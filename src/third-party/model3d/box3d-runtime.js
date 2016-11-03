@@ -56638,7 +56638,7 @@
 	          var attributes = componentDesc.attributes || {};
 	          Object.keys(attributes).forEach(function (attribName) {
 	            // Delete the key if it has been set to undefined.
-	            if (changes.attributes[attribName] === undefined) {
+	            if (changes.attributes.hasOwnProperty(attribName) && changes.attributes[attribName] === undefined) {
 	              changes.attributes[attribName] = undefined;
 	              delete attributes[attribName];
 	            }
@@ -63743,4205 +63743,19 @@
 /* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [
-	  __webpack_require__(29),__webpack_require__(48),__webpack_require__(30),__webpack_require__(31),__webpack_require__(32),__webpack_require__(33),__webpack_require__(35),__webpack_require__(36),__webpack_require__(37),__webpack_require__(38),__webpack_require__(39),__webpack_require__(40),__webpack_require__(41),__webpack_require__(42),__webpack_require__(43),__webpack_require__(44),__webpack_require__(45),__webpack_require__(46),__webpack_require__(47),__webpack_require__(26),__webpack_require__(49),__webpack_require__(50),__webpack_require__(51),__webpack_require__(52),__webpack_require__(53),__webpack_require__(54),__webpack_require__(55),__webpack_require__(56),__webpack_require__(57),__webpack_require__(58),__webpack_require__(59),__webpack_require__(60),__webpack_require__(61),__webpack_require__(62),__webpack_require__(63),__webpack_require__(64),__webpack_require__(65) 
-	], __WEBPACK_AMD_DEFINE_RESULT__ = function(
-	  ComponentAudioListener,ComponentAudioSource,ComponentCubeMapCapture,ComponentCurve,ComponentDebugConsoleDisplay,ComponentDebugPerformance,ComponentDebugTextureViewer,ComponentDefaultFilters,ComponentDynamicOptimizer,ComponentEventHandler,ComponentExploder,ComponentFreeCamera,ComponentFullscreen,ComponentInputController,ComponentKeyframeAnimation,ComponentLookAtTarget,ComponentMaterialCapture,ComponentNormalMapGenerator,ComponentObjectAnimator,ComponentObjectPicker,ComponentOrbitCameraController,ComponentPanoramaToCubeMap,ComponentPMREMGenerator,ComponentPreviewAxisRotation,ComponentPreviewCameraController,ComponentPreviewCameraFocus,ComponentReflectionCapturePlane,ComponentRenderer,ComponentRenderFilters,ComponentRenderModes,ComponentRenderView,ComponentRotate,ComponentSceneLoader,ComponentSimplexNoiseGenerator,ComponentSkybox,ComponentTextRenderer,ComponentTexture2dToCubeMap
-	) { return function(Box3D) {
-	   Box3D.ScriptRegistry.registerScript({
-	  "id": "audio_listener",
-	  "sid": "Audio Listener",
-	  "properties": {
-	    "name": "Audio Listener",
-	    "description": "Audio listener for 3D, positional sound effects",
-	    "attributes": {},
-	    "attributesOrder": [],
-	    "events": {},
-	    "externalDependencies": [],
-	    "category": "Audio",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/AudioListener"
-	  }
-	}, ComponentAudioListener);  Box3D.ScriptRegistry.registerScript({
-	  "id": "audio_source",
-	  "sid": "Audio Source",
-	  "properties": {
-	    "name": "Audio Source",
-	    "description": "Controls playback of audio assets",
-	    "attributes": {
-	      "gain": {
-	        "name": "gain",
-	        "type": "f",
-	        "description": "Volume control",
-	        "default": 1,
-	        "min": 0,
-	        "max": 100
-	      },
-	      "autoPlay": {
-	        "name": "autoPlay",
-	        "type": "b",
-	        "description": "Play the audio once loaded",
-	        "default": true
-	      },
-	      "loop": {
-	        "name": "loop",
-	        "type": "b",
-	        "description": "Continuously replay the audio",
-	        "default": true
-	      },
-	      "preload": {
-	        "name": "preload",
-	        "type": "b",
-	        "description": "Load the audio when the component is initialized",
-	        "default": true
-	      },
-	      "positional": {
-	        "name": "positional",
-	        "type": "b",
-	        "description": "Enable/disable 3D, positional audio effects",
-	        "default": false
-	      },
-	      "stream": {
-	        "name": "stream",
-	        "type": "b",
-	        "description": "Stream the audio",
-	        "default": false
-	      },
-	      "asset": {
-	        "name": "asset",
-	        "type": "asset",
-	        "description": "Audio or video asset",
-	        "default": null,
-	        "filter": {
-	          "audio": true,
-	          "video": true
-	        }
-	      }
-	    },
-	    "attributesOrder": [
-	      "gain",
-	      "autoPlay",
-	      "loop",
-	      "preload",
-	      "positional",
-	      "stream",
-	      "asset"
-	    ],
-	    "events": {
-	      "playAudio": {
-	        "scope": "local",
-	        "name": "playAudio",
-	        "action": true,
-	        "category": "Audio",
-	        "parameters": [
-	          {
-	            "name": "offset",
-	            "type": "f",
-	            "description": "Defined in seconds",
-	            "default": 0
-	          }
-	        ]
-	      },
-	      "pauseAudio": {
-	        "scope": "local",
-	        "name": "pauseAudio",
-	        "action": true,
-	        "category": "Audio",
-	        "parameters": []
-	      },
-	      "stopAudio": {
-	        "scope": "local",
-	        "name": "stopAudio",
-	        "action": true,
-	        "category": "Audio",
-	        "parameters": []
-	      },
-	      "toggleAudio": {
-	        "scope": "local",
-	        "name": "toggleAudio",
-	        "action": true,
-	        "category": "Audio",
-	        "parameters": []
-	      }
-	    },
-	    "externalDependencies": [],
-	    "category": "Audio",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/AudioSource"
-	  }
-	}, ComponentAudioSource);  Box3D.ScriptRegistry.registerScript({
-	  "id": "cubemap_capture",
-	  "sid": "Cube-Map Capture",
-	  "properties": {
-	    "name": "Cube-Map Capture",
-	    "attributes": {
-	      "captureTexture": {
-	        "name": "captureTexture",
-	        "type": "asset",
-	        "description": "The RenderTextureCube to render the reflection to.",
-	        "filter": {
-	          "renderTextureCube": true
-	        },
-	        "default": null
-	      },
-	      "near": {
-	        "name": "near",
-	        "type": "f",
-	        "description": "The closest distance to this object to render. Adjust this to avoid   rendering local geometry to the texture.",
-	        "default": 0.01
-	      },
-	      "far": {
-	        "name": "far",
-	        "type": "f",
-	        "description": "The furthest distance from this object to render.",
-	        "default": 16
-	      },
-	      "updateFrameInterval": {
-	        "name": "updateFrameInterval",
-	        "type": "i",
-	        "description": "The number of frames to skip in between updates of the reflection.   Default is 0.",
-	        "default": 0
-	      },
-	      "renderPosX": {
-	        "name": "renderPosX",
-	        "type": "b",
-	        "description": "Render this side of the cube.",
-	        "default": true
-	      },
-	      "renderNegX": {
-	        "name": "renderNegX",
-	        "type": "b",
-	        "description": "Render this side of the cube.",
-	        "default": true
-	      },
-	      "renderPosY": {
-	        "name": "renderPosY",
-	        "type": "b",
-	        "description": "Render this side of the cube.",
-	        "default": true
-	      },
-	      "renderNegY": {
-	        "name": "renderNegY",
-	        "type": "b",
-	        "description": "Render this side of the cube.",
-	        "default": true
-	      },
-	      "renderPosZ": {
-	        "name": "renderPosZ",
-	        "type": "b",
-	        "description": "Render this side of the cube.",
-	        "default": true
-	      },
-	      "renderNegZ": {
-	        "name": "renderNegZ",
-	        "type": "b",
-	        "description": "Render this side of the cube.",
-	        "default": true
-	      },
-	      "debugView": {
-	        "name": "debugView",
-	        "type": "b",
-	        "description": "Render the camera helpers on the cube capture.",
-	        "default": false
-	      }
-	    },
-	    "attributesOrder": [
-	      "captureTexture",
-	      "near",
-	      "far",
-	      "updateFrameInterval",
-	      "renderPosX",
-	      "renderNegX",
-	      "renderPosY",
-	      "renderNegY",
-	      "renderPosZ",
-	      "renderNegZ",
-	      "debugView"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "Object"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/CubeMapCapture"
-	  }
-	}, ComponentCubeMapCapture);  Box3D.ScriptRegistry.registerScript({
-	  "id": "curve_component",
-	  "sid": "Curve",
-	  "properties": {
-	    "name": "Curve",
-	    "description": "Creates a spline curve that can be used for various things, including making objects follow it. Add controls points to shape the curve.",
-	    "attributes": {
-	      "controlPoints": {
-	        "name": "controlPoints",
-	        "type": "a",
-	        "subType": {
-	          "type": "object"
-	        },
-	        "description": "The list of objects that define the curve shape."
-	      },
-	      "closed": {
-	        "name": "closed",
-	        "type": "b",
-	        "description": "If toggled, the start and end of the curve will be smoothly joined.",
-	        "default": false
-	      }
-	    },
-	    "attributesOrder": [
-	      "controlPoints",
-	      "closed"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "object"
-	    ],
-	    "category": "General",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/Curve"
-	  }
-	}, ComponentCurve);  Box3D.ScriptRegistry.registerScript({
-	  "id": "debug_console_display",
-	  "sid": "Debug Console Display",
-	  "properties": {
-	    "name": "Debug Console Display",
-	    "attributes": {},
-	    "attributesOrder": [],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "Application"
-	    ],
-	    "category": "Debug",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/DebugConsoleDisplay"
-	  }
-	}, ComponentDebugConsoleDisplay);  Box3D.ScriptRegistry.registerScript({
-	  "id": "debug_performance",
-	  "sid": "Debug Performance",
-	  "properties": {
-	    "name": "Debug Performance",
-	    "attributes": {},
-	    "attributesOrder": [],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "Application"
-	    ],
-	    "category": "Debug",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/DebugPerformance"
-	  }
-	}, ComponentDebugPerformance);  Box3D.ScriptRegistry.registerScript({
-	  "id": "debug_texture_viewer",
-	  "sid": "Debug Texture Viewer",
-	  "properties": {
-	    "name": "Debug Texture Viewer",
-	    "attributes": {
-	      "viewportLeft": {
-	        "name": "viewportLeft",
-	        "type": "s",
-	        "description": "Left position of the viewport to be rendered by this camera.",
-	        "default": "25%"
-	      },
-	      "viewportBottom": {
-	        "name": "viewportBottom",
-	        "type": "s",
-	        "description": "Bottom position of the viewport to be rendered by this camera.",
-	        "default": "0px"
-	      },
-	      "viewportWidth": {
-	        "name": "viewportWidth",
-	        "type": "s",
-	        "description": "Width of the viewport to be rendered by this camera.",
-	        "default": "50%"
-	      },
-	      "viewportHeight": {
-	        "name": "viewportHeight",
-	        "type": "s",
-	        "description": "Height of the viewport to be rendered by this camera.",
-	        "default": "50%"
-	      },
-	      "renderGroup": {
-	        "name": "renderGroup",
-	        "type": "i",
-	        "description": "Render passes are done in order, based on the 'render group' value. Lower numbers render first.",
-	        "default": 9
-	      }
-	    },
-	    "attributesOrder": [
-	      "viewportLeft",
-	      "viewportBottom",
-	      "viewportWidth",
-	      "viewportHeight",
-	      "renderGroup"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "Application"
-	    ],
-	    "category": "Debug",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/DebugTextureViewer"
-	  }
-	}, ComponentDebugTextureViewer);  Box3D.ScriptRegistry.registerScript({
-	  "id": "render_filters_component",
-	  "sid": "Default Filters",
-	  "properties": {
-	    "name": "Default Filters",
-	    "description": "Stores the default filter settings that cameras will use when rendering.",
-	    "attributes": {
-	      "bloom": {
-	        "name": "bloom",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "enabled": {
-	            "type": "b",
-	            "default": false
-	          },
-	          "strength": {
-	            "type": "f",
-	            "default": 1,
-	            "min": 0.1,
-	            "max": 4,
-	            "step": 0.001
-	          },
-	          "sigma": {
-	            "type": "f",
-	            "default": 4,
-	            "min": 1,
-	            "max": 8,
-	            "step": 0.001,
-	            "advanced": true
-	          },
-	          "resolution": {
-	            "type": "i",
-	            "default": 256,
-	            "min": 64,
-	            "max": 1024,
-	            "step": 1,
-	            "advanced": true
-	          }
-	        }
-	      },
-	      "toneMapping": {
-	        "name": "toneMapping",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "enabled": {
-	            "type": "b",
-	            "default": false,
-	            "description": "Enable tone-mapping."
-	          },
-	          "adaptive": {
-	            "type": "b",
-	            "description": "Automatically adjusts the tone-mapping every frame based on the average luminance of the scene.",
-	            "default": true
-	          },
-	          "adaptSpeed": {
-	            "type": "f",
-	            "description": "The speed at which adaptive tone-mapping works. Higher number is faster.",
-	            "default": 0.5,
-	            "min": 0.1,
-	            "max": 20
-	          },
-	          "exposureBias": {
-	            "type": "f",
-	            "description": "Adjusts the overall brightness of the image. Use this to tweak the final result of tone-mapping.",
-	            "default": 1,
-	            "min": 0.0001,
-	            "max": 5
-	          },
-	          "maxLuminance": {
-	            "type": "f",
-	            "description": "Sets the maximum brightness reached before pixels become white after tone-mapping.",
-	            "default": 16,
-	            "min": 0.01,
-	            "max": 25
-	          },
-	          "luminance": {
-	            "type": "f",
-	            "description": "When the 'Adaptive' feature is turned off, this will set the scene luminance to be used by tone-mapping.",
-	            "default": 1,
-	            "min": 0.0001,
-	            "max": 16
-	          }
-	        }
-	      },
-	      "fxaa": {
-	        "name": "fxaa",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "enabled": {
-	            "type": "b",
-	            "default": false
-	          }
-	        }
-	      },
-	      "vignette": {
-	        "name": "vignette",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "enabled": {
-	            "type": "b",
-	            "default": false
-	          },
-	          "offset": {
-	            "type": "f",
-	            "default": 1,
-	            "min": 0,
-	            "max": 1,
-	            "step": 0.001
-	          },
-	          "darkness": {
-	            "type": "f",
-	            "default": 1,
-	            "min": 0,
-	            "max": 5,
-	            "step": 0.001
-	          }
-	        }
-	      },
-	      "ssao": {
-	        "name": "ssao",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "enabled": {
-	            "type": "b",
-	            "default": false
-	          },
-	          "fogEnabled": {
-	            "type": "i",
-	            "default": 1,
-	            "advanced": true
-	          },
-	          "depthScale": {
-	            "type": "f",
-	            "default": 2000,
-	            "min": 100,
-	            "max": 50000,
-	            "step": 0.001,
-	            "advanced": true
-	          },
-	          "onlyAO": {
-	            "type": "i",
-	            "default": 0
-	          },
-	          "aoClamp": {
-	            "type": "f",
-	            "default": 0.75,
-	            "advanced": true
-	          },
-	          "lumInfluence": {
-	            "type": "f",
-	            "default": 0.75,
-	            "advanced": true
-	          },
-	          "noiseAmount": {
-	            "type": "f",
-	            "default": 0.0002
-	          },
-	          "radius": {
-	            "type": "f",
-	            "default": 16
-	          },
-	          "diffArea": {
-	            "type": "f",
-	            "default": 0.4,
-	            "advanced": true
-	          },
-	          "gDisplace": {
-	            "type": "f",
-	            "default": 0.4,
-	            "advanced": true
-	          }
-	        }
-	      },
-	      "dof": {
-	        "name": "dof",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "enabled": {
-	            "type": "b",
-	            "default": false
-	          },
-	          "aspect": {
-	            "type": "f",
-	            "default": 1,
-	            "min": 0,
-	            "max": 1,
-	            "step": 0.001,
-	            "advanced": true
-	          },
-	          "aperture": {
-	            "type": "f",
-	            "default": 0.4,
-	            "min": 0,
-	            "max": 1,
-	            "step": 0.001
-	          },
-	          "focus": {
-	            "type": "f",
-	            "default": 0.98,
-	            "min": 0,
-	            "max": 1,
-	            "step": 0.001
-	          }
-	        }
-	      },
-	      "sepia": {
-	        "name": "sepia",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "enabled": {
-	            "type": "b",
-	            "default": false
-	          },
-	          "amount": {
-	            "type": "f",
-	            "default": 0.9,
-	            "min": 0,
-	            "max": 1,
-	            "step": 0.001
-	          }
-	        }
-	      },
-	      "video": {
-	        "name": "video",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "enabled": {
-	            "type": "b",
-	            "default": false
-	          },
-	          "nIntensity": {
-	            "type": "f",
-	            "default": 0.15
-	          },
-	          "sIntensity": {
-	            "type": "f",
-	            "default": 0.05
-	          },
-	          "sCount": {
-	            "type": "f",
-	            "default": 512
-	          },
-	          "grayscale": {
-	            "type": "b",
-	            "default": false
-	          }
-	        }
-	      }
-	    },
-	    "attributesOrder": [
-	      "bloom",
-	      "toneMapping",
-	      "fxaa",
-	      "vignette",
-	      "ssao",
-	      "dof",
-	      "sepia",
-	      "video"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "application"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/DefaultFilters"
-	  }
-	}, ComponentDefaultFilters);  Box3D.ScriptRegistry.registerScript({
-	  "id": "dynamic_optimizer",
-	  "sid": "Dynamic Performance Optimizer",
-	  "properties": {
-	    "name": "Dynamic Performance Optimizer",
-	    "attributes": {
-	      "frameTimeThreshold": {
-	        "name": "frameTimeThreshold",
-	        "type": "f",
-	        "description": "The average time that a frame can take to render before the optimizer drops a   quality level. Default threshold is 30 FPS = 1000 ms / 30 frames",
-	        "default": 33.333333333333
-	      },
-	      "testInterval": {
-	        "name": "testInterval",
-	        "type": "f",
-	        "description": "The amount of elapsed time (in ms) to average the frame time over.   i.e. an optimization decision can be made every time this interval elapses.",
-	        "default": 2000
-	      }
-	    },
-	    "attributesOrder": [
-	      "frameTimeThreshold",
-	      "testInterval"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "Application"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/DynamicOptimizer"
-	  }
-	}, ComponentDynamicOptimizer);  Box3D.ScriptRegistry.registerScript({
-	  "id": "event_handler_component",
-	  "sid": "Event Handler",
-	  "properties": {
-	    "name": "Event Handler",
-	    "attributes": {
-	      "listen": {
-	        "name": "listen",
-	        "type": "event",
-	        "description": "The event to listen for. When this event is captured, all of the defined trigger events will be fired."
-	      },
-	      "triggers": {
-	        "name": "triggers",
-	        "type": "a",
-	        "subType": {
-	          "type": "event"
-	        },
-	        "description": "Fire each of these events in response to the captured listen event."
-	      }
-	    },
-	    "attributesOrder": [
-	      "listen",
-	      "triggers"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "category": "Interaction",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/EventHandler"
-	  }
-	}, ComponentEventHandler);  Box3D.ScriptRegistry.registerScript({
-	  "id": "exploder_component",
-	  "sid": "Exploder",
-	  "properties": {
-	    "name": "Exploder",
-	    "description": "Explodes your objects and their hierarchies into different formations. Great for showing off parts in a model!",
-	    "attributes": {
-	      "Time": {
-	        "name": "Time",
-	        "type": "f",
-	        "default": 1.5,
-	        "description": "The amount of time to explode and contract the child meshes"
-	      },
-	      "Scale": {
-	        "name": "Scale",
-	        "type": "v3",
-	        "default": {
-	          "x": 2,
-	          "y": 2,
-	          "z": 2
-	        },
-	        "description": "The scale of the explosion"
-	      },
-	      "Formation": {
-	        "name": "Formation",
-	        "type": "dd",
-	        "description": "Formation to use when exploding the hierarchy of this object.",
-	        "default": "Scale",
-	        "options": {
-	          "Circle": "Circle",
-	          "Square Grid": "Grid",
-	          "Scale Out": "Scale"
-	        }
-	      }
-	    },
-	    "attributesOrder": [
-	      "Time",
-	      "Scale",
-	      "Formation"
-	    ],
-	    "events": {
-	      "playExplode": {
-	        "scope": "local",
-	        "name": "playExplode",
-	        "action": true,
-	        "category": "Exploder",
-	        "parameters": []
-	      },
-	      "playContract": {
-	        "scope": "local",
-	        "name": "playContract",
-	        "action": true,
-	        "category": "Exploder",
-	        "parameters": []
-	      },
-	      "toggleExploder": {
-	        "scope": "local",
-	        "name": "toggleExploder",
-	        "action": true,
-	        "category": "Exploder",
-	        "parameters": []
-	      },
-	      "resetExploder": {
-	        "scope": "local",
-	        "name": "resetExploder",
-	        "action": true,
-	        "category": "Exploder",
-	        "parameters": []
-	      },
-	      "useCircleExplode": {
-	        "scope": "local",
-	        "name": "useCircleExplode",
-	        "action": true,
-	        "category": "Exploder",
-	        "parameters": [
-	          {
-	            "name": "Scale",
-	            "type": "v3",
-	            "description": "The scale to apply to the explosion",
-	            "default": {
-	              "x": 1,
-	              "y": 1,
-	              "z": 1
-	            }
-	          }
-	        ]
-	      },
-	      "useGridExplode": {
-	        "scope": "local",
-	        "name": "useGridExplode",
-	        "action": true,
-	        "category": "Exploder",
-	        "parameters": [
-	          {
-	            "name": "Scale",
-	            "type": "v3",
-	            "description": "The scale to apply to the explosion",
-	            "default": {
-	              "x": 1,
-	              "y": 1,
-	              "z": 1
-	            }
-	          }
-	        ]
-	      },
-	      "useScaleOutExplode": {
-	        "scope": "local",
-	        "name": "useScaleOutExplode",
-	        "action": true,
-	        "category": "Exploder",
-	        "parameters": [
-	          {
-	            "name": "Scale",
-	            "type": "v3",
-	            "description": "The scale to apply to the explosion",
-	            "default": {
-	              "x": 2,
-	              "y": 2,
-	              "z": 2
-	            }
-	          }
-	        ]
-	      },
-	      "beginExplode": {
-	        "scope": "other",
-	        "name": "beginExplode",
-	        "action": false,
-	        "category": "Exploder",
-	        "parameters": []
-	      },
-	      "endExplode": {
-	        "scope": "other",
-	        "name": "endExplode",
-	        "action": false,
-	        "category": "Exploder",
-	        "parameters": []
-	      },
-	      "beginContract": {
-	        "scope": "other",
-	        "name": "beginContract",
-	        "action": false,
-	        "category": "Exploder",
-	        "parameters": []
-	      },
-	      "endContract": {
-	        "scope": "other",
-	        "name": "endContract",
-	        "action": false,
-	        "category": "Exploder",
-	        "parameters": []
-	      }
-	    },
-	    "externalDependencies": [],
-	    "filter": [
-	      "object"
-	    ],
-	    "category": "Animation",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/Exploder"
-	  }
-	}, ComponentExploder);  Box3D.ScriptRegistry.registerScript({
-	  "id": "free_camera_controller",
-	  "sid": "Free Camera Controller",
-	  "properties": {
-	    "name": "Free Camera Controller",
-	    "attributes": {
-	      "inertialDamping": {
-	        "name": "inertialDamping",
-	        "type": "f",
-	        "default": 0.2,
-	        "min": 0,
-	        "max": 1
-	      },
-	      "usePointerLock": {
-	        "name": "usePointerLock",
-	        "type": "b",
-	        "description": "",
-	        "default": false
-	      },
-	      "invertX": {
-	        "name": "invertX",
-	        "type": "b",
-	        "default": false
-	      },
-	      "invertY": {
-	        "name": "invertY",
-	        "type": "b",
-	        "default": false
-	      },
-	      "invertZoom": {
-	        "name": "invertZoom",
-	        "type": "b",
-	        "default": false
-	      },
-	      "lookSpeed": {
-	        "name": "lookSpeed",
-	        "type": "f",
-	        "default": 1,
-	        "min": 0.0001,
-	        "max": 1000
-	      },
-	      "movementSpeed": {
-	        "name": "movementSpeed",
-	        "type": "f",
-	        "default": 3,
-	        "max": 1000,
-	        "min": 0.01
-	      },
-	      "pitchAngleBounds": {
-	        "name": "pitchAngleBounds",
-	        "type": "v2",
-	        "default": {
-	          "max": 75,
-	          "min": -75
-	        },
-	        "max": {
-	          "max": 90,
-	          "min": 90
-	        },
-	        "min": {
-	          "max": -90,
-	          "min": -90.01
-	        }
-	      },
-	      "enablePan": {
-	        "name": "enablePan",
-	        "type": "b",
-	        "default": true
-	      },
-	      "enableZoom": {
-	        "name": "enableZoom",
-	        "type": "b",
-	        "default": true
-	      }
-	    },
-	    "attributesOrder": [
-	      "inertialDamping",
-	      "usePointerLock",
-	      "invertX",
-	      "invertY",
-	      "invertZoom",
-	      "lookSpeed",
-	      "movementSpeed",
-	      "pitchAngleBounds",
-	      "enablePan",
-	      "enableZoom"
-	    ],
-	    "events": {
-	      "enableFreeCameraController": {
-	        "scope": "local",
-	        "name": "enableFreeCameraController",
-	        "parameters": []
-	      },
-	      "disableFreeCameraController": {
-	        "scope": "local",
-	        "name": "disableFreeCameraController",
-	        "parameters": []
-	      },
-	      "toggleFreeCameraController": {
-	        "scope": "local",
-	        "name": "toggleFreeCameraController",
-	        "parameters": []
-	      }
-	    },
-	    "externalDependencies": [],
-	    "filter": [
-	      "camera"
-	    ],
-	    "category": "Camera-Controllers",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/FreeCamera"
-	  }
-	}, ComponentFreeCamera);  Box3D.ScriptRegistry.registerScript({
-	  "id": "fullscreen_script",
-	  "sid": "Fullscreen",
-	  "properties": {
-	    "name": "Fullscreen",
-	    "description": "ses fullscreen API to make your app fullscreen! This will fullscreen the canvas' parent element, so your UI can be fullscreened as well! If a selector is provided, then we will fullscreen that element instead.",
-	    "attributes": {},
-	    "attributesOrder": [],
-	    "events": {
-	      "toggleFullscreen": {
-	        "scope": "local",
-	        "name": "toggleFullscreen",
-	        "action": true,
-	        "category": "Rendering",
-	        "parameters": []
-	      }
-	    },
-	    "externalDependencies": [],
-	    "filter": [
-	      "application"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/Fullscreen"
-	  }
-	}, ComponentFullscreen);  Box3D.ScriptRegistry.registerScript({
-	  "id": "input_controller_component",
-	  "sid": "Input Controller",
-	  "properties": {
-	    "name": "Input Controller",
-	    "attributes": {
-	      "mouseEvents": {
-	        "name": "mouseEvents",
-	        "type": "custom",
-	        "attributes": {
-	          "enable": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Enable mouse events?"
-	          },
-	          "scroll": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen to scroll events?"
-	          },
-	          "scroll_preventDefault": {
-	            "type": "b",
-	            "default": false,
-	            "description": "Prevent default scroll behaviour?"
-	          },
-	          "move": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen to mouse move events?"
-	          },
-	          "down": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen to mouse down event?"
-	          },
-	          "down_preventDefault": {
-	            "type": "b",
-	            "default": false,
-	            "description": "Prevent default mouse down behaviour?"
-	          },
-	          "up": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen to mouse up event?"
-	          },
-	          "double_click": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen to double click event?"
-	          },
-	          "leave": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen to mouse leave event"
-	          },
-	          "contextMenu": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen for the context menu event? (ie, right click)"
-	          },
-	          "contextMenu_preventDefault": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Prevent context menu default behaviour (ie, the context menu popping open)"
-	          },
-	          "dragBufferDistance": {
-	            "type": "f",
-	            "default": 12,
-	            "name": "Drag Buffer Distance",
-	            "description": "The distance from initial click that you need to move your mouse before a drag event is fired, in pixels"
-	          },
-	          "eventHandler": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Events fired from the mouse are picked up by the Event Handler"
-	          }
-	        }
-	      },
-	      "touchEvents": {
-	        "name": "touchEvents",
-	        "type": "custom",
-	        "attributes": {
-	          "enable": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Enable touch events?"
-	          },
-	          "start": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen for Touch Start"
-	          },
-	          "start_preventDefault": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Prevent default behaviour of touch start event"
-	          },
-	          "end": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen for touch end event"
-	          },
-	          "doubleTap": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen for a touch double tap event"
-	          },
-	          "cancel": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen for touch cancel event"
-	          },
-	          "leave": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen for touch leave event"
-	          },
-	          "move": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen for touch move event"
-	          },
-	          "move_preventDefault": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Prevent default move behaviour (ie, dragging the window)"
-	          },
-	          "dragBufferDistance": {
-	            "type": "f",
-	            "default": 12,
-	            "name": "Drag Buffer Distance",
-	            "description": "The distance from initial touch down that you need to move your finger before a drag event is fired, in pixels"
-	          },
-	          "eventHandler": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Events fired from the touches are picked up by the Event Handler"
-	          }
-	        }
-	      },
-	      "keyEvents": {
-	        "name": "keyEvents",
-	        "type": "custom",
-	        "attributes": {
-	          "enable": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Enable keyboard events"
-	          },
-	          "down": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen to key down events"
-	          },
-	          "up": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Listen to key up events"
-	          },
-	          "preventDefault": {
-	            "type": "b",
-	            "default": false,
-	            "description": "Prevent default keypress behaviour"
-	          },
-	          "eventHandler": {
-	            "type": "b",
-	            "default": true,
-	            "description": "Events fired from the keys are picked up by the Event Handler"
-	          }
-	        }
-	      }
-	    },
-	    "attributesOrder": [
-	      "mouseEvents",
-	      "touchEvents",
-	      "keyEvents"
-	    ],
-	    "events": {
-	      "mouse_down_left": {
-	        "scope": "global",
-	        "name": "mouse_down_left",
-	        "action": false,
-	        "category": "Input - Mouse",
-	        "parameters": []
-	      },
-	      "mouse_down_right": {
-	        "scope": "global",
-	        "name": "mouse_down_right",
-	        "action": false,
-	        "category": "Input - Mouse",
-	        "parameters": []
-	      },
-	      "mouse_down_middle": {
-	        "scope": "global",
-	        "name": "mouse_down_middle",
-	        "action": false,
-	        "category": "Input - Mouse",
-	        "parameters": []
-	      },
-	      "mouse_up_left": {
-	        "scope": "global",
-	        "name": "mouse_up_left",
-	        "action": false,
-	        "category": "Input - Mouse",
-	        "parameters": []
-	      },
-	      "mouse_up_right": {
-	        "scope": "global",
-	        "name": "mouse_up_right",
-	        "action": false,
-	        "category": "Input - Mouse",
-	        "parameters": []
-	      },
-	      "mouse_up_middle": {
-	        "scope": "global",
-	        "name": "mouse_up_middle",
-	        "action": false,
-	        "category": "Input - Mouse",
-	        "parameters": []
-	      },
-	      "keypress_a": {
-	        "scope": "global",
-	        "name": "keypress_a",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_b": {
-	        "scope": "global",
-	        "name": "keypress_b",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_c": {
-	        "scope": "global",
-	        "name": "keypress_c",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_d": {
-	        "scope": "global",
-	        "name": "keypress_d",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_f": {
-	        "scope": "global",
-	        "name": "keypress_f",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_g": {
-	        "scope": "global",
-	        "name": "keypress_g",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_e": {
-	        "scope": "global",
-	        "name": "keypress_e",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_h": {
-	        "scope": "global",
-	        "name": "keypress_h",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_i": {
-	        "scope": "global",
-	        "name": "keypress_i",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_j": {
-	        "scope": "global",
-	        "name": "keypress_j",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_k": {
-	        "scope": "global",
-	        "name": "keypress_k",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_l": {
-	        "scope": "global",
-	        "name": "keypress_l",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_m": {
-	        "scope": "global",
-	        "name": "keypress_m",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_n": {
-	        "scope": "global",
-	        "name": "keypress_n",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_o": {
-	        "scope": "global",
-	        "name": "keypress_o",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_p": {
-	        "scope": "global",
-	        "name": "keypress_p",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_q": {
-	        "scope": "global",
-	        "name": "keypress_q",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_r": {
-	        "scope": "global",
-	        "name": "keypress_r",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_s": {
-	        "scope": "global",
-	        "name": "keypress_s",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_t": {
-	        "scope": "global",
-	        "name": "keypress_t",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_u": {
-	        "scope": "global",
-	        "name": "keypress_u",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_v": {
-	        "scope": "global",
-	        "name": "keypress_v",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_w": {
-	        "scope": "global",
-	        "name": "keypress_w",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_x": {
-	        "scope": "global",
-	        "name": "keypress_x",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_y": {
-	        "scope": "global",
-	        "name": "keypress_y",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_z": {
-	        "scope": "global",
-	        "name": "keypress_z",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_up_arrow": {
-	        "scope": "global",
-	        "name": "keypress_up_arrow",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_down_arrow": {
-	        "scope": "global",
-	        "name": "keypress_down_arrow",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_left_arrow": {
-	        "scope": "global",
-	        "name": "keypress_left_arrow",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_right_arrow": {
-	        "scope": "global",
-	        "name": "keypress_right_arrow",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "keypress_space": {
-	        "scope": "global",
-	        "name": "keypress_space",
-	        "action": false,
-	        "category": "Input - Keys",
-	        "parameters": []
-	      },
-	      "touch_start": {
-	        "scope": "global",
-	        "name": "touch_start",
-	        "action": false,
-	        "category": "Input - Touch",
-	        "parameters": []
-	      },
-	      "touch_end": {
-	        "scope": "global",
-	        "name": "touch_end",
-	        "action": false,
-	        "category": "Input - Touch",
-	        "parameters": []
-	      }
-	    },
-	    "externalDependencies": [],
-	    "filter": [
-	      "application"
-	    ],
-	    "category": "Input",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/InputController"
-	  }
-	}, ComponentInputController);  Box3D.ScriptRegistry.registerScript({
-	  "id": "animation",
-	  "sid": "Animation",
-	  "properties": {
-	    "name": "Animation",
-	    "attributes": {
-	      "autoPlay": {
-	        "name": "autoPlay",
-	        "type": "b",
-	        "description": "Play the animation once loaded",
-	        "default": true
-	      },
-	      "loop": {
-	        "name": "loop",
-	        "type": "b",
-	        "description": "Continuously replay the animation",
-	        "default": true
-	      },
-	      "speed": {
-	        "name": "speed",
-	        "type": "f",
-	        "description": "Playback speed",
-	        "default": 1,
-	        "min": 0,
-	        "max": 100
-	      },
-	      "startTime": {
-	        "name": "startTime",
-	        "type": "f",
-	        "description": "Begin playback at this time offset",
-	        "default": 0,
-	        "min": 0
-	      },
-	      "weight": {
-	        "name": "weight",
-	        "type": "f",
-	        "description": "Blending weight",
-	        "default": 1,
-	        "min": 0,
-	        "max": 1
-	      },
-	      "asset": {
-	        "name": "asset",
-	        "type": "asset",
-	        "description": "Animation asset",
-	        "default": null,
-	        "filter": {
-	          "animation": true
-	        }
-	      },
-	      "clipId": {
-	        "name": "clipId",
-	        "type": "i",
-	        "description": "The animation clip ID",
-	        "default": null
-	      }
-	    },
-	    "attributesOrder": [
-	      "autoPlay",
-	      "loop",
-	      "speed",
-	      "startTime",
-	      "weight",
-	      "asset",
-	      "clipId"
-	    ],
-	    "events": {
-	      "playAnimation": {
-	        "scope": "local",
-	        "name": "playAnimation",
-	        "action": true,
-	        "category": "Animation",
-	        "parameters": [
-	          {
-	            "name": "asset",
-	            "type": "asset",
-	            "description": "The animation asset to play.",
-	            "default": null,
-	            "filter": {
-	              "animation": true
-	            }
-	          },
-	          {
-	            "name": "clipId",
-	            "type": "s",
-	            "description": "The ID of the clip to play.",
-	            "default": null
-	          },
-	          {
-	            "name": "loop",
-	            "type": "b",
-	            "description": "Continuously replay the animation.",
-	            "default": true
-	          },
-	          {
-	            "name": "speed",
-	            "type": "f",
-	            "description": "Playback speed.",
-	            "default": 1,
-	            "min": 0,
-	            "max": 100
-	          },
-	          {
-	            "name": "startTime",
-	            "type": "f",
-	            "description": "Begin playback at this time offset.",
-	            "default": 0,
-	            "min": 0
-	          }
-	        ]
-	      },
-	      "pauseAnimation": {
-	        "scope": "local",
-	        "name": "pauseAnimation",
-	        "action": true,
-	        "category": "Animation",
-	        "parameters": []
-	      },
-	      "stopAnimation": {
-	        "scope": "local",
-	        "name": "stopAnimation",
-	        "action": true,
-	        "category": "Animation",
-	        "parameters": []
-	      },
-	      "toggleAnimation": {
-	        "scope": "local",
-	        "name": "toggleAnimation",
-	        "action": true,
-	        "category": "Animation",
-	        "parameters": []
-	      },
-	      "animationLoaded": {
-	        "scope": "local",
-	        "name": "animationLoaded",
-	        "action": false,
-	        "category": "Animation",
-	        "parameters": []
-	      },
-	      "endAnimation": {
-	        "scope": "local",
-	        "name": "endAnimation",
-	        "action": false,
-	        "category": "Animation",
-	        "parameters": []
-	      }
-	    },
-	    "externalDependencies": [],
-	    "filter": [
-	      "object"
-	    ],
-	    "category": "Animation",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/KeyframeAnimation"
-	  }
-	}, ComponentKeyframeAnimation);  Box3D.ScriptRegistry.registerScript({
-	  "id": "lookat_component",
-	  "sid": "Look At Target",
-	  "properties": {
-	    "name": "Look At Target",
-	    "description": "A component that automatically points the object at a target. This can be used for billboarding an object to the camera, making a character look at another, etc.",
-	    "attributes": {
-	      "target": {
-	        "name": "target",
-	        "type": "object",
-	        "description": "The object that you want this object to point towards. e.g. for billboarding, this would be the camera used to render the scene."
-	      },
-	      "local": {
-	        "name": "local",
-	        "type": "b",
-	        "description": "If toggled, whatever rotation you have already applied to this object will be taken into account.",
-	        "default": false
-	      },
-	      "showPreview": {
-	        "name": "showPreview",
-	        "type": "b",
-	        "description": "Run the lookAt in the editor.",
-	        "default": true
-	      }
-	    },
-	    "attributesOrder": [
-	      "target",
-	      "local",
-	      "showPreview"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "Object"
-	    ],
-	    "category": "General",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/LookAtTarget"
-	  }
-	}, ComponentLookAtTarget);  Box3D.ScriptRegistry.registerScript({
-	  "id": "material_capture",
-	  "sid": "Material Capture",
-	  "properties": {
-	    "name": "Material Capture",
-	    "description": "A component that captures an image of a rendered material as a spherical map, complete with lighting. This image can then be applied (with a sphere map projection) to a mesh to achieve convincing material shading (although the mesh will appear with the same lighting from all directions).",
-	    "attributes": {
-	      "captureTexture": {
-	        "name": "captureTexture",
-	        "type": "asset",
-	        "description": "",
-	        "filter": {
-	          "renderTexture2D": true
-	        },
-	        "default": null
-	      }
-	    },
-	    "attributesOrder": [
-	      "captureTexture"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "material"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/MaterialCapture"
-	  }
-	}, ComponentMaterialCapture);  Box3D.ScriptRegistry.registerScript({
-	  "id": "normal_map_generator_component",
-	  "sid": "Normal Map Generator",
-	  "properties": {
-	    "name": "Normal Map Generator",
-	    "attributes": {
-	      "bumpTexture": {
-	        "name": "bumpTexture",
-	        "type": "asset",
-	        "filter": {
-	          "renderTexture2D": true,
-	          "texture2D": true
-	        }
-	      },
-	      "smoothness": {
-	        "name": "smoothness",
-	        "type": "f",
-	        "slider": true,
-	        "default": 0.25,
-	        "min": 0.0001,
-	        "max": 1
-	      },
-	      "spread": {
-	        "name": "spread",
-	        "type": "f",
-	        "slider": true,
-	        "default": 4,
-	        "min": 1,
-	        "max": 10
-	      },
-	      "autoLoad": {
-	        "name": "autoLoad",
-	        "type": "b",
-	        "default": true
-	      }
-	    },
-	    "attributesOrder": [
-	      "bumpTexture",
-	      "smoothness",
-	      "spread",
-	      "autoLoad"
-	    ],
-	    "events": {
-	      "renderNormalMap": {
-	        "scope": "local",
-	        "name": "renderNormalMap",
-	        "action": true,
-	        "category": "Rendering",
-	        "parameters": []
-	      }
-	    },
-	    "externalDependencies": [],
-	    "filter": [
-	      "renderTexture2D"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/NormalMapGenerator"
-	  }
-	}, ComponentNormalMapGenerator);  Box3D.ScriptRegistry.registerScript({
-	  "id": "object_animator_component",
-	  "sid": "Object Animator",
-	  "properties": {
-	    "name": "Object Animator",
-	    "attributes": {},
-	    "attributesOrder": [],
-	    "events": {
-	      "playAnimateAlongCurve": {
-	        "scope": "local",
-	        "name": "playAnimateAlongCurve",
-	        "action": true,
-	        "category": "Animation",
-	        "parameters": [
-	          {
-	            "name": "curve",
-	            "type": "object",
-	            "componentFilter": {
-	              "Curve": true
-	            }
-	          },
-	          {
-	            "name": "animationTime",
-	            "type": "f",
-	            "description": "Time to animate to object. Defined in seconds",
-	            "default": 3
-	          },
-	          {
-	            "name": "easeIn",
-	            "type": "f",
-	            "description": "The percentage of animation time spent speeding up.",
-	            "default": 0.25,
-	            "min": 0,
-	            "max": 1
-	          },
-	          {
-	            "name": "easeOut",
-	            "type": "f",
-	            "description": "The percentage of animation time spent slowing down.",
-	            "default": 0.25,
-	            "min": 0,
-	            "max": 1
-	          },
-	          {
-	            "name": "orientation",
-	            "description": "Orient the object following the curve to either the direction of the curve or to the objects defining the curve.",
-	            "type": "opt",
-	            "default": "toCurve",
-	            "options": {
-	              "None": "None",
-	              "To Curve": "toCurve",
-	              "To Nodes": "toNode"
-	            }
-	          },
-	          {
-	            "name": "loop",
-	            "type": "b",
-	            "description": "",
-	            "default": false
-	          }
-	        ]
-	      },
-	      "playAnimateToObject": {
-	        "scope": "local",
-	        "name": "playAnimateToObject",
-	        "action": true,
-	        "category": "Animation",
-	        "parameters": [
-	          {
-	            "name": "object",
-	            "type": "object",
-	            "default": null
-	          },
-	          {
-	            "name": "animationTime",
-	            "type": "f",
-	            "description": "Total time that the animation will take. Defined in seconds",
-	            "default": 3
-	          },
-	          {
-	            "name": "easeIn",
-	            "type": "f",
-	            "description": "The percentage of animation time spent speeding up.",
-	            "default": 0.25,
-	            "min": 0,
-	            "max": 1
-	          },
-	          {
-	            "name": "easeOut",
-	            "type": "f",
-	            "description": "The percentage of animation time spent slowing down.",
-	            "default": 0.25,
-	            "min": 0,
-	            "max": 1
-	          },
-	          {
-	            "name": "update orientation",
-	            "type": "b",
-	            "default": true
-	          }
-	        ]
-	      },
-	      "playAnimateTranslation": {
-	        "scope": "local",
-	        "name": "playAnimateTranslation",
-	        "action": true,
-	        "category": "Animation",
-	        "parameters": [
-	          {
-	            "name": "animationTime",
-	            "type": "f",
-	            "description": "Time to animate. Defined in seconds",
-	            "default": 3
-	          },
-	          {
-	            "name": "easeIn",
-	            "type": "f",
-	            "description": "The percentage of animation time spent speeding up.",
-	            "default": 0.25,
-	            "min": 0,
-	            "max": 1
-	          },
-	          {
-	            "name": "easeOut",
-	            "type": "f",
-	            "description": "The percentage of animation time spent slowing down.",
-	            "default": 0.25,
-	            "min": 0,
-	            "max": 1
-	          },
-	          {
-	            "name": "velocity",
-	            "description": "",
-	            "type": "v3",
-	            "default": {
-	              "x": 0,
-	              "y": 0,
-	              "z": 1
-	            },
-	            "min": -1,
-	            "max": 1
-	          },
-	          {
-	            "name": "objectUsage",
-	            "type": "opt",
-	            "description": "Specify what part of the animation the current object's position represents.",
-	            "default": "beginning",
-	            "options": {
-	              "Beginning": "beginning",
-	              "Middle": "middle",
-	              "End": "end"
-	            }
-	          }
-	        ]
-	      },
-	      "playAnimateRotation": {
-	        "scope": "local",
-	        "name": "playAnimateRotation",
-	        "action": true,
-	        "category": "Animation",
-	        "parameters": [
-	          {
-	            "name": "animationTime",
-	            "type": "f",
-	            "description": "Time to animate to object. Defined in seconds",
-	            "default": 3
-	          },
-	          {
-	            "name": "easeIn",
-	            "type": "f",
-	            "description": "The percentage of animation time spent speeding up.",
-	            "default": 0.25,
-	            "min": 0,
-	            "max": 1
-	          },
-	          {
-	            "name": "easeOut",
-	            "type": "f",
-	            "description": "The percentage of animation time spent slowing down.",
-	            "default": 0.25,
-	            "min": 0,
-	            "max": 1
-	          },
-	          {
-	            "name": "angularVelocity",
-	            "description": "",
-	            "type": "v3",
-	            "default": {
-	              "x": 0,
-	              "y": 0,
-	              "z": 1
-	            },
-	            "min": -100,
-	            "max": 100
-	          },
-	          {
-	            "name": "objectUsage",
-	            "type": "opt",
-	            "description": "Specify what part of the animation the current object's rotation represents.",
-	            "default": "beginning",
-	            "options": {
-	              "Beginning": "beginning",
-	              "Middle": "middle",
-	              "End": "end"
-	            }
-	          },
-	          {
-	            "name": "axisOrder",
-	            "type": "opt",
-	            "description": "Specify the axis order that the angular velocity will be applied in.",
-	            "default": "YXZ",
-	            "options": {
-	              "XYZ": "XYZ",
-	              "YXZ": "YXZ",
-	              "ZXY": "ZXY",
-	              "XZY": "XZY",
-	              "YZX": "YZX",
-	              "ZYX": "ZYX"
-	            }
-	          }
-	        ]
-	      },
-	      "playAnimateScale": {
-	        "scope": "local",
-	        "name": "playAnimateScale",
-	        "action": true,
-	        "category": "Animation",
-	        "parameters": [
-	          {
-	            "name": "animationTime",
-	            "type": "f",
-	            "description": "Time to animate to object. Defined in seconds",
-	            "default": 3
-	          },
-	          {
-	            "name": "easeIn",
-	            "type": "f",
-	            "description": "The percentage of animation time spent speeding up.",
-	            "default": 0.25,
-	            "min": 0,
-	            "max": 1
-	          },
-	          {
-	            "name": "easeOut",
-	            "type": "f",
-	            "description": "The percentage of animation time spent slowing down.",
-	            "default": 0.25,
-	            "min": 0,
-	            "max": 1
-	          },
-	          {
-	            "name": "velocity",
-	            "description": "",
-	            "type": "v3",
-	            "default": {
-	              "x": 0,
-	              "y": 0,
-	              "z": 1
-	            },
-	            "min": -10,
-	            "max": 10
-	          },
-	          {
-	            "name": "objectUsage",
-	            "type": "opt",
-	            "description": "Specify what part of the animation the current object's scale represents.",
-	            "default": "beginning",
-	            "options": {
-	              "Beginning": "beginning",
-	              "Middle": "middle",
-	              "End": "end"
-	            }
-	          }
-	        ]
-	      },
-	      "pauseCurveAnimation": {
-	        "scope": "local",
-	        "name": "pauseCurveAnimation",
-	        "action": true,
-	        "category": "Animation",
-	        "parameters": []
-	      },
-	      "stopCurveAnimation": {
-	        "scope": "local",
-	        "name": "stopCurveAnimation",
-	        "action": true,
-	        "category": "Animation",
-	        "parameters": []
-	      },
-	      "unpauseCurveAnimation": {
-	        "scope": "local",
-	        "name": "unpauseCurveAnimation",
-	        "action": true,
-	        "category": "Animation",
-	        "parameters": []
-	      },
-	      "endAnimateAlongCurve": {
-	        "scope": "local",
-	        "name": "endAnimateAlongCurve",
-	        "action": false,
-	        "category": "Animation",
-	        "parameters": []
-	      },
-	      "endAnimateToObject": {
-	        "scope": "local",
-	        "name": "endAnimateToObject",
-	        "action": false,
-	        "category": "Animation",
-	        "parameters": []
-	      },
-	      "endAnimateTranslation": {
-	        "scope": "lcoal",
-	        "name": "endAnimateTranslation",
-	        "action": false,
-	        "category": "Animation",
-	        "parameters": []
-	      }
-	    },
-	    "externalDependencies": [],
-	    "filter": [
-	      "Object"
-	    ],
-	    "category": "Animation",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/ObjectAnimator"
-	  }
-	}, ComponentObjectAnimator);  Box3D.ScriptRegistry.registerScript({
-	  "id": "object_picker",
-	  "sid": "Object Picker",
-	  "properties": {
-	    "name": "Object Picker",
-	    "attributes": {
-	      "pickTrigger": {
-	        "name": "pickTrigger",
-	        "type": "dd",
-	        "description": "What mouse action will trigger the pick?",
-	        "default": "leftMouseClick",
-	        "options": {
-	          "Left Mouse Click": "leftMouseClick",
-	          "Middle Mouse Click": "middleMouseClick",
-	          "Right Mouse Click": "rightMouseClick",
-	          "Left Mouse Down": "leftMouseDown",
-	          "Middle Mouse Down": "middleMouseDown",
-	          "Right Mouse Down": "rightMouseDown",
-	          "Left Mouse Up": "leftMouseUp",
-	          "Middle Mouse Up": "middleMouseUp",
-	          "Right Mouse Up": "rightMouseUp"
-	        }
-	      },
-	      "enableHoverByDefault": {
-	        "name": "enableHoverByDefault",
-	        "type": "b",
-	        "default": false,
-	        "advanced": true,
-	        "description": "Enable hover detection when mouse cursor is over a mesh. Note that this has a potential performance impact."
-	      },
-	      "hoverFrameSkip": {
-	        "name": "hoverFrameSkip",
-	        "type": "i",
-	        "description": "Skip this many frames inbetween hover checks.",
-	        "default": 1,
-	        "min": 0,
-	        "max": 60
-	      }
-	    },
-	    "attributesOrder": [
-	      "pickTrigger",
-	      "enableHoverByDefault",
-	      "hoverFrameSkip"
-	    ],
-	    "events": {
-	      "pick": {
-	        "scope": "other",
-	        "name": "pick",
-	        "action": false,
-	        "category": "General",
-	        "parameters": []
-	      },
-	      "beginHover": {
-	        "scope": "other",
-	        "name": "beginHover",
-	        "action": false,
-	        "category": "General",
-	        "parameters": []
-	      },
-	      "endHover": {
-	        "scope": "other",
-	        "name": "endHover",
-	        "action": false,
-	        "category": "General",
-	        "parameters": []
-	      }
-	    },
-	    "externalDependencies": [],
-	    "filter": [
-	      "Scene"
-	    ],
-	    "category": "General",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/ObjectPicker"
-	  }
-	}, ComponentObjectPicker);  Box3D.ScriptRegistry.registerScript({
-	  "id": "orbit_camera_controller",
-	  "sid": "Orbit Camera Controller",
-	  "properties": {
-	    "name": "Orbit Camera Controller",
-	    "description": "A controller that allows a camera to easily orbit a target object.",
-	    "attributes": {
-	      "targetObject": {
-	        "name": "targetObject",
-	        "type": "object",
-	        "default": null,
-	        "description": "The object that the camera orbit point will be relative to."
-	      },
-	      "targetOffset": {
-	        "name": "targetOffset",
-	        "type": "v3",
-	        "default": {
-	          "x": 0,
-	          "y": 0,
-	          "z": 0
-	        },
-	        "description": "An offset relative to the target object. This will allow you to target a specific point on an object."
-	      },
-	      "inertialDamping": {
-	        "name": "inertialDamping",
-	        "type": "f",
-	        "default": 0.4,
-	        "description": "How quickly the camera stops moving when input stops.",
-	        "min": 0,
-	        "max": 1
-	      },
-	      "invertX": {
-	        "name": "invertX",
-	        "type": "b",
-	        "default": false,
-	        "description": "Reverse the default direction that the camera moves horizontally."
-	      },
-	      "invertY": {
-	        "name": "invertY",
-	        "type": "b",
-	        "default": false,
-	        "description": "Reverse the default direction that the camera moves vertically."
-	      },
-	      "invertZoom": {
-	        "name": "invertZoom",
-	        "type": "b",
-	        "default": false,
-	        "description": "Reverse the default direction that the camera moves when zooming."
-	      },
-	      "lookSpeed": {
-	        "name": "lookSpeed",
-	        "type": "f",
-	        "description": "The speed that the camera orbits the target",
-	        "default": 1,
-	        "max": 1000,
-	        "min": 0.0001
-	      },
-	      "movementSpeed": {
-	        "name": "movementSpeed",
-	        "type": "f",
-	        "description": "The speed that the camera moves when panning",
-	        "default": 8,
-	        "max": 2000,
-	        "min": 0.1
-	      },
-	      "autoOrbit": {
-	        "name": "autoOrbit",
-	        "type": "b",
-	        "default": false,
-	        "description": "Automatically orbit the camera when the user is not controlling it."
-	      },
-	      "autoOrbitSpeed": {
-	        "name": "autoOrbitSpeed",
-	        "type": "f",
-	        "description": "The speed of the automatic orbit.",
-	        "default": 1,
-	        "max": 1000,
-	        "min": -1000
-	      },
-	      "autoOrbitDelay": {
-	        "name": "autoOrbitDelay",
-	        "type": "f",
-	        "description": "The period of time with no mouse input before the auto-orbit starts (in seconds).",
-	        "default": 1,
-	        "max": 1000,
-	        "min": 0.0001
-	      },
-	      "orbitDistanceMin": {
-	        "name": "orbitDistanceMin",
-	        "type": "f",
-	        "description": "The closest that the camera is allowed to get to the target.",
-	        "default": 10,
-	        "max": 1000,
-	        "min": 0.001
-	      },
-	      "orbitDistanceMax": {
-	        "name": "orbitDistanceMax",
-	        "type": "f",
-	        "description": "The furthest that the camera is allowed to get from the target.",
-	        "default": 500,
-	        "max": 100000,
-	        "min": 1
-	      },
-	      "pitchAngleBounds": {
-	        "name": "pitchAngleBounds",
-	        "type": "v2",
-	        "description": "Allows you to set how far the camera can pitch (tilt) from horizontal. Defined in degrees with horizontal being 0.",
-	        "default": {
-	          "x": 75,
-	          "y": -75
-	        },
-	        "max": {
-	          "x": 90,
-	          "y": 90
-	        },
-	        "min": {
-	          "x": -90,
-	          "y": -90.001
-	        }
-	      },
-	      "enablePan": {
-	        "name": "enablePan",
-	        "type": "b",
-	        "default": true,
-	        "description": "Allow the user to pan side-to-side and up and down with the camera."
-	      },
-	      "enableZoom": {
-	        "name": "enableZoom",
-	        "type": "b",
-	        "default": true,
-	        "description": "Allow the user to zoom in and out with the camera."
-	      },
-	      "interpolation": {
-	        "name": "interpolation",
-	        "type": "b",
-	        "default": true,
-	        "description": "When enabled, the camera will smoothly interpolate toward its desired state. e.g. If something else moves the camera, interpolation will cause the camera to smoothly focus on the target again. Otherwise, it will snap back."
-	      },
-	      "interpSpeed": {
-	        "name": "interpSpeed",
-	        "type": "f",
-	        "description": "The speed at which the orbiting camera locks on to its target, if set to point away from it.",
-	        "default": 0.5,
-	        "max": 10,
-	        "min": 0.01
-	      },
-	      "usePointerLock": {
-	        "name": "usePointerLock",
-	        "type": "b",
-	        "default": false,
-	        "description": "The mouse cursor will be hidden during camera control and won't move. Requires the user to accept pointer lock message in web browser."
-	      },
-	      "useKeyboard": {
-	        "name": "useKeyboard",
-	        "type": "b",
-	        "default": true,
-	        "description": "Allow the camera to be controlled via keyboard input. This allows for movement with W,A,S,D/arrow keys as well as modifiers."
-	      }
-	    },
-	    "attributesOrder": [
-	      "targetObject",
-	      "targetOffset",
-	      "inertialDamping",
-	      "invertX",
-	      "invertY",
-	      "invertZoom",
-	      "lookSpeed",
-	      "movementSpeed",
-	      "autoOrbit",
-	      "autoOrbitSpeed",
-	      "autoOrbitDelay",
-	      "orbitDistanceMin",
-	      "orbitDistanceMax",
-	      "pitchAngleBounds",
-	      "enablePan",
-	      "enableZoom",
-	      "interpolation",
-	      "interpSpeed",
-	      "usePointerLock",
-	      "useKeyboard"
-	    ],
-	    "events": {
-	      "enableOrbitCameraController": {
-	        "scope": "local",
-	        "name": "enableOrbitCameraController",
-	        "action": true,
-	        "category": "Orbit Camera",
-	        "parameters": []
-	      },
-	      "disableOrbitCameraController": {
-	        "scope": "local",
-	        "name": "disableOrbitCameraController",
-	        "action": true,
-	        "category": "Orbit Camera",
-	        "parameters": []
-	      },
-	      "toggleOrbitCameraController": {
-	        "scope": "local",
-	        "name": "toggleOrbitCameraController",
-	        "action": true,
-	        "category": "Orbit Camera",
-	        "parameters": []
-	      },
-	      "setOrbitDistance": {
-	        "scope": "local",
-	        "name": "setOrbitDistance",
-	        "action": true,
-	        "category": "Orbit Camera",
-	        "parameters": [
-	          {
-	            "name": "newDistance",
-	            "type": "f",
-	            "description": "The new distance that the camera will orbit at.",
-	            "default": 1
-	          }
-	        ]
-	      },
-	      "setTarget": {
-	        "scope": "local",
-	        "name": "setTarget",
-	        "description": "Sets the camera to orbit the given object",
-	        "action": true,
-	        "category": "Orbit Camera",
-	        "parameters": [
-	          {
-	            "name": "newTarget",
-	            "type": "object",
-	            "description": "The new target that the camera will orbit.",
-	            "default": null
-	          },
-	          {
-	            "name": "center",
-	            "type": "b",
-	            "description": "Whether or not to target the center of the object. If false, the camera will orbit the origin of the object.",
-	            "default": true
-	          }
-	        ]
-	      },
-	      "focusOnTarget": {
-	        "scope": "local",
-	        "name": "focusOnTarget",
-	        "description": "Look at the center of the current target and zoom so that the object nicely fills the field of view.",
-	        "action": true,
-	        "category": "Orbit Camera",
-	        "parameters": []
-	      }
-	    },
-	    "externalDependencies": [],
-	    "filter": [
-	      "camera"
-	    ],
-	    "category": "Camera Controllers",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/OrbitCameraController"
-	  }
-	}, ComponentOrbitCameraController);  Box3D.ScriptRegistry.registerScript({
-	  "id": "panorama_to_cubemap_script",
-	  "sid": "Panorama To Cube Map",
-	  "properties": {
-	    "name": "Panorama To Cube Map",
-	    "description": "A controller that allows a camera to easily orbit a target object.",
-	    "attributes": {
-	      "inputTexture": {
-	        "name": "inputTexture",
-	        "type": "asset",
-	        "default": null,
-	        "filter": {
-	          "texture2D": true,
-	          "renderTexture2D": true
-	        },
-	        "description": "The texture to convert to a cube map."
-	      }
-	    },
-	    "attributesOrder": [
-	      "inputTexture"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "renderTextureCube"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/PanoramaToCubeMap"
-	  }
-	}, ComponentPanoramaToCubeMap);  Box3D.ScriptRegistry.registerScript({
-	  "id": "texture2d_to_pmrem_cubeuv",
-	  "sid": "GeneratePMREM",
-	  "properties": {
-	    "name": "GeneratePMREM",
-	    "description": "Generates a prefiltered mipmaped radiance environment map from a, preferably HDRI, input environment map. The entire result will be stored in this texture in the CubeUV layout.",
-	    "attributes": {
-	      "inputTexture": {
-	        "name": "inputTexture",
-	        "type": "asset",
-	        "default": null,
-	        "filter": {
-	          "texture2D": true,
-	          "renderTexture2D": true,
-	          "textureCube": true,
-	          "renderTextureCube": true
-	        },
-	        "description": "The texture to generate the PMREM for."
-	      }
-	    },
-	    "attributesOrder": [
-	      "inputTexture"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "renderTexture2D"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/PMREMGenerator"
-	  }
-	}, ComponentPMREMGenerator);  Box3D.ScriptRegistry.registerScript({
-	  "id": "preview_axis_rotation",
-	  "sid": "Preview Axis Rotation",
-	  "properties": {
-	    "name": "Preview Axis Rotation",
-	    "description": "Set the rotation of any axis.",
-	    "attributes": {
-	      "speed": {
-	        "name": "speed",
-	        "type": "f",
-	        "description": "The speed that we rotate the object, if a transition is triggered",
-	        "default": 0.4,
-	        "max": 100,
-	        "min": 0.1
-	      }
-	    },
-	    "attributesOrder": [
-	      "speed"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "object"
-	    ],
-	    "category": "User Defined",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/PreviewAxisRotation"
-	  }
-	}, ComponentPreviewAxisRotation);  Box3D.ScriptRegistry.registerScript({
-	  "id": "preview_camera_controller",
-	  "sid": "Preview Camera Controller",
-	  "properties": {
-	    "name": "Preview Camera Controller",
-	    "description": "A controller that allows a camera to easily orbit a target object.",
-	    "attributes": {
-	      "targetObject": {
-	        "name": "targetObject",
-	        "type": "object",
-	        "default": null,
-	        "description": "The object that the camera orbit point will be relative to."
-	      },
-	      "targetOffset": {
-	        "name": "targetOffset",
-	        "type": "v3",
-	        "default": {
-	          "x": 0,
-	          "y": 0,
-	          "z": 0
-	        },
-	        "description": "An offset relative to the target object. This will allow you to target a specific point on an object."
-	      },
-	      "inertialDamping": {
-	        "name": "inertialDamping",
-	        "type": "f",
-	        "default": 0.2,
-	        "description": "How quickly the camera stops moving when input stops.",
-	        "min": 0,
-	        "max": 1
-	      },
-	      "invertX": {
-	        "name": "invertX",
-	        "type": "b",
-	        "default": false,
-	        "description": "Reverse the default direction that the camera moves horizontally."
-	      },
-	      "invertY": {
-	        "name": "invertY",
-	        "type": "b",
-	        "default": false,
-	        "description": "Reverse the default direction that the camera moves vertically."
-	      },
-	      "invertZoom": {
-	        "name": "invertZoom",
-	        "type": "b",
-	        "default": false,
-	        "description": "Reverse the default direction that the camera moves when zooming."
-	      },
-	      "lookSpeed": {
-	        "name": "lookSpeed",
-	        "type": "f",
-	        "description": "The speed that the camera orbits the target",
-	        "default": 1,
-	        "max": 1000,
-	        "min": 0.0001
-	      },
-	      "movementSpeed": {
-	        "name": "movementSpeed",
-	        "type": "f",
-	        "description": "The speed that the camera moves when panning",
-	        "default": 8,
-	        "max": 2000,
-	        "min": 0.1
-	      },
-	      "autoOrbit": {
-	        "name": "autoOrbit",
-	        "type": "b",
-	        "default": false,
-	        "description": "Automatically orbit the camera when the user is not controlling it."
-	      },
-	      "autoOrbitSpeed": {
-	        "name": "autoOrbitSpeed",
-	        "type": "f",
-	        "description": "The speed of the automatic orbit.",
-	        "default": 1,
-	        "max": 1000,
-	        "min": -1000
-	      },
-	      "autoOrbitDelay": {
-	        "name": "autoOrbitDelay",
-	        "type": "f",
-	        "description": "The period of time with no mouse input before the auto-orbit starts (in seconds).",
-	        "default": 1,
-	        "max": 1000,
-	        "min": 0.0001
-	      },
-	      "orbitDistanceMin": {
-	        "name": "orbitDistanceMin",
-	        "type": "f",
-	        "description": "The closest that the camera is allowed to get to the target.",
-	        "default": 1,
-	        "max": 1000,
-	        "min": 0.001
-	      },
-	      "orbitDistanceMax": {
-	        "name": "orbitDistanceMax",
-	        "type": "f",
-	        "description": "The furthest that the camera is allowed to get from the target.",
-	        "default": 50,
-	        "max": 100000,
-	        "min": 1
-	      },
-	      "pitchAngleBounds": {
-	        "name": "pitchAngleBounds",
-	        "type": "v2",
-	        "description": "Allows you to set how far the camera can pitch (tilt) from horizontal. Defined in degrees with horizontal being 0.",
-	        "default": {
-	          "x": 75,
-	          "y": -75
-	        },
-	        "max": {
-	          "x": 90,
-	          "y": 90
-	        },
-	        "min": {
-	          "x": -90,
-	          "y": -90.001
-	        }
-	      },
-	      "enablePan": {
-	        "name": "enablePan",
-	        "type": "b",
-	        "default": true,
-	        "description": "Allow the user to pan side-to-side and up and down with the camera."
-	      },
-	      "enableZoom": {
-	        "name": "enableZoom",
-	        "type": "b",
-	        "default": true,
-	        "description": "Allow the user to zoom in and out with the camera."
-	      },
-	      "interpolation": {
-	        "name": "interpolation",
-	        "type": "b",
-	        "default": true,
-	        "description": "When enabled, the camera will smoothly interpolate toward its desired state. e.g. If something else moves the camera, interpolation will cause the camera to smoothly focus on the target again. Otherwise, it will snap back."
-	      },
-	      "interpSpeed": {
-	        "name": "interpSpeed",
-	        "type": "f",
-	        "description": "The speed at which the orbiting camera locks on to its target, if set to point away from it.",
-	        "default": 0.5,
-	        "max": 10,
-	        "min": 0.01
-	      },
-	      "usePointerLock": {
-	        "name": "usePointerLock",
-	        "type": "b",
-	        "default": false,
-	        "description": "The mouse cursor will be hidden during camera control and won't move. Requires the user to accept pointer lock message in web browser."
-	      },
-	      "useKeyboard": {
-	        "name": "useKeyboard",
-	        "type": "b",
-	        "default": true,
-	        "description": "Allow the camera to be controlled via keyboard input. This allows for movement with W,A,S,D/arrow keys as well as modifiers."
-	      }
-	    },
-	    "attributesOrder": [
-	      "targetObject",
-	      "targetOffset",
-	      "inertialDamping",
-	      "invertX",
-	      "invertY",
-	      "invertZoom",
-	      "lookSpeed",
-	      "movementSpeed",
-	      "autoOrbit",
-	      "autoOrbitSpeed",
-	      "autoOrbitDelay",
-	      "orbitDistanceMin",
-	      "orbitDistanceMax",
-	      "pitchAngleBounds",
-	      "enablePan",
-	      "enableZoom",
-	      "interpolation",
-	      "interpSpeed",
-	      "usePointerLock",
-	      "useKeyboard"
-	    ],
-	    "events": {
-	      "enableOrbitCameraController": {
-	        "scope": "local",
-	        "name": "enableOrbitCameraController",
-	        "action": true,
-	        "category": "Orbit Camera",
-	        "parameters": []
-	      },
-	      "disableOrbitCameraController": {
-	        "scope": "local",
-	        "name": "disableOrbitCameraController",
-	        "action": true,
-	        "category": "Orbit Camera",
-	        "parameters": []
-	      },
-	      "toggleOrbitCameraController": {
-	        "scope": "local",
-	        "name": "toggleOrbitCameraController",
-	        "action": true,
-	        "category": "Orbit Camera",
-	        "parameters": []
-	      },
-	      "resetOrbitCameraController": {
-	        "scope": "local",
-	        "name": "resetOrbitCameraController",
-	        "action": true,
-	        "category": "Orbit Camera",
-	        "parameters": []
-	      },
-	      "setOrbitDistance": {
-	        "scope": "local",
-	        "name": "setOrbitDistance",
-	        "action": true,
-	        "category": "Orbit Camera",
-	        "parameters": [
-	          {
-	            "name": "newDistance",
-	            "type": "f",
-	            "description": "The new distance that the camera will orbit at.",
-	            "default": 1
-	          }
-	        ]
-	      },
-	      "setTarget": {
-	        "scope": "local",
-	        "name": "setTarget",
-	        "description": "Sets the camera to orbit the given object",
-	        "action": true,
-	        "category": "Orbit Camera",
-	        "parameters": [
-	          {
-	            "name": "newTarget",
-	            "type": "object",
-	            "description": "The new target that the camera will orbit.",
-	            "default": null
-	          },
-	          {
-	            "name": "center",
-	            "type": "b",
-	            "description": "Whether or not to target the center of the object. If false, the camera will orbit the origin of the object.",
-	            "default": true
-	          }
-	        ]
-	      },
-	      "focusOnTarget": {
-	        "scope": "local",
-	        "name": "focusOnTarget",
-	        "description": "Look at the center of the current target and zoom so that the object nicely fills the field of view.",
-	        "action": true,
-	        "category": "Orbit Camera",
-	        "parameters": []
-	      }
-	    },
-	    "externalDependencies": [],
-	    "filter": [
-	      "camera"
-	    ],
-	    "category": "Camera Controllers",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/PreviewCameraController"
-	  }
-	}, ComponentPreviewCameraController);  Box3D.ScriptRegistry.registerScript({
-	  "id": "preview_camera_focus",
-	  "sid": "Preview Camera Focus",
-	  "properties": {
-	    "name": "Preview Camera Focus",
-	    "description": "A controller that allows a camera to easily orbit a target object.",
-	    "attributes": {
-	      "speed": {
-	        "name": "speed",
-	        "type": "f",
-	        "description": "The speed that we move to focus on the target",
-	        "default": 0.8,
-	        "max": 100,
-	        "min": 0.1
-	      }
-	    },
-	    "attributesOrder": [
-	      "speed"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "camera"
-	    ],
-	    "category": "Camera Controllers",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/PreviewCameraFocus"
-	  }
-	}, ComponentPreviewCameraFocus);  Box3D.ScriptRegistry.registerScript({
-	  "id": "reflection_capture_planar",
-	  "sid": "Reflection Capture Plane",
-	  "properties": {
-	    "name": "Reflection Capture Plane",
-	    "attributes": {
-	      "captureTexture": {
-	        "name": "captureTexture",
-	        "type": "asset",
-	        "description": "The RenderTexture2D to render the reflection to.",
-	        "filter": {
-	          "renderTexture2D": true
-	        }
-	      },
-	      "clipBias": {
-	        "name": "clipBias",
-	        "type": "f",
-	        "description": "Pushes the rendered scene forward or backwards to adjust clipping with reflection plane.",
-	        "default": 0.01
-	      },
-	      "updateFrameInterval": {
-	        "name": "updateFrameInterval",
-	        "type": "i",
-	        "description": "The number of frames to skip in between updates of the reflection. Default is 0.",
-	        "default": 0
-	      }
-	    },
-	    "attributesOrder": [
-	      "captureTexture",
-	      "clipBias",
-	      "updateFrameInterval"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "Object"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/ReflectionCapturePlane"
-	  }
-	}, ComponentReflectionCapturePlane);  Box3D.ScriptRegistry.registerScript({
-	  "id": "box3d_renderer",
-	  "sid": "Renderer",
-	  "properties": {
-	    "name": "Renderer",
-	    "attributes": {
-	      "renderOnDemand": {
-	        "name": "renderOnDemand",
-	        "type": "b",
-	        "description": "When this is enabled, rendering will only happen when requested instead of every frame.",
-	        "defualt": true
-	      },
-	      "antialias": {
-	        "name": "antialias",
-	        "type": "b",
-	        "description": "Enable or disable antialiasing of the rendered scene.",
-	        "default": true
-	      },
-	      "preserveDrawingBuffer": {
-	        "name": "preserveDrawingBuffer",
-	        "type": "b",
-	        "description": "Tells the browser to preserve drawing buffers between frames so that they are available to be read by the application.",
-	        "default": true
-	      },
-	      "autoClear": {
-	        "name": "autoClear",
-	        "type": "b",
-	        "description": "Automatically clear the render target before each render.",
-	        "default": false
-	      },
-	      "devicePixelRatio": {
-	        "name": "devicePixelRatio",
-	        "type": "dd",
-	        "default": 0,
-	        "options": {
-	          "Device Default": 0,
-	          "One": 1,
-	          "Two": 2
-	        },
-	        "description": "Override the default pixel ratio of the system. Higher values will cause rendering at higher resolution while lower values will force rendering at lower resolutions. You can also set this to use the device default (mobile devices usually have values greater than 1)."
-	      },
-	      "clearColor": {
-	        "name": "clearColor",
-	        "type": "c",
-	        "description": "When the render target is cleared, this colour will be used",
-	        "default": {
-	          "r": 0,
-	          "g": 0,
-	          "b": 0
-	        }
-	      },
-	      "clearAlpha": {
-	        "name": "clearAlpha",
-	        "type": "f",
-	        "description": "When the render target is cleared, this value will be used to clear the transparency",
-	        "default": 0,
-	        "min": 0,
-	        "max": 1,
-	        "step": 0.001
-	      },
-	      "precision": {
-	        "name": "precision",
-	        "type": "dd",
-	        "description": "The default floating point and integer precision to be used by the GPU.",
-	        "default": "mediump",
-	        "options": {
-	          "Low": "lowp",
-	          "Medium": "mediump",
-	          "High": "highp"
-	        }
-	      },
-	      "maxTextureSize2d": {
-	        "name": "maxTextureSize2d",
-	        "type": "i",
-	        "description": "Clamp the maximum allowed dimension of a 2d texture.",
-	        "default": 32768,
-	        "min": 1024,
-	        "max": 32768
-	      },
-	      "maxTextureSizeCube": {
-	        "name": "maxTextureSizeCube",
-	        "type": "i",
-	        "description": "Clamp the maximum allowed dimension of a cube texture.",
-	        "default": 32768,
-	        "min": 512,
-	        "max": 32768
-	      },
-	      "shadowsEnabled": {
-	        "name": "shadowsEnabled",
-	        "type": "b",
-	        "description": "Enable or disable rendering of shadows.",
-	        "default": true
-	      },
-	      "shadowsEnabledMobile": {
-	        "name": "shadowsEnabledMobile",
-	        "type": "b",
-	        "description": "Enable or disable rendering of shadows on mobile devices.",
-	        "default": false
-	      },
-	      "shadowType": {
-	        "name": "shadowType",
-	        "type": "dd",
-	        "options": {
-	          "Soft PCF": 2,
-	          "PCF": 1,
-	          "No Filtering": 0
-	        },
-	        "default": 2
-	      },
-	      "shadowReverseSided": {
-	        "name": "shadowReverseSided",
-	        "type": "b",
-	        "description": "Render shadows with reverse side of mesh.",
-	        "default": false
-	      },
-	      "shadowDebug": {
-	        "name": "shadowDebug",
-	        "type": "b",
-	        "description": "Enable or disable debug rendering, showing the different shadow cascade sizes.",
-	        "default": false
-	      },
-	      "logarithmicDepthBuffer": {
-	        "name": "logarithmicDepthBuffer",
-	        "type": "b",
-	        "description": "Use logarithmic z values while rendering.",
-	        "default": false
-	      }
-	    },
-	    "attributesOrder": [
-	      "renderOnDemand",
-	      "antialias",
-	      "preserveDrawingBuffer",
-	      "autoClear",
-	      "devicePixelRatio",
-	      "clearColor",
-	      "clearAlpha",
-	      "precision",
-	      "maxTextureSize2d",
-	      "maxTextureSizeCube",
-	      "shadowsEnabled",
-	      "shadowsEnabledMobile",
-	      "shadowType",
-	      "shadowReverseSided",
-	      "shadowDebug",
-	      "logarithmicDepthBuffer"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "application"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/Renderer"
-	  }
-	}, ComponentRenderer);  Box3D.ScriptRegistry.registerScript({
-	  "id": "camera_filters_script",
-	  "sid": "Render Filters",
-	  "properties": {
-	    "name": "Render Filters",
-	    "description": "Overrides the filter settings that cameras will use when rendering.",
-	    "attributes": {
-	      "bloom": {
-	        "name": "bloom",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "override": {
-	            "type": "b",
-	            "default": false,
-	            "description": "Override the default behaviour of this filter."
-	          },
-	          "enabled": {
-	            "type": "b",
-	            "default": false
-	          },
-	          "strength": {
-	            "type": "f",
-	            "default": 1,
-	            "min": 0.1,
-	            "max": 4,
-	            "step": 0.001
-	          },
-	          "sigma": {
-	            "type": "f",
-	            "default": 4,
-	            "min": 1,
-	            "max": 8,
-	            "step": 0.001,
-	            "advanced": true
-	          },
-	          "resolution": {
-	            "type": "i",
-	            "default": 256,
-	            "min": 64,
-	            "max": 1024,
-	            "step": 1,
-	            "advanced": true
-	          }
-	        }
-	      },
-	      "toneMapping": {
-	        "name": "toneMapping",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "override": {
-	            "type": "b",
-	            "default": false,
-	            "description": "Override the default behaviour of this filter."
-	          },
-	          "adaptive": {
-	            "type": "b",
-	            "description": "Automatically adjusts the tone-mapping every frame based on the average luminance of the scene.",
-	            "default": true
-	          },
-	          "adaptSpeed": {
-	            "type": "f",
-	            "description": "The speed at which adaptive tone-mapping works. Higher number is faster.",
-	            "default": 0.5,
-	            "min": 0.1,
-	            "max": 20
-	          },
-	          "exposureBias": {
-	            "type": "f",
-	            "description": "Adjusts the overall brightness of the image. Use this to tweak the final result of tone-mapping.",
-	            "default": 1,
-	            "min": 0.0001,
-	            "max": 5
-	          },
-	          "maxLuminance": {
-	            "type": "f",
-	            "description": "Sets the maximum brightness reached before pixels become white after tone-mapping.",
-	            "default": 16,
-	            "min": 0.01,
-	            "max": 25
-	          },
-	          "luminance": {
-	            "type": "f",
-	            "description": "When the \"Adaptive\" feature is turned off, this will set the scene luminance to be used by tone-mapping.",
-	            "default": 1,
-	            "min": 0.0001,
-	            "max": 16
-	          }
-	        }
-	      },
-	      "fxaa": {
-	        "name": "fxaa",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "override": {
-	            "type": "b",
-	            "default": false,
-	            "description": "Override the default behaviour of this filter."
-	          },
-	          "enabled": {
-	            "type": "b",
-	            "default": false
-	          }
-	        }
-	      },
-	      "vignette": {
-	        "name": "vignette",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "override": {
-	            "type": "b",
-	            "default": false,
-	            "description": "Override the default behaviour of this filter."
-	          },
-	          "enabled": {
-	            "type": "b",
-	            "default": false
-	          },
-	          "offset": {
-	            "type": "f",
-	            "default": 1,
-	            "min": 0,
-	            "max": 1,
-	            "step": 0.001
-	          },
-	          "darkness": {
-	            "type": "f",
-	            "default": 1,
-	            "min": 0,
-	            "max": 5,
-	            "step": 0.001
-	          }
-	        }
-	      },
-	      "ssao": {
-	        "name": "ssao",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "override": {
-	            "type": "b",
-	            "default": false,
-	            "description": "Override the default behaviour of this filter."
-	          },
-	          "enabled": {
-	            "type": "b",
-	            "default": false
-	          },
-	          "fogEnabled": {
-	            "type": "i",
-	            "default": 1,
-	            "advanced": true
-	          },
-	          "depthScale": {
-	            "type": "f",
-	            "default": 2000,
-	            "min": 100,
-	            "max": 50000,
-	            "step": 0.001,
-	            "advanced": true
-	          },
-	          "onlyAO": {
-	            "type": "i",
-	            "default": 0
-	          },
-	          "aoClamp": {
-	            "type": "f",
-	            "default": 0.75,
-	            "advanced": true
-	          },
-	          "lumInfluence": {
-	            "type": "f",
-	            "default": 0.75,
-	            "advanced": true
-	          },
-	          "noiseAmount": {
-	            "type": "f",
-	            "default": 0.0002
-	          },
-	          "radius": {
-	            "type": "f",
-	            "default": 16
-	          },
-	          "diffArea": {
-	            "type": "f",
-	            "default": 0.4,
-	            "advanced": true
-	          },
-	          "gDisplace": {
-	            "type": "f",
-	            "default": 0.4,
-	            "advanced": true
-	          }
-	        }
-	      },
-	      "dof": {
-	        "name": "dof",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "override": {
-	            "type": "b",
-	            "default": false,
-	            "description": "Override the default behaviour of this filter."
-	          },
-	          "enabled": {
-	            "type": "b",
-	            "default": false
-	          },
-	          "aspect": {
-	            "type": "f",
-	            "default": 1,
-	            "min": 0,
-	            "max": 1,
-	            "step": 0.001,
-	            "advanced": true
-	          },
-	          "aperture": {
-	            "type": "f",
-	            "default": 0.4,
-	            "min": 0,
-	            "max": 1,
-	            "step": 0.001
-	          },
-	          "focus": {
-	            "type": "f",
-	            "default": 0.98,
-	            "min": 0,
-	            "max": 1,
-	            "step": 0.001
-	          }
-	        }
-	      },
-	      "sepia": {
-	        "name": "sepia",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "override": {
-	            "type": "b",
-	            "default": false,
-	            "description": "Override the default behaviour of this filter."
-	          },
-	          "enabled": {
-	            "type": "b",
-	            "default": false
-	          },
-	          "amount": {
-	            "type": "f",
-	            "default": 0.9,
-	            "min": 0,
-	            "max": 1,
-	            "step": 0.001
-	          }
-	        }
-	      },
-	      "video": {
-	        "name": "video",
-	        "type": "custom",
-	        "description": "",
-	        "attributes": {
-	          "override": {
-	            "type": "b",
-	            "default": false,
-	            "description": "Override the default behaviour of this filter."
-	          },
-	          "enabled": {
-	            "type": "b",
-	            "default": false
-	          },
-	          "nIntensity": {
-	            "type": "f",
-	            "default": 0.15
-	          },
-	          "sIntensity": {
-	            "type": "f",
-	            "default": 0.05
-	          },
-	          "sCount": {
-	            "type": "f",
-	            "default": 512
-	          },
-	          "grayscale": {
-	            "type": "b",
-	            "default": false
-	          }
-	        }
-	      }
-	    },
-	    "attributesOrder": [
-	      "bloom",
-	      "toneMapping",
-	      "fxaa",
-	      "vignette",
-	      "ssao",
-	      "dof",
-	      "sepia",
-	      "video"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "object"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/RenderFilters"
-	  }
-	}, ComponentRenderFilters);  Box3D.ScriptRegistry.registerScript({
-	  "id": "render_modes",
-	  "sid": "Render Modes",
-	  "properties": {
-	    "name": "Render Modes",
-	    "attributes": {
-	      "renderMode": {
-	        "name": "renderMode",
-	        "type": "s",
-	        "description": "How to render the scene",
-	        "default": "Lit"
-	      },
-	      "shapeTexture": {
-	        "name": "shapeTexture",
-	        "type": "asset",
-	        "description": "",
-	        "filter": {
-	          "texture2D": true,
-	          "renderTexture2D": true
-	        },
-	        "default": null
-	      },
-	      "skeletonsVisible": {
-	        "name": "skeletonsVisible",
-	        "type": "b",
-	        "description": "Render skeletons in the scene",
-	        "default": false
-	      },
-	      "wireframesVisible": {
-	        "name": "wireframesVisible",
-	        "type": "b",
-	        "description": "Render mesh wireframes",
-	        "default": false
-	      }
-	    },
-	    "attributesOrder": [
-	      "renderMode",
-	      "shapeTexture",
-	      "skeletonsVisible",
-	      "wireframesVisible"
-	    ],
-	    "events": {
-	      "resetSkeletons": {
-	        "scope": "local",
-	        "name": "resetSkeletons",
-	        "action": true,
-	        "category": "Rendering",
-	        "parameters": []
-	      },
-	      "setRenderMode": {
-	        "scope": "local",
-	        "name": "setRenderMode",
-	        "action": true,
-	        "category": "Rendering",
-	        "parameters": [
-	          {
-	            "name": "renderMode",
-	            "type": "s",
-	            "description": "One of \"Lit\", \"Unlit\", etc.",
-	            "default": "Lit"
-	          }
-	        ]
-	      },
-	      "setSkeletonsVisible": {
-	        "scope": "local",
-	        "name": "setSkeletonsVisible",
-	        "action": true,
-	        "category": "Rendering",
-	        "parameters": [
-	          {
-	            "name": "visible",
-	            "type": "b",
-	            "description": "Whether or not skeletons are visible.",
-	            "default": false
-	          }
-	        ]
-	      },
-	      "setWireframesVisible": {
-	        "scope": "local",
-	        "name": "setWireframesVisible",
-	        "action": true,
-	        "category": "Rendering",
-	        "parameters": [
-	          {
-	            "name": "visible",
-	            "type": "b",
-	            "description": "Whether or not wireframes are visible.",
-	            "default": false
-	          }
-	        ]
-	      }
-	    },
-	    "externalDependencies": [],
-	    "filter": [
-	      "Application"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/RenderModes"
-	  }
-	}, ComponentRenderModes);  Box3D.ScriptRegistry.registerScript({
-	  "id": "render_view_component",
-	  "sid": "Render View",
-	  "properties": {
-	    "name": "Render View",
-	    "attributes": {
-	      "viewportLeft": {
-	        "name": "viewportLeft",
-	        "type": "s",
-	        "description": "Left position of the viewport to be rendered by this camera.",
-	        "default": "0px"
-	      },
-	      "viewportBottom": {
-	        "name": "viewportBottom",
-	        "type": "s",
-	        "description": "Bottom position of the viewport to be rendered by this camera.",
-	        "default": "0px"
-	      },
-	      "viewportWidth": {
-	        "name": "viewportWidth",
-	        "type": "s",
-	        "description": "Width of the viewport to be rendered by this camera.",
-	        "default": "100%"
-	      },
-	      "viewportHeight": {
-	        "name": "viewportHeight",
-	        "type": "s",
-	        "description": "Height of the viewport to be rendered by this camera.",
-	        "default": "100%"
-	      },
-	      "renderGroup": {
-	        "name": "renderGroup",
-	        "type": "i",
-	        "description": "Render passes are done in order, based on the 'render group' value. Lower numbers render first.",
-	        "default": 0
-	      },
-	      "renderLayer": {
-	        "name": "renderLayer",
-	        "type": "i",
-	        "description": ".",
-	        "default": 0,
-	        "min": 0
-	      },
-	      "clearColor": {
-	        "name": "clearColor",
-	        "type": "b",
-	        "description": "",
-	        "default": false,
-	        "advanced": false
-	      },
-	      "clearDepth": {
-	        "name": "clearDepth",
-	        "type": "b",
-	        "description": "",
-	        "default": true,
-	        "advanced": false
-	      },
-	      "renderTarget": {
-	        "name": "renderTarget",
-	        "type": "asset",
-	        "description": "",
-	        "filter": {
-	          "renderTexture2D": true
-	        },
-	        "default": null,
-	        "advanced": false
-	      },
-	      "enablePreRenderFunctions": {
-	        "name": "enablePreRenderFunctions",
-	        "type": "b",
-	        "description": "Run pre-render functions with this view. These include things like real-time reflections, which need to be rendered for each view separately.",
-	        "default": true,
-	        "advanced": true
-	      },
-	      "enableShadows": {
-	        "name": "enableShadows",
-	        "type": "b",
-	        "description": "Render shadows for this view.",
-	        "default": true,
-	        "advanced": true
-	      }
-	    },
-	    "attributesOrder": [
-	      "viewportLeft",
-	      "viewportBottom",
-	      "viewportWidth",
-	      "viewportHeight",
-	      "renderGroup",
-	      "renderLayer",
-	      "clearColor",
-	      "clearDepth",
-	      "renderTarget",
-	      "enablePreRenderFunctions",
-	      "enableShadows"
-	    ],
-	    "events": {
-	      "enableRenderView": {
-	        "scope": "local",
-	        "name": "enableRenderView",
-	        "category": "Rendering",
-	        "parameters": [
-	          {
-	            "name": "fade",
-	            "type": "f",
-	            "description": "Defined in seconds",
-	            "default": 0
-	          }
-	        ]
-	      },
-	      "setViewport": {
-	        "scope": "local",
-	        "name": "setViewport",
-	        "category": "Rendering",
-	        "parameters": [
-	          {
-	            "name": "viewportLeft",
-	            "description": "Left position of the viewport to be rendered by this camera.",
-	            "type": "s",
-	            "default": "0px"
-	          },
-	          {
-	            "name": "viewportBottom",
-	            "description": "Bottom position of the viewport to be rendered by this camera.",
-	            "type": "s",
-	            "default": "0px"
-	          },
-	          {
-	            "name": "viewportWidth",
-	            "description": "Width of the viewport to be rendered by this camera.",
-	            "type": "s",
-	            "default": "100%"
-	          },
-	          {
-	            "name": "viewportHeight",
-	            "description": "Height of the viewport to be rendered by this camera.",
-	            "type": "s",
-	            "default": "100%"
-	          },
-	          {
-	            "name": "animationTime",
-	            "type": "f",
-	            "description": "Animate the change in viewport over this many seconds.",
-	            "default": 0
-	          }
-	        ]
-	      },
-	      "disableRenderView": {
-	        "scope": "local",
-	        "name": "disableRenderView",
-	        "category": "Rendering",
-	        "parameters": [
-	          {
-	            "name": "fade",
-	            "type": "f",
-	            "description": "Defined in seconds",
-	            "default": 0
-	          }
-	        ]
-	      },
-	      "toggleRenderView": {
-	        "scope": "local",
-	        "name": "toggleRenderView",
-	        "category": "Rendering",
-	        "parameters": [
-	          {
-	            "name": "fade",
-	            "type": "f",
-	            "description": "Defined in seconds",
-	            "default": 0
-	          }
-	        ]
-	      }
-	    },
-	    "externalDependencies": [],
-	    "filter": [
-	      "camera"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/RenderView"
-	  }
-	}, ComponentRenderView);  Box3D.ScriptRegistry.registerScript({
-	  "id": "rotate_component",
-	  "sid": "Rotate",
-	  "properties": {
-	    "name": "Rotate",
-	    "description": "A simple component to rotate an object.",
-	    "attributes": {
-	      "autoRotate": {
-	        "name": "autoRotate",
-	        "type": "b",
-	        "description": "Automatically start the rotation upon load.",
-	        "default": true
-	      },
-	      "previewRotation": {
-	        "name": "previewRotation",
-	        "type": "b",
-	        "description": "Show the rotation in the editor.",
-	        "default": true
-	      },
-	      "rotation": {
-	        "name": "rotation",
-	        "type": "v3",
-	        "description": "Amount of rotation per second about the x, y and z axes.",
-	        "default": {
-	          "x": 0,
-	          "y": 0.5,
-	          "z": 0
-	        }
-	      },
-	      "local": {
-	        "name": "local",
-	        "type": "b",
-	        "description": "Rotate relative to the local quaternion of the object. If false, the rotation will be relative to the world.",
-	        "default": false
-	      }
-	    },
-	    "attributesOrder": [
-	      "autoRotate",
-	      "previewRotation",
-	      "rotation",
-	      "local"
-	    ],
-	    "events": {
-	      "startRotate": {
-	        "scope": "local",
-	        "name": "startRotate",
-	        "action": true,
-	        "category": "Rotate",
-	        "parameters": []
-	      },
-	      "stopRotate": {
-	        "scope": "local",
-	        "name": "stopRotate",
-	        "action": true,
-	        "category": "Rotate",
-	        "parameters": []
-	      },
-	      "toggleRotate": {
-	        "scope": "local",
-	        "name": "toggleRotate",
-	        "action": true,
-	        "category": "Rotate",
-	        "parameters": []
-	      }
-	    },
-	    "externalDependencies": [],
-	    "filter": [
-	      "object"
-	    ],
-	    "category": "Animation",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/Rotate"
-	  }
-	}, ComponentRotate);  Box3D.ScriptRegistry.registerScript({
-	  "id": "loader_component",
-	  "sid": "Scene Loader",
-	  "properties": {
-	    "name": "Scene Loader",
-	    "description": "A simple component to load a scene and display progress for it.",
-	    "attributes": {
-	      "scene": {
-	        "name": "scene",
-	        "type": "asset",
-	        "description": "The scene to load.",
-	        "filter": {
-	          "scene": true
-	        }
-	      }
-	    },
-	    "attributesOrder": [
-	      "scene"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "Application"
-	    ],
-	    "category": "Loading",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/SceneLoader"
-	  }
-	}, ComponentSceneLoader);  Box3D.ScriptRegistry.registerScript({
-	  "id": "simplex_noise_component",
-	  "sid": "Simplex Noise Generator",
-	  "properties": {
-	    "name": "Simplex Noise Generator",
-	    "attributes": {
-	      "layerAmplitude": {
-	        "name": "layerAmplitude",
-	        "type": "v4",
-	        "default": {
-	          "x": 0.5,
-	          "y": 0.4,
-	          "z": 0.3,
-	          "w": 0.125
-	        }
-	      },
-	      "layerScale": {
-	        "name": "layerScale",
-	        "type": "v4",
-	        "default": {
-	          "x": 0.5,
-	          "y": 2,
-	          "z": 3,
-	          "w": 4
-	        }
-	      },
-	      "scale": {
-	        "name": "scale",
-	        "type": "v2",
-	        "default": {
-	          "x": 1,
-	          "y": 1
-	        }
-	      },
-	      "offset": {
-	        "name": "offset",
-	        "type": "v2",
-	        "default": {
-	          "x": 0,
-	          "y": 0
-	        }
-	      },
-	      "autoLoad": {
-	        "name": "autoLoad",
-	        "type": "b",
-	        "default": true
-	      }
-	    },
-	    "attributesOrder": [
-	      "layerAmplitude",
-	      "layerScale",
-	      "scale",
-	      "offset",
-	      "autoLoad"
-	    ],
-	    "events": {
-	      "renderNoise": {
-	        "scope": "local",
-	        "name": "renderNoise",
-	        "action": true,
-	        "category": "Rendering",
-	        "parameters": []
-	      },
-	      "changeNoiseValues": {
-	        "scope": "local",
-	        "name": "changeNoiseValues",
-	        "action": true,
-	        "category": "Rendering",
-	        "parameters": [
-	          {
-	            "name": "layerAmplitude",
-	            "type": "v4",
-	            "description": "",
-	            "default": {
-	              "x": 0.5,
-	              "y": 0.4,
-	              "z": 0.3,
-	              "w": 0.125
-	            }
-	          },
-	          {
-	            "name": "layerScale",
-	            "type": "v4",
-	            "description": "",
-	            "default": {
-	              "x": 0.5,
-	              "y": 2,
-	              "z": 3,
-	              "w": 4
-	            }
-	          },
-	          {
-	            "name": "scale",
-	            "type": "v2",
-	            "description": "",
-	            "default": {
-	              "x": 1,
-	              "y": 1
-	            }
-	          },
-	          {
-	            "name": "offset",
-	            "type": "v2",
-	            "description": "",
-	            "default": {
-	              "x": 0,
-	              "y": 0
-	            }
-	          }
-	        ]
-	      }
-	    },
-	    "externalDependencies": [],
-	    "filter": [
-	      "renderTexture2D"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/SimplexNoiseGenerator"
-	  }
-	}, ComponentSimplexNoiseGenerator);  Box3D.ScriptRegistry.registerScript({
-	  "id": "skybox_renderer",
-	  "sid": "Skybox",
-	  "properties": {
-	    "name": "Skybox",
-	    "attributes": {
-	      "size": {
-	        "name": "size",
-	        "type": "f",
-	        "default": 1000,
-	        "min": 1,
-	        "max": 1000000
-	      },
-	      "stereoEnabled": {
-	        "name": "stereoEnabled",
-	        "type": "b",
-	        "default": false
-	      },
-	      "skyboxTexture": {
-	        "name": "skyboxTexture",
-	        "type": "asset",
-	        "description": "",
-	        "filter": {
-	          "textureCube": true,
-	          "texture2D": true,
-	          "renderTexture2D": true,
-	          "renderTextureCube": true
-	        },
-	        "default": "white_cube"
-	      }
-	    },
-	    "attributesOrder": [
-	      "size",
-	      "stereoEnabled",
-	      "skyboxTexture"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "scene"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/Skybox"
-	  }
-	}, ComponentSkybox);  Box3D.ScriptRegistry.registerScript({
-	  "id": "text_renderer_component",
-	  "sid": "Text Renderer",
-	  "properties": {
-	    "name": "Text Renderer",
-	    "description": "Render the desired text to the texture we are attached to",
-	    "attributes": {
-	      "text": {
-	        "name": "text",
-	        "type": "s",
-	        "default": "My Text",
-	        "description": "Text you want to display"
-	      },
-	      "fontColor": {
-	        "name": "fontColor",
-	        "type": "c",
-	        "default": {
-	          "r": 1,
-	          "g": 1,
-	          "b": 1
-	        },
-	        "description": "Color of the text"
-	      },
-	      "fontFamily": {
-	        "name": "fontFamily",
-	        "type": "s",
-	        "default": "Calibri",
-	        "description": "Font family to render"
-	      },
-	      "pointSize": {
-	        "name": "pointSize",
-	        "type": "i",
-	        "default": 48,
-	        "description": "Font size",
-	        "min": 2,
-	        "max": 100
-	      }
-	    },
-	    "attributesOrder": [
-	      "text",
-	      "fontColor",
-	      "fontFamily",
-	      "pointSize"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "renderTexture2D"
-	    ],
-	    "category": "Text",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/TextRenderer"
-	  }
-	}, ComponentTextRenderer);  Box3D.ScriptRegistry.registerScript({
-	  "id": "texture2d_to_cubemap_script",
-	  "sid": "Texture To Cube Map",
-	  "properties": {
-	    "name": "Texture To Cube Map",
-	    "description": "A controller that allows a camera to easily orbit a target object.",
-	    "attributes": {
-	      "inputTexture": {
-	        "name": "inputTexture",
-	        "type": "asset",
-	        "default": null,
-	        "filter": {
-	          "texture2D": true,
-	          "renderTexture2D": true
-	        },
-	        "description": "The texture to convert to a cube map."
-	      }
-	    },
-	    "attributesOrder": [
-	      "inputTexture"
-	    ],
-	    "events": {},
-	    "externalDependencies": [],
-	    "filter": [
-	      "renderTextureCube"
-	    ],
-	    "category": "Rendering",
-	    "parsedComments": true,
-	    "flags": {
-	      "addremove": true,
-	      "disable": true,
-	      "persist": true,
-	      "unique": false,
-	      "display": true
-	    },
-	    "path": "Box3DRuntime/Components/BuiltIn/Texture2dToCubeMap"
-	  }
-	}, ComponentTexture2dToCubeMap); 
-	}
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	'use strict';Object.defineProperty(exports,"__esModule",{value:true});var _AudioListener=__webpack_require__(26);var ComponentAudioListener=_interopRequireWildcard(_AudioListener);var _AudioSource=__webpack_require__(29);var ComponentAudioSource=_interopRequireWildcard(_AudioSource);var _CubeMapCapture=__webpack_require__(30);var ComponentCubeMapCapture=_interopRequireWildcard(_CubeMapCapture);var _Curve=__webpack_require__(31);var ComponentCurve=_interopRequireWildcard(_Curve);var _DebugConsoleDisplay=__webpack_require__(32);var ComponentDebugConsoleDisplay=_interopRequireWildcard(_DebugConsoleDisplay);var _DebugPerformance=__webpack_require__(33);var ComponentDebugPerformance=_interopRequireWildcard(_DebugPerformance);var _DebugTextureViewer=__webpack_require__(35);var ComponentDebugTextureViewer=_interopRequireWildcard(_DebugTextureViewer);var _DefaultFilters=__webpack_require__(36);var ComponentDefaultFilters=_interopRequireWildcard(_DefaultFilters);var _DynamicOptimizer=__webpack_require__(37);var ComponentDynamicOptimizer=_interopRequireWildcard(_DynamicOptimizer);var _EventHandler=__webpack_require__(38);var ComponentEventHandler=_interopRequireWildcard(_EventHandler);var _Exploder=__webpack_require__(39);var ComponentExploder=_interopRequireWildcard(_Exploder);var _FreeCamera=__webpack_require__(40);var ComponentFreeCamera=_interopRequireWildcard(_FreeCamera);var _Fullscreen=__webpack_require__(41);var ComponentFullscreen=_interopRequireWildcard(_Fullscreen);var _InputController=__webpack_require__(42);var ComponentInputController=_interopRequireWildcard(_InputController);var _KeyframeAnimation=__webpack_require__(43);var ComponentKeyframeAnimation=_interopRequireWildcard(_KeyframeAnimation);var _LookAtTarget=__webpack_require__(44);var ComponentLookAtTarget=_interopRequireWildcard(_LookAtTarget);var _MaterialCapture=__webpack_require__(45);var ComponentMaterialCapture=_interopRequireWildcard(_MaterialCapture);var _NormalMapGenerator=__webpack_require__(46);var ComponentNormalMapGenerator=_interopRequireWildcard(_NormalMapGenerator);var _ObjectAnimator=__webpack_require__(47);var ComponentObjectAnimator=_interopRequireWildcard(_ObjectAnimator);var _ObjectPicker=__webpack_require__(48);var ComponentObjectPicker=_interopRequireWildcard(_ObjectPicker);var _OrbitCameraController=__webpack_require__(49);var ComponentOrbitCameraController=_interopRequireWildcard(_OrbitCameraController);var _PanoramaToCubeMap=__webpack_require__(50);var ComponentPanoramaToCubeMap=_interopRequireWildcard(_PanoramaToCubeMap);var _PMREMGenerator=__webpack_require__(51);var ComponentPMREMGenerator=_interopRequireWildcard(_PMREMGenerator);var _PreviewAxisRotation=__webpack_require__(52);var ComponentPreviewAxisRotation=_interopRequireWildcard(_PreviewAxisRotation);var _PreviewCameraController=__webpack_require__(53);var ComponentPreviewCameraController=_interopRequireWildcard(_PreviewCameraController);var _PreviewCameraFocus=__webpack_require__(54);var ComponentPreviewCameraFocus=_interopRequireWildcard(_PreviewCameraFocus);var _ReflectionCapturePlane=__webpack_require__(55);var ComponentReflectionCapturePlane=_interopRequireWildcard(_ReflectionCapturePlane);var _Renderer=__webpack_require__(56);var ComponentRenderer=_interopRequireWildcard(_Renderer);var _RenderFilters=__webpack_require__(57);var ComponentRenderFilters=_interopRequireWildcard(_RenderFilters);var _RenderModes=__webpack_require__(58);var ComponentRenderModes=_interopRequireWildcard(_RenderModes);var _RenderView=__webpack_require__(59);var ComponentRenderView=_interopRequireWildcard(_RenderView);var _Rotate=__webpack_require__(60);var ComponentRotate=_interopRequireWildcard(_Rotate);var _SceneLoader=__webpack_require__(61);var ComponentSceneLoader=_interopRequireWildcard(_SceneLoader);var _SimplexNoiseGenerator=__webpack_require__(62);var ComponentSimplexNoiseGenerator=_interopRequireWildcard(_SimplexNoiseGenerator);var _Skybox=__webpack_require__(63);var ComponentSkybox=_interopRequireWildcard(_Skybox);var _TextRenderer=__webpack_require__(64);var ComponentTextRenderer=_interopRequireWildcard(_TextRenderer);var _Texture2dToCubeMap=__webpack_require__(65);var ComponentTexture2dToCubeMap=_interopRequireWildcard(_Texture2dToCubeMap);function _interopRequireWildcard(obj){if(obj&&obj.__esModule){return obj;}else{var newObj={};if(obj!=null){for(var key in obj){if(Object.prototype.hasOwnProperty.call(obj,key))newObj[key]=obj[key];}}newObj.default=obj;return newObj;}}exports.default=function(Box3D){Box3D.ScriptRegistry.registerScript({"id":"audio_listener","sid":"Audio Listener","properties":{"name":"Audio Listener","description":"Audio listener for 3D, positional sound effects","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"category":"Audio","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/AudioListener"}},ComponentAudioListener);Box3D.ScriptRegistry.registerScript({"id":"audio_source","sid":"Audio Source","properties":{"name":"Audio Source","description":"Controls playback of audio assets","attributes":{"gain":{"name":"gain","type":"f","description":"Volume control","default":1,"min":0,"max":100},"autoPlay":{"name":"autoPlay","type":"b","description":"Play the audio once loaded","default":true},"loop":{"name":"loop","type":"b","description":"Continuously replay the audio","default":true},"preload":{"name":"preload","type":"b","description":"Load the audio when the component is initialized","default":true},"positional":{"name":"positional","type":"b","description":"Enable/disable 3D, positional audio effects","default":false},"stream":{"name":"stream","type":"b","description":"Stream the audio","default":false},"asset":{"name":"asset","type":"asset","description":"Audio or video asset","default":null,"filter":{"audio":true,"video":true}}},"attributesOrder":["gain","autoPlay","loop","preload","positional","stream","asset"],"events":{"playAudio":{"scope":"local","name":"playAudio","action":true,"category":"Audio","parameters":[{"name":"offset","type":"f","description":"Defined in seconds","default":0}]},"pauseAudio":{"scope":"local","name":"pauseAudio","action":true,"category":"Audio","parameters":[]},"stopAudio":{"scope":"local","name":"stopAudio","action":true,"category":"Audio","parameters":[]},"toggleAudio":{"scope":"local","name":"toggleAudio","action":true,"category":"Audio","parameters":[]}},"externalDependencies":[],"category":"Audio","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/AudioSource"}},ComponentAudioSource);Box3D.ScriptRegistry.registerScript({"id":"cubemap_capture","sid":"Cube-Map Capture","properties":{"name":"Cube-Map Capture","attributes":{"captureTexture":{"name":"captureTexture","type":"asset","description":"The RenderTextureCube to render the reflection to.","filter":{"renderTextureCube":true},"default":null},"near":{"name":"near","type":"f","description":"The closest distance to this object to render. Adjust this to avoid   rendering local geometry to the texture.","default":0.01},"far":{"name":"far","type":"f","description":"The furthest distance from this object to render.","default":16},"updateFrameInterval":{"name":"updateFrameInterval","type":"i","description":"The number of frames to skip in between updates of the reflection.   Default is 0.","default":0},"renderPosX":{"name":"renderPosX","type":"b","description":"Render this side of the cube.","default":true},"renderNegX":{"name":"renderNegX","type":"b","description":"Render this side of the cube.","default":true},"renderPosY":{"name":"renderPosY","type":"b","description":"Render this side of the cube.","default":true},"renderNegY":{"name":"renderNegY","type":"b","description":"Render this side of the cube.","default":true},"renderPosZ":{"name":"renderPosZ","type":"b","description":"Render this side of the cube.","default":true},"renderNegZ":{"name":"renderNegZ","type":"b","description":"Render this side of the cube.","default":true},"debugView":{"name":"debugView","type":"b","description":"Render the camera helpers on the cube capture.","default":false}},"attributesOrder":["captureTexture","near","far","updateFrameInterval","renderPosX","renderNegX","renderPosY","renderNegY","renderPosZ","renderNegZ","debugView"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/CubeMapCapture"}},ComponentCubeMapCapture);Box3D.ScriptRegistry.registerScript({"id":"curve_component","sid":"Curve","properties":{"name":"Curve","description":"Creates a spline curve that can be used for various things, including making objects follow it. Add controls points to shape the curve.","attributes":{"controlPoints":{"name":"controlPoints","type":"a","subType":{"type":"object"},"description":"The list of objects that define the curve shape."},"closed":{"name":"closed","type":"b","description":"If toggled, the start and end of the curve will be smoothly joined.","default":false}},"attributesOrder":["controlPoints","closed"],"events":{},"externalDependencies":[],"filter":["object"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Curve"}},ComponentCurve);Box3D.ScriptRegistry.registerScript({"id":"debug_console_display","sid":"Debug Console Display","properties":{"name":"Debug Console Display","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DebugConsoleDisplay"}},ComponentDebugConsoleDisplay);Box3D.ScriptRegistry.registerScript({"id":"debug_performance","sid":"Debug Performance","properties":{"name":"Debug Performance","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DebugPerformance"}},ComponentDebugPerformance);Box3D.ScriptRegistry.registerScript({"id":"debug_texture_viewer","sid":"Debug Texture Viewer","properties":{"name":"Debug Texture Viewer","attributes":{"viewportLeft":{"name":"viewportLeft","type":"s","description":"Left position of the viewport to be rendered by this camera.","default":"25%"},"viewportBottom":{"name":"viewportBottom","type":"s","description":"Bottom position of the viewport to be rendered by this camera.","default":"0px"},"viewportWidth":{"name":"viewportWidth","type":"s","description":"Width of the viewport to be rendered by this camera.","default":"50%"},"viewportHeight":{"name":"viewportHeight","type":"s","description":"Height of the viewport to be rendered by this camera.","default":"50%"},"renderGroup":{"name":"renderGroup","type":"i","description":"Render passes are done in order, based on the 'render group' value. Lower numbers render first.","default":9}},"attributesOrder":["viewportLeft","viewportBottom","viewportWidth","viewportHeight","renderGroup"],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DebugTextureViewer"}},ComponentDebugTextureViewer);Box3D.ScriptRegistry.registerScript({"id":"render_filters_component","sid":"Default Filters","properties":{"name":"Default Filters","description":"Stores the default filter settings that cameras will use when rendering.","attributes":{"bloom":{"name":"bloom","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"strength":{"type":"f","default":1,"min":0.1,"max":4,"step":0.001},"sigma":{"type":"f","default":4,"min":1,"max":8,"step":0.001,"advanced":true},"resolution":{"type":"i","default":256,"min":64,"max":1024,"step":1,"advanced":true}}},"toneMapping":{"name":"toneMapping","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false,"description":"Enable tone-mapping."},"adaptive":{"type":"b","description":"Automatically adjusts the tone-mapping every frame based on the average luminance of the scene.","default":true},"adaptSpeed":{"type":"f","description":"The speed at which adaptive tone-mapping works. Higher number is faster.","default":0.5,"min":0.1,"max":20},"exposureBias":{"type":"f","description":"Adjusts the overall brightness of the image. Use this to tweak the final result of tone-mapping.","default":1,"min":0.0001,"max":5},"maxLuminance":{"type":"f","description":"Sets the maximum brightness reached before pixels become white after tone-mapping.","default":16,"min":0.01,"max":25},"luminance":{"type":"f","description":"When the 'Adaptive' feature is turned off, this will set the scene luminance to be used by tone-mapping.","default":1,"min":0.0001,"max":16}}},"fxaa":{"name":"fxaa","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false}}},"vignette":{"name":"vignette","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"offset":{"type":"f","default":1,"min":0,"max":1,"step":0.001},"darkness":{"type":"f","default":1,"min":0,"max":5,"step":0.001}}},"ssao":{"name":"ssao","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"fogEnabled":{"type":"i","default":1,"advanced":true},"depthScale":{"type":"f","default":2000,"min":100,"max":50000,"step":0.001,"advanced":true},"onlyAO":{"type":"i","default":0},"aoClamp":{"type":"f","default":0.75,"advanced":true},"lumInfluence":{"type":"f","default":0.75,"advanced":true},"noiseAmount":{"type":"f","default":0.0002},"radius":{"type":"f","default":16},"diffArea":{"type":"f","default":0.4,"advanced":true},"gDisplace":{"type":"f","default":0.4,"advanced":true}}},"dof":{"name":"dof","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"aspect":{"type":"f","default":1,"min":0,"max":1,"step":0.001,"advanced":true},"aperture":{"type":"f","default":0.4,"min":0,"max":1,"step":0.001},"focus":{"type":"f","default":0.98,"min":0,"max":1,"step":0.001}}},"sepia":{"name":"sepia","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"amount":{"type":"f","default":0.9,"min":0,"max":1,"step":0.001}}},"video":{"name":"video","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"nIntensity":{"type":"f","default":0.15},"sIntensity":{"type":"f","default":0.05},"sCount":{"type":"f","default":512},"grayscale":{"type":"b","default":false}}}},"attributesOrder":["bloom","toneMapping","fxaa","vignette","ssao","dof","sepia","video"],"events":{},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DefaultFilters"}},ComponentDefaultFilters);Box3D.ScriptRegistry.registerScript({"id":"dynamic_optimizer","sid":"Dynamic Performance Optimizer","properties":{"name":"Dynamic Performance Optimizer","attributes":{"frameTimeThreshold":{"name":"frameTimeThreshold","type":"f","description":"The average time that a frame can take to render before the optimizer drops a   quality level. Default threshold is 30 FPS = 1000 ms / 30 frames","default":33.333333333333},"testInterval":{"name":"testInterval","type":"f","description":"The amount of elapsed time (in ms) to average the frame time over.   i.e. an optimization decision can be made every time this interval elapses.","default":2000}},"attributesOrder":["frameTimeThreshold","testInterval"],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DynamicOptimizer"}},ComponentDynamicOptimizer);Box3D.ScriptRegistry.registerScript({"id":"event_handler_component","sid":"Event Handler","properties":{"name":"Event Handler","attributes":{"listen":{"name":"listen","type":"event","description":"The event to listen for. When this event is captured, all of the defined trigger events will be fired."},"triggers":{"name":"triggers","type":"a","subType":{"type":"event"},"description":"Fire each of these events in response to the captured listen event."}},"attributesOrder":["listen","triggers"],"events":{},"externalDependencies":[],"category":"Interaction","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/EventHandler"}},ComponentEventHandler);Box3D.ScriptRegistry.registerScript({"id":"exploder_component","sid":"Exploder","properties":{"name":"Exploder","description":"Explodes your objects and their hierarchies into different formations. Great for showing off parts in a model!","attributes":{"Time":{"name":"Time","type":"f","default":1.5,"description":"The amount of time to explode and contract the child meshes"},"Scale":{"name":"Scale","type":"v3","default":{"x":2,"y":2,"z":2},"description":"The scale of the explosion"},"Formation":{"name":"Formation","type":"dd","description":"Formation to use when exploding the hierarchy of this object.","default":"Scale","options":{"Circle":"Circle","Square Grid":"Grid","Scale Out":"Scale"}}},"attributesOrder":["Time","Scale","Formation"],"events":{"playExplode":{"scope":"local","name":"playExplode","action":true,"category":"Exploder","parameters":[]},"playContract":{"scope":"local","name":"playContract","action":true,"category":"Exploder","parameters":[]},"toggleExploder":{"scope":"local","name":"toggleExploder","action":true,"category":"Exploder","parameters":[]},"resetExploder":{"scope":"local","name":"resetExploder","action":true,"category":"Exploder","parameters":[]},"useCircleExplode":{"scope":"local","name":"useCircleExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":1,"y":1,"z":1}}]},"useGridExplode":{"scope":"local","name":"useGridExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":1,"y":1,"z":1}}]},"useScaleOutExplode":{"scope":"local","name":"useScaleOutExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":2,"y":2,"z":2}}]},"beginExplode":{"scope":"other","name":"beginExplode","action":false,"category":"Exploder","parameters":[]},"endExplode":{"scope":"other","name":"endExplode","action":false,"category":"Exploder","parameters":[]},"beginContract":{"scope":"other","name":"beginContract","action":false,"category":"Exploder","parameters":[]},"endContract":{"scope":"other","name":"endContract","action":false,"category":"Exploder","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Exploder"}},ComponentExploder);Box3D.ScriptRegistry.registerScript({"id":"free_camera_controller","sid":"Free Camera Controller","properties":{"name":"Free Camera Controller","attributes":{"inertialDamping":{"name":"inertialDamping","type":"f","default":0.2,"min":0,"max":1},"usePointerLock":{"name":"usePointerLock","type":"b","description":"","default":false},"invertX":{"name":"invertX","type":"b","default":false},"invertY":{"name":"invertY","type":"b","default":false},"invertZoom":{"name":"invertZoom","type":"b","default":false},"lookSpeed":{"name":"lookSpeed","type":"f","default":1,"min":0.0001,"max":1000},"movementSpeed":{"name":"movementSpeed","type":"f","default":3,"max":1000,"min":0.01},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","default":{"max":75,"min":-75},"max":{"max":90,"min":90},"min":{"max":-90,"min":-90.01}},"enablePan":{"name":"enablePan","type":"b","default":true},"enableZoom":{"name":"enableZoom","type":"b","default":true}},"attributesOrder":["inertialDamping","usePointerLock","invertX","invertY","invertZoom","lookSpeed","movementSpeed","pitchAngleBounds","enablePan","enableZoom"],"events":{"enableFreeCameraController":{"scope":"local","name":"enableFreeCameraController","parameters":[]},"disableFreeCameraController":{"scope":"local","name":"disableFreeCameraController","parameters":[]},"toggleFreeCameraController":{"scope":"local","name":"toggleFreeCameraController","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera-Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/FreeCamera"}},ComponentFreeCamera);Box3D.ScriptRegistry.registerScript({"id":"fullscreen_script","sid":"Fullscreen","properties":{"name":"Fullscreen","description":"ses fullscreen API to make your app fullscreen! This will fullscreen the canvas' parent element, so your UI can be fullscreened as well! If a selector is provided, then we will fullscreen that element instead.","attributes":{},"attributesOrder":[],"events":{"toggleFullscreen":{"scope":"local","name":"toggleFullscreen","action":true,"category":"Rendering","parameters":[]}},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Fullscreen"}},ComponentFullscreen);Box3D.ScriptRegistry.registerScript({"id":"input_controller_component","sid":"Input Controller","properties":{"name":"Input Controller","attributes":{"mouseEvents":{"name":"mouseEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable mouse events?"},"scroll":{"type":"b","default":true,"description":"Listen to scroll events?"},"scroll_preventDefault":{"type":"b","default":false,"description":"Prevent default scroll behaviour?"},"move":{"type":"b","default":true,"description":"Listen to mouse move events?"},"down":{"type":"b","default":true,"description":"Listen to mouse down event?"},"down_preventDefault":{"type":"b","default":false,"description":"Prevent default mouse down behaviour?"},"up":{"type":"b","default":true,"description":"Listen to mouse up event?"},"double_click":{"type":"b","default":true,"description":"Listen to double click event?"},"leave":{"type":"b","default":true,"description":"Listen to mouse leave event"},"contextMenu":{"type":"b","default":true,"description":"Listen for the context menu event? (ie, right click)"},"contextMenu_preventDefault":{"type":"b","default":true,"description":"Prevent context menu default behaviour (ie, the context menu popping open)"},"dragBufferDistance":{"type":"f","default":12,"name":"Drag Buffer Distance","description":"The distance from initial click that you need to move your mouse before a drag event is fired, in pixels"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the mouse are picked up by the Event Handler"}}},"touchEvents":{"name":"touchEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable touch events?"},"start":{"type":"b","default":true,"description":"Listen for Touch Start"},"start_preventDefault":{"type":"b","default":true,"description":"Prevent default behaviour of touch start event"},"end":{"type":"b","default":true,"description":"Listen for touch end event"},"doubleTap":{"type":"b","default":true,"description":"Listen for a touch double tap event"},"cancel":{"type":"b","default":true,"description":"Listen for touch cancel event"},"leave":{"type":"b","default":true,"description":"Listen for touch leave event"},"move":{"type":"b","default":true,"description":"Listen for touch move event"},"move_preventDefault":{"type":"b","default":true,"description":"Prevent default move behaviour (ie, dragging the window)"},"dragBufferDistance":{"type":"f","default":12,"name":"Drag Buffer Distance","description":"The distance from initial touch down that you need to move your finger before a drag event is fired, in pixels"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the touches are picked up by the Event Handler"}}},"keyEvents":{"name":"keyEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable keyboard events"},"down":{"type":"b","default":true,"description":"Listen to key down events"},"up":{"type":"b","default":true,"description":"Listen to key up events"},"preventDefault":{"type":"b","default":false,"description":"Prevent default keypress behaviour"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the keys are picked up by the Event Handler"}}}},"attributesOrder":["mouseEvents","touchEvents","keyEvents"],"events":{"mouse_down_left":{"scope":"global","name":"mouse_down_left","action":false,"category":"Input - Mouse","parameters":[]},"mouse_down_right":{"scope":"global","name":"mouse_down_right","action":false,"category":"Input - Mouse","parameters":[]},"mouse_down_middle":{"scope":"global","name":"mouse_down_middle","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_left":{"scope":"global","name":"mouse_up_left","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_right":{"scope":"global","name":"mouse_up_right","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_middle":{"scope":"global","name":"mouse_up_middle","action":false,"category":"Input - Mouse","parameters":[]},"keypress_a":{"scope":"global","name":"keypress_a","action":false,"category":"Input - Keys","parameters":[]},"keypress_b":{"scope":"global","name":"keypress_b","action":false,"category":"Input - Keys","parameters":[]},"keypress_c":{"scope":"global","name":"keypress_c","action":false,"category":"Input - Keys","parameters":[]},"keypress_d":{"scope":"global","name":"keypress_d","action":false,"category":"Input - Keys","parameters":[]},"keypress_f":{"scope":"global","name":"keypress_f","action":false,"category":"Input - Keys","parameters":[]},"keypress_g":{"scope":"global","name":"keypress_g","action":false,"category":"Input - Keys","parameters":[]},"keypress_e":{"scope":"global","name":"keypress_e","action":false,"category":"Input - Keys","parameters":[]},"keypress_h":{"scope":"global","name":"keypress_h","action":false,"category":"Input - Keys","parameters":[]},"keypress_i":{"scope":"global","name":"keypress_i","action":false,"category":"Input - Keys","parameters":[]},"keypress_j":{"scope":"global","name":"keypress_j","action":false,"category":"Input - Keys","parameters":[]},"keypress_k":{"scope":"global","name":"keypress_k","action":false,"category":"Input - Keys","parameters":[]},"keypress_l":{"scope":"global","name":"keypress_l","action":false,"category":"Input - Keys","parameters":[]},"keypress_m":{"scope":"global","name":"keypress_m","action":false,"category":"Input - Keys","parameters":[]},"keypress_n":{"scope":"global","name":"keypress_n","action":false,"category":"Input - Keys","parameters":[]},"keypress_o":{"scope":"global","name":"keypress_o","action":false,"category":"Input - Keys","parameters":[]},"keypress_p":{"scope":"global","name":"keypress_p","action":false,"category":"Input - Keys","parameters":[]},"keypress_q":{"scope":"global","name":"keypress_q","action":false,"category":"Input - Keys","parameters":[]},"keypress_r":{"scope":"global","name":"keypress_r","action":false,"category":"Input - Keys","parameters":[]},"keypress_s":{"scope":"global","name":"keypress_s","action":false,"category":"Input - Keys","parameters":[]},"keypress_t":{"scope":"global","name":"keypress_t","action":false,"category":"Input - Keys","parameters":[]},"keypress_u":{"scope":"global","name":"keypress_u","action":false,"category":"Input - Keys","parameters":[]},"keypress_v":{"scope":"global","name":"keypress_v","action":false,"category":"Input - Keys","parameters":[]},"keypress_w":{"scope":"global","name":"keypress_w","action":false,"category":"Input - Keys","parameters":[]},"keypress_x":{"scope":"global","name":"keypress_x","action":false,"category":"Input - Keys","parameters":[]},"keypress_y":{"scope":"global","name":"keypress_y","action":false,"category":"Input - Keys","parameters":[]},"keypress_z":{"scope":"global","name":"keypress_z","action":false,"category":"Input - Keys","parameters":[]},"keypress_up_arrow":{"scope":"global","name":"keypress_up_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_down_arrow":{"scope":"global","name":"keypress_down_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_left_arrow":{"scope":"global","name":"keypress_left_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_right_arrow":{"scope":"global","name":"keypress_right_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_space":{"scope":"global","name":"keypress_space","action":false,"category":"Input - Keys","parameters":[]},"touch_start":{"scope":"global","name":"touch_start","action":false,"category":"Input - Touch","parameters":[]},"touch_end":{"scope":"global","name":"touch_end","action":false,"category":"Input - Touch","parameters":[]}},"externalDependencies":[],"filter":["application"],"category":"Input","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/InputController"}},ComponentInputController);Box3D.ScriptRegistry.registerScript({"id":"animation","sid":"Animation","properties":{"name":"Animation","attributes":{"autoPlay":{"name":"autoPlay","type":"b","description":"Play the animation once loaded","default":true},"loop":{"name":"loop","type":"b","description":"Continuously replay the animation","default":true},"speed":{"name":"speed","type":"f","description":"Playback speed","default":1,"min":0,"max":100},"startTime":{"name":"startTime","type":"f","description":"Begin playback at this time offset","default":0,"min":0},"weight":{"name":"weight","type":"f","description":"Blending weight","default":1,"min":0,"max":1},"asset":{"name":"asset","type":"asset","description":"Animation asset","default":null,"filter":{"animation":true}},"clipId":{"name":"clipId","type":"i","description":"The animation clip ID","default":null}},"attributesOrder":["autoPlay","loop","speed","startTime","weight","asset","clipId"],"events":{"playAnimation":{"scope":"local","name":"playAnimation","action":true,"category":"Animation","parameters":[{"name":"asset","type":"asset","description":"The animation asset to play.","default":null,"filter":{"animation":true}},{"name":"clipId","type":"s","description":"The ID of the clip to play.","default":null},{"name":"loop","type":"b","description":"Continuously replay the animation.","default":true},{"name":"speed","type":"f","description":"Playback speed.","default":1,"min":0,"max":100},{"name":"startTime","type":"f","description":"Begin playback at this time offset.","default":0,"min":0}]},"pauseAnimation":{"scope":"local","name":"pauseAnimation","action":true,"category":"Animation","parameters":[]},"stopAnimation":{"scope":"local","name":"stopAnimation","action":true,"category":"Animation","parameters":[]},"toggleAnimation":{"scope":"local","name":"toggleAnimation","action":true,"category":"Animation","parameters":[]},"animationLoaded":{"scope":"local","name":"animationLoaded","action":false,"category":"Animation","parameters":[]},"endAnimation":{"scope":"local","name":"endAnimation","action":false,"category":"Animation","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/KeyframeAnimation"}},ComponentKeyframeAnimation);Box3D.ScriptRegistry.registerScript({"id":"lookat_component","sid":"Look At Target","properties":{"name":"Look At Target","description":"A component that automatically points the object at a target. This can be used for billboarding an object to the camera, making a character look at another, etc.","attributes":{"target":{"name":"target","type":"object","description":"The object that you want this object to point towards. e.g. for billboarding, this would be the camera used to render the scene."},"local":{"name":"local","type":"b","description":"If toggled, whatever rotation you have already applied to this object will be taken into account.","default":false},"showPreview":{"name":"showPreview","type":"b","description":"Run the lookAt in the editor.","default":true}},"attributesOrder":["target","local","showPreview"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/LookAtTarget"}},ComponentLookAtTarget);Box3D.ScriptRegistry.registerScript({"id":"material_capture","sid":"Material Capture","properties":{"name":"Material Capture","description":"A component that captures an image of a rendered material as a spherical map, complete with lighting. This image can then be applied (with a sphere map projection) to a mesh to achieve convincing material shading (although the mesh will appear with the same lighting from all directions).","attributes":{"captureTexture":{"name":"captureTexture","type":"asset","description":"","filter":{"renderTexture2D":true},"default":null}},"attributesOrder":["captureTexture"],"events":{},"externalDependencies":[],"filter":["material"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/MaterialCapture"}},ComponentMaterialCapture);Box3D.ScriptRegistry.registerScript({"id":"normal_map_generator_component","sid":"Normal Map Generator","properties":{"name":"Normal Map Generator","attributes":{"bumpTexture":{"name":"bumpTexture","type":"asset","filter":{"renderTexture2D":true,"texture2D":true}},"smoothness":{"name":"smoothness","type":"f","slider":true,"default":0.25,"min":0.0001,"max":1},"spread":{"name":"spread","type":"f","slider":true,"default":4,"min":1,"max":10},"autoLoad":{"name":"autoLoad","type":"b","default":true}},"attributesOrder":["bumpTexture","smoothness","spread","autoLoad"],"events":{"renderNormalMap":{"scope":"local","name":"renderNormalMap","action":true,"category":"Rendering","parameters":[]}},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/NormalMapGenerator"}},ComponentNormalMapGenerator);Box3D.ScriptRegistry.registerScript({"id":"object_animator_component","sid":"Object Animator","properties":{"name":"Object Animator","attributes":{},"attributesOrder":[],"events":{"playAnimateAlongCurve":{"scope":"local","name":"playAnimateAlongCurve","action":true,"category":"Animation","parameters":[{"name":"curve","type":"object","componentFilter":{"Curve":true}},{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"orientation","description":"Orient the object following the curve to either the direction of the curve or to the objects defining the curve.","type":"opt","default":"toCurve","options":{"None":"None","To Curve":"toCurve","To Nodes":"toNode"}},{"name":"loop","type":"b","description":"","default":false}]},"playAnimateToObject":{"scope":"local","name":"playAnimateToObject","action":true,"category":"Animation","parameters":[{"name":"object","type":"object","default":null},{"name":"animationTime","type":"f","description":"Total time that the animation will take. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"update orientation","type":"b","default":true}]},"playAnimateTranslation":{"scope":"local","name":"playAnimateTranslation","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"velocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-1,"max":1},{"name":"objectUsage","type":"opt","description":"Specify what part of the animation the current object's position represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}}]},"playAnimateRotation":{"scope":"local","name":"playAnimateRotation","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"angularVelocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-100,"max":100},{"name":"objectUsage","type":"opt","description":"Specify what part of the animation the current object's rotation represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}},{"name":"axisOrder","type":"opt","description":"Specify the axis order that the angular velocity will be applied in.","default":"YXZ","options":{"XYZ":"XYZ","YXZ":"YXZ","ZXY":"ZXY","XZY":"XZY","YZX":"YZX","ZYX":"ZYX"}}]},"playAnimateScale":{"scope":"local","name":"playAnimateScale","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"velocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-10,"max":10},{"name":"objectUsage","type":"opt","description":"Specify what part of the animation the current object's scale represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}}]},"pauseCurveAnimation":{"scope":"local","name":"pauseCurveAnimation","action":true,"category":"Animation","parameters":[]},"stopCurveAnimation":{"scope":"local","name":"stopCurveAnimation","action":true,"category":"Animation","parameters":[]},"unpauseCurveAnimation":{"scope":"local","name":"unpauseCurveAnimation","action":true,"category":"Animation","parameters":[]},"endAnimateAlongCurve":{"scope":"local","name":"endAnimateAlongCurve","action":false,"category":"Animation","parameters":[]},"endAnimateToObject":{"scope":"local","name":"endAnimateToObject","action":false,"category":"Animation","parameters":[]},"endAnimateTranslation":{"scope":"lcoal","name":"endAnimateTranslation","action":false,"category":"Animation","parameters":[]}},"externalDependencies":[],"filter":["Object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/ObjectAnimator"}},ComponentObjectAnimator);Box3D.ScriptRegistry.registerScript({"id":"object_picker","sid":"Object Picker","properties":{"name":"Object Picker","attributes":{"pickTrigger":{"name":"pickTrigger","type":"dd","description":"What mouse action will trigger the pick?","default":"leftMouseClick","options":{"Left Mouse Click":"leftMouseClick","Middle Mouse Click":"middleMouseClick","Right Mouse Click":"rightMouseClick","Left Mouse Down":"leftMouseDown","Middle Mouse Down":"middleMouseDown","Right Mouse Down":"rightMouseDown","Left Mouse Up":"leftMouseUp","Middle Mouse Up":"middleMouseUp","Right Mouse Up":"rightMouseUp"}},"enableHoverByDefault":{"name":"enableHoverByDefault","type":"b","default":false,"advanced":true,"description":"Enable hover detection when mouse cursor is over a mesh. Note that this has a potential performance impact."},"hoverFrameSkip":{"name":"hoverFrameSkip","type":"i","description":"Skip this many frames inbetween hover checks.","default":1,"min":0,"max":60}},"attributesOrder":["pickTrigger","enableHoverByDefault","hoverFrameSkip"],"events":{"pick":{"scope":"other","name":"pick","action":false,"category":"General","parameters":[]},"beginHover":{"scope":"other","name":"beginHover","action":false,"category":"General","parameters":[]},"endHover":{"scope":"other","name":"endHover","action":false,"category":"General","parameters":[]}},"externalDependencies":[],"filter":["Scene"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/ObjectPicker"}},ComponentObjectPicker);Box3D.ScriptRegistry.registerScript({"id":"orbit_camera_controller","sid":"Orbit Camera Controller","properties":{"name":"Orbit Camera Controller","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"targetObject":{"name":"targetObject","type":"object","default":null,"description":"The object that the camera orbit point will be relative to."},"targetOffset":{"name":"targetOffset","type":"v3","default":{"x":0,"y":0,"z":0},"description":"An offset relative to the target object. This will allow you to target a specific point on an object."},"inertialDamping":{"name":"inertialDamping","type":"f","default":0.4,"description":"How quickly the camera stops moving when input stops.","min":0,"max":1},"invertX":{"name":"invertX","type":"b","default":false,"description":"Reverse the default direction that the camera moves horizontally."},"invertY":{"name":"invertY","type":"b","default":false,"description":"Reverse the default direction that the camera moves vertically."},"invertZoom":{"name":"invertZoom","type":"b","default":false,"description":"Reverse the default direction that the camera moves when zooming."},"lookSpeed":{"name":"lookSpeed","type":"f","description":"The speed that the camera orbits the target","default":1,"max":1000,"min":0.0001},"movementSpeed":{"name":"movementSpeed","type":"f","description":"The speed that the camera moves when panning","default":8,"max":2000,"min":0.1},"autoOrbit":{"name":"autoOrbit","type":"b","default":false,"description":"Automatically orbit the camera when the user is not controlling it."},"autoOrbitSpeed":{"name":"autoOrbitSpeed","type":"f","description":"The speed of the automatic orbit.","default":1,"max":1000,"min":-1000},"autoOrbitDelay":{"name":"autoOrbitDelay","type":"f","description":"The period of time with no mouse input before the auto-orbit starts (in seconds).","default":1,"max":1000,"min":0.0001},"orbitDistanceMin":{"name":"orbitDistanceMin","type":"f","description":"The closest that the camera is allowed to get to the target.","default":10,"max":1000,"min":0.001},"orbitDistanceMax":{"name":"orbitDistanceMax","type":"f","description":"The furthest that the camera is allowed to get from the target.","default":500,"max":100000,"min":1},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","description":"Allows you to set how far the camera can pitch (tilt) from horizontal. Defined in degrees with horizontal being 0.","default":{"x":75,"y":-75},"max":{"x":90,"y":90},"min":{"x":-90,"y":-90.001}},"enablePan":{"name":"enablePan","type":"b","default":true,"description":"Allow the user to pan side-to-side and up and down with the camera."},"enableZoom":{"name":"enableZoom","type":"b","default":true,"description":"Allow the user to zoom in and out with the camera."},"interpolation":{"name":"interpolation","type":"b","default":true,"description":"When enabled, the camera will smoothly interpolate toward its desired state. e.g. If something else moves the camera, interpolation will cause the camera to smoothly focus on the target again. Otherwise, it will snap back."},"interpSpeed":{"name":"interpSpeed","type":"f","description":"The speed at which the orbiting camera locks on to its target, if set to point away from it.","default":0.5,"max":10,"min":0.01},"usePointerLock":{"name":"usePointerLock","type":"b","default":false,"description":"The mouse cursor will be hidden during camera control and won't move. Requires the user to accept pointer lock message in web browser."},"useKeyboard":{"name":"useKeyboard","type":"b","default":true,"description":"Allow the camera to be controlled via keyboard input. This allows for movement with W,A,S,D/arrow keys as well as modifiers."}},"attributesOrder":["targetObject","targetOffset","inertialDamping","invertX","invertY","invertZoom","lookSpeed","movementSpeed","autoOrbit","autoOrbitSpeed","autoOrbitDelay","orbitDistanceMin","orbitDistanceMax","pitchAngleBounds","enablePan","enableZoom","interpolation","interpSpeed","usePointerLock","useKeyboard"],"events":{"enableOrbitCameraController":{"scope":"local","name":"enableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"disableOrbitCameraController":{"scope":"local","name":"disableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"toggleOrbitCameraController":{"scope":"local","name":"toggleOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"setOrbitDistance":{"scope":"local","name":"setOrbitDistance","action":true,"category":"Orbit Camera","parameters":[{"name":"newDistance","type":"f","description":"The new distance that the camera will orbit at.","default":1}]},"setTarget":{"scope":"local","name":"setTarget","description":"Sets the camera to orbit the given object","action":true,"category":"Orbit Camera","parameters":[{"name":"newTarget","type":"object","description":"The new target that the camera will orbit.","default":null},{"name":"center","type":"b","description":"Whether or not to target the center of the object. If false, the camera will orbit the origin of the object.","default":true}]},"focusOnTarget":{"scope":"local","name":"focusOnTarget","description":"Look at the center of the current target and zoom so that the object nicely fills the field of view.","action":true,"category":"Orbit Camera","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/OrbitCameraController"}},ComponentOrbitCameraController);Box3D.ScriptRegistry.registerScript({"id":"panorama_to_cubemap_script","sid":"Panorama To Cube Map","properties":{"name":"Panorama To Cube Map","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"inputTexture":{"name":"inputTexture","type":"asset","default":null,"filter":{"texture2D":true,"renderTexture2D":true},"description":"The texture to convert to a cube map."}},"attributesOrder":["inputTexture"],"events":{},"externalDependencies":[],"filter":["renderTextureCube"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PanoramaToCubeMap"}},ComponentPanoramaToCubeMap);Box3D.ScriptRegistry.registerScript({"id":"texture2d_to_pmrem_cubeuv","sid":"GeneratePMREM","properties":{"name":"GeneratePMREM","description":"Generates a prefiltered mipmaped radiance environment map from a, preferably HDRI, input environment map. The entire result will be stored in this texture in the CubeUV layout.","attributes":{"inputTexture":{"name":"inputTexture","type":"asset","default":null,"filter":{"texture2D":true,"renderTexture2D":true,"textureCube":true,"renderTextureCube":true},"description":"The texture to generate the PMREM for."}},"attributesOrder":["inputTexture"],"events":{},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PMREMGenerator"}},ComponentPMREMGenerator);Box3D.ScriptRegistry.registerScript({"id":"preview_axis_rotation","sid":"Preview Axis Rotation","properties":{"name":"Preview Axis Rotation","description":"Set the rotation of any axis.","attributes":{"speed":{"name":"speed","type":"f","description":"The speed that we rotate the object, if a transition is triggered","default":0.4,"max":100,"min":0.1}},"attributesOrder":["speed"],"events":{},"externalDependencies":[],"filter":["object"],"category":"User Defined","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PreviewAxisRotation"}},ComponentPreviewAxisRotation);Box3D.ScriptRegistry.registerScript({"id":"preview_camera_controller","sid":"Preview Camera Controller","properties":{"name":"Preview Camera Controller","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"targetObject":{"name":"targetObject","type":"object","default":null,"description":"The object that the camera orbit point will be relative to."},"targetOffset":{"name":"targetOffset","type":"v3","default":{"x":0,"y":0,"z":0},"description":"An offset relative to the target object. This will allow you to target a specific point on an object."},"inertialDamping":{"name":"inertialDamping","type":"f","default":0.2,"description":"How quickly the camera stops moving when input stops.","min":0,"max":1},"invertX":{"name":"invertX","type":"b","default":false,"description":"Reverse the default direction that the camera moves horizontally."},"invertY":{"name":"invertY","type":"b","default":false,"description":"Reverse the default direction that the camera moves vertically."},"invertZoom":{"name":"invertZoom","type":"b","default":false,"description":"Reverse the default direction that the camera moves when zooming."},"lookSpeed":{"name":"lookSpeed","type":"f","description":"The speed that the camera orbits the target","default":1,"max":1000,"min":0.0001},"movementSpeed":{"name":"movementSpeed","type":"f","description":"The speed that the camera moves when panning","default":8,"max":2000,"min":0.1},"autoOrbit":{"name":"autoOrbit","type":"b","default":false,"description":"Automatically orbit the camera when the user is not controlling it."},"autoOrbitSpeed":{"name":"autoOrbitSpeed","type":"f","description":"The speed of the automatic orbit.","default":1,"max":1000,"min":-1000},"autoOrbitDelay":{"name":"autoOrbitDelay","type":"f","description":"The period of time with no mouse input before the auto-orbit starts (in seconds).","default":1,"max":1000,"min":0.0001},"orbitDistanceMin":{"name":"orbitDistanceMin","type":"f","description":"The closest that the camera is allowed to get to the target.","default":1,"max":1000,"min":0.001},"orbitDistanceMax":{"name":"orbitDistanceMax","type":"f","description":"The furthest that the camera is allowed to get from the target.","default":50,"max":100000,"min":1},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","description":"Allows you to set how far the camera can pitch (tilt) from horizontal. Defined in degrees with horizontal being 0.","default":{"x":75,"y":-75},"max":{"x":90,"y":90},"min":{"x":-90,"y":-90.001}},"enablePan":{"name":"enablePan","type":"b","default":true,"description":"Allow the user to pan side-to-side and up and down with the camera."},"enableZoom":{"name":"enableZoom","type":"b","default":true,"description":"Allow the user to zoom in and out with the camera."},"interpolation":{"name":"interpolation","type":"b","default":true,"description":"When enabled, the camera will smoothly interpolate toward its desired state. e.g. If something else moves the camera, interpolation will cause the camera to smoothly focus on the target again. Otherwise, it will snap back."},"interpSpeed":{"name":"interpSpeed","type":"f","description":"The speed at which the orbiting camera locks on to its target, if set to point away from it.","default":0.5,"max":10,"min":0.01},"usePointerLock":{"name":"usePointerLock","type":"b","default":false,"description":"The mouse cursor will be hidden during camera control and won't move. Requires the user to accept pointer lock message in web browser."},"useKeyboard":{"name":"useKeyboard","type":"b","default":true,"description":"Allow the camera to be controlled via keyboard input. This allows for movement with W,A,S,D/arrow keys as well as modifiers."}},"attributesOrder":["targetObject","targetOffset","inertialDamping","invertX","invertY","invertZoom","lookSpeed","movementSpeed","autoOrbit","autoOrbitSpeed","autoOrbitDelay","orbitDistanceMin","orbitDistanceMax","pitchAngleBounds","enablePan","enableZoom","interpolation","interpSpeed","usePointerLock","useKeyboard"],"events":{"enableOrbitCameraController":{"scope":"local","name":"enableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"disableOrbitCameraController":{"scope":"local","name":"disableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"toggleOrbitCameraController":{"scope":"local","name":"toggleOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"resetOrbitCameraController":{"scope":"local","name":"resetOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"setOrbitDistance":{"scope":"local","name":"setOrbitDistance","action":true,"category":"Orbit Camera","parameters":[{"name":"newDistance","type":"f","description":"The new distance that the camera will orbit at.","default":1}]},"setTarget":{"scope":"local","name":"setTarget","description":"Sets the camera to orbit the given object","action":true,"category":"Orbit Camera","parameters":[{"name":"newTarget","type":"object","description":"The new target that the camera will orbit.","default":null},{"name":"center","type":"b","description":"Whether or not to target the center of the object. If false, the camera will orbit the origin of the object.","default":true}]},"focusOnTarget":{"scope":"local","name":"focusOnTarget","description":"Look at the center of the current target and zoom so that the object nicely fills the field of view.","action":true,"category":"Orbit Camera","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PreviewCameraController"}},ComponentPreviewCameraController);Box3D.ScriptRegistry.registerScript({"id":"preview_camera_focus","sid":"Preview Camera Focus","properties":{"name":"Preview Camera Focus","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"speed":{"name":"speed","type":"f","description":"The speed that we move to focus on the target","default":0.8,"max":100,"min":0.1}},"attributesOrder":["speed"],"events":{},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PreviewCameraFocus"}},ComponentPreviewCameraFocus);Box3D.ScriptRegistry.registerScript({"id":"reflection_capture_planar","sid":"Reflection Capture Plane","properties":{"name":"Reflection Capture Plane","attributes":{"captureTexture":{"name":"captureTexture","type":"asset","description":"The RenderTexture2D to render the reflection to.","filter":{"renderTexture2D":true}},"clipBias":{"name":"clipBias","type":"f","description":"Pushes the rendered scene forward or backwards to adjust clipping with reflection plane.","default":0.01},"updateFrameInterval":{"name":"updateFrameInterval","type":"i","description":"The number of frames to skip in between updates of the reflection. Default is 0.","default":0}},"attributesOrder":["captureTexture","clipBias","updateFrameInterval"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/ReflectionCapturePlane"}},ComponentReflectionCapturePlane);Box3D.ScriptRegistry.registerScript({"id":"box3d_renderer","sid":"Renderer","properties":{"name":"Renderer","attributes":{"renderOnDemand":{"name":"renderOnDemand","type":"b","description":"When this is enabled, rendering will only happen when requested instead of every frame.","defualt":true},"antialias":{"name":"antialias","type":"b","description":"Enable or disable antialiasing of the rendered scene.","default":true},"preserveDrawingBuffer":{"name":"preserveDrawingBuffer","type":"b","description":"Tells the browser to preserve drawing buffers between frames so that they are available to be read by the application.","default":true},"autoClear":{"name":"autoClear","type":"b","description":"Automatically clear the render target before each render.","default":false},"devicePixelRatio":{"name":"devicePixelRatio","type":"dd","default":0,"options":{"Device Default":0,"One":1,"Two":2},"description":"Override the default pixel ratio of the system. Higher values will cause rendering at higher resolution while lower values will force rendering at lower resolutions. You can also set this to use the device default (mobile devices usually have values greater than 1)."},"clearColor":{"name":"clearColor","type":"c","description":"When the render target is cleared, this colour will be used","default":{"r":0,"g":0,"b":0}},"clearAlpha":{"name":"clearAlpha","type":"f","description":"When the render target is cleared, this value will be used to clear the transparency","default":0,"min":0,"max":1,"step":0.001},"precision":{"name":"precision","type":"dd","description":"The default floating point and integer precision to be used by the GPU.","default":"mediump","options":{"Low":"lowp","Medium":"mediump","High":"highp"}},"maxTextureSize2d":{"name":"maxTextureSize2d","type":"i","description":"Clamp the maximum allowed dimension of a 2d texture.","default":32768,"min":1024,"max":32768},"maxTextureSizeCube":{"name":"maxTextureSizeCube","type":"i","description":"Clamp the maximum allowed dimension of a cube texture.","default":32768,"min":512,"max":32768},"shadowsEnabled":{"name":"shadowsEnabled","type":"b","description":"Enable or disable rendering of shadows.","default":true},"shadowsEnabledMobile":{"name":"shadowsEnabledMobile","type":"b","description":"Enable or disable rendering of shadows on mobile devices.","default":false},"shadowType":{"name":"shadowType","type":"dd","options":{"Soft PCF":2,"PCF":1,"No Filtering":0},"default":2},"shadowReverseSided":{"name":"shadowReverseSided","type":"b","description":"Render shadows with reverse side of mesh.","default":false},"shadowDebug":{"name":"shadowDebug","type":"b","description":"Enable or disable debug rendering, showing the different shadow cascade sizes.","default":false},"logarithmicDepthBuffer":{"name":"logarithmicDepthBuffer","type":"b","description":"Use logarithmic z values while rendering.","default":false}},"attributesOrder":["renderOnDemand","antialias","preserveDrawingBuffer","autoClear","devicePixelRatio","clearColor","clearAlpha","precision","maxTextureSize2d","maxTextureSizeCube","shadowsEnabled","shadowsEnabledMobile","shadowType","shadowReverseSided","shadowDebug","logarithmicDepthBuffer"],"events":{},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Renderer"}},ComponentRenderer);Box3D.ScriptRegistry.registerScript({"id":"camera_filters_script","sid":"Render Filters","properties":{"name":"Render Filters","description":"Overrides the filter settings that cameras will use when rendering.","attributes":{"bloom":{"name":"bloom","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"strength":{"type":"f","default":1,"min":0.1,"max":4,"step":0.001},"sigma":{"type":"f","default":4,"min":1,"max":8,"step":0.001,"advanced":true},"resolution":{"type":"i","default":256,"min":64,"max":1024,"step":1,"advanced":true}}},"toneMapping":{"name":"toneMapping","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"adaptive":{"type":"b","description":"Automatically adjusts the tone-mapping every frame based on the average luminance of the scene.","default":true},"adaptSpeed":{"type":"f","description":"The speed at which adaptive tone-mapping works. Higher number is faster.","default":0.5,"min":0.1,"max":20},"exposureBias":{"type":"f","description":"Adjusts the overall brightness of the image. Use this to tweak the final result of tone-mapping.","default":1,"min":0.0001,"max":5},"maxLuminance":{"type":"f","description":"Sets the maximum brightness reached before pixels become white after tone-mapping.","default":16,"min":0.01,"max":25},"luminance":{"type":"f","description":"When the \"Adaptive\" feature is turned off, this will set the scene luminance to be used by tone-mapping.","default":1,"min":0.0001,"max":16}}},"fxaa":{"name":"fxaa","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false}}},"vignette":{"name":"vignette","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"offset":{"type":"f","default":1,"min":0,"max":1,"step":0.001},"darkness":{"type":"f","default":1,"min":0,"max":5,"step":0.001}}},"ssao":{"name":"ssao","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"fogEnabled":{"type":"i","default":1,"advanced":true},"depthScale":{"type":"f","default":2000,"min":100,"max":50000,"step":0.001,"advanced":true},"onlyAO":{"type":"i","default":0},"aoClamp":{"type":"f","default":0.75,"advanced":true},"lumInfluence":{"type":"f","default":0.75,"advanced":true},"noiseAmount":{"type":"f","default":0.0002},"radius":{"type":"f","default":16},"diffArea":{"type":"f","default":0.4,"advanced":true},"gDisplace":{"type":"f","default":0.4,"advanced":true}}},"dof":{"name":"dof","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"aspect":{"type":"f","default":1,"min":0,"max":1,"step":0.001,"advanced":true},"aperture":{"type":"f","default":0.4,"min":0,"max":1,"step":0.001},"focus":{"type":"f","default":0.98,"min":0,"max":1,"step":0.001}}},"sepia":{"name":"sepia","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"amount":{"type":"f","default":0.9,"min":0,"max":1,"step":0.001}}},"video":{"name":"video","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"nIntensity":{"type":"f","default":0.15},"sIntensity":{"type":"f","default":0.05},"sCount":{"type":"f","default":512},"grayscale":{"type":"b","default":false}}}},"attributesOrder":["bloom","toneMapping","fxaa","vignette","ssao","dof","sepia","video"],"events":{},"externalDependencies":[],"filter":["object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/RenderFilters"}},ComponentRenderFilters);Box3D.ScriptRegistry.registerScript({"id":"render_modes","sid":"Render Modes","properties":{"name":"Render Modes","attributes":{"renderMode":{"name":"renderMode","type":"s","description":"How to render the scene","default":"Lit"},"shapeTexture":{"name":"shapeTexture","type":"asset","description":"","filter":{"texture2D":true,"renderTexture2D":true},"default":null},"skeletonsVisible":{"name":"skeletonsVisible","type":"b","description":"Render skeletons in the scene","default":false},"wireframesVisible":{"name":"wireframesVisible","type":"b","description":"Render mesh wireframes","default":false}},"attributesOrder":["renderMode","shapeTexture","skeletonsVisible","wireframesVisible"],"events":{"resetSkeletons":{"scope":"local","name":"resetSkeletons","action":true,"category":"Rendering","parameters":[]},"setRenderMode":{"scope":"local","name":"setRenderMode","action":true,"category":"Rendering","parameters":[{"name":"renderMode","type":"s","description":"One of \"Lit\", \"Unlit\", etc.","default":"Lit"}]},"setSkeletonsVisible":{"scope":"local","name":"setSkeletonsVisible","action":true,"category":"Rendering","parameters":[{"name":"visible","type":"b","description":"Whether or not skeletons are visible.","default":false}]},"setWireframesVisible":{"scope":"local","name":"setWireframesVisible","action":true,"category":"Rendering","parameters":[{"name":"visible","type":"b","description":"Whether or not wireframes are visible.","default":false}]}},"externalDependencies":[],"filter":["Application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/RenderModes"}},ComponentRenderModes);Box3D.ScriptRegistry.registerScript({"id":"render_view_component","sid":"Render View","properties":{"name":"Render View","attributes":{"viewportLeft":{"name":"viewportLeft","type":"s","description":"Left position of the viewport to be rendered by this camera.","default":"0px"},"viewportBottom":{"name":"viewportBottom","type":"s","description":"Bottom position of the viewport to be rendered by this camera.","default":"0px"},"viewportWidth":{"name":"viewportWidth","type":"s","description":"Width of the viewport to be rendered by this camera.","default":"100%"},"viewportHeight":{"name":"viewportHeight","type":"s","description":"Height of the viewport to be rendered by this camera.","default":"100%"},"renderGroup":{"name":"renderGroup","type":"i","description":"Render passes are done in order, based on the 'render group' value. Lower numbers render first.","default":0},"renderLayer":{"name":"renderLayer","type":"i","description":".","default":0,"min":0},"clearColor":{"name":"clearColor","type":"b","description":"","default":false,"advanced":false},"clearDepth":{"name":"clearDepth","type":"b","description":"","default":true,"advanced":false},"renderTarget":{"name":"renderTarget","type":"asset","description":"","filter":{"renderTexture2D":true},"default":null,"advanced":false},"enablePreRenderFunctions":{"name":"enablePreRenderFunctions","type":"b","description":"Run pre-render functions with this view. These include things like real-time reflections, which need to be rendered for each view separately.","default":true,"advanced":true},"enableShadows":{"name":"enableShadows","type":"b","description":"Render shadows for this view.","default":true,"advanced":true}},"attributesOrder":["viewportLeft","viewportBottom","viewportWidth","viewportHeight","renderGroup","renderLayer","clearColor","clearDepth","renderTarget","enablePreRenderFunctions","enableShadows"],"events":{"enableRenderView":{"scope":"local","name":"enableRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]},"setViewport":{"scope":"local","name":"setViewport","category":"Rendering","parameters":[{"name":"viewportLeft","description":"Left position of the viewport to be rendered by this camera.","type":"s","default":"0px"},{"name":"viewportBottom","description":"Bottom position of the viewport to be rendered by this camera.","type":"s","default":"0px"},{"name":"viewportWidth","description":"Width of the viewport to be rendered by this camera.","type":"s","default":"100%"},{"name":"viewportHeight","description":"Height of the viewport to be rendered by this camera.","type":"s","default":"100%"},{"name":"animationTime","type":"f","description":"Animate the change in viewport over this many seconds.","default":0}]},"disableRenderView":{"scope":"local","name":"disableRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]},"toggleRenderView":{"scope":"local","name":"toggleRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]}},"externalDependencies":[],"filter":["camera"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/RenderView"}},ComponentRenderView);Box3D.ScriptRegistry.registerScript({"id":"rotate_component","sid":"Rotate","properties":{"name":"Rotate","description":"A simple component to rotate an object.","attributes":{"autoRotate":{"name":"autoRotate","type":"b","description":"Automatically start the rotation upon load.","default":true},"previewRotation":{"name":"previewRotation","type":"b","description":"Show the rotation in the editor.","default":true},"rotation":{"name":"rotation","type":"v3","description":"Amount of rotation per second about the x, y and z axes.","default":{"x":0,"y":0.5,"z":0}},"local":{"name":"local","type":"b","description":"Rotate relative to the local quaternion of the object. If false, the rotation will be relative to the world.","default":false}},"attributesOrder":["autoRotate","previewRotation","rotation","local"],"events":{"startRotate":{"scope":"local","name":"startRotate","action":true,"category":"Rotate","parameters":[]},"stopRotate":{"scope":"local","name":"stopRotate","action":true,"category":"Rotate","parameters":[]},"toggleRotate":{"scope":"local","name":"toggleRotate","action":true,"category":"Rotate","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Rotate"}},ComponentRotate);Box3D.ScriptRegistry.registerScript({"id":"loader_component","sid":"Scene Loader","properties":{"name":"Scene Loader","description":"A simple component to load a scene and display progress for it.","attributes":{"scene":{"name":"scene","type":"asset","description":"The scene to load.","filter":{"scene":true}}},"attributesOrder":["scene"],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Loading","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/SceneLoader"}},ComponentSceneLoader);Box3D.ScriptRegistry.registerScript({"id":"simplex_noise_component","sid":"Simplex Noise Generator","properties":{"name":"Simplex Noise Generator","attributes":{"layerAmplitude":{"name":"layerAmplitude","type":"v4","default":{"x":0.5,"y":0.4,"z":0.3,"w":0.125}},"layerScale":{"name":"layerScale","type":"v4","default":{"x":0.5,"y":2,"z":3,"w":4}},"scale":{"name":"scale","type":"v2","default":{"x":1,"y":1}},"offset":{"name":"offset","type":"v2","default":{"x":0,"y":0}},"autoLoad":{"name":"autoLoad","type":"b","default":true}},"attributesOrder":["layerAmplitude","layerScale","scale","offset","autoLoad"],"events":{"renderNoise":{"scope":"local","name":"renderNoise","action":true,"category":"Rendering","parameters":[]},"changeNoiseValues":{"scope":"local","name":"changeNoiseValues","action":true,"category":"Rendering","parameters":[{"name":"layerAmplitude","type":"v4","description":"","default":{"x":0.5,"y":0.4,"z":0.3,"w":0.125}},{"name":"layerScale","type":"v4","description":"","default":{"x":0.5,"y":2,"z":3,"w":4}},{"name":"scale","type":"v2","description":"","default":{"x":1,"y":1}},{"name":"offset","type":"v2","description":"","default":{"x":0,"y":0}}]}},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/SimplexNoiseGenerator"}},ComponentSimplexNoiseGenerator);Box3D.ScriptRegistry.registerScript({"id":"skybox_renderer","sid":"Skybox","properties":{"name":"Skybox","attributes":{"size":{"name":"size","type":"f","default":1000,"min":1,"max":1000000},"stereoEnabled":{"name":"stereoEnabled","type":"b","default":false},"skyboxTexture":{"name":"skyboxTexture","type":"asset","description":"","filter":{"textureCube":true,"texture2D":true,"renderTexture2D":true,"renderTextureCube":true},"default":"white_cube"}},"attributesOrder":["size","stereoEnabled","skyboxTexture"],"events":{},"externalDependencies":[],"filter":["scene"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Skybox"}},ComponentSkybox);Box3D.ScriptRegistry.registerScript({"id":"text_renderer_component","sid":"Text Renderer","properties":{"name":"Text Renderer","description":"Render the desired text to the texture we are attached to","attributes":{"text":{"name":"text","type":"s","default":"My Text","description":"Text you want to display"},"fontColor":{"name":"fontColor","type":"c","default":{"r":1,"g":1,"b":1},"description":"Color of the text"},"fontFamily":{"name":"fontFamily","type":"s","default":"Calibri","description":"Font family to render"},"pointSize":{"name":"pointSize","type":"i","default":48,"description":"Font size","min":2,"max":100}},"attributesOrder":["text","fontColor","fontFamily","pointSize"],"events":{},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Text","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/TextRenderer"}},ComponentTextRenderer);Box3D.ScriptRegistry.registerScript({"id":"texture2d_to_cubemap_script","sid":"Texture To Cube Map","properties":{"name":"Texture To Cube Map","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"inputTexture":{"name":"inputTexture","type":"asset","default":null,"filter":{"texture2D":true,"renderTexture2D":true},"description":"The texture to convert to a cube map."}},"attributesOrder":["inputTexture"],"events":{},"externalDependencies":[],"filter":["renderTextureCube"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Texture2dToCubeMap"}},ComponentTexture2dToCubeMap);};/* eslint-enable *//* eslint-disable */
 
 /***/ },
 /* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* eslint-disable */
 	/**
-	 * @vid object_picker
-	 * @vname Object Picker
-	 * @vfilter Scene
-	 * @vcategory General
-	 * @vattr Dropdown pickTrigger {
-	 *   description: 'What mouse action will trigger the pick?',
-	 *   default: 'leftMouseClick',
-	 *   options: {
-	 *     'Left Mouse Click': 'leftMouseClick',
-	 *     'Middle Mouse Click': 'middleMouseClick',
-	 *     'Right Mouse Click': 'rightMouseClick',
-	 *     'Left Mouse Down': 'leftMouseDown',
-	 *     'Middle Mouse Down': 'middleMouseDown',
-	 *     'Right Mouse Down': 'rightMouseDown',
-	 *     'Left Mouse Up': 'leftMouseUp',
-	 *     'Middle Mouse Up': 'middleMouseUp',
-	 *     'Right Mouse Up': 'rightMouseUp'
-	 *   }
-	 * }
-	 * @vattr Boolean enableHoverByDefault {
-	 *   default: false,
-	 *   advanced: true,
-	 *   description: 'Enable hover detection when mouse cursor is over a mesh. Note that this has a potential performance impact.'
-	 * }
-	 * @vattr Integer hoverFrameSkip {
-	 *   description: 'Skip this many frames inbetween hover checks.',
-	 *   default: 1,
-	 *   min: 0,
-	 *   max: 60
-	 * }
-	 * @vevent other pick { action: false, category: 'General', parameters: [] }
-	 * @vevent other beginHover { action: false, category: 'General', parameters: [] }
-	 * @vevent other endHover { action: false, category: 'General', parameters: []}
+	 * @vid audio_listener
+	 * @vname Audio Listener
+	 * @vcategory Audio
+	 * @vdescription Audio listener for 3D, positional sound effects
 	 */
-	/* eslint-enable */
-	/* global Box3D */
+
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -67950,21 +63764,21 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _log = __webpack_require__(7);
+
+	var _log2 = _interopRequireDefault(_log);
+
 	var _three = __webpack_require__(10);
 
 	var THREE = _interopRequireWildcard(_three);
-
-	var _lodash = __webpack_require__(4);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
 
 	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -67972,528 +63786,53 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var ObjectPicker = function (_Box3DComponent) {
-	  _inherits(ObjectPicker, _Box3DComponent);
+	var AudioListener = function (_Box3DComponent) {
+	  _inherits(AudioListener, _Box3DComponent);
 
-	  function ObjectPicker() {
-	    _classCallCheck(this, ObjectPicker);
+	  function AudioListener() {
+	    _classCallCheck(this, AudioListener);
 
-	    var _this = _possibleConstructorReturn(this, (ObjectPicker.__proto__ || Object.getPrototypeOf(ObjectPicker)).call(this));
+	    var _this = _possibleConstructorReturn(this, (AudioListener.__proto__ || Object.getPrototypeOf(AudioListener)).call(this));
 
-	    _this.pickingMaterialDef = undefined;
-	    _this.meshRegistry = {};
-	    _this.meshList = [];
-	    _this.pickingTexture = undefined;
-	    _this.currentHoverObject = undefined;
-	    _this.currentFrame = 0;
-
-	    _this.enableHoverByDefault = false;
-	    _this.pickTrigger = null;
-	    _this.hoverEnabled = false;
+	    _this.context = null;
 	    return _this;
 	  }
 
 	  /** @inheritdoc */
 
 
-	  _createClass(ObjectPicker, [{
-	    key: 'onAwake',
-	    value: function onAwake() {
-	      this.getRuntime().once('endHover:bound', this._enableHover, this);
-	      this.getRuntime().once('beginHover:bound', this._enableHover, this);
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
+	  _createClass(AudioListener, [{
 	    key: 'onStartup',
 	    value: function onStartup() {
-	      // this.box3DEntity is available
-	      this.getRuntime().on('resize', this.resize, this);
+	      this.context = this.getEntity().box3DRuntime.getAudioContext();
 
-	      this.initPickingEvents();
-	      this.initPickingMaterial();
-	      this.initMeshRegistry();
-
-	      //listen to register objects
-	      this.getGlobalEvents().on('registerPickingObject', this.registerObject, this);
-	      this.getGlobalEvents().on('unregisterPickingObject', this.unregisterObject, this);
-
-	      this.resize();
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'onShutdown',
-	    value: function onShutdown() {
-	      // make sure to clean up any events or other bindings that you have created
-	      // to avoid memory leaks
-	      this.uninitPickingEvents();
-
-	      this.getRuntime().off('resize', this.resize, this);
-	      this.getGlobalEvents().off('registerPickingObject', this.registerObject, this);
-	      this.getGlobalEvents().off('unregisterPickingObject', this.unregisterObject, this);
-
-	      // TODO - Listen to different events to make ObjectPicker work again.
-	      // var parentAsset = this.getEntity().getParentAsset();
-	      // parentAsset.off('meshLoaded', this.registerMesh, this);
-	      // parentAsset.off('meshUnloaded', this.unregisterMesh, this);
-	      if (this.pickingTexture) {
-	        this.pickingTexture.dispose();
-	        this.pickingTexture = undefined;
-	      }
-	      for (var x in this.meshRegistry) {
-	        if (this.meshRegistry[x].pickingMaterial) {
-	          this.meshRegistry[x].pickingMaterial.dispose();
-	        }
-	      }
-	      this.meshRegistry = {};
-	      this.meshList = [];
-	    }
-	  }, {
-	    key: 'initPickingEvents',
-	    value: function initPickingEvents() {
-	      if (this.pickTrigger.substr(-2) === 'Up') {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().on('touchEnd', this.touchPick, this);
-	        } else {
-	          this.getRuntime().on('mouseUp', this.pick, this);
-	        }
-	      } else if (this.pickTrigger.substr(-4) === 'Down') {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().on('touchStart', this.touchPick, this);
-	        } else {
-	          this.getRuntime().on('mouseDown', this.pick, this);
-	        }
-	      } else if (this.pickTrigger.substr(-5) === 'Click') {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().on('touchEnd', this.touchPickNoDrag, this);
-	        } else {
-	          this.getRuntime().on('mouseUp', this.pickNoDrag, this);
-	        }
-	      }
-
-	      if (this.enableHoverByDefault && !Box3D.isMobile()) {
-	        this._enableHover();
-	      }
-	    }
-	  }, {
-	    key: 'uninitPickingEvents',
-	    value: function uninitPickingEvents() {
-	      if (this.pickTrigger.substr(-2) === 'Up') {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().off('touchEnd', this.touchPick, this);
-	        } else {
-	          this.getRuntime().off('mouseUp', this.pick, this);
-	        }
-	      } else {
-	        if (Box3D.isMobile()) {
-	          this.getRuntime().off('touchStart', this.touchPick, this);
-	        } else {
-	          this.getRuntime().off('mouseDown', this.pick, this);
-	        }
+	      if (!this.context) {
+	        _log2.default.warn('Failed to create Web Audio context.');
+	        return;
 	      }
 	    }
 
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'onPostRender',
-	    value: function onPostRender() {
-	      if (this.enableHoverByDefault && !Box3D.isMobile()) {
-	        this.hoverUpdate();
+	    key: 'onUpdate',
+	    value: function onUpdate() {
+	      if (this.hasRuntimeData() && this.context) {
+	        var xform = this.getRuntimeData().matrixWorld,
+	            objPos = new THREE.Vector3(0, 0, 0).applyMatrix4(xform),
+	            objDir = new THREE.Vector3(0, 0, -1).applyMatrix4(xform).sub(objPos).normalize(),
+	            objUp = new THREE.Vector3(0, 1, 0).applyMatrix4(xform).sub(objPos).normalize();
+
+	        this.context.listener.setPosition(objPos.x, objPos.y, objPos.z);
+	        this.context.listener.setOrientation(objDir.x, objDir.y, objDir.z, objUp.x, objUp.y, objUp.z);
 	      }
-	    }
-	  }, {
-	    key: 'initPickingMaterial',
-	    value: function initPickingMaterial() {
-	      this.pickingMaterialDef = {
-
-	        depthTest: true,
-	        depthWrite: true,
-	        transparent: false,
-	        side: THREE.DoubleSide,
-
-	        uniforms: {
-	          color: {
-	            type: 'c',
-	            value: 0xff0000
-	          }
-	        },
-
-	        vertexShader: [THREE.ShaderChunk['skinning_pars_vertex'], THREE.ShaderChunk['logdepthbuf_pars_vertex'], 'void main() {', THREE.ShaderChunk['skinbase_vertex'], THREE.ShaderChunk['skinnormal_vertex'], THREE.ShaderChunk['defaultnormal_vertex'], THREE.ShaderChunk['skinning_vertex'], THREE.ShaderChunk['project_vertex'], THREE.ShaderChunk['logdepthbuf_vertex'], '}'].join('\n'),
-
-	        fragmentShader: ['uniform vec3 color;', THREE.ShaderChunk['logdepthbuf_pars_fragment'], 'void main() {', THREE.ShaderChunk['logdepthbuf_fragment'], 'gl_FragColor = vec4( color, 1.0 );', '}'].join('\n')
-
-	      };
-	    }
-	  }, {
-	    key: 'initMeshRegistry',
-	    value: function initMeshRegistry() {
-	      var _this2 = this;
-
-	      // TODO - Listen to different events to make ObjectPicker work again.
-	      // var parentAsset = this.getEntity().getParentAsset();
-	      // parentAsset.on('meshLoaded', this.registerMesh, this);
-	      // parentAsset.on('meshUnloaded', this.unregisterMesh, this);
-
-	      this.getEntity().getParentObject().traverse(function (obj) {
-	        if (obj.type === 'mesh') {
-	          _this2.registerMesh(obj);
-	        }
-	      });
-	    }
-	  }, {
-	    key: '_enableHover',
-	    value: function _enableHover() {
-	      if (!this.hoverEnabled && !Box3D.isMobile()) {
-	        this.hoverEnabled = true;
-	      }
-	    }
-
-	    /**
-	    * reset the size of the texture used to test against geometry picking parameters
-	    * @method resize
-	    */
-
-	  }, {
-	    key: 'resize',
-	    value: function resize() {
-	      var oldPickingTexture = this.pickingTexture;
-	      var width = this.getRenderer().getWidth();
-	      var height = this.getRenderer().getHeight();
-	      this.pickingTexture = new THREE.WebGLRenderTarget(Math.floor(width / 4.0), Math.floor(height / 4.0), {
-	        minFilter: THREE.LinearFilter
-	      });
-	      this.pickingTexture.texture.generateMipmaps = false;
-	      if (oldPickingTexture) {
-	        oldPickingTexture.dispose();
-	      }
-	    }
-	  }, {
-	    key: 'registerObject',
-	    value: function registerObject(box3DObject, runtimeData) {
-
-	      if (!this.meshRegistry[runtimeData.id]) {
-	        this.meshRegistry[runtimeData.id] = {
-	          box3DEntity: box3DObject,
-	          runtimeData: runtimeData,
-	          prevMaterial: null,
-	          pickingMaterial: new THREE.ShaderMaterial(this.pickingMaterialDef)
-	        };
-	        //Array for fast iteration
-	        this.meshList.push(this.meshRegistry[runtimeData.id]);
-	        this.meshRegistry[runtimeData.id].index = this.meshList.length - 1;
-	        var material = this.meshRegistry[runtimeData.id].pickingMaterial;
-	        material.uniforms = THREE.UniformsUtils.clone(this.pickingMaterialDef.uniforms);
-	        material.uniforms.color.value = new THREE.Color(runtimeData.id);
-
-	        if (runtimeData instanceof THREE.SkinnedMesh) {
-	          material.skinning = true;
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'unregisterObject',
-	    value: function unregisterObject(box3DObject, runtimeData) {
-	      if (runtimeData) {
-	        //remove the enitity data from the pick history, if it's there
-	        this.removeFromHistory(runtimeData.id);
-	        //The meshUnloaded event should fire just before the runtimeData is deleted.
-	        if (this.meshRegistry[runtimeData.id]) {
-	          this.meshRegistry[runtimeData.id].box3DEntity = null;
-	          this.meshRegistry[runtimeData.id].pickingMaterial.dispose();
-	          this.meshList.splice(this.meshRegistry[runtimeData.id].index, 1);
-	          delete this.meshRegistry[runtimeData.id];
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'registerMesh',
-	    value: function registerMesh(veroldMesh) {
-	      //When the THREE.Mesh is created, register it so that it can be selected.
-	      veroldMesh.when('loadBase', function (mesh) {
-	        this.registerObject(mesh, mesh.runtimeData);
-	      }, this);
-	    }
-	  }, {
-	    key: 'unregisterMesh',
-	    value: function unregisterMesh(veroldMesh) {
-	      if (veroldMesh) {
-	        this.unregisterObject(veroldMesh.runtimeData);
-	      }
-	    }
-	  }, {
-	    key: 'getThreeObjects',
-	    value: function getThreeObjects(objects) {
-	      var sceneObjects = [];
-	      _lodash2.default.each(objects, function (object) {
-	        if (object && object.runtimeData) {
-	          sceneObjects.push(object.runtimeData);
-	        }
-	      });
-
-	      return sceneObjects;
-	    }
-	  }, {
-	    key: 'touchPickNoDrag',
-	    value: function touchPickNoDrag(event, callback) {
-	      //Check drag state
-	      if (!this.getInput().touchDragStatePrevious) {
-	        this.touchPick(event, callback);
-	      }
-	    }
-	  }, {
-	    key: 'touchPick',
-	    value: function touchPick(event, callback) {
-
-	      if (!this.isEnabled()) {
-	        return;
-	      }
-
-	      // if ( this.getInput().touchPosition.x ) {
-	      var x = this.getInput().touchPosition.x;
-	      var y = this.getInput().touchPosition.y;
-
-	      var mesh = this.pickMesh(x, y);
-	      if (mesh) {
-
-	        mesh.trigger('pick');
-	        var parent = mesh.getParentObject();
-	        while (parent) {
-	          parent.trigger('pick');
-	          parent = parent.getParentObject();
-	        }
-	        if (_lodash2.default.isFunction(callback)) {
-	          callback(mesh);
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'pickNoDrag',
-	    value: function pickNoDrag(event, callback) {
-	      //Check drag state
-	      if (!this.getInput().mouseDragStatePrevious[event.button]) {
-	        this.pick(event, callback);
-	      }
-	    }
-	  }, {
-	    key: 'pick',
-	    value: function pick(event, callback) {
-	      if (!this.isEnabled()) {
-	        return;
-	      }
-	      if (this.pickTrigger.substr(0, 4) === 'left') {
-	        if (event.button !== 0) {
-	          return;
-	        }
-	      } else if (this.pickTrigger.substr(0, 4) === 'right') {
-	        if (event.button !== 2) {
-	          return;
-	        }
-	      } else if (event.button !== 1) {
-	        return;
-	      }
-	      var x = event.clientX;
-	      var y = event.clientY;
-	      var mesh = this.pickMesh(x, y);
-	      if (mesh) {
-	        mesh.trigger('pick');
-	        var parent = mesh.getParentObject();
-	        while (parent) {
-	          parent.trigger('pick');
-	          parent = parent.getParentObject();
-	        }
-	        if (_lodash2.default.isFunction(callback)) {
-	          callback(mesh);
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'hoverUpdate',
-	    value: function hoverUpdate() {
-	      if (!this.isEnabled()) {
-	        return;
-	      }
-	      if (this.currentFrame < this.hoverFrameSkip) {
-	        this.currentFrame++;
-	        return;
-	      }
-	      this.currentFrame = 0;
-	      var x = this.getInput().mousePosition.x;
-	      var y = this.getInput().mousePosition.y;
-	      var parent;
-	      var mesh = this.pickMesh(x, y);
-	      if (mesh !== this.currentHoverObject) {
-	        if (this.currentHoverObject) {
-
-	          this.currentHoverObject.trigger('endHover');
-	          parent = this.currentHoverObject.getParentObject();
-	          while (parent) {
-	            parent.trigger('endHover');
-	            parent = parent.getParentObject();
-	          }
-	        }
-	        if (mesh) {
-	          this.currentHoverObject = mesh;
-
-	          mesh.trigger('beginHover');
-	          parent = mesh.getParentObject();
-	          while (parent) {
-	            parent.trigger('beginHover');
-	            parent = parent.getParentObject();
-	          }
-	        } else {
-	          this.currentHoverObject = null;
-	        }
-	      }
-	    }
-	  }, {
-	    key: 'pickMesh',
-	    value: function pickMesh(x, y) {
-
-	      var that = this;
-	      var scenes = this.getRuntime().getAssetsByType('scene');
-	      var i;
-	      var pickedMesh = null;
-	      _lodash2.default.each(scenes, function (scene) {
-	        var cameras = scene.getObjectsByType('camera');
-
-	        var renderViews = [];
-	        _lodash2.default.each(cameras, function (camera) {
-	          var renderViewComponents = camera.getComponentsByScriptId('render_view_component');
-	          _lodash2.default.each(renderViewComponents, function (renderViewComponent) {
-	            if (renderViewComponent.isEnabled()) {
-	              if (renderViews.length > 0) {
-	                for (i = 0; i < renderViews.length; i++) {
-	                  var renderView = renderViews[i];
-	                  if (renderViewComponent.renderGroup >= renderView.renderGroup) {
-	                    renderViews.splice(i, 0, renderViewComponent);
-	                    break;
-	                  }
-	                }
-	              } else {
-	                renderViews.push(renderViewComponent);
-	              }
-	            }
-	          });
-	        }, this);
-
-	        for (i = 0; i < renderViews.length; i++) {
-	          var renderView = renderViews[i];
-	          var canvas_height = that.getRenderer().getHeight();
-	          var viewport_offset = canvas_height - renderView._height - renderView._y;
-	          //Get the percentage x,y positions of the mouse on the viewport
-	          var mouseX = (x - renderView._x) / renderView._width;
-	          var mouseY = (y - viewport_offset) / renderView._height;
-
-	          // pickedMesh = this.doRaycastPick( scene, renderView.box3DEntity, mouseX, mouseY );
-	          pickedMesh = this.doGPUPick(scene, renderView.box3DEntity, mouseX, mouseY);
-	          if (pickedMesh) {
-	            return;
-	          }
-	        }
-	      }, this);
-
-	      return pickedMesh;
-	    }
-	  }, {
-	    key: 'doRaycastPick',
-	    value: function doRaycastPick(scene, camera, mouseX, mouseY) {
-	      var x = mouseX * 2 - 1;
-	      var y = -mouseY * 2 + 1;
-
-	      var vector = new THREE.Vector3(x, y, 0.5);
-
-	      vector.unproject(camera.runtimeData);
-
-	      var raycaster = new THREE.Raycaster(camera.runtimeData.position, vector.sub(camera.runtimeData.position).normalize());
-
-	      var sceneObjects = this.getThreeObjects(scene.getObjects());
-	      var intersections = raycaster.intersectObjects(sceneObjects, false);
-
-	      if (intersections.length > 0) {
-	        for (var i = 0; i < intersections.length; i++) {
-	          var parent = intersections[i].object.parent;
-	          var entityId = intersections[i].object.id;
-	          var isVisible = true;
-	          if (!intersections[i].object.visible) {
-	            isVisible = false;
-	            continue;
-	          }
-	          while (parent) {
-
-	            if (!parent.visible) {
-	              isVisible = false;
-	              break;
-	            }
-
-	            parent = parent.parent;
-	          }
-
-	          if (isVisible) {
-	            return this.meshRegistry[entityId].box3DEntity;
-	          }
-	        }
-	      }
-	      return null;
-	    }
-	  }, {
-	    key: 'doGPUPick',
-	    value: function doGPUPick(scene, camera, mouseX, mouseY) {
-
-	      if (mouseX < 0.0 || mouseY < 0.0 || mouseX > 1.0 || mouseY > 1.0) {
-	        return null;
-	      }
-
-	      var i = 0;
-	      var material;
-	      for (i = 0; i < this.meshList.length; i++) {
-	        if (this.meshList[i].runtimeData) {
-	          material = this.meshList[i].runtimeData.material;
-	          this.meshList[i].prevMaterial = material;
-	          this.meshList[i].runtimeData.material = this.meshList[i].pickingMaterial;
-	        }
-	      }
-	      var renderer = this.getThreeRenderer();
-	      var currentShadowMapEnabled = renderer.shadowMap.enabled;
-	      renderer.shadowMap.enabled = false;
-	      // renderer.enableScissorTest( true );
-	      renderer.setViewport(0, 0, this.pickingTexture.width, this.pickingTexture.height);
-	      //render the picking scene off-screen
-	      var gl = renderer.getContext();
-	      renderer.render(scene.runtimeData, camera.runtimeData, this.pickingTexture, true);
-
-	      //Return materials to their previous state
-	      for (i = 0; i < this.meshList.length; i++) {
-	        if (this.meshList[i].runtimeData) {
-	          this.meshList[i].runtimeData.material = this.meshList[i].prevMaterial;
-	        }
-	      }
-
-	      var pixelBuffer = new Uint8Array(4);
-	      //read the pixel under the mouse from the texture
-	      gl.readPixels(mouseX * this.pickingTexture.width, this.pickingTexture.height * (1.0 - mouseY), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer);
-
-	      //interpret the pixel as an ID
-	      var id = pixelBuffer[0] << 16 | pixelBuffer[1] << 8 | pixelBuffer[2];
-
-	      renderer.shadowMap.enabled = currentShadowMapEnabled;
-	      renderer.setRenderTarget(null);
-
-	      if (this.meshRegistry[id]) {
-	        var entityId = this.meshRegistry[id].box3DEntity.id;
-	        return this.getRuntime().getEntityById(entityId);
-	      }
-	      return null;
 	    }
 	  }]);
 
-	  return ObjectPicker;
+	  return AudioListener;
 	}(_Box3DComponent3.default);
 
-	exports.default = ObjectPicker;
+	exports.default = AudioListener;
 
 /***/ },
 /* 27 */
@@ -68773,7 +64112,7 @@
 	    }
 
 	    /**
-	     * Enables the component. Fires a 'enable' event on the component and calls
+	     * Enables the component. Fires an 'enable' event on the component and calls
 	     * the component's 'onEnable' function.
 	     * @public
 	     * @method enable
@@ -69225,12 +64564,35 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
-	 * @vid audio_listener
-	 * @vname Audio Listener
+	 * @vid audio_source
+	 * @vname Audio Source
 	 * @vcategory Audio
-	 * @vdescription Audio listener for 3D, positional sound effects
+	 * @vdescription Controls playback of audio assets
+	 * @vattr Float gain  { 'description': 'Volume control', 'default': 1.0, 'min': 0.0, 'max': 100.0 }
+	 * @vattr Boolean autoPlay { 'description': 'Play the audio once loaded', 'default': true }
+	 * @vattr Boolean loop { 'description': 'Continuously replay the audio', 'default': true }
+	 * @vattr Boolean preload { 'description': 'Load the audio when the component is initialized',
+	 *   'default': true }
+	 * @vattr Boolean positional { 'description': 'Enable/disable 3D, positional audio effects',
+	 *   'default': false }
+	 * @vattr Boolean stream { 'description': 'Stream the audio', 'default': false }
+	 * @vattr Asset asset {
+	 *  'description': 'Audio or video asset',
+	 *  'default': null,
+	 *  'type': 'asset',
+	 *  'filter': { 'audio': true, 'video': true }
+	 * }
+	 * @vevent local playAudio {'scope': 'local', 'action': true, 'category': 'Audio', 'parameters': [
+	 *   {'name': 'offset', 'type': 'f', 'description': 'Defined in seconds', 'default': 0}
+	 * ]}
+	 * @vevent local pauseAudio {'scope': 'local', 'action': true, 'category': 'Audio',
+	 *   'parameters': []}
+	 * @vevent local stopAudio {'scope': 'local', 'action': true, 'category': 'Audio',
+	 *   'parameters': []}
+	 * @vevent local toggleAudio {'scope': 'local', 'action': true, 'category': 'Audio',
+	 *   'parameters': []}
 	 */
-
+	/* global Box3D */
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -69261,29 +64623,323 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var AudioListener = function (_Box3DComponent) {
-	  _inherits(AudioListener, _Box3DComponent);
+	var AudioSource = function (_Box3DComponent) {
+	  _inherits(AudioSource, _Box3DComponent);
 
-	  function AudioListener() {
-	    _classCallCheck(this, AudioListener);
+	  function AudioSource() {
+	    _classCallCheck(this, AudioSource);
 
-	    var _this = _possibleConstructorReturn(this, (AudioListener.__proto__ || Object.getPrototypeOf(AudioListener)).call(this));
+	    var _this = _possibleConstructorReturn(this, (AudioSource.__proto__ || Object.getPrototypeOf(AudioSource)).call(this));
 
+	    _this.gainNode = null;
+	    _this.sourceNode = null;
+	    _this.pannerNode = null;
 	    _this.context = null;
+	    _this.buffer = null;
+	    _this.startTime = 0;
+	    _this.playOffset = 0;
+	    _this.state = 'stopped';
+	    _this.element = null;
+	    _this.isVideo = false;
 	    return _this;
 	  }
 
-	  /** @inheritdoc */
+	  _createClass(AudioSource, [{
+	    key: 'freeAudioGraph',
+	    value: function freeAudioGraph() {
+	      if (this.element) {
+	        this.element.pause();
+	        this.element.currentTime = 0;
+	      }
 
+	      if (this.sourceNode) {
+	        // If sourceNode is an AudioBufferSourceNode, stop it first.
+	        if (!this.stream) {
+	          this.sourceNode.stop(0);
+	        }
 
-	  _createClass(AudioListener, [{
+	        this.sourceNode.disconnect();
+	        this.sourceNode = null;
+	      }
+
+	      if (this.gainNode) {
+	        this.gainNode.disconnect();
+	      }
+
+	      if (this.pannerNode) {
+	        this.pannerNode.disconnect();
+	      }
+	    }
+	  }, {
+	    key: 'getCurrentTime',
+	    value: function getCurrentTime() {
+	      if (this.state === 'playing') {
+	        if (this.element) {
+	          return this.element.currentTime;
+	        } else if (this.context) {
+	          return this.context.currentTime - this.startTime;
+	        }
+	      }
+
+	      return this.playOffset;
+	    }
+	  }, {
+	    key: 'getGain',
+	    value: function getGain() {
+	      return this.gain;
+	    }
+	  }, {
+	    key: 'getState',
+	    value: function getState() {
+	      return this.state;
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
 	    key: 'onStartup',
 	    value: function onStartup() {
 	      this.context = this.getEntity().box3DRuntime.getAudioContext();
 
-	      if (!this.context) {
-	        _log2.default.warn('Failed to create Web Audio context.');
-	        return;
+	      if (this.context) {
+	        this.gainNode = this.context.createGain();
+	        this.pannerNode = this.context.createPanner();
+	      } else {
+	        _log2.default.warn('No audio context, using fallback.');
+	        this.stream = true; // Must stream via an audio element.
+	        this.positional = false; // Positional audio not supported.
+	      }
+
+	      // Always stream video assets.
+	      this.isVideo = this.asset instanceof Box3D.VideoAsset;
+	      if (this.isVideo) {
+	        this.stream = true;
+	      }
+
+	      if (this.autoPlay) {
+	        this.play();
+	      } else if (this.preload) {
+	        this.load(function (err) {
+	          if (err) {
+	            _log2.default.warn(err);
+	          }
+	        });
+	      }
+
+	      this.listenTo(this.getEntity(), 'playAudio', this.play);
+	      this.listenTo(this.getEntity(), 'pauseAudio', this.pause);
+	      this.listenTo(this.getEntity(), 'stopAudio', this.stop);
+	      this.listenTo(this.getEntity(), 'toggleAudio', this.toggle);
+	    }
+	  }, {
+	    key: 'initAudioGraph',
+	    value: function initAudioGraph(fn) {
+	      var that = this;
+
+	      this.load(function (err, source) {
+	        if (err) {
+	          return fn(err);
+	        } else if (!that.context) {
+	          return fn(null, null);
+	        }
+
+	        var nodes = [];
+
+	        if (that.stream) {
+	          that.sourceNode = that.context.createMediaElementSource(source);
+	        } else {
+	          that.sourceNode = that.context.createBufferSource();
+	          that.sourceNode.buffer = source;
+	        }
+
+	        nodes.push(that.sourceNode);
+	        nodes.push(that.gainNode);
+
+	        if (that.positional) {
+	          nodes.push(that.pannerNode);
+	        }
+
+	        nodes.push(that.context.destination);
+
+	        for (var iNode = 1; iNode < nodes.length; ++iNode) {
+	          nodes[iNode - 1].connect(nodes[iNode]);
+	        }
+
+	        fn(null, that.sourceNode);
+	      });
+	    }
+	  }, {
+	    key: 'isLoop',
+	    value: function isLoop() {
+	      return this.loop;
+	    }
+	  }, {
+	    key: 'isPaused',
+	    value: function isPaused() {
+	      return this.state === 'paused';
+	    }
+	  }, {
+	    key: 'isPlaying',
+	    value: function isPlaying() {
+	      return this.state === 'playing';
+	    }
+	  }, {
+	    key: 'isStopped',
+	    value: function isStopped() {
+	      return this.state === 'stopped';
+	    }
+	  }, {
+	    key: 'load',
+	    value: function load(fn) {
+	      var that = this;
+
+	      // Return the element or buffer, if they have already been created.
+	      if (this.stream && this.element) {
+	        return fn(null, this.element);
+	      } else if (!this.stream && this.buffer) {
+	        return fn(null, this.buffer);
+	      }
+
+	      if (!this.asset) {
+	        return fn(new Error('No audio asset'));
+	      }
+
+	      // If we are streaming, load the audio asset and reference the audio or video
+	      // element. If we aren't streaming, load the entire file into an audio buffer.
+	      if (this.stream) {
+	        this.asset.load({
+	          load: function load(asset) {
+	            if (!asset) {
+	              return fn(new Error('Error loading audio/video file'));
+	            }
+
+	            if (that.isVideo) {
+	              that.element = asset.runtimeData.image;
+	            } else {
+	              that.element = asset.runtimeData;
+	            }
+
+	            fn(null, that.element);
+	          } });
+	      } else {
+	        if (!this.context) {
+	          return fn(new Error('No Web Audio context'));
+	        }
+
+	        var xhr = new XMLHttpRequest();
+
+	        xhr.open('GET', this.asset.getResourcePaths({ sampleRate: 44100 })[0]);
+	        xhr.responseType = 'arraybuffer';
+
+	        xhr.onreadystatechange = function () {
+	          if (xhr.readyState === 4) {
+	            if (that.buffer) {
+	              return fn(null, that.buffer);
+	            }
+
+	            if (xhr.status === 200) {
+	              that.context.decodeAudioData(this.response, function (buffer) {
+	                that.buffer = buffer;
+	                fn(null, that.buffer);
+	              }, function (err) {
+	                fn(err);
+	              });
+	            } else {
+	              fn(new Error('Error loading audio file'));
+	            }
+	          }
+	        };
+
+	        xhr.send();
+	      }
+	    }
+	  }, {
+	    key: 'pause',
+	    value: function pause() {
+	      if (this.state === 'playing') {
+	        // The order of these function calls is important: getCurrentTime() must be
+	        // called while state is 'playing' and before freeAudioGraph().
+	        this.playOffset = this.getCurrentTime();
+	        this.state = 'paused';
+	        this.freeAudioGraph();
+	      }
+	    }
+	  }, {
+	    key: 'play',
+	    value: function play(offset) {
+	      if (this.state === 'paused' || this.state === 'stopped') {
+	        var that = this;
+
+	        // Add the specified offset to the current play offset.
+	        offset = offset !== undefined ? offset : 0;
+	        this.playOffset += offset;
+
+	        this.initAudioGraph(function (err) {
+	          if (err) {
+	            _log2.default.warn('Error playing audio: ' + err);
+	            return;
+	          }
+
+	          // Update the gain and loop settings.
+	          that.setGain(that.gain);
+	          that.setLoop(that.loop);
+
+	          // If we are streaming, play the audio/video element; otherwise, play the
+	          // buffer source node.
+	          if (that.stream) {
+	            that.element.currentTime = that.playOffset;
+	            that.element.play();
+	          } else if (that.context) {
+	            that.startTime = that.context.currentTime;
+	            that.sourceNode.start(0, that.playOffset);
+	          } else {
+	            _log2.default.warn('No Web Audio context.');
+	          }
+
+	          that.state = 'playing';
+	        });
+	      }
+	    }
+	  }, {
+	    key: 'setGain',
+	    value: function setGain(gain) {
+	      this.gain = gain;
+
+	      // If we have a gain node, set the gain on it; otherwise, set the gain on the
+	      // audio/video element.
+	      if (this.gainNode) {
+	        this.gainNode.gain.value = this.gain;
+	      } else if (this.element) {
+	        this.element.volume = this.gain;
+	      }
+	    }
+	  }, {
+	    key: 'setLoop',
+	    value: function setLoop(loop) {
+	      this.loop = loop;
+
+	      if (this.element) {
+	        this.element.loop = this.loop;
+	      } else if (this.sourceNode) {
+	        this.sourceNode.loop = this.loop;
+	      }
+	    }
+	  }, {
+	    key: 'stop',
+	    value: function stop() {
+	      if (this.state === 'playing' || this.state === 'paused') {
+	        this.playOffset = 0;
+	        this.state = 'stopped';
+	        this.freeAudioGraph();
+	      }
+	    }
+	  }, {
+	    key: 'toggle',
+	    value: function toggle() {
+	      if (this.state === 'playing') {
+	        this.pause();
+	      } else {
+	        this.play();
 	      }
 	    }
 
@@ -69292,22 +64948,21 @@
 	  }, {
 	    key: 'onUpdate',
 	    value: function onUpdate() {
-	      if (this.hasRuntimeData() && this.context) {
+	      if (this.hasRuntimeData() && this.positional) {
 	        var xform = this.getRuntimeData().matrixWorld,
 	            objPos = new THREE.Vector3(0, 0, 0).applyMatrix4(xform),
-	            objDir = new THREE.Vector3(0, 0, -1).applyMatrix4(xform).sub(objPos).normalize(),
-	            objUp = new THREE.Vector3(0, 1, 0).applyMatrix4(xform).sub(objPos).normalize();
+	            objDir = new THREE.Vector3(0, 0, 1).applyMatrix4(xform).sub(objPos).normalize();
 
-	        this.context.listener.setPosition(objPos.x, objPos.y, objPos.z);
-	        this.context.listener.setOrientation(objDir.x, objDir.y, objDir.z, objUp.x, objUp.y, objUp.z);
+	        this.pannerNode.setPosition(objPos.x, objPos.y, objPos.z);
+	        this.pannerNode.setOrientation(objDir.x, objDir.y, objDir.z);
 	      }
 	    }
 	  }]);
 
-	  return AudioListener;
+	  return AudioSource;
 	}(_Box3DComponent3.default);
 
-	exports.default = AudioListener;
+	exports.default = AudioSource;
 
 /***/ },
 /* 30 */
@@ -75228,35 +70883,43 @@
 /* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/* eslint-disable */
 	/**
-	 * @vid audio_source
-	 * @vname Audio Source
-	 * @vcategory Audio
-	 * @vdescription Controls playback of audio assets
-	 * @vattr Float gain  { 'description': 'Volume control', 'default': 1.0, 'min': 0.0, 'max': 100.0 }
-	 * @vattr Boolean autoPlay { 'description': 'Play the audio once loaded', 'default': true }
-	 * @vattr Boolean loop { 'description': 'Continuously replay the audio', 'default': true }
-	 * @vattr Boolean preload { 'description': 'Load the audio when the component is initialized',
-	 *   'default': true }
-	 * @vattr Boolean positional { 'description': 'Enable/disable 3D, positional audio effects',
-	 *   'default': false }
-	 * @vattr Boolean stream { 'description': 'Stream the audio', 'default': false }
-	 * @vattr Asset asset {
-	 *  'description': 'Audio or video asset',
-	 *  'default': null,
-	 *  'type': 'asset',
-	 *  'filter': { 'audio': true, 'video': true }
+	 * @vid object_picker
+	 * @vname Object Picker
+	 * @vfilter Scene
+	 * @vcategory General
+	 * @vattr Dropdown pickTrigger {
+	 *   description: 'What mouse action will trigger the pick?',
+	 *   default: 'leftMouseClick',
+	 *   options: {
+	 *     'Left Mouse Click': 'leftMouseClick',
+	 *     'Middle Mouse Click': 'middleMouseClick',
+	 *     'Right Mouse Click': 'rightMouseClick',
+	 *     'Left Mouse Down': 'leftMouseDown',
+	 *     'Middle Mouse Down': 'middleMouseDown',
+	 *     'Right Mouse Down': 'rightMouseDown',
+	 *     'Left Mouse Up': 'leftMouseUp',
+	 *     'Middle Mouse Up': 'middleMouseUp',
+	 *     'Right Mouse Up': 'rightMouseUp'
+	 *   }
 	 * }
-	 * @vevent local playAudio {'scope': 'local', 'action': true, 'category': 'Audio', 'parameters': [
-	 *   {'name': 'offset', 'type': 'f', 'description': 'Defined in seconds', 'default': 0}
-	 * ]}
-	 * @vevent local pauseAudio {'scope': 'local', 'action': true, 'category': 'Audio',
-	 *   'parameters': []}
-	 * @vevent local stopAudio {'scope': 'local', 'action': true, 'category': 'Audio',
-	 *   'parameters': []}
-	 * @vevent local toggleAudio {'scope': 'local', 'action': true, 'category': 'Audio',
-	 *   'parameters': []}
+	 * @vattr Boolean enableHoverByDefault {
+	 *   default: false,
+	 *   advanced: true,
+	 *   description: 'Enable hover detection when mouse cursor is over a mesh. Note that this has a potential performance impact.'
+	 * }
+	 * @vattr Integer hoverFrameSkip {
+	 *   description: 'Skip this many frames inbetween hover checks.',
+	 *   default: 1,
+	 *   min: 0,
+	 *   max: 60
+	 * }
+	 * @vevent other pick { action: false, category: 'General', parameters: [] }
+	 * @vevent other beginHover { action: false, category: 'General', parameters: [] }
+	 * @vevent other endHover { action: false, category: 'General', parameters: []}
 	 */
+	/* eslint-enable */
 	/* global Box3D */
 	'use strict';
 
@@ -75266,21 +70929,21 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _log = __webpack_require__(7);
-
-	var _log2 = _interopRequireDefault(_log);
-
 	var _three = __webpack_require__(10);
 
 	var THREE = _interopRequireWildcard(_three);
+
+	var _lodash = __webpack_require__(4);
+
+	var _lodash2 = _interopRequireDefault(_lodash);
 
 	var _Box3DComponent2 = __webpack_require__(27);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -75288,75 +70951,35 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var AudioSource = function (_Box3DComponent) {
-	  _inherits(AudioSource, _Box3DComponent);
+	var ObjectPicker = function (_Box3DComponent) {
+	  _inherits(ObjectPicker, _Box3DComponent);
 
-	  function AudioSource() {
-	    _classCallCheck(this, AudioSource);
+	  function ObjectPicker() {
+	    _classCallCheck(this, ObjectPicker);
 
-	    var _this = _possibleConstructorReturn(this, (AudioSource.__proto__ || Object.getPrototypeOf(AudioSource)).call(this));
+	    var _this = _possibleConstructorReturn(this, (ObjectPicker.__proto__ || Object.getPrototypeOf(ObjectPicker)).call(this));
 
-	    _this.gainNode = null;
-	    _this.sourceNode = null;
-	    _this.pannerNode = null;
-	    _this.context = null;
-	    _this.buffer = null;
-	    _this.startTime = 0;
-	    _this.playOffset = 0;
-	    _this.state = 'stopped';
-	    _this.element = null;
-	    _this.isVideo = false;
+	    _this.pickingMaterialDef = undefined;
+	    _this.meshRegistry = {};
+	    _this.meshList = [];
+	    _this.pickingTexture = undefined;
+	    _this.currentHoverObject = undefined;
+	    _this.currentFrame = 0;
+
+	    _this.enableHoverByDefault = false;
+	    _this.pickTrigger = null;
+	    _this.hoverEnabled = false;
 	    return _this;
 	  }
 
-	  _createClass(AudioSource, [{
-	    key: 'freeAudioGraph',
-	    value: function freeAudioGraph() {
-	      if (this.element) {
-	        this.element.pause();
-	        this.element.currentTime = 0;
-	      }
+	  /** @inheritdoc */
 
-	      if (this.sourceNode) {
-	        // If sourceNode is an AudioBufferSourceNode, stop it first.
-	        if (!this.stream) {
-	          this.sourceNode.stop(0);
-	        }
 
-	        this.sourceNode.disconnect();
-	        this.sourceNode = null;
-	      }
-
-	      if (this.gainNode) {
-	        this.gainNode.disconnect();
-	      }
-
-	      if (this.pannerNode) {
-	        this.pannerNode.disconnect();
-	      }
-	    }
-	  }, {
-	    key: 'getCurrentTime',
-	    value: function getCurrentTime() {
-	      if (this.state === 'playing') {
-	        if (this.element) {
-	          return this.element.currentTime;
-	        } else if (this.context) {
-	          return this.context.currentTime - this.startTime;
-	        }
-	      }
-
-	      return this.playOffset;
-	    }
-	  }, {
-	    key: 'getGain',
-	    value: function getGain() {
-	      return this.gain;
-	    }
-	  }, {
-	    key: 'getState',
-	    value: function getState() {
-	      return this.state;
+	  _createClass(ObjectPicker, [{
+	    key: 'onAwake',
+	    value: function onAwake() {
+	      this.getRuntime().once('endHover:bound', this._enableHover, this);
+	      this.getRuntime().once('beginHover:bound', this._enableHover, this);
 	    }
 
 	    /** @inheritdoc */
@@ -75364,270 +70987,492 @@
 	  }, {
 	    key: 'onStartup',
 	    value: function onStartup() {
-	      this.context = this.getEntity().box3DRuntime.getAudioContext();
+	      // this.box3DEntity is available
+	      this.getRuntime().on('resize', this.resize, this);
 
-	      if (this.context) {
-	        this.gainNode = this.context.createGain();
-	        this.pannerNode = this.context.createPanner();
-	      } else {
-	        _log2.default.warn('No audio context, using fallback.');
-	        this.stream = true; // Must stream via an audio element.
-	        this.positional = false; // Positional audio not supported.
+	      this.initPickingEvents();
+	      this.initPickingMaterial();
+	      this.initMeshRegistry();
+
+	      //listen to register objects
+	      this.getGlobalEvents().on('registerPickingObject', this.registerObject, this);
+	      this.getGlobalEvents().on('unregisterPickingObject', this.unregisterObject, this);
+
+	      this.resize();
+	    }
+
+	    /** @inheritdoc */
+
+	  }, {
+	    key: 'onShutdown',
+	    value: function onShutdown() {
+	      // make sure to clean up any events or other bindings that you have created
+	      // to avoid memory leaks
+	      this.uninitPickingEvents();
+
+	      this.getRuntime().off('resize', this.resize, this);
+	      this.getGlobalEvents().off('registerPickingObject', this.registerObject, this);
+	      this.getGlobalEvents().off('unregisterPickingObject', this.unregisterObject, this);
+
+	      // TODO - Listen to different events to make ObjectPicker work again.
+	      // var parentAsset = this.getEntity().getParentAsset();
+	      // parentAsset.off('meshLoaded', this.registerMesh, this);
+	      // parentAsset.off('meshUnloaded', this.unregisterMesh, this);
+	      if (this.pickingTexture) {
+	        this.pickingTexture.dispose();
+	        this.pickingTexture = undefined;
 	      }
-
-	      // Always stream video assets.
-	      this.isVideo = this.asset instanceof Box3D.VideoAsset;
-	      if (this.isVideo) {
-	        this.stream = true;
+	      for (var x in this.meshRegistry) {
+	        if (this.meshRegistry[x].pickingMaterial) {
+	          this.meshRegistry[x].pickingMaterial.dispose();
+	        }
 	      }
-
-	      if (this.autoPlay) {
-	        this.play();
-	      } else if (this.preload) {
-	        this.load(function (err) {
-	          if (err) {
-	            _log2.default.warn(err);
-	          }
-	        });
-	      }
-
-	      this.listenTo(this.getEntity(), 'playAudio', this.play);
-	      this.listenTo(this.getEntity(), 'pauseAudio', this.pause);
-	      this.listenTo(this.getEntity(), 'stopAudio', this.stop);
-	      this.listenTo(this.getEntity(), 'toggleAudio', this.toggle);
+	      this.meshRegistry = {};
+	      this.meshList = [];
 	    }
 	  }, {
-	    key: 'initAudioGraph',
-	    value: function initAudioGraph(fn) {
-	      var that = this;
-
-	      this.load(function (err, source) {
-	        if (err) {
-	          return fn(err);
-	        } else if (!that.context) {
-	          return fn(null, null);
-	        }
-
-	        var nodes = [];
-
-	        if (that.stream) {
-	          that.sourceNode = that.context.createMediaElementSource(source);
+	    key: 'initPickingEvents',
+	    value: function initPickingEvents() {
+	      if (this.pickTrigger.substr(-2) === 'Up') {
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().on('touchEnd', this.touchPick, this);
 	        } else {
-	          that.sourceNode = that.context.createBufferSource();
-	          that.sourceNode.buffer = source;
+	          this.getRuntime().on('mouseUp', this.pick, this);
 	        }
-
-	        nodes.push(that.sourceNode);
-	        nodes.push(that.gainNode);
-
-	        if (that.positional) {
-	          nodes.push(that.pannerNode);
+	      } else if (this.pickTrigger.substr(-4) === 'Down') {
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().on('touchStart', this.touchPick, this);
+	        } else {
+	          this.getRuntime().on('mouseDown', this.pick, this);
 	        }
-
-	        nodes.push(that.context.destination);
-
-	        for (var iNode = 1; iNode < nodes.length; ++iNode) {
-	          nodes[iNode - 1].connect(nodes[iNode]);
+	      } else if (this.pickTrigger.substr(-5) === 'Click') {
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().on('touchEnd', this.touchPickNoDrag, this);
+	        } else {
+	          this.getRuntime().on('mouseUp', this.pickNoDrag, this);
 	        }
-
-	        fn(null, that.sourceNode);
-	      });
-	    }
-	  }, {
-	    key: 'isLoop',
-	    value: function isLoop() {
-	      return this.loop;
-	    }
-	  }, {
-	    key: 'isPaused',
-	    value: function isPaused() {
-	      return this.state === 'paused';
-	    }
-	  }, {
-	    key: 'isPlaying',
-	    value: function isPlaying() {
-	      return this.state === 'playing';
-	    }
-	  }, {
-	    key: 'isStopped',
-	    value: function isStopped() {
-	      return this.state === 'stopped';
-	    }
-	  }, {
-	    key: 'load',
-	    value: function load(fn) {
-	      var that = this;
-
-	      // Return the element or buffer, if they have already been created.
-	      if (this.stream && this.element) {
-	        return fn(null, this.element);
-	      } else if (!this.stream && this.buffer) {
-	        return fn(null, this.buffer);
 	      }
 
-	      if (!this.asset) {
-	        return fn(new Error('No audio asset'));
+	      if (this.enableHoverByDefault && !Box3D.isMobile()) {
+	        this._enableHover();
 	      }
-
-	      // If we are streaming, load the audio asset and reference the audio or video
-	      // element. If we aren't streaming, load the entire file into an audio buffer.
-	      if (this.stream) {
-	        this.asset.load({
-	          load: function load(asset) {
-	            if (!asset) {
-	              return fn(new Error('Error loading audio/video file'));
-	            }
-
-	            if (that.isVideo) {
-	              that.element = asset.runtimeData.image;
-	            } else {
-	              that.element = asset.runtimeData;
-	            }
-
-	            fn(null, that.element);
-	          } });
+	    }
+	  }, {
+	    key: 'uninitPickingEvents',
+	    value: function uninitPickingEvents() {
+	      if (this.pickTrigger.substr(-2) === 'Up') {
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().off('touchEnd', this.touchPick, this);
+	        } else {
+	          this.getRuntime().off('mouseUp', this.pick, this);
+	        }
 	      } else {
-	        if (!this.context) {
-	          return fn(new Error('No Web Audio context'));
+	        if (Box3D.isMobile()) {
+	          this.getRuntime().off('touchStart', this.touchPick, this);
+	        } else {
+	          this.getRuntime().off('mouseDown', this.pick, this);
 	        }
-
-	        var xhr = new XMLHttpRequest();
-
-	        xhr.open('GET', this.asset.getResourcePaths({ sampleRate: 44100 })[0]);
-	        xhr.responseType = 'arraybuffer';
-
-	        xhr.onreadystatechange = function () {
-	          if (xhr.readyState === 4) {
-	            if (that.buffer) {
-	              return fn(null, that.buffer);
-	            }
-
-	            if (xhr.status === 200) {
-	              that.context.decodeAudioData(this.response, function (buffer) {
-	                that.buffer = buffer;
-	                fn(null, that.buffer);
-	              }, function (err) {
-	                fn(err);
-	              });
-	            } else {
-	              fn(new Error('Error loading audio file'));
-	            }
-	          }
-	        };
-
-	        xhr.send();
-	      }
-	    }
-	  }, {
-	    key: 'pause',
-	    value: function pause() {
-	      if (this.state === 'playing') {
-	        // The order of these function calls is important: getCurrentTime() must be
-	        // called while state is 'playing' and before freeAudioGraph().
-	        this.playOffset = this.getCurrentTime();
-	        this.state = 'paused';
-	        this.freeAudioGraph();
-	      }
-	    }
-	  }, {
-	    key: 'play',
-	    value: function play(offset) {
-	      if (this.state === 'paused' || this.state === 'stopped') {
-	        var that = this;
-
-	        // Add the specified offset to the current play offset.
-	        offset = offset !== undefined ? offset : 0;
-	        this.playOffset += offset;
-
-	        this.initAudioGraph(function (err) {
-	          if (err) {
-	            _log2.default.warn('Error playing audio: ' + err);
-	            return;
-	          }
-
-	          // Update the gain and loop settings.
-	          that.setGain(that.gain);
-	          that.setLoop(that.loop);
-
-	          // If we are streaming, play the audio/video element; otherwise, play the
-	          // buffer source node.
-	          if (that.stream) {
-	            that.element.currentTime = that.playOffset;
-	            that.element.play();
-	          } else if (that.context) {
-	            that.startTime = that.context.currentTime;
-	            that.sourceNode.start(0, that.playOffset);
-	          } else {
-	            _log2.default.warn('No Web Audio context.');
-	          }
-
-	          that.state = 'playing';
-	        });
-	      }
-	    }
-	  }, {
-	    key: 'setGain',
-	    value: function setGain(gain) {
-	      this.gain = gain;
-
-	      // If we have a gain node, set the gain on it; otherwise, set the gain on the
-	      // audio/video element.
-	      if (this.gainNode) {
-	        this.gainNode.gain.value = this.gain;
-	      } else if (this.element) {
-	        this.element.volume = this.gain;
-	      }
-	    }
-	  }, {
-	    key: 'setLoop',
-	    value: function setLoop(loop) {
-	      this.loop = loop;
-
-	      if (this.element) {
-	        this.element.loop = this.loop;
-	      } else if (this.sourceNode) {
-	        this.sourceNode.loop = this.loop;
-	      }
-	    }
-	  }, {
-	    key: 'stop',
-	    value: function stop() {
-	      if (this.state === 'playing' || this.state === 'paused') {
-	        this.playOffset = 0;
-	        this.state = 'stopped';
-	        this.freeAudioGraph();
-	      }
-	    }
-	  }, {
-	    key: 'toggle',
-	    value: function toggle() {
-	      if (this.state === 'playing') {
-	        this.pause();
-	      } else {
-	        this.play();
 	      }
 	    }
 
 	    /** @inheritdoc */
 
 	  }, {
-	    key: 'onUpdate',
-	    value: function onUpdate() {
-	      if (this.hasRuntimeData() && this.positional) {
-	        var xform = this.getRuntimeData().matrixWorld,
-	            objPos = new THREE.Vector3(0, 0, 0).applyMatrix4(xform),
-	            objDir = new THREE.Vector3(0, 0, 1).applyMatrix4(xform).sub(objPos).normalize();
-
-	        this.pannerNode.setPosition(objPos.x, objPos.y, objPos.z);
-	        this.pannerNode.setOrientation(objDir.x, objDir.y, objDir.z);
+	    key: 'onPostRender',
+	    value: function onPostRender() {
+	      if (this.enableHoverByDefault && !Box3D.isMobile()) {
+	        this.hoverUpdate();
 	      }
+	    }
+	  }, {
+	    key: 'initPickingMaterial',
+	    value: function initPickingMaterial() {
+	      this.pickingMaterialDef = {
+
+	        depthTest: true,
+	        depthWrite: true,
+	        transparent: false,
+	        side: THREE.DoubleSide,
+
+	        uniforms: {
+	          color: {
+	            type: 'c',
+	            value: 0xff0000
+	          }
+	        },
+
+	        vertexShader: [THREE.ShaderChunk['skinning_pars_vertex'], THREE.ShaderChunk['logdepthbuf_pars_vertex'], 'void main() {', THREE.ShaderChunk['skinbase_vertex'], THREE.ShaderChunk['skinnormal_vertex'], THREE.ShaderChunk['defaultnormal_vertex'], THREE.ShaderChunk['skinning_vertex'], THREE.ShaderChunk['project_vertex'], THREE.ShaderChunk['logdepthbuf_vertex'], '}'].join('\n'),
+
+	        fragmentShader: ['uniform vec3 color;', THREE.ShaderChunk['logdepthbuf_pars_fragment'], 'void main() {', THREE.ShaderChunk['logdepthbuf_fragment'], 'gl_FragColor = vec4( color, 1.0 );', '}'].join('\n')
+
+	      };
+	    }
+	  }, {
+	    key: 'initMeshRegistry',
+	    value: function initMeshRegistry() {
+	      var _this2 = this;
+
+	      // TODO - Listen to different events to make ObjectPicker work again.
+	      // var parentAsset = this.getEntity().getParentAsset();
+	      // parentAsset.on('meshLoaded', this.registerMesh, this);
+	      // parentAsset.on('meshUnloaded', this.unregisterMesh, this);
+
+	      this.getEntity().getParentObject().traverse(function (obj) {
+	        if (obj.type === 'mesh') {
+	          _this2.registerMesh(obj);
+	        }
+	      });
+	    }
+	  }, {
+	    key: '_enableHover',
+	    value: function _enableHover() {
+	      if (!this.hoverEnabled && !Box3D.isMobile()) {
+	        this.hoverEnabled = true;
+	      }
+	    }
+
+	    /**
+	    * reset the size of the texture used to test against geometry picking parameters
+	    * @method resize
+	    */
+
+	  }, {
+	    key: 'resize',
+	    value: function resize() {
+	      var oldPickingTexture = this.pickingTexture;
+	      var width = this.getRenderer().getWidth();
+	      var height = this.getRenderer().getHeight();
+	      this.pickingTexture = new THREE.WebGLRenderTarget(Math.floor(width / 4.0), Math.floor(height / 4.0), {
+	        minFilter: THREE.LinearFilter
+	      });
+	      this.pickingTexture.texture.generateMipmaps = false;
+	      if (oldPickingTexture) {
+	        oldPickingTexture.dispose();
+	      }
+	    }
+	  }, {
+	    key: 'registerObject',
+	    value: function registerObject(box3DObject, runtimeData) {
+
+	      if (!this.meshRegistry[runtimeData.id]) {
+	        this.meshRegistry[runtimeData.id] = {
+	          box3DEntity: box3DObject,
+	          runtimeData: runtimeData,
+	          prevMaterial: null,
+	          pickingMaterial: new THREE.ShaderMaterial(this.pickingMaterialDef)
+	        };
+	        //Array for fast iteration
+	        this.meshList.push(this.meshRegistry[runtimeData.id]);
+	        this.meshRegistry[runtimeData.id].index = this.meshList.length - 1;
+	        var material = this.meshRegistry[runtimeData.id].pickingMaterial;
+	        material.uniforms = THREE.UniformsUtils.clone(this.pickingMaterialDef.uniforms);
+	        material.uniforms.color.value = new THREE.Color(runtimeData.id);
+
+	        if (runtimeData instanceof THREE.SkinnedMesh) {
+	          material.skinning = true;
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'unregisterObject',
+	    value: function unregisterObject(box3DObject, runtimeData) {
+	      if (runtimeData) {
+	        //remove the enitity data from the pick history, if it's there
+	        this.removeFromHistory(runtimeData.id);
+	        //The meshUnloaded event should fire just before the runtimeData is deleted.
+	        if (this.meshRegistry[runtimeData.id]) {
+	          this.meshRegistry[runtimeData.id].box3DEntity = null;
+	          this.meshRegistry[runtimeData.id].pickingMaterial.dispose();
+	          this.meshList.splice(this.meshRegistry[runtimeData.id].index, 1);
+	          delete this.meshRegistry[runtimeData.id];
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'registerMesh',
+	    value: function registerMesh(veroldMesh) {
+	      //When the THREE.Mesh is created, register it so that it can be selected.
+	      veroldMesh.when('loadBase', function (mesh) {
+	        this.registerObject(mesh, mesh.runtimeData);
+	      }, this);
+	    }
+	  }, {
+	    key: 'unregisterMesh',
+	    value: function unregisterMesh(veroldMesh) {
+	      if (veroldMesh) {
+	        this.unregisterObject(veroldMesh.runtimeData);
+	      }
+	    }
+	  }, {
+	    key: 'getThreeObjects',
+	    value: function getThreeObjects(objects) {
+	      var sceneObjects = [];
+	      _lodash2.default.each(objects, function (object) {
+	        if (object && object.runtimeData) {
+	          sceneObjects.push(object.runtimeData);
+	        }
+	      });
+
+	      return sceneObjects;
+	    }
+	  }, {
+	    key: 'touchPickNoDrag',
+	    value: function touchPickNoDrag(event, callback) {
+	      //Check drag state
+	      if (!this.getInput().touchDragStatePrevious) {
+	        this.touchPick(event, callback);
+	      }
+	    }
+	  }, {
+	    key: 'touchPick',
+	    value: function touchPick(event, callback) {
+
+	      if (!this.isEnabled()) {
+	        return;
+	      }
+
+	      // if ( this.getInput().touchPosition.x ) {
+	      var x = this.getInput().touchPosition.x;
+	      var y = this.getInput().touchPosition.y;
+
+	      var mesh = this.pickMesh(x, y);
+	      if (mesh) {
+
+	        mesh.trigger('pick');
+	        var parent = mesh.getParentObject();
+	        while (parent) {
+	          parent.trigger('pick');
+	          parent = parent.getParentObject();
+	        }
+	        if (_lodash2.default.isFunction(callback)) {
+	          callback(mesh);
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'pickNoDrag',
+	    value: function pickNoDrag(event, callback) {
+	      //Check drag state
+	      if (!this.getInput().mouseDragStatePrevious[event.button]) {
+	        this.pick(event, callback);
+	      }
+	    }
+	  }, {
+	    key: 'pick',
+	    value: function pick(event, callback) {
+	      if (!this.isEnabled()) {
+	        return;
+	      }
+	      if (this.pickTrigger.substr(0, 4) === 'left') {
+	        if (event.button !== 0) {
+	          return;
+	        }
+	      } else if (this.pickTrigger.substr(0, 4) === 'right') {
+	        if (event.button !== 2) {
+	          return;
+	        }
+	      } else if (event.button !== 1) {
+	        return;
+	      }
+	      var x = event.clientX;
+	      var y = event.clientY;
+	      var mesh = this.pickMesh(x, y);
+	      if (mesh) {
+	        mesh.trigger('pick');
+	        var parent = mesh.getParentObject();
+	        while (parent) {
+	          parent.trigger('pick');
+	          parent = parent.getParentObject();
+	        }
+	        if (_lodash2.default.isFunction(callback)) {
+	          callback(mesh);
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'hoverUpdate',
+	    value: function hoverUpdate() {
+	      if (!this.isEnabled()) {
+	        return;
+	      }
+	      if (this.currentFrame < this.hoverFrameSkip) {
+	        this.currentFrame++;
+	        return;
+	      }
+	      this.currentFrame = 0;
+	      var x = this.getInput().mousePosition.x;
+	      var y = this.getInput().mousePosition.y;
+	      var parent;
+	      var mesh = this.pickMesh(x, y);
+	      if (mesh !== this.currentHoverObject) {
+	        if (this.currentHoverObject) {
+
+	          this.currentHoverObject.trigger('endHover');
+	          parent = this.currentHoverObject.getParentObject();
+	          while (parent) {
+	            parent.trigger('endHover');
+	            parent = parent.getParentObject();
+	          }
+	        }
+	        if (mesh) {
+	          this.currentHoverObject = mesh;
+
+	          mesh.trigger('beginHover');
+	          parent = mesh.getParentObject();
+	          while (parent) {
+	            parent.trigger('beginHover');
+	            parent = parent.getParentObject();
+	          }
+	        } else {
+	          this.currentHoverObject = null;
+	        }
+	      }
+	    }
+	  }, {
+	    key: 'pickMesh',
+	    value: function pickMesh(x, y) {
+
+	      var that = this;
+	      var scenes = this.getRuntime().getAssetsByType('scene');
+	      var i;
+	      var pickedMesh = null;
+	      _lodash2.default.each(scenes, function (scene) {
+	        var cameras = scene.getObjectsByType('camera');
+
+	        var renderViews = [];
+	        _lodash2.default.each(cameras, function (camera) {
+	          var renderViewComponents = camera.getComponentsByScriptId('render_view_component');
+	          _lodash2.default.each(renderViewComponents, function (renderViewComponent) {
+	            if (renderViewComponent.isEnabled()) {
+	              if (renderViews.length > 0) {
+	                for (i = 0; i < renderViews.length; i++) {
+	                  var renderView = renderViews[i];
+	                  if (renderViewComponent.renderGroup >= renderView.renderGroup) {
+	                    renderViews.splice(i, 0, renderViewComponent);
+	                    break;
+	                  }
+	                }
+	              } else {
+	                renderViews.push(renderViewComponent);
+	              }
+	            }
+	          });
+	        }, this);
+
+	        for (i = 0; i < renderViews.length; i++) {
+	          var renderView = renderViews[i];
+	          var canvas_height = that.getRenderer().getHeight();
+	          var viewport_offset = canvas_height - renderView._height - renderView._y;
+	          //Get the percentage x,y positions of the mouse on the viewport
+	          var mouseX = (x - renderView._x) / renderView._width;
+	          var mouseY = (y - viewport_offset) / renderView._height;
+
+	          // pickedMesh = this.doRaycastPick( scene, renderView.box3DEntity, mouseX, mouseY );
+	          pickedMesh = this.doGPUPick(scene, renderView.box3DEntity, mouseX, mouseY);
+	          if (pickedMesh) {
+	            return;
+	          }
+	        }
+	      }, this);
+
+	      return pickedMesh;
+	    }
+	  }, {
+	    key: 'doRaycastPick',
+	    value: function doRaycastPick(scene, camera, mouseX, mouseY) {
+	      var x = mouseX * 2 - 1;
+	      var y = -mouseY * 2 + 1;
+
+	      var vector = new THREE.Vector3(x, y, 0.5);
+
+	      vector.unproject(camera.runtimeData);
+
+	      var raycaster = new THREE.Raycaster(camera.runtimeData.position, vector.sub(camera.runtimeData.position).normalize());
+
+	      var sceneObjects = this.getThreeObjects(scene.getObjects());
+	      var intersections = raycaster.intersectObjects(sceneObjects, false);
+
+	      if (intersections.length > 0) {
+	        for (var i = 0; i < intersections.length; i++) {
+	          var parent = intersections[i].object.parent;
+	          var entityId = intersections[i].object.id;
+	          var isVisible = true;
+	          if (!intersections[i].object.visible) {
+	            isVisible = false;
+	            continue;
+	          }
+	          while (parent) {
+
+	            if (!parent.visible) {
+	              isVisible = false;
+	              break;
+	            }
+
+	            parent = parent.parent;
+	          }
+
+	          if (isVisible) {
+	            return this.meshRegistry[entityId].box3DEntity;
+	          }
+	        }
+	      }
+	      return null;
+	    }
+	  }, {
+	    key: 'doGPUPick',
+	    value: function doGPUPick(scene, camera, mouseX, mouseY) {
+
+	      if (mouseX < 0.0 || mouseY < 0.0 || mouseX > 1.0 || mouseY > 1.0) {
+	        return null;
+	      }
+
+	      var i = 0;
+	      var material;
+	      for (i = 0; i < this.meshList.length; i++) {
+	        if (this.meshList[i].runtimeData) {
+	          material = this.meshList[i].runtimeData.material;
+	          this.meshList[i].prevMaterial = material;
+	          this.meshList[i].runtimeData.material = this.meshList[i].pickingMaterial;
+	        }
+	      }
+	      var renderer = this.getThreeRenderer();
+	      var currentShadowMapEnabled = renderer.shadowMap.enabled;
+	      renderer.shadowMap.enabled = false;
+	      // renderer.enableScissorTest( true );
+	      renderer.setViewport(0, 0, this.pickingTexture.width, this.pickingTexture.height);
+	      //render the picking scene off-screen
+	      var gl = renderer.getContext();
+	      renderer.render(scene.runtimeData, camera.runtimeData, this.pickingTexture, true);
+
+	      //Return materials to their previous state
+	      for (i = 0; i < this.meshList.length; i++) {
+	        if (this.meshList[i].runtimeData) {
+	          this.meshList[i].runtimeData.material = this.meshList[i].prevMaterial;
+	        }
+	      }
+
+	      var pixelBuffer = new Uint8Array(4);
+	      //read the pixel under the mouse from the texture
+	      gl.readPixels(mouseX * this.pickingTexture.width, this.pickingTexture.height * (1.0 - mouseY), 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixelBuffer);
+
+	      //interpret the pixel as an ID
+	      var id = pixelBuffer[0] << 16 | pixelBuffer[1] << 8 | pixelBuffer[2];
+
+	      renderer.shadowMap.enabled = currentShadowMapEnabled;
+	      renderer.setRenderTarget(null);
+
+	      if (this.meshRegistry[id]) {
+	        var entityId = this.meshRegistry[id].box3DEntity.id;
+	        return this.getRuntime().getEntityById(entityId);
+	      }
+	      return null;
 	    }
 	  }]);
 
-	  return AudioSource;
+	  return ObjectPicker;
 	}(_Box3DComponent3.default);
 
-	exports.default = AudioSource;
+	exports.default = ObjectPicker;
 
 /***/ },
 /* 49 */
