@@ -106,7 +106,7 @@ export function fitDialogHeightInPage(annotatedElement, dialogEl, pageHeight, di
 
         const annotationsEl = dialogEl.querySelector('.annotation-container');
         annotationsEl.style.maxHeight = `${maxHeight}px`;
-        annotationsEl.style.overflow = 'scroll';
+        annotationsEl.style.overflowY = 'auto';
     }
 }
 

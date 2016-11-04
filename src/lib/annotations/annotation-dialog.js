@@ -288,7 +288,9 @@ class AnnotationDialog extends EventEmitter {
      * @protected
      */
     mouseenterHandler() {
-        annotatorUtil.showElement(this._element);
+        if (this._element.classList.contains(CLASS_HIDDEN)) {
+            annotatorUtil.showElement(this._element);
+        }
     }
 
     /**
