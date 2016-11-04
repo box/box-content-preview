@@ -78,10 +78,6 @@ class AnnotationDialog extends EventEmitter {
      * @returns {void}
      */
     show() {
-        // Reset hide timeout handler
-        clearTimeout(this._timeoutHandler);
-        this._timeoutHandler = null;
-
         // Position and show - we need to reposition every time since the DOM
         // could have changed from zooming
         this.position();
@@ -292,7 +288,7 @@ class AnnotationDialog extends EventEmitter {
      * @protected
      */
     mouseenterHandler() {
-        this.show();
+        annotatorUtil.showElement(this._element);
     }
 
     /**

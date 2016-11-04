@@ -40,13 +40,6 @@ describe('annotation-dialog', () => {
     });
 
     describe('show()', () => {
-        it('should clear the hide timeout handler', () => {
-            const clearTimeoutStub = sandbox.stub(window, 'clearTimeout');
-            annotationDialog.show();
-            expect(clearTimeoutStub).to.have.been.called;
-            expect(annotationDialog._timeoutHandler).to.be.null;
-        });
-
         it('should position the dialog', () => {
             const positionStub = sandbox.stub(annotationDialog, 'position');
             annotationDialog.show();
@@ -202,9 +195,9 @@ describe('annotation-dialog', () => {
 
     describe('mouseenterHandler()', () => {
         it('should clear the hide timeout', () => {
-            sandbox.stub(annotationDialog, 'show');
+            sandbox.stub(annotatorUtil, 'showElement');
             annotationDialog.mouseenterHandler();
-            expect(annotationDialog.show).to.have.been.called;
+            expect(annotatorUtil.showElement).to.have.been.called;
         });
     });
 
