@@ -785,8 +785,7 @@ describe('doc-base', () => {
                         id: 0
                     },
                     permissions: {
-                        can_annotate: true,
-                        can_delete: true
+                        can_annotate: true
                     }
                 },
                 location: {
@@ -802,19 +801,15 @@ describe('doc-base', () => {
         it('should allow annotations based on browser and permissions', () => {
             docBase.initAnnotations();
             expect(docBase.annotator._annotationService._canAnnotate).to.be.true;
-            expect(docBase.annotator._annotationService._canDelete).to.be.true;
 
             stubs.browser.returns(true);
             docBase.initAnnotations();
             expect(docBase.annotator._annotationService._canAnnotate).to.be.false;
-            expect(docBase.annotator._annotationService._canDelete).to.be.true;
 
             stubs.browser.returns(false);
             docBase.options.file.permissions.can_annotate = false;
-            docBase.options.file.permissions.can_delete = false;
             docBase.initAnnotations();
             expect(docBase.annotator._annotationService._canAnnotate).to.be.false;
-            expect(docBase.annotator._annotationService._canDelete).to.be.false;
         });
     });
 

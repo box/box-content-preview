@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-expressions */
 import Annotator from '../annotator';
 import * as constants from '../annotation-constants';
+import AnnotationService from '../annotation-service';
+
 
 let annotator;
 const sandbox = sinon.sandbox.create();
@@ -39,11 +41,14 @@ describe('annotator', () => {
 
             const unbindCustomStub = sandbox.stub(annotator, 'unbindCustomListenersOnThread');
             const unbindDOMStub = sandbox.stub(annotator, 'unbindDOMListeners');
+            const unbindCustomListenersOnService = sandbox.stub(annotator, 'unbindCustomListenersOnService');
+
 
             annotator.destroy();
 
             expect(unbindCustomStub).to.be.calledWith(thread);
             expect(unbindDOMStub).to.be.called;
+            expect(unbindCustomListenersOnService).to.be.called;
         });
     });
 
@@ -198,11 +203,14 @@ describe('annotator', () => {
     describe('setupAnnotations', () => {
         it('should initialize thread map and bind DOM listeners', () => {
             sandbox.stub(annotator, 'bindDOMListeners');
+            sandbox.stub(annotator, 'bindCustomListenersOnService');
+
 
             annotator.setupAnnotations();
 
             expect(Object.keys(annotator._threads).length === 0).to.be.true;
             expect(annotator.bindDOMListeners).to.have.been.called;
+            expect(annotator.bindCustomListenersOnService).to.have.been.called;
         });
     });
 
@@ -230,6 +238,56 @@ describe('annotator', () => {
         });
     });
 
+    describe('bindCustomListenersOnService', () => {
+        it('should do nothing if the service does not exist', () => {
+            annotator._annotationService = {
+                addListener: sandbox.stub()
+            };
+
+            annotator.bindCustomListenersOnService();
+            expect(annotator._annotationService.addListener).to.have.not.been.called;
+        });
+
+        it('should add an event listener', () => {
+            annotator._annotationService = new AnnotationService({
+                api: 'API',
+                fileID: 1,
+                token: 'someToken',
+                canAnnotate: true,
+                canDelete: true
+            });
+            const addListenerStub = sandbox.stub(annotator._annotationService, 'addListener');
+
+            annotator.bindCustomListenersOnService();
+            expect(addListenerStub).to.have.been.called;
+        });
+    });
+
+    describe('unbindCustomListenersOnService', () => {
+        it('should do nothing if the service does not exist', () => {
+            annotator._annotationService = {
+                removeListener: sandbox.stub()
+            };
+
+            annotator.unbindCustomListenersOnService();
+            expect(annotator._annotationService.removeListener).to.have.not.been.called;
+        });
+
+        it('should remove an event listener', () => {
+            annotator._annotationService = new AnnotationService({
+                api: 'API',
+                fileID: 1,
+                token: 'someToken',
+                canAnnotate: true,
+                canDelete: true
+            });
+            const removeListenerStub = sandbox.stub(annotator._annotationService, 'removeAllListeners');
+
+            annotator.unbindCustomListenersOnService();
+            expect(removeListenerStub).to.have.been.called;
+        });
+    });
+
     describe('bindCustomListenersOnThread', () => {
         it('should bind custom listeners on the thread', () => {
             const thread = {
@@ -240,8 +298,6 @@ describe('annotator', () => {
 
             expect(thread.addListener).to.have.been.calledWith('threaddeleted', sinon.match.func);
             expect(thread.addListener).to.have.been.calledWith('threadcleanup', sinon.match.func);
-            expect(thread.addListener).to.have.been.calledWith('annotationcreateerror', sinon.match.func);
-            expect(thread.addListener).to.have.been.calledWith('annotationdeleteerror', sinon.match.func);
         });
     });
 
@@ -255,8 +311,6 @@ describe('annotator', () => {
 
             expect(thread.removeAllListeners).to.have.been.calledWith('threaddeleted');
             expect(thread.removeAllListeners).to.have.been.calledWith('threadcleanup');
-            expect(thread.removeAllListeners).to.have.been.calledWith('annotationcreateerror');
-            expect(thread.removeAllListeners).to.have.been.calledWith('annotationdeleteerror');
         });
     });
 

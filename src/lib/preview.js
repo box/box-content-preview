@@ -13,7 +13,7 @@ import throttle from 'lodash.throttle';
 import getTokens from './tokens';
 import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid } from './file';
 import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
-import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_DELETE, PERMISSION_PREVIEW, API } from './constants';
+import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_PREVIEW, API } from './constants';
 
 const PREFETCH_COUNT = 4; // number of files to prefetch
 const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
@@ -645,7 +645,7 @@ class Preview extends EventEmitter {
             }
         }
 
-        if (checkPermission(this.file, PERMISSION_ANNOTATE) && checkPermission(this.file, PERMISSION_DELETE) && !Browser.isMobile()) {
+        if (checkPermission(this.file, PERMISSION_ANNOTATE) && !Browser.isMobile()) {
             if (checkFeature(this.viewer, 'isAnnotatable', 'point')) {
                 showAnnotateButton(this.viewer.getPointModeClickHandler());
             }

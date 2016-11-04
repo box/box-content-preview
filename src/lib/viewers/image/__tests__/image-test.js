@@ -56,8 +56,7 @@ describe('image.js', () => {
                     id: '1'
                 },
                 permissions: {
-                    can_annotate: true,
-                    can_delete: true
+                    can_annotate: true
                 }
             },
             viewerName: 'Image',

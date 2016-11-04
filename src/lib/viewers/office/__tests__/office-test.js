@@ -45,11 +45,14 @@ describe('office.js', () => {
 
         it('should load a xlsx file and set the shared name in src url on load event when the file is a shared link', (done) => {
             const office = new Office('.container', {
-                sharedLink: 'https://app.box.com/s/abcd'
+                sharedLink: 'https://app.box.com/s/abcd',
+                file: {
+                    id: '123'
+                }
             });
 
             office.on('load', () => {
-                assert.equal(office.iframeEl.src, 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?s=abcd');
+                assert.equal(office.iframeEl.src, 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?s=abcd&fileId=123');
                 done();
             });
 

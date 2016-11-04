@@ -443,11 +443,6 @@ class DocAnnotator extends Annotator {
     _highlightCreateHandler(event) {
         event.stopPropagation();
 
-        // Ensures user does not have view-only permissions on the file
-        if (!this._annotationService.canAnnotate || !this._annotationService.canDelete) {
-            return;
-        }
-
         // Determine if any highlight threads are pending and ignore the
         // creation of any new highlights
         const pendingThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_PENDING, constants.ANNOTATION_STATE_PENDING_ACTIVE);
