@@ -164,18 +164,15 @@ describe('box3d-renderer', () => {
     });
 
     describe('initBox3d()', () => {
-        describe('missing global Box3D OR Box3DResourceLoader', () => {
+        describe('missing global Box3D', () => {
             let box3D;
-            let resourceLoader;
 
             beforeEach(() => {
                 box3D = window.Box3D;
-                resourceLoader = window.Box3DResourceLoader;
             });
 
             afterEach(() => {
                 window.Box3D = box3D;
-                window.Box3DResourceLoader = resourceLoader;
             });
 
             it('should fail when no global Box3D present', (done) => {
@@ -187,20 +184,6 @@ describe('box3d-renderer', () => {
                 rejected.catch((err) => {
                     expect(err).to.be.an('error');
                     expect(err.message).to.equal('Missing Box3D');
-                    done();
-                });
-            });
-
-            it('should fail when no global Box3DResourceLoader present', (done) => {
-                window.Box3DResourceLoader = undefined;
-
-                const rejected = renderer.initBox3d();
-
-                expect(rejected).to.be.a('promise');
-
-                rejected.catch((err) => {
-                    expect(err).to.be.an('error');
-                    expect(err.message).to.equal('Missing Box3DResourceLoader');
                     done();
                 });
             });
@@ -247,7 +230,7 @@ describe('box3d-renderer', () => {
                 };
 
                 const creatBox3DStub = sandbox.stub(renderer, 'createBox3d', (loader, entities, inputSettings) => {
-                    expect(loader).to.be.an.instanceof(window.Box3DResourceLoader);
+                    expect(loader).to.be.an.instanceof(window.Box3D.XhrResourceLoader);
                     expect(entities).to.deep.equal(expectedEntities);
                     expect(inputSettings).to.deep.equal(expectedInputSettings);
                 });
@@ -267,7 +250,7 @@ describe('box3d-renderer', () => {
                 });
 
                 const getFromCacheStub = sandbox.stub(renderer, 'getBox3DFromCache', (loader) => {
-                    expect(loader).to.be.an.instanceof(window.Box3DResourceLoader);
+                    expect(loader).to.be.an.instanceof(window.Box3D.XhrResourceLoader);
                 });
 
                 renderer.initBox3d({ file: { file_version: 'abcdef' } });
@@ -300,16 +283,13 @@ describe('box3d-renderer', () => {
 
     describe('createBox3d()', () => {
         let box3D;
-        let resourceLoader;
 
         beforeEach(() => {
             box3D = window.Box3D;
-            resourceLoader = window.Box3DResourceLoader;
         });
 
         afterEach(() => {
             window.Box3D = box3D;
-            window.Box3DResourceLoader = resourceLoader;
         });
 
         it('should create new Box3D engine instance, initialize it with properties, load an app, and resolve in the new (and cached) Box3D', (done) => {
