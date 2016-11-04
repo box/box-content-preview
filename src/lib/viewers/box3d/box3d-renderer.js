@@ -95,7 +95,6 @@ class Box3DRenderer extends EventEmitter {
         }
 
         this.hideBox3d();
-        this.box3d.resourceLoader.destroy();
     }
 
     /**

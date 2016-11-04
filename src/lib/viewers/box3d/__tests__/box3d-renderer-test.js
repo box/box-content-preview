@@ -40,10 +40,7 @@ describe('box3d-renderer', () => {
         beforeEach(() => {
             renderer.box3d = {
                 pause: sandbox.stub(),
-                trigger: sandbox.stub(),
-                resourceLoader: {
-                    destroy: sandbox.spy()
-                }
+                trigger: sandbox.stub()
             };
         });
 
@@ -55,7 +52,6 @@ describe('box3d-renderer', () => {
 
             expect(hideBox3dSpy.called).to.be.true;
             expect(disableVrSpy.called).to.be.true;
-            expect(renderer.box3d.resourceLoader.destroy.called).to.be.true;
         });
 
         it('should not call Box3D cleanup path if no Box3D engine', () => {
