@@ -1,8 +1,7 @@
 # Change Log
 
-## [Unreleased](https://gitenterprise.inside-box.net/Preview/Preview/tree/HEAD)
-
-[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.84.0...HEAD)
+## [v0.85.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.85.0) 
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.84.0...v0.85.0)
 
 **Merged pull requests:**
 
