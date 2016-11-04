@@ -206,8 +206,8 @@ function sceneEntities(prefix) {
         type: 'image',
         properties: {
             name: 'HDR Env Image 1',
-            width: 512,
-            height: 256,
+            width: 256,
+            height: 128,
             stream: false,
             encoding: 'linear'
         },
@@ -216,8 +216,8 @@ function sceneEntities(prefix) {
             isExternal: true,
             contentType: 'image/png',
             contentEncoding: 'identity',
-            width: 512,
-            height: 256,
+            width: 256,
+            height: 128,
             compression: 'zip',
             channels: ['red', 'green', 'blue', 'exponent']
         }]
@@ -226,8 +226,8 @@ function sceneEntities(prefix) {
         type: 'image',
         properties: {
             name: 'HDR Env Image 2',
-            width: 256,
-            height: 128,
+            width: 64,
+            height: 32,
             stream: false,
             encoding: 'linear'
         },
@@ -236,8 +236,8 @@ function sceneEntities(prefix) {
             isExternal: true,
             contentType: 'image/png',
             contentEncoding: 'identity',
-            width: 256,
-            height: 128,
+            width: 64,
+            height: 32,
             compression: 'zip',
             channels: ['red', 'green', 'blue', 'exponent']
         }]
