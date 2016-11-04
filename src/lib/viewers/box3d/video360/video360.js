@@ -96,12 +96,13 @@ class Video360 extends Dash {
      *
      * @inheritdoc
      */
+    @autobind
     loadedmetadataHandler() {
         this.renderer = new Video360Renderer(this.mediaContainerEl, this.boxSdk);
         this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
         this.optionsObj.sceneEntities = sceneEntities;
         this.renderer.initBox3d(this.optionsObj)
-            .then(this.create360Environment.bind(this))
+            .then(this.create360Environment)
             .then(() => {
                 // calling super.loadedmetadataHandler() will ready video playback
                 super.loadedmetadataHandler();
@@ -152,6 +153,7 @@ class Video360 extends Dash {
      * @private
      * @returns {void}
      */
+    @autobind
     create360Environment() {
         const scene = this.renderer.getBox3D().getEntityById('SCENE_ROOT_ID');
         this.skybox = scene.getComponentByScriptId('skybox_renderer');

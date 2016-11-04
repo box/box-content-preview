@@ -12,7 +12,6 @@ import fullscreen from '../../../../fullscreen';
 
 describe('video360', () => {
     const sandbox = sinon.sandbox.create();
-    const CSS_CLASS_VIDEO_360 = 'box-preview-video-360';
     const OPTIONS = {
         token: '12345572asdfliuohhr34812348960',
         file: {
@@ -173,7 +172,7 @@ describe('video360', () => {
     });
 
     describe('loadedmetadataHandler()', () => {
-        let stubs = {};
+        const stubs = {};
         let superLoadedMetadata;
         before(() => {
             superLoadedMetadata = sandbox.stub();
@@ -231,7 +230,7 @@ describe('video360', () => {
             viewer.loadedmetadataHandler();
         });
 
-        it('should invoke super.metadataloadedHandler() on successfully creating 360 environment', (done) =>{
+        it('should invoke super.metadataloadedHandler() on successfully creating 360 environment', (done) => {
             stubs.createControls = sandbox.stub(viewer, 'createControls', () => {
                 expect(superLoadedMetadata).to.have.been.called;
                 done();
@@ -239,14 +238,12 @@ describe('video360', () => {
             viewer.loadedmetadataHandler();
         });
 
-        it('should invoke .createControls() on successfully creating 360 environment', (done) =>{
-            const createControls = sandbox.stub(viewer, 'createControls', () => {
-                done();
-            });
+        it('should invoke .createControls() on successfully creating 360 environment', (done) => {
+            sandbox.stub(viewer, 'createControls', done);
             viewer.loadedmetadataHandler();
         });
 
-        it('should invoke .renderer.initVrIfPresent() on successfully creating 360 environment', (done) =>{
+        it('should invoke .renderer.initVrIfPresent() on successfully creating 360 environment', (done) => {
             sandbox.stub(viewer, 'createControls');
             stubs.initVrIfPresent.restore();
             stubs.initVrIfPresent = sandbox.stub(Video360Renderer.prototype, 'initVrIfPresent', () => {
@@ -472,7 +469,7 @@ describe('video360', () => {
                 viewer.handleToggleVr();
                 expect(viewer.skybox.setAttribute).to.have.been.calledWith('stereoEnabled', false);
             });
-        })
+        });
 
         describe('vr is disabled', () => {
             beforeEach(() => {
