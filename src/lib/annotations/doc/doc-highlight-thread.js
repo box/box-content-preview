@@ -334,6 +334,11 @@ class DocHighlightThread extends AnnotationThread {
             this.show();
         });
 
+        // Annotation drawn
+        this._dialog.addListener('annotationcommentpending', () => {
+            this._state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
+        });
+
         // Annotation created
         this._dialog.addListener('annotationcreate', (data) => {
             if (data) {
@@ -370,6 +375,7 @@ class DocHighlightThread extends AnnotationThread {
      */
     unbindCustomListenersOnDialog() {
         this.removeAllListeners('annotationdraw');
+        this.removeAllListeners('annotationcommentpending');
         this.removeAllListeners('annotationcreate');
         this.removeAllListeners('annotationcancel');
         this.removeAllListeners('annotationdelete');
