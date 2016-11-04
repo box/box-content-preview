@@ -13,19 +13,27 @@ import {
 } from '../box3d-constants';
 
 const CSS_CLASS_VIDEO_360 = 'box-preview-video-360';
+const VIDEO_ID = 'VIDEO_ID';
+const VIDEO_TEXTURE_PROPS = {
+    imageId: VIDEO_ID,
+    minFilter: 'linear',
+    magFilter: 'linear',
+    uMapping: 'clamp',
+    vMapping: 'clamp'
+};
 
 /**
  * Video360
  * This is the entry point for the video360 preview.
  * @class
  */
-@autobind
 class Video360 extends Dash {
     /**
      * Ties together all 360 video rendering and controls
+     *
      * @constructor
-     * @param {string|HTMLElement} container node
-     * @param {object} [options] Options to be passed to Dash. See Dash constructor
+     * @param {string|HTMLElement} container node or selector
+     * @param {Object} [options] Options to be passed to Dash. See dash.js constructor
      * @returns {Video360} the Video360 object instance
      */
     constructor(container, options) {
@@ -35,10 +43,11 @@ class Video360 extends Dash {
         this.controls = null;
         this.destroyed = false;
 
+        // Hide video element
         this.mediaEl.style.display = 'none';
+        // Instead of keeping aspect ratio of video, we want full sized canvas to render to
         this.mediaContainerEl.style.width = '100%';
         this.mediaContainerEl.style.height = '100%';
-        // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_VIDEO_360);
 
         const sdkOpts = { token: options.token, apiBase: options.api };
@@ -53,17 +62,24 @@ class Video360 extends Dash {
         super.destroy();
         if (this.skybox) {
             this.skybox.setAttribute('skyboxTexture', null);
+            this.skybox = null;
         }
 
         if (this.textureAsset) {
             this.textureAsset.destroy();
+            this.textureAsset = null;
         }
 
         if (this.videoAsset) {
             this.videoAsset.destroy();
+            this.videoAsset = null;
         }
 
-        this.destroyControls();
+        if (this.controls) {
+            this.destroyControls();
+            this.controls = null;
+        }
+
         if (this.renderer) {
             // Remove event listeners from box3d, if any on it
             this.renderer.getBox3D().off('mouseDown', this.onCanvasMouseDown);
@@ -71,19 +87,23 @@ class Video360 extends Dash {
 
             this.renderer.removeListener(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
             this.renderer.destroy();
+            this.renderer = null;
         }
     }
 
     /**
-    * @inheritdoc
+     * Once video metadata is ready, we can create a new renderer and start rendering.
+     *
+     * @inheritdoc
      */
     loadedmetadataHandler() {
         this.renderer = new Video360Renderer(this.mediaContainerEl, this.boxSdk);
         this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
         this.optionsObj.sceneEntities = sceneEntities;
         this.renderer.initBox3d(this.optionsObj)
-            .then(this.create360Environment)
+            .then(this.create360Environment.bind(this))
             .then(() => {
+                // calling super.loadedmetadataHandler() will ready video playback
                 super.loadedmetadataHandler();
                 this.createControls();
                 this.renderer.initVrIfPresent();
@@ -92,6 +112,7 @@ class Video360 extends Dash {
 
     /**
      * Create controls for 360 video.
+     *
      * @method createControls
      * @private
      * @returns {void}
@@ -103,17 +124,19 @@ class Video360 extends Dash {
 
     /**
      * Destroy controls for 360 video.
+     *
      * @method destroyControls
      * @private
      * @returns {void}
      */
     destroyControls() {
-        if (this.controls) {
-            this.controls.removeListener(EVENT_TOGGLE_VR, this.handleToggleVr);
-            this.controls.destroy();
-        }
+        this.controls.removeListener(EVENT_TOGGLE_VR, this.handleToggleVr);
+        this.controls.destroy();
     }
 
+    /**
+     * @inheritdoc
+     */
     resize() {
         super.resize();
         if (this.renderer) {
@@ -124,6 +147,7 @@ class Video360 extends Dash {
     /**
      * Create the environment that will render the 360 video
      * using the Box3D runtime.
+     *
      * @method create360Environment
      * @private
      * @returns {void}
@@ -132,23 +156,18 @@ class Video360 extends Dash {
         const scene = this.renderer.getBox3D().getEntityById('SCENE_ROOT_ID');
         this.skybox = scene.getComponentByScriptId('skybox_renderer');
 
-        this.videoAsset = this.renderer.getBox3D().createVideo('VIDEO_ID');
+        this.videoAsset = this.renderer.getBox3D().createVideo(VIDEO_ID);
         this.videoAsset.setProperties({
-            // layout: 'stereo2dOverUnder',
             loop: false,
             generateMipmaps: false,
             querySelector: `.${this.mediaContainerEl.className} video`,
             autoPlay: false
         });
 
+        // Texture props references the ID of the video texture created above, "VIDEO_ID"
         this.textureAsset = this.renderer.getBox3D().createTexture2d('VIDEO_TEX_ID');
-        this.textureAsset.setProperties({
-            imageId: 'VIDEO_ID',
-            minFilter: 'linear',
-            magFilter: 'linear',
-            uMapping: 'clamp',
-            vMapping: 'clamp'
-        });
+        this.textureAsset.setProperties(VIDEO_TEXTURE_PROPS);
+
         return new Promise((resolve) => {
             this.textureAsset.load(() => {
                 this.skybox.setAttribute('skyboxTexture', this.textureAsset.id);
@@ -169,6 +188,7 @@ class Video360 extends Dash {
 
     /**
      * Handles toggle VR event
+     *
      * @returns {void}
      */
     @autobind
@@ -189,6 +209,7 @@ class Video360 extends Dash {
 
     /**
      * Handle show VR button event
+     *
      * @returns {void}
      */
     @autobind
@@ -198,6 +219,7 @@ class Video360 extends Dash {
 
     /**
      * Handle mouseDown on the canvas, for playing video
+     *
      * @returns {void}
      */
     @autobind
@@ -206,7 +228,8 @@ class Video360 extends Dash {
     }
 
     /**
-     * Handle mouseUp on the canvas, for playing video
+     * Handle mouseUp on the canvas, for toggling play on video
+     *
      * @returns {void}
      */
     @autobind
