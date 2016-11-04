@@ -194,10 +194,17 @@ describe('annotation-dialog', () => {
     });
 
     describe('mouseenterHandler()', () => {
-        it('should clear the hide timeout', () => {
+        it('should show the element only if the element is currently hidden', () => {
+            annotationDialog._element.classList.add('box-preview-is-hidden');
             sandbox.stub(annotatorUtil, 'showElement');
             annotationDialog.mouseenterHandler();
             expect(annotatorUtil.showElement).to.have.been.called;
+        });
+
+        it('should do nothing if the element is already shown', () => {
+            sandbox.stub(annotatorUtil, 'showElement');
+            annotationDialog.mouseenterHandler();
+            expect(annotatorUtil.showElement).to.not.have.been.called;
         });
     });
 

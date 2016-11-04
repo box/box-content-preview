@@ -93,13 +93,7 @@ class DocHighlightThread extends AnnotationThread {
     saveAnnotation(type, text) {
         super.saveAnnotation(type, text);
         window.getSelection().removeAllRanges();
-
-        // Hide annotations dialog if only a highlight was created
-        if (text === '') {
-            this._state = constants.ANNOTATION_STATE_INACTIVE;
-        } else {
-            this._state = constants.ANNOTATION_STATE_HOVER;
-        }
+        this._state = constants.ANNOTATION_STATE_HOVER;
     }
 
     /**
@@ -212,14 +206,15 @@ class DocHighlightThread extends AnnotationThread {
 
         // If mouse is in dialog, change state to hover or active-hover
         if (docAnnotatorUtil.isInDialog(event, this._dialog.element)) {
-            this.activateDialog();
+            // Keeps dialog open if comment is pending
+            if (this._state === constants.ANNOTATION_STATE_PENDING_ACTIVE) {
+                return false;
+            }
+            this._state = constants.ANNOTATION_STATE_HOVER;
+
+        // If another dialog is active on top of the current highlight thread
         } else if (docAnnotatorUtil.hasActiveDialog(this._dialog.element, pageEl)) {
             this.hideDialog();
-            return false;
-
-        // Pending check should be first - do nothing if highlight is pending
-        } else if (this._state === constants.ANNOTATION_STATE_PENDING ||
-            this._state === constants.ANNOTATION_STATE_PENDING_ACTIVE) {
             return false;
 
         // If mouse is in highlight, change state to hover or active-hover
