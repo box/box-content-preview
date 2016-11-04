@@ -206,6 +206,18 @@ describe('annotation-dialog', () => {
             annotationDialog.mouseenterHandler();
             expect(annotatorUtil.showElement).to.not.have.been.called;
         });
+
+        it('should emit \'annotationcommentpending\' when user hovers back into a dialog that has a pending comment', () => {
+            annotationDialog._element.classList.add('box-preview-is-hidden');
+            sandbox.stub(annotatorUtil, 'showElement');
+            sandbox.stub(annotationDialog, 'emit');
+            const commentsTextArea = annotationDialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            commentsTextArea.textContent = 'bleh';
+
+            annotationDialog.mouseenterHandler();
+            expect(annotatorUtil.showElement).to.have.been.called;
+            expect(annotationDialog.emit).to.have.been.calledWith('annotationcommentpending');
+        });
     });
 
     describe('mouseleaveHandler()', () => {

@@ -497,6 +497,7 @@ describe('doc-highlight-thread', () => {
             highlightThread.bindCustomListenersOnDialog();
 
             expect(addListenerStub).to.have.been.calledWith('annotationdraw', sinon.match.func);
+            expect(addListenerStub).to.have.been.calledWith('annotationcommentpending', sinon.match.func);
             expect(addListenerStub).to.have.been.calledWith('annotationcreate', sinon.match.func);
             expect(addListenerStub).to.have.been.calledWith('annotationcancel', sinon.match.func);
             expect(addListenerStub).to.have.been.calledWith('annotationdelete', sinon.match.func);
