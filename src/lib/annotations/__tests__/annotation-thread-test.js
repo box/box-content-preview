@@ -382,10 +382,9 @@ describe('annotation-thread', () => {
     });
 
     describe('_saveAnnotationToThread()', () => {
-        it('should push the annotation, reset, and add to the dialog when the dialog exists', () => {
+        it('should push the annotation, and add to the dialog when the dialog exists', () => {
             const addStub = sandbox.stub(annotationThread._dialog, 'addAnnotation');
             const pushStub = sandbox.stub(annotationThread._annotations, 'push');
-            const resetStub = sandbox.stub(annotationThread, 'reset');
             const annotation1 = new Annotation({
                 fileVersionID: '2',
                 threadID: '1',
@@ -399,7 +398,6 @@ describe('annotation-thread', () => {
             annotationThread._saveAnnotationToThread(annotation1);
             expect(addStub).to.be.calledWith(annotation1);
             expect(pushStub).to.be.calledWith(annotation1);
-            expect(resetStub).to.be.called;
         });
 
         it('should not try to push an annotation to the dialog if it doesn\'t exist', () => {

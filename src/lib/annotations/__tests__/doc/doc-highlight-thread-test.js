@@ -43,10 +43,10 @@ describe('doc-highlight-thread', () => {
         it('should switch dialogs when cancelling the first comment on an existing plain highlight', () => {
             // Adding a plain highlight annotation to the thread
             sandbox.stub(highlightThread._annotationService, 'create').returns(Promise.resolve({}));
+            sandbox.stub(highlightThread._dialog, 'position');
             highlightThread.saveAnnotation('highlight', '');
 
             // Cancel first comment on existing annotation
-            sandbox.stub(highlightThread._dialog, 'position');
             sandbox.stub(highlightThread._dialog, 'toggleHighlightDialogs');
             sandbox.stub(highlightThread, 'reset');
             highlightThread.cancelFirstComment();
@@ -121,7 +121,7 @@ describe('doc-highlight-thread', () => {
 
             highlightThread.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, '');
 
-            assert.equal(highlightThread._state, constants.ANNOTATION_STATE_INACTIVE);
+            assert.equal(highlightThread._state, constants.ANNOTATION_STATE_HOVER);
         });
 
         it('should save a highlight comment annotation', () => {
@@ -344,15 +344,27 @@ describe('doc-highlight-thread', () => {
     });
 
     describe('onMousemove()', () => {
-        it('should delay drawing highlight if mouse is hovering over a highlight dialog', () => {
+        it('should delay drawing highlight if mouse is hovering over a highlight dialog and not pending comment', () => {
             sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(true);
-            sandbox.stub(highlightThread, 'activateDialog');
+            highlightThread._state = constants.ANNOTATION_STATE_INACTIVE;
 
             const result = highlightThread.onMousemove({});
 
-            expect(highlightThread.activateDialog).to.have.been.called;
             expect(result).to.be.true;
+            expect(highlightThread._state).to.equal(constants.ANNOTATION_STATE_HOVER);
+        });
+
+        it('should do nothing if mouse is hovering over a highlight dialog and pending comment', () => {
+            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
+            sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(true);
+            sandbox.stub(highlightThread, 'activateDialog');
+            highlightThread._state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
+
+            const result = highlightThread.onMousemove({});
+
+            expect(highlightThread.activateDialog).to.not.have.been.called;
+            expect(result).to.be.false;
         });
 
         it('should not delay drawing highlight if a different dialog is currently active', () => {
@@ -364,28 +376,6 @@ describe('doc-highlight-thread', () => {
             const result = highlightThread.onMousemove({});
 
             expect(highlightThread.hideDialog).to.have.been.called;
-            expect(result).to.be.false;
-        });
-
-        it('should not delay drawing highlight if highlight is pending', () => {
-            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
-            sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
-            sandbox.stub(docAnnotatorUtil, 'hasActiveDialog').returns(false);
-            highlightThread._state = constants.ANNOTATION_STATE_PENDING;
-
-            const result = highlightThread.onMousemove({});
-
-            expect(result).to.be.false;
-        });
-
-        it('should not delay drawing highlight if highlight is pending active', () => {
-            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
-            sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
-            sandbox.stub(docAnnotatorUtil, 'hasActiveDialog').returns(false);
-            highlightThread._state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
-
-            const result = highlightThread.onMousemove({});
-
             expect(result).to.be.false;
         });
 

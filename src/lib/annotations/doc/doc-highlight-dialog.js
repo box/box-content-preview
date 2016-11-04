@@ -313,6 +313,7 @@ class DocHighlightDialog extends AnnotationDialog {
         switch (dataType) {
             // Clicking 'Highlight' button to create or remove a highlight
             case 'highlight-btn':
+                this.emit('annotationdraw');
                 this._toggleHighlight();
                 break;
 

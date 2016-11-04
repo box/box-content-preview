@@ -458,8 +458,6 @@ class AnnotationThread extends EventEmitter {
         if (this._dialog) {
             this._dialog.addAnnotation(annotation);
         }
-
-        this.reset();
     }
 
     /**
