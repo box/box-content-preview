@@ -1,4 +1,4 @@
-/* global Box3D, Box3DResourceLoader, THREE */
+/* global Box3D, THREE */
 import Browser from '../../browser';
 import EventEmitter from 'events';
 import Cache from '../../cache';
@@ -167,15 +167,21 @@ class Box3DRenderer extends EventEmitter {
             return Promise.reject(new Error('Missing Box3D'));
         }
 
-        if (!Box3DResourceLoader) {
-            return Promise.reject(new Error('Missing Box3DResourceLoader'));
-        }
-
         if (!options.file || !options.file.file_version) {
             return Promise.reject(new Error('Missing file version'));
         }
 
-        const resourceLoader = new Box3DResourceLoader(this.boxSdk);
+        const resourceLoader = new Box3D.XhrResourceLoader((path, params) => {
+            const xhr = new XMLHttpRequest();
+
+            xhr.open('GET', path);
+
+            if (!params.isExternal) {
+                xhr.setRequestHeader('Authorization', `Bearer ${options.token}`);
+            }
+
+            return Promise.resolve(xhr);
+        });
 
         if (Cache.get(CACHE_KEY_BOX3D)) {
             return this.getBox3DFromCache(resourceLoader);

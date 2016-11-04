@@ -8,7 +8,6 @@ const VIEWERS = [
         EXTENSIONS: ['box3d', 'fbx', 'obj', 'dae', '3ds', 'ply', 'stl'],
         SCRIPTS: [
             `${STATIC_URI}boxsdk.js`,
-            `${STATIC_URI}box3d-resource-loader.js`,
             `${STATIC_URI}box3d-runtime.js`,
             `${STATIC_URI}webvr-polyfill.js`,
             'model3d.js'],

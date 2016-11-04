@@ -78,163 +78,163 @@
 
 	var _Engine2 = _interopRequireDefault(_Engine);
 
-	var _UserAgent = __webpack_require__(69);
+	var _UserAgent = __webpack_require__(70);
 
 	var _UserAgent2 = _interopRequireDefault(_UserAgent);
 
-	var _EffectComposer = __webpack_require__(70);
+	var _EffectComposer = __webpack_require__(71);
 
 	var _EffectComposer2 = _interopRequireDefault(_EffectComposer);
 
-	var _BloomPass = __webpack_require__(71);
+	var _BloomPass = __webpack_require__(72);
 
 	var _BloomPass2 = _interopRequireDefault(_BloomPass);
 
-	var _BokehPass = __webpack_require__(72);
+	var _BokehPass = __webpack_require__(73);
 
 	var _BokehPass2 = _interopRequireDefault(_BokehPass);
 
-	var _DotScreenPass = __webpack_require__(73);
+	var _DotScreenPass = __webpack_require__(74);
 
 	var _DotScreenPass2 = _interopRequireDefault(_DotScreenPass);
 
-	var _FilmPass = __webpack_require__(74);
+	var _FilmPass = __webpack_require__(75);
 
 	var _FilmPass2 = _interopRequireDefault(_FilmPass);
 
-	var _MaskPass = __webpack_require__(75);
+	var _MaskPass = __webpack_require__(76);
 
 	var _MaskPass2 = _interopRequireDefault(_MaskPass);
 
-	var _RenderPass = __webpack_require__(76);
+	var _RenderPass = __webpack_require__(77);
 
 	var _RenderPass2 = _interopRequireDefault(_RenderPass);
 
-	var _SavePass = __webpack_require__(77);
+	var _SavePass = __webpack_require__(78);
 
 	var _SavePass2 = _interopRequireDefault(_SavePass);
 
-	var _ShaderPass = __webpack_require__(78);
+	var _ShaderPass = __webpack_require__(79);
 
 	var _ShaderPass2 = _interopRequireDefault(_ShaderPass);
 
-	var _TexturePass = __webpack_require__(117);
+	var _TexturePass = __webpack_require__(118);
 
 	var _TexturePass2 = _interopRequireDefault(_TexturePass);
 
-	var _AdaptiveToneMappingPass = __webpack_require__(118);
+	var _AdaptiveToneMappingPass = __webpack_require__(119);
 
 	var _AdaptiveToneMappingPass2 = _interopRequireDefault(_AdaptiveToneMappingPass);
 
-	var _AnimationAsset = __webpack_require__(119);
+	var _AnimationAsset = __webpack_require__(120);
 
 	var _AnimationAsset2 = _interopRequireDefault(_AnimationAsset);
 
-	var _ApplicationAsset = __webpack_require__(121);
+	var _ApplicationAsset = __webpack_require__(123);
 
 	var _ApplicationAsset2 = _interopRequireDefault(_ApplicationAsset);
 
-	var _AudioAsset = __webpack_require__(122);
+	var _AudioAsset = __webpack_require__(124);
 
 	var _AudioAsset2 = _interopRequireDefault(_AudioAsset);
 
-	var _BufferAsset = __webpack_require__(120);
+	var _BufferAsset = __webpack_require__(121);
 
 	var _BufferAsset2 = _interopRequireDefault(_BufferAsset);
 
-	var _DocumentAsset = __webpack_require__(123);
+	var _DocumentAsset = __webpack_require__(125);
 
 	var _DocumentAsset2 = _interopRequireDefault(_DocumentAsset);
 
-	var _ImageAsset = __webpack_require__(154);
+	var _ImageAsset = __webpack_require__(156);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
-	var _MaterialAsset = __webpack_require__(21);
+	var _MaterialAsset = __webpack_require__(23);
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
-	var _MeshGeometryAsset = __webpack_require__(155);
+	var _MeshGeometryAsset = __webpack_require__(157);
 
 	var _MeshGeometryAsset2 = _interopRequireDefault(_MeshGeometryAsset);
 
-	var _PrefabAsset = __webpack_require__(157);
+	var _PrefabAsset = __webpack_require__(159);
 
 	var _PrefabAsset2 = _interopRequireDefault(_PrefabAsset);
 
-	var _PrimitiveGeometryAsset = __webpack_require__(158);
+	var _PrimitiveGeometryAsset = __webpack_require__(160);
 
 	var _PrimitiveGeometryAsset2 = _interopRequireDefault(_PrimitiveGeometryAsset);
 
-	var _RenderTexture2DAsset = __webpack_require__(159);
+	var _RenderTexture2DAsset = __webpack_require__(161);
 
 	var _RenderTexture2DAsset2 = _interopRequireDefault(_RenderTexture2DAsset);
 
-	var _RenderTextureCubeAsset = __webpack_require__(161);
+	var _RenderTextureCubeAsset = __webpack_require__(163);
 
 	var _RenderTextureCubeAsset2 = _interopRequireDefault(_RenderTextureCubeAsset);
 
-	var _ScriptAsset = __webpack_require__(162);
+	var _ScriptAsset = __webpack_require__(164);
 
 	var _ScriptAsset2 = _interopRequireDefault(_ScriptAsset);
 
-	var _ShaderAsset = __webpack_require__(163);
+	var _ShaderAsset = __webpack_require__(165);
 
 	var _ShaderAsset2 = _interopRequireDefault(_ShaderAsset);
 
-	var _SkinAsset = __webpack_require__(168);
+	var _SkinAsset = __webpack_require__(170);
 
 	var _SkinAsset2 = _interopRequireDefault(_SkinAsset);
 
-	var _Texture2DAsset = __webpack_require__(169);
+	var _Texture2DAsset = __webpack_require__(171);
 
 	var _Texture2DAsset2 = _interopRequireDefault(_Texture2DAsset);
 
-	var _TextureCubeAsset = __webpack_require__(171);
+	var _TextureCubeAsset = __webpack_require__(173);
 
 	var _TextureCubeAsset2 = _interopRequireDefault(_TextureCubeAsset);
 
-	var _VideoAsset = __webpack_require__(170);
+	var _VideoAsset = __webpack_require__(172);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
-	var _Box3DObject = __webpack_require__(172);
+	var _Box3DObject = __webpack_require__(174);
 
 	var _Box3DObject2 = _interopRequireDefault(_Box3DObject);
 
-	var _BoneObject = __webpack_require__(173);
+	var _BoneObject = __webpack_require__(175);
 
 	var _BoneObject2 = _interopRequireDefault(_BoneObject);
 
-	var _CameraObject = __webpack_require__(174);
+	var _CameraObject = __webpack_require__(176);
 
 	var _CameraObject2 = _interopRequireDefault(_CameraObject);
 
-	var _LightObject = __webpack_require__(175);
+	var _LightObject = __webpack_require__(177);
 
 	var _LightObject2 = _interopRequireDefault(_LightObject);
 
-	var _MeshObject = __webpack_require__(176);
+	var _MeshObject = __webpack_require__(178);
 
 	var _MeshObject2 = _interopRequireDefault(_MeshObject);
 
-	var _SceneObject = __webpack_require__(177);
+	var _SceneObject = __webpack_require__(179);
 
 	var _SceneObject2 = _interopRequireDefault(_SceneObject);
 
-	var _DOMUtilities = __webpack_require__(178);
+	var _DOMUtilities = __webpack_require__(180);
 
 	var _DOMUtilities2 = _interopRequireDefault(_DOMUtilities);
 
-	var _JSONLoader = __webpack_require__(124);
+	var _JSONLoader = __webpack_require__(126);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
-	var _DevResourceLoader = __webpack_require__(179);
+	var _XhrResourceLoader = __webpack_require__(181);
 
-	var _DevResourceLoader2 = _interopRequireDefault(_DevResourceLoader);
+	var _XhrResourceLoader2 = _interopRequireDefault(_XhrResourceLoader);
 
-	__webpack_require__(180);
+	__webpack_require__(189);
 
 	var _three = __webpack_require__(10);
 
@@ -258,7 +258,7 @@
 
 	Object.assign(Box3D, _UserAgent2.default, {
 	  Engine: _Engine2.default,
-	  RuntimeEvents: _RuntimeEvents2.default,
+
 	  EffectComposer: _EffectComposer2.default,
 	  BloomPass: _BloomPass2.default,
 	  BokehPass: _BokehPass2.default,
@@ -290,16 +290,16 @@
 	  TextureCubeAsset: _TextureCubeAsset2.default,
 	  VideoAsset: _VideoAsset2.default,
 
-	  Box3DObject: _Box3DObject2.default,
-	  SceneObject: _SceneObject2.default,
 	  BoneObject: _BoneObject2.default,
+	  Box3DObject: _Box3DObject2.default,
 	  CameraObject: _CameraObject2.default,
 	  LightObject: _LightObject2.default,
 	  MeshObject: _MeshObject2.default,
+	  SceneObject: _SceneObject2.default,
 
 	  DOMUtilities: _DOMUtilities2.default,
 	  JSONLoader: _JSONLoader2.default,
-	  DevResourceLoader: _DevResourceLoader2.default,
+	  XhrResourceLoader: _XhrResourceLoader2.default,
 
 	  globalEvents: new ((0, _mixwith.mix)().with(_RuntimeEvents2.default))(),
 
@@ -653,7 +653,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	var _lodash = __webpack_require__(4);
 
@@ -13297,7 +13297,7 @@
 	  value: true
 	});
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -13325,11 +13325,11 @@
 
 	var _EntityRegistry2 = _interopRequireDefault(_EntityRegistry);
 
-	var _GeometryUtilities = __webpack_require__(19);
+	var _GeometryUtilities = __webpack_require__(21);
 
 	var _GeometryUtilities2 = _interopRequireDefault(_GeometryUtilities);
 
-	var _MaterialUtilities = __webpack_require__(20);
+	var _MaterialUtilities = __webpack_require__(22);
 
 	var _MaterialUtilities2 = _interopRequireDefault(_MaterialUtilities);
 
@@ -13337,13 +13337,13 @@
 
 	var _RuntimeEvents2 = _interopRequireDefault(_RuntimeEvents);
 
-	var _ScriptRegistry = __webpack_require__(24);
+	var _ScriptRegistry = __webpack_require__(26);
 
 	var _ScriptRegistry2 = _interopRequireDefault(_ScriptRegistry);
 
 	var _mixwith = __webpack_require__(2);
 
-	var _raf = __webpack_require__(66);
+	var _raf = __webpack_require__(67);
 
 	var _raf2 = _interopRequireDefault(_raf);
 
@@ -14036,7 +14036,7 @@
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module) {'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	/*! loglevel - v1.3.1 - https://github.com/pimterry/loglevel - (c) 2015 Tim Perry - licensed MIT */
 	(function (root, definition) {
@@ -56434,7 +56434,7 @@
 	  }, {
 	    key: 'dispatchPropertiesChanged',
 	    value: function dispatchPropertiesChanged(entityId) {
-	      var newProperties = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	      var newProperties = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	      var silent = arguments[2];
 
 	      if (!this.entities[entityId]) {
@@ -56552,7 +56552,7 @@
 	    value: function dispatchChildChanged(entityId) {
 	      var _this3 = this;
 
-	      var newChildren = arguments.length <= 1 || arguments[1] === undefined ? [] : arguments[1];
+	      var newChildren = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 	      var silent = arguments[2];
 
 	      var entityDesc = this.entities[entityId];
@@ -56761,7 +56761,7 @@
 	  value: true
 	});
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	/**
 	 * Returns a deep clone of the given data. This method doesn't copy
@@ -57346,6 +57346,20 @@
 	      }
 
 	      /**
+	       * Create an empty scene object.
+	       * @method createScene
+	       * @public
+	       * @param {string} [id] Optional ID for the new entity.
+	       * @return {SceneObject}
+	       */
+
+	    }, {
+	      key: 'createScene',
+	      value: function createScene(id) {
+	        return this.createEntityByType(id, 'scene');
+	      }
+
+	      /**
 	       * Create a prefab asset.
 	       * @method createAudio
 	       * @public
@@ -57843,9 +57857,15 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DEntity2 = __webpack_require__(16);
+	var _Box3DEntity = __webpack_require__(16);
 
-	var _Box3DEntity3 = _interopRequireDefault(_Box3DEntity2);
+	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
+
+	var _ResourceLifecycle = __webpack_require__(19);
+
+	var _ResourceLifecycle2 = _interopRequireDefault(_ResourceLifecycle);
+
+	var _mixwith = __webpack_require__(2);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -57860,8 +57880,8 @@
 	 * @class Box3DAsset
 	 * @constructor
 	 */
-	var Box3DAsset = function (_Box3DEntity) {
-	  _inherits(Box3DAsset, _Box3DEntity);
+	var Box3DAsset = function (_mix$with) {
+	  _inherits(Box3DAsset, _mix$with);
 
 	  function Box3DAsset() {
 	    _classCallCheck(this, Box3DAsset);
@@ -58002,7 +58022,7 @@
 	    key: 'unload',
 	    value: function unload() {
 	      // abort xhr request associated with this
-	      this.box3DRuntime.resourceLoader.abortRequest(this.id);
+	      this.abortRequests();
 	      _get(Box3DAsset.prototype.__proto__ || Object.getPrototypeOf(Box3DAsset.prototype), 'unload', this).call(this);
 	    }
 
@@ -58032,9 +58052,9 @@
 	  }]);
 
 	  return Box3DAsset;
-	}(_Box3DEntity3.default);
+	}((0, _mixwith.mix)(_Box3DEntity2.default).with(_ResourceLifecycle2.default));
 
-	Box3DAsset.schema = Object.assign({}, _Box3DEntity3.default.schema);
+	Box3DAsset.schema = Object.assign({}, _Box3DEntity2.default.schema);
 	Box3DAsset.events = {
 	  triggerLoad: {
 	    scope: 'local',
@@ -58060,7 +58080,7 @@
 
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -59325,7 +59345,7 @@
 	     * Return array of dependencies referenced directly by this entity.
 	     * @method getOwnDependencies
 	     * @public
-	     * @return {Object} Dependencies, keyed by asset ID and containing reference counts.
+	     * @return {Box3DEntity[]} Dependencies, keyed by asset ID and containing reference counts.
 	     */
 
 
@@ -59363,7 +59383,7 @@
 	       * @public
 	       * @param {Function} predicate A function which returns 'true' or 'false'. Used to determine
 	       * which dependencies to return.
-	       * @return {Array} An array of entities that this entity is dependent on.
+	       * @return {Box3DEntity[]} An array of entities that this entity is dependent on.
 	       */
 
 	    }, {
@@ -59385,7 +59405,7 @@
 	       * @method getDependenciesByType
 	       * @public
 	       * @param {String} type The entity type of the dependencies to return.
-	       * @return {Array} An array of entities that this entity is dependent on.
+	       * @return {Box3DEntity[]} An array of entities that this entity is dependent on.
 	       */
 
 	    }, {
@@ -59408,20 +59428,6 @@
 	      key: 'getDependencyInfo',
 	      value: function getDependencyInfo() {
 	        return this.dependencies;
-	      }
-
-	      /**
-	       * Register any permanent dependencies for this entity.
-	       * @method registerPermanentDependencies
-	       * @protected
-	       * @return {void}
-	       */
-
-	    }, {
-	      key: 'registerPermanentDependencies',
-	      value: function registerPermanentDependencies() {
-	        // Will be overridden per entity type.
-	        return;
 	      }
 
 	      /**
@@ -59775,7 +59781,7 @@
 	'use strict';
 	/* global Box3D */
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -59859,10 +59865,10 @@
 	      /**
 	       * Return an object describing the component on this entity that was matched
 	       * by the predicate function.
+	       * @method getComponentDescriptor
+	       * @public
 	       * @param  {function} predicate Function called on each descriptor to find the component. Return
 	       * true from the function to validate the descriptor.
-	       * @public
-	       * @method getComponentDescriptor
 	       * @return {Object} Component descriptor.
 	       */
 
@@ -59877,12 +59883,32 @@
 	      }
 
 	      /**
+	       * Return an object describing the previous state of the component on this entity
+	       * that was matched by the predicate function.
+	       * @method getPreviousComponentDescriptor
+	       * @public
+	       * @param  {function} predicate Function called on each descriptor to find the component. Return
+	       * true from the function to validate the descriptor.
+	       * @return {Object} Previous component descriptor.
+	       */
+
+	    }, {
+	      key: 'getPreviousComponentDescriptor',
+	      value: function getPreviousComponentDescriptor(predicate) {
+	        var all = typeof predicate !== 'function';
+	        var components = this.sharedData.previousComponents;
+	        return (0, _deepClone2.default)(components.find(function (comp) {
+	          return all || predicate(comp);
+	        }));
+	      }
+
+	      /**
 	       * Return an array of objects describing the components currently on this entity (that are matched
 	       * by the predicate function). If no predicate is defined, all will be returned.
+	       * @method getComponentDescriptors
+	       * @public
 	       * @param  {Function} [predicate] Function called on each descriptor to filter results. Return
 	       * true from the function to include the descriptor in the results.
-	       * @public
-	       * @method getComponentDescriptors
 	       * @return {Object[]} All matching component descriptors.
 	       */
 
@@ -59919,18 +59945,21 @@
 	       * @public
 	       * @method getPreviousComponentDescriptorById
 	       * @param  {String} id Component id
-	       * @return {Object}    JSON representing the component.
+	       * @return {Object} Previous descriptor of the found component.
 	       */
 
 	    }, {
 	      key: 'getPreviousComponentDescriptorById',
 	      value: function getPreviousComponentDescriptorById(id) {
-	        return this.sharedData.previousComponents[id];
+	        return this.getPreviousComponentDescriptor(function (comp) {
+	          return comp.id === id;
+	        });
 	      }
 
 	      /**
 	       * Adds a new component to the Box3DEntity.
 	       * @method addComponent
+	       * @public
 	       * @param {Mixed} script         Either a string scriptId or a script asset
 	       * @param {Object} [attributeValues] The initial attribute values to pass into the component
 	       * @param {string} [name] The name of the new component
@@ -59940,8 +59969,8 @@
 	    }, {
 	      key: 'addComponent',
 	      value: function addComponent(script) {
-	        var attributeValues = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-	        var name = arguments.length <= 2 || arguments[2] === undefined ? '' : arguments[2];
+	        var attributeValues = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+	        var name = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
 
 	        var newComponent = {
 	          scriptId: typeof script === 'string' ? script : script.id,
@@ -60151,7 +60180,7 @@
 	      value: function setComponents(componentDescriptors) {
 	        var _this2 = this;
 
-	        var silent = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	        var silent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 	        var entityDispatcher = this.box3DRuntime.entityDispatcher;
 	        for (var idx = this.sharedData.components.length; idx >= 0; idx--) {
@@ -60409,7 +60438,7 @@
 	      value: function startComponent(component) {
 	        var _this6 = this;
 
-	        var assignAttribs = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+	        var assignAttribs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
 
 	        // First, assign the attribute values and call the 'onAttributesChanged' function
@@ -60527,6 +60556,143 @@
 
 	'use strict';
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _log = __webpack_require__(7);
+
+	var _log2 = _interopRequireDefault(_log);
+
+	var _LoadingEvent = __webpack_require__(20);
+
+	var LoadingEvent = _interopRequireWildcard(_LoadingEvent);
+
+	var _Box3DEntity = __webpack_require__(16);
+
+	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * ResourceLifecycle manages the lifecycle of loading resources for assets
+	 * including keeping track of currently loading assets and cancelling them at
+	 * engine shutdown.
+	 * @mixin ResourceLifecycle
+	 */
+	var ResourceLifecycle = function ResourceLifecycle(superclass) {
+	  return function (_superclass) {
+	    _inherits(_class, _superclass);
+
+	    // Argument pass-through
+	    function _class() {
+	      var _ref;
+
+	      _classCallCheck(this, _class);
+
+	      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+	        args[_key] = arguments[_key];
+	      }
+
+	      var _this = _possibleConstructorReturn(this, (_ref = _class.__proto__ || Object.getPrototypeOf(_class)).call.apply(_ref, [this].concat(args)));
+
+	      _this.loadingResources = [];
+	      return _this;
+	    }
+
+	    /**
+	     * Loads a resource
+	     * @param {String} path The path to the resource
+	     * @param {String} type The type @see LoadingType.js
+	     * @param {Function} callback A function which will be called on completion
+	     *                            including Success, Error and Cancellation
+	     * @param {Object} params Any additional data for the loading process
+	     * @returns {LoadableResource}
+	     */
+
+
+	    _createClass(_class, [{
+	      key: 'loadResource',
+	      value: function loadResource(path, type, callback) {
+	        var _this2 = this;
+
+	        var params = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+	        var resource = this.box3DRuntime.resourceLoader.load(path, type, params);
+
+	        this.loadingResources.push(resource);
+
+	        resource.on(LoadingEvent.ERROR, function (err) {
+	          _log2.default.error(_this2.box3DRuntime.engineName + (' - ResourceLifecycle: Error loading ' + _this2.type + ', ' + _this2.getName() + ', ' + err.toString()));
+	          _this2.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.FAILED);
+	        });
+
+	        resource.on(LoadingEvent.DONE, function () /* state */{
+	          _this2.loadingResources = _this2.loadingResources.filter(function (l) {
+	            return l !== resource;
+	          });
+
+	          if (typeof callback === 'function') {
+	            callback();
+	          }
+	        });
+
+	        return resource;
+	      }
+
+	      /**
+	       * Aborts any requests currently being tracked
+	       * @method abortRequests
+	       * @returns {void}
+	       */
+
+	    }, {
+	      key: 'abortRequests',
+	      value: function abortRequests() {
+	        this.loadingResources.forEach(function (resource) {
+	          return resource.setCancelled();
+	        });
+	      }
+	    }]);
+
+	    return _class;
+	  }(superclass);
+	};
+
+	exports.default = ResourceLifecycle;
+
+/***/ },
+/* 20 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var LOAD = exports.LOAD = 'load';
+	var STATE_CHANGE = exports.STATE_CHANGE = 'state_change';
+	var CANCEL = exports.CANCEL = 'cancel';
+	var ERROR = exports.ERROR = 'error';
+	var PROGRESS = exports.PROGRESS = 'progress';
+	var DONE = exports.DONE = 'done';
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
 	/* global Box3D */
 
 	Object.defineProperty(exports, "__esModule", {
@@ -60599,7 +60765,7 @@
 	exports.default = GeometryUtilities;
 
 /***/ },
-/* 20 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -60610,11 +60776,11 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _MaterialAsset = __webpack_require__(21);
+	var _MaterialAsset = __webpack_require__(23);
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
-	var _BaseTextureAsset = __webpack_require__(22);
+	var _BaseTextureAsset = __webpack_require__(24);
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
@@ -60797,7 +60963,7 @@
 	exports.default = MaterialUtilities;
 
 /***/ },
-/* 21 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -61500,7 +61666,7 @@
 	  }, {
 	    key: '_applyPropertiesUnloaded',
 	    value: function _applyPropertiesUnloaded() {
-	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	      var changes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	      _get(MaterialAsset.prototype.__proto__ || Object.getPrototypeOf(MaterialAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
 	      var shaderAsset = this.getShader();
@@ -62200,7 +62366,7 @@
 	exports.default = MaterialAsset;
 
 /***/ },
-/* 22 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -62229,7 +62395,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _BaseImageAsset = __webpack_require__(23);
+	var _BaseImageAsset = __webpack_require__(25);
 
 	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
@@ -62442,7 +62608,7 @@
 	  }, {
 	    key: '_applyPropertiesUnloaded',
 	    value: function _applyPropertiesUnloaded() {
-	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	      var changes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	      _get(BaseTextureAsset.prototype.__proto__ || Object.getPrototypeOf(BaseTextureAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
 	      if (changes.hasOwnProperty('imageId')) {
@@ -63139,9 +63305,9 @@
 	});
 
 	BaseTextureAsset.createColorTexture = function () {
-	  var r = arguments.length <= 0 || arguments[0] === undefined ? 255 : arguments[0];
-	  var g = arguments.length <= 1 || arguments[1] === undefined ? 255 : arguments[1];
-	  var b = arguments.length <= 2 || arguments[2] === undefined ? 255 : arguments[2];
+	  var r = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 255;
+	  var g = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 255;
+	  var b = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 255;
 	  var a = arguments[3];
 
 	  var format = THREE.RGBFormat;
@@ -63161,9 +63327,9 @@
 	};
 
 	BaseTextureAsset.createColorTextureCube = function () {
-	  var r = arguments.length <= 0 || arguments[0] === undefined ? 255 : arguments[0];
-	  var g = arguments.length <= 1 || arguments[1] === undefined ? 255 : arguments[1];
-	  var b = arguments.length <= 2 || arguments[2] === undefined ? 255 : arguments[2];
+	  var r = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 255;
+	  var g = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 255;
+	  var b = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 255;
 	  var a = arguments[3];
 
 	  var sides = new Array(6);
@@ -63202,7 +63368,7 @@
 	exports.default = BaseTextureAsset;
 
 /***/ },
-/* 23 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -63292,7 +63458,7 @@
 
 	    /** @inheritdoc */
 	    value: function _applyPropertiesUnloaded() {
-	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	      var changes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	      _get(BaseImageAsset.prototype.__proto__ || Object.getPrototypeOf(BaseImageAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
 	      this.box3DRuntime.trigger('imageChanged', this.id, changes);
@@ -63622,7 +63788,7 @@
 	exports.default = BaseImageAsset;
 
 /***/ },
-/* 24 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -63664,7 +63830,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _componentsBuiltin = __webpack_require__(25);
+	var _componentsBuiltin = __webpack_require__(27);
 
 	var _componentsBuiltin2 = _interopRequireDefault(_componentsBuiltin);
 
@@ -63740,13 +63906,13 @@
 	exports.default = ScriptRegistry;
 
 /***/ },
-/* 25 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';Object.defineProperty(exports,"__esModule",{value:true});var _AudioListener=__webpack_require__(26);var ComponentAudioListener=_interopRequireWildcard(_AudioListener);var _AudioSource=__webpack_require__(29);var ComponentAudioSource=_interopRequireWildcard(_AudioSource);var _CubeMapCapture=__webpack_require__(30);var ComponentCubeMapCapture=_interopRequireWildcard(_CubeMapCapture);var _Curve=__webpack_require__(31);var ComponentCurve=_interopRequireWildcard(_Curve);var _DebugConsoleDisplay=__webpack_require__(32);var ComponentDebugConsoleDisplay=_interopRequireWildcard(_DebugConsoleDisplay);var _DebugPerformance=__webpack_require__(33);var ComponentDebugPerformance=_interopRequireWildcard(_DebugPerformance);var _DebugTextureViewer=__webpack_require__(35);var ComponentDebugTextureViewer=_interopRequireWildcard(_DebugTextureViewer);var _DefaultFilters=__webpack_require__(36);var ComponentDefaultFilters=_interopRequireWildcard(_DefaultFilters);var _DynamicOptimizer=__webpack_require__(37);var ComponentDynamicOptimizer=_interopRequireWildcard(_DynamicOptimizer);var _EventHandler=__webpack_require__(38);var ComponentEventHandler=_interopRequireWildcard(_EventHandler);var _Exploder=__webpack_require__(39);var ComponentExploder=_interopRequireWildcard(_Exploder);var _FreeCamera=__webpack_require__(40);var ComponentFreeCamera=_interopRequireWildcard(_FreeCamera);var _Fullscreen=__webpack_require__(41);var ComponentFullscreen=_interopRequireWildcard(_Fullscreen);var _InputController=__webpack_require__(42);var ComponentInputController=_interopRequireWildcard(_InputController);var _KeyframeAnimation=__webpack_require__(43);var ComponentKeyframeAnimation=_interopRequireWildcard(_KeyframeAnimation);var _LookAtTarget=__webpack_require__(44);var ComponentLookAtTarget=_interopRequireWildcard(_LookAtTarget);var _MaterialCapture=__webpack_require__(45);var ComponentMaterialCapture=_interopRequireWildcard(_MaterialCapture);var _NormalMapGenerator=__webpack_require__(46);var ComponentNormalMapGenerator=_interopRequireWildcard(_NormalMapGenerator);var _ObjectAnimator=__webpack_require__(47);var ComponentObjectAnimator=_interopRequireWildcard(_ObjectAnimator);var _ObjectPicker=__webpack_require__(48);var ComponentObjectPicker=_interopRequireWildcard(_ObjectPicker);var _OrbitCameraController=__webpack_require__(49);var ComponentOrbitCameraController=_interopRequireWildcard(_OrbitCameraController);var _PanoramaToCubeMap=__webpack_require__(50);var ComponentPanoramaToCubeMap=_interopRequireWildcard(_PanoramaToCubeMap);var _PMREMGenerator=__webpack_require__(51);var ComponentPMREMGenerator=_interopRequireWildcard(_PMREMGenerator);var _PreviewAxisRotation=__webpack_require__(52);var ComponentPreviewAxisRotation=_interopRequireWildcard(_PreviewAxisRotation);var _PreviewCameraController=__webpack_require__(53);var ComponentPreviewCameraController=_interopRequireWildcard(_PreviewCameraController);var _PreviewCameraFocus=__webpack_require__(54);var ComponentPreviewCameraFocus=_interopRequireWildcard(_PreviewCameraFocus);var _ReflectionCapturePlane=__webpack_require__(55);var ComponentReflectionCapturePlane=_interopRequireWildcard(_ReflectionCapturePlane);var _Renderer=__webpack_require__(56);var ComponentRenderer=_interopRequireWildcard(_Renderer);var _RenderFilters=__webpack_require__(57);var ComponentRenderFilters=_interopRequireWildcard(_RenderFilters);var _RenderModes=__webpack_require__(58);var ComponentRenderModes=_interopRequireWildcard(_RenderModes);var _RenderView=__webpack_require__(59);var ComponentRenderView=_interopRequireWildcard(_RenderView);var _Rotate=__webpack_require__(60);var ComponentRotate=_interopRequireWildcard(_Rotate);var _SceneLoader=__webpack_require__(61);var ComponentSceneLoader=_interopRequireWildcard(_SceneLoader);var _SimplexNoiseGenerator=__webpack_require__(62);var ComponentSimplexNoiseGenerator=_interopRequireWildcard(_SimplexNoiseGenerator);var _Skybox=__webpack_require__(63);var ComponentSkybox=_interopRequireWildcard(_Skybox);var _TextRenderer=__webpack_require__(64);var ComponentTextRenderer=_interopRequireWildcard(_TextRenderer);var _Texture2dToCubeMap=__webpack_require__(65);var ComponentTexture2dToCubeMap=_interopRequireWildcard(_Texture2dToCubeMap);function _interopRequireWildcard(obj){if(obj&&obj.__esModule){return obj;}else{var newObj={};if(obj!=null){for(var key in obj){if(Object.prototype.hasOwnProperty.call(obj,key))newObj[key]=obj[key];}}newObj.default=obj;return newObj;}}exports.default=function(Box3D){Box3D.ScriptRegistry.registerScript({"id":"audio_listener","sid":"Audio Listener","properties":{"name":"Audio Listener","description":"Audio listener for 3D, positional sound effects","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"category":"Audio","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/AudioListener"}},ComponentAudioListener);Box3D.ScriptRegistry.registerScript({"id":"audio_source","sid":"Audio Source","properties":{"name":"Audio Source","description":"Controls playback of audio assets","attributes":{"gain":{"name":"gain","type":"f","description":"Volume control","default":1,"min":0,"max":100},"autoPlay":{"name":"autoPlay","type":"b","description":"Play the audio once loaded","default":true},"loop":{"name":"loop","type":"b","description":"Continuously replay the audio","default":true},"preload":{"name":"preload","type":"b","description":"Load the audio when the component is initialized","default":true},"positional":{"name":"positional","type":"b","description":"Enable/disable 3D, positional audio effects","default":false},"stream":{"name":"stream","type":"b","description":"Stream the audio","default":false},"asset":{"name":"asset","type":"asset","description":"Audio or video asset","default":null,"filter":{"audio":true,"video":true}}},"attributesOrder":["gain","autoPlay","loop","preload","positional","stream","asset"],"events":{"playAudio":{"scope":"local","name":"playAudio","action":true,"category":"Audio","parameters":[{"name":"offset","type":"f","description":"Defined in seconds","default":0}]},"pauseAudio":{"scope":"local","name":"pauseAudio","action":true,"category":"Audio","parameters":[]},"stopAudio":{"scope":"local","name":"stopAudio","action":true,"category":"Audio","parameters":[]},"toggleAudio":{"scope":"local","name":"toggleAudio","action":true,"category":"Audio","parameters":[]}},"externalDependencies":[],"category":"Audio","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/AudioSource"}},ComponentAudioSource);Box3D.ScriptRegistry.registerScript({"id":"cubemap_capture","sid":"Cube-Map Capture","properties":{"name":"Cube-Map Capture","attributes":{"captureTexture":{"name":"captureTexture","type":"asset","description":"The RenderTextureCube to render the reflection to.","filter":{"renderTextureCube":true},"default":null},"near":{"name":"near","type":"f","description":"The closest distance to this object to render. Adjust this to avoid   rendering local geometry to the texture.","default":0.01},"far":{"name":"far","type":"f","description":"The furthest distance from this object to render.","default":16},"updateFrameInterval":{"name":"updateFrameInterval","type":"i","description":"The number of frames to skip in between updates of the reflection.   Default is 0.","default":0},"renderPosX":{"name":"renderPosX","type":"b","description":"Render this side of the cube.","default":true},"renderNegX":{"name":"renderNegX","type":"b","description":"Render this side of the cube.","default":true},"renderPosY":{"name":"renderPosY","type":"b","description":"Render this side of the cube.","default":true},"renderNegY":{"name":"renderNegY","type":"b","description":"Render this side of the cube.","default":true},"renderPosZ":{"name":"renderPosZ","type":"b","description":"Render this side of the cube.","default":true},"renderNegZ":{"name":"renderNegZ","type":"b","description":"Render this side of the cube.","default":true},"debugView":{"name":"debugView","type":"b","description":"Render the camera helpers on the cube capture.","default":false}},"attributesOrder":["captureTexture","near","far","updateFrameInterval","renderPosX","renderNegX","renderPosY","renderNegY","renderPosZ","renderNegZ","debugView"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/CubeMapCapture"}},ComponentCubeMapCapture);Box3D.ScriptRegistry.registerScript({"id":"curve_component","sid":"Curve","properties":{"name":"Curve","description":"Creates a spline curve that can be used for various things, including making objects follow it. Add controls points to shape the curve.","attributes":{"controlPoints":{"name":"controlPoints","type":"a","subType":{"type":"object"},"description":"The list of objects that define the curve shape."},"closed":{"name":"closed","type":"b","description":"If toggled, the start and end of the curve will be smoothly joined.","default":false}},"attributesOrder":["controlPoints","closed"],"events":{},"externalDependencies":[],"filter":["object"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Curve"}},ComponentCurve);Box3D.ScriptRegistry.registerScript({"id":"debug_console_display","sid":"Debug Console Display","properties":{"name":"Debug Console Display","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DebugConsoleDisplay"}},ComponentDebugConsoleDisplay);Box3D.ScriptRegistry.registerScript({"id":"debug_performance","sid":"Debug Performance","properties":{"name":"Debug Performance","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DebugPerformance"}},ComponentDebugPerformance);Box3D.ScriptRegistry.registerScript({"id":"debug_texture_viewer","sid":"Debug Texture Viewer","properties":{"name":"Debug Texture Viewer","attributes":{"viewportLeft":{"name":"viewportLeft","type":"s","description":"Left position of the viewport to be rendered by this camera.","default":"25%"},"viewportBottom":{"name":"viewportBottom","type":"s","description":"Bottom position of the viewport to be rendered by this camera.","default":"0px"},"viewportWidth":{"name":"viewportWidth","type":"s","description":"Width of the viewport to be rendered by this camera.","default":"50%"},"viewportHeight":{"name":"viewportHeight","type":"s","description":"Height of the viewport to be rendered by this camera.","default":"50%"},"renderGroup":{"name":"renderGroup","type":"i","description":"Render passes are done in order, based on the 'render group' value. Lower numbers render first.","default":9}},"attributesOrder":["viewportLeft","viewportBottom","viewportWidth","viewportHeight","renderGroup"],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DebugTextureViewer"}},ComponentDebugTextureViewer);Box3D.ScriptRegistry.registerScript({"id":"render_filters_component","sid":"Default Filters","properties":{"name":"Default Filters","description":"Stores the default filter settings that cameras will use when rendering.","attributes":{"bloom":{"name":"bloom","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"strength":{"type":"f","default":1,"min":0.1,"max":4,"step":0.001},"sigma":{"type":"f","default":4,"min":1,"max":8,"step":0.001,"advanced":true},"resolution":{"type":"i","default":256,"min":64,"max":1024,"step":1,"advanced":true}}},"toneMapping":{"name":"toneMapping","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false,"description":"Enable tone-mapping."},"adaptive":{"type":"b","description":"Automatically adjusts the tone-mapping every frame based on the average luminance of the scene.","default":true},"adaptSpeed":{"type":"f","description":"The speed at which adaptive tone-mapping works. Higher number is faster.","default":0.5,"min":0.1,"max":20},"exposureBias":{"type":"f","description":"Adjusts the overall brightness of the image. Use this to tweak the final result of tone-mapping.","default":1,"min":0.0001,"max":5},"maxLuminance":{"type":"f","description":"Sets the maximum brightness reached before pixels become white after tone-mapping.","default":16,"min":0.01,"max":25},"luminance":{"type":"f","description":"When the 'Adaptive' feature is turned off, this will set the scene luminance to be used by tone-mapping.","default":1,"min":0.0001,"max":16}}},"fxaa":{"name":"fxaa","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false}}},"vignette":{"name":"vignette","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"offset":{"type":"f","default":1,"min":0,"max":1,"step":0.001},"darkness":{"type":"f","default":1,"min":0,"max":5,"step":0.001}}},"ssao":{"name":"ssao","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"fogEnabled":{"type":"i","default":1,"advanced":true},"depthScale":{"type":"f","default":2000,"min":100,"max":50000,"step":0.001,"advanced":true},"onlyAO":{"type":"i","default":0},"aoClamp":{"type":"f","default":0.75,"advanced":true},"lumInfluence":{"type":"f","default":0.75,"advanced":true},"noiseAmount":{"type":"f","default":0.0002},"radius":{"type":"f","default":16},"diffArea":{"type":"f","default":0.4,"advanced":true},"gDisplace":{"type":"f","default":0.4,"advanced":true}}},"dof":{"name":"dof","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"aspect":{"type":"f","default":1,"min":0,"max":1,"step":0.001,"advanced":true},"aperture":{"type":"f","default":0.4,"min":0,"max":1,"step":0.001},"focus":{"type":"f","default":0.98,"min":0,"max":1,"step":0.001}}},"sepia":{"name":"sepia","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"amount":{"type":"f","default":0.9,"min":0,"max":1,"step":0.001}}},"video":{"name":"video","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"nIntensity":{"type":"f","default":0.15},"sIntensity":{"type":"f","default":0.05},"sCount":{"type":"f","default":512},"grayscale":{"type":"b","default":false}}}},"attributesOrder":["bloom","toneMapping","fxaa","vignette","ssao","dof","sepia","video"],"events":{},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DefaultFilters"}},ComponentDefaultFilters);Box3D.ScriptRegistry.registerScript({"id":"dynamic_optimizer","sid":"Dynamic Performance Optimizer","properties":{"name":"Dynamic Performance Optimizer","attributes":{"frameTimeThreshold":{"name":"frameTimeThreshold","type":"f","description":"The average time that a frame can take to render before the optimizer drops a   quality level. Default threshold is 30 FPS = 1000 ms / 30 frames","default":33.333333333333},"testInterval":{"name":"testInterval","type":"f","description":"The amount of elapsed time (in ms) to average the frame time over.   i.e. an optimization decision can be made every time this interval elapses.","default":2000}},"attributesOrder":["frameTimeThreshold","testInterval"],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/DynamicOptimizer"}},ComponentDynamicOptimizer);Box3D.ScriptRegistry.registerScript({"id":"event_handler_component","sid":"Event Handler","properties":{"name":"Event Handler","attributes":{"listen":{"name":"listen","type":"event","description":"The event to listen for. When this event is captured, all of the defined trigger events will be fired."},"triggers":{"name":"triggers","type":"a","subType":{"type":"event"},"description":"Fire each of these events in response to the captured listen event."}},"attributesOrder":["listen","triggers"],"events":{},"externalDependencies":[],"category":"Interaction","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/EventHandler"}},ComponentEventHandler);Box3D.ScriptRegistry.registerScript({"id":"exploder_component","sid":"Exploder","properties":{"name":"Exploder","description":"Explodes your objects and their hierarchies into different formations. Great for showing off parts in a model!","attributes":{"Time":{"name":"Time","type":"f","default":1.5,"description":"The amount of time to explode and contract the child meshes"},"Scale":{"name":"Scale","type":"v3","default":{"x":2,"y":2,"z":2},"description":"The scale of the explosion"},"Formation":{"name":"Formation","type":"dd","description":"Formation to use when exploding the hierarchy of this object.","default":"Scale","options":{"Circle":"Circle","Square Grid":"Grid","Scale Out":"Scale"}}},"attributesOrder":["Time","Scale","Formation"],"events":{"playExplode":{"scope":"local","name":"playExplode","action":true,"category":"Exploder","parameters":[]},"playContract":{"scope":"local","name":"playContract","action":true,"category":"Exploder","parameters":[]},"toggleExploder":{"scope":"local","name":"toggleExploder","action":true,"category":"Exploder","parameters":[]},"resetExploder":{"scope":"local","name":"resetExploder","action":true,"category":"Exploder","parameters":[]},"useCircleExplode":{"scope":"local","name":"useCircleExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":1,"y":1,"z":1}}]},"useGridExplode":{"scope":"local","name":"useGridExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":1,"y":1,"z":1}}]},"useScaleOutExplode":{"scope":"local","name":"useScaleOutExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":2,"y":2,"z":2}}]},"beginExplode":{"scope":"other","name":"beginExplode","action":false,"category":"Exploder","parameters":[]},"endExplode":{"scope":"other","name":"endExplode","action":false,"category":"Exploder","parameters":[]},"beginContract":{"scope":"other","name":"beginContract","action":false,"category":"Exploder","parameters":[]},"endContract":{"scope":"other","name":"endContract","action":false,"category":"Exploder","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Exploder"}},ComponentExploder);Box3D.ScriptRegistry.registerScript({"id":"free_camera_controller","sid":"Free Camera Controller","properties":{"name":"Free Camera Controller","attributes":{"inertialDamping":{"name":"inertialDamping","type":"f","default":0.2,"min":0,"max":1},"usePointerLock":{"name":"usePointerLock","type":"b","description":"","default":false},"invertX":{"name":"invertX","type":"b","default":false},"invertY":{"name":"invertY","type":"b","default":false},"invertZoom":{"name":"invertZoom","type":"b","default":false},"lookSpeed":{"name":"lookSpeed","type":"f","default":1,"min":0.0001,"max":1000},"movementSpeed":{"name":"movementSpeed","type":"f","default":3,"max":1000,"min":0.01},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","default":{"max":75,"min":-75},"max":{"max":90,"min":90},"min":{"max":-90,"min":-90.01}},"enablePan":{"name":"enablePan","type":"b","default":true},"enableZoom":{"name":"enableZoom","type":"b","default":true}},"attributesOrder":["inertialDamping","usePointerLock","invertX","invertY","invertZoom","lookSpeed","movementSpeed","pitchAngleBounds","enablePan","enableZoom"],"events":{"enableFreeCameraController":{"scope":"local","name":"enableFreeCameraController","parameters":[]},"disableFreeCameraController":{"scope":"local","name":"disableFreeCameraController","parameters":[]},"toggleFreeCameraController":{"scope":"local","name":"toggleFreeCameraController","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera-Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/FreeCamera"}},ComponentFreeCamera);Box3D.ScriptRegistry.registerScript({"id":"fullscreen_script","sid":"Fullscreen","properties":{"name":"Fullscreen","description":"ses fullscreen API to make your app fullscreen! This will fullscreen the canvas' parent element, so your UI can be fullscreened as well! If a selector is provided, then we will fullscreen that element instead.","attributes":{},"attributesOrder":[],"events":{"toggleFullscreen":{"scope":"local","name":"toggleFullscreen","action":true,"category":"Rendering","parameters":[]}},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Fullscreen"}},ComponentFullscreen);Box3D.ScriptRegistry.registerScript({"id":"input_controller_component","sid":"Input Controller","properties":{"name":"Input Controller","attributes":{"mouseEvents":{"name":"mouseEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable mouse events?"},"scroll":{"type":"b","default":true,"description":"Listen to scroll events?"},"scroll_preventDefault":{"type":"b","default":false,"description":"Prevent default scroll behaviour?"},"move":{"type":"b","default":true,"description":"Listen to mouse move events?"},"down":{"type":"b","default":true,"description":"Listen to mouse down event?"},"down_preventDefault":{"type":"b","default":false,"description":"Prevent default mouse down behaviour?"},"up":{"type":"b","default":true,"description":"Listen to mouse up event?"},"double_click":{"type":"b","default":true,"description":"Listen to double click event?"},"leave":{"type":"b","default":true,"description":"Listen to mouse leave event"},"contextMenu":{"type":"b","default":true,"description":"Listen for the context menu event? (ie, right click)"},"contextMenu_preventDefault":{"type":"b","default":true,"description":"Prevent context menu default behaviour (ie, the context menu popping open)"},"dragBufferDistance":{"type":"f","default":12,"name":"Drag Buffer Distance","description":"The distance from initial click that you need to move your mouse before a drag event is fired, in pixels"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the mouse are picked up by the Event Handler"}}},"touchEvents":{"name":"touchEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable touch events?"},"start":{"type":"b","default":true,"description":"Listen for Touch Start"},"start_preventDefault":{"type":"b","default":true,"description":"Prevent default behaviour of touch start event"},"end":{"type":"b","default":true,"description":"Listen for touch end event"},"doubleTap":{"type":"b","default":true,"description":"Listen for a touch double tap event"},"cancel":{"type":"b","default":true,"description":"Listen for touch cancel event"},"leave":{"type":"b","default":true,"description":"Listen for touch leave event"},"move":{"type":"b","default":true,"description":"Listen for touch move event"},"move_preventDefault":{"type":"b","default":true,"description":"Prevent default move behaviour (ie, dragging the window)"},"dragBufferDistance":{"type":"f","default":12,"name":"Drag Buffer Distance","description":"The distance from initial touch down that you need to move your finger before a drag event is fired, in pixels"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the touches are picked up by the Event Handler"}}},"keyEvents":{"name":"keyEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable keyboard events"},"down":{"type":"b","default":true,"description":"Listen to key down events"},"up":{"type":"b","default":true,"description":"Listen to key up events"},"preventDefault":{"type":"b","default":false,"description":"Prevent default keypress behaviour"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the keys are picked up by the Event Handler"}}}},"attributesOrder":["mouseEvents","touchEvents","keyEvents"],"events":{"mouse_down_left":{"scope":"global","name":"mouse_down_left","action":false,"category":"Input - Mouse","parameters":[]},"mouse_down_right":{"scope":"global","name":"mouse_down_right","action":false,"category":"Input - Mouse","parameters":[]},"mouse_down_middle":{"scope":"global","name":"mouse_down_middle","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_left":{"scope":"global","name":"mouse_up_left","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_right":{"scope":"global","name":"mouse_up_right","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_middle":{"scope":"global","name":"mouse_up_middle","action":false,"category":"Input - Mouse","parameters":[]},"keypress_a":{"scope":"global","name":"keypress_a","action":false,"category":"Input - Keys","parameters":[]},"keypress_b":{"scope":"global","name":"keypress_b","action":false,"category":"Input - Keys","parameters":[]},"keypress_c":{"scope":"global","name":"keypress_c","action":false,"category":"Input - Keys","parameters":[]},"keypress_d":{"scope":"global","name":"keypress_d","action":false,"category":"Input - Keys","parameters":[]},"keypress_f":{"scope":"global","name":"keypress_f","action":false,"category":"Input - Keys","parameters":[]},"keypress_g":{"scope":"global","name":"keypress_g","action":false,"category":"Input - Keys","parameters":[]},"keypress_e":{"scope":"global","name":"keypress_e","action":false,"category":"Input - Keys","parameters":[]},"keypress_h":{"scope":"global","name":"keypress_h","action":false,"category":"Input - Keys","parameters":[]},"keypress_i":{"scope":"global","name":"keypress_i","action":false,"category":"Input - Keys","parameters":[]},"keypress_j":{"scope":"global","name":"keypress_j","action":false,"category":"Input - Keys","parameters":[]},"keypress_k":{"scope":"global","name":"keypress_k","action":false,"category":"Input - Keys","parameters":[]},"keypress_l":{"scope":"global","name":"keypress_l","action":false,"category":"Input - Keys","parameters":[]},"keypress_m":{"scope":"global","name":"keypress_m","action":false,"category":"Input - Keys","parameters":[]},"keypress_n":{"scope":"global","name":"keypress_n","action":false,"category":"Input - Keys","parameters":[]},"keypress_o":{"scope":"global","name":"keypress_o","action":false,"category":"Input - Keys","parameters":[]},"keypress_p":{"scope":"global","name":"keypress_p","action":false,"category":"Input - Keys","parameters":[]},"keypress_q":{"scope":"global","name":"keypress_q","action":false,"category":"Input - Keys","parameters":[]},"keypress_r":{"scope":"global","name":"keypress_r","action":false,"category":"Input - Keys","parameters":[]},"keypress_s":{"scope":"global","name":"keypress_s","action":false,"category":"Input - Keys","parameters":[]},"keypress_t":{"scope":"global","name":"keypress_t","action":false,"category":"Input - Keys","parameters":[]},"keypress_u":{"scope":"global","name":"keypress_u","action":false,"category":"Input - Keys","parameters":[]},"keypress_v":{"scope":"global","name":"keypress_v","action":false,"category":"Input - Keys","parameters":[]},"keypress_w":{"scope":"global","name":"keypress_w","action":false,"category":"Input - Keys","parameters":[]},"keypress_x":{"scope":"global","name":"keypress_x","action":false,"category":"Input - Keys","parameters":[]},"keypress_y":{"scope":"global","name":"keypress_y","action":false,"category":"Input - Keys","parameters":[]},"keypress_z":{"scope":"global","name":"keypress_z","action":false,"category":"Input - Keys","parameters":[]},"keypress_up_arrow":{"scope":"global","name":"keypress_up_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_down_arrow":{"scope":"global","name":"keypress_down_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_left_arrow":{"scope":"global","name":"keypress_left_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_right_arrow":{"scope":"global","name":"keypress_right_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_space":{"scope":"global","name":"keypress_space","action":false,"category":"Input - Keys","parameters":[]},"touch_start":{"scope":"global","name":"touch_start","action":false,"category":"Input - Touch","parameters":[]},"touch_end":{"scope":"global","name":"touch_end","action":false,"category":"Input - Touch","parameters":[]}},"externalDependencies":[],"filter":["application"],"category":"Input","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/InputController"}},ComponentInputController);Box3D.ScriptRegistry.registerScript({"id":"animation","sid":"Animation","properties":{"name":"Animation","attributes":{"autoPlay":{"name":"autoPlay","type":"b","description":"Play the animation once loaded","default":true},"loop":{"name":"loop","type":"b","description":"Continuously replay the animation","default":true},"speed":{"name":"speed","type":"f","description":"Playback speed","default":1,"min":0,"max":100},"startTime":{"name":"startTime","type":"f","description":"Begin playback at this time offset","default":0,"min":0},"weight":{"name":"weight","type":"f","description":"Blending weight","default":1,"min":0,"max":1},"asset":{"name":"asset","type":"asset","description":"Animation asset","default":null,"filter":{"animation":true}},"clipId":{"name":"clipId","type":"i","description":"The animation clip ID","default":null}},"attributesOrder":["autoPlay","loop","speed","startTime","weight","asset","clipId"],"events":{"playAnimation":{"scope":"local","name":"playAnimation","action":true,"category":"Animation","parameters":[{"name":"asset","type":"asset","description":"The animation asset to play.","default":null,"filter":{"animation":true}},{"name":"clipId","type":"s","description":"The ID of the clip to play.","default":null},{"name":"loop","type":"b","description":"Continuously replay the animation.","default":true},{"name":"speed","type":"f","description":"Playback speed.","default":1,"min":0,"max":100},{"name":"startTime","type":"f","description":"Begin playback at this time offset.","default":0,"min":0}]},"pauseAnimation":{"scope":"local","name":"pauseAnimation","action":true,"category":"Animation","parameters":[]},"stopAnimation":{"scope":"local","name":"stopAnimation","action":true,"category":"Animation","parameters":[]},"toggleAnimation":{"scope":"local","name":"toggleAnimation","action":true,"category":"Animation","parameters":[]},"animationLoaded":{"scope":"local","name":"animationLoaded","action":false,"category":"Animation","parameters":[]},"endAnimation":{"scope":"local","name":"endAnimation","action":false,"category":"Animation","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/KeyframeAnimation"}},ComponentKeyframeAnimation);Box3D.ScriptRegistry.registerScript({"id":"lookat_component","sid":"Look At Target","properties":{"name":"Look At Target","description":"A component that automatically points the object at a target. This can be used for billboarding an object to the camera, making a character look at another, etc.","attributes":{"target":{"name":"target","type":"object","description":"The object that you want this object to point towards. e.g. for billboarding, this would be the camera used to render the scene."},"local":{"name":"local","type":"b","description":"If toggled, whatever rotation you have already applied to this object will be taken into account.","default":false},"showPreview":{"name":"showPreview","type":"b","description":"Run the lookAt in the editor.","default":true}},"attributesOrder":["target","local","showPreview"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/LookAtTarget"}},ComponentLookAtTarget);Box3D.ScriptRegistry.registerScript({"id":"material_capture","sid":"Material Capture","properties":{"name":"Material Capture","description":"A component that captures an image of a rendered material as a spherical map, complete with lighting. This image can then be applied (with a sphere map projection) to a mesh to achieve convincing material shading (although the mesh will appear with the same lighting from all directions).","attributes":{"captureTexture":{"name":"captureTexture","type":"asset","description":"","filter":{"renderTexture2D":true},"default":null}},"attributesOrder":["captureTexture"],"events":{},"externalDependencies":[],"filter":["material"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/MaterialCapture"}},ComponentMaterialCapture);Box3D.ScriptRegistry.registerScript({"id":"normal_map_generator_component","sid":"Normal Map Generator","properties":{"name":"Normal Map Generator","attributes":{"bumpTexture":{"name":"bumpTexture","type":"asset","filter":{"renderTexture2D":true,"texture2D":true}},"smoothness":{"name":"smoothness","type":"f","slider":true,"default":0.25,"min":0.0001,"max":1},"spread":{"name":"spread","type":"f","slider":true,"default":4,"min":1,"max":10},"autoLoad":{"name":"autoLoad","type":"b","default":true}},"attributesOrder":["bumpTexture","smoothness","spread","autoLoad"],"events":{"renderNormalMap":{"scope":"local","name":"renderNormalMap","action":true,"category":"Rendering","parameters":[]}},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/NormalMapGenerator"}},ComponentNormalMapGenerator);Box3D.ScriptRegistry.registerScript({"id":"object_animator_component","sid":"Object Animator","properties":{"name":"Object Animator","attributes":{},"attributesOrder":[],"events":{"playAnimateAlongCurve":{"scope":"local","name":"playAnimateAlongCurve","action":true,"category":"Animation","parameters":[{"name":"curve","type":"object","componentFilter":{"Curve":true}},{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"orientation","description":"Orient the object following the curve to either the direction of the curve or to the objects defining the curve.","type":"opt","default":"toCurve","options":{"None":"None","To Curve":"toCurve","To Nodes":"toNode"}},{"name":"loop","type":"b","description":"","default":false}]},"playAnimateToObject":{"scope":"local","name":"playAnimateToObject","action":true,"category":"Animation","parameters":[{"name":"object","type":"object","default":null},{"name":"animationTime","type":"f","description":"Total time that the animation will take. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"update orientation","type":"b","default":true}]},"playAnimateTranslation":{"scope":"local","name":"playAnimateTranslation","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"velocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-1,"max":1},{"name":"objectUsage","type":"opt","description":"Specify what part of the animation the current object's position represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}}]},"playAnimateRotation":{"scope":"local","name":"playAnimateRotation","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"angularVelocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-100,"max":100},{"name":"objectUsage","type":"opt","description":"Specify what part of the animation the current object's rotation represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}},{"name":"axisOrder","type":"opt","description":"Specify the axis order that the angular velocity will be applied in.","default":"YXZ","options":{"XYZ":"XYZ","YXZ":"YXZ","ZXY":"ZXY","XZY":"XZY","YZX":"YZX","ZYX":"ZYX"}}]},"playAnimateScale":{"scope":"local","name":"playAnimateScale","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"velocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-10,"max":10},{"name":"objectUsage","type":"opt","description":"Specify what part of the animation the current object's scale represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}}]},"pauseCurveAnimation":{"scope":"local","name":"pauseCurveAnimation","action":true,"category":"Animation","parameters":[]},"stopCurveAnimation":{"scope":"local","name":"stopCurveAnimation","action":true,"category":"Animation","parameters":[]},"unpauseCurveAnimation":{"scope":"local","name":"unpauseCurveAnimation","action":true,"category":"Animation","parameters":[]},"endAnimateAlongCurve":{"scope":"local","name":"endAnimateAlongCurve","action":false,"category":"Animation","parameters":[]},"endAnimateToObject":{"scope":"local","name":"endAnimateToObject","action":false,"category":"Animation","parameters":[]},"endAnimateTranslation":{"scope":"lcoal","name":"endAnimateTranslation","action":false,"category":"Animation","parameters":[]}},"externalDependencies":[],"filter":["Object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/ObjectAnimator"}},ComponentObjectAnimator);Box3D.ScriptRegistry.registerScript({"id":"object_picker","sid":"Object Picker","properties":{"name":"Object Picker","attributes":{"pickTrigger":{"name":"pickTrigger","type":"dd","description":"What mouse action will trigger the pick?","default":"leftMouseClick","options":{"Left Mouse Click":"leftMouseClick","Middle Mouse Click":"middleMouseClick","Right Mouse Click":"rightMouseClick","Left Mouse Down":"leftMouseDown","Middle Mouse Down":"middleMouseDown","Right Mouse Down":"rightMouseDown","Left Mouse Up":"leftMouseUp","Middle Mouse Up":"middleMouseUp","Right Mouse Up":"rightMouseUp"}},"enableHoverByDefault":{"name":"enableHoverByDefault","type":"b","default":false,"advanced":true,"description":"Enable hover detection when mouse cursor is over a mesh. Note that this has a potential performance impact."},"hoverFrameSkip":{"name":"hoverFrameSkip","type":"i","description":"Skip this many frames inbetween hover checks.","default":1,"min":0,"max":60}},"attributesOrder":["pickTrigger","enableHoverByDefault","hoverFrameSkip"],"events":{"pick":{"scope":"other","name":"pick","action":false,"category":"General","parameters":[]},"beginHover":{"scope":"other","name":"beginHover","action":false,"category":"General","parameters":[]},"endHover":{"scope":"other","name":"endHover","action":false,"category":"General","parameters":[]}},"externalDependencies":[],"filter":["Scene"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/ObjectPicker"}},ComponentObjectPicker);Box3D.ScriptRegistry.registerScript({"id":"orbit_camera_controller","sid":"Orbit Camera Controller","properties":{"name":"Orbit Camera Controller","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"targetObject":{"name":"targetObject","type":"object","default":null,"description":"The object that the camera orbit point will be relative to."},"targetOffset":{"name":"targetOffset","type":"v3","default":{"x":0,"y":0,"z":0},"description":"An offset relative to the target object. This will allow you to target a specific point on an object."},"inertialDamping":{"name":"inertialDamping","type":"f","default":0.4,"description":"How quickly the camera stops moving when input stops.","min":0,"max":1},"invertX":{"name":"invertX","type":"b","default":false,"description":"Reverse the default direction that the camera moves horizontally."},"invertY":{"name":"invertY","type":"b","default":false,"description":"Reverse the default direction that the camera moves vertically."},"invertZoom":{"name":"invertZoom","type":"b","default":false,"description":"Reverse the default direction that the camera moves when zooming."},"lookSpeed":{"name":"lookSpeed","type":"f","description":"The speed that the camera orbits the target","default":1,"max":1000,"min":0.0001},"movementSpeed":{"name":"movementSpeed","type":"f","description":"The speed that the camera moves when panning","default":8,"max":2000,"min":0.1},"autoOrbit":{"name":"autoOrbit","type":"b","default":false,"description":"Automatically orbit the camera when the user is not controlling it."},"autoOrbitSpeed":{"name":"autoOrbitSpeed","type":"f","description":"The speed of the automatic orbit.","default":1,"max":1000,"min":-1000},"autoOrbitDelay":{"name":"autoOrbitDelay","type":"f","description":"The period of time with no mouse input before the auto-orbit starts (in seconds).","default":1,"max":1000,"min":0.0001},"orbitDistanceMin":{"name":"orbitDistanceMin","type":"f","description":"The closest that the camera is allowed to get to the target.","default":10,"max":1000,"min":0.001},"orbitDistanceMax":{"name":"orbitDistanceMax","type":"f","description":"The furthest that the camera is allowed to get from the target.","default":500,"max":100000,"min":1},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","description":"Allows you to set how far the camera can pitch (tilt) from horizontal. Defined in degrees with horizontal being 0.","default":{"x":75,"y":-75},"max":{"x":90,"y":90},"min":{"x":-90,"y":-90.001}},"enablePan":{"name":"enablePan","type":"b","default":true,"description":"Allow the user to pan side-to-side and up and down with the camera."},"enableZoom":{"name":"enableZoom","type":"b","default":true,"description":"Allow the user to zoom in and out with the camera."},"interpolation":{"name":"interpolation","type":"b","default":true,"description":"When enabled, the camera will smoothly interpolate toward its desired state. e.g. If something else moves the camera, interpolation will cause the camera to smoothly focus on the target again. Otherwise, it will snap back."},"interpSpeed":{"name":"interpSpeed","type":"f","description":"The speed at which the orbiting camera locks on to its target, if set to point away from it.","default":0.5,"max":10,"min":0.01},"usePointerLock":{"name":"usePointerLock","type":"b","default":false,"description":"The mouse cursor will be hidden during camera control and won't move. Requires the user to accept pointer lock message in web browser."},"useKeyboard":{"name":"useKeyboard","type":"b","default":true,"description":"Allow the camera to be controlled via keyboard input. This allows for movement with W,A,S,D/arrow keys as well as modifiers."}},"attributesOrder":["targetObject","targetOffset","inertialDamping","invertX","invertY","invertZoom","lookSpeed","movementSpeed","autoOrbit","autoOrbitSpeed","autoOrbitDelay","orbitDistanceMin","orbitDistanceMax","pitchAngleBounds","enablePan","enableZoom","interpolation","interpSpeed","usePointerLock","useKeyboard"],"events":{"enableOrbitCameraController":{"scope":"local","name":"enableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"disableOrbitCameraController":{"scope":"local","name":"disableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"toggleOrbitCameraController":{"scope":"local","name":"toggleOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"setOrbitDistance":{"scope":"local","name":"setOrbitDistance","action":true,"category":"Orbit Camera","parameters":[{"name":"newDistance","type":"f","description":"The new distance that the camera will orbit at.","default":1}]},"setTarget":{"scope":"local","name":"setTarget","description":"Sets the camera to orbit the given object","action":true,"category":"Orbit Camera","parameters":[{"name":"newTarget","type":"object","description":"The new target that the camera will orbit.","default":null},{"name":"center","type":"b","description":"Whether or not to target the center of the object. If false, the camera will orbit the origin of the object.","default":true}]},"focusOnTarget":{"scope":"local","name":"focusOnTarget","description":"Look at the center of the current target and zoom so that the object nicely fills the field of view.","action":true,"category":"Orbit Camera","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/OrbitCameraController"}},ComponentOrbitCameraController);Box3D.ScriptRegistry.registerScript({"id":"panorama_to_cubemap_script","sid":"Panorama To Cube Map","properties":{"name":"Panorama To Cube Map","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"inputTexture":{"name":"inputTexture","type":"asset","default":null,"filter":{"texture2D":true,"renderTexture2D":true},"description":"The texture to convert to a cube map."}},"attributesOrder":["inputTexture"],"events":{},"externalDependencies":[],"filter":["renderTextureCube"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PanoramaToCubeMap"}},ComponentPanoramaToCubeMap);Box3D.ScriptRegistry.registerScript({"id":"texture2d_to_pmrem_cubeuv","sid":"GeneratePMREM","properties":{"name":"GeneratePMREM","description":"Generates a prefiltered mipmaped radiance environment map from a, preferably HDRI, input environment map. The entire result will be stored in this texture in the CubeUV layout.","attributes":{"inputTexture":{"name":"inputTexture","type":"asset","default":null,"filter":{"texture2D":true,"renderTexture2D":true,"textureCube":true,"renderTextureCube":true},"description":"The texture to generate the PMREM for."}},"attributesOrder":["inputTexture"],"events":{},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PMREMGenerator"}},ComponentPMREMGenerator);Box3D.ScriptRegistry.registerScript({"id":"preview_axis_rotation","sid":"Preview Axis Rotation","properties":{"name":"Preview Axis Rotation","description":"Set the rotation of any axis.","attributes":{"speed":{"name":"speed","type":"f","description":"The speed that we rotate the object, if a transition is triggered","default":0.4,"max":100,"min":0.1}},"attributesOrder":["speed"],"events":{},"externalDependencies":[],"filter":["object"],"category":"User Defined","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PreviewAxisRotation"}},ComponentPreviewAxisRotation);Box3D.ScriptRegistry.registerScript({"id":"preview_camera_controller","sid":"Preview Camera Controller","properties":{"name":"Preview Camera Controller","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"targetObject":{"name":"targetObject","type":"object","default":null,"description":"The object that the camera orbit point will be relative to."},"targetOffset":{"name":"targetOffset","type":"v3","default":{"x":0,"y":0,"z":0},"description":"An offset relative to the target object. This will allow you to target a specific point on an object."},"inertialDamping":{"name":"inertialDamping","type":"f","default":0.2,"description":"How quickly the camera stops moving when input stops.","min":0,"max":1},"invertX":{"name":"invertX","type":"b","default":false,"description":"Reverse the default direction that the camera moves horizontally."},"invertY":{"name":"invertY","type":"b","default":false,"description":"Reverse the default direction that the camera moves vertically."},"invertZoom":{"name":"invertZoom","type":"b","default":false,"description":"Reverse the default direction that the camera moves when zooming."},"lookSpeed":{"name":"lookSpeed","type":"f","description":"The speed that the camera orbits the target","default":1,"max":1000,"min":0.0001},"movementSpeed":{"name":"movementSpeed","type":"f","description":"The speed that the camera moves when panning","default":8,"max":2000,"min":0.1},"autoOrbit":{"name":"autoOrbit","type":"b","default":false,"description":"Automatically orbit the camera when the user is not controlling it."},"autoOrbitSpeed":{"name":"autoOrbitSpeed","type":"f","description":"The speed of the automatic orbit.","default":1,"max":1000,"min":-1000},"autoOrbitDelay":{"name":"autoOrbitDelay","type":"f","description":"The period of time with no mouse input before the auto-orbit starts (in seconds).","default":1,"max":1000,"min":0.0001},"orbitDistanceMin":{"name":"orbitDistanceMin","type":"f","description":"The closest that the camera is allowed to get to the target.","default":1,"max":1000,"min":0.001},"orbitDistanceMax":{"name":"orbitDistanceMax","type":"f","description":"The furthest that the camera is allowed to get from the target.","default":50,"max":100000,"min":1},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","description":"Allows you to set how far the camera can pitch (tilt) from horizontal. Defined in degrees with horizontal being 0.","default":{"x":75,"y":-75},"max":{"x":90,"y":90},"min":{"x":-90,"y":-90.001}},"enablePan":{"name":"enablePan","type":"b","default":true,"description":"Allow the user to pan side-to-side and up and down with the camera."},"enableZoom":{"name":"enableZoom","type":"b","default":true,"description":"Allow the user to zoom in and out with the camera."},"interpolation":{"name":"interpolation","type":"b","default":true,"description":"When enabled, the camera will smoothly interpolate toward its desired state. e.g. If something else moves the camera, interpolation will cause the camera to smoothly focus on the target again. Otherwise, it will snap back."},"interpSpeed":{"name":"interpSpeed","type":"f","description":"The speed at which the orbiting camera locks on to its target, if set to point away from it.","default":0.5,"max":10,"min":0.01},"usePointerLock":{"name":"usePointerLock","type":"b","default":false,"description":"The mouse cursor will be hidden during camera control and won't move. Requires the user to accept pointer lock message in web browser."},"useKeyboard":{"name":"useKeyboard","type":"b","default":true,"description":"Allow the camera to be controlled via keyboard input. This allows for movement with W,A,S,D/arrow keys as well as modifiers."}},"attributesOrder":["targetObject","targetOffset","inertialDamping","invertX","invertY","invertZoom","lookSpeed","movementSpeed","autoOrbit","autoOrbitSpeed","autoOrbitDelay","orbitDistanceMin","orbitDistanceMax","pitchAngleBounds","enablePan","enableZoom","interpolation","interpSpeed","usePointerLock","useKeyboard"],"events":{"enableOrbitCameraController":{"scope":"local","name":"enableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"disableOrbitCameraController":{"scope":"local","name":"disableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"toggleOrbitCameraController":{"scope":"local","name":"toggleOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"resetOrbitCameraController":{"scope":"local","name":"resetOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"setOrbitDistance":{"scope":"local","name":"setOrbitDistance","action":true,"category":"Orbit Camera","parameters":[{"name":"newDistance","type":"f","description":"The new distance that the camera will orbit at.","default":1}]},"setTarget":{"scope":"local","name":"setTarget","description":"Sets the camera to orbit the given object","action":true,"category":"Orbit Camera","parameters":[{"name":"newTarget","type":"object","description":"The new target that the camera will orbit.","default":null},{"name":"center","type":"b","description":"Whether or not to target the center of the object. If false, the camera will orbit the origin of the object.","default":true}]},"focusOnTarget":{"scope":"local","name":"focusOnTarget","description":"Look at the center of the current target and zoom so that the object nicely fills the field of view.","action":true,"category":"Orbit Camera","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PreviewCameraController"}},ComponentPreviewCameraController);Box3D.ScriptRegistry.registerScript({"id":"preview_camera_focus","sid":"Preview Camera Focus","properties":{"name":"Preview Camera Focus","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"speed":{"name":"speed","type":"f","description":"The speed that we move to focus on the target","default":0.8,"max":100,"min":0.1}},"attributesOrder":["speed"],"events":{},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/PreviewCameraFocus"}},ComponentPreviewCameraFocus);Box3D.ScriptRegistry.registerScript({"id":"reflection_capture_planar","sid":"Reflection Capture Plane","properties":{"name":"Reflection Capture Plane","attributes":{"captureTexture":{"name":"captureTexture","type":"asset","description":"The RenderTexture2D to render the reflection to.","filter":{"renderTexture2D":true}},"clipBias":{"name":"clipBias","type":"f","description":"Pushes the rendered scene forward or backwards to adjust clipping with reflection plane.","default":0.01},"updateFrameInterval":{"name":"updateFrameInterval","type":"i","description":"The number of frames to skip in between updates of the reflection. Default is 0.","default":0}},"attributesOrder":["captureTexture","clipBias","updateFrameInterval"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/ReflectionCapturePlane"}},ComponentReflectionCapturePlane);Box3D.ScriptRegistry.registerScript({"id":"box3d_renderer","sid":"Renderer","properties":{"name":"Renderer","attributes":{"renderOnDemand":{"name":"renderOnDemand","type":"b","description":"When this is enabled, rendering will only happen when requested instead of every frame.","defualt":true},"antialias":{"name":"antialias","type":"b","description":"Enable or disable antialiasing of the rendered scene.","default":true},"preserveDrawingBuffer":{"name":"preserveDrawingBuffer","type":"b","description":"Tells the browser to preserve drawing buffers between frames so that they are available to be read by the application.","default":true},"autoClear":{"name":"autoClear","type":"b","description":"Automatically clear the render target before each render.","default":false},"devicePixelRatio":{"name":"devicePixelRatio","type":"dd","default":0,"options":{"Device Default":0,"One":1,"Two":2},"description":"Override the default pixel ratio of the system. Higher values will cause rendering at higher resolution while lower values will force rendering at lower resolutions. You can also set this to use the device default (mobile devices usually have values greater than 1)."},"clearColor":{"name":"clearColor","type":"c","description":"When the render target is cleared, this colour will be used","default":{"r":0,"g":0,"b":0}},"clearAlpha":{"name":"clearAlpha","type":"f","description":"When the render target is cleared, this value will be used to clear the transparency","default":0,"min":0,"max":1,"step":0.001},"precision":{"name":"precision","type":"dd","description":"The default floating point and integer precision to be used by the GPU.","default":"mediump","options":{"Low":"lowp","Medium":"mediump","High":"highp"}},"maxTextureSize2d":{"name":"maxTextureSize2d","type":"i","description":"Clamp the maximum allowed dimension of a 2d texture.","default":32768,"min":1024,"max":32768},"maxTextureSizeCube":{"name":"maxTextureSizeCube","type":"i","description":"Clamp the maximum allowed dimension of a cube texture.","default":32768,"min":512,"max":32768},"shadowsEnabled":{"name":"shadowsEnabled","type":"b","description":"Enable or disable rendering of shadows.","default":true},"shadowsEnabledMobile":{"name":"shadowsEnabledMobile","type":"b","description":"Enable or disable rendering of shadows on mobile devices.","default":false},"shadowType":{"name":"shadowType","type":"dd","options":{"Soft PCF":2,"PCF":1,"No Filtering":0},"default":2},"shadowReverseSided":{"name":"shadowReverseSided","type":"b","description":"Render shadows with reverse side of mesh.","default":false},"shadowDebug":{"name":"shadowDebug","type":"b","description":"Enable or disable debug rendering, showing the different shadow cascade sizes.","default":false},"logarithmicDepthBuffer":{"name":"logarithmicDepthBuffer","type":"b","description":"Use logarithmic z values while rendering.","default":false}},"attributesOrder":["renderOnDemand","antialias","preserveDrawingBuffer","autoClear","devicePixelRatio","clearColor","clearAlpha","precision","maxTextureSize2d","maxTextureSizeCube","shadowsEnabled","shadowsEnabledMobile","shadowType","shadowReverseSided","shadowDebug","logarithmicDepthBuffer"],"events":{},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Renderer"}},ComponentRenderer);Box3D.ScriptRegistry.registerScript({"id":"camera_filters_script","sid":"Render Filters","properties":{"name":"Render Filters","description":"Overrides the filter settings that cameras will use when rendering.","attributes":{"bloom":{"name":"bloom","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"strength":{"type":"f","default":1,"min":0.1,"max":4,"step":0.001},"sigma":{"type":"f","default":4,"min":1,"max":8,"step":0.001,"advanced":true},"resolution":{"type":"i","default":256,"min":64,"max":1024,"step":1,"advanced":true}}},"toneMapping":{"name":"toneMapping","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"adaptive":{"type":"b","description":"Automatically adjusts the tone-mapping every frame based on the average luminance of the scene.","default":true},"adaptSpeed":{"type":"f","description":"The speed at which adaptive tone-mapping works. Higher number is faster.","default":0.5,"min":0.1,"max":20},"exposureBias":{"type":"f","description":"Adjusts the overall brightness of the image. Use this to tweak the final result of tone-mapping.","default":1,"min":0.0001,"max":5},"maxLuminance":{"type":"f","description":"Sets the maximum brightness reached before pixels become white after tone-mapping.","default":16,"min":0.01,"max":25},"luminance":{"type":"f","description":"When the \"Adaptive\" feature is turned off, this will set the scene luminance to be used by tone-mapping.","default":1,"min":0.0001,"max":16}}},"fxaa":{"name":"fxaa","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false}}},"vignette":{"name":"vignette","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"offset":{"type":"f","default":1,"min":0,"max":1,"step":0.001},"darkness":{"type":"f","default":1,"min":0,"max":5,"step":0.001}}},"ssao":{"name":"ssao","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"fogEnabled":{"type":"i","default":1,"advanced":true},"depthScale":{"type":"f","default":2000,"min":100,"max":50000,"step":0.001,"advanced":true},"onlyAO":{"type":"i","default":0},"aoClamp":{"type":"f","default":0.75,"advanced":true},"lumInfluence":{"type":"f","default":0.75,"advanced":true},"noiseAmount":{"type":"f","default":0.0002},"radius":{"type":"f","default":16},"diffArea":{"type":"f","default":0.4,"advanced":true},"gDisplace":{"type":"f","default":0.4,"advanced":true}}},"dof":{"name":"dof","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"aspect":{"type":"f","default":1,"min":0,"max":1,"step":0.001,"advanced":true},"aperture":{"type":"f","default":0.4,"min":0,"max":1,"step":0.001},"focus":{"type":"f","default":0.98,"min":0,"max":1,"step":0.001}}},"sepia":{"name":"sepia","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"amount":{"type":"f","default":0.9,"min":0,"max":1,"step":0.001}}},"video":{"name":"video","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"nIntensity":{"type":"f","default":0.15},"sIntensity":{"type":"f","default":0.05},"sCount":{"type":"f","default":512},"grayscale":{"type":"b","default":false}}}},"attributesOrder":["bloom","toneMapping","fxaa","vignette","ssao","dof","sepia","video"],"events":{},"externalDependencies":[],"filter":["object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/RenderFilters"}},ComponentRenderFilters);Box3D.ScriptRegistry.registerScript({"id":"render_modes","sid":"Render Modes","properties":{"name":"Render Modes","attributes":{"renderMode":{"name":"renderMode","type":"s","description":"How to render the scene","default":"Lit"},"shapeTexture":{"name":"shapeTexture","type":"asset","description":"","filter":{"texture2D":true,"renderTexture2D":true},"default":null},"skeletonsVisible":{"name":"skeletonsVisible","type":"b","description":"Render skeletons in the scene","default":false},"wireframesVisible":{"name":"wireframesVisible","type":"b","description":"Render mesh wireframes","default":false}},"attributesOrder":["renderMode","shapeTexture","skeletonsVisible","wireframesVisible"],"events":{"resetSkeletons":{"scope":"local","name":"resetSkeletons","action":true,"category":"Rendering","parameters":[]},"setRenderMode":{"scope":"local","name":"setRenderMode","action":true,"category":"Rendering","parameters":[{"name":"renderMode","type":"s","description":"One of \"Lit\", \"Unlit\", etc.","default":"Lit"}]},"setSkeletonsVisible":{"scope":"local","name":"setSkeletonsVisible","action":true,"category":"Rendering","parameters":[{"name":"visible","type":"b","description":"Whether or not skeletons are visible.","default":false}]},"setWireframesVisible":{"scope":"local","name":"setWireframesVisible","action":true,"category":"Rendering","parameters":[{"name":"visible","type":"b","description":"Whether or not wireframes are visible.","default":false}]}},"externalDependencies":[],"filter":["Application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/RenderModes"}},ComponentRenderModes);Box3D.ScriptRegistry.registerScript({"id":"render_view_component","sid":"Render View","properties":{"name":"Render View","attributes":{"viewportLeft":{"name":"viewportLeft","type":"s","description":"Left position of the viewport to be rendered by this camera.","default":"0px"},"viewportBottom":{"name":"viewportBottom","type":"s","description":"Bottom position of the viewport to be rendered by this camera.","default":"0px"},"viewportWidth":{"name":"viewportWidth","type":"s","description":"Width of the viewport to be rendered by this camera.","default":"100%"},"viewportHeight":{"name":"viewportHeight","type":"s","description":"Height of the viewport to be rendered by this camera.","default":"100%"},"renderGroup":{"name":"renderGroup","type":"i","description":"Render passes are done in order, based on the 'render group' value. Lower numbers render first.","default":0},"renderLayer":{"name":"renderLayer","type":"i","description":".","default":0,"min":0},"clearColor":{"name":"clearColor","type":"b","description":"","default":false,"advanced":false},"clearDepth":{"name":"clearDepth","type":"b","description":"","default":true,"advanced":false},"renderTarget":{"name":"renderTarget","type":"asset","description":"","filter":{"renderTexture2D":true},"default":null,"advanced":false},"enablePreRenderFunctions":{"name":"enablePreRenderFunctions","type":"b","description":"Run pre-render functions with this view. These include things like real-time reflections, which need to be rendered for each view separately.","default":true,"advanced":true},"enableShadows":{"name":"enableShadows","type":"b","description":"Render shadows for this view.","default":true,"advanced":true}},"attributesOrder":["viewportLeft","viewportBottom","viewportWidth","viewportHeight","renderGroup","renderLayer","clearColor","clearDepth","renderTarget","enablePreRenderFunctions","enableShadows"],"events":{"enableRenderView":{"scope":"local","name":"enableRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]},"setViewport":{"scope":"local","name":"setViewport","category":"Rendering","parameters":[{"name":"viewportLeft","description":"Left position of the viewport to be rendered by this camera.","type":"s","default":"0px"},{"name":"viewportBottom","description":"Bottom position of the viewport to be rendered by this camera.","type":"s","default":"0px"},{"name":"viewportWidth","description":"Width of the viewport to be rendered by this camera.","type":"s","default":"100%"},{"name":"viewportHeight","description":"Height of the viewport to be rendered by this camera.","type":"s","default":"100%"},{"name":"animationTime","type":"f","description":"Animate the change in viewport over this many seconds.","default":0}]},"disableRenderView":{"scope":"local","name":"disableRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]},"toggleRenderView":{"scope":"local","name":"toggleRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]}},"externalDependencies":[],"filter":["camera"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/RenderView"}},ComponentRenderView);Box3D.ScriptRegistry.registerScript({"id":"rotate_component","sid":"Rotate","properties":{"name":"Rotate","description":"A simple component to rotate an object.","attributes":{"autoRotate":{"name":"autoRotate","type":"b","description":"Automatically start the rotation upon load.","default":true},"previewRotation":{"name":"previewRotation","type":"b","description":"Show the rotation in the editor.","default":true},"rotation":{"name":"rotation","type":"v3","description":"Amount of rotation per second about the x, y and z axes.","default":{"x":0,"y":0.5,"z":0}},"local":{"name":"local","type":"b","description":"Rotate relative to the local quaternion of the object. If false, the rotation will be relative to the world.","default":false}},"attributesOrder":["autoRotate","previewRotation","rotation","local"],"events":{"startRotate":{"scope":"local","name":"startRotate","action":true,"category":"Rotate","parameters":[]},"stopRotate":{"scope":"local","name":"stopRotate","action":true,"category":"Rotate","parameters":[]},"toggleRotate":{"scope":"local","name":"toggleRotate","action":true,"category":"Rotate","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Rotate"}},ComponentRotate);Box3D.ScriptRegistry.registerScript({"id":"loader_component","sid":"Scene Loader","properties":{"name":"Scene Loader","description":"A simple component to load a scene and display progress for it.","attributes":{"scene":{"name":"scene","type":"asset","description":"The scene to load.","filter":{"scene":true}}},"attributesOrder":["scene"],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Loading","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/SceneLoader"}},ComponentSceneLoader);Box3D.ScriptRegistry.registerScript({"id":"simplex_noise_component","sid":"Simplex Noise Generator","properties":{"name":"Simplex Noise Generator","attributes":{"layerAmplitude":{"name":"layerAmplitude","type":"v4","default":{"x":0.5,"y":0.4,"z":0.3,"w":0.125}},"layerScale":{"name":"layerScale","type":"v4","default":{"x":0.5,"y":2,"z":3,"w":4}},"scale":{"name":"scale","type":"v2","default":{"x":1,"y":1}},"offset":{"name":"offset","type":"v2","default":{"x":0,"y":0}},"autoLoad":{"name":"autoLoad","type":"b","default":true}},"attributesOrder":["layerAmplitude","layerScale","scale","offset","autoLoad"],"events":{"renderNoise":{"scope":"local","name":"renderNoise","action":true,"category":"Rendering","parameters":[]},"changeNoiseValues":{"scope":"local","name":"changeNoiseValues","action":true,"category":"Rendering","parameters":[{"name":"layerAmplitude","type":"v4","description":"","default":{"x":0.5,"y":0.4,"z":0.3,"w":0.125}},{"name":"layerScale","type":"v4","description":"","default":{"x":0.5,"y":2,"z":3,"w":4}},{"name":"scale","type":"v2","description":"","default":{"x":1,"y":1}},{"name":"offset","type":"v2","description":"","default":{"x":0,"y":0}}]}},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/SimplexNoiseGenerator"}},ComponentSimplexNoiseGenerator);Box3D.ScriptRegistry.registerScript({"id":"skybox_renderer","sid":"Skybox","properties":{"name":"Skybox","attributes":{"size":{"name":"size","type":"f","default":1000,"min":1,"max":1000000},"stereoEnabled":{"name":"stereoEnabled","type":"b","default":false},"skyboxTexture":{"name":"skyboxTexture","type":"asset","description":"","filter":{"textureCube":true,"texture2D":true,"renderTexture2D":true,"renderTextureCube":true},"default":"white_cube"}},"attributesOrder":["size","stereoEnabled","skyboxTexture"],"events":{},"externalDependencies":[],"filter":["scene"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Skybox"}},ComponentSkybox);Box3D.ScriptRegistry.registerScript({"id":"text_renderer_component","sid":"Text Renderer","properties":{"name":"Text Renderer","description":"Render the desired text to the texture we are attached to","attributes":{"text":{"name":"text","type":"s","default":"My Text","description":"Text you want to display"},"fontColor":{"name":"fontColor","type":"c","default":{"r":1,"g":1,"b":1},"description":"Color of the text"},"fontFamily":{"name":"fontFamily","type":"s","default":"Calibri","description":"Font family to render"},"pointSize":{"name":"pointSize","type":"i","default":48,"description":"Font size","min":2,"max":100}},"attributesOrder":["text","fontColor","fontFamily","pointSize"],"events":{},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Text","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/TextRenderer"}},ComponentTextRenderer);Box3D.ScriptRegistry.registerScript({"id":"texture2d_to_cubemap_script","sid":"Texture To Cube Map","properties":{"name":"Texture To Cube Map","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"inputTexture":{"name":"inputTexture","type":"asset","default":null,"filter":{"texture2D":true,"renderTexture2D":true},"description":"The texture to convert to a cube map."}},"attributesOrder":["inputTexture"],"events":{},"externalDependencies":[],"filter":["renderTextureCube"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"Box3DRuntime/Components/BuiltIn/Texture2dToCubeMap"}},ComponentTexture2dToCubeMap);};/* eslint-enable *//* eslint-disable */
+	'use strict';Object.defineProperty(exports,"__esModule",{value:true});var _AudioListener=__webpack_require__(28);var ComponentAudioListener=_interopRequireWildcard(_AudioListener);var _AudioSource=__webpack_require__(31);var ComponentAudioSource=_interopRequireWildcard(_AudioSource);var _CubeMapCapture=__webpack_require__(32);var ComponentCubeMapCapture=_interopRequireWildcard(_CubeMapCapture);var _Curve=__webpack_require__(33);var ComponentCurve=_interopRequireWildcard(_Curve);var _DebugConsoleDisplay=__webpack_require__(34);var ComponentDebugConsoleDisplay=_interopRequireWildcard(_DebugConsoleDisplay);var _DebugPerformance=__webpack_require__(35);var ComponentDebugPerformance=_interopRequireWildcard(_DebugPerformance);var _DebugTextureViewer=__webpack_require__(37);var ComponentDebugTextureViewer=_interopRequireWildcard(_DebugTextureViewer);var _DefaultFilters=__webpack_require__(38);var ComponentDefaultFilters=_interopRequireWildcard(_DefaultFilters);var _DynamicOptimizer=__webpack_require__(39);var ComponentDynamicOptimizer=_interopRequireWildcard(_DynamicOptimizer);var _EventHandler=__webpack_require__(40);var ComponentEventHandler=_interopRequireWildcard(_EventHandler);var _Exploder=__webpack_require__(41);var ComponentExploder=_interopRequireWildcard(_Exploder);var _FreeCamera=__webpack_require__(42);var ComponentFreeCamera=_interopRequireWildcard(_FreeCamera);var _Fullscreen=__webpack_require__(43);var ComponentFullscreen=_interopRequireWildcard(_Fullscreen);var _InputController=__webpack_require__(44);var ComponentInputController=_interopRequireWildcard(_InputController);var _KeyframeAnimation=__webpack_require__(45);var ComponentKeyframeAnimation=_interopRequireWildcard(_KeyframeAnimation);var _LookAtTarget=__webpack_require__(46);var ComponentLookAtTarget=_interopRequireWildcard(_LookAtTarget);var _MaterialCapture=__webpack_require__(47);var ComponentMaterialCapture=_interopRequireWildcard(_MaterialCapture);var _NormalMapGenerator=__webpack_require__(48);var ComponentNormalMapGenerator=_interopRequireWildcard(_NormalMapGenerator);var _ObjectAnimator=__webpack_require__(49);var ComponentObjectAnimator=_interopRequireWildcard(_ObjectAnimator);var _ObjectPicker=__webpack_require__(50);var ComponentObjectPicker=_interopRequireWildcard(_ObjectPicker);var _OrbitCameraController=__webpack_require__(51);var ComponentOrbitCameraController=_interopRequireWildcard(_OrbitCameraController);var _PanoramaToCubeMap=__webpack_require__(52);var ComponentPanoramaToCubeMap=_interopRequireWildcard(_PanoramaToCubeMap);var _PreviewAxisRotation=__webpack_require__(53);var ComponentPreviewAxisRotation=_interopRequireWildcard(_PreviewAxisRotation);var _PreviewCameraController=__webpack_require__(54);var ComponentPreviewCameraController=_interopRequireWildcard(_PreviewCameraController);var _PreviewCameraFocus=__webpack_require__(55);var ComponentPreviewCameraFocus=_interopRequireWildcard(_PreviewCameraFocus);var _ReflectionCapturePlane=__webpack_require__(56);var ComponentReflectionCapturePlane=_interopRequireWildcard(_ReflectionCapturePlane);var _Renderer=__webpack_require__(57);var ComponentRenderer=_interopRequireWildcard(_Renderer);var _RenderFilters=__webpack_require__(58);var ComponentRenderFilters=_interopRequireWildcard(_RenderFilters);var _RenderModes=__webpack_require__(59);var ComponentRenderModes=_interopRequireWildcard(_RenderModes);var _RenderView=__webpack_require__(60);var ComponentRenderView=_interopRequireWildcard(_RenderView);var _Rotate=__webpack_require__(61);var ComponentRotate=_interopRequireWildcard(_Rotate);var _SceneLoader=__webpack_require__(62);var ComponentSceneLoader=_interopRequireWildcard(_SceneLoader);var _SimplexNoiseGenerator=__webpack_require__(63);var ComponentSimplexNoiseGenerator=_interopRequireWildcard(_SimplexNoiseGenerator);var _Skybox=__webpack_require__(64);var ComponentSkybox=_interopRequireWildcard(_Skybox);var _TextRenderer=__webpack_require__(65);var ComponentTextRenderer=_interopRequireWildcard(_TextRenderer);var _Texture2dToCubeMap=__webpack_require__(66);var ComponentTexture2dToCubeMap=_interopRequireWildcard(_Texture2dToCubeMap);function _interopRequireWildcard(obj){if(obj&&obj.__esModule){return obj;}else{var newObj={};if(obj!=null){for(var key in obj){if(Object.prototype.hasOwnProperty.call(obj,key))newObj[key]=obj[key];}}newObj.default=obj;return newObj;}}/* This file was generated with box3d-component-generator at Fri Nov 04 2016 12:55:25 GMT-0400 (EDT) *//* eslint-disable */exports.default=function(Box3D){Box3D.ScriptRegistry.registerScript({"id":"audio_listener","sid":"Audio Listener","properties":{"name":"Audio Listener","description":"Audio listener for 3D, positional sound effects","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"category":"Audio","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/AudioListener"}},ComponentAudioListener);Box3D.ScriptRegistry.registerScript({"id":"audio_source","sid":"Audio Source","properties":{"name":"Audio Source","description":"Controls playback of audio assets","attributes":{"gain":{"name":"gain","type":"f","description":"Volume control","default":1,"min":0,"max":100},"autoPlay":{"name":"autoPlay","type":"b","description":"Play the audio once loaded","default":true},"loop":{"name":"loop","type":"b","description":"Continuously replay the audio","default":true},"preload":{"name":"preload","type":"b","description":"Load the audio when the component is initialized","default":true},"positional":{"name":"positional","type":"b","description":"Enable/disable 3D, positional audio effects","default":false},"stream":{"name":"stream","type":"b","description":"Stream the audio","default":false},"asset":{"name":"asset","type":"asset","description":"Audio or video asset","default":null,"filter":{"audio":true,"video":true}}},"attributesOrder":["gain","autoPlay","loop","preload","positional","stream","asset"],"events":{"playAudio":{"scope":"local","name":"playAudio","action":true,"category":"Audio","parameters":[{"name":"offset","type":"f","description":"Defined in seconds","default":0}]},"pauseAudio":{"scope":"local","name":"pauseAudio","action":true,"category":"Audio","parameters":[]},"stopAudio":{"scope":"local","name":"stopAudio","action":true,"category":"Audio","parameters":[]},"toggleAudio":{"scope":"local","name":"toggleAudio","action":true,"category":"Audio","parameters":[]}},"externalDependencies":[],"category":"Audio","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/AudioSource"}},ComponentAudioSource);Box3D.ScriptRegistry.registerScript({"id":"cubemap_capture","sid":"Cube-Map Capture","properties":{"name":"Cube-Map Capture","attributes":{"captureTexture":{"name":"captureTexture","type":"asset","description":"The RenderTextureCube to render the reflection to.","filter":{"renderTextureCube":true},"default":null},"near":{"name":"near","type":"f","description":"The closest distance to this object to render. Adjust this to avoid   rendering local geometry to the texture.","default":0.01},"far":{"name":"far","type":"f","description":"The furthest distance from this object to render.","default":16},"updateFrameInterval":{"name":"updateFrameInterval","type":"i","description":"The number of frames to skip in between updates of the reflection.   Default is 0.","default":0},"renderPosX":{"name":"renderPosX","type":"b","description":"Render this side of the cube.","default":true},"renderNegX":{"name":"renderNegX","type":"b","description":"Render this side of the cube.","default":true},"renderPosY":{"name":"renderPosY","type":"b","description":"Render this side of the cube.","default":true},"renderNegY":{"name":"renderNegY","type":"b","description":"Render this side of the cube.","default":true},"renderPosZ":{"name":"renderPosZ","type":"b","description":"Render this side of the cube.","default":true},"renderNegZ":{"name":"renderNegZ","type":"b","description":"Render this side of the cube.","default":true},"debugView":{"name":"debugView","type":"b","description":"Render the camera helpers on the cube capture.","default":false}},"attributesOrder":["captureTexture","near","far","updateFrameInterval","renderPosX","renderNegX","renderPosY","renderNegY","renderPosZ","renderNegZ","debugView"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/CubeMapCapture"}},ComponentCubeMapCapture);Box3D.ScriptRegistry.registerScript({"id":"curve_component","sid":"Curve","properties":{"name":"Curve","description":"Creates a spline curve that can be used for various things, including making objects follow it. Add controls points to shape the curve.","attributes":{"controlPoints":{"name":"controlPoints","type":"a","subType":{"type":"object"},"description":"The list of objects that define the curve shape."},"closed":{"name":"closed","type":"b","description":"If toggled, the start and end of the curve will be smoothly joined.","default":false}},"attributesOrder":["controlPoints","closed"],"events":{},"externalDependencies":[],"filter":["object"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/Curve"}},ComponentCurve);Box3D.ScriptRegistry.registerScript({"id":"debug_console_display","sid":"Debug Console Display","properties":{"name":"Debug Console Display","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/DebugConsoleDisplay"}},ComponentDebugConsoleDisplay);Box3D.ScriptRegistry.registerScript({"id":"debug_performance","sid":"Debug Performance","properties":{"name":"Debug Performance","attributes":{},"attributesOrder":[],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/DebugPerformance"}},ComponentDebugPerformance);Box3D.ScriptRegistry.registerScript({"id":"debug_texture_viewer","sid":"Debug Texture Viewer","properties":{"name":"Debug Texture Viewer","attributes":{"viewportLeft":{"name":"viewportLeft","type":"s","description":"Left position of the viewport to be rendered by this camera.","default":"25%"},"viewportBottom":{"name":"viewportBottom","type":"s","description":"Bottom position of the viewport to be rendered by this camera.","default":"0px"},"viewportWidth":{"name":"viewportWidth","type":"s","description":"Width of the viewport to be rendered by this camera.","default":"50%"},"viewportHeight":{"name":"viewportHeight","type":"s","description":"Height of the viewport to be rendered by this camera.","default":"50%"},"renderGroup":{"name":"renderGroup","type":"i","description":"Render passes are done in order, based on the 'render group' value. Lower numbers render first.","default":9}},"attributesOrder":["viewportLeft","viewportBottom","viewportWidth","viewportHeight","renderGroup"],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Debug","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/DebugTextureViewer"}},ComponentDebugTextureViewer);Box3D.ScriptRegistry.registerScript({"id":"render_filters_component","sid":"Default Filters","properties":{"name":"Default Filters","description":"Stores the default filter settings that cameras will use when rendering.","attributes":{"bloom":{"name":"bloom","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"strength":{"type":"f","default":1,"min":0.1,"max":4,"step":0.001},"sigma":{"type":"f","default":4,"min":1,"max":8,"step":0.001,"advanced":true},"resolution":{"type":"i","default":256,"min":64,"max":1024,"step":1,"advanced":true}}},"toneMapping":{"name":"toneMapping","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false,"description":"Enable tone-mapping."},"adaptive":{"type":"b","description":"Automatically adjusts the tone-mapping every frame based on the average luminance of the scene.","default":true},"adaptSpeed":{"type":"f","description":"The speed at which adaptive tone-mapping works. Higher number is faster.","default":0.5,"min":0.1,"max":20},"exposureBias":{"type":"f","description":"Adjusts the overall brightness of the image. Use this to tweak the final result of tone-mapping.","default":1,"min":0.0001,"max":5},"maxLuminance":{"type":"f","description":"Sets the maximum brightness reached before pixels become white after tone-mapping.","default":16,"min":0.01,"max":25},"luminance":{"type":"f","description":"When the 'Adaptive' feature is turned off, this will set the scene luminance to be used by tone-mapping.","default":1,"min":0.0001,"max":16}}},"fxaa":{"name":"fxaa","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false}}},"vignette":{"name":"vignette","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"offset":{"type":"f","default":1,"min":0,"max":1,"step":0.001},"darkness":{"type":"f","default":1,"min":0,"max":5,"step":0.001}}},"ssao":{"name":"ssao","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"fogEnabled":{"type":"i","default":1,"advanced":true},"depthScale":{"type":"f","default":2000,"min":100,"max":50000,"step":0.001,"advanced":true},"onlyAO":{"type":"i","default":0},"aoClamp":{"type":"f","default":0.75,"advanced":true},"lumInfluence":{"type":"f","default":0.75,"advanced":true},"noiseAmount":{"type":"f","default":0.0002},"radius":{"type":"f","default":16},"diffArea":{"type":"f","default":0.4,"advanced":true},"gDisplace":{"type":"f","default":0.4,"advanced":true}}},"dof":{"name":"dof","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"aspect":{"type":"f","default":1,"min":0,"max":1,"step":0.001,"advanced":true},"aperture":{"type":"f","default":0.4,"min":0,"max":1,"step":0.001},"focus":{"type":"f","default":0.98,"min":0,"max":1,"step":0.001}}},"sepia":{"name":"sepia","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"amount":{"type":"f","default":0.9,"min":0,"max":1,"step":0.001}}},"video":{"name":"video","type":"custom","description":"","attributes":{"enabled":{"type":"b","default":false},"nIntensity":{"type":"f","default":0.15},"sIntensity":{"type":"f","default":0.05},"sCount":{"type":"f","default":512},"grayscale":{"type":"b","default":false}}}},"attributesOrder":["bloom","toneMapping","fxaa","vignette","ssao","dof","sepia","video"],"events":{},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/DefaultFilters"}},ComponentDefaultFilters);Box3D.ScriptRegistry.registerScript({"id":"dynamic_optimizer","sid":"Dynamic Performance Optimizer","properties":{"name":"Dynamic Performance Optimizer","attributes":{"frameTimeThreshold":{"name":"frameTimeThreshold","type":"f","description":"The average time that a frame can take to render before the optimizer drops a   quality level. Default threshold is 30 FPS = 1000 ms / 30 frames","default":33.333333333333},"testInterval":{"name":"testInterval","type":"f","description":"The amount of elapsed time (in ms) to average the frame time over.   i.e. an optimization decision can be made every time this interval elapses.","default":2000}},"attributesOrder":["frameTimeThreshold","testInterval"],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/DynamicOptimizer"}},ComponentDynamicOptimizer);Box3D.ScriptRegistry.registerScript({"id":"event_handler_component","sid":"Event Handler","properties":{"name":"Event Handler","attributes":{"listen":{"name":"listen","type":"event","description":"The event to listen for. When this event is captured, all of the defined trigger events will be fired."},"triggers":{"name":"triggers","type":"a","subType":{"type":"event"},"description":"Fire each of these events in response to the captured listen event."}},"attributesOrder":["listen","triggers"],"events":{},"externalDependencies":[],"category":"Interaction","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/EventHandler"}},ComponentEventHandler);Box3D.ScriptRegistry.registerScript({"id":"exploder_component","sid":"Exploder","properties":{"name":"Exploder","description":"Explodes your objects and their hierarchies into different formations. Great for showing off parts in a model!","attributes":{"Time":{"name":"Time","type":"f","default":1.5,"description":"The amount of time to explode and contract the child meshes"},"Scale":{"name":"Scale","type":"v3","default":{"x":2,"y":2,"z":2},"description":"The scale of the explosion"},"Formation":{"name":"Formation","type":"dd","description":"Formation to use when exploding the hierarchy of this object.","default":"Scale","options":{"Circle":"Circle","Square Grid":"Grid","Scale Out":"Scale"}}},"attributesOrder":["Time","Scale","Formation"],"events":{"playExplode":{"scope":"local","name":"playExplode","action":true,"category":"Exploder","parameters":[]},"playContract":{"scope":"local","name":"playContract","action":true,"category":"Exploder","parameters":[]},"toggleExploder":{"scope":"local","name":"toggleExploder","action":true,"category":"Exploder","parameters":[]},"resetExploder":{"scope":"local","name":"resetExploder","action":true,"category":"Exploder","parameters":[]},"useCircleExplode":{"scope":"local","name":"useCircleExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":1,"y":1,"z":1}}]},"useGridExplode":{"scope":"local","name":"useGridExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":1,"y":1,"z":1}}]},"useScaleOutExplode":{"scope":"local","name":"useScaleOutExplode","action":true,"category":"Exploder","parameters":[{"name":"Scale","type":"v3","description":"The scale to apply to the explosion","default":{"x":2,"y":2,"z":2}}]},"beginExplode":{"scope":"other","name":"beginExplode","action":false,"category":"Exploder","parameters":[]},"endExplode":{"scope":"other","name":"endExplode","action":false,"category":"Exploder","parameters":[]},"beginContract":{"scope":"other","name":"beginContract","action":false,"category":"Exploder","parameters":[]},"endContract":{"scope":"other","name":"endContract","action":false,"category":"Exploder","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/Exploder"}},ComponentExploder);Box3D.ScriptRegistry.registerScript({"id":"free_camera_controller","sid":"Free Camera Controller","properties":{"name":"Free Camera Controller","attributes":{"inertialDamping":{"name":"inertialDamping","type":"f","default":0.2,"min":0,"max":1},"usePointerLock":{"name":"usePointerLock","type":"b","description":"","default":false},"invertX":{"name":"invertX","type":"b","default":false},"invertY":{"name":"invertY","type":"b","default":false},"invertZoom":{"name":"invertZoom","type":"b","default":false},"lookSpeed":{"name":"lookSpeed","type":"f","default":1,"min":0.0001,"max":1000},"movementSpeed":{"name":"movementSpeed","type":"f","default":3,"max":1000,"min":0.01},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","default":{"max":75,"min":-75},"max":{"max":90,"min":90},"min":{"max":-90,"min":-90.01}},"enablePan":{"name":"enablePan","type":"b","default":true},"enableZoom":{"name":"enableZoom","type":"b","default":true}},"attributesOrder":["inertialDamping","usePointerLock","invertX","invertY","invertZoom","lookSpeed","movementSpeed","pitchAngleBounds","enablePan","enableZoom"],"events":{"enableFreeCameraController":{"scope":"local","name":"enableFreeCameraController","parameters":[]},"disableFreeCameraController":{"scope":"local","name":"disableFreeCameraController","parameters":[]},"toggleFreeCameraController":{"scope":"local","name":"toggleFreeCameraController","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera-Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/FreeCamera"}},ComponentFreeCamera);Box3D.ScriptRegistry.registerScript({"id":"fullscreen_script","sid":"Fullscreen","properties":{"name":"Fullscreen","description":"ses fullscreen API to make your app fullscreen! This will fullscreen the canvas' parent element, so your UI can be fullscreened as well! If a selector is provided, then we will fullscreen that element instead.","attributes":{},"attributesOrder":[],"events":{"toggleFullscreen":{"scope":"local","name":"toggleFullscreen","action":true,"category":"Rendering","parameters":[]}},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/Fullscreen"}},ComponentFullscreen);Box3D.ScriptRegistry.registerScript({"id":"input_controller_component","sid":"Input Controller","properties":{"name":"Input Controller","attributes":{"mouseEvents":{"name":"mouseEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable mouse events?"},"scroll":{"type":"b","default":true,"description":"Listen to scroll events?"},"scroll_preventDefault":{"type":"b","default":false,"description":"Prevent default scroll behaviour?"},"move":{"type":"b","default":true,"description":"Listen to mouse move events?"},"down":{"type":"b","default":true,"description":"Listen to mouse down event?"},"down_preventDefault":{"type":"b","default":false,"description":"Prevent default mouse down behaviour?"},"up":{"type":"b","default":true,"description":"Listen to mouse up event?"},"double_click":{"type":"b","default":true,"description":"Listen to double click event?"},"leave":{"type":"b","default":true,"description":"Listen to mouse leave event"},"contextMenu":{"type":"b","default":true,"description":"Listen for the context menu event? (ie, right click)"},"contextMenu_preventDefault":{"type":"b","default":true,"description":"Prevent context menu default behaviour (ie, the context menu popping open)"},"dragBufferDistance":{"type":"f","default":12,"name":"Drag Buffer Distance","description":"The distance from initial click that you need to move your mouse before a drag event is fired, in pixels"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the mouse are picked up by the Event Handler"}}},"touchEvents":{"name":"touchEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable touch events?"},"start":{"type":"b","default":true,"description":"Listen for Touch Start"},"start_preventDefault":{"type":"b","default":true,"description":"Prevent default behaviour of touch start event"},"end":{"type":"b","default":true,"description":"Listen for touch end event"},"doubleTap":{"type":"b","default":true,"description":"Listen for a touch double tap event"},"cancel":{"type":"b","default":true,"description":"Listen for touch cancel event"},"leave":{"type":"b","default":true,"description":"Listen for touch leave event"},"move":{"type":"b","default":true,"description":"Listen for touch move event"},"move_preventDefault":{"type":"b","default":true,"description":"Prevent default move behaviour (ie, dragging the window)"},"dragBufferDistance":{"type":"f","default":12,"name":"Drag Buffer Distance","description":"The distance from initial touch down that you need to move your finger before a drag event is fired, in pixels"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the touches are picked up by the Event Handler"}}},"keyEvents":{"name":"keyEvents","type":"custom","attributes":{"enable":{"type":"b","default":true,"description":"Enable keyboard events"},"down":{"type":"b","default":true,"description":"Listen to key down events"},"up":{"type":"b","default":true,"description":"Listen to key up events"},"preventDefault":{"type":"b","default":false,"description":"Prevent default keypress behaviour"},"eventHandler":{"type":"b","default":true,"description":"Events fired from the keys are picked up by the Event Handler"}}}},"attributesOrder":["mouseEvents","touchEvents","keyEvents"],"events":{"mouse_down_left":{"scope":"global","name":"mouse_down_left","action":false,"category":"Input - Mouse","parameters":[]},"mouse_down_right":{"scope":"global","name":"mouse_down_right","action":false,"category":"Input - Mouse","parameters":[]},"mouse_down_middle":{"scope":"global","name":"mouse_down_middle","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_left":{"scope":"global","name":"mouse_up_left","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_right":{"scope":"global","name":"mouse_up_right","action":false,"category":"Input - Mouse","parameters":[]},"mouse_up_middle":{"scope":"global","name":"mouse_up_middle","action":false,"category":"Input - Mouse","parameters":[]},"keypress_a":{"scope":"global","name":"keypress_a","action":false,"category":"Input - Keys","parameters":[]},"keypress_b":{"scope":"global","name":"keypress_b","action":false,"category":"Input - Keys","parameters":[]},"keypress_c":{"scope":"global","name":"keypress_c","action":false,"category":"Input - Keys","parameters":[]},"keypress_d":{"scope":"global","name":"keypress_d","action":false,"category":"Input - Keys","parameters":[]},"keypress_f":{"scope":"global","name":"keypress_f","action":false,"category":"Input - Keys","parameters":[]},"keypress_g":{"scope":"global","name":"keypress_g","action":false,"category":"Input - Keys","parameters":[]},"keypress_e":{"scope":"global","name":"keypress_e","action":false,"category":"Input - Keys","parameters":[]},"keypress_h":{"scope":"global","name":"keypress_h","action":false,"category":"Input - Keys","parameters":[]},"keypress_i":{"scope":"global","name":"keypress_i","action":false,"category":"Input - Keys","parameters":[]},"keypress_j":{"scope":"global","name":"keypress_j","action":false,"category":"Input - Keys","parameters":[]},"keypress_k":{"scope":"global","name":"keypress_k","action":false,"category":"Input - Keys","parameters":[]},"keypress_l":{"scope":"global","name":"keypress_l","action":false,"category":"Input - Keys","parameters":[]},"keypress_m":{"scope":"global","name":"keypress_m","action":false,"category":"Input - Keys","parameters":[]},"keypress_n":{"scope":"global","name":"keypress_n","action":false,"category":"Input - Keys","parameters":[]},"keypress_o":{"scope":"global","name":"keypress_o","action":false,"category":"Input - Keys","parameters":[]},"keypress_p":{"scope":"global","name":"keypress_p","action":false,"category":"Input - Keys","parameters":[]},"keypress_q":{"scope":"global","name":"keypress_q","action":false,"category":"Input - Keys","parameters":[]},"keypress_r":{"scope":"global","name":"keypress_r","action":false,"category":"Input - Keys","parameters":[]},"keypress_s":{"scope":"global","name":"keypress_s","action":false,"category":"Input - Keys","parameters":[]},"keypress_t":{"scope":"global","name":"keypress_t","action":false,"category":"Input - Keys","parameters":[]},"keypress_u":{"scope":"global","name":"keypress_u","action":false,"category":"Input - Keys","parameters":[]},"keypress_v":{"scope":"global","name":"keypress_v","action":false,"category":"Input - Keys","parameters":[]},"keypress_w":{"scope":"global","name":"keypress_w","action":false,"category":"Input - Keys","parameters":[]},"keypress_x":{"scope":"global","name":"keypress_x","action":false,"category":"Input - Keys","parameters":[]},"keypress_y":{"scope":"global","name":"keypress_y","action":false,"category":"Input - Keys","parameters":[]},"keypress_z":{"scope":"global","name":"keypress_z","action":false,"category":"Input - Keys","parameters":[]},"keypress_up_arrow":{"scope":"global","name":"keypress_up_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_down_arrow":{"scope":"global","name":"keypress_down_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_left_arrow":{"scope":"global","name":"keypress_left_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_right_arrow":{"scope":"global","name":"keypress_right_arrow","action":false,"category":"Input - Keys","parameters":[]},"keypress_space":{"scope":"global","name":"keypress_space","action":false,"category":"Input - Keys","parameters":[]},"touch_start":{"scope":"global","name":"touch_start","action":false,"category":"Input - Touch","parameters":[]},"touch_end":{"scope":"global","name":"touch_end","action":false,"category":"Input - Touch","parameters":[]}},"externalDependencies":[],"filter":["application"],"category":"Input","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/InputController"}},ComponentInputController);Box3D.ScriptRegistry.registerScript({"id":"animation","sid":"Animation","properties":{"name":"Animation","attributes":{"autoPlay":{"name":"autoPlay","type":"b","description":"Play the animation once loaded","default":true},"loop":{"name":"loop","type":"b","description":"Continuously replay the animation","default":true},"speed":{"name":"speed","type":"f","description":"Playback speed","default":1,"min":0,"max":100},"startTime":{"name":"startTime","type":"f","description":"Begin playback at this time offset","default":0,"min":0},"weight":{"name":"weight","type":"f","description":"Blending weight","default":1,"min":0,"max":1},"asset":{"name":"asset","type":"asset","description":"Animation asset","default":null,"filter":{"animation":true}},"clipId":{"name":"clipId","type":"i","description":"The animation clip ID","default":null}},"attributesOrder":["autoPlay","loop","speed","startTime","weight","asset","clipId"],"events":{"playAnimation":{"scope":"local","name":"playAnimation","action":true,"category":"Animation","parameters":[{"name":"asset","type":"asset","description":"The animation asset to play.","default":null,"filter":{"animation":true}},{"name":"clipId","type":"s","description":"The ID of the clip to play.","default":null},{"name":"loop","type":"b","description":"Continuously replay the animation.","default":true},{"name":"speed","type":"f","description":"Playback speed.","default":1,"min":0,"max":100},{"name":"startTime","type":"f","description":"Begin playback at this time offset.","default":0,"min":0}]},"pauseAnimation":{"scope":"local","name":"pauseAnimation","action":true,"category":"Animation","parameters":[]},"stopAnimation":{"scope":"local","name":"stopAnimation","action":true,"category":"Animation","parameters":[]},"toggleAnimation":{"scope":"local","name":"toggleAnimation","action":true,"category":"Animation","parameters":[]},"animationLoaded":{"scope":"local","name":"animationLoaded","action":false,"category":"Animation","parameters":[]},"endAnimation":{"scope":"local","name":"endAnimation","action":false,"category":"Animation","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/KeyframeAnimation"}},ComponentKeyframeAnimation);Box3D.ScriptRegistry.registerScript({"id":"lookat_component","sid":"Look At Target","properties":{"name":"Look At Target","description":"A component that automatically points the object at a target. This can be used for billboarding an object to the camera, making a character look at another, etc.","attributes":{"target":{"name":"target","type":"object","description":"The object that you want this object to point towards. e.g. for billboarding, this would be the camera used to render the scene."},"local":{"name":"local","type":"b","description":"If toggled, whatever rotation you have already applied to this object will be taken into account.","default":false},"showPreview":{"name":"showPreview","type":"b","description":"Run the lookAt in the editor.","default":true}},"attributesOrder":["target","local","showPreview"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/LookAtTarget"}},ComponentLookAtTarget);Box3D.ScriptRegistry.registerScript({"id":"material_capture","sid":"Material Capture","properties":{"name":"Material Capture","description":"A component that captures an image of a rendered material as a spherical map, complete with lighting. This image can then be applied (with a sphere map projection) to a mesh to achieve convincing material shading (although the mesh will appear with the same lighting from all directions).","attributes":{"captureTexture":{"name":"captureTexture","type":"asset","description":"","filter":{"renderTexture2D":true},"default":null}},"attributesOrder":["captureTexture"],"events":{},"externalDependencies":[],"filter":["material"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/MaterialCapture"}},ComponentMaterialCapture);Box3D.ScriptRegistry.registerScript({"id":"normal_map_generator_component","sid":"Normal Map Generator","properties":{"name":"Normal Map Generator","attributes":{"bumpTexture":{"name":"bumpTexture","type":"asset","filter":{"renderTexture2D":true,"texture2D":true}},"smoothness":{"name":"smoothness","type":"f","slider":true,"default":0.25,"min":0.0001,"max":1},"spread":{"name":"spread","type":"f","slider":true,"default":4,"min":1,"max":10},"autoLoad":{"name":"autoLoad","type":"b","default":true}},"attributesOrder":["bumpTexture","smoothness","spread","autoLoad"],"events":{"renderNormalMap":{"scope":"local","name":"renderNormalMap","action":true,"category":"Rendering","parameters":[]}},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/NormalMapGenerator"}},ComponentNormalMapGenerator);Box3D.ScriptRegistry.registerScript({"id":"object_animator_component","sid":"Object Animator","properties":{"name":"Object Animator","attributes":{},"attributesOrder":[],"events":{"playAnimateAlongCurve":{"scope":"local","name":"playAnimateAlongCurve","action":true,"category":"Animation","parameters":[{"name":"curve","type":"object","componentFilter":{"Curve":true}},{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"orientation","description":"Orient the object following the curve to either the direction of the curve or to the objects defining the curve.","type":"opt","default":"toCurve","options":{"None":"None","To Curve":"toCurve","To Nodes":"toNode"}},{"name":"loop","type":"b","description":"","default":false}]},"playAnimateToObject":{"scope":"local","name":"playAnimateToObject","action":true,"category":"Animation","parameters":[{"name":"object","type":"object","default":null},{"name":"animationTime","type":"f","description":"Total time that the animation will take. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"update orientation","type":"b","default":true}]},"playAnimateTranslation":{"scope":"local","name":"playAnimateTranslation","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"velocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-1,"max":1},{"name":"objectUsage","type":"opt","description":"Specify what part of the animation the current object's position represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}}]},"playAnimateRotation":{"scope":"local","name":"playAnimateRotation","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"angularVelocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-100,"max":100},{"name":"objectUsage","type":"opt","description":"Specify what part of the animation the current object's rotation represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}},{"name":"axisOrder","type":"opt","description":"Specify the axis order that the angular velocity will be applied in.","default":"YXZ","options":{"XYZ":"XYZ","YXZ":"YXZ","ZXY":"ZXY","XZY":"XZY","YZX":"YZX","ZYX":"ZYX"}}]},"playAnimateScale":{"scope":"local","name":"playAnimateScale","action":true,"category":"Animation","parameters":[{"name":"animationTime","type":"f","description":"Time to animate to object. Defined in seconds","default":3},{"name":"easeIn","type":"f","description":"The percentage of animation time spent speeding up.","default":0.25,"min":0,"max":1},{"name":"easeOut","type":"f","description":"The percentage of animation time spent slowing down.","default":0.25,"min":0,"max":1},{"name":"velocity","description":"","type":"v3","default":{"x":0,"y":0,"z":1},"min":-10,"max":10},{"name":"objectUsage","type":"opt","description":"Specify what part of the animation the current object's scale represents.","default":"beginning","options":{"Beginning":"beginning","Middle":"middle","End":"end"}}]},"pauseCurveAnimation":{"scope":"local","name":"pauseCurveAnimation","action":true,"category":"Animation","parameters":[]},"stopCurveAnimation":{"scope":"local","name":"stopCurveAnimation","action":true,"category":"Animation","parameters":[]},"unpauseCurveAnimation":{"scope":"local","name":"unpauseCurveAnimation","action":true,"category":"Animation","parameters":[]},"endAnimateAlongCurve":{"scope":"local","name":"endAnimateAlongCurve","action":false,"category":"Animation","parameters":[]},"endAnimateToObject":{"scope":"local","name":"endAnimateToObject","action":false,"category":"Animation","parameters":[]},"endAnimateTranslation":{"scope":"lcoal","name":"endAnimateTranslation","action":false,"category":"Animation","parameters":[]}},"externalDependencies":[],"filter":["Object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/ObjectAnimator"}},ComponentObjectAnimator);Box3D.ScriptRegistry.registerScript({"id":"object_picker","sid":"Object Picker","properties":{"name":"Object Picker","attributes":{"pickTrigger":{"name":"pickTrigger","type":"dd","description":"What mouse action will trigger the pick?","default":"leftMouseClick","options":{"Left Mouse Click":"leftMouseClick","Middle Mouse Click":"middleMouseClick","Right Mouse Click":"rightMouseClick","Left Mouse Down":"leftMouseDown","Middle Mouse Down":"middleMouseDown","Right Mouse Down":"rightMouseDown","Left Mouse Up":"leftMouseUp","Middle Mouse Up":"middleMouseUp","Right Mouse Up":"rightMouseUp"}},"enableHoverByDefault":{"name":"enableHoverByDefault","type":"b","default":false,"advanced":true,"description":"Enable hover detection when mouse cursor is over a mesh. Note that this has a potential performance impact."},"hoverFrameSkip":{"name":"hoverFrameSkip","type":"i","description":"Skip this many frames inbetween hover checks.","default":1,"min":0,"max":60}},"attributesOrder":["pickTrigger","enableHoverByDefault","hoverFrameSkip"],"events":{"pick":{"scope":"other","name":"pick","action":false,"category":"General","parameters":[]},"beginHover":{"scope":"other","name":"beginHover","action":false,"category":"General","parameters":[]},"endHover":{"scope":"other","name":"endHover","action":false,"category":"General","parameters":[]}},"externalDependencies":[],"filter":["Scene"],"category":"General","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/ObjectPicker"}},ComponentObjectPicker);Box3D.ScriptRegistry.registerScript({"id":"orbit_camera_controller","sid":"Orbit Camera Controller","properties":{"name":"Orbit Camera Controller","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"targetObject":{"name":"targetObject","type":"object","default":null,"description":"The object that the camera orbit point will be relative to."},"targetOffset":{"name":"targetOffset","type":"v3","default":{"x":0,"y":0,"z":0},"description":"An offset relative to the target object. This will allow you to target a specific point on an object."},"inertialDamping":{"name":"inertialDamping","type":"f","default":0.4,"description":"How quickly the camera stops moving when input stops.","min":0,"max":1},"invertX":{"name":"invertX","type":"b","default":false,"description":"Reverse the default direction that the camera moves horizontally."},"invertY":{"name":"invertY","type":"b","default":false,"description":"Reverse the default direction that the camera moves vertically."},"invertZoom":{"name":"invertZoom","type":"b","default":false,"description":"Reverse the default direction that the camera moves when zooming."},"lookSpeed":{"name":"lookSpeed","type":"f","description":"The speed that the camera orbits the target","default":1,"max":1000,"min":0.0001},"movementSpeed":{"name":"movementSpeed","type":"f","description":"The speed that the camera moves when panning","default":8,"max":2000,"min":0.1},"autoOrbit":{"name":"autoOrbit","type":"b","default":false,"description":"Automatically orbit the camera when the user is not controlling it."},"autoOrbitSpeed":{"name":"autoOrbitSpeed","type":"f","description":"The speed of the automatic orbit.","default":1,"max":1000,"min":-1000},"autoOrbitDelay":{"name":"autoOrbitDelay","type":"f","description":"The period of time with no mouse input before the auto-orbit starts (in seconds).","default":1,"max":1000,"min":0.0001},"orbitDistanceMin":{"name":"orbitDistanceMin","type":"f","description":"The closest that the camera is allowed to get to the target.","default":10,"max":1000,"min":0.001},"orbitDistanceMax":{"name":"orbitDistanceMax","type":"f","description":"The furthest that the camera is allowed to get from the target.","default":500,"max":100000,"min":1},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","description":"Allows you to set how far the camera can pitch (tilt) from horizontal. Defined in degrees with horizontal being 0.","default":{"x":75,"y":-75},"max":{"x":90,"y":90},"min":{"x":-90,"y":-90.001}},"enablePan":{"name":"enablePan","type":"b","default":true,"description":"Allow the user to pan side-to-side and up and down with the camera."},"enableZoom":{"name":"enableZoom","type":"b","default":true,"description":"Allow the user to zoom in and out with the camera."},"interpolation":{"name":"interpolation","type":"b","default":true,"description":"When enabled, the camera will smoothly interpolate toward its desired state. e.g. If something else moves the camera, interpolation will cause the camera to smoothly focus on the target again. Otherwise, it will snap back."},"interpSpeed":{"name":"interpSpeed","type":"f","description":"The speed at which the orbiting camera locks on to its target, if set to point away from it.","default":0.5,"max":10,"min":0.01},"usePointerLock":{"name":"usePointerLock","type":"b","default":false,"description":"The mouse cursor will be hidden during camera control and won't move. Requires the user to accept pointer lock message in web browser."},"useKeyboard":{"name":"useKeyboard","type":"b","default":true,"description":"Allow the camera to be controlled via keyboard input. This allows for movement with W,A,S,D/arrow keys as well as modifiers."}},"attributesOrder":["targetObject","targetOffset","inertialDamping","invertX","invertY","invertZoom","lookSpeed","movementSpeed","autoOrbit","autoOrbitSpeed","autoOrbitDelay","orbitDistanceMin","orbitDistanceMax","pitchAngleBounds","enablePan","enableZoom","interpolation","interpSpeed","usePointerLock","useKeyboard"],"events":{"enableOrbitCameraController":{"scope":"local","name":"enableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"disableOrbitCameraController":{"scope":"local","name":"disableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"toggleOrbitCameraController":{"scope":"local","name":"toggleOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"setOrbitDistance":{"scope":"local","name":"setOrbitDistance","action":true,"category":"Orbit Camera","parameters":[{"name":"newDistance","type":"f","description":"The new distance that the camera will orbit at.","default":1}]},"setTarget":{"scope":"local","name":"setTarget","description":"Sets the camera to orbit the given object","action":true,"category":"Orbit Camera","parameters":[{"name":"newTarget","type":"object","description":"The new target that the camera will orbit.","default":null},{"name":"center","type":"b","description":"Whether or not to target the center of the object. If false, the camera will orbit the origin of the object.","default":true}]},"focusOnTarget":{"scope":"local","name":"focusOnTarget","description":"Look at the center of the current target and zoom so that the object nicely fills the field of view.","action":true,"category":"Orbit Camera","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/OrbitCameraController"}},ComponentOrbitCameraController);Box3D.ScriptRegistry.registerScript({"id":"panorama_to_cubemap_script","sid":"Panorama To Cube Map","properties":{"name":"Panorama To Cube Map","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"inputTexture":{"name":"inputTexture","type":"asset","default":null,"filter":{"texture2D":true,"renderTexture2D":true},"description":"The texture to convert to a cube map."}},"attributesOrder":["inputTexture"],"events":{},"externalDependencies":[],"filter":["renderTextureCube"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/PanoramaToCubeMap"}},ComponentPanoramaToCubeMap);Box3D.ScriptRegistry.registerScript({"id":"preview_axis_rotation","sid":"Preview Axis Rotation","properties":{"name":"Preview Axis Rotation","description":"Set the rotation of any axis.","attributes":{"speed":{"name":"speed","type":"f","description":"The speed that we rotate the object, if a transition is triggered","default":0.4,"max":100,"min":0.1}},"attributesOrder":["speed"],"events":{},"externalDependencies":[],"filter":["object"],"category":"User Defined","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/PreviewAxisRotation"}},ComponentPreviewAxisRotation);Box3D.ScriptRegistry.registerScript({"id":"preview_camera_controller","sid":"Preview Camera Controller","properties":{"name":"Preview Camera Controller","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"targetObject":{"name":"targetObject","type":"object","default":null,"description":"The object that the camera orbit point will be relative to."},"targetOffset":{"name":"targetOffset","type":"v3","default":{"x":0,"y":0,"z":0},"description":"An offset relative to the target object. This will allow you to target a specific point on an object."},"inertialDamping":{"name":"inertialDamping","type":"f","default":0.2,"description":"How quickly the camera stops moving when input stops.","min":0,"max":1},"invertX":{"name":"invertX","type":"b","default":false,"description":"Reverse the default direction that the camera moves horizontally."},"invertY":{"name":"invertY","type":"b","default":false,"description":"Reverse the default direction that the camera moves vertically."},"invertZoom":{"name":"invertZoom","type":"b","default":false,"description":"Reverse the default direction that the camera moves when zooming."},"lookSpeed":{"name":"lookSpeed","type":"f","description":"The speed that the camera orbits the target","default":1,"max":1000,"min":0.0001},"movementSpeed":{"name":"movementSpeed","type":"f","description":"The speed that the camera moves when panning","default":8,"max":2000,"min":0.1},"autoOrbit":{"name":"autoOrbit","type":"b","default":false,"description":"Automatically orbit the camera when the user is not controlling it."},"autoOrbitSpeed":{"name":"autoOrbitSpeed","type":"f","description":"The speed of the automatic orbit.","default":1,"max":1000,"min":-1000},"autoOrbitDelay":{"name":"autoOrbitDelay","type":"f","description":"The period of time with no mouse input before the auto-orbit starts (in seconds).","default":1,"max":1000,"min":0.0001},"orbitDistanceMin":{"name":"orbitDistanceMin","type":"f","description":"The closest that the camera is allowed to get to the target.","default":1,"max":1000,"min":0.001},"orbitDistanceMax":{"name":"orbitDistanceMax","type":"f","description":"The furthest that the camera is allowed to get from the target.","default":50,"max":100000,"min":1},"pitchAngleBounds":{"name":"pitchAngleBounds","type":"v2","description":"Allows you to set how far the camera can pitch (tilt) from horizontal. Defined in degrees with horizontal being 0.","default":{"x":75,"y":-75},"max":{"x":90,"y":90},"min":{"x":-90,"y":-90.001}},"enablePan":{"name":"enablePan","type":"b","default":true,"description":"Allow the user to pan side-to-side and up and down with the camera."},"enableZoom":{"name":"enableZoom","type":"b","default":true,"description":"Allow the user to zoom in and out with the camera."},"interpolation":{"name":"interpolation","type":"b","default":true,"description":"When enabled, the camera will smoothly interpolate toward its desired state. e.g. If something else moves the camera, interpolation will cause the camera to smoothly focus on the target again. Otherwise, it will snap back."},"interpSpeed":{"name":"interpSpeed","type":"f","description":"The speed at which the orbiting camera locks on to its target, if set to point away from it.","default":0.5,"max":10,"min":0.01},"usePointerLock":{"name":"usePointerLock","type":"b","default":false,"description":"The mouse cursor will be hidden during camera control and won't move. Requires the user to accept pointer lock message in web browser."},"useKeyboard":{"name":"useKeyboard","type":"b","default":true,"description":"Allow the camera to be controlled via keyboard input. This allows for movement with W,A,S,D/arrow keys as well as modifiers."}},"attributesOrder":["targetObject","targetOffset","inertialDamping","invertX","invertY","invertZoom","lookSpeed","movementSpeed","autoOrbit","autoOrbitSpeed","autoOrbitDelay","orbitDistanceMin","orbitDistanceMax","pitchAngleBounds","enablePan","enableZoom","interpolation","interpSpeed","usePointerLock","useKeyboard"],"events":{"enableOrbitCameraController":{"scope":"local","name":"enableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"disableOrbitCameraController":{"scope":"local","name":"disableOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"toggleOrbitCameraController":{"scope":"local","name":"toggleOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"resetOrbitCameraController":{"scope":"local","name":"resetOrbitCameraController","action":true,"category":"Orbit Camera","parameters":[]},"setOrbitDistance":{"scope":"local","name":"setOrbitDistance","action":true,"category":"Orbit Camera","parameters":[{"name":"newDistance","type":"f","description":"The new distance that the camera will orbit at.","default":1}]},"setTarget":{"scope":"local","name":"setTarget","description":"Sets the camera to orbit the given object","action":true,"category":"Orbit Camera","parameters":[{"name":"newTarget","type":"object","description":"The new target that the camera will orbit.","default":null},{"name":"center","type":"b","description":"Whether or not to target the center of the object. If false, the camera will orbit the origin of the object.","default":true}]},"focusOnTarget":{"scope":"local","name":"focusOnTarget","description":"Look at the center of the current target and zoom so that the object nicely fills the field of view.","action":true,"category":"Orbit Camera","parameters":[]}},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/PreviewCameraController"}},ComponentPreviewCameraController);Box3D.ScriptRegistry.registerScript({"id":"preview_camera_focus","sid":"Preview Camera Focus","properties":{"name":"Preview Camera Focus","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"speed":{"name":"speed","type":"f","description":"The speed that we move to focus on the target","default":0.8,"max":100,"min":0.1}},"attributesOrder":["speed"],"events":{},"externalDependencies":[],"filter":["camera"],"category":"Camera Controllers","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/PreviewCameraFocus"}},ComponentPreviewCameraFocus);Box3D.ScriptRegistry.registerScript({"id":"reflection_capture_planar","sid":"Reflection Capture Plane","properties":{"name":"Reflection Capture Plane","attributes":{"captureTexture":{"name":"captureTexture","type":"asset","description":"The RenderTexture2D to render the reflection to.","filter":{"renderTexture2D":true}},"clipBias":{"name":"clipBias","type":"f","description":"Pushes the rendered scene forward or backwards to adjust clipping with reflection plane.","default":0.01},"updateFrameInterval":{"name":"updateFrameInterval","type":"i","description":"The number of frames to skip in between updates of the reflection. Default is 0.","default":0}},"attributesOrder":["captureTexture","clipBias","updateFrameInterval"],"events":{},"externalDependencies":[],"filter":["Object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/ReflectionCapturePlane"}},ComponentReflectionCapturePlane);Box3D.ScriptRegistry.registerScript({"id":"box3d_renderer","sid":"Renderer","properties":{"name":"Renderer","attributes":{"renderOnDemand":{"name":"renderOnDemand","type":"b","description":"When this is enabled, rendering will only happen when requested instead of every frame.","defualt":true},"antialias":{"name":"antialias","type":"b","description":"Enable or disable antialiasing of the rendered scene.","default":true},"preserveDrawingBuffer":{"name":"preserveDrawingBuffer","type":"b","description":"Tells the browser to preserve drawing buffers between frames so that they are available to be read by the application.","default":true},"autoClear":{"name":"autoClear","type":"b","description":"Automatically clear the render target before each render.","default":false},"devicePixelRatio":{"name":"devicePixelRatio","type":"dd","default":0,"options":{"Device Default":0,"One":1,"Two":2},"description":"Override the default pixel ratio of the system. Higher values will cause rendering at higher resolution while lower values will force rendering at lower resolutions. You can also set this to use the device default (mobile devices usually have values greater than 1)."},"clearColor":{"name":"clearColor","type":"c","description":"When the render target is cleared, this colour will be used","default":{"r":0,"g":0,"b":0}},"clearAlpha":{"name":"clearAlpha","type":"f","description":"When the render target is cleared, this value will be used to clear the transparency","default":0,"min":0,"max":1,"step":0.001},"precision":{"name":"precision","type":"dd","description":"The default floating point and integer precision to be used by the GPU.","default":"mediump","options":{"Low":"lowp","Medium":"mediump","High":"highp"}},"maxTextureSize2d":{"name":"maxTextureSize2d","type":"i","description":"Clamp the maximum allowed dimension of a 2d texture.","default":32768,"min":1024,"max":32768},"maxTextureSizeCube":{"name":"maxTextureSizeCube","type":"i","description":"Clamp the maximum allowed dimension of a cube texture.","default":32768,"min":512,"max":32768},"shadowsEnabled":{"name":"shadowsEnabled","type":"b","description":"Enable or disable rendering of shadows.","default":true},"shadowsEnabledMobile":{"name":"shadowsEnabledMobile","type":"b","description":"Enable or disable rendering of shadows on mobile devices.","default":false},"shadowType":{"name":"shadowType","type":"dd","options":{"Soft PCF":2,"PCF":1,"No Filtering":0},"default":2},"shadowReverseSided":{"name":"shadowReverseSided","type":"b","description":"Render shadows with reverse side of mesh.","default":false},"shadowDebug":{"name":"shadowDebug","type":"b","description":"Enable or disable debug rendering, showing the different shadow cascade sizes.","default":false},"logarithmicDepthBuffer":{"name":"logarithmicDepthBuffer","type":"b","description":"Use logarithmic z values while rendering.","default":false}},"attributesOrder":["renderOnDemand","antialias","preserveDrawingBuffer","autoClear","devicePixelRatio","clearColor","clearAlpha","precision","maxTextureSize2d","maxTextureSizeCube","shadowsEnabled","shadowsEnabledMobile","shadowType","shadowReverseSided","shadowDebug","logarithmicDepthBuffer"],"events":{},"externalDependencies":[],"filter":["application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/Renderer"}},ComponentRenderer);Box3D.ScriptRegistry.registerScript({"id":"camera_filters_script","sid":"Render Filters","properties":{"name":"Render Filters","description":"Overrides the filter settings that cameras will use when rendering.","attributes":{"bloom":{"name":"bloom","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"strength":{"type":"f","default":1,"min":0.1,"max":4,"step":0.001},"sigma":{"type":"f","default":4,"min":1,"max":8,"step":0.001,"advanced":true},"resolution":{"type":"i","default":256,"min":64,"max":1024,"step":1,"advanced":true}}},"toneMapping":{"name":"toneMapping","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"adaptive":{"type":"b","description":"Automatically adjusts the tone-mapping every frame based on the average luminance of the scene.","default":true},"adaptSpeed":{"type":"f","description":"The speed at which adaptive tone-mapping works. Higher number is faster.","default":0.5,"min":0.1,"max":20},"exposureBias":{"type":"f","description":"Adjusts the overall brightness of the image. Use this to tweak the final result of tone-mapping.","default":1,"min":0.0001,"max":5},"maxLuminance":{"type":"f","description":"Sets the maximum brightness reached before pixels become white after tone-mapping.","default":16,"min":0.01,"max":25},"luminance":{"type":"f","description":"When the \"Adaptive\" feature is turned off, this will set the scene luminance to be used by tone-mapping.","default":1,"min":0.0001,"max":16}}},"fxaa":{"name":"fxaa","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false}}},"vignette":{"name":"vignette","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"offset":{"type":"f","default":1,"min":0,"max":1,"step":0.001},"darkness":{"type":"f","default":1,"min":0,"max":5,"step":0.001}}},"ssao":{"name":"ssao","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"fogEnabled":{"type":"i","default":1,"advanced":true},"depthScale":{"type":"f","default":2000,"min":100,"max":50000,"step":0.001,"advanced":true},"onlyAO":{"type":"i","default":0},"aoClamp":{"type":"f","default":0.75,"advanced":true},"lumInfluence":{"type":"f","default":0.75,"advanced":true},"noiseAmount":{"type":"f","default":0.0002},"radius":{"type":"f","default":16},"diffArea":{"type":"f","default":0.4,"advanced":true},"gDisplace":{"type":"f","default":0.4,"advanced":true}}},"dof":{"name":"dof","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"aspect":{"type":"f","default":1,"min":0,"max":1,"step":0.001,"advanced":true},"aperture":{"type":"f","default":0.4,"min":0,"max":1,"step":0.001},"focus":{"type":"f","default":0.98,"min":0,"max":1,"step":0.001}}},"sepia":{"name":"sepia","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"amount":{"type":"f","default":0.9,"min":0,"max":1,"step":0.001}}},"video":{"name":"video","type":"custom","description":"","attributes":{"override":{"type":"b","default":false,"description":"Override the default behaviour of this filter."},"enabled":{"type":"b","default":false},"nIntensity":{"type":"f","default":0.15},"sIntensity":{"type":"f","default":0.05},"sCount":{"type":"f","default":512},"grayscale":{"type":"b","default":false}}}},"attributesOrder":["bloom","toneMapping","fxaa","vignette","ssao","dof","sepia","video"],"events":{},"externalDependencies":[],"filter":["object"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/RenderFilters"}},ComponentRenderFilters);Box3D.ScriptRegistry.registerScript({"id":"render_modes","sid":"Render Modes","properties":{"name":"Render Modes","attributes":{"renderMode":{"name":"renderMode","type":"s","description":"How to render the scene","default":"Lit"},"shapeTexture":{"name":"shapeTexture","type":"asset","description":"","filter":{"texture2D":true,"renderTexture2D":true},"default":null},"skeletonsVisible":{"name":"skeletonsVisible","type":"b","description":"Render skeletons in the scene","default":false},"wireframesVisible":{"name":"wireframesVisible","type":"b","description":"Render mesh wireframes","default":false}},"attributesOrder":["renderMode","shapeTexture","skeletonsVisible","wireframesVisible"],"events":{"resetSkeletons":{"scope":"local","name":"resetSkeletons","action":true,"category":"Rendering","parameters":[]},"setRenderMode":{"scope":"local","name":"setRenderMode","action":true,"category":"Rendering","parameters":[{"name":"renderMode","type":"s","description":"One of \"Lit\", \"Unlit\", etc.","default":"Lit"}]},"setSkeletonsVisible":{"scope":"local","name":"setSkeletonsVisible","action":true,"category":"Rendering","parameters":[{"name":"visible","type":"b","description":"Whether or not skeletons are visible.","default":false}]},"setWireframesVisible":{"scope":"local","name":"setWireframesVisible","action":true,"category":"Rendering","parameters":[{"name":"visible","type":"b","description":"Whether or not wireframes are visible.","default":false}]}},"externalDependencies":[],"filter":["Application"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/RenderModes"}},ComponentRenderModes);Box3D.ScriptRegistry.registerScript({"id":"render_view_component","sid":"Render View","properties":{"name":"Render View","attributes":{"viewportLeft":{"name":"viewportLeft","type":"s","description":"Left position of the viewport to be rendered by this camera.","default":"0px"},"viewportBottom":{"name":"viewportBottom","type":"s","description":"Bottom position of the viewport to be rendered by this camera.","default":"0px"},"viewportWidth":{"name":"viewportWidth","type":"s","description":"Width of the viewport to be rendered by this camera.","default":"100%"},"viewportHeight":{"name":"viewportHeight","type":"s","description":"Height of the viewport to be rendered by this camera.","default":"100%"},"renderGroup":{"name":"renderGroup","type":"i","description":"Render passes are done in order, based on the 'render group' value. Lower numbers render first.","default":0},"renderLayer":{"name":"renderLayer","type":"i","description":".","default":0,"min":0},"clearColor":{"name":"clearColor","type":"b","description":"","default":false,"advanced":false},"clearDepth":{"name":"clearDepth","type":"b","description":"","default":true,"advanced":false},"renderTarget":{"name":"renderTarget","type":"asset","description":"","filter":{"renderTexture2D":true},"default":null,"advanced":false},"enablePreRenderFunctions":{"name":"enablePreRenderFunctions","type":"b","description":"Run pre-render functions with this view. These include things like real-time reflections, which need to be rendered for each view separately.","default":true,"advanced":true},"enableShadows":{"name":"enableShadows","type":"b","description":"Render shadows for this view.","default":true,"advanced":true}},"attributesOrder":["viewportLeft","viewportBottom","viewportWidth","viewportHeight","renderGroup","renderLayer","clearColor","clearDepth","renderTarget","enablePreRenderFunctions","enableShadows"],"events":{"enableRenderView":{"scope":"local","name":"enableRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]},"setViewport":{"scope":"local","name":"setViewport","category":"Rendering","parameters":[{"name":"viewportLeft","description":"Left position of the viewport to be rendered by this camera.","type":"s","default":"0px"},{"name":"viewportBottom","description":"Bottom position of the viewport to be rendered by this camera.","type":"s","default":"0px"},{"name":"viewportWidth","description":"Width of the viewport to be rendered by this camera.","type":"s","default":"100%"},{"name":"viewportHeight","description":"Height of the viewport to be rendered by this camera.","type":"s","default":"100%"},{"name":"animationTime","type":"f","description":"Animate the change in viewport over this many seconds.","default":0}]},"disableRenderView":{"scope":"local","name":"disableRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]},"toggleRenderView":{"scope":"local","name":"toggleRenderView","category":"Rendering","parameters":[{"name":"fade","type":"f","description":"Defined in seconds","default":0}]}},"externalDependencies":[],"filter":["camera"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/RenderView"}},ComponentRenderView);Box3D.ScriptRegistry.registerScript({"id":"rotate_component","sid":"Rotate","properties":{"name":"Rotate","description":"A simple component to rotate an object.","attributes":{"autoRotate":{"name":"autoRotate","type":"b","description":"Automatically start the rotation upon load.","default":true},"previewRotation":{"name":"previewRotation","type":"b","description":"Show the rotation in the editor.","default":true},"rotation":{"name":"rotation","type":"v3","description":"Amount of rotation per second about the x, y and z axes.","default":{"x":0,"y":0.5,"z":0}},"local":{"name":"local","type":"b","description":"Rotate relative to the local quaternion of the object. If false, the rotation will be relative to the world.","default":false}},"attributesOrder":["autoRotate","previewRotation","rotation","local"],"events":{"startRotate":{"scope":"local","name":"startRotate","action":true,"category":"Rotate","parameters":[]},"stopRotate":{"scope":"local","name":"stopRotate","action":true,"category":"Rotate","parameters":[]},"toggleRotate":{"scope":"local","name":"toggleRotate","action":true,"category":"Rotate","parameters":[]}},"externalDependencies":[],"filter":["object"],"category":"Animation","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/Rotate"}},ComponentRotate);Box3D.ScriptRegistry.registerScript({"id":"loader_component","sid":"Scene Loader","properties":{"name":"Scene Loader","description":"A simple component to load a scene and display progress for it.","attributes":{"scene":{"name":"scene","type":"asset","description":"The scene to load.","filter":{"scene":true}}},"attributesOrder":["scene"],"events":{},"externalDependencies":[],"filter":["Application"],"category":"Loading","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/SceneLoader"}},ComponentSceneLoader);Box3D.ScriptRegistry.registerScript({"id":"simplex_noise_component","sid":"Simplex Noise Generator","properties":{"name":"Simplex Noise Generator","attributes":{"layerAmplitude":{"name":"layerAmplitude","type":"v4","default":{"x":0.5,"y":0.4,"z":0.3,"w":0.125}},"layerScale":{"name":"layerScale","type":"v4","default":{"x":0.5,"y":2,"z":3,"w":4}},"scale":{"name":"scale","type":"v2","default":{"x":1,"y":1}},"offset":{"name":"offset","type":"v2","default":{"x":0,"y":0}},"autoLoad":{"name":"autoLoad","type":"b","default":true}},"attributesOrder":["layerAmplitude","layerScale","scale","offset","autoLoad"],"events":{"renderNoise":{"scope":"local","name":"renderNoise","action":true,"category":"Rendering","parameters":[]},"changeNoiseValues":{"scope":"local","name":"changeNoiseValues","action":true,"category":"Rendering","parameters":[{"name":"layerAmplitude","type":"v4","description":"","default":{"x":0.5,"y":0.4,"z":0.3,"w":0.125}},{"name":"layerScale","type":"v4","description":"","default":{"x":0.5,"y":2,"z":3,"w":4}},{"name":"scale","type":"v2","description":"","default":{"x":1,"y":1}},{"name":"offset","type":"v2","description":"","default":{"x":0,"y":0}}]}},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/SimplexNoiseGenerator"}},ComponentSimplexNoiseGenerator);Box3D.ScriptRegistry.registerScript({"id":"skybox_renderer","sid":"Skybox","properties":{"name":"Skybox","attributes":{"size":{"name":"size","type":"f","default":1000,"min":1,"max":1000000},"stereoEnabled":{"name":"stereoEnabled","type":"b","default":false},"skyboxTexture":{"name":"skyboxTexture","type":"asset","description":"","filter":{"textureCube":true,"texture2D":true,"renderTexture2D":true,"renderTextureCube":true},"default":null}},"attributesOrder":["size","stereoEnabled","skyboxTexture"],"events":{},"externalDependencies":[],"filter":["scene"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/Skybox"}},ComponentSkybox);Box3D.ScriptRegistry.registerScript({"id":"text_renderer_component","sid":"Text Renderer","properties":{"name":"Text Renderer","description":"Render the desired text to the texture we are attached to","attributes":{"text":{"name":"text","type":"s","default":"My Text","description":"Text you want to display"},"fontColor":{"name":"fontColor","type":"c","default":{"r":1,"g":1,"b":1},"description":"Color of the text"},"fontFamily":{"name":"fontFamily","type":"s","default":"Calibri","description":"Font family to render"},"pointSize":{"name":"pointSize","type":"i","default":48,"description":"Font size","min":2,"max":100}},"attributesOrder":["text","fontColor","fontFamily","pointSize"],"events":{},"externalDependencies":[],"filter":["renderTexture2D"],"category":"Text","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/TextRenderer"}},ComponentTextRenderer);Box3D.ScriptRegistry.registerScript({"id":"texture2d_to_cubemap_script","sid":"Texture To Cube Map","properties":{"name":"Texture To Cube Map","description":"A controller that allows a camera to easily orbit a target object.","attributes":{"inputTexture":{"name":"inputTexture","type":"asset","default":null,"filter":{"texture2D":true,"renderTexture2D":true},"description":"The texture to convert to a cube map."}},"attributesOrder":["inputTexture"],"events":{},"externalDependencies":[],"filter":["renderTextureCube"],"category":"Rendering","parsedComments":true,"flags":{"addremove":true,"disable":true,"persist":true,"unique":false,"display":true},"path":"../Components/BuiltIn/Texture2dToCubeMap"}},ComponentTexture2dToCubeMap);};/* eslint-enable */
 
 /***/ },
-/* 26 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -63772,7 +63938,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -63835,7 +64001,7 @@
 	exports.default = AudioListener;
 
 /***/ },
-/* 27 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -63856,7 +64022,7 @@
 
 	var _deepClone2 = _interopRequireDefault(_deepClone);
 
-	var _map = __webpack_require__(28);
+	var _map = __webpack_require__(30);
 
 	var _map2 = _interopRequireDefault(_map);
 
@@ -64532,7 +64698,7 @@
 	exports.default = Box3DComponent;
 
 /***/ },
-/* 28 */
+/* 30 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -64560,7 +64726,7 @@
 	exports.default = map;
 
 /***/ },
-/* 29 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -64609,7 +64775,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -64965,7 +65131,7 @@
 	exports.default = AudioSource;
 
 /***/ },
-/* 30 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -65034,7 +65200,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -65310,7 +65476,7 @@
 	exports.default = CubeMapCapture;
 
 /***/ },
-/* 31 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -65350,7 +65516,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -65656,7 +65822,7 @@
 	exports.default = Curve;
 
 /***/ },
-/* 32 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -65675,7 +65841,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -65741,7 +65907,7 @@
 	exports.default = DebugConsoleDisplay;
 
 /***/ },
-/* 33 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -65760,11 +65926,11 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
-	var _stats = __webpack_require__(34);
+	var _stats = __webpack_require__(36);
 
 	var _stats2 = _interopRequireDefault(_stats);
 
@@ -65845,7 +66011,7 @@
 	exports.default = DebugPerformance;
 
 /***/ },
-/* 34 */
+/* 36 */
 /***/ function(module, exports) {
 
 	// stats.js - http://github.com/mrdoob/stats.js
@@ -65855,7 +66021,7 @@
 	v){c=Math.min(c,f);g=Math.max(g,f);b.fillStyle=l;b.globalAlpha=1;b.fillRect(0,0,r,m);b.fillStyle=k;b.fillText(e(f)+" "+h+" ("+e(c)+"-"+e(g)+")",t,u);b.drawImage(q,d+a,m,n-a,p,d,m,n-a,p);b.fillRect(d+n-a,m,a,p);b.fillStyle=l;b.globalAlpha=.9;b.fillRect(d+n-a,m,a,e((1-f/v)*p))}}};"object"===typeof module&&(module.exports=Stats);
 
 /***/ },
-/* 35 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -65903,7 +66069,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -66299,7 +66465,7 @@
 	exports.default = DebugTextureViewer;
 
 /***/ },
-/* 36 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -66399,7 +66565,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -66496,7 +66662,7 @@
 	exports.default = DefaultFilters;
 
 /***/ },
-/* 37 */
+/* 39 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -66526,7 +66692,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -66873,7 +67039,7 @@
 	exports.default = DynamicOptimizer;
 
 /***/ },
-/* 38 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -66901,7 +67067,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -67036,7 +67202,7 @@
 	exports.default = EventHandler;
 
 /***/ },
-/* 39 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -67079,7 +67245,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -67307,7 +67473,7 @@
 	exports.default = Exploder;
 
 /***/ },
-/* 40 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -67355,7 +67521,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -67882,7 +68048,7 @@
 	exports.default = FreeCamera;
 
 /***/ },
-/* 41 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -67905,7 +68071,7 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -68002,7 +68168,7 @@
 	exports.default = Fullscreen;
 
 /***/ },
-/* 42 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -68113,7 +68279,7 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -68129,8 +68295,8 @@
 	var DOUBLE_TAP_TIME = 300;
 
 	function Box3DMouseVector() {
-	  var x = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-	  var y = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+	  var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	  var y = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
 	  this.x = x;
 	  this.y = y;
@@ -68882,7 +69048,7 @@
 	  }, {
 	    key: 'getMouseDragState',
 	    value: function getMouseDragState() {
-	      var buttonId = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+	      var buttonId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
 	      return this.mouseDragState[buttonId];
 	    }
@@ -68897,7 +69063,7 @@
 	  }, {
 	    key: 'getPreviousMouseDragState',
 	    value: function getPreviousMouseDragState() {
-	      var buttonId = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+	      var buttonId = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
 	      return this.mouseDragStatePrevious[buttonId];
 	    }
@@ -69055,7 +69221,7 @@
 	exports.default = InputController;
 
 /***/ },
-/* 43 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -69182,7 +69348,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -69681,7 +69847,7 @@
 	exports.default = Animation;
 
 /***/ },
-/* 44 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -69716,7 +69882,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -69836,7 +70002,7 @@
 	exports.default = LookAt;
 
 /***/ },
-/* 45 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -69863,7 +70029,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -70000,7 +70166,7 @@
 	exports.default = MaterialCapture;
 
 /***/ },
-/* 46 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -70032,7 +70198,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -70199,7 +70365,7 @@
 	exports.default = NormalMapGenerator;
 
 /***/ },
-/* 47 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -70298,7 +70464,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -70880,7 +71046,7 @@
 	exports.default = ObjectAnimator;
 
 /***/ },
-/* 48 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -70937,7 +71103,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -71475,7 +71641,7 @@
 	exports.default = ObjectPicker;
 
 /***/ },
-/* 49 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -71613,7 +71779,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -72493,7 +72659,7 @@
 	exports.default = OrbitCamera;
 
 /***/ },
-/* 50 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -72520,7 +72686,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -72602,7 +72768,7 @@
 	  }, {
 	    key: 'updateTexture',
 	    value: function updateTexture() {
-	      if (this.inputTexture) {
+	      if (this.inputTexture && !this.getEntity().isUnloaded()) {
 	        this.inputTexture.off('load', this.renderToCube, this);
 	        this.inputTexture.when('load', this.renderToCube, this);
 	        if (this.inputTexture.isBaseUnloaded()) {
@@ -72706,282 +72872,7 @@
 	exports.default = PanoramaToCubeMap;
 
 /***/ },
-/* 51 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @vid texture2d_to_pmrem_cubeuv
-	 * @vname GeneratePMREM
-	 * @vdescription Generates a prefiltered mipmaped radiance environment map from a, preferably HDRI,
-	 * input environment map. The entire result will be stored in this texture in the CubeUV layout.
-	 * @vfilter renderTexture2D
-	 * @vcategory Rendering
-	 * @vattr asset inputTexture {
-	 *   default : null,
-	 *   filter : { texture2D: true, renderTexture2D: true, textureCube: true, renderTextureCube: true },
-	 *   description : 'The texture to generate the PMREM for.'
-	 * }
-	*/
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _three = __webpack_require__(10);
-
-	var _three2 = _interopRequireDefault(_three);
-
-	var _Box3DComponent2 = __webpack_require__(27);
-
-	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
-
-	var _BaseImageAsset = __webpack_require__(23);
-
-	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
-
-	var _BaseTextureAsset = __webpack_require__(22);
-
-	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var PMREMGenerator = function (_Box3DComponent) {
-	  _inherits(PMREMGenerator, _Box3DComponent);
-
-	  function PMREMGenerator() {
-	    _classCallCheck(this, PMREMGenerator);
-
-	    return _possibleConstructorReturn(this, (PMREMGenerator.__proto__ || Object.getPrototypeOf(PMREMGenerator)).call(this));
-	  }
-
-	  /** @inheritdoc */
-
-
-	  _createClass(PMREMGenerator, [{
-	    key: 'onAttributesChanged',
-	    value: function onAttributesChanged(changes) {
-	      if (changes.indexOf('inputTexture') !== -1) {
-	        var prevTex = this.getPreviousAttribute('inputTexture');
-	        this.unregisterDependency(prevTex);
-	        this.registerDependency(this.inputTexture);
-	        this.updateTexture();
-	      }
-	    }
-
-	    // /** @inheritdoc */
-	    // onStartup() {
-	    //   this.registerDependency(this.inputTexture);
-	    //   // this.updateTexture();
-	    // }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'onEntityReady',
-	    value: function onEntityReady() {
-	      var _this2 = this;
-
-	      if (this.inputTexture) {
-	        this.inputTexture.when('load', function () {
-	          _this2.registerDependency(_this2.inputTexture);
-	          _this2.updateTexture();
-	        });
-	        if (this.inputTexture.isUnloaded()) {
-	          this.inputTexture.load();
-	        }
-	      }
-	    }
-
-	    /** @inheritdoc */
-
-	  }, {
-	    key: 'onShutdown',
-	    value: function onShutdown() {
-	      if (this.inputTexture) {
-	        this.unregisterDependency(this.inputTexture);
-	        this.inputTexture.off('load', this.renderToCube, this);
-	      }
-	    }
-	  }, {
-	    key: 'updateTexture',
-	    value: function updateTexture() {
-	      if (this.inputTexture) {
-	        // let cubeSource = this.inputTexture.getThreeTexture();
-	        // if (this.inputTexture && (this.inputTexture.type === 'renderTexture2D' ||
-	        //   this.inputTexture.type === 'texture2D')) {
-	        var cubeSource = this.convertToCubeMap();
-	        // }
-
-
-	        this.generate(cubeSource);
-
-	        // skyboxMesh.material.dispose();
-
-	        // Setup appropriate material for transforming 2D texture to cube map
-	        // let shader;
-	        // let layout = this.inputTexture.getLayout();
-	        // if (layout === BaseImageAsset.LAYOUT.normal) {
-
-
-	        // Bind to texture loading
-	        // this.inputTexture.off('load', this.renderToCube, this);
-	        // this.inputTexture.when('load', this.renderToCube, this);
-	        // if (this.inputTexture.isUnloaded()) {
-	        //   this.inputTexture.load();
-	        // }
-
-	      }
-	    }
-	  }, {
-	    key: 'generate',
-	    value: function generate(sourceCubeMap) {
-	      var renderer = this.getThreeRenderer();
-	      var generator = new _three2.default.PMREMGenerator(sourceCubeMap);
-	      generator.update(renderer);
-	      var packer = new _three2.default.PMREMCubeUVPacker(generator.cubeLods);
-
-	      this.getEntity().getThreeTexture().mapping = _three2.default.EquirectangularReflectionMapping;
-	      packer.CubeUVRenderTarget = this.getEntity().getRuntimeData();
-	      packer.update(renderer);
-	    }
-	  }, {
-	    key: 'convertToCubeMap',
-	    value: function convertToCubeMap() {
-	      // Assume width is power of two so that dividing by 4 produces power of two size.
-	      // TODO: add code to ensure this is the case.
-	      // We're setting the size of the cubemap to be 1/4 the size of this render target because
-	      // that is the ratio hard-coded into the THREE.PMREMCubeUVPacker.
-	      var size = this.getEntity().getWidth() / 4;
-	      var params = {
-	        format: _BaseImageAsset2.default.FORMAT[this.getEntity().getProperty('format')],
-	        magFilter: _BaseTextureAsset2.default.FILTER[this.getEntity().getProperty('magFilter')],
-	        minFilter: _BaseTextureAsset2.default.FILTER[this.getEntity().getProperty('minFilter')],
-	        type: _BaseImageAsset2.default.TYPE[this.getEntity().getProperty('type')],
-	        generateMipmaps: this.getEntity().getProperty('generateMipmaps'),
-	        anisotropy: this.getEntity().getProperty('anisotropy'),
-	        encoding: this.getEntity().getProperty('encoding')
-	      };
-	      var targetCubeMap = new _three2.default.WebGLRenderTargetCube(size, size, params);
-	      var skyboxScene = new _three2.default.Scene();
-	      var skyboxGeometry = new _three2.default.BoxGeometry(100, 100, 100, 1, 1, 1);
-	      skyboxGeometry.dynamic = false;
-	      var skyboxMesh = new _three2.default.Mesh(skyboxGeometry);
-	      skyboxMesh.frustumCulled = false;
-	      skyboxMesh.castShadow = false;
-	      skyboxMesh.receiveShadow = false;
-	      if (this.isEnabled()) {
-	        skyboxScene.add(skyboxMesh);
-	      }
-
-	      var shader = _three2.default.ShaderLib['equirect'];
-	      shader.uniforms.tFlip.value = 1.0;
-	      var equirectMaterial = new _three2.default.ShaderMaterial({
-	        fragmentShader: shader.fragmentShader,
-	        vertexShader: shader.vertexShader,
-	        uniforms: shader.uniforms,
-	        depthWrite: false,
-	        side: _three2.default.BackSide
-	      });
-
-	      equirectMaterial.uniforms.tEquirect.value = this.inputTexture.getThreeTexture();
-	      skyboxMesh.material = equirectMaterial;
-
-	      var fov = 90;
-	      var aspect = 1;
-
-	      var cameras = [];
-	      cameras[0] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
-	      cameras[0].up.set(0, -1, 0);
-	      cameras[0].lookAt(new _three2.default.Vector3(1, 0, 0));
-	      cameras[0].rotationAutoUpdate = false;
-	      skyboxScene.add(cameras[0]);
-
-	      cameras[1] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
-	      cameras[1].up.set(0, -1, 0);
-	      cameras[1].lookAt(new _three2.default.Vector3(-1, 0, 0));
-	      cameras[1].rotationAutoUpdate = false;
-	      skyboxScene.add(cameras[1]);
-
-	      cameras[2] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
-	      cameras[2].up.set(0, 0, 1);
-	      cameras[2].lookAt(new _three2.default.Vector3(0, 1, 0));
-	      cameras[2].rotationAutoUpdate = false;
-	      skyboxScene.add(cameras[2]);
-
-	      cameras[3] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
-	      cameras[3].up.set(0, 0, -1);
-	      cameras[3].lookAt(new _three2.default.Vector3(0, -1, 0));
-	      cameras[3].rotationAutoUpdate = false;
-	      skyboxScene.add(cameras[3]);
-
-	      cameras[4] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
-	      cameras[4].up.set(0, -1, 0);
-	      cameras[4].lookAt(new _three2.default.Vector3(0, 0, 1));
-	      cameras[4].rotationAutoUpdate = false;
-	      skyboxScene.add(cameras[4]);
-
-	      cameras[5] = new _three2.default.PerspectiveCamera(fov, aspect, 1, 1000);
-	      cameras[5].up.set(0, -1, 0);
-	      cameras[5].lookAt(new _three2.default.Vector3(0, 0, -1));
-	      cameras[5].rotationAutoUpdate = false;
-	      skyboxScene.add(cameras[5]);
-
-	      // const renderTarget = this.getRuntimeData();
-	      var renderer = this.getThreeRenderer();
-
-	      targetCubeMap.texture.generateMipmaps = false;
-
-	      renderer.setViewport(0, 0, targetCubeMap.width, targetCubeMap.height);
-	      for (var i = 0; i < 5; i++) {
-	        targetCubeMap.activeCubeFace = i;
-	        renderer.render(skyboxScene, cameras[i], targetCubeMap);
-	      }
-	      targetCubeMap.texture.generateMipmaps = this.getEntity().getProperty('generateMipmaps');
-
-	      targetCubeMap.activeCubeFace = 5;
-	      renderer.render(skyboxScene, cameras[5], targetCubeMap);
-	      return targetCubeMap;
-	    }
-
-	    // renderToCube() {
-	    //   if (this.hasRuntimeData()) {
-
-	    //     this.equirectMaterial.uniforms.inputTexture.value = this.inputTexture.runtimeData;
-	    //     var renderTarget = this.getRuntimeData();
-	    //     var renderer = this.getThreeRenderer();
-
-	    //     renderTarget.texture.generateMipmaps = false;
-
-	    //     renderer.setViewport(0, 0, renderTarget.width, renderTarget.height);
-	    //     for (var i = 0; i < 5; i++) {
-	    //       renderTarget.activeCubeFace = i;
-	    //       renderer.render(this.skyboxScene, this.cameras[i], renderTarget);
-	    //     }
-	    //     renderTarget.texture.generateMipmaps = this.getEntity().getProperty('generateMipmaps');
-
-	    //     renderTarget.activeCubeFace = 5;
-	    //     renderer.render(this.skyboxScene, this.cameras[5], renderTarget);
-	    //   }
-	    // }
-
-	  }]);
-
-	  return PMREMGenerator;
-	}(_Box3DComponent3.default);
-
-	exports.default = PMREMGenerator;
-
-/***/ },
-/* 52 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -73014,7 +72905,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -73389,7 +73280,7 @@
 	exports.default = PreviewAxisRotation;
 
 /***/ },
-/* 53 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -73528,7 +73419,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -74406,7 +74297,7 @@
 	exports.default = PreviewCamera;
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -74439,7 +74330,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -74692,7 +74583,7 @@
 	exports.default = PreviewCameraFocus;
 
 /***/ },
-/* 55 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -74728,7 +74619,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -74973,7 +74864,7 @@
 	exports.default = ReflectionCapture;
 
 /***/ },
-/* 56 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -75087,7 +74978,7 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -75548,7 +75439,7 @@
 	exports.default = DefaultRenderer;
 
 /***/ },
-/* 57 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -75656,7 +75547,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -76119,7 +76010,7 @@
 	exports.default = RenderFilters;
 
 /***/ },
-/* 58 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -76212,7 +76103,7 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -76306,7 +76197,7 @@
 	 * @returns {Canvas} Returns a canvas containing the UV grid.
 	 */
 	function generateUvGrid() {
-	  var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	  var size = options.size || DEFAULT_GRID_SIZE;
 	  var divisions = options.divisions || DEFAULT_GRID_DIVISIONS;
@@ -77006,7 +76897,7 @@
 	exports.default = RenderModes;
 
 /***/ },
-/* 59 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77054,7 +76945,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -77372,7 +77263,7 @@
 	exports.default = RenderView;
 
 /***/ },
-/* 60 */
+/* 61 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77447,7 +77338,7 @@
 
 	var _lodash2 = _interopRequireDefault(_lodash);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -77596,7 +77487,7 @@
 	exports.default = Rotate;
 
 /***/ },
-/* 61 */
+/* 62 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77622,7 +77513,7 @@
 
 	var _log2 = _interopRequireDefault(_log);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -77707,7 +77598,7 @@
 	exports.default = SceneLoader;
 
 /***/ },
-/* 62 */
+/* 63 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77746,7 +77637,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -77938,7 +77829,7 @@
 	exports.default = SimplexNoiseRenderer;
 
 /***/ },
-/* 63 */
+/* 64 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -77957,7 +77848,7 @@
 	 *     'renderTexture2D': true,
 	 *     'renderTextureCube': true
 	 *   },
-	 *   'default': 'white_cube'
+	 *   'default': null
 	 * }
 	 */
 	/* eslint-enable */
@@ -77973,7 +77864,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -78050,11 +77941,47 @@
 	      this.currentTexLayout = null;
 	    }
 
+	    /**
+	     * Returns the Three.js mesh for the skybox.
+	     * @method getMesh
+	     * @public
+	     * @param {String} [eye='left'] If skybox is stereo, return the mesh for a specific eye.
+	     * Either 'left' or 'right'
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'getMesh',
+	    value: function getMesh() {
+	      var eye = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'left';
+
+	      return eye === 'left' ? this.skyboxMesh : this.skyboxMeshRightEye;
+	    }
+
 	    /** @inheritdoc */
 
 	  }, {
 	    key: 'onAttributesChanged',
 	    value: function onAttributesChanged(changed) {
+
+	      // Do dependency setup (should be automated in the future)
+	      if (changed.indexOf('skyboxTexture') !== -1) {
+	        var prevTextureId = this.getPreviousAttribute('skyboxTexture');
+	        if (prevTextureId) {
+	          var texture = this.getRuntime().getEntityById(prevTextureId);
+	          this.stopListening(texture);
+	        }
+	        this.getEntity().unregisterDependencyById(this.getPreviousAttribute('skyboxTexture'));
+
+	        // Only register the texture if it wasn't already registered. This code can be removed
+	        // when we make this more automatic.
+	        var dependencies = this.getEntity().getOwnDependencyInfo();
+	        var newTextureId = this.getAttribute('skyboxTexture');
+	        if (!dependencies[newTextureId]) {
+	          this.getEntity().registerDependencyById(this.getAttribute('skyboxTexture'));
+	        }
+	      }
+	      // Don't do any setup unless the entity is loaded/loading
 	      if (!this.getEntity().isBaseLoaded()) {
 	        return;
 	      }
@@ -78242,24 +78169,21 @@
 	  }, {
 	    key: 'initSkybox',
 	    value: function initSkybox() {
-	      var _this2 = this;
-
 	      this.currentMaterial = this.skyboxMaterial2D;
 	      this.currentMaterial.needsUpdate = true;
 
 	      if (!this.skyboxTexture) {
-	        this.skyboxMaterial2D.map = null;
+	        this.currentMaterial.map = null;
+	        this.currentMaterial.needsUpdate = true;
 	      } else if (this.skyboxTexture.type === 'textureCube' || this.skyboxTexture.type === 'renderTextureCube') {
 	        this.currentMaterial = this.skyboxMaterialCube;
 	      }
 
-	      var layout = this.skyboxTexture ? this.skyboxTexture.getLayout() : 'normal';
-	      if (layout !== this.currentTexLayout) {
-	        this.currentTexLayout = layout;
-	        this.initGeometry();
-	        this.initMesh();
-	        this.initStereoUvs();
-	      }
+	      this.currentTexLayout = this.skyboxTexture ? this.skyboxTexture.getLayout() : 'normal';
+	      this.initGeometry();
+	      this.initMesh();
+	      this.initStereoUvs();
+
 	      if (this.isStereo()) {
 	        this.skyboxMesh.layers.set(1);
 	        this.getRuntimeData().add(this.skyboxMeshRightEye);
@@ -78271,17 +78195,30 @@
 	      if (!this.skyboxTexture) {
 	        return;
 	      }
-	      this.skyboxTexture.when('load', function () {
-	        if (_this2.currentMaterial === _this2.skyboxMaterial2D) {
-	          _this2.currentMaterial.map = _this2.skyboxTexture.getThreeTexture();
-	          _this2.currentMaterial.needsUpdate = true;
-	        } else {
-	          _this2.skyboxUniforms.envMap.value = _this2.skyboxTexture.getThreeTexture();
-	        }
-	      }, this);
+
+	      this.listenTo(this.skyboxTexture, 'load', this.onSkyboxTextureLoad, this);
+	      if (this.skyboxTexture.isLoaded()) {
+	        this.onSkyboxTextureLoad();
+	      }
+
 	      if (this.isEnabled() && this.skyboxTexture.isUnloaded()) {
 	        this.skyboxTexture.load();
 	      }
+	    }
+
+	    /**
+	     * Called when the skybox texture's load event is fired. This links up the texture in
+	     * the skybox's material.
+	     * @method onSkyboxTextureLoad
+	     * @private
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'onSkyboxTextureLoad',
+	    value: function onSkyboxTextureLoad() {
+	      this.currentMaterial.map = this.skyboxTexture.getThreeTexture();
+	      this.currentMaterial.needsUpdate = true;
 	    }
 
 	    /**
@@ -78351,7 +78288,7 @@
 	exports.default = SkyboxRenderer;
 
 /***/ },
-/* 64 */
+/* 65 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* eslint-disable */
@@ -78379,7 +78316,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
@@ -78557,7 +78494,7 @@
 	exports.default = TextRenderer;
 
 /***/ },
-/* 65 */
+/* 66 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -78584,11 +78521,11 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DComponent2 = __webpack_require__(27);
+	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
 
-	var _BaseImageAsset = __webpack_require__(23);
+	var _BaseImageAsset = __webpack_require__(25);
 
 	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
@@ -78813,10 +78750,10 @@
 	exports.default = Texture2dToCubeMap;
 
 /***/ },
-/* 66 */
+/* 67 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(67)
+	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(68)
 	  , root = typeof window === 'undefined' ? global : window
 	  , vendors = ['moz', 'webkit']
 	  , suffix = 'AnimationFrame'
@@ -78892,7 +78829,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 67 */
+/* 68 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
@@ -78928,10 +78865,10 @@
 
 	}).call(this);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(68)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(69)))
 
 /***/ },
-/* 68 */
+/* 69 */
 /***/ function(module, exports) {
 
 	// shim for using process in browser
@@ -78945,25 +78882,40 @@
 	var cachedSetTimeout;
 	var cachedClearTimeout;
 
+	function defaultSetTimout() {
+	    throw new Error('setTimeout has not been defined');
+	}
+	function defaultClearTimeout () {
+	    throw new Error('clearTimeout has not been defined');
+	}
 	(function () {
 	    try {
-	        cachedSetTimeout = setTimeout;
-	    } catch (e) {
-	        cachedSetTimeout = function () {
-	            throw new Error('setTimeout is not defined');
+	        if (typeof setTimeout === 'function') {
+	            cachedSetTimeout = setTimeout;
+	        } else {
+	            cachedSetTimeout = defaultSetTimout;
 	        }
+	    } catch (e) {
+	        cachedSetTimeout = defaultSetTimout;
 	    }
 	    try {
-	        cachedClearTimeout = clearTimeout;
-	    } catch (e) {
-	        cachedClearTimeout = function () {
-	            throw new Error('clearTimeout is not defined');
+	        if (typeof clearTimeout === 'function') {
+	            cachedClearTimeout = clearTimeout;
+	        } else {
+	            cachedClearTimeout = defaultClearTimeout;
 	        }
+	    } catch (e) {
+	        cachedClearTimeout = defaultClearTimeout;
 	    }
 	} ())
 	function runTimeout(fun) {
 	    if (cachedSetTimeout === setTimeout) {
 	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    // if setTimeout wasn't available but was latter defined
+	    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+	        cachedSetTimeout = setTimeout;
 	        return setTimeout(fun, 0);
 	    }
 	    try {
@@ -78984,6 +78936,11 @@
 	function runClearTimeout(marker) {
 	    if (cachedClearTimeout === clearTimeout) {
 	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    // if clearTimeout wasn't available but was latter defined
+	    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+	        cachedClearTimeout = clearTimeout;
 	        return clearTimeout(marker);
 	    }
 	    try {
@@ -79097,7 +79054,7 @@
 
 
 /***/ },
-/* 69 */
+/* 70 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -79317,7 +79274,7 @@
 	exports.default = UserAgent;
 
 /***/ },
-/* 70 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -79483,7 +79440,7 @@
 
 
 /***/ },
-/* 71 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -79665,7 +79622,7 @@
 
 
 /***/ },
-/* 72 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -79772,7 +79729,7 @@
 
 
 /***/ },
-/* 73 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -79840,7 +79797,7 @@
 
 
 /***/ },
-/* 74 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -79919,7 +79876,7 @@
 
 
 /***/ },
-/* 75 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80013,7 +79970,7 @@
 
 
 /***/ },
-/* 76 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80079,7 +80036,7 @@
 
 
 /***/ },
-/* 77 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80149,12 +80106,11 @@
 
 
 /***/ },
-/* 78 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)
-		, __webpack_require__(98)
-		, __webpack_require__(80)
+		, __webpack_require__(99)
 		, __webpack_require__(81)
 		, __webpack_require__(82)
 		, __webpack_require__(83)
@@ -80172,8 +80128,8 @@
 		, __webpack_require__(95)
 		, __webpack_require__(96)
 		, __webpack_require__(97)
-		, __webpack_require__(79)
-		, __webpack_require__(99)
+		, __webpack_require__(98)
+		, __webpack_require__(80)
 		, __webpack_require__(100)
 		, __webpack_require__(101)
 		, __webpack_require__(102)
@@ -80190,7 +80146,8 @@
 		, __webpack_require__(113)
 		, __webpack_require__(114)
 		, __webpack_require__(115)
-		, __webpack_require__(116)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		, __webpack_require__(116)
+		, __webpack_require__(117)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
 		/**
 		 * @author alteredq / http://alteredqualia.com/
 		 */
@@ -80275,7 +80232,7 @@
 
 
 /***/ },
-/* 79 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80381,7 +80338,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 80 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80454,7 +80411,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 81 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80525,7 +80482,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 82 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80583,7 +80540,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 83 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80715,7 +80672,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 84 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81101,7 +81058,7 @@
 
 
 /***/ },
-/* 85 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81166,7 +81123,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 86 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81221,7 +81178,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 87 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81277,7 +81234,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 88 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81385,7 +81342,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 89 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81438,7 +81395,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 90 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81492,7 +81449,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 91 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81557,7 +81514,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 92 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81632,7 +81589,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 93 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81733,7 +81690,7 @@
 
 
 /***/ },
-/* 94 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81826,7 +81783,7 @@
 
 
 /***/ },
-/* 95 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81937,7 +81894,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 96 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82035,7 +81992,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 97 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82117,7 +82074,7 @@
 
 
 /***/ },
-/* 98 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82155,7 +82112,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 99 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82240,7 +82197,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 100 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82309,7 +82266,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 101 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82381,7 +82338,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 102 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82457,7 +82414,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 103 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82525,7 +82482,7 @@
 
 
 /***/ },
-/* 104 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82606,7 +82563,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 105 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82672,7 +82629,7 @@
 
 
 /***/ },
-/* 106 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82732,7 +82689,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 107 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82796,7 +82753,7 @@
 
 
 /***/ },
-/* 108 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82859,7 +82816,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 109 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83156,7 +83113,7 @@
 
 
 /***/ },
-/* 110 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83241,7 +83198,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 111 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83394,7 +83351,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 112 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83458,7 +83415,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 113 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83558,7 +83515,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 114 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83627,7 +83584,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 115 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83699,7 +83656,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 116 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83770,7 +83727,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 117 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83825,7 +83782,7 @@
 
 
 /***/ },
-/* 118 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84453,7 +84410,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 119 */
+/* 120 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -84482,7 +84439,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _BufferAsset = __webpack_require__(120);
+	var _BufferAsset = __webpack_require__(121);
 
 	var _BufferAsset2 = _interopRequireDefault(_BufferAsset);
 
@@ -84812,7 +84769,7 @@
 	  }, {
 	    key: '_applyPropertiesUnloaded',
 	    value: function _applyPropertiesUnloaded() {
-	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	      var changes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	      _get(AnimationAsset.prototype.__proto__ || Object.getPrototypeOf(AnimationAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
 	      if (changes.hasOwnProperty('channels')) {
@@ -84877,7 +84834,7 @@
 	exports.default = AnimationAsset;
 
 /***/ },
-/* 120 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -84890,10 +84847,6 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _log = __webpack_require__(7);
-
-	var _log2 = _interopRequireDefault(_log);
-
 	var _lodash = __webpack_require__(4);
 
 	var _lodash2 = _interopRequireDefault(_lodash);
@@ -84902,9 +84855,15 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _Box3DEntity = __webpack_require__(16);
+	var _LoadingEvent = __webpack_require__(20);
 
-	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
+	var LoadingEvent = _interopRequireWildcard(_LoadingEvent);
+
+	var _LoadingType = __webpack_require__(122);
+
+	var LoadingType = _interopRequireWildcard(_LoadingType);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -84965,9 +84924,6 @@
 
 	    /** @inheritdoc */
 	    value: function unload() {
-	      // Abort XHR request associated with this asset.
-	      this.box3DRuntime.resourceLoader.abortRequest(this.id);
-
 	      this.buffer = null;
 	      this.arrays = {};
 
@@ -85015,26 +84971,18 @@
 	    value: function createRuntimeData(callback) {
 	      var _this3 = this;
 
-	      var onBufferProgress = function onBufferProgress(progressObj) {
+	      var resource = this.loadResource(this.getProperty('src'), LoadingType.BUFFER, callback, { size: 1, priority: 1 });
+
+	      resource.on(LoadingEvent.PROGRESS, function (progressObj) {
 	        _this3.loadedBytes = _this3.getDataSizeDownload() * progressObj.loaded / progressObj.total;
 	        _this3.trigger('loadProgress', _this3);
-	      };
+	      });
 
-	      var onBufferLoadError = function onBufferLoadError(err) {
-	        _log2.default.error(_this3.box3DRuntime.engineName + ' - BufferAsset: Error loading buffer , ' + _this3.getName(), err.toString());
-	        _this3.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.FAILED);
-	        callback();
-	      };
-
-	      var onBufferLoaded = function onBufferLoaded(data) {
-	        _this3.buffer = data.data;
+	      resource.on(LoadingEvent.LOAD, function (data) {
+	        _this3.buffer = data;
 	        _this3.createArrays();
 	        _this3.loadedBytes = _this3.getDataSizeDownload();
-	        callback();
-	      };
-
-	      this.box3DRuntime.resourceLoader.load(this, { size: 1, xhrKey: this.id, priority: 1 }, onBufferProgress).catch(onBufferLoadError) // catch here so that we don't swallow errors in onBufferLoaded
-	      .then(onBufferLoaded);
+	      });
 	    }
 
 	    /**
@@ -85197,13 +85145,23 @@
 	  float32: 4,
 	  float64: 8
 	};
-
-
-	window.Box3D.BufferAsset = BufferAsset;
 	exports.default = BufferAsset;
 
 /***/ },
-/* 121 */
+/* 122 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var BUFFER = exports.BUFFER = 'buffer';
+	var IMAGE = exports.IMAGE = 'image';
+	var VIDEO = exports.VIDEO = 'video';
+
+/***/ },
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85272,7 +85230,7 @@
 	exports.default = ApplicationAsset;
 
 /***/ },
-/* 122 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85358,7 +85316,7 @@
 	exports.default = AudioAsset;
 
 /***/ },
-/* 123 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85377,7 +85335,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _JSONLoader = __webpack_require__(124);
+	var _JSONLoader = __webpack_require__(126);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
@@ -85475,12 +85433,12 @@
 	exports.default = DocumentAsset;
 
 /***/ },
-/* 124 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(4), __webpack_require__(125)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(4), __webpack_require__(127)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
 	  'use strict';
 
 	  /**
@@ -85640,19 +85598,16 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 125 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(126);
-	var v1 = __webpack_require__(127);
-	var v2 = __webpack_require__(128);
-	var v3 = __webpack_require__(152);
-	var v4 = __webpack_require__(153);
-
-	var SUPPORTED_VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv',
-	  'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv'];
+	var _ = __webpack_require__(128);
+	var v1 = __webpack_require__(129);
+	var v2 = __webpack_require__(130);
+	var v3 = __webpack_require__(154);
+	var v4 = __webpack_require__(155);
 
 	/**
 	 * Maps the specified values using the specified mapping function and flattens
@@ -85696,27 +85651,6 @@
 	  }
 
 	  return fns;
-	}
-
-	/**
-	 * Indicates whether or not a filename refers to a supported video format.
-	 * @function isVideoFormat
-	 * @param {String} filename The filename in question.
-	 * @returns {Boolean} Whether or not the filename refers to a supported video
-	 * format.
-	 */
-	function isVideoFormat(filename) {
-	  var tokens = filename.split('.');
-
-	  if (tokens.length === 0) {
-	    return false;
-	  }
-
-	  var extension = tokens[tokens.length - 1].toLowerCase();
-
-	  return SUPPORTED_VIDEO_FORMATS.some(function(supportedType) {
-	    return supportedType === extension;
-	  });
 	}
 
 	/**
@@ -86011,24 +85945,11 @@
 	 * Map the texture entity to the current runtime format.
 	 * @function mapTexture
 	 * @param {Object} texture The texture entity to map.
-	 * @param {Object} entitiesById All entities, indexed by ID.
 	 * @returns {Object} The mapped texture entity.
 	 */
-	function mapTexture(texture, entitiesById) {
+	function mapTexture(texture) {
 	  var textureProps = texture.properties;
 	  var properties = { name: textureProps.name, imageId: textureProps.imageId };
-	  var imageId;
-	  var documentOrImage;
-
-	  // Possibly change the texture2D to a videoTexture entity.
-	  if (texture.properties.imageId) {
-	    imageId = texture.properties.imageId.split('#')[0];
-	    documentOrImage = entitiesById[imageId];
-
-	    if (isVideoFormat(documentOrImage.properties.filename)) {
-	      texture.type = 'textureVideo';
-	    }
-	  }
 
 	  if (textureProps.hasOwnProperty('wrapModeU')) {
 	    properties.uMapping = textureProps.wrapModeU === 'repeat' ?
@@ -86054,8 +85975,9 @@
 	  mapEntities: mapEntities
 	};
 
+
 /***/ },
-/* 126 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.6.0
@@ -87404,12 +87326,12 @@
 
 
 /***/ },
-/* 127 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(126);
+	var _ = __webpack_require__(128);
 
 	/**
 	 * Map "entity.payload" to "entity.properties". This applies to all v1 entities.
@@ -87467,13 +87389,13 @@
 
 
 /***/ },
-/* 128 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(126);
-	var uuid = __webpack_require__(129);
+	var _ = __webpack_require__(128);
+	var uuid = __webpack_require__(131);
 
 	/**
 	 * Returns the basename of a filename (i.e., the final element in the path).
@@ -87554,7 +87476,7 @@
 
 
 /***/ },
-/* 129 */
+/* 131 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(Buffer) {//     uuid.js
@@ -87615,7 +87537,7 @@
 	    // Moderately fast, high quality
 	    if (true) {
 	      try {
-	        var _rb = __webpack_require__(134).randomBytes;
+	        var _rb = __webpack_require__(136).randomBytes;
 	        _nodeRNG = _rng = _rb && function() {return _rb(16);};
 	        _rng();
 	      } catch(e) {}
@@ -87830,10 +87752,10 @@
 	  }
 	})('undefined' !== typeof window ? window : null);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132).Buffer))
 
 /***/ },
-/* 130 */
+/* 132 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -87846,9 +87768,9 @@
 
 	'use strict'
 
-	var base64 = __webpack_require__(131)
-	var ieee754 = __webpack_require__(132)
-	var isArray = __webpack_require__(133)
+	var base64 = __webpack_require__(133)
+	var ieee754 = __webpack_require__(134)
+	var isArray = __webpack_require__(135)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -89626,14 +89548,15 @@
 	  return val !== val // eslint-disable-line no-self-compare
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 131 */
+/* 133 */
 /***/ function(module, exports) {
 
 	'use strict'
 
+	exports.byteLength = byteLength
 	exports.toByteArray = toByteArray
 	exports.fromByteArray = fromByteArray
 
@@ -89641,23 +89564,17 @@
 	var revLookup = []
 	var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
 
-	function init () {
-	  var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-	  for (var i = 0, len = code.length; i < len; ++i) {
-	    lookup[i] = code[i]
-	    revLookup[code.charCodeAt(i)] = i
-	  }
-
-	  revLookup['-'.charCodeAt(0)] = 62
-	  revLookup['_'.charCodeAt(0)] = 63
+	var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+	for (var i = 0, len = code.length; i < len; ++i) {
+	  lookup[i] = code[i]
+	  revLookup[code.charCodeAt(i)] = i
 	}
 
-	init()
+	revLookup['-'.charCodeAt(0)] = 62
+	revLookup['_'.charCodeAt(0)] = 63
 
-	function toByteArray (b64) {
-	  var i, j, l, tmp, placeHolders, arr
+	function placeHoldersCount (b64) {
 	  var len = b64.length
-
 	  if (len % 4 > 0) {
 	    throw new Error('Invalid string. Length must be a multiple of 4')
 	  }
@@ -89667,9 +89584,19 @@
 	  // represent one byte
 	  // if there is only one, then the three characters before it represent 2 bytes
 	  // this is just a cheap hack to not do indexOf twice
-	  placeHolders = b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+	  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+	}
 
+	function byteLength (b64) {
 	  // base64 is 4/3 + up to two characters of the original data
+	  return b64.length * 3 / 4 - placeHoldersCount(b64)
+	}
+
+	function toByteArray (b64) {
+	  var i, j, l, tmp, placeHolders, arr
+	  var len = b64.length
+	  placeHolders = placeHoldersCount(b64)
+
 	  arr = new Arr(len * 3 / 4 - placeHolders)
 
 	  // if there are placeholders, only get up to the last complete 4 chars
@@ -89744,7 +89671,7 @@
 
 
 /***/ },
-/* 132 */
+/* 134 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -89834,7 +89761,7 @@
 
 
 /***/ },
-/* 133 */
+/* 135 */
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
@@ -89845,10 +89772,10 @@
 
 
 /***/ },
-/* 134 */
+/* 136 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(135)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(137)
 
 	function error () {
 	  var m = [].slice.call(arguments).join(' ')
@@ -89859,9 +89786,9 @@
 	    ].join('\n'))
 	}
 
-	exports.createHash = __webpack_require__(137)
+	exports.createHash = __webpack_require__(139)
 
-	exports.createHmac = __webpack_require__(149)
+	exports.createHmac = __webpack_require__(151)
 
 	exports.randomBytes = function(size, callback) {
 	  if (callback && callback.call) {
@@ -89882,7 +89809,7 @@
 	  return ['sha1', 'sha256', 'sha512', 'md5', 'rmd160']
 	}
 
-	var p = __webpack_require__(150)(exports)
+	var p = __webpack_require__(152)(exports)
 	exports.pbkdf2 = p.pbkdf2
 	exports.pbkdf2Sync = p.pbkdf2Sync
 
@@ -89902,16 +89829,16 @@
 	  }
 	})
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132).Buffer))
 
 /***/ },
-/* 135 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, Buffer) {(function() {
 	  var g = ('undefined' === typeof window ? global : window) || {}
 	  _crypto = (
-	    g.crypto || g.msCrypto || __webpack_require__(136)
+	    g.crypto || g.msCrypto || __webpack_require__(138)
 	  )
 	  module.exports = function(size) {
 	    // Modern Browsers
@@ -89935,22 +89862,22 @@
 	  }
 	}())
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(130).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(132).Buffer))
 
 /***/ },
-/* 136 */
+/* 138 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 137 */
+/* 139 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(138)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(140)
 
-	var md5 = toConstructor(__webpack_require__(146))
-	var rmd160 = toConstructor(__webpack_require__(148))
+	var md5 = toConstructor(__webpack_require__(148))
+	var rmd160 = toConstructor(__webpack_require__(150))
 
 	function toConstructor (fn) {
 	  return function () {
@@ -89978,10 +89905,10 @@
 	  return createHash(alg)
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132).Buffer))
 
 /***/ },
-/* 138 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var exports = module.exports = function (alg) {
@@ -89990,16 +89917,16 @@
 	  return new Alg()
 	}
 
-	var Buffer = __webpack_require__(130).Buffer
-	var Hash   = __webpack_require__(139)(Buffer)
+	var Buffer = __webpack_require__(132).Buffer
+	var Hash   = __webpack_require__(141)(Buffer)
 
-	exports.sha1 = __webpack_require__(140)(Buffer, Hash)
-	exports.sha256 = __webpack_require__(144)(Buffer, Hash)
-	exports.sha512 = __webpack_require__(145)(Buffer, Hash)
+	exports.sha1 = __webpack_require__(142)(Buffer, Hash)
+	exports.sha256 = __webpack_require__(146)(Buffer, Hash)
+	exports.sha512 = __webpack_require__(147)(Buffer, Hash)
 
 
 /***/ },
-/* 139 */
+/* 141 */
 /***/ function(module, exports) {
 
 	module.exports = function (Buffer) {
@@ -90082,7 +90009,7 @@
 
 
 /***/ },
-/* 140 */
+/* 142 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -90094,7 +90021,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for details.
 	 */
 
-	var inherits = __webpack_require__(141).inherits
+	var inherits = __webpack_require__(143).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -90226,7 +90153,7 @@
 
 
 /***/ },
-/* 141 */
+/* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -90754,7 +90681,7 @@
 	}
 	exports.isPrimitive = isPrimitive;
 
-	exports.isBuffer = __webpack_require__(142);
+	exports.isBuffer = __webpack_require__(144);
 
 	function objectToString(o) {
 	  return Object.prototype.toString.call(o);
@@ -90798,7 +90725,7 @@
 	 *     prototype.
 	 * @param {function} superCtor Constructor function to inherit prototype from.
 	 */
-	exports.inherits = __webpack_require__(143);
+	exports.inherits = __webpack_require__(145);
 
 	exports._extend = function(origin, add) {
 	  // Don't do anything if add isn't an object
@@ -90816,10 +90743,10 @@
 	  return Object.prototype.hasOwnProperty.call(obj, prop);
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(68)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(69)))
 
 /***/ },
-/* 142 */
+/* 144 */
 /***/ function(module, exports) {
 
 	module.exports = function isBuffer(arg) {
@@ -90830,7 +90757,7 @@
 	}
 
 /***/ },
-/* 143 */
+/* 145 */
 /***/ function(module, exports) {
 
 	if (typeof Object.create === 'function') {
@@ -90859,7 +90786,7 @@
 
 
 /***/ },
-/* 144 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -90871,7 +90798,7 @@
 	 *
 	 */
 
-	var inherits = __webpack_require__(141).inherits
+	var inherits = __webpack_require__(143).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -91012,10 +90939,10 @@
 
 
 /***/ },
-/* 145 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var inherits = __webpack_require__(141).inherits
+	var inherits = __webpack_require__(143).inherits
 
 	module.exports = function (Buffer, Hash) {
 	  var K = [
@@ -91262,7 +91189,7 @@
 
 
 /***/ },
-/* 146 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -91274,7 +91201,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for more info.
 	 */
 
-	var helpers = __webpack_require__(147);
+	var helpers = __webpack_require__(149);
 
 	/*
 	 * Calculate the MD5 of an array of little-endian words, and a bit length
@@ -91423,7 +91350,7 @@
 
 
 /***/ },
-/* 147 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {var intSize = 4;
@@ -91461,10 +91388,10 @@
 
 	module.exports = { hash: hash };
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132).Buffer))
 
 /***/ },
-/* 148 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {
@@ -91673,13 +91600,13 @@
 
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132).Buffer))
 
 /***/ },
-/* 149 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(137)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(139)
 
 	var zeroBuffer = new Buffer(128)
 	zeroBuffer.fill(0)
@@ -91723,13 +91650,13 @@
 	}
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132).Buffer))
 
 /***/ },
-/* 150 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pbkdf2Export = __webpack_require__(151)
+	var pbkdf2Export = __webpack_require__(153)
 
 	module.exports = function (crypto, exports) {
 	  exports = exports || {}
@@ -91744,7 +91671,7 @@
 
 
 /***/ },
-/* 151 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = function(crypto) {
@@ -91832,16 +91759,16 @@
 	  }
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(132).Buffer))
 
 /***/ },
-/* 152 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(126);
-	var uuid = __webpack_require__(129);
+	var _ = __webpack_require__(128);
+	var uuid = __webpack_require__(131);
 
 	/**
 	 * Map a v3 entity to v4.
@@ -91914,13 +91841,13 @@
 
 
 /***/ },
-/* 153 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(126);
-	var uuid = __webpack_require__(129);
+	var _ = __webpack_require__(128);
+	var uuid = __webpack_require__(131);
 
 	/**
 	 * Map a v4 entity to v5.
@@ -91965,7 +91892,7 @@
 	};
 
 /***/ },
-/* 154 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -91986,9 +91913,19 @@
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
-	var _BaseImageAsset2 = __webpack_require__(23);
+	var _BaseImageAsset2 = __webpack_require__(25);
 
 	var _BaseImageAsset3 = _interopRequireDefault(_BaseImageAsset2);
+
+	var _LoadingEvent = __webpack_require__(20);
+
+	var LoadingEvent = _interopRequireWildcard(_LoadingEvent);
+
+	var _LoadingType = __webpack_require__(122);
+
+	var LoadingType = _interopRequireWildcard(_LoadingType);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -91997,6 +91934,17 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var COMPRESSION_TYPE = {
+	  DXT: 'dxt',
+	  DXT1: 'dxt1',
+	  DXT5: 'dxt5',
+	  JPEG: 'jpeg',
+	  ZIP: 'zip'
+	};
+
+	var DEFAULT_CHANNELS = ['red', 'green', 'blue'];
+	var MAX_IMAGE_SIZE = 16384;
 
 	var ImageAsset = function (_BaseImageAsset) {
 	  _inherits(ImageAsset, _BaseImageAsset);
@@ -92043,44 +91991,113 @@
 	    value: function createRuntimeData(callback) {
 	      var _this2 = this;
 
-	      var onImageLoadProgress = function onImageLoadProgress(progressObj) {
-	        _this2.loadedBytes = progressObj.loaded;
-	        if (!_this2.get('bufferSize')) {
-	          _this2.set('bufferSize', progressObj.total);
-	        }
-	        _this2.trigger('loadProgress', _this2);
-	      };
+	      this.loadLowResImage(callback).then(function () {
+	        return _this2.loadHighResImage(callback);
+	      }).catch(this.onImageLoadError.bind(this));
+	    }
 
-	      var loadLowResImage = Promise.resolve();
+	    /**
+	     * Loads the low resolution version of the image.
+	     * @method loadLowResImage
+	     * @private
+	     * @param {Function} callback A function which will be called on completion
+	     *                            regardless of success/failure.
+	     * @return {Promise} A promise which will resolve when the image finishes loading.
+	     */
+
+	  }, {
+	    key: 'loadLowResImage',
+	    value: function loadLowResImage(callback) {
+	      var _this3 = this;
+
+	      // This image is not to be streamed, so this promise is a NOOP.
+	      if (!this.getProperty('stream')) {
+	        return Promise.resolve();
+	      }
+
 	      var textureParams = {
 	        maxSize: 64,
-	        priority: 2,
-	        compression: this.getCompressionFormat(),
-	        xhrKey: this.id
+	        compression: this.getCompressionFormat()
 	      };
-	      var loader = this.box3DRuntime.resourceLoader;
+
+	      var rep = this.findRepresentation(textureParams);
+
+	      if (!rep) {
+	        return Promise.reject(new Error('No representation found for ' + (textureParams.maxSize + ':' + this.getCompressionFormat())));
+	      }
 
 	      // If this image is set to be streamed, load the low-res image first
-	      if (this.getProperty('stream')) {
-	        loadLowResImage = loader.load(this, textureParams).then(function (data) {
-	          _this2.onImageLoad(data);
-	          if (typeof callback === 'function') {
-	            callback.call(_this2);
-	          }
+	      return new Promise(function (resolve, reject) {
+	        var resource = _this3.loadResource(rep.src, LoadingType.IMAGE, callback, {
+	          priority: 2,
+	          responseType: _this3.getImageResponseType(rep.compression),
+	          isExternal: rep.isExternal
 	        });
+
+	        resource.once(LoadingEvent.LOAD, function (data) {
+	          _this3.onImageLoad(data, rep);
+	          resolve();
+	        });
+
+	        resource.once(LoadingEvent.CANCEL, function () {
+	          reject(new Error('Failed to load low res texture'));
+	        });
+
+	        resource.once(LoadingEvent.ERROR, reject);
+	      });
+	    }
+
+	    /**
+	     * Loads the high resolution version of the image. Typically called after the
+	     * low resolution version has already been loaded.
+	     * @method loadHighResImage
+	     * @private
+	     * @param {Function} callback A function which will be called on completion
+	     *                            regardless of success/failure.
+	     * @return {Promise} A promise which will resolve when the image finishes loading.
+	     */
+
+	  }, {
+	    key: 'loadHighResImage',
+	    value: function loadHighResImage(callback) {
+	      var _this4 = this;
+
+	      var textureParams = {
+	        maxSize: Math.max(this.getWidth(), this.getHeight()),
+	        compression: this.getCompressionFormat()
+	      };
+
+	      var rep = this.findRepresentation(textureParams);
+
+	      if (!rep) {
+	        return Promise.reject(new Error('No representation found for ' + (textureParams.maxSize + ':' + this.getCompressionFormat())));
 	      }
-	      loadLowResImage.then(function () {
-	        // Now load the high-res version of the image.
-	        var width = _this2.getWidth();
-	        var height = _this2.getHeight();
-	        _this2.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.INPROGRESS);
-	        textureParams.maxSize = Math.max(width, height);
-	        textureParams.priority = 8;
-	        return loader.load(_this2, textureParams, onImageLoadProgress);
-	      }).then(this.onImageLoad.bind(this)).catch(this.onImageLoadError.bind(this)).then(function () {
-	        if (typeof callback === 'function') {
-	          callback.call(_this2);
-	        }
+
+	      // Now load the high-res version of the image.
+	      return new Promise(function (resolve, reject) {
+	        var onImageLoadProgress = function onImageLoadProgress(progressObj) {
+	          _this4.loadedBytes = progressObj.loaded;
+	          if (!_this4.get('bufferSize')) {
+	            _this4.set('bufferSize', progressObj.total);
+	          }
+	          _this4.trigger('loadProgress', _this4);
+	        };
+
+	        _this4.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.INPROGRESS);
+
+	        var resource = _this4.loadResource(rep.src, LoadingType.IMAGE, callback, {
+	          responseType: _this4.getImageResponseType(rep.compression),
+	          isExternal: rep.isExternal,
+	          priority: 8
+	        });
+
+	        resource.once(LoadingEvent.PROGRESS, onImageLoadProgress);
+
+	        resource.once(LoadingEvent.LOAD, function (data) {
+	          _this4.onImageLoad(data, rep);
+	        });
+
+	        resource.once(LoadingEvent.ERROR, reject);
 	      });
 	    }
 
@@ -92094,18 +92111,23 @@
 
 	  }, {
 	    key: 'onImageLoad',
-	    value: function onImageLoad(data) {
+	    value: function onImageLoad(data, representation) {
 	      if (!this.runtimeData) {
 	        this.runtimeData = {};
 	      }
 
-	      this.runtimeData.compression = data.properties.compression;
-	      this.runtimeData.imageData = data.data;
-	      this.runtimeData.channels = data.properties.channels;
-	      this.runtimeData.width = data.properties.width;
-	      this.runtimeData.height = data.properties.height;
-	      this.loadedBytes = this.getDataSizeDownload();
-	      this.trigger('loadProgress', this);
+	      this.runtimeData.compression = representation.compression;
+	      this.runtimeData.channels = representation.channels || DEFAULT_CHANNELS;
+	      this.runtimeData.width = representation.width;
+	      this.runtimeData.height = representation.height;
+
+	      if (data instanceof ArrayBuffer || data instanceof Image) {
+	        this.runtimeData.imageData = data;
+	        this.loadedBytes = this.getDataSizeDownload();
+	        this.trigger('loadProgress', this);
+	      } else {
+	        throw new Error('Uknown container type for image data!');
+	      }
 	    }
 
 	    /**
@@ -92288,6 +92310,103 @@
 	      var renderer = this.box3DRuntime.getRenderer();
 	      return renderer ? renderer.getMaxTextureSize2d() : _get(ImageAsset.prototype.__proto__ || Object.getPrototypeOf(ImageAsset.prototype), 'getMaxTextureSize', this).call(this);
 	    }
+
+	    /**
+	     * Find the image representation that best matches the specified criteria.
+	     * @method findRepresentation
+	     * @private
+	     * @param {Object} options Loading options (@see XhrResourceLoader.prototype.load()).
+	     * @returns {Object} the representation that best matches the search criteria or null if none were
+	     * found.
+	     */
+
+	  }, {
+	    key: 'findRepresentation',
+	    value: function findRepresentation() {
+	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+	      var representations = this.get('representations');
+	      if (!representations || representations.length === 0) {
+	        return null;
+	      }
+
+	      var optionsEx = Object.assign({ maxSize: MAX_IMAGE_SIZE }, options);
+
+	      // Get closest match for compression param. Compression will either match exactly or fall back
+	      // to 'none'.
+	      var compressionMatches = representations.filter(function (image) {
+	        if (image.compression === optionsEx.compression) {
+	          return true;
+	        }
+
+	        switch (image.compression) {
+	          case COMPRESSION_TYPE.ZIP:
+	          case COMPRESSION_TYPE.JPEG:
+	            return !optionsEx.compression;
+
+	          case COMPRESSION_TYPE.DXT:
+	          case COMPRESSION_TYPE.DXT1:
+	          case COMPRESSION_TYPE.DXT5:
+	            return optionsEx.compression === COMPRESSION_TYPE.DXT;
+	        }
+
+	        return false;
+	      });
+
+	      // If no matches for the supplied compression exist, try to find the regular images (png or
+	      // jpg).
+	      if (compressionMatches.length === 0) {
+	        compressionMatches = representations.filter(function (image) {
+	          return image.compression === COMPRESSION_TYPE.ZIP || image.compression === COMPRESSION_TYPE.JPEG;
+	        });
+	      }
+
+	      var formatMatches = compressionMatches.filter(function (image) {
+	        var channels = image.channels || DEFAULT_CHANNELS;
+	        return !optionsEx.channels || channels.toString() === optionsEx.channels.toString();
+	      });
+
+	      if (formatMatches.length === 0) {
+	        formatMatches = compressionMatches;
+	      }
+
+	      // For each match, compute the difference between its size and the max size.
+	      var sizeDiffs = formatMatches.map(function (image) {
+	        return optionsEx.maxSize - Math.max(image.width || 1, image.height || 1);
+	      });
+
+	      // Find the index of the minimum, *positive* “diff”. This is equivalent to the largest image
+	      // that is less than or equal to the max specified.
+	      var bestIdx = sizeDiffs.reduce(function (bestIdx, currentDiff, currentIdx) {
+	        var bestDiff = bestIdx >= 0 ? sizeDiffs[bestIdx] : Number.MAX_VALUE;
+	        return currentDiff >= 0 && currentDiff < bestDiff ? currentIdx : bestIdx;
+	      }, -1);
+
+	      // Locate the match.
+	      return bestIdx >= 0 ? formatMatches[bestIdx] : null;
+	    }
+
+	    /**
+	     * Given a compression type for a representation (e.g. 'jpeg', 'dxt', etc.),
+	     * return the response type that is expected (e.g. 'blob' or 'arraybuffer').
+	     * @method getImageResponseType
+	     * @public
+	     * @param {String} compression The compression type for the representation ('jpeg', 'dxt', etc.).
+	     * @returns {String} Either 'blob' or 'arraybuffer'.
+	     */
+
+	  }, {
+	    key: 'getImageResponseType',
+	    value: function getImageResponseType(compression) {
+	      switch (compression) {
+	        case COMPRESSION_TYPE.DXT:
+	        case COMPRESSION_TYPE.DXT1:
+	        case COMPRESSION_TYPE.DXT5:
+	          return 'arraybuffer';
+	      }
+
+	      return 'blob';
+	    }
 	  }]);
 
 	  return ImageAsset;
@@ -92300,13 +92419,10 @@
 	    default: false
 	  }
 	});
-
-
-	window.Box3D.ImageAsset = ImageAsset;
 	exports.default = ImageAsset;
 
 /***/ },
-/* 155 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -92331,7 +92447,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(156);
+	var _BaseGeometryAsset2 = __webpack_require__(158);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -92339,7 +92455,7 @@
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
-	var _BufferAsset = __webpack_require__(120);
+	var _BufferAsset = __webpack_require__(121);
 
 	var _BufferAsset2 = _interopRequireDefault(_BufferAsset);
 
@@ -92602,7 +92718,7 @@
 	  }, {
 	    key: '_applyPropertiesUnloaded',
 	    value: function _applyPropertiesUnloaded() {
-	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	      var changes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	      _get(MeshGeometryAsset.prototype.__proto__ || Object.getPrototypeOf(MeshGeometryAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
 	      if (changes.attributes || changes.indices) {
@@ -92673,7 +92789,7 @@
 	exports.default = MeshGeometryAsset;
 
 /***/ },
-/* 156 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -92814,7 +92930,7 @@
 	  }, {
 	    key: 'getGeometry',
 	    value: function getGeometry() {
-	      var type = arguments.length <= 0 || arguments[0] === undefined ? BaseGeometryAsset.PrimitiveType.TRIANGLES : arguments[0];
+	      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : BaseGeometryAsset.PrimitiveType.TRIANGLES;
 
 	      return this.geometries[type];
 	    }
@@ -92842,7 +92958,7 @@
 	     * @returns {number} The maximum material index.
 	     */
 	    value: function getMaxMaterialIndex() {
-	      var type = arguments.length <= 0 || arguments[0] === undefined ? BaseGeometryAsset.PrimitiveType.TRIANGLES : arguments[0];
+	      var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : BaseGeometryAsset.PrimitiveType.TRIANGLES;
 
 	      return this.maxMaterialIndices[type];
 	    }
@@ -92935,7 +93051,7 @@
 	exports.default = BaseGeometryAsset;
 
 /***/ },
-/* 157 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93192,7 +93308,7 @@
 	  }, {
 	    key: '_applyPropertiesUnloaded',
 	    value: function _applyPropertiesUnloaded() {
-	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	      var changes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	      _get(PrefabAsset.prototype.__proto__ || Object.getPrototypeOf(PrefabAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
 	      if (changes.hasOwnProperty('rootObjectId')) {
@@ -93263,7 +93379,7 @@
 	exports.default = PrefabAsset;
 
 /***/ },
-/* 158 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93284,7 +93400,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(156);
+	var _BaseGeometryAsset2 = __webpack_require__(158);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -93481,7 +93597,7 @@
 	exports.default = PrimitiveGeometryAsset;
 
 /***/ },
-/* 159 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93496,15 +93612,15 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _ImageAsset = __webpack_require__(154);
+	var _ImageAsset = __webpack_require__(156);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
-	var _BaseTextureAsset = __webpack_require__(22);
+	var _BaseTextureAsset = __webpack_require__(24);
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(160);
+	var _BaseRenderTextureAsset = __webpack_require__(162);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -93559,7 +93675,7 @@
 	exports.default = RenderTexture2DAsset;
 
 /***/ },
-/* 160 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93572,11 +93688,11 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _BaseTextureAsset2 = __webpack_require__(22);
+	var _BaseTextureAsset2 = __webpack_require__(24);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
-	var _ImageAsset = __webpack_require__(154);
+	var _ImageAsset = __webpack_require__(156);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -93698,7 +93814,7 @@
 	exports.default = BaseRenderTextureAsset;
 
 /***/ },
-/* 161 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93715,15 +93831,15 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _ImageAsset = __webpack_require__(154);
+	var _ImageAsset = __webpack_require__(156);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
-	var _BaseTextureAsset = __webpack_require__(22);
+	var _BaseTextureAsset = __webpack_require__(24);
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(160);
+	var _BaseRenderTextureAsset = __webpack_require__(162);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -93804,7 +93920,7 @@
 	exports.default = RenderTextureCubeAsset;
 
 /***/ },
-/* 162 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* jshint -W061 */
@@ -93826,7 +93942,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _map = __webpack_require__(28);
+	var _map = __webpack_require__(30);
 
 	var _map2 = _interopRequireDefault(_map);
 
@@ -93976,7 +94092,7 @@
 	exports.default = ScriptAsset;
 
 /***/ },
-/* 163 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -94001,7 +94117,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _Box3DShaderPBR = __webpack_require__(164);
+	var _Box3DShaderPBR = __webpack_require__(166);
 
 	var _Box3DShaderPBR2 = _interopRequireDefault(_Box3DShaderPBR);
 
@@ -94047,7 +94163,7 @@
 	  }, {
 	    key: '_applyPropertiesUnloaded',
 	    value: function _applyPropertiesUnloaded() {
-	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	      var changes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	      _get(ShaderAsset.prototype.__proto__ || Object.getPrototypeOf(ShaderAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
 	      this.buildParamDependencies();
@@ -94270,12 +94386,12 @@
 	exports.default = ShaderAsset;
 
 /***/ },
-/* 164 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10), __webpack_require__(165), __webpack_require__(166), __webpack_require__(167)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10), __webpack_require__(167), __webpack_require__(168), __webpack_require__(169)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -94344,7 +94460,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 165 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -94948,19 +95064,19 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 166 */
+/* 168 */
 /***/ function(module, exports) {
 
 	module.exports = "#define PHYSICAL\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n// Removed chunk from physical material <uv_pars_vertex>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined( GLOSS_MAP ) || defined(AO_MAP)\n\tvarying vec2 vUv;\n\tuniform vec4 offsetRepeat;\n#endif\n// Removed chunk from physical material <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\n\nvoid main() {\n\n\t// Removed chunk from physical material <uv_vertex>\n\t#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined( GLOSS_MAP ) || defined(AO_MAP)\n\t\tvUv = uv;\n\t\tvUv.y = 1.0 - vUv.y;\n\t#endif\n\t#include <uv2_vertex>\n\t#include <color_vertex>\n\n\t#include <beginnormal_vertex>\n\t#include <morphnormal_vertex>\n\t#include <skinbase_vertex>\n\t#include <skinnormal_vertex>\n\t#include <defaultnormal_vertex>\n\n#ifndef FLAT_SHADED // Normal computed with derivatives when FLAT_SHADED\n\n\tvNormal = normalize( transformedNormal );\n\n#endif\n\n\t#include <begin_vertex>\n\t#include <displacementmap_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <project_vertex>\n\t#include <logdepthbuf_vertex>\n\t#include <clipping_planes_vertex>\n\n\tvViewPosition = - mvPosition.xyz;\n\n\t#include <worldpos_vertex>\n\t#include <shadowmap_vertex>\n\n}"
 
 /***/ },
-/* 167 */
+/* 169 */
 /***/ function(module, exports) {
 
 	module.exports = "#define PHYSICAL\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform vec3 specular;\nuniform vec4 screenDimensions;\n\n#ifndef STANDARD\n\tuniform float clearCoat;\n\tuniform float clearCoatRoughness;\n#endif\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n#include <packing>\n#include <color_pars_fragment>\n//Removed chunk from physical material <uv_pars_fragment>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined(GLOSS_MAP) || defined(AO_MAP)\n\tvarying vec2 vUv;\n#endif\n//Removed chunk from physical material <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n//Removed chunk from physical material <aomap_pars_fragment>\n#ifdef AO_MAP\n\tuniform sampler2D aoMap;\n#endif\n//Removed chunk from physical material <lightmap_pars_fragment>\n#ifdef EMISSIVE\n#include <emissivemap_pars_fragment>\n#endif\n\n#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\tuniform sampler2D glossMap;\n#endif\n\n#if defined(ENV_MAP_RADIANCE) || defined(ENV_MAP_IRRADIANCE)\n//Removed chunk from physical material <envmap_pars_fragment>\n\tuniform float reflectivity;\n\tuniform float envMapIntensity;\n\tuniform float flipEnvMap;\n\tuniform float refractionRatio;\n\n\t// This code assumes that all environment maps are of the same type (cube or 2D)\n\t// and use the same sampling transform (e.g. equirectangular projection, etc.\n\t// It is allowed that either irradiance or radiance maps can exist by themselves\n\t// but the radianceHalfGloss can only exist if the other two do.\n\t#if defined(ENV_MAP_RADIANCE_TYPE_CUBE) || defined(ENV_MAP_IRRADIANCE_TYPE_CUBE)\n\t\t#define SAMPLER_TYPE samplerCube\n\t#else\n\t\t#define SAMPLER_TYPE sampler2D\n\t#endif\n\n\t#ifdef ENV_MAP_RADIANCE\n\t\tuniform SAMPLER_TYPE envMapRadiance;\n\t#endif\n\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_RADIANCE) && defined(ENV_MAP_IRRADIANCE)\n\t\tuniform SAMPLER_TYPE envMapRadianceHalfGloss;\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE\n\t\tuniform SAMPLER_TYPE envMapIrradiance;\n\t#endif\n#endif\n\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <lights_pars>\n#include <lights_physical_pars_fragment>\n\n#undef MAXIMUM_SPECULAR_COEFFICIENT\n#define MAXIMUM_SPECULAR_COEFFICIENT 1.0\n\n\n// Overriding to remove weird reciprocal of PI factor.\nvoid RE_IndirectDiffuse_BoxPBR( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\treflectedLight.indirectDiffuse += irradiance * material.diffuseColor;\n}\n\n// ref: https://www.unrealengine.com/blog/physically-based-shading-on-mobile - environmentBRDF for GGX on mobile\nfloat BRDF_Specular_GGX_Environment_NonMetal( const in GeometricContext geometry, const in vec3 specularColor, const in float roughness ) {\n\n\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\n\tconst vec2 c0 = vec2(-1.0, -0.0275);\n\tconst vec2 c1 = vec2(1.0, 0.0425);\n\tvec2 r = roughness * c0 + c1;\n\treturn min( r.x * r.x, exp2( -9.28 * dotNV ) ) * r.x + r.y;\n}\n\nvoid RE_IndirectSpecular_BoxPBR( const in vec3 radiance, const in vec3 clearCoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight, out float fresnel ) {\n\n\t#ifdef CLEAR_COAT\n\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\tfloat dotNL = dotNV;\n\t\tfloat clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );\n\t#else\n\t\tfloat clearCoatDHR = 0.0;\n\t#endif\n\n\t#if defined(METALNESS)\n\t\tfresnel = 0.0;\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness );\n\t#else\n\t\tfresnel = BRDF_Specular_GGX_Environment_NonMetal( geometry, material.specularColor, material.specularRoughness );\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * fresnel;\n\t#endif\n\n\n\t#ifdef CLEAR_COAT\n\t\tfresnel += BRDF_Specular_GGX_Environment_NonMetal( geometry, vec3( 1.0 ), material.clearCoatRoughness );\n\t\tfresnel = clamp(fresnel, 0.0, 1.0);\n\t\treflectedLight.indirectSpecular += clearCoatRadiance * fresnel;\n\t#endif\n\n}\n\n#undef RE_IndirectDiffuse\n#define RE_IndirectDiffuse\t\tRE_IndirectDiffuse_BoxPBR\n#undef RE_IndirectSpecular\n#define RE_IndirectSpecular\t\tRE_IndirectSpecular_BoxPBR\n\n#if defined(ENV_MAP_IRRADIANCE)\nvec3 getBox3DLightProbeIndirectIrradiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry ) {\n\n\t#include <normal_flip>\n\n\tvec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n\n\t#ifdef ENV_MAP_IRRADIANCE_TYPE_CUBE\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCube( envMapIrradiance, queryVec );\n\n\t#elif defined( ENV_MAP_IRRADIANCE_TYPE_CUBE_UV )\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCubeUV( queryVec, 1.0 );\n\n\t#else\n\n\t\tvec4 envMapColor = vec4( 0.0 );\n\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE_ENCODING_SRGB\n\t\tenvMapColor.rgb = sRGBToLinear( envMapColor ).rgb;\n\t#endif\n\n\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#if defined(ENV_MAP_RADIANCE)\n\n\t#if defined(ENV_MAP_IRRADIANCE) && defined(ENV_MAP_RADIANCE_HALF_GLOSS)\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refRadianceHalf, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = roughness * 2.0;\n\t\t\treturn mix(mix(refRadiance, refRadianceHalf, min(interp, 1.0)), refIrradiance, max(interp - 1.0, 0.0));\n\t\t}\n\t#else\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = min(roughness * 1.5, 1.0);\n\t\t\treturn mix(refRadiance, refIrradiance, interp);\n\t\t}\n\t#endif\n\n\tvec3 getBox3DLightProbeIndirectRadiance( const in GeometricContext geometry, const in float roughness ) {\n\n\t\t#ifdef ENV_MAP_RADIANCE_MODE_REFLECTION\n\n\t\t\tvec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );\n\n\t\t#else\n\n\t\t\tvec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );\n\n\t\t#endif\n\n\t\t#include <normal_flip>\n\n\t\treflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n\n\t\tvec3 envMapColor = vec3(0.0);\n\t\tfloat radianceBias = roughness * float(ENV_MAP_RADIANCE_NUM_MIPS) * 0.5;\n\t\tvec4 envMapColorRadiance = vec4(0.0);\n\n\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\tfloat halfGlossBias = max((roughness - 0.5) * float(ENV_MAP_RADIANCE_HALF_GLOSS_NUM_MIPS), 0.0);\n\t\t#endif\n\n\t\t// Sample the environment map(s)\n\t\t#ifdef ENV_MAP_RADIANCE_TYPE_CUBE\n\t\t\tvec3 queryReflectVec = flipNormal * vec3( reflectVec.x, reflectVec.yz );\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION textureCube\n\t\t#else // PLANAR REFLECTION\n\t\t\tvec2 queryReflectVec = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw;\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION texture2D\n\t\t#endif\n\n\t\t// Sample env maps\n\t\tenvMapColorRadiance.rgb = ENV_MAP_SAMPLE_FUNCTION( envMapRadiance, queryReflectVec, radianceBias ).rgb;\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\t\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\t\tvec4 envMapColorRadianceHalf = ENV_MAP_SAMPLE_FUNCTION( envMapRadianceHalfGloss, queryReflectVec, halfGlossBias );\n\t\t\t#endif\n\t\t\t#ifdef ENV_MAP_IRRADIANCE\n\t\t\t\tvec4 envMapColorIrradiance = ENV_MAP_SAMPLE_FUNCTION( envMapIrradiance, queryReflectVec );\n\t\t\t#endif\n\t\t#endif\n\n\t\t// Blend depending on which env maps are defined.\n\t\t#ifdef ENV_MAP_RADIANCE_ENCODING_SRGB\n\t\t\tenvMapColorRadiance.rgb = sRGBToLinear( envMapColorRadiance ).rgb;\n\t\t#endif\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\n\t\t\t#if defined(ENV_MAP_IRRADIANCE_ENCODING_SRGB)\n\t\t\t\tenvMapColorIrradiance.rgb = sRGBToLinear(envMapColorIrradiance).rgb;\n\t\t\t#endif\n\n\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_IRRADIANCE)\n\t\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS_ENCODING_SRGB)\n\t\t\t\t\tenvMapColorRadianceHalf.rgb = sRGBToLinear( envMapColorRadianceHalf ).rgb;\n\t\t\t\t#endif\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorRadianceHalf.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#elif defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#else\n\t\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t\t#endif\n\t\t#else\n\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t#endif\n\n\t\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\n\nvoid main() {\n\n\t#include <clipping_planes_fragment>\n\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <roughnessmap_fragment>\n\t#include <metalnessmap_fragment>\n\t#ifndef METALNESS\n\t\tmetalnessFactor = 0.0;\n\t#endif\n\n\t#include <normal_flip>\n\t#if !defined(NORMALS)\n\t\t#undef USE_NORMALMAP\n\t#endif\n\t#include <normal_fragment>\n\n\t#ifdef EMISSIVE\n\t\t#include <emissivemap_fragment>\n\t#endif\n\n\t// accumulation\n\t// Removed chunk from physical material <lights_physical_fragment>\n\tPhysicalMaterial material;\n\tmaterial.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );\n\tmaterial.specularRoughness = clamp( roughnessFactor, 0.00, 1.0 );\n\t#ifdef METALNESS\n\t\tfloat reflectivityF0 = mix(DEFAULT_SPECULAR_COEFFICIENT, MAXIMUM_SPECULAR_COEFFICIENT, metalnessFactor);\n\t\tmaterial.specularColor = mix( vec3(reflectivityF0), diffuseColor.rgb, metalnessFactor );\n\t#else\n\t\tmaterial.specularColor = specular;\n\t#endif\n\tmaterial.clearCoat = saturate( clearCoat ); // Burley clearcoat model\n\tmaterial.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );\n\n\t// Sample gloss map and modify specular roughness\n\t#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\t\tvec4 texelGloss = texture2D( glossMap, vUv );\n\t\tmaterial.specularRoughness = min(material.specularRoughness + 1.0 - texelGloss.r, 1.0);\n\t#endif\n\n\tGeometricContext geometry;\n\n\tgeometry.position = - vViewPosition;\n\tgeometry.normal = normal;\n\tgeometry.viewDir = normalize( vViewPosition );\n\n\tIncidentLight directLight;\n\n\t#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tPointLight pointLight;\n\n\t\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\n\t\t\tpointLight = pointLights[ i ];\n\n\t\t\tgetPointDirectLightIrradiance( pointLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tSpotLight spotLight;\n\n\t\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\n\t\t\tspotLight = spotLights[ i ];\n\n\t\t\tgetSpotDirectLightIrradiance( spotLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tDirectionalLight directionalLight;\n\n\t\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\n\t\t\tdirectionalLight = directionalLights[ i ];\n\n\t\t\tgetDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if defined( RE_IndirectDiffuse )\n\n\t\tvec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n\n\t\t#ifdef USE_LIGHTMAP\n\n\t\t\tvec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\n\t\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\n\t\t\t\tlightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage\n\n\t\t\t#endif\n\n\t\t\tirradiance += lightMapIrradiance;\n\n\t\t#endif\n\n\t\t#if ( NUM_HEMI_LIGHTS > 0 )\n\n\t\t\tfor ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n\n\t\t\t\tirradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n\n\t\t\t}\n\n\t\t#endif\n\n\t\t#if defined(ENV_MAP_IRRADIANCE)\n\n\t\t\tirradiance += getBox3DLightProbeIndirectIrradiance( /*lightProbe,*/ geometry );\n\n\t\t#endif\n\n\t\tRE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );\n\n\t#endif\n\n\t#if defined(ENV_MAP_RADIANCE) && defined( RE_IndirectSpecular )\n\n\t\tvec3 radiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.specularRoughness );\n\t\t#ifdef CLEAR_COAT\n\t\t\tvec3 clearCoatRadiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.clearCoatRoughness );\n\t\t#else\n\t\t\tvec3 clearCoatRadiance = vec3( 0.0 );\n\t\t#endif\n\t\tfloat fresnel = 0.0;\n\t\tRE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight, fresnel );\n\t\tdiffuseColor.a += 2.0 * fresnel; // The factor of 2 is just a rough guess and not based on anything...\n\t\tdiffuseColor.a = min(diffuseColor.a, 1.0);\n\n\t#endif\n\n\t#if defined(AO_MAP)\n\t\t//Removed chunk <aomap_fragment> Overriding so that we can use vUv instead of vUv2\n\t\tfloat ambientOcclusion = texture2D( aoMap, vUv ).r;\n\t\treflectedLight.indirectDiffuse *= ambientOcclusion;\n\t\t#if defined( USE_ENVMAP ) && defined( PHYSICAL )\n\t\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\t\treflectedLight.indirectSpecular *= computeSpecularOcclusion( dotNV, ambientOcclusion, material.specularRoughness );\n\t\t#endif\n\t#endif\n\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n\t#include <premultiplied_alpha_fragment>\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\n}"
 
 /***/ },
-/* 168 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95171,7 +95287,7 @@
 	  }, {
 	    key: '_applyPropertiesUnloaded',
 	    value: function _applyPropertiesUnloaded() {
-	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	      var changes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	      _get(SkinAsset.prototype.__proto__ || Object.getPrototypeOf(SkinAsset.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
 	      if (changes.inverseBindMatrices) {
@@ -95219,7 +95335,7 @@
 	exports.default = SkinAsset;
 
 /***/ },
-/* 169 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95240,15 +95356,15 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _BaseTextureAsset2 = __webpack_require__(22);
+	var _BaseTextureAsset2 = __webpack_require__(24);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
-	var _BaseImageAsset = __webpack_require__(23);
+	var _BaseImageAsset = __webpack_require__(25);
 
 	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
-	var _VideoAsset = __webpack_require__(170);
+	var _VideoAsset = __webpack_require__(172);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
@@ -95389,7 +95505,7 @@
 	exports.default = Texture2DAsset;
 
 /***/ },
-/* 170 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95402,17 +95518,19 @@
 
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
-	var _log = __webpack_require__(7);
-
-	var _log2 = _interopRequireDefault(_log);
-
-	var _BaseImageAsset2 = __webpack_require__(23);
+	var _BaseImageAsset2 = __webpack_require__(25);
 
 	var _BaseImageAsset3 = _interopRequireDefault(_BaseImageAsset2);
 
-	var _Box3DEntity = __webpack_require__(16);
+	var _LoadingType = __webpack_require__(122);
 
-	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
+	var LoadingType = _interopRequireWildcard(_LoadingType);
+
+	var _LoadingEvent = __webpack_require__(20);
+
+	var LoadingEvent = _interopRequireWildcard(_LoadingEvent);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -95422,10 +95540,13 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var MAX_VIDEO_HEIGHT = 1080;
+
 	/**
 	 * @class VideoAsset
 	 * @constructor
 	 */
+
 	var VideoAsset = function (_BaseImageAsset) {
 	  _inherits(VideoAsset, _BaseImageAsset);
 
@@ -95492,13 +95613,6 @@
 	          _this2.runtimeData.height = videoEl.height;
 	          _this2.trigger('loadProgress', _this2);
 	        }
-	        callback();
-	      };
-
-	      var onVideoFail = function onVideoFail(err) {
-	        _log2.default.debug('There was an error loading the video, ' + _this2.getName(), err);
-	        _this2.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.FAILED);
-	        callback();
 	      };
 
 	      var parentEl = this.box3DRuntime.getRenderer().getCanvas().parentElement;
@@ -95507,10 +95621,16 @@
 	        var videoEl = parentEl.querySelector(cssSelector);
 	        onVideoReady(videoEl);
 	      } else {
-	        this.box3DRuntime.resourceLoader.load(this, { xhrKey: this.id }).then(function (data) {
-	          parentEl.appendChild(data.data);
-	          onVideoReady(data.data);
-	        }).catch(onVideoFail);
+	        var rep = this.findRepresentation();
+
+	        if (rep) {
+	          var resource = this.loadResource(rep.src, LoadingType.VIDEO, callback);
+
+	          resource.once(LoadingEvent.LOAD, function (data) {
+	            parentEl.appendChild(data);
+	            onVideoReady(data);
+	          });
+	        }
 	      }
 	    }
 
@@ -95614,6 +95734,44 @@
 	      var renderer = this.box3DRuntime.getRenderer();
 	      return renderer ? renderer.getMaxTextureSize2d() : _get(VideoAsset.prototype.__proto__ || Object.getPrototypeOf(VideoAsset.prototype), 'getMaxTextureSize', this).call(this);
 	    }
+
+	    /**
+	     * Find the video representation that best matches the specified criteria.
+	     * @method findRepresentation
+	     * @private
+	     * @param {Box3DAsset} asset The video asset.
+	     * @param {Object} options Loading options (@see XhrResourceLoader.prototype.load()).
+	     * @returns {Object} the representation that best matches the search criteria or null if none were
+	     * found.
+	     */
+
+	  }, {
+	    key: 'findRepresentation',
+	    value: function findRepresentation() {
+	      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+	      var representations = this.get('representations');
+	      if (!representations || representations.length === 0) {
+	        return null;
+	      }
+
+	      var optionsEx = Object.assign({ maxHeight: MAX_VIDEO_HEIGHT }, options);
+
+	      // For each representation, compute the difference between its height and the max height.
+	      var sizeDiffs = representations.map(function (representation) {
+	        return optionsEx.maxHeight - (representation.video || {}).height || 0;
+	      });
+
+	      // Find the index of the minimum, *positive* “diff”. This is equivalent to the largest video
+	      // that is less than or equal to the max specified.
+	      var bestIdx = sizeDiffs.reduce(function (bestIdx, currentDiff, currentIdx) {
+	        var bestDiff = bestIdx >= 0 ? sizeDiffs[bestIdx] : Number.MAX_VALUE;
+	        return currentDiff >= 0 && currentDiff < bestDiff ? currentIdx : bestIdx;
+	      }, -1);
+
+	      // Locate the match.
+	      return bestIdx >= 0 ? representations[bestIdx] : null;
+	    }
 	  }]);
 
 	  return VideoAsset;
@@ -95668,13 +95826,10 @@
 	    category: ''
 	  }
 	};
-
-
-	window.Box3D.VideoAsset = VideoAsset;
 	exports.default = VideoAsset;
 
 /***/ },
-/* 171 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95689,7 +95844,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _BaseTextureAsset2 = __webpack_require__(22);
+	var _BaseTextureAsset2 = __webpack_require__(24);
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
@@ -95777,7 +95932,7 @@
 	exports.default = TextureCubeAsset;
 
 /***/ },
-/* 172 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95960,7 +96115,7 @@
 	  }, {
 	    key: 'clone',
 	    value: function clone(id) {
-	      var recursive = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+	      var recursive = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
 	      var clonedObject = _get(Box3DObject.prototype.__proto__ || Object.getPrototypeOf(Box3DObject.prototype), 'clone', this).call(this);
 	      clonedObject.set('parentId', null);
@@ -96486,7 +96641,7 @@
 	    value: function unload() {
 	      var _this5 = this;
 
-	      var recursive = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+	      var recursive = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 	      // Remove the object from its parent
 	      if (this.runtimeData && this.runtimeData.parent) {
@@ -96905,7 +97060,7 @@
 	  }, {
 	    key: 'setChildIds',
 	    value: function setChildIds(newChildren) {
-	      var silent = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+	      var silent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 	      this.box3DRuntime.entityDispatcher.dispatchChildChanged(this.id, newChildren, silent);
 	    }
@@ -97218,7 +97373,7 @@
 	  }, {
 	    key: 'breakPrefabLink',
 	    value: function breakPrefabLink() {
-	      var recursive = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+	      var recursive = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 	      if (!this.isInstance()) {
 	        throw new Error('breakPrefabLink: Can\'t call this on an entity that isn\'t an instance.');
@@ -97319,7 +97474,7 @@
 	exports.default = Box3DObject;
 
 /***/ },
-/* 173 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97334,7 +97489,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DObject2 = __webpack_require__(172);
+	var _Box3DObject2 = __webpack_require__(174);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -97385,7 +97540,7 @@
 	exports.default = BoneObject;
 
 /***/ },
-/* 174 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97402,7 +97557,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DObject2 = __webpack_require__(172);
+	var _Box3DObject2 = __webpack_require__(174);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -97548,7 +97703,7 @@
 	exports.default = CameraObject;
 
 /***/ },
-/* 175 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97569,7 +97724,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DObject2 = __webpack_require__(172);
+	var _Box3DObject2 = __webpack_require__(174);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -97964,7 +98119,7 @@
 	exports.default = LightObject;
 
 /***/ },
-/* 176 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97989,7 +98144,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DObject2 = __webpack_require__(172);
+	var _Box3DObject2 = __webpack_require__(174);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -98145,7 +98300,7 @@
 	    value: function _applyPropertiesUnloaded() {
 	      var _this3 = this;
 
-	      var changes = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	      var changes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
 	      _get(MeshObject.prototype.__proto__ || Object.getPrototypeOf(MeshObject.prototype), '_applyPropertiesUnloaded', this).call(this, changes);
 	      if (changes.hasOwnProperty('materials')) {
@@ -98442,8 +98597,8 @@
 	  }, {
 	    key: 'getMaterial',
 	    value: function getMaterial() {
-	      var index = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-	      var placeholder = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+	      var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	      var placeholder = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
 	      // Validate the index parameter.
 	      if (index < 0 || index >= this.getMaterialCount()) {
@@ -98478,8 +98633,8 @@
 	  }, {
 	    key: 'getPreviousMaterial',
 	    value: function getPreviousMaterial() {
-	      var index = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
-	      var placeholder = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+	      var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	      var placeholder = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
 	      // Validate the index parameter.
 	      if (index < 0 || index >= this.getMaterialCount()) {
@@ -98551,7 +98706,7 @@
 	  }, {
 	    key: 'getMaterials',
 	    value: function getMaterials() {
-	      var placeholder = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+	      var placeholder = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 	      var materials = [];
 	      var nMaterials = this.getMaterialCount();
@@ -98575,7 +98730,7 @@
 	  }, {
 	    key: 'getPreviousMaterials',
 	    value: function getPreviousMaterials() {
-	      var placeholder = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+	      var placeholder = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 	      var materials = [];
 	      var nMaterials = this.getMaterialCount();
@@ -98835,7 +98990,7 @@
 	  }, {
 	    key: 'revertMaterial',
 	    value: function revertMaterial() {
-	      var index = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+	      var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 
 	      // Note: we pass undefined, which unassigns the material and causes the prefab material at the
 	      // same index to be used. Passing null would override the prefab's material with an empty
@@ -98855,7 +99010,7 @@
 	  }, {
 	    key: 'setMaterial',
 	    value: function setMaterial(material) {
-	      var index = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
+	      var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 
 	      // Validate the index parameter.
 	      if (index < 0 || index >= this.getMaterialCount()) {
@@ -98941,7 +99096,7 @@
 	exports.default = MeshObject;
 
 /***/ },
-/* 177 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -98964,7 +99119,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DObject2 = __webpack_require__(172);
+	var _Box3DObject2 = __webpack_require__(174);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -99074,7 +99229,7 @@
 	exports.default = SceneObject;
 
 /***/ },
-/* 178 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -99100,477 +99255,885 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 179 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
+	'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(4)], __WEBPACK_AMD_DEFINE_RESULT__ = function (_) {
-	  'use strict';
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
 
-	  var Box3D = window.Box3D = window.Box3D || {},
-	      requests = {},
-	      requestCount = 0,
-	      //for aborting XHR requests
-	  promiseCache = {},
-	      progressListeners = {},
-	      baseUrl;
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _LoadableResource = __webpack_require__(182);
+
+	var _LoadableResource2 = _interopRequireDefault(_LoadableResource);
+
+	var _prioritizedConcurrentPromiseQueue = __webpack_require__(184);
+
+	var _prioritizedConcurrentPromiseQueue2 = _interopRequireDefault(_prioritizedConcurrentPromiseQueue);
+
+	var _bufferLoader = __webpack_require__(185);
+
+	var _bufferLoader2 = _interopRequireDefault(_bufferLoader);
+
+	var _imageLoader = __webpack_require__(187);
+
+	var _imageLoader2 = _interopRequireDefault(_imageLoader);
+
+	var _videoLoader = __webpack_require__(188);
+
+	var _videoLoader2 = _interopRequireDefault(_videoLoader);
+
+	var _LoadingEvent = __webpack_require__(20);
+
+	var LoadingEvent = _interopRequireWildcard(_LoadingEvent);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var MAX_CONCURRENT_LOADS = 4;
+
+	/**
+	 * Given a resource, resolve a Promise with an XHR object configured to request
+	 * via GET to the resource's path.
+	 * @param {LoadableResource} resource The LoadableResource which is being loaded
+	 * @return {Promise} A promise with the configured XHR.
+	 */
+	var DEFAULT_XHR_PROMISE = function DEFAULT_XHR_PROMISE(resource) {
+	  var xhr = new XMLHttpRequest();
+	  xhr.open('GET', resource.path);
+	  return Promise.resolve(xhr);
+	};
+
+	var DEFAULT_STRATEGIES = {
+	  buffer: _bufferLoader2.default,
+	  image: _imageLoader2.default,
+	  video: _videoLoader2.default
+	};
+
+	/**
+	 * This loader specializes in loading data over XHR. It can be configured with
+	 * a custom function `xhrPromise` which can be used to handle tasks such as
+	 * path rewriting and authentication concerns.
+	 *
+	 * @class XhrResourceLoader
+	 */
+
+	var XhrResourceLoader = function () {
 	  /**
-	   * Development environment resource loader implementation
 	   * @constructor
+	   * @param {Function} xhrPromise A function which returns a function which resolves
+	   *                              to a configured XMLHttpRequest object. This function
+	   *                              should accept a LoadableResource as its sole
+	   *                              parameter. eg:
+	   *                              xhrPromise(loadbleResource) =>
+	   *                                Promise.resolve([configured xhr object]);
+	   *                              Defaults to a simple XHR object configured with path only.
+	   * @param {Object} strategies   A mapping of Strategy name => Strategy function, for this
+	   *                              option it's best to use the default value.
 	   */
-	  function DevResourceLoader() /* baseUrl */{
-	    baseUrl = baseUrl || '/';
+	  function XhrResourceLoader() {
+	    var xhrPromise = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_XHR_PROMISE;
+	    var strategies = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_STRATEGIES;
+
+	    _classCallCheck(this, XhrResourceLoader);
+
+	    if (!xhrPromise) {
+	      throw new Error('Must provide argument `xhrPromise`!');
+	    }
+
+	    if (!strategies) {
+	      throw new Error('Must provide argument `strategies`!');
+	    }
+
+	    this.queue = (0, _prioritizedConcurrentPromiseQueue2.default)(MAX_CONCURRENT_LOADS);
+
+	    this.strategies = strategies;
+	    this.resources = {};
+	    this.xhrPromise = xhrPromise;
 	  }
 
-	  // Attach to global Box3D object
-	  Box3D.DevResourceLoader = DevResourceLoader;
-
 	  /**
-	   * Loads the specified asset
-	   * @param  {VeroldAsset} asset      The asset
-	   * @param  {Object} params          Type specific parameters such as
-	   *                                    compression type, max size, etc...
-	   * @param  {Function} progressFn    Callback for progress during load
-	   * @return {Promise}                An asynchronous promise which will be
-	   *                                    resolved on resource load
+	   * Shuts down the queue and any other necessary cleanup.
+	   *
+	   * @method destroy
 	   */
-	  DevResourceLoader.prototype.load = function (asset, params, progressFn) {
-	    switch (asset.type) {
-	      case 'texture2D':
-	      case 'textureCube':
-	        return loadTexture(asset, params, progressFn);
 
-	      case 'meshGeometry':
-	      case 'animation':
-	        return loadArrayBuffer(asset, params, progressFn);
+
+	  _createClass(XhrResourceLoader, [{
+	    key: 'destroy',
+	    value: function destroy() {
+	      this.queue.destroy();
 	    }
 
-	    return Promise.reject(new Error('Unkown type: ' + asset.type));
-	  };
+	    /**
+	     * Loads a resource by specified path, type and parameters.
+	     *
+	     * @method load
+	     * @param {String} path The path to the resource which will be loaded.
+	     * @param {String} type The `LoadingType` to be used for this path.
+	     * @param {Object} params Any additional parameters to pass along to the loader.
+	     * @return {LoadableResource} The LoadableResource instance for tracking this load.
+	     */
 
-	  //interface for request abortion
-	  DevResourceLoader.prototype.abortRequests = function () {
-	    abortRequests();
-	  };
+	  }, {
+	    key: 'load',
+	    value: function load(path, type, params) {
+	      var _this = this;
 
-	  //another interface for request abortion
-	  DevResourceLoader.prototype.abortRequest = function (key) {
-	    abortRequest(key);
-	  };
-
-	  //match other resource loader. Halt requests, etc
-	  DevResourceLoader.prototype.destroy = function () {
-	    abortRequests();
-	  };
-
-	  /**
-	  * Abort all XHR requests
-	  * @return void
-	  */
-	  function abortRequests() {
-	    for (var reqKey in requests) {
-	      abortRequest(reqKey);
-	    }
-	  }
-
-	  /**
-	  * All XHR requests will be tracked by their URL
-	  * @param {object} xhr The XHR object that we want to track
-	  * @param {string} url The url of the request, we'll use this to construct a key
-	  * @param {string | null} key Optional key to store the xhr request at.
-	  *                             Used for explicit xhr abortion
-	  * @return {string} The key at which the request is stored
-	  *
-	  */
-	  function addRequest(xhr, url, key) {
-	    if (key === undefined) {
-	      do {
-	        key = url + '-' + requestCount;
-	        requestCount++;
-	      } while (requests.hasOwnProperty(key));
-	    }
-
-	    //check uniqueness
-	    if (requests.hasOwnProperty(key)) {
-	      throw new Error('Non-unique XHR Key');
-	    }
-
-	    requests[key] = xhr;
-	    return key;
-	  }
-
-	  /**
-	  * Remove an xhr from the request object, on completion
-	  * @param {string} key The key at qhich to remove the request
-	  * @return {void}
-	  */
-	  function removeRequest(key) {
-	    delete requests[key];
-	  }
-
-	  /**
-	  * Abort a single request, by key
-	  * @param {string} key The key that the xhr has been stored at
-	  * @return void
-	  */
-	  function abortRequest(key) {
-	    var xhr = requests[key];
-	    if (!xhr) {
-	      return;
-	    }
-	    removeRequest(key);
-	    xhr.abort();
-	  }
-
-	  /**
-	   * Strategy for loading textures
-	   * @param  {VeroldAsset} asset      The asset
-	   * @param  {Object} params          Type specific parameters such as compression
-	   *                                    type, max size, etc...
-	   * @param  {Function} progressFn    Callback for progress during load
-	   * @return {Promise}                An asynchronous promise which will be
-	   *                                    resolved on resource load]
-	   */
-	  function loadTexture(asset, params, progressFn) {
-	    var xhrKey, result, path, properties;
-
-	    params = params || {};
-
-	    result = getResourceForTexture(asset, params);
-	    if (!result) {
-	      return Promise.reject(new Error('Failed to find suitable resource for texture, ' + asset.id));
-	    }
-	    path = getResourcePathPrefix(asset) + result.path;
-	    properties = result.properties;
-	    if (result.contentType === 'application/unknown') {
-	      return Promise.reject(new Error('Texture file has unknown content type.'));
-	    }
-
-	    if (!promiseCache[path]) {
-	      promiseCache[path] = new Promise(function (resolve, reject) {
-	        var xhr = new XMLHttpRequest(),
-	            total = 0,
-	            loaded = 0;
-
-	        xhrKey = addRequest(xhr, path, params.xhrKey);
-
-	        xhr.open('GET', path, true);
-
-	        xhr.responseType = 'arraybuffer';
-
-	        var progress = function progress(ev) {
-	          if (ev.lengthComputable) {
-	            loaded = ev.loaded;
-	            total = ev.total;
-	          } else {
-	            loaded = ev.loaded;
-	            if (!total) {
-	              total = parseInt(xhr.getResponseHeader('x-goog-meta-uncompressed-size'));
-	            }
-	          }
-
-	          if (progressListeners[path]) {
-	            progressListeners[path].forEach(function (listener) {
-	              listener.call(this, {
-	                loaded: loaded,
-	                total: total
-	              });
-	            });
-	          }
-	        };
-
-	        xhr.addEventListener('progress', progress);
-
-	        xhr.onreadystatechange = function () {
-	          if (this.readyState === 4) {
-	            xhr.removeEventListener('progress', progress);
-	            progressListeners[path] = undefined;
-
-	            /* File protocol returns status == 0 */
-	            if (this.status === 200 || this.status === 0) {
-	              if (result.contentType === 'image/x-dds') {
-	                transformArrayBuffer(xhr, properties, resolve);
-	              } else {
-	                transformImage(xhr, properties, resolve);
-	              }
-	            } else {
-	              return reject(new Error('Failed to load texture, ' + path));
-	            }
-	            removeRequest(xhrKey);
-	          }
-	        };
-
-	        xhr.send();
-	      });
-	    }
-
-	    if (_.isFunction(progressFn)) {
-	      if (!progressListeners[path]) {
-	        progressListeners[path] = [];
+	      if (!this.strategies[type]) {
+	        throw new Error('Unsupported type: ' + type);
 	      }
-	      progressListeners[path].push(progressFn);
-	    }
 
-	    return promiseCache[path];
-	  }
-
-	  /**
-	  * Strategy for loading array buffers
-	  * @param  {VeroldAsset} asset     The asset
-	  * @param  {Object} params         Type specific parameters such as compression type,
-	  *                                 max size, etc...
-	  * @param  {Function} progressFn   Callback for progress during load
-	  * @return {Promise}               An asynchronous promise which will be resolved
-	  *                                 on resource load]]
-	  */
-	  function loadArrayBuffer(asset, params, progressFn) {
-	    var xhrKey, result, path;
-
-	    result = getResources(asset)[0];
-	    path = getResourcePathPrefix(asset) + result.path;
-
-	    params = params || {};
-
-	    if (!promiseCache[path]) {
-	      promiseCache[path] = new Promise(function (resolve) {
-	        var xhr = new XMLHttpRequest(),
-	            loaded = 0,
-	            total = 0;
-
-	        xhrKey = addRequest(xhr, path, params.xhrKey);
-
-	        xhr.open('GET', path, true);
-
-	        xhr.responseType = 'arraybuffer';
-
-	        var progress = function progress(ev) {
-	          if (ev.lengthComputable) {
-	            loaded = ev.loaded;
-	            total = ev.total;
-	          } else {
-	            loaded = ev.loaded;
-	            if (!total) {
-	              total = parseInt(xhr.getResponseHeader('x-goog-meta-uncompressed-size'));
-	            }
-	          }
-
-	          if (progressListeners[path]) {
-	            progressListeners[path].forEach(function (listener) {
-	              listener.call(this, {
-	                loaded: loaded,
-	                total: total
-	              });
-	            });
-	          }
-	        };
-
-	        xhr.addEventListener('progress', progress);
-
-	        xhr.onreadystatechange = function () {
-	          if (this.readyState === 4) {
-	            xhr.removeEventListener('progress', progress);
-	            progressListeners[path] = undefined;
-
-	            /* File protocol returns status == 0 */
-	            if (this.status === 200 || this.status === 0) {
-	              transformArrayBuffer(xhr, {}, resolve);
-	            }
-	            removeRequest(xhrKey);
-	          }
-	        };
-
-	        xhr.send();
-	      });
-	    }
-
-	    if (_.isFunction(progressFn)) {
-	      if (!progressListeners[path]) {
-	        progressListeners[path] = [];
+	      if (this.resources[path]) {
+	        return this.resources[path];
 	      }
-	      progressListeners[path].push(progressFn);
-	    }
 
-	    return promiseCache[path];
-	  }
+	      var resource = this.resources[path] = new _LoadableResource2.default(path, type, params);
 
-	  /**
-	   * Get the resources object on the asset, defaulting to empty array if not
-	   * specified.
-	   * @param  {VeroldAsset} asset  The asset
-	   * @return {Array}              An array of available resources
-	   */
-	  function getResources(asset) {
-	    return asset.get('resources') || [];
-	  }
+	      this.queue.add(function () {
+	        return new Promise(function (resolve) {
+	          var done = function done() {
+	            delete _this.resources[path];
 
-	  /**
-	   * [getResourcePathPrefix description]
-	   * @param  {VeroldAsset} asset  The asset
-	   * @return {String}             The path prefix as a string
-	   */
-	  function getResourcePathPrefix(asset) {
-	    if (asset.getOwnProperties().isLocal) {
-	      return '/';
-	    } else {
-	      return baseUrl;
-	    }
-	  }
+	            resource.off(LoadingEvent.LOAD, done);
+	            resource.off(LoadingEvent.ERROR, done);
+	            resource.off(LoadingEvent.CANCEL, done);
 
-	  /**
-	   * Choose the best texture resource from an asset given query params
-	   * @param  {VeroldAsset} asset  The asset
-	   * @param  {Object} params      The query params
-	   * @return {Object}             A descriptor used to load the texture data
-	   */
-	  function getResourceForTexture(asset, params) {
-	    var results;
+	            resolve(resource);
+	          };
 
-	    results = getTextureResources(asset, {
-	      compression: params.compression,
-	      maxWidth: params.maxWidth,
-	      maxHeight: params.maxHeight,
-	      width: params.width,
-	      height: params.height,
-	      pixelFormat: params.pixelFormat,
-	      packingFormat: params.packingFormat,
-	      bestMatch: true
-	    });
+	          resource.once(LoadingEvent.LOAD, done);
+	          resource.once(LoadingEvent.ERROR, done);
+	          resource.once(LoadingEvent.CANCEL, done);
 
-	    if (!results.length) {
-	      // Try again without compression.
-	      results = getTextureResources(asset, {
-	        maxWidth: params.maxWidth,
-	        maxHeight: params.maxHeight,
-	        width: params.width,
-	        height: params.height,
-	        pixelFormat: params.pixelFormat,
-	        packingFormat: params.packingFormat,
-	        bestMatch: true
-	      });
-	    }
-
-	    if (!results.length) {
-	      // Try again without compression or pixelFormat
-	      results = getTextureResources(asset, {
-	        maxWidth: params.maxWidth,
-	        maxHeight: params.maxHeight,
-	        width: params.width,
-	        height: params.height,
-	        bestMatch: true
-	      });
-	    }
-
-	    return results[0];
-	  }
-
-	  /**
-	   * Get the texture resources matching the provided filters
-	   * @param  {VeroldAsset} asset  The asset
-	   * @param  {Object} filters     An object containing properties to filter on
-	   * @return {Array}              An array of matching assets
-	   */
-	  function getTextureResources(asset, filters) {
-	    var resources = getResources(asset);
-
-	    filters = filters || {};
-
-	    if (filters.compression !== undefined) {
-	      resources = _.filter(resources, function (resource) {
-	        return resource.properties && resource.properties.compression === filters.compression;
-	      });
-	    }
-
-	    if (filters.maxWidth !== undefined || filters.maxHeight !== undefined) {
-	      resources = _.filter(resources, function (resource) {
-	        return resource.properties && (!filters.maxWidth || resource.properties.width <= filters.maxWidth && !filters.maxHeight || resource.properties.height <= filters.maxHeight);
-	      });
-	    }
-
-	    if (filters.pixelFormat !== undefined) {
-	      resources = _.filter(resources, function (resource) {
-	        return resource.properties && resource.properties.pixelFormat === filters.pixelFormat;
-	      });
-	    }
-
-	    if (filters.packingFormat !== undefined) {
-	      resources = _.filter(resources, function (resource) {
-	        return resource.properties && resource.properties.packingFormat === filters.packingFormat;
-	      });
-	    }
-
-	    if (filters.bestMatch) {
-	      var currentBest;
-	      if (resources.length > 1) {
-	        _.each(resources, function (res) {
-	          var widthDiff = 0;
-	          if (filters.width) {
-	            widthDiff = Math.abs(filters.width - res.properties.width);
-	          }
-	          if (!currentBest || filters.width && widthDiff < Math.abs(currentBest.properties.width - res.properties.width)) {
-	            currentBest = res;
-	          } else if (!filters.width && res.properties.width > currentBest.properties.width) {
-	            currentBest = res;
-	          }
+	          _this.strategies[type](resource, _this.xhrPromise);
 	        });
-	        resources = [currentBest];
-	      }
+	      }, params.priority);
+
+	      return resource;
 	    }
+	  }]);
 
-	    return resources;
-	  }
+	  return XhrResourceLoader;
+	}();
 
-	  /**
-	   * Transforms the XHR result into an image tag and returns the result
-	   * @param  {XMLHttpRequest} xhr   The XMLHttpRequest object
-	   * @param  {Object} properties    An object with properties to be returned along with the result
-	   * @param  {Function} fn          The callback function which will receive the result
-	   */
-	  function transformImage(xhr, properties, fn) {
-	    var data, raw, b64, dataURI, img, i;
-
-	    data = new Uint8Array(xhr.response);
-
-	    // A loop is used here instead of fromCharCode.apply(null, data) to avoid stack overflows
-	    // on certain platforms (e.g. iOS) when image size is of a certain size.
-	    raw = '';
-	    for (i = 0; i < data.length; i++) {
-	      raw += String.fromCharCode(data[i]);
-	    }
-
-	    b64 = btoa(raw);
-	    dataURI = 'data:' + xhr.getResponseHeader('Content-Type') + ';base64,' + b64;
-
-	    img = document.createElement('img');
-
-	    img.src = dataURI;
-
-	    fn({
-	      type: 'image',
-	      data: img,
-	      properties: properties
-	    });
-	  }
-
-	  /**
-	  * Transforms the XHR result into an array buffer and returns the result
-	  * @param  {XMLHttpRequest} xhr   The XMLHttpRequest object
-	  * @param  {Object} properties    An object with properties to be returned along with the result
-	  * @param  {Function} fn          The callback function which will receive the result
-	   */
-	  function transformArrayBuffer(xhr, properties, fn) {
-	    fn({
-	      properties: properties || {},
-	      data: xhr.response
-	    });
-	  }
-
-	  return DevResourceLoader;
-	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	exports.default = XhrResourceLoader;
 
 /***/ },
-/* 180 */
+/* 182 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _mixwith = __webpack_require__(2);
+
+	var _RuntimeEvents = __webpack_require__(3);
+
+	var _RuntimeEvents2 = _interopRequireDefault(_RuntimeEvents);
+
+	var _LoadingState = __webpack_require__(183);
+
+	var LoadingState = _interopRequireWildcard(_LoadingState);
+
+	var _LoadingEvent = __webpack_require__(20);
+
+	var LoadingEvent = _interopRequireWildcard(_LoadingEvent);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	/**
+	 * A custom error which captures failures in state transition.
+	 *
+	 * @class StateTransitionError
+	 */
+	var StateTransitionError = function (_Error) {
+	  _inherits(StateTransitionError, _Error);
+
+	  /**
+	   * @constructor
+	   * @param {String} from The initial state
+	   * @param {String} to The target state
+	   */
+	  function StateTransitionError(from, to) {
+	    _classCallCheck(this, StateTransitionError);
+
+	    var _this = _possibleConstructorReturn(this, (StateTransitionError.__proto__ || Object.getPrototypeOf(StateTransitionError)).call(this, 'Illegal state transition "' + from + '" -> "' + to + '"'));
+
+	    _this.from = from;
+	    _this.to = to;
+	    return _this;
+	  }
+
+	  return StateTransitionError;
+	}(Error);
+
+	/**
+	 * This class encapsulates everything related to the loading of an asset.
+	 *
+	 * @class LoadableResource
+	 * @mixes RuntimeEvents
+	 */
+
+
+	var LoadableResource = function (_mix$with) {
+	  _inherits(LoadableResource, _mix$with);
+
+	  /**
+	   * @constructor
+	   * @param {String} path The path to the file to load.
+	   * @param {String} type The type of resource used to determine loading strategy.
+	   * @param {Object} params Additional options fed in to the loading strategy.
+	   */
+	  function LoadableResource(path, type) {
+	    var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+	    _classCallCheck(this, LoadableResource);
+
+	    var _this2 = _possibleConstructorReturn(this, (LoadableResource.__proto__ || Object.getPrototypeOf(LoadableResource)).call(this));
+
+	    if (!path) {
+	      throw new Error('Missing required `path` argument');
+	    }
+
+	    if (!type) {
+	      throw new Error('Missing required `type` argument');
+	    }
+
+	    _this2.path = path;
+	    _this2.type = type;
+	    _this2.params = params || {};
+	    _this2.state = LoadingState.STARTING;
+	    _this2.error = null;
+	    _this2.data = null;
+	    _this2.loaderData = {};
+	    return _this2;
+	  }
+
+	  /**
+	   * Sets the current state of the loading process assuming it is a valid
+	   * transition. Otherwise an error is thrown.
+	   *
+	   * @method setState
+	   * @public
+	   * @param {String} state The new state.
+	   * @return {String} The new state.
+	   */
+
+
+	  _createClass(LoadableResource, [{
+	    key: 'setState',
+	    value: function setState(state) {
+	      switch (state) {
+	        case LoadingState.STARTING:
+	          throw new StateTransitionError(this.state, state);
+
+	        case LoadingState.LOADING:
+	          if (this.state !== LoadingState.STARTING) throw new StateTransitionError(this.state, state);
+
+	          break;
+
+	        case LoadingState.PROCESSING:
+	          if (this.state !== LoadingState.LOADING) throw new StateTransitionError(this.state, state);
+	          break;
+
+	        case LoadingState.COMPLETE:
+	          if (this.state !== LoadingState.PROCESSING) throw new StateTransitionError(this.state, state);
+	          break;
+
+	        case LoadingState.CANCELLED:
+	          if (this.state !== LoadingState.STARTING && this.state !== LoadingState.LOADING && this.state !== LoadingState.PROCESSING) throw new StateTransitionError(this.state, state);
+	          break;
+
+	        case LoadingState.ERROR:
+	          if (this.state !== LoadingState.STARTING && this.state !== LoadingState.LOADING && this.state !== LoadingState.PROCESSING) throw new StateTransitionError(this.state, state);
+	          break;
+
+	        default:
+	          throw new Error('Uknown state: ' + state);
+	      }
+
+	      this.state = state;
+	      this.trigger(LoadingEvent.STATE_CHANGE, state);
+
+	      return state;
+	    }
+
+	    /**
+	     * Sets the state to loading.
+	     *
+	     * @method setLoading
+	     * @public
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'setLoading',
+	    value: function setLoading() {
+	      this.setState(LoadingState.LOADING);
+	    }
+
+	    /**
+	     * Sets the state to processing.
+	     *
+	     * @method setProcessing
+	     * @public
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'setProcessing',
+	    value: function setProcessing() {
+	      this.setState(LoadingState.PROCESSING);
+	    }
+
+	    /**
+	     * Sets the state to complete.
+	     *
+	     * @method setComplete
+	     * @public
+	     * @param {Mixed} data The data which has been loaded and processed.
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'setComplete',
+	    value: function setComplete(data) {
+	      this.setState(LoadingState.COMPLETE);
+	      this.data = data;
+	      this.trigger(LoadingEvent.LOAD, data);
+	      this.done();
+	    }
+
+	    /**
+	     * Sets the state to error.
+	     *
+	     * @method setError
+	     * @public
+	     * @param {Error} error The exception which caused this error.
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'setError',
+	    value: function setError(error) {
+	      this.setState(LoadingState.ERROR);
+	      this.error = error;
+	      this.trigger(LoadingEvent.ERROR, error);
+	      this.done();
+	    }
+
+	    /**
+	     * Sets the state to cancelled.
+	     *
+	     * @method setCancelled
+	     * @public
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'setCancelled',
+	    value: function setCancelled() {
+	      this.setState(LoadingState.CANCELLED);
+	      this.trigger(LoadingEvent.CANCEL);
+	      this.done();
+	    }
+
+	    /**
+	     * Checks whether or not the loading has been cancelled.
+	     *
+	     * @method isCancelled
+	     * @public
+	     * @return {Boolean}
+	     */
+
+	  }, {
+	    key: 'isCancelled',
+	    value: function isCancelled() {
+	      return this.state === LoadingState.CANCELLED;
+	    }
+
+	    /**
+	     * Called on completion with any status (complete, error, cancelled)
+	     * @method done
+	     * @private
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'done',
+	    value: function done() {
+	      this.trigger(LoadingEvent.DONE, this.state);
+	      this.off();
+	    }
+	  }]);
+
+	  return LoadableResource;
+	}((0, _mixwith.mix)().with(_RuntimeEvents2.default));
+
+	exports.default = LoadableResource;
+
+/***/ },
+/* 183 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var STARTING = exports.STARTING = 'starting';
+	var LOADING = exports.LOADING = 'loading';
+	var PROCESSING = exports.PROCESSING = 'processing';
+	var COMPLETE = exports.COMPLETE = 'complete';
+	var CANCELLED = exports.CANCELLED = 'cancelled';
+	var ERROR = exports.ERROR = 'error';
+
+/***/ },
+/* 184 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	// The default maxium concurrency level
+	var DEFAULT_MAX_CONCURRENCY = 4;
+	// The default priority level
+	var DEFAULT_PRIORITY = 5;
+
+	/**
+	 * Creates a queue which runs functions which produce promises.
+	 * @param   {Number} [maxConcurrency=DEFAULT_MAX_CONCURRENCY]
+	 *                The number of concurrent promises to execute
+	 * @param   {Number} [defaultPriority=DEFAULT_PRIORITY]
+	 *                The default priority
+	 * @returns {Object} Returns a module with the following two functions:
+	 *                    add: (fn, priority) => void
+	 *                    shutdown: () => void
+	 */
+	var prioritizedConcurrentPromiseQueue = function prioritizedConcurrentPromiseQueue() {
+	  var maxConcurrency = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_MAX_CONCURRENCY;
+	  var defaultPriority = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_PRIORITY;
+
+	  // A list of functions waiting to be executed.
+	  var queued = [];
+	  // A list of functions which are currently being executed.
+	  var executing = [];
+	  // Whether or not the queue is currently running.
+	  var running = true;
+
+	  /**
+	   * Dequeues and starts a promise.
+	   * @private
+	   */
+	  var dequeue = function dequeue() {
+	    var _loop = function _loop() {
+	      var f = queued.pop();
+
+	      executing.push(f);
+
+	      f.fn().then(function () {
+	        var idx = executing.indexOf(f);
+
+	        if (idx >= 0) {
+	          executing.splice(idx, 1);
+	          dequeue();
+	        }
+	      });
+	    };
+
+	    while (queued.length > 0 && executing.length < maxConcurrency) {
+	      _loop();
+	    }
+	  };
+
+	  /**
+	   * Used to sort the promise queue.
+	   * @param   {Object} a An object containing a `priority` property.
+	   * @param   {Object} b An object containing a `priority` property.
+	   * @returns {Number} The difference between priority B and priority A
+	   */
+	  var sortFn = function sortFn(a, b) {
+	    return b.priority - a.priority;
+	  };
+
+	  return {
+	    /**
+	     * Adds a function to the queue.
+	     *
+	     * @method
+	     * @param {Function} fn A function which takes zero arguments and produces a Promise.
+	     * @param {Number} priority A number which represents the priority of this promise.
+	     */
+	    add: function add(fn) {
+	      var priority = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultPriority;
+
+	      if (priority < 0) {
+	        throw new Error('Invalid priority ' + priority);
+	      }
+	      if (!running) {
+	        throw new Error('Queue is not running, cannot accept new promises');
+	      }
+	      queued.push({ fn: fn, priority: priority });
+	      queued.sort(sortFn);
+
+	      setTimeout(dequeue(), 0);
+	    },
+
+	    /**
+	     * Shuts down the queue.
+	     *
+	     * @method
+	     */
+	    shutdown: function shutdown() {
+	      running = false;
+	      executing.splice(0, executing.length);
+	      queued.splice(0, queued.length);
+	    }
+	  };
+	};
+
+	exports.default = prioritizedConcurrentPromiseQueue;
+
+/***/ },
+/* 185 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _common = __webpack_require__(186);
+
+	/**
+	 * Takes the loaded data from the XHR object and converts it into data which can
+	 * be used by the runtime.
+	 * In the case of buffers we simply pass the loaded XHR response to the asset.
+	 * @function processBuffer
+	 * @param  {LoadableResource} resource The LoadableResource instance which is being loaded
+	 * @return {Promise}                   A promise which will allow for continuation of the
+	 *                                     processing.
+	 */
+	var processBuffer = function processBuffer(resource) {
+	  resource.setProcessing();
+	  resource.setComplete(resource.loaderData.xhr.response);
+	};
+
+	/**
+	 * A promise chain which trakes a LoadableResource instance and performs a
+	 * series of actions to load and produce data for a BufferAsset.
+	 * @param  {LoadableResource} resource The LoadableResource instance which is being loaded
+	 * @param  {Function} configureXhr     A function which returns a Promise to resolve an configured
+	 *                                     XMLHttpRequest object.
+	 * @return {Promise}                   Returns the tail of the promise chaina.
+	 */
+
+	exports.default = function (resource, configureXhr) {
+	  return (0, _common.makeXhr)(configureXhr)(resource).then((0, _common.unlessCancelled)((0, _common.setResponseType)('arraybuffer'))).then((0, _common.unlessCancelled)(_common.loadXhr)).then((0, _common.unlessCancelled)((0, _common.requireStatus)(function (s) {
+	    return s === 200;
+	  }))).then((0, _common.unlessCancelled)(processBuffer)).catch((0, _common.handleError)(resource));
+	};
+
+/***/ },
+/* 186 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.unlessCancelled = exports.handleError = exports.setResponseType = exports.requireStatus = exports.loadXhr = exports.makeXhr = undefined;
+
+	var _LoadingEvent = __webpack_require__(20);
+
+	var LoadingEvent = _interopRequireWildcard(_LoadingEvent);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	/**
+	 * Configures an XMLHttpRequest object and adds it to a LoadableResource.
+	 * @function makeXhr
+	 * @param {Function} configureXhr     The function used to generate / configureXhr
+	 *                                    the XMLHttpRequest object, should return a
+	 *                                    promise to resolve with an XHR.
+	 * @param {LoadableResource} resource The loadable resource which contains the
+	 *                                    XMLHttpRequest object.
+	 * @return {Promise}                  Promise that will resolve with the same
+	 *                                    LoadableResource for purposes of continuation.
+	 */
+	var makeXhr = exports.makeXhr = function makeXhr(configureXhr) {
+	  return function (resource) {
+	    return configureXhr(resource.path, resource.params).then(function (xhr) {
+	      resource.loaderData.xhr = xhr;
+	      return Promise.resolve(resource);
+	    });
+	  };
+	};
+
+	/**
+	 * Loads an XMLHttpRequest object.
+	 * @function loadXhr
+	 * @param {LoadableResource} resource The loadable resource which contains the
+	 *                                    XMLHttpRequest object.
+	 * @return {Promise}                  Promise that will resolve with the
+	 *                                    same LoadableResource for purposes of
+	 *                                    continuation.
+	 */
+	var loadXhr = exports.loadXhr = function loadXhr(resource) {
+	  return new Promise(function (resolve, reject) {
+	    resource.setLoading();
+
+	    var getContentLength = function getContentLength(xhr) {
+	      return parseInt(xhr.getResponseHeader('Content-Length'), 10);
+	    };
+
+	    var getLoadStatus = function getLoadStatus(ev) {
+	      return {
+	        total: ev.lengthComputable && ev.target ? getContentLength(ev.target) : 0,
+	        loaded: ev.loaded
+	      };
+	    };
+
+	    var unbind = function unbind() {
+	      resource.off(LoadingEvent.CANCEL, cancel);
+	    };
+
+	    var cancel = function cancel() {
+	      unbind();
+	      resource.loaderData.xhr.abort();
+	      resolve(resource);
+	    };
+
+	    var complete = function complete() {
+	      unbind();
+	      resolve(resource);
+	    };
+
+	    var error = function error(err) {
+	      unbind();
+	      reject(err);
+	    };
+
+	    resource.on(LoadingEvent.CANCEL, cancel);
+
+	    resource.loaderData.xhr.send();
+
+	    resource.loaderData.xhr.addEventListener('load', complete);
+	    resource.loaderData.xhr.addEventListener('error', error);
+	    resource.loaderData.xhr.addEventListener('progress', function (ev) {
+	      return resource.trigger('progress', getLoadStatus(ev));
+	    });
+	  });
+	};
+
+	/**
+	 * Uses predicate function to determine whether the status code constitutes
+	 * success or failure.
+	 * @function requireStatus
+	 * @param {Function} predicate A function which takes a status code and
+	 *                             returns a Boolean.
+	 * @param {Resource} resource  A LoadableResource instance.
+	 * @return {Promise}           Promise that will resolve with the same
+	 *                             LoadableResource for purposes of continuation.
+	 */
+	var requireStatus = exports.requireStatus = function requireStatus(predicate) {
+	  return function (resource) {
+	    return predicate(resource.loaderData.xhr.status) ? Promise.resolve(resource) : Promise.reject(new Error('Failed to load: ' + resource.path + ' status: ' + resource.loaderData.xhr.status));
+	  };
+	};
+
+	/**
+	 * Sets the repsonseType on the XMLHttpRequest object.
+	 * @function setResponseType
+	 * @param {String}           defaultType A default type to use in the situation which one
+	 * @param {LoadableResource} resource A LoadableResource instance.
+	 * @return {Function}        Promise that will resolve with the same
+	 *                           LoadableResource for purposes of continuation.
+	 */
+	var setResponseType = exports.setResponseType = function setResponseType(defaultType) {
+	  return function (resource) {
+	    resource.loaderData.xhr.responseType = resource.params.responseType || defaultType;
+
+	    return Promise.resolve(resource);
+	  };
+	};
+
+	/**
+	 * Handles an error condition by setting the LoadableResource error and then
+	 * returning the error down the promise chain.
+	 * @function handleError
+	 * @param {LoadableResource} resource A LoadableResource instance.
+	 * @param {Error} err                 An Error object.
+	 * @return {Promise}                  Promise that will resolve with the same
+	 *                                    LoadableResource for purposes of continuation.
+	 */
+	var handleError = exports.handleError = function handleError(resource) {
+	  return function (err) {
+	    resource.setError(err);
+	    return Promise.reject(err);
+	  };
+	};
+
+	/**
+	 * A wrapper for a promise which first checks if the LoadableResource was
+	 * cancelled before executing the wrapped promise. In the case where the
+	 * LoadableResource was cancelled, the continuation will continue with the next
+	 * Promise in the chain.
+	 * @function unlessCancelled
+	 * @param {Promise} promise            The Promise to wrap.
+	 * @param {LoadableResource} resource  A LoadableResource object.
+	 * @return {Promise}                   Promise that will resolve with the same
+	 *                                     LoadableResource for purposes of
+	 *                                     continuation.
+	 */
+	var unlessCancelled = exports.unlessCancelled = function unlessCancelled(promise) {
+	  return function (resource) {
+	    return resource.isCancelled() ? Promise.resolve(resource) : promise(resource);
+	  };
+	};
+
+/***/ },
+/* 187 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _common = __webpack_require__(186);
+
+	/**
+	 * Takes the loaded data from the XHR object and converts it into data which can
+	 * be used by the runtime.
+	 * @function processImage
+	 * @param  {LoadableResource} resource The LoadableResource instance which is being loaded
+	 * @return {Promise}                   A promise which will allow for continuation of the
+	 *                                     processing
+	 */
+	var processImage = function processImage(resource) {
+	  return new Promise(function (resolve) {
+	    resource.setProcessing();
+
+	    if (resource.loaderData.xhr.response instanceof Blob) {
+	      (function () {
+	        var url = URL.createObjectURL(resource.loaderData.xhr.response);
+	        var img = new Image();
+
+	        img.onload = function () {
+	          resource.setComplete(img);
+	          resolve(resource);
+	        };
+
+	        img.src = url;
+	      })();
+	    } else {
+	      resource.setComplete(resource.loaderData.xhr.response);
+	      resolve(resource);
+	    }
+	  });
+	};
+
+	/**
+	 * A promise chain which trakes a LoadableResource instance and performs a
+	 * series of actions to load and produce data for an ImageAsset.
+	 * @param  {LoadableResource} resource An object describing the resource which is being loaded
+	 *                                     as well as containing any required state for the load.
+	 * @param  {Function} configureXhr     A function which returns a Promise to resolve an configured
+	 *                                     XMLHttpRequest object.
+	 * @return {Promise}                   Returns the tail of the promise chain
+	 */
+
+	exports.default = function (resource, configureXhr) {
+	  return (0, _common.makeXhr)(configureXhr)(resource).then((0, _common.unlessCancelled)((0, _common.setResponseType)('blob'))).then((0, _common.unlessCancelled)(_common.loadXhr)).then((0, _common.unlessCancelled)((0, _common.requireStatus)(function (s) {
+	    return s === 200;
+	  }))).then((0, _common.unlessCancelled)(processImage)).catch((0, _common.handleError)(resource));
+	};
+
+/***/ },
+/* 188 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _common = __webpack_require__(186);
+
+	/**
+	 * Takes the loaded data from the XHR object and converts it into data which can
+	 * be used by the runtime.
+	 * @function processVideo
+	 * @param  {LoadableResource} resource The LoadableResource instance which is being loaded
+	 * @return {Promise}                   A promise which will allow for continuation of the
+	 *                                     processing
+	 */
+	var processVideo = function processVideo(resource) {
+	  return new Promise(function (resolve, reject) {
+	    resource.setProcessing();
+
+	    var url = URL.createObjectURL(resource.loaderData.xhr.response);
+	    var video = document.createElement('video');
+
+	    video.addEventListener('loadeddata', function () {
+	      resource.setComplete(video);
+	      resolve(resource);
+	    });
+
+	    video.addEventListener('error', function () {
+	      return reject(new Error('Failed to load video'));
+	    });
+
+	    video.src = url;
+	    video.load();
+	  });
+	};
+
+	/**
+	 * A promise chain which trakes a LoadableResource instance and performs a
+	 * series of actions to load and produce data for an VideoAsset.
+	 * @param  {LoadableResource} resource An object describing the resource which is being loaded
+	 *                                     as well as containing any required state for the load.
+	 * @param  {Function} configureXhr     A function which returns a Promise to resolve an configured
+	 *                                     XMLHttpRequest object.
+	 * @return {Promise}                   Returns the tail of the promise chain
+	 */
+
+	exports.default = function (resource, configureXhr) {
+	  return (0, _common.makeXhr)(configureXhr)(resource).then((0, _common.unlessCancelled)((0, _common.setResponseType)('blob'))).then((0, _common.unlessCancelled)(_common.loadXhr)).then((0, _common.unlessCancelled)((0, _common.requireStatus)(function (s) {
+	    return s === 200;
+	  }))).then((0, _common.unlessCancelled)(processVideo)).catch((0, _common.handleError)(resource));
+	};
+
+/***/ },
+/* 189 */
 /***/ function(module, exports) {
 
 	'use strict';
