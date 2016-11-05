@@ -58,6 +58,34 @@ describe('office-loader', () => {
             });
         });
 
+        it('should choose the Office viewer if it is not disabled and the file is a shared link that is not password-protected', () => {
+            const file = {
+                extension: 'xlsx',
+                size: 1000,
+                permissions: {
+                    can_download: true
+                },
+                representations: {
+                    entries: [{
+                        representation: 'original'
+                    }]
+                },
+                shared_link: {
+                    is_password_enabled: false
+                }
+            };
+
+            const viewer = OfficeLoader.determineViewer(file);
+
+            expect(viewer).to.deep.equal({
+                REPRESENTATION: 'original',
+                EXTENSIONS: ['xlsx'],
+                SCRIPTS: ['office.js'],
+                STYLESHEETS: [],
+                CONSTRUCTOR: 'Office'
+            });
+        });
+
         it('should choose the Document viewer if the Office viewer is disabled', () => {
             const file = {
                 extension: 'xlsx',
@@ -137,6 +165,42 @@ describe('office-loader', () => {
                     }, {
                         representation: 'pdf'
                     }]
+                }
+            };
+
+            const viewer = OfficeLoader.determineViewer(file, []);
+
+            expect(viewer).to.deep.equal({
+                REPRESENTATION: 'pdf',
+                EXTENSIONS: ['xlsx'],
+                SCRIPTS: [
+                    'third-party/doc/compatibility.js',
+                    'third-party/doc/pdf.min.js',
+                    'third-party/doc/pdf_viewer.min.js',
+                    'third-party/doc/pdf.worker.min.js',
+                    'document.js'],
+                STYLESHEETS: ['third-party/doc/pdf_viewer.css', 'document.css'],
+                CONSTRUCTOR: 'Document',
+                PREFETCH: 'xhr'
+            });
+        });
+
+        it('should choose the Document viewer if the file is a password-protected shared link', () => {
+            const file = {
+                extension: 'xlsx',
+                size: 1000,
+                permissions: {
+                    can_download: true
+                },
+                representations: {
+                    entries: [{
+                        representation: 'original'
+                    }, {
+                        representation: 'pdf'
+                    }]
+                },
+                shared_link: {
+                    is_password_enabled: true
                 }
             };
 
