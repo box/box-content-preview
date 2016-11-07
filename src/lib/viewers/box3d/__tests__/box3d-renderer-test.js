@@ -291,12 +291,10 @@ describe('box3d-renderer', () => {
         it('should create new Box3D engine instance, initialize it with properties, load an app, and resolve in the new (and cached) Box3D', (done) => {
             const loader = { name: 'loader' };
             const entities = { name: 'entities' };
-            const inputSettings = { name: 'some_settings' };
             const expectedInitProps = {
                 container: containerEl,
                 engineName: 'Default',
                 entities,
-                inputSettings,
                 resourceLoader: loader
             };
             let initProps;
@@ -316,7 +314,7 @@ describe('box3d-renderer', () => {
             };
             window.Box3D = Box3DFake;
 
-            const callPromise = renderer.createBox3d(loader, entities, inputSettings).then((b3d) => {
+            const callPromise = renderer.createBox3d(loader, entities).then((b3d) => {
                 expect(b3d).to.be.an.instanceof(window.Box3D.Engine);
                 expect(initProps).to.deep.equal(expectedInitProps);
                 expect(callPromise).to.be.a('promise');
