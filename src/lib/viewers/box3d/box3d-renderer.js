@@ -93,6 +93,7 @@ class Box3DRenderer extends EventEmitter {
         }
 
         this.box3d.uninitialize();
+        this.box3d = null;
     }
 
     /**

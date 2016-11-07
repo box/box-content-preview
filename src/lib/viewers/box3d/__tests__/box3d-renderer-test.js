@@ -43,9 +43,11 @@ describe('box3d-renderer', () => {
         });
 
         it('should call uninitialize on the engine', () => {
+            const uninitializeStub = renderer.box3d.uninitialize;
+
             renderer.destroy();
 
-            expect(renderer.box3d.uninitialize.called).to.be.true;
+            expect(uninitializeStub).to.have.been.called;
         });
 
         it('should fully shutdown by disabling vr and unbinding events ', () => {
@@ -62,6 +64,12 @@ describe('box3d-renderer', () => {
             renderer.destroy();
 
             expect(renderer._events.triggerRender).to.not.exist;
+        });
+
+        it('should remove the reference to box3d', () => {
+            renderer.destroy();
+
+            expect(renderer.box3d).to.not.exist;
         });
     });
 
