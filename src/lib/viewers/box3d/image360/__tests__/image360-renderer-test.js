@@ -2,14 +2,6 @@
 import Image360Renderer from '../image360-renderer';
 import sceneEntities from '../scene-entities';
 
-// Copied from ../image360-renderer
-const INPUT_SETTINGS = {
-    vrEvents: {
-        enable: true,
-        position: false
-    }
-};
-
 const sandbox = sinon.sandbox.create();
 
 describe('image360', () => {
@@ -212,16 +204,6 @@ describe('image360', () => {
             });
 
             renderer.load('', { inputSettings: myInputSettings });
-        });
-
-        it('should use default inputSettings, if none provided, for initialization', (done) => {
-            sandbox.stub(renderer, 'initBox3d', (options) => {
-                expect(options.inputSettings).to.deep.equal(INPUT_SETTINGS);
-                done();
-                return new Promise(() => {});
-            });
-
-            renderer.load('');
         });
 
         it('should call initBox3d() with the passed in options object', (done) => {

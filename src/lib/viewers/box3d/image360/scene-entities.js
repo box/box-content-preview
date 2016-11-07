@@ -75,6 +75,7 @@ export default [{
             name: 'Renderer',
             attributes: {
                 antialias: !Browser.isMobile(),
+                maxTextureSize2d: 4096, // TODO - remove this when >4096 reps are available
                 renderOnDemand: true
             },
             scriptId: 'box3d_renderer',

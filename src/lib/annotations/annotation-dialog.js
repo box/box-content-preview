@@ -288,7 +288,15 @@ class AnnotationDialog extends EventEmitter {
      * @protected
      */
     mouseenterHandler() {
-        annotatorUtil.showElement(this._element);
+        if (this._element.classList.contains(CLASS_HIDDEN)) {
+            annotatorUtil.showElement(this._element);
+
+            const replyTextArea = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            const commentsTextArea = this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            if (replyTextArea.textContent !== '' || commentsTextArea.textContent !== '') {
+                this.emit('annotationcommentpending');
+            }
+        }
     }
 
     /**

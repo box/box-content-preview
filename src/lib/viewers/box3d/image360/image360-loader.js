@@ -3,16 +3,8 @@ import Base360Loader from '../base360-loader';
 const STATIC_URI = 'third-party/model3d/';
 const VIEWERS = [
     {
-        REPRESENTATION: 'original',
-        EXTENSIONS: ['jpg', 'jpeg', 'png'],
-        SCRIPTS: [`${STATIC_URI}boxsdk.js`, `${STATIC_URI}box3d-runtime.js`,
-            `${STATIC_URI}webvr-polyfill.js`, 'image360.js'],
-        STYLESHEETS: ['image360.css'],
-        CONSTRUCTOR: 'Image360'
-    },
-    {
-        REPRESENTATION: 'png',
-        EXTENSIONS: ['ai', 'bmp', 'dcm', 'eps', 'gif', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff'],
+        REPRESENTATION: '3d',
+        EXTENSIONS: ['jpg', 'jpeg', 'png', 'ai', 'bmp', 'dcm', 'eps', 'gif', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff'],
         SCRIPTS: [`${STATIC_URI}boxsdk.js`, `${STATIC_URI}box3d-runtime.js`,
             `${STATIC_URI}webvr-polyfill.js`, 'image360.js'],
         STYLESHEETS: ['image360.css'],
