@@ -1,6 +1,22 @@
 # Change Log
 
-## [v0.85.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.85.0) 
+## [v0.86.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.86.0) (2016-11-04)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.85.0...v0.86.0)
+
+**Merged pull requests:**
+
+- Fix video360, also added resourceLoader.destroy\(\) [\#745](https://gitenterprise.inside-box.net/Preview/Preview/pull/745) ([dweis](https://gitenterprise.inside-box.net/dweis))
+- Hovering out of an annotation dialog with a pending comment should maintain annotation-pending state [\#744](https://gitenterprise.inside-box.net/Preview/Preview/pull/744) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Annotation fixes [\#743](https://gitenterprise.inside-box.net/Preview/Preview/pull/743) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- remove box3d-resource-loader from image360/video360 [\#742](https://gitenterprise.inside-box.net/Preview/Preview/pull/742) ([dweis](https://gitenterprise.inside-box.net/dweis))
+- Changing HDR image resolutions to match the actual files [\#741](https://gitenterprise.inside-box.net/Preview/Preview/pull/741) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- COXP-2987 minor bug fix related to multple calls to resourceLoader.de… [\#740](https://gitenterprise.inside-box.net/Preview/Preview/pull/740) ([dweis](https://gitenterprise.inside-box.net/dweis))
+- fixing changelog [\#739](https://gitenterprise.inside-box.net/Preview/Preview/pull/739) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Update README.md [\#737](https://gitenterprise.inside-box.net/Preview/Preview/pull/737) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- updating changelog to v0.85.0 [\#736](https://gitenterprise.inside-box.net/Preview/Preview/pull/736) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- COXP-2987: Use new XhrResourceLoader [\#735](https://gitenterprise.inside-box.net/Preview/Preview/pull/735) ([dweis](https://gitenterprise.inside-box.net/dweis))
+
+## [v0.85.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.85.0) (2016-11-04)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.84.0...v0.85.0)
 
 **Merged pull requests:**
