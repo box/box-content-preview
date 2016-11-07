@@ -337,6 +337,8 @@ class Box3DRenderer extends EventEmitter {
         const camera = this.getCamera();
         this.initCameraForVr(camera);
 
+        this.box3d.setVrDevice(this.vrEffect.getVRDisplay());
+
         const renderView = camera.getComponentByScriptId(RENDER_VIEW_COMPONENT_ID);
         renderView.effect = this.vrEffect;
         renderView.setAttribute('enablePreRenderFunctions', false);
@@ -377,6 +379,8 @@ class Box3DRenderer extends EventEmitter {
             this.vrControls.dispose();
             this.vrControls = undefined;
         }
+
+        this.box3d.setVrDevice(null);
 
         this.enableCameraControls();
         this.reset();
