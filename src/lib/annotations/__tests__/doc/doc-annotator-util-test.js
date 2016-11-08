@@ -117,7 +117,6 @@ describe('doc-annotator-util', () => {
 
             const annotationsEl = dialogEl.querySelector('.annotation-container');
             expect(annotationsEl.style.maxHeight).to.not.be.undefined;
-            expect(annotationsEl.style.overflowY).to.equal('auto');
         });
     });
 

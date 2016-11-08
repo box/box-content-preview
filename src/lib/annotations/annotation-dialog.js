@@ -123,7 +123,7 @@ class AnnotationDialog extends EventEmitter {
         }
 
         this._addAnnotationElement(annotation);
-        this._deactivateReply(); // Deactivate reply area and focus
+        this._deactivateReply(true); // Deactivate reply area and focus
     }
 
     /**
@@ -334,6 +334,7 @@ class AnnotationDialog extends EventEmitter {
             // Clicking 'Cancel' button to cancel the annotation
             case 'cancel-annotation-btn':
                 this._cancelAnnotation();
+                this._deactivateReply(true);
                 break;
 
             // Clicking inside reply text area
@@ -343,7 +344,7 @@ class AnnotationDialog extends EventEmitter {
 
             // Canceling a reply
             case 'cancel-reply-btn':
-                this._deactivateReply();
+                this._deactivateReply(true);
                 break;
 
             // Clicking 'Post' button to create a reply annotation
@@ -480,13 +481,14 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Deactivate reply textarea.
      *
+     * @param {Boolean} clearText Whether or not text in text area should be cleared
      * @returns {void}
      * @private
      */
-    _deactivateReply() {
+    _deactivateReply(clearText) {
         const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
         const replyButtonEls = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
-        annotatorUtil.resetTextarea(replyTextEl);
+        annotatorUtil.resetTextarea(replyTextEl, clearText);
         annotatorUtil.hideElement(replyButtonEls);
 
         if (annotatorUtil.isElementInViewport(replyTextEl)) {
