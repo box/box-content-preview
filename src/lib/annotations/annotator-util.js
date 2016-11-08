@@ -220,3 +220,43 @@ export function htmlEscape(str) {
               .replace(/'/g, '&#39;')
               .replace(/`/g, '&#96;');
 }
+
+/**
+ * Repositions caret if annotations dialog will run off the right or left
+ * side of the page. Otherwise positions caret at the center of the
+ * annotations dialog and the updated left corner x coordinate.
+ * @param  {HTMLElement} dialogEl Annotations dialog element
+ * @param  {number} dialogX Left corner x coordinate of the annotations dialog
+ * @param  {number} highlightDialogWidth Width of the annotations dialog
+ * @param  {number} browserX X coordinate of the mouse position
+ * @param  {number} pageWidth Width of document page
+ * @return {number} Adjusted left corner x coordinate of the annotations dialog
+ */
+export function repositionCaret(dialogEl, dialogX, highlightDialogWidth, browserX, pageWidth) {
+    // Reposition to avoid sides - left side of page is 0px, right side is
+    // ${pageWidth}px
+    const dialogPastLeft = dialogX < 0;
+    const dialogPastRight = dialogX + highlightDialogWidth > pageWidth;
+    const annotationCaretEl = dialogEl.querySelector('.box-preview-annotation-caret');
+
+    if (dialogPastLeft && !dialogPastRight) {
+        // Leave a minimum of 10 pixels so caret doesn't go off edge
+        const caretLeftX = Math.max(10, browserX);
+        annotationCaretEl.style.left = `${caretLeftX}px`;
+
+        return 0;
+    } else if (dialogPastRight && !dialogPastLeft) {
+        // Leave a minimum of 10 pixels so caret doesn't go off edge
+        const caretRightX = Math.max(10, pageWidth - browserX);
+
+        // We set the 'left' property even when we have caretRightX for
+        // IE10/11
+        annotationCaretEl.style.left = `${highlightDialogWidth - caretRightX}px`;
+
+        return pageWidth - highlightDialogWidth;
+    }
+
+    // Reset caret to center
+    annotationCaretEl.style.left = '50%';
+    return dialogX;
+}

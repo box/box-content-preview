@@ -40,13 +40,6 @@ describe('annotation-dialog', () => {
     });
 
     describe('show()', () => {
-        it('should clear the hide timeout handler', () => {
-            const clearTimeoutStub = sandbox.stub(window, 'clearTimeout');
-            annotationDialog.show();
-            expect(clearTimeoutStub).to.have.been.called;
-            expect(annotationDialog._timeoutHandler).to.be.null;
-        });
-
         it('should position the dialog', () => {
             const positionStub = sandbox.stub(annotationDialog, 'position');
             annotationDialog.show();
@@ -201,10 +194,29 @@ describe('annotation-dialog', () => {
     });
 
     describe('mouseenterHandler()', () => {
-        it('should clear the hide timeout', () => {
-            sandbox.stub(annotationDialog, 'show');
+        it('should show the element only if the element is currently hidden', () => {
+            annotationDialog._element.classList.add('box-preview-is-hidden');
+            sandbox.stub(annotatorUtil, 'showElement');
             annotationDialog.mouseenterHandler();
-            expect(annotationDialog.show).to.have.been.called;
+            expect(annotatorUtil.showElement).to.have.been.called;
+        });
+
+        it('should do nothing if the element is already shown', () => {
+            sandbox.stub(annotatorUtil, 'showElement');
+            annotationDialog.mouseenterHandler();
+            expect(annotatorUtil.showElement).to.not.have.been.called;
+        });
+
+        it('should emit \'annotationcommentpending\' when user hovers back into a dialog that has a pending comment', () => {
+            annotationDialog._element.classList.add('box-preview-is-hidden');
+            sandbox.stub(annotatorUtil, 'showElement');
+            sandbox.stub(annotationDialog, 'emit');
+            const commentsTextArea = annotationDialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            commentsTextArea.textContent = 'bleh';
+
+            annotationDialog.mouseenterHandler();
+            expect(annotatorUtil.showElement).to.have.been.called;
+            expect(annotationDialog.emit).to.have.been.calledWith('annotationcommentpending');
         });
     });
 

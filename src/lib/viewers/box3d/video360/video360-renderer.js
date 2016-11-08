@@ -27,6 +27,7 @@ class Video360Renderer extends Box3DRenderer {
 
     /**
      * Get the input controller attached to the runtime
+     *
      * @returns {Object} The input controller, if any
      */
     getInputController() {

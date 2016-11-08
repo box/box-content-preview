@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-expressions */
 import Box3DRenderer from '../box3d-renderer';
-import Cache from '../../../cache';
 
 const sandbox = sinon.sandbox.create();
 
@@ -39,33 +38,38 @@ describe('box3d-renderer', () => {
     describe('destroy()', () => {
         beforeEach(() => {
             renderer.box3d = {
-                pause: sandbox.stub(),
-                trigger: sandbox.stub(),
-                resourceLoader: {
-                    destroy: sandbox.spy()
-                }
+                uninitialize: sandbox.stub()
             };
         });
 
-        it('should fully shutdown by disabling vr, hiding canvas, unbinding events and destroying resourceLoader', () => {
-            const hideBox3dSpy = sandbox.spy(renderer, 'hideBox3d');
+        it('should call uninitialize on the engine', () => {
+            const uninitializeStub = renderer.box3d.uninitialize;
+
+            renderer.destroy();
+
+            expect(uninitializeStub).to.have.been.called;
+        });
+
+        it('should fully shutdown by disabling vr and unbinding events ', () => {
             const disableVrSpy = sandbox.spy(renderer, 'disableVr');
 
             renderer.destroy();
 
-            expect(hideBox3dSpy.called).to.be.true;
             expect(disableVrSpy.called).to.be.true;
-            expect(renderer.box3d.resourceLoader.destroy.called).to.be.true;
         });
 
         it('should not call Box3D cleanup path if no Box3D engine', () => {
             renderer.box3d = null;
 
-            const hideBox3dSpy = sandbox.spy(renderer, 'hideBox3d');
             renderer.destroy();
 
-            expect(hideBox3dSpy.called).to.be.false;
             expect(renderer._events.triggerRender).to.not.exist;
+        });
+
+        it('should remove the reference to box3d', () => {
+            renderer.destroy();
+
+            expect(renderer.box3d).to.not.exist;
         });
     });
 
@@ -164,18 +168,15 @@ describe('box3d-renderer', () => {
     });
 
     describe('initBox3d()', () => {
-        describe('missing global Box3D OR Box3DResourceLoader', () => {
+        describe('missing global Box3D', () => {
             let box3D;
-            let resourceLoader;
 
             beforeEach(() => {
                 box3D = window.Box3D;
-                resourceLoader = window.Box3DResourceLoader;
             });
 
             afterEach(() => {
                 window.Box3D = box3D;
-                window.Box3DResourceLoader = resourceLoader;
             });
 
             it('should fail when no global Box3D present', (done) => {
@@ -187,20 +188,6 @@ describe('box3d-renderer', () => {
                 rejected.catch((err) => {
                     expect(err).to.be.an('error');
                     expect(err.message).to.equal('Missing Box3D');
-                    done();
-                });
-            });
-
-            it('should fail when no global Box3DResourceLoader present', (done) => {
-                window.Box3DResourceLoader = undefined;
-
-                const rejected = renderer.initBox3d();
-
-                expect(rejected).to.be.a('promise');
-
-                rejected.catch((err) => {
-                    expect(err).to.be.an('error');
-                    expect(err.message).to.equal('Missing Box3DResourceLoader');
                     done();
                 });
             });
@@ -231,11 +218,7 @@ describe('box3d-renderer', () => {
                 });
             });
 
-            it('should create a new box3d instance if it doesn\'t exist in the cache', () => {
-                Object.defineProperty(Object.getPrototypeOf(Cache), 'get', {
-                    value: sandbox.stub().returns(null)
-                });
-
+            it('should create a new box3d instance', () => {
                 const expectedEntities = {
                     one: 'a',
                     two: 'b'
@@ -247,7 +230,7 @@ describe('box3d-renderer', () => {
                 };
 
                 const creatBox3DStub = sandbox.stub(renderer, 'createBox3d', (loader, entities, inputSettings) => {
-                    expect(loader).to.be.an.instanceof(window.Box3DResourceLoader);
+                    expect(loader).to.be.an.instanceof(window.Box3D.XhrResourceLoader);
                     expect(entities).to.deep.equal(expectedEntities);
                     expect(inputSettings).to.deep.equal(expectedInputSettings);
                 });
@@ -260,59 +243,21 @@ describe('box3d-renderer', () => {
 
                 expect(creatBox3DStub).to.have.been.called;
             });
-
-            it('should get the cached box3d instance if in the cache', () => {
-                Object.defineProperty(Object.getPrototypeOf(Cache), 'get', {
-                    value: sandbox.stub().returns({})
-                });
-
-                const getFromCacheStub = sandbox.stub(renderer, 'getBox3DFromCache', (loader) => {
-                    expect(loader).to.be.an.instanceof(window.Box3DResourceLoader);
-                });
-
-                renderer.initBox3d({ file: { file_version: 'abcdef' } });
-
-                expect(getFromCacheStub).to.have.been.called;
-            });
-        });
-    });
-
-    describe('getBox3DFromCache()', () => {
-        it('should call showBox3D, assign a loader, and return a promise resolved with Box3D instance', (done) => {
-            const box3d = { name: 'fooey' };
-            const loader = { name: 'loader' };
-
-            Object.defineProperty(Object.getPrototypeOf(Cache), 'get', {
-                value: sandbox.stub().returns(box3d)
-            });
-
-            const showStub = sandbox.stub(renderer, 'showBox3d');
-
-            renderer.getBox3DFromCache(loader).then((b3d) => {
-                expect(b3d).to.deep.equal(box3d);
-                expect(renderer.box3d).to.deep.equal(b3d);
-                expect(b3d.resourceLoader).to.deep.equal(loader);
-                expect(showStub).to.have.been.called;
-                done();
-            });
         });
     });
 
     describe('createBox3d()', () => {
         let box3D;
-        let resourceLoader;
 
         beforeEach(() => {
             box3D = window.Box3D;
-            resourceLoader = window.Box3DResourceLoader;
         });
 
         afterEach(() => {
             window.Box3D = box3D;
-            window.Box3DResourceLoader = resourceLoader;
         });
 
-        it('should create new Box3D engine instance, initialize it with properties, load an app, and resolve in the new (and cached) Box3D', (done) => {
+        it('should create new Box3D engine instance, initialize it with properties, load an app, and resolve in the new Box3D', (done) => {
             const loader = { name: 'loader' };
             const entities = { name: 'entities' };
             const inputSettings = { name: 'some_settings' };
@@ -361,7 +306,7 @@ describe('box3d-renderer', () => {
             expect(shouldBePromise).to.be.a('promise');
         });
 
-        it('should not add box3d to cache and set reference if error occurs initializing engine', (done) => {
+        it('should not set reference if error occurs initializing engine', (done) => {
             const Box3DFake = {
                 Engine: function constructor() {
                     this.initialize = function init() {
@@ -377,7 +322,7 @@ describe('box3d-renderer', () => {
             });
         });
 
-        it('should not add box3d to cache if error loading app', (done) => {
+        it('should not set reference if error loading app', (done) => {
             const Box3DFake = {
                 Engine: function constructor() {
                     this.initialize = function initialize(props, callback) {
@@ -414,91 +359,6 @@ describe('box3d-renderer', () => {
 
             expect(emitSpy.withArgs('sceneLoaded').calledOnce).to.be.true;
             expect(initVRSpy.calledOnce).to.be.true;
-        });
-    });
-
-    describe('showBox3d()', () => {
-        it('should do nothing if Box3D reference does not exist', () => {
-            const show3D = () => {
-                renderer.showBox3d();
-            };
-            expect(show3D).to.not.throw(Error);
-        });
-
-        it('should unpause and trigger a resize event', () => {
-            const unpauseSpy = sandbox.spy();
-            const triggerSpy = sandbox.spy();
-            triggerSpy.withArgs('resize');
-            renderer.box3d = {
-                unpause: unpauseSpy,
-                trigger: triggerSpy,
-                container: {} // To prevent addition of container element
-            };
-
-            renderer.showBox3d();
-
-            expect(unpauseSpy.calledOnce).to.be.true;
-            expect(triggerSpy.withArgs('resize').calledOnce).to.be.true;
-        });
-
-        it('should append canvas element to containerEl', () => {
-            renderer.box3d = {
-                unpause: sandbox.stub(),
-                trigger: sandbox.stub(),
-                canvas: document.createElement('canvas')
-            };
-
-            renderer.showBox3d();
-
-            const canvas = containerEl.querySelector('canvas');
-            expect(canvas).to.exist;
-        });
-    });
-
-    describe('hideBox3d()', () => {
-        it('should do nothing if Box3D reference is missing', () => {
-            const hide3D = () => {
-                renderer.hideBox3d();
-            };
-            expect(hide3D).to.not.throw(Error);
-        });
-
-        it('should trigger an update event, trigger a render event, set box3d.container to null, and pause the runtime', () => {
-            const triggerSpy = sandbox.spy();
-            triggerSpy.withArgs('update');
-            triggerSpy.withArgs('render');
-            const pauseSpy = sandbox.spy();
-
-            renderer.box3d = {
-                trigger: triggerSpy,
-                pause: pauseSpy,
-                container: undefined // Just to test nullification
-            };
-
-            renderer.hideBox3d();
-
-            expect(triggerSpy.withArgs('update').calledOnce).to.be.true;
-            expect(triggerSpy.withArgs('render').calledOnce).to.be.true;
-            expect(pauseSpy.calledOnce).to.be.true;
-            expect(renderer.box3d.container).to.not.exist;
-        });
-
-        it('should remove the Box3D canvas from the containerEl', () => {
-            const canvasEl = document.createElement('canvas');
-            containerEl.appendChild(canvasEl);
-
-            renderer.box3d = {
-                trigger: sandbox.stub(),
-                pause: sandbox.stub(),
-                container: containerEl,
-                canvas: canvasEl
-            };
-
-            renderer.hideBox3d();
-
-            expect(renderer.box3d.container).to.not.exist;
-            expect(containerEl.querySelector('canvas')).to.not.exist;
-            expect(canvasEl.parentNode).to.not.exist;
         });
     });
 

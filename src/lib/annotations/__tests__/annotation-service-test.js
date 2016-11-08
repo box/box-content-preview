@@ -16,8 +16,7 @@ describe('annotation-service', () => {
             api: API,
             fileID: 1,
             token: 'someToken',
-            canAnnotate: true,
-            canDelete: true
+            canAnnotate: true
         });
     });
 
@@ -66,6 +65,8 @@ describe('annotation-service', () => {
                     created_by: {}
                 }
             });
+            const emitStub = sandbox.stub(annotationService, 'emit');
+
 
             return annotationService.create(annotationToSave).then((createdAnnotation) => {
                 expect(createdAnnotation.fileVersionID).to.equal(annotationToSave.fileVersionID);
@@ -75,6 +76,7 @@ describe('annotation-service', () => {
                 expect(createdAnnotation.text).to.equal(annotationToSave.text);
                 expect(createdAnnotation.location.x).to.equal(annotationToSave.location.x);
                 expect(createdAnnotation.location.y).to.equal(annotationToSave.location.y);
+                expect(emitStub).to.not.be.called;
             });
         });
 
@@ -84,6 +86,7 @@ describe('annotation-service', () => {
                     type: 'error'
                 }
             });
+            const emitStub = sandbox.stub(annotationService, 'emit');
 
             return annotationService.create(annotationToSave).then(
                 () => {
@@ -91,6 +94,9 @@ describe('annotation-service', () => {
                 },
                 (error) => {
                     expect(error.message).to.equal('Could not create annotation');
+                    expect(emitStub).to.be.calledWith('annotationerror', {
+                        reason: 'create'
+                    });
                 });
         });
     });
@@ -183,16 +189,24 @@ describe('annotation-service', () => {
     describe('delete()', () => {
         const url = `${API}/2.0/annotations/3`;
 
+
         it('should successfully delete the annotation', () => {
             fetchMock.mock(url, 204);
+            const emitStub = sandbox.stub(annotationService, 'emit');
 
             return annotationService.delete(3).then(() => {
                 expect(fetchMock.called(url)).to.be.true;
+                expect(emitStub).to.not.be.called;
             });
         });
 
         it('should reject with an error if there was a problem deleting', () => {
-            fetchMock.mock(url, 401);
+            fetchMock.mock(url, {
+                body: {
+                    type: 'error'
+                }
+            });
+            const emitStub = sandbox.stub(annotationService, 'emit');
 
             return annotationService.delete(3).then(
                 () => {
@@ -200,6 +214,9 @@ describe('annotation-service', () => {
                 },
                 (error) => {
                     expect(error.message).to.equal('Could not delete annotation with ID 3');
+                    expect(emitStub).to.be.calledWith('annotationerror', {
+                        reason: 'delete'
+                    });
                 });
         });
     });
@@ -354,6 +371,61 @@ describe('annotation-service', () => {
                 expect(result[0].text).to.equal(annotation2.text);
                 expect(result[0].thread).to.equal(annotation2.thread);
             });
+        });
+
+        it('should reject with an error and show a notification if there was a problem reading', () => {
+            const markerUrl = annotationService._getReadUrl(2, 'a', 1);
+
+            fetchMock.mock(markerUrl, {
+                body: {
+                    type: 'error'
+                }
+            });
+            const emitStub = sandbox.stub(annotationService, 'emit');
+
+            let resolve;
+            let reject;
+            const promise = new Promise((success, failure) => {
+                resolve = success;
+                reject = failure;
+            });
+
+            annotationService._annotations = [];
+            annotationService._readFromMarker(resolve, reject, 2, 'a', 1);
+            return promise.then(
+                () => {
+                    throw new Error('Annotation should not have been deleted');
+                },
+                (error) => {
+                    expect(error.message).to.equal('Could not read annotations from file version with ID 2');
+                    expect(emitStub).to.be.calledWith('annotationerror', {
+                        reason: 'read'
+                    });
+                });
+        });
+
+        it('should reject with an error and show a notification if the token is invalid', () => {
+            const markerUrl = annotationService._getReadUrl(2, 'a', 1);
+
+            fetchMock.mock(markerUrl, 401);
+            const emitStub = sandbox.stub(annotationService, 'emit');
+
+            let resolve;
+            let reject;
+            const promise = new Promise((success, failure) => {
+                resolve = success;
+                reject = failure;
+            });
+
+            annotationService._annotations = [];
+            annotationService._readFromMarker(resolve, reject, 2, 'a', 1);
+            return promise.catch(
+                (error) => {
+                    expect(error.message).to.equal('Could not read annotations from file due to invalid or expired token');
+                    expect(emitStub).to.be.calledWith('annotationerror', {
+                        reason: 'authorization'
+                    });
+                });
         });
     });
 

@@ -1,5 +1,52 @@
 # Change Log
 
+## [v0.86.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.86.0) (2016-11-04)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.85.0...v0.86.0)
+
+**Merged pull requests:**
+
+- Fix video360, also added resourceLoader.destroy\(\) [\#745](https://gitenterprise.inside-box.net/Preview/Preview/pull/745) ([dweis](https://gitenterprise.inside-box.net/dweis))
+- Hovering out of an annotation dialog with a pending comment should maintain annotation-pending state [\#744](https://gitenterprise.inside-box.net/Preview/Preview/pull/744) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Annotation fixes [\#743](https://gitenterprise.inside-box.net/Preview/Preview/pull/743) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- remove box3d-resource-loader from image360/video360 [\#742](https://gitenterprise.inside-box.net/Preview/Preview/pull/742) ([dweis](https://gitenterprise.inside-box.net/dweis))
+- Changing HDR image resolutions to match the actual files [\#741](https://gitenterprise.inside-box.net/Preview/Preview/pull/741) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- COXP-2987 minor bug fix related to multple calls to resourceLoader.de… [\#740](https://gitenterprise.inside-box.net/Preview/Preview/pull/740) ([dweis](https://gitenterprise.inside-box.net/dweis))
+- fixing changelog [\#739](https://gitenterprise.inside-box.net/Preview/Preview/pull/739) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Update README.md [\#737](https://gitenterprise.inside-box.net/Preview/Preview/pull/737) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- updating changelog to v0.85.0 [\#736](https://gitenterprise.inside-box.net/Preview/Preview/pull/736) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- COXP-2987: Use new XhrResourceLoader [\#735](https://gitenterprise.inside-box.net/Preview/Preview/pull/735) ([dweis](https://gitenterprise.inside-box.net/dweis))
+
+## [v0.85.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.85.0) (2016-11-04)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.84.0...v0.85.0)
+
+**Merged pull requests:**
+
+- Fixing annotation clickhandler in IE/Edge [\#734](https://gitenterprise.inside-box.net/Preview/Preview/pull/734) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Hides delete annotation trash icon when delete confirmation is displayed [\#733](https://gitenterprise.inside-box.net/Preview/Preview/pull/733) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Cleaning up annotations code [\#731](https://gitenterprise.inside-box.net/Preview/Preview/pull/731) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Ensuring that annotation permissions mirror comment permissions [\#730](https://gitenterprise.inside-box.net/Preview/Preview/pull/730) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Update the src for the Office viewer to include the file ID so that p… [\#729](https://gitenterprise.inside-box.net/Preview/Preview/pull/729) ([jedwards](https://gitenterprise.inside-box.net/jedwards))
+- Updating point annotation icon [\#727](https://gitenterprise.inside-box.net/Preview/Preview/pull/727) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Coxp 2954 update runtime [\#726](https://gitenterprise.inside-box.net/Preview/Preview/pull/726) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Fixing triggering of multiple annotations on hover when a point or highlight annotation annotation is open [\#725](https://gitenterprise.inside-box.net/Preview/Preview/pull/725) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Added methods for reset of skeleton and wireframes [\#724](https://gitenterprise.inside-box.net/Preview/Preview/pull/724) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Fixes the hidden overflow of annotation dialogs on powerpoint files [\#723](https://gitenterprise.inside-box.net/Preview/Preview/pull/723) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- adding annotation load failure notification [\#722](https://gitenterprise.inside-box.net/Preview/Preview/pull/722) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Minify modified papaparse library [\#721](https://gitenterprise.inside-box.net/Preview/Preview/pull/721) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- changing error name to avoid console error [\#720](https://gitenterprise.inside-box.net/Preview/Preview/pull/720) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Image360 renderer tests and cleanup [\#719](https://gitenterprise.inside-box.net/Preview/Preview/pull/719) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- lint fix in controls-test.js [\#717](https://gitenterprise.inside-box.net/Preview/Preview/pull/717) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Adding getter for annotation-service can\_delete permission [\#716](https://gitenterprise.inside-box.net/Preview/Preview/pull/716) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Adding more granularity for users with view-only permissions on the file [\#715](https://gitenterprise.inside-box.net/Preview/Preview/pull/715) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Ensuring users with view-only permissions cannot add new point annotations [\#714](https://gitenterprise.inside-box.net/Preview/Preview/pull/714) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- moving error event, removing ready event, and style fixes [\#712](https://gitenterprise.inside-box.net/Preview/Preview/pull/712) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Expose functions to disable and enable hotkeys [\#711](https://gitenterprise.inside-box.net/Preview/Preview/pull/711) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Hover fixes for highlight annotations [\#710](https://gitenterprise.inside-box.net/Preview/Preview/pull/710) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Highlight annotation fixes [\#709](https://gitenterprise.inside-box.net/Preview/Preview/pull/709) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Update changelog for v0.84.0 [\#708](https://gitenterprise.inside-box.net/Preview/Preview/pull/708) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- adding viewer events [\#693](https://gitenterprise.inside-box.net/Preview/Preview/pull/693) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Fetching annotations thread numbers from API [\#687](https://gitenterprise.inside-box.net/Preview/Preview/pull/687) ([spramod](https://gitenterprise.inside-box.net/spramod))
+
 ## [v0.84.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.84.0) (2016-10-25)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.83.0...v0.84.0)
 

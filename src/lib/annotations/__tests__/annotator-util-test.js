@@ -12,9 +12,12 @@ import {
     getScale,
     isPlainHighlight,
     isHighlightAnnotation,
-    htmlEscape
+    htmlEscape,
+    repositionCaret
 } from '../annotator-util';
 import * as constants from '../annotation-constants';
+
+const DIALOG_WIDTH = 81;
 
 describe('annotator-util', () => {
     let childEl;
@@ -211,6 +214,47 @@ describe('annotator-util', () => {
             assert.equal(htmlEscape('"string"'), '&quot;string&quot;', 'Should escape double quote');
             assert.equal(htmlEscape('\'string\''), '&#39;string&#39;', 'Should escape single quote');
             assert.equal(htmlEscape('`string`'), '&#96;string&#96;', 'Should escape back tick');
+        });
+    });
+
+    describe('repositionCaret()', () => {
+        it('should position the dialog on the left edge of the page and adjust caret location accordingly', () => {
+            const browserX = 1;
+            const pageWidth = 100;
+            const initX = browserX - (DIALOG_WIDTH / 2);
+            const dialogEl = document.querySelector('.box-preview-annotation-dialog');
+
+            const dialogX = repositionCaret(dialogEl, initX, DIALOG_WIDTH, browserX, pageWidth);
+
+            const annotationCaretEl = dialogEl.querySelector('.box-preview-annotation-caret');
+            expect(dialogX).to.equal(0); // dialog aligned to the left
+            expect(annotationCaretEl.style.left).to.equal('10px'); // caret aligned to the left
+        });
+
+        it('should position the dialog on the right edge of the page and adjust caret location accordingly', () => {
+            const browserX = 400;
+            const pageWidth = 100;
+            const initX = browserX - (DIALOG_WIDTH / 2);
+            const dialogEl = document.querySelector('.box-preview-annotation-dialog');
+
+            const dialogX = repositionCaret(dialogEl, initX, DIALOG_WIDTH, browserX, pageWidth);
+
+            const annotationCaretEl = dialogEl.querySelector('.box-preview-annotation-caret');
+            expect(dialogX).to.equal(19); // dialog aligned to the right
+            expect(annotationCaretEl.style.left).to.equal('71px'); // caret aligned to the right
+        });
+
+        it('should position the caret in the center of the dialog and return top left corner coordinate', () => {
+            const browserX = 100;
+            const pageWidth = 1000;
+            const initX = browserX - (DIALOG_WIDTH / 2);
+            const dialogEl = document.querySelector('.box-preview-annotation-dialog');
+
+            const dialogX = repositionCaret(dialogEl, initX, DIALOG_WIDTH, browserX, pageWidth);
+
+            const annotationCaretEl = dialogEl.querySelector('.box-preview-annotation-caret');
+            expect(dialogX).to.equal(initX); // dialog x unchanged
+            expect(annotationCaretEl.style.left).to.equal('50%'); // caret centered with dialog
         });
     });
 });
