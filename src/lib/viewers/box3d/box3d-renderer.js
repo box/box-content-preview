@@ -1,12 +1,10 @@
 /* global Box3D, THREE */
 import Browser from '../../browser';
 import EventEmitter from 'events';
-import Cache from '../../cache';
 import '../../../third-party/model3d/WebVR/VREffect';
 import '../../../third-party/model3d/WebVR/VRControls';
 import '../../../third-party/model3d/WebVR/VRConfig';
 import {
-    CACHE_KEY_BOX3D,
     EVENT_SHOW_VR_BUTTON,
     EVENT_SCENE_LOADED,
     EVENT_TRIGGER_RENDER
@@ -14,17 +12,6 @@ import {
 
 const RENDER_VIEW_COMPONENT_ID = 'render_view_component';
 const PREVIEW_CAMERA_CONTROLLER_ID = 'preview_camera_controller';
-
-const INPUT_SETTINGS = {
-    mouseEvents: {
-        scroll: true,
-        scroll_preventDefault: true
-    },
-    vrEvents: {
-        enable: true,
-        position: false
-    }
-};
 
 /**
  * Detect is WebVR is available with latest API
@@ -88,17 +75,14 @@ class Box3DRenderer extends EventEmitter {
             return;
         }
 
-        if (this.box3d.resourceLoader) {
-            this.box3d.resourceLoader.destroy();
-        }
-
         this.disableVr();
 
         if (this.vrEffect) {
             this.vrEffect.dispose();
         }
 
-        this.hideBox3d();
+        this.box3d.uninitialize();
+        this.box3d = null;
     }
 
     /**
@@ -162,7 +146,7 @@ class Box3DRenderer extends EventEmitter {
      * @param {string} [options.api] API URL base to make requests to
      * @param {Object|null} [options.file] Information about the current box file we're using.
      * Used to get the parent.id of the box file.
-     * @returns {Promise} A promise that resolves with the created/cached box3d
+     * @returns {Promise} A promise that resolves with the created box3d
      */
     initBox3d(options = {}) {
         // Initialize global modules.
@@ -186,26 +170,7 @@ class Box3DRenderer extends EventEmitter {
             return Promise.resolve(xhr);
         });
 
-        if (Cache.get(CACHE_KEY_BOX3D)) {
-            return this.getBox3DFromCache(resourceLoader);
-        }
-
         return this.createBox3d(resourceLoader, options.sceneEntities, options.inputSettings);
-    }
-
-    /**
-     * Get the Box3D runtime instance from cache
-     *
-     * @param {Object} resourceLoader The resource loader used to load assets used by the box3d engine
-     * @returns {Promise} A promise that resolves with the Box3D runtime instance
-     */
-    getBox3DFromCache(resourceLoader) {
-        this.box3d = Cache.get(CACHE_KEY_BOX3D);
-        // Assign fresh resource loader
-        this.box3d.resourceLoader = resourceLoader;
-        // Force render and resize events for first render
-        this.showBox3d();
-        return Promise.resolve(this.box3d);
     }
 
     /**
@@ -216,7 +181,7 @@ class Box3DRenderer extends EventEmitter {
      * @param {Object} [inputSettings] Config for the input controller of the Box3D Engine
      * @returns {Promise} A promise that resolves with the Box3D Engine.
      */
-    createBox3d(resourceLoader, sceneEntities, inputSettings = INPUT_SETTINGS) {
+    createBox3d(resourceLoader, sceneEntities) {
         const box3d = new Box3D.Engine();
 
         return new Promise((resolve, reject) => {
@@ -224,13 +189,11 @@ class Box3DRenderer extends EventEmitter {
                 container: this.containerEl,
                 engineName: 'Default',
                 entities: sceneEntities,
-                inputSettings,
                 resourceLoader
             }, () => {
                 const app = box3d.getAssetById('APP_ASSET_ID');
                 app.load(() => {
                     this.box3d = box3d;
-                    Cache.set(CACHE_KEY_BOX3D, this.box3d);
                     resolve(this.box3d);
                 });
             })
@@ -246,48 +209,6 @@ class Box3DRenderer extends EventEmitter {
     onSceneLoad() {
         this.emit(EVENT_SCENE_LOADED);
         this.initVrIfPresent();
-    }
-
-    /**
-     * Make the Box3D canvas visible and resume updates.
-     *
-     * @returns {void}
-     */
-    showBox3d() {
-        if (!this.box3d) {
-            return;
-        }
-
-        if (!this.box3d.container) {
-            this.box3d.container = this.containerEl;
-            this.box3d.container.appendChild(this.box3d.canvas);
-        }
-
-        // Resume updates and rendering.
-        this.box3d.unpause();
-        this.resize();
-    }
-
-    /**
-     * Hide the Box3D canvas and pause the runtime.
-     *
-     * @returns {void}
-     */
-    hideBox3d() {
-        if (!this.box3d) {
-            return;
-        }
-        // Trigger a render to remove any artifacts.
-        this.box3d.trigger('update');
-        this.handleOnRender();
-
-        if (this.box3d.container && this.box3d.container.querySelector('canvas')) {
-            this.box3d.container.removeChild(this.box3d.canvas);
-        }
-        this.box3d.container = null;
-
-        // Prevent background updates and rendering.
-        this.box3d.pause();
     }
 
     /**
