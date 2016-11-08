@@ -58,5 +58,21 @@ describe('office.js', () => {
 
             office.load();
         });
+
+        it('should load a xlsx file and set the vanity name in src url on load event when the file is a vanity url', (done) => {
+            const office = new Office('.container', {
+                sharedLink: 'https://app.box.com/v/test',
+                file: {
+                    id: '123'
+                }
+            });
+
+            office.on('load', () => {
+                assert.equal(office.iframeEl.src, 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&fileId=123');
+                done();
+            });
+
+            office.load();
+        });
     });
 });
