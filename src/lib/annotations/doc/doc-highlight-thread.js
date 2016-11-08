@@ -36,10 +36,6 @@ class DocHighlightThread extends AnnotationThread {
 
             // Reset type from highlight-comment to highlight
             this._type = constants.ANNOTATION_TYPE_HIGHLIGHT;
-
-            // Clear text area when comment is cancelled
-            const annotationTextEl = this._annotatedElement.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
-            annotationTextEl.value = '';
         } else {
             this.destroy();
         }

@@ -11,7 +11,7 @@ const PAGE_PADDING_TOP = 15;
 // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
 const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
 const CSS_PIXEL_TO_PDF_UNIT = 3 / 4;
-const HIGHLIGHT_DIALOG_HEIGHT = 38;
+const HIGHLIGHT_DIALOG_HEIGHT = 48;
 
 export function isPresentation(annotatedElement) {
     return annotatedElement.classList.contains(PREVIEW_PRESENTATION_CLASS);
@@ -106,7 +106,6 @@ export function fitDialogHeightInPage(annotatedElement, dialogEl, pageHeight, di
 
         const annotationsEl = dialogEl.querySelector('.annotation-container');
         annotationsEl.style.maxHeight = `${maxHeight}px`;
-        annotationsEl.style.overflowY = 'auto';
     }
 }
 
