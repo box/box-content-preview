@@ -43,6 +43,14 @@ class Video360Renderer extends Box3DRenderer {
 
         return this.inputController;
     }
+
+    /**
+     * @inheritdoc
+     */
+    destroy() {
+        this.inputController = null;
+        super.destroy();
+    }
 }
 
 export default Video360Renderer;

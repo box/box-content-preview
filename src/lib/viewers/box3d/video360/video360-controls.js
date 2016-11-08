@@ -7,6 +7,8 @@ import {
 } from '../../../icons/icons';
 
 const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
+const CSS_CLASS_MEDIA_CONTROLS_CONTAINER = 'box-preview-media-controls-container';
+const CSS_CLASS_MEDIA_CONTROL_BUTTON = 'box-preview-media-controls-btn';
 
 class Video360Controls extends EventEmitter {
 
@@ -14,6 +16,7 @@ class Video360Controls extends EventEmitter {
      * Base class for building 3D previews on. Contains events for VR, Fullscreen,
      * Scene Reset, and Scene Loaded. Also, used for programmatic building of control
      * bar UI.
+     *
      * @constructor
      * @param {HTMLElement} containerEl The container element to put controls ui into
      * @returns {Box3DControls} Instance of Box3DControls
@@ -21,7 +24,9 @@ class Video360Controls extends EventEmitter {
     constructor(containerEl) {
         super();
 
+        this.vrButtonEl = null;
         this.el = containerEl;
+        this.handleToggleVr = this.handleToggleVr.bind(this);
 
         // Add any ui you want, to the parent container
         this.addUi();
@@ -30,31 +35,48 @@ class Video360Controls extends EventEmitter {
 
     /**
      * Add and create any UI to the container element and control bar
+     *
      * @returns {void}
      */
     addUi() {
-        const mediaControlsEl = this.el.querySelector('.box-preview-media-controls-container');
+        const mediaControlsEl = this.el.querySelector(`.${CSS_CLASS_MEDIA_CONTROLS_CONTAINER}`);
 
         // Create the VR toggle button and then hide it.
-        this.vrButton = mediaControlsEl.appendChild(document.createElement('button'));
-        this.vrButton.classList.add('box-preview-media-controls-btn');
-        this.vrButton.setAttribute('aria-label', __('box3d_toggle_vr'));
-        this.vrButton.setAttribute('title', __('box3d_toggle_vr'));
-        this.vrButtonSpan = this.vrButton.appendChild(document.createElement('span'));
-        this.vrButtonSpan.innerHTML = ICON_3D_VR;
-        this.vrButton.classList.add(CSS_CLASS_HIDDEN);
+        this.vrButtonEl = mediaControlsEl.appendChild(document.createElement('button'));
+        this.vrButtonEl.classList.add(CSS_CLASS_MEDIA_CONTROL_BUTTON);
+        this.vrButtonEl.setAttribute('aria-label', __('box3d_toggle_vr'));
+        this.vrButtonEl.setAttribute('title', __('box3d_toggle_vr'));
+        this.vrButtonEl.classList.add(CSS_CLASS_HIDDEN);
+        // Add icon to VR Button
+        const vrButtonSpanEl = this.vrButtonEl.appendChild(document.createElement('span'));
+        vrButtonSpanEl.innerHTML = ICON_3D_VR;
     }
 
     /**
      * Attaches event handlers to buttons
+     *
      * @returns {void}
      */
     attachEventHandlers() {
-        this.vrButton.addEventListener('click', this.handleToggleVr.bind(this));
+        if (this.vrButtonEl) {
+            this.vrButtonEl.addEventListener('click', this.handleToggleVr);
+        }
+    }
+
+    /**
+     * Detach event handlers from buttons
+     *
+     * @returns {void}
+     */
+    detachEventHandlers() {
+        if (this.vrButtonEl) {
+            this.vrButtonEl.removeEventListener('click', this.handleToggleVr);
+        }
     }
 
     /**
      * Handle a toggle of VR event, and emit a message
+     *
      * @returns {void}
      */
     handleToggleVr() {
@@ -63,20 +85,30 @@ class Video360Controls extends EventEmitter {
 
     /**
      * Enables the VR button
+     *
      * @returns {void}
      */
     showVrButton() {
-        this.vrButton.classList.remove(CSS_CLASS_HIDDEN);
+        if (this.vrButtonEl) {
+            this.vrButtonEl.classList.remove(CSS_CLASS_HIDDEN);
+        }
     }
 
     /**
      * Destroy all controls, and this module
+     *
      * @returns {void}
      */
     destroy() {
         this.removeAllListeners();
-        this.vrButton.removeEventListener('click', this.handleToggleVr);
-        this.vrButton.parentElement.remove(this.vrButton);
+        this.detachEventHandlers();
+
+        if (this.vrButtonEl && this.vrButtonEl.parentElement) {
+            this.vrButtonEl.parentElement.removeChild(this.vrButtonEl);
+        }
+        this.vrButtonEl = null;
+        this.el = null;
+        this.handleToggleVr = null;
     }
 
 }
