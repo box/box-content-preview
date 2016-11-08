@@ -151,6 +151,9 @@ class AnnotationThread extends EventEmitter {
         const tempAnnotation = new Annotation(tempAnnotationData);
         this._saveAnnotationToThread(tempAnnotation);
 
+        // Changing state from pending
+        this._state = constants.ANNOTATION_STATE_HOVER;
+
         // Save annotation on server
         this._annotationService.create(annotationData).then((savedAnnotation) => {
             // If no temporary annotation is found, save to thread normally

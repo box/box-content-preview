@@ -118,6 +118,8 @@ describe('annotation-thread', () => {
                 threadID: '2',
                 thread: '1'
             }));
+
+            expect(annotationThread.state).to.equal(constants.ANNOTATION_STATE_HOVER);
         });
 
         it('should delete the temporary annotation and broadcast an error if there was an error saving', (done) => {
