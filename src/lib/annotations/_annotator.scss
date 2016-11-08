@@ -129,6 +129,7 @@ $avatar-color-9: #f22c44;
         max-width: 250px;
         min-height: 34px;
         padding: 7px;
+        resize: vertical;
         -webkit-transition: border-color linear .15s, box-shadow linear .1s, min-height .1s;
         transition: border-color linear .15s, box-shadow linear .1s, min-height .1s;
         width: 250px;
