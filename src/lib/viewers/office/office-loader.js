@@ -45,12 +45,7 @@ class OfficeLoader extends AssetLoader {
             disabledViewers.push(OFFICE_CONSTRUCTOR);
         }
 
-        return this.viewers.find((viewer) => {
-            if (disabledViewers.indexOf(viewer.CONSTRUCTOR) > -1) {
-                return false;
-            }
-            return viewer.EXTENSIONS.indexOf(file.extension) > -1 && file.representations.entries.some((entry) => viewer.REPRESENTATION === entry.representation);
-        });
+        return super.determineViewer(file, disabledViewers);
     }
 }
 
