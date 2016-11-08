@@ -9,8 +9,7 @@ const VIEWERS = [
         EXTENSIONS: ['svg', 'gif'],
         SCRIPTS: ['image.js'],
         STYLESHEETS: ['image.css'],
-        CONSTRUCTOR: 'Image',
-        PREFETCH: 'xhr'
+        CONSTRUCTOR: 'Image'
     },
     {
         REPRESENTATION: 'multi-image',
@@ -24,16 +23,14 @@ const VIEWERS = [
         EXTENSIONS: ['jpeg', 'jpg'],
         SCRIPTS: ['image.js'],
         STYLESHEETS: ['image.css'],
-        CONSTRUCTOR: 'Image',
-        PREFETCH: 'xhr'
+        CONSTRUCTOR: 'Image'
     },
     {
         REPRESENTATION: 'png',
         EXTENSIONS: ['ai', 'bmp', 'dcm', 'eps', 'gif', 'png', 'ps', 'psd', 'svs', 'tga', 'tif', 'tiff'],
         SCRIPTS: ['image.js'],
         STYLESHEETS: ['image.css'],
-        CONSTRUCTOR: 'Image',
-        PREFETCH: 'xhr'
+        CONSTRUCTOR: 'Image'
     }
 ];
 

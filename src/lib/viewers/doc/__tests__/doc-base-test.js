@@ -130,6 +130,7 @@ describe('doc-base', () => {
     describe('load()', () => {
         it('should load a document', () => {
             const url = 'test';
+            const appendAuthStub = sandbox.stub(docBase, 'appendAuthParam').returns(`${url}authed`);
             const setupPdfjsStub = sandbox.stub(docBase, 'setupPdfjs');
             const initViewerStub = sandbox.stub(docBase, 'initViewer');
             const initPrintStub = sandbox.stub(docBase, 'initPrint');
@@ -139,9 +140,10 @@ describe('doc-base', () => {
             });
 
             docBase.load(url);
-            expect(docBase.pdfUrl).to.equal(url);
+            expect(appendAuthStub).to.be.calledWith(url);
+            expect(docBase.pdfUrl).to.equal(`${url}authed`);
             expect(setupPdfjsStub).to.be.called;
-            expect(initViewerStub).to.be.calledWith(url);
+            expect(initViewerStub).to.be.calledWith(docBase.pdfUrl);
             expect(initPrintStub).to.be.called;
             expect(initFindStub).to.be.called;
 
@@ -667,7 +669,6 @@ describe('doc-base', () => {
             };
             stubs.pdfViewer.linkService.setDocument = sandbox.stub();
             stubs.pdfViewerStub = sandbox.stub(PDFJS, 'PDFViewer').returns(stubs.pdfViewer);
-            stubs.auth = sandbox.stub(docBase, 'appendAuthHeader');
             stubs.bindDOMListeners = sandbox.stub(docBase, 'bindDOMListeners');
             stubs.emit = sandbox.stub(docBase, 'emit');
         });
@@ -684,7 +685,6 @@ describe('doc-base', () => {
             docBase.initViewer('url');
             expect(stubs.pdfViewerStub).to.be.called;
             expect(getDocumentStub).to.be.called;
-            expect(stubs.auth).to.be.called;
             expect(stubs.bindDOMListeners).to.be.called;
 
             return promise.then(() => {
@@ -842,14 +842,12 @@ describe('doc-base', () => {
 
     describe('fetchPrintBlob()', () => {
         it('should get and return the blob', () => {
-            const authStub = sandbox.stub(docBase, 'appendAuthHeader');
             const getStub = sandbox.stub(util, 'get').returns({
                 then: () => { docBase.printBlob = 'blob'; }
             });
 
             docBase.fetchPrintBlob('url');
             expect(getStub).to.be.called;
-            expect(authStub).to.be.called;
             expect(docBase.printBlob).to.equal('blob');
         });
     });
