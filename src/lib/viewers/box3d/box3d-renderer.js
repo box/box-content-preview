@@ -315,6 +315,9 @@ class Box3DRenderer extends EventEmitter {
         this.box3d.off('preUpdate', this.updateVrControls, this);
 
         this.vrEffect.exitPresent().then(() => {
+            if (!this.box3d) {
+                return;
+            }
             const renderer = this.box3d.getRenderer();
             renderer.setAttribute('renderOnDemand', true);
             this.resize();
