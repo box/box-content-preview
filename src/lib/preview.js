@@ -15,6 +15,7 @@ import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid }
 import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
 import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_PREVIEW, API } from './constants';
 
+const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
 const PREFETCH_COUNT = 4; // number of files to prefetch
 const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
 const RETRY_TIMEOUT = 500; // retry network request interval for a file
@@ -58,6 +59,9 @@ class Preview extends EventEmitter {
 
         // Disabled viewers
         this.disabledViewers = {};
+        DEFAULT_DISABLED_VIEWERS.forEach((viewerName) => {
+            this.disabledViewers[viewerName] = 1;
+        });
 
         // Auth token
         this.token = '';
@@ -463,9 +467,17 @@ class Preview extends EventEmitter {
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaders);
 
-        // Iterate over all the viewer options and disable any viewer
-        // that has an option disabled set to true
-        this.disableViewers(Object.keys(this.options.viewers).filter((viewer) => !!this.options.viewers[viewer].disabled));
+        // Disable or enable viewers based on viewer options
+        Object.keys(this.options.viewers).forEach((viewerName) => {
+            const isDisabled = this.options.viewers[viewerName].disabled;
+
+            // Explicitly check for booleans, disabled:false will override any default disabling
+            if (isDisabled === true) {
+                this.disableViewers(viewerName);
+            } else if (isDisabled === false) {
+                this.enableViewers(viewerName);
+            }
+        });
     }
 
     /**
