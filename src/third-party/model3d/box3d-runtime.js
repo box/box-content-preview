@@ -78,75 +78,75 @@
 
 	var _Engine2 = _interopRequireDefault(_Engine);
 
-	var _UserAgent = __webpack_require__(71);
+	var _UserAgent = __webpack_require__(68);
 
 	var _UserAgent2 = _interopRequireDefault(_UserAgent);
 
-	var _EffectComposer = __webpack_require__(72);
+	var _EffectComposer = __webpack_require__(69);
 
 	var _EffectComposer2 = _interopRequireDefault(_EffectComposer);
 
-	var _BloomPass = __webpack_require__(73);
+	var _BloomPass = __webpack_require__(70);
 
 	var _BloomPass2 = _interopRequireDefault(_BloomPass);
 
-	var _BokehPass = __webpack_require__(74);
+	var _BokehPass = __webpack_require__(71);
 
 	var _BokehPass2 = _interopRequireDefault(_BokehPass);
 
-	var _DotScreenPass = __webpack_require__(75);
+	var _DotScreenPass = __webpack_require__(72);
 
 	var _DotScreenPass2 = _interopRequireDefault(_DotScreenPass);
 
-	var _FilmPass = __webpack_require__(76);
+	var _FilmPass = __webpack_require__(73);
 
 	var _FilmPass2 = _interopRequireDefault(_FilmPass);
 
-	var _MaskPass = __webpack_require__(77);
+	var _MaskPass = __webpack_require__(74);
 
 	var _MaskPass2 = _interopRequireDefault(_MaskPass);
 
-	var _RenderPass = __webpack_require__(78);
+	var _RenderPass = __webpack_require__(75);
 
 	var _RenderPass2 = _interopRequireDefault(_RenderPass);
 
-	var _SavePass = __webpack_require__(79);
+	var _SavePass = __webpack_require__(76);
 
 	var _SavePass2 = _interopRequireDefault(_SavePass);
 
-	var _ShaderPass = __webpack_require__(80);
+	var _ShaderPass = __webpack_require__(77);
 
 	var _ShaderPass2 = _interopRequireDefault(_ShaderPass);
 
-	var _TexturePass = __webpack_require__(119);
+	var _TexturePass = __webpack_require__(116);
 
 	var _TexturePass2 = _interopRequireDefault(_TexturePass);
 
-	var _AdaptiveToneMappingPass = __webpack_require__(120);
+	var _AdaptiveToneMappingPass = __webpack_require__(117);
 
 	var _AdaptiveToneMappingPass2 = _interopRequireDefault(_AdaptiveToneMappingPass);
 
-	var _AnimationAsset = __webpack_require__(121);
+	var _AnimationAsset = __webpack_require__(118);
 
 	var _AnimationAsset2 = _interopRequireDefault(_AnimationAsset);
 
-	var _ApplicationAsset = __webpack_require__(124);
+	var _ApplicationAsset = __webpack_require__(121);
 
 	var _ApplicationAsset2 = _interopRequireDefault(_ApplicationAsset);
 
-	var _AudioAsset = __webpack_require__(125);
+	var _AudioAsset = __webpack_require__(122);
 
 	var _AudioAsset2 = _interopRequireDefault(_AudioAsset);
 
-	var _BufferAsset = __webpack_require__(122);
+	var _BufferAsset = __webpack_require__(119);
 
 	var _BufferAsset2 = _interopRequireDefault(_BufferAsset);
 
-	var _DocumentAsset = __webpack_require__(126);
+	var _DocumentAsset = __webpack_require__(123);
 
 	var _DocumentAsset2 = _interopRequireDefault(_DocumentAsset);
 
-	var _ImageAsset = __webpack_require__(157);
+	var _ImageAsset = __webpack_require__(155);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -154,87 +154,87 @@
 
 	var _MaterialAsset2 = _interopRequireDefault(_MaterialAsset);
 
-	var _MeshGeometryAsset = __webpack_require__(158);
+	var _MeshGeometryAsset = __webpack_require__(156);
 
 	var _MeshGeometryAsset2 = _interopRequireDefault(_MeshGeometryAsset);
 
-	var _PrefabAsset = __webpack_require__(160);
+	var _PrefabAsset = __webpack_require__(158);
 
 	var _PrefabAsset2 = _interopRequireDefault(_PrefabAsset);
 
-	var _PrimitiveGeometryAsset = __webpack_require__(161);
+	var _PrimitiveGeometryAsset = __webpack_require__(159);
 
 	var _PrimitiveGeometryAsset2 = _interopRequireDefault(_PrimitiveGeometryAsset);
 
-	var _RenderTexture2DAsset = __webpack_require__(162);
+	var _RenderTexture2DAsset = __webpack_require__(160);
 
 	var _RenderTexture2DAsset2 = _interopRequireDefault(_RenderTexture2DAsset);
 
-	var _RenderTextureCubeAsset = __webpack_require__(164);
+	var _RenderTextureCubeAsset = __webpack_require__(162);
 
 	var _RenderTextureCubeAsset2 = _interopRequireDefault(_RenderTextureCubeAsset);
 
-	var _ScriptAsset = __webpack_require__(165);
+	var _ScriptAsset = __webpack_require__(163);
 
 	var _ScriptAsset2 = _interopRequireDefault(_ScriptAsset);
 
-	var _ShaderAsset = __webpack_require__(166);
+	var _ShaderAsset = __webpack_require__(164);
 
 	var _ShaderAsset2 = _interopRequireDefault(_ShaderAsset);
 
-	var _SkinAsset = __webpack_require__(171);
+	var _SkinAsset = __webpack_require__(169);
 
 	var _SkinAsset2 = _interopRequireDefault(_SkinAsset);
 
-	var _Texture2DAsset = __webpack_require__(172);
+	var _Texture2DAsset = __webpack_require__(170);
 
 	var _Texture2DAsset2 = _interopRequireDefault(_Texture2DAsset);
 
-	var _TextureCubeAsset = __webpack_require__(174);
+	var _TextureCubeAsset = __webpack_require__(172);
 
 	var _TextureCubeAsset2 = _interopRequireDefault(_TextureCubeAsset);
 
-	var _VideoAsset = __webpack_require__(173);
+	var _VideoAsset = __webpack_require__(171);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
-	var _Box3DObject = __webpack_require__(175);
+	var _Box3DObject = __webpack_require__(173);
 
 	var _Box3DObject2 = _interopRequireDefault(_Box3DObject);
 
-	var _BoneObject = __webpack_require__(176);
+	var _BoneObject = __webpack_require__(174);
 
 	var _BoneObject2 = _interopRequireDefault(_BoneObject);
 
-	var _CameraObject = __webpack_require__(177);
+	var _CameraObject = __webpack_require__(175);
 
 	var _CameraObject2 = _interopRequireDefault(_CameraObject);
 
-	var _LightObject = __webpack_require__(178);
+	var _LightObject = __webpack_require__(176);
 
 	var _LightObject2 = _interopRequireDefault(_LightObject);
 
-	var _MeshObject = __webpack_require__(179);
+	var _MeshObject = __webpack_require__(177);
 
 	var _MeshObject2 = _interopRequireDefault(_MeshObject);
 
-	var _SceneObject = __webpack_require__(180);
+	var _SceneObject = __webpack_require__(178);
 
 	var _SceneObject2 = _interopRequireDefault(_SceneObject);
 
-	var _DOMUtilities = __webpack_require__(181);
+	var _DOMUtilities = __webpack_require__(179);
 
 	var _DOMUtilities2 = _interopRequireDefault(_DOMUtilities);
 
-	var _JSONLoader = __webpack_require__(127);
+	var _JSONLoader = __webpack_require__(124);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
-	var _XhrResourceLoader = __webpack_require__(182);
+	var _XhrResourceLoader = __webpack_require__(180);
 
 	var _XhrResourceLoader2 = _interopRequireDefault(_XhrResourceLoader);
 
-	__webpack_require__(190);
+	__webpack_require__(188);
 
 	var _three = __webpack_require__(10);
 
@@ -13343,10 +13343,6 @@
 
 	var _mixwith = __webpack_require__(2);
 
-	var _raf = __webpack_require__(68);
-
-	var _raf2 = _interopRequireDefault(_raf);
-
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -13356,10 +13352,6 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	// requstAnimationFrame polyfill only used in cases where native version is not
-	// available.
-
 
 	function getElement(obj) {
 	  var els = void 0;
@@ -13690,7 +13682,7 @@
 
 	      this.globalEvents.off('requestBox3DEngine', this.onRequestEngine, this);
 
-	      _raf2.default.cancel(this.animationRequestID);
+	      this.cancelAnimationFrame(this.animationRequestID);
 
 	      if (this.canvas && this.canvasCreatedByEngine) {
 	        this.canvas.parentNode.removeChild(this.canvas);
@@ -13783,6 +13775,86 @@
 	          _log2.default.error('loadEntities error: ' + err);
 	          callback.call(_this6, err);
 	        }
+	      });
+	    }
+
+	    /**
+	     * The engine's request animation callback. This just calls the browser's RAF
+	     * callback unless there is a WebVR device activated. Then, this calls the RAF
+	     * on the VR device.
+	     * @method requestAnimationFrame
+	     * @private
+	     * @param {Function} fn Callback to be executed each frame
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'requestAnimationFrame',
+	    value: function (_requestAnimationFrame) {
+	      function requestAnimationFrame(_x) {
+	        return _requestAnimationFrame.apply(this, arguments);
+	      }
+
+	      requestAnimationFrame.toString = function () {
+	        return _requestAnimationFrame.toString();
+	      };
+
+	      return requestAnimationFrame;
+	    }(function (fn) {
+	      if (this.vrDevice) {
+	        return this.vrDevice.requestAnimationFrame(fn);
+	      }
+	      return requestAnimationFrame(fn);
+	    })
+
+	    /**
+	     * The engine's cancel animation callback. This just calls the browser's CAF
+	     * callback unless there is a WebVR device activated. Then, this calls the CAF
+	     * on the VR device.
+	     * @method requestAnimationFrame
+	     * @private
+	     * @param {Number} requestId ID of the current RAF callback
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'cancelAnimationFrame',
+	    value: function (_cancelAnimationFrame) {
+	      function cancelAnimationFrame(_x2) {
+	        return _cancelAnimationFrame.apply(this, arguments);
+	      }
+
+	      cancelAnimationFrame.toString = function () {
+	        return _cancelAnimationFrame.toString();
+	      };
+
+	      return cancelAnimationFrame;
+	    }(function (requestId) {
+	      if (this.vrDevice) {
+	        return this.vrDevice.cancelAnimationFrame(requestId);
+	      }
+	      return cancelAnimationFrame(requestId);
+	    })
+
+	    /**
+	     * Mark the given device as the current VR device being rendered to. This allows
+	     * the render loop to be controlled by the requestAnimationFrame on the device rather
+	     * than the window.
+	     * @method setVrDevice
+	     * @public
+	     * @param {Object} device The device returned by navigator.getVrDisplays
+	     * @return {void}
+	     */
+
+	  }, {
+	    key: 'setVrDevice',
+	    value: function setVrDevice(device) {
+	      var _this7 = this;
+
+	      this.cancelAnimationFrame(this.animationRequestID);
+	      this.vrDevice = device;
+	      this.animationRequestID = this.requestAnimationFrame(function () {
+	        _this7.update();
 	      });
 	    }
 
@@ -13909,7 +13981,7 @@
 	      if (!this.paused) {
 	        this.paused = true;
 	        this.clock.stop();
-	        _raf2.default.cancel(this.animationRequestID);
+	        this.cancelAnimationFrame(this.animationRequestID);
 	        _log2.default.info(this.engineName + ' engine has been paused.');
 	      }
 	    }
@@ -13958,15 +14030,15 @@
 	  }, {
 	    key: 'update',
 	    value: function update() {
-	      var _this7 = this;
+	      var _this8 = this;
 
 	      // Remember to put visible check.
 	      if (this.paused) {
 	        return;
 	      }
 
-	      this.animationRequestID = (0, _raf2.default)(function () {
-	        _this7.update();
+	      this.animationRequestID = this.requestAnimationFrame(function () {
+	        _this8.update();
 	      });
 
 	      if (!this.documentVisible) {
@@ -71775,10 +71847,6 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _lodash = __webpack_require__(4);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
 	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
@@ -71904,7 +71972,6 @@
 	  }, {
 	    key: 'onStartup',
 	    value: function onStartup() {
-
 	      var engine = this.getRuntime();
 
 	      if (this.usePointerLock) {
@@ -71912,6 +71979,8 @@
 	      }
 	      this.pitchAngleBoundsRadians.max = Math.PI * this.pitchAngleBounds.x / 180.0;
 	      this.pitchAngleBoundsRadians.min = Math.PI * this.pitchAngleBounds.y / 180.0;
+
+	      this.canvasEl = this.getThreeRenderer().domElement;
 
 	      this.getEntity().when('loadBase', this.initTarget, this);
 
@@ -72012,9 +72081,9 @@
 	  }, {
 	    key: 'setTarget',
 	    value: function setTarget(newObjectId, center) {
-	      if (_lodash2.default.isString(newObjectId) || !newObjectId) {
+	      if (typeof newObjectId === 'string' || !newObjectId) {
 	        this.setAttribute('targetObject', newObjectId);
-	      } else if (_lodash2.default.isObject(newObjectId) && newObjectId.id) {
+	      } else if (newObjectId && newObjectId.id) {
 	        this.setAttribute('targetObject', newObjectId.id);
 	      }
 	      if (center) {
@@ -72339,9 +72408,9 @@
 	      this.usePointerLock = on;
 
 	      if (this.usePointerLock) {
-	        this.getThreeRenderer().domElement.addEventListener('mousedown', this.onMouseDown_PointerLock);
+	        this.canvasEl.addEventListener('mousedown', this.onMouseDown_PointerLock);
 	      } else {
-	        this.getThreeRenderer().domElement.removeEventListener('mousedown', this.onMouseDown_PointerLock);
+	        this.canvasEl.removeEventListener('mousedown', this.onMouseDown_PointerLock);
 	      }
 	    }
 	  }, {
@@ -72389,7 +72458,7 @@
 	      if (this.isEnabled() && event.button === 0 || event.button === 2) {
 	        this.getInput().enablePointerLock();
 
-	        this.getThreeRenderer().domElement.addEventListener('mouseup', this.onMouseUp_PointerLock);
+	        this.canvasEl.addEventListener('mouseup', this.onMouseUp_PointerLock);
 	      }
 	    }
 	  }, {
@@ -72397,7 +72466,7 @@
 	    value: function onMouseUp_PointerLock(event) {
 	      if (this.box3DEntity) {
 	        if (event.button === 2 && this.getInput().mouseButtonUp('left') || event.button === 0 && this.getInput().mouseButtonUp('right')) {
-	          this.getThreeRenderer().domElement.removeEventListener('mouseup', this.onMouseUp_PointerLock);
+	          this.canvasEl.removeEventListener('mouseup', this.onMouseUp_PointerLock);
 	          this.getInput().disablePointerLock();
 	        }
 	      }
@@ -72425,7 +72494,7 @@
 	  }, {
 	    key: 'onMouseScroll',
 	    value: function onMouseScroll(delta) {
-	      if (this.isEnabled() && _lodash2.default.isNumber(delta) && this.enableZoom) {
+	      if (this.isEnabled() && typeof delta === 'number' && this.enableZoom) {
 	        this.zoomDelta = -delta * 0.1;
 	      }
 	    }
@@ -73690,10 +73759,6 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _lodash = __webpack_require__(4);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
 	var _Box3DComponent2 = __webpack_require__(29);
 
 	var _Box3DComponent3 = _interopRequireDefault(_Box3DComponent2);
@@ -73816,6 +73881,8 @@
 	  }, {
 	    key: 'onStartup',
 	    value: function onStartup() {
+	      this.canvasEl = this.getThreeRenderer().domElement;
+
 	      if (this.usePointerLock) {
 	        this.togglePointerLock(true);
 	      }
@@ -73917,9 +73984,9 @@
 	  }, {
 	    key: 'setTarget',
 	    value: function setTarget(newObjectId, center) {
-	      if (_lodash2.default.isString(newObjectId) || !newObjectId) {
+	      if (typeof newObjectId === 'string' || !newObjectId) {
 	        this.setAttribute('targetObject', newObjectId);
-	      } else if (_lodash2.default.isObject(newObjectId) && newObjectId.id) {
+	      } else if (newObjectId && newObjectId.id) {
 	        this.setAttribute('targetObject', newObjectId.id);
 	      }
 	      if (center) {
@@ -74256,9 +74323,9 @@
 	      this.usePointerLock = on;
 
 	      if (this.usePointerLock) {
-	        this.getThreeRenderer().domElement.addEventListener('mousedown', this.onMouseDown_PointerLock);
+	        this.canvasEl.addEventListener('mousedown', this.onMouseDown_PointerLock);
 	      } else {
-	        this.getThreeRenderer().domElement.removeEventListener('mousedown', this.onMouseDown_PointerLock);
+	        this.canvasEl.removeEventListener('mousedown', this.onMouseDown_PointerLock);
 	      }
 	    }
 	  }, {
@@ -74306,7 +74373,7 @@
 	      if (this.isEnabled() && event.button === 0 || event.button === 2) {
 	        this.getInput().enablePointerLock();
 
-	        this.getThreeRenderer().domElement.addEventListener('mouseup', this.onMouseUp_PointerLock);
+	        this.canvasEl.addEventListener('mouseup', this.onMouseUp_PointerLock);
 	      }
 	    }
 	  }, {
@@ -74314,7 +74381,7 @@
 	    value: function onMouseUp_PointerLock(event) {
 	      if (this.box3DEntity) {
 	        if (event.button === 2 && this.getInput().mouseButtonUp('left') || event.button === 0 && this.getInput().mouseButtonUp('right')) {
-	          this.getThreeRenderer().domElement.removeEventListener('mouseup', this.onMouseUp_PointerLock);
+	          this.canvasEl.removeEventListener('mouseup', this.onMouseUp_PointerLock);
 	          this.getInput().disablePointerLock();
 	        }
 	      }
@@ -74343,7 +74410,7 @@
 	  }, {
 	    key: 'onMouseScroll',
 	    value: function onMouseScroll(delta) {
-	      if (this.isEnabled() && _lodash2.default.isNumber(delta) && this.enableZoom) {
+	      if (this.isEnabled() && typeof delta === 'number' && this.enableZoom) {
 	        this.zoomDelta = -delta * 0.1;
 	      }
 	    }
@@ -76370,10 +76437,6 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _lodash = __webpack_require__(4);
-
-	var _lodash2 = _interopRequireDefault(_lodash);
-
 	var _log = __webpack_require__(7);
 
 	var _log2 = _interopRequireDefault(_log);
@@ -76585,9 +76648,9 @@
 	      this.renderModes[RenderModes.UV_OVERLAY].overrideMaterial.static = uvMaterialStatic;
 
 	      // Add a flat shaded material to the registry if it doesn't already exist.
-	      // TODO: We do we do this for the flat shaded material but not for the others?
+	      // TODO: Why do we do this for the flat shaded material but not for the others?
 	      if (!this.getRuntime().getAssetById('flatShaded')) {
-	        var flatShadedMaterial = this.getRuntime().createMaterial('flatShaded');
+	        var flatShadedMaterial = this.flatShadedMaterial = this.getRuntime().createMaterial('flatShaded');
 	        flatShadedMaterial.setProperties({
 	          emissiveColor: { r: 0.9, g: 0.85, b: 0.8 },
 	          side: THREE.DoubleSide
@@ -76636,20 +76699,29 @@
 	  }, {
 	    key: 'onShutdown',
 	    value: function onShutdown() {
+	      var _this2 = this;
+
 	      Box3D.globalEvents.off('resetSkeletons', this.resetSkeletons, this);
 	      Box3D.globalEvents.off('setRenderMode', this.setRenderMode, this);
 	      Box3D.globalEvents.off('setSkeletonsVisible', this.setSkeletonsVisible, this);
 	      Box3D.globalEvents.off('setWireframesVisible', this.setWireframesVisible, this);
 
-	      _lodash2.default.each(this.renderModes, function (mode) {
+	      Object.keys(this.renderModes).forEach(function (modeName) {
+	        var mode = _this2.renderModes[modeName];
 	        if (mode.overrideMaterial) {
-	          _lodash2.default.each(mode.overrideMaterial, function (material) {
-	            if (material) {
-	              material.dispose();
-	            }
-	          });
+	          if (mode.overrideMaterial && mode.overrideMaterial.skinned) {
+	            mode.overrideMaterial.skinned.dispose();
+	          }
+
+	          if (mode.overrideMaterial && mode.overrideMaterial.static) {
+	            mode.overrideMaterial.static.dispose();
+	          }
 	        }
 	      });
+
+	      if (this.flatShadedMaterial) {
+	        this.flatShadedMaterial.destroy();
+	      }
 	    }
 
 	    /**
@@ -76662,7 +76734,7 @@
 	  }, {
 	    key: 'onRenderModeChanged',
 	    value: function onRenderModeChanged() {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      if (!this.renderModes[this.renderMode]) {
 	        this.renderMode = RenderModes.LIT;
@@ -76674,7 +76746,7 @@
 	      var scenes = this.getRuntime().getObjectsByType('scene');
 	      scenes.forEach(function (scene) {
 	        if (scene.isDependenciesLoaded()) {
-	          _this2.applyRenderModeToScene(scene, null);
+	          _this3.applyRenderModeToScene(scene, null);
 	        }
 	      });
 
@@ -76691,14 +76763,14 @@
 	  }, {
 	    key: 'onShapeTextureChanged',
 	    value: function onShapeTextureChanged() {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      if (!this.shapeTexture) {
 	        return;
 	      }
 
 	      this.shapeTexture.when('load', function (texture) {
-	        var material = _this3.renderModes[RenderModes.SHAPE].overrideMaterial;
+	        var material = _this4.renderModes[RenderModes.SHAPE].overrideMaterial;
 	        material.static.uniforms.matCapTexture.value = texture.runtimeData;
 	        material.skinned.uniforms.matCapTexture.value = texture.runtimeData;
 	      });
@@ -76801,7 +76873,7 @@
 	  }, {
 	    key: 'resetSkeletons',
 	    value: function resetSkeletons() {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      // Clear the cache.
 	      this.skeletonHelpers = {};
@@ -76811,7 +76883,7 @@
 	        var scenes = this.getRuntime().getObjectsByType('scene');
 	        scenes.forEach(function (scene) {
 	          var runtimeData = scene.getRuntimeData();
-	          _this4.skeletonHelpers[runtimeData.uuid] = runtimeData ? new THREE.SkeletonHelper(runtimeData) : undefined;
+	          _this5.skeletonHelpers[runtimeData.uuid] = runtimeData ? new THREE.SkeletonHelper(runtimeData) : undefined;
 	        });
 	      }
 
@@ -76926,7 +76998,7 @@
 	  }, {
 	    key: 'applyOverrideMaterialToMesh',
 	    value: function applyOverrideMaterialToMesh(mesh, overrideMaterials, copyUniforms) {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      var matType = mesh.isSkinned() ? 'skinned' : 'static';
 	      var overrideMaterial = overrideMaterials[matType];
@@ -76939,7 +77011,7 @@
 	        });
 	      } else {
 	        newMaterials = materials.map(function () {
-	          return _this5.cloneMaterial(overrideMaterial);
+	          return _this6.cloneMaterial(overrideMaterial);
 	        });
 
 	        // Copy certain shader uniforms from the old materials to the new materials.
@@ -77005,7 +77077,7 @@
 	  }, {
 	    key: 'applyRenderModeToScene',
 	    value: function applyRenderModeToScene(scene) {
-	      var _this6 = this;
+	      var _this7 = this;
 
 	      if (!scene) {
 	        return;
@@ -77014,7 +77086,7 @@
 	      var renderMode = this.renderModes[this.renderMode];
 	      var overrideMaterial = void 0;
 
-	      if (_lodash2.default.isString(renderMode.overrideMaterial)) {
+	      if (typeof renderMode.overrideMaterial === 'string') {
 	        var materialAsset = this.getRuntime().getAssetById(renderMode.overrideMaterial);
 	        // TODO: Are we assuming that the asset will load immediately here?
 	        materialAsset.load();
@@ -77030,14 +77102,14 @@
 
 	        scene.traverse(function (obj) {
 	          if (obj.type === 'mesh') {
-	            _this6.applyOverrideMaterialToMesh(obj, overrideMaterial, renderMode.copyUniforms);
+	            _this7.applyOverrideMaterialToMesh(obj, overrideMaterial, renderMode.copyUniforms);
 	          }
 	        });
 	      } else if (this.overrideMaterialEnabled) {
 	        // Re-apply materials if they were previously overridden.
 	        scene.traverse(function (obj) {
 	          if (obj.type === 'mesh') {
-	            _this6.removeMaterialOverrideFromMesh(obj);
+	            _this7.removeMaterialOverrideFromMesh(obj);
 	          }
 	        });
 
@@ -77087,18 +77159,18 @@
 	  }, {
 	    key: 'disableImageBasedLighting',
 	    value: function disableImageBasedLighting() {
-	      var _this7 = this;
+	      var _this8 = this;
 
 	      var materials = this.getRuntime().getAssetsByType('material');
 	      materials.forEach(function (material) {
 	        var matId = material.id;
-	        if (!_this7.prevMaterialProperties[matId]) {
-	          _this7.prevMaterialProperties[matId] = {};
+	        if (!_this8.prevMaterialProperties[matId]) {
+	          _this8.prevMaterialProperties[matId] = {};
 	        }
 	        var useSpecular = material.isFeatureEnabled('specular');
 	        var irradianceMap = material.getProperty('irradianceMap');
-	        _this7.prevMaterialProperties[matId].useSpecular = useSpecular;
-	        _this7.prevMaterialProperties[matId].irradianceMap = irradianceMap;
+	        _this8.prevMaterialProperties[matId].useSpecular = useSpecular;
+	        _this8.prevMaterialProperties[matId].irradianceMap = irradianceMap;
 	        material.setProperty('irradianceMap', null);
 	        material.enableFeature('specular', false);
 	      });
@@ -77114,17 +77186,17 @@
 	  }, {
 	    key: 'enableImageBasedLighting',
 	    value: function enableImageBasedLighting() {
-	      var _this8 = this;
+	      var _this9 = this;
 
 	      var materials = this.getRuntime().getAssetsByType('material');
 	      materials.forEach(function (material) {
 	        var matId = material.id;
-	        if (_this8.prevMaterialProperties[matId]) {
-	          var useSpecular = _this8.prevMaterialProperties[matId].useSpecular;
-	          var irradianceMap = _this8.prevMaterialProperties[matId].irradianceMap;
+	        if (_this9.prevMaterialProperties[matId]) {
+	          var useSpecular = _this9.prevMaterialProperties[matId].useSpecular;
+	          var irradianceMap = _this9.prevMaterialProperties[matId].irradianceMap;
 	          material.enableFeature('specular', useSpecular);
 	          material.setProperty('irradianceMap', irradianceMap);
-	          delete _this8.prevMaterialProperties[matId];
+	          delete _this9.prevMaterialProperties[matId];
 	        }
 	      });
 	    }
@@ -79026,290 +79098,6 @@
 
 /***/ },
 /* 68 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {var now = __webpack_require__(69)
-	  , root = typeof window === 'undefined' ? global : window
-	  , vendors = ['moz', 'webkit']
-	  , suffix = 'AnimationFrame'
-	  , raf = root['request' + suffix]
-	  , caf = root['cancel' + suffix] || root['cancelRequest' + suffix]
-
-	for(var i = 0; !raf && i < vendors.length; i++) {
-	  raf = root[vendors[i] + 'Request' + suffix]
-	  caf = root[vendors[i] + 'Cancel' + suffix]
-	      || root[vendors[i] + 'CancelRequest' + suffix]
-	}
-
-	// Some versions of FF have rAF but not cAF
-	if(!raf || !caf) {
-	  var last = 0
-	    , id = 0
-	    , queue = []
-	    , frameDuration = 1000 / 60
-
-	  raf = function(callback) {
-	    if(queue.length === 0) {
-	      var _now = now()
-	        , next = Math.max(0, frameDuration - (_now - last))
-	      last = next + _now
-	      setTimeout(function() {
-	        var cp = queue.slice(0)
-	        // Clear queue here to prevent
-	        // callbacks from appending listeners
-	        // to the current frame's queue
-	        queue.length = 0
-	        for(var i = 0; i < cp.length; i++) {
-	          if(!cp[i].cancelled) {
-	            try{
-	              cp[i].callback(last)
-	            } catch(e) {
-	              setTimeout(function() { throw e }, 0)
-	            }
-	          }
-	        }
-	      }, Math.round(next))
-	    }
-	    queue.push({
-	      handle: ++id,
-	      callback: callback,
-	      cancelled: false
-	    })
-	    return id
-	  }
-
-	  caf = function(handle) {
-	    for(var i = 0; i < queue.length; i++) {
-	      if(queue[i].handle === handle) {
-	        queue[i].cancelled = true
-	      }
-	    }
-	  }
-	}
-
-	module.exports = function(fn) {
-	  // Wrap in a new function to prevent
-	  // `cancel` potentially being assigned
-	  // to the native rAF function
-	  return raf.call(root, fn)
-	}
-	module.exports.cancel = function() {
-	  caf.apply(root, arguments)
-	}
-	module.exports.polyfill = function() {
-	  root.requestAnimationFrame = raf
-	  root.cancelAnimationFrame = caf
-	}
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 69 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {// Generated by CoffeeScript 1.7.1
-	(function() {
-	  var getNanoSeconds, hrtime, loadTime;
-
-	  if ((typeof performance !== "undefined" && performance !== null) && performance.now) {
-	    module.exports = function() {
-	      return performance.now();
-	    };
-	  } else if ((typeof process !== "undefined" && process !== null) && process.hrtime) {
-	    module.exports = function() {
-	      return (getNanoSeconds() - loadTime) / 1e6;
-	    };
-	    hrtime = process.hrtime;
-	    getNanoSeconds = function() {
-	      var hr;
-	      hr = hrtime();
-	      return hr[0] * 1e9 + hr[1];
-	    };
-	    loadTime = getNanoSeconds();
-	  } else if (Date.now) {
-	    module.exports = function() {
-	      return Date.now() - loadTime;
-	    };
-	    loadTime = Date.now();
-	  } else {
-	    module.exports = function() {
-	      return new Date().getTime() - loadTime;
-	    };
-	    loadTime = new Date().getTime();
-	  }
-
-	}).call(this);
-
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(70)))
-
-/***/ },
-/* 70 */
-/***/ function(module, exports) {
-
-	// shim for using process in browser
-	var process = module.exports = {};
-
-	// cached from whatever global is present so that test runners that stub it
-	// don't break things.  But we need to wrap it in a try catch in case it is
-	// wrapped in strict mode code which doesn't define any globals.  It's inside a
-	// function because try/catches deoptimize in certain engines.
-
-	var cachedSetTimeout;
-	var cachedClearTimeout;
-
-	(function () {
-	    try {
-	        cachedSetTimeout = setTimeout;
-	    } catch (e) {
-	        cachedSetTimeout = function () {
-	            throw new Error('setTimeout is not defined');
-	        }
-	    }
-	    try {
-	        cachedClearTimeout = clearTimeout;
-	    } catch (e) {
-	        cachedClearTimeout = function () {
-	            throw new Error('clearTimeout is not defined');
-	        }
-	    }
-	} ())
-	function runTimeout(fun) {
-	    if (cachedSetTimeout === setTimeout) {
-	        //normal enviroments in sane situations
-	        return setTimeout(fun, 0);
-	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedSetTimeout(fun, 0);
-	    } catch(e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
-	            return cachedSetTimeout.call(null, fun, 0);
-	        } catch(e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
-	            return cachedSetTimeout.call(this, fun, 0);
-	        }
-	    }
-
-
-	}
-	function runClearTimeout(marker) {
-	    if (cachedClearTimeout === clearTimeout) {
-	        //normal enviroments in sane situations
-	        return clearTimeout(marker);
-	    }
-	    try {
-	        // when when somebody has screwed with setTimeout but no I.E. maddness
-	        return cachedClearTimeout(marker);
-	    } catch (e){
-	        try {
-	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
-	            return cachedClearTimeout.call(null, marker);
-	        } catch (e){
-	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
-	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
-	            return cachedClearTimeout.call(this, marker);
-	        }
-	    }
-
-
-
-	}
-	var queue = [];
-	var draining = false;
-	var currentQueue;
-	var queueIndex = -1;
-
-	function cleanUpNextTick() {
-	    if (!draining || !currentQueue) {
-	        return;
-	    }
-	    draining = false;
-	    if (currentQueue.length) {
-	        queue = currentQueue.concat(queue);
-	    } else {
-	        queueIndex = -1;
-	    }
-	    if (queue.length) {
-	        drainQueue();
-	    }
-	}
-
-	function drainQueue() {
-	    if (draining) {
-	        return;
-	    }
-	    var timeout = runTimeout(cleanUpNextTick);
-	    draining = true;
-
-	    var len = queue.length;
-	    while(len) {
-	        currentQueue = queue;
-	        queue = [];
-	        while (++queueIndex < len) {
-	            if (currentQueue) {
-	                currentQueue[queueIndex].run();
-	            }
-	        }
-	        queueIndex = -1;
-	        len = queue.length;
-	    }
-	    currentQueue = null;
-	    draining = false;
-	    runClearTimeout(timeout);
-	}
-
-	process.nextTick = function (fun) {
-	    var args = new Array(arguments.length - 1);
-	    if (arguments.length > 1) {
-	        for (var i = 1; i < arguments.length; i++) {
-	            args[i - 1] = arguments[i];
-	        }
-	    }
-	    queue.push(new Item(fun, args));
-	    if (queue.length === 1 && !draining) {
-	        runTimeout(drainQueue);
-	    }
-	};
-
-	// v8 likes predictible objects
-	function Item(fun, array) {
-	    this.fun = fun;
-	    this.array = array;
-	}
-	Item.prototype.run = function () {
-	    this.fun.apply(null, this.array);
-	};
-	process.title = 'browser';
-	process.browser = true;
-	process.env = {};
-	process.argv = [];
-	process.version = ''; // empty string to avoid regexp issues
-	process.versions = {};
-
-	function noop() {}
-
-	process.on = noop;
-	process.addListener = noop;
-	process.once = noop;
-	process.off = noop;
-	process.removeListener = noop;
-	process.removeAllListeners = noop;
-	process.emit = noop;
-
-	process.binding = function (name) {
-	    throw new Error('process.binding is not supported');
-	};
-
-	process.cwd = function () { return '/' };
-	process.chdir = function (dir) {
-	    throw new Error('process.chdir is not supported');
-	};
-	process.umask = function() { return 0; };
-
-
-/***/ },
-/* 71 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -79529,7 +79317,7 @@
 	exports.default = UserAgent;
 
 /***/ },
-/* 72 */
+/* 69 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -79695,7 +79483,7 @@
 
 
 /***/ },
-/* 73 */
+/* 70 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -79877,7 +79665,7 @@
 
 
 /***/ },
-/* 74 */
+/* 71 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -79984,7 +79772,7 @@
 
 
 /***/ },
-/* 75 */
+/* 72 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80052,7 +79840,7 @@
 
 
 /***/ },
-/* 76 */
+/* 73 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80131,7 +79919,7 @@
 
 
 /***/ },
-/* 77 */
+/* 74 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80225,7 +80013,7 @@
 
 
 /***/ },
-/* 78 */
+/* 75 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80291,7 +80079,7 @@
 
 
 /***/ },
-/* 79 */
+/* 76 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80361,11 +80149,14 @@
 
 
 /***/ },
-/* 80 */
+/* 77 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)
-		, __webpack_require__(100)
+		, __webpack_require__(97)
+		, __webpack_require__(79)
+		, __webpack_require__(80)
+		, __webpack_require__(81)
 		, __webpack_require__(82)
 		, __webpack_require__(83)
 		, __webpack_require__(84)
@@ -80381,10 +80172,10 @@
 		, __webpack_require__(94)
 		, __webpack_require__(95)
 		, __webpack_require__(96)
-		, __webpack_require__(97)
+		, __webpack_require__(78)
 		, __webpack_require__(98)
 		, __webpack_require__(99)
-		, __webpack_require__(81)
+		, __webpack_require__(100)
 		, __webpack_require__(101)
 		, __webpack_require__(102)
 		, __webpack_require__(103)
@@ -80399,10 +80190,7 @@
 		, __webpack_require__(112)
 		, __webpack_require__(113)
 		, __webpack_require__(114)
-		, __webpack_require__(115)
-		, __webpack_require__(116)
-		, __webpack_require__(117)
-		, __webpack_require__(118)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
+		, __webpack_require__(115)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
 		/**
 		 * @author alteredq / http://alteredqualia.com/
 		 */
@@ -80487,7 +80275,7 @@
 
 
 /***/ },
-/* 81 */
+/* 78 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80593,7 +80381,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 82 */
+/* 79 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80666,7 +80454,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 83 */
+/* 80 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80737,7 +80525,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 84 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80795,7 +80583,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 85 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -80927,7 +80715,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 86 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81313,7 +81101,7 @@
 
 
 /***/ },
-/* 87 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81378,7 +81166,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 88 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81433,7 +81221,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 89 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81489,7 +81277,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 90 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81597,7 +81385,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 91 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81650,7 +81438,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 92 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81704,7 +81492,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 93 */
+/* 90 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81769,7 +81557,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 94 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81844,7 +81632,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 95 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -81945,7 +81733,7 @@
 
 
 /***/ },
-/* 96 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82038,7 +81826,7 @@
 
 
 /***/ },
-/* 97 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82149,7 +81937,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 98 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82247,7 +82035,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 99 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82329,7 +82117,7 @@
 
 
 /***/ },
-/* 100 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82367,7 +82155,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 101 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82452,7 +82240,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 102 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82521,7 +82309,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 103 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82593,7 +82381,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 104 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82669,7 +82457,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 105 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82737,7 +82525,7 @@
 
 
 /***/ },
-/* 106 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82818,7 +82606,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 107 */
+/* 104 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82884,7 +82672,7 @@
 
 
 /***/ },
-/* 108 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -82944,7 +82732,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 109 */
+/* 106 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83008,7 +82796,7 @@
 
 
 /***/ },
-/* 110 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83071,7 +82859,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 111 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83368,7 +83156,7 @@
 
 
 /***/ },
-/* 112 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83453,7 +83241,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 113 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83606,7 +83394,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 114 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83670,7 +83458,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 115 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83770,7 +83558,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 116 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83839,7 +83627,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 117 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83911,7 +83699,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 118 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -83982,7 +83770,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 119 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84037,7 +83825,7 @@
 
 
 /***/ },
-/* 120 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10)], __WEBPACK_AMD_DEFINE_RESULT__ = function(THREE) {
@@ -84665,7 +84453,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 121 */
+/* 118 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -84694,7 +84482,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _BufferAsset = __webpack_require__(122);
+	var _BufferAsset = __webpack_require__(119);
 
 	var _BufferAsset2 = _interopRequireDefault(_BufferAsset);
 
@@ -85089,7 +84877,7 @@
 	exports.default = AnimationAsset;
 
 /***/ },
-/* 122 */
+/* 119 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85114,7 +84902,7 @@
 
 	var LoadingEvent = _interopRequireWildcard(_LoadingEvent);
 
-	var _LoadingType = __webpack_require__(123);
+	var _LoadingType = __webpack_require__(120);
 
 	var LoadingType = _interopRequireWildcard(_LoadingType);
 
@@ -85403,7 +85191,7 @@
 	exports.default = BufferAsset;
 
 /***/ },
-/* 123 */
+/* 120 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -85416,7 +85204,7 @@
 	var VIDEO = exports.VIDEO = 'video';
 
 /***/ },
-/* 124 */
+/* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85485,7 +85273,7 @@
 	exports.default = ApplicationAsset;
 
 /***/ },
-/* 125 */
+/* 122 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85571,7 +85359,7 @@
 	exports.default = AudioAsset;
 
 /***/ },
-/* 126 */
+/* 123 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -85590,7 +85378,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _JSONLoader = __webpack_require__(127);
+	var _JSONLoader = __webpack_require__(124);
 
 	var _JSONLoader2 = _interopRequireDefault(_JSONLoader);
 
@@ -85688,12 +85476,12 @@
 	exports.default = DocumentAsset;
 
 /***/ },
-/* 127 */
+/* 124 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(4), __webpack_require__(128)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(7), __webpack_require__(4), __webpack_require__(125)], __WEBPACK_AMD_DEFINE_RESULT__ = function (log, _, Box3DShim) {
 	  'use strict';
 
 	  /**
@@ -85853,16 +85641,16 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 128 */
+/* 125 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(129);
-	var v1 = __webpack_require__(130);
-	var v2 = __webpack_require__(131);
-	var v3 = __webpack_require__(155);
-	var v4 = __webpack_require__(156);
+	var _ = __webpack_require__(126);
+	var v1 = __webpack_require__(127);
+	var v2 = __webpack_require__(128);
+	var v3 = __webpack_require__(153);
+	var v4 = __webpack_require__(154);
 
 	var SUPPORTED_VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv',
 	  'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv'];
@@ -86268,7 +86056,7 @@
 	};
 
 /***/ },
-/* 129 */
+/* 126 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscore.js 1.6.0
@@ -87617,12 +87405,12 @@
 
 
 /***/ },
-/* 130 */
+/* 127 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(129);
+	var _ = __webpack_require__(126);
 
 	/**
 	 * Map "entity.payload" to "entity.properties". This applies to all v1 entities.
@@ -87680,13 +87468,13 @@
 
 
 /***/ },
-/* 131 */
+/* 128 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(129);
-	var uuid = __webpack_require__(132);
+	var _ = __webpack_require__(126);
+	var uuid = __webpack_require__(129);
 
 	/**
 	 * Returns the basename of a filename (i.e., the final element in the path).
@@ -87767,7 +87555,7 @@
 
 
 /***/ },
-/* 132 */
+/* 129 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(Buffer) {//     uuid.js
@@ -87828,7 +87616,7 @@
 	    // Moderately fast, high quality
 	    if (true) {
 	      try {
-	        var _rb = __webpack_require__(137).randomBytes;
+	        var _rb = __webpack_require__(134).randomBytes;
 	        _nodeRNG = _rng = _rb && function() {return _rb(16);};
 	        _rng();
 	      } catch(e) {}
@@ -88043,10 +87831,10 @@
 	  }
 	})('undefined' !== typeof window ? window : null);
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(133).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
 
 /***/ },
-/* 133 */
+/* 130 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -88059,9 +87847,9 @@
 
 	'use strict'
 
-	var base64 = __webpack_require__(134)
-	var ieee754 = __webpack_require__(135)
-	var isArray = __webpack_require__(136)
+	var base64 = __webpack_require__(131)
+	var ieee754 = __webpack_require__(132)
+	var isArray = __webpack_require__(133)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -89839,10 +89627,10 @@
 	  return val !== val // eslint-disable-line no-self-compare
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(133).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 134 */
+/* 131 */
 /***/ function(module, exports) {
 
 	'use strict'
@@ -89957,7 +89745,7 @@
 
 
 /***/ },
-/* 135 */
+/* 132 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -90047,7 +89835,7 @@
 
 
 /***/ },
-/* 136 */
+/* 133 */
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
@@ -90058,10 +89846,10 @@
 
 
 /***/ },
-/* 137 */
+/* 134 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(138)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var rng = __webpack_require__(135)
 
 	function error () {
 	  var m = [].slice.call(arguments).join(' ')
@@ -90072,9 +89860,9 @@
 	    ].join('\n'))
 	}
 
-	exports.createHash = __webpack_require__(140)
+	exports.createHash = __webpack_require__(137)
 
-	exports.createHmac = __webpack_require__(152)
+	exports.createHmac = __webpack_require__(150)
 
 	exports.randomBytes = function(size, callback) {
 	  if (callback && callback.call) {
@@ -90095,7 +89883,7 @@
 	  return ['sha1', 'sha256', 'sha512', 'md5', 'rmd160']
 	}
 
-	var p = __webpack_require__(153)(exports)
+	var p = __webpack_require__(151)(exports)
 	exports.pbkdf2 = p.pbkdf2
 	exports.pbkdf2Sync = p.pbkdf2Sync
 
@@ -90115,16 +89903,16 @@
 	  }
 	})
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(133).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
 
 /***/ },
-/* 138 */
+/* 135 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, Buffer) {(function() {
 	  var g = ('undefined' === typeof window ? global : window) || {}
 	  _crypto = (
-	    g.crypto || g.msCrypto || __webpack_require__(139)
+	    g.crypto || g.msCrypto || __webpack_require__(136)
 	  )
 	  module.exports = function(size) {
 	    // Modern Browsers
@@ -90148,22 +89936,22 @@
 	  }
 	}())
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(133).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(130).Buffer))
 
 /***/ },
-/* 139 */
+/* 136 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
 
 /***/ },
-/* 140 */
+/* 137 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(141)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(138)
 
-	var md5 = toConstructor(__webpack_require__(149))
-	var rmd160 = toConstructor(__webpack_require__(151))
+	var md5 = toConstructor(__webpack_require__(147))
+	var rmd160 = toConstructor(__webpack_require__(149))
 
 	function toConstructor (fn) {
 	  return function () {
@@ -90191,10 +89979,10 @@
 	  return createHash(alg)
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(133).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
 
 /***/ },
-/* 141 */
+/* 138 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var exports = module.exports = function (alg) {
@@ -90203,16 +89991,16 @@
 	  return new Alg()
 	}
 
-	var Buffer = __webpack_require__(133).Buffer
-	var Hash   = __webpack_require__(142)(Buffer)
+	var Buffer = __webpack_require__(130).Buffer
+	var Hash   = __webpack_require__(139)(Buffer)
 
-	exports.sha1 = __webpack_require__(143)(Buffer, Hash)
-	exports.sha256 = __webpack_require__(147)(Buffer, Hash)
-	exports.sha512 = __webpack_require__(148)(Buffer, Hash)
+	exports.sha1 = __webpack_require__(140)(Buffer, Hash)
+	exports.sha256 = __webpack_require__(145)(Buffer, Hash)
+	exports.sha512 = __webpack_require__(146)(Buffer, Hash)
 
 
 /***/ },
-/* 142 */
+/* 139 */
 /***/ function(module, exports) {
 
 	module.exports = function (Buffer) {
@@ -90295,7 +90083,7 @@
 
 
 /***/ },
-/* 143 */
+/* 140 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -90307,7 +90095,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for details.
 	 */
 
-	var inherits = __webpack_require__(144).inherits
+	var inherits = __webpack_require__(141).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -90439,7 +90227,7 @@
 
 
 /***/ },
-/* 144 */
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global, process) {// Copyright Joyent, Inc. and other Node contributors.
@@ -90967,7 +90755,7 @@
 	}
 	exports.isPrimitive = isPrimitive;
 
-	exports.isBuffer = __webpack_require__(145);
+	exports.isBuffer = __webpack_require__(143);
 
 	function objectToString(o) {
 	  return Object.prototype.toString.call(o);
@@ -91011,7 +90799,7 @@
 	 *     prototype.
 	 * @param {function} superCtor Constructor function to inherit prototype from.
 	 */
-	exports.inherits = __webpack_require__(146);
+	exports.inherits = __webpack_require__(144);
 
 	exports._extend = function(origin, add) {
 	  // Don't do anything if add isn't an object
@@ -91029,10 +90817,176 @@
 	  return Object.prototype.hasOwnProperty.call(obj, prop);
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(70)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(142)))
 
 /***/ },
-/* 145 */
+/* 142 */
+/***/ function(module, exports) {
+
+	// shim for using process in browser
+	var process = module.exports = {};
+
+	// cached from whatever global is present so that test runners that stub it
+	// don't break things.  But we need to wrap it in a try catch in case it is
+	// wrapped in strict mode code which doesn't define any globals.  It's inside a
+	// function because try/catches deoptimize in certain engines.
+
+	var cachedSetTimeout;
+	var cachedClearTimeout;
+
+	(function () {
+	    try {
+	        cachedSetTimeout = setTimeout;
+	    } catch (e) {
+	        cachedSetTimeout = function () {
+	            throw new Error('setTimeout is not defined');
+	        }
+	    }
+	    try {
+	        cachedClearTimeout = clearTimeout;
+	    } catch (e) {
+	        cachedClearTimeout = function () {
+	            throw new Error('clearTimeout is not defined');
+	        }
+	    }
+	} ())
+	function runTimeout(fun) {
+	    if (cachedSetTimeout === setTimeout) {
+	        //normal enviroments in sane situations
+	        return setTimeout(fun, 0);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedSetTimeout(fun, 0);
+	    } catch(e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+	            return cachedSetTimeout.call(null, fun, 0);
+	        } catch(e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+	            return cachedSetTimeout.call(this, fun, 0);
+	        }
+	    }
+
+
+	}
+	function runClearTimeout(marker) {
+	    if (cachedClearTimeout === clearTimeout) {
+	        //normal enviroments in sane situations
+	        return clearTimeout(marker);
+	    }
+	    try {
+	        // when when somebody has screwed with setTimeout but no I.E. maddness
+	        return cachedClearTimeout(marker);
+	    } catch (e){
+	        try {
+	            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+	            return cachedClearTimeout.call(null, marker);
+	        } catch (e){
+	            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+	            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+	            return cachedClearTimeout.call(this, marker);
+	        }
+	    }
+
+
+
+	}
+	var queue = [];
+	var draining = false;
+	var currentQueue;
+	var queueIndex = -1;
+
+	function cleanUpNextTick() {
+	    if (!draining || !currentQueue) {
+	        return;
+	    }
+	    draining = false;
+	    if (currentQueue.length) {
+	        queue = currentQueue.concat(queue);
+	    } else {
+	        queueIndex = -1;
+	    }
+	    if (queue.length) {
+	        drainQueue();
+	    }
+	}
+
+	function drainQueue() {
+	    if (draining) {
+	        return;
+	    }
+	    var timeout = runTimeout(cleanUpNextTick);
+	    draining = true;
+
+	    var len = queue.length;
+	    while(len) {
+	        currentQueue = queue;
+	        queue = [];
+	        while (++queueIndex < len) {
+	            if (currentQueue) {
+	                currentQueue[queueIndex].run();
+	            }
+	        }
+	        queueIndex = -1;
+	        len = queue.length;
+	    }
+	    currentQueue = null;
+	    draining = false;
+	    runClearTimeout(timeout);
+	}
+
+	process.nextTick = function (fun) {
+	    var args = new Array(arguments.length - 1);
+	    if (arguments.length > 1) {
+	        for (var i = 1; i < arguments.length; i++) {
+	            args[i - 1] = arguments[i];
+	        }
+	    }
+	    queue.push(new Item(fun, args));
+	    if (queue.length === 1 && !draining) {
+	        runTimeout(drainQueue);
+	    }
+	};
+
+	// v8 likes predictible objects
+	function Item(fun, array) {
+	    this.fun = fun;
+	    this.array = array;
+	}
+	Item.prototype.run = function () {
+	    this.fun.apply(null, this.array);
+	};
+	process.title = 'browser';
+	process.browser = true;
+	process.env = {};
+	process.argv = [];
+	process.version = ''; // empty string to avoid regexp issues
+	process.versions = {};
+
+	function noop() {}
+
+	process.on = noop;
+	process.addListener = noop;
+	process.once = noop;
+	process.off = noop;
+	process.removeListener = noop;
+	process.removeAllListeners = noop;
+	process.emit = noop;
+
+	process.binding = function (name) {
+	    throw new Error('process.binding is not supported');
+	};
+
+	process.cwd = function () { return '/' };
+	process.chdir = function (dir) {
+	    throw new Error('process.chdir is not supported');
+	};
+	process.umask = function() { return 0; };
+
+
+/***/ },
+/* 143 */
 /***/ function(module, exports) {
 
 	module.exports = function isBuffer(arg) {
@@ -91043,7 +90997,7 @@
 	}
 
 /***/ },
-/* 146 */
+/* 144 */
 /***/ function(module, exports) {
 
 	if (typeof Object.create === 'function') {
@@ -91072,7 +91026,7 @@
 
 
 /***/ },
-/* 147 */
+/* 145 */
 /***/ function(module, exports, __webpack_require__) {
 
 	
@@ -91084,7 +91038,7 @@
 	 *
 	 */
 
-	var inherits = __webpack_require__(144).inherits
+	var inherits = __webpack_require__(141).inherits
 
 	module.exports = function (Buffer, Hash) {
 
@@ -91225,10 +91179,10 @@
 
 
 /***/ },
-/* 148 */
+/* 146 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var inherits = __webpack_require__(144).inherits
+	var inherits = __webpack_require__(141).inherits
 
 	module.exports = function (Buffer, Hash) {
 	  var K = [
@@ -91475,7 +91429,7 @@
 
 
 /***/ },
-/* 149 */
+/* 147 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -91487,7 +91441,7 @@
 	 * See http://pajhome.org.uk/crypt/md5 for more info.
 	 */
 
-	var helpers = __webpack_require__(150);
+	var helpers = __webpack_require__(148);
 
 	/*
 	 * Calculate the MD5 of an array of little-endian words, and a bit length
@@ -91636,7 +91590,7 @@
 
 
 /***/ },
-/* 150 */
+/* 148 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {var intSize = 4;
@@ -91674,10 +91628,10 @@
 
 	module.exports = { hash: hash };
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(133).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
 
 /***/ },
-/* 151 */
+/* 149 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {
@@ -91886,13 +91840,13 @@
 
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(133).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
 
 /***/ },
-/* 152 */
+/* 150 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(140)
+	/* WEBPACK VAR INJECTION */(function(Buffer) {var createHash = __webpack_require__(137)
 
 	var zeroBuffer = new Buffer(128)
 	zeroBuffer.fill(0)
@@ -91936,13 +91890,13 @@
 	}
 
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(133).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
 
 /***/ },
-/* 153 */
+/* 151 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pbkdf2Export = __webpack_require__(154)
+	var pbkdf2Export = __webpack_require__(152)
 
 	module.exports = function (crypto, exports) {
 	  exports = exports || {}
@@ -91957,7 +91911,7 @@
 
 
 /***/ },
-/* 154 */
+/* 152 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {module.exports = function(crypto) {
@@ -92045,16 +91999,16 @@
 	  }
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(133).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(130).Buffer))
 
 /***/ },
-/* 155 */
+/* 153 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(129);
-	var uuid = __webpack_require__(132);
+	var _ = __webpack_require__(126);
+	var uuid = __webpack_require__(129);
 
 	/**
 	 * Map a v3 entity to v4.
@@ -92127,13 +92081,13 @@
 
 
 /***/ },
-/* 156 */
+/* 154 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _ = __webpack_require__(129);
-	var uuid = __webpack_require__(132);
+	var _ = __webpack_require__(126);
+	var uuid = __webpack_require__(129);
 
 	/**
 	 * Map a v4 entity to v5.
@@ -92178,7 +92132,7 @@
 	};
 
 /***/ },
-/* 157 */
+/* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -92207,7 +92161,7 @@
 
 	var LoadingEvent = _interopRequireWildcard(_LoadingEvent);
 
-	var _LoadingType = __webpack_require__(123);
+	var _LoadingType = __webpack_require__(120);
 
 	var LoadingType = _interopRequireWildcard(_LoadingType);
 
@@ -92708,7 +92662,7 @@
 	exports.default = ImageAsset;
 
 /***/ },
-/* 158 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -92733,7 +92687,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(159);
+	var _BaseGeometryAsset2 = __webpack_require__(157);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -92741,7 +92695,7 @@
 
 	var _Box3DEntity2 = _interopRequireDefault(_Box3DEntity);
 
-	var _BufferAsset = __webpack_require__(122);
+	var _BufferAsset = __webpack_require__(119);
 
 	var _BufferAsset2 = _interopRequireDefault(_BufferAsset);
 
@@ -93075,7 +93029,7 @@
 	exports.default = MeshGeometryAsset;
 
 /***/ },
-/* 159 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93187,9 +93141,9 @@
 	        return geometry;
 	      });
 
-	      return geometries.reduce(function (geometry, bounds) {
+	      return geometries.reduce(function (bounds, geometry) {
 	        return bounds.union(geometry.boundingBox);
-	      }, new THREE.Box());
+	      }, new THREE.Box3());
 	    }
 
 	    /**
@@ -93337,7 +93291,7 @@
 	exports.default = BaseGeometryAsset;
 
 /***/ },
-/* 160 */
+/* 158 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93665,7 +93619,7 @@
 	exports.default = PrefabAsset;
 
 /***/ },
-/* 161 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93686,7 +93640,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _BaseGeometryAsset2 = __webpack_require__(159);
+	var _BaseGeometryAsset2 = __webpack_require__(157);
 
 	var _BaseGeometryAsset3 = _interopRequireDefault(_BaseGeometryAsset2);
 
@@ -93883,7 +93837,7 @@
 	exports.default = PrimitiveGeometryAsset;
 
 /***/ },
-/* 162 */
+/* 160 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93898,7 +93852,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _ImageAsset = __webpack_require__(157);
+	var _ImageAsset = __webpack_require__(155);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -93906,7 +93860,7 @@
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(163);
+	var _BaseRenderTextureAsset = __webpack_require__(161);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -93961,7 +93915,7 @@
 	exports.default = RenderTexture2DAsset;
 
 /***/ },
-/* 163 */
+/* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -93978,7 +93932,7 @@
 
 	var _BaseTextureAsset3 = _interopRequireDefault(_BaseTextureAsset2);
 
-	var _ImageAsset = __webpack_require__(157);
+	var _ImageAsset = __webpack_require__(155);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -94100,7 +94054,7 @@
 	exports.default = BaseRenderTextureAsset;
 
 /***/ },
-/* 164 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -94117,7 +94071,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _ImageAsset = __webpack_require__(157);
+	var _ImageAsset = __webpack_require__(155);
 
 	var _ImageAsset2 = _interopRequireDefault(_ImageAsset);
 
@@ -94125,7 +94079,7 @@
 
 	var _BaseTextureAsset2 = _interopRequireDefault(_BaseTextureAsset);
 
-	var _BaseRenderTextureAsset = __webpack_require__(163);
+	var _BaseRenderTextureAsset = __webpack_require__(161);
 
 	var _BaseRenderTextureAsset2 = _interopRequireDefault(_BaseRenderTextureAsset);
 
@@ -94206,7 +94160,7 @@
 	exports.default = RenderTextureCubeAsset;
 
 /***/ },
-/* 165 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* jshint -W061 */
@@ -94378,7 +94332,7 @@
 	exports.default = ScriptAsset;
 
 /***/ },
-/* 166 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -94403,7 +94357,7 @@
 
 	var _Box3DAsset3 = _interopRequireDefault(_Box3DAsset2);
 
-	var _Box3DShaderPBR = __webpack_require__(167);
+	var _Box3DShaderPBR = __webpack_require__(165);
 
 	var _Box3DShaderPBR2 = _interopRequireDefault(_Box3DShaderPBR);
 
@@ -94672,12 +94626,12 @@
 	exports.default = ShaderAsset;
 
 /***/ },
-/* 167 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
 
-	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10), __webpack_require__(168), __webpack_require__(169), __webpack_require__(170)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
+	!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(10), __webpack_require__(166), __webpack_require__(167), __webpack_require__(168)], __WEBPACK_AMD_DEFINE_RESULT__ = function (THREE, shaderParams, uberPBRVertexShader, uberPBRFragmentShader) {
 	  'use strict';
 
 	  var Box3DShaderPBR = {
@@ -94746,7 +94700,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 168 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -95350,19 +95304,19 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 169 */
+/* 167 */
 /***/ function(module, exports) {
 
 	module.exports = "#define PHYSICAL\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n// Removed chunk from physical material <uv_pars_vertex>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined( GLOSS_MAP ) || defined(AO_MAP)\n\tvarying vec2 vUv;\n\tuniform vec4 offsetRepeat;\n#endif\n// Removed chunk from physical material <uv2_pars_vertex>\n#include <displacementmap_pars_vertex>\n#include <color_pars_vertex>\n#include <morphtarget_pars_vertex>\n#include <skinning_pars_vertex>\n#include <shadowmap_pars_vertex>\n#include <specularmap_pars_fragment>\n#include <logdepthbuf_pars_vertex>\n#include <clipping_planes_pars_vertex>\n\nvoid main() {\n\n\t// Removed chunk from physical material <uv_vertex>\n\t#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined( GLOSS_MAP ) || defined(AO_MAP)\n\t\tvUv = uv;\n\t\tvUv.y = 1.0 - vUv.y;\n\t#endif\n\t#include <uv2_vertex>\n\t#include <color_vertex>\n\n\t#include <beginnormal_vertex>\n\t#include <morphnormal_vertex>\n\t#include <skinbase_vertex>\n\t#include <skinnormal_vertex>\n\t#include <defaultnormal_vertex>\n\n#ifndef FLAT_SHADED // Normal computed with derivatives when FLAT_SHADED\n\n\tvNormal = normalize( transformedNormal );\n\n#endif\n\n\t#include <begin_vertex>\n\t#include <displacementmap_vertex>\n\t#include <morphtarget_vertex>\n\t#include <skinning_vertex>\n\t#include <project_vertex>\n\t#include <logdepthbuf_vertex>\n\t#include <clipping_planes_vertex>\n\n\tvViewPosition = - mvPosition.xyz;\n\n\t#include <worldpos_vertex>\n\t#include <shadowmap_vertex>\n\n}"
 
 /***/ },
-/* 170 */
+/* 168 */
 /***/ function(module, exports) {
 
 	module.exports = "#define PHYSICAL\n\nuniform vec3 diffuse;\nuniform vec3 emissive;\nuniform float roughness;\nuniform float metalness;\nuniform float opacity;\nuniform vec3 specular;\nuniform vec4 screenDimensions;\n\n#ifndef STANDARD\n\tuniform float clearCoat;\n\tuniform float clearCoatRoughness;\n#endif\n\nvarying vec3 vViewPosition;\n\n#ifndef FLAT_SHADED\n\n\tvarying vec3 vNormal;\n\n#endif\n\n#include <common>\n#include <packing>\n#include <color_pars_fragment>\n//Removed chunk from physical material <uv_pars_fragment>\n#if defined( USE_MAP ) || defined( USE_BUMPMAP ) || defined( USE_NORMALMAP ) || defined( USE_SPECULARMAP ) || defined( USE_ALPHAMAP ) || defined( USE_EMISSIVEMAP ) || defined( USE_ROUGHNESSMAP ) || defined( USE_METALNESSMAP ) || defined(GLOSS_MAP) || defined(AO_MAP)\n\tvarying vec2 vUv;\n#endif\n//Removed chunk from physical material <uv2_pars_fragment>\n#include <map_pars_fragment>\n#include <alphamap_pars_fragment>\n//Removed chunk from physical material <aomap_pars_fragment>\n#ifdef AO_MAP\n\tuniform sampler2D aoMap;\n#endif\n//Removed chunk from physical material <lightmap_pars_fragment>\n#ifdef EMISSIVE\n#include <emissivemap_pars_fragment>\n#endif\n\n#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\tuniform sampler2D glossMap;\n#endif\n\n#if defined(ENV_MAP_RADIANCE) || defined(ENV_MAP_IRRADIANCE)\n//Removed chunk from physical material <envmap_pars_fragment>\n\tuniform float reflectivity;\n\tuniform float envMapIntensity;\n\tuniform float flipEnvMap;\n\tuniform float refractionRatio;\n\n\t// This code assumes that all environment maps are of the same type (cube or 2D)\n\t// and use the same sampling transform (e.g. equirectangular projection, etc.\n\t// It is allowed that either irradiance or radiance maps can exist by themselves\n\t// but the radianceHalfGloss can only exist if the other two do.\n\t#if defined(ENV_MAP_RADIANCE_TYPE_CUBE) || defined(ENV_MAP_IRRADIANCE_TYPE_CUBE)\n\t\t#define SAMPLER_TYPE samplerCube\n\t#else\n\t\t#define SAMPLER_TYPE sampler2D\n\t#endif\n\n\t#ifdef ENV_MAP_RADIANCE\n\t\tuniform SAMPLER_TYPE envMapRadiance;\n\t#endif\n\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_RADIANCE) && defined(ENV_MAP_IRRADIANCE)\n\t\tuniform SAMPLER_TYPE envMapRadianceHalfGloss;\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE\n\t\tuniform SAMPLER_TYPE envMapIrradiance;\n\t#endif\n#endif\n\n#include <fog_pars_fragment>\n#include <bsdfs>\n#include <cube_uv_reflection_fragment>\n#include <lights_pars>\n#include <lights_physical_pars_fragment>\n\n#undef MAXIMUM_SPECULAR_COEFFICIENT\n#define MAXIMUM_SPECULAR_COEFFICIENT 1.0\n\n\n// Overriding to remove weird reciprocal of PI factor.\nvoid RE_IndirectDiffuse_BoxPBR( const in vec3 irradiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight ) {\n\treflectedLight.indirectDiffuse += irradiance * material.diffuseColor;\n}\n\n// ref: https://www.unrealengine.com/blog/physically-based-shading-on-mobile - environmentBRDF for GGX on mobile\nfloat BRDF_Specular_GGX_Environment_NonMetal( const in GeometricContext geometry, const in vec3 specularColor, const in float roughness ) {\n\n\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\n\tconst vec2 c0 = vec2(-1.0, -0.0275);\n\tconst vec2 c1 = vec2(1.0, 0.0425);\n\tvec2 r = roughness * c0 + c1;\n\treturn min( r.x * r.x, exp2( -9.28 * dotNV ) ) * r.x + r.y;\n}\n\nvoid RE_IndirectSpecular_BoxPBR( const in vec3 radiance, const in vec3 clearCoatRadiance, const in GeometricContext geometry, const in PhysicalMaterial material, inout ReflectedLight reflectedLight, out float fresnel ) {\n\n\t#ifdef CLEAR_COAT\n\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\tfloat dotNL = dotNV;\n\t\tfloat clearCoatDHR = material.clearCoat * clearCoatDHRApprox( material.clearCoatRoughness, dotNL );\n\t#else\n\t\tfloat clearCoatDHR = 0.0;\n\t#endif\n\n\t#if defined(METALNESS)\n\t\tfresnel = 0.0;\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * BRDF_Specular_GGX_Environment( geometry, material.specularColor, material.specularRoughness );\n\t#else\n\t\tfresnel = BRDF_Specular_GGX_Environment_NonMetal( geometry, material.specularColor, material.specularRoughness );\n\t\treflectedLight.indirectSpecular += ( 1.0 - clearCoatDHR ) * radiance * fresnel;\n\t#endif\n\n\n\t#ifdef CLEAR_COAT\n\t\tfresnel += BRDF_Specular_GGX_Environment_NonMetal( geometry, vec3( 1.0 ), material.clearCoatRoughness );\n\t\tfresnel = clamp(fresnel, 0.0, 1.0);\n\t\treflectedLight.indirectSpecular += clearCoatRadiance * fresnel;\n\t#endif\n\n}\n\n#undef RE_IndirectDiffuse\n#define RE_IndirectDiffuse\t\tRE_IndirectDiffuse_BoxPBR\n#undef RE_IndirectSpecular\n#define RE_IndirectSpecular\t\tRE_IndirectSpecular_BoxPBR\n\n#if defined(ENV_MAP_IRRADIANCE)\nvec3 getBox3DLightProbeIndirectIrradiance( /*const in SpecularLightProbe specularLightProbe,*/ const in GeometricContext geometry ) {\n\n\t#include <normal_flip>\n\n\tvec3 worldNormal = inverseTransformDirection( geometry.normal, viewMatrix );\n\n\t#ifdef ENV_MAP_IRRADIANCE_TYPE_CUBE\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCube( envMapIrradiance, queryVec );\n\n\t#elif defined( ENV_MAP_IRRADIANCE_TYPE_CUBE_UV )\n\n\t\tvec3 queryVec = flipNormal * vec3( worldNormal.x, worldNormal.yz );\n\t\tvec4 envMapColor = textureCubeUV( queryVec, 1.0 );\n\n\t#else\n\n\t\tvec4 envMapColor = vec4( 0.0 );\n\n\t#endif\n\t#ifdef ENV_MAP_IRRADIANCE_ENCODING_SRGB\n\t\tenvMapColor.rgb = sRGBToLinear( envMapColor ).rgb;\n\t#endif\n\n\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#if defined(ENV_MAP_RADIANCE)\n\n\t#if defined(ENV_MAP_IRRADIANCE) && defined(ENV_MAP_RADIANCE_HALF_GLOSS)\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refRadianceHalf, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = roughness * 2.0;\n\t\t\treturn mix(mix(refRadiance, refRadianceHalf, min(interp, 1.0)), refIrradiance, max(interp - 1.0, 0.0));\n\t\t}\n\t#else\n\t\tvec3 getReflectionFromRoughness(in vec3 refRadiance, in vec3 refIrradiance, in float roughness) {\n\t\t\tfloat interp = min(roughness * 1.5, 1.0);\n\t\t\treturn mix(refRadiance, refIrradiance, interp);\n\t\t}\n\t#endif\n\n\tvec3 getBox3DLightProbeIndirectRadiance( const in GeometricContext geometry, const in float roughness ) {\n\n\t\t#ifdef ENV_MAP_RADIANCE_MODE_REFLECTION\n\n\t\t\tvec3 reflectVec = reflect( -geometry.viewDir, geometry.normal );\n\n\t\t#else\n\n\t\t\tvec3 reflectVec = refract( -geometry.viewDir, geometry.normal, refractionRatio );\n\n\t\t#endif\n\n\t\t#include <normal_flip>\n\n\t\treflectVec = inverseTransformDirection( reflectVec, viewMatrix );\n\n\t\tvec3 envMapColor = vec3(0.0);\n\t\tfloat radianceBias = roughness * float(ENV_MAP_RADIANCE_NUM_MIPS) * 0.5;\n\t\tvec4 envMapColorRadiance = vec4(0.0);\n\n\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\tfloat halfGlossBias = max((roughness - 0.5) * float(ENV_MAP_RADIANCE_HALF_GLOSS_NUM_MIPS), 0.0);\n\t\t#endif\n\n\t\t// Sample the environment map(s)\n\t\t#ifdef ENV_MAP_RADIANCE_TYPE_CUBE\n\t\t\tvec3 queryReflectVec = flipNormal * vec3( reflectVec.x, reflectVec.yz );\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION textureCube\n\t\t#else // PLANAR REFLECTION\n\t\t\tvec2 queryReflectVec = vec2(-1.0, 1.0) * (gl_FragCoord.xy - screenDimensions.xy) / screenDimensions.zw;\n\t\t\t#define ENV_MAP_SAMPLE_FUNCTION texture2D\n\t\t#endif\n\n\t\t// Sample env maps\n\t\tenvMapColorRadiance.rgb = ENV_MAP_SAMPLE_FUNCTION( envMapRadiance, queryReflectVec, radianceBias ).rgb;\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\t\t\t#ifdef ENV_MAP_RADIANCE_HALF_GLOSS\n\t\t\t\tvec4 envMapColorRadianceHalf = ENV_MAP_SAMPLE_FUNCTION( envMapRadianceHalfGloss, queryReflectVec, halfGlossBias );\n\t\t\t#endif\n\t\t\t#ifdef ENV_MAP_IRRADIANCE\n\t\t\t\tvec4 envMapColorIrradiance = ENV_MAP_SAMPLE_FUNCTION( envMapIrradiance, queryReflectVec );\n\t\t\t#endif\n\t\t#endif\n\n\t\t// Blend depending on which env maps are defined.\n\t\t#ifdef ENV_MAP_RADIANCE_ENCODING_SRGB\n\t\t\tenvMapColorRadiance.rgb = sRGBToLinear( envMapColorRadiance ).rgb;\n\t\t#endif\n\n\t\t#ifdef ENV_MAP_GLOSS_VARIANCE\n\n\t\t\t#if defined(ENV_MAP_IRRADIANCE_ENCODING_SRGB)\n\t\t\t\tenvMapColorIrradiance.rgb = sRGBToLinear(envMapColorIrradiance).rgb;\n\t\t\t#endif\n\n\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS) && defined(ENV_MAP_IRRADIANCE)\n\t\t\t\t#if defined(ENV_MAP_RADIANCE_HALF_GLOSS_ENCODING_SRGB)\n\t\t\t\t\tenvMapColorRadianceHalf.rgb = sRGBToLinear( envMapColorRadianceHalf ).rgb;\n\t\t\t\t#endif\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorRadianceHalf.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#elif defined(ENV_MAP_IRRADIANCE)\n\t\t\t\tenvMapColor = getReflectionFromRoughness(envMapColorRadiance.rgb, envMapColorIrradiance.rgb, roughness);\n\t\t\t#else\n\t\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t\t#endif\n\t\t#else\n\t\t\tenvMapColor = envMapColorRadiance.rgb;\n\t\t#endif\n\n\t\treturn envMapColor.rgb * envMapIntensity;\n\n}\n#endif\n\n#include <shadowmap_pars_fragment>\n#include <bumpmap_pars_fragment>\n#include <normalmap_pars_fragment>\n#include <specularmap_pars_fragment>\n#include <roughnessmap_pars_fragment>\n#include <metalnessmap_pars_fragment>\n#include <logdepthbuf_pars_fragment>\n#include <clipping_planes_pars_fragment>\n\nvoid main() {\n\n\t#include <clipping_planes_fragment>\n\n\tvec4 diffuseColor = vec4( diffuse, opacity );\n\tReflectedLight reflectedLight = ReflectedLight( vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ), vec3( 0.0 ) );\n\tvec3 totalEmissiveRadiance = emissive;\n\n\t#include <logdepthbuf_fragment>\n\t#include <map_fragment>\n\t#include <color_fragment>\n\t#include <alphamap_fragment>\n\t#include <alphatest_fragment>\n\t#include <specularmap_fragment>\n\t#include <roughnessmap_fragment>\n\t#include <metalnessmap_fragment>\n\t#ifndef METALNESS\n\t\tmetalnessFactor = 0.0;\n\t#endif\n\n\t#include <normal_flip>\n\t#if !defined(NORMALS)\n\t\t#undef USE_NORMALMAP\n\t#endif\n\t#include <normal_fragment>\n\n\t#ifdef EMISSIVE\n\t\t#include <emissivemap_fragment>\n\t#endif\n\n\t// accumulation\n\t// Removed chunk from physical material <lights_physical_fragment>\n\tPhysicalMaterial material;\n\tmaterial.diffuseColor = diffuseColor.rgb * ( 1.0 - metalnessFactor );\n\tmaterial.specularRoughness = clamp( roughnessFactor, 0.00, 1.0 );\n\t#ifdef METALNESS\n\t\tfloat reflectivityF0 = mix(DEFAULT_SPECULAR_COEFFICIENT, MAXIMUM_SPECULAR_COEFFICIENT, metalnessFactor);\n\t\tmaterial.specularColor = mix( vec3(reflectivityF0), diffuseColor.rgb, metalnessFactor );\n\t#else\n\t\tmaterial.specularColor = specular;\n\t#endif\n\tmaterial.clearCoat = saturate( clearCoat ); // Burley clearcoat model\n\tmaterial.clearCoatRoughness = clamp( clearCoatRoughness, 0.04, 1.0 );\n\n\t// Sample gloss map and modify specular roughness\n\t#if defined(GLOSS_MAP) && !defined(ROUGHNESS_MAP)\n\t\tvec4 texelGloss = texture2D( glossMap, vUv );\n\t\tmaterial.specularRoughness = min(material.specularRoughness + 1.0 - texelGloss.r, 1.0);\n\t#endif\n\n\tGeometricContext geometry;\n\n\tgeometry.position = - vViewPosition;\n\tgeometry.normal = normal;\n\tgeometry.viewDir = normalize( vViewPosition );\n\n\tIncidentLight directLight;\n\n\t#if ( NUM_POINT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tPointLight pointLight;\n\n\t\tfor ( int i = 0; i < NUM_POINT_LIGHTS; i ++ ) {\n\n\t\t\tpointLight = pointLights[ i ];\n\n\t\t\tgetPointDirectLightIrradiance( pointLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( pointLight.shadow, directLight.visible ) ) ? getPointShadow( pointShadowMap[ i ], pointLight.shadowMapSize, pointLight.shadowBias, pointLight.shadowRadius, vPointShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tSpotLight spotLight;\n\n\t\tfor ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {\n\n\t\t\tspotLight = spotLights[ i ];\n\n\t\t\tgetSpotDirectLightIrradiance( spotLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if ( NUM_DIR_LIGHTS > 0 ) && defined( RE_Direct )\n\n\t\tDirectionalLight directionalLight;\n\n\t\tfor ( int i = 0; i < NUM_DIR_LIGHTS; i ++ ) {\n\n\t\t\tdirectionalLight = directionalLights[ i ];\n\n\t\t\tgetDirectionalDirectLightIrradiance( directionalLight, geometry, directLight );\n\n\t\t\t#ifdef USE_SHADOWMAP\n\t\t\tdirectLight.color *= all( bvec2( directionalLight.shadow, directLight.visible ) ) ? getShadow( directionalShadowMap[ i ], directionalLight.shadowMapSize, directionalLight.shadowBias, directionalLight.shadowRadius, vDirectionalShadowCoord[ i ] ) : 1.0;\n\t\t\t#endif\n\n\t\t\tRE_Direct( directLight, geometry, material, reflectedLight );\n\n\t\t}\n\n\t#endif\n\n\t#if defined( RE_IndirectDiffuse )\n\n\t\tvec3 irradiance = getAmbientLightIrradiance( ambientLightColor );\n\n\t\t#ifdef USE_LIGHTMAP\n\n\t\t\tvec3 lightMapIrradiance = texture2D( lightMap, vUv2 ).xyz * lightMapIntensity;\n\n\t\t\t#ifndef PHYSICALLY_CORRECT_LIGHTS\n\n\t\t\t\tlightMapIrradiance *= PI; // factor of PI should not be present; included here to prevent breakage\n\n\t\t\t#endif\n\n\t\t\tirradiance += lightMapIrradiance;\n\n\t\t#endif\n\n\t\t#if ( NUM_HEMI_LIGHTS > 0 )\n\n\t\t\tfor ( int i = 0; i < NUM_HEMI_LIGHTS; i ++ ) {\n\n\t\t\t\tirradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometry );\n\n\t\t\t}\n\n\t\t#endif\n\n\t\t#if defined(ENV_MAP_IRRADIANCE)\n\n\t\t\tirradiance += getBox3DLightProbeIndirectIrradiance( /*lightProbe,*/ geometry );\n\n\t\t#endif\n\n\t\tRE_IndirectDiffuse( irradiance, geometry, material, reflectedLight );\n\n\t#endif\n\n\t#if defined(ENV_MAP_RADIANCE) && defined( RE_IndirectSpecular )\n\n\t\tvec3 radiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.specularRoughness );\n\t\t#ifdef CLEAR_COAT\n\t\t\tvec3 clearCoatRadiance = getBox3DLightProbeIndirectRadiance( /*specularLightProbe,*/ geometry, material.clearCoatRoughness );\n\t\t#else\n\t\t\tvec3 clearCoatRadiance = vec3( 0.0 );\n\t\t#endif\n\t\tfloat fresnel = 0.0;\n\t\tRE_IndirectSpecular( radiance, clearCoatRadiance, geometry, material, reflectedLight, fresnel );\n\t\tdiffuseColor.a += 2.0 * fresnel; // The factor of 2 is just a rough guess and not based on anything...\n\t\tdiffuseColor.a = min(diffuseColor.a, 1.0);\n\n\t#endif\n\n\t#if defined(AO_MAP)\n\t\t//Removed chunk <aomap_fragment> Overriding so that we can use vUv instead of vUv2\n\t\tfloat ambientOcclusion = texture2D( aoMap, vUv ).r;\n\t\treflectedLight.indirectDiffuse *= ambientOcclusion;\n\t\t#if defined( USE_ENVMAP ) && defined( PHYSICAL )\n\t\t\tfloat dotNV = saturate( dot( geometry.normal, geometry.viewDir ) );\n\t\t\treflectedLight.indirectSpecular *= computeSpecularOcclusion( dotNV, ambientOcclusion, material.specularRoughness );\n\t\t#endif\n\t#endif\n\n\tvec3 outgoingLight = reflectedLight.directDiffuse + reflectedLight.indirectDiffuse + reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance;\n\n\tgl_FragColor = vec4( outgoingLight, diffuseColor.a );\n\n\t#include <premultiplied_alpha_fragment>\n\t#include <tonemapping_fragment>\n\t#include <encodings_fragment>\n\t#include <fog_fragment>\n\n}"
 
 /***/ },
-/* 171 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95621,7 +95575,7 @@
 	exports.default = SkinAsset;
 
 /***/ },
-/* 172 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95650,7 +95604,7 @@
 
 	var _BaseImageAsset2 = _interopRequireDefault(_BaseImageAsset);
 
-	var _VideoAsset = __webpack_require__(173);
+	var _VideoAsset = __webpack_require__(171);
 
 	var _VideoAsset2 = _interopRequireDefault(_VideoAsset);
 
@@ -95791,7 +95745,7 @@
 	exports.default = Texture2DAsset;
 
 /***/ },
-/* 173 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -95808,7 +95762,7 @@
 
 	var _BaseImageAsset3 = _interopRequireDefault(_BaseImageAsset2);
 
-	var _LoadingType = __webpack_require__(123);
+	var _LoadingType = __webpack_require__(120);
 
 	var LoadingType = _interopRequireWildcard(_LoadingType);
 
@@ -96116,7 +96070,7 @@
 	exports.default = VideoAsset;
 
 /***/ },
-/* 174 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -96219,7 +96173,7 @@
 	exports.default = TextureCubeAsset;
 
 /***/ },
-/* 175 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97761,7 +97715,7 @@
 	exports.default = Box3DObject;
 
 /***/ },
-/* 176 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97776,7 +97730,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DObject2 = __webpack_require__(175);
+	var _Box3DObject2 = __webpack_require__(173);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -97827,7 +97781,7 @@
 	exports.default = BoneObject;
 
 /***/ },
-/* 177 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -97844,7 +97798,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DObject2 = __webpack_require__(175);
+	var _Box3DObject2 = __webpack_require__(173);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -97990,7 +97944,7 @@
 	exports.default = CameraObject;
 
 /***/ },
-/* 178 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -98011,7 +97965,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DObject2 = __webpack_require__(175);
+	var _Box3DObject2 = __webpack_require__(173);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -98406,7 +98360,7 @@
 	exports.default = LightObject;
 
 /***/ },
-/* 179 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -98431,7 +98385,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DObject2 = __webpack_require__(175);
+	var _Box3DObject2 = __webpack_require__(173);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -99383,7 +99337,7 @@
 	exports.default = MeshObject;
 
 /***/ },
-/* 180 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99406,7 +99360,7 @@
 
 	var THREE = _interopRequireWildcard(_three);
 
-	var _Box3DObject2 = __webpack_require__(175);
+	var _Box3DObject2 = __webpack_require__(173);
 
 	var _Box3DObject3 = _interopRequireDefault(_Box3DObject2);
 
@@ -99516,7 +99470,7 @@
 	exports.default = SceneObject;
 
 /***/ },
-/* 181 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;'use strict';
@@ -99542,7 +99496,7 @@
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 
 /***/ },
-/* 182 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99553,23 +99507,23 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _LoadableResource = __webpack_require__(183);
+	var _LoadableResource = __webpack_require__(181);
 
 	var _LoadableResource2 = _interopRequireDefault(_LoadableResource);
 
-	var _prioritizedConcurrentPromiseQueue = __webpack_require__(185);
+	var _prioritizedConcurrentPromiseQueue = __webpack_require__(183);
 
 	var _prioritizedConcurrentPromiseQueue2 = _interopRequireDefault(_prioritizedConcurrentPromiseQueue);
 
-	var _bufferLoader = __webpack_require__(186);
+	var _bufferLoader = __webpack_require__(184);
 
 	var _bufferLoader2 = _interopRequireDefault(_bufferLoader);
 
-	var _imageLoader = __webpack_require__(188);
+	var _imageLoader = __webpack_require__(186);
 
 	var _imageLoader2 = _interopRequireDefault(_imageLoader);
 
-	var _videoLoader = __webpack_require__(189);
+	var _videoLoader = __webpack_require__(187);
 
 	var _videoLoader2 = _interopRequireDefault(_videoLoader);
 
@@ -99713,7 +99667,7 @@
 	exports.default = XhrResourceLoader;
 
 /***/ },
-/* 183 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -99730,7 +99684,7 @@
 
 	var _RuntimeEvents2 = _interopRequireDefault(_RuntimeEvents);
 
-	var _LoadingState = __webpack_require__(184);
+	var _LoadingState = __webpack_require__(182);
 
 	var LoadingState = _interopRequireWildcard(_LoadingState);
 
@@ -99980,7 +99934,7 @@
 	exports.default = LoadableResource;
 
 /***/ },
-/* 184 */
+/* 182 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -99996,7 +99950,7 @@
 	var ERROR = exports.ERROR = 'error';
 
 /***/ },
-/* 185 */
+/* 183 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -100104,7 +100058,7 @@
 	exports.default = prioritizedConcurrentPromiseQueue;
 
 /***/ },
-/* 186 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100113,7 +100067,7 @@
 	  value: true
 	});
 
-	var _common = __webpack_require__(187);
+	var _common = __webpack_require__(185);
 
 	/**
 	 * Takes the loaded data from the XHR object and converts it into data which can
@@ -100145,7 +100099,7 @@
 	};
 
 /***/ },
-/* 187 */
+/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100304,7 +100258,7 @@
 	};
 
 /***/ },
-/* 188 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100313,7 +100267,7 @@
 	  value: true
 	});
 
-	var _common = __webpack_require__(187);
+	var _common = __webpack_require__(185);
 
 	/**
 	 * Takes the loaded data from the XHR object and converts it into data which can
@@ -100363,7 +100317,7 @@
 	};
 
 /***/ },
-/* 189 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -100372,7 +100326,7 @@
 	  value: true
 	});
 
-	var _common = __webpack_require__(187);
+	var _common = __webpack_require__(185);
 
 	/**
 	 * Takes the loaded data from the XHR object and converts it into data which can
@@ -100420,7 +100374,7 @@
 	};
 
 /***/ },
-/* 190 */
+/* 188 */
 /***/ function(module, exports) {
 
 	'use strict';
