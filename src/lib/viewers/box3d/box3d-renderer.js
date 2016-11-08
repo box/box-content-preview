@@ -13,17 +13,6 @@ import {
 const RENDER_VIEW_COMPONENT_ID = 'render_view_component';
 const PREVIEW_CAMERA_CONTROLLER_ID = 'preview_camera_controller';
 
-const INPUT_SETTINGS = {
-    mouseEvents: {
-        scroll: true,
-        scroll_preventDefault: true
-    },
-    vrEvents: {
-        enable: true,
-        position: false
-    }
-};
-
 /**
  * Detect is WebVR is available with latest API
  * @returns {Boolean} True is we can support WebVR
@@ -192,7 +181,7 @@ class Box3DRenderer extends EventEmitter {
      * @param {Object} [inputSettings] Config for the input controller of the Box3D Engine
      * @returns {Promise} A promise that resolves with the Box3D Engine.
      */
-    createBox3d(resourceLoader, sceneEntities, inputSettings = INPUT_SETTINGS) {
+    createBox3d(resourceLoader, sceneEntities) {
         const box3d = new Box3D.Engine();
 
         return new Promise((resolve, reject) => {
@@ -200,7 +189,6 @@ class Box3DRenderer extends EventEmitter {
                 container: this.containerEl,
                 engineName: 'Default',
                 entities: sceneEntities,
-                inputSettings,
                 resourceLoader
             }, () => {
                 const app = box3d.getAssetById('APP_ASSET_ID');
