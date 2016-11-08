@@ -106,7 +106,7 @@ class Video360Controls extends EventEmitter {
         if (this.vrButtonEl && this.vrButtonEl.parentElement) {
             this.vrButtonEl.parentElement.removeChild(this.vrButtonEl);
         }
-        
+
         this.vrButtonEl = null;
         this.el = null;
         this.handleToggleVr = null;
