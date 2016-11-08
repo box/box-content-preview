@@ -56,10 +56,6 @@ describe('doc-highlight-thread', () => {
 
             // only plain highlight annotation should still exist
             expect(highlightThread._annotations.length).to.equal(1);
-
-            // comment textarea should be cleared
-            const annotationTextEl = highlightThread._annotatedElement.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
-            expect(annotationTextEl.value).to.equal('');
         });
 
         it('should destroy the annotation when cancelling a new highlight comment annotation', () => {

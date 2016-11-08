@@ -68,7 +68,7 @@ describe('annotation-dialog', () => {
             annotationDialog.addAnnotation({});
 
             expect(addStub).to.have.been.called;
-            expect(deactivateStub).to.have.been.called;
+            expect(deactivateStub).to.have.been.calledWith(true);
         });
 
         it('should hide the create section and show the show section if there are no annotations', () => {
@@ -260,11 +260,13 @@ describe('annotation-dialog', () => {
 
         it('should cancel annotation when cancel annotation button is clicked', () => {
             sandbox.stub(annotatorUtil, 'findClosestDataType').returns('cancel-annotation-btn');
-            const stub = sandbox.stub(annotationDialog, '_cancelAnnotation');
+            const cancelStub = sandbox.stub(annotationDialog, '_cancelAnnotation');
+            const deactivateStub = sandbox.stub(annotationDialog, '_deactivateReply');
 
             annotationDialog.clickHandler(event);
 
-            expect(stub).to.have.been.called;
+            expect(cancelStub).to.have.been.called;
+            expect(deactivateStub).to.have.been.calledWith(true);
         });
 
         it('should activate reply area when textarea is clicked', () => {
@@ -282,7 +284,7 @@ describe('annotation-dialog', () => {
 
             annotationDialog.clickHandler(event);
 
-            expect(stub).to.have.been.called;
+            expect(stub).to.have.been.calledWith(true);
         });
 
         it('should post reply when post reply button is clicked', () => {

@@ -101,5 +101,20 @@ describe('video360-renderer', () => {
         });
     });
 
-    describe('destroy()', () => {});
+    describe('destroy()', () => {
+        it('should nullify .inputController', () => {
+            renderer.destroy();
+            expect(renderer.inputController).to.not.exist;
+        });
+
+        it('should call super.destroy()', () => {
+            const destroyStub = sandbox.stub();
+            Object.defineProperty(Object.getPrototypeOf(Video360Renderer.prototype), 'destroy', {
+                value: destroyStub
+            });
+            renderer.destroy();
+
+            expect(destroyStub).to.have.been.called;
+        });
+    });
 });

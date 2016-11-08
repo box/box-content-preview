@@ -293,10 +293,6 @@ class Image extends Base {
         // Adjust image position after transformations
         this.adjustImageZoomPadding();
 
-        // Fix the scroll position of the image to be centered
-        this.wrapperEl.scrollLeft = (this.wrapperEl.scrollWidth - viewport.width) / 2;
-        this.wrapperEl.scrollTop = (this.wrapperEl.scrollHeight - viewport.height) / 2;
-
         // Give the browser some time to render before updating pannability
         setTimeout(this.updatePannability, 50);
 
@@ -429,6 +425,10 @@ class Image extends Base {
         let largerWidth = 0;
         let largerHeight = 0;
         const wrapperDimensions = this.wrapperEl.getBoundingClientRect();
+        const viewport = {
+            width: this.wrapperEl.clientWidth - IMAGE_PADDING,
+            height: this.wrapperEl.clientHeight - IMAGE_PADDING
+        };
 
         if (this.isRotated()) {
             largerWidth = (wrapperDimensions.width > this.imageEl.clientHeight) ? wrapperDimensions.width : this.imageEl.clientHeight;
@@ -443,6 +443,10 @@ class Image extends Base {
 
         this.imageEl.style.left = `${leftPadding}px`;
         this.imageEl.style.top = `${topPadding}px`;
+
+        // Fix the scroll position of the image to be centered
+        this.wrapperEl.scrollLeft = (this.wrapperEl.scrollWidth - viewport.width) / 2;
+        this.wrapperEl.scrollTop = (this.wrapperEl.scrollHeight - viewport.height) / 2;
     }
 
     //--------------------------------------------------------------------------

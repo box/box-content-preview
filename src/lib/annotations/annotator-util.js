@@ -118,14 +118,18 @@ export function hideElementVisibility(elementOrSelector) {
  * Reset textarea element - clears value, resets styles, and remove active
  * state.
  * @param {HTMLElement} element Textarea to reset
+ * @param {Boolean} clearText Whether or not text in text area should be cleared
  * @returns {void}
  */
-export function resetTextarea(element) {
+export function resetTextarea(element, clearText) {
     const textareaEl = element;
-    textareaEl.value = '';
     textareaEl.style.width = '';
     textareaEl.style.height = '';
     textareaEl.classList.remove(CLASS_ACTIVE);
+
+    if (clearText) {
+        textareaEl.value = '';
+    }
 }
 
 //------------------------------------------------------------------------------

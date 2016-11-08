@@ -131,6 +131,23 @@ describe('annotator-util', () => {
             resetTextarea(textAreaEl);
 
             assert.ok(!textAreaEl.classList.contains('box-preview-is-active'), 'Should be inactive');
+            assert.equal(textAreaEl.value, 'test', 'Value should NOT be reset');
+            assert.equal(textAreaEl.style.width, '', 'Width should be reset');
+            assert.equal(textAreaEl.style.height, '', 'Height should be reset');
+        });
+
+        it('should reset text area', () => {
+            const textAreaEl = document.querySelector('.textarea');
+
+            // Fake making text area 'active'
+            textAreaEl.classList.add('box-preview-is-active');
+            textAreaEl.value = 'test';
+            textAreaEl.style.width = '10px';
+            textAreaEl.style.height = '10px';
+
+            resetTextarea(textAreaEl, true);
+
+            assert.ok(!textAreaEl.classList.contains('box-preview-is-active'), 'Should be inactive');
             assert.equal(textAreaEl.value, '', 'Value should be reset');
             assert.equal(textAreaEl.style.width, '', 'Width should be reset');
             assert.equal(textAreaEl.style.height, '', 'Height should be reset');
