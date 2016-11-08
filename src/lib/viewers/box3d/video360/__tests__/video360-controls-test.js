@@ -65,7 +65,6 @@ describe('video360-controls', () => {
     });
 
     describe('addUi()', () => {
-        let controls;
         let mediaControlsEl;
         let vrButtonEl;
         let iconSpanEl;
@@ -91,12 +90,12 @@ describe('video360-controls', () => {
             const createElement = sandbox.stub(document, 'createElement');
             createElement.withArgs('button').returns(vrButtonEl);
             createElement.withArgs('span').returns(iconSpanEl);
-
-            controls = new Video360Controls(containerEl);
+            /*eslint-disable*/
+            const controls = new Video360Controls(containerEl);
+            /*eslint-enable*/
         });
 
         afterEach(() => {
-            controls = null;
             mediaControlsEl = null;
             vrButtonEl = null;
             iconSpanEl = null;
