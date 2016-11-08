@@ -1,12 +1,6 @@
+/* global Box3D, THREE */
 import Box3DRenderer from '../box3d-renderer';
 import sceneEntities from './scene-entities';
-
-const INPUT_SETTINGS = {
-    vrEvents: {
-        enable: true,
-        position: false
-    }
-};
 
 /**
  * Image360Renderer
@@ -87,63 +81,39 @@ class Image360Renderer extends Box3DRenderer {
     load(jsonUrl, options = {}) {
         const opts = options;
         opts.sceneEntities = opts.sceneEntities || sceneEntities;
-        opts.inputSettings = opts.inputSettings || INPUT_SETTINGS;
 
         return this.initBox3d(opts)
-            .then(this.loadPanoramaFile.bind(this, opts.file))
+            .then(this.loadPanoramaFile.bind(this, jsonUrl))
             .then(this.onSceneLoad.bind(this));
     }
 
     /**
-     * Parse out the proper components to assemble a threejs mesh
-     *
-     * @param {object} fileProperties The Box3D file properties
+     * Load a box3d representation and initialize the scene.
+     * @method loadBox3dFile
+     * @private
+     * @param {string} fileUrl The representation URL.
      * @returns {void}
      */
-    loadPanoramaFile(fileProperties) {
-        this.imageAsset = this.box3d.createImage();
-        this.imageAsset.setProperty('stream', false);
-
-        // FIXME - when we get support for '3d' representations on image files, the logic below
-        // should no longer be needed.
-        // Figure out the appropriate representation info and then add that info to the asset.
-        const extension = fileProperties.extension.toLowerCase();
-        let compression = extension === 'png' ? 'zip' : 'jpeg';
-        return this.boxSdk.representationLoader.getRepresentationUrl(fileProperties.id, (entry) => {
-            const grabOriginal = (extension === 'jpg' || extension === 'jpeg'
-                || extension === 'png');
-            if (grabOriginal && entry.representation === 'original') {
-                return true;
-            } else if (!grabOriginal && entry.properties.dimensions === '2048x2048') {
-                if (entry.representation === 'jpg') {
-                    compression = 'jpeg';
-                } else if (entry.representation === 'png') {
-                    compression = 'zip';
-                }
-                return true;
-            }
-            return false;
-        }, undefined, { headers: { 'x-rep-hints': 'original|jpeg|png' } }).then((url) => {
-            this.imageAsset.set('representations', [{
-                src: url,
-                compression
-            }]);
-
-            this.textureAsset = this.box3d.createTexture2d();
-            this.textureAsset.setProperties({
-                imageId: this.imageAsset.id,
-                uMapping: 'clamp',
-                vMapping: 'clamp'
-            });
-            return new Promise((resolve) => {
-                this.textureAsset.load(() => {
-                    const skybox = this.getSkyboxComponent();
-                    skybox.enable();
-                    skybox.setAttribute('skyboxTexture', this.textureAsset.id);
-                    resolve();
+    loadPanoramaFile(fileUrl) {
+        const loader = new Box3D.JSONLoader(this.box3d);
+        return loader.loadFromUrl(fileUrl, { withCredentials: false })
+            .then(() => {
+                this.imageAsset = this.box3d.getAssetByType('image');
+                this.textureAsset = this.box3d.createTexture2d();
+                this.textureAsset.setProperties({
+                    imageId: this.imageAsset.id,
+                    uMapping: 'clamp',
+                    vMapping: 'clamp'
                 });
-            });
-        });
+                return new Promise((resolve) => {
+                    this.textureAsset.load(() => {
+                        this.skybox = this.getSkyboxComponent();
+                        this.skybox.enable();
+                        this.skybox.setAttribute('skyboxTexture', this.textureAsset.id);
+                        resolve();
+                    });
+                });
+            }, () => this.onUnsupportedRepresentation());
     }
 
     /**

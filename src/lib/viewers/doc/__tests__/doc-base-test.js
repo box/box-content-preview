@@ -15,7 +15,6 @@ const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
-const MIN_RANGE_REQUEST_SIZE_BYTES = 5242880; // 5MB
 const SCROLL_END_TIMEOUT = 500;
 
 
@@ -704,7 +703,6 @@ describe('doc-base', () => {
                     staticBaseURI: 'test/'
                 },
                 file: {
-                    size: MIN_RANGE_REQUEST_SIZE_BYTES - 1,
                     watermark_info: {
                         is_watermarked: false
                     },
@@ -713,6 +711,8 @@ describe('doc-base', () => {
                     }
                 }
             };
+
+            PDFJS.disableRange = false;
         });
 
         it('should create the asset url', () => {
@@ -726,14 +726,8 @@ describe('doc-base', () => {
             expect(PDFJS.externalLinkRel).to.equal('noopener noreferrer');
         });
 
-        it('should disable range requests if the file is not too big', () => {
-            stubs.browser.returns('Chrome');
-
-            docBase.setupPdfjs();
-            expect(PDFJS.disableRange).to.be.true;
-        });
-
-        it('should disable range requests if the browser is Safari', () => {
+        it('should disable range requests if the browser is Mobile Safari', () => {
+            sandbox.stub(Browser, 'isIOS').returns(true);
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.true;
         });
@@ -749,7 +743,6 @@ describe('doc-base', () => {
 
         it('should enable range requests if the file and browser meet the conditions', () => {
             stubs.browser.returns('Chrome');
-            docBase.options.file.size = MIN_RANGE_REQUEST_SIZE_BYTES + 100;
 
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.false;

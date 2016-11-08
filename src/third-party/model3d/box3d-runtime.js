@@ -93141,9 +93141,9 @@
 	        return geometry;
 	      });
 
-	      return geometries.reduce(function (geometry, bounds) {
+	      return geometries.reduce(function (bounds, geometry) {
 	        return bounds.union(geometry.boundingBox);
-	      }, new THREE.Box());
+	      }, new THREE.Box3());
 	    }
 
 	    /**
