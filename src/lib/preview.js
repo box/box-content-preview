@@ -377,6 +377,12 @@ class Preview extends EventEmitter {
      * @private
      */
     loadPreviewWithTokens(tokenMap) {
+        // If this is a retry, short-circuit and load from server
+        if (this.retryCount > 0) {
+            this.loadFromServer();
+            return;
+        }
+
         // Parse the preview options supplied by show()
         this.parseOptions(this.previewOptions, tokenMap);
 
