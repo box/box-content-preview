@@ -267,6 +267,9 @@ describe('annotation-service', () => {
 
     describe('_createThreadMap()', () => {
         it('should create a thread map with the correct annotations, in the correct order', () => {
+            // Dates are provided as a string format from the API such as "2016-10-30T14:19:56",
+            // ensures that the method converts to a Date() format for comparison/sorting
+            // Hard coding dates to ensure formatting resembles API response
             const annotation1 = new Annotation({
                 fileVersionID: 2,
                 threadID: AnnotationService.generateID(),
@@ -274,8 +277,21 @@ describe('annotation-service', () => {
                 text: 'blah',
                 thread: '1',
                 location: { x: 0, y: 0 },
-                created: Date.now()
+                created: '2016-10-29T14:19:56'
             });
+
+            // Ensures annotations are not provided in chronological order
+            const annotation4 = new Annotation({
+                fileVersionID: 2,
+                threadID: annotation1.threadID,
+                type: 'point',
+                text: 'blah4',
+                thread: '1',
+                location: { x: 0, y: 0 },
+                created: '2016-10-30T14:19:56'
+
+            });
+
             const annotation2 = new Annotation({
                 fileVersionID: 2,
                 threadID: AnnotationService.generateID(),
@@ -283,9 +299,10 @@ describe('annotation-service', () => {
                 text: 'blah2',
                 thread: '2',
                 location: { x: 0, y: 0 },
-                created: Date.now()
+                created: '2016-10-30T14:19:56'
 
             });
+
             const annotation3 = new Annotation({
                 fileVersionID: 2,
                 threadID: annotation1.threadID,
@@ -293,13 +310,15 @@ describe('annotation-service', () => {
                 text: 'blah3',
                 thread: '1',
                 location: { x: 0, y: 0 },
-                created: Date.now()
+                created: '2016-10-31T14:19:56'
 
             });
-            const threadMap = annotationService._createThreadMap([annotation1, annotation2, annotation3]);
 
-            expect(threadMap[annotation1.threadID].length).to.equal(2);
+            const threadMap = annotationService._createThreadMap([annotation1, annotation2, annotation3, annotation4]);
+
+            expect(threadMap[annotation1.threadID].length).to.equal(3);
             expect(threadMap[annotation1.threadID][0]).to.equal(annotation1);
+            expect(threadMap[annotation1.threadID][1]).to.equal(annotation4);
             expect(threadMap[annotation1.threadID][0].thread).to.equal(threadMap[annotation1.threadID][1].thread);
             expect(threadMap[annotation1.threadID][0].thread).to.not.equal(threadMap[annotation2.threadID][0].thread);
         });
