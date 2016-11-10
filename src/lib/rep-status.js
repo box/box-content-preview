@@ -9,7 +9,7 @@ class RepStatus {
     /**
      * [constructor]
      *
-     * @param {Object} representation rep url
+     * @param {Object} representation representation object
      * @param {Object} headers request headers
      * @param {Object} [logger] optional logger instance
      * @param {Array} [files] optional files to test
