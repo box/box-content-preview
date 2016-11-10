@@ -4,7 +4,6 @@ import AnnotationService from '../../annotations/annotation-service';
 import ImageAnnotator from '../../annotations/image/image-annotator';
 import Browser from '../../browser';
 import Base from './image-base';
-import { get } from '../../util';
 import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
 
@@ -65,24 +64,11 @@ class Image extends Base {
      * @returns {void}
      */
     load(imageUrl) {
+        this.imageEl.src = this.appendAuthParam(imageUrl);
         this.imageEl.addEventListener('load', this.onLoadHandler);
         this.bindDOMListeners();
-        this.fetchImageUrl(imageUrl);
+
         super.load();
-    }
-
-    fetchImageUrl(imageUrl) {
-        get(imageUrl, this.appendAuthHeader(), 'blob').then((img) => {
-            if (this.destroyed) {
-                return;
-            }
-
-            this.imageEl.src = URL.createObjectURL(img);
-        }).catch((err) => {
-            /* eslint-disable no-console */
-            console.error(err);
-            /* eslint-enable no-console */
-        });
     }
 
     /**
@@ -515,7 +501,6 @@ class Image extends Base {
             return;
         }
 
-        URL.revokeObjectURL(this.imageEl.src);
         this.loaded = true;
         this.emit('load');
         this.zoom();

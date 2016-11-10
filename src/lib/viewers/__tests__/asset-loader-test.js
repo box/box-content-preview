@@ -225,7 +225,6 @@ describe('asset-loader', () => {
         });
 
         it('should prefetch assets with XHR if viewer has xhr prefetch', () => {
-            const headers = {};
             const url = 'someUrl';
             const token = 'someToken';
             const sharedLink = 'someLink';
@@ -244,12 +243,11 @@ describe('asset-loader', () => {
             });
             sandbox.stub(loader, 'prefetchAssets');
             sandbox.stub(util, 'get');
-            sandbox.stub(util, 'getHeaders').returns(headers);
+            sandbox.stub(util, 'createContentUrl').returns(url);
 
             loader.prefetch({}, token, {}, sharedLink, password);
 
-            expect(util.getHeaders).to.have.been.calledWith(sinon.match.object, token, sharedLink, password);
-            expect(util.get).to.have.been.calledWith(url, headers, 'any');
+            expect(util.get).to.have.been.calledWith(url, 'any');
         });
 
         it('should prefetch assets via img tag if viewer doesn\'t use xhr prefetch', () => {

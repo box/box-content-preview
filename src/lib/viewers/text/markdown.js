@@ -33,7 +33,7 @@ class MarkDown extends TextBase {
      * @returns {Promise} Promise to load a text file
      */
     load(textUrl) {
-        get(textUrl, this.appendAuthHeader(), 'text')
+        get(this.appendAuthParam(textUrl), 'text')
         .then((txt) => {
             /* global hljs */
 

@@ -118,7 +118,7 @@ class DocBase extends Base {
      * @returns {Promise} Promise to load a pdf
      */
     load(pdfUrl) {
-        this.pdfUrl = pdfUrl;
+        this.pdfUrl = this.appendAuthParam(pdfUrl);
 
         this.setupPdfjs();
         this.initViewer(this.pdfUrl);
@@ -510,7 +510,6 @@ class DocBase extends Base {
         // Load PDF from representation URL
         this.pdfLoadingTask = PDFJS.getDocument({
             url: pdfUrl,
-            httpHeaders: this.appendAuthHeader(),
             rangeChunkSize: RANGE_REQUEST_CHUNK_SIZE
         });
 
@@ -655,7 +654,7 @@ class DocBase extends Base {
      * @private
      */
     fetchPrintBlob(pdfUrl) {
-        return get(pdfUrl, this.appendAuthHeader(), 'blob').then((blob) => {
+        return get(pdfUrl, 'blob').then((blob) => {
             this.printBlob = blob;
         });
     }

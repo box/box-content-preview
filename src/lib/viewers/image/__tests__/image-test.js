@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-expressions */
 import Image from '../image';
-import * as util from '../../../util';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
@@ -11,38 +10,12 @@ const imageUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABW
 let image;
 let stubs = {};
 let imageParams;
-let imageBlob;
 let containerEl;
 let clock;
-
-/**
- * Creates and returns a blob from a base64 data URL
- *
- * @private
- * @param {string} dataURL The data URL to convert.
- * @returns {Blob} A blob representing the array buffer data.
- */
-function dataURLToBlob(dataURL) {
-    const parts = dataURL.split(';base64,');
-    const contentType = parts[0].split(':')[1];
-    const raw = window.atob(parts[1]);
-    const rawLength = raw.length;
-
-    const uInt8Array = new Uint8Array(rawLength);
-
-    for (let i = 0; i < rawLength; ++i) {
-        uInt8Array[i] = raw.charCodeAt(i);
-    }
-
-    return new Blob([uInt8Array], {
-        type: contentType
-    });
-}
 
 describe('image.js', () => {
     before(() => {
         fixture.setBase('src/lib');
-        imageBlob = dataURLToBlob(imageUrl);
     });
 
     beforeEach(() => {
@@ -108,40 +81,19 @@ describe('image.js', () => {
     describe('load()', () => {
         beforeEach(() => {
             image = new Image(containerEl, imageParams);
+            sandbox.stub(image, 'appendAuthParam').returns(imageUrl);
         });
 
         it('should fetch the image URL and load an image', () => {
             stubs.event = sandbox.stub(image.imageEl, 'addEventListener');
             stubs.load = sandbox.stub(image, 'onLoadHandler');
-            stubs.fetch = sandbox.stub(image, 'fetchImageUrl');
             stubs.bind = sandbox.stub(image, 'bindDOMListeners');
 
             // load the image
             image.load(imageUrl);
 
             expect(stubs.event).to.have.been.calledWith('load', stubs.load);
-            expect(stubs.fetch).to.have.been.called;
             expect(stubs.bind).to.have.been.called;
-        });
-    });
-
-    describe('fetchImageUrl()', () => {
-        beforeEach(() => {
-            image = new Image(containerEl, imageParams);
-            stubs.auth = sandbox.stub(image, 'appendAuthHeader');
-        });
-
-        it('should create the object url from image blob', () => {
-            const promise = Promise.resolve(imageBlob);
-            stubs.getImage = sandbox.stub(util, 'get').returns(promise);
-
-            image.fetchImageUrl(imageUrl);
-            expect(stubs.getImage).to.have.been.called;
-            expect(stubs.auth).to.have.been.called;
-
-            return promise.then(() => {
-                expect(image.imageEl.src).to.not.equal('');
-            });
         });
     });
 
@@ -374,11 +326,7 @@ describe('image.js', () => {
     describe('zoom()', () => {
         beforeEach(() => {
             image = new Image(containerEl, imageParams);
-
-            // Mock out fetch and return a blobbed image
-            stubs.auth = sandbox.stub(image, 'appendAuthHeader');
-            stubs.promise = Promise.resolve(imageBlob);
-            stubs.getImage = sandbox.stub(util, 'get').returns(stubs.promise);
+            sandbox.stub(image, 'appendAuthParam').returns(imageUrl);
             sandbox.stub(image, 'onLoadHandler');
 
             // Set image height & width
@@ -388,28 +336,20 @@ describe('image.js', () => {
 
         it('should zoom in', () => {
             image.load(imageUrl);
-            expect(stubs.getImage).to.have.been.called;
-            expect(stubs.auth).to.have.been.called;
 
-            return stubs.promise.then(() => {
-                const origImageSize = image.imageEl.getBoundingClientRect();
-                image.zoomIn();
-                const newImageSize = image.imageEl.getBoundingClientRect();
-                expect(newImageSize.width).gt(origImageSize.width);
-            });
+            const origImageSize = image.imageEl.getBoundingClientRect();
+            image.zoom('in');
+            const newImageSize = image.imageEl.getBoundingClientRect();
+            expect(newImageSize.width).gt(origImageSize.width);
         });
 
         it('should zoom out', () => {
             image.load(imageUrl);
-            expect(stubs.getImage).to.have.been.called;
-            expect(stubs.auth).to.have.been.called;
 
-            return stubs.promise.then(() => {
-                const origImageSize = image.imageEl.getBoundingClientRect();
-                image.zoomOut();
-                const newImageSize = image.imageEl.getBoundingClientRect();
-                expect(newImageSize.width).lt(origImageSize.width);
-            });
+            const origImageSize = image.imageEl.getBoundingClientRect();
+            image.zoom('out');
+            const newImageSize = image.imageEl.getBoundingClientRect();
+            expect(newImageSize.width).lt(origImageSize.width);
         });
     });
 });

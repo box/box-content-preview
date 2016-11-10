@@ -4,7 +4,6 @@ import {
     loadStylesheets,
     loadScripts,
     createAssetUrlCreator,
-    getHeaders,
     get
 } from '../util';
 
@@ -127,10 +126,9 @@ class AssetLoader {
         }
 
         if (viewer.PREFETCH === 'xhr') {
-            get(representation.links.content.url, getHeaders({}, token, sharedLink, sharedLinkPassword), 'any');
+            get(createContentUrl(representation.links.content.url, token, sharedLink, sharedLinkPassword), 'any');
         } else {
             const img = document.createElement('img');
-            img.crossOrigin = 'anonymous';
             img.src = createContentUrl(representation.links.content.url, token, sharedLink, sharedLinkPassword);
         }
     }
