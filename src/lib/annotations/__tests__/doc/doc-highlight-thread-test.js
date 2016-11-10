@@ -116,8 +116,6 @@ describe('doc-highlight-thread', () => {
             });
 
             highlightThread.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, '');
-
-            assert.equal(highlightThread._state, constants.ANNOTATION_STATE_HOVER);
         });
 
         it('should save a highlight comment annotation', () => {
@@ -129,8 +127,6 @@ describe('doc-highlight-thread', () => {
             });
 
             highlightThread.saveAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT, 'bleh');
-
-            assert.equal(highlightThread._state, constants.ANNOTATION_STATE_HOVER);
         });
     });
 

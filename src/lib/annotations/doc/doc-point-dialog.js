@@ -38,7 +38,7 @@ class DocPointDialog extends AnnotationDialog {
 
         // Center middle of dialog with point - this coordinate is with respect to the page
         let dialogLeftX = browserX - (dialogWidth / 2);
-        const dialogTopY = browserY - (POINT_ANNOTATION_ICON_DOT_HEIGHT / 2) - 10;
+        const dialogTopY = browserY - (POINT_ANNOTATION_ICON_DOT_HEIGHT / 2);
 
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing

@@ -288,7 +288,7 @@ class AnnotationService extends EventEmitter {
         // Sort annotations by date created
         Object.keys(threadMap).forEach((threadID) => {
             threadMap[threadID].sort((a, b) => {
-                return a.created - b.created;
+                return new Date(a.created) - new Date(b.created);
             });
         });
 
