@@ -35,7 +35,14 @@ class Office extends Base {
     load() {
         let src = `${deduceBoxUrl(this.options.api)}/integrations/officeonline/openExcelOnlinePreviewer`;
         if (this.options.sharedLink) {
-            src += `?s=${this.options.sharedLink.split('/s/')[1]}&fileId=${this.options.file.id}`;
+            // Find the shared or vanity name
+            const sharedName = this.options.sharedLink.split('/s/')[1];
+            if (sharedName) {
+                src += `?s=${sharedName}&fileId=${this.options.file.id}`;
+            } else {
+                const vanityName = this.options.sharedLink.split('/v/')[1];
+                src += `?v=${vanityName}&fileId=${this.options.file.id}`;
+            }
         } else {
             src += `?fileId=${this.options.file.id}`;
         }

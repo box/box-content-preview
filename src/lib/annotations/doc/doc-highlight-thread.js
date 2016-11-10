@@ -89,7 +89,6 @@ class DocHighlightThread extends AnnotationThread {
     saveAnnotation(type, text) {
         super.saveAnnotation(type, text);
         window.getSelection().removeAllRanges();
-        this._state = constants.ANNOTATION_STATE_HOVER;
     }
 
     /**

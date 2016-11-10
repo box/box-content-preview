@@ -58317,11 +58317,11 @@
 
 	      this.unload(false);
 
-	      this.type = undefined;
 	      for (var i = 0; i < this.state.length; i++) {
 	        this.state[i] = Box3DEntity.STATE.DESTROYED;
 	      }
 
+	      this.type = undefined;
 	      this.runtimeData = null;
 	      this.box3DRuntime = undefined;
 	    }
@@ -58915,6 +58915,10 @@
 	        this.startComponents();
 
 	        this.createRuntimeData(function () {
+	          if (_this5.isDestroyed()) {
+	            return;
+	          }
+
 	          // Apply the initial set of properties.
 	          _this5._applyPropertiesLoaded(_this5.getProperties(), 'init');
 
@@ -84661,6 +84665,10 @@
 	      var _this5 = this;
 
 	      this.when('loadDependencies', function () {
+	        if (_this5.isDestroyed()) {
+	          return;
+	        }
+
 	        var dependencies = _this5.getDependencies();
 	        var loadFailed = dependencies.some(function (asset) {
 	          return asset.isLoadFailed();
@@ -92302,6 +92310,10 @@
 	    value: function loadHighResImage(callback) {
 	      var _this4 = this;
 
+	      if (this.isDestroyed()) {
+	        return;
+	      }
+
 	      var textureParams = {
 	        maxSize: Math.max(this.getWidth(), this.getHeight()),
 	        compression: this.getCompressionFormat()
@@ -92316,6 +92328,10 @@
 	      // Now load the high-res version of the image.
 	      return new Promise(function (resolve, reject) {
 	        var onImageLoadProgress = function onImageLoadProgress(progressObj) {
+	          if (_this4.isDestroyed()) {
+	            return;
+	          }
+
 	          _this4.loadedBytes = progressObj.loaded;
 	          if (!_this4.get('bufferSize')) {
 	            _this4.set('bufferSize', progressObj.total);
@@ -92381,6 +92397,10 @@
 	  }, {
 	    key: 'onImageLoadError',
 	    value: function onImageLoadError(err) {
+	      if (this.isDestroyed()) {
+	        return;
+	      }
+
 	      _log2.default.error('There was an error loading the image, ' + this.getName(), err);
 
 	      this.setState(_Box3DEntity2.default.STATE_TYPE.BASE, _Box3DEntity2.default.STATE.FAILED);
@@ -92927,6 +92947,10 @@
 	        var loadFailed = dependencies.some(function (asset) {
 	          return asset.isLoadFailed();
 	        });
+
+	        if (_this4.isDestroyed()) {
+	          return;
+	        }
 
 	        if (!loadFailed) {
 	          try {
@@ -93712,24 +93736,24 @@
 
 	      switch (type) {
 	        case 'box':
-	          geometry = new THREE.BoxGeometry(this.getProperty('sizeX'), this.getProperty('sizeY'), this.getProperty('sizeZ'), this.getProperty('segmentsX'), this.getProperty('segmentsY'), this.getProperty('segmentsZ'), this.getProperty('flipSided'));
+	          geometry = new THREE.BoxBufferGeometry(this.getProperty('sizeX'), this.getProperty('sizeY'), this.getProperty('sizeZ'), this.getProperty('segmentsX'), this.getProperty('segmentsY'), this.getProperty('segmentsZ'), this.getProperty('flipSided'));
 	          break;
 
 	        case 'cylinder':
-	          geometry = new THREE.CylinderGeometry(this.getProperty('radiusTop'), this.getProperty('radiusBottom'), this.getProperty('height'), this.getProperty('segmentsV'), this.getProperty('segmentsU'), this.getProperty('open'));
+	          geometry = new THREE.CylinderBufferGeometry(this.getProperty('radiusTop'), this.getProperty('radiusBottom'), this.getProperty('height'), this.getProperty('segmentsV'), this.getProperty('segmentsU'), this.getProperty('open'));
 	          break;
 
 	        case 'plane':
-	          geometry = new THREE.PlaneGeometry(this.getProperty('sizeX'), this.getProperty('sizeY'), this.getProperty('segmentsX'), this.getProperty('segmentsY'));
+	          geometry = new THREE.PlaneBufferGeometry(this.getProperty('sizeX'), this.getProperty('sizeY'), this.getProperty('segmentsX'), this.getProperty('segmentsY'));
 	          geometry.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
 	          break;
 
 	        case 'sphere':
-	          geometry = new THREE.SphereGeometry(this.getProperty('radius'), this.getProperty('segmentsU'), this.getProperty('segmentsV'));
+	          geometry = new THREE.SphereBufferGeometry(this.getProperty('radius'), this.getProperty('segmentsU'), this.getProperty('segmentsV'));
 	          break;
 
 	        case 'torus':
-	          geometry = new THREE.TorusGeometry(this.getProperty('radius'), 2 * this.getProperty('tubeRadius'), this.getProperty('segmentsV'), this.getProperty('segmentsU'), this.getProperty('arcAngle'));
+	          geometry = new THREE.TorusBufferGeometry(this.getProperty('radius'), 2 * this.getProperty('tubeRadius'), this.getProperty('segmentsV'), this.getProperty('segmentsU'), this.getProperty('arcAngle'));
 	          break;
 
 	        default:
@@ -95427,6 +95451,10 @@
 	      var _this2 = this;
 
 	      this.when('loadDependencies', function () {
+	        if (_this2.isDestroyed()) {
+	          return;
+	        }
+
 	        var dependencies = _this2.getDependencies();
 	        var loadFailed = dependencies.some(function (asset) {
 	          return asset.isLoadFailed();
@@ -98750,6 +98778,10 @@
 	        _this5.createMeshLoaded();
 	        callback();
 	      }).catch(function (err) {
+	        if (_this5.isDestroyed()) {
+	          return;
+	        }
+
 	        _log2.default.error(_this5.box3DRuntime.engineName + ' - MeshObject: ' + err.toString());
 	        _this5.createDefaultMesh();
 	        callback();

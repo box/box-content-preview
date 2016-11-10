@@ -40,16 +40,39 @@ describe('annotation-dialog', () => {
     });
 
     describe('show()', () => {
+        it('should not re-show dialog if already shown', () => {
+            const positionStub = sandbox.stub(annotationDialog, 'position');
+            annotationDialog._hasAnnotations = true;
+            annotationDialog._activateReply();
+            annotationDialog.show();
+            expect(positionStub).to.not.have.been.called;
+        });
+
         it('should position the dialog', () => {
             const positionStub = sandbox.stub(annotationDialog, 'position');
+            annotationDialog._hasAnnotations = true;
+            annotationDialog._deactivateReply();
+            const commentsTextArea = annotationDialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            commentsTextArea.classList.remove('box-preview-is-active');
             annotationDialog.show();
             expect(positionStub).to.have.been.called;
         });
 
         it('should hide the reply/edit/delete UI if user cannot annotate', () => {
             annotationDialog._canAnnotate = false;
+            annotationDialog._hasAnnotations = true;
+            annotationDialog._deactivateReply();
             annotationDialog.show();
             expect(annotationDialog._element.classList.contains(constants.CLASS_CANNOT_ANNOTATE)).to.be.true;
+        });
+
+        it('should focus textarea if in viewport', () => {
+            annotationDialog._canAnnotate = false;
+            annotationDialog._hasAnnotations = true;
+            annotationDialog._deactivateReply();
+            sandbox.stub(annotatorUtil, 'isElementInViewport').returns(true);
+            annotationDialog.show();
+            expect(document.activeElement.classList.contains('reply-textarea')).to.be.true;
         });
     });
 
@@ -487,6 +510,14 @@ describe('annotation-dialog', () => {
     });
 
     describe('_activateReply()', () => {
+        it('should do nothing if reply textarea is already active', () => {
+            const replyTextEl = annotationDialog._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            replyTextEl.classList.add('box-preview-is-active');
+            sandbox.stub(annotatorUtil, 'showElement');
+            annotationDialog._activateReply();
+            expect(annotatorUtil.showElement).to.not.have.been.called;
+        });
+
         it('should show the correct UI when the reply textarea is activated', () => {
             document.querySelector('textarea').innerHTML += 'the preview SDK is great!';
             annotationDialog._addAnnotationElement({

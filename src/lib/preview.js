@@ -377,6 +377,12 @@ class Preview extends EventEmitter {
      * @private
      */
     loadPreviewWithTokens(tokenMap) {
+        // If this is a retry, short-circuit and load from server
+        if (this.retryCount > 0) {
+            this.loadFromServer();
+            return;
+        }
+
         // Parse the preview options supplied by show()
         this.parseOptions(this.previewOptions, tokenMap);
 
@@ -832,9 +838,10 @@ class Preview extends EventEmitter {
      * @private
      */
     getRequestHeaders(token) {
-        const hints = Browser.canPlayDash() ? '|dash|filmstrip|mp4' : '|mp4';
+        const videoHints = Browser.canPlayDash() ? '[dash,mp4][filmstrip]' : '[mp4]';
         const headers = {
-            'X-Rep-Hints': `3d|pdf|png?dimensions=2048x2048|jpg?dimensions=2048x2048|mp3${hints}`
+            'X-Rep-Hints': '[3d][pdf][jpg?dimensions=2048x2048,jpg?dimensions=1024x1024,' +
+                `png?dimensions=2048x2048,png?dimensions=1024x1024][mp3][original]${videoHints}`
         };
         return getHeaders(headers, token || this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
     }

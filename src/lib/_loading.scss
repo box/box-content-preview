@@ -1,19 +1,5 @@
 $crawler-blue: #2b90ef;
 
-@keyframes box-loading {
-    0% {
-        opacity: .2;
-    }
-
-    20% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: .2;
-    }
-}
-
 @keyframes box-crawler {
     0%,
     80%,
