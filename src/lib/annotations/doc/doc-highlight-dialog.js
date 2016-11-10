@@ -119,6 +119,10 @@ class DocHighlightDialog extends AnnotationDialog {
             annotatorUtil.showElement(commentsDialogEl);
             this._hasComments = true;
 
+            // Activate comments textarea
+            const textAreaEl = this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            textAreaEl.classList.add(CLASS_ACTIVE);
+
         // Displays the highlight and comment buttons dialog and hides the
         // comments dialog
         } else {
@@ -205,7 +209,7 @@ class DocHighlightDialog extends AnnotationDialog {
             </div>
             <div class="annotation-container ${this._hasComments ? '' : CLASS_HIDDEN}">
                 <section class="${annotations.length ? CLASS_HIDDEN : ''}" data-section="create">
-                    <textarea class="box-preview-textarea annotation-textarea ${CLASS_ACTIVE}"
+                    <textarea class="box-preview-textarea annotation-textarea"
                         placeholder="${__('annotation_add_comment_placeholder')}"></textarea>
                     <div class="button-container">
                         <button class="box-preview-btn cancel-annotation-btn" data-type="cancel-annotation-btn">

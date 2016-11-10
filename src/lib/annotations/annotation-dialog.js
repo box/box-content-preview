@@ -83,8 +83,8 @@ class AnnotationDialog extends EventEmitter {
             this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
 
         // Don't re-position if reply textarea is already active
-        const isActive = textAreaEl.classList.contains(CLASS_ACTIVE);
-        if (isActive) {
+        const textareaIsActive = textAreaEl.classList.contains(CLASS_ACTIVE);
+        if (textareaIsActive) {
             return;
         }
 
@@ -92,8 +92,17 @@ class AnnotationDialog extends EventEmitter {
         // could have changed from zooming
         this.position();
 
+        // Activate appropriate textarea
+        if (this._hasAnnotations) {
+            this._activateReply();
+        } else {
+            textAreaEl.classList.add(CLASS_ACTIVE);
+        }
+
         // Move cursor to end of text area
-        textAreaEl.selectionStart = textAreaEl.selectionEnd = textAreaEl.value.length;
+        if (textAreaEl.selectionStart) {
+            textAreaEl.selectionStart = textAreaEl.selectionEnd = textAreaEl.value.length;
+        }
 
         // If user cannot annotate, hide reply/edit/delete UI
         if (!this._canAnnotate) {
@@ -195,7 +204,7 @@ class AnnotationDialog extends EventEmitter {
             <div class="box-preview-annotation-caret"></div>
             <div class="annotation-container">
                 <section class="${annotations.length ? CLASS_HIDDEN : ''}" data-section="create">
-                    <textarea class="box-preview-textarea annotation-textarea ${CLASS_ACTIVE}"
+                    <textarea class="box-preview-textarea annotation-textarea"
                         placeholder="${__('annotation_add_comment_placeholder')}"></textarea>
                     <div class="button-container">
                         <button class="box-preview-btn cancel-annotation-btn" data-type="cancel-annotation-btn">
@@ -508,6 +517,10 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _deactivateReply(clearText) {
+        if (!this._element) {
+            return;
+        }
+
         const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
         const replyButtonEls = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
         annotatorUtil.resetTextarea(replyTextEl, clearText);
