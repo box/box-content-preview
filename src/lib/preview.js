@@ -841,7 +841,7 @@ class Preview extends EventEmitter {
         const videoHints = Browser.canPlayDash() ? '[dash,mp4][filmstrip]' : '[mp4]';
         const headers = {
             'X-Rep-Hints': '[3d][pdf][jpg?dimensions=2048x2048,jpg?dimensions=1024x1024,' +
-                `png?dimensions=2048x2048,png?dimensions=1024x1024][mp3]${videoHints}`
+                `png?dimensions=2048x2048,png?dimensions=1024x1024][mp3][original]${videoHints}`
         };
         return getHeaders(headers, token || this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
     }
