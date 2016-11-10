@@ -43,6 +43,27 @@ class DocLoader extends AssetLoader {
         super();
         this.viewers = VIEWERS;
     }
+
+    /**
+     * Chooses a representation. Assumes that there will be only
+     * one specific representation. In other words we will not have
+     * two png representation entries with different properties.
+     *
+     * @param {Object} file box file
+     * @param {Object} viewer the chosen viewer
+     * @returns {Object} The representation to load
+     */
+    determineRepresentation(file, viewer) {
+        let repOverride;
+
+        // Use PDF representation unless it's pending - if it is, use original rep
+        const rep = super.determineRepresentation(file, viewer);
+        if (rep.representation === 'pdf' && rep.status === 'pending') {
+            repOverride = file.representations.entries.find((entry) => entry.representation === 'original');
+        }
+
+        return repOverride || rep;
+    }
 }
 
 export default new DocLoader();
