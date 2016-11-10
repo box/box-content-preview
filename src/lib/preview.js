@@ -663,10 +663,8 @@ class Preview extends EventEmitter {
             }
         }
 
-        if (checkPermission(this.file, PERMISSION_ANNOTATE) && !Browser.isMobile()) {
-            if (checkFeature(this.viewer, 'isAnnotatable', 'point')) {
-                showAnnotateButton(this.viewer.getPointModeClickHandler());
-            }
+        if (checkPermission(this.file, PERMISSION_ANNOTATE) && !Browser.isMobile() && checkFeature(this.viewer, 'isAnnotatable', 'point')) {
+            showAnnotateButton(this.viewer.getPointModeClickHandler());
         }
 
         // Once the viewer loads, hide the loading indicator
