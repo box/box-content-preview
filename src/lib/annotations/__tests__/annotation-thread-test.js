@@ -298,8 +298,8 @@ describe('annotation-thread', () => {
             annotationThread.bindDOMListeners();
 
             expect(addEventListenerStub).to.have.been.calledWith('click', sinon.match.func);
-            expect(addEventListenerStub).to.have.been.calledWith('mouseover', sinon.match.func);
-            expect(addEventListenerStub).to.have.been.calledWith('mouseout', sinon.match.func);
+            expect(addEventListenerStub).to.have.been.calledWith('mouseenter', sinon.match.func);
+            expect(addEventListenerStub).to.have.been.calledWith('mouseleave', sinon.match.func);
         });
     });
 
@@ -311,8 +311,8 @@ describe('annotation-thread', () => {
             annotationThread.unbindDOMListeners();
 
             expect(removeEventListenerStub).to.have.been.calledWith('click', sinon.match.func);
-            expect(removeEventListenerStub).to.have.been.calledWith('mouseover', sinon.match.func);
-            expect(removeEventListenerStub).to.have.been.calledWith('mouseout', sinon.match.func);
+            expect(removeEventListenerStub).to.have.been.calledWith('mouseenter', sinon.match.func);
+            expect(removeEventListenerStub).to.have.been.calledWith('mouseleave', sinon.match.func);
         });
     });
 

@@ -78,9 +78,22 @@ class AnnotationDialog extends EventEmitter {
      * @returns {void}
      */
     show() {
+        const textAreaEl = this._hasAnnotations ?
+            this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA) :
+            this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+
+        // Don't re-position if reply textarea is already active
+        const isActive = textAreaEl.classList.contains(CLASS_ACTIVE);
+        if (isActive) {
+            return;
+        }
+
         // Position and show - we need to reposition every time since the DOM
         // could have changed from zooming
         this.position();
+
+        // Move cursor to end of text area
+        textAreaEl.selectionStart = textAreaEl.selectionEnd = textAreaEl.value.length;
 
         // If user cannot annotate, hide reply/edit/delete UI
         if (!this._canAnnotate) {
@@ -88,9 +101,6 @@ class AnnotationDialog extends EventEmitter {
         }
 
         // Focus the textarea if visible
-        const textAreaEl = this._hasAnnotations ?
-            this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA) :
-            this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
         if (annotatorUtil.isElementInViewport(textAreaEl)) {
             textAreaEl.focus();
         }
@@ -104,6 +114,7 @@ class AnnotationDialog extends EventEmitter {
      */
     hide() {
         annotatorUtil.hideElement(this._element);
+        this._deactivateReply();
     }
 
     /**
@@ -473,9 +484,20 @@ class AnnotationDialog extends EventEmitter {
      */
     _activateReply() {
         const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+
+        // Don't activate if reply textarea is already active
+        const isActive = replyTextEl.classList.contains(CLASS_ACTIVE);
+        if (isActive) {
+            return;
+        }
+
         const replyButtonEls = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
         replyTextEl.classList.add(CLASS_ACTIVE);
         annotatorUtil.showElement(replyButtonEls);
+
+        // Auto scroll annotations dialog to bottom where new comment was added
+        const annotationsEl = this._element.querySelector('.annotation-container');
+        annotationsEl.scrollTop = annotationsEl.scrollHeight - annotationsEl.clientHeight;
     }
 
     /**
@@ -494,6 +516,10 @@ class AnnotationDialog extends EventEmitter {
         if (annotatorUtil.isElementInViewport(replyTextEl)) {
             replyTextEl.focus();
         }
+
+        // Auto scroll annotations dialog to bottom where new comment was added
+        const annotationsEl = this._element.querySelector('.annotation-container');
+        annotationsEl.scrollTop = annotationsEl.scrollHeight - annotationsEl.clientHeight;
     }
 
     /**

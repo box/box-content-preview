@@ -354,8 +354,8 @@ class AnnotationThread extends EventEmitter {
         }
 
         this._element.addEventListener('click', this.showDialog);
-        this._element.addEventListener('mouseover', this.showDialog);
-        this._element.addEventListener('mouseout', this._mouseoutHandler);
+        this._element.addEventListener('mouseenter', this.showDialog);
+        this._element.addEventListener('mouseleave', this._mouseoutHandler);
     }
 
     /**
@@ -370,8 +370,8 @@ class AnnotationThread extends EventEmitter {
         }
 
         this._element.removeEventListener('click', this.showDialog);
-        this._element.removeEventListener('mouseover', this.showDialog);
-        this._element.removeEventListener('mouseout', this._mouseoutHandler);
+        this._element.removeEventListener('mouseenter', this.showDialog);
+        this._element.removeEventListener('mouseleave', this._mouseoutHandler);
     }
 
     /**

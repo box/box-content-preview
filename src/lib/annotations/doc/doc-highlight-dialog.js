@@ -76,6 +76,9 @@ class DocHighlightDialog extends AnnotationDialog {
         // Shorten extra transparent border top if showing comments dialog
         let dialogY = this._hasComments ? browserY - 10 : browserY;
         dialogY -= 10;
+        if (this._hasComments) {
+            this._element.style.borderTopWidth = '30px';
+        }
 
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing
