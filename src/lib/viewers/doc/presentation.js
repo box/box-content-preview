@@ -182,13 +182,10 @@ class Presentation extends DocBase {
     wheelHandler() {
         if (!this.throttledWheelHandler) {
             this.throttledWheelHandler = throttle((event) => {
-                const page = this.pdfViewer.currentPageNumber;
-                if (!this.annotator.isInDialogOnPage(event, page)) {
-                    if (event.deltaY > 0) {
-                        this.nextPage();
-                    } else if (event.deltaY < 0) {
-                        this.previousPage();
-                    }
+                if (event.deltaY > 0) {
+                    this.nextPage();
+                } else if (event.deltaY < 0) {
+                    this.previousPage();
                 }
             }, WHEEL_THROTTLE);
         }

@@ -16,7 +16,7 @@ let containerEl;
 let presentation;
 let stubs = {};
 
-describe('doc-find-bar', () => {
+describe('presentation', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -238,16 +238,6 @@ describe('doc-find-bar', () => {
             const result = presentation.wheelHandler();
 
             expect(result).to.be.truthy;
-        });
-
-        it('should not trigger page change if mouse is over an annotation dialog', () => {
-            presentation.annotator = {
-                isInDialogOnPage: sandbox.stub().returns(true)
-            };
-            presentation.wheelHandler();
-
-            presentation.throttledWheelHandler(presentation.event);
-            expect(stubs.nextPage).to.not.be.called;
         });
     });
 });

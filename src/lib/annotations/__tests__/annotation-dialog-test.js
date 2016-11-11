@@ -159,9 +159,10 @@ describe('annotation-dialog', () => {
 
             expect(addListenerStub).to.have.been.calledWith('keydown', sinon.match.func);
             expect(addListenerStub).to.have.been.calledWith('click', sinon.match.func);
-            expect(addListenerStub).to.have.been.calledWith('mouseup', sinon.match.func);
+            expect(addListenerStub).to.have.been.calledWith('mouseup', annotationDialog.stopPropagation);
             expect(addListenerStub).to.have.been.calledWith('mouseenter', sinon.match.func);
             expect(addListenerStub).to.have.been.calledWith('mouseleave', sinon.match.func);
+            expect(addListenerStub).to.have.been.calledWith('wheel', annotationDialog.stopPropagation);
         });
     });
 
@@ -172,9 +173,10 @@ describe('annotation-dialog', () => {
 
             expect(removeListenerStub).to.have.been.calledWith('keydown', sinon.match.func);
             expect(removeListenerStub).to.have.been.calledWith('click', sinon.match.func);
-            expect(removeListenerStub).to.have.been.calledWith('mouseup', sinon.match.func);
+            expect(removeListenerStub).to.have.been.calledWith('mouseup', annotationDialog.stopPropagation);
             expect(removeListenerStub).to.have.been.calledWith('mouseenter', sinon.match.func);
             expect(removeListenerStub).to.have.been.calledWith('mouseleave', sinon.match.func);
+            expect(removeListenerStub).to.have.been.calledWith('wheel', annotationDialog.stopPropagation);
         });
     });
 
@@ -203,14 +205,14 @@ describe('annotation-dialog', () => {
         });
     });
 
-    describe('mouseupHandler()', () => {
+    describe('stopPropagation()', () => {
         it('should stop propagation on the event', () => {
             const event = {
                 stopPropagation: () => {}
             };
             const stopPropStub = sandbox.stub(event, 'stopPropagation');
 
-            annotationDialog.mouseupHandler(event);
+            annotationDialog.stopPropagation(event);
 
             expect(stopPropStub).to.have.been.called;
         });

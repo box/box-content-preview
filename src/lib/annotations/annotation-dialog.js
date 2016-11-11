@@ -249,9 +249,10 @@ class AnnotationDialog extends EventEmitter {
     bindDOMListeners() {
         this._element.addEventListener('keydown', this.keydownHandler);
         this._element.addEventListener('click', this.clickHandler);
-        this._element.addEventListener('mouseup', this.mouseupHandler);
+        this._element.addEventListener('mouseup', this.stopPropagation);
         this._element.addEventListener('mouseenter', this.mouseenterHandler);
         this._element.addEventListener('mouseleave', this.mouseleaveHandler);
+        this._element.addEventListener('wheel', this.stopPropagation);
     }
 
     /**
@@ -263,9 +264,10 @@ class AnnotationDialog extends EventEmitter {
     unbindDOMListeners() {
         this._element.removeEventListener('keydown', this.keydownHandler);
         this._element.removeEventListener('click', this.clickHandler);
-        this._element.removeEventListener('mouseup', this.mouseupHandler);
+        this._element.removeEventListener('mouseup', this.stopPropagation);
         this._element.removeEventListener('mouseenter', this.mouseenterHandler);
         this._element.removeEventListener('mouseleave', this.mouseleaveHandler);
+        this._element.removeEventListener('wheel', this.stopPropagation);
     }
 
     /**
@@ -290,14 +292,13 @@ class AnnotationDialog extends EventEmitter {
     }
 
     /**
-     * Mouseup handler. Stops propagation of mouseup, which may be used by
-     * other annotation classes.
+     * Stops propagation of DOM event.
      *
      * @param {Event} event DOM event
      * @returns {void}
      * @protected
      */
-    mouseupHandler(event) {
+    stopPropagation(event) {
         event.stopPropagation();
     }
 
