@@ -347,8 +347,6 @@ describe('box3d-renderer', () => {
 
     describe('onSceneLoad()', () => {
         it('should emit a scene loaded event and init VR mode if present', () => {
-            sandbox.stub(window.Box3D, 'isTablet', () => false);
-
             const emitSpy = sandbox.spy(renderer, 'emit');
             emitSpy.withArgs('sceneLoaded');
             const initVRSpy = sandbox.spy(renderer, 'initVrIfPresent');
