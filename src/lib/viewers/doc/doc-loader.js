@@ -56,9 +56,9 @@ class DocLoader extends AssetLoader {
     determineRepresentation(file, viewer) {
         let repOverride;
 
-        // Use PDF representation unless it's pending - if it is, use original rep
+        // For PDF files, use PDF representation unless it's pending - if it is, use original rep
         const rep = super.determineRepresentation(file, viewer);
-        if (rep.representation === 'pdf' && rep.status === 'pending') {
+        if (file.extension === 'pdf' && rep.representation === 'pdf' && rep.status === 'pending') {
             repOverride = file.representations.entries.find((entry) => entry.representation === 'original');
         }
 
