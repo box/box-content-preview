@@ -7,7 +7,6 @@ import Controls from '../../../controls';
 import fullscreen from '../../../fullscreen';
 import * as util from '../../../util';
 
-
 import { CLASS_BOX_PREVIEW_FIND_BAR } from '../../../constants';
 
 const LOAD_TIMEOUT_MS = 300000; // 5 min timeout
