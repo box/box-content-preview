@@ -5,14 +5,12 @@
  */
 
 import autobind from 'autobind-decorator';
-import Browser from '../../browser';
 import AnnotationThread from '../annotation-thread';
 import DocHighlightDialog from './doc-highlight-dialog';
 import * as annotatorUtil from '../annotator-util';
 import * as constants from '../annotation-constants';
 import * as docAnnotatorUtil from './doc-annotator-util';
 
-const IS_MOBILE = Browser.isMobile();
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 const HOVER_TIMEOUT_MS = 75;
@@ -137,12 +135,6 @@ class DocHighlightThread extends AnnotationThread {
      * @returns {boolean} Whether click was in a non-pending highlight
      */
     onClick(event, consumed) {
-        // Don't show any dialog if on a mobile device, if this highlight is a
-        // plain highlight
-        if (IS_MOBILE && this._type === constants.ANNOTATION_TYPE_HIGHLIGHT) {
-            return false;
-        }
-
         // If state is in hover, it means mouse is already over this highlight
         // so we can skip the is in highlight calculation
         if (!consumed && (this._state === constants.ANNOTATION_STATE_HOVER ||

@@ -340,6 +340,13 @@ $avatar-color-9: #f22c44;
     display: table;
     position: absolute;
     z-index: 9999;
+
+    &.cannot-annotate {
+        .box-preview-add-highlight-btn,
+        .box-preview-highlight-comment-btn {
+            display: none;
+        }
+    }
 }
 
 .box-preview-annotation-highlight-dialog,

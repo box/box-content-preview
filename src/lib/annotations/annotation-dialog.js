@@ -83,8 +83,8 @@ class AnnotationDialog extends EventEmitter {
             this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
 
         // Don't re-position if reply textarea is already active
-        const isActive = textAreaEl.classList.contains(CLASS_ACTIVE);
-        if (isActive) {
+        const textareaIsActive = textAreaEl.classList.contains(CLASS_ACTIVE);
+        if (textareaIsActive) {
             return;
         }
 
@@ -92,8 +92,17 @@ class AnnotationDialog extends EventEmitter {
         // could have changed from zooming
         this.position();
 
+        // Activate appropriate textarea
+        if (this._hasAnnotations) {
+            this._activateReply();
+        } else {
+            textAreaEl.classList.add(CLASS_ACTIVE);
+        }
+
         // Move cursor to end of text area
-        textAreaEl.selectionStart = textAreaEl.selectionEnd = textAreaEl.value.length;
+        if (textAreaEl.selectionStart) {
+            textAreaEl.selectionStart = textAreaEl.selectionEnd = textAreaEl.value.length;
+        }
 
         // If user cannot annotate, hide reply/edit/delete UI
         if (!this._canAnnotate) {
@@ -195,7 +204,7 @@ class AnnotationDialog extends EventEmitter {
             <div class="box-preview-annotation-caret"></div>
             <div class="annotation-container">
                 <section class="${annotations.length ? CLASS_HIDDEN : ''}" data-section="create">
-                    <textarea class="box-preview-textarea annotation-textarea ${CLASS_ACTIVE}"
+                    <textarea class="box-preview-textarea annotation-textarea"
                         placeholder="${__('annotation_add_comment_placeholder')}"></textarea>
                     <div class="button-container">
                         <button class="box-preview-btn cancel-annotation-btn" data-type="cancel-annotation-btn">
@@ -240,9 +249,10 @@ class AnnotationDialog extends EventEmitter {
     bindDOMListeners() {
         this._element.addEventListener('keydown', this.keydownHandler);
         this._element.addEventListener('click', this.clickHandler);
-        this._element.addEventListener('mouseup', this.mouseupHandler);
+        this._element.addEventListener('mouseup', this.stopPropagation);
         this._element.addEventListener('mouseenter', this.mouseenterHandler);
         this._element.addEventListener('mouseleave', this.mouseleaveHandler);
+        this._element.addEventListener('wheel', this.stopPropagation);
     }
 
     /**
@@ -254,9 +264,10 @@ class AnnotationDialog extends EventEmitter {
     unbindDOMListeners() {
         this._element.removeEventListener('keydown', this.keydownHandler);
         this._element.removeEventListener('click', this.clickHandler);
-        this._element.removeEventListener('mouseup', this.mouseupHandler);
+        this._element.removeEventListener('mouseup', this.stopPropagation);
         this._element.removeEventListener('mouseenter', this.mouseenterHandler);
         this._element.removeEventListener('mouseleave', this.mouseleaveHandler);
+        this._element.removeEventListener('wheel', this.stopPropagation);
     }
 
     /**
@@ -281,14 +292,13 @@ class AnnotationDialog extends EventEmitter {
     }
 
     /**
-     * Mouseup handler. Stops propagation of mouseup, which may be used by
-     * other annotation classes.
+     * Stops propagation of DOM event.
      *
      * @param {Event} event DOM event
      * @returns {void}
      * @protected
      */
-    mouseupHandler(event) {
+    stopPropagation(event) {
         event.stopPropagation();
     }
 
@@ -508,6 +518,10 @@ class AnnotationDialog extends EventEmitter {
      * @private
      */
     _deactivateReply(clearText) {
+        if (!this._element) {
+            return;
+        }
+
         const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
         const replyButtonEls = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
         annotatorUtil.resetTextarea(replyTextEl, clearText);
