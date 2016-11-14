@@ -145,9 +145,9 @@
 	            } else {
 	                // If using the devicePixelRatio of the mobile device, we must be
 	                // careful not to exceed the max texture dimensions of the device.
-	                let pixelRatio = renderer.getPixelRatio();
-	                const maxTextureSize = renderer.capabilities.maxTextureSize;
-	                const vrWidth = 2.0 * eyeParamsL.renderWidth;
+	                var pixelRatio = renderer.getPixelRatio();
+	                var maxTextureSize = renderer.capabilities.maxTextureSize;
+	                var vrWidth = 2.0 * eyeParamsL.renderWidth;
 	                if (vrWidth * pixelRatio > maxTextureSize) {
 	                    pixelRatio = Math.floor(maxTextureSize / vrWidth);
 	                }
@@ -193,9 +193,9 @@
 	                } else {
 	                    // If using the devicePixelRatio of the mobile device, we must be
 	                    // careful not to exceed the max texture dimensions of the device.
-	                    let pixelRatio = renderer.getPixelRatio();
-	                    const maxTextureSize = renderer.capabilities.maxTextureSize;
-	                    const vrWidth = 2.0 * eyeWidth;
+	                    var pixelRatio = renderer.getPixelRatio();
+	                    var maxTextureSize = renderer.capabilities.maxTextureSize;
+	                    var vrWidth = 2.0 * eyeWidth;
 	                    if (vrWidth * pixelRatio > maxTextureSize) {
 	                        pixelRatio = Math.floor(maxTextureSize / vrWidth);
 	                    }
