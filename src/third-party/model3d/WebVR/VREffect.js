@@ -142,6 +142,16 @@
 	            var eyeParamsL = vrDisplay.getEyeParameters( 'left' );
 	            if (!isMobile()) {
 	                renderer.setPixelRatio( 1 );
+	            } else {
+	                // If using the devicePixelRatio of the mobile device, we must be
+	                // careful not to exceed the max texture dimensions of the device.
+	                let pixelRatio = renderer.getPixelRatio();
+	                const maxTextureSize = renderer.capabilities.maxTextureSize;
+	                const vrWidth = 2.0 * eyeParamsL.renderWidth;
+	                if (vrWidth * pixelRatio > maxTextureSize) {
+	                    pixelRatio = Math.floor(maxTextureSize / vrWidth);
+	                }
+	                renderer.setPixelRatio(pixelRatio);
 	            }
 	            renderer.setSize( eyeParamsL.renderWidth * 2, eyeParamsL.renderHeight, false );
 
@@ -180,6 +190,16 @@
 	                rendererSize = renderer.getSize();
 	                if (!isMobile()) {
 	                    renderer.setPixelRatio( 1 );
+	                } else {
+	                    // If using the devicePixelRatio of the mobile device, we must be
+	                    // careful not to exceed the max texture dimensions of the device.
+	                    let pixelRatio = renderer.getPixelRatio();
+	                    const maxTextureSize = renderer.capabilities.maxTextureSize;
+	                    const vrWidth = 2.0 * eyeWidth;
+	                    if (vrWidth * pixelRatio > maxTextureSize) {
+	                        pixelRatio = Math.floor(maxTextureSize / vrWidth);
+	                    }
+	                    renderer.setPixelRatio(pixelRatio);
 	                }
 	                renderer.setSize( eyeWidth * 2, eyeHeight, false );
 
