@@ -4,6 +4,7 @@ import EventEmitter from 'events';
 import '../../../third-party/model3d/WebVR/VREffect';
 import '../../../third-party/model3d/WebVR/VRControls';
 import '../../../third-party/model3d/WebVR/VRConfig';
+import { createContentUrl } from '../../util';
 import {
     EVENT_SHOW_VR_BUTTON,
     EVENT_SCENE_LOADED,
@@ -161,11 +162,8 @@ class Box3DRenderer extends EventEmitter {
         const resourceLoader = new Box3D.XhrResourceLoader((path, params) => {
             const xhr = new XMLHttpRequest();
 
-            xhr.open('GET', path);
-
-            if (!params.isExternal) {
-                xhr.setRequestHeader('Authorization', `Bearer ${options.token}`);
-            }
+            xhr.open('GET', params.isExternal ? path :
+                createContentUrl(path, options.token, options.sharedLink, options.sharedLinkPassword));
 
             return Promise.resolve(xhr);
         });

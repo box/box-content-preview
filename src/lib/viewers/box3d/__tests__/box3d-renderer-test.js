@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Box3DRenderer from '../box3d-renderer';
+import * as util from '../../../util';
 
 const sandbox = sinon.sandbox.create();
 
@@ -193,7 +194,7 @@ describe('box3d-renderer', () => {
             });
         });
 
-        describe('with global Box3D and ResourceLoader', () => {
+        describe('with global Box3D', () => {
             it('should fail when missing file property on option', (done) => {
                 const rejected = renderer.initBox3d({});
 
@@ -230,7 +231,6 @@ describe('box3d-renderer', () => {
                 };
 
                 const creatBox3DStub = sandbox.stub(renderer, 'createBox3d', (loader, entities, inputSettings) => {
-                    expect(loader).to.be.an.instanceof(window.Box3D.XhrResourceLoader);
                     expect(entities).to.deep.equal(expectedEntities);
                     expect(inputSettings).to.deep.equal(expectedInputSettings);
                 });
@@ -242,6 +242,32 @@ describe('box3d-renderer', () => {
                 });
 
                 expect(creatBox3DStub).to.have.been.called;
+            });
+
+            it('should produce an XhrResourceLoader which supports token, sharedLink and sharedLinkPassword', (done) => {
+                const createContentUrlStub = sandbox.stub(util, 'createContentUrl');
+
+                const creatBox3DStub = sandbox.stub(renderer, 'createBox3d', (loader) => {
+                    sandbox.stub(loader.queue, 'add', (fn) => fn());
+
+                    const resource = loader.load('path/to/texture.jpg', 'image', {});
+
+                    resource.once('done', () => {
+                        expect(creatBox3DStub).to.have.been.called;
+                        expect(createContentUrlStub).to.be
+                            .calledWith('path/to/texture.jpg', 'foo', 'bar', 'baz');
+                        done();
+                    });
+                });
+
+                renderer.initBox3d({
+                    file: { file_version: 'abcdef' },
+                    sceneEntities: [],
+                    inputSettings: {},
+                    token: 'foo',
+                    sharedLink: 'bar',
+                    sharedLinkPassword: 'baz'
+                });
             });
         });
     });
