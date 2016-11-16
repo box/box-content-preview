@@ -295,7 +295,7 @@ class Image extends Base {
      * @returns {void}
      */
     scaleAnnotations(width, height) {
-        const scale = width ? (width / this.naturalWidth) : (height / this.naturalHeight);
+        const scale = width ? (width / this.imageEl.naturalWidth) : (height / this.imageEl.naturalHeight);
         const rotationAngle = this.currentRotationAngle % 3600 % 360;
         this.annotator.setScale(scale);
         this.annotator.renderAnnotations(rotationAngle);
