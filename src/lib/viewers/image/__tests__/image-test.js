@@ -332,8 +332,6 @@ describe('image.js', () => {
             image.imageEl.style.height = '100px';
             image.wrapperEl.style.width = '50px';
             image.wrapperEl.style.height = '50px';
-            image.naturalHeight = 50;
-            image.naturalWidth = 50;
 
             image.load(imageUrl);
         });
@@ -381,90 +379,6 @@ describe('image.js', () => {
             });
         });
 
-        it('should reset zoom dimensions', () => {
-            sandbox.stub(image, 'isRotated').returns(false);
-            image.imageEl.style.width = '125px';
-
-            image.zoom('reset');
-            const newImageSize = image.imageEl.getBoundingClientRect();
-
-            expect(stubs.adjustZoom).to.have.been.called;
-            expect(newImageSize.height).to.equal(35);
-        });
-
-        describe('reset', () => {
-            describe('if image is larger than viewport', () => {
-                it('should scale by modifying width', () => {
-                    image.imageEl.style.width = '125px';
-
-                    image.zoom();
-                    const newImageSize = image.imageEl.getBoundingClientRect();
-
-                    expect(newImageSize.width).to.equal(35);
-                });
-
-                it('should scale by modifying height', () => {
-                    image.imageEl.style.height = '125px';
-
-                    image.zoom();
-                    const newImageSize = image.imageEl.getBoundingClientRect();
-
-                    expect(newImageSize.height).to.equal(35);
-                });
-            });
-
-            describe('if image is smaller than viewport', () => {
-                beforeEach(() => {
-                    image.wrapperEl.style.width = '150px';
-                    image.wrapperEl.style.height = '150px';
-                });
-
-                describe('without rotation', () => {
-                    it('should scale by modifying width', () => {
-                        image.imageEl.style.width = '125px';
-                        sandbox.stub(image, 'isRotated').returns(false);
-
-                        image.zoom();
-                        const newImageSize = image.imageEl.getBoundingClientRect();
-
-                        expect(newImageSize.width).to.equal(50);
-                    });
-
-                    it('should scale by modifying height', () => {
-                        image.imageEl.style.height = '125px';
-                        sandbox.stub(image, 'isRotated').returns(false);
-
-                        image.zoom();
-                        const newImageSize = image.imageEl.getBoundingClientRect();
-
-                        expect(newImageSize.height).to.equal(50);
-                    });
-                });
-
-                describe('with rotation', () => {
-                    it('should scale by modifying width', () => {
-                        image.imageEl.style.width = '125px';
-                        sandbox.stub(image, 'isRotated').returns(true);
-
-                        image.zoom();
-                        const newImageSize = image.imageEl.getBoundingClientRect();
-
-                        expect(newImageSize.height).to.equal(50);
-                    });
-
-                    it('should scale by modifying height', () => {
-                        image.imageEl.style.height = '125px';
-                        sandbox.stub(image, 'isRotated').returns(true);
-
-                        image.zoom();
-                        const newImageSize = image.imageEl.getBoundingClientRect();
-
-                        expect(newImageSize.width).to.equal(50);
-                    });
-                });
-            });
-        });
-
         it('should swap height & width is image is rotated', () => {
             sandbox.stub(image, 'isRotated').returns(true);
             image.imageEl.style.width = '200px'; // ensures width > height
@@ -496,14 +410,11 @@ describe('image.js', () => {
                 renderAnnotations: sandbox.stub()
             };
 
-            // Set image naturalHeight & naturalWidth
-            image.naturalHeight = 50;
-            image.naturalWidth = 50;
             image.currentRotationAngle = -90;
             const [width, height] = [100, 100];
 
             image.scaleAnnotations(width, height);
-            expect(image.annotator.setScale).to.have.been.calledWith(2);
+            expect(image.annotator.setScale).to.have.been.called;
             expect(image.annotator.renderAnnotations).to.have.been.calledWith(-90);
         });
     });

@@ -252,10 +252,10 @@ class Image extends Base {
                 // If the image is smaller than the new viewport, zoom up to a
                 // max of the original file size
                 } else if (modifyWidthInsteadOfHeight) {
-                    const originalWidth = this.isRotated() ? this.naturalHeight : this.naturalWidth;
+                    const originalWidth = this.isRotated() ? this.imageEl.naturalHeight : this.imageEl.naturalWidth;
                     newWidth = Math.min(viewport.width, originalWidth);
                 } else {
-                    const originalHeight = this.isRotated() ? this.naturalWidth : this.naturalHeight;
+                    const originalHeight = this.isRotated() ? this.imageEl.naturalWidth : this.imageEl.naturalHeight;
                     newHeight = Math.min(viewport.height, originalHeight);
                 }
         }
@@ -286,6 +286,14 @@ class Image extends Base {
         }
     }
 
+    /**
+     * Scales annotations and repositions with rotation
+     *
+     * @param {number} width
+     * @param {number} height
+     * @private
+     * @returns {void}
+     */
     scaleAnnotations(width, height) {
         const scale = width ? (width / this.naturalWidth) : (height / this.naturalHeight);
         const rotationAngle = this.currentRotationAngle % 3600 % 360;
@@ -500,10 +508,6 @@ class Image extends Base {
         this.zoom();
         this.imageEl.classList.remove(CLASS_INVISIBLE);
 
-        // Save natural dimensions
-        this.naturalHeight = this.imageEl.naturalHeight;
-        this.naturalWidth = this.imageEl.naturalWidth;
-
         this.loadUI();
     }
 
@@ -548,7 +552,6 @@ class Image extends Base {
             event.preventDefault();
         }
     }
-
     /**
     * Adjust padding on image rotation/zoom of images when the view port
     * orientation changes from landscape to portrait and vice versa. Especially
@@ -561,7 +564,7 @@ class Image extends Base {
         this.adjustImageZoomPadding();
 
         if (this.annotator) {
-            const scale = (this.imageEl.clientWidth / this.naturalWidth);
+            const scale = (this.imageEl.clientWidth / this.imageEl.naturalWidth);
             const rotationAngle = this.currentRotationAngle % 3600 % 360;
             this.annotator.setScale(scale);
             this.annotator.renderAnnotations(rotationAngle);
