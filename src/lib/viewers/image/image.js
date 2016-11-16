@@ -186,7 +186,6 @@ class Image extends Base {
      * @returns {void}
      */
     zoom(type) {
-        let ratio = 1; // default scaling ratio is 1:1
         let newWidth;
         let newHeight;
         const imageCurrentDimensions = this.imageEl.getBoundingClientRect(); // Getting bounding rect does not ignore transforms / rotates
@@ -242,7 +241,7 @@ class Image extends Base {
                 // If the image is overflowing the viewport, figure out by how much
                 // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
                 if (width > viewport.width || height > viewport.height) {
-                    ratio = Math.min(viewport.width / width, viewport.height / height);
+                    const ratio = Math.min(viewport.width / width, viewport.height / height);
 
                     if (modifyWidthInsteadOfHeight) {
                         newWidth = width * ratio;
@@ -253,10 +252,10 @@ class Image extends Base {
                 // If the image is smaller than the new viewport, zoom up to a
                 // max of the original file size
                 } else if (modifyWidthInsteadOfHeight) {
-                    const originalWidth = this.isRotated() ? this.imageEl.naturalHeight : this.imageEl.naturalWidth;
+                    const originalWidth = this.isRotated() ? this.naturalHeight : this.naturalWidth;
                     newWidth = Math.min(viewport.width, originalWidth);
                 } else {
-                    const originalHeight = this.isRotated() ? this.imageEl.naturalWidth : this.imageEl.naturalHeight;
+                    const originalHeight = this.isRotated() ? this.naturalWidth : this.naturalHeight;
                     newHeight = Math.min(viewport.height, originalHeight);
                 }
         }
@@ -283,20 +282,15 @@ class Image extends Base {
         setTimeout(this.updatePannability, 50);
 
         if (this.annotator) {
-            const scale = newWidth ? (newWidth / this.imageEl.naturalWidth) : (newHeight / this.imageEl.naturalHeight);
-            const rotationAngle = this.currentRotationAngle % 3600 % 360;
-            this.annotator.setScale(scale);
-            this.annotator.renderAnnotations(rotationAngle);
+            this.scaleAnnotations(newWidth, newHeight);
         }
+    }
 
-        this.emit('zoom', {
-            zoom: {
-                width: newWidth,
-                height: newHeight
-            },
-            canZoomOut: true,
-            canZoomIn: true
-        });
+    scaleAnnotations(width, height) {
+        const scale = width ? (width / this.naturalWidth) : (height / this.naturalHeight);
+        const rotationAngle = this.currentRotationAngle % 3600 % 360;
+        this.annotator.setScale(scale);
+        this.annotator.renderAnnotations(rotationAngle);
     }
 
     /**
@@ -352,7 +346,7 @@ class Image extends Base {
         });
         this.annotator.init(this);
 
-        // Disable controls during point annotation mode
+        // Disables controls during point annotation mode
         this.annotator.addListener('pointmodeenter', () => {
             if (this.controls) {
                 this.controls.disable();
@@ -506,6 +500,10 @@ class Image extends Base {
         this.zoom();
         this.imageEl.classList.remove(CLASS_INVISIBLE);
 
+        // Save natural dimensions
+        this.naturalHeight = this.imageEl.naturalHeight;
+        this.naturalWidth = this.imageEl.naturalWidth;
+
         this.loadUI();
     }
 
@@ -550,6 +548,7 @@ class Image extends Base {
             event.preventDefault();
         }
     }
+
     /**
     * Adjust padding on image rotation/zoom of images when the view port
     * orientation changes from landscape to portrait and vice versa. Especially
@@ -562,7 +561,7 @@ class Image extends Base {
         this.adjustImageZoomPadding();
 
         if (this.annotator) {
-            const scale = (this.imageEl.clientWidth / this.imageEl.naturalWidth);
+            const scale = (this.imageEl.clientWidth / this.naturalWidth);
             const rotationAngle = this.currentRotationAngle % 3600 % 360;
             this.annotator.setScale(scale);
             this.annotator.renderAnnotations(rotationAngle);
@@ -589,11 +588,19 @@ class Image extends Base {
             return null;
         }
 
-        return (event = {}) => {
-            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
-            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-            this.annotator.togglePointModeHandler(event);
-        };
+        return this.pointModeClickHandler(event);
+    }
+
+
+    /**
+     * Click handler for toggling point annotation mode.
+     *
+     * @returns {void}
+     */
+    pointModeClickHandler(event = {}) {
+        this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+        this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+        this.annotator.togglePointModeHandler(event);
     }
 }
 
