@@ -900,20 +900,8 @@ describe('image.js', () => {
         });
 
         it('should return event listener', () => {
-            sandbox.stub(image, 'pointModeClickHandler').returns(() => {});
             const handler = image.getPointModeClickHandler();
             expect(handler).to.be.a('function');
-        });
-    });
-
-    describe('pointModeClickHandler()', () => {
-        it('should do nothing if not annotatable', () => {
-            image.annotator = {
-                togglePointModeHandler: sandbox.stub()
-            };
-            stubs.handler = image.annotator.togglePointModeHandler;
-            image.pointModeClickHandler();
-            expect(stubs.handler).to.have.been.called;
         });
     });
 });

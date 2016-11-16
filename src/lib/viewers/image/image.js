@@ -588,19 +588,11 @@ class Image extends Base {
             return null;
         }
 
-        return this.pointModeClickHandler(event);
-    }
-
-
-    /**
-     * Click handler for toggling point annotation mode.
-     *
-     * @returns {void}
-     */
-    pointModeClickHandler(event = {}) {
-        this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
-        this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-        this.annotator.togglePointModeHandler(event);
+        return (event = {}) => {
+            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+            this.annotator.togglePointModeHandler(event);
+        };
     }
 }
 

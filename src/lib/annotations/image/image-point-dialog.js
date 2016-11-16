@@ -45,7 +45,7 @@ class ImagePointDialog extends AnnotationDialog {
         let dialogLeftX = browserX - (dialogWidth / 2);
 
         // Adjusts Y position for transparent top border
-        const dialogTopY = browserY - 3;
+        const dialogTopY = browserY + 7;
 
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing
