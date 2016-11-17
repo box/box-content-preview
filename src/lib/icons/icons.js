@@ -23,6 +23,7 @@ import FIND_DROP_DOWN from 'raw!./arrow_drop_down.svg';
 import FIND_DROP_UP from 'raw!./arrow_drop_up.svg';
 import CLOSE from 'raw!./close.svg';
 import SEARCH from 'raw!./search.svg';
+import PRINT_CHECKMARK from 'raw!./print_checkmark.svg';
 
 export const ICON_ANNOTATION = ANNOTATION;
 export const ICON_HIGHLIGHT_COMMENT = ANNOTATION_HIGHLIGHT_COMMENT;
@@ -49,3 +50,4 @@ export const ICON_FIND_DROP_DOWN = FIND_DROP_DOWN;
 export const ICON_FIND_DROP_UP = FIND_DROP_UP;
 export const ICON_CLOSE = CLOSE;
 export const ICON_SEARCH = SEARCH;
+export const ICON_PRINT_CHECKMARK = PRINT_CHECKMARK;

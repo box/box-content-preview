@@ -1,0 +1,186 @@
+/* eslint-disable no-unused-expressions */
+import { CLASS_HIDDEN } from '../constants';
+import Popup from '../popup';
+
+let popup;
+
+const sandbox = sinon.sandbox.create();
+
+describe('Popup', () => {
+    before(() => {
+        fixture.setBase('src/lib');
+    });
+
+    beforeEach(() => {
+        fixture.load('__tests__/popup-test.html');
+        popup = new Popup(document.getElementById('test-popup-container'));
+    });
+
+    afterEach(() => {
+        fixture.cleanup();
+        sandbox.verifyAndRestore();
+    });
+
+    describe('constructor()', () => {
+        it('should have the right classes assigned', () => {
+            expect(popup.popupEl.className).to.equal('box-preview-modal-dialog box-preview-is-hidden');
+        });
+
+        it('should have the correct aria attributes', () => {
+            expect(popup.popupEl.getAttribute('role')).to.equal('alert');
+            expect(popup.popupEl.getAttribute('aria-labeledby')).to.not.equal(undefined);
+        });
+
+        it('shouldn\'t have any message or button text', () => {
+            expect(popup.buttonEl.textContext).to.equal(undefined);
+            expect(popup.messageEl.textContent).to.equal('');
+        });
+
+        it('should have the correct parent wrapper', () => {
+            expect(popup.popupEl.parentNode).to.not.equal(undefined);
+            expect(popup.popupEl.parentNode.className).to.equal('box-preview-popup-modal');
+        });
+    });
+
+    describe('show()', () => {
+        it('should set the message element', () => {
+            const message = 'message';
+
+            popup.show(message, '', undefined);
+            expect(popup.messageEl.textContent).to.equal(message);
+        });
+
+        it('should set the button text, otherwise use the default value', () => {
+            const buttonText = 'button';
+
+            popup.show('message', undefined, undefined);
+            expect(popup.buttonEl.textContent).to.equal(__('notification_button_default_text'));
+
+            popup.show('message', '', undefined);
+            expect(popup.buttonEl.textContent).to.equal(__('notification_button_default_text'));
+
+            popup.show('message', buttonText, undefined);
+            expect(popup.buttonEl.textContent).to.equal(buttonText);
+        });
+
+        it('should set the button handler if it exists', () => {
+            const handler = () => {};
+
+            popup.show('message', 'button', undefined);
+            expect(popup.buttonEl.handler).to.equal(undefined);
+
+            popup.show('message', 'button', 'handler');
+            expect(popup.buttonEl.handler).to.equal(undefined);
+
+            popup.show('message', 'button', handler);
+            expect(popup.buttonEl.handler).to.equal(handler);
+        });
+
+        it('should show and focus the popup element', () => {
+            const focusStub = sandbox.stub(popup.popupEl, 'focus');
+
+            popup.show('message', 'button', undefined);
+            expect(popup.popupEl.classList.contains(CLASS_HIDDEN)).to.be.false;
+            expect(focusStub).to.be.called;
+        });
+    });
+
+    describe('hide()', () => {
+        it('should hide the popup element', () => {
+            popup.show('message', 'button', undefined);
+
+            popup.hide();
+            expect(popup.popupEl.classList.contains(CLASS_HIDDEN)).to.be.true;
+        });
+    });
+
+    describe('addContent()', () => {
+        const element = 'element';
+
+        it('should insert content before if prepending', () => {
+            const insertBeforeStub = sandbox.stub(popup.contentEl, 'insertBefore');
+
+            popup.addContent(element, true);
+            expect(insertBeforeStub).to.be.calledWith(element, popup.contentEl.firstChild);
+        });
+
+        it('should insert content after if appending', () => {
+            const appendChildStub = sandbox.stub(popup.contentEl, 'appendChild');
+
+            popup.addContent(element, false);
+            expect(appendChildStub).to.be.calledWith(element);
+        });
+    });
+
+    describe('disableButton()', () => {
+        it('set the correct boolean and add the disabled class', () => {
+            popup.disableButton();
+            expect(popup.isButtonDisabled).to.be.true;
+            expect(popup.buttonEl.classList.contains('is-disabled')).to.be.true;
+        });
+    });
+
+    describe('enableButton()', () => {
+        it('should set the correct boolean and remove the disabled class', () => {
+            popup.enableButton();
+            expect(popup.isButtonDisabled).to.be.false;
+            expect(popup.buttonEl.classList.contains('is-disabled')).to.be.false;
+        });
+    });
+
+    describe('enableButton()', () => {
+        it('should set the correct boolean and remove the disabled class', () => {
+            popup.enableButton();
+            expect(popup.isButtonDisabled).to.be.false;
+            expect(popup.buttonEl.classList.contains('is-disabled')).to.be.false;
+        });
+    });
+
+    describe('popupClickHandler()', () => {
+        let event;
+
+        beforeEach(() => {
+            popup.hide = sandbox.stub(popup, 'hide');
+            event = {
+                preventDefault: sandbox.stub(),
+                stopPropagation: sandbox.stub()
+            };
+        });
+
+        it('should prevent default and stop propagation', () => {
+            popup.popupClickHandler(event);
+
+            expect(event.preventDefault).to.be.called;
+            expect(event.stopPropagation).to.be.called;
+        });
+
+        it('should hide the popup if the close button is clicked', () => {
+            event.target = popup.closeButtonEl;
+
+            popup.popupClickHandler(event);
+            expect(popup.hide).to.be.called;
+        });
+
+        it('should hide the popup if the backdrop is clicked', () => {
+            event.target = popup.backdropEl;
+
+            popup.popupClickHandler(event);
+            expect(popup.hide).to.be.called;
+        });
+
+        it('should call the button handler if the button is clicked', () => {
+            event.target = popup.buttonEl;
+            popup.buttonEl.handler = sandbox.stub();
+
+            popup.popupClickHandler(event);
+            expect(popup.buttonEl.handler).to.be.called;
+        });
+
+        it('should hide the popup if the buttone element is clicked without a handler', () => {
+            event.target = popup.buttonEl;
+
+            popup.popupClickHandler(event);
+            expect(popup.hide).to.be.called;
+        });
+    });
+});

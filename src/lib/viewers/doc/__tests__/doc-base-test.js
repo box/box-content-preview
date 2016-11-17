@@ -7,7 +7,14 @@ import Controls from '../../../controls';
 import fullscreen from '../../../fullscreen';
 import * as util from '../../../util';
 
-import { CLASS_BOX_PREVIEW_FIND_BAR } from '../../../constants';
+import {
+    CLASS_BOX_PREVIEW_FIND_BAR,
+    CLASS_HIDDEN
+} from '../../../constants';
+
+import {
+    ICON_PRINT_CHECKMARK
+} from '../../../icons/icons';
 
 const LOAD_TIMEOUT_MS = 300000; // 5 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -171,9 +178,90 @@ describe('doc-base', () => {
         });
     });
 
+    describe('initPrint()', () => {
+        it('should add print checkmark', () => {
+            docBase.initPrint();
+
+            const mockCheckmark = document.createElement('div');
+            mockCheckmark.innerHTML = `<span> ${ICON_PRINT_CHECKMARK} </span>`.trim();
+            expect(docBase.printPopup.printCheckmark.innerHTML).to.equal(mockCheckmark.innerHTML);
+        });
+
+        it('should hide the print checkmark', () => {
+            docBase.initPrint();
+
+            expect(docBase.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN));
+        });
+
+        it('should add the loading indicator', () => {
+            docBase.initPrint();
+
+            const mockIndicator = document.createElement('div');
+            mockIndicator.innerHTML = `
+            <div></div>
+            <div></div>
+            <div></div>
+            `.trim();
+            expect(docBase.printPopup.loadingIndicator.innerHTML).to.equal(mockIndicator.innerHTML);
+            expect(docBase.printPopup.loadingIndicator.classList.contains('box-preview-crawler')).to.be.true;
+        });
+    });
+
     describe('print()', () => {
         beforeEach(() => {
-            stubs.fetchPrintBlob = sandbox.stub(docBase, 'fetchPrintBlob').returns({ then: () => {} });
+            docBase.printBlob = undefined;
+            stubs.fetchPrintBlob = sandbox.stub(docBase, 'fetchPrintBlob').returns({
+                then: sandbox.stub()
+            });
+            docBase.initPrint();
+            stubs.show = sandbox.stub(docBase.printPopup, 'show');
+        });
+
+        it('should request the print blob if it is not ready', () => {
+            docBase.print();
+            expect(stubs.fetchPrintBlob).to.be.called;
+        });
+
+        it('should show the print popup and disable the print button if the blob is not ready', () => {
+            docBase.print();
+            expect(stubs.show).to.be.calledWith(__('print_loading'), __('print'), docBase.printPopupClickHandler);
+            expect(docBase.printPopup.isButtonDisabled).to.be.true;
+        });
+
+        it('should show the print popup and disable the print button if the blob is not ready', () => {
+            docBase.printBlob = true;
+
+            docBase.print();
+            expect(stubs.show).to.be.calledWith(__('print_ready'), __('print'), docBase.printPopupClickHandler);
+        });
+    });
+
+    describe('printPopupClickHandler()', () => {
+        beforeEach(() => {
+            docBase.initPrint();
+            stubs.hide = sandbox.stub(docBase.printPopup, 'hide');
+            stubs.browserPrint = sandbox.stub(docBase, 'browserPrint');
+        });
+
+        it('should do nothing if the print popup is not ready', () => {
+            docBase.printPopup.disableButton();
+
+            docBase.printPopupClickHandler();
+            expect(stubs.hide).to.not.be.called;
+            expect(stubs.browserPrint).to.not.be.called;
+        });
+
+        it('should hide the popup', () => {
+            docBase.printPopup.disableButton();
+
+            docBase.printPopupClickHandler();
+            expect(stubs.hide).to.not.be.called;
+            expect(stubs.browserPrint).to.not.be.called;
+        });
+    });
+
+    describe('browserPrint()', () => {
+        beforeEach(() => {
             stubs.emit = sandbox.stub(docBase, 'emit');
             stubs.createObject = sandbox.stub(URL, 'createObjectURL');
             stubs.open = sandbox.stub(window, 'open').returns(false);
@@ -184,21 +272,14 @@ describe('doc-base', () => {
             window.navigator.msSaveOrOpenBlob = sandbox.stub().returns(true);
         });
 
-        it('should fetch the print blob if it is not ready', () => {
-            docBase.printBlob = false;
-
-            docBase.print();
-            expect(stubs.fetchPrintBlob).to.be.called;
-        });
-
         it('should use the open or save dialog if on IE or Edge', () => {
-            docBase.print();
+            docBase.browserPrint();
             expect(window.navigator.msSaveOrOpenBlob).to.be.called;
             expect(stubs.emit).to.be.called;
         });
 
         it('should use the open or save dialog if on IE or Edge and emit a message', () => {
-            docBase.print();
+            docBase.browserPrint();
             expect(window.navigator.msSaveOrOpenBlob).to.be.called;
             expect(stubs.emit).to.be.called;
         });
@@ -206,7 +287,7 @@ describe('doc-base', () => {
         it('should emit an error message if the print result fails on IE or Edge', () => {
             window.navigator.msSaveOrOpenBlob.returns(false);
 
-            docBase.print();
+            docBase.browserPrint();
             expect(window.navigator.msSaveOrOpenBlob).to.be.called;
             expect(stubs.emit).to.be.calledWith('printerror');
         });
@@ -214,7 +295,7 @@ describe('doc-base', () => {
         it('should open the pdf in a new tab if not on IE or Edge', () => {
             window.navigator.msSaveOrOpenBlob = undefined;
 
-            docBase.print();
+            docBase.browserPrint();
             expect(stubs.createObject).to.be.calledWith(docBase.printBlob);
             expect(stubs.open).to.be.called.with;
             expect(stubs.emit).to.be.called;
@@ -225,7 +306,7 @@ describe('doc-base', () => {
             stubs.open.returns(stubs.printResult);
 
 
-            docBase.print();
+            docBase.browserPrint();
             expect(stubs.createObject).to.be.calledWith(docBase.printBlob);
             expect(stubs.open).to.be.called.with;
             expect(stubs.browser).to.be.called;
@@ -239,7 +320,7 @@ describe('doc-base', () => {
             stubs.open.returns(stubs.printResult);
             stubs.browser.returns('Safari');
 
-            docBase.print();
+            docBase.browserPrint();
             clock.tick(PRINT_TIMEOUT_MS + 1);
             expect(stubs.createObject).to.be.calledWith(docBase.printBlob);
             expect(stubs.open).to.be.called;
@@ -760,15 +841,6 @@ describe('doc-base', () => {
         });
     });
 
-    describe('initPrint()', () => {
-        it('should add the print notification element', () => {
-            docBase.initPrint();
-
-            const printNotificationEl = document.getElementsByClassName('box-preview-print-notification')[0];
-            expect(printNotificationEl.parentNode).to.equal(docBase.containerEl);
-        });
-    });
-
     describe('initAnnotations()', () => {
         beforeEach(() => {
             docBase.options = {
@@ -840,14 +912,31 @@ describe('doc-base', () => {
     });
 
     describe('fetchPrintBlob()', () => {
-        it('should get and return the blob', () => {
-            const getStub = sandbox.stub(util, 'get').returns({
-                then: () => { docBase.printBlob = 'blob'; }
-            });
+        beforeEach(() => {
+            stubs.promise = Promise.resolve({ blob: 'blob' });
+            stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
+            stubs.appendAuthHeader = sandbox.stub(docBase, 'appendAuthHeader');
+            docBase.initPrint();
+        });
 
+        it('should get and return the blob', () => {
             docBase.fetchPrintBlob('url');
-            expect(getStub).to.be.called;
-            expect(docBase.printBlob).to.equal('blob');
+
+            return stubs.promise.then((blob) => {
+                expect(stubs.get).to.be.called;
+                expect(blob.blob).to.equal('blob');
+            });
+        });
+
+        it('should update the print popup UI', () => {
+            docBase.fetchPrintBlob('url');
+
+            return stubs.promise.then(() => {
+                expect(docBase.printPopup.buttonEl.classList.contains('is-disabled')).to.be.false;
+                expect(docBase.printPopup.messageEl.textContent).to.equal(__('print_ready'));
+                expect(docBase.printPopup.loadingIndicator.classList.contains(CLASS_HIDDEN)).to.be.true;
+                expect(docBase.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN)).to.be.false;
+            });
         });
     });
 
@@ -1134,7 +1223,7 @@ describe('doc-base', () => {
             expect(stubs.setPage).to.be.called;
         });
 
-        it('should broadcast that the preview is loaded if it has\'nt already', () => {
+        it('should broadcast that the preview is loaded if it hasn\'t already', () => {
             stubs.isAnnotatable.returns(false);
             docBase.pdfViewer = {
                 currentScale: 'unknown'

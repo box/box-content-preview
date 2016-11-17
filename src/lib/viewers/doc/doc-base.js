@@ -13,15 +13,20 @@ import Controls from '../../controls';
 import DocAnnotator from '../../annotations/doc/doc-annotator';
 import DocFindBar from './doc-find-bar';
 import fullscreen from '../../fullscreen';
+import Popup from '../../popup';
 import throttle from 'lodash.throttle';
 import {
-    CLASS_BOX_PREVIEW_FIND_BAR
+    CLASS_BOX_PREVIEW_FIND_BAR,
+    CLASS_HIDDEN
 } from '../../constants';
 import {
     get,
     createAssetUrlCreator,
     decodeKeydown
 } from '../../util';
+import {
+    ICON_PRINT_CHECKMARK
+} from '../../icons/icons';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
@@ -145,7 +150,36 @@ class DocBase extends Base {
     }
 
     /**
-     * Prints the document by providing the PDF representation to the user.
+     * Sets up print notification & prepare PDF for printing.
+     *
+     * @returns {void}
+     * @private
+     */
+    initPrint() {
+        this.printPopup = new Popup(this.containerEl);
+
+        const printCheckmark = document.createElement('div');
+        printCheckmark.classList.add(CLASS_HIDDEN);
+        printCheckmark.innerHTML = `<span> ${ICON_PRINT_CHECKMARK} </span>`.trim();
+
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.classList.add('box-preview-crawler');
+        loadingIndicator.innerHTML = `
+            <div></div>
+            <div></div>
+            <div></div>
+            `.trim();
+
+        this.printPopup.addContent(loadingIndicator, true);
+        this.printPopup.addContent(printCheckmark, true);
+
+        // Save a reference so they can be hidden or shown later.
+        this.printPopup.loadingIndicator = loadingIndicator;
+        this.printPopup.printCheckmark = printCheckmark;
+    }
+
+    /**
+     * Ensures that the print blob is loaded & updates the print UI.
      *
      * @returns {void}
      */
@@ -153,9 +187,34 @@ class DocBase extends Base {
         // If print blob is not ready, fetch it
         if (!this.printBlob) {
             this.fetchPrintBlob(this.pdfUrl).then(this.print);
+            this.printPopup.show(__('print_loading'), __('print'), this.printPopupClickHandler);
+            this.printPopup.disableButton();
+            return;
+        }
+        this.printPopup.show(__('print_ready'), __('print'), this.printPopupClickHandler);
+    }
+
+    /**
+     * Handles on click for the print button in the print popup.
+     *
+     * @returns {void}
+     * @private
+     */
+    printPopupClickHandler() {
+        if (this.printPopup.isButtonDisabled) {
             return;
         }
 
+        this.printPopup.hide();
+        this.browserPrint();
+    }
+
+    /**
+     * Handles logic for priting the PDF representation in browser.
+     *
+     * @returns {void}
+     */
+    browserPrint() {
         // For IE & Edge, use the open or save dialog since we can't open
         // in a new tab due to security restrictions, see:
         // http://stackoverflow.com/questions/24007073/open-links-made-by-createobjecturl-in-ie11
@@ -575,19 +634,6 @@ class DocBase extends Base {
     }
 
     /**
-     * Sets up print notification & prepare PDF for printing.
-     *
-     * @returns {void}
-     * @private
-     */
-    initPrint() {
-        const printNotificationEl = document.createElement('p');
-        printNotificationEl.classList.add('box-preview-print-notification');
-        printNotificationEl.textContent = __('print_notification');
-        this.containerEl.appendChild(printNotificationEl);
-    }
-
-    /**
      * Initializes annotations.
      *
      * @returns {void}
@@ -656,6 +702,12 @@ class DocBase extends Base {
     fetchPrintBlob(pdfUrl) {
         return get(pdfUrl, 'blob').then((blob) => {
             this.printBlob = blob;
+
+            // update UI to reflect that print is ready
+            this.printPopup.enableButton();
+            this.printPopup.messageEl.textContent = __('print_ready');
+            this.printPopup.loadingIndicator.classList.add(CLASS_HIDDEN);
+            this.printPopup.printCheckmark.classList.remove(CLASS_HIDDEN);
         });
     }
 
@@ -798,6 +850,10 @@ class DocBase extends Base {
                     this.docEl.removeEventListener('touchend', this.mobileZoomEndHandler);
                 }
             }
+        }
+
+        if (this.printPopup) {
+            this.printPopup.buttonEl.removeEventListener('click', this.printPopupClickHandler);
         }
 
         fullscreen.removeListener('enter', this.enterfullscreenHandler);
