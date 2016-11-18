@@ -40,6 +40,10 @@ describe('Popup', () => {
             expect(popup.popupEl.parentNode).to.not.equal(undefined);
             expect(popup.popupEl.parentNode.className).to.equal('box-preview-popup-modal');
         });
+
+        it('should initialize buttonDisabled to false', () => {
+            expect(popup.buttonDisabled).to.be.false;
+        });
     });
 
     describe('show()', () => {
@@ -112,10 +116,34 @@ describe('Popup', () => {
         });
     });
 
+    describe('isVisible()', () => {
+        it('should return true if popup is visible', () => {
+            popup.popupEl.classList.remove(CLASS_HIDDEN);
+            expect(popup.isVisible()).to.be.true;
+        });
+
+        it('should return false if popup is hidden', () => {
+            popup.popupEl.classList.add(CLASS_HIDDEN);
+            expect(popup.isVisible()).to.be.false;
+        });
+    });
+
+    describe('isButtonDisabled()', () => {
+        it('should return true if button is disabled', () => {
+            popup.disableButton();
+            expect(popup.isButtonDisabled()).to.be.true;
+        });
+
+        it('should return false if button is enabled', () => {
+            popup.enableButton();
+            expect(popup.isButtonDisabled()).to.be.false;
+        });
+    });
+
     describe('disableButton()', () => {
         it('set the correct boolean and add the disabled class', () => {
             popup.disableButton();
-            expect(popup.isButtonDisabled).to.be.true;
+            expect(popup.buttonDisabled).to.be.true;
             expect(popup.buttonEl.classList.contains('is-disabled')).to.be.true;
         });
     });
@@ -123,7 +151,7 @@ describe('Popup', () => {
     describe('enableButton()', () => {
         it('should set the correct boolean and remove the disabled class', () => {
             popup.enableButton();
-            expect(popup.isButtonDisabled).to.be.false;
+            expect(popup.buttonDisabled).to.be.false;
             expect(popup.buttonEl.classList.contains('is-disabled')).to.be.false;
         });
     });
@@ -131,7 +159,7 @@ describe('Popup', () => {
     describe('enableButton()', () => {
         it('should set the correct boolean and remove the disabled class', () => {
             popup.enableButton();
-            expect(popup.isButtonDisabled).to.be.false;
+            expect(popup.buttonDisabled).to.be.false;
             expect(popup.buttonEl.classList.contains('is-disabled')).to.be.false;
         });
     });

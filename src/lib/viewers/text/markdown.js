@@ -19,7 +19,7 @@ class MarkDown extends TextBase {
      */
     constructor(container, options) {
         super(container, options);
-        this.containerEl.innerHTML = '<pre class="hljs box-preview-text"><code></code></pre>';
+        this.containerEl.innerHTML = '<pre class="hljs box-preview-text box-preview-text-plain"><code></code></pre>';
         this.preEl = this.containerEl.firstElementChild;
         this.markDownEl = this.preEl.firstElementChild;
         this.preEl.classList.add(CLASS_INVISIBLE); // Hide the element till data loads

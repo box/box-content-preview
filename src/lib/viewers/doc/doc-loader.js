@@ -9,7 +9,7 @@ const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.min
 const VIEWERS = [
     {
         REPRESENTATION: 'pdf',
-        EXTENSIONS: ['ppt', 'pptx'],
+        EXTENSIONS: ['odp', 'ppt', 'pptx'],
         SCRIPTS: [`${STATIC_URI}compatibility.js`, `${STATIC_URI}pdf.min.js`, `${STATIC_URI}pdf_viewer.min.js`, `${STATIC_URI}pdf.worker.min.js`, 'presentation.js'],
         STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'presentation.css'],
         CONSTRUCTOR: 'Presentation',

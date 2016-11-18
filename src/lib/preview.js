@@ -812,7 +812,8 @@ class Preview extends EventEmitter {
 
             this.emit('load', {
                 error: logMessage,
-                metrics: this.logger.done(this.count)
+                metrics: this.logger.done(this.count),
+                file: this.file
             });
 
             // Hookup for phantom JS health check
@@ -838,7 +839,7 @@ class Preview extends EventEmitter {
     getRequestHeaders(token) {
         const videoHints = Browser.canPlayDash() ? '[dash,mp4][filmstrip]' : '[mp4]';
         const headers = {
-            'X-Rep-Hints': '[3d][pdf][jpg?dimensions=2048x2048,jpg?dimensions=1024x1024,' +
+            'X-Rep-Hints': '[3d][pdf][text][jpg?dimensions=2048x2048,jpg?dimensions=1024x1024,' +
                 `png?dimensions=2048x2048,png?dimensions=1024x1024][mp3][original]${videoHints}`
         };
         return getHeaders(headers, token || this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);

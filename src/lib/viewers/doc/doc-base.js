@@ -31,7 +31,8 @@ import {
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
 const LOAD_TIMEOUT_MS = 300000; // 5 min timeout
-const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
+const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
+const PRINT_DIALOG_TIMEOUT_MS = 500;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const RANGE_REQUEST_CHUNK_SIZE = 524288; // 512KB
@@ -159,16 +160,15 @@ class DocBase extends Base {
         this.printPopup = new Popup(this.containerEl);
 
         const printCheckmark = document.createElement('div');
-        printCheckmark.classList.add(CLASS_HIDDEN);
-        printCheckmark.innerHTML = `<span> ${ICON_PRINT_CHECKMARK} </span>`.trim();
+        printCheckmark.className = `box-preview-print-check ${CLASS_HIDDEN}`;
+        printCheckmark.innerHTML = ICON_PRINT_CHECKMARK.trim();
 
         const loadingIndicator = document.createElement('div');
         loadingIndicator.classList.add('box-preview-crawler');
         loadingIndicator.innerHTML = `
             <div></div>
             <div></div>
-            <div></div>
-            `.trim();
+            <div></div>`.trim();
 
         this.printPopup.addContent(loadingIndicator, true);
         this.printPopup.addContent(printCheckmark, true);
@@ -187,80 +187,27 @@ class DocBase extends Base {
         // If print blob is not ready, fetch it
         if (!this.printBlob) {
             this.fetchPrintBlob(this.pdfUrl).then(this.print);
-            this.printPopup.show(__('print_loading'), __('print'), this.printPopupClickHandler);
-            this.printPopup.disableButton();
-            return;
-        }
-        this.printPopup.show(__('print_ready'), __('print'), this.printPopupClickHandler);
-    }
 
-    /**
-     * Handles on click for the print button in the print popup.
-     *
-     * @returns {void}
-     * @private
-     */
-    printPopupClickHandler() {
-        if (this.printPopup.isButtonDisabled) {
+            // Show print dialog after PRINT_DIALOG_TIMEOUT_MS
+            this.printDialogTimeout = setTimeout(() => {
+                this.printPopup.show(__('print_loading'), __('print'), this.printPopupClickHandler);
+                this.printPopup.disableButton();
+                this.printDialogTimeout = null;
+            }, PRINT_DIALOG_TIMEOUT_MS);
             return;
         }
 
-        this.printPopup.hide();
-        this.browserPrint();
-    }
-
-    /**
-     * Handles logic for priting the PDF representation in browser.
-     *
-     * @returns {void}
-     */
-    browserPrint() {
-        // For IE & Edge, use the open or save dialog since we can't open
-        // in a new tab due to security restrictions, see:
-        // http://stackoverflow.com/questions/24007073/open-links-made-by-createobjecturl-in-ie11
-        if (typeof window.navigator.msSaveOrOpenBlob === 'function') {
-            const printResult = window.navigator.msSaveOrOpenBlob(this.printBlob, 'print.pdf');
-
-            // If open/save notification is not shown, broadcast error
-            if (!printResult) {
-                this.emit('printerror');
-            } else {
-                this.emit('printsuccess');
-            }
-
-        // For other browsers, open and print in a new tab
+        // Immediately print if either printing is ready within PRINT_DIALOG_TIMEOUT_MS
+        // or if popup is not visible (e.g. from initiating print again)
+        if (this.printDialogTimeout || !this.printPopup.isVisible()) {
+            clearTimeout(this.printDialogTimeout);
+            this.browserPrint();
         } else {
-            const printURL = URL.createObjectURL(this.printBlob);
-            const printResult = window.open(printURL);
-
-            // Open print popup if possible
-            if (printResult && typeof printResult.print === 'function') {
-                const browser = Browser.getName();
-
-                // Chrome supports printing on load
-                if (browser === 'Chrome') {
-                    printResult.addEventListener('load', () => {
-                        printResult.print();
-                    });
-
-                // Safari print on load produces blank page, so we use a timeout
-                } else if (browser === 'Safari') {
-                    setTimeout(() => {
-                        printResult.print();
-                    }, PRINT_TIMEOUT_MS);
-                }
-
-                // Firefox has a blocking bug: https://bugzilla.mozilla.org/show_bug.cgi?id=911444
-            }
-
-            // If new window/tab was blocked, broadcast error
-            if (!printResult || printResult.closed || typeof printResult.closed === 'undefined') {
-                this.emit('printerror');
-            } else {
-                this.emit('printsuccess');
-            }
-
-            URL.revokeObjectURL(printURL);
+            // Update popup UI to reflect that print is ready
+            this.printPopup.enableButton();
+            this.printPopup.messageEl.textContent = __('print_ready');
+            this.printPopup.loadingIndicator.classList.add(CLASS_HIDDEN);
+            this.printPopup.printCheckmark.classList.remove(CLASS_HIDDEN);
         }
     }
 
@@ -702,13 +649,78 @@ class DocBase extends Base {
     fetchPrintBlob(pdfUrl) {
         return get(pdfUrl, 'blob').then((blob) => {
             this.printBlob = blob;
-
-            // update UI to reflect that print is ready
-            this.printPopup.enableButton();
-            this.printPopup.messageEl.textContent = __('print_ready');
-            this.printPopup.loadingIndicator.classList.add(CLASS_HIDDEN);
-            this.printPopup.printCheckmark.classList.remove(CLASS_HIDDEN);
         });
+    }
+
+    /**
+     * Handles on click for the print button in the print popup.
+     *
+     * @returns {void}
+     * @private
+     */
+    printPopupClickHandler() {
+        if (this.printPopup.isButtonDisabled()) {
+            return;
+        }
+
+        this.printPopup.hide();
+        this.browserPrint();
+    }
+
+    /**
+     * Handles logic for priting the PDF representation in browser.
+     *
+     * @returns {void}
+     * @private
+     */
+    browserPrint() {
+        // For IE & Edge, use the open or save dialog since we can't open
+        // in a new tab due to security restrictions, see:
+        // http://stackoverflow.com/questions/24007073/open-links-made-by-createobjecturl-in-ie11
+        if (typeof window.navigator.msSaveOrOpenBlob === 'function') {
+            const printResult = window.navigator.msSaveOrOpenBlob(this.printBlob, 'print.pdf');
+
+            // If open/save notification is not shown, broadcast error
+            if (!printResult) {
+                this.emit('printerror');
+            } else {
+                this.emit('printsuccess');
+            }
+
+        // For other browsers, open and print in a new tab
+        } else {
+            const printURL = URL.createObjectURL(this.printBlob);
+            const printResult = window.open(printURL);
+
+            // Open print popup if possible
+            if (printResult && typeof printResult.print === 'function') {
+                const browser = Browser.getName();
+
+                // Chrome supports printing on load
+                if (browser === 'Chrome') {
+                    printResult.addEventListener('load', () => {
+                        printResult.print();
+                    });
+
+                // Safari print on load produces blank page, so we use a timeout
+                } else if (browser === 'Safari') {
+                    setTimeout(() => {
+                        printResult.print();
+                    }, SAFARI_PRINT_TIMEOUT_MS);
+                }
+
+                // Firefox has a blocking bug: https://bugzilla.mozilla.org/show_bug.cgi?id=911444
+            }
+
+            // If new window/tab was blocked, broadcast error
+            if (!printResult || printResult.closed || typeof printResult.closed === 'undefined') {
+                this.emit('printerror');
+            } else {
+                this.emit('printsuccess');
+            }
+
+            URL.revokeObjectURL(printURL);
+        }
     }
 
     /**

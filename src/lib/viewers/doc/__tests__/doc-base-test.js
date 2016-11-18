@@ -18,6 +18,7 @@ import {
 
 const LOAD_TIMEOUT_MS = 300000; // 5 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
+const PRINT_DIALOG_TIMEOUT_MS = 500;
 const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
@@ -183,7 +184,7 @@ describe('doc-base', () => {
             docBase.initPrint();
 
             const mockCheckmark = document.createElement('div');
-            mockCheckmark.innerHTML = `<span> ${ICON_PRINT_CHECKMARK} </span>`.trim();
+            mockCheckmark.innerHTML = `${ICON_PRINT_CHECKMARK}`.trim();
             expect(docBase.printPopup.printCheckmark.innerHTML).to.equal(mockCheckmark.innerHTML);
         });
 
@@ -208,7 +209,10 @@ describe('doc-base', () => {
     });
 
     describe('print()', () => {
+        let clock;
+
         beforeEach(() => {
+            clock = sinon.useFakeTimers();
             docBase.printBlob = undefined;
             stubs.fetchPrintBlob = sandbox.stub(docBase, 'fetchPrintBlob').returns({
                 then: sandbox.stub()
@@ -217,22 +221,57 @@ describe('doc-base', () => {
             stubs.show = sandbox.stub(docBase.printPopup, 'show');
         });
 
+        afterEach(() => {
+            clock.restore();
+        });
+
         it('should request the print blob if it is not ready', () => {
             docBase.print();
             expect(stubs.fetchPrintBlob).to.be.called;
         });
 
         it('should show the print popup and disable the print button if the blob is not ready', () => {
+            sandbox.stub(docBase.printPopup, 'disableButton');
+
             docBase.print();
+            clock.tick(PRINT_DIALOG_TIMEOUT_MS + 1);
+
             expect(stubs.show).to.be.calledWith(__('print_loading'), __('print'), docBase.printPopupClickHandler);
-            expect(docBase.printPopup.isButtonDisabled).to.be.true;
+            expect(docBase.printPopup.disableButton).to.be.called;
+
+            clock.restore();
         });
 
-        it('should show the print popup and disable the print button if the blob is not ready', () => {
-            docBase.printBlob = true;
+        it('should directly print if print blob is ready and the print dialog hasn\'t been shown yet', () => {
+            docBase.printBlob = {};
+            docBase.printDialogTimeout = setTimeout(() => {});
+            sandbox.stub(docBase, 'browserPrint');
 
             docBase.print();
-            expect(stubs.show).to.be.calledWith(__('print_ready'), __('print'), docBase.printPopupClickHandler);
+            expect(docBase.browserPrint).to.be.called;
+        });
+
+        it('should directly print if print blob is ready and the print dialog isn\'t visible', () => {
+            docBase.printBlob = {};
+            docBase.printDialogTimeout = null;
+            sandbox.stub(docBase.printPopup, 'isVisible').returns(false);
+            sandbox.stub(docBase, 'browserPrint');
+
+            docBase.print();
+            expect(docBase.browserPrint).to.be.called;
+        });
+
+        it('should update the print popup UI if popup is visible and there is no current print timeout', () => {
+            docBase.printBlob = {};
+
+            sandbox.stub(docBase.printPopup, 'isVisible').returns(true);
+
+            docBase.print();
+
+            expect(docBase.printPopup.buttonEl.classList.contains('is-disabled')).to.be.false;
+            expect(docBase.printPopup.messageEl.textContent).to.equal(__('print_ready'));
+            expect(docBase.printPopup.loadingIndicator.classList.contains(CLASS_HIDDEN)).to.be.true;
+            expect(docBase.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN)).to.be.false;
         });
     });
 
@@ -925,17 +964,6 @@ describe('doc-base', () => {
             return stubs.promise.then((blob) => {
                 expect(stubs.get).to.be.called;
                 expect(blob.blob).to.equal('blob');
-            });
-        });
-
-        it('should update the print popup UI', () => {
-            docBase.fetchPrintBlob('url');
-
-            return stubs.promise.then(() => {
-                expect(docBase.printPopup.buttonEl.classList.contains('is-disabled')).to.be.false;
-                expect(docBase.printPopup.messageEl.textContent).to.equal(__('print_ready'));
-                expect(docBase.printPopup.loadingIndicator.classList.contains(CLASS_HIDDEN)).to.be.true;
-                expect(docBase.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN)).to.be.false;
             });
         });
     });

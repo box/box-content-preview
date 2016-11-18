@@ -1362,7 +1362,7 @@ describe('Preview', () => {
             stubs.canPlayDash = sandbox.stub(Browser, 'canPlayDash').returns(false);
             stubs.getHeaders = sandbox.stub(util, 'getHeaders');
             stubs.headers = {
-                'X-Rep-Hints': '[3d][pdf][jpg?dimensions=2048x2048,jpg?dimensions=1024x1024,' +
+                'X-Rep-Hints': '[3d][pdf][text][jpg?dimensions=2048x2048,jpg?dimensions=1024x1024,' +
                 'png?dimensions=2048x2048,png?dimensions=1024x1024][mp3][original]'
             };
 

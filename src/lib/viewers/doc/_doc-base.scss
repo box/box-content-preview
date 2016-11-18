@@ -113,65 +113,20 @@
     font-size: 24px;
 }
 
-//---------- Override popup related CSS from _boxui.scss ----------//
-.box-preview-modal-dialog {
-    padding: 20px;
-    width: 380px;
-}
-
-.box-preview-modal-header {
-    display: block;
-    float: right;
-    height: 0;
-    width: 100%;
-}
-
-.box-preview-modal-content {
-    text-align: center;
-
-    p {
-        margin: 10px 0 20px;
-    }
-}
-
-.box-preview-modal-close-button {
-    float: right;
-
-    svg {
-        fill: $downtown-grey;
-        height: 24px;
-        pointer-events: none;
-        width: 24px;
-    }
-}
-
-.box-preview-modal-actions {
-    justify-content: flex-start;
-    margin: 20px;
-}
-
-.box-preview-modal-backdrop {
-    background-color: $black;
-    height: 100%;
-    position: fixed;
-    width: 100%;
-}
-
-.box-preview-popup-btn {
-    margin: 0 auto;
-}
-
-// z-index as the base modal
-.box-preview-popup-modal {
-    z-index: 160; // follows box-preview-modal from boxui
-}
-
-
 // prevents modal from becoming taller when crawler is swapped with print checkmark
-.box-preview-crawler {
-    height: 16px;
-}
+.box-preview-modal-dialog {
+    .box-preview-print-check {
+        height: 16px;
+    }
 
+    .box-preview-crawler {
+        font-size: 0;
+        height: 16px;
+        margin: 0 auto;
+        white-space: nowrap;
+        width: 10px;
+    }
+}
 
 // Hide content when using native print, show message to use print button
 @media print {

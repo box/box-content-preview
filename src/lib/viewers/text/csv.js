@@ -22,7 +22,7 @@ class CSV extends TextBase {
     constructor(container, options) {
         super(container, options);
         this.csvEl = this.containerEl.appendChild(document.createElement('div'));
-        this.csvEl.classList.add('box-preview-text-csv');
+        this.csvEl.className = 'box-preview-text box-preview-text-csv';
     }
 
     /**

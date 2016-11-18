@@ -36,7 +36,7 @@ class Popup {
                 </button>
             </div>
             <div class='box-preview-modal-content'>
-                <p id=${uniqueLabel}></p>
+                <p class='box-preview-modal-message' id=${uniqueLabel}></p>
                 <div class='box-preview-modal-actions'>
                     <button class='box-preview-btn box-preview-btn-primary box-preview-popup-btn'> </button>
                 </div>
@@ -50,6 +50,7 @@ class Popup {
         this.closeButtonEl = this.popupEl.querySelector('button.box-preview-modal-close-button');
         this.contentEl = this.popupEl.querySelector('div.box-preview-modal-content');
         this.backdropEl = this.popupEl.querySelector('div.box-preview-modal-backdrop');
+        this.buttonDisabled = false;
 
         this.popupEl.addEventListener('click', this.popupClickHandler);
 
@@ -65,7 +66,7 @@ class Popup {
      *
      * @param {string} message Popup message
      * @param {string} buttonText Button text
-     * @param {function} buttonHandler Onclick function for the button
+     * @param {function} [buttonHandler] Optional onclick function for the button
      * @param {string} [buttonText] Optional text to show in button
      * @returns {void}
      */
@@ -113,12 +114,30 @@ class Popup {
     }
 
     /**
+     * Returns whether or not the popup is visible.
+     *
+     * @returns {boolean} Whether or not popup is visible.
+     */
+    isVisible() {
+        return !this.popupEl.classList.contains(CLASS_HIDDEN);
+    }
+
+    /**
+     * Gets whether or not the button is disabled.
+     *
+     * @returns {boolean} Whether or not button is diabled
+     */
+    isButtonDisabled() {
+        return this.buttonDisabled;
+    }
+
+    /**
      * Disbles the button element.
      *
      * @returns {void}
      */
     disableButton() {
-        this.isButtonDisabled = true;
+        this.buttonDisabled = true;
         this.buttonEl.classList.add('is-disabled');
     }
 
@@ -128,7 +147,7 @@ class Popup {
      * @returns {void}
      */
     enableButton() {
-        this.isButtonDisabled = false;
+        this.buttonDisabled = false;
         this.buttonEl.classList.remove('is-disabled');
     }
 

@@ -1,4 +1,4 @@
-.box-preview-text {
+.box-preview-text-plain {
     bottom: 0;
     left: 0;
     margin: 0;
@@ -16,8 +16,18 @@
     }
 }
 
+.box-preview-text-truncated {
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    padding-bottom: 75px; // Pad bottom so controls don't overlap
+    text-align: center;
+
+    p {
+        margin: 10px 0;
+    }
+}
+
 @media print {
-    .box-preview-text {
+    .box-preview-text-plain {
         margin: 0;
         overflow: visible;
         padding: 0;

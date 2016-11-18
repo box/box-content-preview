@@ -32,7 +32,7 @@ class TextBase extends Base {
      * @returns {void}
      */
     zoom(inOrOut) {
-        const el = this.containerEl.firstElementChild;
+        const el = this.containerEl.querySelector('.box-preview-text');
         const size = parseInt(el.style.fontSize, 10) || 100;
 
         if (inOrOut === 'in') {

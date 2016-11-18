@@ -12,6 +12,10 @@ const CODE_EXTENSIONS = ['as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', '
 // Inline web worker JS
 const HIGHLIGHT_WORKER_JS = 'onmessage=function(event){importScripts(event.data.highlightSrc);var result=self.hljs.highlightAuto(event.data.text);postMessage(result.value)};';
 
+// Only load up to 192Kb of text
+const SIZE_LIMIT_BYTES = '196608';
+const BYTE_RANGE = `bytes=0-${SIZE_LIMIT_BYTES}`;
+
 class PlainText extends TextBase {
 
     /**
@@ -23,13 +27,27 @@ class PlainText extends TextBase {
      */
     constructor(container, options) {
         super(container, options);
-        this.preEl = this.containerEl.appendChild(document.createElement('pre'));
-        this.preEl.classList.add('box-preview-text');
-        this.preEl.classList.add('hljs');
-        this.preEl.classList.add(CLASS_HIDDEN);
+        this.textEl = this.containerEl.appendChild(document.createElement('pre'));
+        this.textEl.className = 'box-preview-text box-preview-text-plain hljs';
+        this.textEl.classList.add(CLASS_HIDDEN);
 
-        this.codeEl = this.preEl.appendChild(document.createElement('code'));
+        this.codeEl = this.textEl.appendChild(document.createElement('code'));
         this.codeEl.classList.add(this.options.file.extension);
+
+        // Whether or not we truncated text shown due to performance issues
+        this.truncated = false;
+    }
+
+    /**
+     * [destructor]
+     *
+     * @returns {void}
+     */
+    destroy() {
+        const downloadBtnEl = this.textEl.querySelector('.box-preview-btn-download');
+        if (downloadBtnEl) {
+            downloadBtnEl.removeEventListener('click', this.download.bind(this));
+        }
     }
 
     /**
@@ -39,17 +57,34 @@ class PlainText extends TextBase {
      * @returns {Promise} Promise to load a text file
      */
     load(textUrl) {
-        get(this.appendAuthParam(textUrl), 'text')
-        .then((text) => {
+        // Default to access token in query param since this is a 'simple'
+        // CORS request that doesn't need an extra OPTIONS pre-flight
+        let getPromise = get(this.appendAuthParam(textUrl), 'text');
+
+        // If file is greater than size limit, only fetch first few bytes
+        if (this.options.file.size > SIZE_LIMIT_BYTES) {
+            getPromise = get(textUrl, this.appendAuthHeader({
+                Range: BYTE_RANGE
+            }), 'text');
+
+            this.truncated = true;
+        }
+
+        getPromise.then((text) => {
             if (this.destroyed) {
                 return;
             }
 
+            let fetchedText = text;
+            if (this.truncated) {
+                fetchedText += '...';
+            }
+
             // Only highlight code files
-            if (CODE_EXTENSIONS.indexOf(this.options.file.extension) !== -1) {
-                this.initHighlightJs(text);
+            if (CODE_EXTENSIONS.indexOf(this.options.file.extension) === -1) {
+                this.finishLoading(fetchedText, false);
             } else {
-                this.finishLoading(text, false);
+                this.initHighlightJs(fetchedText);
             }
         });
 
@@ -96,11 +131,6 @@ class PlainText extends TextBase {
             highlightSrc,
             text
         });
-
-        // // Only try to parse files smaller than 50KB otherwise the browser can hang
-        // if (this.options.file && this.options.file.size < 50000) {
-        //     hljs.highlightBlock(this.preEl);
-        // }
     }
 
     /**
@@ -112,7 +142,7 @@ class PlainText extends TextBase {
     initPrint() {
         // Help in printing by creating an iframe with the contents
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
-        this.printframe = openContentInsideIframe(this.preEl.outerHTML);
+        this.printframe = openContentInsideIframe(this.textEl.outerHTML);
         this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('third-party/text/github.css')));
         this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('text.css')));
     }
@@ -134,8 +164,7 @@ class PlainText extends TextBase {
         }
 
         this.loadUI();
-        this.initPrint();
-        this.preEl.classList.remove(CLASS_HIDDEN);
+        this.textEl.classList.remove(CLASS_HIDDEN);
 
         this.loaded = true;
         this.emit('load');
@@ -143,6 +172,45 @@ class PlainText extends TextBase {
         if (this.workerUrl) {
             URL.revokeObjectURL(this.workerUrl);
         }
+
+        // Show message that text was truncated along with a download button
+        if (this.truncated) {
+            this.showTruncatedDownloadButton();
+        }
+    }
+
+    /**
+     * Shows notification that text was truncated along with download button.
+     *
+     * @returns {void}
+     * @private
+     */
+    showTruncatedDownloadButton() {
+        const truncatedEl = document.createElement('div');
+        truncatedEl.classList.add('box-preview-text-truncated');
+
+        const truncatedTextEl = document.createElement('p');
+        truncatedTextEl.textContent = __('text_truncated');
+
+        const downloadBtnEl = document.createElement('button');
+        downloadBtnEl.className = 'box-preview-btn box-preview-btn-primary box-preview-btn-download';
+        downloadBtnEl.textContent = __('download_file');
+
+        truncatedEl.appendChild(truncatedTextEl);
+        truncatedEl.appendChild(downloadBtnEl);
+        this.textEl.appendChild(truncatedEl);
+
+        downloadBtnEl.addEventListener('click', this.download.bind(this));
+    }
+
+    /**
+     * Emits download event
+     *
+     * @returns {void}
+     * @private
+     */
+    download() {
+        this.emit('download');
     }
 }
 
