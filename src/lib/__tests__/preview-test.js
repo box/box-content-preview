@@ -449,6 +449,28 @@ describe('Preview', () => {
         });
     });
 
+    describe('updateToken()', () => {
+        it('should update token in options with the passed in string or function', () => {
+            const newToken = 'daredevil';
+            preview.updateToken(newToken);
+            expect(preview.previewOptions.token).to.equal(newToken);
+        });
+
+        it('should reload preview by default', () => {
+            preview.file = {};
+            sandbox.stub(preview, 'load');
+            preview.updateToken('dr-strange');
+            expect(preview.load).to.be.calledWith(preview.file);
+        });
+
+        it('should not reload preview if reloadPreview is false', () => {
+            preview.file = {};
+            sandbox.stub(preview, 'load');
+            preview.updateToken('nick-fury', false);
+            expect(preview.load).to.not.be.calledWith(preview.file);
+        });
+    });
+
     describe('load()', () => {
         beforeEach(() => {
             stubs.tokens = {

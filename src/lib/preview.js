@@ -321,6 +321,24 @@ class Preview extends EventEmitter {
         }
     }
 
+    /**
+     * Updates the token Preview uses. Passed in parameter can either be a
+     * string token or token generation function. See tokens.js.
+     *
+     * @param {string|function} tokenOrTokenFunc Either an access token or token
+     * generator function
+     * @param {boolean} [reloadPreview] Whether or not to reload the current
+     * preview with the updated token, defaults to true
+     * @returns {void}
+     */
+    updateToken(tokenOrTokenFunc, reloadPreview = true) {
+        this.previewOptions.token = tokenOrTokenFunc;
+
+        if (reloadPreview) {
+            this.load(this.file);
+        }
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
