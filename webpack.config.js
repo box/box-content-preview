@@ -115,13 +115,13 @@ module.exports = languages.map((language, index) => {
         test: /\.js$/,
         loader: 'babel',
         exclude: [
-            /third\-party/,
+            /third-party/,
             path.resolve('node_modules')
         ]
     });
 
     // Add license message to top of code
-    config.plugins.push(new webpack.BannerPlugin('Box Javascript Preview SDK | Copyright 2016 Box | Licenses: https://cloud.box.com/v/preview-sdk-os-licenses'));
+    config.plugins.push(new webpack.BannerPlugin('Box Javascript Preview SDK | Copyright 2016 Box | Licenses: https://cloud.box.com/v/preview-licenses-v1'));
 
     return config;
 });
