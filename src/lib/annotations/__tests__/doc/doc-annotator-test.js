@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-expressions */
+import rangy from 'rangy';
 import Annotator from '../../annotator';
 import Annotation from '../../annotation';
 import Browser from '../../../browser';
 import DocAnnotator from '../../doc/doc-annotator';
 import DocHighlightThread from '../../doc/doc-highlight-thread';
 import DocPointThread from '../../doc/doc-point-thread';
-import rangy from 'rangy';
 import * as annotatorUtil from '../../annotator-util';
 import * as docAnnotatorUtil from '../../doc/doc-annotator-util';
 import * as constants from '../../annotation-constants';

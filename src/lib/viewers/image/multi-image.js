@@ -1,10 +1,10 @@
-import './multi-image.scss';
 import autobind from 'autobind-decorator';
 import ImageBase from './image-base';
 import {
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT
 } from '../../icons/icons';
+import './multi-image.scss';
 
 const CSS_CLASS_IMAGE = 'box-preview-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'box-preview-images-wrapper';

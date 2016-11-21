@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
-import MediaBase from './media-base';
 import throttle from 'lodash.throttle';
+import MediaBase from './media-base';
 import { CLASS_HIDDEN, CLASS_PREVIEW_LOADED } from '../../constants';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;

@@ -1,11 +1,11 @@
 /* global BoxSDK */
-import './video360.scss';
 import autobind from 'autobind-decorator';
 import fullscreen from '../../../fullscreen';
 import Dash from '../../media/dash';
 import Video360Controls from './video360-controls';
 import Video360Renderer from './video360-renderer';
 import sceneEntities from './scene-entities';
+import './video360.scss';
 
 import {
     EVENT_TOGGLE_VR,

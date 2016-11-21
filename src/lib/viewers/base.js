@@ -1,10 +1,9 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
+import debounce from 'lodash.debounce';
 import fullscreen from '../fullscreen';
 import { createContentUrl, getHeaders } from '../util';
-import debounce from 'lodash.debounce';
 import Browser from '../browser';
-
 import {
     CLASS_FULLSCREEN,
     CLASS_BOX_PREVIEW_CONTAINER,

@@ -1,4 +1,3 @@
-import './model3d.scss';
 import autobind from 'autobind-decorator';
 import Box3D from '../box3d';
 import Model3dControls from './model3d-controls';
@@ -18,11 +17,11 @@ import {
     EVENT_TOGGLE_HELPERS,
     RENDER_MODE_LIT
 } from './model3d-constants';
-
 import {
     CSS_CLASS_INVISIBLE,
     EVENT_LOAD
 } from '../box3d-constants';
+import './model3d.scss';
 
 const Box = global.Box || {};
 

@@ -4,8 +4,8 @@
  * @author spramod
  */
 
-import AnnotationDialog from '../annotation-dialog';
 import autobind from 'autobind-decorator';
+import AnnotationDialog from '../annotation-dialog';
 import * as annotatorUtil from '../annotator-util';
 import * as imageAnnotatorUtil from './image-annotator-util';
 

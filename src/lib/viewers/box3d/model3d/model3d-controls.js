@@ -1,6 +1,6 @@
+import autobind from 'autobind-decorator';
 import Box3DControls from '../box3d-controls';
 import Model3DSettingsPullup from './model3d-settings-pullup';
-import autobind from 'autobind-decorator';
 import {
     EVENT_CLOSE_UI,
     EVENT_ROTATE_ON_AXIS,
@@ -13,7 +13,6 @@ import {
     EVENT_TOGGLE_HELPERS,
     RENDER_MODE_LIT
 } from './model3d-constants';
-
 import {
     ICON_GEAR,
     ICON_3D_RESET

@@ -1,17 +1,18 @@
-import './csv.scss';
-import autobind from 'autobind-decorator';
-import TextBase from './text-base';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Table, Column, Cell } from 'fixed-data-table';
+import { Grid } from 'react-virtualized';
+import TextBase from './text-base';
 import { createAssetUrlCreator, get } from '../../util';
+import './csv.scss';
 
 const Box = global.Box || {};
-const HORIZONTAL_PADDING = 50;
+const PADDING = 80;
+const HEIGHT_ROW = 30;
+const WIDTH_SCROLLER = 5;
+const WIDTH_COLUMN = 160;
+const WIDTH_BORDER = 2;
 
-@autobind
 class CSV extends TextBase {
-
     /**
      * [constructor]
      *
@@ -88,27 +89,29 @@ class CSV extends TextBase {
     }
 
     /**
+     * Gets row class name
+     *
+     * @private
+     * @param {number} row index of the row
+     * @returns {string} class name
+     */
+    getRowClassName = (row) => {
+        return row % 2 === 0 ? 'box-preview-text-csv-even-row' : 'box-preview-text-csv-odd-row';
+    }
+
+    /* eslint-disable react/prop-types */
+    /**
      * Renders cell
      *
      * @private
      * @param {number} cellIndex index of cell
      * @returns {function} Cell renderer function
      */
-    renderCell(cellIndex) {
-        /* eslint-disable react/prop-types */
-        return ({ rowIndex }) => <Cell>{this.data[rowIndex][cellIndex]}</Cell>;
-        /* eslint-enable react/prop-types */
+    cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
+        const rowClass = this.getRowClassName(rowIndex);
+        return <div className={`${rowClass} box-preview-text-csv-cell`} key={key} style={style}>{this.data[rowIndex][columnIndex]}</div>;
     }
-
-    /**
-     * Renders column
-     *
-     * @private
-     * @returns {Array} columns
-     */
-    renderColumn() {
-        return this.data[0].map((val, cellIndex) => <Column width={100} allowCellsRecycling cell={this.renderCell(cellIndex)} key={cellIndex} flexGrow={1} />);
-    }
+    /* eslint-enable react/prop-types */
 
     /**
      * Renders CSV into an html table
@@ -117,10 +120,32 @@ class CSV extends TextBase {
      * @returns {void}
      */
     renderCSV() {
+        const rowCount = this.data.length;
+        const columnCount = this.data[0].length;
+
+        const maxWidth = this.csvEl.clientWidth - PADDING + WIDTH_BORDER;
+        const maxHeight = this.csvEl.clientHeight - PADDING + WIDTH_BORDER;
+
+        const calculatedHeight = rowCount * HEIGHT_ROW;
+        const calculatedWidth = columnCount * WIDTH_COLUMN;
+
+        let columnWidth = Math.max(maxWidth / columnCount, WIDTH_COLUMN);
+        if (calculatedHeight > maxHeight && calculatedWidth < maxWidth) {
+            // Re-adjust the columnWidth when there is a vertical scrollbar but not a horizontal one
+            columnWidth = (maxWidth - WIDTH_SCROLLER - WIDTH_BORDER) / columnCount;
+        }
+
         ReactDOM.render(
-            <Table rowHeight={50} rowsCount={this.data.length} width={this.csvEl.clientWidth - (HORIZONTAL_PADDING * 2)} maxHeight={this.csvEl.clientHeight} headerHeight={0}>
-                {this.renderColumn()}
-            </Table>,
+            <Grid
+                className='box-preview-text-csv-grid'
+                cellRenderer={this.cellRenderer}
+                width={maxWidth}
+                height={Math.min(maxHeight, calculatedHeight)}
+                columnCount={columnCount}
+                rowHeight={HEIGHT_ROW}
+                columnWidth={columnWidth}
+                rowCount={rowCount}
+            />,
             this.csvEl
         );
     }

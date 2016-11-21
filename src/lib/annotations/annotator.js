@@ -9,9 +9,9 @@
  * @author tjin
  */
 
+import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import Browser from '../browser';
-import EventEmitter from 'events';
 import LocalStorageAnnotationService from './localstorage-annotation-service';
 import Notification from '../notification';
 import AnnotationService from './annotation-service';

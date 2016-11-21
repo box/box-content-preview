@@ -1,7 +1,6 @@
 /* global BoxSDK */
-import './box3d.scss';
-import Base from '../base';
 import autobind from 'autobind-decorator';
+import Base from '../base';
 import fullscreen from '../../fullscreen';
 import Box3DControls from './box3d-controls';
 import Box3DRenderer from './box3d-renderer';
@@ -15,6 +14,7 @@ import {
     EVENT_TOGGLE_FULLSCREEN,
     EVENT_TOGGLE_VR
 } from './box3d-constants';
+import './box3d.scss';
 
 // Milliseconds to wait for model to load before cancelling Preview
 const LOAD_TIMEOUT = 50000;
@@ -150,11 +150,6 @@ class Box3D extends Base {
     load(assetUrl) {
         this.renderer
         .load(this.appendAuthParam(assetUrl), this.options)
-        .then(() => {
-            if (this.destroyed) {
-                return;
-            }
-        })
         .catch(this.handleError);
         super.load();
     }

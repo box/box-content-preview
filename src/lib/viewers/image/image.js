@@ -1,4 +1,3 @@
-import './image.scss';
 import autobind from 'autobind-decorator';
 import AnnotationService from '../../annotations/annotation-service';
 import ImageAnnotator from '../../annotations/image/image-annotator';
@@ -6,6 +5,7 @@ import Browser from '../../browser';
 import Base from './image-base';
 import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
+import './image.scss';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';

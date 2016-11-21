@@ -1,10 +1,10 @@
-import './text.scss';
 import autobind from 'autobind-decorator';
-import TextBase from './text-base';
 import marked from 'marked';
+import TextBase from './text-base';
 import Browser from '../../browser';
 import { get, openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
 import { CLASS_INVISIBLE } from '../../constants';
+import './text.scss';
 
 const Box = global.Box || {};
 

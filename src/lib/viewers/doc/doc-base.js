@@ -1,10 +1,5 @@
-/**
- * @fileoverview Base document viewer class. The document and presentation
- * viewers extend this class.
- * @author tjin
- */
-
 import autobind from 'autobind-decorator';
+import throttle from 'lodash.throttle';
 import AnnotationService from '../../annotations/annotation-service';
 import Base from '../base';
 import Browser from '../../browser';
@@ -14,7 +9,6 @@ import DocAnnotator from '../../annotations/doc/doc-annotator';
 import DocFindBar from './doc-find-bar';
 import fullscreen from '../../fullscreen';
 import Popup from '../../popup';
-import throttle from 'lodash.throttle';
 import {
     CLASS_BOX_PREVIEW_FIND_BAR,
     CLASS_HIDDEN
@@ -931,8 +925,9 @@ class DocBase extends Base {
                 event.stopPropagation();
                 event.preventDefault();
                 break;
+
             default:
-                return;
+                break;
         }
     }
 

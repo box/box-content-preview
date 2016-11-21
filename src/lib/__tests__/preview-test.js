@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import fetchMock from 'fetch-mock';
 import '../preview';
 import ErrorLoader from '../viewers/error/error-loader';
 import loaders from '../loaders';
@@ -9,7 +10,6 @@ import * as ui from '../ui';
 import * as file from '../file';
 import * as util from '../util';
 import { API, CLASS_NAVIGATION_VISIBILITY } from '../constants';
-import fetchMock from 'fetch-mock';
 
 const tokens = require('../tokens');
 

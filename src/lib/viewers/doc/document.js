@@ -1,13 +1,7 @@
-/**
- * @fileoverview Document viewer for non-powerpoint documents. Extends DocBase.
- * @author tjin
- */
-
-import './document.scss';
+import pageNumTemplate from 'raw!./page-num-button-content.html';
 import autobind from 'autobind-decorator';
 import DocBase from './doc-base';
 import fullscreen from '../../fullscreen';
-import pageNumTemplate from 'raw!./page-num-button-content.html';
 import {
     ICON_DROP_DOWN,
     ICON_DROP_UP,
@@ -16,6 +10,7 @@ import {
     ICON_ZOOM_IN,
     ICON_ZOOM_OUT
 } from '../../icons/icons';
+import './document.scss';
 
 const Box = global.Box || {};
 

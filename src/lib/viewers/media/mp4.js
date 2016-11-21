@@ -1,6 +1,6 @@
-import './mp4.scss';
 import autobind from 'autobind-decorator';
 import VideoBase from './video-base';
+import './mp4.scss';
 
 const CSS_CLASS_MP4 = 'box-preview-media-mp4';
 

@@ -1,4 +1,3 @@
-import './error.scss';
 import autobind from 'autobind-decorator';
 import Base from '../base';
 import {
@@ -6,6 +5,7 @@ import {
     ICON_FILE_ZIP,
     ICON_FILE_MEDIA
 } from '../../icons/icons';
+import './error.scss';
 
 const Box = global.Box || {};
 

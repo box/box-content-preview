@@ -1,14 +1,12 @@
 import EventEmitter from 'events';
-import Controls from '../../controls';
 import autobind from 'autobind-decorator';
-
+import Controls from '../../controls';
 import {
     EVENT_RESET,
     EVENT_SCENE_LOADED,
     EVENT_TOGGLE_FULLSCREEN,
     EVENT_TOGGLE_VR
 } from './box3d-constants';
-
 import {
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,

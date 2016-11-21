@@ -1,13 +1,7 @@
-/**
- * @fileoverview Presentation viewer for PowerPoint presentations.
- * @author tjin
- */
-
-import './presentation.scss';
 import autobind from 'autobind-decorator';
-import DocBase from './doc-base';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
 import throttle from 'lodash.throttle';
+import DocBase from './doc-base';
 import { CLASS_INVISIBLE } from '../../constants';
 import {
     ICON_DROP_DOWN,
@@ -15,6 +9,7 @@ import {
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT
 } from '../../icons/icons';
+import './presentation.scss';
 
 const Box = global.Box || {};
 const WHEEL_THROTTLE = 200;

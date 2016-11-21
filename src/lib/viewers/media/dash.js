@@ -1,10 +1,10 @@
-import './dash.scss';
 import autobind from 'autobind-decorator';
 import VideoBase from './video-base';
 import cache from '../../cache';
 import fullscreen from '../../fullscreen';
 import { createContentUrl, getHeaders } from '../../util';
 import RepStatus from '../../rep-status';
+import './dash.scss';
 
 const CSS_CLASS_DASH = 'box-preview-media-dash';
 const CSS_CLASS_HD = 'box-preview-media-controls-is-hd';

@@ -1,7 +1,9 @@
-import './preview.scss';
+/* eslint-disable import/first */
 import './polyfill';
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
+import throttle from 'lodash.throttle';
+/* eslint-enable import/first */
 import Browser from './browser';
 import Logger from './logger';
 import loaders from './loaders';
@@ -9,11 +11,11 @@ import cache from './cache';
 import RepStatus from './rep-status';
 import ErrorLoader from './viewers/error/error-loader';
 import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
-import throttle from 'lodash.throttle';
 import getTokens from './tokens';
 import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid } from './file';
 import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
 import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_PREVIEW, API } from './constants';
+import './preview.scss';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
 const PREFETCH_COUNT = 4; // number of files to prefetch

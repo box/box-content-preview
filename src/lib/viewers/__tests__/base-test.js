@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
+import EventEmitter from 'events';
 import Base from '../base';
 import Browser from '../../browser';
-import EventEmitter from 'events';
 import fullscreen from '../../fullscreen';
 import * as util from '../../util';
 
