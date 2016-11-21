@@ -34,4 +34,8 @@
         position: static;
         word-wrap: break-word;
     }
+
+    .box-preview-text-truncated .box-preview-btn-download {
+        display: none;
+    }
 }

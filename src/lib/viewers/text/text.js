@@ -1,7 +1,9 @@
 import './text.scss';
 import TextBase from './text-base';
 import Browser from '../../browser';
+import Popup from '../../popup';
 import { CLASS_HIDDEN } from '../../constants';
+import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { get, openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
 
 const Box = global.Box || {};
@@ -15,6 +17,9 @@ const HIGHLIGHT_WORKER_JS = 'onmessage=function(event){importScripts(event.data.
 // Only load up to 192Kb of text
 const SIZE_LIMIT_BYTES = '196608';
 const BYTE_RANGE = `bytes=0-${SIZE_LIMIT_BYTES}`;
+
+// Time to wait before allowing user to print (we're guessing how long it takes the iframe to load)
+const PRINT_TIMEOUT_MS = 5000;
 
 class PlainText extends TextBase {
 
@@ -36,6 +41,8 @@ class PlainText extends TextBase {
 
         // Whether or not we truncated text shown due to performance issues
         this.truncated = false;
+
+        this.initPrint();
     }
 
     /**
@@ -48,6 +55,8 @@ class PlainText extends TextBase {
         if (downloadBtnEl) {
             downloadBtnEl.removeEventListener('click', this.download.bind(this));
         }
+
+        this.printIframe = null;
     }
 
     /**
@@ -97,12 +106,19 @@ class PlainText extends TextBase {
      * @returns {void}
      */
     print() {
-        this.printframe.contentWindow.focus();
-        if (Browser.getName() === 'Explorer' || Browser.getName() === 'Edge') {
-            this.printframe.contentWindow.document.execCommand('print', false, null);
-        } else {
-            this.printframe.contentWindow.print();
+        if (!this.printReady) {
+            this.preparePrint();
+
+            this.printPopup.show(__('print_loading'), __('print'), () => {
+                this.printPopup.hide();
+                this.printIframe();
+            });
+
+            this.printPopup.disableButton();
+            return;
         }
+
+        this.printIframe();
     }
 
     /**
@@ -134,17 +150,72 @@ class PlainText extends TextBase {
     }
 
     /**
-     * Sets up the print iframe.
+     * Sets up the print dialog.
      *
      * @returns {void}
      * @private
      */
     initPrint() {
-        // Help in printing by creating an iframe with the contents
+        this.printPopup = new Popup(this.containerEl);
+
+        const printCheckmark = document.createElement('div');
+        printCheckmark.className = `box-preview-print-check ${CLASS_HIDDEN}`;
+        printCheckmark.innerHTML = ICON_PRINT_CHECKMARK.trim();
+
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.classList.add('box-preview-crawler');
+        loadingIndicator.innerHTML = `
+            <div></div>
+            <div></div>
+            <div></div>`.trim();
+
+        this.printPopup.addContent(loadingIndicator, true);
+        this.printPopup.addContent(printCheckmark, true);
+
+        // Save a reference so they can be hidden or shown later.
+        this.printPopup.loadingIndicator = loadingIndicator;
+        this.printPopup.printCheckmark = printCheckmark;
+    }
+
+    /**
+     * Sets up the print iframe - uses a web worker to insert text content and
+     * styles into an iframe that can be printed.
+     *
+     * @returns {void}
+     * @private
+     */
+    preparePrint() {
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
         this.printframe = openContentInsideIframe(this.textEl.outerHTML);
         this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('third-party/text/github.css')));
         this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('text.css')));
+
+        setTimeout(() => {
+            if (this.printPopup) {
+                // Update popup UI to reflect that print is ready
+                this.printPopup.enableButton();
+                this.printPopup.messageEl.textContent = __('print_ready');
+                this.printPopup.loadingIndicator.classList.add(CLASS_HIDDEN);
+                this.printPopup.printCheckmark.classList.remove(CLASS_HIDDEN);
+            }
+
+            this.printReady = true;
+        }, PRINT_TIMEOUT_MS);
+    }
+
+    /**
+     * Prints from print iframe.
+     *
+     * @returns {void}
+     * @private
+     */
+    printIframe() {
+        this.printframe.contentWindow.focus();
+        if (Browser.getName() === 'Explorer' || Browser.getName() === 'Edge') {
+            this.printframe.contentWindow.document.execCommand('print', false, null);
+        } else {
+            this.printframe.contentWindow.print();
+        }
     }
 
     /**

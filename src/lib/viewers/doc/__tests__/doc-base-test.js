@@ -236,7 +236,7 @@ describe('doc-base', () => {
             docBase.print();
             clock.tick(PRINT_DIALOG_TIMEOUT_MS + 1);
 
-            expect(stubs.show).to.be.calledWith(__('print_loading'), __('print'), docBase.printPopupClickHandler);
+            expect(stubs.show).to.be.calledWith(__('print_loading'), __('print'), sinon.match.func);
             expect(docBase.printPopup.disableButton).to.be.called;
 
             clock.restore();
@@ -272,30 +272,6 @@ describe('doc-base', () => {
             expect(docBase.printPopup.messageEl.textContent).to.equal(__('print_ready'));
             expect(docBase.printPopup.loadingIndicator.classList.contains(CLASS_HIDDEN)).to.be.true;
             expect(docBase.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN)).to.be.false;
-        });
-    });
-
-    describe('printPopupClickHandler()', () => {
-        beforeEach(() => {
-            docBase.initPrint();
-            stubs.hide = sandbox.stub(docBase.printPopup, 'hide');
-            stubs.browserPrint = sandbox.stub(docBase, 'browserPrint');
-        });
-
-        it('should do nothing if the print popup is not ready', () => {
-            docBase.printPopup.disableButton();
-
-            docBase.printPopupClickHandler();
-            expect(stubs.hide).to.not.be.called;
-            expect(stubs.browserPrint).to.not.be.called;
-        });
-
-        it('should hide the popup', () => {
-            docBase.printPopup.disableButton();
-
-            docBase.printPopupClickHandler();
-            expect(stubs.hide).to.not.be.called;
-            expect(stubs.browserPrint).to.not.be.called;
         });
     });
 

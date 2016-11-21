@@ -62,6 +62,23 @@ class Popup {
     }
 
     /**
+     * [destructor]
+     *
+     * @returns {void}
+     */
+    destroy() {
+        if (!this.popupEl) {
+            return;
+        }
+
+        this.popupEl.removeEventListener('click', this.popupClickHandler);
+
+        const popupWrapperEl = this.popupEl.parentNode;
+        popupWrapperEl.parentNode.removeChild(popupWrapperEl);
+        this.popupEl = null;
+    }
+
+    /**
      * Shows a popup with a message.
      *
      * @param {string} message Popup message
@@ -163,7 +180,7 @@ class Popup {
 
         if (event.target === this.closeButtonEl || event.target === this.backdropEl) {
             this.hide();
-        } else if (event.target === this.buttonEl) {
+        } else if (event.target === this.buttonEl && !this.isButtonDisabled()) {
             if (typeof this.buttonEl.handler === 'function') {
                 this.buttonEl.handler();
             } else {

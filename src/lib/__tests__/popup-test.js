@@ -204,6 +204,15 @@ describe('Popup', () => {
             expect(popup.buttonEl.handler).to.be.called;
         });
 
+        it('should not call the button handler if the button is clicked but the button is disabled', () => {
+            event.target = popup.buttonEl;
+            popup.buttonEl.handler = sandbox.stub();
+            sandbox.stub(popup, 'isButtonDisabled').returns(true);
+
+            popup.popupClickHandler(event);
+            expect(popup.buttonEl.handler).to.not.be.called;
+        });
+
         it('should hide the popup if the buttone element is clicked without a handler', () => {
             event.target = popup.buttonEl;
 

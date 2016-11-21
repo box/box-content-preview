@@ -108,6 +108,10 @@ class DocBase extends Base {
             }
         }
 
+        if (this.printPopup) {
+            this.printPopup.destroy();
+        }
+
         super.destroy();
     }
 
@@ -184,7 +188,11 @@ class DocBase extends Base {
 
             // Show print dialog after PRINT_DIALOG_TIMEOUT_MS
             this.printDialogTimeout = setTimeout(() => {
-                this.printPopup.show(__('print_loading'), __('print'), this.printPopupClickHandler);
+                this.printPopup.show(__('print_loading'), __('print'), () => {
+                    this.printPopup.hide();
+                    this.browserPrint();
+                });
+
                 this.printPopup.disableButton();
                 this.printDialogTimeout = null;
             }, PRINT_DIALOG_TIMEOUT_MS);
@@ -647,21 +655,6 @@ class DocBase extends Base {
     }
 
     /**
-     * Handles on click for the print button in the print popup.
-     *
-     * @returns {void}
-     * @private
-     */
-    printPopupClickHandler() {
-        if (this.printPopup.isButtonDisabled()) {
-            return;
-        }
-
-        this.printPopup.hide();
-        this.browserPrint();
-    }
-
-    /**
      * Handles logic for priting the PDF representation in browser.
      *
      * @returns {void}
@@ -856,10 +849,6 @@ class DocBase extends Base {
                     this.docEl.removeEventListener('touchend', this.mobileZoomEndHandler);
                 }
             }
-        }
-
-        if (this.printPopup) {
-            this.printPopup.buttonEl.removeEventListener('click', this.printPopupClickHandler);
         }
 
         fullscreen.removeListener('enter', this.enterfullscreenHandler);

@@ -113,21 +113,6 @@
     font-size: 24px;
 }
 
-// prevents modal from becoming taller when crawler is swapped with print checkmark
-.box-preview-modal-dialog {
-    .box-preview-print-check {
-        height: 16px;
-    }
-
-    .box-preview-crawler {
-        font-size: 0;
-        height: 16px;
-        margin: 0 auto;
-        white-space: nowrap;
-        width: 10px;
-    }
-}
-
 // Hide content when using native print, show message to use print button
 @media print {
     .box-preview-doc {
