@@ -819,7 +819,7 @@ class DocBase extends Base {
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
         // Detects scroll so an event can be fired
-        this.docEl.addEventListener('scroll', this.scrollHandler());
+        this.docEl.addEventListener('scroll', this.scrollHandler(), { passive: true });
 
         // Fullscreen
         fullscreen.addListener('enter', this.enterfullscreenHandler);
@@ -849,7 +849,7 @@ class DocBase extends Base {
             this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
-            this.docEl.removeEventListener('scroll', this.scrollHandler());
+            this.docEl.removeEventListener('scroll', this.scrollHandler(), { passive: true });
 
             if (Browser.isMobile()) {
                 if (Browser.isIOS()) {

@@ -156,7 +156,7 @@ describe('presentation', () => {
             const addEventListenerStub = sandbox.stub(presentation.docEl, 'addEventListener');
             presentation.bindDOMListeners();
 
-            expect(addEventListenerStub).to.be.calledWith('wheel', presentation.wheelHandler(), { passive: true });
+            expect(addEventListenerStub).to.be.calledWith('wheel', presentation.wheelHandler());
         });
     });
 
@@ -165,7 +165,7 @@ describe('presentation', () => {
             const removeEventListenerStub = sandbox.stub(presentation.docEl, 'removeEventListener');
             presentation.unbindDOMListeners();
 
-            expect(removeEventListenerStub).to.be.calledWith('wheel', presentation.wheelHandler(), { passive: true });
+            expect(removeEventListenerStub).to.be.calledWith('wheel', presentation.wheelHandler());
         });
     });
 

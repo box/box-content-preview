@@ -109,8 +109,7 @@ class Presentation extends DocBase {
     bindDOMListeners() {
         super.bindDOMListeners();
 
-        // We set passive: true to make page more responsive
-        this.docEl.addEventListener('wheel', this.wheelHandler(), { passive: true });
+        this.docEl.addEventListener('wheel', this.wheelHandler());
     }
 
     /**
@@ -123,8 +122,7 @@ class Presentation extends DocBase {
     unbindDOMListeners() {
         super.unbindDOMListeners();
 
-        // We set passive: true to make page more responsive
-        this.docEl.removeEventListener('wheel', this.wheelHandler(), { passive: true });
+        this.docEl.removeEventListener('wheel', this.wheelHandler());
     }
 
     /**
