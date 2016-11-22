@@ -29,7 +29,8 @@ const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
-const RANGE_REQUEST_CHUNK_SIZE = 524288; // 512KB
+const DEFAULT_RANGE_REQUEST_CHUNK_SIZE = 262144; // 256KB
+const LARGE_RANGE_REQUEST_CHUNK_SIZE = 1048576; // 1MB
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const SCROLL_END_TIMEOUT = Browser.isMobile() ? 500 : 250;
@@ -446,10 +447,9 @@ class DocBase extends Base {
         }
 
         // Respect viewer-specific annotation option if it is set
-        const viewers = this.options.viewers;
-        const viewerName = this.options.viewerName;
-        if (viewers && viewers[viewerName] && typeof viewers[viewerName].annotations === 'boolean') {
-            return viewers[viewerName].annotations;
+        const viewerAnnotations = this.getViewerOption('annotations');
+        if (typeof viewerAnnotations === 'boolean') {
+            return viewerAnnotations;
         }
 
         // Otherwise, use global preview annotation option
@@ -515,10 +515,22 @@ class DocBase extends Base {
             enhanceTextSelection: false // improves text selection if true
         });
 
+        // Use chunk size set in viewer options if available
+        let rangeChunkSize = this.getViewerOption('rangeChunkSize');
+
+        // Otherwise, use large chunk size if locale is en-US and the default,
+        // smaller chunk size if not. This is using a rough assumption that
+        // en-US users have higher bandwidth to Box.
+        if (!rangeChunkSize) {
+            rangeChunkSize = this.options.location.locale === 'en-US' ?
+                LARGE_RANGE_REQUEST_CHUNK_SIZE :
+                DEFAULT_RANGE_REQUEST_CHUNK_SIZE;
+        }
+
         // Load PDF from representation URL
         this.pdfLoadingTask = PDFJS.getDocument({
             url: pdfUrl,
-            rangeChunkSize: RANGE_REQUEST_CHUNK_SIZE
+            rangeChunkSize
         });
 
         // Set document for PDF.js

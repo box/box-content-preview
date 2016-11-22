@@ -381,10 +381,9 @@ class Image extends Base {
         }
 
         // Respect viewer-specific annotation option if it is set
-        const viewers = this.options.viewers;
-        const viewerName = this.options.viewerName;
-        if (viewers && viewers[viewerName] && typeof viewers[viewerName].annotations === 'boolean') {
-            return viewers[viewerName].annotations;
+        const viewerAnnotations = this.getViewerOption('annotations');
+        if (typeof viewerAnnotations === 'boolean') {
+            return viewerAnnotations;
         }
 
         // Otherwise, use global preview annotation option

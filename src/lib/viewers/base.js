@@ -311,6 +311,22 @@ class Base extends EventEmitter {
             this._pinchScale = undefined;
         }
     }
+
+    /**
+     * Retrieves the value of a viewer option.
+     *
+     * @returns {object} Value of a viewer option
+     */
+    getViewerOption(option) {
+        const viewers = this.options.viewers;
+        const viewerName = this.options.viewerName;
+
+        if (viewers && viewers[viewerName]) {
+            return viewers[viewerName][option];
+        }
+
+        return null;
+    }
 }
 
 export default Base;

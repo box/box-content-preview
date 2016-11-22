@@ -393,4 +393,20 @@ describe('base', () => {
             });
         });
     });
+
+    describe('getViewerOption', () => {
+        it('should return the user-defined viewer option with the specified key if it exists', () => {
+            const baz = 'captain-america';
+            base.options = {
+                viewers: {
+                    Base: {
+                        fooBar: baz
+                    }
+                },
+                viewerName: 'Base'
+            };
+
+            expect(base.getViewerOption('fooBar')).to.equal(baz);
+        });
+    });
 });

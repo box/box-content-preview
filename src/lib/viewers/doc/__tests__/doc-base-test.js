@@ -768,6 +768,61 @@ describe('doc-base', () => {
             stubs.emit = sandbox.stub(docBase, 'emit');
         });
 
+        it('should set a chunk size based on viewer options if available', () => {
+            const url = 'url';
+            const rangeChunkSize = 100;
+
+            sandbox.stub(docBase, 'getViewerOption').returns(rangeChunkSize);
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+
+            docBase.initViewer(url);
+
+            expect(PDFJS.getDocument).to.be.calledWith({
+                url,
+                rangeChunkSize
+            });
+        });
+
+        it('should set a default chunk size if no viewer option set and locale is not en-US', () => {
+            const url = 'url';
+            const defaultChunkSize = 262144;
+
+            docBase.options = {
+                location: {
+                    locale: 'not-en-US'
+                }
+            };
+            sandbox.stub(docBase, 'getViewerOption').returns(null);
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+
+            docBase.initViewer(url);
+
+            expect(PDFJS.getDocument).to.be.calledWith({
+                url,
+                rangeChunkSize: defaultChunkSize
+            });
+        });
+
+        it('should set a large chunk size if no viewer option set and locale is en-US', () => {
+            const url = 'url';
+            const largeChunkSize = 1048576;
+
+            docBase.options = {
+                location: {
+                    locale: 'en-US'
+                }
+            };
+            sandbox.stub(docBase, 'getViewerOption').returns(null);
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+
+            docBase.initViewer(url);
+
+            expect(PDFJS.getDocument).to.be.calledWith({
+                url,
+                rangeChunkSize: largeChunkSize
+            });
+        });
+
         it('should resolve the loading task and set the document/viewer', () => {
             const doc = {
                 url: 'url'
@@ -776,6 +831,7 @@ describe('doc-base', () => {
             const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(
                 promise
             );
+            sandbox.stub(docBase, 'getViewerOption').returns(100);
 
             docBase.initViewer('url');
             expect(stubs.pdfViewerStub).to.be.called;
