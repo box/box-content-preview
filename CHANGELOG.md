@@ -1,5 +1,26 @@
 # Change Log
 
+## [v0.88.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.88.0) (2016-11-23)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.87.0...v0.88.0)
+
+**Merged pull requests:**
+
+- Dynamic pdf range chunk size [\#797](https://gitenterprise.inside-box.net/Preview/Preview/pull/797) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding an additional check in office-loader to disable the Office vie… [\#796](https://gitenterprise.inside-box.net/Preview/Preview/pull/796) ([jedwards](https://gitenterprise.inside-box.net/jedwards))
+- fixes to dark mode [\#795](https://gitenterprise.inside-box.net/Preview/Preview/pull/795) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- pdf.js 1.6.334 [\#794](https://gitenterprise.inside-box.net/Preview/Preview/pull/794) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing ppt annotation dialog scroll on IE [\#793](https://gitenterprise.inside-box.net/Preview/Preview/pull/793) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Add updateToken\(\) method [\#792](https://gitenterprise.inside-box.net/Preview/Preview/pull/792) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Update webpack config for license url [\#791](https://gitenterprise.inside-box.net/Preview/Preview/pull/791) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Enable printing in text viewer [\#790](https://gitenterprise.inside-box.net/Preview/Preview/pull/790) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Updating packages [\#788](https://gitenterprise.inside-box.net/Preview/Preview/pull/788) ([phora](https://gitenterprise.inside-box.net/phora))
+- Updating runtime with camera focus fix [\#783](https://gitenterprise.inside-box.net/Preview/Preview/pull/783) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Only fetch first 192kb of text representation [\#782](https://gitenterprise.inside-box.net/Preview/Preview/pull/782) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- update changelog [\#781](https://gitenterprise.inside-box.net/Preview/Preview/pull/781) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Update README.md [\#780](https://gitenterprise.inside-box.net/Preview/Preview/pull/780) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- New print flow [\#751](https://gitenterprise.inside-box.net/Preview/Preview/pull/751) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- setting enhanceTextSelection to true in doc-base.js [\#642](https://gitenterprise.inside-box.net/Preview/Preview/pull/642) ([jpress](https://gitenterprise.inside-box.net/jpress))
+
 ## [v0.87.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.87.0) (2016-11-17)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.86.0...v0.87.0)
 
