@@ -6,9 +6,9 @@ The Box Javascript Preview SDK makes it easy for developers to embed previews of
 Browser Support
 ---------------
 * Desktop Chrome, Firefox, Safari, Edge, and Internet Explorer 11
-* Limited support for mobile web - previews will render but some controls may not work, full support will come soon!
+* Limited support for mobile web - previews will render but some controls may not work
 
-The browser needs to have the Promise API implemented. If not, it can be polyfilled by including a promise library (e.g. Bluebird - https://cdn.jsdelivr.net/bluebird/latest/bluebird.min.js) before including any other script.
+Preview uses the Promise object. If your browser doesn't support Promises, they can be polyfilled by including a promise library (e.g. Bluebird - https://cdn.jsdelivr.net/bluebird/latest/bluebird.min.js) before including any other script.
 
 Current Version
 ---------------
@@ -27,10 +27,10 @@ Usage
     <meta charset="utf-8" />
     <title>Preview SDK Demo</title>
 
-    <!-- Polyfill promise API if using Internet Explorer -->
+    <!-- Polyfill promise API if using Internet Explorer 11 -->
     <script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.min.js"></script>
 
-    <!-- Latest version of Preview SDK for en-US locale -->
+    <!-- Latest version of Preview SDK for your locale -->
     <script src="https://cdn01.boxcdn.net/content-experience/0.88.0/en-US/preview.js"></script>
     <link rel="stylesheet" href="https://cdn01.boxcdn.net/content-experience/0.88.0/en-US/preview.css" />
 </head>
