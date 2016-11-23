@@ -512,7 +512,7 @@ class DocBase extends Base {
         this.pdfViewer = new PDFJS.PDFViewer({
             container: this.docEl,
             linkService: new PDFJS.PDFLinkService(),
-            enhanceTextSelection: false // improves text selection if true
+            enhanceTextSelection: true // improves text selection if true
         });
 
         // Use chunk size set in viewer options if available
