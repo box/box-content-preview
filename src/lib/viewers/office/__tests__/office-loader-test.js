@@ -71,7 +71,10 @@ describe('office-loader', () => {
                     }]
                 },
                 shared_link: {
-                    is_password_enabled: false
+                    is_password_enabled: false,
+                    permissions: {
+                        can_download: true
+                    }
                 }
             };
 
@@ -200,7 +203,49 @@ describe('office-loader', () => {
                     }]
                 },
                 shared_link: {
-                    is_password_enabled: true
+                    is_password_enabled: true,
+                    permissions: {
+                        can_download: true
+                    }
+                }
+            };
+
+            const viewer = OfficeLoader.determineViewer(file, []);
+
+            expect(viewer).to.deep.equal({
+                REPRESENTATION: 'pdf',
+                EXTENSIONS: ['xlsx'],
+                SCRIPTS: [
+                    'third-party/doc/compatibility.js',
+                    'third-party/doc/pdf.min.js',
+                    'third-party/doc/pdf_viewer.min.js',
+                    'third-party/doc/pdf.worker.min.js',
+                    'document.js'],
+                STYLESHEETS: ['third-party/doc/pdf_viewer.css', 'document.css'],
+                CONSTRUCTOR: 'Document',
+                PREFETCH: 'xhr'
+            });
+        });
+
+        it('should choose the Document viewer if the file is a shared link without download permissions', () => {
+            const file = {
+                extension: 'xlsx',
+                size: 1000,
+                permissions: {
+                    can_download: true
+                },
+                representations: {
+                    entries: [{
+                        representation: 'original'
+                    }, {
+                        representation: 'pdf'
+                    }]
+                },
+                shared_link: {
+                    is_password_enabled: false,
+                    permissions: {
+                        can_download: false
+                    }
                 }
             };
 
