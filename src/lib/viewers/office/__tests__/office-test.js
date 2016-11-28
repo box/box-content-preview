@@ -22,7 +22,7 @@ describe('office.js', () => {
             expect(office.iframeEl.width).to.equal('100%');
             expect(office.iframeEl.height).to.equal('100%');
             expect(office.iframeEl.frameBorder).to.equal('0');
-            expect(office.iframeEl.sandbox.toString()).to.equal('allow-scripts allow-same-origin allow-forms');
+            expect(office.iframeEl.sandbox.toString()).to.equal('allow-scripts allow-same-origin allow-forms allow-popups');
             expect(office.loadTimeout).to.equal(120000);
         });
     });

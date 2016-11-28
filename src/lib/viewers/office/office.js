@@ -21,7 +21,7 @@ class Office extends Base {
         this.iframeEl.setAttribute('width', '100%');
         this.iframeEl.setAttribute('height', '100%');
         this.iframeEl.setAttribute('frameborder', 0);
-        this.iframeEl.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms');
+        this.iframeEl.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
         // Timeout for loading the preview
         this.loadTimeout = LOAD_TIMEOUT_MS;
     }
