@@ -423,7 +423,7 @@ class DocHighlightDialog extends AnnotationDialog {
         let [x, y] = docAnnotatorUtil.getLowerRightCornerOfLastQuadPoint(this._location.quadPoints);
 
         // If needed, scale coordinates comparing current dimensions with saved dimensions
-        const dimensionScale = docAnnotatorUtil.getDimensionScale(this._location.dimensions, pageDimensions, zoomScale);
+        const dimensionScale = annotatorUtil.getDimensionScale(this._location.dimensions, pageDimensions, zoomScale, PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM);
         if (dimensionScale) {
             x *= dimensionScale.x;
             y *= dimensionScale.y;

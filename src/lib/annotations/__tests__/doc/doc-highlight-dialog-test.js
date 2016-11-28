@@ -275,7 +275,7 @@ describe('doc-highlight-dialog', () => {
 
             sandbox.stub(annotatorUtil, 'getScale').returns(1);
             sandbox.stub(docAnnotatorUtil, 'getLowerRightCornerOfLastQuadPoint').returns([200, 2]);
-            sandbox.stub(docAnnotatorUtil, 'getDimensionScale');
+            sandbox.stub(annotatorUtil, 'getDimensionScale');
 
             highlightDialog._getScaledPDFCoordinates({}, 100);
 

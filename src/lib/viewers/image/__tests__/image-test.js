@@ -296,9 +296,8 @@ describe('image.js', () => {
         beforeEach(() => {
             stubs.emit = sandbox.stub(image, 'emit');
             stubs.orientChange = sandbox.stub(image, 'handleOrientationChange');
-            image.annotator = {
-                renderAnnotations: sandbox.stub()
-            };
+            image.annotator = {};
+            stubs.scale = sandbox.stub(image, 'scaleAnnotations');
             image.currentRotationAngle = 0;
         });
 
@@ -315,7 +314,7 @@ describe('image.js', () => {
         it('should re-render annotations if annotator is initialized', () => {
             image.rotateLeft();
 
-            expect(image.annotator.renderAnnotations).to.have.been.called;
+            expect(stubs.scale).to.have.been.called;
         });
     });
 

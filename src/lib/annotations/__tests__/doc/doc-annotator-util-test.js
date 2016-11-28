@@ -9,7 +9,6 @@ import {
     isSelectionPresent,
     convertPDFSpaceToDOMSpace,
     convertDOMSpaceToPDFSpace,
-    getDimensionScale,
     getBrowserCoordinatesFromLocation,
     getLowerRightCornerOfLastQuadPoint
 } from '../../doc/doc-annotator-util';
@@ -174,37 +173,6 @@ describe('doc-annotator-util', () => {
             // 400 * 3/4 / 0.5 to fixed 4, (1000 - 400) * 3/4 / 0.5 to fixed 4
             const expected = [Number(600).toFixed(4), Number(900).toFixed(4)];
             assert.equal(convertDOMSpaceToPDFSpace(coordinates, 1000, 0.5).toString(), expected.toString());
-        });
-    });
-
-    describe('getDimensionScale()', () => {
-        it('should return null if no dimension scaling is needed', () => {
-            const dimensions = {
-                x: 100,
-                y: 100
-            };
-            const pageDimensions = {
-                width: 100,
-                height: 130
-            };
-
-            const result = getDimensionScale(dimensions, pageDimensions, 1);
-            assert.equal(result, null);
-        });
-
-        it('should return dimension scaling factor if dimension scaling is needed', () => {
-            const dimensions = {
-                x: 100,
-                y: 100
-            };
-            const pageDimensions = {
-                width: 200,
-                height: 230
-            };
-
-            const result = getDimensionScale(dimensions, pageDimensions, 1);
-            assert.equal(result.x, 2, 'X scaling should be 2');
-            assert.equal(result.y, 2, 'Y scaling should be 2');
         });
     });
 

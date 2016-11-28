@@ -175,7 +175,7 @@ class Image extends Base {
         this.handleOrientationChange();
 
         if (this.annotator) {
-            this.annotator.renderAnnotations(this.currentRotationAngle);
+            this.scaleAnnotations(this.imageEl.offsetwidth, this.imageEl.offsetHeight);
         }
     }
 
@@ -287,7 +287,8 @@ class Image extends Base {
     }
 
     /**
-     * Scales annotations and repositions with rotation
+     * Scales annotations and repositions with rotation. Only one argument
+     * (either height or width) is required for the scale calculations.
      *
      * @param {number} width
      * @param {number} height

@@ -12,6 +12,7 @@ import {
     getScale,
     isPlainHighlight,
     isHighlightAnnotation,
+    getDimensionScale,
     htmlEscape,
     repositionCaret
 } from '../annotator-util';
@@ -221,6 +222,39 @@ describe('annotator-util', () => {
 
         it('should return false if annotation is a point annotation', () => {
             assert.ok(!isHighlightAnnotation(constants.ANNOTATION_TYPE_POINT));
+        });
+    });
+
+    describe('getDimensionScale()', () => {
+        it('should return null if no dimension scaling is needed', () => {
+            const dimensions = {
+                x: 100,
+                y: 100
+            };
+            const pageDimensions = {
+                width: 100,
+                height: 130
+            };
+
+            const HEIGHT_PADDING = 30;
+            const result = getDimensionScale(dimensions, pageDimensions, 1, HEIGHT_PADDING);
+            expect(result).to.be.null;
+        });
+
+        it('should return dimension scaling factor if dimension scaling is needed', () => {
+            const dimensions = {
+                x: 100,
+                y: 100
+            };
+            const pageDimensions = {
+                width: 200,
+                height: 230
+            };
+
+            const HEIGHT_PADDING = 30;
+            const result = getDimensionScale(dimensions, pageDimensions, 1, HEIGHT_PADDING);
+            expect(result.x).to.equal(2);
+            expect(result.y).to.equal(2);
         });
     });
 

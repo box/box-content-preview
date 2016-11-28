@@ -487,7 +487,7 @@ describe('doc-highlight-thread', () => {
             };
             pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
             const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(pageEl);
-            const dimensionScaleStub = sandbox.stub(docAnnotatorUtil, 'getDimensionScale').returns(false);
+            const dimensionScaleStub = sandbox.stub(annotatorUtil, 'getDimensionScale').returns(false);
             const quadPoint = {
                 map: sandbox.stub()
             };
@@ -508,7 +508,7 @@ describe('doc-highlight-thread', () => {
             };
             pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
             const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(pageEl);
-            const dimensionScaleStub = sandbox.stub(docAnnotatorUtil, 'getDimensionScale').returns(true);
+            const dimensionScaleStub = sandbox.stub(annotatorUtil, 'getDimensionScale').returns(true);
             const quadPoint = {
                 map: sandbox.stub()
             };
@@ -529,7 +529,7 @@ describe('doc-highlight-thread', () => {
             };
             pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
             const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(pageEl);
-            const dimensionScaleStub = sandbox.stub(docAnnotatorUtil, 'getDimensionScale').returns(false);
+            const dimensionScaleStub = sandbox.stub(annotatorUtil, 'getDimensionScale').returns(false);
             const quadPoint = {
                 map: sandbox.stub()
             };

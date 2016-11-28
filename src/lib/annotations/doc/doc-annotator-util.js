@@ -8,6 +8,7 @@ import * as annotatorUtil from '../annotator-util';
 const PREVIEW_PRESENTATION_CLASS = 'box-preview-doc-presentation';
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
+const HEIGHT_PADDING = 30;
 // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
 const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
 const CSS_PIXEL_TO_PDF_UNIT = 3 / 4;
@@ -235,36 +236,6 @@ export function convertDOMSpaceToPDFSpace(coordinates, pageHeight, scale) {
 }
 
 /**
- * Returns dimension scale multiplier for x and y axes calculated from comparing
- * the current page dimensions scaled to 100% with page dimensions when
- * annotations were created.
- *
- * @param {Object} dimensions Dimensions saved in annotation
- * @param {Object} pageDimensions Current page dimensions
- * @param {number} zoomScale Zoom scale
- * @returns {Object|null} {x, y} dimension scale if needed, null otherwise
- */
-export function getDimensionScale(dimensions, pageDimensions, zoomScale) {
-    let dimensionScale = null;
-
-    // Scale comparing current dimensions with saved dimensions if needed
-    if (dimensions && dimensions.x !== undefined && dimensions.y !== undefined) {
-        const pageWidth = pageDimensions.width / zoomScale;
-        const pageHeight = (pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM) / zoomScale;
-
-        // Ignore sub-pixel variations that could result from float math
-        if (Math.abs(pageWidth - dimensions.x) > 1 || Math.abs(pageHeight !== dimensions.y) > 1) {
-            dimensionScale = {
-                x: pageWidth / dimensions.x,
-                y: pageHeight / dimensions.y
-            };
-        }
-    }
-
-    return dimensionScale;
-}
-
-/**
  * Returns browser coordinates given an annotation location object and the HTML
  * element being annotated on.
  * @param {Object} location Annotation location object
@@ -280,7 +251,7 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     let y = location.y;
 
     // If needed, scale coords comparing current dimensions with saved dimensions
-    const dimensionScale = getDimensionScale(location.dimensions, pageDimensions, zoomScale);
+    const dimensionScale = annotatorUtil.getDimensionScale(location.dimensions, pageDimensions, zoomScale, HEIGHT_PADDING);
     if (dimensionScale) {
         x *= dimensionScale.x;
         y *= dimensionScale.y;

@@ -212,6 +212,37 @@ export function isHighlightAnnotation(type) {
 //------------------------------------------------------------------------------
 
 /**
+ * Returns dimension scale multiplier for x and y axes calculated from comparing
+ * the current annotated element dimensions scaled to 100% with annotated
+ * element dimensions when annotations were created.
+ *
+ * @param {Object} dimensions Dimensions saved in annotation
+ * @param {Object} fileDimensions Current annotated element dimensions
+ * @param {number} zoomScale Zoom scale
+ * @param {number} heightPadding Top & bottom padding for annotated element
+ * @returns {Object|null} {x, y} dimension scale if needed, null otherwise
+ */
+export function getDimensionScale(dimensions, fileDimensions, zoomScale, heightPadding) {
+    let dimensionScale = null;
+
+    // Scale comparing current dimensions with saved dimensions if needed
+    if (dimensions && dimensions.x !== undefined && dimensions.y !== undefined) {
+        const width = fileDimensions.width / zoomScale;
+        const height = (fileDimensions.height - heightPadding) / zoomScale;
+
+        // Ignore sub-pixel variations that could result from float math
+        if (Math.abs(width - dimensions.x) > 1 || Math.abs(height !== dimensions.y) > 1) {
+            dimensionScale = {
+                x: width / dimensions.x,
+                y: height / dimensions.y
+            };
+        }
+    }
+
+    return dimensionScale;
+}
+
+/**
  * Escapes HTML.
  * @param {string} str Input string
  * @returns {string} HTML escaped string
