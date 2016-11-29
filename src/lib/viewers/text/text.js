@@ -15,7 +15,7 @@ const CODE_EXTENSIONS = ['as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', '
 const HIGHLIGHT_WORKER_JS = 'onmessage=function(event){importScripts(event.data.highlightSrc);var result=self.hljs.highlightAuto(event.data.text);postMessage(result.value)};';
 
 // Only load up to 192Kb of text
-const SIZE_LIMIT_BYTES = '196608';
+const SIZE_LIMIT_BYTES = 196608;
 const BYTE_RANGE = `bytes=0-${SIZE_LIMIT_BYTES}`;
 
 // Time to wait before allowing user to print (we're guessing how long it takes the iframe to load)
@@ -57,6 +57,7 @@ class PlainText extends TextBase {
         }
 
         this.printIframe = null;
+        super.destroy();
     }
 
     /**
@@ -134,6 +135,7 @@ class PlainText extends TextBase {
         });
         this.workerSrc = URL.createObjectURL(workerBlob);
         const worker = new Worker(this.workerSrc);
+        URL.revokeObjectURL(this.workerSrc);
 
         // Once highlighting is done, replace content and finish loading
         worker.onmessage = (event) => {
@@ -239,10 +241,6 @@ class PlainText extends TextBase {
 
         this.loaded = true;
         this.emit('load');
-
-        if (this.workerUrl) {
-            URL.revokeObjectURL(this.workerUrl);
-        }
 
         // Show message that text was truncated along with a download button
         if (this.truncated) {

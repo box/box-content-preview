@@ -773,13 +773,17 @@ describe('doc-base', () => {
             const rangeChunkSize = 100;
 
             sandbox.stub(docBase, 'getViewerOption').returns(rangeChunkSize);
-            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+
+            const promise = Promise.resolve({});
+            sandbox.stub(PDFJS, 'getDocument').returns(promise);
 
             docBase.initViewer(url);
 
-            expect(PDFJS.getDocument).to.be.calledWith({
-                url,
-                rangeChunkSize
+            return promise.then(() => {
+                expect(PDFJS.getDocument).to.be.calledWith({
+                    url,
+                    rangeChunkSize
+                });
             });
         });
 
@@ -793,13 +797,17 @@ describe('doc-base', () => {
                 }
             };
             sandbox.stub(docBase, 'getViewerOption').returns(null);
-            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+
+            const promise = Promise.resolve({});
+            sandbox.stub(PDFJS, 'getDocument').returns(promise);
 
             docBase.initViewer(url);
 
-            expect(PDFJS.getDocument).to.be.calledWith({
-                url,
-                rangeChunkSize: defaultChunkSize
+            return promise.then(() => {
+                expect(PDFJS.getDocument).to.be.calledWith({
+                    url,
+                    rangeChunkSize: defaultChunkSize
+                });
             });
         });
 
@@ -813,13 +821,17 @@ describe('doc-base', () => {
                 }
             };
             sandbox.stub(docBase, 'getViewerOption').returns(null);
-            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+
+            const promise = Promise.resolve({});
+            sandbox.stub(PDFJS, 'getDocument').returns(promise);
 
             docBase.initViewer(url);
 
-            expect(PDFJS.getDocument).to.be.calledWith({
-                url,
-                rangeChunkSize: largeChunkSize
+            return promise.then(() => {
+                expect(PDFJS.getDocument).to.be.calledWith({
+                    url,
+                    rangeChunkSize: largeChunkSize
+                });
             });
         });
 
