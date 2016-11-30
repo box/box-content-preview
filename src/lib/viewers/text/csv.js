@@ -13,6 +13,7 @@ const WIDTH_COLUMN = 160;
 const WIDTH_BORDER = 2;
 
 class CSV extends TextBase {
+
     /**
      * [constructor]
      *
@@ -29,7 +30,6 @@ class CSV extends TextBase {
     /**
      * Loads a csv file.
      *
-     * @public
      * @param {string} csvUrl The text to load
      * @returns {Promise} Promise to load a CSV
      */
@@ -67,8 +67,8 @@ class CSV extends TextBase {
     /**
      * Finishes loading the csv data
      *
-     * @private
      * @returns {void}
+     * @private
      */
     finishLoading() {
         this.renderCSV();
@@ -80,8 +80,8 @@ class CSV extends TextBase {
     /**
      * Resize handler
      *
-     * @private
      * @returns {void}
+     * @private
      */
     resize() {
         this.renderCSV();
@@ -91,11 +91,11 @@ class CSV extends TextBase {
     /**
      * Gets row class name
      *
-     * @private
      * @param {number} row index of the row
      * @returns {string} class name
+     * @private
      */
-    getRowClassName = (row) => {
+    getRowClassName(row) {
         return row % 2 === 0 ? 'box-preview-text-csv-even-row' : 'box-preview-text-csv-odd-row';
     }
 
@@ -103,9 +103,13 @@ class CSV extends TextBase {
     /**
      * Renders cell
      *
-     * @private
-     * @param {number} cellIndex index of cell
+     * @param {Object} cellInfo
+     * @param {number} cellInfo.columnIndex
+     * @param {string} cellInfo.key
+     * @param {number} cellInfo.rowIndex
+     * @param {string} cellInfo.style
      * @returns {function} Cell renderer function
+     * @private
      */
     cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
         const rowClass = this.getRowClassName(rowIndex);
@@ -116,8 +120,8 @@ class CSV extends TextBase {
     /**
      * Renders CSV into an html table
      *
-     * @private
      * @returns {void}
+     * @private
      */
     renderCSV() {
         const rowCount = this.data.length;
