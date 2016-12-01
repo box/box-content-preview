@@ -13,6 +13,7 @@ const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 
 const Box = global.Box || {};
 
+/* istanbul ignore next */
 @autobind
 class Dash extends VideoBase {
 

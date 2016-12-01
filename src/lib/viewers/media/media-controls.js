@@ -17,6 +17,7 @@ const VOLUME_LEVEL_CLASS_NAMES = [
 ];
 const CRAWLER = '<div class="box-preview-media-crawler-wrapper"><div class="box-preview-crawler"><div></div><div></div><div></div></div></div>';
 
+/* istanbul ignore next */
 @autobind
 class MediaControls extends EventEmitter {
 
