@@ -9,28 +9,32 @@ const VIEWERS = [
         EXTENSIONS: ['svg', 'gif'],
         SCRIPTS: ['image.js'],
         STYLESHEETS: ['image.css'],
-        CONSTRUCTOR: 'Image'
+        CONSTRUCTOR: 'Image',
+        PREFETCH: 'img'
     },
     {
         REPRESENTATION: 'multi-image',
         EXTENSIONS: ['tif', 'tiff'],
         SCRIPTS: ['multi-image.js'],
         STYLESHEETS: ['multi-image.css'],
-        CONSTRUCTOR: 'MultiImage'
+        CONSTRUCTOR: 'MultiImage',
+        PREFETCH: 'img'
     },
     {
         REPRESENTATION: 'jpg',
         EXTENSIONS: ['jpeg', 'jpg'],
         SCRIPTS: ['image.js'],
         STYLESHEETS: ['image.css'],
-        CONSTRUCTOR: 'Image'
+        CONSTRUCTOR: 'Image',
+        PREFETCH: 'img'
     },
     {
         REPRESENTATION: 'png',
         EXTENSIONS: ['ai', 'bmp', 'dcm', 'eps', 'gif', 'png', 'ps', 'psd', 'svs', 'tga', 'tif', 'tiff'],
         SCRIPTS: ['image.js'],
         STYLESHEETS: ['image.css'],
-        CONSTRUCTOR: 'Image'
+        CONSTRUCTOR: 'Image',
+        PREFETCH: 'img'
     }
 ];
 

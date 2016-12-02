@@ -12,7 +12,8 @@ const VIEWERS = [
             `${STATIC_URI}webvr-polyfill.js`,
             'model3d.js'],
         STYLESHEETS: ['box3d.css', 'model3d.css'],
-        CONSTRUCTOR: 'Model3d'
+        CONSTRUCTOR: 'Model3d',
+        PREFETCH: 'xhr'
     }
 ];
 

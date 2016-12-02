@@ -250,7 +250,32 @@ describe('asset-loader', () => {
             expect(util.get).to.have.been.calledWith(url, 'any');
         });
 
-        it('should prefetch assets via img tag if viewer doesn\'t use xhr prefetch', () => {
+        it('should prefetch assets via img tag if viewer has img prefetch', () => {
+            const url = 'someUrl';
+            const token = 'someToken';
+            const sharedLink = 'someLink';
+            const password = 'somePass';
+
+            sandbox.stub(loader, 'determineViewer').returns({
+                PREFETCH: 'img'
+            });
+            sandbox.stub(loader, 'determineRepresentation').returns({
+                links: {
+                    content: {
+                        url
+                    }
+                },
+                status: 'success'
+            });
+            sandbox.stub(loader, 'prefetchAssets');
+            sandbox.stub(util, 'createContentUrl');
+
+            loader.prefetch({}, token, {}, sharedLink, password);
+
+            expect(util.createContentUrl).to.have.been.calledWith(url, token, sharedLink, password);
+        });
+
+        it('should not prefetch assets if viewer does not have prefetch method defined', () => {
             const url = 'someUrl';
             const token = 'someToken';
             const sharedLink = 'someLink';
@@ -266,11 +291,13 @@ describe('asset-loader', () => {
                 status: 'success'
             });
             sandbox.stub(loader, 'prefetchAssets');
+            sandbox.stub(util, 'get');
             sandbox.stub(util, 'createContentUrl');
 
             loader.prefetch({}, token, {}, sharedLink, password);
 
-            expect(util.createContentUrl).to.have.been.calledWith(url, token, sharedLink, password);
+            expect(util.get).to.have.not.been.called;
+            expect(util.createContentUrl).to.have.not.been.called;
         });
     });
 

@@ -8,7 +8,8 @@ const VIEWERS = [
         SCRIPTS: [`${STATIC_URI}boxsdk.js`, `${STATIC_URI}box3d-runtime.js`,
             `${STATIC_URI}webvr-polyfill.js`, 'image360.js'],
         STYLESHEETS: ['image360.css'],
-        CONSTRUCTOR: 'Image360'
+        CONSTRUCTOR: 'Image360',
+        PREFETCH: 'img'
     }
 ];
 

@@ -125,9 +125,10 @@ class AssetLoader {
             /* eslint-enable no-param-reassign */
         }
 
+        // Prefetch based on viewer strategy
         if (viewer.PREFETCH === 'xhr') {
             get(createContentUrl(representation.links.content.url, token, sharedLink, sharedLinkPassword), 'any');
-        } else {
+        } else if (viewer.PREFETCH === 'img') {
             const img = document.createElement('img');
             img.src = createContentUrl(representation.links.content.url, token, sharedLink, sharedLinkPassword);
         }

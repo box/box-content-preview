@@ -13,7 +13,8 @@ const VIEWERS = [
         EXTENSIONS: ['mp3'],
         SCRIPTS: ['mp3.js'],
         STYLESHEETS: ['mp3.css'],
-        CONSTRUCTOR: 'MP3'
+        CONSTRUCTOR: 'MP3',
+        PREFETCH: 'xhr'
     },
     // {
     //     REPRESENTATION: 'original',
@@ -44,14 +45,16 @@ const VIEWERS = [
         EXTENSIONS: VIDEO_FORMATS,
         SCRIPTS: ['mp4.js'],
         STYLESHEETS: ['mp4.css'],
-        CONSTRUCTOR: 'MP4'
+        CONSTRUCTOR: 'MP4',
+        PREFETCH: 'xhr'
     },
     {
         REPRESENTATION: 'mp3',
         EXTENSIONS: ['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma'],
         SCRIPTS: ['mp3.js'],
         STYLESHEETS: ['mp3.css'],
-        CONSTRUCTOR: 'MP3'
+        CONSTRUCTOR: 'MP3',
+        PREFETCH: 'xhr'
     }
 ];
 
