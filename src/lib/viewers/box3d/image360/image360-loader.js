@@ -9,7 +9,7 @@ const VIEWERS = [
             `${STATIC_URI}webvr-polyfill.js`, 'image360.js'],
         STYLESHEETS: ['image360.css'],
         CONSTRUCTOR: 'Image360',
-        PREFETCH: 'img'
+        PREFETCH: 'xhr'
     }
 ];
 
