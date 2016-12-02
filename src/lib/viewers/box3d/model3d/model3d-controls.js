@@ -1,21 +1,30 @@
 import autobind from 'autobind-decorator';
 import Box3DControls from '../box3d-controls';
+import Model3DAnimationClipsPullup from './model3d-animation-clips-pullup';
 import Model3DSettingsPullup from './model3d-settings-pullup';
+
 import {
-    EVENT_CLOSE_UI,
     EVENT_ROTATE_ON_AXIS,
     EVENT_SAVE_SCENE_DEFAULTS,
+    EVENT_SELECT_ANIMATION_CLIP,
     EVENT_SET_CAMERA_PROJECTION,
     EVENT_SET_QUALITY_LEVEL,
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
+    EVENT_TOGGLE_ANIMATION,
     EVENT_TOGGLE_HELPERS,
     RENDER_MODE_LIT
 } from './model3d-constants';
+
+import { CSS_CLASS_HIDDEN } from '../box3d-constants';
+
 import {
+    ICON_3D_RESET,
+    ICON_ANIMATION,
     ICON_GEAR,
-    ICON_3D_RESET
+    ICON_PAUSE,
+    ICON_PLAY
 } from '../../../icons/icons';
 
 /**
@@ -27,15 +36,17 @@ import {
 @autobind
 class Model3dControls extends Box3DControls {
     /**
-     * Creates UI and Handles events for 3D Model Preview
+     * Creates UI and handles events for 3D Model Preview
      * @constructor
      * @inheritdoc
      * @returns {Model3dControls} Model3dControls instance
      */
     constructor(containerEl) {
         super(containerEl);
+        this.animationClipsPullup = new Model3DAnimationClipsPullup(containerEl);
         this.settingsPanelEl = null;
         this.settingsPullup = new Model3DSettingsPullup();
+        this.isAnimationPlaying = false;
     }
 
     /**
@@ -43,11 +54,25 @@ class Model3dControls extends Box3DControls {
      * @param {bool} showSaveButton Whether or not we allow the user to attempt saving to metadata
      */
     addUi(showSaveButton = false) {
-        this.addListener(EVENT_CLOSE_UI, this.handleCloseUi);
-
         if (!showSaveButton) {
             this.settingsPullup.hideSaveButton();
         }
+
+        // Reset button
+        this.resetButtonEl = this.controls.add(__('box3d_reset_camera'), this.handleReset, '', ICON_3D_RESET);
+
+        // Animation controls
+        this.animationClipsPullup.addListener(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
+        this.animationToggleEl = this.controls.add(__('box3d_toggle_animation'), this.handleToggleAnimation, '', ICON_PLAY);
+        this.animationClipButtonEl = this.controls.add(__('box3d_animation_clips'), this.handleToggleAnimationClips, '', ICON_ANIMATION);
+        this.animationClipButtonEl.parentNode.appendChild(this.animationClipsPullup.pullupEl);
+        this.hideAnimationControls();
+
+        // VR button
+        this.addVrButton();
+        this.hideVrButton();
+
+        // Settings panel
         this.settingsPanelEl = this.settingsPullup.pullupEl;
         this.settingsPullup.addListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
         this.settingsPullup.addListener(EVENT_SET_SKELETONS_VISIBLE, this.handleSetSkeletonsVisible);
@@ -56,26 +81,25 @@ class Model3dControls extends Box3DControls {
         this.settingsPullup.addListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.addListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
         this.settingsPullup.addListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
-
-        this.resetButtonEl = this.controls.add(__('box3d_reset_camera'), this.handleReset, '', ICON_3D_RESET);
-
-        this.addVrButton();
-        this.hideVrButton();
-
         this.settingsButtonEl = this.controls.add(__('box3d_settings'), this.handleToggleSettings, '', ICON_GEAR);
-        this.settingsButtonEl.parentElement.appendChild(this.settingsPanelEl);
+        this.settingsButtonEl.parentNode.appendChild(this.settingsPanelEl);
 
+        // Fullscreen button
         this.addFullscreenButton();
 
         this.handleSetRenderMode(RENDER_MODE_LIT);
     }
 
     /**
-     * Handle toggle rendermodes ui event
+     * Hide any open pullups.
+     * @method hidePullups
+     * @public
      * @returns {void}
      */
-    handleToggleRenderModes() {
+    hidePullups() {
+        this.animationClipsPullup.hide();
         this.settingsPullup.hide();
+        this.emit(EVENT_TOGGLE_HELPERS, false);
     }
 
     /**
@@ -83,8 +107,9 @@ class Model3dControls extends Box3DControls {
      * @returns {void}
      */
     handleToggleSettings() {
-        this.emit(EVENT_TOGGLE_HELPERS);
+        this.animationClipsPullup.hide();
         this.settingsPullup.toggle();
+        this.emit(EVENT_TOGGLE_HELPERS);
     }
 
     /**
@@ -143,12 +168,100 @@ class Model3dControls extends Box3DControls {
     }
 
     /**
-     * Close the render mode ui
+     * Show the animation controls.
+     * @method showAnimationControls
+     * @public
      * @returns {void}
      */
-    handleCloseUi() {
-        this.emit(EVENT_TOGGLE_HELPERS, false);
+    showAnimationControls() {
+        if (this.animationToggleEl && this.animationClipButtonEl) {
+            this.animationToggleEl.classList.remove(CSS_CLASS_HIDDEN);
+            this.animationClipButtonEl.classList.remove(CSS_CLASS_HIDDEN);
+        }
+    }
+
+    /**
+     * Hide the animation controls.
+     * @method hideAnimationControls
+     * @public
+     * @returns {void}
+     */
+    hideAnimationControls() {
+        if (this.animationToggleEl && this.animationClipButtonEl) {
+            this.animationToggleEl.classList.add(CSS_CLASS_HIDDEN);
+            this.animationClipButtonEl.classList.add(CSS_CLASS_HIDDEN);
+        }
+    }
+
+    /**
+     * Handle animation clip selection.
+     * @method handleSelectAnimationClip
+     * @private
+     * @param {string} clipId The ID of the clip that was selected.
+     * @returns {void}
+     */
+    handleSelectAnimationClip(clipId) {
+        this.setAnimationPlaying(false);
+        this.emit(EVENT_SELECT_ANIMATION_CLIP, clipId);
+    }
+
+    /**
+     * Handle clicks on the animation clip button.
+     * @method handleToggleAnimationClips
+     * @private
+     * @returns {void}
+     */
+    handleToggleAnimationClips() {
         this.settingsPullup.hide();
+        this.animationClipsPullup.toggle();
+    }
+
+    /**
+     * Handle clicks on the animation play / pause button.
+     * @method handleToggleAnimation
+     * @private
+     * @returns {void}
+     */
+    handleToggleAnimation() {
+        this.hidePullups();
+        this.setAnimationPlaying(!this.isAnimationPlaying);
+    }
+
+    /**
+     * Set the animation playback state, firing event EVENT_TOGGLE_ANIMATION.
+     * @method setAnimationPlaying
+     * @private
+     * @param {boolean} playing Whether or not the animation is playing.
+     * @returns {void}
+     */
+    setAnimationPlaying(playing) {
+        this.isAnimationPlaying = playing;
+        this.animationToggleEl.innerHTML = this.isAnimationPlaying ? ICON_PAUSE : ICON_PLAY;
+        this.emit(EVENT_TOGGLE_ANIMATION, this.isAnimationPlaying);
+    }
+
+    /**
+     * Add an animation clip to the clip pullup.
+     * @method addAnimationClip
+     * @public
+     * @param {string} id The ID of the clip.
+     * @param {string} name The name of the clip.
+     * @param {number} duration The duration of the clip.
+     * @returns {void}
+     */
+    addAnimationClip(id, name, duration) {
+        this.animationClipsPullup.addClip(id, name, duration);
+    }
+
+    /**
+     * Select the animation clip with the specified ID.
+     * @method selectAnimationClip
+     * @public
+     * @param {string} clipId The ID of the clip to select.
+     * @returns {void}
+     */
+    selectAnimationClip(clipId) {
+        this.animationClipsPullup.selectClip(clipId);
     }
 
     /**
@@ -156,9 +269,9 @@ class Model3dControls extends Box3DControls {
      */
     handleReset() {
         super.handleReset();
-        this.handleCloseUi();
-        this.settingsPullup.hideWireframes();
-        this.settingsPullup.hideSkeletons();
+        this.hidePullups();
+        this.settingsPullup.reset();
+        this.setAnimationPlaying(false);
     }
 
     /**
@@ -176,7 +289,7 @@ class Model3dControls extends Box3DControls {
      */
     handleToggleFullscreen() {
         super.handleToggleFullscreen();
-        this.handleCloseUi();
+        this.hidePullups();
     }
 
     /**
@@ -197,7 +310,9 @@ class Model3dControls extends Box3DControls {
             this.controls.controlsEl.removeEventListener('click', this.handleControlsClick);
         }
 
-        this.removeListener(EVENT_CLOSE_UI, this.handleCloseUi);
+        this.animationClipsPullup.removeListener(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
+        this.animationClipsPullup.destroy();
+        this.animationClipsPullup = null;
 
         this.settingsPullup.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
         this.settingsPullup.removeListener(EVENT_SET_SKELETONS_VISIBLE, this.handleSetSkeletonsVisible);

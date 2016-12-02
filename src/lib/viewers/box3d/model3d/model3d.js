@@ -2,25 +2,30 @@ import autobind from 'autobind-decorator';
 import Box3D from '../box3d';
 import Model3dControls from './model3d-controls';
 import Model3dRenderer from './model3d-renderer';
+
 import {
     CAMERA_PROJECTION_PERSPECTIVE,
-    EVENT_CLOSE_UI,
+    EVENT_CANVAS_CLICK,
     EVENT_METADATA_UPDATE_FAILURE,
     EVENT_METADATA_UPDATE_SUCCESS,
     EVENT_ROTATE_ON_AXIS,
     EVENT_SAVE_SCENE_DEFAULTS,
+    EVENT_SELECT_ANIMATION_CLIP,
     EVENT_SET_CAMERA_PROJECTION,
     EVENT_SET_QUALITY_LEVEL,
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
+    EVENT_TOGGLE_ANIMATION,
     EVENT_TOGGLE_HELPERS,
     RENDER_MODE_LIT
 } from './model3d-constants';
+
 import {
     CSS_CLASS_INVISIBLE,
     EVENT_LOAD
 } from '../box3d-constants';
+
 import './model3d.scss';
 
 const Box = global.Box || {};
@@ -59,7 +64,7 @@ class Model3d extends Box3D {
     }
 
     /**
-    * @inheritdoc
+     * @inheritdoc
      */
     createSubModules() {
         this.controls = new Model3dControls(this.wrapperEl);
@@ -75,14 +80,17 @@ class Model3d extends Box3D {
         if (this.controls) {
             this.controls.on(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.on(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
+            this.controls.on(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
             this.controls.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
             this.controls.on(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
             this.controls.on(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
             this.controls.on(EVENT_SET_SKELETONS_VISIBLE, this.handleShowSkeletons);
             this.controls.on(EVENT_SET_WIREFRAMES_VISIBLE, this.handleShowWireframes);
+            this.controls.on(EVENT_TOGGLE_ANIMATION, this.handleToggleAnimation);
             this.controls.on(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
         }
-        this.renderer.on(EVENT_CLOSE_UI, this.handleCloseUi);
+
+        this.renderer.on(EVENT_CANVAS_CLICK, this.handleCanvasClick);
 
         // For addition/removal of VR class when display stops presenting
         window.addEventListener('vrdisplaypresentchange', this.onVrPresentChange);
@@ -97,14 +105,18 @@ class Model3d extends Box3D {
         if (this.controls) {
             this.controls.removeListener(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.removeListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
+            this.controls.removeListener(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
             this.controls.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
             this.controls.removeListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
             this.controls.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
             this.controls.removeListener(EVENT_SET_SKELETONS_VISIBLE, this.handleShowSkeletons);
             this.controls.removeListener(EVENT_SET_WIREFRAMES_VISIBLE, this.handleShowWireframes);
+            this.controls.removeListener(EVENT_TOGGLE_ANIMATION, this.handleToggleAnimation);
             this.controls.removeListener(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
         }
-        this.renderer.removeListener(EVENT_CLOSE_UI, this.handleCloseUi);
+
+        this.renderer.removeListener(EVENT_CANVAS_CLICK, this.handleCanvasClick);
+
         window.removeEventListener('vrdisplaypresentchange', this.onVrPresentChange);
     }
 
@@ -209,6 +221,18 @@ class Model3d extends Box3D {
     }
 
     /**
+     * Handle animation clip selection.
+     * @method handleSelectAnimationClip
+     * @private
+     * @param {string} clipId The ID of the clip that was selected.
+     * @returns {void}
+     */
+    @autobind
+    handleSelectAnimationClip(clipId) {
+        this.renderer.setAnimationClip(clipId);
+    }
+
+    /**
      * Handle model rotation event
      * @param  {Object}  axis An object describing the axis to rotate on
      * @returns {void}
@@ -265,6 +289,24 @@ class Model3d extends Box3D {
                 this.controls.handleSetRenderMode(defaults.defaultRenderMode);
                 this.controls.handleSetSkeletonsVisible(false);
                 this.controls.handleSetWireframesVisible(false);
+
+                // Initialize animation controls when animations are present.
+                const animations = this.renderer.box3d.getEntitiesByType('animation');
+                if (animations.length > 0) {
+                    const clipIds = animations[0].getClipIds();
+
+                    clipIds.forEach((clipId) => {
+                        const clip = animations[0].getClip(clipId);
+                        const duration = clip.stop - clip.start;
+                        this.controls.addAnimationClip(clipId, clip.name, duration);
+                    });
+
+                    if (clipIds.length > 0) {
+                        this.controls.showAnimationControls();
+                        this.controls.selectAnimationClip(clipIds[0]);
+                    }
+                }
+
                 this.showWrapper();
                 this.renderer.initVrIfPresent();
             })
@@ -287,12 +329,25 @@ class Model3d extends Box3D {
     }
 
     /**
-     * Notify the control module to close all ui, if open
+     * Handle animation playback (play / pause).
+     * @method handleToggleAnimation
+     * @private
      * @returns {void}
      */
     @autobind
-    handleCloseUi() {
-        this.controls.emit(EVENT_CLOSE_UI);
+    handleToggleAnimation(play) {
+        this.renderer.toggleAnimation(play);
+    }
+
+    /**
+     * Handle canvas focus events.
+     * @method handleCanvasClick
+     * @private
+     * @returns {void}
+     */
+    @autobind
+    handleCanvasClick() {
+        this.controls.hidePullups();
     }
 
     /**
@@ -367,14 +422,17 @@ class Model3d extends Box3D {
         this.handleRotationAxisSet(this.axes.up, this.axes.forward, true);
         this.controls.handleSetRenderMode(this.renderMode);
         this.controls.setCurrentProjectionMode(this.projection);
+
         if (this.renderer.vrEnabled) {
             const camera = this.renderer.getCamera();
             this.renderer.initCameraForVr(camera);
         }
+
+        this.renderer.stopAnimation();
     }
 
     /**
-     *  Handle set render mode event
+     * Handle set render mode event
      * @param  {string} mode The selected render mode string
      * @returns {void}
      */
@@ -419,7 +477,7 @@ class Model3d extends Box3D {
     /**
      * Handle setting skeleton visibility.
      * @private
-     * @param {Boolean} visible Indicates whether or not skeletons are visible.
+     * @param {boolean} visible Indicates whether or not skeletons are visible.
      * @returns {void}
      */
     @autobind
@@ -430,7 +488,7 @@ class Model3d extends Box3D {
     /**
      * Handle setting wireframe visibility.
      * @private
-     * @param {Boolean} visible Indicates whether or not wireframes are visible.
+     * @param {boolean} visible Indicates whether or not wireframes are visible.
      * @returns {void}
      */
     @autobind

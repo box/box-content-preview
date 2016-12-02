@@ -5,7 +5,7 @@ import sceneEntities from './scene-entities';
 import {
     CAMERA_PROJECTION_PERSPECTIVE,
     CAMERA_PROJECTION_ORTHOGRAPHIC,
-    EVENT_CLOSE_UI,
+    EVENT_CANVAS_CLICK,
     EVENT_RESET_SKELETONS,
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
@@ -95,12 +95,15 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /**
-     * Handle the canvas being selected
+     * Handle the canvas being clicked.
+     * @method handleCanvasClick
+     * @private
+     * @param {Event} event The click event.
      * @returns {void}
      */
     @autobind
-    handleCanvasClick() {
-        this.emit(EVENT_CLOSE_UI);
+    handleCanvasClick(event) {
+        this.emit(EVENT_CANVAS_CLICK, event);
     }
 
     /**
@@ -187,7 +190,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Create an instance of the specified prefab and add it to the scene.
      * @param {object} prefab The prefab entity to instance.
      * @param {object} scene The scene asset to add the instance to.
-     * @returns {Boolean} Whether or not the instance was added to the scene.
+     * @returns {boolean} Whether or not the instance was added to the scene.
      */
     addInstanceToScene(prefab, scene) {
         // Create an instance of the prefab asset.
@@ -202,8 +205,9 @@ class Model3dRenderer extends Box3DRenderer {
         // Center the instance.
         instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
 
-        // Attach PreviewAxisRotation component to the instance.
+        // Add components to the instance.
         instance.addComponent('preview_axis_rotation', {}, `axis_rotation_${instance.id}`);
+        instance.addComponent('animation', {}, `animation_${instance.id}`);
 
         // Add the instance to the scene.
         scene.getRootObject().addChild(instance);
@@ -238,19 +242,107 @@ class Model3dRenderer extends Box3DRenderer {
 
         // Should wait until all textures are fully loaded before trying to measure performance.
         // Once they're loaded, start the dynamic optimizer.
+        const animations = this.box3d.getEntitiesByType('animation');
         const images = this.box3d.getEntitiesByType('image');
         const videos = this.box3d.getEntitiesByType('video');
-        const media = images.concat(videos).filter((asset) => asset.isLoading());
-        const mediaPromises = media.map((asset) => new Promise((resolve) => {
+        const assets = animations.concat(images, videos).filter((asset) => asset.isLoading());
+        const assetPromises = assets.map((asset) => new Promise((resolve) => {
             asset.when('load', resolve);
         }));
 
-        Promise.all(mediaPromises).then(() => {
+        Promise.all(assetPromises).then(() => {
             this.startOptimizer();
+
+            if (animations.length > 0) {
+                this.setAnimationAsset(animations[0]);
+            }
+
             videos.forEach((video) => video.play());
         });
 
         this.resize();
+    }
+
+    /**
+     * Set the current animation asset.
+     * @method setAnimationAsset
+     * @public
+     * @param {AnimationAsset} animation The animation asset.
+     * @returns {void}
+     */
+    setAnimationAsset(animation) {
+        if (!this.instance) {
+            return;
+        }
+
+        const component = this.instance.getComponentByScriptId('animation');
+        component.setAsset(animation);
+        component.setLoop(true);
+    }
+
+    /**
+     * Set the current animation clip.
+     * @method setAnimationClip
+     * @public
+     * @param {string} clipId The animation clip ID.
+     * @returns {void}
+     */
+    setAnimationClip(clipId) {
+        if (!this.instance) {
+            return;
+        }
+
+        const component = this.instance.getComponentByScriptId('animation');
+        component.setClipId(clipId);
+    }
+
+    /**
+     * Play / pause the current animation.
+     * @method toggleAnimation
+     * @public
+     * @param {boolean} play Whether to play or pause the animation.
+     * @returns {void}
+     */
+    toggleAnimation(play) {
+        if (!this.instance) {
+            return;
+        }
+
+        const component = this.instance.getComponentByScriptId('animation');
+        const animation = component.asset;
+        if (!animation) {
+            return;
+        }
+
+        // Make sure the animation asset and instance are loaded before trying
+        // to play / pause.
+        animation.when('load', () => {
+            this.instance.when('load', () => {
+                if (play) {
+                    component.play();
+                    component.onUpdate(0);
+                    this.instance.scaleToSize(this.modelSize);
+                    this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
+                } else {
+                    component.pause();
+                }
+            });
+        });
+    }
+
+    /**
+     * Stop the current animation and reset it to its beginning.
+     * @method stopAnimation
+     * @public
+     * @returns {void}
+     */
+    stopAnimation() {
+        if (!this.instance) {
+            return;
+        }
+
+        const component = this.instance.getComponentByScriptId('animation');
+        component.stop();
     }
 
     /**
@@ -537,7 +629,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Set the visibility of skeletons.
      * @method setSkeletonsVisible
      * @private
-     * @param {Boolean} visible Indicates whether or not skeletons are visible.
+     * @param {boolean} visible Indicates whether or not skeletons are visible.
      * @returns {void}
      */
     setSkeletonsVisible(visible) {
@@ -550,7 +642,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Set the visibility of wireframes.
      * @method setWireframesVisible
      * @private
-     * @param {Boolean} visible Indicates whether or not wireframes are visible.
+     * @param {boolean} visible Indicates whether or not wireframes are visible.
      * @returns {void}
      */
     setWireframesVisible(visible) {

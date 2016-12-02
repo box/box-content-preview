@@ -106,7 +106,7 @@ class Model3DSettingsPullup extends EventEmitter {
         this.saveRowEl = null;
 
         this.uiRegistry = new UIRegistry();
-        this.pullupEl = this.createUi();
+        this.createUi();
     }
 
     /**
@@ -131,7 +131,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Create the UI necessary to run the Settings panel pullup.
      * @method createUi
      * @private
-     * @returns {HtmlElement} The pullup element for the settings panel.
+     * @returns {void}
      */
     createUi() {
         // The containing pullup element
@@ -232,8 +232,6 @@ class Model3DSettingsPullup extends EventEmitter {
         saveButtonEl.classList.add('box-preview-btn-primary');
         this.saveRowEl.appendChild(saveButtonEl);
         this.pullupEl.appendChild(this.saveRowEl);
-
-        return this.pullupEl;
     }
 
     /**
@@ -264,7 +262,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Create a single axis rotation widget.
      * @method createRotationAxis
      * @private
-     * @param {String} axisLabel The label for the axis.
+     * @param {string} axisLabel The label for the axis.
      * @param {Function} minusIconCallback Called when the "minus" icon is clicked.
      * @param {Function} plusIconCallback Called when the "plus" icon is clicked.
      * @returns {HtmlElement} The axis widget for the supplied axis.
@@ -298,7 +296,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Emit a message with the render mode that has been selected.
      * @method onRenderModeSelected
      * @private
-     * @param {String} mode The render mode to emit a message about.
+     * @param {string} mode The render mode to emit a message about.
      * @returns {void}
      */
     onRenderModeSelected(mode) {
@@ -309,8 +307,8 @@ class Model3DSettingsPullup extends EventEmitter {
      * Emit an axis rotation event with the axis of rotation and direction to rotate.
      * @method onAxisRotationSelected
      * @private
-     * @param {String} rotationAxis The axis to rotate on.
-     * @param {Integer} direction The direction to rotate: 1 is positive rotation and -1 is negative.
+     * @param {string} rotationAxis The axis to rotate on.
+     * @param {number} direction The direction to rotate: 1 is positive rotation and -1 is negative.
      * @returns {void}
      */
     onAxisRotationSelected(rotationAxis, direction) {
@@ -323,7 +321,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Set the current projection mode being used.
      * @method onProjectionSelected
      * @private
-     * @param {String} mode The projection mode to use.
+     * @param {string} mode The projection mode to use.
      * @returns {void}
      */
     onProjectionSelected(mode) {
@@ -334,7 +332,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Set the current quality level used for rendering.
      * @method onQualityLevelSelected
      * @private
-     * @param {String} level The quality level to use.
+     * @param {string} level The quality level to use.
      * @returns {void}
      */
     onQualityLevelSelected(level) {
@@ -395,10 +393,21 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
+     * Reset the pullup to its default state.
+     * @method reset
+     * @public
+     * @returns {void}
+     */
+    reset() {
+        this.hideWireframes();
+        this.hideSkeletons();
+    }
+
+    /**
      * Set the current render mode being shown, in the dropdown label
      * @method setCurrentRenderMode
      * @public
-     * @param {String} mode The render mode name to display.
+     * @param {string} mode The render mode name to display.
      * @returns {void}
      */
     setCurrentRenderMode(mode) {
@@ -409,7 +418,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Set the current projection mode being used, in the dropdown label.
      * @method setCurrentProjectionMode
      * @public
-     * @param {String} mode The projection mode name to display
+     * @param {string} mode The projection mode name to display
      * @returns {void}
      */
     setCurrentProjectionMode(mode) {

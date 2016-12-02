@@ -19,7 +19,7 @@ $arrow-top-bottom: 4px solid transparent;
     .box-preview-pullup {
         bottom: calc(100%);
         text-align: left;
-        padding: 0 10px 10px 18px;
+        padding: 0 10px 10px 10px;
     }
 
     .box-preview-settings-panel-row {
@@ -56,13 +56,12 @@ $arrow-top-bottom: 4px solid transparent;
     }
 
     .box-preview-toggle-overlay {
-
         .box-preview-menu {
             min-width: 183px;
         }
 
         .box-preview-btn {
-            width: 96%;
+            width: 100%;
             text-align: left;
             color: #808080;
             text-transform: none;
@@ -87,8 +86,7 @@ $arrow-top-bottom: 4px solid transparent;
     }
 
     .box-preview-overlay-panel {
-
-        .box-preview-btn.box-preview-btn-primary {
+        .box-preview-btn .box-preview-btn-primary {
             margin: 6px 0 0 0;
         }
     }
@@ -98,7 +96,6 @@ $arrow-top-bottom: 4px solid transparent;
         border-bottom-width: 2px;
         border-radius: 2px;
         display: inline;
-        margin-right: 6px;
         padding-bottom: 10px;
 
         &.box3d-settings-axis-widget-x {
@@ -107,6 +104,8 @@ $arrow-top-bottom: 4px solid transparent;
 
         &.box3d-settings-axis-widget-y {
             border-bottom-color: #26C281;
+            margin-left: 4px;
+            margin-right: 4px;
         }
 
         &.box3d-settings-axis-widget-z {
@@ -164,4 +163,33 @@ $arrow-top-bottom: 4px solid transparent;
         }
     }
 
+    .box3d-animation-clip-pullup {
+        max-height: 200px;
+        overflow: scroll;
+    }
+
+    .box3d-animation-clip {
+        display: block;
+        margin-top: 6px;
+        white-space: nowrap;
+        cursor: pointer;
+
+        .box3d-animation-clip-icon {
+            display: inline-block;
+            width: 24px;
+
+            svg {
+                vertical-align: text-bottom;
+                height: 16px;
+            }
+        }
+
+        .box3d-animation-clip-value {
+            display: inline;
+            width: auto;
+            max-width: 183px;
+            overflow-x: hidden;
+            white-space: nowrap;
+        }
+    }
 }

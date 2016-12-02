@@ -149,8 +149,8 @@ class Box3D extends Base {
      */
     load(assetUrl) {
         this.renderer
-        .load(this.appendAuthParam(assetUrl), this.options)
-        .catch(this.handleError);
+            .load(this.appendAuthParam(assetUrl), this.options)
+            .catch(this.handleError);
         super.load();
     }
 

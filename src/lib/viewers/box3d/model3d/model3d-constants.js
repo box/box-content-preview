@@ -1,14 +1,17 @@
 // Events
+export const EVENT_CANVAS_CLICK = 'canvasClick';
 export const EVENT_METADATA_UPDATE_FAILURE = 'metdataUpdateFail';
 export const EVENT_METADATA_UPDATE_SUCCESS = 'metdataUpdateSuccess';
 export const EVENT_RESET_SKELETONS = 'resetSkeletons';
 export const EVENT_ROTATE_ON_AXIS = 'rotateOnAxis';
 export const EVENT_SAVE_SCENE_DEFAULTS = 'sceneSave';
+export const EVENT_SELECT_ANIMATION_CLIP = 'selectAnimationClip';
 export const EVENT_SET_RENDER_MODE = 'setRenderMode';
 export const EVENT_SET_CAMERA_PROJECTION = 'setCameraProjection';
 export const EVENT_SET_QUALITY_LEVEL = 'setQualityLevel';
 export const EVENT_SET_SKELETONS_VISIBLE = 'setSkeletonsVisible';
 export const EVENT_SET_WIREFRAMES_VISIBLE = 'setWireframesVisible';
+export const EVENT_TOGGLE_ANIMATION = 'toggleAnimation';
 export const EVENT_TOGGLE_HELPERS = 'toggleHelpers';
 
 // 3D Scene Params
@@ -17,6 +20,7 @@ export const GRID_SIZE = 5;
 export const GRID_COLOR = 0xaaaaaa;
 
 // CSS
+export const CSS_CLASS_ANIMATION_CLIP_PULLUP = 'box3d-animation-clip-pullup';
 export const CSS_CLASS_OVERLAY = 'box-preview-overlay-panel';
 export const CSS_CLASS_PULLUP = 'box-preview-pullup';
 export const CSS_CLASS_CURRENT_AXIS = 'box-preview-current-axis';
