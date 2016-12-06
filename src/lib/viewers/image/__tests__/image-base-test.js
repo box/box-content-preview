@@ -22,6 +22,12 @@ describe('image-base', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        if (typeof imageBase.destroy === 'function') {
+            imageBase.destroy();
+        }
+
+        imageBase = null;
     });
 
     describe('destroy()', () => {

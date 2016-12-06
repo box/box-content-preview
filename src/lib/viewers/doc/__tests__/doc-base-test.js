@@ -46,14 +46,19 @@ describe('doc-base', () => {
             }
         };
         docBase = new DocBase(containerEl, options);
+        stubs = {};
     });
 
     afterEach(() => {
         docBase.pdfViewer = undefined;
-        docBase.destroy();
+        if (typeof docBase.destroy === 'function') {
+            docBase.destroy();
+        }
+
         sandbox.verifyAndRestore();
         fixture.cleanup();
-        stubs = {};
+        docBase = null;
+        stubs = null;
     });
 
     describe('constructor()', () => {

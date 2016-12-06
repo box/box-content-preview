@@ -28,6 +28,8 @@ describe('csv', () => {
         if (typeof csv.destroy === 'function') {
             csv.destroy();
         }
+
+        csv = null;
     });
 
     describe('CSV()', () => {

@@ -25,6 +25,8 @@ describe('text', () => {
         if (typeof text.destroy === 'function') {
             text.destroy();
         }
+
+        text = null;
     });
 
     describe('PlainText()', () => {

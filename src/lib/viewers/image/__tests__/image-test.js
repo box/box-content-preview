@@ -60,6 +60,7 @@ describe('image.js', () => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
         clock.restore();
+        image = null;
     });
 
     describe('destroy()', () => {

@@ -12,6 +12,12 @@ describe('asset-loader', () => {
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+
+        if (typeof loader.destroy === 'function') {
+            loader.destroy();
+        }
+
+        loader = null;
     });
 
     describe('canLoad()', () => {

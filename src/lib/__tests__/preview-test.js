@@ -35,12 +35,20 @@ describe('Preview', () => {
         containerEl = document.querySelector('.container');
         preview = Box.Preview;
         preview.container = containerEl;
+        preview.viewer = {};
+        stubs = {};
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         fetchMock.restore();
-        stubs = {};
+        stubs = null;
+
+        if (typeof preview.destroy === 'function') {
+            preview.destroy();
+        }
+
+        preview = null;
     });
 
     describe('constructor()', () => {
@@ -893,7 +901,7 @@ describe('Preview', () => {
             stubs.loadPromiseResolve = Promise.resolve();
             stubs.determineRepresentationStatusPromise = Promise.resolve();
             stubs.loader = {
-                determineViewer: sandbox.stub().returns({ CONSTRUCTOR: 'mockviewer' }),
+                determineViewer: sandbox.stub().returns({ CONSTRUCTOR: 'viewer' }),
                 determineRepresentation: sandbox.stub().returns({
                     links: {
                         content: {
@@ -912,11 +920,13 @@ describe('Preview', () => {
             };
 
             function Viewer() {
-                this.load = sandbox.stub();
-                this.addListener = sandbox.stub();
+                return {
+                    load: sandbox.stub(),
+                    addListener: sandbox.stub()
+                };
             }
 
-            Box.Preview.mockviewer = Viewer;
+            Box.Preview.viewer = Viewer;
 
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.emit = sandbox.stub(preview, 'emit');
@@ -977,11 +987,6 @@ describe('Preview', () => {
             return promise.catch(() => {
                 expect(stubs.triggerError).to.be.called;
             });
-        });
-
-        it('should finally load that viewer', () => {
-            preview.loadViewer();
-            expect(preview.viewer.load).to.be.called;
         });
     });
 
@@ -1571,6 +1576,7 @@ describe('Preview', () => {
         it('should set a timeout to remove the arrows if the container exists', () => {
             const clock = sinon.useFakeTimers();
             const handler = preview.getGlobalMousemoveHandler();
+            preview.viewer.allowNavigationArrows = sandbox.stub();
 
             handler();
             clock.tick(MOUSEMOVE_THROTTLE + 1);
@@ -1683,6 +1689,10 @@ describe('Preview', () => {
                 target: {
                     nodeName: KEYDOWN_EXCEPTIONS[0]
                 }
+            };
+
+            preview.viewer = {
+
             };
         });
 

@@ -41,7 +41,11 @@ describe('presentation', () => {
     afterEach(() => {
         presentation.pdfViewer = null;
         presentation.controls = null;
-        presentation.destroy();
+        if (typeof presentation.destroy === 'function') {
+            presentation.destroy();
+        }
+
+        presentation = null;
         sandbox.verifyAndRestore();
         fixture.cleanup();
         stubs = {};

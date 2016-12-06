@@ -23,7 +23,11 @@ describe('text-base', () => {
 
     afterEach(() => {
         sandbox.verifyAndRestore();
-        textBase.destroy();
+        if (typeof textBase.destroy === 'function') {
+            textBase.destroy();
+        }
+
+        textBase = null;
     });
 
     describe('destroy()', () => {

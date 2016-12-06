@@ -38,6 +38,7 @@ describe('doc-find-bar', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+        doc = null;
         stubs = {};
     });
 
