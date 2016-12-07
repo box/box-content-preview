@@ -380,13 +380,15 @@ describe('text', () => {
         });
 
         it('should cleanup worker and show truncated download button if needed', () => {
-            text.workerUrl = 'someUrl';
+            text.workerSrc = 'blah';
             text.truncated = true;
             sandbox.stub(text, 'showTruncatedDownloadButton');
+            sandbox.stub(URL, 'revokeObjectURL');
 
             text.finishLoading('', true);
 
             expect(text.showTruncatedDownloadButton).to.have.been.called;
+            expect(URL.revokeObjectURL).to.have.been.calledWith(text.workerSrc);
         });
     });
 

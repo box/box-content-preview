@@ -135,7 +135,6 @@ class PlainText extends TextBase {
         });
         this.workerSrc = URL.createObjectURL(workerBlob);
         const worker = new Worker(this.workerSrc);
-        URL.revokeObjectURL(this.workerSrc);
 
         // Once highlighting is done, replace content and finish loading
         worker.onmessage = (event) => {
@@ -245,6 +244,11 @@ class PlainText extends TextBase {
         // Show message that text was truncated along with a download button
         if (this.truncated) {
             this.showTruncatedDownloadButton();
+        }
+
+        // Clean up worker URL
+        if (this.workerSrc) {
+            URL.revokeObjectURL(this.workerSrc);
         }
     }
 
