@@ -1,6 +1,6 @@
 # CSV Viewer
 
-The CSV viewer uses [PapaParse] () to parse CSV and TSV files and [React Virtualized] () to display the parsed data in a table.
+The CSV viewer uses [PapaParse] (https://github.com/mholt/PapaParse) to parse CSV and TSV files and [React Virtualized] (https://github.com/bvaughn/react-virtualized) to display the parsed data in a table.
 
 ## Screenshot
 
