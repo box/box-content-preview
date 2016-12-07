@@ -26,6 +26,12 @@
     .box-preview-text-csv-grid {
         border: 1px solid $off-white;
         width: 100%;
+
+        &:focus {
+            border-color: darken($sf-fog, 14%);
+            box-shadow: 0 1px 2px fade-out($black, .9);
+            outline: 0;
+        }
     }
 
     .box-preview-text-csv-even-row,
