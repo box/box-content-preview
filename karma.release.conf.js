@@ -14,11 +14,6 @@ module.exports = function karmaReleaseConf(config) {
 
         webpack: webpackConfig,
 
-        coverageReporter: {
-            dir: 'reports/coverage-client',
-            type: 'cobertura'
-        },
-
         reporters: ['dots', 'coverage', 'threshold'],
 
         singleRun: true

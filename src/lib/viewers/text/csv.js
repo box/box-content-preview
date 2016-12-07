@@ -1,3 +1,4 @@
+import autobind from 'autobind-decorator';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Grid } from 'react-virtualized';
@@ -12,6 +13,7 @@ const WIDTH_SCROLLER = 5;
 const WIDTH_COLUMN = 160;
 const WIDTH_BORDER = 2;
 
+@autobind
 class CSV extends TextBase {
 
     /**
@@ -25,6 +27,21 @@ class CSV extends TextBase {
         super(container, options);
         this.csvEl = this.containerEl.appendChild(document.createElement('div'));
         this.csvEl.className = 'box-preview-text box-preview-text-csv';
+        this.gridComponent = null;
+    }
+
+    /**
+     * [destructor]
+     *
+     * @returns {void}
+     */
+    destroy() {
+        if (this.gridComponent) {
+            ReactDOM.unmountComponentAtNode(this.csvEl);
+            this.gridComponent = null;
+        }
+
+        super.destroy();
     }
 
     /**
@@ -65,6 +82,18 @@ class CSV extends TextBase {
     }
 
     /**
+     * Resize handler
+     *
+     * @override
+     * @returns {void}
+     * @protected
+     */
+    resize() {
+        this.renderCSV();
+        super.resize();
+    }
+
+    /**
      * Finishes loading the csv data
      *
      * @returns {void}
@@ -75,17 +104,6 @@ class CSV extends TextBase {
         this.loadUI();
         this.loaded = true;
         this.emit('load');
-    }
-
-    /**
-     * Resize handler
-     *
-     * @returns {void}
-     * @private
-     */
-    resize() {
-        this.renderCSV();
-        super.resize();
     }
 
     /**
@@ -139,7 +157,7 @@ class CSV extends TextBase {
             columnWidth = (maxWidth - WIDTH_SCROLLER - WIDTH_BORDER) / columnCount;
         }
 
-        ReactDOM.render(
+        this.gridComponent = ReactDOM.render(
             <Grid
                 className='box-preview-text-csv-grid'
                 cellRenderer={this.cellRenderer}

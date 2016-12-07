@@ -217,7 +217,9 @@ class DocBase extends Base {
     /**
      * Re-sizing logic.
      *
+     * @override
      * @returns {void}
+     * @protected
      */
     resize() {
         // Save page and return after resize

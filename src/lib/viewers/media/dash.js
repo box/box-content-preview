@@ -327,8 +327,9 @@ class Dash extends VideoBase {
      * Resizes the video to be of fixed dimensions.
      * Should work in most common scenarios.
      *
-     * @private
+     * @override
      * @returns {void}
+     * @protected
      */
     resize() {
         let width = this.videoWidth || 0;
