@@ -1,5 +1,5 @@
 ![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg)
-![NPM version](https://img.shields.io/badge/npm-v0.88.0-blue.svg)
+![NPM version](https://img.shields.io/badge/npm-v0.89.0-blue.svg)
 
 [Box Javascript Preview SDK](https://docs.box.com/docs/box-javascript-preview-sdk)
 ==========================
@@ -15,11 +15,11 @@ Preview uses the Promise object. If your browser doesn't support Promises, they 
 
 Current Version
 ---------------
-* Version: 0.88.0
+* Version: 0.89.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/content-experience/0.88.0/en-US/preview.js  
-https://cdn01.boxcdn.net/content-experience/0.88.0/en-US/preview.css
+https://cdn01.boxcdn.net/content-experience/0.89.0/en-US/preview.js  
+https://cdn01.boxcdn.net/content-experience/0.89.0/en-US/preview.css
 
 Usage
 -----
@@ -34,8 +34,8 @@ Usage
     <script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.min.js"></script>
 
     <!-- Latest version of Preview SDK for your locale -->
-    <script src="https://cdn01.boxcdn.net/content-experience/0.88.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="https://cdn01.boxcdn.net/content-experience/0.88.0/en-US/preview.css" />
+    <script src="https://cdn01.boxcdn.net/content-experience/0.89.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="https://cdn01.boxcdn.net/content-experience/0.89.0/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>

@@ -1,5 +1,36 @@
 # Change Log
 
+## [v0.89.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.89.0) (2016-12-07)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.88.0...v0.89.0)
+
+**Closed issues:**
+
+- Missing localization for box3d\_toggle\_animation and box3d\_animation\_clips [\#817](https://gitenterprise.inside-box.net/Preview/Preview/issues/817)
+
+**Merged pull requests:**
+
+- Tweak CSV viewer focus outline [\#823](https://gitenterprise.inside-box.net/Preview/Preview/pull/823) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Tweak CSV documentation [\#822](https://gitenterprise.inside-box.net/Preview/Preview/pull/822) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Move docs to docs directory and add screenshot [\#821](https://gitenterprise.inside-box.net/Preview/Preview/pull/821) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- CSV viewer fixes [\#820](https://gitenterprise.inside-box.net/Preview/Preview/pull/820) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fix Jenkins OOM issue [\#819](https://gitenterprise.inside-box.net/Preview/Preview/pull/819) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixes issue \#817 [\#818](https://gitenterprise.inside-box.net/Preview/Preview/pull/818) ([ikerr](https://gitenterprise.inside-box.net/ikerr))
+- fixing memory leaks [\#816](https://gitenterprise.inside-box.net/Preview/Preview/pull/816) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- MP3 viewer unit tests [\#815](https://gitenterprise.inside-box.net/Preview/Preview/pull/815) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Disable text viewer for md files [\#814](https://gitenterprise.inside-box.net/Preview/Preview/pull/814) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Add documentation for text viewer [\#813](https://gitenterprise.inside-box.net/Preview/Preview/pull/813) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Change prefetch strategy for Image360 [\#811](https://gitenterprise.inside-box.net/Preview/Preview/pull/811) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fix prefetching for Box3D and other file types [\#810](https://gitenterprise.inside-box.net/Preview/Preview/pull/810) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Add animation UI [\#808](https://gitenterprise.inside-box.net/Preview/Preview/pull/808) ([ikerr](https://gitenterprise.inside-box.net/ikerr))
+- Adding istanbul ignore to fix code coverage [\#807](https://gitenterprise.inside-box.net/Preview/Preview/pull/807) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Unit tests for CSV viewer [\#804](https://gitenterprise.inside-box.net/Preview/Preview/pull/804) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- watermarking cache fixes [\#803](https://gitenterprise.inside-box.net/Preview/Preview/pull/803) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Unit tests for plain text viewer [\#801](https://gitenterprise.inside-box.net/Preview/Preview/pull/801) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Need to also add the "allow-popups" token to the iframe's sandbox att… [\#800](https://gitenterprise.inside-box.net/Preview/Preview/pull/800) ([jedwards](https://gitenterprise.inside-box.net/jedwards))
+- Tests for text-base [\#799](https://gitenterprise.inside-box.net/Preview/Preview/pull/799) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- updating readme and changelog [\#798](https://gitenterprise.inside-box.net/Preview/Preview/pull/798) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Rescales annotations and calculates location accordingly based on image's full size dimensions [\#784](https://gitenterprise.inside-box.net/Preview/Preview/pull/784) ([spramod](https://gitenterprise.inside-box.net/spramod))
+
 ## [v0.88.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.88.0) (2016-11-23)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.87.0...v0.88.0)
 
