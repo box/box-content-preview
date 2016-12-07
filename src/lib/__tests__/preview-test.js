@@ -221,7 +221,10 @@ describe('Preview', () => {
 
         it('should format the metadata into an array', () => {
             const files = {
-                id: 0
+                id: 0,
+                watermark_info: {
+                    is_watermarked: false
+                }
             };
 
             stubs.checkFileValid.onCall(0).returns(true);
@@ -232,11 +235,17 @@ describe('Preview', () => {
 
         it('should add the file to the cache if it is valid', () => {
             const files = [
-                'file0': {
-                    id: 0
+                {
+                    id: 0,
+                    watermark_info: {
+                        is_watermarked: false
+                    }
                 },
-                'file1': {
-                    id: 1
+                {
+                    id: 1,
+                    watermark_info: {
+                        is_watermarked: false
+                    }
                 }
             ];
 
@@ -246,6 +255,21 @@ describe('Preview', () => {
             preview.updateFileCache(files);
             expect(stubs.set).calledOnce;
             expect(stubs.error).calledOnce;
+        });
+
+        it('should not cache a file if it is watermarked', () => {
+            const files = {
+                id: 0,
+                watermark_info: {
+                    is_watermarked: true
+                }
+            };
+
+            stubs.checkFileValid.returns(true);
+
+            preview.updateFileCache(files);
+            expect(stubs.set).to.not.be.called;
+            expect(stubs.error).to.not.be.called;
         });
     });
 
@@ -802,7 +826,7 @@ describe('Preview', () => {
         });
     });
 
-    describe('handleLoadReponse()', () => {
+    describe('handleLoadResponse()', () => {
         beforeEach(() => {
             preview.logger = {
                 setFile: sandbox.stub(),
@@ -818,6 +842,9 @@ describe('Preview', () => {
                 name: 'file',
                 file_version: {
                     sha1: 2
+                },
+                watermark_info: {
+                    is_watermarked: false
                 }
             };
         });
@@ -853,8 +880,23 @@ describe('Preview', () => {
             expect(stubs.loadViewer).to.not.be.called;
         });
 
+        it('should not cache the file if the file is watermarked', () => {
+            stubs.file.watermark_info.is_watermarked = true;
+            preview.open = true;
+            stubs.get.returns({
+                file_version: {
+                    sha1: 0
+                }
+            });
+
+            stubs.file.file_version.sha1 = 0;
+
+            preview.handleLoadResponse(stubs.file);
+            expect(stubs.set).to.be.not.be.called;
+        });
+
         it('should set the cache stale and re-load the viewer if the file is not in the cache', () => {
-            stubs.get.returns(true);
+            stubs.get.returns(false);
 
             preview.handleLoadResponse(stubs.file);
             expect(preview.logger.setCacheStale).to.be.called;
@@ -872,6 +914,21 @@ describe('Preview', () => {
         });
 
         it('should set the cache stale and re-load the viewer if the cached sha1 does not match the files sha1', () => {
+            stubs.get.returns({
+                file_version: {
+                    sha1: 0
+                }
+            });
+
+            stubs.file.file_version.sha1 = 2;
+
+            preview.handleLoadResponse(stubs.file);
+            expect(preview.logger.setCacheStale).to.be.called;
+            expect(stubs.loadViewer).to.be.called;
+        });
+
+        it('should set the cache stale and re-load the viewer if the file is watermarked', () => {
+            stubs.file.watermark_info.is_watermarked = true;
             stubs.get.returns({
                 file_version: {
                     sha1: 0

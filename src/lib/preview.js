@@ -161,6 +161,10 @@ class Preview extends EventEmitter {
         }
 
         files.forEach((file) => {
+            if (file.watermark_info && file.watermark_info.is_watermarked) {
+                return;
+            }
+
             if (checkFileValid(file)) {
                 cache.set(file.id, file);
             } else {
@@ -553,12 +557,22 @@ class Preview extends EventEmitter {
             this.file = file;
             this.logger.setFile(file);
 
-            // Get existing cache before updating it to latest version
+            // Keep reference to previously cached file version
             const cached = cache.get(file.id);
-            cache.set(file.id, file);
 
-            // Finally re-load the viewer if cached file sha1 doesn't match loaded file sha1
-            if (!cached || !cached.file_version || cached.file_version.sha1 !== file.file_version.sha1) {
+            // Check if cache is stale or if updated file info is watermarked
+            const isWatermarked = file.watermark_info && file.watermark_info.is_watermarked;
+            const isStale = !cached || !cached.file_version || cached.file_version.sha1 !== file.file_version.sha1;
+
+            // Don't cache watermarked files, update cache otherwise
+            if (isWatermarked) {
+                cache.unset(file.id);
+            } else {
+                cache.set(file.id, file);
+            }
+
+            // Reload if needed
+            if (isStale || isWatermarked) {
                 this.logger.setCacheStale();
                 this.loadViewer();
             }
