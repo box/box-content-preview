@@ -2,6 +2,10 @@
 
 The text viewer renders previews of text files and uses [highlight.js] (https://github.com/isagalaev/highlight.js) to add syntax highlighting to code files.
 
+## Screenshot
+
+![Screenshot of text viewer](https://gitenterprise.inside-box.net/Preview/Preview/raw/master/docs/viewers/text.png)
+
 ## Behavior
 
 The text viewer displays the first 192KB of text in the file. Additional text is truncated and a notification and download button are appended to the bottom of the preview.
