@@ -1,4 +1,3 @@
-_site
 node_modules
 yarn.lock
 *.swp
@@ -9,3 +8,5 @@ npm-debug.log
 reports
 dist
 src/i18n/json
+jsconfig.json
+.vscode

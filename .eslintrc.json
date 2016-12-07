@@ -1,0 +1,52 @@
+{
+    "parser": "babel-eslint",
+    "extends": "airbnb",
+    "env": {
+        "es6": true,
+        "browser": true,
+        "mocha": true,
+        "commonjs": true
+    },
+    "globals": {
+        "after": false,
+        "afterEach": false,
+        "before": false,
+        "beforeEach": false,
+        "describe": false,
+        "expect": false,
+        "it": false,
+        "sinon": false,
+        "assert": false,
+        "fixture": false,
+        "__": false,
+        "PDFJS": false,
+        "Box": false,
+        "DocumentTouch": false,
+        "ActiveXObject": false
+    },
+    "rules": {
+        "comma-dangle": [2, "never"],
+        "indent": [2, 4, {"SwitchCase": 1}],
+        "import/imports-first": [0],
+        "jsx-quotes": [2, "prefer-single"],
+        "max-len": [0, 120],
+        "react/jsx-indent-props": [2, 4],
+        "react/jsx-indent": [2, 4],
+        "no-underscore-dangle": [0],
+        "react/jsx-filename-extension": [0],
+        "arrow-body-style": [0],
+        "no-mixed-operators": ["error", {"allowSamePrecedence": true}],
+        "class-methods-use-this": [0],
+        "arrow-parens": ["error", "always"],
+        "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+        "import/no-extraneous-dependencies": [0],
+        "import/no-webpack-loader-syntax": [0]
+    },
+    "settings": {
+        "import/resolver": {
+            "webpack": {
+                "config-index": 0
+            }
+        }
+    }
+}
