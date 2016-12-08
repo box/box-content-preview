@@ -10,9 +10,3 @@ gulp.task('test-release', function testRelease(done) {
         configFile: __dirname + '/karma.release.conf.js'
     }, done).start();
 });
-
-gulp.task('test-dev', function testDev(done) {
- new Server({
-     configFile: __dirname + '/karma.dev.conf.js'
- }, done).start();
-});
