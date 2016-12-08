@@ -62,7 +62,7 @@ Setup
 2. Fork the upstream repo `https://gitenterprise.inside-box.net/Preview/Preview` under your LDAP account.
 3. Then clone your fork `git clone git@gitenterprise.inside-box.net:YOURLDAP/Preview.git`. This will be your origin.
 4. `cd Preview`
-5. Add the upstream repo via `git remote add upstream https://gitenterprise.inside-box.net/Preview/Preview`.
+5. Add the upstream repo via `git remote add upstream git@gitenterprise.inside-box.net/Preview/Preview.git`.
 6. Verify repos via `git remote -v`. You will always pull from `upstream` and push to `origin`.
 7. `npm install`
 8. `npm run build`
