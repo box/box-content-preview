@@ -8,6 +8,9 @@ import { CLASS_HIDDEN } from './constants';
 import {
     ICON_CLOSE
 } from './icons/icons';
+import {
+    decodeKeydown
+} from './util';
 
 @autobind
 class Popup {
@@ -53,6 +56,7 @@ class Popup {
         this.buttonDisabled = false;
 
         this.popupEl.addEventListener('click', this.popupClickHandler);
+        document.addEventListener('keydown', this.keydownHandler);
 
         // Append and position popup
         const popupWrapperEl = document.createElement('div');
@@ -72,6 +76,7 @@ class Popup {
         }
 
         this.popupEl.removeEventListener('click', this.popupClickHandler);
+        document.removeEventListener('keydown', this.keydownHandler);
 
         const popupWrapperEl = this.popupEl.parentNode;
         popupWrapperEl.parentNode.removeChild(popupWrapperEl);
@@ -187,6 +192,23 @@ class Popup {
                 this.hide();
             }
         }
+    }
+
+    /*
+    * @param {string} key keydown key
+    * @returns {boolean} consumed or not
+    */
+    keydownHandler(event) {
+        const key = decodeKeydown(event);
+        switch (key) {
+            case 'Esc':
+            case 'Escape':
+                this.hide();
+                break;
+            default:
+                return false;
+        }
+        return true;
     }
 }
 

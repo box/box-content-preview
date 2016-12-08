@@ -46,6 +46,39 @@ describe('Popup', () => {
         });
     });
 
+    describe('destroy()', () => {
+        it('should do nothing if there is no popup element', () => {
+            const removeEventListenerStub = sandbox.stub(document, 'removeEventListener');
+            popup.popupEl = undefined;
+
+            popup.destroy();
+            expect(removeEventListenerStub).to.not.be.called;
+        });
+
+        it('should remove event listeners', () => {
+            const removeEventListenerStub = sandbox.stub(document, 'removeEventListener');
+            popup.popupEl = {
+                removeEventListener: sandbox.stub(),
+                parentNode: {
+                    parentNode: {
+                        removeChild: sandbox.stub()
+                    }
+                }
+            };
+            const popupStub = popup.popupEl.removeEventListener;
+
+            popup.destroy();
+            expect(removeEventListenerStub).to.be.called;
+            expect(popupStub).to.be.called;
+        });
+
+        it('should set the popupEl to null', () => {
+            popup.destroy();
+
+            expect(popup.popupEl).to.equal(null);
+        });
+    });
+
     describe('show()', () => {
         it('should set the message element', () => {
             const message = 'message';
@@ -218,6 +251,41 @@ describe('Popup', () => {
 
             popup.popupClickHandler(event);
             expect(popup.hide).to.be.called;
+        });
+    });
+
+    describe('popupClickHandler()', () => {
+        it('should hide the popup and return true if Esc is pressed', () => {
+            const event = {
+                key: 'Esc'
+            };
+            const hideStub = sandbox.stub(popup, 'hide');
+
+            const result = popup.keydownHandler(event);
+            expect(hideStub).to.be.called;
+            expect(result).to.be.true;
+        });
+
+        it('should hide the popup and return true if Escape is pressed', () => {
+            const event = {
+                key: 'Escape'
+            };
+            const hideStub = sandbox.stub(popup, 'hide');
+
+            const result = popup.keydownHandler(event);
+            expect(hideStub).to.be.called;
+            expect(result).to.be.true;
+        });
+
+        it('should do nothing and return false if anything other key is pressed', () => {
+            const event = {
+                key: 'EscapeNot'
+            };
+            const hideStub = sandbox.stub(popup, 'hide');
+
+            const result = popup.keydownHandler(event);
+            expect(hideStub).to.be.not.called;
+            expect(result).to.be.false;
         });
     });
 });
