@@ -38,7 +38,7 @@ class Model3dAnimationClipsPullup extends EventEmitter {
      */
     addClip(id, name, duration) {
         const clipFragment = createFragment(this.pullupEl, CLIP_TEMPLATE);
-        const clipEl = clipFragment.firstElementChild;
+        const clipEl = clipFragment.firstChild;
 
         const durationStr = this.formatDurationStr(duration);
         const valueEl = clipEl.querySelector('.box3d-animation-clip-value');
