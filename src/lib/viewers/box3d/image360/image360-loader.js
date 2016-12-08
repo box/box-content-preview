@@ -5,8 +5,15 @@ const VIEWERS = [
     {
         REPRESENTATION: '3d',
         EXTENSIONS: ['jpg', 'jpeg', 'png', 'ai', 'bmp', 'dcm', 'eps', 'gif', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff'],
-        SCRIPTS: [`${STATIC_URI}boxsdk.js`, `${STATIC_URI}box3d-runtime.js`,
-            `${STATIC_URI}webvr-polyfill.js`, 'image360.js'],
+        SCRIPTS: [
+            `${STATIC_URI}boxsdk.js`,
+            `${STATIC_URI}box3d-runtime.js`,
+            `${STATIC_URI}webvr-polyfill.js`,
+            `${STATIC_URI}WebVR/VREffect.js`,
+            `${STATIC_URI}WebVR/VRControls.js`,
+            `${STATIC_URI}WebVR/VRConfig.js`,
+            'image360.js'
+        ],
         STYLESHEETS: ['image360.css'],
         CONSTRUCTOR: 'Image360',
         PREFETCH: 'xhr'

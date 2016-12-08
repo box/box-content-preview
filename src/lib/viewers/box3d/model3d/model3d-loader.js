@@ -10,7 +10,11 @@ const VIEWERS = [
             `${STATIC_URI}boxsdk.js`,
             `${STATIC_URI}box3d-runtime.js`,
             `${STATIC_URI}webvr-polyfill.js`,
-            'model3d.js'],
+            `${STATIC_URI}WebVR/VREffect.js`,
+            `${STATIC_URI}WebVR/VRControls.js`,
+            `${STATIC_URI}WebVR/VRConfig.js`,
+            'model3d.js'
+        ],
         STYLESHEETS: ['box3d.css', 'model3d.css'],
         CONSTRUCTOR: 'Model3d',
         PREFETCH: 'xhr'

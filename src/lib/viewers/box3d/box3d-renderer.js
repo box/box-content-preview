@@ -1,9 +1,6 @@
 /* global Box3D, THREE */
 import EventEmitter from 'events';
 import Browser from '../../browser';
-import '../../../third-party/model3d/WebVR/VREffect';
-import '../../../third-party/model3d/WebVR/VRControls';
-import '../../../third-party/model3d/WebVR/VRConfig';
 import { createContentUrl } from '../../util';
 import {
     EVENT_SHOW_VR_BUTTON,
