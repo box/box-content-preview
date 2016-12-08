@@ -1,5 +1,14 @@
 # Change Log
 
+## [v0.90.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.90.0) (2016-12-07)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.89.0...v0.90.0)
+
+**Merged pull requests:**
+
+- Fix Text viewers in IE11/Edge [\#827](https://gitenterprise.inside-box.net/Preview/Preview/pull/827) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Modify ESLint settings [\#826](https://gitenterprise.inside-box.net/Preview/Preview/pull/826) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- updating changelog and readme [\#824](https://gitenterprise.inside-box.net/Preview/Preview/pull/824) ([jpress](https://gitenterprise.inside-box.net/jpress))
+
 ## [v0.89.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.89.0) (2016-12-07)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.88.0...v0.89.0)
 
