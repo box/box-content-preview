@@ -99,13 +99,21 @@ class Preview extends EventEmitter {
     /**
      * Primary function for showing a preview of a file.
      *
-     * @param {string|Object} file Box File ID or well-formed file object
-     * @param {Object} options Preview options
+     * @param {String|Object} file Box File ID or well-formed file object
+     * @param {String|Function} token auth token string or generator function
+     * @param {Object} [options] Optional preview options
      * @returns {void}
      */
-    show(file, options) {
+    show(file, token, options = {}) {
         // Save a reference to the options to be used later
-        this.previewOptions = Object.assign({}, options);
+        if (typeof token === 'string' || typeof token === 'function') {
+            this.previewOptions = Object.assign({}, options, { token });
+        } else if (token) {
+            // @TODO Remove this use case after a few releases and webapp upgrade
+            this.previewOptions = Object.assign({}, token || {});
+        } else {
+            throw new Error('Missing Auth Token!');
+        }
 
         // load the preview
         this.load(file);

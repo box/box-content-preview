@@ -130,20 +130,47 @@ describe('Preview', () => {
             stubs.load = sandbox.stub(preview, 'load');
         });
 
-        it('should set the preview options', () => {
+        it('should set the preview options DEPRECATED REMOVE ME EVENTUALLY', () => {
             const options = {
                 token: 'token',
                 viewer: 'viewer'
             };
 
-
             preview.show('file', options);
             expect(preview.previewOptions).to.deep.equal(options);
         });
 
+        it('should set the preview options with string token', () => {
+            preview.show('file', 'token', { viewer: 'viewer' });
+            expect(preview.previewOptions).to.deep.equal({
+                token: 'token',
+                viewer: 'viewer'
+            });
+        });
+
+        it('should set the preview options with function token', () => {
+            const foo = () => {};
+            preview.show('file', foo, { viewer: 'viewer' });
+            expect(preview.previewOptions).to.deep.equal({
+                token: foo,
+                viewer: 'viewer'
+            });
+        });
+
         it('should load the given file', () => {
-            preview.show('file', {});
+            preview.show('file', 'token');
             expect(stubs.load).to.be.calledWith('file');
+        });
+
+        it('should throw an error if there is no auth token', () => {
+            const spy = sandbox.spy(preview, 'show');
+
+            try {
+                preview.show('file');
+            } catch (e) {
+                expect(spy.threw());
+                expect(e.message).to.equal('Missing Auth Token!');
+            }
         });
     });
 

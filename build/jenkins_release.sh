@@ -9,7 +9,8 @@ KIND="content-experience-assets"
 
 
 # The static asset path where deploy needs to happen
-installDir="/box/www/content-experience-assets"
+# Do not remove the word preview
+installDir="/box/www/platform-assets/preview"
 
 
 # Temp directory
@@ -102,9 +103,9 @@ push_to_artifactory() {
 # Clean node modules, re-install dependencies, and build assets
 build_assets() {
 
-    echo "-------------------------------------------------------------------------------------------------"
-    echo "Installing node modules from http://maven-vip.dev.box.net:8150/nexus/content/groups/npm-all/"
-    echo "-------------------------------------------------------------------------------------------------"
+    echo "--------------------------------------------------"
+    echo "Installing node modules"
+    echo "--------------------------------------------------"
     if npm install; then
         echo "----------------------------------------------------"
         echo "Installed node modules."
