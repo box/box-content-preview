@@ -317,6 +317,9 @@ class AnnotationDialog extends EventEmitter {
             if (replyTextArea.textContent !== '' || commentsTextArea.textContent !== '') {
                 this.emit('annotationcommentpending');
             }
+
+            // Ensure textarea stays open
+            this._activateReply();
         }
     }
 
