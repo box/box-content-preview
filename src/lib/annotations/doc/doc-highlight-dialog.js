@@ -98,7 +98,6 @@ class DocHighlightDialog extends AnnotationDialog {
         this._element.style.left = `${dialogX}px`;
         this._element.style.top = `${dialogY + PAGE_PADDING_TOP}px`;
         docAnnotatorUtil.fitDialogHeightInPage(this._annotatedElement, this._element, pageDimensions.height, dialogY);
-
         annotatorUtil.showElement(this._element);
     }
 
@@ -345,6 +344,13 @@ class DocHighlightDialog extends AnnotationDialog {
         }
     }
 
+    /**
+     * Toggles the highlight icon color to a darker yellow based on if the user
+     * is hovering over the highlight to activate it
+     *
+     * @param {string} fillStyle RGBA fill style
+     * @returns {void}
+     */
     toggleHighlightIcon(fillStyle) {
         const addHighlightBtn = this._element.querySelector('.box-preview-add-highlight-btn');
         if (fillStyle === constants.HIGHLIGHT_ACTIVE_FILL_STYLE) {

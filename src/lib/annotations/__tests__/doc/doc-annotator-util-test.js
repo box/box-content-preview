@@ -61,6 +61,11 @@ describe('doc-annotator-util', () => {
     });
 
     describe('isInDialog()', () => {
+        it('should return false if no dialog element exists', () => {
+            const result = isInDialog({ clientX: 8, clientY: 8 });
+            expect(result).to.be.false;
+        });
+
         it('should return true if the event is in the given dialog', () => {
             const dialogEl = document.querySelector(DIALOG_CLASS);
             const result = isInDialog({ clientX: 8, clientY: 8 }, dialogEl);
@@ -78,17 +83,11 @@ describe('doc-annotator-util', () => {
         it('should return false if no annotation dialog is open', () => {
             const currDialogEl = document.querySelector(DIALOG_CLASS);
             currDialogEl.classList.add('box-preview-is-hidden');
-            const result = hasActiveDialog(currDialogEl, document);
+            const result = hasActiveDialog(document);
             expect(result).to.be.false;
         });
 
-        it('should return false if the current annotation dialog is open', () => {
-            const currDialogEl = document.querySelector(DIALOG_CLASS);
-            const result = hasActiveDialog(currDialogEl, document);
-            expect(result).to.be.false;
-        });
-
-        it('should return true if a different annotation dialog is open that is not the current annotation dialog', () => {
+        it('should return true if an annotion dialog is open', () => {
             const docEl = document.querySelector('.annotatedElement');
             const currDialogEl = document.querySelector(DIALOG_CLASS);
             currDialogEl.classList.add('box-preview-is-hidden');
@@ -97,7 +96,7 @@ describe('doc-annotator-util', () => {
             openDialogEl.classList.add('box-preview-annotation-dialog');
             docEl.appendChild(openDialogEl);
 
-            const result = hasActiveDialog(currDialogEl, docEl);
+            const result = hasActiveDialog(document);
             expect(result).to.be.true;
         });
     });

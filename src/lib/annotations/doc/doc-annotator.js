@@ -29,27 +29,6 @@ const HOVER_TIMEOUT_MS = 75;
 @autobind
 class DocAnnotator extends Annotator {
 
-    /**
-     * Initializes annotator.
-     *
-     * @override
-     * @returns {void}
-     */
-    init() {
-        super.init();
-
-        // On mobile, we want to disable user-scaling since we want users to use
-        // the document zoom controls
-        /* Unclear whether we want this behavior or not
-        if (Browser.isMobile()) {
-            const metaEl = document.createElement('meta');
-            metaEl.setAttribute('name', 'viewport');
-            metaEl.setAttribute('content', 'user-scalable=no');
-            document.getElementsByTagName('head')[0].appendChild(metaEl);
-        }
-        */
-    }
-
     //--------------------------------------------------------------------------
     // Abstract Implementations
     //--------------------------------------------------------------------------
@@ -340,73 +319,70 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightMousemoveHandler() {
-        if (!this._throttledHighlightMousemoveHandler) {
-            this._throttledHighlightMousemoveHandler = throttle((event) => {
-                // Determine if any highlight threads are pending and ignore the
-                // hover events of other annotations
-                const pendingThreads = this._getHighlightThreadsWithStates(
-                    constants.ANNOTATION_STATE_PENDING,
-                    constants.ANNOTATION_STATE_ACTIVE,
-                    constants.ANNOTATION_STATE_ACTIVE_HOVER);
-
-                if (pendingThreads.length) {
-                    return;
-                }
-
-                // Ignore small mouse movements when figuring out if a mousedown
-                // and mouseup was a click
-                if (Math.abs(event.clientX - this._mouseX) > 5 ||
-                    Math.abs(event.clientY - this._mouseY) > 5) {
-                    this._didMouseMove = true;
-                }
-
-                // Determine if the user is creating a new overlapping highlight
-                // and ignore hover events of any highlights below
-                if (this._isCreatingHighlight) {
-                    return;
-                }
-
-                const delayThreads = [];
-                const page = docAnnotatorUtil.getPageElAndPageNumber(event.target).page;
-                if (page !== -1) {
-                    this._getHighlightThreadsOnPage(page).forEach((thread) => {
-                        const shouldDelay = thread.onMousemove(event);
-                        if (shouldDelay) {
-                            delayThreads.push(thread);
-                        }
-                    });
-                }
-
-                // If we are hovering over a highlight, we should use a hand cursor
-                if (delayThreads.some((thread) => {
-                    return thread.state === constants.ANNOTATION_STATE_HOVER ||
-                        thread.state === constants.ANNOTATION_STATE_ACTIVE_HOVER;
-                })) {
-                    this._useDefaultCursor();
-                    clearTimeout(this.cursorTimeout);
-                } else {
-                    // Setting timeout on cursor change so cursor doesn't
-                    // flicker when hovering on line spacing
-                    this.cursorTimeout = setTimeout(() => {
-                        this._removeDefaultCursor();
-                    }, HOVER_TIMEOUT_MS);
-                }
-
-                // Delayed threads (threads that should be in active or hover
-                // state) should be drawn last. If multiple highlights are
-                // hovered over at the same time, only the top-most highlight
-                // dialog will be displayed and the others will be hidden
-                // without delay
-                delayThreads.forEach((thread, index) => {
-                    if (index === 0) {
-                        thread.show();
-                    } else {
-                        thread.hideDialog();
-                    }
-                });
-            }, MOUSEMOVE_THROTTLE_MS);
+        if (this._throttledHighlightMousemoveHandler) {
+            return this._throttledHighlightMousemoveHandler;
         }
 
+        this._throttledHighlightMousemoveHandler = throttle((event) => {
+            // Only filter through highlight threads on the current page
+            const page = docAnnotatorUtil.getPageElAndPageNumber(event.target).page;
+            const pageThreads = this._getHighlightThreadsOnPage(page);
+            const delayThreads = [];
+
+            pageThreads.forEach((thread) => {
+                // Determine if any highlight threads on page are pending or active
+                // and ignore hover events of any highlights below
+                if (thread.state === constants.ANNOTATION_STATE_PENDING || thread.state === constants.ANNOTATION_STATE_ACTIVE) {
+                    return;
+                }
+
+                // Determine if the mouse is hovering over any highlight threads
+                const shouldDelay = thread.onMousemove(event);
+                if (shouldDelay) {
+                    delayThreads.push(thread);
+                }
+            });
+
+            // Ignore small mouse movements when figuring out if a mousedown
+            // and mouseup was a click
+            if (Math.abs(event.clientX - this._mouseX) > 5 ||
+                Math.abs(event.clientY - this._mouseY) > 5) {
+                this._didMouseMove = true;
+            }
+
+            // Determine if the user is creating a new overlapping highlight
+            // and ignore hover events of any highlights below
+            if (this._isCreatingHighlight) {
+                return;
+            }
+
+            // If we are hovering over a highlight, we should use a hand cursor
+            if (delayThreads.some((thread) => {
+                return constants.HOVER_STATES.indexOf(thread.state) > 1;
+            })) {
+                this._useDefaultCursor();
+                clearTimeout(this.cursorTimeout);
+            } else {
+                // Setting timeout on cursor change so cursor doesn't
+                // flicker when hovering on line spacing
+                this.cursorTimeout = setTimeout(() => {
+                    this._removeDefaultCursor();
+                }, HOVER_TIMEOUT_MS);
+            }
+
+            // Delayed threads (threads that should be in active or hover
+            // state) should be drawn last. If multiple highlights are
+            // hovered over at the same time, only the top-most highlight
+            // dialog will be displayed and the others will be hidden
+            // without delay
+            delayThreads.forEach((thread, index) => {
+                if (index === 0) {
+                    thread.show();
+                } else {
+                    thread.hideDialog();
+                }
+            });
+        }, MOUSEMOVE_THROTTLE_MS);
         return this._throttledHighlightMousemoveHandler;
     }
 
@@ -445,14 +421,15 @@ class DocAnnotator extends Annotator {
 
         // Determine if any highlight threads are pending and ignore the
         // creation of any new highlights
-        const pendingThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_PENDING, constants.ANNOTATION_STATE_PENDING_ACTIVE);
-        if (pendingThreads.length) {
+        if (docAnnotatorUtil.hasActiveDialog(this._annotatedElement)) {
             return;
         }
 
+        // Only filter through highlight threads on the current page
         // Reset active highlight threads before creating new highlight
-        const threads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_ACTIVE, constants.ANNOTATION_STATE_ACTIVE_HOVER);
-        threads.forEach((thread) => {
+        const page = docAnnotatorUtil.getPageElAndPageNumber(event.target).page;
+        const activeThreads = this._getHighlightThreadsOnPage(page).filter((thread) => constants.ACTIVE_STATES.indexOf(thread.state) > -1);
+        activeThreads.forEach((thread) => {
             thread.reset();
         });
 
@@ -479,33 +456,58 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _highlightClickHandler(event) {
-        // Destroy any pending highlights on click outside the highlight
-        const pendingThreads = this._getHighlightThreadsWithStates(constants.ANNOTATION_STATE_PENDING);
-        pendingThreads.forEach((thread) => {
-            thread.cancelFirstComment();
-        });
-
-        // We use this to prevent a mousedown from activating two different
-        // highlights at the same time - this tracks whether a delegated
-        // mousedown activated some highlight, and then informs the other
-        // keydown handlers to not activate
         let consumed = false;
         let activeThread = null;
-        Object.keys(this._threads).forEach((threadPage) => {
-            this._getHighlightThreadsOnPage(threadPage).forEach((thread) => {
-                const threadActive = thread.onClick(event, consumed);
-                if (threadActive) {
-                    activeThread = thread;
-                }
 
-                consumed = consumed || threadActive;
-            });
+        // Destroy any pending highlights on click outside the highlight
+        const pendingThreads = this._getThreadsWithStates(constants.PENDING_STATES);
+        pendingThreads.forEach((thread) => {
+            if (thread.type === constants.ANNOTATION_TYPE_POINT) {
+                thread.destroy();
+            } else {
+                thread.cancelFirstComment();
+            }
+        });
+
+        // Only filter through highlight threads on the current page
+        const page = docAnnotatorUtil.getPageElAndPageNumber(event.target).page;
+        const pageThreads = this._getHighlightThreadsOnPage(page);
+        pageThreads.forEach((thread) => {
+            // We use this to prevent a mousedown from activating two different
+            // highlights at the same time - this tracks whether a delegated
+            // mousedown activated some highlight, and then informs the other
+            // keydown handlers to not activate
+            const threadActive = thread.onClick(event, consumed);
+            if (threadActive) {
+                activeThread = thread;
+            }
+
+            consumed = consumed || threadActive;
         });
 
         // Show active thread last
         if (activeThread) {
             activeThread.show();
         }
+    }
+    /**
+     * Returns all threads with a state in the specified states.
+     *
+     * @param {...string} states States of highlight threads to find
+     * @returns {AnnotationThread[]} threads with the specified states
+     * @private
+     * */
+    _getThreadsWithStates(...states) {
+        const threads = [];
+
+        Object.keys(this._threads).forEach((page) => {
+            // Concat threads with a matching state to array we're returning
+            [].push.apply(threads, this._threads[page].filter((thread) => {
+                return states.indexOf(thread.state) > -1;
+            }));
+        });
+
+        return threads;
     }
 
     /**
@@ -538,31 +540,6 @@ class DocAnnotator extends Annotator {
     _getHighlightThreadsOnPage(page) {
         const threads = this._threads[page] || [];
         return threads.filter((thread) => annotatorUtil.isHighlightAnnotation(thread.type));
-    }
-
-    /**
-     * Returns highlight threads with a state in the specified states.
-     *
-     * @param {...string} states States of highlight threads to find
-     * @returns {DocHighlightThread[]} Highlight threads with the specified states
-     * @private
-     */
-    _getHighlightThreadsWithStates(...states) {
-        const threads = [];
-
-        Object.keys(this._threads).forEach((page) => {
-            // Append pending highlight threads on page to array of threads
-            [].push.apply(threads, this._threads[page].filter((thread) => {
-                let matchedState = false;
-                states.forEach((state) => {
-                    matchedState = matchedState || (thread.state === state);
-                });
-
-                return matchedState && annotatorUtil.isHighlightAnnotation(thread.type);
-            }));
-        });
-
-        return threads;
     }
 
     /**

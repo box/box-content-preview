@@ -30,6 +30,7 @@ describe('annotation-thread', () => {
             addListener: () => {},
             addAnnotation: () => {},
             destroy: () => {},
+            setup: () => {},
             removeAllListeners: () => {},
             show: () => {},
             hide: () => {}
@@ -43,6 +44,10 @@ describe('annotation-thread', () => {
     afterEach(() => {
         annotationThread._annotationService = undefined;
         sandbox.verifyAndRestore();
+        if (typeof annotationThread.destroy === 'function') {
+            annotationThread.destroy();
+            annotationThread = null;
+        }
     });
 
     describe('destroy()', () => {
@@ -74,7 +79,9 @@ describe('annotation-thread', () => {
     });
 
     describe('showDialog()', () => {
-        it('should show the thread dialog', () => {
+        it('should setup the thread dialog and show dialog', () => {
+            annotationThread._dialog._element = null;
+            sandbox.mock(annotationThread._dialog).expects('setup');
             sandbox.mock(annotationThread._dialog).expects('show');
             annotationThread.showDialog();
         });
@@ -319,7 +326,9 @@ describe('annotation-thread', () => {
     describe('bindCustomListenersOnDialog()', () => {
         it('should bind custom listeners on dialog', () => {
             annotationThread._dialog = {
-                addListener: () => {}
+                addListener: () => {},
+                removeAllListeners: sandbox.stub(),
+                destroy: sandbox.stub()
             };
 
             const addListenerStub = sandbox.stub(annotationThread._dialog, 'addListener');
@@ -335,7 +344,8 @@ describe('annotation-thread', () => {
     describe('unbindCustomListenersOnDialog()', () => {
         it('should unbind custom listeners from dialog', () => {
             annotationThread._dialog = {
-                removeAllListeners: () => {}
+                removeAllListeners: () => {},
+                destroy: sandbox.stub()
             };
 
             const removeAllListenersStub = sandbox.stub(annotationThread._dialog, 'removeAllListeners');

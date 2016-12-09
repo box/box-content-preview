@@ -175,6 +175,11 @@ class DocHighlightThread extends AnnotationThread {
         } else {
             this._state = constants.ANNOTATION_STATE_HOVER;
         }
+
+        // Setup the dialog element if it has not already been created
+        if (!this._dialog._element) {
+            this._dialog.setup(this._annotations);
+        }
         this._dialog.mouseenterHandler();
         clearTimeout(this.hoverTimeoutHandler);
     }
@@ -189,8 +194,6 @@ class DocHighlightThread extends AnnotationThread {
      * @returns {boolean} Whether we should delay drawing highlight
      */
     onMousemove(event) {
-        const pageEl = this._getPageEl();
-
         // If mouse is in dialog, change state to hover or active-hover
         if (docAnnotatorUtil.isInDialog(event, this._dialog.element)) {
             // Keeps dialog open if comment is pending
@@ -199,19 +202,9 @@ class DocHighlightThread extends AnnotationThread {
             }
             this._state = constants.ANNOTATION_STATE_HOVER;
 
-        // If another dialog is active on top of the current highlight thread
-        } else if (docAnnotatorUtil.hasActiveDialog(this._dialog.element, pageEl)) {
-            this.hideDialog();
-            return false;
-
         // If mouse is in highlight, change state to hover or active-hover
         } else if (this._isInHighlight(event)) {
             this.activateDialog();
-
-        // If mouse is not in highlight, and state was previously active-hover,
-        // change state back to active
-        } else if (this._state === constants.ANNOTATION_STATE_ACTIVE_HOVER) {
-            this._state = constants.ANNOTATION_STATE_ACTIVE;
 
         // If mouse is not in highlight, and state is active, do not override
         } else if (this._state === constants.ANNOTATION_STATE_ACTIVE) {
@@ -424,7 +417,9 @@ class DocHighlightThread extends AnnotationThread {
                 context.fill();
 
                 // Update highlight icon hover to appropriate color
-                this._dialog.toggleHighlightIcon(fillStyle);
+                if (this._dialog._element) {
+                    this._dialog.toggleHighlightIcon(fillStyle);
+                }
             }
         });
     }

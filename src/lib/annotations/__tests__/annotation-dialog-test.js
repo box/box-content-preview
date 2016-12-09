@@ -21,6 +21,7 @@ describe('annotation-dialog', () => {
             annotations: [],
             canAnnotate: true
         });
+        annotationDialog.setup([]);
         document.querySelector('.annotated-element').appendChild(annotationDialog._element);
     });
 
@@ -28,6 +29,10 @@ describe('annotation-dialog', () => {
         const dialogEl = document.querySelector('.annotated-element');
         dialogEl.parentNode.removeChild(dialogEl);
         sandbox.verifyAndRestore();
+        if (typeof annotationDialog.destroy === 'function') {
+            annotationDialog.destroy();
+            annotationDialog = null;
+        }
     });
 
     describe('destroy()', () => {

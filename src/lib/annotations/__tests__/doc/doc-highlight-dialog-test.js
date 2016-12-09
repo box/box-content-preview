@@ -27,6 +27,7 @@ describe('doc-highlight-dialog', () => {
             annotations: [],
             canAnnotate: true
         });
+        highlightDialog.setup([]);
         document.querySelector('.annotated-element').appendChild(highlightDialog._element);
     });
 

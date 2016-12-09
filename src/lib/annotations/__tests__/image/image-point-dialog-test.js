@@ -20,12 +20,16 @@ describe('image-point-dialog', () => {
             annotations: [],
             canAnnotate: true
         });
-
+        pointDialog.setup([]);
         pointDialog._element.style.width = '282px';
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+        if (typeof pointDialog.destroy === 'function') {
+            pointDialog.destroy();
+            pointDialog = null;
+        }
     });
 
     describe('position()', () => {

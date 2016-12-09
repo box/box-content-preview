@@ -20,10 +20,15 @@ describe('doc-point-dialog', () => {
             annotations: [],
             canAnnotate: true
         });
+        pointDialog.setup([]);
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+        if (typeof pointDialog.destroy === 'function') {
+            pointDialog.destroy();
+            pointDialog = null;
+        }
     });
 
     describe('position()', () => {

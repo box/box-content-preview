@@ -34,6 +34,10 @@ describe('doc-annotator', () => {
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+        if (typeof annotator.destroy === 'function') {
+            annotator.destroy();
+            annotator = null;
+        }
         stubs = {};
     });
 
@@ -484,119 +488,103 @@ describe('doc-annotator', () => {
 
     describe('_highlightMousedownHandler()', () => {
         it('should get highlights on page and call their onMouse down method', () => {
-            const threadPages = { thread1: 'thread', thread: 'thread' };
-            const thread1 = { onMousedown: sinon.stub() };
-            const thread2 = { onMousedown: sinon.stub() };
-            const highlightStub = sandbox.stub(annotator, '_getHighlightThreadsOnPage').returns([thread1, thread2]);
+            const thread = {
+                onMousedown: sinon.stub(),
+                unbindCustomListenersOnThread: sandbox.stub(),
+                removeAllListeners: sandbox.stub()
+            };
+            const threadPages = { 1: [thread] };
+            const highlightStub = sandbox.stub(annotator, '_getHighlightThreadsOnPage').returns([thread]);
 
             annotator._threads = threadPages;
             annotator._highlightMousedownHandler({ clientX: 1, clientY: 1 });
-            expect(highlightStub).to.be.calledTwice;
-            expect(thread1.onMousedown).to.be.called;
-            expect(thread2.onMousedown).to.be.called;
+            expect(highlightStub).to.be.called;
+            expect(thread.onMousedown).to.be.called;
         });
     });
 
     describe('_highlightMousemoveHandler()', () => {
+        beforeEach(() => {
+            annotator._throttledHighlightMousemoveHandler = false;
+
+            stubs.thread = {
+                onMousemove: sandbox.stub().returns(false),
+                hideDialog: sandbox.stub(),
+                show: sandbox.stub()
+            };
+            stubs.delayThread = {
+                onMousemove: sandbox.stub().returns(true),
+                hideDialog: sandbox.stub(),
+                show: sandbox.stub()
+            };
+
+            stubs.getPage = sandbox.stub(docAnnotatorUtil, 'getPageElAndPageNumber').returns({ pageEl: {}, page: 1 });
+            stubs.getThreads = sandbox.stub(annotator, '_getHighlightThreadsOnPage');
+        });
+
         it('should do nothing if the throttledHighlightMousemoveHandler already exists', () => {
             annotator._throttledHighlightMousemoveHandler = true;
-            const getHighlightsStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates');
+
             const result = annotator._highlightMousemoveHandler();
 
-            expect(getHighlightsStub).to.not.be.called;
+            expect(stubs.getThreads).to.not.be.called;
             expect(result).to.be.true;
         });
 
         it('should do nothing if there are pending, pending-active, active, or active hover highlight threads', () => {
-            annotator._throttledHighlightMousemoveHandler = false;
-            const getHighlightsStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates').returns(['thread1', 'thread2']);
+            stubs.thread.state = constants.ANNOTATION_STATE_PENDING;
+            stubs.getThreads.returns([stubs.thread]);
+
             const result = annotator._highlightMousemoveHandler()({ x: 1, y: 2 });
 
-            expect(getHighlightsStub).to.be.called;
+            expect(stubs.getThreads).to.be.called;
             expect(result).to.equal(undefined);
         });
 
+        it('should not add any delayThreads if there are no threads on the current page', () => {
+            stubs.getThreads.returns([]);
+            annotator._highlightMousemoveHandler()({ clientX: 3, clientY: 3 });
+            expect(stubs.thread.onMousemove).to.not.be.called;
+        });
+
+        it('should add delayThreads and hide innactive threads if the page is found', () => {
+            stubs.getThreads.returns([stubs.thread, stubs.delayThread]);
+
+            annotator._highlightMousemoveHandler()({ clientX: 3, clientY: 3 });
+
+            expect(stubs.thread.onMousemove).to.be.called;
+            expect(stubs.delayThread.onMousemove).to.be.called;
+            expect(stubs.thread.show).to.not.be.called;
+            expect(stubs.delayThread.show).to.be.called;
+        });
+
         it('should set _didMouseMove to true if the mouse was moved enough', () => {
-            annotator._throttledHighlightMousemoveHandler = false;
-            const getHighlightsStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates').returns([]);
+            stubs.getThreads.returns([]);
             annotator._mouseX = 0;
             annotator._mouseY = 0;
 
             annotator._highlightMousemoveHandler()({ clientX: 10, clientY: 10 });
-            expect(getHighlightsStub).to.be.called;
+
             expect(annotator._didMouseMove).to.equal(true);
         });
 
         it('should not set _didMouseMove to true if the mouse was not moved enough', () => {
-            annotator._throttledHighlightMousemoveHandler = false;
-            const getHighlightsStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates').returns([]);
+            stubs.getThreads.returns([]);
             annotator._mouseX = 0;
             annotator._mouseY = 0;
 
             annotator._highlightMousemoveHandler()({ clientX: 3, clientY: 3 });
-            expect(getHighlightsStub).to.be.called;
+
             expect(annotator._didMouseMove).to.equal(undefined);
         });
 
-        it('should not add any delayThreads if the page is not found', () => {
-            annotator._throttledHighlightMousemoveHandler = false;
-            const getHighlightsStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates').returns([]);
-            const getPageStub = sandbox.stub(docAnnotatorUtil, 'getPageElAndPageNumber').returns({ page: -1 });
-            const getHighlightThreadStub = sandbox.stub(annotator, '_getHighlightThreadsOnPage');
-
-            annotator._highlightMousemoveHandler()({ clientX: 3, clientY: 3 });
-            expect(getPageStub).to.be.called;
-            expect(getHighlightThreadStub).to.not.be.called;
-            expect(getHighlightsStub).to.be.called;
-        });
-
-        it('should add delayThreads and hide innactive threads if the page is found', () => {
-            annotator._throttledHighlightMousemoveHandler = false;
-            const thread = {
-                onMousemove: sandbox.stub(),
-                hideDialog: sandbox.stub(),
-                show: sandbox.stub()
-            };
-            const getHighlightsStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates');
-            getHighlightsStub.onCall(0).returns([]);
-            getHighlightsStub.onCall(1).returns([thread, thread]);
-
-            const getPageStub = sandbox.stub(docAnnotatorUtil, 'getPageElAndPageNumber').returns({ page: 1 });
-            const getHighlightThreadStub = sandbox.stub(annotator, '_getHighlightThreadsOnPage').returns([thread, thread]);
-            thread.onMousemove.onCall(0).returns(false);
-            thread.onMousemove.onCall(1).returns(true);
-
-            annotator._highlightMousemoveHandler()({ clientX: 3, clientY: 3 });
-            expect(getPageStub).to.be.called;
-            expect(getHighlightThreadStub).to.be.called;
-            expect(thread.onMousemove).to.be.calledTwice;
-            expect(getHighlightsStub).to.be.called;
-        });
-
         it('should show the top-most delayed thread, and hide all others', () => {
-            annotator._throttledHighlightMousemoveHandler = false;
-            const thread = {
-                onMousemove: sandbox.stub(),
-                show: sandbox.stub(),
-                hideDialog: sandbox.stub(),
-                state: 'inactive'
-            };
-            const getHighlightsStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates');
-            getHighlightsStub.onCall(0).returns([]);
-            getHighlightsStub.onCall(1).returns([thread, thread]);
-
-            const getPageStub = sandbox.stub(docAnnotatorUtil, 'getPageElAndPageNumber').returns({ page: 1 });
-            const getHighlightThreadStub = sandbox.stub(annotator, '_getHighlightThreadsOnPage').returns([thread, thread]);
-            thread.onMousemove.onCall(0).returns(true);
-            thread.onMousemove.onCall(1).returns(true);
+            stubs.getThreads.returns([stubs.delayThread, stubs.delayThread]);
 
             annotator._highlightMousemoveHandler()({ clientX: 3, clientY: 3 });
-            expect(getPageStub).to.be.called;
-            expect(getHighlightThreadStub).to.be.called;
-            expect(thread.onMousemove).to.be.calledTwice;
-            expect(getHighlightsStub).to.be.called;
-            expect(thread.show).to.be.calledOnce;
-            expect(thread.hideDialog).to.be.called;
+            expect(stubs.delayThread.onMousemove).to.be.calledTwice;
+            expect(stubs.delayThread.show).to.be.calledOnce;
+            expect(stubs.delayThread.hideDialog).to.be.called;
         });
     });
 
@@ -624,167 +612,173 @@ describe('doc-annotator', () => {
     });
 
     describe('_highlightCreateHandler()', () => {
+        beforeEach(() => {
+            stubs.thread = {
+                reset: sandbox.stub(),
+                show: sandbox.stub()
+            };
+
+            stubs.getPage = sandbox.stub(docAnnotatorUtil, 'getPageElAndPageNumber').returns({ pageEl: {}, page: 1 });
+            stubs.hasActiveDialog = sandbox.stub(docAnnotatorUtil, 'hasActiveDialog').returns(false);
+            stubs.getThreads = sandbox.stub(annotator, '_getHighlightThreadsOnPage').returns([]);
+            stubs.getLocation = sandbox.stub(annotator, 'getLocationFromEvent').returns(undefined);
+            stubs.createThread = sandbox.stub(annotator, 'createAnnotationThread');
+            stubs.bindListeners = sandbox.stub(annotator, 'bindCustomListenersOnThread');
+        });
+
+        afterEach(() => {
+            stubs.thread.state = 'inactive';
+        });
+
         it('should stop event propogation', () => {
             const event = new Event({ x: 1, y: 1 });
             const eventStub = sandbox.stub(event, 'stopPropagation');
-            const threadsWithStatesStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates').returns([]);
-
             annotator._highlightCreateHandler(event);
             expect(eventStub).to.be.called;
-            expect(threadsWithStatesStub).to.be.called;
         });
 
         it('should do nothing if there are no pending threads', () => {
             const event = new Event({ x: 1, y: 1 });
-            const threadsWithStatesStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates').returns([]);
 
+            stubs.hasActiveDialog.returns(true);
             annotator._highlightCreateHandler(event);
-            expect(threadsWithStatesStub).to.be.called;
+            expect(stubs.thread.reset).to.not.be.called;
+
+            stubs.getThreads.returns([stubs.thread]);
+            annotator._highlightCreateHandler(event);
+            expect(stubs.thread.reset).to.not.be.called;
         });
 
         it('should reset active highlight threads', () => {
             const event = new Event({ x: 1, y: 1 });
-            const statesStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates');
-            const thread = { reset: () => {} };
-            const threadStub = sandbox.stub(thread, 'reset');
-            statesStub.onCall(0).returns([]);
-            statesStub.onCall(1).returns([thread]);
 
+            stubs.thread.state = constants.ANNOTATION_STATE_ACTIVE;
+            stubs.getThreads.returns([stubs.thread]);
             annotator._highlightCreateHandler(event);
-            expect(statesStub).to.be.called;
-            expect(threadStub).to.be.called;
+            expect(stubs.thread.reset).to.be.called;
+
+            stubs.thread.state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
+            stubs.getThreads.returns([stubs.thread]);
+            annotator._highlightCreateHandler(event);
+            expect(stubs.thread.reset).to.be.called;
         });
 
         it('should return before showing if the location is invalid', () => {
             const event = new Event({ x: 1, y: 1 });
-            const statesStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates');
-            statesStub.onCall(0).returns([]);
-            statesStub.onCall(1).returns([]);
-            const locationStub = sandbox.stub(annotator, 'getLocationFromEvent').returns(undefined);
-            const threadStub = sandbox.stub(annotator, 'createAnnotationThread');
+            stubs.getLocation.returns(undefined);
 
             annotator._highlightCreateHandler(event);
-            expect(statesStub).to.be.called;
-            expect(locationStub).to.be.called;
-            expect(threadStub).to.not.be.called;
+            expect(stubs.getLocation).to.be.called;
+            expect(stubs.createThread).to.not.be.called;
         });
 
         it('should show and bind listeners to a thread', () => {
             const event = new Event({ x: 1, y: 1 });
-            const statesStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates');
-            statesStub.onCall(0).returns([]);
-            statesStub.onCall(1).returns([]);
-            const locationStub = sandbox.stub(annotator, 'getLocationFromEvent').returns(true);
-            const thread = { show: () => {} };
-            const threadStub = sandbox.stub(annotator, 'createAnnotationThread').returns(thread);
-            const threadShowStub = sandbox.stub(thread, 'show');
-            const threadBindStub = sandbox.stub(annotator, 'bindCustomListenersOnThread');
+            stubs.getLocation.returns(true);
+            stubs.createThread.returns(stubs.thread);
 
             annotator._highlightCreateHandler(event);
-            expect(statesStub).to.be.called;
-            expect(locationStub).to.be.called;
-            expect(threadStub).to.be.called;
-            expect(threadShowStub).to.be.called;
-            expect(threadBindStub).to.be.called;
+            expect(stubs.getLocation).to.be.called;
+            expect(stubs.createThread).to.be.called;
+            expect(stubs.thread.show).to.be.called;
+            expect(stubs.bindListeners).to.be.called;
         });
     });
 
     describe('_highlightClickHandler()', () => {
         beforeEach(() => {
-            stubs.cancelFirstComment = sandbox.stub();
-            stubs.onClick = sandbox.stub();
-            stubs.show = sandbox.stub();
+            stubs.event = { x: 1, y: 1 };
+            stubs.thread = {
+                cancelFirstComment: sandbox.stub(),
+                onClick: sandbox.stub(),
+                show: sandbox.stub(),
+                destroy: sandbox.stub()
+            };
+
+            stubs.getPage = sandbox.stub(docAnnotatorUtil, 'getPageElAndPageNumber').returns({ pageEl: {}, page: 1 });
+            stubs.getAllThreads = sandbox.stub(annotator, '_getThreadsWithStates').returns([]);
+            stubs.getThreads = sandbox.stub(annotator, '_getHighlightThreadsOnPage').returns([stubs.thread]);
+        });
+
+        afterEach(() => {
+            stubs.thread.state = 'invalid';
         });
 
         it('should cancel the first comment of pending threads', () => {
-            const statesStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates').returns([stubs]);
-            annotator._threads = [];
-            annotator._highlightClickHandler({ x: 1, y: 1 });
+            stubs.thread.state = constants.ANNOTATION_STATE_PENDING;
+            stubs.getAllThreads.returns([stubs.thread]);
 
-            expect(stubs.cancelFirstComment).to.be.called;
-            expect(statesStub).to.be.calledWith(constants.ANNOTATION_STATE_PENDING);
+            // Point annotation
+            stubs.thread.type = constants.ANNOTATION_TYPE_POINT;
+            annotator._highlightClickHandler(stubs.event);
+            expect(stubs.thread.destroy).to.be.called;
+
+            // Highlight annotation
+            stubs.thread.type = constants.ANNOTATION_TYPE_HIGHLIGHT;
+            annotator._highlightClickHandler(stubs.event);
+            expect(stubs.thread.cancelFirstComment).to.be.called;
         });
 
         it('should not show a thread if it is not active', () => {
-            const statesStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates').returns([stubs]);
-            const threadsOnPageStub = sandbox.stub(annotator, '_getHighlightThreadsOnPage').returns([stubs]);
-            const event = { x: 1, y: 1 };
-            annotator._threads = { thread: 1 };
+            stubs.thread.onClick.returns(false);
 
-            annotator._highlightClickHandler(event);
-            expect(statesStub).to.be.calledWith(constants.ANNOTATION_STATE_PENDING);
-            expect(stubs.onClick).to.be.calledWith(event, false);
-            expect(threadsOnPageStub).to.be.called;
-            expect(stubs.show).to.not.be.called;
+            annotator._highlightClickHandler(stubs.event);
+            expect(stubs.thread.cancelFirstComment).to.not.be.called;
+            expect(stubs.thread.onClick).to.be.calledWith(stubs.event, false);
+            expect(stubs.thread.show).to.not.be.called;
         });
 
         it('should show an active thread on the page', () => {
-            stubs.onClick.returns(true);
-            const statesStub = sandbox.stub(annotator, '_getHighlightThreadsWithStates').returns([stubs]);
-            const threadsOnPageStub = sandbox.stub(annotator, '_getHighlightThreadsOnPage').returns([stubs]);
-            const event = { x: 1, y: 1 };
-            annotator._threads = { thread: 1 };
+            stubs.thread.onClick.returns(true);
 
-            annotator._highlightClickHandler(event);
-            expect(statesStub).to.be.calledWith(constants.ANNOTATION_STATE_PENDING);
-            expect(stubs.onClick).to.be.calledWith(event, false);
-            expect(threadsOnPageStub).to.be.called;
-            expect(stubs.show).to.be.called;
+            annotator._highlightClickHandler(stubs.event);
+            expect(stubs.thread.cancelFirstComment).to.not.be.called;
+            expect(stubs.thread.onClick).to.be.calledWith(stubs.event, false);
+            expect(stubs.thread.show).to.be.called;
+        });
+    });
+
+    describe('_getThreadsWithStates()', () => {
+        it('return all of the threads in the specified state', () => {
+            const thread1 = {
+                type: 'highlight',
+                state: constants.ANNOTATION_STATE_HOVER,
+                unbindCustomListenersOnThread: sandbox.stub(),
+                removeAllListeners: sandbox.stub()
+            };
+            const thread2 = {
+                type: 'point',
+                state: constants.ANNOTATION_STATE_HOVER,
+                unbindCustomListenersOnThread: sandbox.stub(),
+                removeAllListeners: sandbox.stub()
+            };
+            const thread3 = {
+                type: 'highlight',
+                state: constants.ANNOTATION_STATE_PENDING,
+                unbindCustomListenersOnThread: sandbox.stub(),
+                removeAllListeners: sandbox.stub()
+            };
+            annotator._threads = { 0: [thread1, thread2], 1: [thread3] };
+
+            const threads = annotator._getThreadsWithStates(constants.ANNOTATION_STATE_HOVER);
+
+            expect(threads).to.deep.equal([thread1, thread2]);
         });
     });
 
     describe('_getHighlightThreadsOnPage()', () => {
         it('return the highlight threads on that page', () => {
-            const thread = [{
-                type: 'highlight'
-            }];
-            annotator._threads = { 0: thread };
+            const thread = {
+                type: 'highlight',
+                unbindCustomListenersOnThread: sandbox.stub(),
+                removeAllListeners: sandbox.stub()
+            };
+            annotator._threads = { 0: [thread] };
             const docStub = sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(thread);
             const threads = annotator._getHighlightThreadsOnPage(0);
 
             expect(docStub).to.be.calledWith('highlight');
-            expect(threads).to.deep.equal(thread);
-        });
-    });
-
-    describe('_getHighlightThreadsWithStates()', () => {
-        it('should return a highlight if it is the state requested', () => {
-            const thread = [{
-                state: 'pending',
-                type: 'highlight'
-            }];
-            annotator._threads = { 0: thread };
-            const docStub = sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(true);
-            const threads = annotator._getHighlightThreadsWithStates('pending');
-
-            expect(docStub).to.be.calledWith('highlight');
-            expect(threads).to.deep.equal(thread);
-        });
-
-        it('should return a highlight if it is one of the states', () => {
-            const thread = [{
-                state: 'active',
-                type: 'highlight'
-            }];
-            annotator._threads = { 0: thread };
-            const docStub = sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(true);
-            const threads = annotator._getHighlightThreadsWithStates('pending', 'active', 'deleted');
-
-            expect(docStub).to.be.calledWith('highlight');
-            expect(threads).to.deep.equal(thread);
-        });
-
-        it('should return an empty list if no states match', () => {
-            const thread = [{
-                state: 'hidden',
-                type: 'highlight'
-            }];
-            annotator._threads = { 0: thread };
-            const docStub = sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(true);
-            const threads = annotator._getHighlightThreadsWithStates('pending', 'active', 'deleted');
-
-            expect(docStub).to.not.be.called;
-            expect(threads).to.deep.equal([]);
+            expect(threads).to.deep.equal([thread]);
         });
     });
 

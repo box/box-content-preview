@@ -59,11 +59,14 @@ class Annotator extends EventEmitter {
      * @returns {void}
      */
     destroy() {
-        Object.keys(this._threads).forEach((page) => {
-            this._threads[page].forEach((thread) => {
-                this.unbindCustomListenersOnThread(thread);
+        if (this._threads) {
+            Object.keys(this._threads).forEach((page) => {
+                this._threads[page].forEach((thread) => {
+                    this.unbindCustomListenersOnThread(thread);
+                });
             });
-        });
+        }
+
         this.unbindDOMListeners();
         this.unbindCustomListenersOnService();
     }
@@ -126,8 +129,6 @@ class Annotator extends EventEmitter {
      * @private
      */
     renderAnnotations() {
-        this.hideAnnotations();
-
         Object.keys(this._threads).forEach((page) => {
             this._threads[page].forEach((thread) => {
                 thread.show();
@@ -143,7 +144,6 @@ class Annotator extends EventEmitter {
      */
     renderAnnotationsOnPage(pageNum) {
         if (this._threads[pageNum]) {
-            this.hideAnnotationsOnPage(pageNum);
             this._threads[pageNum].forEach((thread) => {
                 thread.show();
             });

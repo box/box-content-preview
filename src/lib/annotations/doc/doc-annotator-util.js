@@ -50,6 +50,10 @@ export function getPageElAndPageNumber(element) {
  * @private
  */
 export function isInDialog(event, dialogEl) {
+    if (!dialogEl) {
+        return false;
+    }
+
     // DOM coordinates with respect to the page
     const x = event.clientX;
     const y = event.clientY;
@@ -65,27 +69,17 @@ export function isInDialog(event, dialogEl) {
 }
 
 /**
- * Checks if there is an active annotation on the current page that doesn't
- * match the current dialog being hovered on
+ * Checks if there is an active annotation in the annotated document
  *
- * @param {HTMLElement} currentDialogEl Current dialog being hovered on
- * @param {HTMLElement} pageEl Current page
- * @returns {boolean} Whether or not a different dialog is active
+ * @param {HTMLElement} annotatedEl Annotated document
+ * @returns {boolean} Whether or not a dialog is active
  * @private
  */
-export function hasActiveDialog(currentDialogEl, pageEl) {
-    const dialogEl = pageEl.querySelector('.box-preview-annotation-dialog:not(.box-preview-is-hidden)');
-    const highlightDialogEl = pageEl.querySelector('.box-preview-highlight-dialog:not(.box-preview-is-hidden)');
+export function hasActiveDialog(annotatedEl) {
+    const commentsDialogEl = annotatedEl.querySelector('.box-preview-annotation-dialog:not(.box-preview-is-hidden)');
+    const highlightDialogEl = annotatedEl.querySelector('.box-preview-highlight-dialog:not(.box-preview-is-hidden)');
 
-    if (dialogEl || highlightDialogEl) {
-        // If the current dialog is the active dialog
-        if (currentDialogEl === dialogEl ||
-            currentDialogEl === highlightDialogEl) {
-            return false;
-        }
-        return true;
-    }
-    return false;
+    return !!(commentsDialogEl || highlightDialogEl);
 }
 
 /**

@@ -112,6 +112,11 @@ class AnnotationThread extends EventEmitter {
      * @returns {void}
      */
     showDialog() {
+        // Setup the dialog element if it has not already been created
+        if (!this._dialog._element) {
+            this._dialog.setup(this._annotations);
+        }
+
         if (this._dialog) {
             this._dialog.show();
         }
