@@ -42,7 +42,11 @@ class DocHighlightDialog extends AnnotationDialog {
             const highlightLabelEl = this._element.querySelector('.box-preview-annotation-highlight-label');
             highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [annotation.user.name]);
             annotatorUtil.showElement(highlightLabelEl);
-            this.position();
+
+            // Only reposition if mouse is still hovering over the dialog
+            if (!this._element.classList.contains(CLASS_HIDDEN)) {
+                this.position();
+            }
         }
 
         super.addAnnotation(annotation);
