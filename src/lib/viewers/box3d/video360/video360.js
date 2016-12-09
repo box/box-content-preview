@@ -155,20 +155,17 @@ class Video360 extends Dash {
      */
     @autobind
     create360Environment() {
-        const scene = this.renderer.getBox3D().getEntityById('SCENE_ROOT_ID');
-        this.skybox = scene.getComponentByScriptId('skybox_renderer');
+        this.skybox = this.renderer.getScene().getComponentByScriptId('skybox_renderer');
 
-        this.videoAsset = this.renderer.getBox3D().createVideo(VIDEO_ID);
-        this.videoAsset.setProperties({
+        this.videoAsset = this.renderer.getBox3D().createVideo({
             loop: false,
             generateMipmaps: false,
             querySelector: `.${this.mediaContainerEl.className} video`,
             autoPlay: false
-        });
+        }, VIDEO_ID);
 
         // Texture props references the ID of the video texture created above, "VIDEO_ID"
-        this.textureAsset = this.renderer.getBox3D().createTexture2d('VIDEO_TEX_ID');
-        this.textureAsset.setProperties(VIDEO_TEXTURE_PROPS);
+        this.textureAsset = this.renderer.getBox3D().createTexture2d(VIDEO_TEXTURE_PROPS, 'VIDEO_TEX_ID');
 
         return new Promise((resolve) => {
             this.textureAsset.load(() => {

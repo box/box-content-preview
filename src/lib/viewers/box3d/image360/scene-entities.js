@@ -3,7 +3,7 @@ import Browser from '../../../browser';
 export default [{
     id: 'CAMERA_ID',
     type: 'camera',
-    parentId: 'SCENE_ROOT_ID',
+    parentId: 'SCENE_ID',
     properties: {
         position: {
             x: 0.0,
@@ -43,12 +43,6 @@ export default [{
     ]
 }, {
     id: 'SCENE_ID',
-    type: 'prefab',
-    properties: {
-        rootObjectId: 'SCENE_ROOT_ID'
-    }
-}, {
-    id: 'SCENE_ROOT_ID',
     type: 'scene',
     // The scene contains the lights and camera
     children: [
@@ -68,14 +62,14 @@ export default [{
     id: 'APP_ASSET_ID',
     type: 'application',
     properties: {
-        startupScene: 'SCENE_ID' // The scene to load
+        startupSceneId: 'SCENE_ID' // The scene to load
     },
     components: [
         {
             name: 'Renderer',
             attributes: {
                 antialias: !Browser.isMobile(),
-                maxTextureSize2d: 4096, // TODO - remove this when >4096 reps are available
+                maxTextureSize2d: 8192,
                 renderOnDemand: true
             },
             scriptId: 'box3d_renderer',

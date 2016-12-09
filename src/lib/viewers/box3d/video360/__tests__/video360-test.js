@@ -18,6 +18,12 @@ describe('video360', () => {
             id: 'f_098765'
         }
     };
+    const VIDEO_PROPS = {
+        loop: false,
+        generateMipmaps: false,
+        querySelector: '.box-preview-media-container video',
+        autoPlay: false
+    };
     // Taken from ./video360.js
     const VIDEO_TEXTURE_PROPS = {
         imageId: 'VIDEO_ID',
@@ -348,7 +354,8 @@ describe('video360', () => {
             };
 
             renderer = {
-                getBox3D: sandbox.stub().returns(box3d)
+                getBox3D: sandbox.stub().returns(box3d),
+                getScene: sandbox.stub().returns(scene)
             };
 
             viewer.renderer = renderer;
@@ -371,8 +378,8 @@ describe('video360', () => {
             expect(createPromise).to.be.an.instanceof(Promise);
         });
 
-        it('should invoke .renderer.getBox3D().getEntityById() to get the root scene from the runtime', () => {
-            expect(box3d.getEntityById).to.have.been.calledWith('SCENE_ROOT_ID');
+        it('should invoke .renderer.getScene() to get the root scene from the runtime', () => {
+            expect(renderer.getScene).to.have.been.called;
         });
 
         it('should invoke scene.getComponentByScriptId() to get the skybox_renderer component', () => {
@@ -381,24 +388,11 @@ describe('video360', () => {
         });
 
         it('should create a new video asset via .renderer.getBox3D().createVideo()', () => {
-            expect(box3d.createVideo).to.have.been.calledWith('VIDEO_ID');
-        });
-
-        it('should set proper properties on the video asset', () => {
-            expect(viewer.videoAsset.setProperties).to.have.been.calledWith({
-                loop: false,
-                generateMipmaps: false,
-                querySelector: '.box-preview-media-container video',
-                autoPlay: false
-            });
+            expect(box3d.createVideo).to.have.been.calledWith(VIDEO_PROPS, 'VIDEO_ID');
         });
 
         it('should create a new texture asset by invoking .renderer.getBox3D().createTexture2d()', () => {
-            expect(box3d.createTexture2d).to.have.been.calledWith('VIDEO_TEX_ID');
-        });
-
-        it('should set proper properties on the texture asset', () => {
-            expect(viewer.textureAsset.setProperties).to.have.been.calledWith(VIDEO_TEXTURE_PROPS);
+            expect(box3d.createTexture2d).to.have.been.calledWith(VIDEO_TEXTURE_PROPS, 'VIDEO_TEX_ID');
         });
 
         describe('load texture asset', () => {

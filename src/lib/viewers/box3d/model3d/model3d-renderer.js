@@ -114,7 +114,7 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     loadBox3dFile(fileUrl) {
-        const loader = new Box3D.JSONLoader(this.box3d);
+        // const loader = new Box3D.JSONLoader(this.box3d);
 
         this.box3d.canvas.addEventListener('click', this.handleCanvasClick);
 
@@ -123,7 +123,7 @@ class Model3dRenderer extends Box3DRenderer {
 
         renderModes.setAttribute('shapeTexture', 'MAT_CAP_TEX');
 
-        return loader.loadFromUrl(fileUrl, { withCredentials: false })
+        return this.box3d.addRemoteEntities(fileUrl)
             .then((entities) => {
                 const scene = this.getScene();
 
@@ -151,14 +151,14 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     createPrefabInstances() {
-        const prefabs =
-            this.box3d.getAssets((asset) => asset.type === 'prefab' && asset.id !== 'SCENE_ID');
-        if (prefabs.length === 0) {
+        const prefab =
+            this.box3d.getAsset((asset) => asset.type === 'prefab');
+        if (!prefab) {
             return true;
         }
 
         // Only instance a single prefab for now.
-        return this.addInstanceToScene(prefabs[0], this.getScene());
+        return this.addInstanceToScene(prefab, this.getScene());
     }
 
     /**
@@ -169,9 +169,6 @@ class Model3dRenderer extends Box3DRenderer {
      */
     addIblToMaterials() {
         this.box3d.getAssetsByType('material').forEach((mat) => {
-            mat.setProperty('envMapIrradiance', 'HDR_ENV_MAP_CUBE_2');
-            mat.setProperty('envMapRadiance', 'HDR_ENV_MAP_CUBE_0');
-            mat.setProperty('envMapRadianceHalfGloss', 'HDR_ENV_MAP_CUBE_1');
             if (mat.getProperty('roughness') <= 0.01 && !mat.getProperty('glossMap')) {
                 mat.setProperty('envMapGlossVariance', false);
             }
@@ -194,7 +191,7 @@ class Model3dRenderer extends Box3DRenderer {
      */
     addInstanceToScene(prefab, scene) {
         // Create an instance of the prefab asset.
-        const instance = scene.createInstance(prefab);
+        const instance = prefab.createInstance();
         if (!instance) {
             return false;
         }
@@ -210,7 +207,7 @@ class Model3dRenderer extends Box3DRenderer {
         instance.addComponent('animation', {}, `animation_${instance.id}`);
 
         // Add the instance to the scene.
-        scene.getRootObject().addChild(instance);
+        scene.addChild(instance);
 
         this.instance = instance;
 
@@ -392,7 +389,7 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     addHelpersToScene() {
-        const scene = this.getScene().getRootObject().runtimeData;
+        const scene = this.getScene().runtimeData;
         this.grid = new THREE.GridHelper(GRID_SIZE, GRID_SECTIONS, GRID_COLOR, GRID_COLOR);
         this.grid.material.transparent = true;
         this.grid.material.blending = THREE.MultiplyBlending;
@@ -411,7 +408,7 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     cleanupHelpers() {
-        const scene = this.getScene().getRootObject().runtimeData;
+        const scene = this.getScene().runtimeData;
         if (this.grid) {
             scene.remove(this.grid);
             this.grid.material.dispose();

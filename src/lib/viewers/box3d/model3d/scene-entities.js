@@ -8,7 +8,7 @@ function sceneEntities(prefix) {
     return [{
         id: 'CAMERA_ID',
         type: 'camera',
-        parentId: 'SCENE_ROOT_ID',
+        parentId: 'SCENE_ID',
         properties: {
             position: {
                 x: -0.559,
@@ -52,22 +52,27 @@ function sceneEntities(prefix) {
         ]
     }, {
         id: 'SCENE_ID',
-        type: 'prefab',
-        properties: {
-            rootObjectId: 'SCENE_ROOT_ID'
-        }
-    }, {
-        id: 'SCENE_ROOT_ID',
         type: 'scene',
         // The scene contains the lights and camera
         children: [
             'CAMERA_ID',
             'AMBIENT_LIGHT_ID'
+        ],
+        components: [
+            {
+                name: 'Light Environment',
+                attributes: {
+                    irradianceMap: 'HDR_ENV_MAP_CUBE_2',
+                    radianceMapHalfGloss: 'HDR_ENV_MAP_CUBE_1',
+                    radianceMap: 'HDR_ENV_MAP_CUBE_0'
+                },
+                scriptId: 'light_environment_component'
+            }
         ]
     }, {
         id: 'AMBIENT_LIGHT_ID',
         type: 'light',
-        parentId: 'SCENE_ROOT_ID',
+        parentId: 'SCENE_ID',
         properties: {
             lightType: 'ambient',
             color: { r: 0.0, g: 0.0, b: 0.0 }
@@ -76,14 +81,14 @@ function sceneEntities(prefix) {
         id: 'APP_ASSET_ID',
         type: 'application',
         properties: {
-            startupScene: 'SCENE_ID' // The scene to load
+            startupSceneId: 'SCENE_ID' // The scene to load
         },
         components: [
             {
                 name: 'Renderer',
                 attributes: {
                     renderOnDemand: true,
-                    maxTextureSize2d: Browser.isMobile() ? 1024 : undefined,
+                    maxTextureSize2d: Browser.isMobile() ? 1024 : 8192,
                     maxTextureSizeCube: Browser.isMobile() ? 512 : undefined,
                     preserveDrawingBuffer: false,
                     precision: Browser.isMobile() ? 'highp' : 'mediump',

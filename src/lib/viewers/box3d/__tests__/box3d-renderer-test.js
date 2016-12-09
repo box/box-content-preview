@@ -39,16 +39,16 @@ describe('box3d-renderer', () => {
     describe('destroy()', () => {
         beforeEach(() => {
             renderer.box3d = {
-                uninitialize: sandbox.stub()
+                destroy: sandbox.stub()
             };
         });
 
-        it('should call uninitialize on the engine', () => {
-            const uninitializeStub = renderer.box3d.uninitialize;
+        it('should call destroy on the engine', () => {
+            const destroyStub = renderer.box3d.destroy;
 
             renderer.destroy();
 
-            expect(uninitializeStub).to.have.been.called;
+            expect(destroyStub).to.have.been.called;
         });
 
         it('should fully shutdown by disabling vr and unbinding events ', () => {
@@ -225,20 +225,13 @@ describe('box3d-renderer', () => {
                     two: 'b'
                 };
 
-                const expectedInputSettings = {
-                    key_board: 'enabled',
-                    mouse: 'disabled'
-                };
-
-                const creatBox3DStub = sandbox.stub(renderer, 'createBox3d', (loader, entities, inputSettings) => {
+                const creatBox3DStub = sandbox.stub(renderer, 'createBox3d', (loader, entities) => {
                     expect(entities).to.deep.equal(expectedEntities);
-                    expect(inputSettings).to.deep.equal(expectedInputSettings);
                 });
 
                 renderer.initBox3d({
                     file: { file_version: 'abcdef' },
-                    sceneEntities: expectedEntities,
-                    inputSettings: expectedInputSettings
+                    sceneEntities: expectedEntities
                 });
 
                 expect(creatBox3DStub).to.have.been.called;
@@ -250,7 +243,7 @@ describe('box3d-renderer', () => {
                 const creatBox3DStub = sandbox.stub(renderer, 'createBox3d', (loader) => {
                     sandbox.stub(loader.queue, 'add', (fn) => fn());
 
-                    const resource = loader.load('path/to/texture.jpg', 'image', {});
+                    const resource = loader.load('path/to/texture.jpg', window.Box3D.LoadingType.IMAGE, {});
 
                     resource.once('done', () => {
                         expect(creatBox3DStub).to.have.been.called;
@@ -263,7 +256,6 @@ describe('box3d-renderer', () => {
                 renderer.initBox3d({
                     file: { file_version: 'abcdef' },
                     sceneEntities: [],
-                    inputSettings: {},
                     token: 'foo',
                     sharedLink: 'bar',
                     sharedLinkPassword: 'baz'
@@ -289,21 +281,15 @@ describe('box3d-renderer', () => {
             const expectedInitProps = {
                 container: containerEl,
                 engineName: 'Default',
-                entities,
                 resourceLoader: loader
             };
             let initProps;
             const Box3DFake = {
-                Engine: function contructor() {
-                    this.initialize = function init(props, callback) {
-                        initProps = props;
-                        callback();
-                    };
-
+                Engine: function contructor(props) {
+                    initProps = props;
+                    this.addEntities = sandbox.stub();
                     this.getAssetById = sandbox.stub().returns({
-                        load: function load(onLoad) {
-                            onLoad();
-                        }
+                        load: function load() {}
                     });
                 }
             };
@@ -320,7 +306,10 @@ describe('box3d-renderer', () => {
         it('should return a promise', () => {
             const Box3DFake = {
                 Engine: function constructor() {
-                    this.initialize = function init() {};
+                    this.addEntities = sandbox.stub();
+                    this.getAssetById = sandbox.stub().returns({
+                        load: function load() {}
+                    });
                 }
             };
             window.Box3D = Box3DFake;
@@ -333,7 +322,7 @@ describe('box3d-renderer', () => {
         it('should not set reference if error occurs initializing engine', (done) => {
             const Box3DFake = {
                 Engine: function constructor() {
-                    this.initialize = function init() {
+                    this.addEntities = function addEntities() {
                         throw new Error('Error while initializing');
                     };
                 }

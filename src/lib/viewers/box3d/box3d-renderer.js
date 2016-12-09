@@ -79,7 +79,7 @@ class Box3DRenderer extends EventEmitter {
             this.vrEffect.dispose();
         }
 
-        this.box3d.uninitialize();
+        this.box3d.destroy();
         this.box3d = null;
     }
 
@@ -165,7 +165,7 @@ class Box3DRenderer extends EventEmitter {
             return Promise.resolve(xhr);
         });
 
-        return this.createBox3d(resourceLoader, options.sceneEntities, options.inputSettings);
+        return this.createBox3d(resourceLoader, options.sceneEntities);
     }
 
     /**
@@ -177,22 +177,17 @@ class Box3DRenderer extends EventEmitter {
      * @returns {Promise} A promise that resolves with the Box3D Engine.
      */
     createBox3d(resourceLoader, sceneEntities) {
-        const box3d = new Box3D.Engine();
-
-        return new Promise((resolve, reject) => {
-            box3d.initialize({
-                container: this.containerEl,
-                engineName: 'Default',
-                entities: sceneEntities,
-                resourceLoader
-            }, () => {
-                const app = box3d.getAssetById('APP_ASSET_ID');
-                app.load(() => {
-                    this.box3d = box3d;
-                    resolve(this.box3d);
-                });
-            })
-            .catch(reject);
+        const box3d = new Box3D.Engine({
+            container: this.containerEl,
+            engineName: 'Default',
+            resourceLoader
+        });
+        return new Promise((resolve) => {
+            box3d.addEntities(sceneEntities);
+            const app = box3d.getAssetById('APP_ASSET_ID');
+            app.load();
+            this.box3d = box3d;
+            resolve(this.box3d);
         });
     }
 
