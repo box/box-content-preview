@@ -5,6 +5,8 @@ import { CLASS_INVISIBLE } from '../../../constants';
 import {
     ICON_DROP_DOWN,
     ICON_DROP_UP,
+    ICON_ZOOM_OUT,
+    ICON_ZOOM_IN,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT
 } from '../../../icons/icons';
@@ -77,13 +79,22 @@ describe('presentation', () => {
             presentation.docEl.removeChild(page2);
         });
 
+        it('should check to see if overflow is present', () => {
+            const checkOverflowStub = sandbox.stub(presentation, 'checkOverflow');
+
+            presentation.setPage(2);
+            expect(checkOverflowStub).to.be.called;
+        });
+
         it('should hide the page that was previously shown', () => {
+            sandbox.stub(presentation, 'checkOverflow');
             presentation.setPage(2);
 
             expect(page1.classList.contains(CLASS_INVISIBLE)).to.be.true;
         });
 
         it('should show the page being set', () => {
+            sandbox.stub(presentation, 'checkOverflow');
             presentation.setPage(2);
 
             expect(page2.classList.contains(CLASS_INVISIBLE)).to.be.false;
@@ -119,6 +130,61 @@ describe('presentation', () => {
             const result2 = presentation.onKeydown('d');
 
             expect(result2).to.be.false;
+        });
+    });
+
+    describe('checkOverflow()', () => {
+        beforeEach(() => {
+            stubs.docEl = {
+                clientHeight: 0,
+                clientWidth: 0,
+                classList: {
+                    add: sandbox.stub(),
+                    remove: sandbox.stub()
+                },
+                addEventListener: sandbox.stub(),
+                removeEventListener: sandbox.stub(),
+                firstChild: {
+                    firstChild: {
+                        clientHeight: 0,
+                        clientWidth: 0
+                    }
+                }
+            };
+
+            presentation.docEl = stubs.docEl;
+        });
+
+        it('should remove the both overflow classes and return false if there is no overflow', () => {
+            stubs.docEl.clientWidth = 100;
+            stubs.docEl.clientHeight = 100;
+
+            const result = presentation.checkOverflow();
+            expect(stubs.docEl.classList.remove).to.be.calledWith('overflow');
+            expect(stubs.docEl.classList.remove).to.be.calledWith('overflow-y');
+            expect(result).to.equal(false);
+        });
+
+        it('should add both overflow classes and return true if there is y overflow', () => {
+            stubs.docEl.clientWidth = 100;
+            stubs.docEl.clientHeight = 100;
+            stubs.docEl.firstChild.firstChild.clientHeight = 500;
+
+            const result = presentation.checkOverflow();
+            expect(stubs.docEl.classList.add).to.be.calledWith('overflow');
+            expect(stubs.docEl.classList.add).to.be.calledWith('overflow-y');
+            expect(result).to.equal(true);
+        });
+
+        it('should remove the y overflow class, add the overflow class, and return true if there is x overflow', () => {
+            stubs.docEl.clientWidth = 100;
+            stubs.docEl.clientHeight = 100;
+            stubs.docEl.firstChild.firstChild.clientWidth = 500;
+
+            const result = presentation.checkOverflow();
+            expect(stubs.docEl.classList.add).to.be.calledWith('overflow');
+            expect(stubs.docEl.classList.remove).to.be.calledWith('overflow-y');
+            expect(result).to.equal(true);
         });
     });
 
@@ -176,6 +242,8 @@ describe('presentation', () => {
     describe('bindControlListeners()', () => {
         it('should ', () => {
             presentation.bindControlListeners();
+            expect(presentation.controls.add).to.be.calledWith(__('zoom_out'), presentation.zoomOut, 'box-preview-exit-zoom-out-icon', ICON_ZOOM_OUT);
+            expect(presentation.controls.add).to.be.calledWith(__('zoom_in'), presentation.zoomIn, 'box-preview-enter-zoom-in-icon', ICON_ZOOM_IN);
             expect(presentation.controls.add).to.be.calledWith(__('previous_page'), presentation.previousPage, 'box-preview-presentation-previous-page-icon box-preview-previous-page', ICON_DROP_UP);
             expect(presentation.controls.add).to.be.calledWith(__('enter_page_num'), presentation.showPageNumInput, 'box-preview-doc-page-num');
             expect(presentation.controls.add).to.be.calledWith(__('next_page'), presentation.nextPage, 'box-preview-presentation-next-page-icon box-preview-next-page', ICON_DROP_DOWN);
@@ -208,11 +276,13 @@ describe('presentation', () => {
         beforeEach(() => {
             stubs.nextPage = sandbox.stub(presentation, 'nextPage');
             stubs.previousPage = sandbox.stub(presentation, 'previousPage');
+            stubs.checkOverflow = sandbox.stub(presentation, 'checkOverflow').returns(false);
             presentation.annotator = {
                 isInDialogOnPage: sandbox.stub().returns(false)
             };
             presentation.event = {
-                deltaY: 5
+                deltaY: 5,
+                deltaX: -0
             };
         });
 
@@ -235,6 +305,24 @@ describe('presentation', () => {
             presentation.wheelHandler();
             presentation.throttledWheelHandler(presentation.event);
             expect(stubs.previousPage).to.be.called;
+        });
+
+        it('should do nothing if x scroll is detected', () => {
+            presentation.event.deltaX = -7;
+
+            presentation.wheelHandler();
+            presentation.throttledWheelHandler(presentation.event);
+            expect(stubs.previousPage).to.not.be.called;
+            expect(stubs.nextPage).to.not.be.called;
+        });
+
+        it('should do nothing if there is overflow', () => {
+            stubs.checkOverflow.returns(true);
+
+            presentation.wheelHandler();
+            presentation.throttledWheelHandler(presentation.event);
+            expect(stubs.previousPage).to.not.be.called;
+            expect(stubs.nextPage).to.not.be.called;
         });
 
         it('should return the original function if the wheel handler already exists', () => {

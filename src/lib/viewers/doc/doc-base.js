@@ -770,7 +770,7 @@ class DocBase extends Base {
     /**
      * Update page number in page control widget.
      *
-     * @param {number} pageNum Nubmer of page to update to
+     * @param {number} pageNum Number of page to update to
      * @returns {void}
      * @private
      */

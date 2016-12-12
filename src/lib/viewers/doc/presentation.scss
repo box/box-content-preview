@@ -15,4 +15,17 @@
         right: 0;
         top: 0;
     }
+
+    &.overflow {
+        overflow-x: scroll;
+        overflow-y: scroll;
+    }
+
+    &.overflow-y {
+        overflow-y: scroll;
+
+        .pdfViewer .page {
+            margin-top: 5px;
+        }
+    }
 }

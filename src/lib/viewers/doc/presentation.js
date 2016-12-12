@@ -7,12 +7,16 @@ import {
     ICON_DROP_DOWN,
     ICON_DROP_UP,
     ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT
+    ICON_FULLSCREEN_OUT,
+    ICON_ZOOM_IN,
+    ICON_ZOOM_OUT
 } from '../../icons/icons';
 import './presentation.scss';
 
 const Box = global.Box || {};
 const WHEEL_THROTTLE = 200;
+const PRESENTATION_MODE_STATE = 3;
+const PADDING_OFFSET = 30;
 
 @autobind
 class Presentation extends DocBase {
@@ -41,6 +45,8 @@ class Presentation extends DocBase {
      * @returns {void}
      */
     setPage(pageNum) {
+        this.checkOverflow();
+
         let pageEl = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
         pageEl.classList.add(CLASS_INVISIBLE);
 
@@ -48,6 +54,8 @@ class Presentation extends DocBase {
 
         pageEl = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
         pageEl.classList.remove(CLASS_INVISIBLE);
+
+        this.pdfViewer.update();
     }
 
     /**
@@ -69,6 +77,33 @@ class Presentation extends DocBase {
         return super.onKeydown(key);
     }
 
+    /**
+     * Determines if the document has overflow and adjusts the CSS accordingly.
+     *
+     * @returns {boolean}
+     */
+    checkOverflow() {
+        const doc = this.docEl;
+        // Getting the page element to compare to the doc height/width
+        const page = this.docEl.firstChild.firstChild;
+        const hasXOverflow = page.clientWidth > doc.clientWidth;
+        const hasYOverflow = page.clientHeight - PADDING_OFFSET > doc.clientHeight;
+        if (!hasXOverflow && !hasYOverflow) {
+            doc.classList.remove('overflow');
+            doc.classList.remove('overflow-y');
+            return false;
+        } else if (hasYOverflow) {
+            doc.classList.add('overflow');
+            doc.classList.add('overflow-y');
+            return true;
+        }
+
+        // only x overflow
+        doc.classList.remove('overflow-y');
+        doc.classList.add('overflow');
+        return true;
+    }
+
     //--------------------------------------------------------------------------
     // Protected
     //--------------------------------------------------------------------------
@@ -83,7 +118,8 @@ class Presentation extends DocBase {
      */
     initViewer(pdfUrl) {
         super.initViewer(pdfUrl);
-
+        this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE;
+        this.initialDocHeight = this.docEl.clientHeight;
         // Overwrite scrollPageIntoView for presentations since we have custom pagination behavior
         this.pdfViewer.scrollPageIntoView = (pageObj) => {
             let pageNum = pageObj;
@@ -135,6 +171,9 @@ class Presentation extends DocBase {
     bindControlListeners() {
         super.bindControlListeners();
 
+        this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-exit-zoom-out-icon', ICON_ZOOM_OUT);
+        this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-enter-zoom-in-icon', ICON_ZOOM_IN);
+
         this.controls.add(__('previous_page'), this.previousPage, 'box-preview-presentation-previous-page-icon box-preview-previous-page', ICON_DROP_UP);
 
         const buttonContent = pageNumTemplate.replace(/>\s*</g, '><'); // removing new lines
@@ -175,6 +214,11 @@ class Presentation extends DocBase {
     wheelHandler() {
         if (!this.throttledWheelHandler) {
             this.throttledWheelHandler = throttle((event) => {
+                // Should not change pages if there is overflow, horizontal movement or a lack of vertical movement
+                if (event.deltaY === -0 || event.deltaX !== -0 || this.checkOverflow()) {
+                    return;
+                }
+
                 if (event.deltaY > 0) {
                     this.nextPage();
                 } else if (event.deltaY < 0) {
@@ -186,6 +230,7 @@ class Presentation extends DocBase {
         return this.throttledWheelHandler;
     }
 }
+
 
 Box.Preview = Box.Preview || {};
 Box.Preview.Presentation = Presentation;
