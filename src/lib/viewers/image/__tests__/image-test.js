@@ -577,7 +577,7 @@ describe('image.js', () => {
 
     describe('unbindDOMListeners()', () => {
         beforeEach(() => {
-            document.removeEventListener = sandbox.stub();
+            stubs.removeEventListener = sandbox.stub(document, 'removeEventListener');
             image.imageEl.removeEventListener = sandbox.stub();
             stubs.listeners = image.imageEl.removeEventListener;
             stubs.isMobile = sandbox.stub(Browser, 'isMobile').returns(true);
@@ -598,7 +598,7 @@ describe('image.js', () => {
             expect(stubs.listeners).to.not.have.been.calledWith('mousedown', image.handleMouseDown);
             expect(stubs.listeners).to.not.have.been.calledWith('mouseup', image.handleMouseUp);
             expect(stubs.listeners).to.not.have.been.calledWith('dragstart', image.handleDragStart);
-            expect(document.removeEventListener).to.have.been.calledTwice;
+            expect(stubs.removeEventListener).to.have.been.calledTwice;
         });
 
         it('should unbind all mobile and iOS listeners', () => {

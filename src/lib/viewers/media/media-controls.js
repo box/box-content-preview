@@ -98,8 +98,8 @@ class MediaControls extends EventEmitter {
             this.playButtonEl.removeEventListener('click', this.togglePlay);
         }
 
-        if (this.volButtonEl) {
-            this.volButtonEl.removeEventListener('click', this.toggleMute);
+        if (this.volLevelButtonEl) {
+            this.volLevelButtonEl.removeEventListener('click', this.toggleMute);
         }
 
         if (this.fullscreenButtonEl) {
@@ -116,8 +116,7 @@ class MediaControls extends EventEmitter {
         }
 
         if (fullscreen) {
-            fullscreen.removeListener('exit', () =>
-                this.setLabel(this.fullscreenButtonEl, __('enter_fullscreen')));
+            fullscreen.removeListener('exit', this.setFullscreenLabel);
         }
 
         this.wrapperEl = undefined;
@@ -187,7 +186,7 @@ class MediaControls extends EventEmitter {
      *
      * @param {number} seconds seconds
      * @private
-     * @returns {string} A string formatted like 03:57:35
+     * @returns {string} A string formatted like 3:57:35
      */
     formatTime(seconds) {
         const h = Math.floor(seconds / 3600);
@@ -215,7 +214,7 @@ class MediaControls extends EventEmitter {
      */
     setTimeCode(time) {
         const duration = this.mediaEl.duration;
-        this.timeScrubber.setValue(duration ? time / duration : 0);
+        this.timeScrubber.setValue(duration ? (time || 0) / duration : 0);
         this.timecodeEl.textContent = this.formatTime(time || 0);
     }
 
@@ -259,10 +258,21 @@ class MediaControls extends EventEmitter {
      */
     toggleFullscreen() {
         this.emit('togglefullscreen');
+        this.setFullscreenLabel();
+    }
+
+    /**
+     * sets the fullscreen label once fullscreen mode has been exited.
+     *
+     * @private
+     * @returns {void}
+     */
+    setFullscreenLabel() {
         const fullscreenTitle = fullscreen.isFullscreen(this.containerEl) ?
                                 __('exit_fullscreen') : __('enter_fullscreen');
         this.setLabel(this.fullscreenButtonEl, fullscreenTitle);
     }
+
 
     /**
      * Toggles settings menu
@@ -342,8 +352,7 @@ class MediaControls extends EventEmitter {
         this.volLevelButtonEl.addEventListener('click', this.toggleMute);
         this.fullscreenButtonEl.addEventListener('click', this.toggleFullscreen);
         this.settingsButtonEl.addEventListener('click', this.toggleSettings);
-        fullscreen.addListener('exit', () =>
-            this.setLabel(this.fullscreenButtonEl, __('enter_fullscreen')));
+        fullscreen.addListener('exit', this.setFullscreenLabel);
     }
 
     /**
