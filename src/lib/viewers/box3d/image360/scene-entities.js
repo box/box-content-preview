@@ -69,7 +69,7 @@ export default [{
             name: 'Renderer',
             attributes: {
                 antialias: !Browser.isMobile(),
-                maxTextureSize2d: 8192,
+                maxTextureSize2d: 4096,
                 renderOnDemand: true
             },
             scriptId: 'box3d_renderer',
