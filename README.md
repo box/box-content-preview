@@ -40,8 +40,7 @@ Usage
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
     <script>
-        Box.Preview.show('93392244621', {
-            token: 'EqFyi1Yq1tD9mxY8F38sxDfp73pFd7FP',
+        Box.Preview.show('93392244621', 'EqFyi1Yq1tD9mxY8F38sxDfp73pFd7FP', {
     	    container: '.preview-container'
         });
     </script>
@@ -110,19 +109,18 @@ https://gitenterprise.inside-box.net/Preview/demo
 Initialization
 --------------
 
-The recommended way to show a preview is by calling `Box.Preview.show(fileId, { options })` where fileId is a `Box_File` id. `Box.Preview` is an instance of the class `Preview`. Another way to show a preview or multiple previews on the same page is by creating instances of the `Preview` class as follows:
+The recommended way to show a preview is by calling `Box.Preview.show(fileId, accessToken, { options })` where `fileId` is a `Box_File` id and `accessToken` is a Box API access token. `Box.Preview` is an instance of the class `Preview`. Another way to show a preview or multiple previews on the same page is by creating instances of the `Preview` class as follows:
 
 ```javascript
 const preview = new Preview();
-preview.show(FILE_ID, { OPTIONS });
+preview.show(fileId, accessToken, { options });
 ```
 
-Options
+Parameters & Options
 -------
 
 ```javascript
-Box.Preview.show(FILE_ID, {
-    token: 'AUTH_TOKEN',
+Box.Preview.show(fileId, accessToken, {
     container: '.preview-container',
     api: 'https://api.box.com',
     sharedLink: 'https://app.box.com/v/foo',
@@ -142,23 +140,27 @@ Box.Preview.show(FILE_ID, {
     }
 });
 ```
-| Option | Optionality | Default | Description |
-| --- | --- | --- | --- |
-| token | Required |  | Either a string auth token or a token generator function, see below for details |
-| container | Optional | document.body | DOM node or selector where Preview should be placed |
-| api | Optional | https://api.box.com | Root API URL |
-| sharedLink | Optional |  | Shared link URL |
-| sharedLinkPassword | Optional |  | Shared link password |
-| collection | Optional |  | List of file IDs to iterate over for previewing |
-| header | Optional | 'light' | String value of 'none' or 'dark' or 'light' that controls header visibility and theme |
-| logoUrl | Optional |  | URL of logo to show in header |
-| showAnnotations | Optional | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. |
-| showDownload | Optional | false | Whether download button is shown |
-| useHotkeys | Optional | true | Whether hotkeys (keyboard shortcuts) are enabled |
-| viewers | Optional |  | Arguments to pass on to viewers |
-| { VIEWERNAME } |  |  | Name of the viewer, see below for more details |
-| {{ disabled }} |  | false | Disables the viewer |
-| {{ annotations }} |  | false | Enables annotations for the viewer |
+| Parameter | Description |
+| --- | --- |
+| fileId | Box file ID |
+| accessToken | Either a string auth token or a token generator function, see below for details |
+
+| Option | Default | Description |
+| --- | --- | --- |
+| container | document.body | DOM node or selector where Preview should be placed |
+| api | https://api.box.com | Root API URL |
+| sharedLink |  | Shared link URL |
+| sharedLinkPassword |  | Shared link password |
+| collection |  | List of file IDs to iterate over for previewing |
+| header | 'light' | String value of 'none' or 'dark' or 'light' that controls header visibility and theme |
+| logoUrl |  | URL of logo to show in header |
+| showAnnotations | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. |
+| showDownload | false | Whether download button is shown |
+| useHotkeys | true | Whether hotkeys (keyboard shortcuts) are enabled |
+| viewers |  | Arguments to pass on to viewers |
+| { VIEWERNAME } |  | Name of the viewer, see below for more details |
+| {{ disabled }} | false | Disables the viewer |
+| {{ annotations }} | false | Enables annotations for the viewer |
 
 Authentication Token
 --------------------
