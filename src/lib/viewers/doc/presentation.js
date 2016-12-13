@@ -1,6 +1,7 @@
 import autobind from 'autobind-decorator';
 import pageNumTemplate from 'raw!./page-num-button-content.html';
 import throttle from 'lodash.throttle';
+import Browser from '../../browser';
 import DocBase from './doc-base';
 import { CLASS_INVISIBLE } from '../../constants';
 import {
@@ -17,6 +18,7 @@ const Box = global.Box || {};
 const WHEEL_THROTTLE = 200;
 const PRESENTATION_MODE_STATE = 3;
 const PADDING_OFFSET = 30;
+const SCROLL_EVENT_OFFSET = 5;
 
 @autobind
 class Presentation extends DocBase {
@@ -146,6 +148,10 @@ class Presentation extends DocBase {
         super.bindDOMListeners();
 
         this.docEl.addEventListener('wheel', this.wheelHandler());
+        if (Browser.isMobile()) {
+            this.docEl.addEventListener('touchstart', this.mobileScrollHandler);
+            this.docEl.addEventListener('touchend', this.mobileScrollHandler);
+        }
     }
 
     /**
@@ -159,6 +165,10 @@ class Presentation extends DocBase {
         super.unbindDOMListeners();
 
         this.docEl.removeEventListener('wheel', this.wheelHandler());
+        if (Browser.isMobile()) {
+            this.docEl.removeEventListener('touchstart', this.mobileScrollHandler);
+            this.docEl.removeEventListener('touchend', this.mobileScrollHandler);
+        }
     }
 
     /**
@@ -184,6 +194,32 @@ class Presentation extends DocBase {
         this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
+
+    /**
+     * Handler for mobile scroll events.
+     *
+     * @returns {void}
+     * @private
+     */
+    mobileScrollHandler(event) {
+        if (this.checkOverflow() || !event.changedTouches || event.changedTouches.length === 0) {
+            return;
+        }
+
+        if (event.type === 'touchstart') {
+            this.scrollStart = event.changedTouches[0].clientY;
+        } else {
+            const scrollEnd = event.changedTouches[0].clientY;
+
+            // scroll event offset prevents tapping from triggering a scroll
+            if (this.scrollStart && this.scrollStart > scrollEnd + SCROLL_EVENT_OFFSET) {
+                this.nextPage();
+            } else if (this.scrollStart && this.scrollStart < scrollEnd - SCROLL_EVENT_OFFSET) {
+                this.previousPage();
+            }
+        }
+    }
+
 
     /**
      * Handler for 'pagesinit' event.

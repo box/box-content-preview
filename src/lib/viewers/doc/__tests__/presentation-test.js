@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Presentation from '../presentation';
+import Browser from '../../../browser';
 import { CLASS_INVISIBLE } from '../../../constants';
 
 import {
@@ -222,20 +223,54 @@ describe('presentation', () => {
     });
 
     describe('bindDOMListeners()', () => {
-        it('should add a wheel handler', () => {
-            const addEventListenerStub = sandbox.stub(presentation.docEl, 'addEventListener');
-            presentation.bindDOMListeners();
+        beforeEach(() => {
+            stubs.addEventListener = sandbox.stub(presentation.docEl, 'addEventListener');
+            stubs.isMobile = sandbox.stub(Browser, 'isMobile');
+        });
 
-            expect(addEventListenerStub).to.be.calledWith('wheel', presentation.wheelHandler());
+        it('should add a wheel handler', () => {
+            presentation.bindDOMListeners();
+            expect(stubs.addEventListener).to.be.calledWith('wheel', presentation.wheelHandler());
+        });
+
+        it('should add a touchstart handler if on mobile', () => {
+            stubs.isMobile.returns(true);
+
+            presentation.bindDOMListeners();
+            expect(stubs.addEventListener).to.be.calledWith('touchstart', presentation.mobileScrollHandler);
+        });
+
+        it('should add a touchend handler if on mobile', () => {
+            stubs.isMobile.returns(true);
+
+            presentation.bindDOMListeners();
+            expect(stubs.addEventListener).to.be.calledWith('touchend', presentation.mobileScrollHandler);
         });
     });
 
     describe('unbindDOMListeners()', () => {
-        it('should remove a wheel handler', () => {
-            const removeEventListenerStub = sandbox.stub(presentation.docEl, 'removeEventListener');
-            presentation.unbindDOMListeners();
+        beforeEach(() => {
+            stubs.removeEventListener = sandbox.stub(presentation.docEl, 'removeEventListener');
+            stubs.isMobile = sandbox.stub(Browser, 'isMobile');
+        });
 
-            expect(removeEventListenerStub).to.be.calledWith('wheel', presentation.wheelHandler());
+        it('should remove a wheel handler', () => {
+            presentation.unbindDOMListeners();
+            expect(stubs.removeEventListener).to.be.calledWith('wheel', presentation.wheelHandler());
+        });
+
+        it('should remove the scrollhandler if on mobile', () => {
+            stubs.isMobile.returns(true);
+
+            presentation.unbindDOMListeners();
+            expect(stubs.removeEventListener).to.be.calledWith('touchstart', presentation.mobileScrollHandler);
+        });
+
+        it('should remove a wheel handler', () => {
+            stubs.isMobile.returns(true);
+
+            presentation.unbindDOMListeners();
+            expect(stubs.removeEventListener).to.be.calledWith('touchend', presentation.mobileScrollHandler);
         });
     });
 
@@ -249,6 +284,56 @@ describe('presentation', () => {
             expect(presentation.controls.add).to.be.calledWith(__('next_page'), presentation.nextPage, 'box-preview-presentation-next-page-icon box-preview-next-page', ICON_DROP_DOWN);
             expect(presentation.controls.add).to.be.calledWith(__('enter_fullscreen'), presentation.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
             expect(presentation.controls.add).to.be.calledWith(__('exit_fullscreen'), presentation.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+        });
+    });
+
+    describe('mobileScrollHandler()', () => {
+        beforeEach(() => {
+            stubs.checkOverflow = sandbox.stub(presentation, 'checkOverflow').returns(false);
+            stubs.event = {
+                type: '',
+                changedTouches: [
+                    {
+                        clientX: 0,
+                        clientY: 0
+                    }
+                ]
+            };
+            stubs.nextPage = sandbox.stub(presentation, 'nextPage');
+            stubs.previousPage = sandbox.stub(presentation, 'previousPage');
+        });
+
+        it('should do nothing if there is overflow', () => {
+            stubs.checkOverflow.returns(true);
+
+            presentation.mobileScrollHandler(stubs.event);
+            expect(presentation.scrollStart).to.equal(undefined);
+        });
+
+        it('should set the scroll start position if the event is a touch start', () => {
+            stubs.event.type = 'touchstart';
+            stubs.event.changedTouches[0].clientY = 100;
+
+            presentation.mobileScrollHandler(stubs.event);
+            expect(presentation.scrollStart).to.equal(100);
+        });
+
+        it('should go to the next page if the scroll is in the correct direction', () => {
+            stubs.event.type = 'touchend';
+            presentation.scrollStart = 500;
+            stubs.event.changedTouches[0].clientY = 100;
+
+            presentation.mobileScrollHandler(stubs.event);
+            expect(stubs.nextPage).to.be.called;
+        });
+
+        it('should go to the previous page if the scroll is in the correct direction', () => {
+            stubs.event.type = 'touchend';
+            presentation.scrollStart = 100;
+            stubs.event.changedTouches[0].clientY = 500;
+
+            presentation.mobileScrollHandler(stubs.event);
+            expect(stubs.previousPage).to.be.called;
         });
     });
 
@@ -272,6 +357,7 @@ describe('presentation', () => {
             expect(stubs.page2Add).to.be.calledOnce;
         });
     });
+
     describe('wheelHandler()', () => {
         beforeEach(() => {
             stubs.nextPage = sandbox.stub(presentation, 'nextPage');
