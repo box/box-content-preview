@@ -39,11 +39,11 @@ class OfficeLoader extends AssetLoader {
      * @inheritdoc
      */
     determineViewer(file, disabledViewers = []) {
-        // The Office viewer is disabled when this is a password protected shared link or this is a shared link that does not have download permissions
-        const isDisabledDueToSharedLink = file.shared_link && (file.shared_link.is_password_enabled || !file.shared_link.permissions.can_download);
+        // The Office viewer is disabled when this is a password protected shared link
+        const isDisabledDueToPasswordProtectedSharedLink = file.shared_link && file.shared_link.is_password_enabled;
         // If the user does not have permission to download the file, the file is larger than 5MB, or isDisabledDueToSharedLink is true,
         // then disable the Office viewer
-        if (!file.permissions.can_download || file.size > FIVE_MB || isDisabledDueToSharedLink) {
+        if (!file.permissions.can_download || file.size > FIVE_MB || isDisabledDueToPasswordProtectedSharedLink) {
             disabledViewers.push(OFFICE_CONSTRUCTOR);
         }
 
