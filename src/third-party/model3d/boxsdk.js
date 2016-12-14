@@ -2205,4 +2205,3 @@
 
 /***/ }
 /******/ ]);
-//# sourceMappingURL=boxsdk-0.2.2.js.map
