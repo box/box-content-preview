@@ -2,6 +2,7 @@
 ![NPM version](https://img.shields.io/badge/npm-v0.93.0-blue.svg)
 
 [Box Javascript Preview SDK](https://docs.box.com/docs/box-javascript-preview-sdk)
+===============
 
 The Box Javascript Preview SDK makes it easy for developers to embed previews of Box files in a web application. The SDK fetches information about the file and its converted representations through the Box Content API, chooses the appropriate viewer for the file type, dynamically loads the static assets and file representations needed, and finally renders the preview client-side. The SDK also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
 
