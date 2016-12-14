@@ -1,5 +1,44 @@
 # Change Log
 
+## [v0.93.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.93.0) (2016-12-14)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.92.0...v0.93.0)
+
+**Merged pull requests:**
+
+- adding pagesCount to the load event for documents [\#851](https://gitenterprise.inside-box.net/Preview/Preview/pull/851) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- adding scrolling back to mobile ppt files [\#849](https://gitenterprise.inside-box.net/Preview/Preview/pull/849) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Add screenshots for documentation [\#848](https://gitenterprise.inside-box.net/Preview/Preview/pull/848) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Docs for iframe and office viewers [\#847](https://gitenterprise.inside-box.net/Preview/Preview/pull/847) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Reduce clamp to 4096 to handle old textures [\#846](https://gitenterprise.inside-box.net/Preview/Preview/pull/846) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- updated 360 video third party paths to correct ones [\#845](https://gitenterprise.inside-box.net/Preview/Preview/pull/845) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- I made some modifications to the PHP code that no longer requires the… [\#844](https://gitenterprise.inside-box.net/Preview/Preview/pull/844) ([jedwards](https://gitenterprise.inside-box.net/jedwards))
+- Update swfobject to v2.3 [\#843](https://gitenterprise.inside-box.net/Preview/Preview/pull/843) ([tjin](https://gitenterprise.inside-box.net/tjin))
+
+## [v0.92.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.92.0) (2016-12-12)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.91.0...v0.92.0)
+
+**Merged pull requests:**
+
+- adding media-controls-test, small fixes to media-controls [\#842](https://gitenterprise.inside-box.net/Preview/Preview/pull/842) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- adding zoom to powerpoint files [\#805](https://gitenterprise.inside-box.net/Preview/Preview/pull/805) ([jpress](https://gitenterprise.inside-box.net/jpress))
+
+## [v0.91.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.91.0) (2016-12-10)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.90.0...v0.91.0)
+
+**Merged pull requests:**
+
+- Updating preview show API to be show\(fileId, token, options\) [\#841](https://gitenterprise.inside-box.net/Preview/Preview/pull/841) ([phora](https://gitenterprise.inside-box.net/phora))
+- Ensuring point annotation textarea stays open on mousenter for the annotation dialog [\#839](https://gitenterprise.inside-box.net/Preview/Preview/pull/839) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Fixes highlight annotation bug which can cause plain highlight to get stuck in the pending state [\#838](https://gitenterprise.inside-box.net/Preview/Preview/pull/838) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Vr effect js gets built as a webpack module [\#836](https://gitenterprise.inside-box.net/Preview/Preview/pull/836) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Update karma/gulp settings [\#835](https://gitenterprise.inside-box.net/Preview/Preview/pull/835) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Merge box3d runtime dec7 2016 [\#834](https://gitenterprise.inside-box.net/Preview/Preview/pull/834) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Fixes issue \#832 [\#833](https://gitenterprise.inside-box.net/Preview/Preview/pull/833) ([ikerr](https://gitenterprise.inside-box.net/ikerr))
+- Change remote repo instructions to SSH. [\#831](https://gitenterprise.inside-box.net/Preview/Preview/pull/831) ([acoven](https://gitenterprise.inside-box.net/acoven))
+- Update changelog for v0.90.0 [\#829](https://gitenterprise.inside-box.net/Preview/Preview/pull/829) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- adding escape keyboard shortcut to print popup [\#828](https://gitenterprise.inside-box.net/Preview/Preview/pull/828) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Annotations optimizations + cleaning up highlight mouse event handlers [\#806](https://gitenterprise.inside-box.net/Preview/Preview/pull/806) ([spramod](https://gitenterprise.inside-box.net/spramod))
+
 ## [v0.90.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.90.0) (2016-12-07)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.89.0...v0.90.0)
 
