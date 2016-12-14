@@ -957,7 +957,9 @@ class DocBase extends Base {
         // Broadcast that preview has loaded
         if (!this.loaded) {
             this.loaded = true;
-            this.emit('load');
+            this.emit('load', {
+                numPages: this.pdfViewer.pagesCount
+            });
         }
     }
 
