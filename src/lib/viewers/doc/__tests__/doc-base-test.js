@@ -1306,9 +1306,12 @@ describe('doc-base', () => {
                 currentScale: 'unknown'
             };
             docBase.loaded = false;
+            docBase.pdfViewer.pagesCount = 5;
 
             docBase.pagesinitHandler();
-            expect(stubs.emit).to.be.calledWith('load');
+            expect(stubs.emit).to.be.calledWith('load', {
+                numPages: 5
+            });
             expect(docBase.loaded).to.be.truthy;
         });
     });
