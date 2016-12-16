@@ -353,36 +353,42 @@ describe('doc-base', () => {
     });
 
     describe('resize()', () => {
-        it('should update the pdfViewer and reset the page', () => {
+        beforeEach(() => {
             docBase.pdfViewer = {
                 update: sandbox.stub(),
                 currentScaleValue: 0,
-                currentPageNumber: 0
+                currentPageNumber: 0,
+                pageViewsReady: true
             };
-            const setPageStub = sandbox.stub(docBase, 'setPage');
+
+            stubs.setPage = sandbox.stub(docBase, 'setPage');
             Object.defineProperty(Object.getPrototypeOf(DocBase.prototype), 'resize', {
                 value: sandbox.stub()
             });
+        });
+
+        it('should do nothing if the page views are not ready', () => {
+            docBase.pdfViewer.pageViewsReady = false;
 
             docBase.resize();
+            expect(docBase.pdfViewer.update).to.not.be.called;
+        });
+
+        it('should update the pdfViewer and reset the page', () => {
+            docBase.resize();
             expect(docBase.pdfViewer.update).to.be.called;
-            expect(setPageStub).to.be.called;
+            expect(stubs.setPage).to.be.called;
             expect(Base.prototype.resize).to.be.called;
         });
 
         it('should set the annotator scale if it exists', () => {
-            docBase.pdfViewer = {
-                currentPageNumber: 0,
-                update: sandbox.stub()
-            };
-            const setPageStub = sandbox.stub(docBase, 'setPage');
             docBase.annotator = {
                 setScale: sandbox.stub()
             };
 
             docBase.resize();
             expect(docBase.annotator.setScale).to.be.called;
-            expect(setPageStub).to.be.called;
+            expect(stubs.setPage).to.be.called;
         });
     });
 

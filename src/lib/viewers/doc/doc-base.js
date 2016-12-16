@@ -222,6 +222,10 @@ class DocBase extends Base {
      * @protected
      */
     resize() {
+        if (!this.pdfViewer.pageViewsReady) {
+            return;
+        }
+
         // Save page and return after resize
         const currentPageNumber = this.pdfViewer.currentPageNumber;
 
