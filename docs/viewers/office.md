@@ -4,7 +4,7 @@ The office viewer renders previews of Microsoft Office documents by embedding an
 
 ## Screenshot
 
-![Screenshot of office viewer](https://gitenterprise.inside-box.net/Preview/Preview/raw/master/docs/viewers/office.png)
+![Screenshot of office viewer](images/office.png)
 
 ## Behavior
 

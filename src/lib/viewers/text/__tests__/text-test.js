@@ -196,7 +196,7 @@ describe('text', () => {
 
             text.print();
 
-            expect(text.preparePrint).to.have.been.called;
+            expect(text.preparePrint).to.have.been.calledWith('third-party/text/github.css', 'text.css');
             expect(text.printPopup.show).to.have.been.called;
             expect(text.printPopup.disableButton).to.have.been.called;
         });
@@ -288,11 +288,11 @@ describe('text', () => {
             });
             text.options.location = 'en-US';
 
-            text.preparePrint();
+            text.preparePrint('blah');
 
             expect(util.createAssetUrlCreator).to.have.been.calledWith(text.options.location);
             expect(util.openContentInsideIframe).to.have.been.calledWith(text.textEl.outerHTML);
-            expect(text.printframe.contentDocument.head.appendChild).to.have.been.called.twice;
+            expect(text.printframe.contentDocument.head.appendChild).to.have.been.called.once;
         });
 
         it('should enable printing via print popup after a delay', (done) => {

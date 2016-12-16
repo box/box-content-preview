@@ -80,7 +80,7 @@ class TextBase extends Base {
     }
 
     /**
-     * Zooms in.
+     * Loads controls for zooming and fullscreen.
      *
      * @returns {void}
      * @protected

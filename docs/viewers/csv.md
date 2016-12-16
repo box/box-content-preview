@@ -4,7 +4,7 @@ The CSV viewer uses [PapaParse] (https://github.com/mholt/PapaParse) to parse CS
 
 ## Screenshot
 
-![Screenshot of CSV viewer](https://gitenterprise.inside-box.net/Preview/Preview/raw/master/docs/viewers/csv.png)
+![Screenshot of CSV viewer](images/csv.png)
 
 ## Behavior
 

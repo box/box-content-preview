@@ -4,7 +4,7 @@ The 360 Video viewer renders a preview of a video stored as an equirectangular p
 
 ## Screenshot
 
-<img src=./video360.png />
+<img src=./images/video360.png />
 
 ## Behavior
 

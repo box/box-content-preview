@@ -4,7 +4,7 @@ The text viewer renders previews of text files and uses [highlight.js] (https://
 
 ## Screenshot
 
-![Screenshot of text viewer](https://gitenterprise.inside-box.net/Preview/Preview/raw/master/docs/viewers/text.png)
+![Screenshot of text viewer](images/text.png)
 
 ## Behavior
 
@@ -17,9 +17,3 @@ This viewer supports printing and will attempt to print with appropriate syntax 
 ## Supported File Extensions
 
 `as, as3, asm, bat, c, cc, cmake, cpp, cs, css, cxx, diff, erb, groovy, h, haml, hh, htm, html, java, js, less, m, make, md, ml, mm, php, pl, plist, properties, py, rb, rst, sass, scala, script, scm, sml, sql, sh, vi, vim, webdoc, xhtml, yaml`
-
-## Options
-
-| Option | Type | Description |
-| --- | --- | --- |
-| annotations | boolean | Optional. Whether annotations on content are shown. Defaults to false |

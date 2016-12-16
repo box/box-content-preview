@@ -1,85 +1,111 @@
 import autobind from 'autobind-decorator';
 import marked from 'marked';
-import TextBase from './text-base';
-import Browser from '../../browser';
-import { get, openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
-import { CLASS_INVISIBLE } from '../../constants';
-import './text.scss';
+
+import './markdown.scss';
+import Controls from '../../controls';
+import PlainText from './text';
+import { CLASS_HIDDEN } from '../../constants';
+import {
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT
+} from '../../icons/icons';
 
 const Box = global.Box || {};
 
 @autobind
-class MarkDown extends TextBase {
+class Markdown extends PlainText {
 
     /**
      * [constructor]
+     *
      * @param {string|HTMLElement} container The container
      * @param {Object} options some options
-     * @returns {MarkDown} MarkDown instance
+     * @returns {Markdown} Markdown instance
      */
     constructor(container, options) {
         super(container, options);
-        this.containerEl.innerHTML = '<pre class="hljs box-preview-text box-preview-text-plain"><code></code></pre>';
-        this.preEl = this.containerEl.firstElementChild;
-        this.markDownEl = this.preEl.firstElementChild;
-        this.preEl.classList.add(CLASS_INVISIBLE); // Hide the element till data loads
+
+        this.codeEl.parentNode.removeChild(this.codeEl);
+        this.codeEl = null;
+        this.markdownEl = this.textEl.appendChild(document.createElement('article'));
+        this.markdownEl.classList.add('markdown-body');
     }
 
     /**
-     * Loads a md file.
+     * Prints text using an an iframe. Adds Github Markdown CSS to print styles.
      *
-     * @param {string} textUrl The text file to load
-     * @public
-     * @returns {Promise} Promise to load a text file
-     */
-    load(textUrl) {
-        get(this.appendAuthParam(textUrl), 'text')
-        .then((txt) => {
-            /* global hljs */
-
-            if (this.destroyed) {
-                return;
-            }
-
-            marked.setOptions({
-                highlightClass: 'hljs',
-                highlight: (code) => hljs.highlightAuto(code).value
-            });
-
-            this.markDownEl.innerHTML = marked(txt);
-
-            this.loadUI();
-
-            this.loaded = true;
-            this.emit('load');
-            this.preEl.classList.remove(CLASS_INVISIBLE);
-
-            // Help in printing by creating an iframe with the contents
-            const assetUrlCreator = createAssetUrlCreator(this.options.location);
-            this.printframe = openContentInsideIframe(this.preEl.outerHTML);
-            this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('third-party/text/github.css')));
-            this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('markdown.css')));
-        });
-
-        super.load();
-    }
-
-    /**
-     * Prints the text
-     *
+     * @override
      * @returns {void}
      */
     print() {
-        this.printframe.contentWindow.focus();
-        if (Browser.getName() === 'Explorer' || Browser.getName() === 'Edge') {
-            this.printframe.contentWindow.document.execCommand('print', false, null);
-        } else {
-            this.printframe.contentWindow.print();
+        if (!this.printReady) {
+            this.preparePrint('third-party/text/github-markdown.css', 'third-party/text/github.css', 'markdown.css');
+
+            this.printPopup.show(__('print_loading'), __('print'), () => {
+                this.printPopup.hide();
+                this.printIframe();
+            });
+
+            this.printPopup.disableButton();
+            return;
         }
+
+        this.printIframe();
+    }
+
+    /**
+     * Finishes loading by parsing Markdown and highlighting any necessary code.
+     *
+     * @override
+     * @param {string} content - Markdown text
+     * @returns {void}
+     * @protected
+     */
+    finishLoading(content) {
+        // Strip referrer from links using custom renderer
+        const renderer = new marked.Renderer();
+        renderer.link = (href, title, text) => {
+            const linkTitle = title ? `title="${title}"` : '';
+            return `<a href="${href}" ${linkTitle} rel="noopener noreferrer" target="_blank">${text}</a>`;
+        };
+
+        /* global hljs */
+        marked.setOptions({
+            breaks: true,
+            highlight: (code) => hljs.highlightAuto(code).value,
+            highlightClass: 'hljs',
+            renderer
+        });
+
+        // Set innerHTML to parsed markdown
+        this.markdownEl.innerHTML = marked(content);
+
+        this.loadUI();
+        this.textEl.classList.remove(CLASS_HIDDEN);
+        this.loaded = true;
+        this.emit('load');
+
+        // Show message that text was truncated along with a download button
+        if (this.truncated) {
+            this.showTruncatedDownloadButton();
+        }
+    }
+
+    /**
+     * Loads controls for fullscreen. Markdown viewer doesn't have zoom in or out.
+     *
+     * @override
+     * @returns {void}
+     * @protected
+     */
+    loadUI() {
+        this.controls = new Controls(this.containerEl);
+        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 }
 
 Box.Preview = Box.Preview || {};
-Box.Preview.MarkDown = MarkDown;
+Box.Preview.Markdown = Markdown;
 global.Box = Box;
-export default MarkDown;
+export default Markdown;

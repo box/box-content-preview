@@ -9,7 +9,7 @@ import { get, openContentInsideIframe, createAssetUrlCreator, createStylesheet }
 const Box = global.Box || {};
 
 // Extensions for code files
-const CODE_EXTENSIONS = ['as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'cxx', 'diff', 'erb', 'groovy', 'h', 'haml', 'hh', 'htm', 'html', 'java', 'js', 'less', 'm', 'make', 'md', 'ml', 'mm', 'php', 'pl', 'plist', 'properties', 'py', 'rb', 'rst', 'sass', 'scala', 'script', 'scm', 'sml', 'sql', 'sh', 'vi', 'vim', 'webdoc', 'xhtml', 'yaml'];
+const CODE_EXTENSIONS = ['as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'cxx', 'diff', 'erb', 'groovy', 'h', 'haml', 'hh', 'htm', 'html', 'java', 'js', 'less', 'm', 'make', 'ml', 'mm', 'php', 'pl', 'plist', 'properties', 'py', 'rb', 'rst', 'sass', 'scala', 'script', 'scm', 'sml', 'sql', 'sh', 'vi', 'vim', 'webdoc', 'xhtml', 'yaml'];
 
 // Inline web worker JS
 const HIGHLIGHT_WORKER_JS = 'onmessage=function(event){importScripts(event.data.highlightSrc);var result=self.hljs.highlightAuto(event.data.text);postMessage(result.value)};';
@@ -108,7 +108,7 @@ class PlainText extends TextBase {
      */
     print() {
         if (!this.printReady) {
-            this.preparePrint();
+            this.preparePrint('third-party/text/github.css', 'text.css');
 
             this.printPopup.show(__('print_loading'), __('print'), () => {
                 this.printPopup.hide();
@@ -121,6 +121,47 @@ class PlainText extends TextBase {
 
         this.printIframe();
     }
+
+    //--------------------------------------------------------------------------
+    // Protected
+    //--------------------------------------------------------------------------
+
+    /**
+     * Finishes loading after text is highlighted.
+     *
+     * @param {string} content Text
+     * @param {boolean} isHighlighted Whether or not text is highlighted
+     * @returns {void}
+     * @protected
+     */
+    finishLoading(content, isHighlighted) {
+        // Change embed strategy based on whether or not text was highlighted
+        if (isHighlighted) {
+            this.codeEl.innerHTML = content;
+        } else {
+            this.codeEl.textContent = content;
+        }
+
+        this.loadUI();
+        this.textEl.classList.remove(CLASS_HIDDEN);
+
+        this.loaded = true;
+        this.emit('load');
+
+        // Show message that text was truncated along with a download button
+        if (this.truncated) {
+            this.showTruncatedDownloadButton();
+        }
+
+        // Clean up worker URL
+        if (this.workerSrc) {
+            URL.revokeObjectURL(this.workerSrc);
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
 
     /**
      * Loads highlight.js to highlight the file
@@ -182,14 +223,16 @@ class PlainText extends TextBase {
      * Sets up the print iframe - uses a web worker to insert text content and
      * styles into an iframe that can be printed.
      *
+     * @param {...string} stylesheets - Stylesheets needed for print
      * @returns {void}
      * @private
      */
-    preparePrint() {
+    preparePrint(...stylesheets) {
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
         this.printframe = openContentInsideIframe(this.textEl.outerHTML);
-        this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('third-party/text/github.css')));
-        this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator('text.css')));
+        stylesheets.forEach((stylesheet) => {
+            this.printframe.contentDocument.head.appendChild(createStylesheet(assetUrlCreator(stylesheet)));
+        });
 
         setTimeout(() => {
             if (this.printPopup) {
@@ -216,39 +259,6 @@ class PlainText extends TextBase {
             this.printframe.contentWindow.document.execCommand('print', false, null);
         } else {
             this.printframe.contentWindow.print();
-        }
-    }
-
-    /**
-     * Finishes loading after text is highlighted.
-     *
-     * @param {string} content Text
-     * @param {boolean} isHighlighted Whether or not text is highlighted
-     * @returns {void}
-     * @private
-     */
-    finishLoading(content, isHighlighted) {
-        // Change embed strategy based on whether or not text was highlighted
-        if (isHighlighted) {
-            this.codeEl.innerHTML = content;
-        } else {
-            this.codeEl.textContent = content;
-        }
-
-        this.loadUI();
-        this.textEl.classList.remove(CLASS_HIDDEN);
-
-        this.loaded = true;
-        this.emit('load');
-
-        // Show message that text was truncated along with a download button
-        if (this.truncated) {
-            this.showTruncatedDownloadButton();
-        }
-
-        // Clean up worker URL
-        if (this.workerSrc) {
-            URL.revokeObjectURL(this.workerSrc);
         }
     }
 

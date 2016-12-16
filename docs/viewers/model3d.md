@@ -1,10 +1,10 @@
-# 3D Viewer
+# Model3D Viewer
 
-The Box3D viewer renders previews of 3d model files and allows you to enable different rendering modes to inspect various aspects of the model. e.g. wireframe, texture coords, etc. Animation data is also supported for files that contain it (e.g. box3d, fbx, dae).
+The Model3D viewer renders previews of 3d model files and allows you to enable different rendering modes to inspect various aspects of the model. e.g. wireframe, texture coords, etc. Animation data is also supported for files that contain it (e.g. box3d, fbx, dae).
 
 ## Screenshot
 
-<img src=./3d.png />
+<img src=./images/model3d.png />
 
 ## Behavior
 
