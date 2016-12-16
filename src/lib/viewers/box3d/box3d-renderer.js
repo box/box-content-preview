@@ -1,7 +1,6 @@
 /* global Box3D, THREE */
 import EventEmitter from 'events';
 import Browser from '../../browser';
-import { createContentUrl } from '../../util';
 import {
     EVENT_SHOW_VR_BUTTON,
     EVENT_SCENE_LOADED,
@@ -17,6 +16,22 @@ const PREVIEW_CAMERA_CONTROLLER_ID = 'preview_camera_controller';
  */
 function isVRAvailable() {
     return navigator.getVRDisplays !== undefined;
+}
+
+/**
+ * Append shared link headers to an XHR Object
+ * @param {XMLHttpRequest} xhr The XMLHttpRequest object to attach the header to.
+ * @param {string} sharedLink The Box Content API shared link header to append to the XMLHttpRequest.
+ * @param {string} [sharedLinkPassword] The password for the Box Content API shared link header.
+ * @returns {void}
+ */
+function appendSharedLinkHeaders(xhr, sharedLink, sharedLinkPassword) {
+    let sharePasswordParam = '';
+    if (sharedLinkPassword) {
+        const sharePassEncoded = encodeURI(sharedLinkPassword);
+        sharePasswordParam = `&shared_link_password=${sharePassEncoded}`;
+    }
+    xhr.setRequestHeader('boxapi', `shared_link=${encodeURI(sharedLink)}${sharePasswordParam}`);
 }
 
 class Box3DRenderer extends EventEmitter {
@@ -137,6 +152,31 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
+     * Configure the provided XHR object with auth token and shared link headers.
+     * Used exclusively by the Box3DRuntime.
+     *
+     * @param {Object} headerConfig Configuration parameters to be applied to the created XMLHttpRequest.
+     * @param {string} path The URL to the resource to load. See Box3D.XhrResourceLoader().
+     * @param {Object} params Addition parameters provided by the Box3D Runtime. See Box3D.XhrResourceLoader().
+     * @returns {Promise} A promise that resolves in the newly created and configured XMLHttpRequest object.
+     */
+    configureXHR(headerConfig, path, params = {}) {
+        const xhr = new XMLHttpRequest();
+
+        xhr.open('GET', path);
+
+        if (!params.isExternal) {
+            xhr.setRequestHeader('Authorization', `Bearer ${headerConfig.token}`);
+
+            if (headerConfig.sharedLink) {
+                appendSharedLinkHeaders(xhr, headerConfig.sharedLink, headerConfig.sharedLinkPassword);
+            }
+        }
+
+        return Promise.resolve(xhr);
+    }
+
+    /**
      * Initialize the Box3D engine.
      *
      * @param {Object} options the preview options object
@@ -156,14 +196,7 @@ class Box3DRenderer extends EventEmitter {
             return Promise.reject(new Error('Missing file version'));
         }
 
-        const resourceLoader = new Box3D.XhrResourceLoader((path, params) => {
-            const xhr = new XMLHttpRequest();
-
-            xhr.open('GET', params.isExternal ? path :
-                createContentUrl(path, options.token, options.sharedLink, options.sharedLinkPassword));
-
-            return Promise.resolve(xhr);
-        });
+        const resourceLoader = new Box3D.XhrResourceLoader(this.configureXHR.bind(this, options));
 
         return this.createBox3d(resourceLoader, options.sceneEntities);
     }

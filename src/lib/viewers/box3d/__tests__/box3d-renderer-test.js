@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-expressions */
 import Box3DRenderer from '../box3d-renderer';
-import * as util from '../../../util';
 
 const sandbox = sinon.sandbox.create();
 
@@ -168,6 +167,62 @@ describe('box3d-renderer', () => {
         });
     });
 
+    describe('configureXHR()', () => {
+        it('should return a Promise', () => {
+            const promise = renderer.configureXHR({}, 'path/to/stuff.jpg', { isExternal: true });
+            expect(promise).to.be.a('promise');
+        });
+
+        it('should return a Promise that resolves in an XMLHttpRequest object', (done) => {
+            const promise = renderer.configureXHR({}, 'path/to/stuff.wav', { isExternal: true });
+            promise.then((xhr) => {
+                expect(xhr).to.be.an('XMLHttpRequest');
+                done();
+            });
+        });
+
+        it('should invoke .open() on the XMLHttpRequest object, with "GET" and the provided path', () => {
+            const openSpy = sandbox.spy(XMLHttpRequest.prototype, 'open');
+            const path = 'path/to/resource.psd';
+            renderer.configureXHR({}, path, { isExternal: true });
+
+            expect(openSpy).to.have.been.calledWith('GET', path);
+        });
+
+        it('should append "Authorization" request header to the XHR with the provided auth token', () => {
+            const setReqHeaderSpy = sandbox.spy(XMLHttpRequest.prototype, 'setRequestHeader');
+            const token = 'ABCDEFG';
+            const expectedAuthHeaderValue = `Bearer ${token}`;
+
+            renderer.configureXHR({ token }, 'a/path/tp/stuff.gif', { isExternal: false });
+
+            expect(setReqHeaderSpy).to.have.been.calledWith('Authorization', expectedAuthHeaderValue);
+        });
+
+        it('should append "boxapi" request header to the XHR with the provided shared link', () => {
+            sandbox.stub(window, 'encodeURI', (uri) => { return uri; });
+            const setReqHeaderSpy = sandbox.spy(XMLHttpRequest.prototype, 'setRequestHeader');
+            const sharedLink = 'abcde';
+            const expectedAuthHeaderValue = `shared_link=${sharedLink}`;
+
+            renderer.configureXHR({ sharedLink, token: 'asdf' }, 'some/path.png');
+
+            expect(setReqHeaderSpy).to.have.been.calledWith('boxapi', expectedAuthHeaderValue);
+        });
+
+        it('should append "boxapi" request header to the XHR with the shared link AND shared link password', () => {
+            sandbox.stub(window, 'encodeURI', (uri) => { return uri; });
+            const setReqHeaderSpy = sandbox.spy(XMLHttpRequest.prototype, 'setRequestHeader');
+            const sharedLink = 'abcde';
+            const sharedLinkPassword = '!!myP455w0rD';
+            const expectedAuthHeaderValue = `shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}`;
+
+            renderer.configureXHR({ sharedLink, sharedLinkPassword, token: 'asdf' }, 'some/path.png');
+
+            expect(setReqHeaderSpy).to.have.been.calledWith('boxapi', expectedAuthHeaderValue);
+        });
+    });
+
     describe('initBox3d()', () => {
         describe('missing global Box3D', () => {
             let box3D;
@@ -238,8 +293,6 @@ describe('box3d-renderer', () => {
             });
 
             it('should produce an XhrResourceLoader which supports token, sharedLink and sharedLinkPassword', (done) => {
-                const createContentUrlStub = sandbox.stub(util, 'createContentUrl');
-
                 const creatBox3DStub = sandbox.stub(renderer, 'createBox3d', (loader) => {
                     sandbox.stub(loader.queue, 'add', (fn) => fn());
 
@@ -247,8 +300,6 @@ describe('box3d-renderer', () => {
 
                     resource.once('done', () => {
                         expect(creatBox3DStub).to.have.been.called;
-                        expect(createContentUrlStub).to.be
-                            .calledWith('path/to/texture.jpg', 'foo', 'bar', 'baz');
                         done();
                     });
                 });
