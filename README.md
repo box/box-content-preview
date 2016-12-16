@@ -1,5 +1,5 @@
 ![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg)
-![NPM version](https://img.shields.io/badge/npm-v0.93.0-blue.svg)
+![NPM version](https://img.shields.io/badge/npm-v0.94.0-blue.svg)
 
 [Box Javascript Preview SDK](https://docs.box.com/docs/box-javascript-preview-sdk)
 ===============
@@ -15,11 +15,11 @@ Preview uses the Promise object. If your browser doesn't support Promises, they 
 
 Current Version
 ---------------
-* Version: 0.93.0
+* Version: 0.94.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/platform/preview/0.93.0/en-US/preview.js
-https://cdn01.boxcdn.net/platform/preview/0.93.0/en-US/preview.css
+https://cdn01.boxcdn.net/platform/preview/0.94.0/en-US/preview.js
+https://cdn01.boxcdn.net/platform/preview/0.94.0/en-US/preview.css
 
 Usage
 -----
@@ -34,8 +34,8 @@ Usage
     <script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.min.js"></script>
 
     <!-- Latest version of Preview SDK for your locale -->
-    <script src="https://cdn01.boxcdn.net/platform/preview/0.93.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/0.93.0/en-US/preview.js" />
+    <script src="https://cdn01.boxcdn.net/platform/preview/0.94.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/0.94.0/en-US/preview.js" />
 </head>
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
@@ -70,7 +70,14 @@ Setup
 
 **Update webapp conf override (developers only)**
 
-In order for the webapp to use your static assets from your dev VM, you will need to add entries for yourself in `preview.conf` which requires an appconf push to dev. Follow instructions here `https://confluence.inside-box.net/display/ETO/Appconf+User+Guide#AppconfUserGuide-DevWorkflow`. If you are a developer, you would want an entry in there pointing to your dev VM with version set to `dev`. If you are not a developer, then you do not need to modify this file and it will automatically use the version thats deployed to our live CDNs.
+In order for the webapp to use your static assets from your dev VM, you will need to add entries for yourself in `preview.conf` which requires an appconf push to dev. You will need to edit the following sections of the file
+
+* under "path": `path<username> = content-experience`
+* under "hosts": `hostname<username> = username.dev.box.net`
+* under "files_app": `version<username> = dev`
+* under "expiring_embed": `version<username> = dev`
+
+ Follow instructions here `https://confluence.inside-box.net/display/ETO/Appconf+User+Guide#AppconfUserGuide-DevWorkflow`. If you are a developer, you would want an entry in there pointing to your dev VM with version set to `dev`. If you are not a developer, then you do not need to modify this file and it will automatically use the version thats deployed to our live CDNs.
 
 While Developing
 ----------------

@@ -1,5 +1,15 @@
 # Change Log
 
+## [v0.94.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.94.0) (2016-12-15)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.93.0...v0.94.0)
+
+**Merged pull requests:**
+
+- Update runtime to fix yet another IE11 loading bug [\#858](https://gitenterprise.inside-box.net/Preview/Preview/pull/858) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- removed sourcemap refs [\#856](https://gitenterprise.inside-box.net/Preview/Preview/pull/856) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Updating runtime to fix ie11 and Edge errors [\#855](https://gitenterprise.inside-box.net/Preview/Preview/pull/855) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Changelog and readme [\#852](https://gitenterprise.inside-box.net/Preview/Preview/pull/852) ([jpress](https://gitenterprise.inside-box.net/jpress))
+
 ## [v0.93.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.93.0) (2016-12-14)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.92.0...v0.93.0)
 
