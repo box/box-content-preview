@@ -87,20 +87,26 @@ describe('markdown', () => {
             expect(markdown.markdownEl.innerHTML).to.contain(expectedMarkdown);
         });
 
-        it('should use custom renderer for links to add rel and target', () => {
+        it('should use custom renderer for links to add rel', () => {
             const content = 'https://sometestlink.com';
-            const expectedMarkdown = '<a href="https://sometestlink.com" rel="noopener noreferrer" target="_blank">https://sometestlink.com</a>';
+            const expectedMarkdown = '<a href="https://sometestlink.com" target="_blank" rel="noopener noreferrer">https://sometestlink.com</a>';
 
             markdown.finishLoading(content);
             expect(markdown.markdownEl.innerHTML).to.contain(expectedMarkdown);
         });
 
-        it('should finish loading, show the markdown, and emit load', () => {
+        it('should finish loading, init markdown renderer, show the markdown, and emit load', () => {
+            const md = {
+                render: sandbox.stub()
+            };
+            sandbox.stub(markdown, 'initRemarkable').returns(md);
             sandbox.stub(markdown, 'loadUI');
             sandbox.stub(markdown, 'emit');
 
             markdown.finishLoading('', true);
 
+            expect(markdown.initRemarkable).to.have.been.called;
+            expect(md.render).to.have.been.called;
             expect(markdown.loadUI).to.have.been.called;
             expect(markdown.emit).to.have.been.calledWith('load');
             expect(markdown.loaded).to.be.true;

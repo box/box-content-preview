@@ -1,6 +1,6 @@
 # Markdown Viewer
 
-The markdown viewer uses [marked] (https://github.com/chjj/marked) to parse md files and [highlight.js] (https://github.com/isagalaev/highlight.js) to add syntax highlighting to code blocks contained within.
+The markdown viewer uses [Remarkable] (https://github.com/jonschlinkert/remarkable) to parse md files and [highlight.js] (https://github.com/isagalaev/highlight.js) to add syntax highlighting to code blocks contained within.
 
 ## Screenshot
 
