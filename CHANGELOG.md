@@ -1,5 +1,20 @@
 # Change Log
 
+## [v0.95.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.95.0) (2016-12-21)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.94.0...v0.95.0)
+
+**Merged pull requests:**
+
+- Added HD images for documentation [\#868](https://gitenterprise.inside-box.net/Preview/Preview/pull/868) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Switch markdown parser from marked to remarkable [\#865](https://gitenterprise.inside-box.net/Preview/Preview/pull/865) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding documentation [\#863](https://gitenterprise.inside-box.net/Preview/Preview/pull/863) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Enable Markdown viewer [\#861](https://gitenterprise.inside-box.net/Preview/Preview/pull/861) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Remove at and other links from requests \[box3d\] [\#860](https://gitenterprise.inside-box.net/Preview/Preview/pull/860) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- updating changelog and readme [\#859](https://gitenterprise.inside-box.net/Preview/Preview/pull/859) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- 97 user docs for 3d viewers [\#857](https://gitenterprise.inside-box.net/Preview/Preview/pull/857) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- preventing console errors when resizing a loading preview [\#854](https://gitenterprise.inside-box.net/Preview/Preview/pull/854) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- updating load event unit test [\#853](https://gitenterprise.inside-box.net/Preview/Preview/pull/853) ([jpress](https://gitenterprise.inside-box.net/jpress))
+
 ## [v0.94.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.94.0) (2016-12-15)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.93.0...v0.94.0)
 
