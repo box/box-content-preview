@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
-import pageNumTemplate from 'raw!./page-num-button-content.html';
 import throttle from 'lodash.throttle';
+import pageNumTemplate from './page-num-button-content.html';
 import Browser from '../../browser';
 import DocBase from './doc-base';
 import { CLASS_INVISIBLE } from '../../constants';

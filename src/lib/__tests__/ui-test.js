@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import shellTemplate from 'raw!../shell.html';
+import shellTemplate from '../shell.html';
 import * as constants from '../constants';
 import * as ui from '../ui';
 import * as util from '../util';

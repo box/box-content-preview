@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
-import scrubberTemplate from 'raw!./scrubber.html';
+import scrubberTemplate from './scrubber.html';
 
 const MIN_VALUE = 0;
 const MAX_VALUE = 1;

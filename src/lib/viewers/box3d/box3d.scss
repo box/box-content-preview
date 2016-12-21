@@ -18,8 +18,9 @@
 
     // For VR mode
     &.vr-enabled {
+        // Hide this NO MATTER WHAT
         .box-preview-controls {
-            opacity: 0!important; // Hide this NO MATTER WHAT
+            opacity: 0!important;
         }
     }
 }

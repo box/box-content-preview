@@ -57,7 +57,7 @@ Setup
 -----
 *Note: Do not use sudo for the commands below below. If you did, delete the ~/.npm and node_module folders and run npm install again without sudo.*
 
-1. Make sure you have Node version 4 or higher.
+1. Make sure you have Node version 4.x.
 2. Fork the upstream repo `https://gitenterprise.inside-box.net/Preview/Preview` under your LDAP account.
 3. Then clone your fork `git clone git@gitenterprise.inside-box.net:YOURLDAP/Preview.git`. This will be your origin.
 4. `cd Preview`
@@ -81,8 +81,6 @@ In order for the webapp to use your static assets from your dev VM, you will nee
 
 While Developing
 ----------------
-Install SCSS linter `gem install scss_lint` for linting SCSS files.
-
 Install the following plugins in Sublime
 
 * babel (then set JS files to use babel)
@@ -97,11 +95,12 @@ Similar counterparts for atom.
 
 * `npm run build` to generate resource bundles and JS webpack bundles.
 * `npm run watch` to only generate JS webpack bundles on file changes.
-* `npm run test` launches karma tests with chrome browser to debug tests.
-* `npm run coverage` launches karma tests with PhantomJS and dumps coverage inside `reports\coverage`. This requires PhantomJS 2.x, which can be installed via `npm install -g phantomjs`.
+* `npm run test` launches karma tests with PhantomJS.
+* `npm run test-dev` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
 * `npm run test-file -- FILENAME` launches test for FILENAME-test.js instead of all tests.
 
 *For more script commands see `package.json`*
+*Coverage reports are available under reports/coverage*
 
 ### Release build
 `npm run release` does a release build.

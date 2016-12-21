@@ -1,8 +1,0 @@
-scss_files: 'src/lib/**/*.scss'
-
-linters:
-  Indentation:
-    width: 4
-
-  VendorPrefix:
-    enabled: false

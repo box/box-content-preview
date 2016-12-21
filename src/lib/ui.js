@@ -1,4 +1,4 @@
-import shellTemplate from 'raw!./shell.html';
+import shellTemplate from './shell.html';
 import { insertTemplate } from './util';
 import {
     CLASS_HIDDEN,

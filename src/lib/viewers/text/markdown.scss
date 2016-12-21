@@ -1,5 +1,6 @@
 @import 'text';
 
+// Overrides pre-wrap from plain text
 .markdown-body {
-    white-space: normal; // Overrides pre-wrap from plain text
+    white-space: normal;
 }
