@@ -128,7 +128,7 @@ class Model3dRenderer extends Box3DRenderer {
                 const scene = this.getScene();
 
                 if (this.box3d && scene) {
-                    this.addIblToMaterials();
+                    this.optimizeMaterials();
                     this.createPrefabInstances();
                     this.addHelpersToScene();
                     scene.when('load', () => this.onSceneLoad());
@@ -145,29 +145,12 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /**
-     * Create instances of prefabs and add them to the scene.
-     * @method createPrefabInstances
+     * Go through all materials and look for ways to turn off features to optimize perfomance.
+     * @method optimizeMaterials
      * @private
      * @returns {void}
      */
-    createPrefabInstances() {
-        const prefab =
-            this.box3d.getAsset((asset) => asset.type === 'prefab');
-        if (!prefab) {
-            return true;
-        }
-
-        // Only instance a single prefab for now.
-        return this.addInstanceToScene(prefab, this.getScene());
-    }
-
-    /**
-     * Traverse the given scene and set the IBL parameters on all referenced materials found.
-     * @method addIblToMaterials
-     * @private
-     * @returns {void}
-     */
-    addIblToMaterials() {
+    optimizeMaterials() {
         this.box3d.getAssetsByType('material').forEach((mat) => {
             if (mat.getProperty('roughness') <= 0.01 && !mat.getProperty('glossMap')) {
                 mat.setProperty('envMapGlossVariance', false);
@@ -184,18 +167,32 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /**
+     * Create instances of prefabs and add them to the scene.
+     * @method createPrefabInstances
+     * @private
+     * @returns {void}
+     */
+    createPrefabInstances() {
+        const prefabs = this.box3d.getAssetsByType('prefab');
+        if (prefabs.length === 0) {
+            return;
+        }
+
+        // Create a single parent for all instances.
+        const parent = this.box3d.createObject();
+        this.getScene().addChild(parent);
+        prefabs.forEach((prefab) => parent.addChild(prefab.createInstance()));
+
+        this.adjustModelForScene(parent);
+    }
+
+    /**
      * Create an instance of the specified prefab and add it to the scene.
      * @param {object} prefab The prefab entity to instance.
      * @param {object} scene The scene asset to add the instance to.
-     * @returns {boolean} Whether or not the instance was added to the scene.
+     * @returns {void}
      */
-    addInstanceToScene(prefab, scene) {
-        // Create an instance of the prefab asset.
-        const instance = prefab.createInstance();
-        if (!instance) {
-            return false;
-        }
-
+    adjustModelForScene(instance) {
         // Scale the instance to 100 units in size.
         instance.scaleToSize(this.modelSize);
 
@@ -206,12 +203,7 @@ class Model3dRenderer extends Box3DRenderer {
         instance.addComponent('preview_axis_rotation', {}, `axis_rotation_${instance.id}`);
         instance.addComponent('animation', {}, `animation_${instance.id}`);
 
-        // Add the instance to the scene.
-        scene.addChild(instance);
-
         this.instance = instance;
-
-        return true;
     }
 
     /**
