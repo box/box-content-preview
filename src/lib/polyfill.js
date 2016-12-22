@@ -1,5 +1,4 @@
 /* eslint-disable */
-/* istanbul ignore next */
 (function() {
     var testObject = {};
 
@@ -16,7 +15,6 @@
     }
 })();
 
-/* istanbul ignore next */
 if (typeof Object.assign != 'function') {
     (function() {
         Object.assign = function(target) {
@@ -41,7 +39,6 @@ if (typeof Object.assign != 'function') {
     })();
 }
 
-/* istanbul ignore next */
 if (!Array.prototype.find) {
     Object.defineProperty(Array.prototype, 'find', {
         configurable: true,
@@ -71,7 +68,6 @@ if (!Array.prototype.find) {
     });
 }
 
-/* istanbul ignore next */
 if (!Array.prototype.findIndex) {
     Object.defineProperty(Array.prototype, 'findIndex', {
         configurable: true,
@@ -101,7 +97,6 @@ if (!Array.prototype.findIndex) {
     });
 }
 
-/* istanbul ignore next */
 if (!String.prototype.endsWith) {
     Object.defineProperty(String.prototype, 'endsWith', {
         configurable: true,

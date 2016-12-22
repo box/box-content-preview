@@ -6,7 +6,6 @@ const MIN_VALUE = 0;
 const MAX_VALUE = 1;
 const CLASS_SCRUBBER_HOVER = 'box-preview-media-scrubber-hover';
 
-/* istanbul ignore next */
 @autobind
 class Scrubber extends EventEmitter {
 

@@ -19,7 +19,10 @@
                 [
                     "__coverage__", {
                         "ignore": [
-                            "**/*-test.js"
+                            "**/*-test.js",
+                            "lib/polyfill.js",
+                            "lib/browser.js", // Browser util unit tests not worthwhile
+                            "lib/viewers/media/*.js" // Ignore media files for now - tests will come
                         ],
                     }
                 ],

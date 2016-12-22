@@ -12,7 +12,6 @@
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import Browser from '../browser';
-import LocalStorageAnnotationService from './localstorage-annotation-service';
 import Notification from '../notification';
 import AnnotationService from './annotation-service';
 import * as constants from './annotation-constants';
@@ -29,7 +28,7 @@ class Annotator extends EventEmitter {
      * The data object for constructing an Annotator.
      * @typedef {Object} AnnotatorData
      * @property {HTMLElement} annotatedElement HTML element to annotate on
-     * @property {AnnotationService|LocalStorageAnnotationService} [annotationService] Annotations CRUD service
+     * @property {AnnotationService} [annotationService] Annotations CRUD service
      * @property {string} fileVersionID File version ID
      */
 
@@ -46,7 +45,7 @@ class Annotator extends EventEmitter {
     constructor(data) {
         super();
         this._annotatedElement = data.annotatedElement;
-        this._annotationService = data.annotationService || new LocalStorageAnnotationService();
+        this._annotationService = data.annotationService;
         this._fileVersionID = data.fileVersionID;
         this._locale = data.locale;
 

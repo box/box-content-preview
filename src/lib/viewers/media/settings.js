@@ -67,7 +67,6 @@ const SETTINGS_TEMPLATE = `<div class="box-preview-media-settings">
     </div>
 </div>`;
 
-/* istanbul ignore next */
 @autobind
 class Settings extends EventEmitter {
 

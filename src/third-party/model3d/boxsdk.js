@@ -359,7 +359,6 @@
 	'use strict';
 	var immediate = __webpack_require__(3);
 	
-	/* istanbul ignore next */
 	function INTERNAL() {}
 	
 	var handlers = {};

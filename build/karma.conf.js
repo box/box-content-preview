@@ -1,5 +1,11 @@
 const webpackConfig = require('./webpack.karma.config');
 
+const isSingleFile = process.env.TEST_ENV === 'single-file';
+const coverageStatements = isSingleFile ? 0 : 85;
+const coverageBranches = isSingleFile ? 0 : 80;
+const coverageFunctions = isSingleFile ? 0 : 75;
+const coverageLines = isSingleFile ? 0 : 85;
+
 module.exports = (config) => config.set({
     autoWatch: false,
 
@@ -16,10 +22,10 @@ module.exports = (config) => config.set({
     coverageReporter: {
         check: {
             global: {
-                statements: 5, // 95
-                branches: 5, // 95
-                functions: 5, // 93
-                lines: 5 // 90
+                statements: coverageStatements,
+                branches: coverageBranches,
+                functions: coverageFunctions,
+                lines: coverageLines
             }
         },
         reporters: [

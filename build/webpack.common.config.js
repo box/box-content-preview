@@ -3,6 +3,8 @@ const I18nPlugin = require('i18n-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const DefinePlugin = require('webpack').DefinePlugin;
 
+/* eslint-disable global-require */
+/* eslint-disable import/no-dynamic-require */
 module.exports = (language) => {
     const langJson = require(`${path.resolve('src/i18n/json')}/${language}.json`);
     return {

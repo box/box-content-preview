@@ -8,7 +8,6 @@ const CSS_CLASS_MEDIA = 'box-preview-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'box-preview-media-container';
 const DEFAULT_VOLUME = 0.7;
 
-/* istanbul ignore next */
 @autobind
 class MediaBase extends Base {
 

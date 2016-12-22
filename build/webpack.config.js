@@ -39,6 +39,7 @@ const languages = isRelease ? [
     'zh-TW'
 ] : ['en-US']; // Only 1 language needed for dev
 
+/* eslint-disable key-spacing */
 function updateConfig(conf, language, index) {
     const config = Object.assign(conf, {
         entry: {

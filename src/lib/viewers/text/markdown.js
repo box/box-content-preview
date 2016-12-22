@@ -95,7 +95,6 @@ class Markdown extends PlainText {
      * @returns {Remarkable}
      * @private
      */
-    /* istanbul ignore next */
     initRemarkable() {
         const md = new Remarkable({
             breaks: true,           // convert '\n' in paragraphs into <br>
