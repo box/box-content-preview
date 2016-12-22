@@ -1,24 +1,16 @@
-// Rsync plugin that copies things from the dist folder to our dev machine
-var exec = require('child_process').execSync;
+const execSync = require('child_process').execSync;
 
 function RsyncPlugin(source, destination) {
     this.source = source;
     this.destination = destination;
 }
 
-RsyncPlugin.prototype.apply = function(compiler) {
-    var self = this;
-    compiler.plugin('done', function() {
+/* eslint-disable no-console */
+RsyncPlugin.prototype.apply = function rsync(compiler) {
+    compiler.plugin('done', () => {
         console.log('');
-        console.log('🔄  Rsync starting for ' + self.source);
-        exec('rsync -avz --delete --exclude=".*" "' + self.source + '" "' + self.destination + '"', function(err) {
-            if (err === null) {
-                console.log('✅  Push SUCCEEDED for '  + self.source);
-            } else {
-                console.log('❌  Push FAILED with error ' + err);
-                process.exit(1);
-            }
-        });
+        console.log(`🔄 🔄 🔄  Rsync starting for ${this.source} 🔄 🔄 🔄`);
+        execSync(`rsync -avz --delete --exclude=".*" "${this.source}" "${this.destination}"`, { stdio: [0, 1, 2] });
     });
 };
 
