@@ -54,6 +54,7 @@ class MediaBase extends Base {
                 this.mediaEl.removeEventListener('ended', this.resetPlayIcon);
                 this.mediaEl.removeEventListener('seeked', this.seekHandler);
                 this.mediaEl.removeEventListener('loadedmetadata', this.loadedmetadataHandler);
+                this.mediaEl.removeEventListener('error', this.errorHandler);
 
                 this.mediaEl.removeAttribute('src');
                 this.mediaEl.load();
@@ -79,6 +80,7 @@ class MediaBase extends Base {
     load(mediaUrl) {
         this.mediaUrl = this.appendAuthParam(mediaUrl);
         this.mediaEl.addEventListener('loadedmetadata', this.loadedmetadataHandler);
+        this.mediaEl.addEventListener('error', this.errorHandler);
         this.mediaEl.src = this.mediaUrl;
         super.load();
     }
@@ -86,8 +88,8 @@ class MediaBase extends Base {
     /**
      * Handler for meta data load for the media element.
      *
-     * @private
      * @returns {void}
+     * @private
      */
     loadedmetadataHandler() {
         if (this.destroyed) {
@@ -99,6 +101,25 @@ class MediaBase extends Base {
 
         this.loadUI();
         this.resize();
+    }
+
+    /**
+     * Handles media element loading errors.
+     *
+     * @returns {void}
+     * @private
+     */
+    errorHandler = (err) => {
+        /* eslint-disable no-console */
+        console.error(err);
+        /* eslint-enable no-console */
+
+        // Display a generic error message but log the real one
+        const error = err;
+        if (err instanceof Error) {
+            error.displayMessage = __('error_refresh');
+        }
+        this.emit('error', error);
     }
 
     /**

@@ -92,13 +92,15 @@ describe('image.js', () => {
 
         it('should fetch the image URL and load an image', () => {
             stubs.event = sandbox.stub(image.imageEl, 'addEventListener');
-            stubs.load = sandbox.stub(image, 'onLoadHandler');
+            stubs.load = sandbox.stub(image, 'loadHandler');
+            stubs.error = sandbox.stub(image, 'errorHandler');
             stubs.bind = sandbox.stub(image, 'bindDOMListeners');
 
             // load the image
             image.load(imageUrl);
 
             expect(stubs.event).to.have.been.calledWith('load', stubs.load);
+            expect(stubs.event).to.have.been.calledWith('error', stubs.error);
             expect(stubs.bind).to.have.been.called;
         });
     });
@@ -322,7 +324,7 @@ describe('image.js', () => {
     describe('zoom()', () => {
         beforeEach(() => {
             sandbox.stub(image, 'appendAuthParam').returns(imageUrl);
-            sandbox.stub(image, 'onLoadHandler');
+            sandbox.stub(image, 'loadHandler');
 
             // Stub out methods called in zoom()
             stubs.adjustZoom = sandbox.stub(image, 'adjustImageZoomPadding');
@@ -586,6 +588,8 @@ describe('image.js', () => {
         it('should unbind all default image listeners', () => {
             stubs.isMobile.returns(false);
             image.unbindDOMListeners();
+            expect(stubs.listeners).to.have.been.calledWith('load', image.loadHandler);
+            expect(stubs.listeners).to.have.been.calledWith('error', image.errorHandler);
             expect(stubs.listeners).to.have.been.calledWith('mousedown', image.handleMouseDown);
             expect(stubs.listeners).to.have.been.calledWith('mouseup', image.handleMouseUp);
             expect(stubs.listeners).to.have.been.calledWith('dragstart', image.handleDragStart);
@@ -619,7 +623,7 @@ describe('image.js', () => {
         });
     });
 
-    describe('onLoadHandler()', () => {
+    describe('loadHandler()', () => {
         beforeEach(() => {
             image.loaded = false;
             stubs.emit = sandbox.stub(image, 'emit');
@@ -629,7 +633,7 @@ describe('image.js', () => {
 
         it('should do nothing if already destroyed', () => {
             image.destroyed = true;
-            image.onLoadHandler();
+            image.loadHandler();
             expect(image.loaded).to.be.false;
             expect(stubs.emit).to.not.have.been.called;
             expect(stubs.zoom).to.not.have.been.called;
@@ -637,11 +641,30 @@ describe('image.js', () => {
         });
 
         it('should load UI if not destroyed', () => {
-            image.onLoadHandler();
+            image.loadHandler();
             expect(image.loaded).to.be.true;
             expect(stubs.emit).to.have.been.called;
             expect(stubs.zoom).to.have.been.called;
             expect(stubs.loadUI).to.have.been.called;
+        });
+    });
+
+    describe('errorHandler()', () => {
+        beforeEach(() => {
+            stubs.emit = sandbox.stub(image, 'emit');
+        });
+
+        it('should console log error and emit with generic display error message', () => {
+            sandbox.stub(window.console, 'error');
+
+            const err = new Error('blah');
+            image.errorHandler(err);
+
+
+            expect(window.console.error).to.have.been.calledWith(err);
+
+            err.displayMessage = 'We\'re sorry, the preview didn\'t load. Please refresh the page.';
+            expect(stubs.emit).to.have.been.calledWith('error', err);
         });
     });
 

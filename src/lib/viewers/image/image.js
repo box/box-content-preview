@@ -65,7 +65,8 @@ class Image extends Base {
      */
     load(imageUrl) {
         this.imageEl.src = this.appendAuthParam(imageUrl);
-        this.imageEl.addEventListener('load', this.onLoadHandler);
+        this.imageEl.addEventListener('load', this.loadHandler);
+        this.imageEl.addEventListener('error', this.errorHandler);
         this.bindDOMListeners();
 
         super.load();
@@ -473,6 +474,8 @@ class Image extends Base {
      */
     unbindDOMListeners() {
         if (this.imageEl) {
+            this.imageEl.removeEventListener('load', this.loadHandler);
+            this.imageEl.removeEventListener('error', this.errorHandler);
             this.imageEl.removeEventListener('mousedown', this.handleMouseDown);
             this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
             this.imageEl.removeEventListener('dragstart', this.handleDragStart);
@@ -496,9 +499,11 @@ class Image extends Base {
 
     /**
      * Handles the loading of an image once the 'load' event has been fired
+     *
      * @returns {void}
+     * @private
      */
-    onLoadHandler() {
+    loadHandler = () => {
         if (this.destroyed) {
             return;
         }
@@ -509,6 +514,25 @@ class Image extends Base {
         this.imageEl.classList.remove(CLASS_INVISIBLE);
 
         this.loadUI();
+    }
+
+    /**
+     * Handles image element loading errors.
+     *
+     * @returns {void}
+     * @private
+     */
+    errorHandler = (err) => {
+        /* eslint-disable no-console */
+        console.error(err);
+        /* eslint-enable no-console */
+
+        // Display a generic error message but log the real one
+        const error = err;
+        if (err instanceof Error) {
+            error.displayMessage = __('error_refresh');
+        }
+        this.emit('error', error);
     }
 
     /**
