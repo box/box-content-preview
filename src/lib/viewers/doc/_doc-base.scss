@@ -11,9 +11,6 @@
     position: absolute;
     right: 0;
     top: 0;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -webkit-user-select: none;
     user-select: none;
     width: 100%;
 
@@ -23,6 +20,10 @@
         display: none !important;
     }
 
+    &.is-safari {
+        // Fixes bug in Safari https://css-tricks.com/forums/topic/safari-for-ios-z-index-ordering-bug-while-scrolling-a-page-with-a-fixed-element/
+        transform: translate3d(0, 0, 0);
+    }
     //---------- Override CSS from generic PDFJS viewer build ----------//
     .pdfViewer .page {
         border: 0;

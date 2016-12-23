@@ -27,10 +27,10 @@ module.exports = (language) => {
                                 options: { importLoaders: 1 }
                             },
                             {
-                                loader: 'sass-loader'
+                                loader: 'postcss-loader'
                             },
                             {
-                                loader: 'postcss-loader'
+                                loader: 'sass-loader'
                             }
                         ]
                     }),
