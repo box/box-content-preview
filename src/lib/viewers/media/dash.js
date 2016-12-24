@@ -74,6 +74,8 @@ class Dash extends VideoBase {
 
         this.mediaUrl = mediaUrl;
         this.mediaEl.addEventListener('loadedmetadata', this.loadedmetadataHandler);
+        this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
+
         this.loadDashPlayer();
         this.resetLoadTimeout();
     }
@@ -245,7 +247,6 @@ class Dash extends VideoBase {
             if (this.adapting) {
                 this.emit('adaptation', adaptation.bandwidth);
             }
-            this.hideLoadingIcon();
         }
     }
 
@@ -276,10 +277,25 @@ class Dash extends VideoBase {
         this.loadUI();
         this.loadFilmStrip();
         this.resize();
-        this.showPlayButton();
         this.handleVolume();
         this.startBandwidthTracking();
         this.handleQuality(); // should come after gettings rep ids
+    }
+
+    /**
+     * Handler for data load for the media element.
+     *
+     * @private
+     * @returns {void}
+     */
+    loadeddataHandler() {
+        if (this.isDestroyed()) {
+            return;
+        }
+
+        this.hideLoadingIcon();
+        this.showPlayButton();
+
         this.loaded = true;
         this.emit('load');
     }

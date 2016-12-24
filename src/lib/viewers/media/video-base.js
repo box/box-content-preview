@@ -28,6 +28,11 @@ class VideoBase extends MediaBase {
         this.playButtonEl.classList.add(CLASS_PLAY_BUTTON);
         this.playButtonEl.classList.add(CLASS_HIDDEN);
         this.playButtonEl.innerHTML = PLAY_ICON;
+
+        this.loadingContainerEl = document.querySelector('.box-preview-loading-wrapper');
+        if (this.loadingContainerEl) {
+            this.loadingContainerEl.classList.add('video-loading');
+        }
     }
 
     /**
@@ -84,7 +89,10 @@ class VideoBase extends MediaBase {
      */
     pauseHandler() {
         super.pauseHandler();
-        this.showPlayButton();
+
+        if (this.containerEl.classList.contains(CLASS_PREVIEW_LOADED)) {
+            this.showPlayButton();
+        }
     }
 
     /**

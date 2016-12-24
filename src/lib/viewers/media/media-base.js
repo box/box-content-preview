@@ -186,6 +186,8 @@ class MediaBase extends Base {
         });
 
         this.mediaControls.addListener('toggleplayback', () => {
+            this.hidePlayButton();
+
             if (this.mediaEl.paused) {
                 this.mediaEl.play();
                 this.emit('play');
@@ -310,6 +312,7 @@ class MediaBase extends Base {
     togglePlay() {
         if (this.mediaControls) {
             this.mediaControls.togglePlay();
+            this.hidePlayButton();
         }
     }
 
@@ -334,6 +337,7 @@ class MediaBase extends Base {
     showLoadingIcon() {
         if (this.containerEl && this.mediaEl && !this.mediaEl.paused && !this.mediaEl.ended) {
             this.containerEl.classList.remove(CLASS_PREVIEW_LOADED);
+            this.hidePlayButton();
         }
     }
 

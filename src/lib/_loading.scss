@@ -33,6 +33,33 @@ $crawler-blue: #2b90ef;
     flex-direction: column;
     padding-bottom: 27px; // Match height of error viewer
     transition: .25s opacity, .25s transform;
+
+    // behavior of the video loading indicator
+    &.video-loading {
+        padding: 0;
+        z-index: 1;
+
+        .box-preview-loading {
+            padding: 0;
+        }
+
+        .box-preview-btn-loading-download {
+            display: none;
+        }
+
+        .box-preview-icon {
+            display: none;
+        }
+
+        .box-preview-loading-text {
+            display: none;
+        }
+
+        .box-preview-crawler-wrapper {
+            position: relative;
+            top: 0;
+        }
+    }
 }
 
 .box-preview-loaded .box-preview-loading-wrapper {
