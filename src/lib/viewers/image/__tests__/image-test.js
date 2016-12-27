@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-expressions */
 import Image from '../image';
 import Browser from '../../../browser';
+import * as util from '../../../util';
+
 // import AnnotationService from '../../../annotations/annotation-service';
 // import ImageAnnotator from '../../../annotations/image/image-annotator';
 
@@ -449,6 +451,50 @@ describe('image.js', () => {
             image.loadUI();
             expect(image.annotator.showAnnotations).to.have.been.called;
             expect(image.annotationsLoaded).to.be.true;
+        });
+    });
+
+    describe('print()', () => {
+        beforeEach(() => {
+            stubs.iframe = {
+                contentWindow: {
+                    focus: sandbox.stub(),
+                    print: sandbox.stub(),
+                    document: {
+                        execCommand: sandbox.stub()
+                    }
+                }
+            };
+
+            stubs.openContentInsideIframe = sandbox.stub(util, 'openContentInsideIframe').returns(stubs.iframe);
+            stubs.getName = sandbox.stub(Browser, 'getName');
+        });
+
+        it('should open the content inside an iframe, and focus', () => {
+            image.print();
+            expect(stubs.openContentInsideIframe).to.be.called;
+            expect(stubs.iframe.contentWindow.focus).to.be.called;
+        });
+
+        it('should execute the print command if the browser is Explorer', () => {
+            stubs.getName.returns('Explorer');
+
+            image.print();
+            expect(stubs.iframe.contentWindow.document.execCommand).to.be.calledWith('print', false, null);
+        });
+
+        it('should execute the print command if the browser is Edge', () => {
+            stubs.getName.returns('Edge');
+
+            image.print();
+            expect(stubs.iframe.contentWindow.document.execCommand).to.be.calledWith('print', false, null);
+        });
+
+        it('should call the contentWindow print for other browsers', () => {
+            stubs.getName.returns('Chrome');
+
+            image.print();
+            expect(stubs.iframe.contentWindow.print).to.be.called;
         });
     });
 

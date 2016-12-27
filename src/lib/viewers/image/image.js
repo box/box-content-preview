@@ -3,8 +3,16 @@ import AnnotationService from '../../annotations/annotation-service';
 import ImageAnnotator from '../../annotations/image/image-annotator';
 import Browser from '../../browser';
 import Base from './image-base';
-import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
-import { CLASS_INVISIBLE } from '../../constants';
+import {
+  ICON_ROTATE_LEFT,
+  ICON_FULLSCREEN_IN,
+  ICON_FULLSCREEN_OUT
+} from '../../icons/icons';
+import {
+  CLASS_INVISIBLE
+ } from '../../constants';
+import { openContentInsideIframe } from '../../util';
+
 import './image.scss';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -322,6 +330,23 @@ class Image extends Base {
         this.annotator.showAnnotations();
         this.annotationsLoaded = true;
     }
+
+    /**
+     * Prints image using an an iframe.
+     *
+     * @returns {void}
+     */
+    print() {
+        this.printframe = openContentInsideIframe(this.imageEl.outerHTML);
+        this.printframe.contentWindow.focus();
+
+        if (Browser.getName() === 'Explorer' || Browser.getName() === 'Edge') {
+            this.printframe.contentWindow.document.execCommand('print', false, null);
+        } else {
+            this.printframe.contentWindow.print();
+        }
+    }
+
 
     /**
      * Initializes annotations.
