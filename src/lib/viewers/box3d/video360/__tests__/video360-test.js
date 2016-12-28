@@ -49,7 +49,11 @@ describe('video360', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
-        viewer.destroy();
+
+        if (viewer && typeof viewer.destroy === 'function') {
+            viewer.destroy();
+        }
+
         viewer = null;
     });
 

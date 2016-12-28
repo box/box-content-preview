@@ -19,6 +19,12 @@ describe('Popup', () => {
     afterEach(() => {
         fixture.cleanup();
         sandbox.verifyAndRestore();
+
+        if (popup && typeof popup.destroy() === 'function') {
+            popup.destroy();
+        }
+
+        popup = null;
     });
 
     describe('constructor()', () => {

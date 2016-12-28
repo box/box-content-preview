@@ -23,6 +23,8 @@ describe('swf.js', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        swf = null;
     });
 
     it('should load an swf and fire load event', (done) => {

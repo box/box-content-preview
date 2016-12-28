@@ -26,7 +26,11 @@ describe('video360-renderer', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
-        renderer.destroy();
+
+        if (renderer && typeof renderer.destroy === 'function') {
+            renderer.destroy();
+        }
+
         renderer = null;
     });
 

@@ -18,6 +18,8 @@ describe('Notification', () => {
     afterEach(() => {
         fixture.cleanup();
         sandbox.verifyAndRestore();
+
+        notif = null;
     });
 
     describe('Notification()', () => {

@@ -33,6 +33,8 @@ describe('doc-highlight-dialog', () => {
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+
+        highlightDialog = null;
     });
 
     describe('addAnnotation()', () => {

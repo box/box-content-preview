@@ -24,6 +24,12 @@ describe('RepStatus', () => {
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+
+        if (repStatus && typeof repStatus.destroy === 'function') {
+            repStatus.destroy();
+        }
+
+        repStatus = null;
     });
 
     describe('constructor()', () => {

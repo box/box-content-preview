@@ -1,6 +1,7 @@
 import IFrame from '../iframe';
 
 const sandbox = sinon.sandbox.create();
+let iframe;
 
 describe('iframe.js', () => {
     before(() => {
@@ -14,11 +15,13 @@ describe('iframe.js', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        iframe = null;
     });
 
     describe('load()', () => {
         it('should load a boxnote and fire load event', (done) => {
-            const iframe = new IFrame('.container', {
+            iframe = new IFrame('.container', {
                 file: {
                     id: '123',
                     extension: 'boxnote'
@@ -34,7 +37,7 @@ describe('iframe.js', () => {
         });
 
         it('should load a boxnote with a shared name if a shared link exists and fire load event', (done) => {
-            const iframe = new IFrame('.container', {
+            iframe = new IFrame('.container', {
                 file: {
                     id: '123',
                     extension: 'boxnote'
@@ -51,7 +54,7 @@ describe('iframe.js', () => {
         });
 
         it('should load a boxdicom and fire load event', (done) => {
-            const iframe = new IFrame('.container', {
+            iframe = new IFrame('.container', {
                 file: {
                     id: '123',
                     extension: 'boxdicom'

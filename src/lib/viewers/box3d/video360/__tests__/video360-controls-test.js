@@ -7,6 +7,7 @@ const sandbox = sinon.sandbox.create();
 
 describe('video360-controls', () => {
     let containerEl;
+    let controls;
     const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
     const CSS_CLASS_MEDIA_CONTROLS_CONTAINER = 'box-preview-media-controls-container';
     const CSS_CLASS_MEDIA_CONTROL_BUTTON = 'box-preview-media-controls-btn';
@@ -18,15 +19,21 @@ describe('video360-controls', () => {
     beforeEach(() => {
         fixture.load('viewers/box3d/video360/__tests__/video360-controls-test.html');
         containerEl = document.querySelector('.container');
+        controls = new Video360Controls(containerEl);
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        if (controls && typeof controls.destroy === 'function') {
+            controls.destroy;
+        }
+
+        controls = null;
     });
 
     describe('constructor()', () => {
-        let controls;
         beforeEach(() => {
             sandbox.stub(Video360Controls.prototype, 'addUi');
             sandbox.stub(Video360Controls.prototype, 'attachEventHandlers');
@@ -86,9 +93,8 @@ describe('video360-controls', () => {
             const createElement = sandbox.stub(document, 'createElement');
             createElement.withArgs('button').returns(vrButtonEl);
             createElement.withArgs('span').returns(iconSpanEl);
-            /*eslint-disable*/
-            const controls = new Video360Controls(containerEl);
-            /*eslint-enable*/
+
+            controls.addUi();
         });
 
         afterEach(() => {
@@ -135,7 +141,6 @@ describe('video360-controls', () => {
     describe('attachEventHandlers()', () => {
         it('should invoke .vrButtonEl.addEventListener() with args ["click", .handleToggleVr()]', () => {
             sandbox.stub(Video360Controls.prototype, 'addUi');
-            const controls = new Video360Controls(containerEl);
             const vrButton = {
                 addEventListener: sandbox.stub()
             };
@@ -151,7 +156,6 @@ describe('video360-controls', () => {
     describe('detachEventHandlers()', () => {
         it('should invoke .vrButtonEl.removeEventListener() with args ["click", .handleToggleVr()]', () => {
             sandbox.stub(Video360Controls.prototype, 'addUi');
-            const controls = new Video360Controls(containerEl);
             const vrButton = {
                 removeEventListener: sandbox.stub()
             };
@@ -169,7 +173,6 @@ describe('video360-controls', () => {
             sandbox.stub(Video360Controls.prototype, 'addUi');
             sandbox.stub(Video360Controls.prototype, 'attachEventHandlers');
             sandbox.stub(Video360Controls.prototype, 'emit');
-            const controls = new Video360Controls(containerEl);
 
             controls.handleToggleVr();
             expect(controls.emit).to.have.been.calledWith(EVENT_TOGGLE_VR);
@@ -180,7 +183,6 @@ describe('video360-controls', () => {
         it('should invoke .vrButtonEl.classList.remove() with CSS_CLASS_HIDDEN', () => {
             sandbox.stub(Video360Controls.prototype, 'addUi');
             sandbox.stub(Video360Controls.prototype, 'attachEventHandlers');
-            const controls = new Video360Controls(containerEl);
             const vrButton = {
                 classList: {
                     remove: sandbox.stub()
@@ -196,14 +198,11 @@ describe('video360-controls', () => {
     });
 
     describe('destroy()', () => {
-        let controls;
-
         beforeEach(() => {
             sandbox.stub(Video360Controls.prototype, 'addUi');
             sandbox.stub(Video360Controls.prototype, 'attachEventHandlers');
             sandbox.stub(Video360Controls.prototype, 'removeAllListeners');
             sandbox.stub(Video360Controls.prototype, 'detachEventHandlers');
-            controls = new Video360Controls(containerEl);
         });
 
         afterEach(() => {

@@ -30,6 +30,7 @@ describe('doc-point-thread', () => {
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+        pointThread = null;
     });
 
     describe('showDialog', () => {

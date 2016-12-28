@@ -4,7 +4,7 @@ import * as constants from '../annotation-constants';
 import AnnotationService from '../annotation-service';
 
 let annotator;
-const stubs = {};
+let stubs = {};
 const sandbox = sinon.sandbox.create();
 
 describe('annotator', () => {
@@ -50,6 +50,8 @@ describe('annotator', () => {
             annotator.destroy();
             annotator = null;
         }
+
+        stubs = {};
     });
 
     describe('constructor()', () => {

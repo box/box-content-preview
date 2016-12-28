@@ -33,7 +33,11 @@ describe('box3d-controls', () => {
 
     afterEach(() => {
         sandbox.verifyAndRestore();
-        controls.destroy();
+
+        if (controls && typeof controls.destroy === 'function') {
+            controls.destroy();
+        }
+
         controls = null;
         fixture.cleanup();
     });

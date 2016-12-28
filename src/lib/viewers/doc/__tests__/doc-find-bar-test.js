@@ -45,7 +45,14 @@ describe('doc-find-bar', () => {
     });
 
     afterEach(() => {
-        docFindBar.destroy();
+        if (docFindBar && typeof docFindBar.destroy === 'function') {
+            docFindBar.destroy();
+        }
+
+        pdfViewer = null;
+        docFindBar = null;
+        findController = null;
+
         sandbox.verifyAndRestore();
         fixture.cleanup();
         stubs = {};

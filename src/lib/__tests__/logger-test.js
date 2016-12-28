@@ -1,8 +1,16 @@
 import Logger from '../logger';
 
+let logger;
 describe('Logger', () => {
+    beforeEach(() => {
+        logger = new Logger('FOO');
+    });
+
+    afterEach(() => {
+        logger = null;
+    });
+
     it('should have correct defaults', () => {
-        const logger = new Logger('FOO');
         const log = logger.done();
 
         assert.ok(log.time.total < 5, 'Total time should be correct');
@@ -21,7 +29,6 @@ describe('Logger', () => {
 
     it('should set and get correctly', () => {
         const now = Date.now();
-        const logger = new Logger('FOO');
         logger.setCached();
         logger.setCacheStale();
         logger.setFile({ id: 1 });
@@ -51,7 +58,6 @@ describe('Logger', () => {
 
     describe('setCached()', () => {
         it('should indicate a cache hit', () => {
-            const logger = new Logger('FOO');
             logger.setCached();
 
             assert.ok(logger.log.cache.hit);
@@ -60,7 +66,6 @@ describe('Logger', () => {
 
     describe('setUnConverted()', () => {
         it('should set converted to false', () => {
-            const logger = new Logger('FOO');
             logger.setUnConverted();
 
             assert.notOk(logger.log.converted);
@@ -69,7 +74,6 @@ describe('Logger', () => {
 
     describe('setFile()', () => {
         it('should set the file', () => {
-            const logger = new Logger('FOO');
             logger.setFile('file');
 
             assert.equal(logger.log.file, 'file');
@@ -78,7 +82,6 @@ describe('Logger', () => {
 
     describe('setType()', () => {
         it('should set the type', () => {
-            const logger = new Logger('FOO');
             logger.setType('type');
 
             assert.equal(logger.log.type, 'type');
@@ -87,7 +90,6 @@ describe('Logger', () => {
 
     describe('done()', () => {
         it('should set the count, rendering time, and return the log', () => {
-            const logger = new Logger('FOO');
             const log = logger.done(0);
 
             assert.equal(logger.log.count, 0);

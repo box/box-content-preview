@@ -24,6 +24,12 @@ describe('box3d-renderer', () => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
         stubs = {};
+
+        if (renderer && typeof renderer.destroy === 'function') {
+            renderer.destroy();
+        }
+
+        renderer = null;
     });
 
     describe('constructor()', () => {

@@ -22,6 +22,12 @@ describe('controls', () => {
     afterEach(() => {
         fixture.cleanup();
         sandbox.verifyAndRestore();
+
+        if (controls && typeof controls.destroy === 'function') {
+            controls.destroy();
+        }
+
+        controls = null;
     });
 
     describe('constructor()', () => {

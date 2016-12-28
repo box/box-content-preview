@@ -37,7 +37,11 @@ describe('box3d', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
-        box3d.destroy();
+
+        if (box3d && typeof box3d.destroy === 'function') {
+            box3d.destroy();
+        }
+
         box3d = undefined;
         stubs = {};
     });

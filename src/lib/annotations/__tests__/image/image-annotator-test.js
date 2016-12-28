@@ -24,6 +24,8 @@ describe('image-annotator', () => {
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+
+        annotator = null;
     });
 
     describe('getLocationFromEvent()', () => {
