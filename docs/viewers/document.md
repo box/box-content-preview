@@ -8,10 +8,10 @@ The document viewer renders previews for a variety of document types.
 
 ## Behavior
 
-The document viewer remembers which page you were viewing upon closing the preview.
-The next time that file is opened, you will immediately be brought to that page.
+The document viewer remembers which page you were viewing upon closing the preview. The next time that file is opened, you will immediately be brought to that page. Resizing the viewer window will cause the document to resize.
 
 ### Controls:
+
 * Zoom In
 * Zoom Out
 * Set Page: either with the up and down arrows, or by clicking the page number and entering text

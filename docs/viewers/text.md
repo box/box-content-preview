@@ -14,6 +14,11 @@ Re-sizing the viewer window will reflow the text to fit the available space and 
 
 This viewer supports printing and will attempt to print with appropriate syntax highlighting when either `print()` is invoked or the print button is pressed. Note that printing large files may cause some browsers to hang for a few seconds.
 
+### Controls:
+* Zoom In
+* Zoom Out
+* Fullscreen: can be exited with the escape key
+
 ## Supported File Extensions
 
 `as, as3, asm, bat, c, cc, cmake, cpp, cs, css, cxx, diff, erb, groovy, h, haml, hh, htm, html, java, js, less, m, make, md, ml, mm, php, pl, plist, properties, py, rb, rst, sass, scala, script, scm, sml, sql, sh, vi, vim, webdoc, xhtml, yaml`

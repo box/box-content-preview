@@ -15,7 +15,7 @@ Volume can be muted or unmuted by clicking the volume icon, or changed by draggi
 
 ###Settings (cog icon in toolbar):
 
-* audio speed values: 0.25, 0.5, normal (1), 1.25, 1.5, 2.0
+* Audio Speed: 0.25, 0.5, normal (1), 1.25, 1.5, 2.0
 
 
 ## Supported File Extensions

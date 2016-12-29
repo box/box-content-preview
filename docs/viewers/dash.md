@@ -1,14 +1,15 @@
-# Dash Viewer
+# DASH Viewer
 
-The dash viewer renders previews for video files using [shaka player](https://github.com/google/shaka-player).
+The DASH viewer renders previews for video files using [shaka player](https://github.com/google/shaka-player).
 
 ## Screenshot
-![Screenshot of dash viewer](images/dash.png)
+
+![Screenshot of DASH viewer](images/dash.png)
 
 
 ## Behavior
 
-The dash viewer uses a black background to create a better viewing experience. Video is streamed in chunks of ____ at an initial quality determined automatically. Volume can be muted or unmuted by clicking the volume icon, or changed by dragging the volume scrubber. The position of the video can be changed by clicking or dragging the playback scrubber.
+The DASH viewer uses a black background to create a more native viewing experience. Video is streamed in chunks of ____ at an initial quality determined automatically. Volume can be muted or unmuted by clicking the volume icon, or changed by dragging the volume scrubber. The position of the video can be changed by clicking or dragging the playback scrubber.
 
 ### Controls:
 
@@ -19,8 +20,8 @@ The dash viewer uses a black background to create a better viewing experience. V
 
 ### Settings (cog icon in toolbar):
 
-* video speed values: 0.25, 0.5, normal (1), 1.25, 1.5, 2.0
-* video quality values: 480p, 1080p, auto
+* Video Speed: 0.25, 0.5, normal (1), 1.25, 1.5, 2.0
+* Video Quality: 480p, 1080p, auto
 
 ## Supported File Extensions
 
