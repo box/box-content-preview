@@ -34,11 +34,6 @@
         }
     }
 
-    .box-preview-text-csv-even-row,
-    .box-preview-text-csv-odd-row {
-        //border-bottom: 1px solid $off-white;
-    }
-
     .box-preview-text-csv-odd-row {
         background-color: $haze;
     }
@@ -49,7 +44,7 @@
         flex-direction: column;
         height: 100%;
         justify-content: center;
-        overflow: hidden;
+        overflow: auto;
         padding: 0 .5em;
         width: 100%;
     }
