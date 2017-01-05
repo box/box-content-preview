@@ -100,7 +100,7 @@
     "sync": "./build/push_to_dev.sh",
     "dev": "BABEL_ENV=dev NODE_ENV=dev ./node_modules/.bin/webpack --progress --colors --config build/webpack.config.js",
     "jenkins": "./node_modules/.bin/webpack --progress --colors --config build/webpack.config.js",
-    "prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --progress --colors --config build/webpack.config.js",
+    "prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js -p --progress --colors --config build/webpack.config.js",
     "watch": "BABEL_ENV=dev NODE_ENV=dev ./node_modules/.bin/webpack --watch --progress --colors --config build/webpack.config.js",
     "clean": "rm -rf dist && rm -rf reports && rm -rf src/i18n/json",
     "watch-rb": "mojito-rb-gen -w -s src/i18n -o src/i18n/json -b en-US.properties",
