@@ -367,8 +367,7 @@ class DocBase extends Base {
         let numTicks = ticks;
         let newScale = this.pdfViewer.currentScale;
         do {
-            newScale = (newScale * DEFAULT_SCALE_DELTA).toFixed(2);
-            newScale = Math.ceil(newScale * 10) / 10;
+            newScale = (newScale * DEFAULT_SCALE_DELTA).toFixed(3);
             newScale = Math.min(MAX_SCALE, newScale);
             numTicks -= 1;
         } while (numTicks > 0 && newScale < MAX_SCALE);
@@ -394,8 +393,7 @@ class DocBase extends Base {
         let numTicks = ticks;
         let newScale = this.pdfViewer.currentScale;
         do {
-            newScale = (newScale / DEFAULT_SCALE_DELTA).toFixed(2);
-            newScale = Math.floor(newScale * 10) / 10;
+            newScale = (newScale / DEFAULT_SCALE_DELTA).toFixed(3);
             newScale = Math.max(MIN_SCALE, newScale);
             numTicks -= 1;
         } while (numTicks > 0 && newScale > MIN_SCALE);

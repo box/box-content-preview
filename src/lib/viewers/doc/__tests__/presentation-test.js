@@ -233,17 +233,12 @@ describe('presentation', () => {
             expect(stubs.addEventListener).to.be.calledWith('wheel', presentation.wheelHandler());
         });
 
-        it('should add a touchstart handler if on mobile', () => {
+        it('should add a touch handlers if on mobile', () => {
             stubs.isMobile.returns(true);
 
             presentation.bindDOMListeners();
             expect(stubs.addEventListener).to.be.calledWith('touchstart', presentation.mobileScrollHandler);
-        });
-
-        it('should add a touchend handler if on mobile', () => {
-            stubs.isMobile.returns(true);
-
-            presentation.bindDOMListeners();
+            expect(stubs.addEventListener).to.be.calledWith('touchmove', presentation.mobileScrollHandler);
             expect(stubs.addEventListener).to.be.calledWith('touchend', presentation.mobileScrollHandler);
         });
     });
@@ -259,17 +254,12 @@ describe('presentation', () => {
             expect(stubs.removeEventListener).to.be.calledWith('wheel', presentation.wheelHandler());
         });
 
-        it('should remove the scrollhandler if on mobile', () => {
+        it('should remove the touchhandlers if on mobile', () => {
             stubs.isMobile.returns(true);
 
             presentation.unbindDOMListeners();
             expect(stubs.removeEventListener).to.be.calledWith('touchstart', presentation.mobileScrollHandler);
-        });
-
-        it('should remove a wheel handler', () => {
-            stubs.isMobile.returns(true);
-
-            presentation.unbindDOMListeners();
+            expect(stubs.removeEventListener).to.be.calledWith('touchmove', presentation.mobileScrollHandler);
             expect(stubs.removeEventListener).to.be.calledWith('touchend', presentation.mobileScrollHandler);
         });
     });
@@ -297,7 +287,8 @@ describe('presentation', () => {
                         clientX: 0,
                         clientY: 0
                     }
-                ]
+                ],
+                preventDefault: sandbox.stub()
             };
             stubs.nextPage = sandbox.stub(presentation, 'nextPage');
             stubs.previousPage = sandbox.stub(presentation, 'previousPage');
@@ -305,6 +296,21 @@ describe('presentation', () => {
 
         it('should do nothing if there is overflow', () => {
             stubs.checkOverflow.returns(true);
+
+            presentation.mobileScrollHandler(stubs.event);
+            expect(presentation.scrollStart).to.equal(undefined);
+            expect(stubs.event.preventDefault).to.be.called;
+        });
+
+        it('should do nothing if there is no change', () => {
+            stubs.event.changedTouches = [];
+
+            presentation.mobileScrollHandler(stubs.event);
+            expect(presentation.scrollStart).to.equal(undefined);
+        });
+
+        it('should do nothing if it was a touch move event', () => {
+            stubs.event.type = 'touchmove';
 
             presentation.mobileScrollHandler(stubs.event);
             expect(presentation.scrollStart).to.equal(undefined);

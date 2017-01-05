@@ -150,6 +150,7 @@ class Presentation extends DocBase {
         this.docEl.addEventListener('wheel', this.wheelHandler());
         if (Browser.isMobile()) {
             this.docEl.addEventListener('touchstart', this.mobileScrollHandler);
+            this.docEl.addEventListener('touchmove', this.mobileScrollHandler);
             this.docEl.addEventListener('touchend', this.mobileScrollHandler);
         }
     }
@@ -167,6 +168,7 @@ class Presentation extends DocBase {
         this.docEl.removeEventListener('wheel', this.wheelHandler());
         if (Browser.isMobile()) {
             this.docEl.removeEventListener('touchstart', this.mobileScrollHandler);
+            this.docEl.removeEventListener('touchmove', this.mobileScrollHandler);
             this.docEl.removeEventListener('touchend', this.mobileScrollHandler);
         }
     }
@@ -202,7 +204,9 @@ class Presentation extends DocBase {
      * @private
      */
     mobileScrollHandler(event) {
-        if (this.checkOverflow() || !event.changedTouches || event.changedTouches.length === 0) {
+        // don't want to handle scroll if zoomed, if nothing has changed, or a touch move event which fixes intertia scroll bounce on iOS
+        if (this.checkOverflow() || !event.changedTouches || event.changedTouches.length === 0 || event.type === 'touchmove') {
+            event.preventDefault();
             return;
         }
 

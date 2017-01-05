@@ -619,7 +619,7 @@ describe('doc-base', () => {
 
         describe('zoomOut()', () => {
             it('should zoom out until it hits the number of ticks or the min scale', () => {
-                docBase.pdfViewer.currentScale = 1;
+                docBase.pdfViewer.currentScale = 0.2;
 
                 docBase.zoomOut(10);
                 expect(stubs.setScale).to.be.calledWith(MIN_SCALE);
