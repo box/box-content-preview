@@ -45,6 +45,11 @@
         .box-preview-loaded & .loadingIcon {
             background: url('loading-icon.gif') center no-repeat;
         }
+
+        // Fixes annotation icon broken src
+        .textAnnotation > img {
+            display: none;
+        }
     }
 
     .textLayer {
