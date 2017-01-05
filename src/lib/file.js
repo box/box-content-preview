@@ -1,4 +1,6 @@
-// List of Box Content API fields that the Preview SDK requires for every file
+// List of Box Content API fields that the Preview SDK requires for every file. Updating this list is most likely
+// a breaking change and should be done with care. Clients that leverage functionality dependent on this format
+// (e.g. Box.Preview.updateFileCache()) will need to be updated if this list is modified.
 const FILE_FIELDS = [
     'permissions',
     'parent',

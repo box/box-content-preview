@@ -141,7 +141,7 @@ class Preview extends EventEmitter {
     /**
      * Updates files to navigate between.
      *
-     * @param {array} [collection] Updated collection of file IDs
+     * @param {string[]} [collection] Updated collection of file IDs
      * @returns {void}
      */
     updateCollection(collection = []) {
@@ -159,7 +159,7 @@ class Preview extends EventEmitter {
      * a file is previewed. Note that we only do simple validation that the
      * expected properties exist before caching.
      *
-     * @param {array|Object} [fileMetadata] Array or single file metadata to cache
+     * @param {Object[]|Object} [fileMetadata] Array or single file metadata to cache
      * @returns {void}
      */
     updateFileCache(fileMetadata = []) {
@@ -213,7 +213,7 @@ class Preview extends EventEmitter {
     /**
      * Returns the list of viewers that Preview supports.
      *
-     * @returns {array} List of supported viewers
+     * @returns {string[]} List of supported viewers
      */
     getViewers() {
         let viewers = [];
@@ -228,7 +228,7 @@ class Preview extends EventEmitter {
      * prefetch assets for those viewers. Otherwise, prefetch assets for
      * all viewers.
      *
-     * @param {array} [viewerNames] Names of specific viewers to prefetch assets for
+     * @param {string[]} [viewerNames] Names of specific viewers to prefetch assets for
      * @returns {void}
      */
     prefetchViewers(viewerNames = []) {
@@ -250,7 +250,7 @@ class Preview extends EventEmitter {
     /**
      * Disables one or more viewers.
      *
-     * @param {string|Array} viewers destroys the container contents
+     * @param {string|string[]} viewers destroys the container contents
      * @returns {void}
      */
     disableViewers(viewers) {
@@ -266,7 +266,7 @@ class Preview extends EventEmitter {
     /**
      * Enables one or more viewers.
      *
-     * @param {string|Array} viewers destroys the container contents
+     * @param {string|string[]} viewers destroys the container contents
      * @returns {void}
      */
     enableViewers(viewers) {
