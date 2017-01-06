@@ -36,30 +36,6 @@ class VideoBase extends MediaBase {
     }
 
     /**
-     * Shows the play button on video
-     *
-     * @private
-     * @returns {void}
-     */
-    showPlayButton() {
-        if (this.playButtonEl) {
-            this.playButtonEl.classList.remove(CLASS_HIDDEN);
-        }
-    }
-
-    /**
-     * Hides the play button on video
-     *
-     * @private
-     * @returns {void}
-     */
-    hidePlayButton() {
-        if (this.playButtonEl) {
-            this.playButtonEl.classList.add(CLASS_HIDDEN);
-        }
-    }
-
-    /**
      * Handler for meta data load for the media element.
      *
      * @private

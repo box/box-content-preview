@@ -2,7 +2,7 @@ import autobind from 'autobind-decorator';
 import Base from '../base';
 import cache from '../../cache';
 import MediaControls from './media-controls';
-import { CLASS_PREVIEW_LOADED } from '../../constants';
+import { CLASS_HIDDEN, CLASS_PREVIEW_LOADED } from '../../constants';
 
 const CSS_CLASS_MEDIA = 'box-preview-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'box-preview-media-container';
@@ -34,11 +34,12 @@ class MediaBase extends Base {
 
     /**
      * [destructor]
+     *
      * @returns {void}
      */
     destroy() {
         if (this.mediaControls) {
-            this.mediaControls.removeListener('speedchange', this.handleSpeed);
+            this.mediaControls.removeAllListeners();
             this.mediaControls.destroy();
         }
 
@@ -73,7 +74,6 @@ class MediaBase extends Base {
      * Loads a media source.
      *
      * @param {string} mediaUrl The media url
-     * @public
      * @returns {Promise} Promise to load media
      */
     load(mediaUrl) {
@@ -124,8 +124,8 @@ class MediaBase extends Base {
     /**
      * Handler for playback rate
      *
-     * @private
      * @returns {void}
+     * @private
      */
     handleSpeed() {
         const speed = cache.get('media-speed') - 0;
@@ -138,8 +138,8 @@ class MediaBase extends Base {
     /**
      * Handler for volume
      *
-     * @private
      * @returns {void}
+     * @private
      */
     handleVolume() {
         let volume = DEFAULT_VOLUME;
@@ -154,8 +154,8 @@ class MediaBase extends Base {
     /**
      * Loads the controls
      *
-     * @private
      * @returns {void}
+     * @private
      */
     loadUI() {
         this.mediaControls = new MediaControls(this.mediaContainerEl, this.mediaEl);
@@ -290,10 +290,34 @@ class MediaBase extends Base {
     }
 
     /**
+     * Shows the play button in media content.
+     *
+     * @returns {void}
+     * @private
+     */
+    showPlayButton() {
+        if (this.playButtonEl) {
+            this.playButtonEl.classList.remove(CLASS_HIDDEN);
+        }
+    }
+
+    /**
+     * Hides the play button in media content.
+     *
+     * @returns {void}
+     * @private
+     */
+    hidePlayButton() {
+        if (this.playButtonEl) {
+            this.playButtonEl.classList.add(CLASS_HIDDEN);
+        }
+    }
+
+    /**
      * Resets the play icon and time.
      *
-     * @private
      * @returns {void}
+     * @private
      */
     resetPlayIcon() {
         if (this.mediaControls) {
@@ -306,8 +330,8 @@ class MediaBase extends Base {
     /**
      * Toggle playback
      *
-     * @private
      * @returns {void}
+     * @private
      */
     togglePlay() {
         if (this.mediaControls) {
@@ -319,8 +343,8 @@ class MediaBase extends Base {
     /**
      * Hides the loading indicator
      *
-     * @private
      * @returns {void}
+     * @private
      */
     hideLoadingIcon() {
         if (this.containerEl) {

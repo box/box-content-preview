@@ -50,7 +50,7 @@ describe('mp3', () => {
             mp3.mediaControls = {
                 show: sandbox.stub(),
                 resizeTimeScrubber: sandbox.stub(),
-                removeListener: sandbox.stub(),
+                removeAllListeners: sandbox.stub(),
                 destroy: sandbox.stub()
             };
 

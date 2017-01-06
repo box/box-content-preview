@@ -89,7 +89,5 @@ export function checkFileValid(file) {
         return false;
     }
 
-    return FILE_FIELDS.every((field) => {
-        return typeof file[field] !== 'undefined';
-    });
+    return FILE_FIELDS.every((field) => typeof file[field] !== 'undefined');
 }
