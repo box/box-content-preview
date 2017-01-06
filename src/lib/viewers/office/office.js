@@ -40,8 +40,12 @@ class Office extends Base {
             if (sharedName) {
                 src += `?s=${sharedName}&fileId=${this.options.file.id}`;
             } else {
-                const vanityName = this.options.sharedLink.split('/v/')[1];
-                src += `?v=${vanityName}&fileId=${this.options.file.id}`;
+                const vanityUrl = this.options.sharedLink.split('/v/');
+                // Core logic in Box_Context::get_enterprise_id_from_request() expects to find the vanity link's domain
+                // in $_GET['vanity_subdomain'], so we need to add it to src
+                const vanitySubdomain = vanityUrl[0];
+                const vanityName = vanityUrl[1];
+                src += `?v=${vanityName}&vanity_subdomain=${vanitySubdomain}&fileId=${this.options.file.id}`;
             }
         } else {
             src += `?fileId=${this.options.file.id}`;
