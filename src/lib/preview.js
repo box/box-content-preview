@@ -363,6 +363,9 @@ class Preview extends EventEmitter {
      * @private
      */
     load(file) {
+        // Clean up any existing previews before loading
+        this.destroy();
+
         // Indicate preview is open
         this.open = true;
 
@@ -555,8 +558,8 @@ class Preview extends EventEmitter {
      * @private
      */
     handleLoadResponse(file) {
-        // If preview is closed don't do anything
-        if (!this.open) {
+        // If preview is closed or response comes back for an incorrect file, don't do anything
+        if (!this.open || (this.file && this.file.id !== file.id)) {
             return;
         }
 

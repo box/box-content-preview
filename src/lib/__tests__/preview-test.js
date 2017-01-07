@@ -543,6 +543,12 @@ describe('Preview', () => {
             stubs.getTokens = sandbox.stub(tokens, 'default').returns(stubs.promise);
             stubs.loadPreviewWithTokens = sandbox.stub(preview, 'loadPreviewWithTokens');
             stubs.get = sandbox.stub(cache, 'get').returns('file');
+            stubs.destroy = sandbox.stub(preview, 'destroy');
+        });
+
+        it('should cleanup any existing viewer', () => {
+            preview.load({ id: 0 });
+            expect(stubs.destroy).to.be.called;
         });
 
         it('should set the preview to open, and initialize the performance logger', () => {
@@ -878,16 +884,26 @@ describe('Preview', () => {
 
         it('should do nothing if the preview is closed', () => {
             preview.open = false;
+            preview.handleLoadResponse(stubs.file);
+            expect(stubs.set).to.not.be.called;
+        });
 
-            preview.handleLoadResponse('file');
+        it('should do nothing if response comes back for an incorrect file', () => {
+            preview.open = true;
+            preview.file = {
+                id: 0
+            };
+            stubs.file.id = 1;
+
+            preview.handleLoadResponse(stubs.file);
             expect(stubs.set).to.not.be.called;
         });
 
         it('should save a reference to the file and update the logger', () => {
             preview.open = true;
 
-            preview.handleLoadResponse('file');
-            expect(preview.file).to.equal('file');
+            preview.handleLoadResponse(stubs.file);
+            expect(preview.file).to.equal(stubs.file);
             expect(preview.logger.setFile).to.be.called;
         });
 
