@@ -1,5 +1,32 @@
 # Change Log
 
+## [v0.96.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.96.0) (2017-01-11)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.95.0...v0.96.0)
+
+**Merged pull requests:**
+
+- Fix timing issue when navigating quickly between previews [\#889](https://gitenterprise.inside-box.net/Preview/Preview/pull/889) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Unit tests for MediaBase [\#888](https://gitenterprise.inside-box.net/Preview/Preview/pull/888) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Pass along the subdomain for a vanity URL so that cross-domain vanity… [\#887](https://gitenterprise.inside-box.net/Preview/Preview/pull/887) ([jedwards](https://gitenterprise.inside-box.net/jedwards))
+- Fixes PDF annotation icon [\#886](https://gitenterprise.inside-box.net/Preview/Preview/pull/886) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Remove -p from webpack production build since we explicitly configure… [\#885](https://gitenterprise.inside-box.net/Preview/Preview/pull/885) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Add comments to FILE\_FIELDS array [\#884](https://gitenterprise.inside-box.net/Preview/Preview/pull/884) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Adding back the missing production flag for production build [\#883](https://gitenterprise.inside-box.net/Preview/Preview/pull/883) ([phora](https://gitenterprise.inside-box.net/phora))
+- Fix csv column overflow [\#882](https://gitenterprise.inside-box.net/Preview/Preview/pull/882) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- PPT scrolling and scaling tweaks [\#880](https://gitenterprise.inside-box.net/Preview/Preview/pull/880) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- cleaning up unit tests [\#879](https://gitenterprise.inside-box.net/Preview/Preview/pull/879) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- adding printing for images [\#878](https://gitenterprise.inside-box.net/Preview/Preview/pull/878) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Adding documentation and unifying format [\#877](https://gitenterprise.inside-box.net/Preview/Preview/pull/877) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Fix coverage & remove unused code [\#875](https://gitenterprise.inside-box.net/Preview/Preview/pull/875) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixing Rsync [\#874](https://gitenterprise.inside-box.net/Preview/Preview/pull/874) ([phora](https://gitenterprise.inside-box.net/phora))
+- Increase base timeout from 60s to 180s [\#873](https://gitenterprise.inside-box.net/Preview/Preview/pull/873) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- fixing scrollbar under document in safari [\#872](https://gitenterprise.inside-box.net/Preview/Preview/pull/872) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Better error logging for media and image files [\#871](https://gitenterprise.inside-box.net/Preview/Preview/pull/871) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- read me and changelog to 0.95 [\#870](https://gitenterprise.inside-box.net/Preview/Preview/pull/870) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Upgrade all packages [\#867](https://gitenterprise.inside-box.net/Preview/Preview/pull/867) ([phora](https://gitenterprise.inside-box.net/phora))
+- Instancing all prefabs while still scaling and positioning them as ex… [\#864](https://gitenterprise.inside-box.net/Preview/Preview/pull/864) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Fixing media loading indicator [\#862](https://gitenterprise.inside-box.net/Preview/Preview/pull/862) ([jpress](https://gitenterprise.inside-box.net/jpress))
+
 ## [v0.95.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.95.0) (2016-12-21)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.94.0...v0.95.0)
 
