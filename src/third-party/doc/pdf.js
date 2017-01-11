@@ -23,8 +23,8 @@
  }
 }(this, function (exports) {
  'use strict';
- var pdfjsVersion = '1.6.334';
- var pdfjsBuild = '787d887';
+ var pdfjsVersion = '1.6.442';
+ var pdfjsBuild = '393740e';
  var pdfjsFilePath = typeof document !== 'undefined' && document.currentScript ? document.currentScript.src : null;
  var pdfjsLibs = {};
  (function pdfjsWrapper() {
@@ -2715,7 +2715,7 @@
      var chars = '';
      for (var i = 0; i < bytes.length; i += 2) {
       var code = bytes.charCodeAt(i) * 256 + bytes.charCodeAt(i + 1);
-      chars += code >= 32 && code < 127 && code !== 60 && code !== 62 && code !== 38 && false ? String.fromCharCode(code) : '&#x' + (0x10000 + code).toString(16).substring(1) + ';';
+      chars += code >= 32 && code < 127 && code !== 60 && code !== 62 && code !== 38 ? String.fromCharCode(code) : '&#x' + (0x10000 + code).toString(16).substring(1) + ';';
      }
      return '>' + chars;
     });
@@ -3800,6 +3800,14 @@
       switch (fieldType) {
       case 'Tx':
        return new TextWidgetAnnotationElement(parameters);
+      case 'Btn':
+       if (parameters.data.radioButton) {
+        return new RadioButtonWidgetAnnotationElement(parameters);
+       } else if (parameters.data.checkBox) {
+        return new CheckboxWidgetAnnotationElement(parameters);
+       }
+       warn('Unimplemented button widget annotation: pushbutton');
+       break;
       case 'Ch':
        return new ChoiceWidgetAnnotationElement(parameters);
       }
@@ -4066,6 +4074,45 @@
      }
     });
     return TextWidgetAnnotationElement;
+   }();
+   var CheckboxWidgetAnnotationElement = function CheckboxWidgetAnnotationElementClosure() {
+    function CheckboxWidgetAnnotationElement(parameters) {
+     WidgetAnnotationElement.call(this, parameters, parameters.renderInteractiveForms);
+    }
+    Util.inherit(CheckboxWidgetAnnotationElement, WidgetAnnotationElement, {
+     render: function CheckboxWidgetAnnotationElement_render() {
+      this.container.className = 'buttonWidgetAnnotation checkBox';
+      var element = document.createElement('input');
+      element.disabled = this.data.readOnly;
+      element.type = 'checkbox';
+      if (this.data.fieldValue && this.data.fieldValue !== 'Off') {
+       element.setAttribute('checked', true);
+      }
+      this.container.appendChild(element);
+      return this.container;
+     }
+    });
+    return CheckboxWidgetAnnotationElement;
+   }();
+   var RadioButtonWidgetAnnotationElement = function RadioButtonWidgetAnnotationElementClosure() {
+    function RadioButtonWidgetAnnotationElement(parameters) {
+     WidgetAnnotationElement.call(this, parameters, parameters.renderInteractiveForms);
+    }
+    Util.inherit(RadioButtonWidgetAnnotationElement, WidgetAnnotationElement, {
+     render: function RadioButtonWidgetAnnotationElement_render() {
+      this.container.className = 'buttonWidgetAnnotation radioButton';
+      var element = document.createElement('input');
+      element.disabled = this.data.readOnly;
+      element.type = 'radio';
+      element.name = this.data.fieldName;
+      if (this.data.fieldValue === this.data.buttonValue) {
+       element.setAttribute('checked', true);
+      }
+      this.container.appendChild(element);
+      return this.container;
+     }
+    });
+    return RadioButtonWidgetAnnotationElement;
    }();
    var ChoiceWidgetAnnotationElement = function ChoiceWidgetAnnotationElementClosure() {
     function ChoiceWidgetAnnotationElement(parameters) {
@@ -6745,7 +6792,7 @@
        return;
       }
       var name = fontObj.loadedName || 'sans-serif';
-      var bold = fontObj.black ? fontObj.bold ? '900' : 'bold' : fontObj.bold ? 'bold' : 'normal';
+      var bold = fontObj.black ? '900' : fontObj.bold ? 'bold' : 'normal';
       var italic = fontObj.italic ? 'italic' : 'normal';
       var typeface = '"' + name + '", ' + fontObj.fallbackName;
       var browserFontSize = size < MIN_FONT_SIZE ? MIN_FONT_SIZE : size > MAX_FONT_SIZE ? MAX_FONT_SIZE : size;
@@ -7094,11 +7141,11 @@
      paintFormXObjectBegin: function CanvasGraphics_paintFormXObjectBegin(matrix, bbox) {
       this.save();
       this.baseTransformStack.push(this.baseTransform);
-      if (isArray(matrix) && 6 === matrix.length) {
+      if (isArray(matrix) && matrix.length === 6) {
        this.transform.apply(this, matrix);
       }
       this.baseTransform = this.ctx.mozCurrentTransform;
-      if (isArray(bbox) && 4 === bbox.length) {
+      if (isArray(bbox) && bbox.length === 4) {
        var width = bbox[2] - bbox[0];
        var height = bbox[3] - bbox[1];
        this.ctx.rect(bbox[0], bbox[1], width, height);
@@ -7226,7 +7273,7 @@
      },
      beginAnnotation: function CanvasGraphics_beginAnnotation(rect, transform, matrix) {
       this.save();
-      if (isArray(rect) && 4 === rect.length) {
+      if (isArray(rect) && rect.length === 4) {
        var width = rect[2] - rect[0];
        var height = rect[3] - rect[1];
        this.ctx.rect(rect[0], rect[1], width, height);
@@ -7859,6 +7906,9 @@
      get ref() {
       return this.pageInfo.ref;
      },
+     get userUnit() {
+      return this.pageInfo.userUnit;
+     },
      get view() {
       return this.pageInfo.view;
      },
@@ -8301,6 +8351,7 @@
      this.fontLoader = new FontLoader(loadingTask.docId);
      this.destroyed = false;
      this.destroyCapability = null;
+     this._passwordCapability = null;
      this.pageCache = [];
      this.pagePromises = [];
      this.downloadInfoCapability = createPromiseCapability();
@@ -8313,6 +8364,9 @@
       }
       this.destroyed = true;
       this.destroyCapability = createPromiseCapability();
+      if (this._passwordCapability) {
+       this._passwordCapability.reject(new Error('Worker was destroyed during onPassword callback'));
+      }
       var waitOn = [];
       this.pageCache.forEach(function (page) {
        if (page) {
@@ -8340,9 +8394,7 @@
      },
      setupMessageHandler: function WorkerTransport_setupMessageHandler() {
       var messageHandler = this.messageHandler;
-      function updatePassword(password) {
-       messageHandler.send('UpdatePassword', password);
-      }
+      var loadingTask = this.loadingTask;
       var pdfDataRangeTransport = this.pdfDataRangeTransport;
       if (pdfDataRangeTransport) {
        pdfDataRangeTransport.addRangeListener(function (begin, chunk) {
@@ -8369,18 +8421,19 @@
        this.pdfDocument = pdfDocument;
        loadingTask._capability.resolve(pdfDocument);
       }, this);
-      messageHandler.on('NeedPassword', function transportNeedPassword(exception) {
-       var loadingTask = this.loadingTask;
+      messageHandler.on('PasswordRequest', function transportPasswordRequest(exception) {
+       this._passwordCapability = createPromiseCapability();
        if (loadingTask.onPassword) {
-        return loadingTask.onPassword(updatePassword, PasswordResponses.NEED_PASSWORD);
+        var updatePassword = function (password) {
+         this._passwordCapability.resolve({ password: password });
+        }.bind(this);
+        loadingTask.onPassword(updatePassword, exception.code);
+       } else {
+        this._passwordCapability.reject(new PasswordException(exception.message, exception.code));
        }
-       loadingTask._capability.reject(new PasswordException(exception.message, exception.code));
+       return this._passwordCapability.promise;
       }, this);
-      messageHandler.on('IncorrectPassword', function transportIncorrectPassword(exception) {
-       var loadingTask = this.loadingTask;
-       if (loadingTask.onPassword) {
-        return loadingTask.onPassword(updatePassword, PasswordResponses.INCORRECT_PASSWORD);
-       }
+      messageHandler.on('PasswordException', function transportPasswordException(exception) {
        loadingTask._capability.reject(new PasswordException(exception.message, exception.code));
       }, this);
       messageHandler.on('InvalidPDF', function transportInvalidPDF(exception) {
@@ -8691,9 +8744,8 @@
       var objs = this.objs;
       if (!objs[objId]) {
        return false;
-      } else {
-       return objs[objId].resolved;
       }
+      return objs[objId].resolved;
      },
      hasData: function PDFObjects_hasData(objId) {
       return this.isResolved(objId);
@@ -8702,9 +8754,8 @@
       var objs = this.objs;
       if (!objs[objId] || !objs[objId].resolved) {
        return null;
-      } else {
-       return objs[objId].data;
       }
+      return objs[objId].data;
      },
      clear: function PDFObjects_clear() {
       this.objs = Object.create(null);

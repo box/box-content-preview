@@ -20,7 +20,7 @@ describe('office-loader', () => {
                 REPRESENTATION: 'pdf',
                 EXTENSIONS: ['xlsx'],
                 SCRIPTS: [
-                    'third-party/doc/compatibility.js',
+                    'third-party/doc/compatibility.min.js',
                     'third-party/doc/pdf.min.js',
                     'third-party/doc/pdf_viewer.min.js',
                     'third-party/doc/pdf.worker.min.js',
@@ -108,7 +108,7 @@ describe('office-loader', () => {
                 REPRESENTATION: 'pdf',
                 EXTENSIONS: ['xlsx'],
                 SCRIPTS: [
-                    'third-party/doc/compatibility.js',
+                    'third-party/doc/compatibility.min.js',
                     'third-party/doc/pdf.min.js',
                     'third-party/doc/pdf_viewer.min.js',
                     'third-party/doc/pdf.worker.min.js',
@@ -141,7 +141,7 @@ describe('office-loader', () => {
                 REPRESENTATION: 'pdf',
                 EXTENSIONS: ['xlsx'],
                 SCRIPTS: [
-                    'third-party/doc/compatibility.js',
+                    'third-party/doc/compatibility.min.js',
                     'third-party/doc/pdf.min.js',
                     'third-party/doc/pdf_viewer.min.js',
                     'third-party/doc/pdf.worker.min.js',
@@ -174,7 +174,7 @@ describe('office-loader', () => {
                 REPRESENTATION: 'pdf',
                 EXTENSIONS: ['xlsx'],
                 SCRIPTS: [
-                    'third-party/doc/compatibility.js',
+                    'third-party/doc/compatibility.min.js',
                     'third-party/doc/pdf.min.js',
                     'third-party/doc/pdf_viewer.min.js',
                     'third-party/doc/pdf.worker.min.js',
@@ -210,7 +210,7 @@ describe('office-loader', () => {
                 REPRESENTATION: 'pdf',
                 EXTENSIONS: ['xlsx'],
                 SCRIPTS: [
-                    'third-party/doc/compatibility.js',
+                    'third-party/doc/compatibility.min.js',
                     'third-party/doc/pdf.min.js',
                     'third-party/doc/pdf_viewer.min.js',
                     'third-party/doc/pdf.worker.min.js',

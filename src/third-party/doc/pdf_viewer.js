@@ -347,8 +347,9 @@
       b = q;
      }
     }
+    var result;
     if (x_ - a / b < c / d - x_) {
-     return x_ === x ? [
+     result = x_ === x ? [
       a,
       b
      ] : [
@@ -356,7 +357,7 @@
       a
      ];
     } else {
-     return x_ === x ? [
+     result = x_ === x ? [
       c,
       d
      ] : [
@@ -364,6 +365,7 @@
       c
      ];
     }
+    return result;
    }
    function roundToDivide(x, div) {
     var r = x % div;
@@ -462,8 +464,7 @@
    });
    var localized = new Promise(function (resolve, reject) {
     if (!mozL10n) {
-     //@NOTE(tjin): Don't show console error
-     //reject(new Error('mozL10n service is not available.'));
+     resolve();
      return;
     }
     if (mozL10n.getReadyState() !== 'loading') {
@@ -990,17 +991,16 @@
        offset.matchIdx = previous ? numMatches - 1 : 0;
        this.updateMatch(true);
        return true;
-      } else {
-       this.advanceOffsetPage(previous);
-       if (offset.wrapped) {
-        offset.matchIdx = null;
-        if (this.pagesToSearch < 0) {
-         this.updateMatch(false);
-         return true;
-        }
-       }
-       return false;
       }
+      this.advanceOffsetPage(previous);
+      if (offset.wrapped) {
+       offset.matchIdx = null;
+       if (this.pagesToSearch < 0) {
+        this.updateMatch(false);
+        return true;
+       }
+      }
+      return false;
      },
      updateMatchPosition: function PDFFindController_updateMatchPosition(pageIndex, index, elements, beginIdx) {
       if (this.selected.matchIdx === index && this.selected.pageIdx === pageIndex) {
@@ -1238,9 +1238,8 @@
        this.nextHashParam = null;
        this.updatePreviousBookmark = true;
        return;
-      } else {
-       this.nextHashParam = null;
       }
+      this.nextHashParam = null;
      }
      if (params.hash) {
       if (this.current.hash) {
@@ -1440,7 +1439,6 @@
          goToDestination(destRef);
         }).catch(function () {
          console.error('PDFLinkService_navigateTo: "' + destRef + '" is not a valid page reference.');
-         return;
         });
        }
       };
@@ -1987,7 +1985,7 @@
        }
        if (error === 'cancelled') {
         self.error = null;
-        return;
+        return Promise.resolve(undefined);
        }
        self.renderingState = RenderingStates.FINISHED;
        if (self.loadingIconDiv) {
@@ -2013,21 +2011,25 @@
         pageNumber: self.id,
         cssTransform: false
        });
+       if (error) {
+        return Promise.reject(error);
+       }
+       return Promise.resolve(undefined);
       };
       var paintTask = this.renderer === RendererType.SVG ? this.paintOnSvg(canvasWrapper) : this.paintOnCanvas(canvasWrapper);
       paintTask.onRenderContinue = renderContinueCallback;
       this.paintTask = paintTask;
       var resultPromise = paintTask.promise.then(function () {
-       finishPaintTask(null);
-       if (textLayer) {
-        pdfPage.getTextContent({ normalizeWhitespace: true }).then(function textContentResolved(textContent) {
-         textLayer.setTextContent(textContent);
-         textLayer.render(TEXT_LAYER_RENDER_DELAY);
-        });
-       }
+       return finishPaintTask(null).then(function () {
+        if (textLayer) {
+         pdfPage.getTextContent({ normalizeWhitespace: true }).then(function textContentResolved(textContent) {
+          textLayer.setTextContent(textContent);
+          textLayer.render(TEXT_LAYER_RENDER_DELAY);
+         });
+        }
+       });
       }, function (reason) {
-       finishPaintTask(reason);
-       throw reason;
+       return finishPaintTask(reason);
       });
       if (this.annotationLayerFactory) {
        if (!this.annotationLayer) {
@@ -3101,19 +3103,18 @@
      _getVisiblePages: function () {
       if (!this.isInPresentationMode) {
        return getVisibleElements(this.container, this._pages, true);
-      } else {
-       var visible = [];
-       var currentPage = this._pages[this._currentPageNumber - 1];
-       visible.push({
-        id: currentPage.id,
-        view: currentPage
-       });
-       return {
-        first: currentPage,
-        last: currentPage,
-        views: visible
-       };
       }
+      var visible = [];
+      var currentPage = this._pages[this._currentPageNumber - 1];
+      visible.push({
+       id: currentPage.id,
+       view: currentPage
+      });
+      return {
+       first: currentPage,
+       last: currentPage,
+       views: visible
+      };
      },
      cleanup: function () {
       for (var i = 0, ii = this._pages.length; i < ii; i++) {

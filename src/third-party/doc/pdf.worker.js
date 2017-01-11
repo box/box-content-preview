@@ -23,8 +23,8 @@
  }
 }(this, function (exports) {
  'use strict';
- var pdfjsVersion = '1.6.334';
- var pdfjsBuild = '787d887';
+ var pdfjsVersion = '1.6.442';
+ var pdfjsBuild = '393740e';
  var pdfjsFilePath = typeof document !== 'undefined' && document.currentScript ? document.currentScript.src : null;
  var pdfjsLibs = {};
  (function pdfjsWrapper() {
@@ -407,751 +407,6 @@
     return ArithmeticDecoder;
    }();
    exports.ArithmeticDecoder = ArithmeticDecoder;
-  }));
-  (function (root, factory) {
-   factory(root.pdfjsCoreBidi = {});
-  }(this, function (exports) {
-   var baseTypes = [
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'S',
-    'B',
-    'S',
-    'WS',
-    'B',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'B',
-    'B',
-    'B',
-    'S',
-    'WS',
-    'ON',
-    'ON',
-    'ET',
-    'ET',
-    'ET',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'CS',
-    'ON',
-    'CS',
-    'ON',
-    'EN',
-    'EN',
-    'EN',
-    'EN',
-    'EN',
-    'EN',
-    'EN',
-    'EN',
-    'EN',
-    'EN',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'B',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'BN',
-    'CS',
-    'ON',
-    'ET',
-    'ET',
-    'ET',
-    'ET',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'L',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'ET',
-    'ET',
-    'EN',
-    'EN',
-    'ON',
-    'L',
-    'ON',
-    'ON',
-    'ON',
-    'EN',
-    'L',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'ON',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'ON',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'ON',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L',
-    'L'
-   ];
-   var arabicTypes = [
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'CS',
-    'AL',
-    'ON',
-    'ON',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AN',
-    'AN',
-    'AN',
-    'AN',
-    'AN',
-    'AN',
-    'AN',
-    'AN',
-    'AN',
-    'AN',
-    'ET',
-    'AN',
-    'AN',
-    'AL',
-    'AL',
-    'AL',
-    'NSM',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'ON',
-    'NSM',
-    'NSM',
-    'NSM',
-    'NSM',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL',
-    'AL'
-   ];
-   function isOdd(i) {
-    return (i & 1) !== 0;
-   }
-   function isEven(i) {
-    return (i & 1) === 0;
-   }
-   function findUnequal(arr, start, value) {
-    for (var j = start, jj = arr.length; j < jj; ++j) {
-     if (arr[j] !== value) {
-      return j;
-     }
-    }
-    return j;
-   }
-   function setValues(arr, start, end, value) {
-    for (var j = start; j < end; ++j) {
-     arr[j] = value;
-    }
-   }
-   function reverseValues(arr, start, end) {
-    for (var i = start, j = end - 1; i < j; ++i, --j) {
-     var temp = arr[i];
-     arr[i] = arr[j];
-     arr[j] = temp;
-    }
-   }
-   function createBidiText(str, isLTR, vertical) {
-    return {
-     str: str,
-     dir: vertical ? 'ttb' : isLTR ? 'ltr' : 'rtl'
-    };
-   }
-   var chars = [];
-   var types = [];
-   function bidi(str, startLevel, vertical) {
-    var isLTR = true;
-    var strLength = str.length;
-    if (strLength === 0 || vertical) {
-     return createBidiText(str, isLTR, vertical);
-    }
-    chars.length = strLength;
-    types.length = strLength;
-    var numBidi = 0;
-    var i, ii;
-    for (i = 0; i < strLength; ++i) {
-     chars[i] = str.charAt(i);
-     var charCode = str.charCodeAt(i);
-     var charType = 'L';
-     if (charCode <= 0x00ff) {
-      charType = baseTypes[charCode];
-     } else if (0x0590 <= charCode && charCode <= 0x05f4) {
-      charType = 'R';
-     } else if (0x0600 <= charCode && charCode <= 0x06ff) {
-      charType = arabicTypes[charCode & 0xff];
-     } else if (0x0700 <= charCode && charCode <= 0x08AC) {
-      charType = 'AL';
-     }
-     if (charType === 'R' || charType === 'AL' || charType === 'AN') {
-      numBidi++;
-     }
-     types[i] = charType;
-    }
-    if (numBidi === 0) {
-     isLTR = true;
-     return createBidiText(str, isLTR);
-    }
-    if (startLevel === -1) {
-     if (strLength / numBidi < 0.3) {
-      isLTR = true;
-      startLevel = 0;
-     } else {
-      isLTR = false;
-      startLevel = 1;
-     }
-    }
-    var levels = [];
-    for (i = 0; i < strLength; ++i) {
-     levels[i] = startLevel;
-    }
-    var e = isOdd(startLevel) ? 'R' : 'L';
-    var sor = e;
-    var eor = sor;
-    var lastType = sor;
-    for (i = 0; i < strLength; ++i) {
-     if (types[i] === 'NSM') {
-      types[i] = lastType;
-     } else {
-      lastType = types[i];
-     }
-    }
-    lastType = sor;
-    var t;
-    for (i = 0; i < strLength; ++i) {
-     t = types[i];
-     if (t === 'EN') {
-      types[i] = lastType === 'AL' ? 'AN' : 'EN';
-     } else if (t === 'R' || t === 'L' || t === 'AL') {
-      lastType = t;
-     }
-    }
-    for (i = 0; i < strLength; ++i) {
-     t = types[i];
-     if (t === 'AL') {
-      types[i] = 'R';
-     }
-    }
-    for (i = 1; i < strLength - 1; ++i) {
-     if (types[i] === 'ES' && types[i - 1] === 'EN' && types[i + 1] === 'EN') {
-      types[i] = 'EN';
-     }
-     if (types[i] === 'CS' && (types[i - 1] === 'EN' || types[i - 1] === 'AN') && types[i + 1] === types[i - 1]) {
-      types[i] = types[i - 1];
-     }
-    }
-    for (i = 0; i < strLength; ++i) {
-     if (types[i] === 'EN') {
-      var j;
-      for (j = i - 1; j >= 0; --j) {
-       if (types[j] !== 'ET') {
-        break;
-       }
-       types[j] = 'EN';
-      }
-      for (j = i + 1; j < strLength; ++j) {
-       if (types[j] !== 'ET') {
-        break;
-       }
-       types[j] = 'EN';
-      }
-     }
-    }
-    for (i = 0; i < strLength; ++i) {
-     t = types[i];
-     if (t === 'WS' || t === 'ES' || t === 'ET' || t === 'CS') {
-      types[i] = 'ON';
-     }
-    }
-    lastType = sor;
-    for (i = 0; i < strLength; ++i) {
-     t = types[i];
-     if (t === 'EN') {
-      types[i] = lastType === 'L' ? 'L' : 'EN';
-     } else if (t === 'R' || t === 'L') {
-      lastType = t;
-     }
-    }
-    for (i = 0; i < strLength; ++i) {
-     if (types[i] === 'ON') {
-      var end = findUnequal(types, i + 1, 'ON');
-      var before = sor;
-      if (i > 0) {
-       before = types[i - 1];
-      }
-      var after = eor;
-      if (end + 1 < strLength) {
-       after = types[end + 1];
-      }
-      if (before !== 'L') {
-       before = 'R';
-      }
-      if (after !== 'L') {
-       after = 'R';
-      }
-      if (before === after) {
-       setValues(types, i, end, before);
-      }
-      i = end - 1;
-     }
-    }
-    for (i = 0; i < strLength; ++i) {
-     if (types[i] === 'ON') {
-      types[i] = e;
-     }
-    }
-    for (i = 0; i < strLength; ++i) {
-     t = types[i];
-     if (isEven(levels[i])) {
-      if (t === 'R') {
-       levels[i] += 1;
-      } else if (t === 'AN' || t === 'EN') {
-       levels[i] += 2;
-      }
-     } else {
-      if (t === 'L' || t === 'AN' || t === 'EN') {
-       levels[i] += 1;
-      }
-     }
-    }
-    var highestLevel = -1;
-    var lowestOddLevel = 99;
-    var level;
-    for (i = 0, ii = levels.length; i < ii; ++i) {
-     level = levels[i];
-     if (highestLevel < level) {
-      highestLevel = level;
-     }
-     if (lowestOddLevel > level && isOdd(level)) {
-      lowestOddLevel = level;
-     }
-    }
-    for (level = highestLevel; level >= lowestOddLevel; --level) {
-     var start = -1;
-     for (i = 0, ii = levels.length; i < ii; ++i) {
-      if (levels[i] < level) {
-       if (start >= 0) {
-        reverseValues(chars, start, i);
-        start = -1;
-       }
-      } else if (start < 0) {
-       start = i;
-      }
-     }
-     if (start >= 0) {
-      reverseValues(chars, start, levels.length);
-     }
-    }
-    for (i = 0, ii = chars.length; i < ii; ++i) {
-     var ch = chars[i];
-     if (ch === '<' || ch === '>') {
-      chars[i] = '';
-     }
-    }
-    return createBidiText(chars.join(''), isLTR);
-   }
-   exports.bidi = bidi;
   }));
   (function (root, factory) {
    factory(root.pdfjsCoreCharsets = {});
@@ -5694,6 +4949,755 @@
    exports.warn = warn;
   }));
   (function (root, factory) {
+   factory(root.pdfjsCoreBidi = {}, root.pdfjsSharedUtil);
+  }(this, function (exports, sharedUtil) {
+   var warn = sharedUtil.warn;
+   var baseTypes = [
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'S',
+    'B',
+    'S',
+    'WS',
+    'B',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'B',
+    'B',
+    'B',
+    'S',
+    'WS',
+    'ON',
+    'ON',
+    'ET',
+    'ET',
+    'ET',
+    'ON',
+    'ON',
+    'ON',
+    'ON',
+    'ON',
+    'ES',
+    'CS',
+    'ES',
+    'CS',
+    'CS',
+    'EN',
+    'EN',
+    'EN',
+    'EN',
+    'EN',
+    'EN',
+    'EN',
+    'EN',
+    'EN',
+    'EN',
+    'CS',
+    'ON',
+    'ON',
+    'ON',
+    'ON',
+    'ON',
+    'ON',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'ON',
+    'ON',
+    'ON',
+    'ON',
+    'ON',
+    'ON',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'ON',
+    'ON',
+    'ON',
+    'ON',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'B',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'BN',
+    'CS',
+    'ON',
+    'ET',
+    'ET',
+    'ET',
+    'ET',
+    'ON',
+    'ON',
+    'ON',
+    'ON',
+    'L',
+    'ON',
+    'ON',
+    'BN',
+    'ON',
+    'ON',
+    'ET',
+    'ET',
+    'EN',
+    'EN',
+    'ON',
+    'L',
+    'ON',
+    'ON',
+    'ON',
+    'EN',
+    'L',
+    'ON',
+    'ON',
+    'ON',
+    'ON',
+    'ON',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'ON',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'ON',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L',
+    'L'
+   ];
+   var arabicTypes = [
+    'AN',
+    'AN',
+    'AN',
+    'AN',
+    'AN',
+    'AN',
+    'ON',
+    'ON',
+    'AL',
+    'ET',
+    'ET',
+    'AL',
+    'CS',
+    'AL',
+    'ON',
+    'ON',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'AL',
+    'AL',
+    '',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'AN',
+    'AN',
+    'AN',
+    'AN',
+    'AN',
+    'AN',
+    'AN',
+    'AN',
+    'AN',
+    'AN',
+    'ET',
+    'AN',
+    'AN',
+    'AL',
+    'AL',
+    'AL',
+    'NSM',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'AN',
+    'ON',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'AL',
+    'AL',
+    'NSM',
+    'NSM',
+    'ON',
+    'NSM',
+    'NSM',
+    'NSM',
+    'NSM',
+    'AL',
+    'AL',
+    'EN',
+    'EN',
+    'EN',
+    'EN',
+    'EN',
+    'EN',
+    'EN',
+    'EN',
+    'EN',
+    'EN',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL',
+    'AL'
+   ];
+   function isOdd(i) {
+    return (i & 1) !== 0;
+   }
+   function isEven(i) {
+    return (i & 1) === 0;
+   }
+   function findUnequal(arr, start, value) {
+    for (var j = start, jj = arr.length; j < jj; ++j) {
+     if (arr[j] !== value) {
+      return j;
+     }
+    }
+    return j;
+   }
+   function setValues(arr, start, end, value) {
+    for (var j = start; j < end; ++j) {
+     arr[j] = value;
+    }
+   }
+   function reverseValues(arr, start, end) {
+    for (var i = start, j = end - 1; i < j; ++i, --j) {
+     var temp = arr[i];
+     arr[i] = arr[j];
+     arr[j] = temp;
+    }
+   }
+   function createBidiText(str, isLTR, vertical) {
+    return {
+     str: str,
+     dir: vertical ? 'ttb' : isLTR ? 'ltr' : 'rtl'
+    };
+   }
+   var chars = [];
+   var types = [];
+   function bidi(str, startLevel, vertical) {
+    var isLTR = true;
+    var strLength = str.length;
+    if (strLength === 0 || vertical) {
+     return createBidiText(str, isLTR, vertical);
+    }
+    chars.length = strLength;
+    types.length = strLength;
+    var numBidi = 0;
+    var i, ii;
+    for (i = 0; i < strLength; ++i) {
+     chars[i] = str.charAt(i);
+     var charCode = str.charCodeAt(i);
+     var charType = 'L';
+     if (charCode <= 0x00ff) {
+      charType = baseTypes[charCode];
+     } else if (0x0590 <= charCode && charCode <= 0x05f4) {
+      charType = 'R';
+     } else if (0x0600 <= charCode && charCode <= 0x06ff) {
+      charType = arabicTypes[charCode & 0xff];
+      if (!charType) {
+       warn('Bidi: invalid Unicode character ' + charCode.toString(16));
+      }
+     } else if (0x0700 <= charCode && charCode <= 0x08AC) {
+      charType = 'AL';
+     }
+     if (charType === 'R' || charType === 'AL' || charType === 'AN') {
+      numBidi++;
+     }
+     types[i] = charType;
+    }
+    if (numBidi === 0) {
+     isLTR = true;
+     return createBidiText(str, isLTR);
+    }
+    if (startLevel === -1) {
+     if (strLength / numBidi < 0.3) {
+      isLTR = true;
+      startLevel = 0;
+     } else {
+      isLTR = false;
+      startLevel = 1;
+     }
+    }
+    var levels = [];
+    for (i = 0; i < strLength; ++i) {
+     levels[i] = startLevel;
+    }
+    var e = isOdd(startLevel) ? 'R' : 'L';
+    var sor = e;
+    var eor = sor;
+    var lastType = sor;
+    for (i = 0; i < strLength; ++i) {
+     if (types[i] === 'NSM') {
+      types[i] = lastType;
+     } else {
+      lastType = types[i];
+     }
+    }
+    lastType = sor;
+    var t;
+    for (i = 0; i < strLength; ++i) {
+     t = types[i];
+     if (t === 'EN') {
+      types[i] = lastType === 'AL' ? 'AN' : 'EN';
+     } else if (t === 'R' || t === 'L' || t === 'AL') {
+      lastType = t;
+     }
+    }
+    for (i = 0; i < strLength; ++i) {
+     t = types[i];
+     if (t === 'AL') {
+      types[i] = 'R';
+     }
+    }
+    for (i = 1; i < strLength - 1; ++i) {
+     if (types[i] === 'ES' && types[i - 1] === 'EN' && types[i + 1] === 'EN') {
+      types[i] = 'EN';
+     }
+     if (types[i] === 'CS' && (types[i - 1] === 'EN' || types[i - 1] === 'AN') && types[i + 1] === types[i - 1]) {
+      types[i] = types[i - 1];
+     }
+    }
+    for (i = 0; i < strLength; ++i) {
+     if (types[i] === 'EN') {
+      var j;
+      for (j = i - 1; j >= 0; --j) {
+       if (types[j] !== 'ET') {
+        break;
+       }
+       types[j] = 'EN';
+      }
+      for (j = i + 1; j < strLength; ++j) {
+       if (types[j] !== 'ET') {
+        break;
+       }
+       types[j] = 'EN';
+      }
+     }
+    }
+    for (i = 0; i < strLength; ++i) {
+     t = types[i];
+     if (t === 'WS' || t === 'ES' || t === 'ET' || t === 'CS') {
+      types[i] = 'ON';
+     }
+    }
+    lastType = sor;
+    for (i = 0; i < strLength; ++i) {
+     t = types[i];
+     if (t === 'EN') {
+      types[i] = lastType === 'L' ? 'L' : 'EN';
+     } else if (t === 'R' || t === 'L') {
+      lastType = t;
+     }
+    }
+    for (i = 0; i < strLength; ++i) {
+     if (types[i] === 'ON') {
+      var end = findUnequal(types, i + 1, 'ON');
+      var before = sor;
+      if (i > 0) {
+       before = types[i - 1];
+      }
+      var after = eor;
+      if (end + 1 < strLength) {
+       after = types[end + 1];
+      }
+      if (before !== 'L') {
+       before = 'R';
+      }
+      if (after !== 'L') {
+       after = 'R';
+      }
+      if (before === after) {
+       setValues(types, i, end, before);
+      }
+      i = end - 1;
+     }
+    }
+    for (i = 0; i < strLength; ++i) {
+     if (types[i] === 'ON') {
+      types[i] = e;
+     }
+    }
+    for (i = 0; i < strLength; ++i) {
+     t = types[i];
+     if (isEven(levels[i])) {
+      if (t === 'R') {
+       levels[i] += 1;
+      } else if (t === 'AN' || t === 'EN') {
+       levels[i] += 2;
+      }
+     } else {
+      if (t === 'L' || t === 'AN' || t === 'EN') {
+       levels[i] += 1;
+      }
+     }
+    }
+    var highestLevel = -1;
+    var lowestOddLevel = 99;
+    var level;
+    for (i = 0, ii = levels.length; i < ii; ++i) {
+     level = levels[i];
+     if (highestLevel < level) {
+      highestLevel = level;
+     }
+     if (lowestOddLevel > level && isOdd(level)) {
+      lowestOddLevel = level;
+     }
+    }
+    for (level = highestLevel; level >= lowestOddLevel; --level) {
+     var start = -1;
+     for (i = 0, ii = levels.length; i < ii; ++i) {
+      if (levels[i] < level) {
+       if (start >= 0) {
+        reverseValues(chars, start, i);
+        start = -1;
+       }
+      } else if (start < 0) {
+       start = i;
+      }
+     }
+     if (start >= 0) {
+      reverseValues(chars, start, levels.length);
+     }
+    }
+    for (i = 0, ii = chars.length; i < ii; ++i) {
+     var ch = chars[i];
+     if (ch === '<' || ch === '>') {
+      chars[i] = '';
+     }
+    }
+    return createBidiText(chars.join(''), isLTR);
+   }
+   exports.bidi = bidi;
+  }));
+  (function (root, factory) {
    factory(root.pdfjsCoreCFFParser = {}, root.pdfjsSharedUtil, root.pdfjsCoreCharsets, root.pdfjsCoreEncodings);
   }(this, function (exports, sharedUtil, coreCharsets, coreEncodings) {
    var error = sharedUtil.error;
@@ -6491,10 +6495,9 @@
         return (value - 247) * 256 + dict[pos++] + 108;
        } else if (value >= 251 && value <= 254) {
         return -((value - 251) * 256) - dict[pos++] - 108;
-       } else {
-        warn('CFFParser_parseDict: "' + value + '" is a reserved command.');
-        return NaN;
        }
+       warn('CFFParser_parseDict: "' + value + '" is a reserved command.');
+       return NaN;
       }
       function parseFloatOperand() {
        var str = '';
@@ -7776,9 +7779,8 @@
      encodeNumber: function CFFCompiler_encodeNumber(value) {
       if (parseFloat(value) === parseInt(value, 10) && !isNaN(value)) {
        return this.encodeInteger(value);
-      } else {
-       return this.encodeFloat(value);
       }
+      return this.encodeFloat(value);
      },
      encodeFloat: function CFFCompiler_encodeFloat(num) {
       var value = num.toString();
@@ -9977,6 +9979,7 @@
     t['controlHT'] = 0x0009;
     t['controlLF'] = 0x000A;
     t['controlNAK'] = 0x0015;
+    t['controlNULL'] = 0x0000;
     t['controlRS'] = 0x001E;
     t['controlSI'] = 0x000F;
     t['controlSO'] = 0x000E;
@@ -12728,6 +12731,122 @@
     t['zuhiragana'] = 0x305A;
     t['zukatakana'] = 0x30BA;
     t['.notdef'] = 0x0000;
+    t['angbracketleftbig'] = 0x2329;
+    t['angbracketleftBig'] = 0x2329;
+    t['angbracketleftbigg'] = 0x2329;
+    t['angbracketleftBigg'] = 0x2329;
+    t['angbracketrightBig'] = 0x232A;
+    t['angbracketrightbig'] = 0x232A;
+    t['angbracketrightBigg'] = 0x232A;
+    t['angbracketrightbigg'] = 0x232A;
+    t['arrowhookleft'] = 0x21AA;
+    t['arrowhookright'] = 0x21A9;
+    t['arrowlefttophalf'] = 0x21BC;
+    t['arrowleftbothalf'] = 0x21BD;
+    t['arrownortheast'] = 0x2197;
+    t['arrownorthwest'] = 0x2196;
+    t['arrowrighttophalf'] = 0x21C0;
+    t['arrowrightbothalf'] = 0x21C1;
+    t['arrowsoutheast'] = 0x2198;
+    t['arrowsouthwest'] = 0x2199;
+    t['backslashbig'] = 0x2216;
+    t['backslashBig'] = 0x2216;
+    t['backslashBigg'] = 0x2216;
+    t['backslashbigg'] = 0x2216;
+    t['bardbl'] = 0x2016;
+    t['bracehtipdownleft'] = 0xFE37;
+    t['bracehtipdownright'] = 0xFE37;
+    t['bracehtipupleft'] = 0xFE38;
+    t['bracehtipupright'] = 0xFE38;
+    t['braceleftBig'] = 0x007B;
+    t['braceleftbig'] = 0x007B;
+    t['braceleftbigg'] = 0x007B;
+    t['braceleftBigg'] = 0x007B;
+    t['bracerightBig'] = 0x007D;
+    t['bracerightbig'] = 0x007D;
+    t['bracerightbigg'] = 0x007D;
+    t['bracerightBigg'] = 0x007D;
+    t['bracketleftbig'] = 0x005B;
+    t['bracketleftBig'] = 0x005B;
+    t['bracketleftbigg'] = 0x005B;
+    t['bracketleftBigg'] = 0x005B;
+    t['bracketrightBig'] = 0x005D;
+    t['bracketrightbig'] = 0x005D;
+    t['bracketrightbigg'] = 0x005D;
+    t['bracketrightBigg'] = 0x005D;
+    t['ceilingleftbig'] = 0x2308;
+    t['ceilingleftBig'] = 0x2308;
+    t['ceilingleftBigg'] = 0x2308;
+    t['ceilingleftbigg'] = 0x2308;
+    t['ceilingrightbig'] = 0x2309;
+    t['ceilingrightBig'] = 0x2309;
+    t['ceilingrightbigg'] = 0x2309;
+    t['ceilingrightBigg'] = 0x2309;
+    t['circledotdisplay'] = 0x2299;
+    t['circledottext'] = 0x2299;
+    t['circlemultiplydisplay'] = 0x2297;
+    t['circlemultiplytext'] = 0x2297;
+    t['circleplusdisplay'] = 0x2295;
+    t['circleplustext'] = 0x2295;
+    t['contintegraldisplay'] = 0x222E;
+    t['contintegraltext'] = 0x222E;
+    t['coproductdisplay'] = 0x2210;
+    t['coproducttext'] = 0x2210;
+    t['floorleftBig'] = 0x230A;
+    t['floorleftbig'] = 0x230A;
+    t['floorleftbigg'] = 0x230A;
+    t['floorleftBigg'] = 0x230A;
+    t['floorrightbig'] = 0x230B;
+    t['floorrightBig'] = 0x230B;
+    t['floorrightBigg'] = 0x230B;
+    t['floorrightbigg'] = 0x230B;
+    t['hatwide'] = 0x0302;
+    t['hatwider'] = 0x0302;
+    t['hatwidest'] = 0x0302;
+    t['intercal'] = 0x1D40;
+    t['integraldisplay'] = 0x222B;
+    t['integraltext'] = 0x222B;
+    t['intersectiondisplay'] = 0x22C2;
+    t['intersectiontext'] = 0x22C2;
+    t['logicalanddisplay'] = 0x2227;
+    t['logicalandtext'] = 0x2227;
+    t['logicalordisplay'] = 0x2228;
+    t['logicalortext'] = 0x2228;
+    t['parenleftBig'] = 0x0028;
+    t['parenleftbig'] = 0x0028;
+    t['parenleftBigg'] = 0x0028;
+    t['parenleftbigg'] = 0x0028;
+    t['parenrightBig'] = 0x0029;
+    t['parenrightbig'] = 0x0029;
+    t['parenrightBigg'] = 0x0029;
+    t['parenrightbigg'] = 0x0029;
+    t['prime'] = 0x2032;
+    t['productdisplay'] = 0x220F;
+    t['producttext'] = 0x220F;
+    t['radicalbig'] = 0x221A;
+    t['radicalBig'] = 0x221A;
+    t['radicalBigg'] = 0x221A;
+    t['radicalbigg'] = 0x221A;
+    t['radicalbt'] = 0x221A;
+    t['radicaltp'] = 0x221A;
+    t['radicalvertex'] = 0x221A;
+    t['slashbig'] = 0x002F;
+    t['slashBig'] = 0x002F;
+    t['slashBigg'] = 0x002F;
+    t['slashbigg'] = 0x002F;
+    t['summationdisplay'] = 0x2211;
+    t['summationtext'] = 0x2211;
+    t['tildewide'] = 0x02DC;
+    t['tildewider'] = 0x02DC;
+    t['tildewidest'] = 0x02DC;
+    t['uniondisplay'] = 0x22C3;
+    t['unionmultidisplay'] = 0x228E;
+    t['unionmultitext'] = 0x228E;
+    t['unionsqdisplay'] = 0x2294;
+    t['unionsqtext'] = 0x2294;
+    t['uniontext'] = 0x22C3;
+    t['vextenddouble'] = 0x2225;
+    t['vextendsingle'] = 0x2223;
    });
    var getDingbatsGlyphsUnicode = getLookupTableFactory(function (t) {
     t['space'] = 0x0020;
@@ -14949,12 +15068,11 @@
         return false;
        }
        return true;
-      } else {
-       if (!this.adobe && this.colorTransform === 1) {
-        return true;
-       }
-       return false;
       }
+      if (!this.adobe && this.colorTransform === 1) {
+       return true;
+      }
+      return false;
      },
      _convertYccToRgb: function convertYccToRgb(data) {
       var Y, Cb, Cr;
@@ -15038,9 +15156,8 @@
        if (this._isColorConversionNeeded()) {
         if (forceRGBoutput) {
          return this._convertYcckToRgb(data);
-        } else {
-         return this._convertYcckToCmyk(data);
         }
+        return this._convertYcckToCmyk(data);
        } else if (forceRGBoutput) {
         return this._convertCmykToRgb(data);
        }
@@ -20458,6 +20575,10 @@
     t['ArialBlack-Bold'] = 'Helvetica-Bold';
     t['ArialBlack-BoldItalic'] = 'Helvetica-BoldOblique';
     t['ArialBlack-Italic'] = 'Helvetica-Oblique';
+    t['Arial-Black'] = 'Helvetica';
+    t['Arial-Black-Bold'] = 'Helvetica-Bold';
+    t['Arial-Black-BoldItalic'] = 'Helvetica-BoldOblique';
+    t['Arial-Black-Italic'] = 'Helvetica-Oblique';
     t['Arial'] = 'Helvetica';
     t['Arial-Bold'] = 'Helvetica-Bold';
     t['Arial-BoldItalic'] = 'Helvetica-BoldOblique';
@@ -20531,6 +20652,7 @@
     t['MS-PMincho-Bold'] = 'MS PMincho-Bold';
     t['MS-PMincho-BoldItalic'] = 'MS PMincho-BoldItalic';
     t['MS-PMincho-Italic'] = 'MS PMincho-Italic';
+    t['NuptialScript'] = 'Times-Italic';
     t['Wingdings'] = 'ZapfDingbats';
    });
    var getSerifFonts = getLookupTableFactory(function (t) {
@@ -20631,6 +20753,7 @@
     t['New York'] = true;
     t['Nimbus Roman'] = true;
     t['NPS Rawlinson Roadway'] = true;
+    t['NuptialScript'] = true;
     t['Palatino'] = true;
     t['Perpetua'] = true;
     t['Plantin'] = true;
@@ -24228,12 +24351,14 @@
      var inbits = 0, outbits = 0;
      var pos = bufferLength;
      var i;
-     if (bits === 1) {
+     if (bits === 1 && colors === 1) {
       for (i = 0; i < rowBytes; ++i) {
-       var c = rawBytes[i];
-       inbuf = inbuf << 8 | c;
-       buffer[pos++] = (c ^ inbuf >> colors) & 0xFF;
-       inbuf &= 0xFFFF;
+       var c = rawBytes[i] ^ inbuf;
+       c ^= c >> 1;
+       c ^= c >> 2;
+       c ^= c >> 4;
+       inbuf = (c & 1) << 7;
+       buffer[pos++] = c;
       }
      } else if (bits === 8) {
       for (i = 0; i < colors; ++i) {
@@ -33179,18 +33304,18 @@
    }();
    var CipherTransform = function CipherTransformClosure() {
     function CipherTransform(stringCipherConstructor, streamCipherConstructor) {
-     this.stringCipherConstructor = stringCipherConstructor;
-     this.streamCipherConstructor = streamCipherConstructor;
+     this.StringCipherConstructor = stringCipherConstructor;
+     this.StreamCipherConstructor = streamCipherConstructor;
     }
     CipherTransform.prototype = {
      createStream: function CipherTransform_createStream(stream, length) {
-      var cipher = new this.streamCipherConstructor();
+      var cipher = new this.StreamCipherConstructor();
       return new DecryptStream(stream, length, function cipherTransformDecryptStream(data, finalize) {
        return cipher.decryptBlock(data, finalize);
       });
      },
      decryptString: function CipherTransform_decryptString(s) {
-      var cipher = new this.stringCipherConstructor();
+      var cipher = new this.StringCipherConstructor();
       var data = stringToBytes(s);
       data = cipher.decryptBlock(data, true);
       return bytesToString(data);
@@ -33475,17 +33600,17 @@
        return new NullCipher();
       };
      }
-     if ('V2' === cfm.name) {
+     if (cfm.name === 'V2') {
       return function cipherTransformFactoryBuildCipherConstructorV2() {
        return new ARCFourCipher(buildObjectKey(num, gen, key, false));
       };
      }
-     if ('AESV2' === cfm.name) {
+     if (cfm.name === 'AESV2') {
       return function cipherTransformFactoryBuildCipherConstructorAESV2() {
        return new AES128Cipher(buildObjectKey(num, gen, key, true));
       };
      }
-     if ('AESV3' === cfm.name) {
+     if (cfm.name === 'AESV3') {
       return function cipherTransformFactoryBuildCipherConstructorAESV3() {
        return new AES256Cipher(key);
       };
@@ -34288,9 +34413,8 @@
         0
        ];
        return new TrueTypeCompiled(parseGlyfTable(glyf, loca, indexToLocFormat), cmap, fontMatrix);
-      } else {
-       return new Type2Compiled(cff, cmap, font.fontMatrix, font.glyphNameMap);
       }
+      return new Type2Compiled(cff, cmap, font.fontMatrix, font.glyphNameMap);
      }
     };
    }();
@@ -34607,8 +34731,11 @@
       var filter = dict.get('Filter', 'F'), filterName;
       if (isName(filter)) {
        filterName = filter.name;
-      } else if (isArray(filter) && isName(filter[0])) {
-       filterName = filter[0].name;
+      } else if (isArray(filter)) {
+       var filterZero = this.xref.fetchIfRef(filter[0]);
+       if (isName(filterZero)) {
+        filterName = filterZero.name;
+       }
       }
       var startPos = stream.pos, length, i, ii;
       if (filterName === 'DCTDecode' || filterName === 'DCT') {
@@ -34732,7 +34859,7 @@
       var params = dict.get('DecodeParms', 'DP');
       if (isName(filter)) {
        if (isArray(params)) {
-        params = params[0];
+        params = this.xref.fetchIfRef(params[0]);
        }
        return this.makeFilter(stream, filter.name, length, params);
       }
@@ -34741,13 +34868,13 @@
        var filterArray = filter;
        var paramsArray = params;
        for (var i = 0, ii = filterArray.length; i < ii; ++i) {
-        filter = filterArray[i];
+        filter = this.xref.fetchIfRef(filterArray[i]);
         if (!isName(filter)) {
          error('Bad filter name: ' + filter);
         }
         params = null;
         if (isArray(paramsArray) && i in paramsArray) {
-         params = paramsArray[i];
+         params = this.xref.fetchIfRef(paramsArray[i]);
         }
         stream = this.makeFilter(stream, filter.name, maybeLength, params);
         maybeLength = null;
@@ -34761,9 +34888,6 @@
        return new NullStream(stream);
       }
       try {
-       if (params && this.xref) {
-        params = this.xref.fetchIfRef(params);
-       }
        var xrefStreamStats = this.xref.stats.streamTypes;
        if (name === 'FlateDecode' || name === 'Fl') {
         xrefStreamStats[StreamType.FLATE] = true;
@@ -37617,7 +37741,7 @@
        for (charCode in GlyphMapForStandardFonts) {
         map[+charCode] = GlyphMapForStandardFonts[charCode];
        }
-       if (/ArialBlack/i.test(name)) {
+       if (/Arial-?Black/i.test(name)) {
         var SupplementalGlyphMapForArialBlack = getSupplementalGlyphMapForArialBlack();
         for (charCode in SupplementalGlyphMapForArialBlack) {
          map[+charCode] = SupplementalGlyphMapForArialBlack[charCode];
@@ -37800,13 +37924,15 @@
       originalCharCode |= 0;
       var glyphId = charCodeToGlyphId[originalCharCode];
       var fontCharCode = originalCharCode;
+      var hasUnicodeValue = false;
       if (!isIdentityUnicode && toUnicode.has(originalCharCode)) {
+       hasUnicodeValue = true;
        var unicode = toUnicode.get(fontCharCode);
        if (unicode.length === 1) {
         fontCharCode = unicode.charCodeAt(0);
        }
       }
-      if ((usedFontCharCodes[fontCharCode] !== undefined || isProblematicUnicodeLocation(fontCharCode) || isSymbolic && isIdentityUnicode) && nextAvailableFontCharCode <= PRIVATE_USE_OFFSET_END) {
+      if ((usedFontCharCodes[fontCharCode] !== undefined || isProblematicUnicodeLocation(fontCharCode) || isSymbolic && !hasUnicodeValue) && nextAvailableFontCharCode <= PRIVATE_USE_OFFSET_END) {
        do {
         fontCharCode = nextAvailableFontCharCode++;
         if (SKIP_PRIVATE_USE_RANGE_F000_TO_F01F && fontCharCode === 0xF000) {
@@ -39499,6 +39625,7 @@
    function type1FontGlyphMapping(properties, builtInEncoding, glyphNames) {
     var charCodeToGlyphId = Object.create(null);
     var glyphId, charCode, baseEncoding;
+    var isSymbolicFont = !!(properties.flags & FontFlags.Symbolic);
     if (properties.baseEncodingName) {
      baseEncoding = getEncoding(properties.baseEncodingName);
      for (charCode = 0; charCode < baseEncoding.length; charCode++) {
@@ -39509,7 +39636,7 @@
        charCodeToGlyphId[charCode] = 0;
       }
      }
-    } else if (!!(properties.flags & FontFlags.Symbolic)) {
+    } else if (isSymbolicFont) {
      for (charCode in builtInEncoding) {
       charCodeToGlyphId[charCode] = builtInEncoding[charCode];
      }
@@ -41270,11 +41397,8 @@
       }
      }
      cs = xref.fetchIfRef(cs);
-     var mode;
      if (isName(cs)) {
-      mode = cs.name;
-      this.mode = mode;
-      switch (mode) {
+      switch (cs.name) {
       case 'DeviceGray':
       case 'G':
        return 'DeviceGrayCS';
@@ -41290,11 +41414,10 @@
         null
        ];
       default:
-       error('unrecognized colorspace ' + mode);
+       error('unrecognized colorspace ' + cs.name);
       }
      } else if (isArray(cs)) {
-      mode = xref.fetchIfRef(cs[0]).name;
-      this.mode = mode;
+      var mode = xref.fetchIfRef(cs[0]).name;
       var numComps, params, alt, whitePoint, blackPoint, gamma;
       switch (mode) {
       case 'DeviceGray':
@@ -41377,12 +41500,7 @@
       case 'Separation':
       case 'DeviceN':
        var name = xref.fetchIfRef(cs[1]);
-       numComps = 1;
-       if (isName(name)) {
-        numComps = 1;
-       } else if (isArray(name)) {
-        numComps = name.length;
-       }
+       numComps = isArray(name) ? name.length : 1;
        alt = ColorSpace.parseToIR(cs[2], xref, res);
        var tintFnIR = PDFFunction.getIR(xref, xref.fetchIfRef(cs[3]));
        return [
@@ -41470,22 +41588,16 @@
       var scaled = new Float32Array(numComps);
       var tinted = new Float32Array(baseNumComps);
       var i, j;
-      if (usesZeroToOneRange) {
-       for (i = 0; i < count; i++) {
-        for (j = 0; j < numComps; j++) {
-         scaled[j] = src[srcOffset++] * scale;
-        }
-        tintFn(scaled, 0, tinted, 0);
+      for (i = 0; i < count; i++) {
+       for (j = 0; j < numComps; j++) {
+        scaled[j] = src[srcOffset++] * scale;
+       }
+       tintFn(scaled, 0, tinted, 0);
+       if (usesZeroToOneRange) {
         for (j = 0; j < baseNumComps; j++) {
          baseBuf[pos++] = tinted[j] * 255;
         }
-       }
-      } else {
-       for (i = 0; i < count; i++) {
-        for (j = 0; j < numComps; j++) {
-         scaled[j] = src[srcOffset++] * scale;
-        }
-        tintFn(scaled, 0, tinted, 0);
+       } else {
         base.getRgbItem(tinted, 0, baseBuf, pos);
         pos += baseNumComps;
        }
@@ -41518,27 +41630,25 @@
     function IndexedCS(base, highVal, lookup) {
      this.name = 'Indexed';
      this.numComps = 1;
-     this.defaultColor = new Uint8Array([0]);
+     this.defaultColor = new Uint8Array(this.numComps);
      this.base = base;
      this.highVal = highVal;
      var baseNumComps = base.numComps;
      var length = baseNumComps * highVal;
-     var lookupArray;
      if (isStream(lookup)) {
-      lookupArray = new Uint8Array(length);
+      this.lookup = new Uint8Array(length);
       var bytes = lookup.getBytes(length);
-      lookupArray.set(bytes);
+      this.lookup.set(bytes);
      } else if (isString(lookup)) {
-      lookupArray = new Uint8Array(length);
+      this.lookup = new Uint8Array(length);
       for (var i = 0; i < length; ++i) {
-       lookupArray[i] = lookup.charCodeAt(i);
+       this.lookup[i] = lookup.charCodeAt(i);
       }
      } else if (lookup instanceof Uint8Array || lookup instanceof Array) {
-      lookupArray = lookup;
+      this.lookup = lookup;
      } else {
       error('Unrecognized lookup table: ' + lookup);
      }
-     this.lookup = lookupArray;
     }
     IndexedCS.prototype = {
      getRgb: ColorSpace.prototype.getRgb,
@@ -41574,7 +41684,7 @@
     function DeviceGrayCS() {
      this.name = 'DeviceGray';
      this.numComps = 1;
-     this.defaultColor = new Float32Array([0]);
+     this.defaultColor = new Float32Array(this.numComps);
     }
     DeviceGrayCS.prototype = {
      getRgb: ColorSpace.prototype.getRgb,
@@ -41610,11 +41720,7 @@
     function DeviceRgbCS() {
      this.name = 'DeviceRGB';
      this.numComps = 3;
-     this.defaultColor = new Float32Array([
-      0,
-      0,
-      0
-     ]);
+     this.defaultColor = new Float32Array(this.numComps);
     }
     DeviceRgbCS.prototype = {
      getRgb: ColorSpace.prototype.getRgb,
@@ -41670,12 +41776,8 @@
     function DeviceCmykCS() {
      this.name = 'DeviceCMYK';
      this.numComps = 4;
-     this.defaultColor = new Float32Array([
-      0,
-      0,
-      0,
-      1
-     ]);
+     this.defaultColor = new Float32Array(this.numComps);
+     this.defaultColor[3] = 1;
     }
     DeviceCmykCS.prototype = {
      getRgb: ColorSpace.prototype.getRgb,
@@ -41706,7 +41808,7 @@
     function CalGrayCS(whitePoint, blackPoint, gamma) {
      this.name = 'CalGray';
      this.numComps = 1;
-     this.defaultColor = new Float32Array([0]);
+     this.defaultColor = new Float32Array(this.numComps);
      if (!whitePoint) {
       error('WhitePoint missing - required for color space CalGray');
      }
@@ -41818,7 +41920,7 @@
     function CalRGBCS(whitePoint, blackPoint, gamma, matrix) {
      this.name = 'CalRGB';
      this.numComps = 3;
-     this.defaultColor = new Float32Array(3);
+     this.defaultColor = new Float32Array(this.numComps);
      if (!whitePoint) {
       error('WhitePoint missing - required for color space CalRGB');
      }
@@ -42018,11 +42120,7 @@
     function LabCS(whitePoint, blackPoint, range) {
      this.name = 'Lab';
      this.numComps = 3;
-     this.defaultColor = new Float32Array([
-      0,
-      0,
-      0
-     ]);
+     this.defaultColor = new Float32Array(this.numComps);
      if (!whitePoint) {
       error('WhitePoint missing - required for color space Lab');
      }
@@ -42063,11 +42161,13 @@
      }
     }
     function fn_g(x) {
+     var result;
      if (x >= 6 / 29) {
-      return x * x * x;
+      result = x * x * x;
      } else {
-      return 108 / 841 * (x - 4 / 29);
+      result = 108 / 841 * (x - 4 / 29);
      }
+     return result;
     }
     function decode(value, high1, low2, high2) {
      return low2 + value * (high2 - low2) / high1;
@@ -42149,9 +42249,8 @@
     function handleImageData(image, nativeDecoder) {
      if (nativeDecoder && nativeDecoder.canDecode(image)) {
       return nativeDecoder.decode(image);
-     } else {
-      return Promise.resolve(image);
      }
+     return Promise.resolve(image);
     }
     function decodeAndClamp(value, addend, coefficient, max) {
      value = addend + value * coefficient;
@@ -43223,12 +43322,12 @@
     return Catalog;
    }();
    var XRef = function XRefClosure() {
-    function XRef(stream, password) {
+    function XRef(stream, pdfManager) {
      this.stream = stream;
+     this.pdfManager = pdfManager;
      this.entries = [];
      this.xrefstms = Object.create(null);
      this.cache = [];
-     this.password = password;
      this.stats = {
       streamTypes: [],
       fontTypes: []
@@ -43249,11 +43348,11 @@
       trailerDict.assignXref(this);
       this.trailer = trailerDict;
       var encrypt = trailerDict.get('Encrypt');
-      if (encrypt) {
+      if (isDict(encrypt)) {
        var ids = trailerDict.get('ID');
        var fileId = ids && ids.length ? ids[0] : '';
        encrypt.suppressEncryption = true;
-       this.encrypt = new CipherTransformFactory(encrypt, fileId, this.password);
+       this.encrypt = new CipherTransformFactory(encrypt, fileId, this.pdfManager.password);
       }
       if (!(this.root = trailerDict.get('Root'))) {
        error('Invalid root reference');
@@ -43903,9 +44002,8 @@
       return dict.get('Mac');
      } else if (dict.has('DOS')) {
       return dict.get('DOS');
-     } else {
-      return null;
      }
+     return null;
     }
     FileSpec.prototype = {
      get filename() {
@@ -45008,13 +45106,12 @@
      var cs = ColorSpace.parse(dict.get('ColorSpace', 'CS'), xref, res);
      return (cs.numComps === 1 || cs.numComps === 3) && cs.isDefaultDecode(dict.getArray('Decode', 'D'));
     };
-    function PartialEvaluator(pdfManager, xref, handler, pageIndex, uniquePrefix, idCounters, fontCache, options) {
+    function PartialEvaluator(pdfManager, xref, handler, pageIndex, idFactory, fontCache, options) {
      this.pdfManager = pdfManager;
      this.xref = xref;
      this.handler = handler;
      this.pageIndex = pageIndex;
-     this.uniquePrefix = uniquePrefix;
-     this.idCounters = idCounters;
+     this.idFactory = idFactory;
      this.fontCache = fontCache;
      this.options = options || DefaultPartialEvaluatorOptions;
     }
@@ -45177,8 +45274,7 @@
        operatorList.addOp(OPS.paintInlineImageXObject, [imgData]);
        return;
       }
-      var uniquePrefix = this.uniquePrefix || '';
-      var objId = 'img_' + uniquePrefix + ++this.idCounters.obj;
+      var objId = 'img_' + this.idFactory.createObjId();
       operatorList.addDependency(objId);
       args = [
        objId,
@@ -45462,7 +45558,7 @@
        this.fontCache.put(fontRef, fontCapability.promise);
       } else {
        if (!fontID) {
-        fontID = (this.uniquePrefix || 'F_') + ++this.idCounters.obj;
+        fontID = this.idFactory.createObjId();
        }
        this.fontCache.put('id_' + fontID, fontCapability.promise);
       }
@@ -45528,9 +45624,8 @@
         pattern = Pattern.parseShading(shading, matrix, xref, resources, this.handler);
         operatorList.addOp(fn, pattern.getIR());
         return Promise.resolve();
-       } else {
-        return Promise.reject('Unknown PatternType: ' + typeNum);
        }
+       return Promise.reject('Unknown PatternType: ' + typeNum);
       }
       operatorList.addOp(fn, args);
       return Promise.resolve();
@@ -45970,10 +46065,10 @@
        }
        if (!font.vertical) {
         textChunk.lastAdvanceWidth = width;
-        textChunk.width += width * textChunk.textAdvanceScale;
+        textChunk.width += width;
        } else {
         textChunk.lastAdvanceHeight = height;
-        textChunk.height += Math.abs(height * textChunk.textAdvanceScale);
+        textChunk.height += Math.abs(height);
        }
        return textChunk;
       }
@@ -45994,6 +46089,8 @@
        if (!textContentItem.initialized) {
         return;
        }
+       textContentItem.width *= textContentItem.textAdvanceScale;
+       textContentItem.height *= textContentItem.textAdvanceScale;
        textContent.items.push(runBidiTransform(textContentItem));
        textContentItem.initialized = false;
        textContentItem.str.length = 0;
@@ -46106,16 +46203,16 @@
            advance = items[j] * textState.fontSize / 1000;
            var breakTextRun = false;
            if (textState.font.vertical) {
-            offset = advance * (textState.textHScale * textState.textMatrix[2] + textState.textMatrix[3]);
-            textState.translateTextMatrix(0, advance);
+            offset = advance;
+            textState.translateTextMatrix(0, offset);
             breakTextRun = textContentItem.textRunBreakAllowed && advance > textContentItem.fakeMultiSpaceMax;
             if (!breakTextRun) {
              textContentItem.height += offset;
             }
            } else {
             advance = -advance;
-            offset = advance * (textState.textHScale * textState.textMatrix[0] + textState.textMatrix[1]);
-            textState.translateTextMatrix(advance, 0);
+            offset = advance * textState.textHScale;
+            textState.translateTextMatrix(offset, 0);
             breakTextRun = textContentItem.textRunBreakAllowed && advance > textContentItem.fakeMultiSpaceMax;
             if (!breakTextRun) {
              textContentItem.width += offset;
@@ -46265,8 +46362,13 @@
       if (baseEncodingName) {
        properties.defaultEncoding = getEncoding(baseEncodingName).slice();
       } else {
-       encoding = properties.type === 'TrueType' ? WinAnsiEncoding : StandardEncoding;
-       if (!!(properties.flags & FontFlags.Symbolic)) {
+       var isSymbolicFont = !!(properties.flags & FontFlags.Symbolic);
+       var isNonsymbolicFont = !!(properties.flags & FontFlags.Nonsymbolic);
+       encoding = StandardEncoding;
+       if (properties.type === 'TrueType' && !isNonsymbolicFont) {
+        encoding = WinAnsiEncoding;
+       }
+       if (isSymbolicFont) {
         encoding = MacRomanEncoding;
         if (!properties.file) {
          if (/Symbol/i.test(properties.name)) {
@@ -46432,14 +46534,14 @@
        widths = dict.get('W');
        if (widths) {
         for (i = 0, ii = widths.length; i < ii; i++) {
-         start = widths[i++];
+         start = xref.fetchIfRef(widths[i++]);
          code = xref.fetchIfRef(widths[i]);
          if (isArray(code)) {
           for (j = 0, jj = code.length; j < jj; j++) {
-           glyphsWidths[start++] = code[j];
+           glyphsWidths[start++] = xref.fetchIfRef(code[j]);
           }
          } else {
-          var width = widths[++i];
+          var width = xref.fetchIfRef(widths[++i]);
           for (j = start; j <= code; j++) {
            glyphsWidths[j] = width;
           }
@@ -46447,7 +46549,7 @@
         }
        }
        if (properties.vertical) {
-        var vmetrics = dict.get('DW2') || [
+        var vmetrics = dict.getArray('DW2') || [
          880,
          -1000
         ];
@@ -46459,21 +46561,21 @@
         vmetrics = dict.get('W2');
         if (vmetrics) {
          for (i = 0, ii = vmetrics.length; i < ii; i++) {
-          start = vmetrics[i++];
+          start = xref.fetchIfRef(vmetrics[i++]);
           code = xref.fetchIfRef(vmetrics[i]);
           if (isArray(code)) {
            for (j = 0, jj = code.length; j < jj; j++) {
             glyphsVMetrics[start++] = [
-             code[j++],
-             code[j++],
-             code[j]
+             xref.fetchIfRef(code[j++]),
+             xref.fetchIfRef(code[j++]),
+             xref.fetchIfRef(code[j])
             ];
            }
           } else {
            var vmetric = [
-            vmetrics[++i],
-            vmetrics[++i],
-            vmetrics[++i]
+            xref.fetchIfRef(vmetrics[++i]),
+            xref.fetchIfRef(vmetrics[++i]),
+            xref.fetchIfRef(vmetrics[++i])
            ];
            for (j = start; j <= code; j++) {
             glyphsVMetrics[j] = vmetric;
@@ -46488,7 +46590,7 @@
        if (widths) {
         j = firstChar;
         for (i = 0, ii = widths.length; i < ii; i++) {
-         glyphsWidths[j++] = widths[i];
+         glyphsWidths[j++] = xref.fetchIfRef(widths[i]);
         }
         defaultWidth = parseFloat(descriptor.get('MissingWidth')) || 0;
        } else {
@@ -46604,7 +46706,16 @@
          } else if (isRef(entry)) {
           hash.update(entry.toString());
          } else if (isArray(entry)) {
-          hash.update(entry.length.toString());
+          var diffLength = entry.length, diffBuf = new Array(diffLength);
+          for (var j = 0; j < diffLength; j++) {
+           var diffEntry = entry[j];
+           if (isName(diffEntry)) {
+            diffBuf[j] = diffEntry.name;
+           } else if (isNum(diffEntry) || isRef(diffEntry)) {
+            diffBuf[j] = diffEntry.toString();
+           }
+          }
+          hash.update(diffBuf.join());
          }
         }
        }
@@ -47468,17 +47579,16 @@
         operation.fn = fn;
         operation.args = args;
         return true;
-       } else {
-        if (isEOF(obj)) {
-         return false;
+       }
+       if (isEOF(obj)) {
+        return false;
+       }
+       if (obj !== null) {
+        if (args === null) {
+         args = [];
         }
-        if (obj !== null) {
-         if (args === null) {
-          args = [];
-         }
-         args.push(obj);
-         assert(args.length <= 33, 'Too many arguments');
-        }
+        args.push(obj);
+        assert(args.length <= 33, 'Too many arguments');
        }
       }
      },
@@ -47853,12 +47963,12 @@
    function AnnotationFactory() {
    }
    AnnotationFactory.prototype = {
-    create: function AnnotationFactory_create(xref, ref, pdfManager, uniquePrefix, idCounters) {
+    create: function AnnotationFactory_create(xref, ref, pdfManager, idFactory) {
      var dict = xref.fetchIfRef(ref);
      if (!isDict(dict)) {
       return;
      }
-     var id = isRef(ref) ? ref.toString() : 'annot_' + (uniquePrefix || '') + ++idCounters.obj;
+     var id = isRef(ref) ? ref.toString() : 'annot_' + idFactory.createObjId();
      var subtype = dict.get('Subtype');
      subtype = isName(subtype) ? subtype.name : null;
      var parameters = {
@@ -47880,6 +47990,8 @@
       switch (fieldType) {
       case 'Tx':
        return new TextWidgetAnnotation(parameters);
+      case 'Btn':
+       return new ButtonWidgetAnnotation(parameters);
       case 'Ch':
        return new ChoiceWidgetAnnotation(parameters);
       }
@@ -48307,17 +48419,72 @@
     });
     return TextWidgetAnnotation;
    }();
+   var ButtonWidgetAnnotation = function ButtonWidgetAnnotationClosure() {
+    function ButtonWidgetAnnotation(params) {
+     WidgetAnnotation.call(this, params);
+     this.data.checkBox = !this.hasFieldFlag(AnnotationFieldFlag.RADIO) && !this.hasFieldFlag(AnnotationFieldFlag.PUSHBUTTON);
+     if (this.data.checkBox) {
+      if (!isName(this.data.fieldValue)) {
+       return;
+      }
+      this.data.fieldValue = this.data.fieldValue.name;
+     }
+     this.data.radioButton = this.hasFieldFlag(AnnotationFieldFlag.RADIO) && !this.hasFieldFlag(AnnotationFieldFlag.PUSHBUTTON);
+     if (this.data.radioButton) {
+      this.data.fieldValue = this.data.buttonValue = null;
+      var fieldParent = params.dict.get('Parent');
+      if (!isDict(fieldParent) || !fieldParent.has('V')) {
+       return;
+      }
+      var fieldParentValue = fieldParent.get('V');
+      if (!isName(fieldParentValue)) {
+       return;
+      }
+      this.data.fieldValue = fieldParentValue.name;
+      var appearanceStates = params.dict.get('AP');
+      if (!isDict(appearanceStates)) {
+       return;
+      }
+      var normalAppearanceState = appearanceStates.get('N');
+      if (!isDict(normalAppearanceState)) {
+       return;
+      }
+      var keys = normalAppearanceState.getKeys();
+      for (var i = 0, ii = keys.length; i < ii; i++) {
+       if (keys[i] !== 'Off') {
+        this.data.buttonValue = keys[i];
+        break;
+       }
+      }
+     }
+    }
+    Util.inherit(ButtonWidgetAnnotation, WidgetAnnotation, {
+     getOperatorList: function ButtonWidgetAnnotation_getOperatorList(evaluator, task, renderForms) {
+      var operatorList = new OperatorList();
+      if (renderForms) {
+       return Promise.resolve(operatorList);
+      }
+      if (this.appearance) {
+       return Annotation.prototype.getOperatorList.call(this, evaluator, task, renderForms);
+      }
+      return Promise.resolve(operatorList);
+     }
+    });
+    return ButtonWidgetAnnotation;
+   }();
    var ChoiceWidgetAnnotation = function ChoiceWidgetAnnotationClosure() {
     function ChoiceWidgetAnnotation(params) {
      WidgetAnnotation.call(this, params);
      this.data.options = [];
-     var options = params.dict.getArray('Opt');
+     var options = params.dict.get('Opt');
      if (isArray(options)) {
+      var xref = params.xref;
       for (var i = 0, ii = options.length; i < ii; i++) {
-       var option = options[i];
+       var option = xref.fetchIfRef(options[i]);
+       var isOptionArray = isArray(option);
        this.data.options[i] = {
-        exportValue: isArray(option) ? option[0] : option,
-        displayValue: isArray(option) ? option[1] : option
+        exportValue: isOptionArray ? xref.fetchIfRef(option[0]) : option,
+        displayValue: isOptionArray ? xref.fetchIfRef(option[1]) : option
        };
       }
      }
@@ -48463,6 +48630,7 @@
    var info = sharedUtil.info;
    var isArray = sharedUtil.isArray;
    var isArrayBuffer = sharedUtil.isArrayBuffer;
+   var isNum = sharedUtil.isNum;
    var isString = sharedUtil.isString;
    var shadow = sharedUtil.shadow;
    var stringToBytes = sharedUtil.stringToBytes;
@@ -48486,6 +48654,7 @@
    var Annotation = coreAnnotation.Annotation;
    var AnnotationFactory = coreAnnotation.AnnotationFactory;
    var Page = function PageClosure() {
+    var DEFAULT_USER_UNIT = 1.0;
     var LETTER_SIZE_MEDIABOX = [
      0,
      0,
@@ -48499,20 +48668,26 @@
      this.xref = xref;
      this.ref = ref;
      this.fontCache = fontCache;
-     this.uniquePrefix = 'p' + this.pageIndex + '_';
-     this.idCounters = { obj: 0 };
      this.evaluatorOptions = pdfManager.evaluatorOptions;
      this.resourcesPromise = null;
+     var uniquePrefix = 'p' + this.pageIndex + '_';
+     var idCounters = { obj: 0 };
+     this.idFactory = {
+      createObjId: function () {
+       return uniquePrefix + ++idCounters.obj;
+      }
+     };
     }
     Page.prototype = {
      getPageProp: function Page_getPageProp(key) {
       return this.pageDict.get(key);
      },
-     getInheritedPageProp: function Page_getInheritedPageProp(key) {
+     getInheritedPageProp: function Page_getInheritedPageProp(key, getArray) {
       var dict = this.pageDict, valueArray = null, loopCount = 0;
       var MAX_LOOP_COUNT = 100;
+      getArray = getArray || false;
       while (dict) {
-       var value = dict.get(key);
+       var value = getArray ? dict.getArray(key) : dict.get(key);
        if (value) {
         if (!valueArray) {
          valueArray = [];
@@ -48540,23 +48715,33 @@
       return shadow(this, 'resources', this.getInheritedPageProp('Resources'));
      },
      get mediaBox() {
-      var obj = this.getInheritedPageProp('MediaBox');
-      if (!isArray(obj) || obj.length !== 4) {
-       obj = LETTER_SIZE_MEDIABOX;
+      var mediaBox = this.getInheritedPageProp('MediaBox', true);
+      if (!isArray(mediaBox) || mediaBox.length !== 4) {
+       return shadow(this, 'mediaBox', LETTER_SIZE_MEDIABOX);
       }
-      return shadow(this, 'mediaBox', obj);
+      return shadow(this, 'mediaBox', mediaBox);
+     },
+     get cropBox() {
+      var cropBox = this.getInheritedPageProp('CropBox', true);
+      if (!isArray(cropBox) || cropBox.length !== 4) {
+       return shadow(this, 'cropBox', this.mediaBox);
+      }
+      return shadow(this, 'cropBox', cropBox);
+     },
+     get userUnit() {
+      var obj = this.getPageProp('UserUnit');
+      if (!isNum(obj) || obj <= 0) {
+       obj = DEFAULT_USER_UNIT;
+      }
+      return shadow(this, 'userUnit', obj);
      },
      get view() {
-      var mediaBox = this.mediaBox;
-      var cropBox = this.getInheritedPageProp('CropBox');
-      if (!isArray(cropBox) || cropBox.length !== 4) {
+      var mediaBox = this.mediaBox, cropBox = this.cropBox;
+      if (mediaBox === cropBox) {
        return shadow(this, 'view', mediaBox);
       }
-      cropBox = Util.intersect(cropBox, mediaBox);
-      if (!cropBox) {
-       return shadow(this, 'view', mediaBox);
-      }
-      return shadow(this, 'view', cropBox);
+      var intersection = Util.intersect(cropBox, mediaBox);
+      return shadow(this, 'view', intersection || mediaBox);
      },
      get rotate() {
       var rotate = this.getInheritedPageProp('Rotate') || 0;
@@ -48608,7 +48793,7 @@
        'XObject',
        'Font'
       ]);
-      var partialEvaluator = new PartialEvaluator(pdfManager, this.xref, handler, this.pageIndex, this.uniquePrefix, this.idCounters, this.fontCache, this.evaluatorOptions);
+      var partialEvaluator = new PartialEvaluator(pdfManager, this.xref, handler, this.pageIndex, this.idFactory, this.fontCache, this.evaluatorOptions);
       var dataPromises = Promise.all([
        contentStreamPromise,
        resourcesPromise
@@ -48664,7 +48849,7 @@
       ]);
       return dataPromises.then(function (data) {
        var contentStream = data[0];
-       var partialEvaluator = new PartialEvaluator(pdfManager, self.xref, handler, self.pageIndex, self.uniquePrefix, self.idCounters, self.fontCache, self.evaluatorOptions);
+       var partialEvaluator = new PartialEvaluator(pdfManager, self.xref, handler, self.pageIndex, self.idFactory, self.fontCache, self.evaluatorOptions);
        return partialEvaluator.getTextContent(contentStream, task, self.resources, null, normalizeWhitespace, combineTextItems);
       });
      },
@@ -48687,7 +48872,7 @@
       var annotationFactory = new AnnotationFactory();
       for (var i = 0, n = annotationRefs.length; i < n; ++i) {
        var annotationRef = annotationRefs[i];
-       var annotation = annotationFactory.create(this.xref, annotationRef, this.pdfManager, this.uniquePrefix, this.idCounters);
+       var annotation = annotationFactory.create(this.xref, annotationRef, this.pdfManager, this.idFactory);
        if (annotation) {
         annotations.push(annotation);
        }
@@ -48700,21 +48885,19 @@
    var PDFDocument = function PDFDocumentClosure() {
     var FINGERPRINT_FIRST_BYTES = 1024;
     var EMPTY_FINGERPRINT = '\x00\x00\x00\x00\x00\x00\x00' + '\x00\x00\x00\x00\x00\x00\x00\x00\x00';
-    function PDFDocument(pdfManager, arg, password) {
+    function PDFDocument(pdfManager, arg) {
+     var stream;
      if (isStream(arg)) {
-      init.call(this, pdfManager, arg, password);
+      stream = arg;
      } else if (isArrayBuffer(arg)) {
-      init.call(this, pdfManager, new Stream(arg), password);
+      stream = new Stream(arg);
      } else {
       error('PDFDocument: Unknown argument type');
      }
-    }
-    function init(pdfManager, stream, password) {
      assert(stream.length > 0, 'stream must have data');
      this.pdfManager = pdfManager;
      this.stream = stream;
-     var xref = new XRef(this.stream, password, pdfManager);
-     this.xref = xref;
+     this.xref = new XRef(stream, pdfManager);
     }
     function find(stream, needle, limit, backwards) {
      var pos = stream.pos;
@@ -48947,6 +49130,9 @@
      get docId() {
       return this._docId;
      },
+     get password() {
+      return this._password;
+     },
      get docBaseUrl() {
       var docBaseUrl = null;
       if (this._docBaseUrl) {
@@ -48990,14 +49176,7 @@
       return new NotImplementedException();
      },
      updatePassword: function BasePdfManager_updatePassword(password) {
-      this.pdfDocument.xref.password = this.password = password;
-      if (this._passwordChangedCapability) {
-       this._passwordChangedCapability.resolve();
-      }
-     },
-     passwordChanged: function BasePdfManager_passwordChanged() {
-      this._passwordChangedCapability = createPromiseCapability();
-      return this._passwordChangedCapability.promise;
+      this._password = password;
      },
      terminate: function BasePdfManager_terminate() {
       return new NotImplementedException();
@@ -49008,10 +49187,11 @@
    var LocalPdfManager = function LocalPdfManagerClosure() {
     function LocalPdfManager(docId, data, password, evaluatorOptions, docBaseUrl) {
      this._docId = docId;
+     this._password = password;
      this._docBaseUrl = docBaseUrl;
      this.evaluatorOptions = evaluatorOptions;
      var stream = new Stream(data);
-     this.pdfDocument = new PDFDocument(this, stream, password);
+     this.pdfDocument = new PDFDocument(this, stream);
      this._loadedStreamCapability = createPromiseCapability();
      this._loadedStreamCapability.resolve(stream);
     }
@@ -49036,13 +49216,11 @@
       return Promise.resolve();
      },
      requestLoadedStream: function LocalPdfManager_requestLoadedStream() {
-      return;
      },
      onLoadedStream: function LocalPdfManager_onLoadedStream() {
       return this._loadedStreamCapability.promise;
      },
      terminate: function LocalPdfManager_terminate() {
-      return;
      }
     });
     return LocalPdfManager;
@@ -49050,6 +49228,7 @@
    var NetworkPdfManager = function NetworkPdfManagerClosure() {
     function NetworkPdfManager(docId, pdfNetworkStream, args, evaluatorOptions, docBaseUrl) {
      this._docId = docId;
+     this._password = args.password;
      this._docBaseUrl = docBaseUrl;
      this.msgHandler = args.msgHandler;
      this.evaluatorOptions = evaluatorOptions;
@@ -49061,7 +49240,7 @@
       rangeChunkSize: args.rangeChunkSize
      };
      this.streamManager = new ChunkedStreamManager(pdfNetworkStream, params);
-     this.pdfDocument = new PDFDocument(this, this.streamManager.getStream(), args.password);
+     this.pdfDocument = new PDFDocument(this, this.streamManager.getStream());
     }
     Util.inherit(NetworkPdfManager, BasePdfManager, {
      ensure: function NetworkPdfManager_ensure(obj, prop, args) {
@@ -49563,18 +49742,23 @@
       };
       return pdfManagerCapability.promise;
      }
-     var setupDoc = function (data) {
-      var onSuccess = function (doc) {
+     function setupDoc(data) {
+      function onSuccess(doc) {
        ensureNotTerminated();
        handler.send('GetDoc', { pdfInfo: doc });
-      };
-      var onFailure = function (e) {
+      }
+      function onFailure(e) {
        if (e instanceof PasswordException) {
-        if (e.code === PasswordResponses.NEED_PASSWORD) {
-         handler.send('NeedPassword', e);
-        } else if (e.code === PasswordResponses.INCORRECT_PASSWORD) {
-         handler.send('IncorrectPassword', e);
-        }
+        var task = new WorkerTask('PasswordException: response ' + e.code);
+        startWorkerTask(task);
+        handler.sendWithPromise('PasswordRequest', e).then(function (data) {
+         finishWorkerTask(task);
+         pdfManager.updatePassword(data.password);
+         pdfManagerReady();
+        }).catch(function (ex) {
+         finishWorkerTask(task);
+         handler.send('PasswordException', ex);
+        }.bind(null, e));
        } else if (e instanceof InvalidPDFException) {
         handler.send('InvalidPDF', e);
        } else if (e instanceof MissingPDFException) {
@@ -49584,7 +49768,22 @@
        } else {
         handler.send('UnknownError', new UnknownErrorException(e.message, e.toString()));
        }
-      };
+      }
+      function pdfManagerReady() {
+       ensureNotTerminated();
+       loadDocument(false).then(onSuccess, function loadFailure(ex) {
+        ensureNotTerminated();
+        if (!(ex instanceof XRefParseException)) {
+         onFailure(ex);
+         return;
+        }
+        pdfManager.requestLoadedStream();
+        pdfManager.onLoadedStream().then(function () {
+         ensureNotTerminated();
+         loadDocument(true).then(onSuccess, onFailure);
+        });
+       }, onFailure);
+      }
       ensureNotTerminated();
       var cMapOptions = {
        url: data.cMapUrl === undefined ? null : data.cMapUrl,
@@ -49606,39 +49805,25 @@
        pdfManager.onLoadedStream().then(function (stream) {
         handler.send('DataLoaded', { length: stream.bytes.byteLength });
        });
-      }).then(function pdfManagerReady() {
-       ensureNotTerminated();
-       loadDocument(false).then(onSuccess, function loadFailure(ex) {
-        ensureNotTerminated();
-        if (!(ex instanceof XRefParseException)) {
-         if (ex instanceof PasswordException) {
-          pdfManager.passwordChanged().then(pdfManagerReady);
-         }
-         onFailure(ex);
-         return;
-        }
-        pdfManager.requestLoadedStream();
-        pdfManager.onLoadedStream().then(function () {
-         ensureNotTerminated();
-         loadDocument(true).then(onSuccess, onFailure);
-        });
-       }, onFailure);
-      }, onFailure);
-     };
+      }).then(pdfManagerReady, onFailure);
+     }
      handler.on('GetPage', function wphSetupGetPage(data) {
       return pdfManager.getPage(data.pageIndex).then(function (page) {
        var rotatePromise = pdfManager.ensure(page, 'rotate');
        var refPromise = pdfManager.ensure(page, 'ref');
+       var userUnitPromise = pdfManager.ensure(page, 'userUnit');
        var viewPromise = pdfManager.ensure(page, 'view');
        return Promise.all([
         rotatePromise,
         refPromise,
+        userUnitPromise,
         viewPromise
        ]).then(function (results) {
         return {
          rotate: results[0],
          ref: results[1],
-         view: results[2]
+         userUnit: results[2],
+         view: results[3]
         };
        });
       });
@@ -49680,9 +49865,6 @@
      });
      handler.on('GetStats', function wphSetupGetStats(data) {
       return pdfManager.pdfDocument.xref.stats;
-     });
-     handler.on('UpdatePassword', function wphSetupUpdatePassword(data) {
-      pdfManager.updatePassword(data);
      });
      handler.on('GetAnnotations', function wphSetupGetAnnotations(data) {
       return pdfManager.getPage(data.pageIndex).then(function (page) {
@@ -49858,8 +50040,8 @@
     return array.buffer;
    }
    // @NOTE(tjin): Fix Chrome console warning
-   // var supportsMozChunked = (function supportsMozChunkedClosure() {
-   var supportsMozChunked = !(typeof navigator !== 'undefined' && /Chrome/.test(navigator.userAgent)) && (function supportsMozChunkedClosure() {
+   // var supportsMozChunked = function supportsMozChunkedClosure() {
+   var supportsMozChunked = !(typeof navigator !== 'undefined' && /Chrome/.test(navigator.userAgent)) && function supportsMozChunkedClosure() {
     try {
      var x = new XMLHttpRequest();
      x.open('GET', 'https://example.com');
@@ -49868,7 +50050,7 @@
     } catch (e) {
      return false;
     }
-   })();
+   }();
    NetworkManager.prototype = {
     requestRange: function NetworkManager_requestRange(begin, end, listeners) {
      var args = {
