@@ -26,7 +26,7 @@ class CSV extends TextBase {
     constructor(container, options) {
         super(container, options);
         this.csvEl = this.containerEl.appendChild(document.createElement('div'));
-        this.csvEl.className = 'box-preview-text box-preview-text-csv';
+        this.csvEl.className = 'bp-text bp-text-csv';
         this.gridComponent = null;
     }
 
@@ -114,7 +114,7 @@ class CSV extends TextBase {
      * @private
      */
     getRowClassName(row) {
-        return row % 2 === 0 ? 'box-preview-text-csv-even-row' : 'box-preview-text-csv-odd-row';
+        return row % 2 === 0 ? 'bp-text-csv-even-row' : 'bp-text-csv-odd-row';
     }
 
     /* eslint-disable react/prop-types */
@@ -131,7 +131,7 @@ class CSV extends TextBase {
      */
     cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
         const rowClass = this.getRowClassName(rowIndex);
-        return <div className={`${rowClass} box-preview-text-csv-cell`} key={key} style={style}>{this.data[rowIndex][columnIndex]}</div>;
+        return <div className={`${rowClass} bp-text-csv-cell`} key={key} style={style}>{this.data[rowIndex][columnIndex]}</div>;
     }
     /* eslint-enable react/prop-types */
 
@@ -159,7 +159,7 @@ class CSV extends TextBase {
 
         this.gridComponent = ReactDOM.render(
             <Grid
-                className='box-preview-text-csv-grid'
+                className='bp-text-csv-grid'
                 cellRenderer={this.cellRenderer}
                 width={maxWidth}
                 height={Math.min(maxHeight, calculatedHeight)}

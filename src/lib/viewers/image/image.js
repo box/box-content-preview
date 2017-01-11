@@ -18,7 +18,7 @@ import './image.scss';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
 const CSS_CLASS_PANNING = 'panning';
-const CSS_CLASS_IMAGE = 'box-preview-image';
+const CSS_CLASS_IMAGE = 'bp-image';
 const IMAGE_PADDING = 15;
 const IMAGE_ZOOM_SCALE = 1.2;
 
@@ -319,9 +319,9 @@ class Image extends Base {
      */
     loadUI() {
         super.loadUI();
-        this.controls.add(__('rotate_left'), this.rotateLeft, 'box-preview-image-rotate-left-icon', ICON_ROTATE_LEFT);
-        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+        this.controls.add(__('rotate_left'), this.rotateLeft, 'bp-image-rotate-left-icon', ICON_ROTATE_LEFT);
+        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
 
         // Show existing annotations after image is rendered
         if (!this.annotator || this.annotationsLoaded) {

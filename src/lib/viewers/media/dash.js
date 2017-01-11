@@ -6,8 +6,8 @@ import { createContentUrl, getHeaders } from '../../util';
 import RepStatus from '../../rep-status';
 import './dash.scss';
 
-const CSS_CLASS_DASH = 'box-preview-media-dash';
-const CSS_CLASS_HD = 'box-preview-media-controls-is-hd';
+const CSS_CLASS_DASH = 'bp-media-dash';
+const CSS_CLASS_HD = 'bp-media-controls-is-hd';
 const SEGMENT_SIZE = 5;
 const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 
@@ -476,7 +476,7 @@ class Dash extends VideoBase {
         }
 
         this.statsEl = this.mediaContainerEl.appendChild(document.createElement('div'));
-        this.statsEl.className = 'box-preview-media-dash-stats';
+        this.statsEl.className = 'bp-media-dash-stats';
         this.statsEl.textContent = '?!? kbps';
     }
 

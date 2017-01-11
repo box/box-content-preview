@@ -6,8 +6,8 @@ import {
 } from '../../icons/icons';
 import './multi-image.scss';
 
-const CSS_CLASS_IMAGE = 'box-preview-images';
-const CSS_CLASS_IMAGE_WRAPPER = 'box-preview-images-wrapper';
+const CSS_CLASS_IMAGE = 'bp-images';
+const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
 
 const Box = global.Box || {};
 
@@ -133,8 +133,8 @@ class MultiImage extends ImageBase {
      */
     loadUI() {
         super.loadUI();
-        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 }
 

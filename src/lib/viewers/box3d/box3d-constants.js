@@ -11,6 +11,6 @@ export const EVENT_TOGGLE_FULLSCREEN = 'toggleFullscreen';
 export const EVENT_TRIGGER_RENDER = 'triggerRender';
 
 // CSS CLASSES
-export const CSS_CLASS_BOX3D = 'box-preview-box3d';
-export const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
-export const CSS_CLASS_INVISIBLE = 'box-preview-invisible';
+export const CSS_CLASS_BOX3D = 'bp-box3d';
+export const CSS_CLASS_HIDDEN = 'bp-is-hidden';
+export const CSS_CLASS_INVISIBLE = 'bp-invisible';

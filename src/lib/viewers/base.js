@@ -45,7 +45,7 @@ class Base extends EventEmitter {
             container = wrapper.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER);
         }
 
-        // From the perspective of viewers box-preview holds everything
+        // From the perspective of viewers bp holds everything
         this.containerEl = container.querySelector(SELECTOR_BOX_PREVIEW);
 
         // Attach event listeners

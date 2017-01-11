@@ -1,6 +1,6 @@
 @import '../../annotations/annotator';
 
-.box-preview-image {
+.bp-image {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -16,32 +16,32 @@
     text-align: center;
 }
 
-.box-preview-image:before {
+.bp-image:before {
     content: "";
     height: 100%;
     display: inline-block;
     vertical-align: middle;
 }
 
-.box-preview-image img {
+.bp-image img {
     vertical-align: middle;
     position: absolute;
 }
 
-.box-preview-image .pannable {
+.bp-image .pannable {
     cursor: move;
     cursor: -moz-grab;
     cursor: -webkit-grab;
 }
 
-.box-preview-image .panning {
+.bp-image .panning {
     cursor: move;
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
 }
 
-.box-preview-images-wrapper,
-.box-preview-image .zoomable {
+.bp-images-wrapper,
+.bp-image .zoomable {
     cursor: pointer; /* cursor for IE9 */
     cursor: zoom-in;
     cursor: -moz-zoom-in;
@@ -50,13 +50,13 @@
 
 
 
-.box-preview-images-wrapper {
+.bp-images-wrapper {
     padding: 0;
     margin: 0 auto;
     border: 0 none;
 }
 
-.box-preview-images img {
+.bp-images img {
     width: 100%;
     display: block;
 }

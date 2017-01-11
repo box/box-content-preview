@@ -1,8 +1,8 @@
-.box-preview-is-fullscreen .box-preview-navigate {
+.bp-is-fullscreen .bp-navigate {
     display: none;
 }
 
-.box-preview-navigate {
+.bp-navigate {
     position: absolute;
     white-space: nowrap;
     top: 50%;
@@ -26,7 +26,7 @@
     }
 }
 
-.box-preview-is-navigation-visible .box-preview-navigate {
+.bp-is-navigation-visible .bp-navigate {
     opacity: .8;
 
     &:hover {
@@ -34,12 +34,12 @@
     }
 }
 
-.box-preview-navigate-left {
+.bp-navigate-left {
     border-radius: 0 2px 2px 0;
     left: 0;
 }
 
-.box-preview-navigate-right {
+.bp-navigate-right {
     border-radius: 2px 0 0 2px;
     right: 0;
 }

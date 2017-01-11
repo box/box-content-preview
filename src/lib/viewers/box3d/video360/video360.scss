@@ -1,18 +1,18 @@
 @import '../../media/dash';
 
-.box-preview-video-360 .box-preview-media-container {
+.bp-video-360 .bp-media-container {
     display: flex;
 }
 
-.box-preview-video-360 canvas {
+.bp-video-360 canvas {
     cursor: move; /* fallback if grab cursor is unsupported */
     cursor: -moz-grab;
     cursor: -webkit-grab;
     cursor: grab;
 }
 
-.box-preview-is-mobile {
-    .box-preview-media-controls-wrapper {
+.bp-is-mobile {
+    .bp-media-controls-wrapper {
         opacity: 1!important;
     }
 }

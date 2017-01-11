@@ -33,7 +33,7 @@ class PlainText extends TextBase {
     constructor(container, options) {
         super(container, options);
         this.textEl = this.containerEl.appendChild(document.createElement('pre'));
-        this.textEl.className = 'box-preview-text box-preview-text-plain hljs';
+        this.textEl.className = 'bp-text bp-text-plain hljs';
         this.textEl.classList.add(CLASS_HIDDEN);
 
         this.codeEl = this.textEl.appendChild(document.createElement('code'));
@@ -51,7 +51,7 @@ class PlainText extends TextBase {
      * @returns {void}
      */
     destroy() {
-        const downloadBtnEl = this.textEl.querySelector('.box-preview-btn-download');
+        const downloadBtnEl = this.textEl.querySelector('.bp-btn-download');
         if (downloadBtnEl) {
             downloadBtnEl.removeEventListener('click', this.download.bind(this));
         }
@@ -201,11 +201,11 @@ class PlainText extends TextBase {
         this.printPopup = new Popup(this.containerEl);
 
         const printCheckmark = document.createElement('div');
-        printCheckmark.className = `box-preview-print-check ${CLASS_HIDDEN}`;
+        printCheckmark.className = `bp-print-check ${CLASS_HIDDEN}`;
         printCheckmark.innerHTML = ICON_PRINT_CHECKMARK.trim();
 
         const loadingIndicator = document.createElement('div');
-        loadingIndicator.classList.add('box-preview-crawler');
+        loadingIndicator.classList.add('bp-crawler');
         loadingIndicator.innerHTML = `
             <div></div>
             <div></div>
@@ -270,13 +270,13 @@ class PlainText extends TextBase {
      */
     showTruncatedDownloadButton() {
         const truncatedEl = document.createElement('div');
-        truncatedEl.classList.add('box-preview-text-truncated');
+        truncatedEl.classList.add('bp-text-truncated');
 
         const truncatedTextEl = document.createElement('p');
         truncatedTextEl.textContent = __('text_truncated');
 
         const downloadBtnEl = document.createElement('button');
-        downloadBtnEl.className = 'box-preview-btn box-preview-btn-primary box-preview-btn-download';
+        downloadBtnEl.className = 'bp-btn bp-btn-primary bp-btn-download';
         downloadBtnEl.textContent = __('download_file');
 
         truncatedEl.appendChild(truncatedTextEl);

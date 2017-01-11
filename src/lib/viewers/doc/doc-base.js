@@ -53,7 +53,7 @@ class DocBase extends Base {
     constructor(container, options) {
         super(container, options);
         this.docEl = this.containerEl.appendChild(document.createElement('div'));
-        this.docEl.classList.add('box-preview-doc');
+        this.docEl.classList.add('bp-doc');
 
         if (Browser.getName() === 'Safari') {
             this.docEl.classList.add(IS_SAFARI_CLASS);
@@ -164,11 +164,11 @@ class DocBase extends Base {
         this.printPopup = new Popup(this.containerEl);
 
         const printCheckmark = document.createElement('div');
-        printCheckmark.className = `box-preview-print-check ${CLASS_HIDDEN}`;
+        printCheckmark.className = `bp-print-check ${CLASS_HIDDEN}`;
         printCheckmark.innerHTML = ICON_PRINT_CHECKMARK.trim();
 
         const loadingIndicator = document.createElement('div');
-        loadingIndicator.classList.add('box-preview-crawler');
+        loadingIndicator.classList.add('bp-crawler');
         loadingIndicator.innerHTML = `
             <div></div>
             <div></div>
@@ -322,9 +322,9 @@ class DocBase extends Base {
     checkPaginationButtons() {
         const pagesCount = this.pdfViewer.pagesCount;
         const currentPageNum = this.pdfViewer.currentPageNumber;
-        const pageNumButtonEl = this.containerEl.querySelector('.box-preview-doc-page-num');
-        const previousPageButtonEl = this.containerEl.querySelector('.box-preview-previous-page');
-        const nextPageButtonEl = this.containerEl.querySelector('.box-preview-next-page');
+        const pageNumButtonEl = this.containerEl.querySelector('.bp-doc-page-num');
+        const previousPageButtonEl = this.containerEl.querySelector('.bp-previous-page');
+        const nextPageButtonEl = this.containerEl.querySelector('.bp-next-page');
 
         // Disable page number selector for Safari fullscreen, see https://jira.inside-box.net/browse/COXP-997
         const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen(this.containerEl);
@@ -651,15 +651,15 @@ class DocBase extends Base {
      * @private
      */
     initPageNumEl() {
-        const pageNumEl = this.controls.controlsEl.querySelector('.box-preview-doc-page-num');
+        const pageNumEl = this.controls.controlsEl.querySelector('.bp-doc-page-num');
 
         // Update total page number
-        const totalPageEl = pageNumEl.querySelector('.box-preview-doc-total-pages');
+        const totalPageEl = pageNumEl.querySelector('.bp-doc-total-pages');
         totalPageEl.textContent = this.pdfViewer.pagesCount;
 
         // Keep reference to page number input and current page elements
-        this.pageNumInputEl = pageNumEl.querySelector('.box-preview-doc-page-num-input');
-        this.currentPageEl = pageNumEl.querySelector('.box-preview-doc-current-page');
+        this.pageNumInputEl = pageNumEl.querySelector('.bp-doc-page-num-input');
+        this.currentPageEl = pageNumEl.querySelector('.bp-doc-current-page');
     }
 
     /**

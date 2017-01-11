@@ -46,7 +46,7 @@ describe('text-base', () => {
 
         beforeEach(() => {
             textEl = document.createElement('div');
-            textEl.className = 'box-preview-text';
+            textEl.className = 'bp-text';
             textBase.containerEl.appendChild(textEl);
         });
 
@@ -90,7 +90,7 @@ describe('text-base', () => {
             };
 
             textBase.load();
-            expect(textBase.containerEl.classList.contains('box-preview-is-selectable')).to.be.true;
+            expect(textBase.containerEl.classList.contains('bp-is-selectable')).to.be.true;
         });
     });
 

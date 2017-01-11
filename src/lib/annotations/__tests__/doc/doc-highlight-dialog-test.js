@@ -8,7 +8,7 @@ import * as constants from '../../annotation-constants';
 let highlightDialog;
 const sandbox = sinon.sandbox.create();
 
-const CLASS_HIGHLIGHT_DIALOG = 'box-preview-highlight-dialog';
+const CLASS_HIGHLIGHT_DIALOG = 'bp-highlight-dialog';
 const PAGE_PADDING_TOP = 15;
 
 describe('doc-highlight-dialog', () => {
@@ -56,7 +56,7 @@ describe('doc-highlight-dialog', () => {
                 }
             });
 
-            const highlightLabelEl = highlightDialog._element.querySelector('.box-preview-annotation-highlight-label');
+            const highlightLabelEl = highlightDialog._element.querySelector('.bp-annotation-highlight-label');
             expect(highlightLabelEl.innerHTML).to.equal('Bob highlighted');
             expect(highlightDialog._hasAnnotations).to.be.true;
         });
@@ -187,7 +187,7 @@ describe('doc-highlight-dialog', () => {
 
     describe('toggleHighlightIcon()', () => {
         it('should display active highlight icon when highlight is active', () => {
-            const addHighlightBtn = highlightDialog._element.querySelector('.box-preview-add-highlight-btn');
+            const addHighlightBtn = highlightDialog._element.querySelector('.bp-add-highlight-btn');
 
             highlightDialog.toggleHighlightIcon(constants.HIGHLIGHT_ACTIVE_FILL_STYLE);
 
@@ -195,7 +195,7 @@ describe('doc-highlight-dialog', () => {
         });
 
         it('should display normal \'text highlighted\' highlight icon when highlight is not active', () => {
-            const addHighlightBtn = highlightDialog._element.querySelector('.box-preview-add-highlight-btn');
+            const addHighlightBtn = highlightDialog._element.querySelector('.bp-add-highlight-btn');
 
             highlightDialog.toggleHighlightIcon(constants.HIGHLIGHT_NORMAL_FILL_STYLE);
 
@@ -254,7 +254,7 @@ describe('doc-highlight-dialog', () => {
 
     describe('_getDialogWidth', () => {
         it('should calculate dialog width once annotator\'s user name has been populated', () => {
-            const highlightLabelEl = highlightDialog._element.querySelector('.box-preview-annotation-highlight-label');
+            const highlightLabelEl = highlightDialog._element.querySelector('.bp-annotation-highlight-label');
             highlightLabelEl.innerHTML = 'Bob highlighted';
             highlightDialog._element.style.width = '100px';
 

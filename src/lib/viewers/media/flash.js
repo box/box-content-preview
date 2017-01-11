@@ -2,7 +2,7 @@ import autobind from 'autobind-decorator';
 import Base from '../base';
 import { createAssetUrlCreator } from '../../util';
 
-const CSS_CLASS_FLASH = 'box-preview-media-flash';
+const CSS_CLASS_FLASH = 'bp-media-flash';
 const Box = global.Box || {};
 const SWF_PARAMS = {
     allowfullscreen: 'true',

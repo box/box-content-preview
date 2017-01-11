@@ -5,7 +5,7 @@
 
 import * as annotatorUtil from '../annotator-util';
 
-const PREVIEW_PRESENTATION_CLASS = 'box-preview-doc-presentation';
+const PREVIEW_PRESENTATION_CLASS = 'bp-doc-presentation';
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 const HEIGHT_PADDING = 30;
@@ -76,8 +76,8 @@ export function isInDialog(event, dialogEl) {
  * @private
  */
 export function hasActiveDialog(annotatedEl) {
-    const commentsDialogEl = annotatedEl.querySelector('.box-preview-annotation-dialog:not(.box-preview-is-hidden)');
-    const highlightDialogEl = annotatedEl.querySelector('.box-preview-highlight-dialog:not(.box-preview-is-hidden)');
+    const commentsDialogEl = annotatedEl.querySelector('.bp-annotation-dialog:not(.bp-is-hidden)');
+    const highlightDialogEl = annotatedEl.querySelector('.bp-highlight-dialog:not(.bp-is-hidden)');
 
     return !!(commentsDialogEl || highlightDialogEl);
 }
@@ -272,16 +272,16 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
  */
 export function getQuadPoints(element, pageEl, scale) {
     const quadCornerContainerEl = document.createElement('div');
-    quadCornerContainerEl.classList.add('box-preview-quad-corner-container');
+    quadCornerContainerEl.classList.add('bp-quad-corner-container');
 
     // Create zero-size elements that can be styled to the 4 corners of
     // quadrilateral around element - using 4 divs is faster than using
     // one div and moving it around
     quadCornerContainerEl.innerHTML = `
-        <div class="box-preview-quad-corner corner1"></div>
-        <div class="box-preview-quad-corner corner2"></div>
-        <div class="box-preview-quad-corner corner3"></div>
-        <div class="box-preview-quad-corner corner4"></div>`.trim();
+        <div class="bp-quad-corner corner1"></div>
+        <div class="bp-quad-corner corner2"></div>
+        <div class="bp-quad-corner corner3"></div>
+        <div class="bp-quad-corner corner4"></div>`.trim();
 
     // Insert helper container into element
     element.appendChild(quadCornerContainerEl);

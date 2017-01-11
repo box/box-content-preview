@@ -517,7 +517,7 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _useDefaultCursor() {
-        this._annotatedElement.classList.add('box-preview-use-default-cursor');
+        this._annotatedElement.classList.add('bp-use-default-cursor');
     }
 
     /**
@@ -527,7 +527,7 @@ class DocAnnotator extends Annotator {
      * @private
      */
     _removeDefaultCursor() {
-        this._annotatedElement.classList.remove('box-preview-use-default-cursor');
+        this._annotatedElement.classList.remove('bp-use-default-cursor');
     }
 
     /**
@@ -555,7 +555,7 @@ class DocAnnotator extends Annotator {
 
         // Clear context if needed
         const pageEl = this._annotatedElement.querySelector(`[data-page-number="${page}"]`);
-        const annotationLayerEl = pageEl.querySelector('.box-preview-annotation-layer');
+        const annotationLayerEl = pageEl.querySelector('.bp-annotation-layer');
         if (annotationLayerEl) {
             const context = annotationLayerEl.getContext('2d');
             context.clearRect(0, 0, annotationLayerEl.width, annotationLayerEl.height);

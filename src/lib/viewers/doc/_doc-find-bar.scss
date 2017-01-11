@@ -2,7 +2,7 @@ $medium-aquamarine:   #5aeda8 !default;
 $moon-yellow:         #ffba1a !default;
 $blue:                #00f !default;
 
-.box-preview-find-bar {
+.bp-find-bar {
     background: $white;
     border: 1px solid fade-out($black, .95);
     box-shadow: 0 1px 0 fade-out($white, .95) fade-out($black, .95);
@@ -18,7 +18,7 @@ $blue:                #00f !default;
         display: none;
     }
 
-    .box-preview-doc-find-field {
+    .bp-doc-find-field {
         border: 1px solid fade-out($black, .95);
         border-radius: 2px 0 0 2px;
         box-shadow: 0 1px 0 fade-out($white, .95) fade-out($black, .95);
@@ -37,7 +37,7 @@ $blue:                #00f !default;
         }
     }
 
-    .box-preview-doc-find-results-count {
+    .bp-doc-find-results-count {
         color: fade-out($better-black, .75);
         cursor: default;
         line-height: 1;
@@ -51,10 +51,10 @@ $blue:                #00f !default;
         -webkit-user-select: none;
     }
 
-    .box-preview-doc-find-search,
-    .box-preview-doc-find-prev,
-    .box-preview-doc-find-next,
-    .box-preview-doc-find-close {
+    .bp-doc-find-search,
+    .bp-doc-find-prev,
+    .bp-doc-find-next,
+    .bp-doc-find-close {
         background: none;
         border: 1px solid $off-white;
         display: inline-block;
@@ -69,7 +69,7 @@ $blue:                #00f !default;
         }
     }
 
-    .box-preview-doc-find-search {
+    .bp-doc-find-search {
         border: 0;
         left: 5px;
         line-height: 1;
@@ -80,7 +80,7 @@ $blue:                #00f !default;
         top: 15%;
     }
 
-    .box-preview-doc-find-close {
+    .bp-doc-find-close {
         border: 0;
         padding: 6px;
 
@@ -89,9 +89,9 @@ $blue:                #00f !default;
         }
     }
 
-    .box-preview-find-match-not-found,
-    .box-preview-find-match-not-found:hover,
-    .box-preview-find-match-not-found:focus {
+    .bp-find-match-not-found,
+    .bp-find-match-not-found:hover,
+    .bp-find-match-not-found:focus {
         border-color: fade-out($great-balls-of-fire, .5);
     }
 }

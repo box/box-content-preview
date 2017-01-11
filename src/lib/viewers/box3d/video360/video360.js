@@ -12,7 +12,7 @@ import {
     EVENT_SHOW_VR_BUTTON
 } from '../box3d-constants';
 
-const CSS_CLASS_VIDEO_360 = 'box-preview-video-360';
+const CSS_CLASS_VIDEO_360 = 'bp-video-360';
 const VIDEO_ID = 'VIDEO_ID';
 const VIDEO_TEXTURE_PROPS = {
     imageId: VIDEO_ID,

@@ -24,7 +24,7 @@ li {
 //------------------------------------------------------------------------------
 // Buttons
 //------------------------------------------------------------------------------
-.box-preview-btn {
+.bp-btn {
     border-style: solid;
     border-width: 1px;
     box-sizing: border-box;
@@ -62,9 +62,9 @@ li {
     }
 }
 
-.box-preview-btn-plain,
-.box-preview-btn-plain:hover,
-.box-preview-btn-plain:active {
+.bp-btn-plain,
+.bp-btn-plain:hover,
+.bp-btn-plain:active {
     border: 0;
     cursor: pointer;
     font-weight: normal;
@@ -79,7 +79,7 @@ li {
 }
 
 // scss-lint:disable MergeableSelector
-.box-preview-btn {
+.bp-btn {
     -webkit-appearance: none;
     background-color: $white;
     border: 1px solid $sf-fog;
@@ -113,7 +113,7 @@ li {
     }
 }
 
-.box-preview-btn-primary {
+.bp-btn-primary {
     background-color: $box-blue;
     border-color: $box-blue;
     color: $white;
@@ -148,10 +148,10 @@ li {
     }
 }
 
-.box-preview-btn-plain,
-.box-preview-btn-plain:hover,
-.box-preview-btn-plain:active,
-.box-preview-btn-plain:focus {
+.bp-btn-plain,
+.bp-btn-plain:hover,
+.bp-btn-plain:active,
+.bp-btn-plain:focus {
     background: transparent;
     box-shadow: none;
     outline: none;
@@ -160,7 +160,7 @@ li {
 //------------------------------------------------------------------------------
 // Forms
 //------------------------------------------------------------------------------
-.box-preview-textarea {
+.bp-textarea {
     border: 1px solid $sf-fog;
     border-radius: 2px;
     box-shadow: inset 0 1px 1px lighten($black, 90%);
@@ -170,11 +170,11 @@ li {
     transition: border-color linear .15s, box-shadow linear .1s;
 }
 
-.box-preview-textarea:hover {
+.bp-textarea:hover {
     box-shadow: inset 0 1px 1px lighten($black, 85%);
 }
 
-.box-preview-textarea:focus {
+.bp-textarea:focus {
     border: 1px solid $box-blue;
     box-shadow: none;
     outline: 0;
@@ -183,7 +183,7 @@ li {
 //------------------------------------------------------------------------------
 // Menus
 //------------------------------------------------------------------------------
-.box-preview-overlay {
+.bp-overlay {
     background: $white;
     border: 1px solid $sf-fog;
     box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.1);
@@ -206,7 +206,7 @@ li {
     z-index: 90;
 }
 
-.box-preview-link {
+.bp-link {
     color: #64686D;
     font-smoothing: antialiased;
     line-height: 1.5em;
@@ -219,7 +219,7 @@ li {
     white-space: nowrap;
 }
 
-.box-preview-menu {
+.bp-menu {
     list-style: none;
     margin: 0;
     min-width: 225px;
@@ -250,7 +250,7 @@ li {
 //------------------------------------------------------------------------------
 // Notifications
 //------------------------------------------------------------------------------
-.box-preview-notifications-wrapper {
+.bp-notifications-wrapper {
     height: 0; /* allows elements around notifications to be clickable */
     left: 0;
     position: fixed;
@@ -259,7 +259,7 @@ li {
     z-index: 130;
 }
 
-.box-preview-notification {
+.bp-notification {
     align-items: center;
     background-color: $sunset-grey;
     border-radius: 4px;
@@ -337,7 +337,7 @@ li {
 // Popups
 //------------------------------------------------------------------------------
 
-.box-preview-modal {
+.bp-modal {
     align-items: center;
     bottom: 0;
     display: flex;
@@ -351,7 +351,7 @@ li {
     z-index: 160;
 }
 
-.box-preview-modal-dialog {
+.bp-modal-dialog {
     background-clip: padding-box;
     background-color: $white;
     box-shadow: 0 3px 10px fade-out($black, 0.7);
@@ -361,13 +361,13 @@ li {
     width: 460px;
 }
 
-.box-preview-modal-header {
+.bp-modal-header {
     display: flex;
     font-size: 15px;
     font-weight: bold;
 }
 
-.box-preview-modal-title {
+.bp-modal-title {
     display: inline-block;
     flex: 1;
     word-wrap: break-word;
@@ -375,11 +375,11 @@ li {
     overflow: hidden;
 }
 
-.box-preview-modal-content {
+.bp-modal-content {
     margin-top: 27px;
 }
 
-.box-preview-modal-close-button {
+.bp-modal-close-button {
     background: none;
     border: 0;
     color: $downtown-grey;
@@ -390,7 +390,7 @@ li {
 
 }
 
-.box-preview-modal-backdrop {
+.bp-modal-backdrop {
     background: $white;
     bottom: 0;
     filter: alpha(opacity=75);
@@ -402,14 +402,14 @@ li {
     z-index: -1;  // .modal creates a new stacking context. Let's just make sure that backdrop is below dialog.
 }
 
-.box-preview-modal-actions {
+.bp-modal-actions {
     align-items: center;
     display: flex;
     justify-content: flex-end;
     text-align: right;
 }
 
-.box-preview-modal-container {
+.bp-modal-container {
     bottom: 0;
     display: flex;
     left: 0;

@@ -56,7 +56,7 @@ describe('presentation', () => {
 
     describe('constructor()', () => {
         it('should add the document class to the doc element', () => {
-            expect(presentation.docEl.classList.contains('box-preview-doc-presentation')).to.be.true;
+            expect(presentation.docEl.classList.contains('bp-doc-presentation')).to.be.true;
         });
     });
 
@@ -267,13 +267,13 @@ describe('presentation', () => {
     describe('bindControlListeners()', () => {
         it('should ', () => {
             presentation.bindControlListeners();
-            expect(presentation.controls.add).to.be.calledWith(__('zoom_out'), presentation.zoomOut, 'box-preview-exit-zoom-out-icon', ICON_ZOOM_OUT);
-            expect(presentation.controls.add).to.be.calledWith(__('zoom_in'), presentation.zoomIn, 'box-preview-enter-zoom-in-icon', ICON_ZOOM_IN);
-            expect(presentation.controls.add).to.be.calledWith(__('previous_page'), presentation.previousPage, 'box-preview-presentation-previous-page-icon box-preview-previous-page', ICON_DROP_UP);
-            expect(presentation.controls.add).to.be.calledWith(__('enter_page_num'), presentation.showPageNumInput, 'box-preview-doc-page-num');
-            expect(presentation.controls.add).to.be.calledWith(__('next_page'), presentation.nextPage, 'box-preview-presentation-next-page-icon box-preview-next-page', ICON_DROP_DOWN);
-            expect(presentation.controls.add).to.be.calledWith(__('enter_fullscreen'), presentation.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-            expect(presentation.controls.add).to.be.calledWith(__('exit_fullscreen'), presentation.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+            expect(presentation.controls.add).to.be.calledWith(__('zoom_out'), presentation.zoomOut, 'bp-exit-zoom-out-icon', ICON_ZOOM_OUT);
+            expect(presentation.controls.add).to.be.calledWith(__('zoom_in'), presentation.zoomIn, 'bp-enter-zoom-in-icon', ICON_ZOOM_IN);
+            expect(presentation.controls.add).to.be.calledWith(__('previous_page'), presentation.previousPage, 'bp-presentation-previous-page-icon bp-previous-page', ICON_DROP_UP);
+            expect(presentation.controls.add).to.be.calledWith(__('enter_page_num'), presentation.showPageNumInput, 'bp-doc-page-num');
+            expect(presentation.controls.add).to.be.calledWith(__('next_page'), presentation.nextPage, 'bp-presentation-next-page-icon bp-next-page', ICON_DROP_DOWN);
+            expect(presentation.controls.add).to.be.calledWith(__('enter_fullscreen'), presentation.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+            expect(presentation.controls.add).to.be.calledWith(__('exit_fullscreen'), presentation.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
         });
     });
 

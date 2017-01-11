@@ -148,7 +148,7 @@ class Cache {
      * @private
      */
     generateKey(key) {
-        return `box-preview-${key}`;
+        return `bp-${key}`;
     }
 }
 

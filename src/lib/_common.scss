@@ -2,18 +2,18 @@
 
 $header-height: 48px;
 
-.box-preview-is-hidden {
+.bp-is-hidden {
     // scss-lint:disable ImportantRule
     display: none !important;
 }
 
-.box-preview-container,
-.box-preview-container * {
+.bp-container,
+.bp-container * {
     // scss-lint:disable ImportantRule
     box-sizing: border-box !important;
 }
 
-.box-preview-container {
+.bp-container {
     border: 0 none;
     font-size: 13px;
     -moz-font-smoothing: subpixel-antialiased;
@@ -30,7 +30,7 @@ $header-height: 48px;
     }
 }
 
-.box-preview-header {
+.bp-header {
     align-items: center;
     background-color: $white;
     border-bottom: 1px solid $seesee;
@@ -42,20 +42,20 @@ $header-height: 48px;
     justify-content: space-between;
     padding: 0 20px;
 
-    + .box-preview:not(.box-preview-is-fullscreen) {
+    + .bp:not(.bp-is-fullscreen) {
         top: $header-height;
     }
 
-    .box-preview-custom-logo {
+    .bp-custom-logo {
         max-height: 30px;
     }
 
-    .box-preview-default-logo svg {
+    .bp-default-logo svg {
         fill: $box-blue;
     }
 }
 
-.box-preview-header-btns {
+.bp-header-btns {
     button {
         padding: 0 10px;
 
@@ -76,14 +76,14 @@ $header-height: 48px;
 }
 
 // Dark theme for header
-.box-preview-theme-dark {
-    .box-preview-header {
+.bp-theme-dark {
+    .bp-header {
         background-color: fade-out($black, .15);
         border-bottom: 0;
     }
 
     // scss-lint:disable SelectorDepth
-    .box-preview-header-btns button {
+    .bp-header-btns button {
         svg {
             fill: fade-out($white, .1);
         }
@@ -93,20 +93,20 @@ $header-height: 48px;
         }
     }
 
-    .box-preview-default-logo svg {
+    .bp-default-logo svg {
         fill: $white;
     }
 
-    .box-preview {
+    .bp {
         background-color: $sunset-grey;
     }
 
-    .box-preview-loading-text {
+    .bp-loading-text {
         color: $white;
     }
 }
 
-.box-preview {
+.bp {
     align-items: center;
     background-color: $ffive;
     border: 0 none;
@@ -132,37 +132,37 @@ $header-height: 48px;
     top: auto; // Some browsers ignore left without a top
 }
 
-.box-preview-no-user-highlight {
+.bp-no-user-highlight {
     -webkit-touch-callout: none;
     user-select: none;
 }
 
-.box-preview-is-invisible {
+.bp-is-invisible {
     visibility: hidden;
 }
 
-.box-preview-has-header .box-preview-notifications-wrapper {
+.bp-has-header .bp-notifications-wrapper {
     top: 48px;
 }
 
-.box-preview-toggle-overlay {
+.bp-toggle-overlay {
     > button {
         margin-bottom: 0;
         margin-left: 0;
     }
 }
 
-.box-preview-overlay-wrapper {
+.bp-overlay-wrapper {
     display: inherit;
     position: relative;
 
-    .box-preview-overlay {
+    .bp-overlay {
         margin-top: 5px;
     }
 
-    &.box-preview-is-visible {
+    &.bp-is-visible {
 
-        .box-preview-overlay {
+        .bp-overlay {
             opacity: 1;
             pointer-events: all;
             -webkit-transform: rotateY(0deg) rotateX(0deg);
@@ -175,17 +175,17 @@ $header-height: 48px;
 }
 
 //---------- Override popup related CSS from _boxui.scss ----------//
-.box-preview-modal-dialog {
+.bp-modal-dialog {
     padding: 20px;
     width: 380px;
 
     // Prevents modal from becoming taller when crawler is swapped with print checkmark
-    .box-preview-print-check {
+    .bp-print-check {
         height: 16px;
     }
 
     // Fix crawler appearance
-    .box-preview-crawler {
+    .bp-crawler {
         font-size: 0;
         height: 16px;
         margin: 0 auto;
@@ -194,23 +194,23 @@ $header-height: 48px;
     }
 }
 
-.box-preview-modal-header {
+.bp-modal-header {
     display: block;
     float: right;
     height: 0;
     width: 100%;
 }
 
-.box-preview-modal-content {
+.bp-modal-content {
     text-align: center;
 
-    .box-preview-modal-message {
+    .bp-modal-message {
         color: $fours;
         margin: 10px 0 20px;
     }
 }
 
-.box-preview-modal-close-button {
+.bp-modal-close-button {
     float: right;
 
     svg {
@@ -221,23 +221,23 @@ $header-height: 48px;
     }
 }
 
-.box-preview-modal-actions {
+.bp-modal-actions {
     justify-content: flex-start;
     margin: 20px;
 }
 
-.box-preview-modal-backdrop {
+.bp-modal-backdrop {
     background-color: $black;
     height: 100%;
     position: fixed;
     width: 100%;
 }
 
-.box-preview-popup-btn {
+.bp-popup-btn {
     margin: 0 auto;
 }
 
 // z-index as the base modal
-.box-preview-popup-modal {
-    z-index: 160; // follows box-preview-modal from boxui
+.bp-popup-modal {
+    z-index: 160; // follows bp-modal from boxui
 }

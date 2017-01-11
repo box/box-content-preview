@@ -4,7 +4,7 @@ import scrubberTemplate from './scrubber.html';
 
 const MIN_VALUE = 0;
 const MAX_VALUE = 1;
-const CLASS_SCRUBBER_HOVER = 'box-preview-media-scrubber-hover';
+const CLASS_SCRUBBER_HOVER = 'bp-media-scrubber-hover';
 
 @autobind
 class Scrubber extends EventEmitter {
@@ -28,21 +28,21 @@ class Scrubber extends EventEmitter {
         this.containerEl.innerHTML = scrubberTemplate.replace('{{accessibilityText}}', accessibilityText).replace(/>\s*</g, '><'); // removing new lines
 
         // This container provides relative positioning. It also helps with adding hover states.
-        this.scrubberContainerEl = this.containerEl.querySelector('.box-preview-media-scrubber-container');
+        this.scrubberContainerEl = this.containerEl.querySelector('.bp-media-scrubber-container');
 
         // This wrapper is absolute positioned 50% to the right.
-        this.scrubberWrapperEl = this.containerEl.querySelector('.box-preview-media-scrubber-wrapper');
+        this.scrubberWrapperEl = this.containerEl.querySelector('.bp-media-scrubber-wrapper');
 
         // The scrubber is relative positioned 50% to the left. Since its relative parent is
         // positioned 50% right, it makes this element center aligned.
-        this.scrubberEl = this.containerEl.querySelector('.box-preview-media-scrubber');
+        this.scrubberEl = this.containerEl.querySelector('.bp-media-scrubber');
         this.scrubberEl.setAttribute('aria-label', accessibilityText);
         this.scrubberEl.setAttribute('title', accessibilityText);
         // The actual bars
-        this.bufferedEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-buffered');
-        this.convertedEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-converted');
-        this.playedEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-played');
-        this.handleEl = this.scrubberEl.querySelector('.box-preview-media-scrubber-handle');
+        this.bufferedEl = this.scrubberEl.querySelector('.bp-media-scrubber-buffered');
+        this.convertedEl = this.scrubberEl.querySelector('.bp-media-scrubber-converted');
+        this.playedEl = this.scrubberEl.querySelector('.bp-media-scrubber-played');
+        this.handleEl = this.scrubberEl.querySelector('.bp-media-scrubber-handle');
 
         // Set the provided initial values
         this.setConvertedValue(convertedValue);

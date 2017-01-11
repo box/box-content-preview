@@ -30,7 +30,7 @@ describe('error', () => {
 
     describe('constructor()', () => {
         it('should set appropriate properties', () => {
-            expect(error.infoEl.classList.contains('box-preview-error')).to.be.true;
+            expect(error.infoEl.classList.contains('bp-error')).to.be.true;
             expect(error.iconEl instanceof HTMLElement).to.be.true;
             expect(error.iconEl.parentNode).to.equal(error.infoEl);
             expect(error.messageEl instanceof HTMLElement).to.be.true;
@@ -90,8 +90,8 @@ describe('error', () => {
             expect(error.downloadEl instanceof HTMLElement).to.be.true;
             expect(error.downloadEl.parentNode).to.equal(error.infoEl);
             expect(error.downloadBtnEl instanceof HTMLElement).to.be.true;
-            expect(error.downloadBtnEl.classList.contains('box-preview-btn')).to.be.true;
-            expect(error.downloadBtnEl.classList.contains('box-preview-btn-primary')).to.be.true;
+            expect(error.downloadBtnEl.classList.contains('bp-btn')).to.be.true;
+            expect(error.downloadBtnEl.classList.contains('bp-btn-primary')).to.be.true;
             expect(error.downloadBtnEl.textContent).to.equal('Download');
 
             error.downloadBtnEl.dispatchEvent(new Event('click'));

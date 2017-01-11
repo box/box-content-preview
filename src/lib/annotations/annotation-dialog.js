@@ -199,16 +199,16 @@ class AnnotationDialog extends EventEmitter {
         this._element.setAttribute('data-type', 'annotation-dialog');
         this._element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
         this._element.innerHTML = `
-            <div class="box-preview-annotation-caret"></div>
+            <div class="bp-annotation-caret"></div>
             <div class="annotation-container">
                 <section class="${annotations.length ? CLASS_HIDDEN : ''}" data-section="create">
-                    <textarea class="box-preview-textarea annotation-textarea"
+                    <textarea class="bp-textarea annotation-textarea"
                         placeholder="${__('annotation_add_comment_placeholder')}"></textarea>
                     <div class="button-container">
-                        <button class="box-preview-btn cancel-annotation-btn" data-type="cancel-annotation-btn">
+                        <button class="bp-btn cancel-annotation-btn" data-type="cancel-annotation-btn">
                             ${__('annotation_cancel')}
                         </button>
-                        <button class="box-preview-btn box-preview-btn-primary post-annotation-btn" data-type="post-annotation-btn">
+                        <button class="bp-btn bp-btn-primary post-annotation-btn" data-type="post-annotation-btn">
                             ${__('annotation_post')}
                         </button>
                     </div>
@@ -216,13 +216,13 @@ class AnnotationDialog extends EventEmitter {
                 <section class="${annotations.length ? '' : CLASS_HIDDEN}" data-section="show">
                     <div class="annotation-comments"></div>
                     <div class="reply-container">
-                        <textarea class="box-preview-textarea reply-textarea"
+                        <textarea class="bp-textarea reply-textarea"
                             placeholder="${__('annotation_reply_placeholder')}" data-type="reply-textarea"></textarea>
                         <div class="button-container ${CLASS_HIDDEN}">
-                            <button class="box-preview-btn cancel-annotation-btn" data-type="cancel-reply-btn">
+                            <button class="bp-btn cancel-annotation-btn" data-type="cancel-reply-btn">
                                 ${__('annotation_cancel')}
                             </button>
-                            <button class="box-preview-btn box-preview-btn-primary post-annotation-btn" data-type="post-reply-btn">
+                            <button class="bp-btn bp-btn-primary post-annotation-btn" data-type="post-reply-btn">
                                 ${__('annotation_post')}
                             </button>
                         </div>
@@ -439,7 +439,7 @@ class AnnotationDialog extends EventEmitter {
                 <div class="comment-date">${created}</div>
             </div>
             <div class="comment-text">${text}</div>
-            <button class="box-preview-btn-plain delete-comment-btn ${annotation.permissions.can_delete ? '' : 'box-preview-is-hidden'}" data-type="delete-btn" title="${__('annotation_delete')}">
+            <button class="bp-btn-plain delete-comment-btn ${annotation.permissions.can_delete ? '' : 'bp-is-hidden'}" data-type="delete-btn" title="${__('annotation_delete')}">
                 ${ICON_DELETE}
             </button>
             <div class="delete-confirmation ${CLASS_HIDDEN}">
@@ -447,10 +447,10 @@ class AnnotationDialog extends EventEmitter {
                     ${__('annotation_delete_confirmation_message')}
                 </div>
                 <div class="button-container">
-                    <button class="box-preview-btn cancel-delete-btn" data-type="cancel-delete-btn">
+                    <button class="bp-btn cancel-delete-btn" data-type="cancel-delete-btn">
                         ${__('annotation_cancel')}
                     </button>
-                    <button class="box-preview-btn box-preview-btn-primary confirm-delete-btn" data-type="confirm-delete-btn">
+                    <button class="bp-btn bp-btn-primary confirm-delete-btn" data-type="confirm-delete-btn">
                         ${__('annotation_delete')}
                     </button>
                 </div>

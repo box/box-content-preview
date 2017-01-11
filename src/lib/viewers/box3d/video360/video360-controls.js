@@ -6,9 +6,9 @@ import {
     ICON_3D_VR
 } from '../../../icons/icons';
 
-const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
-const CSS_CLASS_MEDIA_CONTROLS_CONTAINER = 'box-preview-media-controls-container';
-const CSS_CLASS_MEDIA_CONTROL_BUTTON = 'box-preview-media-controls-btn';
+const CSS_CLASS_HIDDEN = 'bp-is-hidden';
+const CSS_CLASS_MEDIA_CONTROLS_CONTAINER = 'bp-media-controls-container';
+const CSS_CLASS_MEDIA_CONTROL_BUTTON = 'bp-media-controls-btn';
 
 class Video360Controls extends EventEmitter {
 

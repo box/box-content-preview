@@ -13,7 +13,7 @@ import {
     getLowerRightCornerOfLastQuadPoint
 } from '../../doc/doc-annotator-util';
 
-const DIALOG_CLASS = '.box-preview-annotation-dialog';
+const DIALOG_CLASS = '.bp-annotation-dialog';
 
 describe('doc-annotator-util', () => {
     before(() => {
@@ -37,7 +37,7 @@ describe('doc-annotator-util', () => {
 
         it('should return true if annotatedElement is a presentation', () => {
             const docEl = document.querySelector('.annotatedElement');
-            docEl.classList.add('box-preview-doc-presentation');
+            docEl.classList.add('bp-doc-presentation');
             const result = isPresentation(docEl);
             expect(result).to.be.true;
         });
@@ -82,7 +82,7 @@ describe('doc-annotator-util', () => {
     describe('hasActiveDialog()', () => {
         it('should return false if no annotation dialog is open', () => {
             const currDialogEl = document.querySelector(DIALOG_CLASS);
-            currDialogEl.classList.add('box-preview-is-hidden');
+            currDialogEl.classList.add('bp-is-hidden');
             const result = hasActiveDialog(document);
             expect(result).to.be.false;
         });
@@ -90,10 +90,10 @@ describe('doc-annotator-util', () => {
         it('should return true if an annotion dialog is open', () => {
             const docEl = document.querySelector('.annotatedElement');
             const currDialogEl = document.querySelector(DIALOG_CLASS);
-            currDialogEl.classList.add('box-preview-is-hidden');
+            currDialogEl.classList.add('bp-is-hidden');
 
             const openDialogEl = document.createElement('div');
-            openDialogEl.classList.add('box-preview-annotation-dialog');
+            openDialogEl.classList.add('bp-annotation-dialog');
             docEl.appendChild(openDialogEl);
 
             const result = hasActiveDialog(document);
@@ -104,7 +104,7 @@ describe('doc-annotator-util', () => {
     describe('fitDialogHeightInPage()', () => {
         it('should allow scrolling on annotations dialog if file is a powerpoint', () => {
             const docEl = document.querySelector('.annotatedElement');
-            docEl.classList.add('box-preview-doc-presentation');
+            docEl.classList.add('bp-doc-presentation');
             docEl.style.height = 100;
 
             const dialogEl = document.querySelector(DIALOG_CLASS);

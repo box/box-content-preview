@@ -4,8 +4,8 @@ import cache from '../../cache';
 import MediaControls from './media-controls';
 import { CLASS_HIDDEN, CLASS_PREVIEW_LOADED } from '../../constants';
 
-const CSS_CLASS_MEDIA = 'box-preview-media';
-const CSS_CLASS_MEDIA_CONTAINER = 'box-preview-media-container';
+const CSS_CLASS_MEDIA = 'bp-media';
+const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
 const DEFAULT_VOLUME = 0.7;
 
 @autobind

@@ -110,7 +110,7 @@ describe('markdown', () => {
             expect(markdown.loadUI).to.have.been.called;
             expect(markdown.emit).to.have.been.calledWith('load');
             expect(markdown.loaded).to.be.true;
-            expect(markdown.textEl.classList.contains('box-preview-is-hidden')).to.be.false;
+            expect(markdown.textEl.classList.contains('bp-is-hidden')).to.be.false;
         });
     });
 });

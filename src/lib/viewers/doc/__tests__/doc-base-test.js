@@ -63,7 +63,7 @@ describe('doc-base', () => {
 
     describe('constructor()', () => {
         it('should correctly set a doc element, viewer element, and a timeout', () => {
-            expect(docBase.docEl.classList.contains('box-preview-doc')).to.be.true;
+            expect(docBase.docEl.classList.contains('bp-doc')).to.be.true;
             expect(docBase.docEl.parentNode).to.deep.equal(docBase.containerEl);
 
             expect(docBase.viewerEl.classList.contains('pdfViewer')).to.be.true;
@@ -209,7 +209,7 @@ describe('doc-base', () => {
             <div></div>
             `.trim();
             expect(docBase.printPopup.loadingIndicator.innerHTML).to.equal(mockIndicator.innerHTML);
-            expect(docBase.printPopup.loadingIndicator.classList.contains('box-preview-crawler')).to.be.true;
+            expect(docBase.printPopup.loadingIndicator.classList.contains('bp-crawler')).to.be.true;
         });
     });
 
@@ -514,17 +514,17 @@ describe('doc-base', () => {
     describe('checkPaginationButtons()', () => {
         beforeEach(() => {
             const pageNumButtonEl = document.createElement('div');
-            pageNumButtonEl.className = 'box-preview-doc-page-num';
+            pageNumButtonEl.className = 'bp-doc-page-num';
             pageNumButtonEl.disabled = undefined;
             docBase.containerEl.appendChild(pageNumButtonEl);
 
             const previousPageButtonEl = document.createElement('div');
-            previousPageButtonEl.className = 'box-preview-previous-page';
+            previousPageButtonEl.className = 'bp-previous-page';
             previousPageButtonEl.disabled = undefined;
             docBase.containerEl.appendChild(previousPageButtonEl);
 
             const nextPageButtonEl = document.createElement('div');
-            nextPageButtonEl.className = 'box-preview-next-page';
+            nextPageButtonEl.className = 'bp-next-page';
             nextPageButtonEl.disabled = undefined;
             docBase.containerEl.appendChild(nextPageButtonEl);
 

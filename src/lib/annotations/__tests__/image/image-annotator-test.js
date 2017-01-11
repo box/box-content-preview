@@ -99,18 +99,18 @@ describe('image-annotator', () => {
     describe('hideAllAnnotations()', () => {
         it('should hide all annotations on image', () => {
             annotator.hideAllAnnotations();
-            const annotation = document.querySelector('.box-preview-point-annotation-btn');
+            const annotation = document.querySelector('.bp-point-annotation-btn');
             const classList = Array.from(annotation.classList);
-            expect(classList).to.include('box-preview-is-hidden');
+            expect(classList).to.include('bp-is-hidden');
         });
     });
 
     describe('showAllAnnotations()', () => {
         it('should show all annotations on image', () => {
             annotator.showAllAnnotations();
-            const annotation = document.querySelector('.box-preview-point-annotation-btn');
+            const annotation = document.querySelector('.bp-point-annotation-btn');
             const classList = Array.from(annotation.classList);
-            expect(classList).to.not.include('box-preview-is-hidden');
+            expect(classList).to.not.include('bp-is-hidden');
         });
     });
 });

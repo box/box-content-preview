@@ -2,7 +2,7 @@ import autobind from 'autobind-decorator';
 import MediaBase from './media-base';
 import './mp3.scss';
 
-const CSS_CLASS_MP3 = 'box-preview-media-mp3';
+const CSS_CLASS_MP3 = 'bp-media-mp3';
 
 const Box = global.Box || {};
 

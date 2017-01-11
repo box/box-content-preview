@@ -67,7 +67,7 @@ describe('annotation-thread', () => {
     describe('hide()', () => {
         it('should hide the thread element', () => {
             annotationThread.hide();
-            expect(annotationThread._element.classList.contains('box-preview-is-hidden')).to.be.true;
+            expect(annotationThread._element.classList.contains('bp-is-hidden')).to.be.true;
         });
     });
 
@@ -292,7 +292,7 @@ describe('annotation-thread', () => {
             annotationThread.setupElement();
 
             expect(annotationThread._element instanceof HTMLElement).to.be.true;
-            expect(annotationThread._element.classList.contains('box-preview-point-annotation-btn')).to.be.true;
+            expect(annotationThread._element.classList.contains('bp-point-annotation-btn')).to.be.true;
             expect(bindStub).to.have.been.called;
         });
     });
@@ -362,7 +362,7 @@ describe('annotation-thread', () => {
         it('should create an element with the right class and attribute', () => {
             const element = annotationThread._createElement();
 
-            expect(element.classList.contains('box-preview-point-annotation-btn')).to.be.true;
+            expect(element.classList.contains('bp-point-annotation-btn')).to.be.true;
             expect(element.getAttribute('data-type')).to.equal('annotation-indicator');
         });
     });

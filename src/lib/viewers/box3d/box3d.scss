@@ -1,4 +1,4 @@
-.box-preview-box3d {
+.bp-box3d {
     border: 0 none;
     display: flex;
     height: 100%;
@@ -19,13 +19,13 @@
     // For VR mode
     &.vr-enabled {
         // Hide this NO MATTER WHAT
-        .box-preview-controls {
+        .bp-controls {
             opacity: 0!important;
         }
     }
 }
 
-.box-preview-box3d canvas {
+.bp-box3d canvas {
     cursor: move; /* fallback if grab cursor is unsupported */
     cursor: -moz-grab;
     cursor: -webkit-grab;
@@ -38,17 +38,17 @@
     user-select: none;
 }
 
-.box-preview-box3d.box-preview-invisible {
+.bp-box3d.bp-invisible {
     visibility: hidden;
 }
 
-.box-preview-box3d canvas:active {
+.bp-box3d canvas:active {
     cursor: -moz-grabbing;
     cursor: -webkit-grabbing;
     cursor: grabbing;
 }
 
-.box-preview-box3d .box-preview-overlay-panel {
+.bp-box3d .bp-overlay-panel {
     z-index: 2;
     position: absolute;
     font-size: 13px;
@@ -63,30 +63,30 @@
     font-weight: 400;
 }
 
-.box-preview-box3d .box-preview-overlay-panel span {
+.bp-box3d .bp-overlay-panel span {
     position: relative;
     top: 5px;
     display: inline-block;
     opacity: 0.7;
 }
 
-.box-preview-box3d .box-preview-toggle-overlay .box-preview-menu {
+.bp-box3d .bp-toggle-overlay .bp-menu {
     min-width: 196px;
 }
 
-.box-preview-box3d li,
-.box-preview-box3d ul {
+.bp-box3d li,
+.bp-box3d ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.box-preview-box3d input[type="checkbox"] {
+.bp-box3d input[type="checkbox"] {
     opacity: 1;
 }
 
-.box-preview-is-mobile {
-    .box-preview-box3d .box-preview-controls {
+.bp-is-mobile {
+    .bp-box3d .bp-controls {
         opacity: 1!important;
     }
 }

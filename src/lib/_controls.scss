@@ -1,4 +1,4 @@
-.box-preview-controls-wrapper {
+.bp-controls-wrapper {
     border: 0 none;
     bottom: 25px;
     left: 50%;
@@ -7,7 +7,7 @@
     position: absolute;
 }
 
-.box-preview-controls {
+.bp-controls {
     background: fade-out($twos, .05);
     border-radius: 3px;
     display: table;
@@ -18,20 +18,20 @@
     transition: opacity .5s;
 }
 
-.box-show-preview-controls .box-preview-controls,
-.box-preview-controls:hover,
-.box-preview-controls:focus {
+.box-show-preview-controls .bp-controls,
+.bp-controls:hover,
+.bp-controls:focus {
     opacity: 1;
 }
 
-.box-preview-controls-cell {
+.bp-controls-cell {
     display: table-cell;
     margin: 0;
     padding: 0;
     vertical-align: middle;
 }
 
-.box-preview-controls-btn {
+.bp-controls-btn {
     background: transparent;
     border: 1px solid transparent;
     color: $white;
@@ -72,16 +72,16 @@
     }
 }
 
-.box-preview-exit-fullscreen-icon {
+.bp-exit-fullscreen-icon {
     display: none;
 }
 
-.box-preview-is-fullscreen {
-    .box-preview-enter-fullscreen-icon {
+.bp-is-fullscreen {
+    .bp-enter-fullscreen-icon {
         display: none;
     }
 
-    .box-preview-exit-fullscreen-icon {
+    .bp-exit-fullscreen-icon {
         display: block;
     }
 }

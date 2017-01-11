@@ -2,7 +2,7 @@ $padding: 8px;
 $item-height: 26px;
 $item-hover-color: #F6FAFD;
 
-.box-preview-media-settings {
+.bp-media-settings {
     background-color: $white;
     border: 1px solid $sf-fog;
     border-radius: 2px;
@@ -20,35 +20,35 @@ $item-hover-color: #F6FAFD;
     transition: width .2s, height .2s;
     width: 148px;
 
-    .box-preview-media-settings-is-open & {
+    .bp-media-settings-is-open & {
         display: block;
     }
 
     // For MP3 and MP4 we only have speed option
-    .box-preview-media-mp4 &,
-    .box-preview-media-mp3 & {
+    .bp-media-mp4 &,
+    .bp-media-mp3 & {
         height: $item-height + (2 * ($padding + 1px));
     }
 
-    .box-preview-media-mp3 & {
+    .bp-media-mp3 & {
         bottom: 65px;
         right: 0;
     }
 
-    &.box-preview-media-settings-show-speed,
-    &.box-preview-media-settings-show-quality {
+    &.bp-media-settings-show-speed,
+    &.bp-media-settings-show-quality {
         height: ((4 * $item-height) + (2 * $padding)) !important;
         width: (88px + (2 * $padding)) !important;
     }
 
-    &.box-preview-media-settings-show-speed {
+    &.bp-media-settings-show-speed {
         height: ((7 * $item-height) + (2 * $padding)) !important;
     }
 
 }
 
-.box-preview-media-settings-item,
-.box-preview-media-settings-sub-item {
+.bp-media-settings-item,
+.bp-media-settings-sub-item {
     cursor: pointer;
     height: $item-height;
     overflow: hidden;
@@ -56,28 +56,28 @@ $item-hover-color: #F6FAFD;
     white-space: nowrap;
 }
 
-.box-preview-media-settings-item:hover,
-.box-preview-media-settings-sub-item:hover {
+.bp-media-settings-item:hover,
+.bp-media-settings-sub-item:hover {
     background-color: $item-hover-color;
 
-    .box-preview-media-settings-label {
+    .bp-media-settings-label {
         color: lighten($blue-steel, 50%);
     }
 
-    .box-preview-media-settings-value {
+    .bp-media-settings-value {
         color: $blue-steel;
     }
 }
 
-.box-preview-media-settings-item .box-preview-media-settings-label,
-.box-preview-media-settings-item .box-preview-media-settings-value,
-.box-preview-media-settings-sub-item .box-preview-media-settings-label,
-.box-preview-media-settings-sub-item .box-preview-media-settings-value {
+.bp-media-settings-item .bp-media-settings-label,
+.bp-media-settings-item .bp-media-settings-value,
+.bp-media-settings-sub-item .bp-media-settings-label,
+.bp-media-settings-sub-item .bp-media-settings-value {
     display: inline-block;
     vertical-align: middle;
 }
 
-.box-preview-media-settings-item .box-preview-media-settings-label {
+.bp-media-settings-item .bp-media-settings-label {
     color: $downtown-grey;
     font-size: 11px;
     font-weight: 400;
@@ -87,28 +87,28 @@ $item-hover-color: #F6FAFD;
     width: 55px;
 }
 
-.box-preview-media-settings-value {
+.bp-media-settings-value {
 
     color: $sunset-grey;
     font-size: 12px;
     text-align: right;
 
-    .box-preview-media-settings-item & {
+    .bp-media-settings-item & {
         color: $sunset-grey;
         font-weight: 400;
         width: 48px;
     }
 
-    .box-preview-media-settings-sub-item & {
+    .bp-media-settings-sub-item & {
         width: 30px;
     }
 
-    .box-preview-media-settings-selected & {
+    .bp-media-settings-selected & {
         color: $box-blue;
     }
 }
 
-.box-preview-media-settings-sub-item .box-preview-media-settings-label {
+.bp-media-settings-sub-item .bp-media-settings-label {
     color: $downtown-grey;
     font-weight: 400;
     text-align: center;
@@ -116,19 +116,19 @@ $item-hover-color: #F6FAFD;
     width: 48px;
 }
 
-.box-preview-media-settings-options-quality,
-.box-preview-media-settings-options-speed,
-.box-preview-media-settings-show-speed .box-preview-media-settings-item,
-.box-preview-media-settings-show-quality .box-preview-media-settings-item {
+.bp-media-settings-options-quality,
+.bp-media-settings-options-speed,
+.bp-media-settings-show-speed .bp-media-settings-item,
+.bp-media-settings-show-quality .bp-media-settings-item {
     display: none;
 }
 
-.box-preview-media-settings-show-speed .box-preview-media-settings-options-speed,
-.box-preview-media-settings-show-quality .box-preview-media-settings-options-quality {
+.bp-media-settings-show-speed .bp-media-settings-options-speed,
+.bp-media-settings-show-quality .bp-media-settings-options-quality {
     display: block;
 }
 
-.box-preview-media-settings-arrow {
+.bp-media-settings-arrow {
     display: inline-block;
     height: 18px;
     vertical-align: middle;
@@ -140,7 +140,7 @@ $item-hover-color: #F6FAFD;
     }
 }
 
-.box-preview-media-settings-icon {
+.bp-media-settings-icon {
     display: inline-block;
     height: 16px;
     text-align: center;
@@ -153,7 +153,7 @@ $item-hover-color: #F6FAFD;
         width: 16px;
     }
 
-    .box-preview-media-settings-selected & {
+    .bp-media-settings-selected & {
         visibility: visible;
     }
 

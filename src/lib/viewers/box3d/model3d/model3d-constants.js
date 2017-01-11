@@ -21,15 +21,15 @@ export const GRID_COLOR = 0xaaaaaa;
 
 // CSS
 export const CSS_CLASS_ANIMATION_CLIP_PULLUP = 'box3d-animation-clip-pullup';
-export const CSS_CLASS_OVERLAY = 'box-preview-overlay-panel';
-export const CSS_CLASS_PULLUP = 'box-preview-pullup';
-export const CSS_CLASS_CURRENT_AXIS = 'box-preview-current-axis';
-export const CSS_CLASS_SETTINGS_BUTTON = 'box-preview-settings-btn';
-export const CSS_CLASS_PANEL_BUTTON = 'box-preview-panel-btn';
-export const CSS_CLASS_SETTINGS_PANEL_LABEL = 'box-preview-settings-panel-label';
-export const CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL = 'box-preview-setting-selector-label';
-export const CSS_CLASS_SETTINGS_PANEL_ROW = 'box-preview-settings-panel-row';
-export const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
+export const CSS_CLASS_OVERLAY = 'bp-overlay-panel';
+export const CSS_CLASS_PULLUP = 'bp-pullup';
+export const CSS_CLASS_CURRENT_AXIS = 'bp-current-axis';
+export const CSS_CLASS_SETTINGS_BUTTON = 'bp-settings-btn';
+export const CSS_CLASS_PANEL_BUTTON = 'bp-panel-btn';
+export const CSS_CLASS_SETTINGS_PANEL_LABEL = 'bp-settings-panel-label';
+export const CSS_CLASS_SETTINGS_PANEL_SELECTOR_LABEL = 'bp-setting-selector-label';
+export const CSS_CLASS_SETTINGS_PANEL_ROW = 'bp-settings-panel-row';
+export const CSS_CLASS_HIDDEN = 'bp-is-hidden';
 
 // Constants
 export const AXIS_X = 'x';

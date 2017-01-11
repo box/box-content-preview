@@ -5,7 +5,7 @@ import { CLASS_HIDDEN, CLASS_PREVIEW_LOADED } from '../../constants';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
 const PLAY_ICON = '<svg fill="#FFF" height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
-const CLASS_PLAY_BUTTON = 'box-preview-media-play-button';
+const CLASS_PLAY_BUTTON = 'bp-media-play-button';
 
 @autobind
 class VideoBase extends MediaBase {
@@ -29,7 +29,7 @@ class VideoBase extends MediaBase {
         this.playButtonEl.classList.add(CLASS_HIDDEN);
         this.playButtonEl.innerHTML = PLAY_ICON;
 
-        this.loadingContainerEl = document.querySelector('.box-preview-loading-wrapper');
+        this.loadingContainerEl = document.querySelector('.bp-loading-wrapper');
         if (this.loadingContainerEl) {
             this.loadingContainerEl.classList.add('video-loading');
         }

@@ -108,7 +108,7 @@ class ImageAnnotator extends Annotator {
      */
     hideAllAnnotations() {
         const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-        const annotations = this._annotatedElement.getElementsByClassName('box-preview-point-annotation-btn');
+        const annotations = this._annotatedElement.getElementsByClassName('bp-point-annotation-btn');
         for (let i = 0; i < annotations.length; i++) {
             annotatorUtil.hideElement(annotations[i]);
         }
@@ -123,7 +123,7 @@ class ImageAnnotator extends Annotator {
      */
     showAllAnnotations() {
         const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-        const annotations = this._annotatedElement.getElementsByClassName('box-preview-point-annotation-btn');
+        const annotations = this._annotatedElement.getElementsByClassName('bp-point-annotation-btn');
         for (let i = 0; i < annotations.length; i++) {
             annotatorUtil.showElement(annotations[i]);
         }

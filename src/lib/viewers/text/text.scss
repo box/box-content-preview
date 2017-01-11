@@ -1,6 +1,6 @@
 @import '../../boxui-variables';
 
-.box-preview-text-plain {
+.bp-text-plain {
     background-color: $white;
     bottom: 0;
     left: 0;
@@ -15,7 +15,7 @@
     white-space: pre-wrap;
     word-wrap: break-word;
 
-    .box-preview-is-selectable & {
+    .bp-is-selectable & {
         user-select: auto;
     }
 
@@ -25,7 +25,7 @@
     }
 }
 
-.box-preview-text-truncated {
+.bp-text-truncated {
     font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
 
     // Pad bottom so controls dont overlap
@@ -38,7 +38,7 @@
 }
 
 @media print {
-    .box-preview-text-plain {
+    .bp-text-plain {
         margin: 0;
         overflow: visible;
         padding: 0;
@@ -46,7 +46,7 @@
         word-wrap: break-word;
     }
 
-    .box-preview-text-truncated .box-preview-btn-download {
+    .bp-text-truncated .bp-btn-download {
         display: none;
     }
 }

@@ -23,10 +23,10 @@ class Controls {
         this.containerEl = container;
 
         this.controlsWrapperEl = this.containerEl.appendChild(document.createElement('div'));
-        this.controlsWrapperEl.className = 'box-preview-controls-wrapper';
+        this.controlsWrapperEl.className = 'bp-controls-wrapper';
 
         this.controlsEl = this.controlsWrapperEl.appendChild(document.createElement('div'));
-        this.controlsEl.className = 'box-preview-controls';
+        this.controlsEl.className = 'bp-controls';
 
         this.mousemoveHandler = throttle(() => {
             this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
@@ -64,7 +64,7 @@ class Controls {
      * @returns {boolean} true if element is a preview control button
      */
     isPreviewControlButton(element) {
-        return !!element && element.classList.contains('box-preview-controls-btn');
+        return !!element && element.classList.contains('bp-controls-btn');
     }
 
     /**
@@ -140,12 +140,12 @@ class Controls {
      */
     add(text, handler, classList = '', buttonContent = '') {
         const cell = document.createElement('div');
-        cell.className = 'box-preview-controls-cell';
+        cell.className = 'bp-controls-cell';
 
         const button = document.createElement('button');
         button.setAttribute('aria-label', text);
         button.setAttribute('title', text);
-        button.className = `box-preview-controls-btn ${classList}`;
+        button.className = `bp-controls-btn ${classList}`;
         button.addEventListener('click', handler);
 
         if (buttonContent) {

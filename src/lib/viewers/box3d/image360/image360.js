@@ -4,7 +4,7 @@ import Box3DControls from '../box3d-controls';
 import Image360Renderer from './image360-renderer';
 
 const Box = global.Box || {};
-const CSS_CLASS_IMAGE_360 = 'box-preview-image-360';
+const CSS_CLASS_IMAGE_360 = 'bp-image-360';
 const LOAD_TIMEOUT = 120000;
 
 /**

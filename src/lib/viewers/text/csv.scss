@@ -1,6 +1,6 @@
 @import '../../boxui-variables';
 
-.box-preview-text-csv {
+.bp-text-csv {
     align-items: center;
     bottom: 0;
     color: $black;
@@ -19,11 +19,11 @@
     word-break: normal;
     word-wrap: normal;
 
-    .box-preview-is-selectable & {
+    .bp-is-selectable & {
         user-select: auto;
     }
 
-    .box-preview-text-csv-grid {
+    .bp-text-csv-grid {
         border: 1px solid $off-white;
         width: 100%;
 
@@ -34,11 +34,11 @@
         }
     }
 
-    .box-preview-text-csv-odd-row {
+    .bp-text-csv-odd-row {
         background-color: $haze;
     }
 
-    .box-preview-text-csv-cell {
+    .bp-text-csv-cell {
         border-right: 1px solid $off-white;
         display: flex;
         flex-direction: column;

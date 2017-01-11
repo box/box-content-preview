@@ -6,16 +6,16 @@ import Settings from './settings';
 import fullscreen from '../../fullscreen';
 import { insertTemplate } from '../../util';
 
-const SHOW_CONTROLS_CLASS = 'box-preview-media-controls-is-visible';
-const PLAYING_CLASS = 'box-preview-media-is-playing';
+const SHOW_CONTROLS_CLASS = 'bp-media-controls-is-visible';
+const PLAYING_CLASS = 'bp-media-is-playing';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
 const VOLUME_LEVEL_CLASS_NAMES = [
-    'box-preview-media-volume-icon-is-mute',
-    'box-preview-media-volume-icon-is-low',
-    'box-preview-media-volume-icon-is-medium',
-    'box-preview-media-volume-icon-is-high'
+    'bp-media-volume-icon-is-mute',
+    'bp-media-volume-icon-is-low',
+    'bp-media-volume-icon-is-medium',
+    'bp-media-volume-icon-is-high'
 ];
-const CRAWLER = '<div class="box-preview-media-crawler-wrapper"><div class="box-preview-crawler"><div></div><div></div><div></div></div></div>';
+const CRAWLER = '<div class="bp-media-crawler-wrapper"><div class="bp-crawler"><div></div><div></div><div></div></div></div>';
 
 @autobind
 class MediaControls extends EventEmitter {
@@ -34,27 +34,27 @@ class MediaControls extends EventEmitter {
 
         insertTemplate(this.containerEl, controlsTemplate);
 
-        this.wrapperEl = this.containerEl.querySelector('.box-preview-media-controls-wrapper');
+        this.wrapperEl = this.containerEl.querySelector('.bp-media-controls-wrapper');
 
-        this.timeScrubberEl = this.wrapperEl.querySelector('.box-preview-media-time-scrubber-container');
-        this.volScrubberEl = this.wrapperEl.querySelector('.box-preview-media-volume-scrubber-container');
+        this.timeScrubberEl = this.wrapperEl.querySelector('.bp-media-time-scrubber-container');
+        this.volScrubberEl = this.wrapperEl.querySelector('.bp-media-volume-scrubber-container');
 
-        this.playButtonEl = this.wrapperEl.querySelector('.box-preview-media-playpause-icon');
+        this.playButtonEl = this.wrapperEl.querySelector('.bp-media-playpause-icon');
         this.setLabel(this.playButtonEl, __('media_play'));
 
 
-        this.volButtonEl = this.wrapperEl.querySelector('.box-preview-media-controls-volume-control');
-        this.volLevelButtonEl = this.wrapperEl.querySelector('.box-preview-media-volume-icon');
+        this.volButtonEl = this.wrapperEl.querySelector('.bp-media-controls-volume-control');
+        this.volLevelButtonEl = this.wrapperEl.querySelector('.bp-media-volume-icon');
         this.setLabel(this.volButtonEl, __('media_mute'));
 
-        this.timecodeEl = this.wrapperEl.querySelector('.box-preview-media-controls-timecode');
-        this.durationEl = this.wrapperEl.querySelector('.box-preview-media-controls-duration');
+        this.timecodeEl = this.wrapperEl.querySelector('.bp-media-controls-timecode');
+        this.durationEl = this.wrapperEl.querySelector('.bp-media-controls-duration');
 
-        this.fullscreenButtonEl = this.wrapperEl.querySelector('.box-preview-media-fullscreen-icon');
+        this.fullscreenButtonEl = this.wrapperEl.querySelector('.bp-media-fullscreen-icon');
         this.setLabel(this.fullscreenButtonEl, __('enter_fullscreen'));
 
 
-        this.settingsButtonEl = this.wrapperEl.querySelector('.box-preview-media-gear-icon');
+        this.settingsButtonEl = this.wrapperEl.querySelector('.bp-media-gear-icon');
         this.setLabel(this.settingsButtonEl, __('media_settings'));
 
 
@@ -449,14 +449,14 @@ class MediaControls extends EventEmitter {
         this.filmstripUrl = url;
 
         this.filmstripContainerEl = this.containerEl.appendChild(document.createElement('div'));
-        this.filmstripContainerEl.className = 'box-preview-media-filmstrip-container';
+        this.filmstripContainerEl.className = 'bp-media-filmstrip-container';
         this.filmstripContainerEl.innerHTML = CRAWLER;
 
         this.filmstripEl = this.filmstripContainerEl.appendChild(document.createElement('img'));
-        this.filmstripEl.className = 'box-preview-media-filmstrip';
+        this.filmstripEl.className = 'bp-media-filmstrip';
 
         this.filmstripTimeEl = this.filmstripContainerEl.appendChild(document.createElement('div'));
-        this.filmstripTimeEl.className = 'box-preview-media-filmstrip-timecode';
+        this.filmstripTimeEl.className = 'bp-media-filmstrip-timecode';
 
 
         const frameWidth = 90 * aspect;
@@ -473,7 +473,7 @@ class MediaControls extends EventEmitter {
         this.filmstripEl.onload = () => {
             if (this.filmstripContainerEl) {
                 this.filmstripContainerEl.style.width = `${frameWidth + 2}px`; // 2px for the borders on each side
-                this.filmstripContainerEl.querySelector('.box-preview-media-crawler-wrapper').style.display = 'none'; // Hide the crawler
+                this.filmstripContainerEl.querySelector('.bp-media-crawler-wrapper').style.display = 'none'; // Hide the crawler
             }
         };
 

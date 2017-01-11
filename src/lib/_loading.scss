@@ -24,7 +24,7 @@ $crawler-blue: #2b90ef;
     }
 }
 
-.box-preview-loading-wrapper {
+.bp-loading-wrapper {
     animation-duration: .5s;
     animation-iteration-count: 1;
     animation-name: fadeIn;
@@ -39,61 +39,61 @@ $crawler-blue: #2b90ef;
         padding: 0;
         z-index: 1;
 
-        .box-preview-loading {
+        .bp-loading {
             padding: 0;
         }
 
-        .box-preview-btn-loading-download {
+        .bp-btn-loading-download {
             display: none;
         }
 
-        .box-preview-icon {
+        .bp-icon {
             display: none;
         }
 
-        .box-preview-loading-text {
+        .bp-loading-text {
             display: none;
         }
 
-        .box-preview-crawler-wrapper {
+        .bp-crawler-wrapper {
             position: relative;
             top: 0;
         }
     }
 }
 
-.box-preview-loaded .box-preview-loading-wrapper {
+.bp-loaded .bp-loading-wrapper {
     display: none;
 }
 
 // Preview content should not be interactable during loading
-:not(.box-preview-loaded) > .box-preview-loading-wrapper + div {
+:not(.bp-loaded) > .bp-loading-wrapper + div {
     pointer-events: none;
 }
 
-.box-preview-loading {
+.bp-loading {
     color: $twos;
     padding-bottom: 15px;
     position: relative;
     text-align: center;
 }
 
-.box-preview-loading-btn-container {
+.bp-loading-btn-container {
     text-align: center;
 }
 
-.box-preview-btn-loading-download {
+.bp-btn-loading-download {
     color: $better-black;
     font-size: 12px;
 }
 
 // This crawler wrapper is used duing preview loading
-.box-preview-crawler-wrapper {
+.bp-crawler-wrapper {
     position: absolute;
     top: 72px;
     width: 100%;
 
-    .box-preview-crawler {
+    .bp-crawler {
         transform: scale(1.5);
 
         div {
@@ -103,7 +103,7 @@ $crawler-blue: #2b90ef;
 }
 
 // Crawler is 3 short lines pulsing
-.box-preview-crawler {
+.bp-crawler {
     text-align: center;
 
     div {

@@ -29,7 +29,7 @@ describe('Popup', () => {
 
     describe('constructor()', () => {
         it('should have the right classes assigned', () => {
-            expect(popup.popupEl.className).to.equal('box-preview-modal-dialog box-preview-is-hidden');
+            expect(popup.popupEl.className).to.equal('bp-modal-dialog bp-is-hidden');
         });
 
         it('should have the correct aria attributes', () => {
@@ -44,7 +44,7 @@ describe('Popup', () => {
 
         it('should have the correct parent wrapper', () => {
             expect(popup.popupEl.parentNode).to.not.equal(undefined);
-            expect(popup.popupEl.parentNode.className).to.equal('box-preview-popup-modal');
+            expect(popup.popupEl.parentNode.className).to.equal('bp-popup-modal');
         });
 
         it('should initialize buttonDisabled to false', () => {

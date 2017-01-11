@@ -8,9 +8,9 @@ const sandbox = sinon.sandbox.create();
 describe('video360-controls', () => {
     let containerEl;
     let controls;
-    const CSS_CLASS_HIDDEN = 'box-preview-is-hidden';
-    const CSS_CLASS_MEDIA_CONTROLS_CONTAINER = 'box-preview-media-controls-container';
-    const CSS_CLASS_MEDIA_CONTROL_BUTTON = 'box-preview-media-controls-btn';
+    const CSS_CLASS_HIDDEN = 'bp-is-hidden';
+    const CSS_CLASS_MEDIA_CONTROLS_CONTAINER = 'bp-media-controls-container';
+    const CSS_CLASS_MEDIA_CONTROL_BUTTON = 'bp-media-controls-btn';
 
     before(() => {
         fixture.setBase('src/lib');

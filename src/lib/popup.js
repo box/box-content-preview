@@ -26,33 +26,33 @@ class Popup {
         const uniqueLabel = `popup_${(new Date()).getTime()}_label`;
 
         this.popupEl = document.createElement('div');
-        this.popupEl.className = 'box-preview-modal-dialog box-preview-is-hidden';
+        this.popupEl.className = 'bp-modal-dialog bp-is-hidden';
 
         // ARIA for accessibility
         this.popupEl.setAttribute('role', 'alert');
         this.popupEl.setAttribute('aria-labeledby', uniqueLabel);
 
         this.popupEl.innerHTML = `
-            <div class='box-preview-modal-header'>
-                <button class='box-preview-modal-close-button'>
+            <div class='bp-modal-header'>
+                <button class='bp-modal-close-button'>
                     ${ICON_CLOSE}
                 </button>
             </div>
-            <div class='box-preview-modal-content'>
-                <p class='box-preview-modal-message' id=${uniqueLabel}></p>
-                <div class='box-preview-modal-actions'>
-                    <button class='box-preview-btn box-preview-btn-primary box-preview-popup-btn'> </button>
+            <div class='bp-modal-content'>
+                <p class='bp-modal-message' id=${uniqueLabel}></p>
+                <div class='bp-modal-actions'>
+                    <button class='bp-btn bp-btn-primary bp-popup-btn'> </button>
                 </div>
             </div>
-            <div class='box-preview-modal-backdrop'> </div>
+            <div class='bp-modal-backdrop'> </div>
         `.trim();
 
         // Save references to message, buttons, content, and backdrop
         this.messageEl = this.popupEl.querySelector(`#${uniqueLabel}`);
-        this.buttonEl = this.popupEl.querySelector('button.box-preview-popup-btn');
-        this.closeButtonEl = this.popupEl.querySelector('button.box-preview-modal-close-button');
-        this.contentEl = this.popupEl.querySelector('div.box-preview-modal-content');
-        this.backdropEl = this.popupEl.querySelector('div.box-preview-modal-backdrop');
+        this.buttonEl = this.popupEl.querySelector('button.bp-popup-btn');
+        this.closeButtonEl = this.popupEl.querySelector('button.bp-modal-close-button');
+        this.contentEl = this.popupEl.querySelector('div.bp-modal-content');
+        this.backdropEl = this.popupEl.querySelector('div.bp-modal-backdrop');
         this.buttonDisabled = false;
 
         this.popupEl.addEventListener('click', this.popupClickHandler);
@@ -60,7 +60,7 @@ class Popup {
 
         // Append and position popup
         const popupWrapperEl = document.createElement('div');
-        popupWrapperEl.className = 'box-preview-popup-modal';
+        popupWrapperEl.className = 'bp-popup-modal';
         popupWrapperEl.appendChild(this.popupEl);
         containerEl.appendChild(popupWrapperEl);
     }

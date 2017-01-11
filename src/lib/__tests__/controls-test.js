@@ -35,10 +35,10 @@ describe('controls', () => {
             expect(controls.containerEl).to.equal(document.getElementById('test-controls-container'));
 
             expect(controls.controlsWrapperEl.parentNode).to.equal(controls.containerEl);
-            expect(controls.controlsWrapperEl.classList.contains('box-preview-controls-wrapper')).to.true;
+            expect(controls.controlsWrapperEl.classList.contains('bp-controls-wrapper')).to.true;
 
             expect(controls.controlsEl.parentNode).to.equal(controls.controlsWrapperEl);
-            expect(controls.controlsEl.classList.contains('box-preview-controls')).to.true;
+            expect(controls.controlsEl.classList.contains('bp-controls')).to.true;
         });
     });
 
@@ -76,7 +76,7 @@ describe('controls', () => {
             expect(controls.isPreviewControlButton(element)).to.be.false;
 
             element = document.createElement('div');
-            element.className = 'box-preview-controls-btn';
+            element.className = 'bp-controls-btn';
             expect(controls.isPreviewControlButton(element)).to.be.true;
 
             element.className = '';

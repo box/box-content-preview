@@ -66,56 +66,56 @@ describe('annotator-util', () => {
     describe('showElement()', () => {
         it('should remove hidden class from element with matching selector', () => {
             // Hide element before testing show function
-            childEl.classList.add('box-preview-is-hidden');
+            childEl.classList.add('bp-is-hidden');
             showElement('.child');
-            assert.ok(!childEl.classList.contains('box-preview-is-hidden'));
+            assert.ok(!childEl.classList.contains('bp-is-hidden'));
         });
 
         it('should remove hidden class from provided element', () => {
             // Hide element before testing show function
-            childEl.classList.add('box-preview-is-hidden');
+            childEl.classList.add('bp-is-hidden');
             showElement(childEl);
-            assert.ok(!childEl.classList.contains('box-preview-is-hidden'));
+            assert.ok(!childEl.classList.contains('bp-is-hidden'));
         });
     });
 
     describe('hideElement()', () => {
         it('should add hidden class to matching element', () => {
             hideElement('.child');
-            assert.ok(childEl.classList.contains('box-preview-is-hidden'));
+            assert.ok(childEl.classList.contains('bp-is-hidden'));
         });
 
         it('should add hidden class to provided element', () => {
             hideElement(childEl);
-            assert.ok(childEl.classList.contains('box-preview-is-hidden'));
+            assert.ok(childEl.classList.contains('bp-is-hidden'));
         });
     });
 
     describe('showInvisibleElement()', () => {
         it('should remove invisible class from element with matching selector', () => {
             // Hide element before testing show function
-            childEl.classList.add('box-preview-is-invisible');
+            childEl.classList.add('bp-is-invisible');
             showInvisibleElement('.child');
-            expect(childEl.classList.contains('box-preview-is-invisible')).to.be.false;
+            expect(childEl.classList.contains('bp-is-invisible')).to.be.false;
         });
 
         it('should remove invisible class from provided element', () => {
             // Hide element before testing show function
-            childEl.classList.add('box-preview-is-invisible');
+            childEl.classList.add('bp-is-invisible');
             showInvisibleElement(childEl);
-            expect(childEl.classList.contains('box-preview-is-invisible')).to.be.false;
+            expect(childEl.classList.contains('bp-is-invisible')).to.be.false;
         });
     });
 
     describe('hideElementVisibility()', () => {
         it('should add invisible class to matching element', () => {
             hideElementVisibility('.child');
-            expect(childEl.classList.contains('box-preview-is-invisible')).to.be.true;
+            expect(childEl.classList.contains('bp-is-invisible')).to.be.true;
         });
 
         it('should add invisible class to provided element', () => {
             hideElementVisibility(childEl);
-            expect(childEl.classList.contains('box-preview-is-invisible')).to.be.true;
+            expect(childEl.classList.contains('bp-is-invisible')).to.be.true;
         });
     });
 
@@ -124,14 +124,14 @@ describe('annotator-util', () => {
             const textAreaEl = document.querySelector('.textarea');
 
             // Fake making text area 'active'
-            textAreaEl.classList.add('box-preview-is-active');
+            textAreaEl.classList.add('bp-is-active');
             textAreaEl.value = 'test';
             textAreaEl.style.width = '10px';
             textAreaEl.style.height = '10px';
 
             resetTextarea(textAreaEl);
 
-            assert.ok(!textAreaEl.classList.contains('box-preview-is-active'), 'Should be inactive');
+            assert.ok(!textAreaEl.classList.contains('bp-is-active'), 'Should be inactive');
             assert.equal(textAreaEl.value, 'test', 'Value should NOT be reset');
             assert.equal(textAreaEl.style.width, '', 'Width should be reset');
             assert.equal(textAreaEl.style.height, '', 'Height should be reset');
@@ -141,14 +141,14 @@ describe('annotator-util', () => {
             const textAreaEl = document.querySelector('.textarea');
 
             // Fake making text area 'active'
-            textAreaEl.classList.add('box-preview-is-active');
+            textAreaEl.classList.add('bp-is-active');
             textAreaEl.value = 'test';
             textAreaEl.style.width = '10px';
             textAreaEl.style.height = '10px';
 
             resetTextarea(textAreaEl, true);
 
-            assert.ok(!textAreaEl.classList.contains('box-preview-is-active'), 'Should be inactive');
+            assert.ok(!textAreaEl.classList.contains('bp-is-active'), 'Should be inactive');
             assert.equal(textAreaEl.value, '', 'Value should be reset');
             assert.equal(textAreaEl.style.width, '', 'Width should be reset');
             assert.equal(textAreaEl.style.height, '', 'Height should be reset');
@@ -175,7 +175,7 @@ describe('annotator-util', () => {
         });
 
         it('should return avatar HTML initials if no avatarUrl is provided', () => {
-            const expectedHtml = '<div class="box-preview-annotation-profile avatar-color-1">SN</div>'.trim();
+            const expectedHtml = '<div class="bp-annotation-profile avatar-color-1">SN</div>'.trim();
             assert.equal(getAvatarHtml('', '1', 'Some Name'), expectedHtml);
         });
     });
@@ -273,11 +273,11 @@ describe('annotator-util', () => {
             const browserX = 1;
             const pageWidth = 100;
             const initX = browserX - (DIALOG_WIDTH / 2);
-            const dialogEl = document.querySelector('.box-preview-annotation-dialog');
+            const dialogEl = document.querySelector('.bp-annotation-dialog');
 
             const dialogX = repositionCaret(dialogEl, initX, DIALOG_WIDTH, browserX, pageWidth);
 
-            const annotationCaretEl = dialogEl.querySelector('.box-preview-annotation-caret');
+            const annotationCaretEl = dialogEl.querySelector('.bp-annotation-caret');
             expect(dialogX).to.equal(0); // dialog aligned to the left
             expect(annotationCaretEl.style.left).to.equal('10px'); // caret aligned to the left
         });
@@ -286,11 +286,11 @@ describe('annotator-util', () => {
             const browserX = 400;
             const pageWidth = 100;
             const initX = browserX - (DIALOG_WIDTH / 2);
-            const dialogEl = document.querySelector('.box-preview-annotation-dialog');
+            const dialogEl = document.querySelector('.bp-annotation-dialog');
 
             const dialogX = repositionCaret(dialogEl, initX, DIALOG_WIDTH, browserX, pageWidth);
 
-            const annotationCaretEl = dialogEl.querySelector('.box-preview-annotation-caret');
+            const annotationCaretEl = dialogEl.querySelector('.bp-annotation-caret');
             expect(dialogX).to.equal(19); // dialog aligned to the right
             expect(annotationCaretEl.style.left).to.equal('71px'); // caret aligned to the right
         });
@@ -299,11 +299,11 @@ describe('annotator-util', () => {
             const browserX = 100;
             const pageWidth = 1000;
             const initX = browserX - (DIALOG_WIDTH / 2);
-            const dialogEl = document.querySelector('.box-preview-annotation-dialog');
+            const dialogEl = document.querySelector('.bp-annotation-dialog');
 
             const dialogX = repositionCaret(dialogEl, initX, DIALOG_WIDTH, browserX, pageWidth);
 
-            const annotationCaretEl = dialogEl.querySelector('.box-preview-annotation-caret');
+            const annotationCaretEl = dialogEl.querySelector('.bp-annotation-caret');
             expect(dialogX).to.equal(initX); // dialog x unchanged
             expect(annotationCaretEl.style.left).to.equal('50%'); // caret centered with dialog
         });

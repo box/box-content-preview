@@ -1,7 +1,7 @@
 @import '../../boxui-variables';
 @import 'media-controls';
 
-.box-preview-media {
+.bp-media {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -26,11 +26,11 @@
     align-items: center;
 }
 
-.box-preview-media-container {
+.bp-media-container {
     position: relative;
 }
 
-.box-preview-media-play-button {
+.bp-media-play-button {
     background: rgba($black, .5);
     border: 4px solid $white;
     border-radius: 40px;

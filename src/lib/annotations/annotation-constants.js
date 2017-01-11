@@ -1,10 +1,10 @@
 export const CLASS_ANNOTATION_BUTTON_CANCEL = 'cancel-annotation-btn';
 export const CLASS_ANNOTATION_BUTTON_POST = 'post-annotation-btn';
-export const CLASS_ANNOTATION_DIALOG = 'box-preview-annotation-dialog';
-export const CLASS_ANNOTATION_TEXT_HIGHLIGHTED = 'box-preview-is-text-highlighted';
-export const CLASS_ANNOTATION_POINT = 'box-preview-show-point-annotation-btn';
-export const CLASS_ANNOTATION_POINT_ICON = 'box-preview-point-annotation-icon';
-export const CLASS_ANNOTATION_POINT_MODE = 'box-preview-point-annotation-mode';
+export const CLASS_ANNOTATION_DIALOG = 'bp-annotation-dialog';
+export const CLASS_ANNOTATION_TEXT_HIGHLIGHTED = 'bp-is-text-highlighted';
+export const CLASS_ANNOTATION_POINT = 'bp-show-point-annotation-btn';
+export const CLASS_ANNOTATION_POINT_ICON = 'bp-point-annotation-icon';
+export const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
 export const CLASS_ANNOTATION_TEXTAREA = 'annotation-textarea';
 export const CLASS_BUTTON_CONTAINER = 'button-container';
 export const CLASS_BUTTON_DELETE_COMMENT = 'delete-comment-btn';

@@ -36,7 +36,7 @@ class Presentation extends DocBase {
      */
     constructor(container, options) {
         super(container, options);
-        this.docEl.classList.add('box-preview-doc-presentation');
+        this.docEl.classList.add('bp-doc-presentation');
     }
 
     /**
@@ -183,18 +183,18 @@ class Presentation extends DocBase {
     bindControlListeners() {
         super.bindControlListeners();
 
-        this.controls.add(__('zoom_out'), this.zoomOut, 'box-preview-exit-zoom-out-icon', ICON_ZOOM_OUT);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'box-preview-enter-zoom-in-icon', ICON_ZOOM_IN);
+        this.controls.add(__('zoom_out'), this.zoomOut, 'bp-exit-zoom-out-icon', ICON_ZOOM_OUT);
+        this.controls.add(__('zoom_in'), this.zoomIn, 'bp-enter-zoom-in-icon', ICON_ZOOM_IN);
 
-        this.controls.add(__('previous_page'), this.previousPage, 'box-preview-presentation-previous-page-icon box-preview-previous-page', ICON_DROP_UP);
+        this.controls.add(__('previous_page'), this.previousPage, 'bp-presentation-previous-page-icon bp-previous-page', ICON_DROP_UP);
 
         const buttonContent = pageNumTemplate.replace(/>\s*</g, '><'); // removing new lines
-        this.controls.add(__('enter_page_num'), this.showPageNumInput, 'box-preview-doc-page-num', buttonContent);
+        this.controls.add(__('enter_page_num'), this.showPageNumInput, 'bp-doc-page-num', buttonContent);
 
-        this.controls.add(__('next_page'), this.nextPage, 'box-preview-presentation-next-page-icon box-preview-next-page', ICON_DROP_DOWN);
+        this.controls.add(__('next_page'), this.nextPage, 'bp-presentation-next-page-icon bp-next-page', ICON_DROP_DOWN);
 
-        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 
     /**

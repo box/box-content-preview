@@ -4,66 +4,66 @@ import cache from '../../cache';
 import { insertTemplate } from '../../util';
 import { ICON_ARROW_LEFT, ICON_ARROW_RIGHT, ICON_CHECK_MARK } from '../../icons/icons';
 
-const CLASS_SETTINGS = 'box-preview-media-settings';
-const CLASS_SETTINGS_SELECTED = 'box-preview-media-settings-selected';
-const CLASS_SETTINGS_OPEN = 'box-preview-media-settings-is-open';
-const SELECTOR_SETTINGS_SUB_ITEM = '.box-preview-media-settings-sub-item';
-const SELECTOR_SETTINGS_VALUE = '.box-preview-media-settings-value';
+const CLASS_SETTINGS = 'bp-media-settings';
+const CLASS_SETTINGS_SELECTED = 'bp-media-settings-selected';
+const CLASS_SETTINGS_OPEN = 'bp-media-settings-is-open';
+const SELECTOR_SETTINGS_SUB_ITEM = '.bp-media-settings-sub-item';
+const SELECTOR_SETTINGS_VALUE = '.bp-media-settings-value';
 
-const SETTINGS_TEMPLATE = `<div class="box-preview-media-settings">
-    <div class="box-preview-media-settings-item box-preview-media-settings-item-speed" data-type="speed">
-        <div class="box-preview-media-settings-label">${__('media_speed')}</div>
-        <div class="box-preview-media-settings-value">${__('media_speed_normal')}</div>
-        <div class="box-preview-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
+const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
+    <div class="bp-media-settings-item bp-media-settings-item-speed" data-type="speed">
+        <div class="bp-media-settings-label">${__('media_speed')}</div>
+        <div class="bp-media-settings-value">${__('media_speed_normal')}</div>
+        <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
     </div>
-    <div class="box-preview-media-settings-item box-preview-media-settings-item-quality" data-type="quality">
-        <div class="box-preview-media-settings-label">${__('media_quality')}</div>
-        <div class="box-preview-media-settings-value">${__('media_quality_auto')}</div>
-        <div class="box-preview-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
+    <div class="bp-media-settings-item bp-media-settings-item-quality" data-type="quality">
+        <div class="bp-media-settings-label">${__('media_quality')}</div>
+        <div class="bp-media-settings-value">${__('media_quality_auto')}</div>
+        <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
     </div>
-    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-speed box-preview-media-settings-sub-item-speed" data-type="menu">
-        <div class="box-preview-media-settings-arrow">${ICON_ARROW_LEFT}</div>
-        <div class="box-preview-media-settings-label">${__('media_speed')}</div>
+    <div class="bp-media-settings-sub-item bp-media-settings-options-speed bp-media-settings-sub-item-speed" data-type="menu">
+        <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
+        <div class="bp-media-settings-label">${__('media_speed')}</div>
     </div>
-    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-speed" data-type="speed" data-value="0.25">
-        <div class="box-preview-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="box-preview-media-settings-value">0.25</div>
+    <div class="bp-media-settings-sub-item bp-media-settings-options-speed" data-type="speed" data-value="0.25">
+        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+        <div class="bp-media-settings-value">0.25</div>
     </div>
-    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-speed" data-type="speed" data-value="0.5">
-        <div class="box-preview-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="box-preview-media-settings-value">0.5</div>
+    <div class="bp-media-settings-sub-item bp-media-settings-options-speed" data-type="speed" data-value="0.5">
+        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+        <div class="bp-media-settings-value">0.5</div>
     </div>
-    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-speed box-preview-media-settings-selected" data-type="speed" data-value="1.0">
-        <div class="box-preview-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="box-preview-media-settings-value">${__('media_speed_normal')}</div>
+    <div class="bp-media-settings-sub-item bp-media-settings-options-speed bp-media-settings-selected" data-type="speed" data-value="1.0">
+        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+        <div class="bp-media-settings-value">${__('media_speed_normal')}</div>
     </div>
-    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-speed" data-type="speed" data-value="1.25">
-        <div class="box-preview-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="box-preview-media-settings-value">1.25</div>
+    <div class="bp-media-settings-sub-item bp-media-settings-options-speed" data-type="speed" data-value="1.25">
+        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+        <div class="bp-media-settings-value">1.25</div>
     </div>
-    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-speed" data-type="speed" data-value="1.5">
-        <div class="box-preview-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="box-preview-media-settings-value">1.5</div>
+    <div class="bp-media-settings-sub-item bp-media-settings-options-speed" data-type="speed" data-value="1.5">
+        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+        <div class="bp-media-settings-value">1.5</div>
     </div>
-    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-speed" data-type="speed" data-value="2.0">
-        <div class="box-preview-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="box-preview-media-settings-value">2.0</div>
+    <div class="bp-media-settings-sub-item bp-media-settings-options-speed" data-type="speed" data-value="2.0">
+        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+        <div class="bp-media-settings-value">2.0</div>
     </div>
-    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-quality box-preview-media-settings-sub-item-quality" data-type="menu">
-        <div class="box-preview-media-settings-arrow">${ICON_ARROW_LEFT}</div>
-        <div class="box-preview-media-settings-label">${__('media_quality')}</div>
+    <div class="bp-media-settings-sub-item bp-media-settings-options-quality bp-media-settings-sub-item-quality" data-type="menu">
+        <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
+        <div class="bp-media-settings-label">${__('media_quality')}</div>
     </div>
-    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-quality" data-type="quality" data-value="sd">
-        <div class="box-preview-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="box-preview-media-settings-value">480p</div>
+    <div class="bp-media-settings-sub-item bp-media-settings-options-quality" data-type="quality" data-value="sd">
+        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+        <div class="bp-media-settings-value">480p</div>
     </div>
-    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-quality" data-type="quality" data-value="hd">
-        <div class="box-preview-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="box-preview-media-settings-value">1080p</div>
+    <div class="bp-media-settings-sub-item bp-media-settings-options-quality" data-type="quality" data-value="hd">
+        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+        <div class="bp-media-settings-value">1080p</div>
     </div>
-    <div class="box-preview-media-settings-sub-item box-preview-media-settings-options-quality box-preview-media-settings-selected" data-type="quality" data-value="auto">
-        <div class="box-preview-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="box-preview-media-settings-value">${__('media_quality_auto')}</div>
+    <div class="bp-media-settings-sub-item bp-media-settings-options-quality bp-media-settings-selected" data-type="quality" data-value="auto">
+        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+        <div class="bp-media-settings-value">${__('media_quality_auto')}</div>
     </div>
 </div>`;
 
@@ -165,7 +165,7 @@ class Settings extends EventEmitter {
             this.chooseOption(type, value);
         } else if (type) {
             // We are in the main menu and clicked a valid option
-            this.settings.classList.add(`box-preview-media-settings-show-${type}`);
+            this.settings.classList.add(`bp-media-settings-show-${type}`);
         }
     }
 
@@ -236,7 +236,7 @@ class Settings extends EventEmitter {
         this.containerEl.classList.add(CLASS_SETTINGS_OPEN);
 
         // Asynchronously add a blur handler.
-        // Needs to be async so that event is not caught on bubble when box-preview-media-settings icon is clicked
+        // Needs to be async so that event is not caught on bubble when bp-media-settings icon is clicked
         setTimeout(() => {
             document.addEventListener('click', this.blurHandler);
         }, 0);

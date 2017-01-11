@@ -58,7 +58,7 @@ describe('annotation-dialog', () => {
             annotationDialog._hasAnnotations = true;
             annotationDialog._deactivateReply();
             const commentsTextArea = annotationDialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
-            commentsTextArea.classList.remove('box-preview-is-active');
+            commentsTextArea.classList.remove('bp-is-active');
             annotationDialog.show();
             expect(positionStub).to.have.been.called;
         });
@@ -85,7 +85,7 @@ describe('annotation-dialog', () => {
         it('should hide dialog immediately', () => {
             annotationDialog.hide();
 
-            expect(annotationDialog._element.classList.contains('box-preview-is-hidden')).to.be.true;
+            expect(annotationDialog._element.classList.contains('bp-is-hidden')).to.be.true;
         });
     });
 
@@ -109,8 +109,8 @@ describe('annotation-dialog', () => {
 
             const createSectionEl = document.querySelector('[data-section="create"]');
             const showSectionEl = document.querySelector('[data-section="show"]');
-            expect(createSectionEl.classList.contains('box-preview-is-hidden')).to.be.true;
-            expect(showSectionEl.classList.contains('box-preview-is-hidden')).to.be.false;
+            expect(createSectionEl.classList.contains('bp-is-hidden')).to.be.true;
+            expect(showSectionEl.classList.contains('bp-is-hidden')).to.be.false;
         });
     });
 
@@ -225,7 +225,7 @@ describe('annotation-dialog', () => {
 
     describe('mouseenterHandler()', () => {
         it('should show the element only if the element is currently hidden', () => {
-            annotationDialog._element.classList.add('box-preview-is-hidden');
+            annotationDialog._element.classList.add('bp-is-hidden');
             sandbox.stub(annotatorUtil, 'showElement');
             annotationDialog.mouseenterHandler();
             expect(annotatorUtil.showElement).to.have.been.called;
@@ -238,7 +238,7 @@ describe('annotation-dialog', () => {
         });
 
         it('should emit \'annotationcommentpending\' when user hovers back into a dialog that has a pending comment', () => {
-            annotationDialog._element.classList.add('box-preview-is-hidden');
+            annotationDialog._element.classList.add('bp-is-hidden');
             sandbox.stub(annotatorUtil, 'showElement');
             sandbox.stub(annotationDialog, 'emit');
             const commentsTextArea = annotationDialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
@@ -427,7 +427,7 @@ describe('annotation-dialog', () => {
             });
             const deleteButton = document.querySelector('.delete-comment-btn');
 
-            expect(deleteButton.classList.contains('box-preview-is-hidden')).to.be.true;
+            expect(deleteButton.classList.contains('bp-is-hidden')).to.be.true;
         });
 
         it('should make the delete icon hidden if the delete permission is not specified', () => {
@@ -439,7 +439,7 @@ describe('annotation-dialog', () => {
             });
             const deleteButton = document.querySelector('.delete-comment-btn');
 
-            expect(deleteButton.classList.contains('box-preview-is-hidden')).to.be.true;
+            expect(deleteButton.classList.contains('bp-is-hidden')).to.be.true;
         });
 
         it('should make delete icon visible if the user has delete permission', () => {
@@ -451,7 +451,7 @@ describe('annotation-dialog', () => {
             });
             const deleteButton = document.querySelector('.delete-comment-btn');
 
-            expect(deleteButton.classList.contains('box-preview-is-hidden')).to.be.false;
+            expect(deleteButton.classList.contains('bp-is-hidden')).to.be.false;
         });
 
         it('should hide the delete confirmation UI by default', () => {
@@ -463,7 +463,7 @@ describe('annotation-dialog', () => {
             });
             const deleteConfirmation = document.querySelector('.delete-confirmation');
 
-            expect(deleteConfirmation.classList.contains('box-preview-is-hidden')).to.be.true;
+            expect(deleteConfirmation.classList.contains('bp-is-hidden')).to.be.true;
         });
         it('should correctly format the date and time in a different locale', () => {
             const date = new Date();
@@ -519,7 +519,7 @@ describe('annotation-dialog', () => {
     describe('_activateReply()', () => {
         it('should do nothing if reply textarea is already active', () => {
             const replyTextEl = annotationDialog._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
-            replyTextEl.classList.add('box-preview-is-active');
+            replyTextEl.classList.add('bp-is-active');
             sandbox.stub(annotatorUtil, 'showElement');
             annotationDialog._activateReply();
             expect(annotatorUtil.showElement).to.not.have.been.called;
@@ -537,8 +537,8 @@ describe('annotation-dialog', () => {
             const buttonContainer = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
 
             annotationDialog._activateReply();
-            expect(replyTextEl.classList.contains('box-preview-is-active')).to.be.true;
-            expect(buttonContainer.classList.contains('box-preview-is-hidden')).to.be.false;
+            expect(replyTextEl.classList.contains('bp-is-active')).to.be.true;
+            expect(buttonContainer.classList.contains('bp-is-hidden')).to.be.false;
         });
     });
 
@@ -554,8 +554,8 @@ describe('annotation-dialog', () => {
             const buttonContainer = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
 
             annotationDialog._deactivateReply();
-            expect(replyTextEl.classList.contains('box-preview-is-active')).to.be.false;
-            expect(buttonContainer.classList.contains('box-preview-is-hidden')).to.be.true;
+            expect(replyTextEl.classList.contains('bp-is-active')).to.be.false;
+            expect(buttonContainer.classList.contains('bp-is-hidden')).to.be.true;
         });
     });
 

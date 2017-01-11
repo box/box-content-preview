@@ -1,24 +1,24 @@
 @import 'media';
 
-.box-preview-media-mp3 {
+.bp-media-mp3 {
 
-    .box-preview-media-container {
+    .bp-media-container {
         width: 360px;
         height: 60px; /* same as controls */
         overflow: visible; /* to show settings popup */
     }
 
-    .box-preview-media-fullscreen-icon {
+    .bp-media-fullscreen-icon {
         display: none;
     }
 
-    .box-preview-media-controls-wrapper {
+    .bp-media-controls-wrapper {
         background: $black;
         opacity: 1;
     }
 
-    .box-preview-media-settings-item-quality,
-    .box-preview-image-switch-360-icon {
+    .bp-media-settings-item-quality,
+    .bp-image-switch-360-icon {
         display: none;
     }
 

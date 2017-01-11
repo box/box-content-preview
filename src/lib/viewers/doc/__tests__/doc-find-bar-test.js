@@ -3,7 +3,7 @@ import DocFindBar from '../doc-find-bar';
 import { CLASS_HIDDEN } from '../../../constants';
 import * as util from '../../../util';
 
-const CLASS_FIND_MATCH_NOT_FOUND = 'box-preview-find-match-not-found';
+const CLASS_FIND_MATCH_NOT_FOUND = 'bp-find-match-not-found';
 
 // Values match FindStates in PDFFindController
 const FIND_MATCH_FOUND = 0;
@@ -105,29 +105,29 @@ describe('doc-find-bar', () => {
         it('should create the search icon', () => {
             docFindBar.createFindField();
 
-            const searchIconEl = document.querySelector('.box-preview-doc-find-search');
+            const searchIconEl = document.querySelector('.bp-doc-find-search');
 
 
             expect(searchIconEl.parentNode).to.equal(docFindBar.bar);
-            expect(searchIconEl.className).to.equal('box-preview-doc-find-search');
+            expect(searchIconEl.className).to.equal('bp-doc-find-search');
         });
 
         it('should create the input field', () => {
             docFindBar.createFindField();
 
-            const inputFieldEl = document.querySelector('.box-preview-doc-find-field');
+            const inputFieldEl = document.querySelector('.bp-doc-find-field');
 
             expect(inputFieldEl.parentNode).to.equal(docFindBar.bar);
-            expect(inputFieldEl.className).to.equal('box-preview-doc-find-field');
+            expect(inputFieldEl.className).to.equal('bp-doc-find-field');
         });
 
         it('should create the match results count', () => {
             docFindBar.createFindField();
 
-            const resultsCountEl = document.querySelector('.box-preview-doc-find-results-count');
+            const resultsCountEl = document.querySelector('.bp-doc-find-results-count');
 
             expect(resultsCountEl.parentNode).to.equal(docFindBar.bar);
-            expect(resultsCountEl.classList.contains('box-preview-doc-find-results-count')).to.be.true;
+            expect(resultsCountEl.classList.contains('bp-doc-find-results-count')).to.be.true;
             expect(resultsCountEl.classList.contains(CLASS_HIDDEN)).to.be.true;
         });
     });
@@ -136,7 +136,7 @@ describe('doc-find-bar', () => {
         it('should create the find buttons with the correct class, and add to the bar', () => {
             docFindBar.createFindButtons();
 
-            expect(docFindBar.findButtonContainerEl.classList.contains('box-preview-doc-find-controls')).to.be.true;
+            expect(docFindBar.findButtonContainerEl.classList.contains('bp-doc-find-controls')).to.be.true;
             expect(docFindBar.findButtonContainerEl.parentNode).to.equal(docFindBar.bar);
         });
     });

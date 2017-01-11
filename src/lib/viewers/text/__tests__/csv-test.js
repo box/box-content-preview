@@ -35,7 +35,7 @@ describe('csv', () => {
     describe('CSV()', () => {
         it('should set up the container and DOM structure', () => {
             expect(csv.csvEl.parentNode).to.equal(csv.containerEl);
-            expect(csv.csvEl.classList.contains('box-preview-text')).to.be.true;
+            expect(csv.csvEl.classList.contains('bp-text')).to.be.true;
         });
     });
 
@@ -148,8 +148,8 @@ describe('csv', () => {
 
     describe('getRowClassName()', () => {
         it('should return appropriate classname for row', () => {
-            expect(csv.getRowClassName(1)).to.equal('box-preview-text-csv-odd-row');
-            expect(csv.getRowClassName(2)).to.equal('box-preview-text-csv-even-row');
+            expect(csv.getRowClassName(1)).to.equal('bp-text-csv-odd-row');
+            expect(csv.getRowClassName(2)).to.equal('bp-text-csv-even-row');
         });
     });
 
@@ -165,7 +165,7 @@ describe('csv', () => {
                 style: 'style'
             });
 
-            expect(cell.props.className).to.equal('rowClass box-preview-text-csv-cell');
+            expect(cell.props.className).to.equal('rowClass bp-text-csv-cell');
             expect(cell.props.children).to.equal('stuff');
             expect(cell.props.style).to.equal('style');
         });
@@ -179,7 +179,7 @@ describe('csv', () => {
             csv.renderCSV();
 
             const gridComponent = renderStub.firstCall.args[0];
-            expect(gridComponent.props.className).to.equal('box-preview-text-csv-grid');
+            expect(gridComponent.props.className).to.equal('bp-text-csv-grid');
             expect(gridComponent.props.cellRenderer).to.equal(csv.cellRenderer);
             expect(gridComponent.props.columnCount).to.equal(2);
             expect(gridComponent.props.rowCount).to.equal(3);

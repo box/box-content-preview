@@ -229,7 +229,7 @@ class Model3DSettingsPullup extends EventEmitter {
             this.onSaveSelected();
         });
 
-        saveButtonEl.classList.add('box-preview-btn-primary');
+        saveButtonEl.classList.add('bp-btn-primary');
         this.saveRowEl.appendChild(saveButtonEl);
         this.pullupEl.appendChild(this.saveRowEl);
     }

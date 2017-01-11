@@ -32,7 +32,7 @@ describe('mp3', () => {
 
     describe('constructor()', () => {
         it('should create mp3 viewer and initialize audio element', () => {
-            const wrapperEl = document.querySelector('.box-preview-media-mp3');
+            const wrapperEl = document.querySelector('.bp-media-mp3');
             const mediaEl = document.querySelector('audio');
             const preloadAttr = mp3.mediaEl.getAttribute('preload');
 

@@ -171,8 +171,8 @@ class Annotator extends EventEmitter {
         // doesn't manage its own functionality
         let buttonEl = event.target;
         if (!buttonEl) {
-            const containerEl = document.querySelector('.box-preview-header');
-            buttonEl = containerEl ? containerEl.querySelector('.box-preview-btn-annotate') : null;
+            const containerEl = document.querySelector('.bp-header');
+            buttonEl = containerEl ? containerEl.querySelector('.bp-btn-annotate') : null;
         }
 
         this._destroyPendingThreads();

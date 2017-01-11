@@ -15,7 +15,7 @@ $avatar-color-7: #159f45;
 $avatar-color-8: #b800b2;
 $avatar-color-9: #f22c44;
 
-.box-preview-annotation-caret {
+.bp-annotation-caret {
     left: 50%;
     position: absolute;
 
@@ -57,7 +57,7 @@ $avatar-color-9: #f22c44;
     }
 }
 
-.box-preview-annotation-highlight-dialog .box-preview-btn-plain {
+.bp-annotation-highlight-dialog .bp-btn-plain {
     padding-left: 5px;
     padding-right: 5px;
 
@@ -72,16 +72,16 @@ $avatar-color-9: #f22c44;
     }
 }
 
-.box-preview-highlight-comment-btn:hover .icon {
+.bp-highlight-comment-btn:hover .icon {
     fill: $white;
 }
 
-.box-preview-add-highlight-btn:hover svg {
+.bp-add-highlight-btn:hover svg {
     fill: $highlight-yellow;
 }
 
 // scss-lint:disable SelectorDepth
-.box-preview-is-text-highlighted .box-preview-annotation-highlight-dialog .box-preview-btn-plain {
+.bp-is-text-highlighted .bp-annotation-highlight-dialog .bp-btn-plain {
     svg {
         fill: $highlight-yellow;
     }
@@ -96,7 +96,7 @@ $avatar-color-9: #f22c44;
 }
 // scss-lint:enable SelectorDepth
 
-.box-preview-btn-plain.box-preview-btn-annotate.box-preview-is-active svg {
+.bp-btn-plain.bp-btn-annotate.bp-is-active svg {
     fill: $box-blue;
 }
 
@@ -104,7 +104,7 @@ $avatar-color-9: #f22c44;
 // CSS for points and dialogs
 //------------------------------------------------------------------------------
 
-.box-preview-annotation-dialog {
+.bp-annotation-dialog {
     border-top: 20px solid transparent; // Transparent border for hover detection
     cursor: default; // Overrides cursor: none from annotation mode
     position: absolute;
@@ -122,7 +122,7 @@ $avatar-color-9: #f22c44;
         white-space: normal;
     }
 
-    .box-preview-textarea {
+    .bp-textarea {
         display: block;
         font-size: 13px;
         height: 34px;
@@ -134,7 +134,7 @@ $avatar-color-9: #f22c44;
         transition: border-color linear .15s, box-shadow linear .1s, min-height .1s;
         width: 250px;
 
-        &.box-preview-is-active {
+        &.bp-is-active {
             min-height: 68px;
         }
     }
@@ -235,7 +235,7 @@ $avatar-color-9: #f22c44;
         text-align: right;
         width: 100%;
 
-        .box-preview-btn:last-child {
+        .bp-btn:last-child {
             margin-right: 0;
         }
     }
@@ -256,7 +256,7 @@ $avatar-color-9: #f22c44;
     }
 }
 
-.box-preview-point-annotation-btn {
+.bp-point-annotation-btn {
     background-color: transparent;
     border-style: none;
     cursor: pointer;
@@ -275,7 +275,7 @@ $avatar-color-9: #f22c44;
     }
 }
 
-.box-preview-annotation-profile {
+.bp-annotation-profile {
     background-color: $tendemob-grey;
     border-radius: 16px; // Circle
     color: $white;
@@ -326,7 +326,7 @@ $avatar-color-9: #f22c44;
 // CSS for highlights
 //------------------------------------------------------------------------------
 
-.box-preview-annotation-layer {
+.bp-annotation-layer {
     cursor: text;
     left: 0;
     mix-blend-mode: multiply;
@@ -334,7 +334,7 @@ $avatar-color-9: #f22c44;
     top: 15px; // Match 15px padding top on page
 }
 
-.box-preview-highlight-dialog {
+.bp-highlight-dialog {
     border-top: 20px solid transparent; // Transparent border for hover detection
     color: $fours;
     display: table;
@@ -342,31 +342,31 @@ $avatar-color-9: #f22c44;
     z-index: 9999;
 
     &.cannot-annotate {
-        .box-preview-add-highlight-btn,
-        .box-preview-highlight-comment-btn {
+        .bp-add-highlight-btn,
+        .bp-highlight-comment-btn {
             display: none;
         }
     }
 }
 
-.box-preview-annotation-highlight-dialog,
-.box-preview-annotation-highlight-dialog:hover {
+.bp-annotation-highlight-dialog,
+.bp-annotation-highlight-dialog:hover {
     background-color: $white;
     border: 1px solid $seesee;
     border-radius: 2px;
     padding: 5px 6px;
 
     // Center buttons
-    .box-preview-add-highlight-btn {
+    .bp-add-highlight-btn {
         padding-top: 1px;
     }
 
-    .box-preview-highlight-comment-btn {
+    .bp-highlight-comment-btn {
         padding-top: 3px;
     }
 }
 
-.box-preview-use-default-cursor {
+.bp-use-default-cursor {
     cursor: default;
 
     // Overrides pdf_viewer.css
@@ -377,12 +377,12 @@ $avatar-color-9: #f22c44;
 }
 
 // Quad point positioning - the helper divs are positioned relative to the Rangy-created element
-.box-preview-doc .rangy-highlight {
+.bp-doc .rangy-highlight {
     position: relative;
 }
 
 // These helper divs allow us to calculate the quad points of an element
-.box-preview-quad-corner-container {
+.bp-quad-corner-container {
     bottom: 0;
     left: 0;
     position: absolute;
@@ -390,7 +390,7 @@ $avatar-color-9: #f22c44;
     top: 0;
 }
 
-.box-preview-quad-corner {
+.bp-quad-corner {
     background: none;
     height: 0;
     position: absolute;
@@ -417,7 +417,7 @@ $avatar-color-9: #f22c44;
     }
 }
 
-.box-preview-annotation-highlight-label {
+.bp-annotation-highlight-label {
     padding-left: 5px;
     padding-right: 5px;
     width: 100%;
@@ -428,18 +428,18 @@ $avatar-color-9: #f22c44;
 //------------------------------------------------------------------------------
 
 // scss-lint:disable SelectorFormat
-.box-preview-point-annotation-mode .page,
-.box-preview-point-annotation-mode .box-preview-annotation-layer,
-.box-preview-point-annotation-mode .textLayer > div,
-.box-preview-point-annotation-mode > img {
+.bp-point-annotation-mode .page,
+.bp-point-annotation-mode .bp-annotation-layer,
+.bp-point-annotation-mode .textLayer > div,
+.bp-point-annotation-mode > img {
     cursor: crosshair;
 }
 
 // Needed to allow point annotations since PDF.js adds a funky mousedown handler
 // that helps with text selection - we need to disable this since it interacts
 // badly with point annotations on non-text divs in non-Chrome browsers
-.box-preview-point-annotation-mode .textLayer > div,
-.box-preview-point-annotation-mode .textLayer .endOfContent {
+.bp-point-annotation-mode .textLayer > div,
+.bp-point-annotation-mode .textLayer .endOfContent {
     pointer-events: none;
 }
 
@@ -447,8 +447,8 @@ $avatar-color-9: #f22c44;
 // http://stackoverflow.com/questions/7419314/custom-cursor-image-doesnt-work-in-all-ies
 // To get around this, we use absolute URLs to the cursor hosted on Box's CDN
 // scss-lint:disable SelectorFormat, UrlFormat
-.ie.box-preview-point-annotation-mode .page,
-.ie.box-preview-point-annotation-mode .box-preview-annotation-layer,
-.ie.box-preview-point-annotation-mode .textLayer > div {
+.ie.bp-point-annotation-mode .page,
+.ie.bp-point-annotation-mode .bp-annotation-layer,
+.ie.bp-point-annotation-mode .textLayer > div {
     cursor: crosshair;
 }

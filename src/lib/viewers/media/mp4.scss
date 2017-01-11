@@ -1,6 +1,6 @@
 @import 'media';
 
-.box-preview-media-mp4 {
+.bp-media-mp4 {
 
     background: $black;
 
@@ -12,21 +12,21 @@
         cursor: none;
     }
 
-    .box-preview-media-controls-is-visible video {
+    .bp-media-controls-is-visible video {
         cursor: pointer;
     }
 
-    .box-preview-is-fullscreen & .box-preview-media-container {
+    .bp-is-fullscreen & .bp-media-container {
         width: 100%;
     }
 
-    .box-preview-media-settings-item-quality,
-    .box-preview-image-switch-360-icon {
+    .bp-media-settings-item-quality,
+    .bp-image-switch-360-icon {
         display: none;
     }
 
-    .box-preview-media-controls-label,
-    .box-preview-media-controls-btn  {
+    .bp-media-controls-label,
+    .bp-media-controls-btn  {
         opacity: .9;
 
         &:hover {

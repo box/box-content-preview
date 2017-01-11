@@ -34,8 +34,8 @@ describe('mp3', () => {
 
     describe('MediaBase()', () => {
         it('should setup wrapper and container and load timeout', () => {
-            expect(media.wrapperEl.className).to.equal('box-preview-media');
-            expect(media.mediaContainerEl.className).to.equal('box-preview-media-container');
+            expect(media.wrapperEl.className).to.equal('bp-media');
+            expect(media.mediaContainerEl.className).to.equal('bp-media-container');
             expect(media.loadTimeout).to.equal(100000);
         });
     });
@@ -279,9 +279,9 @@ describe('mp3', () => {
     describe('showPlayButton', () => {
         it('should show the play button if it exists', () => {
             media.playButtonEl = document.createElement('button');
-            media.playButtonEl.classList.add('box-preview-is-hidden');
+            media.playButtonEl.classList.add('bp-is-hidden');
             media.showPlayButton();
-            expect(media.playButtonEl.classList.contains('box-preview-is-hidden')).to.be.false;
+            expect(media.playButtonEl.classList.contains('bp-is-hidden')).to.be.false;
         });
     });
 
@@ -289,7 +289,7 @@ describe('mp3', () => {
         it('should hide the play button if it exists', () => {
             media.playButtonEl = document.createElement('button');
             media.hidePlayButton();
-            expect(media.playButtonEl.classList.contains('box-preview-is-hidden')).to.be.true;
+            expect(media.playButtonEl.classList.contains('bp-is-hidden')).to.be.true;
         });
     });
 
@@ -314,7 +314,7 @@ describe('mp3', () => {
     describe('hideLoadingIcon()', () => {
         it('should add the loaded class to the container', () => {
             media.hideLoadingIcon();
-            expect(media.containerEl.classList.contains('box-preview-loaded')).to.be.true;
+            expect(media.containerEl.classList.contains('bp-loaded')).to.be.true;
         });
     });
 
@@ -329,7 +329,7 @@ describe('mp3', () => {
             media.showLoadingIcon();
 
             expect(media.hidePlayButton).to.be.called;
-            expect(media.containerEl.classList.contains('box-preview-loaded')).to.be.false;
+            expect(media.containerEl.classList.contains('bp-loaded')).to.be.false;
         });
     });
 

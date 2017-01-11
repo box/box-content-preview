@@ -1,7 +1,7 @@
 @import '../../boxui-variables';
 
 // scss-lint:disable SelectorFormat
-.box-preview-doc {
+.bp-doc {
     bottom: 0;
     height: 100%;
     left: 0;
@@ -42,7 +42,7 @@
         }
 
         // Only show page loading indicator when viewer has loaded
-        .box-preview-loaded & .loadingIcon {
+        .bp-loaded & .loadingIcon {
             background: url('loading-icon.gif') center no-repeat;
         }
 
@@ -77,9 +77,9 @@
     }
 }
 
-.box-preview-controls {
+.bp-controls {
     // Page num input CSS
-    .box-preview-doc-page-num {
+    .bp-doc-page-num {
         min-width: 48px;
         width: auto; // Let page num expand as needed
 
@@ -89,7 +89,7 @@
         }
     }
 
-    .box-preview-doc-page-num-input {
+    .bp-doc-page-num-input {
         display: none;
         font-size: 14px;
         margin: 0 auto;
@@ -98,34 +98,34 @@
     }
 
     &.show-page-number-input {
-        .box-preview-doc-page-num {
+        .bp-doc-page-num {
             opacity: 1;
         }
 
-        .box-preview-doc-current-page,
-        .box-preview-doc-page-num-divider,
-        .box-preview-doc-total-pages {
+        .bp-doc-current-page,
+        .bp-doc-page-num-divider,
+        .bp-doc-total-pages {
             display: none;
         }
 
-        .box-preview-doc-page-num-input {
+        .bp-doc-page-num-input {
             display: block;
         }
     }
 }
 
-.box-preview-print-notification {
+.bp-print-notification {
     display: none;
     font-size: 24px;
 }
 
 // Hide content when using native print, show message to use print button
 @media print {
-    .box-preview-doc {
+    .bp-doc {
         display: none;
     }
 
-    .box-preview-print-notification {
+    .bp-print-notification {
         display: block;
     }
 }

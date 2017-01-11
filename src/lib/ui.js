@@ -268,11 +268,11 @@ export function setup(options, keydown, navigateLeft, navigateRight, mousemove) 
     cleanup();
 
     // Create the preview with absolute positioning inside a relative positioned container
-    // <box-preview-container>
-    //      <box-preview-header>
-    //      <box-preview>
+    // <bp-container>
+    //      <bp-header>
+    //      <bp>
     //      <navigation>
-    // </box-preview-container>
+    // </bp-container>
     insertTemplate(container, shellTemplate);
 
     container = container.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER);

@@ -10,8 +10,8 @@ let mediaControls;
 let stubs;
 let clock;
 
-const PLAYING_CLASS = 'box-preview-media-is-playing';
-const CRAWLER = '<div class="box-preview-media-crawler-wrapper"><div class="box-preview-crawler"><div></div><div></div><div></div></div></div>';
+const PLAYING_CLASS = 'bp-media-is-playing';
+const CRAWLER = '<div class="bp-media-crawler-wrapper"><div class="bp-crawler"><div></div><div></div><div></div></div></div>';
 
 const sandbox = sinon.sandbox.create();
 
@@ -420,11 +420,11 @@ describe('Media Controls', () => {
         });
 
         it('should remove all volume level classes and add the correct one', () => {
-            mediaControls.className = 'box-preview-media-volume-icon-is-low';
+            mediaControls.className = 'bp-media-volume-icon-is-low';
 
             mediaControls.updateVolumeIcon(1);
-            expect(mediaControls.volLevelButtonEl.classList.contains('box-preview-media-volume-icon-is-low')).to.be.false;
-            expect(mediaControls.volLevelButtonEl.classList.contains('box-preview-media-volume-icon-is-high')).to.be.true;
+            expect(mediaControls.volLevelButtonEl.classList.contains('bp-media-volume-icon-is-low')).to.be.false;
+            expect(mediaControls.volLevelButtonEl.classList.contains('bp-media-volume-icon-is-high')).to.be.true;
         });
 
         it('set the new value of the volume scrubber', () => {
@@ -485,7 +485,7 @@ describe('Media Controls', () => {
 
     describe('show', () => {
         beforeEach(() => {
-            stubs.showControlClass = 'box-preview-media-controls-is-visible';
+            stubs.showControlClass = 'bp-media-controls-is-visible';
             stubs.timeout = 1501;
             stubs.hide = sandbox.stub(mediaControls, 'hide');
             clock = sinon.useFakeTimers();
@@ -539,7 +539,7 @@ describe('Media Controls', () => {
 
             mediaControls.hide();
             expect(stubs.show).to.not.be.called;
-            expect(mediaControls.wrapperEl.parentNode.classList.contains('box-preview-media-controls-is-visible')).to.be.false;
+            expect(mediaControls.wrapperEl.parentNode.classList.contains('bp-media-controls-is-visible')).to.be.false;
         });
     });
 
@@ -578,18 +578,18 @@ describe('Media Controls', () => {
         });
         it('should give the correct class and content to the filmstrip container', () => {
             mediaControls.initFilmstrip('url', stubs.status, '380');
-            expect(mediaControls.filmstripContainerEl.classList.contains('box-preview-media-filmstrip-container')).to.be.true;
+            expect(mediaControls.filmstripContainerEl.classList.contains('bp-media-filmstrip-container')).to.be.true;
             expect(mediaControls.filmstripContainerEl.innerHTML.includes(CRAWLER)).to.be.true;
         });
 
         it('should give the correct class to the filmstrip', () => {
             mediaControls.initFilmstrip('url', stubs.status, '380');
-            expect(mediaControls.filmstripEl.classList.contains('box-preview-media-filmstrip')).to.be.true;
+            expect(mediaControls.filmstripEl.classList.contains('bp-media-filmstrip')).to.be.true;
         });
 
         it('should give the correct class to the filmstrip time element', () => {
             mediaControls.initFilmstrip('url', stubs.status, '380');
-            expect(mediaControls.filmstripTimeEl.classList.contains('box-preview-media-filmstrip-timecode')).to.be.true;
+            expect(mediaControls.filmstripTimeEl.classList.contains('bp-media-filmstrip-timecode')).to.be.true;
         });
 
         it('should add the correct eventListeners to the handle and converted time scrubber elements', () => {

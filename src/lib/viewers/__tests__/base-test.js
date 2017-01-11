@@ -18,7 +18,7 @@ describe('base', () => {
     beforeEach(() => {
         fixture.load('viewers/__tests__/base-test.html');
 
-        containerEl = document.querySelector('.box-preview-container');
+        containerEl = document.querySelector('.bp-container');
 
         // Prevent constructor from adding too many listeners
         Object.defineProperty(Base.prototype, 'addCommonListeners', {
@@ -41,7 +41,7 @@ describe('base', () => {
             base = new Base(containerEl, options);
 
             expect(base.options).to.equal(options);
-            expect(base.containerEl).to.equal(containerEl.querySelector('.box-preview'));
+            expect(base.containerEl).to.equal(containerEl.querySelector('.bp'));
             expect(Base.prototype.addCommonListeners).to.have.been.called;
             expect(base.loadTimeout).to.be.a.number;
         });
@@ -51,8 +51,8 @@ describe('base', () => {
 
             base = new Base(containerEl);
 
-            const container = document.querySelector('.box-preview');
-            expect(container.classList.contains('box-preview-is-mobile')).to.be.true;
+            const container = document.querySelector('.bp');
+            expect(container.classList.contains('bp-is-mobile')).to.be.true;
         });
     });
 

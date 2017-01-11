@@ -24,7 +24,7 @@ class PreviewError extends Base {
         this.infoEl = this.containerEl.appendChild(document.createElement('div'));
         this.iconEl = this.infoEl.appendChild(document.createElement('div'));
         this.messageEl = this.infoEl.appendChild(document.createElement('div'));
-        this.infoEl.className = 'box-preview-error';
+        this.infoEl.className = 'bp-error';
     }
 
     /**
@@ -76,10 +76,10 @@ class PreviewError extends Base {
      */
     addDownloadButton() {
         this.downloadEl = this.infoEl.appendChild(document.createElement('div'));
-        this.downloadEl.classList.add('box-preview-error-download');
+        this.downloadEl.classList.add('bp-error-download');
         this.downloadBtnEl = this.infoEl.appendChild(document.createElement('button'));
-        this.downloadBtnEl.classList.add('box-preview-btn');
-        this.downloadBtnEl.classList.add('box-preview-btn-primary');
+        this.downloadBtnEl.classList.add('bp-btn');
+        this.downloadBtnEl.classList.add('bp-btn-primary');
         this.downloadBtnEl.textContent = __('download');
         this.downloadBtnEl.addEventListener('click', this.download);
     }

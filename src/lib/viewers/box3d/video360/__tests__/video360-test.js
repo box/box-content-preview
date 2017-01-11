@@ -21,7 +21,7 @@ describe('video360', () => {
     const VIDEO_PROPS = {
         loop: false,
         generateMipmaps: false,
-        querySelector: '.box-preview-media-container video',
+        querySelector: '.bp-media-container video',
         autoPlay: false
     };
     // Taken from ./video360.js
@@ -82,8 +82,8 @@ describe('video360', () => {
             expect(viewer.mediaContainerEl.style.height).to.equal('100%');
         });
 
-        it('should add class box-preview-video-360 to the wrapperEl', () => {
-            expect(viewer.wrapperEl).to.have.class('box-preview-video-360');
+        it('should add class bp-video-360 to the wrapperEl', () => {
+            expect(viewer.wrapperEl).to.have.class('bp-video-360');
         });
 
         it('should assign the newly created BoxSDK to the .boxSdk property', () => {

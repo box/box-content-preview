@@ -102,7 +102,7 @@ class DocHighlightThread extends AnnotationThread {
         // Hide delete button on plain highlights if user doesn't have
         // permissions
         if (this._annotations.length && this._annotations[0].permissions && !this._annotations[0].permissions.can_delete) {
-            const addHighlightBtn = this._dialog._element.querySelector('.box-preview-add-highlight-btn');
+            const addHighlightBtn = this._dialog._element.querySelector('.bp-add-highlight-btn');
             annotatorUtil.hideElement(addHighlightBtn);
         }
     }
@@ -487,10 +487,10 @@ class DocHighlightThread extends AnnotationThread {
             return null;
         }
 
-        let annotationLayerEl = pageEl.querySelector('.box-preview-annotation-layer');
+        let annotationLayerEl = pageEl.querySelector('.bp-annotation-layer');
         if (!annotationLayerEl) {
             annotationLayerEl = document.createElement('canvas');
-            annotationLayerEl.classList.add('box-preview-annotation-layer');
+            annotationLayerEl.classList.add('bp-annotation-layer');
             const pageDimensions = pageEl.getBoundingClientRect();
             annotationLayerEl.width = pageDimensions.width;
             annotationLayerEl.height = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;

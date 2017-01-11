@@ -172,7 +172,7 @@ export function getAvatarHtml(avatarUrl, userId, userName) {
     }
 
     const index = parseInt(userId, 10) || 0;
-    return `<div class="box-preview-annotation-profile avatar-color-${index % AVATAR_COLOR_COUNT}">${initials}</div>`.trim();
+    return `<div class="bp-annotation-profile avatar-color-${index % AVATAR_COLOR_COUNT}">${initials}</div>`.trim();
 }
 
 /**
@@ -272,7 +272,7 @@ export function repositionCaret(dialogEl, dialogX, highlightDialogWidth, browser
     // ${pageWidth}px
     const dialogPastLeft = dialogX < 0;
     const dialogPastRight = dialogX + highlightDialogWidth > pageWidth;
-    const annotationCaretEl = dialogEl.querySelector('.box-preview-annotation-caret');
+    const annotationCaretEl = dialogEl.querySelector('.bp-annotation-caret');
 
     if (dialogPastLeft && !dialogPastRight) {
         // Leave a minimum of 10 pixels so caret doesn't go off edge

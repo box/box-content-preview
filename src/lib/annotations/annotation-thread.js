@@ -434,7 +434,7 @@ class AnnotationThread extends EventEmitter {
      */
     _createElement() {
         const indicatorEl = document.createElement('button');
-        indicatorEl.classList.add('box-preview-point-annotation-btn');
+        indicatorEl.classList.add('bp-point-annotation-btn');
         indicatorEl.setAttribute('data-type', 'annotation-indicator');
         indicatorEl.innerHTML = ICON_PLACED_ANNOTATION;
         return indicatorEl;

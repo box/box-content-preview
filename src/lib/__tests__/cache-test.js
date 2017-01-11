@@ -24,8 +24,8 @@ describe('Cache', () => {
         assert.equal(cache.get('foo'), 'bar');
 
         /* eslint-disable no-unused-expressions */
-        expect(getSpy).to.be.calledWith('box-preview-foo');
-        expect(setSpy).to.be.calledWith('box-preview-foo', JSON.stringify('bar'));
+        expect(getSpy).to.be.calledWith('bp-foo');
+        expect(setSpy).to.be.calledWith('bp-foo', JSON.stringify('bar'));
         /* eslint-enable no-unused-expressions */
 
         cache.unset('foo');

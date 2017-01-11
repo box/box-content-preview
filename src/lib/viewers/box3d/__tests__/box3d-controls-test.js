@@ -86,11 +86,11 @@ describe('box3d-controls', () => {
         });
 
         it('should invoke controls.add() with enter fullscreen button params', () => {
-            expect(controls.controls.add).to.have.been.calledWith('Enter fullscreen', controls.handleToggleFullscreen, 'box-preview-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+            expect(controls.controls.add).to.have.been.calledWith('Enter fullscreen', controls.handleToggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
         });
 
         it('should invoke controls.add() with exit fullscreen button params', () => {
-            expect(controls.controls.add).to.have.been.calledWith('Exit fullscreen', controls.handleToggleFullscreen, 'box-preview-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+            expect(controls.controls.add).to.have.been.calledWith('Exit fullscreen', controls.handleToggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
         });
     });
 
