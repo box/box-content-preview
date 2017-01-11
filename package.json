@@ -1,6 +1,6 @@
 {
   "name": "preview",
-  "version": "0.95.0",
+  "version": "0.96.0",
   "description": "Box Preview Library",
   "author": "Box (https://www.box.com/)",
   "license": "Apache-2.0",
@@ -62,7 +62,6 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^1.8.0",
     "karma-chai-dom": "^1.1.0",
-    "karma-chai-sinon": "^0.1.5",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
     "lolex": "^1.5.2",
