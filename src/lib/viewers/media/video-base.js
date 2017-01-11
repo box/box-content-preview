@@ -4,7 +4,7 @@ import MediaBase from './media-base';
 import { CLASS_HIDDEN, CLASS_PREVIEW_LOADED } from '../../constants';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
-const PLAY_ICON = '<svg fill="#FFF" height="48" viewBox="0 0 24 24" width="48" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
+const PLAY_ICON = '<svg fill="#FFF" height="48" viewBox="0 0 24 24" width="48"><path d="M8 5v14l11-7z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
 const CLASS_PLAY_BUTTON = 'bp-media-play-button';
 
 @autobind
