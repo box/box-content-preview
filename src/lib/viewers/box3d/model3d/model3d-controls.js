@@ -5,7 +5,6 @@ import Model3DSettingsPullup from './model3d-settings-pullup';
 
 import {
     EVENT_ROTATE_ON_AXIS,
-    EVENT_SAVE_SCENE_DEFAULTS,
     EVENT_SELECT_ANIMATION_CLIP,
     EVENT_SET_CAMERA_PROJECTION,
     EVENT_SET_QUALITY_LEVEL,
@@ -49,15 +48,8 @@ class Model3dControls extends Box3DControls {
         this.isAnimationPlaying = false;
     }
 
-    /**
-     * @inheritdoc
-     * @param {bool} showSaveButton Whether or not we allow the user to attempt saving to metadata
-     */
-    addUi(showSaveButton = false) {
-        if (!showSaveButton) {
-            this.settingsPullup.hideSaveButton();
-        }
-
+    /** @inheritdoc */
+    addUi() {
         // Reset button
         this.resetButtonEl = this.controls.add(__('box3d_reset_camera'), this.handleReset, '', ICON_3D_RESET);
 
@@ -80,7 +72,6 @@ class Model3dControls extends Box3DControls {
         this.settingsPullup.addListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
         this.settingsPullup.addListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.addListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
-        this.settingsPullup.addListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
         this.settingsButtonEl = this.controls.add(__('box3d_settings'), this.handleToggleSettings, '', ICON_GEAR);
         this.settingsButtonEl.parentNode.appendChild(this.settingsPanelEl);
 
@@ -275,16 +266,6 @@ class Model3dControls extends Box3DControls {
     }
 
     /**
-     * Handle a save event
-     * @param {string} renderMode     The render mode to save
-     * @param {string} projectionMode The projection mode to save
-     * @returns {void}
-     */
-    handleSceneSave(renderMode, projectionMode) {
-        this.emit(EVENT_SAVE_SCENE_DEFAULTS, renderMode, projectionMode);
-    }
-
-    /**
      * @inheritdoc
      */
     handleToggleFullscreen() {
@@ -320,7 +301,6 @@ class Model3dControls extends Box3DControls {
         this.settingsPullup.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
         this.settingsPullup.removeListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.removeListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
-        this.settingsPullup.removeListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
         this.settingsPullup.destroy();
         this.settingsPanelEl = null;
         this.settingsPullup = null;

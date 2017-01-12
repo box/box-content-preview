@@ -6,10 +6,7 @@ import Model3dRenderer from './model3d-renderer';
 import {
     CAMERA_PROJECTION_PERSPECTIVE,
     EVENT_CANVAS_CLICK,
-    EVENT_METADATA_UPDATE_FAILURE,
-    EVENT_METADATA_UPDATE_SUCCESS,
     EVENT_ROTATE_ON_AXIS,
-    EVENT_SAVE_SCENE_DEFAULTS,
     EVENT_SELECT_ANIMATION_CLIP,
     EVENT_SET_CAMERA_PROJECTION,
     EVENT_SET_QUALITY_LEVEL,
@@ -79,7 +76,6 @@ class Model3d extends Box3D {
 
         if (this.controls) {
             this.controls.on(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
-            this.controls.on(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
             this.controls.on(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
             this.controls.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
             this.controls.on(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
@@ -104,7 +100,6 @@ class Model3d extends Box3D {
 
         if (this.controls) {
             this.controls.removeListener(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
-            this.controls.removeListener(EVENT_SAVE_SCENE_DEFAULTS, this.handleSceneSave);
             this.controls.removeListener(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
             this.controls.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
             this.controls.removeListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
@@ -263,30 +258,37 @@ class Model3d extends Box3D {
 
         // Get scene defaults for up/forward axes, and render mode
         this.boxSdk.getMetadataClient().get(this.options.file.id, 'global', 'box3d')
-            .then((resp) => {
-                if (resp.status !== 200) {
-                    throw new Error(`Error loading template for ${this.options.file.id}`);
+            .then((response) => {
+                // Treat non-200 responses as errors.
+                if (response.status !== 200) {
+                    throw new Error(`Received unsuccessful response status: ${response.status}`);
                 }
 
-                const defaults = resp.response;
+                return response.response;
+            })
+            .catch((err) => {
+                /* eslint-disable no-console */
+                console.error('Error loading metadata:', err.toString());
+                /* eslint-enable no-console */
 
+                // Continue with default settings.
+                return {};
+            })
+            .then((defaults) => {
                 this.axes.up = defaults.upAxis || DEFAULT_AXIS_UP;
                 this.axes.forward = defaults.forwardAxis || DEFAULT_AXIS_FORWARD;
                 this.renderMode = defaults.defaultRenderMode || RENDER_MODE_LIT;
                 this.projection = defaults.cameraProjection || CAMERA_PROJECTION_PERSPECTIVE;
 
-                const permissions = this.options.file.permissions || {};
-                this.controls.addUi(permissions.can_upload && permissions.can_delete);
+                this.controls.addUi();
 
-                if (defaults.upAxis !== DEFAULT_AXIS_UP || defaults.forwardAxis !== DEFAULT_AXIS_FORWARD) {
-                    this.handleRotationAxisSet(defaults.upAxis, defaults.forwardAxis, false);
+                if (this.axes.up !== DEFAULT_AXIS_UP || this.axes.forward !== DEFAULT_AXIS_FORWARD) {
+                    this.handleRotationAxisSet(this.axes.up, this.axes.forward, false);
                 }
 
-                // Update settings ui
-                this.controls.setCurrentProjectionMode(defaults.cameraProjection);
-
                 // Update controls ui
-                this.controls.handleSetRenderMode(defaults.defaultRenderMode);
+                this.controls.setCurrentProjectionMode(this.projection);
+                this.controls.handleSetRenderMode(this.renderMode);
                 this.controls.handleSetSkeletonsVisible(false);
                 this.controls.handleSetWireframesVisible(false);
 
@@ -309,21 +311,6 @@ class Model3d extends Box3D {
 
                 this.showWrapper();
                 this.renderer.initVrIfPresent();
-            })
-            .catch((error) => {
-                /* eslint-disable no-console */
-                console.error(error);
-                /* eslint-enable no-console */
-                this.axes.up = DEFAULT_AXIS_UP;
-                this.axes.forward = DEFAULT_AXIS_FORWARD;
-                this.renderMode = RENDER_MODE_LIT;
-                this.projection = CAMERA_PROJECTION_PERSPECTIVE;
-                // Make sure to display the settings panel, but hide the save button
-                this.controls.addUi(false);
-                this.showWrapper();
-                this.renderer.initVrIfPresent();
-            })
-            .then(() => {
                 this.emit(EVENT_LOAD);
             });
     }
@@ -380,38 +367,6 @@ class Model3d extends Box3D {
      */
     showWrapper() {
         this.wrapperEl.classList.remove(CSS_CLASS_INVISIBLE);
-    }
-
-    /**
-     * Handle a scene save. Save defaults to metadata
-     * @param {string} renderMode The default render mode to save
-     * @param {string} projection The default projection to save
-     * @returns {void}
-     */
-    @autobind
-    handleSceneSave(renderMode, projection) {
-        const metadata = this.boxSdk.getMetadataClient();
-        const operations = [];
-
-        operations.push(metadata.createOperation(this.renderMode ? 'replace' : 'add', '/defaultRenderMode', renderMode));
-        operations.push(metadata.createOperation(this.projection ? 'replace' : 'add', '/cameraProjection', projection));
-
-        this.renderMode = renderMode;
-        this.projection = projection;
-
-        this.renderer.getAxes().then((axes) => {
-            operations.push(metadata.createOperation(this.axes.up ? 'replace' : 'add', '/upAxis', axes.up));
-            operations.push(metadata.createOperation(this.axes.forward ? 'replace' : 'add', '/forwardAxis', axes.forward));
-
-            this.axes.up = axes.up;
-            this.axes.forward = axes.forward;
-
-            metadata.update(this.options.file.id, 'global', 'box3d', operations)
-                .then((resp) => {
-                    const event = resp.status === '200' ? EVENT_METADATA_UPDATE_SUCCESS : EVENT_METADATA_UPDATE_FAILURE;
-                    this.emit(event, resp);
-                });
-        });
     }
 
     /**

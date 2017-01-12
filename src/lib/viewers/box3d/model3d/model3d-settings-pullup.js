@@ -1,7 +1,6 @@
 import EventEmitter from 'events';
 import {
     UIRegistry,
-    createButton,
     createCheckbox,
     createDropdown,
     createLabel,
@@ -18,7 +17,6 @@ import {
     QUALITY_LEVEL_FULL,
     CSS_CLASS_HIDDEN,
     EVENT_ROTATE_ON_AXIS,
-    EVENT_SAVE_SCENE_DEFAULTS,
     EVENT_SET_CAMERA_PROJECTION,
     EVENT_SET_QUALITY_LEVEL,
     EVENT_SET_RENDER_MODE,
@@ -103,7 +101,6 @@ class Model3DSettingsPullup extends EventEmitter {
         this.projectionListEl = null;
         this.qualityLevelEl = null;
         this.qualityLevelListEl = null;
-        this.saveRowEl = null;
 
         this.uiRegistry = new UIRegistry();
         this.createUi();
@@ -221,17 +218,6 @@ class Model3DSettingsPullup extends EventEmitter {
         const axisRowEl = this.createAxisWidget();
         this.pullupEl.appendChild(rotateRowEl);
         this.pullupEl.appendChild(axisRowEl);
-
-        // Save button
-        this.saveRowEl = createRow();
-        const saveButtonEl = createButton('Save Settings');
-        this.uiRegistry.registerItem('settings-save-button', saveButtonEl, 'click', () => {
-            this.onSaveSelected();
-        });
-
-        saveButtonEl.classList.add('bp-btn-primary');
-        this.saveRowEl.appendChild(saveButtonEl);
-        this.pullupEl.appendChild(this.saveRowEl);
     }
 
     /**
@@ -340,17 +326,6 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
-     * Notify listeners of save event.
-     * @method onSaveSelected
-     * @private
-     * @returns {void}
-     */
-    onSaveSelected() {
-        // We can cheat because the strings in the label match the metadata values
-        this.emit(EVENT_SAVE_SCENE_DEFAULTS, this.renderModeEl.textContent, this.projectionEl.textContent);
-    }
-
-    /**
      * Notify listeners that the show skeletons checkbox was toggled.
      * @method onShowSkeletonsToggled
      * @private
@@ -426,16 +401,6 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
-     * Hide the save button.
-     * @method hideSaveButton
-     * @public
-     * @returns {void}
-     */
-    hideSaveButton() {
-        this.saveRowEl.querySelector('button').classList.add(CSS_CLASS_HIDDEN);
-    }
-
-    /**
      * Show the settings panel.
      * @method show
      * @public
@@ -485,7 +450,6 @@ class Model3DSettingsPullup extends EventEmitter {
         this.showSkeletonsEl = null;
         this.projectionEl = null;
         this.qualityLevelEl = null;
-        this.saveRowEl = null;
         this.pullupEl = null;
     }
 }

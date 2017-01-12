@@ -45,8 +45,6 @@ class Model3dRenderer extends Box3DRenderer {
     constructor(containerEl, boxSdk) {
         super(containerEl, boxSdk);
 
-        this.axisUp = null;
-        this.axisForward = null;
         this.instance = null;
         this.grid = null;
         this.axisDisplay = null;
@@ -608,10 +606,6 @@ class Model3dRenderer extends Box3DRenderer {
 
         // Modify the axes.
         this.box3d.trigger('set_axes', upAxis, forwardAxis, useTransition);
-
-        // Save these values back to forward and up, for metadata save.
-        this.axisUp = upAxis;
-        this.axisForward = forwardAxis;
     }
 
     /**
