@@ -605,10 +605,6 @@ class Preview extends EventEmitter {
             return;
         }
 
-        // Before loading a new preview check if a prior preview was showing.
-        // If it was showing make sure to destroy it to do any cleanup.
-        this.destroy();
-
         // Check if preview permissions exist
         if (!checkPermission(this.file, PERMISSION_PREVIEW)) {
             throw new Error(__('error_permissions'));

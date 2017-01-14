@@ -1041,11 +1041,6 @@ describe('Preview', () => {
             expect(stubs.destroy).to.not.be.called;
         });
 
-        it('should cleanup before showing a new preview', () => {
-            preview.loadViewer();
-            expect(stubs.destroy).to.be.called;
-        });
-
         it('should throw an error if there is no preview permission', () => {
             stubs.checkPermission.returns(false);
             const spy = sandbox.spy(preview, 'loadViewer');
