@@ -1,0 +1,22 @@
+$box-blue: #2b90ef;
+
+.bp-progress-bar-container {
+    position: absolute;
+    width: 100%;
+
+    .bp-header ~ & {
+        top: 48px;
+    }
+}
+
+.bp-progress-bar {
+    background-color: $box-blue;
+    height: 3px;
+    opacity: 0;
+    transition: opacity .3s ease-in, width .2s ease-in;
+    width: 0%;
+
+    &.bp-is-visible {
+        opacity: 1;
+    }
+}

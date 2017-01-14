@@ -1,4 +1,4 @@
-$crawler-blue: #2b90ef;
+$box-blue: #2b90ef;
 
 @keyframes box-crawler {
     0%,
@@ -108,7 +108,7 @@ $crawler-blue: #2b90ef;
 
     div {
         animation: box-crawler .66s infinite ease-in-out;
-        background-color: $crawler-blue;
+        background-color: $box-blue;
         border-radius: 4px;
         display: inline-block;
         height: 10px;
