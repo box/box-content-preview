@@ -177,10 +177,9 @@ class Model3dRenderer extends Box3DRenderer {
         }
 
         // Create a single parent for all instances.
-        const parent = this.box3d.createObject();
-        this.getScene().addChild(parent);
+        const parent = this.box3d.createNode();
         prefabs.forEach((prefab) => parent.addChild(prefab.createInstance()));
-
+        this.getScene().addChild(parent);
         this.adjustModelForScene(parent);
     }
 

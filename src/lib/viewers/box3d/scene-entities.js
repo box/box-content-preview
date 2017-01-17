@@ -38,7 +38,7 @@ function sceneEntities() {
                     enablePan: true
                 },
                 enabled: true,
-                scriptId: 'preview_camera_controller'
+                scriptId: 'orbit_camera_controller'
             },
             previewCameraFocus: {
                 attributes: {},

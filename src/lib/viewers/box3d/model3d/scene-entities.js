@@ -41,7 +41,7 @@ function sceneEntities(prefix) {
                     enablePan: true
                 },
                 enabled: true,
-                scriptId: 'preview_camera_controller'
+                scriptId: 'orbit_camera_controller'
             },
             {
                 name: 'Preview Camera Focus',
