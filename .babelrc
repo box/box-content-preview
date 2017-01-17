@@ -17,18 +17,21 @@
         "test": {
             "plugins": [
                 [
-                    "__coverage__", {
-                        "ignore": [
+                    "istanbul", {
+                        "exclude": [
                             "**/*-test.js",
-                            "lib/polyfill.js",
-                            "lib/browser.js", // Browser util unit tests not worthwhile
-                            "lib/viewers/media/*.js" // Ignore media files for now - tests will come
-                        ],
+                            "build/**",
+                            "src/lib/polyfill.js",
+                            "src/lib/browser.js",
+                            "src/lib/viewers/media/**"
+                        ]
                     }
                 ],
-                ["babel-plugin-transform-require-ignore", {
-                    "extensions": [".scss"]
-                }],
+                [
+                    "babel-plugin-transform-require-ignore", {
+                        "extensions": [".scss"]
+                    }
+                ]
             ]
         }
     }
