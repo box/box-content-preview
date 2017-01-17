@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Markdown from '../markdown';
+import Popup from '../../../popup';
 
 let containerEl;
 let markdown;
@@ -65,8 +66,27 @@ describe('markdown', () => {
             markdown.print();
 
             expect(markdown.preparePrint).to.have.been.calledWith('third-party/text/github-markdown.css', 'third-party/text/github.css', 'markdown.css');
-            expect(markdown.printPopup.show).to.have.been.called;
+            expect(markdown.printPopup.show).to.have.been.calledWith('Preparing to print...', 'Print', sinon.match.func);
             expect(markdown.printPopup.disableButton).to.have.been.called;
+        });
+
+        it('should hide print popup and print iframe when print button is clicked', () => {
+            sandbox.stub(markdown, 'preparePrint');
+            markdown.printPopup = new Popup(containerEl);
+            sandbox.stub(markdown.printPopup, 'isButtonDisabled').returns(false);
+            sandbox.stub(markdown.printPopup, 'hide');
+            sandbox.stub(markdown, 'printIframe');
+
+            markdown.print();
+            const event = {
+                preventDefault: () => {},
+                stopPropagation: () => {},
+                target: markdown.printPopup.buttonEl
+            };
+            markdown.printPopup.popupClickHandler(event);
+
+            expect(markdown.printPopup.hide).to.be.called;
+            expect(markdown.printIframe).to.be.called;
         });
     });
 
@@ -103,7 +123,7 @@ describe('markdown', () => {
             sandbox.stub(markdown, 'loadUI');
             sandbox.stub(markdown, 'emit');
 
-            markdown.finishLoading('', true);
+            markdown.finishLoading('');
 
             expect(markdown.initRemarkable).to.have.been.called;
             expect(md.render).to.have.been.called;
@@ -111,6 +131,20 @@ describe('markdown', () => {
             expect(markdown.emit).to.have.been.calledWith('load');
             expect(markdown.loaded).to.be.true;
             expect(markdown.textEl.classList.contains('bp-is-hidden')).to.be.false;
+        });
+
+        it('should show truncated download button if text is truncated', () => {
+            sandbox.stub(markdown, 'initRemarkable').returns({
+                render: () => {}
+            });
+            sandbox.stub(markdown, 'loadUI');
+            sandbox.stub(markdown, 'emit');
+            sandbox.stub(markdown, 'showTruncatedDownloadButton');
+            markdown.truncated = true;
+
+            markdown.finishLoading('');
+
+            expect(markdown.showTruncatedDownloadButton).to.be.called;
         });
     });
 });
