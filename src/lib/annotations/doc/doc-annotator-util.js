@@ -131,7 +131,8 @@ export function isPointInPolyOpt(poly, x, y) {
  * @param {HTMLElement} pageEl Page element highlight is over
  * @returns {Object} Rangy highlight object and highlight DOM elements
  */
-export function getHighlightAndHighlightEls(highlighter, pageEl) {
+/* eslint-disable space-before-function-paren */
+export function getHighlightAndHighlightEls /* istanbul-ignore-next */ (highlighter, pageEl) {
     // We use Rangy to turn the selection into a highlight, which creates
     // spans around the selection that we can then turn into quadpoints
     const highlight = highlighter.highlightSelection('rangy-highlight', {
@@ -149,6 +150,7 @@ export function getHighlightAndHighlightEls(highlighter, pageEl) {
         highlightEls
     };
 }
+/* eslint-enable space-before-function-paren */
 
 /**
  * Returns whether or not there currently is a non-empty selection.
@@ -270,7 +272,8 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
  * element and the other 3 vertices in counterclockwise order. These are
  * in PDF default user space.
  */
-export function getQuadPoints(element, pageEl, scale) {
+/* eslint-disable space-before-function-paren */
+export function getQuadPoints /* istanbul ignore next */ (element, pageEl, scale) {
     const quadCornerContainerEl = document.createElement('div');
     quadCornerContainerEl.classList.add('bp-quad-corner-container');
 
@@ -316,6 +319,7 @@ export function getQuadPoints(element, pageEl, scale) {
     // Return quad points at 100% scale in PDF units
     return convertDOMSpaceToPDFSpace(quadPoints, pageHeight, scale);
 }
+/* eslint-enable space-before-function-paren */
 
 /**
  * Returns the lower right corner of the last quad point. This should provide

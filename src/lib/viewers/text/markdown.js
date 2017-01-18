@@ -96,6 +96,7 @@ class Markdown extends PlainText {
      * @private
      */
     initRemarkable() {
+        /* istanbul ignore next */
         const md = new Remarkable({
             breaks: true,           // convert '\n' in paragraphs into <br>
             linkify: true,          // automatically URL-like text into links

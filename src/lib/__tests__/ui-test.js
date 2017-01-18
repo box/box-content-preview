@@ -45,6 +45,25 @@ describe('ui', () => {
             expect(loadingWrapperEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOADING_TEXT).textContent).to.equal('Generating Preview...');
             expect(loadingWrapperEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD).textContent).to.equal('Download File');
         });
+
+        it('should setup logo if option specifies', () => {
+            const containerEl = document.querySelector('.ui');
+            const url = 'http://someurl.com/';
+            const options = {
+                container: containerEl,
+                logoUrl: url
+            };
+            const handler = () => {};
+
+            const resultEl = ui.setup(options, handler, handler, handler, handler);
+
+            // Check logo
+            expect(resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOGO_DEFAULT).classList.contains(constants.CLASS_HIDDEN)).to.be.true;
+
+            const logoEl = resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOGO_CUSTOM);
+            expect(logoEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
+            expect(logoEl.src).to.equal(url);
+        });
     });
 
     describe('visibility functions', () => {

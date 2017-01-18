@@ -30,7 +30,7 @@ describe('mp3', () => {
         }
     });
 
-    describe('constructor()', () => {
+    describe('MP3()', () => {
         it('should create mp3 viewer and initialize audio element', () => {
             const wrapperEl = document.querySelector('.bp-media-mp3');
             const mediaEl = document.querySelector('audio');
