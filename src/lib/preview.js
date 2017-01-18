@@ -564,6 +564,9 @@ class Preview extends EventEmitter {
         }
 
         try {
+            // Add original representation if needed
+            this.addOriginalRepresentation(file);
+
             // Save reference to the file and update logger
             this.file = file;
             this.logger.setFile(file);
@@ -1108,6 +1111,37 @@ class Preview extends EventEmitter {
             event.preventDefault();
             event.stopPropagation();
         }
+    }
+
+    /**
+     * If the file doens't already have an original representation, creates an
+     * original representation url from the authenticated download url and adds
+     * it to the file representations
+     *
+     * @param {Object} file File object
+     * @returns {void}
+     * @private
+     */
+    addOriginalRepresentation(file) {
+        // Don't add an original representation if it already exists
+        const originalRep = file.representations.entries.filter((entry) => {
+            return (entry.representation && entry.representation === 'original');
+        });
+        if (originalRep.length) {
+            return;
+        }
+
+        // Add an original representation if it doesn't already exist
+        file.representations.entries.push({
+            links: {
+                content: {
+                    type: 'asset',
+                    url: `${file.authenticated_download_url}?preview=true`
+                }
+            },
+            representation: 'original',
+            status: 'success'
+        });
     }
 }
 

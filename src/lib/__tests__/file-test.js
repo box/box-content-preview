@@ -2,7 +2,7 @@ import { getURL, getDownloadURL, isWatermarked, checkPermission, checkFeature, c
 
 describe('getURL()', () => {
     it('should return the correct api url', () => {
-        assert.equal(getURL('id', 'api'), 'api/2.0/files/id?fields=permissions,parent,shared_link,sha1,file_version,name,size,extension,representations,watermark_info');
+        assert.equal(getURL('id', 'api'), 'api/2.0/files/id?fields=permissions,parent,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url');
     });
 });
 
@@ -94,7 +94,8 @@ describe('checkFileValid()', () => {
             size: 'blah',
             extension: 'blah',
             representations: {},
-            watermark_info: {}
+            watermark_info: {},
+            authenticated_download_url: 'blah'
         };
         assert.ok(checkFileValid(file));
     });

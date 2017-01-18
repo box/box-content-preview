@@ -859,6 +859,37 @@ describe('Preview', () => {
         });
     });
 
+    describe('addOriginalRepresentation()', () => {
+        beforeEach(() => {
+            stubs.file = {
+                id: 0,
+                name: 'file',
+                file_version: {
+                    sha1: 2
+                },
+                watermark_info: {
+                    is_watermarked: false
+                },
+                representations: {
+                    entries: [{ representation: 'pdf' }]
+                }
+            };
+        });
+
+        it('should do nothing if original representation already exists', () => {
+            stubs.file.representations.entries[0].representation = 'original';
+            preview.addOriginalRepresentation(stubs.file);
+            expect(stubs.file.representations.entries.length).to.equal(1);
+        });
+
+        it('should create and add the original representation to the file', () => {
+            preview.addOriginalRepresentation(stubs.file);
+            expect(stubs.file.representations.entries.length).to.equal(2);
+            expect(stubs.file.representations.entries[0].representation).to.equal('pdf');
+            expect(stubs.file.representations.entries[1].representation).to.equal('original');
+        });
+    });
+
     describe('handleLoadResponse()', () => {
         beforeEach(() => {
             preview.logger = {
@@ -868,6 +899,7 @@ describe('Preview', () => {
 
             stubs.get = sandbox.stub(cache, 'get').returns(true);
             stubs.set = sandbox.stub(cache, 'set');
+            stubs.addOriginalRep = sandbox.stub(preview, 'addOriginalRepresentation');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.loadViewer = sandbox.stub(preview, 'loadViewer');
             stubs.file = {
@@ -878,6 +910,9 @@ describe('Preview', () => {
                 },
                 watermark_info: {
                     is_watermarked: false
+                },
+                representations: {
+                    entries: []
                 }
             };
         });

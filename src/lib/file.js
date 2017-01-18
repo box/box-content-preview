@@ -11,7 +11,8 @@ const FILE_FIELDS = [
     'size',
     'extension',
     'representations',
-    'watermark_info'
+    'watermark_info',
+    'authenticated_download_url'
 ];
 
 /**
