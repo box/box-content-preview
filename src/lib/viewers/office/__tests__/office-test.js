@@ -68,7 +68,7 @@ describe('office.js', () => {
             });
 
             office.on('load', () => {
-                assert.equal(office.iframeEl.src, 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=https://app.box.com&fileId=123');
+                assert.equal(office.iframeEl.src, 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=app&fileId=123');
                 done();
             });
 
@@ -84,7 +84,7 @@ describe('office.js', () => {
             });
 
             office.on('load', () => {
-                assert.equal(office.iframeEl.src, 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=https://cloud.app.box.com&fileId=123');
+                assert.equal(office.iframeEl.src, 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=cloud&fileId=123');
                 done();
             });
 
