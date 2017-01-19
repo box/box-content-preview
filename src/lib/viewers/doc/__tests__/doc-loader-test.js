@@ -16,7 +16,7 @@ describe('doc-loader', () => {
                     entries: [{
                         representation: 'pdf'
                     }, {
-                        representation: 'original'
+                        representation: 'ORIGINAL'
                     }]
                 }
             };
@@ -44,7 +44,7 @@ describe('doc-loader', () => {
                         representation: 'pdf',
                         status: 'success'
                     }, {
-                        representation: 'original'
+                        representation: 'ORIGINAL'
                     }]
                 }
             };
@@ -73,7 +73,7 @@ describe('doc-loader', () => {
                         representation: 'pdf',
                         status: 'pending'
                     }, {
-                        representation: 'original'
+                        representation: 'ORIGINAL'
                     }]
                 }
             };
@@ -89,7 +89,7 @@ describe('doc-loader', () => {
 
             const determinedRep = DocLoader.determineRepresentation(file, viewer);
             expect(determinedRep).to.deep.equal({
-                representation: 'original'
+                representation: 'ORIGINAL'
             });
         });
     });

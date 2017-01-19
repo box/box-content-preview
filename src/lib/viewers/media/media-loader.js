@@ -9,7 +9,7 @@ const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 
 // representation but can fallback to using the mp3 representation (for watermarked versions).
 const VIEWERS = [
     {
-        REPRESENTATION: 'original',
+        REPRESENTATION: 'ORIGINAL',
         EXTENSIONS: ['mp3'],
         SCRIPTS: ['mp3.js'],
         STYLESHEETS: ['mp3.css'],
@@ -17,7 +17,7 @@ const VIEWERS = [
         PREFETCH: 'xhr'
     },
     // {
-    //     REPRESENTATION: 'original',
+    //     REPRESENTATION: 'ORIGINAL',
     //     EXTENSIONS: ['flv'],
     //     SCRIPTS: ['third-party/swf/swfobject.js', 'flash.js'],
     //     STYLESHEETS: ['flash.css'],

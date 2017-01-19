@@ -10,7 +10,7 @@ describe('office-loader', () => {
     describe('constructor()', () => {
         it('should have the correct viewer', () => {
             expect(OfficeLoader.viewers[0]).to.deep.equal({
-                REPRESENTATION: 'original',
+                REPRESENTATION: 'ORIGINAL',
                 EXTENSIONS: ['xlsx'],
                 SCRIPTS: ['office.js'],
                 STYLESHEETS: [],
@@ -42,7 +42,7 @@ describe('office-loader', () => {
                 },
                 representations: {
                     entries: [{
-                        representation: 'original'
+                        representation: 'ORIGINAL'
                     }]
                 }
             };
@@ -50,7 +50,7 @@ describe('office-loader', () => {
             const viewer = OfficeLoader.determineViewer(file);
 
             expect(viewer).to.deep.equal({
-                REPRESENTATION: 'original',
+                REPRESENTATION: 'ORIGINAL',
                 EXTENSIONS: ['xlsx'],
                 SCRIPTS: ['office.js'],
                 STYLESHEETS: [],
@@ -67,7 +67,7 @@ describe('office-loader', () => {
                 },
                 representations: {
                     entries: [{
-                        representation: 'original'
+                        representation: 'ORIGINAL'
                     }]
                 },
                 shared_link: {
@@ -78,7 +78,7 @@ describe('office-loader', () => {
             const viewer = OfficeLoader.determineViewer(file);
 
             expect(viewer).to.deep.equal({
-                REPRESENTATION: 'original',
+                REPRESENTATION: 'ORIGINAL',
                 EXTENSIONS: ['xlsx'],
                 SCRIPTS: ['office.js'],
                 STYLESHEETS: [],
@@ -95,7 +95,7 @@ describe('office-loader', () => {
                 },
                 representations: {
                     entries: [{
-                        representation: 'original'
+                        representation: 'ORIGINAL'
                     }, {
                         representation: 'pdf'
                     }]
@@ -128,7 +128,7 @@ describe('office-loader', () => {
                 },
                 representations: {
                     entries: [{
-                        representation: 'original'
+                        representation: 'ORIGINAL'
                     }, {
                         representation: 'pdf'
                     }]
@@ -161,7 +161,7 @@ describe('office-loader', () => {
                 },
                 representations: {
                     entries: [{
-                        representation: 'original'
+                        representation: 'ORIGINAL'
                     }, {
                         representation: 'pdf'
                     }]
@@ -194,7 +194,7 @@ describe('office-loader', () => {
                 },
                 representations: {
                     entries: [{
-                        representation: 'original'
+                        representation: 'ORIGINAL'
                     }, {
                         representation: 'pdf'
                     }]

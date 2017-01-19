@@ -877,7 +877,7 @@ describe('Preview', () => {
         });
 
         it('should do nothing if original representation already exists', () => {
-            stubs.file.representations.entries[0].representation = 'original';
+            stubs.file.representations.entries[0].representation = 'ORIGINAL';
             preview.addOriginalRepresentation(stubs.file);
             expect(stubs.file.representations.entries.length).to.equal(1);
         });
@@ -886,7 +886,7 @@ describe('Preview', () => {
             preview.addOriginalRepresentation(stubs.file);
             expect(stubs.file.representations.entries.length).to.equal(2);
             expect(stubs.file.representations.entries[0].representation).to.equal('pdf');
-            expect(stubs.file.representations.entries[1].representation).to.equal('original');
+            expect(stubs.file.representations.entries[1].representation).to.equal('ORIGINAL');
         });
     });
 
@@ -899,7 +899,6 @@ describe('Preview', () => {
 
             stubs.get = sandbox.stub(cache, 'get').returns(true);
             stubs.set = sandbox.stub(cache, 'set');
-            stubs.addOriginalRep = sandbox.stub(preview, 'addOriginalRepresentation');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.loadViewer = sandbox.stub(preview, 'loadViewer');
             stubs.file = {
@@ -1034,6 +1033,7 @@ describe('Preview', () => {
             stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(true);
 
             stubs.loadPromiseResolve = Promise.resolve();
+            stubs.addOriginalRep = sandbox.stub(preview, 'addOriginalRepresentation');
             stubs.determineRepresentationStatusPromise = Promise.resolve();
             stubs.loader = {
                 determineViewer: sandbox.stub().returns({ CONSTRUCTOR: 'viewer' }),
@@ -1520,7 +1520,7 @@ describe('Preview', () => {
             stubs.getHeaders = sandbox.stub(util, 'getHeaders');
             stubs.headers = {
                 'X-Rep-Hints': '[3d][pdf][text][jpg?dimensions=2048x2048,jpg?dimensions=1024x1024,' +
-                'png?dimensions=2048x2048,png?dimensions=1024x1024][mp3][original]'
+                'png?dimensions=2048x2048,png?dimensions=1024x1024][mp3]'
             };
 
             preview.options.sharedLink = 'link';

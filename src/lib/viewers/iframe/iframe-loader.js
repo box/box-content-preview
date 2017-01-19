@@ -3,7 +3,7 @@ import AssetLoader from '../asset-loader';
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 const VIEWERS = [
     {
-        REPRESENTATION: 'original',
+        REPRESENTATION: 'ORIGINAL',
         EXTENSIONS: ['boxnote', 'boxdicom'],
         SCRIPTS: ['iframe.js'],
         STYLESHEETS: [],

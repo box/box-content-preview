@@ -21,7 +21,7 @@ const VIEWERS = [
         PREFETCH: 'xhr'
     },
     {
-        REPRESENTATION: 'original',
+        REPRESENTATION: 'ORIGINAL',
         EXTENSIONS: ['htm', 'html', 'xhtml', 'xml', 'xsd', 'xsl'], // These types do not have an appropriate extracted text representation for preview
         SCRIPTS: [`${STATIC_URI}highlight.min.js`, 'text.js'],
         STYLESHEETS: [`${STATIC_URI}github.css`, 'text.css'],

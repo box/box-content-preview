@@ -11,7 +11,7 @@ describe('error-loader', () => {
     describe('constructor()', () => {
         it('should have the correct viewer', () => {
             expect(ErrorLoader.viewers[0]).to.deep.equal({
-                REPRESENTATION: 'original',
+                REPRESENTATION: 'ORIGINAL',
                 EXTENSIONS: [],
                 SCRIPTS: ['error.js'],
                 STYLESHEETS: ['error.css'],

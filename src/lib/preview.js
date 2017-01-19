@@ -564,9 +564,6 @@ class Preview extends EventEmitter {
         }
 
         try {
-            // Add original representation if needed
-            this.addOriginalRepresentation(file);
-
             // Save reference to the file and update logger
             this.file = file;
             this.logger.setFile(file);
@@ -612,6 +609,9 @@ class Preview extends EventEmitter {
         if (!checkPermission(this.file, PERMISSION_PREVIEW)) {
             throw new Error(__('error_permissions'));
         }
+
+        // Add original representation if needed
+        this.addOriginalRepresentation(this.file);
 
         // Determine the asset loader to use
         const loader = this.getLoader(this.file);
@@ -884,7 +884,7 @@ class Preview extends EventEmitter {
         const videoHints = Browser.canPlayDash() ? '[dash,mp4][filmstrip]' : '[mp4]';
         const headers = {
             'X-Rep-Hints': '[3d][pdf][text][jpg?dimensions=2048x2048,jpg?dimensions=1024x1024,' +
-                `png?dimensions=2048x2048,png?dimensions=1024x1024][mp3][original]${videoHints}`
+                `png?dimensions=2048x2048,png?dimensions=1024x1024][mp3]${videoHints}`
         };
         return getHeaders(headers, token || this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
     }
@@ -1125,7 +1125,7 @@ class Preview extends EventEmitter {
     addOriginalRepresentation(file) {
         // Don't add an original representation if it already exists
         const originalRep = file.representations.entries.filter((entry) => {
-            return (entry.representation && entry.representation === 'original');
+            return (entry.representation && entry.representation === 'ORIGINAL');
         });
         if (originalRep.length) {
             return;
@@ -1139,7 +1139,7 @@ class Preview extends EventEmitter {
                     url: `${file.authenticated_download_url}?preview=true`
                 }
             },
-            representation: 'original',
+            representation: 'ORIGINAL',
             status: 'success'
         });
     }

@@ -8,7 +8,7 @@ const FIVE_MB = 5242880;
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 const VIEWERS = [
     {
-        REPRESENTATION: 'original',
+        REPRESENTATION: 'ORIGINAL',
         EXTENSIONS: ['xlsx'],
         SCRIPTS: ['office.js'],
         STYLESHEETS: [],

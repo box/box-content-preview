@@ -5,7 +5,7 @@ import AssetLoader from '../asset-loader';
 // representation but can fallback to using the png representation (for watermarked versions).
 const VIEWERS = [
     {
-        REPRESENTATION: 'original',
+        REPRESENTATION: 'ORIGINAL',
         EXTENSIONS: ['svg', 'gif'],
         SCRIPTS: ['image.js'],
         STYLESHEETS: ['image.css'],

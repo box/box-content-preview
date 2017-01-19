@@ -10,7 +10,7 @@ describe('iframe-loader.js', () => {
 
     it('should have the correct viewer', () => {
         const iframeViewer = IFrameLoader.viewers[0];
-        assert.equal(iframeViewer.REPRESENTATION, 'original');
+        assert.equal(iframeViewer.REPRESENTATION, 'ORIGINAL');
         assert.equal(iframeViewer.CONSTRUCTOR, 'IFrame');
         assert.ok(iframeViewer.SCRIPTS.indexOf('iframe.js') > -1);
         assert.ok(iframeViewer.EXTENSIONS.indexOf('boxnote') > -1);

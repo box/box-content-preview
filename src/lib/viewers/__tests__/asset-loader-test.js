@@ -55,7 +55,7 @@ describe('asset-loader', () => {
                 EXTENSIONS: ['pdf'],
                 CONSTRUCTOR: 'Adobe'
             }, {
-                REPRESENTATION: 'original',
+                REPRESENTATION: 'ORIGINAL',
                 EXTENSIONS: ['pdf'],
                 CONSTRUCTOR: 'Document'
             }, {
@@ -88,7 +88,7 @@ describe('asset-loader', () => {
                 extension: 'pdf',
                 representations: {
                     entries: [{
-                        representation: 'original'
+                        representation: 'ORIGINAL'
                     }, {
                         representation: 'pdf'
                     }]
@@ -97,7 +97,7 @@ describe('asset-loader', () => {
 
             const viewer = loader.determineViewer(file, ['Adobe']);
             expect(viewer).to.deep.equal({
-                REPRESENTATION: 'original',
+                REPRESENTATION: 'ORIGINAL',
                 EXTENSIONS: ['pdf'],
                 CONSTRUCTOR: 'Document'
             });
@@ -108,7 +108,7 @@ describe('asset-loader', () => {
                 extension: 'mp3',
                 representations: {
                     entries: [{
-                        representation: 'original'
+                        representation: 'ORIGINAL'
                     }, {
                         representation: 'mp3'
                     }]
@@ -125,7 +125,7 @@ describe('asset-loader', () => {
             const file = {
                 representations: {
                     entries: [{
-                        representation: 'original'
+                        representation: 'ORIGINAL'
                     }, {
                         representation: 'pdf'
                     }]
@@ -145,7 +145,7 @@ describe('asset-loader', () => {
             const file = {
                 representations: {
                     entries: [{
-                        representation: 'original'
+                        representation: 'ORIGINAL'
                     }, {
                         representation: 'pdf'
                     }]

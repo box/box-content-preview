@@ -24,7 +24,7 @@ const VIEWERS = [
         PREFETCH: 'xhr'
     },
     {
-        REPRESENTATION: 'original',
+        REPRESENTATION: 'ORIGINAL',
         EXTENSIONS: ['pdf'],
         SCRIPTS: SCRIPTS_DOCUMENT,
         STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
@@ -59,7 +59,7 @@ class DocLoader extends AssetLoader {
         // For PDF files, use PDF representation unless it's pending - if it is, use original rep
         const rep = super.determineRepresentation(file, viewer);
         if (file.extension === 'pdf' && rep.representation === 'pdf' && rep.status === 'pending') {
-            repOverride = file.representations.entries.find((entry) => entry.representation === 'original');
+            repOverride = file.representations.entries.find((entry) => entry.representation === 'ORIGINAL');
         }
 
         return repOverride || rep;
