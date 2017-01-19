@@ -22,11 +22,11 @@ describe('doc-loader', () => {
             };
 
             const viewer = {
-                REPRESENTATION: 'pdf',
-                EXTENSIONS: ['docx'],
-                SCRIPTS: [],
-                STYLESHEETS: [],
-                CONSTRUCTOR: 'Document',
+                REP: 'pdf',
+                EXT: ['docx'],
+                JS: [],
+                CSS: [],
+                NAME: 'Document',
                 PREFETCH: 'xhr'
             };
 
@@ -50,11 +50,11 @@ describe('doc-loader', () => {
             };
 
             const viewer = {
-                REPRESENTATION: 'pdf',
-                EXTENSIONS: ['pdf'],
-                SCRIPTS: [],
-                STYLESHEETS: [],
-                CONSTRUCTOR: 'Document',
+                REP: 'pdf',
+                EXT: ['pdf'],
+                JS: [],
+                CSS: [],
+                NAME: 'Document',
                 PREFETCH: 'xhr'
             };
 
@@ -79,11 +79,11 @@ describe('doc-loader', () => {
             };
 
             const viewer = {
-                REPRESENTATION: 'pdf',
-                EXTENSIONS: ['pdf'],
-                SCRIPTS: [],
-                STYLESHEETS: [],
-                CONSTRUCTOR: 'Document',
+                REP: 'pdf',
+                EXT: ['pdf'],
+                JS: [],
+                CSS: [],
+                NAME: 'Document',
                 PREFETCH: 'xhr'
             };
 

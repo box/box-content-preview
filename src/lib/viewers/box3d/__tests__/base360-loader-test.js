@@ -11,8 +11,8 @@ describe('base360-loader', () => {
     beforeEach(() => {
         base360Loader = new Base360Loader();
         const some360Viewer = {
-            REPRESENTATION: 'dash',
-            EXTENSIONS: 'mp4'
+            REP: 'dash',
+            EXT: 'mp4'
         };
 
         base360Loader.viewers = [some360Viewer];

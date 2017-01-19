@@ -51,17 +51,17 @@ describe('asset-loader', () => {
     describe('determineViewer()', () => {
         beforeEach(() => {
             loader.viewers = [{
-                REPRESENTATION: 'pdf',
-                EXTENSIONS: ['pdf'],
-                CONSTRUCTOR: 'Adobe'
+                REP: 'pdf',
+                EXT: ['pdf'],
+                NAME: 'Adobe'
             }, {
-                REPRESENTATION: 'ORIGINAL',
-                EXTENSIONS: ['pdf'],
-                CONSTRUCTOR: 'Document'
+                REP: 'ORIGINAL',
+                EXT: ['pdf'],
+                NAME: 'Document'
             }, {
-                REPRESENTATION: 'pdf',
-                EXTENSIONS: ['pdf'],
-                CONSTRUCTOR: 'SomeOtherPDFViewer'
+                REP: 'pdf',
+                EXT: ['pdf'],
+                NAME: 'SomeOtherPDFViewer'
             }];
         });
 
@@ -77,9 +77,9 @@ describe('asset-loader', () => {
 
             const viewer = loader.determineViewer(file);
             expect(viewer).to.deep.equal({
-                REPRESENTATION: 'pdf',
-                EXTENSIONS: ['pdf'],
-                CONSTRUCTOR: 'Adobe'
+                REP: 'pdf',
+                EXT: ['pdf'],
+                NAME: 'Adobe'
             });
         });
 
@@ -97,9 +97,9 @@ describe('asset-loader', () => {
 
             const viewer = loader.determineViewer(file, ['Adobe']);
             expect(viewer).to.deep.equal({
-                REPRESENTATION: 'ORIGINAL',
-                EXTENSIONS: ['pdf'],
-                CONSTRUCTOR: 'Document'
+                REP: 'ORIGINAL',
+                EXT: ['pdf'],
+                NAME: 'Document'
             });
         });
 
@@ -132,7 +132,7 @@ describe('asset-loader', () => {
                 }
             };
             const viewer = {
-                REPRESENTATION: 'pdf'
+                REP: 'pdf'
             };
 
             const representation = loader.determineRepresentation(file, viewer);
@@ -152,7 +152,7 @@ describe('asset-loader', () => {
                 }
             };
             const viewer = {
-                REPRESENTATION: 'xlsx'
+                REP: 'xlsx'
             };
 
             const representation = loader.determineRepresentation(file, viewer);
@@ -175,8 +175,8 @@ describe('asset-loader', () => {
     describe('load()', () => {
         it('should create an asset URL and load the relevant stylesheets and scripts', () => {
             const viewer = {
-                STYLESHEETS: [],
-                SCRIPTS: []
+                CSS: [],
+                JS: []
             };
             const location = {};
             const promise = Promise.resolve();
@@ -316,8 +316,8 @@ describe('asset-loader', () => {
     describe('prefetchAssets()', () => {
         it('should create an asset URL and prefetch the relevant stylesheets and scripts', () => {
             const viewer = {
-                STYLESHEETS: [],
-                SCRIPTS: []
+                CSS: [],
+                JS: []
             };
             const location = {};
 

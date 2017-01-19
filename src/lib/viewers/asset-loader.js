@@ -41,10 +41,10 @@ class AssetLoader {
      */
     determineViewer(file, disabledViewers = []) {
         return this.viewers.find((viewer) => {
-            if (disabledViewers.indexOf(viewer.CONSTRUCTOR) > -1) {
+            if (disabledViewers.indexOf(viewer.NAME) > -1) {
                 return false;
             }
-            return viewer.EXTENSIONS.indexOf(file.extension) > -1 && file.representations.entries.some((entry) => viewer.REPRESENTATION === entry.representation);
+            return viewer.EXT.indexOf(file.extension) > -1 && file.representations.entries.some((entry) => viewer.REP === entry.representation);
         });
     }
 
@@ -59,7 +59,7 @@ class AssetLoader {
      * @returns {Object} the representation to load
      */
     determineRepresentation(file, viewer) {
-        return file.representations.entries.find((entry) => viewer.REPRESENTATION === entry.representation);
+        return file.representations.entries.find((entry) => viewer.REP === entry.representation);
     }
 
     /**
@@ -88,10 +88,10 @@ class AssetLoader {
         const assetUrlCreator = createAssetUrlCreator(location);
 
         // 1st load the stylesheets needed for this preview
-        loadStylesheets(viewer.STYLESHEETS.map(assetUrlCreator));
+        loadStylesheets(viewer.CSS.map(assetUrlCreator));
 
         // Then load the scripts needed for this preview
-        return loadScripts(viewer.SCRIPTS.map(assetUrlCreator));
+        return loadScripts(viewer.JS.map(assetUrlCreator));
     }
 
     /**
@@ -154,10 +154,10 @@ class AssetLoader {
         const assetUrlCreator = createAssetUrlCreator(location);
 
         // Prefetch the stylesheets needed for this preview
-        prefetchAssets(viewer.STYLESHEETS.map(assetUrlCreator));
+        prefetchAssets(viewer.CSS.map(assetUrlCreator));
 
         // Prefetch the scripts needed for this preview
-        prefetchAssets(viewer.SCRIPTS.map(assetUrlCreator));
+        prefetchAssets(viewer.JS.map(assetUrlCreator));
     }
 }
 

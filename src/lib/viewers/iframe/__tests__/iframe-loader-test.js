@@ -10,12 +10,12 @@ describe('iframe-loader.js', () => {
 
     it('should have the correct viewer', () => {
         const iframeViewer = IFrameLoader.viewers[0];
-        assert.equal(iframeViewer.REPRESENTATION, 'ORIGINAL');
-        assert.equal(iframeViewer.CONSTRUCTOR, 'IFrame');
-        assert.ok(iframeViewer.SCRIPTS.indexOf('iframe.js') > -1);
-        assert.ok(iframeViewer.EXTENSIONS.indexOf('boxnote') > -1);
-        assert.ok(iframeViewer.EXTENSIONS.indexOf('boxdicom') > -1);
-        assert.ok(iframeViewer.STYLESHEETS.length === 0);
+        assert.equal(iframeViewer.REP, 'ORIGINAL');
+        assert.equal(iframeViewer.NAME, 'IFrame');
+        assert.ok(iframeViewer.JS.indexOf('iframe.js') > -1);
+        assert.ok(iframeViewer.EXT.indexOf('boxnote') > -1);
+        assert.ok(iframeViewer.EXT.indexOf('boxdicom') > -1);
+        assert.ok(iframeViewer.CSS.length === 0);
     });
 
     it('should not prefetch representations', () => {

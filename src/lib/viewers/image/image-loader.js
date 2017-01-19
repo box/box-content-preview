@@ -5,38 +5,38 @@ import AssetLoader from '../asset-loader';
 // representation but can fallback to using the png representation (for watermarked versions).
 const VIEWERS = [
     {
-        REPRESENTATION: 'ORIGINAL',
-        EXTENSIONS: ['svg', 'gif'],
-        SCRIPTS: ['image.js'],
-        STYLESHEETS: ['image.css'],
-        CONSTRUCTOR: 'Image',
+        REP: 'ORIGINAL',
+        EXT: ['svg', 'gif'],
+        JS: ['image.js'],
+        CSS: ['image.css'],
+        NAME: 'Image',
         PREFETCH: 'img',
         ASSET: ''
     },
     {
-        REPRESENTATION: 'multi-image',
-        EXTENSIONS: ['tif', 'tiff'],
-        SCRIPTS: ['multi-image.js'],
-        STYLESHEETS: ['multi-image.css'],
-        CONSTRUCTOR: 'MultiImage',
+        REP: 'multi-image',
+        EXT: ['tif', 'tiff'],
+        JS: ['multi-image.js'],
+        CSS: ['multi-image.css'],
+        NAME: 'MultiImage',
         PREFETCH: 'img',
         ASSET: ''
     },
     {
-        REPRESENTATION: 'jpg',
-        EXTENSIONS: ['jpeg', 'jpg'],
-        SCRIPTS: ['image.js'],
-        STYLESHEETS: ['image.css'],
-        CONSTRUCTOR: 'Image',
+        REP: 'jpg',
+        EXT: ['jpeg', 'jpg'],
+        JS: ['image.js'],
+        CSS: ['image.css'],
+        NAME: 'Image',
         PREFETCH: 'img',
         ASSET: '1.jpg'
     },
     {
-        REPRESENTATION: 'png',
-        EXTENSIONS: ['ai', 'bmp', 'dcm', 'eps', 'gif', 'png', 'ps', 'psd', 'svs', 'tga', 'tif', 'tiff'],
-        SCRIPTS: ['image.js'],
-        STYLESHEETS: ['image.css'],
-        CONSTRUCTOR: 'Image',
+        REP: 'png',
+        EXT: ['ai', 'bmp', 'dcm', 'eps', 'gif', 'png', 'ps', 'psd', 'svs', 'tga', 'tif', 'tiff'],
+        JS: ['image.js'],
+        CSS: ['image.css'],
+        NAME: 'Image',
         PREFETCH: 'img',
         ASSET: '1.png'
     }

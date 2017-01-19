@@ -11,11 +11,11 @@ describe('error-loader', () => {
     describe('constructor()', () => {
         it('should have the correct viewer', () => {
             expect(ErrorLoader.viewers[0]).to.deep.equal({
-                REPRESENTATION: 'ORIGINAL',
-                EXTENSIONS: [],
-                SCRIPTS: ['error.js'],
-                STYLESHEETS: ['error.css'],
-                CONSTRUCTOR: 'PreviewError'
+                REP: 'ORIGINAL',
+                EXT: [],
+                JS: ['error.js'],
+                CSS: ['error.css'],
+                NAME: 'PreviewError'
             });
         });
     });

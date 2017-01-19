@@ -3,11 +3,11 @@ import AssetLoader from '../asset-loader';
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 const VIEWERS = [
     {
-        REPRESENTATION: 'ORIGINAL',
-        EXTENSIONS: ['swf'],
-        SCRIPTS: ['third-party/swf/swfobject.js', 'swf.js'],
-        STYLESHEETS: [],
-        CONSTRUCTOR: 'SWF',
+        REP: 'ORIGINAL',
+        EXT: ['swf'],
+        JS: ['third-party/swf/swfobject.js', 'swf.js'],
+        CSS: [],
+        NAME: 'SWF',
         ASSET: ''
     }
 ];

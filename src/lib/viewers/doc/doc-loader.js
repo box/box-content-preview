@@ -8,29 +8,29 @@ const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.min.js`, `${STATIC_URI}pdf
 // representation but can fallback to using the pdf representation (for watermarked versions).
 const VIEWERS = [
     {
-        REPRESENTATION: 'pdf',
-        EXTENSIONS: ['odp', 'ppt', 'pptx'],
-        SCRIPTS: [`${STATIC_URI}compatibility.min.js`, `${STATIC_URI}pdf.min.js`, `${STATIC_URI}pdf_viewer.min.js`, `${STATIC_URI}pdf.worker.min.js`, 'presentation.js'],
-        STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'presentation.css'],
-        CONSTRUCTOR: 'Presentation',
+        REP: 'pdf',
+        EXT: ['odp', 'ppt', 'pptx'],
+        JS: [`${STATIC_URI}compatibility.min.js`, `${STATIC_URI}pdf.min.js`, `${STATIC_URI}pdf_viewer.min.js`, `${STATIC_URI}pdf.worker.min.js`, 'presentation.js'],
+        CSS: [`${STATIC_URI}pdf_viewer.css`, 'presentation.css'],
+        NAME: 'Presentation',
         PREFETCH: 'xhr',
         ASSET: ''
     },
     {
-        REPRESENTATION: 'pdf',
-        EXTENSIONS: ['as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'csv', 'cxx', 'diff', 'doc', 'docx', 'erb', 'gdoc', 'groovy', 'gsheet', 'h', 'haml', 'hh', 'htm', 'html', 'java', 'js', 'less', 'log', 'm', 'make', 'md', 'ml', 'mm', 'msg', 'odp', 'ods', 'odt', 'pdf', 'php', 'pl', 'plist', 'ppt', 'pptx', 'properties', 'py', 'rb', 'rst', 'rtf', 'sass', 'scala', 'scm', 'script', 'sh', 'sml', 'sql', 'tsv', 'txt', 'vi', 'vim', 'webdoc', 'wpd', 'xhtml', 'xls', 'xlsm', 'xlsx', 'xml', 'xsd', 'xsl', 'yaml'],
-        SCRIPTS: SCRIPTS_DOCUMENT,
-        STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
-        CONSTRUCTOR: 'Document',
+        REP: 'pdf',
+        EXT: ['as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'csv', 'cxx', 'diff', 'doc', 'docx', 'erb', 'gdoc', 'groovy', 'gsheet', 'h', 'haml', 'hh', 'htm', 'html', 'java', 'js', 'less', 'log', 'm', 'make', 'md', 'ml', 'mm', 'msg', 'odp', 'ods', 'odt', 'pdf', 'php', 'pl', 'plist', 'ppt', 'pptx', 'properties', 'py', 'rb', 'rst', 'rtf', 'sass', 'scala', 'scm', 'script', 'sh', 'sml', 'sql', 'tsv', 'txt', 'vi', 'vim', 'webdoc', 'wpd', 'xhtml', 'xls', 'xlsm', 'xlsx', 'xml', 'xsd', 'xsl', 'yaml'],
+        JS: SCRIPTS_DOCUMENT,
+        CSS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
+        NAME: 'Document',
         PREFETCH: 'xhr',
         ASSET: ''
     },
     {
-        REPRESENTATION: 'ORIGINAL',
-        EXTENSIONS: ['pdf'],
-        SCRIPTS: SCRIPTS_DOCUMENT,
-        STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
-        CONSTRUCTOR: 'Document',
+        REP: 'ORIGINAL',
+        EXT: ['pdf'],
+        JS: SCRIPTS_DOCUMENT,
+        CSS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
+        NAME: 'Document',
         PREFETCH: 'xhr',
         ASSET: ''
     }

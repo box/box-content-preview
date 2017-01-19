@@ -9,45 +9,45 @@ const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 
 // representation but can fallback to using the mp3 representation (for watermarked versions).
 const VIEWERS = [
     {
-        REPRESENTATION: 'ORIGINAL',
-        EXTENSIONS: ['mp3'],
-        SCRIPTS: ['mp3.js'],
-        STYLESHEETS: ['mp3.css'],
-        CONSTRUCTOR: 'MP3',
+        REP: 'ORIGINAL',
+        EXT: ['mp3'],
+        JS: ['mp3.js'],
+        CSS: ['mp3.css'],
+        NAME: 'MP3',
         PREFETCH: 'xhr',
         ASSET: ''
     },
     // {
-    //     REPRESENTATION: 'ORIGINAL',
-    //     EXTENSIONS: ['flv'],
-    //     SCRIPTS: ['third-party/swf/swfobject.js', 'flash.js'],
-    //     STYLESHEETS: ['flash.css'],
-    //     CONSTRUCTOR: 'Flash'
+    //     REP: 'ORIGINAL',
+    //     EXT: ['flv'],
+    //     JS: ['third-party/swf/swfobject.js', 'flash.js'],
+    //     CSS: ['flash.css'],
+    //     NAME: 'Flash'
     // },
     {
-        REPRESENTATION: 'dash',
-        EXTENSIONS: VIDEO_FORMATS,
-        SCRIPTS: [`${STATIC_URI}shaka-player.js`, 'dash.js'],
-        STYLESHEETS: ['dash.css'],
-        CONSTRUCTOR: 'Dash',
+        REP: 'dash',
+        EXT: VIDEO_FORMATS,
+        JS: [`${STATIC_URI}shaka-player.js`, 'dash.js'],
+        CSS: ['dash.css'],
+        NAME: 'Dash',
         PREFETCH: 'xhr',
         ASSET: 'manifest.mpd'
     },
     {
-        REPRESENTATION: 'mp4',
-        EXTENSIONS: VIDEO_FORMATS,
-        SCRIPTS: ['mp4.js'],
-        STYLESHEETS: ['mp4.css'],
-        CONSTRUCTOR: 'MP4',
+        REP: 'mp4',
+        EXT: VIDEO_FORMATS,
+        JS: ['mp4.js'],
+        CSS: ['mp4.css'],
+        NAME: 'MP4',
         PREFETCH: 'xhr',
         ASSET: ''
     },
     {
-        REPRESENTATION: 'mp3',
-        EXTENSIONS: ['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma'],
-        SCRIPTS: ['mp3.js'],
-        STYLESHEETS: ['mp3.css'],
-        CONSTRUCTOR: 'MP3',
+        REP: 'mp3',
+        EXT: ['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma'],
+        JS: ['mp3.js'],
+        CSS: ['mp3.css'],
+        NAME: 'MP3',
         PREFETCH: 'xhr',
         ASSET: ''
     }

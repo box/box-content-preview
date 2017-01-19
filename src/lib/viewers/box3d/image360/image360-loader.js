@@ -3,9 +3,9 @@ import Base360Loader from '../base360-loader';
 const STATIC_URI = 'third-party/model3d/';
 const VIEWERS = [
     {
-        REPRESENTATION: '3d',
-        EXTENSIONS: ['jpg', 'jpeg', 'png', 'ai', 'bmp', 'dcm', 'eps', 'gif', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff'],
-        SCRIPTS: [
+        REP: '3d',
+        EXT: ['jpg', 'jpeg', 'png', 'ai', 'bmp', 'dcm', 'eps', 'gif', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff'],
+        JS: [
             `${STATIC_URI}boxsdk.js`,
             `${STATIC_URI}box3d-runtime.js`,
             `${STATIC_URI}webvr-polyfill.js`,
@@ -14,8 +14,8 @@ const VIEWERS = [
             `${STATIC_URI}WebVR/VRConfig.js`,
             'image360.js'
         ],
-        STYLESHEETS: ['image360.css'],
-        CONSTRUCTOR: 'Image360',
+        CSS: ['image360.css'],
+        NAME: 'Image360',
         PREFETCH: 'xhr',
         ASSET: 'entities.json'
     }

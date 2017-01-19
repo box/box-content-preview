@@ -1,11 +1,11 @@
 import AssetLoader from '../asset-loader';
 
 const VIEWERS = [{
-    REPRESENTATION: 'ORIGINAL',
-    EXTENSIONS: [],
-    SCRIPTS: ['error.js'],
-    STYLESHEETS: ['error.css'],
-    CONSTRUCTOR: 'PreviewError'
+    REP: 'ORIGINAL',
+    EXT: [],
+    JS: ['error.js'],
+    CSS: ['error.css'],
+    NAME: 'PreviewError'
 }];
 
 class ErrorLoader extends AssetLoader {

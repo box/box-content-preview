@@ -336,13 +336,13 @@ describe('Preview', () => {
         beforeEach(() => {
             const mockViewers = [
                 {
-                    CONSTRUCTOR: 'text'
+                    NAME: 'text'
                 },
                 {
-                    CONSTRUCTOR: 'csv'
+                    NAME: 'csv'
                 },
                 {
-                    CONSTRUCTOR: 'excel'
+                    NAME: 'excel'
                 }
             ];
 
@@ -365,7 +365,7 @@ describe('Preview', () => {
 
         it('should prefetch only passed in viewers', () => {
             const viewerToPrefetch = preview.getViewers()[0];
-            const viewerName = viewerToPrefetch.CONSTRUCTOR;
+            const viewerName = viewerToPrefetch.NAME;
 
             preview.prefetchViewers([viewerName]);
             expect(preview.loaders[0].prefetchAssets).to.be.calledOnce;
@@ -1036,7 +1036,7 @@ describe('Preview', () => {
             stubs.addOriginalRep = sandbox.stub(preview, 'addOriginalRepresentation');
             stubs.determineRepresentationStatusPromise = Promise.resolve();
             stubs.loader = {
-                determineViewer: sandbox.stub().returns({ CONSTRUCTOR: 'viewer' }),
+                determineViewer: sandbox.stub().returns({ NAME: 'viewer' }),
                 determineRepresentation: sandbox.stub().returns({
                     links: {
                         content: {
@@ -1397,7 +1397,7 @@ describe('Preview', () => {
         beforeEach(() => {
             stubs.unset = sandbox.stub(cache, 'unset');
             stubs.destroy = sandbox.stub(preview, 'destroy');
-            stubs.determineViewer = sandbox.stub(ErrorLoader, 'determineViewer').returns({ CONSTRUCTOR: 'error' });
+            stubs.determineViewer = sandbox.stub(ErrorLoader, 'determineViewer').returns({ NAME: 'error' });
             stubs.promiseResolve = Promise.resolve();
             stubs.load = sandbox.stub(ErrorLoader, 'load').returns(stubs.promiseResolve);
             stubs.hideLoadingIndicator = sandbox.stub(ui, 'hideLoadingIndicator');

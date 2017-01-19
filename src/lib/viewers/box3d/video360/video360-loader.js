@@ -7,9 +7,9 @@ const BROWSERS_SUPPORTED = ['Chrome', 'Edge', 'Firefox', 'Opera'];
 
 const VIEWERS = [
     {
-        REPRESENTATION: 'dash',
-        EXTENSIONS: VIDEO_FORMATS,
-        SCRIPTS: [
+        REP: 'dash',
+        EXT: VIDEO_FORMATS,
+        JS: [
             `${STATIC_URI}media/shaka-player.js`,
             `${STATIC_URI}model3d/boxsdk.js`,
             `${STATIC_URI}model3d/box3d-runtime.js`,
@@ -19,8 +19,8 @@ const VIEWERS = [
             `${STATIC_URI}model3d/WebVR/VRConfig.js`,
             'video360.js'
         ],
-        STYLESHEETS: ['dash.css', 'video360.css'],
-        CONSTRUCTOR: 'Video360',
+        CSS: ['dash.css', 'video360.css'],
+        NAME: 'Video360',
         PREFETCH: 'xhr',
         ASSET: 'manifest.mpd'
     }

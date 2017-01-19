@@ -237,7 +237,7 @@ class Preview extends EventEmitter {
         // Filter down to specified viewers
         if (viewerNames.length) {
             viewers = viewers.filter((viewer) => {
-                return viewerNames.indexOf(viewer.CONSTRUCTOR) !== -1;
+                return viewerNames.indexOf(viewer.NAME) !== -1;
             });
         }
 
@@ -620,7 +620,7 @@ class Preview extends EventEmitter {
         const viewer = loader.determineViewer(this.file, Object.keys(this.disabledViewers));
 
         // Log the type of file
-        this.logger.setType(viewer.CONSTRUCTOR);
+        this.logger.setType(viewer.NAME);
 
         // Determine the representation to use
         const representation = loader.determineRepresentation(this.file, viewer);
@@ -641,9 +641,9 @@ class Preview extends EventEmitter {
         // Proceed only when both static and representation assets have been loaded
         Promise.all([promiseToLoadStaticAssets, promiseToGetRepresentationStatusSuccess]).then(() => {
             // Instantiate the viewer
-            this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, Object.assign({}, this.options, {
+            this.viewer = new Box.Preview[viewer.NAME](this.container, Object.assign({}, this.options, {
                 file: this.file,
-                viewerName: viewer.CONSTRUCTOR // name of the viewer, cannot rely on constructor.name
+                viewerName: viewer.NAME // name of the viewer, cannot rely on constructor.name
             }));
 
             // Once the viewer instance has been created, emit it so that clients can attach their events.
@@ -839,7 +839,7 @@ class Preview extends EventEmitter {
 
         const viewer = ErrorLoader.determineViewer();
         ErrorLoader.load(viewer, this.options.location).then(() => {
-            this.viewer = new Box.Preview[viewer.CONSTRUCTOR](this.container, Object.assign({}, this.options, {
+            this.viewer = new Box.Preview[viewer.NAME](this.container, Object.assign({}, this.options, {
                 file: this.file
             }));
 

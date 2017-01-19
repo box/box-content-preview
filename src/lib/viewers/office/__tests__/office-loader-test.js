@@ -10,24 +10,24 @@ describe('office-loader', () => {
     describe('constructor()', () => {
         it('should have the correct viewer', () => {
             expect(OfficeLoader.viewers[0]).to.deep.equal({
-                REPRESENTATION: 'ORIGINAL',
-                EXTENSIONS: ['xlsx'],
-                SCRIPTS: ['office.js'],
-                STYLESHEETS: [],
-                CONSTRUCTOR: 'Office',
+                REP: 'ORIGINAL',
+                EXT: ['xlsx'],
+                JS: ['office.js'],
+                CSS: [],
+                NAME: 'Office',
                 ASSET: ''
             });
             expect(OfficeLoader.viewers[1]).to.deep.equal({
-                REPRESENTATION: 'pdf',
-                EXTENSIONS: ['xlsx'],
-                SCRIPTS: [
+                REP: 'pdf',
+                EXT: ['xlsx'],
+                JS: [
                     'third-party/doc/compatibility.min.js',
                     'third-party/doc/pdf.min.js',
                     'third-party/doc/pdf_viewer.min.js',
                     'third-party/doc/pdf.worker.min.js',
                     'document.js'],
-                STYLESHEETS: ['third-party/doc/pdf_viewer.css', 'document.css'],
-                CONSTRUCTOR: 'Document',
+                CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
+                NAME: 'Document',
                 PREFETCH: 'xhr',
                 ASSET: ''
             });
@@ -52,11 +52,11 @@ describe('office-loader', () => {
             const viewer = OfficeLoader.determineViewer(file);
 
             expect(viewer).to.deep.equal({
-                REPRESENTATION: 'ORIGINAL',
-                EXTENSIONS: ['xlsx'],
-                SCRIPTS: ['office.js'],
-                STYLESHEETS: [],
-                CONSTRUCTOR: 'Office',
+                REP: 'ORIGINAL',
+                EXT: ['xlsx'],
+                JS: ['office.js'],
+                CSS: [],
+                NAME: 'Office',
                 ASSET: ''
             });
         });
@@ -81,11 +81,11 @@ describe('office-loader', () => {
             const viewer = OfficeLoader.determineViewer(file);
 
             expect(viewer).to.deep.equal({
-                REPRESENTATION: 'ORIGINAL',
-                EXTENSIONS: ['xlsx'],
-                SCRIPTS: ['office.js'],
-                STYLESHEETS: [],
-                CONSTRUCTOR: 'Office',
+                REP: 'ORIGINAL',
+                EXT: ['xlsx'],
+                JS: ['office.js'],
+                CSS: [],
+                NAME: 'Office',
                 ASSET: ''
             });
         });
@@ -109,16 +109,16 @@ describe('office-loader', () => {
             const viewer = OfficeLoader.determineViewer(file, ['Office']);
 
             expect(viewer).to.deep.equal({
-                REPRESENTATION: 'pdf',
-                EXTENSIONS: ['xlsx'],
-                SCRIPTS: [
+                REP: 'pdf',
+                EXT: ['xlsx'],
+                JS: [
                     'third-party/doc/compatibility.min.js',
                     'third-party/doc/pdf.min.js',
                     'third-party/doc/pdf_viewer.min.js',
                     'third-party/doc/pdf.worker.min.js',
                     'document.js'],
-                STYLESHEETS: ['third-party/doc/pdf_viewer.css', 'document.css'],
-                CONSTRUCTOR: 'Document',
+                CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
+                NAME: 'Document',
                 PREFETCH: 'xhr',
                 ASSET: ''
             });
@@ -143,16 +143,16 @@ describe('office-loader', () => {
             const viewer = OfficeLoader.determineViewer(file, []);
 
             expect(viewer).to.deep.equal({
-                REPRESENTATION: 'pdf',
-                EXTENSIONS: ['xlsx'],
-                SCRIPTS: [
+                REP: 'pdf',
+                EXT: ['xlsx'],
+                JS: [
                     'third-party/doc/compatibility.min.js',
                     'third-party/doc/pdf.min.js',
                     'third-party/doc/pdf_viewer.min.js',
                     'third-party/doc/pdf.worker.min.js',
                     'document.js'],
-                STYLESHEETS: ['third-party/doc/pdf_viewer.css', 'document.css'],
-                CONSTRUCTOR: 'Document',
+                CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
+                NAME: 'Document',
                 PREFETCH: 'xhr',
                 ASSET: ''
             });
@@ -177,16 +177,16 @@ describe('office-loader', () => {
             const viewer = OfficeLoader.determineViewer(file, []);
 
             expect(viewer).to.deep.equal({
-                REPRESENTATION: 'pdf',
-                EXTENSIONS: ['xlsx'],
-                SCRIPTS: [
+                REP: 'pdf',
+                EXT: ['xlsx'],
+                JS: [
                     'third-party/doc/compatibility.min.js',
                     'third-party/doc/pdf.min.js',
                     'third-party/doc/pdf_viewer.min.js',
                     'third-party/doc/pdf.worker.min.js',
                     'document.js'],
-                STYLESHEETS: ['third-party/doc/pdf_viewer.css', 'document.css'],
-                CONSTRUCTOR: 'Document',
+                CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
+                NAME: 'Document',
                 PREFETCH: 'xhr',
                 ASSET: ''
             });
@@ -214,16 +214,16 @@ describe('office-loader', () => {
             const viewer = OfficeLoader.determineViewer(file, []);
 
             expect(viewer).to.deep.equal({
-                REPRESENTATION: 'pdf',
-                EXTENSIONS: ['xlsx'],
-                SCRIPTS: [
+                REP: 'pdf',
+                EXT: ['xlsx'],
+                JS: [
                     'third-party/doc/compatibility.min.js',
                     'third-party/doc/pdf.min.js',
                     'third-party/doc/pdf_viewer.min.js',
                     'third-party/doc/pdf.worker.min.js',
                     'document.js'],
-                STYLESHEETS: ['third-party/doc/pdf_viewer.css', 'document.css'],
-                CONSTRUCTOR: 'Document',
+                CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
+                NAME: 'Document',
                 PREFETCH: 'xhr',
                 ASSET: ''
             });

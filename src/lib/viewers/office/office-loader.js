@@ -8,19 +8,19 @@ const FIVE_MB = 5242880;
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 const VIEWERS = [
     {
-        REPRESENTATION: 'ORIGINAL',
-        EXTENSIONS: ['xlsx'],
-        SCRIPTS: ['office.js'],
-        STYLESHEETS: [],
-        CONSTRUCTOR: OFFICE_CONSTRUCTOR,
+        REP: 'ORIGINAL',
+        EXT: ['xlsx'],
+        JS: ['office.js'],
+        CSS: [],
+        NAME: OFFICE_CONSTRUCTOR,
         ASSET: ''
     },
     {
-        REPRESENTATION: 'pdf',
-        EXTENSIONS: ['xlsx'],
-        SCRIPTS: SCRIPTS_DOCUMENT,
-        STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
-        CONSTRUCTOR: 'Document',
+        REP: 'pdf',
+        EXT: ['xlsx'],
+        JS: SCRIPTS_DOCUMENT,
+        CSS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
+        NAME: 'Document',
         PREFETCH: 'xhr',
         ASSET: ''
     }
