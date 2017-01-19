@@ -145,11 +145,12 @@ class Box3D extends Base {
      * Loads a 3D Scene
      *
      * @param {string} assetUrl The asset to load into preview
+     * @param {string} assetPath The asset path needed to access file
      * @returns {Promise} A promise object which will be resolved/rejected on load
      */
-    load(assetUrl) {
+    load(assetUrl, assetPath) {
         this.renderer
-            .load(assetUrl, this.options)
+            .load(assetUrl, assetPath, this.options)
             .catch(this.handleError);
         super.load();
     }

@@ -10,11 +10,11 @@ const STATUS_UPDATE_INTERVAL_IN_MILLIS = 2000;
 describe('RepStatus', () => {
     beforeEach(() => {
         const rep = {
-            links: {
-                info: {
-                    url: 'https://info'
-                }
-            }
+            info: {
+                url: 'https://info'
+            },
+            links: {},
+            status: {}
         };
         const headers = {};
         const logger = () => {};
@@ -34,11 +34,11 @@ describe('RepStatus', () => {
     describe('constructor()', () => {
         it('should set the correct object properties', () => {
             const rep = {
-                links: {
-                    info: {
-                        url: 'https://info'
-                    }
-                }
+                info: {
+                    url: 'https://info'
+                },
+                links: {},
+                status: {}
             };
 
             assert.deepEqual(repStatus.headers, {});
@@ -58,7 +58,9 @@ describe('RepStatus', () => {
     describe('updateStatus()', () => {
         it('should fetch latest status', () => {
             sandbox.stub(util, 'get').returns(Promise.resolve({
-                status: 'success',
+                status: {
+                    state: 'success'
+                },
                 files: [
                     'foo'
                 ]
@@ -67,7 +69,7 @@ describe('RepStatus', () => {
             const spy = sandbox.spy(repStatus, 'handleResponse');
 
             return repStatus.updateStatus().then(() => {
-                assert.equal('success', repStatus.representation.status);
+                assert.equal('success', repStatus.representation.status.state);
                 assert.equal('foo', repStatus.representation.links.files[0]);
 
                 assert.isTrue(spy.called);
@@ -78,7 +80,7 @@ describe('RepStatus', () => {
     describe('handleResponse()', () => {
         it('should reject if the rep status is error', () => {
             const rejectStub = sandbox.stub(repStatus, 'reject');
-            repStatus.representation.status = 'error';
+            repStatus.representation.status.state = 'error';
 
             repStatus.handleResponse();
             assert.isTrue(rejectStub.called);
@@ -86,7 +88,7 @@ describe('RepStatus', () => {
 
         it('should resolve if the rep status is success', () => {
             const resolveStub = sandbox.spy(repStatus, 'resolve');
-            repStatus.representation.status = 'success';
+            repStatus.representation.status.state = 'success';
 
             repStatus.handleResponse();
             assert.isTrue(resolveStub.called);
@@ -94,7 +96,7 @@ describe('RepStatus', () => {
 
         it('should resolve if the rep status is viewable', () => {
             const resolveStub = sandbox.spy(repStatus, 'resolve');
-            repStatus.representation.status = 'viewable';
+            repStatus.representation.status.state = 'viewable';
 
             repStatus.handleResponse();
             assert.isTrue(resolveStub.called);
@@ -102,7 +104,7 @@ describe('RepStatus', () => {
 
         it('should log that file needs conversion if status is pending and logger exists', () => {
             repStatus.logger = { setUnConverted: sandbox.stub() };
-            repStatus.representation.status = 'pending';
+            repStatus.representation.status.state = 'pending';
 
             repStatus.handleResponse();
             assert.isTrue(repStatus.logger.setUnConverted.called);
@@ -113,7 +115,7 @@ describe('RepStatus', () => {
             repStatus.logger = false;
             const resolveStub = sandbox.spy(repStatus, 'resolve');
             const updateStatusStub = sandbox.stub(repStatus, 'updateStatus');
-            repStatus.representation.status = 'pending';
+            repStatus.representation.status.state = 'pending';
 
             repStatus.handleResponse();
             clock.tick(STATUS_UPDATE_INTERVAL_IN_MILLIS + 1);

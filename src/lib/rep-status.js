@@ -41,10 +41,17 @@ class RepStatus {
      * @returns {void}
      */
     updateStatus() {
-        return get(this.representation.links.info.url, this.headers)
+        return get(this.representation.info.url, this.headers)
         .then((info) => {
             clearTimeout(this.statusTimeout);
-            this.representation.status = info.status;
+
+            const status = (typeof info.status === 'object') ? info.status.state : info.temp_status.state;
+            if (typeof this.representation.status === 'object') {
+                this.representation.status.state = status;
+            } else {
+                this.representation.temp_status.state = status;
+            }
+
             this.representation.links.files = info.files || [];
             this.handleResponse();
         });
@@ -57,7 +64,8 @@ class RepStatus {
      * @returns {void}
      */
     handleResponse() {
-        switch (this.representation.status) {
+        const status = (typeof this.representation.status === 'object') ? this.representation.status.state : this.representation.temp_status.state;
+        switch (status) {
             case 'error':
                 this.reject();
                 break;

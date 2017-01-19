@@ -7,7 +7,8 @@ const VIEWERS = [
         EXTENSIONS: ['swf'],
         SCRIPTS: ['third-party/swf/swfobject.js', 'swf.js'],
         STYLESHEETS: [],
-        CONSTRUCTOR: 'SWF'
+        CONSTRUCTOR: 'SWF',
+        ASSET: ''
     }
 ];
 

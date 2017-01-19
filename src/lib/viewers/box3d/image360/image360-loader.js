@@ -16,7 +16,8 @@ const VIEWERS = [
         ],
         STYLESHEETS: ['image360.css'],
         CONSTRUCTOR: 'Image360',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: 'entities.json'
     }
 ];
 

@@ -111,7 +111,8 @@ class AssetLoader {
 
         // Determine the representation to use
         const representation = this.determineRepresentation(file, viewer);
-        if (representation.status !== 'success') {
+        const status = (typeof representation.status === 'object') ? representation.status.state : representation.temp_status.state;
+        if (status !== 'success') {
             return;
         }
 
@@ -127,10 +128,16 @@ class AssetLoader {
 
         // Prefetch based on viewer strategy
         if (viewer.PREFETCH === 'xhr') {
-            get(createContentUrl(representation.links.content.url, token, sharedLink, sharedLinkPassword), 'any');
+            // Checks if representation requires an asset path
+            const assetPath = viewer.ASSET || '';
+
+            get(createContentUrl(representation.content.url_template, token, sharedLink, sharedLinkPassword, assetPath), 'any');
         } else if (viewer.PREFETCH === 'img') {
+            // Checks if representation requires an asset path
+            const assetPath = (representation.use_paged_viewer !== 'false') ? viewer.ASSET : '';
+
             const img = document.createElement('img');
-            img.src = createContentUrl(representation.links.content.url, token, sharedLink, sharedLinkPassword);
+            img.src = createContentUrl(representation.content.url_template, token, sharedLink, sharedLinkPassword, assetPath);
         }
     }
 

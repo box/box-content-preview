@@ -180,7 +180,7 @@ describe('image360', () => {
                 return new Promise(() => {});
             });
 
-            renderer.load('', { sceneEntities: mySceneEntities });
+            renderer.load('', '', { sceneEntities: mySceneEntities });
         });
 
         it('should use default sceneEntities, if none provided, for initialization', (done) => {
@@ -190,7 +190,7 @@ describe('image360', () => {
                 return new Promise(() => {});
             });
 
-            renderer.load('');
+            renderer.load('', '');
         });
 
         it('should use provided inputSettings for initialization', (done) => {
@@ -207,7 +207,7 @@ describe('image360', () => {
                 return new Promise(() => {});
             });
 
-            renderer.load('', { inputSettings: myInputSettings });
+            renderer.load('', '', { inputSettings: myInputSettings });
         });
 
         it('should call initBox3d() with the passed in options object', (done) => {
@@ -223,7 +223,7 @@ describe('image360', () => {
                 return new Promise(() => {});
             });
 
-            renderer.load('', myOptions);
+            renderer.load('', '', myOptions);
         });
 
         it('should call loadPanoramaFile() with url for box3d representation', (done) => {
@@ -236,7 +236,7 @@ describe('image360', () => {
                 return new Promise(() => {});
             });
 
-            renderer.load(fileUrl);
+            renderer.load(fileUrl, '');
         });
 
         it('should call onSceneLoad() when done loading file', (done) => {

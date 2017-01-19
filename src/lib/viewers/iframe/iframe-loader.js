@@ -7,7 +7,8 @@ const VIEWERS = [
         EXTENSIONS: ['boxnote', 'boxdicom'],
         SCRIPTS: ['iframe.js'],
         STYLESHEETS: [],
-        CONSTRUCTOR: 'IFrame'
+        CONSTRUCTOR: 'IFrame',
+        ASSET: ''
     }
 ];
 

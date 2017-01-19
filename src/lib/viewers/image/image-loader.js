@@ -10,7 +10,8 @@ const VIEWERS = [
         SCRIPTS: ['image.js'],
         STYLESHEETS: ['image.css'],
         CONSTRUCTOR: 'Image',
-        PREFETCH: 'img'
+        PREFETCH: 'img',
+        ASSET: ''
     },
     {
         REPRESENTATION: 'multi-image',
@@ -18,7 +19,8 @@ const VIEWERS = [
         SCRIPTS: ['multi-image.js'],
         STYLESHEETS: ['multi-image.css'],
         CONSTRUCTOR: 'MultiImage',
-        PREFETCH: 'img'
+        PREFETCH: 'img',
+        ASSET: ''
     },
     {
         REPRESENTATION: 'jpg',
@@ -26,7 +28,8 @@ const VIEWERS = [
         SCRIPTS: ['image.js'],
         STYLESHEETS: ['image.css'],
         CONSTRUCTOR: 'Image',
-        PREFETCH: 'img'
+        PREFETCH: 'img',
+        ASSET: '1.jpg'
     },
     {
         REPRESENTATION: 'png',
@@ -34,7 +37,8 @@ const VIEWERS = [
         SCRIPTS: ['image.js'],
         STYLESHEETS: ['image.css'],
         CONSTRUCTOR: 'Image',
-        PREFETCH: 'img'
+        PREFETCH: 'img',
+        ASSET: '1.png'
     }
 ];
 

@@ -14,7 +14,8 @@ const VIEWERS = [
         SCRIPTS: ['mp3.js'],
         STYLESHEETS: ['mp3.css'],
         CONSTRUCTOR: 'MP3',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: ''
     },
     // {
     //     REPRESENTATION: 'ORIGINAL',
@@ -29,7 +30,8 @@ const VIEWERS = [
         SCRIPTS: [`${STATIC_URI}shaka-player.js`, 'dash.js'],
         STYLESHEETS: ['dash.css'],
         CONSTRUCTOR: 'Dash',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: 'manifest.mpd'
     },
     {
         REPRESENTATION: 'mp4',
@@ -37,7 +39,8 @@ const VIEWERS = [
         SCRIPTS: ['mp4.js'],
         STYLESHEETS: ['mp4.css'],
         CONSTRUCTOR: 'MP4',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: ''
     },
     {
         REPRESENTATION: 'mp3',
@@ -45,7 +48,8 @@ const VIEWERS = [
         SCRIPTS: ['mp3.js'],
         STYLESHEETS: ['mp3.css'],
         CONSTRUCTOR: 'MP3',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: ''
     }
 ];
 

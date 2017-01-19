@@ -10,7 +10,8 @@ const VIEWERS = [
         SCRIPTS: [`${STATIC_URI}papaparse.min.js`, 'csv.js'],
         STYLESHEETS: ['csv.css'],
         CONSTRUCTOR: 'CSV',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: ''
     },
     {
         REPRESENTATION: 'text',
@@ -18,7 +19,8 @@ const VIEWERS = [
         SCRIPTS: [`${STATIC_URI}highlight.min.js`, 'markdown.js'],
         STYLESHEETS: [`${STATIC_URI}github-markdown.css`, `${STATIC_URI}github.css`, 'markdown.css'],
         CONSTRUCTOR: 'Markdown',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: ''
     },
     {
         REPRESENTATION: 'ORIGINAL',
@@ -26,7 +28,8 @@ const VIEWERS = [
         SCRIPTS: [`${STATIC_URI}highlight.min.js`, 'text.js'],
         STYLESHEETS: [`${STATIC_URI}github.css`, 'text.css'],
         CONSTRUCTOR: 'Text',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: ''
     },
     {
         REPRESENTATION: 'text',
@@ -34,7 +37,8 @@ const VIEWERS = [
         SCRIPTS: [`${STATIC_URI}highlight.min.js`, 'text.js'],
         STYLESHEETS: [`${STATIC_URI}github.css`, 'text.css'],
         CONSTRUCTOR: 'Text',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: ''
     }
 ];
 

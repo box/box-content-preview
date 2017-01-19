@@ -14,7 +14,8 @@ describe('office-loader', () => {
                 EXTENSIONS: ['xlsx'],
                 SCRIPTS: ['office.js'],
                 STYLESHEETS: [],
-                CONSTRUCTOR: 'Office'
+                CONSTRUCTOR: 'Office',
+                ASSET: ''
             });
             expect(OfficeLoader.viewers[1]).to.deep.equal({
                 REPRESENTATION: 'pdf',
@@ -27,7 +28,8 @@ describe('office-loader', () => {
                     'document.js'],
                 STYLESHEETS: ['third-party/doc/pdf_viewer.css', 'document.css'],
                 CONSTRUCTOR: 'Document',
-                PREFETCH: 'xhr'
+                PREFETCH: 'xhr',
+                ASSET: ''
             });
         });
     });
@@ -54,7 +56,8 @@ describe('office-loader', () => {
                 EXTENSIONS: ['xlsx'],
                 SCRIPTS: ['office.js'],
                 STYLESHEETS: [],
-                CONSTRUCTOR: 'Office'
+                CONSTRUCTOR: 'Office',
+                ASSET: ''
             });
         });
 
@@ -82,7 +85,8 @@ describe('office-loader', () => {
                 EXTENSIONS: ['xlsx'],
                 SCRIPTS: ['office.js'],
                 STYLESHEETS: [],
-                CONSTRUCTOR: 'Office'
+                CONSTRUCTOR: 'Office',
+                ASSET: ''
             });
         });
 
@@ -115,7 +119,8 @@ describe('office-loader', () => {
                     'document.js'],
                 STYLESHEETS: ['third-party/doc/pdf_viewer.css', 'document.css'],
                 CONSTRUCTOR: 'Document',
-                PREFETCH: 'xhr'
+                PREFETCH: 'xhr',
+                ASSET: ''
             });
         });
 
@@ -148,7 +153,8 @@ describe('office-loader', () => {
                     'document.js'],
                 STYLESHEETS: ['third-party/doc/pdf_viewer.css', 'document.css'],
                 CONSTRUCTOR: 'Document',
-                PREFETCH: 'xhr'
+                PREFETCH: 'xhr',
+                ASSET: ''
             });
         });
 
@@ -181,7 +187,8 @@ describe('office-loader', () => {
                     'document.js'],
                 STYLESHEETS: ['third-party/doc/pdf_viewer.css', 'document.css'],
                 CONSTRUCTOR: 'Document',
-                PREFETCH: 'xhr'
+                PREFETCH: 'xhr',
+                ASSET: ''
             });
         });
 
@@ -217,7 +224,8 @@ describe('office-loader', () => {
                     'document.js'],
                 STYLESHEETS: ['third-party/doc/pdf_viewer.css', 'document.css'],
                 CONSTRUCTOR: 'Document',
-                PREFETCH: 'xhr'
+                PREFETCH: 'xhr',
+                ASSET: ''
             });
         });
     });

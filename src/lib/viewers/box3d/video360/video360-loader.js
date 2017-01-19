@@ -21,7 +21,8 @@ const VIEWERS = [
         ],
         STYLESHEETS: ['dash.css', 'video360.css'],
         CONSTRUCTOR: 'Video360',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: 'manifest.mpd'
     }
 ];
 

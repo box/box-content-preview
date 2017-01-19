@@ -63,16 +63,17 @@ class Dash extends VideoBase {
      * Loads a media source.
      *
      * @param {string} mediaUrl The media url
-     * @pubic
+     * @param {string} assetPath The asset path needed to access file
+     * @public
      * @returns {Promise} Promise to load the media
      */
-    load(mediaUrl) {
+    load(mediaUrl, assetPath) {
         /* global shaka */
 
         // Polyfill
         shaka.polyfill.installAll();
 
-        this.mediaUrl = mediaUrl;
+        this.mediaUrl = this.appendAuthParam(mediaUrl, assetPath);
         this.mediaEl.addEventListener('loadedmetadata', this.loadedmetadataHandler);
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
 
@@ -310,7 +311,7 @@ class Dash extends VideoBase {
         const { file, token, sharedLink, sharedLinkPassword } = this.options;
         const filmstrip = file.representations.entries.find((entry) => entry.representation === 'filmstrip');
         if (filmstrip) {
-            const url = createContentUrl(filmstrip.links.content.url, token, sharedLink, sharedLinkPassword);
+            const url = createContentUrl(filmstrip.content.url_template, token, sharedLink, sharedLinkPassword);
             this.filmstripStatus = new RepStatus(filmstrip, getHeaders({}, token, sharedLink, sharedLinkPassword));
             this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect);
         }

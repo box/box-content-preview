@@ -48,11 +48,15 @@ class CSV extends TextBase {
      * Loads a csv file.
      *
      * @param {string} csvUrl The text to load
+     * @param {string} assetPath The asset path needed to access file
      * @returns {Promise} Promise to load a CSV
      */
-    load(csvUrl) {
+    load(csvUrl, assetPath) {
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
         const papaWorkerUrl = assetUrlCreator('third-party/text/papaparse.min.js');
+
+        // Replace asset path in csv url
+        const url = csvUrl.replace(/\{asset_path\}/, assetPath);
 
         get(papaWorkerUrl, 'blob')
         .then((papaWorkerBlob) => {
@@ -60,7 +64,7 @@ class CSV extends TextBase {
 
             /* global Papa */
             Papa.SCRIPT_PATH = workerSrc;
-            Papa.parse(csvUrl, {
+            Papa.parse(url, {
                 download: true,
                 token: this.options.token,
                 sharedLink: this.options.sharedLink,

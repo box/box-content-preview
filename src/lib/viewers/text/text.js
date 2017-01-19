@@ -64,16 +64,20 @@ class PlainText extends TextBase {
      * Loads a text file.
      *
      * @param {string} textUrl The text file to load
+     * @param {string} assetPath The asset path needed to access file
      * @returns {Promise} Promise to load a text file
      */
-    load(textUrl) {
+    load(textUrl, assetPath) {
+        // Replace asset path in text url
+        const url = textUrl.replace(/\{asset_path\}/, assetPath);
+
         // Default to access token in query param since this is a 'simple'
         // CORS request that doesn't need an extra OPTIONS pre-flight
-        let getPromise = get(this.appendAuthParam(textUrl), 'text');
+        let getPromise = get(this.appendAuthParam(textUrl, assetPath), 'text');
 
         // If file is greater than size limit, only fetch first few bytes
         if (this.options.file.size > SIZE_LIMIT_BYTES) {
-            getPromise = get(textUrl, this.appendAuthHeader({
+            getPromise = get(url, this.appendAuthHeader({
                 Range: BYTE_RANGE
             }), 'text');
 

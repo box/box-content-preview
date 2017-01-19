@@ -197,7 +197,9 @@ describe('asset-loader', () => {
         it('should not prefetch assets if representation status isn\'t successful', () => {
             sandbox.stub(loader, 'determineViewer');
             sandbox.stub(loader, 'determineRepresentation').returns({
-                status: 'error'
+                status: {
+                    state: 'error'
+                }
             });
             sandbox.stub(loader, 'prefetchAssets');
 
@@ -219,7 +221,9 @@ describe('asset-loader', () => {
                         url: ''
                     }
                 },
-                status: 'success'
+                status: {
+                    state: 'success'
+                }
             });
             sandbox.stub(loader, 'prefetchAssets');
 
@@ -240,12 +244,12 @@ describe('asset-loader', () => {
                 PREFETCH: 'xhr'
             });
             sandbox.stub(loader, 'determineRepresentation').returns({
-                links: {
-                    content: {
-                        url
-                    }
+                content: {
+                    url_template: 'someUrl'
                 },
-                status: 'success'
+                status: {
+                    state: 'success'
+                }
             });
             sandbox.stub(loader, 'prefetchAssets');
             sandbox.stub(util, 'get');
@@ -266,12 +270,12 @@ describe('asset-loader', () => {
                 PREFETCH: 'img'
             });
             sandbox.stub(loader, 'determineRepresentation').returns({
-                links: {
-                    content: {
-                        url
-                    }
+                content: {
+                    url_template: 'someUrl'
                 },
-                status: 'success'
+                status: {
+                    state: 'success'
+                }
             });
             sandbox.stub(loader, 'prefetchAssets');
             sandbox.stub(util, 'createContentUrl');
@@ -294,7 +298,9 @@ describe('asset-loader', () => {
                         url
                     }
                 },
-                status: 'success'
+                status: {
+                    state: 'success'
+                }
             });
             sandbox.stub(loader, 'prefetchAssets');
             sandbox.stub(util, 'get');

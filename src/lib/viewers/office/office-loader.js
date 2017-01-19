@@ -12,7 +12,8 @@ const VIEWERS = [
         EXTENSIONS: ['xlsx'],
         SCRIPTS: ['office.js'],
         STYLESHEETS: [],
-        CONSTRUCTOR: OFFICE_CONSTRUCTOR
+        CONSTRUCTOR: OFFICE_CONSTRUCTOR,
+        ASSET: ''
     },
     {
         REPRESENTATION: 'pdf',
@@ -20,7 +21,8 @@ const VIEWERS = [
         SCRIPTS: SCRIPTS_DOCUMENT,
         STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
         CONSTRUCTOR: 'Document',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: ''
     }
 ];
 

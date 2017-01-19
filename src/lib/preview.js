@@ -653,8 +653,11 @@ class Preview extends EventEmitter {
             // Add listeners for viewer events
             this.attachViewerListeners();
 
+            // Checks if representation requires an asset path
+            const assetPath = (viewer.PREFETCH === 'img' && representation.use_paged_viewer === 'false') ? '' : viewer.ASSET;
+
             // Load the representation into the viewer
-            this.viewer.load(representation.links.content.url);
+            this.viewer.load(representation.content.url_template, assetPath);
         }).catch((err) => {
             this.triggerError((err instanceof Error) ? err : new Error(__('error_refresh')));
         });
@@ -1133,14 +1136,14 @@ class Preview extends EventEmitter {
 
         // Add an original representation if it doesn't already exist
         file.representations.entries.push({
-            links: {
-                content: {
-                    type: 'asset',
-                    url: `${file.authenticated_download_url}?preview=true`
-                }
+            content: {
+                type: 'asset',
+                url_template: `${file.authenticated_download_url}?preview=true`
             },
             representation: 'ORIGINAL',
-            status: 'success'
+            status: {
+                state: 'success'
+            }
         });
     }
 }

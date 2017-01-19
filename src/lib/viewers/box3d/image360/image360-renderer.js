@@ -75,14 +75,15 @@ class Image360Renderer extends Box3DRenderer {
      *
      * @inheritdoc
      * @param  {string} jsonUrl The url to the box3d json
+     * @param {string} assetPath The asset path needed to access file
      * @returns {Promise} a promise that resolves with the newly created runtime
      */
-    load(jsonUrl, options = {}) {
+    load(jsonUrl, assetPath, options = {}) {
         const opts = options;
         opts.sceneEntities = opts.sceneEntities || sceneEntities;
 
         return this.initBox3d(opts)
-            .then(this.loadPanoramaFile.bind(this, jsonUrl))
+            .then(this.loadPanoramaFile.bind(this, jsonUrl, assetPath))
             .then(this.onSceneLoad.bind(this));
     }
 
@@ -91,11 +92,14 @@ class Image360Renderer extends Box3DRenderer {
      * @method loadBox3dFile
      * @private
      * @param {string} fileUrl The representation URL.
+     * @param {string} assetPath The asset path needed to access file
      * @returns {void}
      */
-    loadPanoramaFile(fileUrl) {
-        /* istanbul ignore next */
-        return this.box3d.addRemoteEntities(fileUrl)
+    loadPanoramaFile(fileUrl, assetPath) {
+        // Replace asset path for fileUrl
+        const assetUrl = fileUrl.replace(/\{asset_path\}/, assetPath);
+
+        return this.box3d.addRemoteEntities(assetUrl)
             .then(() => {
                 this.imageAsset = this.box3d.getAssetByType('image');
                 this.textureAsset = this.box3d.createTexture2d();

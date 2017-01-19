@@ -13,7 +13,8 @@ const VIEWERS = [
         SCRIPTS: [`${STATIC_URI}compatibility.min.js`, `${STATIC_URI}pdf.min.js`, `${STATIC_URI}pdf_viewer.min.js`, `${STATIC_URI}pdf.worker.min.js`, 'presentation.js'],
         STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'presentation.css'],
         CONSTRUCTOR: 'Presentation',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: ''
     },
     {
         REPRESENTATION: 'pdf',
@@ -21,7 +22,8 @@ const VIEWERS = [
         SCRIPTS: SCRIPTS_DOCUMENT,
         STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
         CONSTRUCTOR: 'Document',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: ''
     },
     {
         REPRESENTATION: 'ORIGINAL',
@@ -29,7 +31,8 @@ const VIEWERS = [
         SCRIPTS: SCRIPTS_DOCUMENT,
         STYLESHEETS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
         CONSTRUCTOR: 'Document',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: ''
     }
 ];
 

@@ -82,14 +82,14 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /** @inheritdoc */
-    load(jsonUrl, options = {}) {
+    load(jsonUrl, assetPath, options = {}) {
         // #TODO @jholdstock: set this to not reassign param
         /*eslint-disable*/
         options.sceneEntities = sceneEntities(options.location.staticBaseURI);
         /*eslint-enable*/
 
         return this.initBox3d(options)
-            .then(() => this.loadBox3dFile(jsonUrl));
+            .then(() => this.loadBox3dFile(jsonUrl, assetPath));
     }
 
     /**
@@ -111,7 +111,7 @@ class Model3dRenderer extends Box3DRenderer {
      * @param {string} fileUrl The representation URL.
      * @returns {void}
      */
-    loadBox3dFile(fileUrl) {
+    loadBox3dFile(fileUrl, assetPath) {
         // const loader = new Box3D.JSONLoader(this.box3d);
 
         this.box3d.canvas.addEventListener('click', this.handleCanvasClick);
@@ -121,7 +121,10 @@ class Model3dRenderer extends Box3DRenderer {
 
         renderModes.setAttribute('shapeTexture', 'MAT_CAP_TEX');
 
-        return this.box3d.addRemoteEntities(fileUrl)
+        // Replace asset path for fileUrl
+        const assetUrl = fileUrl.replace(/\{asset_path\}/, assetPath);
+
+        return this.box3d.addRemoteEntities(assetUrl)
             .then((entities) => {
                 const scene = this.getScene();
 

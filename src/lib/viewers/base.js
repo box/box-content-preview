@@ -128,10 +128,11 @@ class Base extends EventEmitter {
      *
      * @protected
      * @param {string} url url to attach param to
+     * @param {string} assetPath The asset path needed to access file
      * @returns {string} url with appended auth params
      */
-    appendAuthParam(url) {
-        return createContentUrl(url, this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
+    appendAuthParam(url, assetPath) {
+        return createContentUrl(url, this.options.token, this.options.sharedLink, this.options.sharedLinkPassword, assetPath);
     }
 
     /**

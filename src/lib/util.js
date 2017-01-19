@@ -305,9 +305,10 @@ export function getHeaders(headers = {}, token = '', sharedLink = '', password =
  * @param {string} [token] optional auth token
  * @param {string} [sharedLink] optional shared link
  * @param {string} [password] optional shared link password
+ * @param {string} [asset] optional asset name
  * @returns {string} content urls
  */
-export function createContentUrl(url, token = '', sharedLink = '', password = '') {
+export function createContentUrl(url, token = '', sharedLink = '', password = '', asset = '') {
     if (!token && !sharedLink) {
         return url;
     }
@@ -333,7 +334,8 @@ export function createContentUrl(url, token = '', sharedLink = '', password = ''
         }
     }
 
-    return `${url}${delim}${params}`;
+    // Replace {asset_path} with specific asset if required
+    return `${url.replace(/\{asset_path\}/, asset)}${delim}${params}`;
 }
 
 /**

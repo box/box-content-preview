@@ -17,7 +17,8 @@ const VIEWERS = [
         ],
         STYLESHEETS: ['box3d.css', 'model3d.css'],
         CONSTRUCTOR: 'Model3d',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        ASSET: 'entities.json'
     }
 ];
 
