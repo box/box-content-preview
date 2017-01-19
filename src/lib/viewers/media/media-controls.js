@@ -22,9 +22,10 @@ class MediaControls extends EventEmitter {
 
     /**
      * [constructor]
+     *
      * @param {HTMLElement} containerEl container
      * @param {HTMLElement} mediaEl media element
-     * @returns {Controls} Controls instance
+     * @return {Controls} Controls instance
      */
     constructor(containerEl, mediaEl) {
         super();
@@ -65,7 +66,8 @@ class MediaControls extends EventEmitter {
 
     /**
      * [destructor]
-     * @returns {void}
+     *
+     * @return {void}
      */
     destroy() {
         this.removeAllListeners();
@@ -136,7 +138,7 @@ class MediaControls extends EventEmitter {
      * Playback rate handler
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     handleSpeed() {
         this.emit('speedchange');
@@ -146,7 +148,7 @@ class MediaControls extends EventEmitter {
      * Quality handler
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     handleQuality() {
         this.emit('qualitychange');
@@ -154,8 +156,9 @@ class MediaControls extends EventEmitter {
 
     /**
      * Attaches settings menu
+     *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     setupSettings() {
         this.settings = new Settings(this.containerEl);
@@ -165,8 +168,9 @@ class MediaControls extends EventEmitter {
 
     /**
      * Attaches scrubbers
+     *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     setupScrubbers() {
         this.timeScrubber = new Scrubber(this.timeScrubberEl, __('media_time_slider'), 0, 0, 1);
@@ -174,7 +178,7 @@ class MediaControls extends EventEmitter {
             this.emit('timeupdate', value);
         });
 
-        this.volScrubber = new Scrubber(this.volScrubberEl, __('media_volume_slider'), 0, 1, 1);
+        this.volScrubber = new Scrubber(this.volScrubberEl, __('media_volume_slider'), 1, 1, 1);
         this.volScrubber.on('valuechange', (value) => {
             this.emit('volumeupdate', value);
         });
@@ -185,7 +189,7 @@ class MediaControls extends EventEmitter {
      *
      * @param {number} seconds seconds
      * @private
-     * @returns {string} A string formatted like 3:57:35
+     * @return {string} A string formatted like 3:57:35
      */
     formatTime(seconds) {
         const h = Math.floor(seconds / 3600);
@@ -199,8 +203,9 @@ class MediaControls extends EventEmitter {
 
     /**
      * Updates the time duration of the media file
+     *
      * @param {number} time the time length of the media file
-     * @returns {void}
+     * @return {void}
      */
     setDuration(time) {
         this.durationEl.textContent = this.formatTime(time || 0);
@@ -208,8 +213,9 @@ class MediaControls extends EventEmitter {
 
     /**
      * Updates the current time/playback position of the media file
+     *
      * @param {number} time current playback position of the media file
-     * @returns {void}
+     * @return {void}
      */
     setTimeCode(time) {
         const duration = this.mediaEl.duration;
@@ -220,7 +226,7 @@ class MediaControls extends EventEmitter {
     /**
      * Updates progress.
      *
-     * @returns {void}
+     * @return {void}
      */
     updateProgress() {
         const buffered = this.mediaEl.buffered;
@@ -232,19 +238,21 @@ class MediaControls extends EventEmitter {
 
     /**
      * Toggles mute
-     * @returns {void}
+     *
+     * @emits togglemute
+     * @return {void}
      */
     toggleMute() {
         this.emit('togglemute');
-        const muteTitle = this.volButtonEl.title === __('media_mute') ?
-                          __('media_unmute') : __('media_mute');
+        const muteTitle = this.volButtonEl.title === __('media_mute') ? __('media_unmute') : __('media_mute');
         this.setLabel(this.volButtonEl, muteTitle);
     }
 
     /**
      * Toggles playback
+     *
      * @emits toggleplayback
-     * @returns {void}
+     * @return {void}
      */
     togglePlay() {
         this.emit('toggleplayback');
@@ -252,8 +260,9 @@ class MediaControls extends EventEmitter {
 
     /**
      * Toggles fullscreen
+     *
      * @emits togglefullscreen
-     * @returns {void}
+     * @return {void}
      */
     toggleFullscreen() {
         this.emit('togglefullscreen');
@@ -264,18 +273,18 @@ class MediaControls extends EventEmitter {
      * sets the fullscreen label once fullscreen mode has been exited.
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     setFullscreenLabel() {
-        const fullscreenTitle = fullscreen.isFullscreen(this.containerEl) ?
-                                __('exit_fullscreen') : __('enter_fullscreen');
+        const fullscreenTitle = fullscreen.isFullscreen(this.containerEl) ? __('exit_fullscreen') : __('enter_fullscreen');
         this.setLabel(this.fullscreenButtonEl, fullscreenTitle);
     }
 
 
     /**
      * Toggles settings menu
-     * @returns {void}
+     *
+     * @return {void}
      */
     toggleSettings() {
         if (this.isSettingsVisible()) {
@@ -287,7 +296,7 @@ class MediaControls extends EventEmitter {
 
     /**
      * Toggles label for control element with more than one state
-     * @returns {void}
+     * @return {void}
      */
     setLabel(el, label) {
         el.setAttribute('aria-label', label);
@@ -296,7 +305,7 @@ class MediaControls extends EventEmitter {
 
     /**
      * Tells if settings menu is open
-     * @returns {boolean} true or false
+     * @return {boolean} true or false
      */
     isSettingsVisible() {
         return !!this.settings && this.settings.isVisible();
@@ -305,7 +314,8 @@ class MediaControls extends EventEmitter {
     /**
      * Shows the pause icon.
      * Does not emit any event.
-     * @returns {void}
+     *
+     * @return {void}
      */
     showPauseIcon() {
         this.wrapperEl.classList.add(PLAYING_CLASS);
@@ -315,7 +325,8 @@ class MediaControls extends EventEmitter {
     /**
      * Shows the play icon.
      * Does not emit any event.
-     * @returns {void}
+     *
+     * @return {void}
      */
     showPlayIcon() {
         this.wrapperEl.classList.remove(PLAYING_CLASS);
@@ -324,8 +335,9 @@ class MediaControls extends EventEmitter {
 
     /**
      * Sets the volume
+     *
      * @param {number} volume volume
-     * @returns {void}
+     * @return {void}
      */
     updateVolumeIcon(volume) {
         VOLUME_LEVEL_CLASS_NAMES.forEach((className) => {
@@ -334,14 +346,14 @@ class MediaControls extends EventEmitter {
         this.volLevelButtonEl.classList.add(VOLUME_LEVEL_CLASS_NAMES[Math.ceil(volume * 3)]);
         this.volScrubber.setValue(volume);
 
-        const muteTitle = Math.ceil(volume * 3) === 0 ?
-                          __('media_unmute') : __('media_mute');
+        const muteTitle = Math.ceil(volume * 3) === 0 ? __('media_unmute') : __('media_mute');
         this.setLabel(this.volButtonEl, muteTitle);
     }
 
     /**
      * Attaches event handlers to buttons
-     * @returns {void}
+     *
+     * @return {void}
      */
     attachEventHandlers() {
         this.wrapperEl.addEventListener('mouseenter', this.mouseenterHandler);
@@ -359,7 +371,7 @@ class MediaControls extends EventEmitter {
      * Prevents hiding of the controls.
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     mouseenterHandler() {
         this.preventHiding = true;
@@ -371,7 +383,7 @@ class MediaControls extends EventEmitter {
      * Allows hiding of the controls.
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     mouseleaveHandler() {
         this.preventHiding = false;
@@ -381,8 +393,7 @@ class MediaControls extends EventEmitter {
     /**
      * Shows the media controls
      *
-     * @public
-     * @returns {void}
+     * @return {void}
      */
     show() {
         if (!this.wrapperEl || !this.wrapperEl.parentNode) {
@@ -399,7 +410,8 @@ class MediaControls extends EventEmitter {
 
     /**
      * Hides the media controls
-     * @returns {void}
+     *
+     * @return {void}
      */
     hide() {
         // Do not hide the controls if the settings menu was open
@@ -416,7 +428,8 @@ class MediaControls extends EventEmitter {
 
     /**
      * Resizes the time scrubber
-     * @returns {void}
+     *
+     * @return {void}
      */
     resizeTimeScrubber() {
         if (this.timeScrubber) {
@@ -428,7 +441,7 @@ class MediaControls extends EventEmitter {
      * Sets the filmstrip
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     setFilmstrip() {
         if (this.filmstripEl) {
@@ -443,7 +456,7 @@ class MediaControls extends EventEmitter {
      * @param {string} url filmstrip url
      * @param {RepStatus} status status of filmstrip
      * @param {number} aspect ratio
-     * @returns {void}
+     * @return {void}
      */
     initFilmstrip(url, status, aspect) {
         this.filmstripUrl = url;
@@ -483,8 +496,9 @@ class MediaControls extends EventEmitter {
 
     /**
      * Called when the user has mouse pressed the scrubbler handler
+     *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     timeScrubbingStartHandler() {
         // Flag that we are scrubbing
@@ -504,9 +518,9 @@ class MediaControls extends EventEmitter {
     /**
      * Adjusts the video time
      *
-     * @param {Event} event mouse event
      * @private
-     * @returns {void}
+     * @param {Event} event mouse event
+     * @return {void}
      */
     timeScrubbingStopHandler(event) {
         // Flag that scrubbing is done
@@ -529,7 +543,7 @@ class MediaControls extends EventEmitter {
      *
      * @private
      * @param {Event} event mouse event
-     * @returns {void}
+     * @return {void}
      */
     filmstripShowHandler(event) {
         // Don't show the filstrip when settings menu is open
@@ -567,8 +581,9 @@ class MediaControls extends EventEmitter {
 
     /**
      * Hides the filmstrip frame
+     *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     filmstripHideHandler() {
         if (!this.isScrubbing) {
@@ -580,8 +595,7 @@ class MediaControls extends EventEmitter {
     /**
      * Determines if controls are focused
      *
-     * @public
-     * @returns {boolean} true if controls are focused
+     * @return {boolean} true if controls are focused
      */
     isFocused() {
         return this.wrapperEl.contains(document.activeElement);

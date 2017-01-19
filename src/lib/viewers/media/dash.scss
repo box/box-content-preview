@@ -1,8 +1,6 @@
 @import 'media';
 
 .bp-media-dash {
-    background: $black;
-
     video {
         cursor: none;
         display: block;
@@ -20,24 +18,30 @@
         }
     }
 
-    .bp-media-controls-is-visible video {
-        cursor: pointer;
+    .bp-media-controls-is-visible {
+        video {
+            cursor: pointer;
+        }
     }
 }
 
-.bp-is-fullscreen .bp-media-dash .bp-media-container {
-    width: 100%;
+.bp-is-fullscreen {
+    .bp-media-dash {
+        .bp-media-container {
+            width: 100%;
+        }
+    }
 }
 
 .bp-media-filmstrip-container {
-    position: absolute;
-    height: 110px; /* 90px filmstrip frame height + 20px for timecode */
-    width: 160px;
+    border: 1px solid $sunset-grey;
     bottom: 60px;
+    display: none;
+    height: 110px; // 90px filmstrip frame height + 20px for timecode
     left: 0;
     overflow: hidden;
-    display: none;
-    border: 1px solid $sunset-grey;
+    position: absolute;
+    width: 160px;
 }
 
 .bp-media-filmstrip {
@@ -45,30 +49,30 @@
 }
 
 .bp-media-filmstrip-timecode {
-    position: absolute;
-    z-index: 1;
-    color: $white;
+    background-color: $twos;
     bottom: 0;
+    color: $white;
+    font-size: 13px;
+    line-height: 18px; // 110px container height - 2px border - 90px filmstrip frame height
+    position: absolute;
     text-align: center;
     width: 100%;
-    background-color: $twos;
-    font-size: 13px;
-    line-height: 18px; /* 110px container height - 2px border - 90px filmstrip frame height */
+    z-index: 1;
 }
 
 .bp-media-crawler-wrapper {
-    width: 10px;
     left: 50%;
     margin: -15px 0 0 -5px;
     position: relative;
-    z-index: 1;
     top: 50%;
+    width: 10px;
+    z-index: 1;
 }
 
 .bp-media-dash-stats {
-    position: absolute;
     color: $white;
     font-size: 24px;
+    position: absolute;
     right: 20px;
     top: 20px;
 }

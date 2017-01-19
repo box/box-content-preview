@@ -31,39 +31,13 @@ $box-blue: #2b90ef;
 
     display: flex;
     flex-direction: column;
-    padding-bottom: 27px; // Match height of error viewer
     transition: .25s opacity, .25s transform;
-
-    // behavior of the video loading indicator
-    &.video-loading {
-        padding: 0;
-        z-index: 1;
-
-        .bp-loading {
-            padding: 0;
-        }
-
-        .bp-btn-loading-download {
-            display: none;
-        }
-
-        .bp-icon {
-            display: none;
-        }
-
-        .bp-loading-text {
-            display: none;
-        }
-
-        .bp-crawler-wrapper {
-            position: relative;
-            top: 0;
-        }
-    }
 }
 
-.bp-loaded .bp-loading-wrapper {
-    display: none;
+.bp-loaded {
+    .bp-loading-wrapper {
+        display: none;
+    }
 }
 
 // Preview content should not be interactable during loading
@@ -73,12 +47,15 @@ $box-blue: #2b90ef;
 
 .bp-loading {
     color: $twos;
-    padding-bottom: 15px;
     position: relative;
     text-align: center;
+    z-index: 1;
 }
 
 .bp-loading-btn-container {
+    line-height: 32px;
+    margin: 0 0 15px;
+    padding-top: 15px;
     text-align: center;
 }
 

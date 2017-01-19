@@ -77,20 +77,20 @@ describe('mp3', () => {
             const mediaUrl = 'www.netflix.com';
             media.load(mediaUrl);
 
-            expect(media.mediaEl.addEventListener).to.be.calledWith('loadedmetadata', media.loadedmetadataHandler);
+            expect(media.mediaEl.addEventListener).to.be.calledWith('loadeddata', media.loadeddataHandler);
             expect(media.mediaEl.addEventListener).to.be.calledWith('error', media.errorHandler);
             expect(media.mediaEl.src).to.equal(mediaUrl);
         });
     });
 
-    describe('loadedmetadataHandler()', () => {
+    describe('loadeddataHandler()', () => {
         it('should finish loading and resize the media viewer', () => {
             sandbox.stub(media, 'handleVolume');
             sandbox.stub(media, 'emit');
             sandbox.stub(media, 'loadUI');
             sandbox.stub(media, 'resize');
 
-            media.loadedmetadataHandler();
+            media.loadeddataHandler();
 
             expect(media.handleVolume).to.be.called;
             expect(media.loaded).to.be.true;

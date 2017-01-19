@@ -1,19 +1,18 @@
 @import 'media';
 
 .bp-media-mp4 {
-
-    background: $black;
-
     video {
-        display: block;
-        max-width: 100%;
-        max-height: 100%;
-        width: 100%;
         cursor: none;
+        display: block;
+        max-height: 100%;
+        max-width: 100%;
+        width: 100%;
     }
 
-    .bp-media-controls-is-visible video {
-        cursor: pointer;
+    .bp-media-controls-is-visible {
+        video {
+            cursor: pointer;
+        }
     }
 
     .bp-is-fullscreen & .bp-media-container {
@@ -33,5 +32,4 @@
             opacity: 1;
         }
     }
-
 }

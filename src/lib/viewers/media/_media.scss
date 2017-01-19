@@ -51,3 +51,16 @@
         background: $black;
     }
 }
+
+// When lights are lowered only show the crawler
+.bp-dark {
+    .bp-icon,
+    .bp-loading-text,
+    .bp-loading-btn-container {
+        display: none;
+    }
+
+    .bp-crawler-wrapper {
+        position: static;
+    }
+}

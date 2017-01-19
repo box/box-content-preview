@@ -6,7 +6,7 @@ import { CLASS_HIDDEN, CLASS_PREVIEW_LOADED } from '../../constants';
 
 const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
-const DEFAULT_VOLUME = 0.7;
+const DEFAULT_VOLUME = 1;
 
 @autobind
 class MediaBase extends Base {
@@ -14,9 +14,10 @@ class MediaBase extends Base {
     /**
      * [constructor]
      *
+     * @override
      * @param {string|HTMLElement} container The container DOM node
      * @param {object} [options] some options
-     * @returns {MediaBase} MediaBase instance
+     * @return {MediaBase} MediaBase instance
      */
     constructor(container, options) {
         super(container, options);
@@ -35,7 +36,8 @@ class MediaBase extends Base {
     /**
      * [destructor]
      *
-     * @returns {void}
+     * @override
+     * @return {void}
      */
     destroy() {
         if (this.mediaControls) {
@@ -53,7 +55,7 @@ class MediaBase extends Base {
                 this.mediaEl.removeEventListener('pause', this.pauseHandler);
                 this.mediaEl.removeEventListener('ended', this.resetPlayIcon);
                 this.mediaEl.removeEventListener('seeked', this.seekHandler);
-                this.mediaEl.removeEventListener('loadedmetadata', this.loadedmetadataHandler);
+                this.mediaEl.removeEventListener('loadeddata', this.loadeddataHandler);
                 this.mediaEl.removeEventListener('error', this.errorHandler);
 
                 this.mediaEl.removeAttribute('src');
@@ -74,11 +76,11 @@ class MediaBase extends Base {
      * Loads a media source.
      *
      * @param {string} mediaUrl The media url
-     * @returns {Promise} Promise to load media
+     * @return {Promise} Promise to load media
      */
     load(mediaUrl) {
         this.mediaUrl = this.appendAuthParam(mediaUrl);
-        this.mediaEl.addEventListener('loadedmetadata', this.loadedmetadataHandler);
+        this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
         this.mediaEl.addEventListener('error', this.errorHandler);
         this.mediaEl.src = this.mediaUrl;
         super.load();
@@ -87,10 +89,11 @@ class MediaBase extends Base {
     /**
      * Handler for meta data load for the media element.
      *
-     * @returns {void}
-     * @private
+     * @protected
+     * @emits load
+     * @return {void}
      */
-    loadedmetadataHandler() {
+    loadeddataHandler() {
         if (this.destroyed) {
             return;
         }
@@ -105,8 +108,9 @@ class MediaBase extends Base {
     /**
      * Handles media element loading errors.
      *
-     * @returns {void}
      * @private
+     * @emits error
+     * @return {void}
      */
     errorHandler = (err) => {
         /* eslint-disable no-console */
@@ -124,8 +128,9 @@ class MediaBase extends Base {
     /**
      * Handler for playback rate
      *
-     * @returns {void}
      * @private
+     * @emits speedchange
+     * @return {void}
      */
     handleSpeed() {
         const speed = cache.get('media-speed') - 0;
@@ -138,8 +143,8 @@ class MediaBase extends Base {
     /**
      * Handler for volume
      *
-     * @returns {void}
      * @private
+     * @return {void}
      */
     handleVolume() {
         let volume = DEFAULT_VOLUME;
@@ -154,8 +159,8 @@ class MediaBase extends Base {
     /**
      * Loads the controls
      *
-     * @returns {void}
      * @private
+     * @return {void}
      */
     loadUI() {
         this.mediaControls = new MediaControls(this.mediaContainerEl, this.mediaEl);
@@ -172,8 +177,10 @@ class MediaBase extends Base {
      * Adds event listeners to the media controls.
      * Makes changes to the media element.
      *
-     * @private
-     * @returns {void}
+     * @protected
+     * @emits play
+     * @emits pause
+     * @return {void}
      */
     addEventListenersForMediaControls() {
         /* istanbul ignore next */
@@ -189,8 +196,6 @@ class MediaBase extends Base {
 
         /* istanbul ignore next */
         this.mediaControls.addListener('toggleplayback', () => {
-            this.hidePlayButton();
-
             if (this.mediaEl.paused) {
                 this.mediaEl.play();
                 this.emit('play');
@@ -220,7 +225,7 @@ class MediaBase extends Base {
      * Updates time code.
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     setTimeCode() {
         if (this.mediaControls) {
@@ -232,7 +237,7 @@ class MediaBase extends Base {
      * Updates volume icon.
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     updateVolumeIcon() {
         if (this.mediaControls) {
@@ -247,7 +252,7 @@ class MediaBase extends Base {
      * Updates speed.
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     playingHandler() {
         if (this.mediaControls) {
@@ -262,7 +267,7 @@ class MediaBase extends Base {
      * Updates progress.
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     progressHandler() {
         if (this.mediaControls) {
@@ -274,7 +279,7 @@ class MediaBase extends Base {
      * Shows the play icon.
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     pauseHandler() {
         if (this.mediaControls) {
@@ -286,7 +291,8 @@ class MediaBase extends Base {
      * Emits the seek event and hides the loading icon.
      *
      * @private
-     * @returns {void}
+     * @emits seek
+     * @return {void}
      */
     seekHandler() {
         this.hideLoadingIcon();
@@ -296,8 +302,8 @@ class MediaBase extends Base {
     /**
      * Shows the play button in media content.
      *
-     * @returns {void}
      * @private
+     * @return {void}
      */
     showPlayButton() {
         if (this.playButtonEl) {
@@ -308,8 +314,8 @@ class MediaBase extends Base {
     /**
      * Hides the play button in media content.
      *
-     * @returns {void}
      * @private
+     * @return {void}
      */
     hidePlayButton() {
         if (this.playButtonEl) {
@@ -320,8 +326,8 @@ class MediaBase extends Base {
     /**
      * Resets the play icon and time.
      *
-     * @returns {void}
      * @private
+     * @return {void}
      */
     resetPlayIcon() {
         if (this.mediaControls) {
@@ -334,21 +340,20 @@ class MediaBase extends Base {
     /**
      * Toggle playback
      *
-     * @returns {void}
      * @private
+     * @return {void}
      */
     togglePlay() {
         if (this.mediaControls) {
             this.mediaControls.togglePlay();
-            this.hidePlayButton();
         }
     }
 
     /**
      * Hides the loading indicator
      *
-     * @returns {void}
      * @private
+     * @return {void}
      */
     hideLoadingIcon() {
         if (this.containerEl) {
@@ -360,7 +365,7 @@ class MediaBase extends Base {
      * Shows the loading indicator
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     showLoadingIcon() {
         if (this.containerEl && this.mediaEl && !this.mediaEl.paused && !this.mediaEl.ended) {
@@ -373,8 +378,8 @@ class MediaBase extends Base {
      * Adds event listeners to the media element.
      * Makes changes to the media controls.
      *
-     * @private
-     * @returns {void}
+     * @protected
+     * @return {void}
      */
     addEventListenersForMediaElement() {
         this.mediaEl.addEventListener('timeupdate', this.setTimeCode);
@@ -389,9 +394,9 @@ class MediaBase extends Base {
     /**
      * Handles keyboard events for media
      *
-     * @private
+     * @protected
      * @param {string} key keydown key
-     * @returns {boolean} consumed or not
+     * @return {boolean} consumed or not
      */
     onKeydown(key) {
         // Return false when media controls are not ready or are focused

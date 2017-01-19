@@ -23,7 +23,7 @@ class Base extends EventEmitter {
      * [constructor]
      * @param {string|HTMLElement} container The container
      * @param {Object} [options] some options
-     * @returns {Base} Instance of base
+     * @return {Base} Instance of base
      */
     constructor(containerEl, options) {
         super();
@@ -63,7 +63,7 @@ class Base extends EventEmitter {
     /**
      * Resize handler
      * @private
-     * @returns {Function} debounced resize handler
+     * @return {Function} debounced resize handler
      */
     debouncedResizeHandler() {
         if (!this.resizeHandler) {
@@ -78,7 +78,7 @@ class Base extends EventEmitter {
      * Loads content.
      *
      * @protected
-     * @returns {void}
+     * @return {void}
      */
     load() {
         this.resetLoadTimeout();
@@ -88,7 +88,7 @@ class Base extends EventEmitter {
      * Sets a timeout for loading.
      *
      * @protected
-     * @returns {void}
+     * @return {void}
      */
     resetLoadTimeout() {
         clearTimeout(this.loadTimeoutId);
@@ -107,7 +107,7 @@ class Base extends EventEmitter {
      * Loads content.
      *
      * @protected
-     * @returns {boolean} loaded
+     * @return {boolean} loaded
      */
     isLoaded() {
         return this.loaded;
@@ -117,7 +117,7 @@ class Base extends EventEmitter {
      * If preview destroyed
      *
      * @protected
-     * @returns {boolean} destroyed
+     * @return {boolean} destroyed
      */
     isDestroyed() {
         return this.destroyed;
@@ -128,10 +128,10 @@ class Base extends EventEmitter {
      *
      * @protected
      * @param {string} url url to attach param to
-     * @param {string} assetPath The asset path needed to access file
-     * @returns {string} url with appended auth params
+     * @param {string|void} [assetPath] optional asset path needed to access file
+     * @return {string} url with appended auth params
      */
-    appendAuthParam(url, assetPath) {
+    appendAuthParam(url, assetPath = '') {
         return createContentUrl(url, this.options.token, this.options.sharedLink, this.options.sharedLinkPassword, assetPath);
     }
 
@@ -140,7 +140,7 @@ class Base extends EventEmitter {
      *
      * @protected
      * @param {Object} [headers] optional existing headers
-     * @returns {Object} fetch headers
+     * @return {Object} fetch headers
      */
     appendAuthHeader(headers = {}) {
         return getHeaders(headers, this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
@@ -150,7 +150,7 @@ class Base extends EventEmitter {
      * Adds common event listeners.
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     addCommonListeners() {
         // Attach common full screen event listeners
@@ -170,7 +170,7 @@ class Base extends EventEmitter {
     /**
      * Enters or exits fullscreen
      * @protected
-     * @returns {void}
+     * @return {void}
      */
     toggleFullscreen() {
         fullscreen.toggle(this.containerEl);
@@ -180,7 +180,7 @@ class Base extends EventEmitter {
      * Resizing logic
      *
      * @protected
-     * @returns {void}
+     * @return {void}
      */
     resize() {
         this.emit('resize', {
@@ -194,7 +194,7 @@ class Base extends EventEmitter {
      * should be shown and won't intefere with viewer
      *
      * @protected
-     * @returns {boolean} true
+     * @return {boolean} true
      */
     allowNavigationArrows() {
         return true;
@@ -204,7 +204,7 @@ class Base extends EventEmitter {
      * Destroys the viewer
      *
      * @protected
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         this.emit('destroy');
@@ -221,7 +221,7 @@ class Base extends EventEmitter {
      * @protected
      * @param {string} event Event name
      * @param {Object} data Event data
-     * @returns {void}
+     * @return {void}
      */
     emit(event, data) {
         super.emit(event, data);
@@ -238,8 +238,8 @@ class Base extends EventEmitter {
      * Although W3 strongly discourages the prevention of pinch to zoom,
      * we still meet the WCAG's requirement of a 200% zoom on text.
      *
-     * @returns {void}
      * @private
+     * @return {void}
      */
     mobileZoomStartHandler(event) {
         if (Browser.isIOS()) {
@@ -267,8 +267,8 @@ class Base extends EventEmitter {
      * Handles updates to the pinch in order to determine whether the user
      * was pinching in or out. Used only by non iOS browsers
      *
-     * @returns {void}
      * @private
+     * @return {void}
      */
     mobileZoomChangeHandler(event) {
         if (event.touches.length !== 2 || !this._scaling) {
@@ -283,8 +283,8 @@ class Base extends EventEmitter {
     /**
      * Zooms the document in or out depending on the scale of the pinch
      *
-     * @returns {void}
      * @private
+     * @return {void}
      */
     mobileZoomEndHandler(event) {
         if (this._scaling) {
@@ -316,7 +316,8 @@ class Base extends EventEmitter {
     /**
      * Retrieves the value of a viewer option.
      *
-     * @returns {object} Value of a viewer option
+     * @param {string} option to get
+     * @return {Object} Value of a viewer option
      */
     getViewerOption(option) {
         const viewers = this.options.viewers;

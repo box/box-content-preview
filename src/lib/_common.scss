@@ -124,6 +124,10 @@ $header-height: 48px;
     position: absolute;
     right: 0;
     top: 0;
+
+    &.bp-dark {
+        background-color: $black;
+    }
 }
 
 .accessibility-hidden {

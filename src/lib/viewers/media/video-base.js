@@ -12,9 +12,11 @@ class VideoBase extends MediaBase {
 
     /**
      * [constructor]
+     *
+     * @override
      * @param {string|HTMLElement} container The container DOM node
      * @param {Object} [options] some options
-     * @returns {VideoBase} VideoBase instance
+     * @return {VideoBase} VideoBase instance
      */
     constructor(container, options) {
         super(container, options);
@@ -28,64 +30,13 @@ class VideoBase extends MediaBase {
         this.playButtonEl.classList.add(CLASS_PLAY_BUTTON);
         this.playButtonEl.classList.add(CLASS_HIDDEN);
         this.playButtonEl.innerHTML = PLAY_ICON;
-
-        this.loadingContainerEl = document.querySelector('.bp-loading-wrapper');
-        if (this.loadingContainerEl) {
-            this.loadingContainerEl.classList.add('video-loading');
-        }
-    }
-
-    /**
-     * Handler for meta data load for the media element.
-     *
-     * @private
-     * @returns {void}
-     */
-    loadedmetadataHandler() {
-        super.loadedmetadataHandler();
-        this.showPlayButton();
-    }
-
-    /**
-     * Handler for play state
-     *
-     * @private
-     * @returns {void}
-     */
-    playingHandler() {
-        super.playingHandler();
-        this.hidePlayButton();
-    }
-
-    /**
-     * Handler for pause state
-     *
-     * @private
-     * @returns {void}
-     */
-    pauseHandler() {
-        super.pauseHandler();
-
-        if (this.containerEl.classList.contains(CLASS_PREVIEW_LOADED)) {
-            this.showPlayButton();
-        }
-    }
-
-    /**
-     * Shows the loading indicator.
-     *
-     * @private
-     * @returns {void}
-     */
-    waitingHandler() {
-        if (this.containerEl) {
-            this.containerEl.classList.remove(CLASS_PREVIEW_LOADED);
-        }
     }
 
     /**
      * [destructor]
-     * @returns {void}
+     *
+     * @override
+     * @return {void}
      */
     destroy() {
         if (this.mediaEl) {
@@ -100,11 +51,61 @@ class VideoBase extends MediaBase {
     }
 
     /**
+     * Handler for meta data load for the media element.
+     *
+     * @override
+     * @protected
+     * @return {void}
+     */
+    loadeddataHandler() {
+        super.loadeddataHandler();
+        this.showPlayButton();
+        this.lowerLights();
+    }
+
+    /**
+     * Handler for play state
+     *
+     * @override
+     * @private
+     * @return {void}
+     */
+    playingHandler() {
+        super.playingHandler();
+        this.hidePlayButton();
+    }
+
+    /**
+     * Handler for pause state
+     *
+     * @override
+     * @private
+     * @return {void}
+     */
+    pauseHandler() {
+        super.pauseHandler();
+        this.showPlayButton();
+    }
+
+    /**
+     * Shows the loading indicator.
+     *
+     * @private
+     * @return {void}
+     */
+    waitingHandler() {
+        if (this.containerEl) {
+            this.containerEl.classList.remove(CLASS_PREVIEW_LOADED);
+        }
+    }
+
+    /**
      * Adds event listeners to the media controls.
      * Makes changes to the media element.
      *
-     * @private
-     * @returns {void}
+     * @override
+     * @protected
+     * @return {void}
      */
     addEventListenersForMediaControls() {
         super.addEventListenersForMediaControls();
@@ -118,8 +119,9 @@ class VideoBase extends MediaBase {
      * Adds event listeners to the media element.
      * Makes changes to the meida controls.
      *
-     * @private
-     * @returns {void}
+     * @override
+     * @protected
+     * @return {void}
      */
     addEventListenersForMediaElement() {
         super.addEventListenersForMediaElement();
@@ -139,14 +141,14 @@ class VideoBase extends MediaBase {
      * Adjusts the size of the time scrubber since its
      * senstive to the containers width.
      *
-     * @private
-     * @returns {void}
+     * @override
+     * @protected
+     * @return {void}
      */
     resize() {
         if (this.mediaControls) {
             this.mediaControls.resizeTimeScrubber();
         }
-
         super.resize();
     }
 
@@ -155,10 +157,23 @@ class VideoBase extends MediaBase {
      * should be shown and won't intefere with viewer
      *
      * @protected
-     * @returns {boolean} true
+     * @return {boolean} true if arrows should be shown
      */
     allowNavigationArrows() {
         return !this.mediaControls || !this.mediaControls.isSettingsVisible();
+    }
+
+    /**
+     * Darkens the background of preview.
+     * Good for having high contrast videos.
+     *
+     * @protected
+     * @return {void}
+     */
+    lowerLights() {
+        if (this.containerEl) {
+            this.containerEl.classList.add('bp-dark');
+        }
     }
 }
 
