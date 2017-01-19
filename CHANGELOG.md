@@ -1,5 +1,37 @@
 # Change Log
 
+## [v0.97.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.97.0) (2017-01-19)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.96.0...v0.97.0)
+
+**Closed issues:**
+
+- Animation controls aren't displayed when metadata fails to load [\#895](https://gitenterprise.inside-box.net/Preview/Preview/issues/895)
+- Animation controls aren't displayed in IE 11 [\#832](https://gitenterprise.inside-box.net/Preview/Preview/issues/832)
+
+**Merged pull requests:**
+
+- Adding visual studio settings [\#914](https://gitenterprise.inside-box.net/Preview/Preview/pull/914) ([phora](https://gitenterprise.inside-box.net/phora))
+- Updated box3d-runtime.js to fix an animation issue in IE 11 [\#912](https://gitenterprise.inside-box.net/Preview/Preview/pull/912) ([ikerr](https://gitenterprise.inside-box.net/ikerr))
+- Remove REQUIRED\_REPRESENTATIONS [\#911](https://gitenterprise.inside-box.net/Preview/Preview/pull/911) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Updating box3d-runtime with fixes for Safari and IE [\#910](https://gitenterprise.inside-box.net/Preview/Preview/pull/910) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Using 'ORIGINAL' instead of 'original' representation type [\#909](https://gitenterprise.inside-box.net/Preview/Preview/pull/909) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Adding tests to improve code coverage [\#907](https://gitenterprise.inside-box.net/Preview/Preview/pull/907) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Updating karma webpack [\#905](https://gitenterprise.inside-box.net/Preview/Preview/pull/905) ([phora](https://gitenterprise.inside-box.net/phora))
+- Updating runtime with r82 of three.js to fix error on Safari with ima… [\#904](https://gitenterprise.inside-box.net/Preview/Preview/pull/904) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Upgrading to babel plugin istanbul [\#903](https://gitenterprise.inside-box.net/Preview/Preview/pull/903) ([phora](https://gitenterprise.inside-box.net/phora))
+- Add more markdown tests [\#902](https://gitenterprise.inside-box.net/Preview/Preview/pull/902) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Pass only the subdomain, not the full domain. [\#901](https://gitenterprise.inside-box.net/Preview/Preview/pull/901) ([jedwards](https://gitenterprise.inside-box.net/jedwards))
+- Updating runtime with dependency-loading fixes [\#900](https://gitenterprise.inside-box.net/Preview/Preview/pull/900) ([mbond](https://gitenterprise.inside-box.net/mbond))
+- Remove unnecessary extra destroy\(\) in preview.js [\#898](https://gitenterprise.inside-box.net/Preview/Preview/pull/898) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Add progress bar class [\#897](https://gitenterprise.inside-box.net/Preview/Preview/pull/897) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fixes \#895 [\#896](https://gitenterprise.inside-box.net/Preview/Preview/pull/896) ([ikerr](https://gitenterprise.inside-box.net/ikerr))
+- Optimize SVGs [\#894](https://gitenterprise.inside-box.net/Preview/Preview/pull/894) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- PDF.JS v1.6.442 [\#893](https://gitenterprise.inside-box.net/Preview/Preview/pull/893) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Rename 'box-preview-' classes to 'bp-' to save bytes [\#892](https://gitenterprise.inside-box.net/Preview/Preview/pull/892) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- update changelog and readme to v0.96.0 [\#891](https://gitenterprise.inside-box.net/Preview/Preview/pull/891) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Migrating to new reps API format [\#876](https://gitenterprise.inside-box.net/Preview/Preview/pull/876) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Fake 'original' representation using the streaming download endpoint [\#825](https://gitenterprise.inside-box.net/Preview/Preview/pull/825) ([spramod](https://gitenterprise.inside-box.net/spramod))
+
 ## [v0.96.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.96.0) (2017-01-11)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.95.0...v0.96.0)
 
