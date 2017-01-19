@@ -14,9 +14,15 @@ describe('doc-loader', () => {
                 extension: 'docx',
                 representations: {
                     entries: [{
-                        representation: 'pdf'
+                        representation: 'pdf',
+                        status: {
+                            state: 'success'
+                        }
                     }, {
-                        representation: 'ORIGINAL'
+                        representation: 'ORIGINAL',
+                        status: {
+                            state: 'success'
+                        }
                     }]
                 }
             };
@@ -32,7 +38,10 @@ describe('doc-loader', () => {
 
             const determinedRep = DocLoader.determineRepresentation(file, viewer);
             expect(determinedRep).to.deep.equal({
-                representation: 'pdf'
+                representation: 'pdf',
+                status: {
+                    state: 'success'
+                }
             });
         });
 
@@ -42,9 +51,14 @@ describe('doc-loader', () => {
                 representations: {
                     entries: [{
                         representation: 'pdf',
-                        status: 'success'
+                        status: {
+                            state: 'success'
+                        }
                     }, {
-                        representation: 'ORIGINAL'
+                        representation: 'ORIGINAL',
+                        status: {
+                            state: 'success'
+                        }
                     }]
                 }
             };
@@ -61,7 +75,9 @@ describe('doc-loader', () => {
             const determinedRep = DocLoader.determineRepresentation(file, viewer);
             expect(determinedRep).to.deep.equal({
                 representation: 'pdf',
-                status: 'success'
+                status: {
+                    state: 'success'
+                }
             });
         });
 
@@ -71,9 +87,14 @@ describe('doc-loader', () => {
                 representations: {
                     entries: [{
                         representation: 'pdf',
-                        status: 'pending'
+                        status: {
+                            state: 'pending'
+                        }
                     }, {
-                        representation: 'ORIGINAL'
+                        representation: 'ORIGINAL',
+                        status: {
+                            state: 'success'
+                        }
                     }]
                 }
             };
@@ -89,7 +110,10 @@ describe('doc-loader', () => {
 
             const determinedRep = DocLoader.determineRepresentation(file, viewer);
             expect(determinedRep).to.deep.equal({
-                representation: 'ORIGINAL'
+                representation: 'ORIGINAL',
+                status: {
+                    state: 'success'
+                }
             });
         });
     });
