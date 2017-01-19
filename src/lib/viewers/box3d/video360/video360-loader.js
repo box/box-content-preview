@@ -21,16 +21,7 @@ const VIEWERS = [
         ],
         STYLESHEETS: ['dash.css', 'video360.css'],
         CONSTRUCTOR: 'Video360',
-        PREFETCH: 'xhr',
-        REQUIRED_REPRESENTATIONS: [
-            'manifest.mpd',
-            'video/480/init.m4s',
-            'video/1080/init.m4s',
-            'audio/0/init.m4s',
-            'video/480/1.m4s',
-            'video/1080/1.m4s',
-            'audio/0/1.m4s'
-        ]
+        PREFETCH: 'xhr'
     }
 ];
 

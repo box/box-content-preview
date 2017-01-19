@@ -632,7 +632,7 @@ class Preview extends EventEmitter {
         });
 
         // Load the representation assets
-        this.repStatus = new RepStatus(representation, this.getRequestHeaders(), this.logger, viewer.REQUIRED_REPRESENTATIONS);
+        this.repStatus = new RepStatus(representation, this.getRequestHeaders(), this.logger);
         const promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(this.repStatus);
         promiseToGetRepresentationStatusSuccess.catch((err) => {
             this.triggerError((err instanceof Error) ? err : new Error(__('error_reupload')));

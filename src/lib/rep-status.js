@@ -12,14 +12,12 @@ class RepStatus {
      * @param {Object} representation representation object
      * @param {Object} headers request headers
      * @param {Object} [logger] optional logger instance
-     * @param {Array} [files] optional files to test
      * @returns {RepStatus} RepStatus instance
      */
-    constructor(representation, headers, logger, files) {
+    constructor(representation, headers, logger) {
         this.representation = representation;
         this.logger = logger;
         this.headers = headers;
-        this.files = files || [];
 
         this.promise = new Promise((resolve, reject) => {
             this.resolve = resolve;
@@ -53,31 +51,6 @@ class RepStatus {
     }
 
     /**
-     * Handles the pending response
-     *
-     * @private
-     * @returns {boolean} true if we should consider success
-     */
-    handlePending() {
-        // If no files to compare then return false
-        if (this.files.length === 0) {
-            return false;
-        }
-
-        // If no files in response then return false
-        if (!this.representation.links.files || this.representation.links.files.length === 0) {
-            return false;
-        }
-
-        // Compare all the files needed for psuedo-success
-        return this.files.every((file) => {
-            return this.representation.links.files.some((asset) => {
-                return asset.url.endsWith(file);
-            });
-        });
-    }
-
-    /**
      * Gets the status of a representation asset
      *
      * @private
@@ -101,16 +74,10 @@ class RepStatus {
                     this.logger.setUnConverted();
                 }
 
-                // If files to test were passed in then a logical success status
-                // is dependent on them and not just status success. This will be
-                // used for multi-assets files like Dash
-                if (this.handlePending()) {
-                    this.resolve();
-                } else {
-                    this.statusTimeout = setTimeout(() => {
-                        this.updateStatus();
-                    }, STATUS_UPDATE_INTERVAL_IN_MILLIS);
-                }
+                // Check status again after delay
+                this.statusTimeout = setTimeout(() => {
+                    this.updateStatus();
+                }, STATUS_UPDATE_INTERVAL_IN_MILLIS);
                 break;
 
             default:

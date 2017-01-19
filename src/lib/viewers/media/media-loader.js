@@ -29,16 +29,7 @@ const VIEWERS = [
         SCRIPTS: [`${STATIC_URI}shaka-player.js`, 'dash.js'],
         STYLESHEETS: ['dash.css'],
         CONSTRUCTOR: 'Dash',
-        PREFETCH: 'xhr',
-        REQUIRED_REPRESENTATIONS: [
-            'manifest.mpd',
-            'video/480/init.m4s',
-            'video/1080/init.m4s',
-            'audio/0/init.m4s',
-            'video/480/1.m4s',
-            'video/1080/1.m4s',
-            'audio/0/1.m4s'
-        ]
+        PREFETCH: 'xhr'
     },
     {
         REPRESENTATION: 'mp4',
