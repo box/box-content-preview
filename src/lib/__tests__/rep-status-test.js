@@ -60,17 +60,13 @@ describe('RepStatus', () => {
             sandbox.stub(util, 'get').returns(Promise.resolve({
                 status: {
                     state: 'success'
-                },
-                files: [
-                    'foo'
-                ]
+                }
             }));
 
             const spy = sandbox.spy(repStatus, 'handleResponse');
 
             return repStatus.updateStatus().then(() => {
                 assert.equal('success', repStatus.representation.status.state);
-                assert.equal('foo', repStatus.representation.links.files[0]);
 
                 assert.isTrue(spy.called);
             });

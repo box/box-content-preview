@@ -52,7 +52,6 @@ class RepStatus {
                 this.representation.temp_status.state = status;
             }
 
-            this.representation.links.files = info.files || [];
             this.handleResponse();
         });
     }
