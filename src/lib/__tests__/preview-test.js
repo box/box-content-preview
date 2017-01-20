@@ -242,7 +242,7 @@ describe('Preview', () => {
     describe('updateFileCache()', () => {
         beforeEach(() => {
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
-            stubs.set = sandbox.stub(cache, 'set');
+            stubs.cacheFile = sandbox.stub(file, 'cacheFile');
             stubs.error = sandbox.stub(console, 'error');
         });
 
@@ -257,7 +257,7 @@ describe('Preview', () => {
             stubs.checkFileValid.onCall(0).returns(true);
 
             preview.updateFileCache(files);
-            expect(stubs.set).calledOnce;
+            expect(stubs.cacheFile).to.be.calledWith(files);
         });
 
         it('should add the file to the cache if it is valid', () => {
@@ -280,7 +280,7 @@ describe('Preview', () => {
             .onCall(1).returns(false);
 
             preview.updateFileCache(files);
-            expect(stubs.set).calledOnce;
+            expect(stubs.cacheFile).calledOnce;
             expect(stubs.error).calledOnce;
         });
 
@@ -295,7 +295,7 @@ describe('Preview', () => {
             stubs.checkFileValid.returns(true);
 
             preview.updateFileCache(files);
-            expect(stubs.set).to.not.be.called;
+            expect(stubs.cacheFile).to.not.be.called;
             expect(stubs.error).to.not.be.called;
         });
     });
@@ -836,7 +836,9 @@ describe('Preview', () => {
             stubs.handleLoadResponse = sandbox.stub(preview, 'handleLoadResponse');
             stubs.triggerFetchError = sandbox.stub(preview, 'triggerFetchError');
             stubs.getURL = sandbox.stub(file, 'getURL').returns('/get_url');
-            preview.file.id = 0;
+            preview.file = {
+                id: 0
+            };
         });
 
         it('should handle load response on a successful get', () => {
@@ -847,46 +849,6 @@ describe('Preview', () => {
                 expect(stubs.handleLoadResponse).to.be.called;
                 expect(stubs.triggerFetchError).to.not.be.called;
             });
-        });
-
-        it('should trigger a fetch error on a failed get', () => {
-            stubs.promise = Promise.reject('file');
-
-            preview.loadFromServer();
-            expect(stubs.get).to.be.called;
-            expect(stubs.getURL).to.be.called;
-            return stubs.promise.should.be.rejectedWith('file');
-        });
-    });
-
-    describe('addOriginalRepresentation()', () => {
-        beforeEach(() => {
-            stubs.file = {
-                id: 0,
-                name: 'file',
-                file_version: {
-                    sha1: 2
-                },
-                watermark_info: {
-                    is_watermarked: false
-                },
-                representations: {
-                    entries: [{ representation: 'pdf' }]
-                }
-            };
-        });
-
-        it('should do nothing if original representation already exists', () => {
-            stubs.file.representations.entries[0].representation = 'ORIGINAL';
-            preview.addOriginalRepresentation(stubs.file);
-            expect(stubs.file.representations.entries.length).to.equal(1);
-        });
-
-        it('should create and add the original representation to the file', () => {
-            preview.addOriginalRepresentation(stubs.file);
-            expect(stubs.file.representations.entries.length).to.equal(2);
-            expect(stubs.file.representations.entries[0].representation).to.equal('pdf');
-            expect(stubs.file.representations.entries[1].representation).to.equal('ORIGINAL');
         });
     });
 
@@ -1033,7 +995,6 @@ describe('Preview', () => {
             stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(true);
 
             stubs.loadPromiseResolve = Promise.resolve();
-            stubs.addOriginalRep = sandbox.stub(preview, 'addOriginalRepresentation');
             stubs.determineRepresentationStatusPromise = Promise.resolve();
             stubs.loader = {
                 determineViewer: sandbox.stub().returns({ NAME: 'viewer' }),
@@ -1358,6 +1319,9 @@ describe('Preview', () => {
         });
 
         it('should do nothing if the preview is closed', () => {
+            preview.file = {
+                id: '0'
+            };
             preview.open = false;
 
             preview.triggerFetchError();
@@ -1365,6 +1329,9 @@ describe('Preview', () => {
         });
 
         it('should clear the current file from the cache', () => {
+            preview.file = {
+                id: '0'
+            };
             preview.open = true;
 
             preview.triggerFetchError();
@@ -1372,6 +1339,9 @@ describe('Preview', () => {
         });
 
         it('should trigger an error if we have hit our retry count limit', () => {
+            preview.file = {
+                id: '0'
+            };
             preview.open = true;
             preview.retryCount = 6;
 
@@ -1380,6 +1350,9 @@ describe('Preview', () => {
         });
 
         it('should reset a timeout that tries to load the file again', () => {
+            preview.file = {
+                id: '0'
+            };
             const clock = sinon.useFakeTimers();
             preview.open = true;
             preview.retryCount = 1;

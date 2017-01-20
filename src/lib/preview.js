@@ -12,7 +12,7 @@ import RepStatus from './rep-status';
 import ErrorLoader from './viewers/error/error-loader';
 import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
 import getTokens from './tokens';
-import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid } from './file';
+import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid, cacheFile } from './file';
 import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
 import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_PREVIEW, API } from './constants';
 import './preview.scss';
@@ -174,7 +174,7 @@ class Preview extends EventEmitter {
             }
 
             if (checkFileValid(file)) {
-                cache.set(file.id, file);
+                cacheFile(file);
             } else {
                 /* eslint-disable no-console */
                 console.error('[Preview SDK] Tried to cache invalid file: ', file);
@@ -434,7 +434,7 @@ class Preview extends EventEmitter {
         showNavigation(this.file.id, this.collection);
 
         // Cache the file
-        cache.set(this.file.id, this.file);
+        cacheFile(this.file);
 
         // Normalize files array by putting current file inside it
         // if it was is empty. If its not empty, then it is assumed
@@ -579,7 +579,7 @@ class Preview extends EventEmitter {
             if (isWatermarked) {
                 cache.unset(file.id);
             } else {
-                cache.set(file.id, file);
+                cacheFile(file);
             }
 
             // Reload if needed
@@ -609,9 +609,6 @@ class Preview extends EventEmitter {
         if (!checkPermission(this.file, PERMISSION_PREVIEW)) {
             throw new Error(__('error_permissions'));
         }
-
-        // Add original representation if needed
-        this.addOriginalRepresentation(this.file);
 
         // Determine the asset loader to use
         const loader = this.getLoader(this.file);
@@ -926,7 +923,7 @@ class Preview extends EventEmitter {
                 get(getURL(id, this.options.api), this.getRequestHeaders(token))
                 .then((file) => {
                     // Cache file info
-                    cache.set(file.id, file);
+                    cacheFile(file);
                     this.prefetchedCollection.push(file.id);
 
                     // Prefetch content
@@ -1114,37 +1111,6 @@ class Preview extends EventEmitter {
             event.preventDefault();
             event.stopPropagation();
         }
-    }
-
-    /**
-     * If the file doens't already have an original representation, creates an
-     * original representation url from the authenticated download url and adds
-     * it to the file representations
-     *
-     * @param {Object} file File object
-     * @returns {void}
-     * @private
-     */
-    addOriginalRepresentation(file) {
-        // Don't add an original representation if it already exists
-        const originalRep = file.representations.entries.filter((entry) => {
-            return (entry.representation && entry.representation === 'ORIGINAL');
-        });
-        if (originalRep.length) {
-            return;
-        }
-
-        // Add an original representation if it doesn't already exist
-        file.representations.entries.push({
-            content: {
-                type: 'asset',
-                url_template: `${file.authenticated_download_url}?preview=true`
-            },
-            representation: 'ORIGINAL',
-            status: {
-                state: 'success'
-            }
-        });
     }
 }
 
