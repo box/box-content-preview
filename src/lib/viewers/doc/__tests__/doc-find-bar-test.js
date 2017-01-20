@@ -349,17 +349,6 @@ describe('doc-find-bar', () => {
             expect(stubs.close).to.not.be.called;
             expect(stubs.event.preventDefault).to.not.be.called;
         });
-
-        it('should close, prevent default, and stop propogation if escape is entered', () => {
-            stubs.decodeKeydown.returns('escape');
-            docFindBar.opened = true;
-
-            docFindBar.displayFindBarHandler(stubs.event);
-            expect(stubs.open).to.not.be.called;
-            expect(stubs.close).to.be.called;
-            expect(stubs.event.preventDefault).to.be.called;
-            expect(stubs.event.stopPropagation).to.be.called;
-        });
     });
 
     describe('findFieldHandler()', () => {
@@ -372,7 +361,7 @@ describe('doc-find-bar', () => {
         });
     });
 
-    describe('findFieldHandler()', () => {
+    describe('barKeyDownHandler()', () => {
         beforeEach(() => {
             stubs.decodeKeydown = sandbox.stub(util, 'decodeKeydown');
             stubs.event = {
@@ -411,6 +400,16 @@ describe('doc-find-bar', () => {
 
         it('should close, prevent default behavior, and stop propogation if Escape is entered', () => {
             stubs.decodeKeydown.returns('Escape');
+            docFindBar.opened = true;
+
+            docFindBar.barKeyDownHandler(stubs.event);
+            expect(stubs.close).to.be.called;
+            expect(stubs.event.stopPropagation).to.be.called;
+            expect(stubs.event.preventDefault).to.be.called;
+        });
+
+        it('should close, prevent default behavior, and stop propogation if Esc is entered', () => {
+            stubs.decodeKeydown.returns('Esc');
             docFindBar.opened = true;
 
             docFindBar.barKeyDownHandler(stubs.event);

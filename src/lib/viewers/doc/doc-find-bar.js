@@ -236,18 +236,6 @@ class DocFindBar extends EventEmitter {
                 this.open();
                 event.preventDefault();
                 break;
-
-            case 'escape':
-                // Ignore if findbar is not open
-                if (!this.opened) {
-                    return;
-                }
-
-                this.close();
-                event.stopPropagation();
-                event.preventDefault();
-                break;
-
             default:
                 break;
         }
@@ -270,15 +258,16 @@ class DocFindBar extends EventEmitter {
      * @private
      */
     barKeyDownHandler(event) {
-        const key = decodeKeydown(event);
+        const key = decodeKeydown(event).toLowerCase();
         switch (key) {
-            case 'Enter':
+            case 'enter':
                 this.findNextHandler(false);
                 break;
-            case 'Shift+Enter':
+            case 'shift+enter':
                 this.findPreviousHandler(false);
                 break;
-            case 'Escape':
+            case 'escape':
+            case 'esc':
                 // Ignore if findbar is not open
                 if (!this.opened) {
                     return;
@@ -288,8 +277,8 @@ class DocFindBar extends EventEmitter {
                 event.stopPropagation();
                 event.preventDefault();
                 break;
-            case 'Shift++':
-            case 'Shift+_':
+            case 'shift++':
+            case 'shift+_':
             case '[':
             case ']':
                 event.stopPropagation();
