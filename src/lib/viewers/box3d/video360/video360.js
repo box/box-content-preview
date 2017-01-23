@@ -92,20 +92,20 @@ class Video360 extends Dash {
     }
 
     /**
-     * Once video metadata is ready, we can create a new renderer and start rendering.
+     * Once video data is ready, we can create a new renderer and start rendering.
      *
      * @inheritdoc
      */
     @autobind
-    loadedmetadataHandler() {
+    loadeddataHandler() {
         this.renderer = new Video360Renderer(this.mediaContainerEl, this.boxSdk);
         this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
         this.optionsObj.sceneEntities = sceneEntities;
         this.renderer.initBox3d(this.optionsObj)
             .then(this.create360Environment)
             .then(() => {
-                // calling super.loadedmetadataHandler() will ready video playback
-                super.loadedmetadataHandler();
+                // calling super.loadeddataHandler() will ready video playback
+                super.loadeddataHandler();
                 this.createControls();
                 this.renderer.initVrIfPresent();
             });

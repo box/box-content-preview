@@ -181,13 +181,13 @@ describe('video360', () => {
         });
     });
 
-    describe('loadedmetadataHandler()', () => {
+    describe('loadeddataHandler()', () => {
         const stubs = {};
-        let superLoadedMetadata;
+        let superLoadedData;
         before(() => {
-            superLoadedMetadata = sandbox.stub();
-            Object.defineProperty(Object.getPrototypeOf(Video360.prototype), 'loadedmetadataHandler', {
-                value: superLoadedMetadata
+            superLoadedData = sandbox.stub();
+            Object.defineProperty(Object.getPrototypeOf(Video360.prototype), 'loadeddataHandler', {
+                value: superLoadedData
             });
         });
 
@@ -210,25 +210,25 @@ describe('video360', () => {
 
         it('should create a new Video360 renderer instance', (done) => {
             stubs.createControls = sandbox.stub(viewer, 'createControls', done);
-            viewer.loadedmetadataHandler();
+            viewer.loadeddataHandler();
             expect(viewer.renderer).to.be.an.instanceof(Video360Renderer);
         });
 
         it('should set .optionsObj.sceneEntities to the sceneEntities imported into Video360', (done) => {
             stubs.createControls = sandbox.stub(viewer, 'createControls', done);
-            viewer.loadedmetadataHandler();
+            viewer.loadeddataHandler();
             expect(viewer.optionsObj.sceneEntities).to.deep.equal(sceneEntities);
         });
 
         it('should add custom event handler for VR Toggle to .renderer via .renderer.on()', (done) => {
             stubs.createControls = sandbox.stub(viewer, 'createControls', done);
-            viewer.loadedmetadataHandler();
+            viewer.loadeddataHandler();
             expect(stubs.on).to.have.been.calledWith(EVENT_SHOW_VR_BUTTON, viewer.handleShowVrButton);
         });
 
         it('should invoke .renderer.initBox3d() with .optionsObj', (done) => {
             stubs.createControls = sandbox.stub(viewer, 'createControls', done);
-            viewer.loadedmetadataHandler();
+            viewer.loadeddataHandler();
             expect(stubs.initBox3d).to.have.been.calledWith(viewer.optionsObj);
         });
 
@@ -237,20 +237,20 @@ describe('video360', () => {
                 expect(stubs.create360Environment).to.have.been.called;
                 done();
             });
-            viewer.loadedmetadataHandler();
+            viewer.loadeddataHandler();
         });
 
         it('should invoke super.metadataloadedHandler() on successfully creating 360 environment', (done) => {
             stubs.createControls = sandbox.stub(viewer, 'createControls', () => {
-                expect(superLoadedMetadata).to.have.been.called;
+                expect(superLoadedData).to.have.been.called;
                 done();
             });
-            viewer.loadedmetadataHandler();
+            viewer.loadeddataHandler();
         });
 
         it('should invoke .createControls() on successfully creating 360 environment', (done) => {
             sandbox.stub(viewer, 'createControls', done);
-            viewer.loadedmetadataHandler();
+            viewer.loadeddataHandler();
         });
 
         it('should invoke .renderer.initVrIfPresent() on successfully creating 360 environment', (done) => {
@@ -260,7 +260,7 @@ describe('video360', () => {
                 expect(stubs.initVrIfPresent).to.have.been.called;
                 done();
             });
-            viewer.loadedmetadataHandler();
+            viewer.loadeddataHandler();
         });
     });
 
