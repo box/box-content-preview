@@ -44,9 +44,7 @@ class DocHighlightDialog extends AnnotationDialog {
             annotatorUtil.showElement(highlightLabelEl);
 
             // Only reposition if mouse is still hovering over the dialog
-            if (!this._element.classList.contains(CLASS_HIDDEN)) {
-                this.position();
-            }
+            this.position();
         }
 
         super.addAnnotation(annotation);
