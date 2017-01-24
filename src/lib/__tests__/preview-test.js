@@ -1468,7 +1468,7 @@ describe('Preview', () => {
             preview.triggerError();
             return stubs.promiseResolve.then(() => {
                 expect(preview.count.error).to.equal(1);
-                expect(stubs.emit).to.be.calledWith('load');
+                expect(stubs.emit).to.be.calledWith('load', { error: sinon.match.string, metrics: sinon.match.any, file: sinon.match.any });
             });
         });
 
@@ -1479,11 +1479,6 @@ describe('Preview', () => {
             return stubs.promiseResolve.then(() => {
                 expect(window.callPhantom).to.be.called;
             });
-        });
-
-        it('should emit a preview error message', () => {
-            preview.triggerError();
-            expect(stubs.emit).to.be.calledWith('previewerror');
         });
     });
 
