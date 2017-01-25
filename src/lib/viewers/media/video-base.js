@@ -1,5 +1,6 @@
 import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
+import Browser from '../../browser';
 import MediaBase from './media-base';
 import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_DARK } from '../../constants';
 
@@ -24,6 +25,13 @@ class VideoBase extends MediaBase {
         // Video element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));
         this.mediaEl.setAttribute('preload', 'auto');
+
+        if (Browser.isIOS()) {
+            // iOS doesn't fire loadeddata event till some data loads
+            // Adding autoplay helps with that and itself won't autoplay.
+            // https://webkit.org/blog/6784/new-video-policies-for-ios/
+            this.mediaEl.autoplay = true;
+        }
 
         // Play button
         this.playButtonEl = this.mediaContainerEl.appendChild(document.createElement('div'));

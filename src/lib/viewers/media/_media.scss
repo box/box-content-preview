@@ -85,3 +85,10 @@
         position: static;
     }
 }
+
+.bp-is-mobile {
+    *::-webkit-media-controls-start-playback-button {
+        appearance: none;
+        display: none;
+    }
+}
