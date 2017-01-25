@@ -51,20 +51,18 @@ class CSV extends TextBase {
      * @returns {Promise} Promise to load a CSV
      */
     load(csvUrlTemplate) {
-        const { token, sharedLink, sharedLinkPassword, location } = this.options;
+        const { location } = this.options;
         const assetUrlCreator = createAssetUrlCreator(location);
         const papaWorkerUrl = assetUrlCreator('third-party/text/papaparse.min.js');
 
         get(papaWorkerUrl, 'blob')
         .then((papaWorkerBlob) => {
-            const workerSrc = URL.createObjectURL(papaWorkerBlob);
-
             /* global Papa */
+            const workerSrc = URL.createObjectURL(papaWorkerBlob);
             Papa.SCRIPT_PATH = workerSrc;
-            Papa.parse(this.createContentUrl(csvUrlTemplate), {
-                token,
-                sharedLink,
-                sharedLinkPassword,
+
+            const urlWithAuth = this.createContentUrlWithAuthParams(csvUrlTemplate);
+            Papa.parse(urlWithAuth, {
                 download: true,
                 error: (err, file, inputElem, reason) => {
                     this.emit('error', reason);

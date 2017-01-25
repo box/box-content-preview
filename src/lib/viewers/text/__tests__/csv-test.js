@@ -75,7 +75,6 @@ describe('csv', () => {
         it('should parse with Papaparse', () => {
             sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub().returns('someUrl'));
 
-            const csvUrl = 'csvUrl';
             const getPromise = Promise.resolve({});
             sandbox.stub(util, 'get').returns(getPromise);
             sandbox.stub(URL, 'createObjectURL');
@@ -83,7 +82,7 @@ describe('csv', () => {
             sandbox.stub(window.Papa, 'parse');
             const token = 'token';
             const sharedLink = 'sharedLink';
-            const sharedLinkPassword = 'sharedLinkPassword';
+            const sharedLinkPassword = 'test';
             csv.options.token = token;
             csv.options.sharedLink = sharedLink;
             csv.options.sharedLinkPassword = sharedLinkPassword;
@@ -93,14 +92,13 @@ describe('csv', () => {
                 value: sandbox.stub()
             });
 
+            const csvUrl = 'csvUrl{asset_path}';
+            const csvUrlWithAuth = `csvUrl?access_token=${token}&shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}`;
             csv.load(csvUrl);
 
             return getPromise.then(() => {
-                expect(window.Papa.parse).to.have.been.calledWith(csvUrl, {
+                expect(window.Papa.parse).to.have.been.calledWith(csvUrlWithAuth, {
                     download: true,
-                    token,
-                    sharedLink,
-                    sharedLinkPassword,
                     error: sinon.match.func,
                     complete: sinon.match.func
                 });
