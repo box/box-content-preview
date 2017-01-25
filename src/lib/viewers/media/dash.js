@@ -76,13 +76,13 @@ class Dash extends VideoBase {
      * @param {string} mediaUrl The media url
      * @return {void}
      */
-    load(mediaUrl, assetPath) {
+    load(mediaUrlTemplate) {
         /* global shaka */
 
         // Polyfill
         shaka.polyfill.installAll();
 
-        this.mediaUrl = this.appendAuthParam(mediaUrl, assetPath);
+        this.mediaUrl = mediaUrlTemplate;
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
 
         this.loadDashPlayer();
@@ -121,14 +121,15 @@ class Dash extends VideoBase {
 
     /**
      * A networking filter to append representation URLs with tokens
+     * Manifest type will use an asset name. Segments will not.
      *
      * @private
      * @return {void}
      */
     requestFilter(type, request) {
-        if (type !== shaka.net.NetworkingEngine.RequestType.SEGMENT) return;
+        const asset = type !== shaka.net.NetworkingEngine.RequestType.MANIFEST ? '' : undefined;
         /* eslint-disable no-param-reassign */
-        request.uris = request.uris.map((uri) => this.appendAuthParam(uri));
+        request.uris = request.uris.map((uri) => this.createContentUrlWithAuthParams(uri, asset));
         /* eslint-enable no-param-reassign */
     }
 
@@ -292,7 +293,7 @@ class Dash extends VideoBase {
         const { file, token, sharedLink, sharedLinkPassword } = this.options;
         const filmstrip = file.representations.entries.find((entry) => entry.representation === 'filmstrip');
         if (filmstrip) {
-            const url = this.appendAuthParam(filmstrip.content.url_template);
+            const url = this.createContentUrlWithAuthParams(filmstrip.content.url_template, '');
             this.filmstripStatus = new RepStatus(filmstrip, getHeaders({}, token, sharedLink, sharedLinkPassword));
             this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect);
         }

@@ -83,8 +83,10 @@ describe('csv', () => {
             sandbox.stub(window.Papa, 'parse');
             const token = 'token';
             const sharedLink = 'sharedLink';
+            const sharedLinkPassword = 'sharedLinkPassword';
             csv.options.token = token;
             csv.options.sharedLink = sharedLink;
+            csv.options.sharedLinkPassword = sharedLinkPassword;
 
             const loadFunc = Object.getPrototypeOf(CSV.prototype).load;
             Object.defineProperty(Object.getPrototypeOf(CSV.prototype), 'load', {
@@ -98,6 +100,7 @@ describe('csv', () => {
                     download: true,
                     token,
                     sharedLink,
+                    sharedLinkPassword,
                     error: sinon.match.func,
                     complete: sinon.match.func
                 });

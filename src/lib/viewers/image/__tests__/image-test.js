@@ -89,7 +89,7 @@ describe('image.js', () => {
 
     describe('load()', () => {
         beforeEach(() => {
-            sandbox.stub(image, 'appendAuthParam').returns(imageUrl);
+            sandbox.stub(image, 'appendAuthParams').returns(imageUrl);
         });
 
         it('should fetch the image URL and load an image', () => {
@@ -325,7 +325,7 @@ describe('image.js', () => {
 
     describe('zoom()', () => {
         beforeEach(() => {
-            sandbox.stub(image, 'appendAuthParam').returns(imageUrl);
+            sandbox.stub(image, 'appendAuthParams').returns(imageUrl);
             sandbox.stub(image, 'loadHandler');
 
             // Stub out methods called in zoom()

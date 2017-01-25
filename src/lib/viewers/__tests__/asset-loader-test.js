@@ -208,108 +208,70 @@ describe('asset-loader', () => {
             expect(loader.prefetchAssets).to.not.have.been.called;
         });
 
-        it('it should determine viewer and representation and then prefetch assets', () => {
+        it('it should determine viewer and representation and then prefetch assets via xhr', () => {
+            const url = 'someUrl';
             const file = {};
             const token = 'someToken';
+            const sharedLink = 'someLink';
+            const password = 'somePass';
             const location = {};
-            const viewer = {};
+            const viewer = {
+                PREFETCH: 'xhr'
+            };
 
             sandbox.stub(loader, 'determineViewer').returns(viewer);
             sandbox.stub(loader, 'determineRepresentation').returns({
-                links: {
-                    content: {
-                        url: ''
-                    }
+                content: {
+                    url_template: url
                 },
                 status: {
                     state: 'success'
                 }
             });
+            sandbox.stub(util, 'get');
+            sandbox.spy(util, 'appendAuthParams');
             sandbox.stub(loader, 'prefetchAssets');
 
-            loader.prefetch(file, token, location, 'someLink', 'somePass');
+            loader.prefetch(file, token, location, sharedLink, password);
 
             expect(loader.determineViewer).to.have.been.calledWith(file);
             expect(loader.determineRepresentation).to.have.been.calledWith(file, viewer);
             expect(loader.prefetchAssets).to.have.been.calledWith(viewer, location);
+            expect(util.appendAuthParams).to.have.been.calledWith(url, token, sharedLink, password);
+            expect(util.get).to.have.been.calledWith('someUrl?access_token=someToken&shared_link=someLink&shared_link_password=somePass', 'any');
         });
 
-        it('should prefetch assets with XHR if viewer has xhr prefetch', () => {
+        it('should prefetch assets via img tag if prefetch strategy indicates it', () => {
             const url = 'someUrl';
+            const file = {};
             const token = 'someToken';
             const sharedLink = 'someLink';
             const password = 'somePass';
-
-            sandbox.stub(loader, 'determineViewer').returns({
-                PREFETCH: 'xhr'
-            });
-            sandbox.stub(loader, 'determineRepresentation').returns({
-                content: {
-                    url_template: 'someUrl'
-                },
-                status: {
-                    state: 'success'
-                }
-            });
-            sandbox.stub(loader, 'prefetchAssets');
-            sandbox.stub(util, 'get');
-            sandbox.stub(util, 'createContentUrl').returns(url);
-
-            loader.prefetch({}, token, {}, sharedLink, password);
-
-            expect(util.get).to.have.been.calledWith(url, 'any');
-        });
-
-        it('should prefetch assets via img tag if viewer has img prefetch', () => {
-            const url = 'someUrl';
-            const token = 'someToken';
-            const sharedLink = 'someLink';
-            const password = 'somePass';
-
-            sandbox.stub(loader, 'determineViewer').returns({
+            const location = {};
+            const viewer = {
                 PREFETCH: 'img'
-            });
+            };
+
+            sandbox.stub(loader, 'determineViewer').returns(viewer);
             sandbox.stub(loader, 'determineRepresentation').returns({
                 content: {
-                    url_template: 'someUrl'
+                    url_template: url
                 },
                 status: {
                     state: 'success'
                 }
             });
-            sandbox.stub(loader, 'prefetchAssets');
-            sandbox.stub(util, 'createContentUrl');
-
-            loader.prefetch({}, token, {}, sharedLink, password);
-
-            expect(util.createContentUrl).to.have.been.calledWith(url, token, sharedLink, password);
-        });
-
-        it('should not prefetch assets if viewer does not have prefetch method defined', () => {
-            const url = 'someUrl';
-            const token = 'someToken';
-            const sharedLink = 'someLink';
-            const password = 'somePass';
-
-            sandbox.stub(loader, 'determineViewer').returns({});
-            sandbox.stub(loader, 'determineRepresentation').returns({
-                links: {
-                    content: {
-                        url
-                    }
-                },
-                status: {
-                    state: 'success'
-                }
-            });
-            sandbox.stub(loader, 'prefetchAssets');
             sandbox.stub(util, 'get');
-            sandbox.stub(util, 'createContentUrl');
+            sandbox.spy(util, 'appendAuthParams');
+            sandbox.stub(loader, 'prefetchAssets');
 
-            loader.prefetch({}, token, {}, sharedLink, password);
+            loader.prefetch(file, token, location, sharedLink, password);
 
-            expect(util.get).to.have.not.been.called;
-            expect(util.createContentUrl).to.have.not.been.called;
+            expect(loader.determineViewer).to.have.been.calledWith(file);
+            expect(loader.determineRepresentation).to.have.been.calledWith(file, viewer);
+            expect(loader.prefetchAssets).to.have.been.calledWith(viewer, location);
+            expect(util.appendAuthParams).to.have.been.calledWith(url, token, sharedLink, password);
+            expect(util.get).to.not.have.been.called;
         });
     });
 

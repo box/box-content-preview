@@ -15,6 +15,7 @@ import {
     GRID_COLOR,
     QUALITY_LEVEL_FULL
 } from './model3d-constants';
+import { createContentUrl } from '../../../util';
 import Browser from '../../../browser';
 
 const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
@@ -82,14 +83,15 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /** @inheritdoc */
-    load(jsonUrl, assetPath, options = {}) {
+    load(jsonUrlTemplate, options = {}) {
+        const { viewerAsset = '', location } = options;
         // #TODO @jholdstock: set this to not reassign param
         /*eslint-disable*/
-        options.sceneEntities = sceneEntities(options.location.staticBaseURI);
+        options.sceneEntities = sceneEntities(location.staticBaseURI);
         /*eslint-enable*/
 
         return this.initBox3d(options)
-            .then(() => this.loadBox3dFile(jsonUrl, assetPath));
+            .then(() => this.loadBox3dFile(jsonUrlTemplate, viewerAsset));
     }
 
     /**
@@ -109,6 +111,7 @@ class Model3dRenderer extends Box3DRenderer {
      * @method loadBox3dFile
      * @private
      * @param {string} fileUrl The representation URL.
+     * @param {string} assetPath The asset path needed to access file
      * @returns {void}
      */
     loadBox3dFile(fileUrl, assetPath) {
@@ -122,7 +125,7 @@ class Model3dRenderer extends Box3DRenderer {
         renderModes.setAttribute('shapeTexture', 'MAT_CAP_TEX');
 
         // Replace asset path for fileUrl
-        const assetUrl = fileUrl.replace(/\{asset_path\}/, assetPath);
+        const assetUrl = createContentUrl(fileUrl, assetPath);
 
         return this.box3d.addRemoteEntities(assetUrl)
             .then((entities) => {

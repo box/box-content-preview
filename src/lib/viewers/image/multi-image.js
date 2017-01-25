@@ -55,8 +55,8 @@ class MultiImage extends ImageBase {
      * @param {Array} imageUrls urls for images
      * @returns {Promise} Promise to load bunch of images
      */
-    load(imageUrls) {
-        this.imageUrls = imageUrls;
+    load(imageUrlsTemplate) {
+        this.imageUrls = imageUrlsTemplate;
 
         this.imageEls[0].addEventListener('load', () => {
             if (this.destroyed) {

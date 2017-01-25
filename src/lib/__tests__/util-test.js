@@ -3,7 +3,7 @@ import fetchMock from 'fetch-mock';
 import {
     openContentInsideIframe,
     openUrlInsideIframe,
-    createContentUrl,
+    appendAuthParams,
     createScript,
     createAssetUrlCreator,
     deduceBoxUrl,
@@ -273,10 +273,10 @@ describe('util', () => {
         });
     });
 
-    describe('createContentUrl()', () => {
+    describe('appendAuthParams()', () => {
         it('should return url when no token is provided', () => {
             const url = 'foo';
-            assert.equal(url, createContentUrl(url));
+            assert.equal(url, appendAuthParams(url));
         });
     });
 
@@ -342,13 +342,13 @@ describe('util', () => {
         });
     });
 
-    describe('createContentUrl()', () => {
+    describe('appendAuthParams()', () => {
         it('should return correct content url', () => {
-            const url = createContentUrl('url?foo=bar', 'token', 'https://shared name');
+            const url = appendAuthParams('url?foo=bar', 'token', 'https://shared name');
             assert.equal(url, 'url?foo=bar&access_token=token&shared_link=https://shared%20name');
         });
         it('should return correct content url with password', () => {
-            const url = createContentUrl('url?foo=bar', 'token', 'https://shared name', 'password');
+            const url = appendAuthParams('url?foo=bar', 'token', 'https://shared name', 'password');
             assert.equal(url, 'url?foo=bar&access_token=token&shared_link=https://shared%20name&shared_link_password=password');
         });
     });

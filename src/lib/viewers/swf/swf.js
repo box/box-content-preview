@@ -36,9 +36,9 @@ class SWF extends Base {
      * @param {string} swfUrl The swf to load
      * @returns {void}
      */
-    load(swfUrl) {
+    load(swfUrlTemplate) {
         /* global swfobject */
-        swfobject.embedSWF(this.appendAuthParam(swfUrl), this.playerEl.id, '100%', '100%', '9', null, null, SWF_PARAMS, null, () => {
+        swfobject.embedSWF(this.createContentUrlWithAuthParams(swfUrlTemplate), this.playerEl.id, '100%', '100%', '9', null, null, SWF_PARAMS, null, () => {
             if (this.destroyed) {
                 return;
             }

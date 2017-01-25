@@ -1,4 +1,5 @@
 import AssetLoader from '../asset-loader';
+import { ORIGINAL_REP_NAME } from '../../constants';
 
 const STATIC_URI = 'third-party/doc/';
 const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.min.js`, `${STATIC_URI}pdf.min.js`, `${STATIC_URI}pdf_viewer.min.js`, `${STATIC_URI}pdf.worker.min.js`, 'document.js'];
@@ -8,12 +9,11 @@ const FIVE_MB = 5242880;
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 const VIEWERS = [
     {
-        REP: 'ORIGINAL',
+        REP: ORIGINAL_REP_NAME,
         EXT: ['xlsx'],
         JS: ['office.js'],
         CSS: [],
-        NAME: OFFICE_CONSTRUCTOR,
-        ASSET: ''
+        NAME: OFFICE_CONSTRUCTOR
     },
     {
         REP: 'pdf',
@@ -21,8 +21,7 @@ const VIEWERS = [
         JS: SCRIPTS_DOCUMENT,
         CSS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
         NAME: 'Document',
-        PREFETCH: 'xhr',
-        ASSET: ''
+        PREFETCH: 'xhr'
     }
 ];
 

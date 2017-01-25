@@ -1,10 +1,11 @@
 import {
-    createContentUrl,
+    appendAuthParams,
     prefetchAssets,
     loadStylesheets,
     loadScripts,
     createAssetUrlCreator,
-    get
+    get,
+    createContentUrl
 } from '../util';
 
 class AssetLoader {
@@ -111,7 +112,8 @@ class AssetLoader {
 
         // Determine the representation to use
         const representation = this.determineRepresentation(file, viewer);
-        const status = (typeof representation.status === 'object') ? representation.status.state : representation.temp_status.state;
+        const { content, use_paged_viewer: usePagedViewer, temp_status: tempStatus } = representation;
+        const status = (typeof representation.status === 'object') ? representation.status.state : tempStatus.state;
         if (status !== 'success') {
             return;
         }
@@ -126,18 +128,17 @@ class AssetLoader {
             /* eslint-enable no-param-reassign */
         }
 
-        // Prefetch based on viewer strategy
+        // DELETE LINE BELOW
+        const asset = usePagedViewer !== 'false' ? (viewer.ASSET || '') : '';
+        // DELETE LINE ABOVE
+        const url = createContentUrl(content.url_template, asset); // pass in viewer.ASSET
+        const urlWithAuth = appendAuthParams(url, token, sharedLink, sharedLinkPassword);
+
         if (viewer.PREFETCH === 'xhr') {
-            // Checks if representation requires an asset path
-            const assetPath = viewer.ASSET || '';
-
-            get(createContentUrl(representation.content.url_template, token, sharedLink, sharedLinkPassword, assetPath), 'any');
-        } else if (viewer.PREFETCH === 'img') {
-            // Checks if representation requires an asset path
-            const assetPath = (representation.use_paged_viewer !== 'false') ? viewer.ASSET : '';
-
-            const img = document.createElement('img');
-            img.src = createContentUrl(representation.content.url_template, token, sharedLink, sharedLinkPassword, assetPath);
+            get(urlWithAuth, 'any');
+        } else {
+            // img, audio, video tags should be fetched usign browser GET as they don't need CORS headers
+            document.createElement(viewer.PREFETCH).src = urlWithAuth;
         }
     }
 

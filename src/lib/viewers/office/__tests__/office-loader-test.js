@@ -14,8 +14,7 @@ describe('office-loader', () => {
                 EXT: ['xlsx'],
                 JS: ['office.js'],
                 CSS: [],
-                NAME: 'Office',
-                ASSET: ''
+                NAME: 'Office'
             });
             expect(OfficeLoader.viewers[1]).to.deep.equal({
                 REP: 'pdf',
@@ -28,8 +27,7 @@ describe('office-loader', () => {
                     'document.js'],
                 CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
                 NAME: 'Document',
-                PREFETCH: 'xhr',
-                ASSET: ''
+                PREFETCH: 'xhr'
             });
         });
     });
@@ -56,8 +54,7 @@ describe('office-loader', () => {
                 EXT: ['xlsx'],
                 JS: ['office.js'],
                 CSS: [],
-                NAME: 'Office',
-                ASSET: ''
+                NAME: 'Office'
             });
         });
 
@@ -85,8 +82,7 @@ describe('office-loader', () => {
                 EXT: ['xlsx'],
                 JS: ['office.js'],
                 CSS: [],
-                NAME: 'Office',
-                ASSET: ''
+                NAME: 'Office'
             });
         });
 
@@ -119,8 +115,7 @@ describe('office-loader', () => {
                     'document.js'],
                 CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
                 NAME: 'Document',
-                PREFETCH: 'xhr',
-                ASSET: ''
+                PREFETCH: 'xhr'
             });
         });
 
@@ -153,8 +148,7 @@ describe('office-loader', () => {
                     'document.js'],
                 CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
                 NAME: 'Document',
-                PREFETCH: 'xhr',
-                ASSET: ''
+                PREFETCH: 'xhr'
             });
         });
 
@@ -187,8 +181,7 @@ describe('office-loader', () => {
                     'document.js'],
                 CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
                 NAME: 'Document',
-                PREFETCH: 'xhr',
-                ASSET: ''
+                PREFETCH: 'xhr'
             });
         });
 
@@ -224,8 +217,7 @@ describe('office-loader', () => {
                     'document.js'],
                 CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
                 NAME: 'Document',
-                PREFETCH: 'xhr',
-                ASSET: ''
+                PREFETCH: 'xhr'
             });
         });
     });

@@ -2,14 +2,11 @@ import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import debounce from 'lodash.debounce';
 import fullscreen from '../fullscreen';
-import { createContentUrl, getHeaders } from '../util';
+import { appendAuthParams, getHeaders, createContentUrl } from '../util';
 import Browser from '../browser';
 import {
     CLASS_FULLSCREEN,
-    CLASS_BOX_PREVIEW_CONTAINER,
-    CLASS_BOX_PREVIEW,
     CLASS_BOX_PREVIEW_MOBILE,
-    SELECTOR_BOX_PREVIEW_CONTAINER,
     SELECTOR_BOX_PREVIEW
 } from '../constants';
 
@@ -21,8 +18,9 @@ class Base extends EventEmitter {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} container The container
-     * @param {Object} [options] some options
+     *
+     * @param {HTMLElement} containerEl - The container
+     * @param {Object} options - some options
      * @return {Base} Instance of base
      */
     constructor(containerEl, options) {
@@ -31,18 +29,10 @@ class Base extends EventEmitter {
         // Save the options
         this.options = options;
 
-        // Get the container dom element if selector was passed
+        // Get the container dom element if selector was passed, in tests
         let container = containerEl;
         if (typeof containerEl === 'string') {
             container = document.querySelector(containerEl);
-        }
-
-        // Double check if the layout is accurate and if not re-create it.
-        // This code should never execute when using the wrapper preview.js
-        if (!container.classList.contains(CLASS_BOX_PREVIEW_CONTAINER) || !container.firstElementChild) {
-            const wrapper = container.parentElement;
-            wrapper.innerHTML = `<div class="${CLASS_BOX_PREVIEW_CONTAINER}" style="display: block;"><div class="${CLASS_BOX_PREVIEW}"></div></div>`;
-            container = wrapper.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER);
         }
 
         // From the perspective of viewers bp holds everything
@@ -62,17 +52,13 @@ class Base extends EventEmitter {
 
     /**
      * Resize handler
+     *
      * @private
      * @return {Function} debounced resize handler
      */
-    debouncedResizeHandler() {
-        if (!this.resizeHandler) {
-            this.resizeHandler = debounce(() => {
-                this.resize();
-            }, RESIZE_WAIT_TIME_IN_MILLIS);
-        }
-        return this.resizeHandler;
-    }
+    debouncedResizeHandler = debounce(() => {
+        this.resize();
+    }, RESIZE_WAIT_TIME_IN_MILLIS);
 
     /**
      * Loads content.
@@ -88,6 +74,7 @@ class Base extends EventEmitter {
      * Sets a timeout for loading.
      *
      * @protected
+     * @emits error
      * @return {void}
      */
     resetLoadTimeout() {
@@ -104,46 +91,77 @@ class Base extends EventEmitter {
     }
 
     /**
-     * Loads content.
+     * Tells if the content is loaded or not
      *
      * @protected
-     * @return {boolean} loaded
+     * @return {boolean} true if loaded
      */
     isLoaded() {
         return this.loaded;
     }
 
     /**
-     * If preview destroyed
+     * Tells if preview destroyed
      *
      * @protected
-     * @return {boolean} destroyed
+     * @return {boolean} true if destroyed
      */
     isDestroyed() {
         return this.destroyed;
     }
 
     /**
-     * Headers for fetch
+     * Appends auth params to the content url
      *
      * @protected
      * @param {string} url url to attach param to
-     * @param {string|void} [assetPath] optional asset path needed to access file
      * @return {string} url with appended auth params
      */
-    appendAuthParam(url, assetPath = '') {
-        return createContentUrl(url, this.options.token, this.options.sharedLink, this.options.sharedLinkPassword, assetPath);
+    appendAuthParams(url) {
+        const { token, sharedLink, sharedLinkPassword } = this.options;
+        return appendAuthParams(url, token, sharedLink, sharedLinkPassword);
     }
 
     /**
-     * Headers for fetch
+     * Creates and returns the content url
+     * Prioritizes using the provided asset over
+     * using the asset name provided from preview
+     *
+     * @protected
+     * @param {string} template url template to attach param to
+     * @param {string|void} [asset] optional asset name needed to access file
+     * @return {string} content url
+     */
+    createContentUrl(template, asset) {
+        const { viewerAsset = '' } = this.options;
+        const assetName = typeof asset === 'string' ? asset : viewerAsset;
+        return createContentUrl(template, assetName);
+    }
+
+    /**
+     * Creates and returns the content url
+     * Prioritizes using the provided asset over
+     * using the asset name provided from preview
+     *
+     * @protected
+     * @param {string} template url template to attach param to
+     * @param {string|void} [asset] optional asset name needed to access file
+     * @return {string} content url
+     */
+    createContentUrlWithAuthParams(template, asset) {
+        return this.appendAuthParams(this.createContentUrl(template, asset));
+    }
+
+    /**
+     * Adds headers needed for an XHR fetch
      *
      * @protected
      * @param {Object} [headers] optional existing headers
      * @return {Object} fetch headers
      */
     appendAuthHeader(headers = {}) {
-        return getHeaders(headers, this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
+        const { token, sharedLink, sharedLinkPassword } = this.options;
+        return getHeaders(headers, token, sharedLink, sharedLinkPassword);
     }
 
     /**
@@ -164,7 +182,7 @@ class Base extends EventEmitter {
         });
 
         // Add a resize handler for the window
-        document.defaultView.addEventListener('resize', this.debouncedResizeHandler());
+        document.defaultView.addEventListener('resize', this.debouncedResizeHandler);
     }
 
     /**
@@ -180,6 +198,7 @@ class Base extends EventEmitter {
      * Resizing logic
      *
      * @protected
+     * @emits resize
      * @return {void}
      */
     resize() {
@@ -209,7 +228,7 @@ class Base extends EventEmitter {
     destroy() {
         this.emit('destroy');
         fullscreen.removeAllListeners();
-        document.defaultView.removeEventListener('resize', this.resizeHandler);
+        document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
         this.removeAllListeners();
         this.containerEl.innerHTML = '';
         this.destroyed = true;
@@ -219,6 +238,7 @@ class Base extends EventEmitter {
      * Emits a generic viewer event
      *
      * @protected
+     * @emits viewerevent
      * @param {string} event Event name
      * @param {Object} data Event data
      * @return {void}
@@ -239,6 +259,7 @@ class Base extends EventEmitter {
      * we still meet the WCAG's requirement of a 200% zoom on text.
      *
      * @private
+     * @param {Event} event object
      * @return {void}
      */
     mobileZoomStartHandler(event) {
@@ -268,6 +289,7 @@ class Base extends EventEmitter {
      * was pinching in or out. Used only by non iOS browsers
      *
      * @private
+     * @param {Event} event object
      * @return {void}
      */
     mobileZoomChangeHandler(event) {
@@ -284,6 +306,7 @@ class Base extends EventEmitter {
      * Zooms the document in or out depending on the scale of the pinch
      *
      * @private
+     * @param {Event} event object
      * @return {void}
      */
     mobileZoomEndHandler(event) {
@@ -316,17 +339,15 @@ class Base extends EventEmitter {
     /**
      * Retrieves the value of a viewer option.
      *
+     * @protected
      * @param {string} option to get
      * @return {Object} Value of a viewer option
      */
     getViewerOption(option) {
-        const viewers = this.options.viewers;
-        const viewerName = this.options.viewerName;
-
+        const { viewers, viewerName } = this.options;
         if (viewers && viewers[viewerName]) {
             return viewers[viewerName][option];
         }
-
         return null;
     }
 }

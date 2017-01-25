@@ -104,7 +104,7 @@ describe('base', () => {
         });
     });
 
-    describe('appendAuthParam()', () => {
+    describe('appendAuthParams()', () => {
         it('should return content url with auth options appended', () => {
             const token = 'TOKEN';
             const sharedLink = 'https://app.box.com/s/HASH';
@@ -116,11 +116,60 @@ describe('base', () => {
                 sharedLink,
                 sharedLinkPassword
             });
-            sandbox.stub(util, 'createContentUrl').returns(url);
+            sandbox.stub(util, 'appendAuthParams').returns(url);
 
-            const result = base.appendAuthParam('');
+            const result = base.appendAuthParams('');
             expect(result).to.equal(url);
-            expect(util.createContentUrl).to.have.been.calledWith('', token, sharedLink, sharedLinkPassword);
+            expect(util.appendAuthParams).to.have.been.calledWith('', token, sharedLink, sharedLinkPassword);
+        });
+    });
+
+    describe('createContentUrl()', () => {
+        it('should return content url with no asset path', () => {
+            const url = 'url{asset_path}';
+
+            base = new Base(containerEl, {});
+
+            sandbox.spy(util, 'createContentUrl');
+            const result = base.createContentUrl(url, '');
+            expect(result).to.equal('url');
+            expect(util.createContentUrl).to.have.been.calledWith(url, '');
+        });
+        it('should return content url with asset path from options', () => {
+            const url = 'url{asset_path}';
+
+            base = new Base(containerEl, {
+                viewerAsset: 'foo'
+            });
+
+            sandbox.spy(util, 'createContentUrl');
+            const result = base.createContentUrl(url);
+            expect(result).to.equal('urlfoo');
+            expect(util.createContentUrl).to.have.been.calledWith(url, 'foo');
+        });
+        it('should return content url with asset path from args', () => {
+            const url = 'url{asset_path}';
+
+            base = new Base(containerEl, {
+                viewerAsset: 'foo'
+            });
+
+            sandbox.spy(util, 'createContentUrl');
+            const result = base.createContentUrl(url, 'bar');
+            expect(result).to.equal('urlbar');
+            expect(util.createContentUrl).to.have.been.calledWith(url, 'bar');
+        });
+    });
+
+    describe('createContentUrlWithAuthParams()', () => {
+        it('should return content url with no asset path', () => {
+            base = new Base(containerEl, {});
+            sandbox.stub(base, 'createContentUrl').returns('foo');
+            sandbox.stub(base, 'appendAuthParams').returns('bar');
+            const result = base.createContentUrlWithAuthParams('boo', 'hoo');
+            expect(result).to.equal('bar');
+            expect(base.createContentUrl).to.have.been.calledWith('boo', 'hoo');
+            expect(base.appendAuthParams).to.have.been.calledWith('foo');
         });
     });
 
@@ -159,7 +208,7 @@ describe('base', () => {
 
             expect(fullscreen.addListener).to.have.been.calledWith('enter', sinon.match.func);
             expect(fullscreen.addListener).to.have.been.calledWith('exit', sinon.match.func);
-            expect(document.defaultView.addEventListener).to.have.been.calledWith('resize', base.debouncedResizeHandler());
+            expect(document.defaultView.addEventListener).to.have.been.calledWith('resize', base.debouncedResizeHandler);
         });
     });
 
@@ -203,7 +252,7 @@ describe('base', () => {
             base.destroy();
 
             expect(fullscreen.removeAllListeners).to.have.been.called;
-            expect(document.defaultView.removeEventListener).to.have.been.calledWith('resize', base.resizeHandler);
+            expect(document.defaultView.removeEventListener).to.have.been.calledWith('resize', base.debouncedResizeHandler);
             expect(base.removeAllListeners).to.have.been.called;
             expect(base.containerEl.innerHTML).to.equal('');
             expect(base.destroyed).to.be.true;

@@ -47,3 +47,5 @@ export const PERMISSION_ANNOTATE = 'can_annotate';
 export const PERMISSION_PREVIEW = 'can_preview';
 
 export const API = 'https://api.box.com';
+
+export const ORIGINAL_REP_NAME = 'ORIGINAL';

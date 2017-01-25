@@ -1,4 +1,5 @@
 import cache from './cache';
+import { ORIGINAL_REP_NAME } from './constants';
 
 // List of Box Content API fields that the Preview SDK requires for every file. Updating this list is most likely
 // a breaking change and should be done with care. Clients that leverage functionality dependent on this format
@@ -16,8 +17,6 @@ const FILE_FIELDS = [
     'watermark_info',
     'authenticated_download_url'
 ];
-
-const ORIGINAL_REP_NAME = 'ORIGINAL';
 
 /**
  * If the file doens't already have an original representation, creates an

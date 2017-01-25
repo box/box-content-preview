@@ -1,7 +1,8 @@
 import AssetLoader from '../asset-loader';
+import { ORIGINAL_REP_NAME } from '../../constants';
 
 const VIEWERS = [{
-    REP: 'ORIGINAL',
+    REP: ORIGINAL_REP_NAME,
     EXT: [],
     JS: ['error.js'],
     CSS: ['error.css'],

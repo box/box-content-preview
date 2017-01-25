@@ -1,4 +1,6 @@
 import AssetLoader from '../asset-loader';
+import { ORIGINAL_REP_NAME } from '../../constants';
+import { HTML_EXTENSIONS, TXT_EXTENSIONS } from './extensions';
 
 const STATIC_URI = 'third-party/text/';
 
@@ -10,8 +12,7 @@ const VIEWERS = [
         JS: [`${STATIC_URI}papaparse.min.js`, 'csv.js'],
         CSS: ['csv.css'],
         NAME: 'CSV',
-        PREFETCH: 'xhr',
-        ASSET: ''
+        PREFETCH: 'xhr'
     },
     {
         REP: 'text',
@@ -19,26 +20,23 @@ const VIEWERS = [
         JS: [`${STATIC_URI}highlight.min.js`, 'markdown.js'],
         CSS: [`${STATIC_URI}github-markdown.css`, `${STATIC_URI}github.css`, 'markdown.css'],
         NAME: 'Markdown',
-        PREFETCH: 'xhr',
-        ASSET: ''
+        PREFETCH: 'xhr'
     },
     {
-        REP: 'ORIGINAL',
-        EXT: ['htm', 'html', 'xhtml', 'xml', 'xsd', 'xsl'], // These types do not have an appropriate extracted text representation for preview
+        REP: ORIGINAL_REP_NAME,
+        EXT: HTML_EXTENSIONS,
         JS: [`${STATIC_URI}highlight.min.js`, 'text.js'],
         CSS: [`${STATIC_URI}github.css`, 'text.css'],
         NAME: 'Text',
-        PREFETCH: 'xhr',
-        ASSET: ''
+        PREFETCH: 'xhr'
     },
     {
         REP: 'text',
-        EXT: ['as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'cxx', 'diff', 'erb', 'groovy', 'h', 'haml', 'hh', 'java', 'js', 'less', 'log', 'm', 'make', 'md', 'ml', 'mm', 'php', 'pl', 'plist', 'properties', 'py', 'rb', 'rst', 'sass', 'scala', 'script', 'scm', 'sml', 'sql', 'sh', 'tsv', 'txt', 'vi', 'vim', 'webdoc', 'yaml'],
+        EXT: TXT_EXTENSIONS,
         JS: [`${STATIC_URI}highlight.min.js`, 'text.js'],
         CSS: [`${STATIC_URI}github.css`, 'text.css'],
         NAME: 'Text',
-        PREFETCH: 'xhr',
-        ASSET: ''
+        PREFETCH: 'xhr'
     }
 ];
 

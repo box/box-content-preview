@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { render, unmountComponentAtNode } from 'react-dom';
 import { Grid } from 'react-virtualized';
 import TextBase from './text-base';
 import { createAssetUrlCreator, get } from '../../util';
@@ -37,7 +37,7 @@ class CSV extends TextBase {
      */
     destroy() {
         if (this.gridComponent) {
-            ReactDOM.unmountComponentAtNode(this.csvEl);
+            unmountComponentAtNode(this.csvEl);
             this.gridComponent = null;
         }
 
@@ -48,15 +48,12 @@ class CSV extends TextBase {
      * Loads a csv file.
      *
      * @param {string} csvUrl The text to load
-     * @param {string} assetPath The asset path needed to access file
      * @returns {Promise} Promise to load a CSV
      */
-    load(csvUrl, assetPath) {
-        const assetUrlCreator = createAssetUrlCreator(this.options.location);
+    load(csvUrlTemplate) {
+        const { token, sharedLink, sharedLinkPassword, location } = this.options;
+        const assetUrlCreator = createAssetUrlCreator(location);
         const papaWorkerUrl = assetUrlCreator('third-party/text/papaparse.min.js');
-
-        // Replace asset path in csv url
-        const url = csvUrl.replace(/\{asset_path\}/, assetPath);
 
         get(papaWorkerUrl, 'blob')
         .then((papaWorkerBlob) => {
@@ -64,10 +61,11 @@ class CSV extends TextBase {
 
             /* global Papa */
             Papa.SCRIPT_PATH = workerSrc;
-            Papa.parse(url, {
+            Papa.parse(this.createContentUrl(csvUrlTemplate), {
+                token,
+                sharedLink,
+                sharedLinkPassword,
                 download: true,
-                token: this.options.token,
-                sharedLink: this.options.sharedLink,
                 error: (err, file, inputElem, reason) => {
                     this.emit('error', reason);
                 },
@@ -161,7 +159,7 @@ class CSV extends TextBase {
             columnWidth = (maxWidth - WIDTH_SCROLLER - WIDTH_BORDER) / columnCount;
         }
 
-        this.gridComponent = ReactDOM.render(
+        this.gridComponent = render(
             <Grid
                 className='bp-text-csv-grid'
                 cellRenderer={this.cellRenderer}

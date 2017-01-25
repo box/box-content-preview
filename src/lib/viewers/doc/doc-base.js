@@ -127,8 +127,8 @@ class DocBase extends Base {
      * @param {string} pdfUrl The pdf to load
      * @returns {Promise} Promise to load a pdf
      */
-    load(pdfUrl) {
-        this.pdfUrl = this.appendAuthParam(pdfUrl);
+    load(pdfUrlTemplate) {
+        this.pdfUrl = this.createContentUrlWithAuthParams(pdfUrlTemplate);
 
         this.setupPdfjs();
         this.initViewer(this.pdfUrl);

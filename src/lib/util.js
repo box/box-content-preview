@@ -31,7 +31,7 @@ function checkStatus(response) {
 /**
  * Wrapper function for XHR post put and delete
  *
- * @returns {Promise} xhr promise
+ * @return {Promise} xhr promise
  */
 function xhr(method, url, headers = {}, data = {}) {
     return fetch(url, {
@@ -47,7 +47,7 @@ function xhr(method, url, headers = {}, data = {}) {
  * Creates an empty iframe or uses an existing one
  * for the purposes of downloading or printing
  *
- * @returns {HTMLElement} iframe
+ * @return {HTMLElement} iframe
  */
 function createDownloadIframe() {
     let iframe = document.querySelector('#downloadiframe');
@@ -74,7 +74,7 @@ function createDownloadIframe() {
  * @param {string} url - The URL to fetch
  * @param {Object} [headers] - Key-value map of headers
  * @param {string} [type] - response type json (default), text, blob or any
- * @returns {Promise} - HTTP response
+ * @return {Promise} - HTTP response
  */
 export function get(url, ...rest) {
     let headers;
@@ -118,7 +118,7 @@ export function get(url, ...rest) {
  * @param {string} url - The URL to fetch
  * @param {Object} headers - Key-value map of headers
  * @param {Object} data - JS Object representation of JSON data to send
- * @returns {Promise} - HTTP response
+ * @return {Promise} - HTTP response
  */
 export function post(...rest) {
     return xhr('post', ...rest);
@@ -130,7 +130,7 @@ export function post(...rest) {
  * @param {string} url - The URL to fetch
  * @param {Object} headers - Key-value map of headers
  * @param {Object} data - JS Object representation of JSON data to send
- * @returns {Promise} - HTTP response
+ * @return {Promise} - HTTP response
  */
 export function del(...rest) {
     return xhr('delete', ...rest);
@@ -142,7 +142,7 @@ export function del(...rest) {
  * @param {string} url - The URL to fetch
  * @param {Object} headers - Key-value map of headers
  * @param {Object} data - JS Object representation of JSON data to send
- * @returns {Promise} - HTTP response
+ * @return {Promise} - HTTP response
  */
 export function put(...rest) {
     return xhr('put', ...rest);
@@ -154,7 +154,7 @@ export function put(...rest) {
  *
  * @public
  * @param {string} api api url
- * @returns {HTMLElement}
+ * @return {HTMLElement}
  */
 export function openUrlInsideIframe(url) {
     const iframe = createDownloadIframe();
@@ -168,7 +168,7 @@ export function openUrlInsideIframe(url) {
  *
  * @public
  * @param {string} content html content
- * @returns {HTMLElement}
+ * @return {HTMLElement}
  */
 export function openContentInsideIframe(content) {
     const iframe = createDownloadIframe();
@@ -182,7 +182,7 @@ export function openContentInsideIframe(content) {
  *
  * @public
  * @param {string} api api url
- * @returns {HTMLElement}
+ * @return {HTMLElement}
  */
 export function deduceBoxUrl(api) {
     let origin;
@@ -208,7 +208,7 @@ export function deduceBoxUrl(api) {
  * @public
  * @param {Element} node dom node
  * @param {string} template  html template
- * @returns {HTMLElement}
+ * @return {HTMLElement}
  */
 export function createFragment(node, template) {
     const range = document.createRange();
@@ -222,7 +222,7 @@ export function createFragment(node, template) {
  * @public
  * @param {Element} node dom node
  * @param {string} template  html template
- * @returns {void}
+ * @return {void}
  */
 export function insertTemplate(node, template) {
     node.appendChild(createFragment(node, template));
@@ -233,7 +233,7 @@ export function insertTemplate(node, template) {
  *
  * @public
  * @param {string} url  asset url
- * @returns {Array} script element
+ * @return {Array} script element
  */
 export function createScript(url) {
     const script = document.createElement('script');
@@ -247,7 +247,7 @@ export function createScript(url) {
  *
  * @public
  * @param {string} url  asset urls
- * @returns {HTMLElement} prefetch link element
+ * @return {HTMLElement} prefetch link element
  */
 export function createPrefetch(url) {
     const link = document.createElement('link');
@@ -261,7 +261,7 @@ export function createPrefetch(url) {
  *
  * @public
  * @param {string} url  asset urls
- * @returns {HTMLElement} css link element
+ * @return {HTMLElement} css link element
  */
 export function createStylesheet(url) {
     const link = document.createElement('link');
@@ -279,7 +279,7 @@ export function createStylesheet(url) {
  * @param {string} [token] optional auth token
  * @param {string} [sharedLink] optional shared link
  * @param {string} [password] optional shared link password
- * @returns {Object} Headers
+ * @return {Object} Headers
  */
 export function getHeaders(headers = {}, token = '', sharedLink = '', password = '') {
     /* eslint-disable no-param-reassign */
@@ -293,22 +293,23 @@ export function getHeaders(headers = {}, token = '', sharedLink = '', password =
             headers.BoxApi = `${headers.BoxApi}&shared_link_password=${password}`;
         }
     }
+    // Tells the backend this request is coming from preview, for API analytics
+    headers['X-Box-UI-Preview'] = true;
     /* eslint-enable no-param-reassign */
     return headers;
 }
 
 /**
- * Creates the content URLs
+ * Appends auth params to a url
  *
  * @public
  * @param {string} url content url
  * @param {string} [token] optional auth token
  * @param {string} [sharedLink] optional shared link
  * @param {string} [password] optional shared link password
- * @param {string} [asset] optional asset name
- * @returns {string} content urls
+ * @return {string} content urls
  */
-export function createContentUrl(url, token = '', sharedLink = '', password = '', asset = '') {
+export function appendAuthParams(url, token = '', sharedLink = '', password = '') {
     if (!token && !sharedLink) {
         return url;
     }
@@ -334,8 +335,19 @@ export function createContentUrl(url, token = '', sharedLink = '', password = ''
         }
     }
 
-    // Replace {asset_path} with specific asset if required
-    return `${url.replace(/\{asset_path\}/, asset)}${delim}${params}`;
+    return `${url}${delim}${params}`;
+}
+
+/**
+ * Create a content url from template
+ *
+ * @public
+ * @param {string} template url template to attach param to
+ * @param {string|void} [asset] optional asset name needed to access file
+ * @return {string} content url
+ */
+export function createContentUrl(template, asset) {
+    return template.replace('{asset_path}', asset || '');
 }
 
 /**
@@ -343,7 +355,7 @@ export function createContentUrl(url, token = '', sharedLink = '', password = ''
  *
  * @public
  * @param {location} location object
- * @returns {Function} factory for creating asset url
+ * @return {Function} factory for creating asset url
  */
 export function createAssetUrlCreator(location) {
     const baseURI = location.baseURI;
@@ -371,7 +383,7 @@ export function createAssetUrlCreator(location) {
  * Prefetches external stylsheets or js by appending a <link rel="prefetch"> element
  *
  * @param {Array} urls asset urls
- * @returns {void}
+ * @return {void}
  */
 export function prefetchAssets(urls) {
     const head = document.getElementsByTagName('head')[0];
@@ -387,7 +399,7 @@ export function prefetchAssets(urls) {
  * Loads external stylsheets by appending a <link> element
  *
  * @param {Array} urls asset urls
- * @returns {void}
+ * @return {void}
  */
 export function loadStylesheets(urls) {
     const head = document.getElementsByTagName('head')[0];
@@ -403,7 +415,7 @@ export function loadStylesheets(urls) {
  * Loads external scripts by appending a <script> element
  *
  * @param {Array} urls asset urls
- * @returns {Promise} Promise to load scripts
+ * @return {Promise} Promise to load scripts
  */
 export function loadScripts(urls) {
     const head = document.getElementsByTagName('head')[0];
@@ -428,7 +440,7 @@ export function loadScripts(urls) {
  *
  * @public
  * @param {Event} event keydown event
- * @returns {string} decoded keydown key
+ * @return {string} decoded keydown key
  */
 export function decodeKeydown(event) {
     let modifier = '';
@@ -487,14 +499,13 @@ export function decodeKeydown(event) {
     return modifier + key;
 }
 
-
 /**
  * Find location information about a script include
  *
  * @public
  * @param {string} name script name
  * @param {HTMLScriptElement} [currentScript] current script tag
- * @returns {void}
+ * @return {void}
  */
 export function findScriptLocation(name, currentScript = null) {
     const scriptSrc = currentScript
@@ -562,7 +573,7 @@ export function replacePlaceholders(string, placeholderValues) {
  *
  * @public
  * @param file {Object} The file to check
- * @returns {Boolean} True if the file needs a Box3D 360 degree viewer to be viewed
+ * @return {Boolean} True if the file needs a Box3D 360 degree viewer to be viewed
  */
 export function requires360Viewer(file) {
     // For now, we'll only support this preview if the filename has a secondary

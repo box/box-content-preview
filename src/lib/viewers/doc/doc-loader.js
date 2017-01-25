@@ -1,4 +1,5 @@
 import AssetLoader from '../asset-loader';
+import { ORIGINAL_REP_NAME } from '../../constants';
 
 const STATIC_URI = 'third-party/doc/';
 const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.min.js`, `${STATIC_URI}pdf.min.js`, `${STATIC_URI}pdf_viewer.min.js`, `${STATIC_URI}pdf.worker.min.js`, 'document.js'];
@@ -13,8 +14,7 @@ const VIEWERS = [
         JS: [`${STATIC_URI}compatibility.min.js`, `${STATIC_URI}pdf.min.js`, `${STATIC_URI}pdf_viewer.min.js`, `${STATIC_URI}pdf.worker.min.js`, 'presentation.js'],
         CSS: [`${STATIC_URI}pdf_viewer.css`, 'presentation.css'],
         NAME: 'Presentation',
-        PREFETCH: 'xhr',
-        ASSET: ''
+        PREFETCH: 'xhr'
     },
     {
         REP: 'pdf',
@@ -22,17 +22,15 @@ const VIEWERS = [
         JS: SCRIPTS_DOCUMENT,
         CSS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
         NAME: 'Document',
-        PREFETCH: 'xhr',
-        ASSET: ''
+        PREFETCH: 'xhr'
     },
     {
-        REP: 'ORIGINAL',
+        REP: ORIGINAL_REP_NAME,
         EXT: ['pdf'],
         JS: SCRIPTS_DOCUMENT,
         CSS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
         NAME: 'Document',
-        PREFETCH: 'xhr',
-        ASSET: ''
+        PREFETCH: 'xhr'
     }
 ];
 
@@ -63,7 +61,7 @@ class DocLoader extends AssetLoader {
         const rep = super.determineRepresentation(file, viewer);
         const status = (typeof rep.status === 'object') ? rep.status.state : rep.temp_status.state;
         if (file.extension === 'pdf' && rep.representation === 'pdf' && status === 'pending') {
-            repOverride = file.representations.entries.find((entry) => entry.representation === 'ORIGINAL');
+            repOverride = file.representations.entries.find((entry) => entry.representation === ORIGINAL_REP_NAME);
         }
 
         return repOverride || rep;

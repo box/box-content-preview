@@ -1,5 +1,6 @@
 import AssetLoader from '../asset-loader';
 import { requires360Viewer } from '../../util';
+import { ORIGINAL_REP_NAME } from '../../constants';
 
 const STATIC_URI = 'third-party/media/';
 const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv'];
@@ -9,21 +10,13 @@ const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 
 // representation but can fallback to using the mp3 representation (for watermarked versions).
 const VIEWERS = [
     {
-        REP: 'ORIGINAL',
+        REP: ORIGINAL_REP_NAME,
         EXT: ['mp3'],
         JS: ['mp3.js'],
         CSS: ['mp3.css'],
         NAME: 'MP3',
-        PREFETCH: 'xhr',
-        ASSET: ''
+        PREFETCH: 'audio'
     },
-    // {
-    //     REP: 'ORIGINAL',
-    //     EXT: ['flv'],
-    //     JS: ['third-party/swf/swfobject.js', 'flash.js'],
-    //     CSS: ['flash.css'],
-    //     NAME: 'Flash'
-    // },
     {
         REP: 'dash',
         EXT: VIDEO_FORMATS,
@@ -39,8 +32,7 @@ const VIEWERS = [
         JS: ['mp4.js'],
         CSS: ['mp4.css'],
         NAME: 'MP4',
-        PREFETCH: 'xhr',
-        ASSET: ''
+        PREFETCH: 'video'
     },
     {
         REP: 'mp3',
@@ -48,8 +40,7 @@ const VIEWERS = [
         JS: ['mp3.js'],
         CSS: ['mp3.css'],
         NAME: 'MP3',
-        PREFETCH: 'xhr',
-        ASSET: ''
+        PREFETCH: 'audio'
     }
 ];
 

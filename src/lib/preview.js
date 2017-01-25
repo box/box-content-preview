@@ -10,7 +10,7 @@ import loaders from './loaders';
 import cache from './cache';
 import RepStatus from './rep-status';
 import ErrorLoader from './viewers/error/error-loader';
-import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
+import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation, createContentUrl } from './util';
 import getTokens from './tokens';
 import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid, cacheFile } from './file';
 import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
@@ -640,6 +640,7 @@ class Preview extends EventEmitter {
             // Instantiate the viewer
             this.viewer = new Box.Preview[viewer.NAME](this.container, Object.assign({}, this.options, {
                 file: this.file,
+                viewerAsset: viewer.ASSET,
                 viewerName: viewer.NAME // name of the viewer, cannot rely on constructor.name
             }));
 
@@ -650,11 +651,14 @@ class Preview extends EventEmitter {
             // Add listeners for viewer events
             this.attachViewerListeners();
 
-            // Checks if representation requires an asset path
-            const assetPath = (viewer.PREFETCH === 'img' && representation.use_paged_viewer === 'false') ? '' : viewer.ASSET;
+            // -------------------- DELETE NEXT 3 LINES
+            const { content, use_paged_viewer: usePagedViewer } = representation;
+            const asset = usePagedViewer !== 'false' ? (viewer.ASSET || '') : '';
+            const url = createContentUrl(content.url_template, asset);
+            // -------------------- DELETE ABOVE 3 LINES
 
             // Load the representation into the viewer
-            this.viewer.load(representation.content.url_template, assetPath);
+            this.viewer.load(url); // pass in content.url_template
         }).catch((err) => {
             this.triggerError((err instanceof Error) ? err : new Error(__('error_refresh')));
         });

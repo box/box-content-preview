@@ -69,15 +69,13 @@ class Image extends Base {
      *
      * @public
      * @param {string} imageUrl The image url
-     * @param {string} assetPath The asset path needed to access file
      * @returns {void}
      */
-    load(imageUrl, assetPath) {
-        // Checks if representation requires a paged viewer
-        this.imageEl.src = this.appendAuthParam(imageUrl, assetPath);
+    load(imageUrlTemplate) {
         this.imageEl.addEventListener('load', this.loadHandler);
         this.imageEl.addEventListener('error', this.errorHandler);
         this.bindDOMListeners();
+        this.imageEl.src = this.createContentUrlWithAuthParams(imageUrlTemplate);
 
         super.load();
     }

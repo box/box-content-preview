@@ -75,11 +75,12 @@ class MediaBase extends Base {
     /**
      * Loads a media source.
      *
+     * @override
      * @param {string} mediaUrl The media url
-     * @return {Promise} Promise to load media
+     * @return {void}
      */
-    load(mediaUrl) {
-        this.mediaUrl = this.appendAuthParam(mediaUrl);
+    load(mediaUrlTemplate) {
+        this.mediaUrl = this.createContentUrlWithAuthParams(mediaUrlTemplate);
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
         this.mediaEl.addEventListener('error', this.errorHandler);
         this.mediaEl.src = this.mediaUrl;

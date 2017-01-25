@@ -94,6 +94,17 @@ class TextBase extends Base {
     }
 
     /**
+     * Resize handler
+     *
+     * @override
+     * @returns {void}
+     * @protected
+     */
+    resize() {
+        super.resize();
+    }
+
+    /**
      * Handles keyboard events for media
      *
      * @param {string} key keydown key

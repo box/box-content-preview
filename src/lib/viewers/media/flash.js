@@ -30,8 +30,8 @@ class Flash extends Base {
         this.playerEl.id = 'flash-player';
     }
 
-    load(mediaUrl) {
-        this.mediaUrl = this.appendAuthParam(mediaUrl);
+    load(mediaUrlTemplate) {
+        this.mediaUrl = this.createContentUrlWithAuthParams(mediaUrlTemplate);
         this.initFlash();
     }
 

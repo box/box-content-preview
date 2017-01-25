@@ -4,19 +4,16 @@ import Browser from '../../browser';
 import Popup from '../../popup';
 import { CLASS_HIDDEN } from '../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
+import { HIGHLIGHTTABLE_EXTENSIONS } from './extensions';
 import { get, openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
 
 const Box = global.Box || {};
 
-// Extensions for code files
-const CODE_EXTENSIONS = ['as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'cxx', 'diff', 'erb', 'groovy', 'h', 'haml', 'hh', 'htm', 'html', 'java', 'js', 'less', 'm', 'make', 'ml', 'mm', 'php', 'pl', 'plist', 'properties', 'py', 'rb', 'rst', 'sass', 'scala', 'script', 'scm', 'sml', 'sql', 'sh', 'vi', 'vim', 'webdoc', 'xhtml', 'yaml'];
-
 // Inline web worker JS
-const HIGHLIGHT_WORKER_JS = 'onmessage=function(event){importScripts(event.data.highlightSrc);var result=self.hljs.highlightAuto(event.data.text);postMessage(result.value)};';
+const HIGHLIGHT_WORKER_JS = 'onmessage=function(e){importScripts(e.data.highlightSrc);postMessage(self.hljs.highlightAuto(e.data.text).value)};';
 
 // Only load up to 192Kb of text
 const SIZE_LIMIT_BYTES = 196608;
-const BYTE_RANGE = `bytes=0-${SIZE_LIMIT_BYTES}`;
 
 // Time to wait before allowing user to print (we're guessing how long it takes the iframe to load)
 const PRINT_TIMEOUT_MS = 5000;
@@ -64,28 +61,19 @@ class PlainText extends TextBase {
      * Loads a text file.
      *
      * @param {string} textUrl The text file to load
-     * @param {string} assetPath The asset path needed to access file
      * @returns {Promise} Promise to load a text file
      */
-    load(textUrl, assetPath) {
-        // Replace asset path in text url
-        const url = textUrl.replace(/\{asset_path\}/, assetPath);
+    load(textUrlTemplate) {
+        const url = this.createContentUrlWithAuthParams(textUrlTemplate);
+        const { file } = this.options;
+        const { size, extension } = file;
 
-        // Default to access token in query param since this is a 'simple'
-        // CORS request that doesn't need an extra OPTIONS pre-flight
-        let getPromise = get(this.appendAuthParam(textUrl, assetPath), 'text');
+        this.truncated = size > SIZE_LIMIT_BYTES;
+        const headers = this.truncated ? { Range: `bytes=0-${SIZE_LIMIT_BYTES}` } : {};
 
-        // If file is greater than size limit, only fetch first few bytes
-        if (this.options.file.size > SIZE_LIMIT_BYTES) {
-            getPromise = get(url, this.appendAuthHeader({
-                Range: BYTE_RANGE
-            }), 'text');
-
-            this.truncated = true;
-        }
-
-        getPromise.then((text) => {
-            if (this.destroyed) {
+        get(url, headers, 'text')
+        .then((text) => {
+            if (this.isDestroyed()) {
                 return;
             }
 
@@ -95,7 +83,7 @@ class PlainText extends TextBase {
             }
 
             // Only highlight code files
-            if (CODE_EXTENSIONS.indexOf(this.options.file.extension) === -1) {
+            if (HIGHLIGHTTABLE_EXTENSIONS.indexOf(extension) === -1) {
                 this.finishLoading(fetchedText, false);
             } else {
                 this.initHighlightJs(fetchedText);

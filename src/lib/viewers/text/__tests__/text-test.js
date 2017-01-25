@@ -107,29 +107,28 @@ describe('text', () => {
         });
 
         it('should fetch text representation with access token in query param if file is small enough', () => {
-            const getPromise = Promise.resolve('');
-            sandbox.stub(util, 'get').returns(getPromise);
-            text.options.file.size = 196608 - 1; // 192KB - 1
             const urlWithAccessToken = 'blah';
-            sandbox.stub(text, 'appendAuthParam').returns(urlWithAccessToken);
+            const getPromise = Promise.resolve('');
+            text.options.file.size = 196608 - 1; // 192KB - 1
 
+            sandbox.stub(util, 'get').returns(getPromise);
+            sandbox.stub(text, 'createContentUrlWithAuthParams').returns(urlWithAccessToken);
             text.load('');
 
             return getPromise.then(() => {
                 expect(text.truncated).to.be.false;
-                expect(util.get).to.have.been.calledWith(urlWithAccessToken, 'text');
+                expect(util.get).to.have.been.calledWith(urlWithAccessToken, {}, 'text');
             });
         });
 
         it('should fetch text representation with a byte range if file size is too large', () => {
             const getPromise = Promise.resolve('');
-            sandbox.stub(util, 'get').returns(getPromise);
-            text.options.file.size = 196608 + 1; // 192KB + 1
             const url = 'url';
-            const headersWithRange = {
-                Range: 'blah'
-            };
-            sandbox.stub(text, 'appendAuthHeader').returns(headersWithRange);
+            const headersWithRange = { Range: 'bytes=0-196608' };
+            text.options.file.size = 196608 + 1; // 192KB + 1
+
+            sandbox.stub(util, 'get').returns(getPromise);
+            sandbox.stub(text, 'createContentUrlWithAuthParams').returns(url);
 
             text.load(url);
 
@@ -144,7 +143,7 @@ describe('text', () => {
             const getPromise = Promise.resolve(someText);
             sandbox.stub(util, 'get').returns(getPromise);
             sandbox.stub(text, 'finishLoading');
-            text.truncated = true;
+            text.options.file.size = 196608 + 1; // 192KB + 1
 
             text.load('');
 
@@ -158,7 +157,7 @@ describe('text', () => {
             const getPromise = Promise.resolve(someText);
             sandbox.stub(util, 'get').returns(getPromise);
             sandbox.stub(text, 'initHighlightJs');
-            text.truncated = true;
+            text.options.file.size = 196608 + 1; // 192KB + 1
             text.options.file.extension = 'js'; // code extension
 
             text.load('');
