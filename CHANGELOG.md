@@ -1,5 +1,27 @@
 # Change Log
 
+## [v0.98.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.98.0) (2017-01-25)
+[Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.97.0...v0.98.0)
+
+**Merged pull requests:**
+
+- Fix media loading when skipping to unloaded portion of media [\#932](https://gitenterprise.inside-box.net/Preview/Preview/pull/932) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Moving mouse out of a newly created annotation mispositions highlight dialog [\#931](https://gitenterprise.inside-box.net/Preview/Preview/pull/931) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Tweak video loading [\#929](https://gitenterprise.inside-box.net/Preview/Preview/pull/929) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Cleanup [\#928](https://gitenterprise.inside-box.net/Preview/Preview/pull/928) ([phora](https://gitenterprise.inside-box.net/phora))
+- Remove previewerror event [\#927](https://gitenterprise.inside-box.net/Preview/Preview/pull/927) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- hiding default play button and fixing playback on iOS Safari [\#926](https://gitenterprise.inside-box.net/Preview/Preview/pull/926) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- replaced loadedmetadataHandler\(\) with loadeddataHandler [\#925](https://gitenterprise.inside-box.net/Preview/Preview/pull/925) ([jholdstock](https://gitenterprise.inside-box.net/jholdstock))
+- Removing files field in representation [\#923](https://gitenterprise.inside-box.net/Preview/Preview/pull/923) ([spramod](https://gitenterprise.inside-box.net/spramod))
+- Modify PapaParse to support shared link password [\#922](https://gitenterprise.inside-box.net/Preview/Preview/pull/922) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Fix prefetching by making sure original representation is faked prope… [\#920](https://gitenterprise.inside-box.net/Preview/Preview/pull/920) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- fixing find bar height and shortcut handling [\#918](https://gitenterprise.inside-box.net/Preview/Preview/pull/918) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Fix status check in doc-loader [\#917](https://gitenterprise.inside-box.net/Preview/Preview/pull/917) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Changelog and readme [\#915](https://gitenterprise.inside-box.net/Preview/Preview/pull/915) ([jpress](https://gitenterprise.inside-box.net/jpress))
+- Shorten viewer property names [\#913](https://gitenterprise.inside-box.net/Preview/Preview/pull/913) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Minifying pdf.js files with Google Closure Compiler [\#906](https://gitenterprise.inside-box.net/Preview/Preview/pull/906) ([tjin](https://gitenterprise.inside-box.net/tjin))
+- Shaka Player 2.0.3 Upgrade [\#890](https://gitenterprise.inside-box.net/Preview/Preview/pull/890) ([phora](https://gitenterprise.inside-box.net/phora))
+
 ## [v0.97.0](https://gitenterprise.inside-box.net/Preview/Preview/tree/v0.97.0) (2017-01-19)
 [Full Changelog](https://gitenterprise.inside-box.net/Preview/Preview/compare/v0.96.0...v0.97.0)
 
