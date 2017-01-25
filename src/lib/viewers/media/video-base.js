@@ -1,7 +1,7 @@
 import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
 import MediaBase from './media-base';
-import { CLASS_HIDDEN, CLASS_PREVIEW_LOADED } from '../../constants';
+import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_DARK } from '../../constants';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
 const PLAY_ICON = '<svg fill="#FFF" height="48" viewBox="0 0 24 24" width="48"><path d="M8 5v14l11-7z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
@@ -60,8 +60,8 @@ class VideoBase extends MediaBase {
      * @return {void}
      */
     loadeddataHandler() {
-        this.showPlayButton();
         super.loadeddataHandler();
+        this.showPlayButton();
     }
 
     /**
@@ -96,7 +96,7 @@ class VideoBase extends MediaBase {
      */
     waitingHandler() {
         if (this.containerEl) {
-            this.containerEl.classList.remove(CLASS_PREVIEW_LOADED);
+            this.containerEl.classList.add(CLASS_IS_BUFFERING);
         }
     }
 
@@ -173,7 +173,7 @@ class VideoBase extends MediaBase {
      */
     lowerLights() {
         if (this.containerEl) {
-            this.containerEl.classList.add('bp-dark');
+            this.containerEl.classList.add(CLASS_DARK);
         }
     }
 }

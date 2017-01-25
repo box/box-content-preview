@@ -2,7 +2,7 @@ import autobind from 'autobind-decorator';
 import Base from '../base';
 import cache from '../../cache';
 import MediaControls from './media-controls';
-import { CLASS_HIDDEN, CLASS_PREVIEW_LOADED, CLASS_IS_VISIBLE } from '../../constants';
+import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
 
 const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
@@ -371,7 +371,7 @@ class MediaBase extends Base {
      */
     hideLoadingIcon() {
         if (this.containerEl) {
-            this.containerEl.classList.add(CLASS_PREVIEW_LOADED);
+            this.containerEl.classList.remove(CLASS_IS_BUFFERING);
         }
     }
 
@@ -383,7 +383,7 @@ class MediaBase extends Base {
      */
     showLoadingIcon() {
         if (this.containerEl && this.mediaEl && !this.mediaEl.paused && !this.mediaEl.ended) {
-            this.containerEl.classList.remove(CLASS_PREVIEW_LOADED);
+            this.containerEl.classList.add(CLASS_IS_BUFFERING);
             this.hidePlayButton();
         }
     }

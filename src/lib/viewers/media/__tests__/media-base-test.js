@@ -323,7 +323,7 @@ describe('mp3', () => {
     describe('hideLoadingIcon()', () => {
         it('should add the loaded class to the container', () => {
             media.hideLoadingIcon();
-            expect(media.containerEl.classList.contains('bp-loaded')).to.be.true;
+            expect(media.containerEl.classList.contains('bp-is-buffering')).to.be.false;
         });
     });
 
@@ -338,7 +338,7 @@ describe('mp3', () => {
             media.showLoadingIcon();
 
             expect(media.hidePlayButton).to.be.called;
-            expect(media.containerEl.classList.contains('bp-loaded')).to.be.false;
+            expect(media.containerEl.classList.contains('bp-is-buffering')).to.be.true;
         });
     });
 

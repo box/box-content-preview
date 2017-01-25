@@ -25,6 +25,8 @@ export const CLASS_FULLSCREEN = 'bp-is-fullscreen';
 export const CLASS_INVISIBLE = 'bp-is-invisible';
 export const CLASS_IS_VISIBLE = 'bp-is-visible';
 export const CLASS_SELECTABLE = 'bp-is-selectable';
+export const CLASS_IS_BUFFERING = 'bp-is-buffering';
+export const CLASS_DARK = 'bp-dark';
 
 export const SELECTOR_BOX_PREVIEW_CONTAINER = `.${CLASS_BOX_PREVIEW_CONTAINER}`;
 export const SELECTOR_BOX_PREVIEW = `.${CLASS_BOX_PREVIEW}`;

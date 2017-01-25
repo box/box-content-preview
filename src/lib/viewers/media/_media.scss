@@ -57,10 +57,31 @@
     }
 }
 
-// When lights are lowered only show the crawler
+// When lights are lowered, change color of loading text
 .bp-dark {
     .bp-loading-text,
     .bp-btn-loading-download {
         color: $white;
+    }
+
+    .bp-icon {
+        opacity: .9;
+    }
+}
+
+// When media is buffering, show only the crawler
+.bp-is-buffering .bp-loading-wrapper {
+    // Show loading indicator immediately
+    animation-name: none;
+    display: block;
+
+    .bp-icon,
+    .bp-loading-text,
+    .bp-loading-btn-container {
+        display: none;
+    }
+
+    .bp-crawler-wrapper {
+        position: static;
     }
 }
