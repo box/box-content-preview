@@ -15,7 +15,8 @@ $box-blue: #2b90ef;
 }
 
 @keyframes fadeIn {
-    0% {
+    0%,
+    25% {
         opacity: 0;
     }
 
@@ -25,7 +26,7 @@ $box-blue: #2b90ef;
 }
 
 .bp-loading-wrapper {
-    animation-duration: .5s;
+    animation-duration: 1s;
     animation-iteration-count: 1;
     animation-name: fadeIn;
 

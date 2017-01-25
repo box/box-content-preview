@@ -30,6 +30,8 @@ class VideoBase extends MediaBase {
         this.playButtonEl.classList.add(CLASS_PLAY_BUTTON);
         this.playButtonEl.classList.add(CLASS_HIDDEN);
         this.playButtonEl.innerHTML = PLAY_ICON;
+
+        this.lowerLights();
     }
 
     /**
@@ -58,9 +60,8 @@ class VideoBase extends MediaBase {
      * @return {void}
      */
     loadeddataHandler() {
-        super.loadeddataHandler();
         this.showPlayButton();
-        this.lowerLights();
+        super.loadeddataHandler();
     }
 
     /**

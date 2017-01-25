@@ -2,7 +2,7 @@ import autobind from 'autobind-decorator';
 import Base from '../base';
 import cache from '../../cache';
 import MediaControls from './media-controls';
-import { CLASS_HIDDEN, CLASS_PREVIEW_LOADED } from '../../constants';
+import { CLASS_HIDDEN, CLASS_PREVIEW_LOADED, CLASS_IS_VISIBLE } from '../../constants';
 
 const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
@@ -104,6 +104,19 @@ class MediaBase extends Base {
 
         this.loadUI();
         this.resize();
+
+        // Make media element visible after resize
+        this.showMedia();
+    }
+
+    /**
+     * Makes media wrapper (and contents) visible.
+     *
+     * @protected
+     * @return {void}
+     */
+    showMedia() {
+        this.wrapperEl.classList.add(CLASS_IS_VISIBLE);
     }
 
     /**

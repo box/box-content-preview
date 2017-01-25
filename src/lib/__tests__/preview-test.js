@@ -608,7 +608,6 @@ describe('Preview', () => {
             stubs.setup = sandbox.stub(ui, 'setup');
             stubs.showLoadingIndicator = sandbox.stub(ui, 'showLoadingIndicator');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
-            stubs.showLoadingDownloadButton = sandbox.stub(ui, 'showLoadingDownloadButton');
             stubs.showNavigation = sandbox.stub(ui, 'showNavigation');
             stubs.set = sandbox.stub(cache, 'set');
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
@@ -634,31 +633,6 @@ describe('Preview', () => {
             preview.loadPreviewWithTokens({});
             expect(stubs.setup).to.be.called;
             expect(stubs.showLoadingIndicator).to.be.called;
-        });
-
-        it('should show the loading download button if there are sufficient permissions', () => {
-            stubs.checkPermission.returns(false);
-            preview.options.showDownload = false;
-
-            preview.loadPreviewWithTokens({});
-            expect(stubs.showLoadingDownloadButton).to.not.be.called;
-
-            stubs.checkPermission.returns(true);
-
-            preview.loadPreviewWithTokens({});
-            expect(stubs.showLoadingDownloadButton).to.not.be.called;
-
-            stubs.checkPermission.returns(false);
-            preview.options.showDownload = true;
-
-            preview.loadPreviewWithTokens({});
-            expect(stubs.showLoadingDownloadButton).to.not.be.called;
-
-            stubs.checkPermission.returns(true);
-            preview.options.showDownload = true;
-
-            preview.loadPreviewWithTokens({});
-            expect(stubs.showLoadingDownloadButton).to.be.called;
         });
 
         it('should show navigation and cache the file', () => {
@@ -993,7 +967,7 @@ describe('Preview', () => {
         beforeEach(() => {
             stubs.destroy = sandbox.stub(preview, 'destroy');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(true);
-
+            stubs.showLoadingDownloadButton = sandbox.stub(ui, 'showLoadingDownloadButton');
             stubs.loadPromiseResolve = Promise.resolve();
             stubs.determineRepresentationStatusPromise = Promise.resolve();
             stubs.loader = {
@@ -1046,6 +1020,34 @@ describe('Preview', () => {
             } catch (e) {
                 expect(spy.threw('Error'));
             }
+        });
+
+        it('should show the loading download button if there are sufficient permissions', () => {
+            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(false);
+            preview.options.showDownload = false;
+
+            preview.loadViewer({});
+            expect(stubs.showLoadingDownloadButton).to.not.be.called;
+            preview.destroy();
+
+            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(true);
+
+            preview.loadViewer({});
+            expect(stubs.showLoadingDownloadButton).to.not.be.called;
+            preview.destroy();
+
+            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(false);
+            preview.options.showDownload = true;
+
+            preview.loadViewer({});
+            expect(stubs.showLoadingDownloadButton).to.not.be.called;
+            preview.destroy();
+
+            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(true);
+            preview.options.showDownload = true;
+
+            preview.loadViewer({});
+            expect(stubs.showLoadingDownloadButton).to.be.called;
         });
 
         it('should get the loader, viewer, and log the type of file', () => {

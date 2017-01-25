@@ -89,6 +89,7 @@ describe('mp3', () => {
             sandbox.stub(media, 'emit');
             sandbox.stub(media, 'loadUI');
             sandbox.stub(media, 'resize');
+            sandbox.stub(media, 'showMedia');
 
             media.loadeddataHandler();
 
@@ -97,6 +98,14 @@ describe('mp3', () => {
             expect(media.emit).to.be.calledWith('load');
             expect(media.loadUI).to.be.called;
             expect(media.resize).to.be.called;
+            expect(media.showMedia).to.be.called;
+        });
+    });
+
+    describe('showMedia()', () => {
+        it('should add the bp-is-visible class to make wrapper visible', () => {
+            media.showMedia();
+            expect(media.wrapperEl.classList.contains('bp-is-visible')).to.be.true;
         });
     });
 

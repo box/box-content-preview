@@ -11,6 +11,7 @@
     margin: 0;
     border: 0 none;
     width: 100%;
+    visibility: hidden;
     height: 100%;
     display: -webkit-flex;
     display: -ms-flexbox;
@@ -24,6 +25,10 @@
     -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center;
+
+    &.bp-is-visible {
+        visibility: visible;
+    }
 }
 
 .bp-media-container {
@@ -54,13 +59,8 @@
 
 // When lights are lowered only show the crawler
 .bp-dark {
-    .bp-icon,
     .bp-loading-text,
-    .bp-loading-btn-container {
-        display: none;
-    }
-
-    .bp-crawler-wrapper {
-        position: static;
+    .bp-btn-loading-download {
+        color: $white;
     }
 }

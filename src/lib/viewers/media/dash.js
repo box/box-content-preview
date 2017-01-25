@@ -275,12 +275,13 @@ class Dash extends VideoBase {
         this.handleVolume();
         this.startBandwidthTracking();
         this.handleQuality(); // should come after gettings rep ids
-
-        this.lowerLights();
         this.showPlayButton();
 
         this.loaded = true;
         this.emit('load');
+
+        // Make media element visible after resize
+        this.showMedia();
     }
 
     /**

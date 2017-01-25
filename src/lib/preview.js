@@ -425,11 +425,6 @@ class Preview extends EventEmitter {
         this.container = setup(this.options, this.keydownHandler, this.navigateLeft, this.navigateRight, this.getGlobalMousemoveHandler());
         showLoadingIndicator();
 
-        // Show download button while preview is loading
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload) {
-            showLoadingDownloadButton(this.download);
-        }
-
         // Update navigation
         showNavigation(this.file.id, this.collection);
 
@@ -608,6 +603,11 @@ class Preview extends EventEmitter {
         // Check if preview permissions exist
         if (!checkPermission(this.file, PERMISSION_PREVIEW)) {
             throw new Error(__('error_permissions'));
+        }
+
+        // Show download button if download permissions exist and preview options allow
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload) {
+            showLoadingDownloadButton(this.download);
         }
 
         // Determine the asset loader to use
