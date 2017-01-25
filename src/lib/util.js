@@ -238,6 +238,8 @@ export function insertTemplate(node, template) {
 export function createScript(url) {
     const script = document.createElement('script');
     script.src = url;
+
+    // Force scripts to execute in order, see: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script
     script.async = false;
     return script;
 }
@@ -386,7 +388,7 @@ export function createAssetUrlCreator(location) {
  * @return {void}
  */
 export function prefetchAssets(urls) {
-    const head = document.getElementsByTagName('head')[0];
+    const head = document.head;
 
     urls.forEach((url) => {
         if (!head.querySelector(`link[rel="prefetch"][href="${url}"]`)) {
@@ -402,7 +404,7 @@ export function prefetchAssets(urls) {
  * @return {void}
  */
 export function loadStylesheets(urls) {
-    const head = document.getElementsByTagName('head')[0];
+    const head = document.head;
 
     urls.forEach((url) => {
         if (!head.querySelector(`link[rel="stylesheet"][href="${url}"]`)) {
@@ -418,7 +420,7 @@ export function loadStylesheets(urls) {
  * @return {Promise} Promise to load scripts
  */
 export function loadScripts(urls) {
-    const head = document.getElementsByTagName('head')[0];
+    const head = document.head;
     const promises = [];
 
     urls.forEach((url) => {

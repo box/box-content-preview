@@ -378,7 +378,7 @@ describe('util', () => {
         describe('prefetchAssets()', () => {
             it('should insert links into the document', () => {
                 prefetchAssets(['foo', 'bar']);
-                const head = document.getElementsByTagName('head')[0];
+                const head = document.head;
                 assert.ok(head.querySelector('link[rel="prefetch"][href="foo"]') instanceof HTMLLinkElement);
                 assert.ok(head.querySelector('link[rel="prefetch"][href="bar"]') instanceof HTMLLinkElement);
             });
@@ -387,7 +387,7 @@ describe('util', () => {
         describe('loadStylesheets()', () => {
             it('should insert styles into the document', () => {
                 loadStylesheets(['foo', 'bar']);
-                const head = document.getElementsByTagName('head')[0];
+                const head = document.head;
                 assert.ok(head.querySelector('link[rel="stylesheet"][href="foo"]') instanceof HTMLLinkElement);
                 assert.ok(head.querySelector('link[rel="stylesheet"][href="bar"]') instanceof HTMLLinkElement);
             });
@@ -396,7 +396,7 @@ describe('util', () => {
         describe('loadScripts()', () => {
             it('should insert scripts into the document', () => {
                 loadScripts(['foo', 'bar']).catch(() => {});
-                const head = document.getElementsByTagName('head')[0];
+                const head = document.head;
                 assert.ok(head.querySelector('script[src="foo"]') instanceof HTMLScriptElement);
                 assert.ok(head.querySelector('script[src="bar"]') instanceof HTMLScriptElement);
             });
