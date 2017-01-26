@@ -14,8 +14,6 @@ const VIEWERS = [
             `${STATIC_URI}model3d/boxsdk.js`,
             `${STATIC_URI}model3d/box3d-runtime.js`,
             `${STATIC_URI}model3d/webvr-polyfill.js`,
-            `${STATIC_URI}model3d/WebVR/VREffect.js`,
-            `${STATIC_URI}model3d/WebVR/VRControls.js`,
             `${STATIC_URI}model3d/WebVR/VRConfig.js`,
             'video360.js'
         ],

@@ -13,7 +13,12 @@ import {
     GRID_SIZE,
     GRID_SECTIONS,
     GRID_COLOR,
-    QUALITY_LEVEL_FULL
+    QUALITY_LEVEL_FULL,
+    RENDER_MODE_LIT,
+    RENDER_MODE_UNLIT,
+    RENDER_MODE_SHAPE,
+    RENDER_MODE_NORMALS,
+    RENDER_MODE_UV
 } from './model3d-constants';
 import { createContentUrl } from '../../../util';
 import Browser from '../../../browser';
@@ -21,12 +26,33 @@ import Browser from '../../../browser';
 const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
 const FLOOR_VECTOR = { x: 0, y: -1, z: 0 };
 
-const OPTIMIZE_FRAMETIME_THESHOLD_REGULAR = 50; // 20 FPS
+const PREVIEW_CAMERA_POSITION = {
+    x: -0.559,
+    y: 0.197,
+    z: 0.712
+};
+const PREVIEW_CAMERA_QUATERNION = {
+    x: -0.101,
+    y: -0.325,
+    z: -0.035,
+    w: 0.940
+};
+
+const OPTIMIZE_FRAMETIME_THESHOLD_REGULAR = 30; // 20 FPS
 const OPTIMIZE_FRAMETIME_THESHOLD_MOBILE = 66.6; // 15 FPS
 const OPTIMIZE_FRAMETIME_THESHOLD_REGULAR_VR = 20.0; // 50 FPS
 const OPTIMIZE_FRAMETIME_THESHOLD_MOBILE_VR = 66.6; // 15 FPS
 const DEFAULT_MODEL_SIZE = 1;
 const DEFAULT_MODEL_VR_SIZE = 1.5;
+
+// A mapping of preview render mode names to Box3D render mode enum values.
+const RENDER_MODE_VALUES = {
+    [RENDER_MODE_LIT]: Box3D.RenderMode.Lit,
+    [RENDER_MODE_UNLIT]: Box3D.RenderMode.Unlit,
+    [RENDER_MODE_NORMALS]: Box3D.RenderMode.Normals,
+    [RENDER_MODE_SHAPE]: Box3D.RenderMode.Shape,
+    [RENDER_MODE_UV]: Box3D.RenderMode.UVOverlay
+};
 
 /**
  * Model3dRenderer
@@ -57,6 +83,8 @@ class Model3dRenderer extends Box3DRenderer {
         this.modelVrAlignmentPosition = ORIGIN_VECTOR;
         this.modelVrAlignmentVector = FLOOR_VECTOR;
         this.dynamicOptimizerEnabled = true;
+        this.defaultCameraPosition = PREVIEW_CAMERA_POSITION;
+        this.defaultCameraQuaternion = PREVIEW_CAMERA_QUATERNION;
     }
 
     /** @inheritdoc */
@@ -64,20 +92,6 @@ class Model3dRenderer extends Box3DRenderer {
         this.box3d.canvas.removeEventListener('click', this.handleCanvasClick);
 
         this.cleanupScene();
-
-        [
-            'HDR_ENV_MAP_CUBE_0',
-            'HDR_ENV_MAP_CUBE_1',
-            'HDR_ENV_MAP_CUBE_2',
-            'HDR_ENV_MAP_0',
-            'HDR_ENV_MAP_1',
-            'HDR_ENV_MAP_2'
-        ].forEach((assetId) => {
-            const asset = this.box3d.getEntityById(assetId);
-            if (asset) {
-                asset.unload();
-            }
-        });
 
         super.destroy();
     }
@@ -115,13 +129,10 @@ class Model3dRenderer extends Box3DRenderer {
      * @returns {void}
      */
     loadBox3dFile(fileUrl, assetPath) {
-        // const loader = new Box3D.JSONLoader(this.box3d);
-
         this.box3d.canvas.addEventListener('click', this.handleCanvasClick);
 
         // Set MatCap texture for the 'Shape' render mode
         const renderModes = this.box3d.getApplication().getComponentByScriptId('render_modes');
-
         renderModes.setAttribute('shapeTexture', 'MAT_CAP_TEX');
 
         // Replace asset path for fileUrl
@@ -223,9 +234,6 @@ class Model3dRenderer extends Box3DRenderer {
 
     /** @inheritdoc */
     onSceneLoad() {
-        // Reset the camera.
-        this.reset();
-
         // Reset the skeleton visualization.
         this.resetSkeletons();
 
@@ -426,7 +434,9 @@ class Model3dRenderer extends Box3DRenderer {
     toggleHelpers(show) {
         const enable = show !== undefined ? show : !this.grid.visible;
         this.axisDisplay.visible = enable;
-        this.grid.visible = enable;
+        if (!this.vrEnabled || !this.vrDeviceHasPosition) {
+            this.grid.visible = enable;
+        }
         this.box3d.needsRender = true;
     }
 
@@ -474,7 +484,7 @@ class Model3dRenderer extends Box3DRenderer {
      */
     setRenderMode(mode) {
         if (this.box3d) {
-            Box3D.globalEvents.trigger(EVENT_SET_RENDER_MODE, mode);
+            Box3D.globalEvents.trigger(EVENT_SET_RENDER_MODE, RENDER_MODE_VALUES[mode]);
         }
     }
 
@@ -647,10 +657,6 @@ class Model3dRenderer extends Box3DRenderer {
 
         super.enableVr();
 
-        if (!this.instance) {
-            return;
-        }
-
         if (this.dynamicOptimizer) {
             this.dynamicOptimizer.setQualityChangeLevels(this.vrQualityChangeLevels);
             if (Browser.isMobile()) {
@@ -662,10 +668,11 @@ class Model3dRenderer extends Box3DRenderer {
 
         // Scale the instance for VR.
         this.instance.scaleToSize(this.modelVrSize);
-
+        const display = this.box3d.getVrDisplay();
+        this.vrDeviceHasPosition = display.capabilities.hasPosition;
         if (this.vrDeviceHasPosition) {
             this.instance.alignToPosition(this.modelVrAlignmentPosition, this.modelVrAlignmentVector);
-            this.box3d.on('mouseScroll', this.onVrZoom, this);
+            this.grid.visible = true;
         } else {
             // Enable position-less camera controls
             this.box3d.on('update', this.updateModel3dVrControls, this);
@@ -674,11 +681,7 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /** @inheritdoc */
-    disableVr() {
-        if (!this.vrEnabled) {
-            return;
-        }
-
+    onDisableVr() {
         if (this.dynamicOptimizer) {
             this.dynamicOptimizer.setQualityChangeLevels(this.regularQualityChangeLevels);
             if (Browser.isMobile()) {
@@ -693,30 +696,13 @@ class Model3dRenderer extends Box3DRenderer {
             this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
         }
 
-        if (this.vrDeviceHasPosition) {
-            this.box3d.off('mouseScroll', this.onVrZoom, this);
-        } else {
+        if (!this.vrDeviceHasPosition) {
             // Disable position-less camera controls
             this.box3d.off('update', this.updateModel3dVrControls, this);
+            this.grid.visible = false;
         }
 
-        super.disableVr();
-    }
-
-    /**
-     * Grow and shrink the model in VR using mouse scrolling.
-     * @method onVrZoom
-     * @private
-     * @param {float} delta Amount of scrolling.
-     * @returns {void}
-     */
-    onVrZoom(delta) {
-        this.modelVrSize += delta * 0.05;
-
-        if (this.instance) {
-            this.instance.scaleToSize(this.modelVrSize);
-            this.instance.alignToPosition(this.modelVrAlignmentPosition, this.modelVrAlignmentVector);
-        }
+        super.onDisableVr();
     }
 
     /**

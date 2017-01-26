@@ -107,7 +107,7 @@ class Video360 extends Dash {
                 // calling super.loadeddataHandler() will ready video playback
                 super.loadeddataHandler();
                 this.createControls();
-                this.renderer.initVrIfPresent();
+                this.renderer.initVr();
             });
     }
 

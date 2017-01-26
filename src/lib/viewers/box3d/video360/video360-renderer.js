@@ -12,20 +12,6 @@ class Video360Renderer extends Box3DRenderer {
     }
 
     /**
-     * @inheritdoc
-     */
-    enableCameraControls() {
-        super.enableCameraControls('orbit_camera_controller');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    disableCameraControls() {
-        super.disableCameraControls('orbit_camera_controller');
-    }
-
-    /**
      * Get the input controller attached to the runtime
      *
      * @returns {Object} The input controller, if any

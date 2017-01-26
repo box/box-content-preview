@@ -1,22 +1,15 @@
 /* global Box3D, THREE */
+/* eslint no-param-reassign:0 */
 import EventEmitter from 'events';
-import Browser from '../../browser';
 import {
     EVENT_SHOW_VR_BUTTON,
     EVENT_SCENE_LOADED,
     EVENT_TRIGGER_RENDER
 } from './box3d-constants';
 
-const RENDER_VIEW_COMPONENT_ID = 'render_view_component';
-const PREVIEW_CAMERA_CONTROLLER_ID = 'preview_camera_controller';
-
-/**
- * Detect is WebVR is available with latest API
- * @returns {Boolean} True is we can support WebVR
- */
-function isVRAvailable() {
-    return navigator.getVRDisplays !== undefined;
-}
+const PREVIEW_CAMERA_CONTROLLER_ID = 'orbit_camera_controller';
+const PREVIEW_CAMERA_POSITION = { x: 0, y: 0, z: 0 };
+const PREVIEW_CAMERA_QUATERNION = { x: 0, y: 0, z: 0, w: 1 };
 
 /**
  * Append shared link headers to an XHR Object
@@ -50,14 +43,13 @@ class Box3DRenderer extends EventEmitter {
         this.containerEl = containerEl;
         // Instances and assets created, that are not scene default entities, are
         // tracked for cleanup during recycling of box3d runtime
-        this.instances = [];
         this.assets = [];
         this.vrEnabled = false;
-        this.vrEffect = null;
-        this.vrDeviceHasPosition = false;
         this.box3d = null;
         this.boxSdk = boxSdk;
         this.on(EVENT_TRIGGER_RENDER, this.handleOnRender);
+        this.defaultCameraPosition = PREVIEW_CAMERA_POSITION;
+        this.defaultCameraQuaternion = PREVIEW_CAMERA_QUATERNION;
     }
 
     /**
@@ -82,17 +74,12 @@ class Box3DRenderer extends EventEmitter {
      */
     destroy() {
         this.removeListener(EVENT_TRIGGER_RENDER, this.handleOnRender);
-        window.removeEventListener('vrdisplaypresentchange', this.onVrPresentChange.bind(this));
 
         if (!this.box3d) {
             return;
         }
 
         this.disableVr();
-
-        if (this.vrEffect) {
-            this.vrEffect.dispose();
-        }
 
         this.box3d.destroy();
         this.box3d = null;
@@ -107,7 +94,9 @@ class Box3DRenderer extends EventEmitter {
         const camera = this.getCamera();
 
         // Reset camera settings to default.
-        if (camera && !this.vrEnabled) {
+        if (camera) {
+            camera.setPosition(this.defaultCameraPosition.x, this.defaultCameraPosition.y, this.defaultCameraPosition.z);
+            camera.setQuaternion(this.defaultCameraQuaternion.x, this.defaultCameraQuaternion.y, this.defaultCameraQuaternion.z, this.defaultCameraQuaternion.w);
             camera.trigger('resetOrbitCameraController');
         }
     }
@@ -134,9 +123,9 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
-     * Get the scene asset.
+     * Get the scene object.
      *
-     * @returns {Box3DEntity} The scene asset
+     * @returns {SceneObject} The scene object
      */
     getScene() {
         return this.box3d ? this.box3d.getEntityById('SCENE_ID') : null;
@@ -230,8 +219,10 @@ class Box3DRenderer extends EventEmitter {
      * @returns {void}
      */
     onSceneLoad() {
+        // Reset the camera.
+        this.reset();
         this.emit(EVENT_SCENE_LOADED);
-        this.initVrIfPresent();
+        this.initVr();
     }
 
     /**
@@ -248,20 +239,29 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
-     * Initialize Box3D camera controls for use with VR display.
-     *
-     * @param {Object} camera The Box3D camera entity to create VR controls for.
-     * @returns {void}
+     * Handle returning behaviour to normal after leaving VR.
      */
-    initCameraForVr(camera) {
-        if (this.vrControls) {
-            this.vrControls.dispose();
-        }
-        this.vrControls = new THREE.VRControls(camera.runtimeData);
-        this.vrControls.scale = 1;
-        this.vrControls.standing = true;
-        this.vrControls.userHeight = 1;
-        this.vrControls.resetPose();
+    onDisableVr() {
+        this.enableCameraControls();
+        this.reset();
+        this.box3d.trigger('resize');
+        const renderer = this.box3d.getRenderer();
+        renderer.setAttribute('renderOnDemand', true);
+
+        const display = this.box3d.getVrDisplay();
+        this.vrEnabled = display && display.isPresenting;
+    }
+
+    /**
+     * Handle turning on VR.
+     */
+    onEnableVr() {
+        this.disableCameraControls();
+        // Render every frame to make sure that we're as responsive as possible.
+        const renderer = this.box3d.getRenderer();
+        renderer.setAttribute('renderOnDemand', false);
+        const display = this.box3d.getVrDisplay();
+        this.vrEnabled = display && display.isPresenting;
     }
 
     /**
@@ -274,39 +274,7 @@ class Box3DRenderer extends EventEmitter {
             return;
         }
 
-        this.disableCameraControls();
-
-        // Create the controls every time we enter VR mode so that we're always using the current
-        // camera.
-        const camera = this.getCamera();
-        this.initCameraForVr(camera);
-
-        this.box3d.setVrDisplay(this.vrEffect.getVRDisplay());
-
-        const renderView = camera.getComponentByScriptId(RENDER_VIEW_COMPONENT_ID);
-        renderView.effect = this.vrEffect;
-        renderView.setAttribute('enablePreRenderFunctions', false);
-
-        // Start doing updates of the VR controls.
-        this.box3d.on('preUpdate', this.updateVrControls, this);
-
-        // Start rendering to the VR device.
-        this.renderVR();
-
-        // Render every frame to make sure that we're as responsive as possible.
-        const renderer = this.box3d.getRenderer();
-        renderer.setAttribute('renderOnDemand', false);
-    }
-
-    /**
-     * Request WebVR to begin rendering to the VR device.
-     *
-     * @returns {void}
-     */
-    renderVR() {
-        if (this.vrEffect) {
-            this.vrEffect.requestPresent();
-        }
+        this.box3d.trigger('enableVrRendering');
     }
 
     /**
@@ -319,49 +287,9 @@ class Box3DRenderer extends EventEmitter {
             return;
         }
 
-        if (this.vrControls) {
-            this.vrControls.dispose();
-            this.vrControls = undefined;
-        }
-
-        this.box3d.setVrDisplay(null);
-
-        this.enableCameraControls();
-        this.reset();
-
-        const camera = this.getCamera();
-        if (camera) {
-            const renderViewComponent = camera.getComponentByScriptId(RENDER_VIEW_COMPONENT_ID);
-            renderViewComponent.effect = null;
-            renderViewComponent.setAttribute('enablePreRenderFunctions', true);
-        }
-
-        this.box3d.off('preUpdate', this.updateVrControls, this);
-
-        this.vrEffect.exitPresent().then(() => {
-            if (!this.box3d) {
-                return;
-            }
-
-            const renderer = this.box3d.getRenderer();
-            renderer.setAttribute('renderOnDemand', true);
-            this.resize();
-        });
+        this.box3d.trigger('disableVrRendering');
     }
 
-
-    /**
-     * Update the controls for VR when enabled.
-     *
-     * @private
-     * @returns {void}
-     */
-    updateVrControls() {
-        if (!this.vrControls) {
-            return;
-        }
-        this.vrControls.update();
-    }
 
     /**
      * Trigger an update and render event on the runtime.
@@ -414,51 +342,23 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
-     * Callback for vrdisplaypresentchange event. On mobile, this is how we know the back button
-     * was pressed in VR mode so we can disable the VR controls and rendering effect.
-     *
-     * @return {void}
-     */
-    onVrPresentChange() {
-        // We only want to call disable when we're on mobile.
-        if (Browser.isMobile() && this.vrEnabled) {
-            this.disableVr();
-        }
-        this.vrEnabled = !this.vrEnabled;
-    }
-
-    /**
      * Enables VR if present.
      *
      * @returns {void}
      */
-    initVrIfPresent() {
-        if (!isVRAvailable() || Box3D.isTablet()) {
+    initVr() {
+        if (Box3D.isTablet()) {
             return;
         }
 
-        navigator.getVRDisplays().then((devices) => {
-            // Only setup and allow VR if devices present
-            if (!devices.length || !this.getBox3D()) {
-                return;
+        const app = this.box3d.getApplication();
+        const vrPresenter = app.getComponentByScriptId('vr_presenter_component');
+        vrPresenter.whenDisplaysAvailable((displays) => {
+            if (displays.length) {
+                this.emit(EVENT_SHOW_VR_BUTTON);
+                this.box3d.listenTo(this.box3d, 'vrRenderingDisabled', this.onDisableVr.bind(this));
+                this.box3d.listenTo(this.box3d, 'vrRenderingEnabled', this.onEnableVr.bind(this));
             }
-
-            this.vrDeviceHasPosition = devices.some((device) => device.capabilities.hasPosition);
-
-            // Create the VR Effect object that handles rendering left and right views.
-            const threeRenderer = this.box3d.getThreeRenderer();
-            if (!this.vrEffect) {
-                this.vrEffect = new THREE.VREffect(threeRenderer, this.box3d.getRenderer());
-                const rendererSize = threeRenderer.getSize();
-                this.vrEffect.setSize(rendererSize.width, rendererSize.height);
-            }
-
-            if (!this.vrInitialized) {
-                window.addEventListener('vrdisplaypresentchange', this.onVrPresentChange.bind(this));
-                this.vrInitialized = true;
-            }
-
-            this.emit(EVENT_SHOW_VR_BUTTON);
         });
     }
 }

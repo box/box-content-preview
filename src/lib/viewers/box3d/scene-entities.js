@@ -1,6 +1,6 @@
 import Browser from '../../browser';
 /**
- * Returns the default scene entities array for a base 3d preview. Comes with a box!
+ * Returns the default scene entities array
  * @returns {array} Array of scene entities
  */
 function sceneEntities() {
@@ -9,28 +9,19 @@ function sceneEntities() {
         type: 'camera',
         parentId: 'SCENE_ID',
         properties: {
-            position: {
-                x: -0.559,
-                y: 0.197,
-                z: 0.712
-            }, // Default position of camera
-            quaternion: {
-                x: -0.101,
-                y: -0.325,
-                z: -0.035,
-                w: 0.940
-            }, // Default position of camera
             near: 0.01, // Camera near-plane distance
-            far: 6
+            far: 8
         },
-        components: {
+        components: [
             // The render view controls how the scene is rendered: regular, UV-only, normal-only, etc.
-            renderView: {
+            {
+                name: 'Render View',
                 enabled: true,
-                scriptId: 'render_view_component'
+                scriptId: 'vr_render_view_component'
             },
             // An orbit controller for rotating around the 3D model, made for preview
-            previewCameraController: {
+            {
+                name: 'Preview Camera',
                 attributes: {
                     orbitDistanceMin: 0.02, // Minimum camera distance
                     orbitDistanceMax: 3, // Maximum camera distance
@@ -40,12 +31,12 @@ function sceneEntities() {
                 enabled: true,
                 scriptId: 'orbit_camera_controller'
             },
-            previewCameraFocus: {
-                attributes: {},
+            {
+                name: 'VR Camera Controller',
                 enabled: true,
-                scriptId: 'preview_camera_focus'
+                scriptId: 'vr_camera_controller'
             }
-        }
+        ]
     }, {
         id: 'SCENE_ID',
         type: 'scene',
@@ -68,11 +59,12 @@ function sceneEntities() {
         properties: {
             startupSceneId: 'SCENE_ID' // The scene to load
         },
-        components: {
-            rendererComponent: {
+        components: [
+            {
+                name: 'Renderer',
                 attributes: {
                     renderOnDemand: true,
-                    maxTextureSize2d: Browser.isMobile() ? 1024 : undefined,
+                    maxTextureSize2d: Browser.isMobile() ? 1024 : 8192,
                     maxTextureSizeCube: Browser.isMobile() ? 512 : undefined,
                     preserveDrawingBuffer: false,
                     precision: Browser.isMobile() ? 'highp' : 'mediump',
@@ -82,18 +74,8 @@ function sceneEntities() {
                 scriptId: 'box3d_renderer',
                 enabled: true
             },
-            dynamicOptimizer: {
-                scriptId: 'dynamic_optimizer',
-                enabled: false,
-                attributes: {
-                    testInterval: 4000.0
-                }
-            },
-            debugPerformance: {
-                scriptId: 'debug_performance',
-                enabled: false
-            },
-            inputController: {
+            {
+                name: 'Input',
                 scriptId: 'input_controller_component',
                 enabled: true,
                 attributes: {
@@ -134,11 +116,11 @@ function sceneEntities() {
                     }
                 }
             },
-            renderModesComponent: {
-                attributes: {},
-                scriptId: 'render_modes'
+            {
+                name: 'VR Presenter',
+                scriptId: 'vr_presenter_component'
             }
-        }
+        ]
     }];
 }
 

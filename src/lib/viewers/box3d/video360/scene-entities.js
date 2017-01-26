@@ -5,17 +5,6 @@ export default [{
     type: 'camera',
     parentId: 'SCENE_ID',
     properties: {
-        position: {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0
-        }, // Default position of camera
-        quaternion: {
-            x: -0.185,
-            y: 0.294,
-            z: 0.058,
-            w: 0.936
-        }, // Default position of camera
         near: 10, // Camera near-plane distance
         far: 1200,
         fov: 70
@@ -25,7 +14,7 @@ export default [{
         {
             name: 'Render View',
             enabled: true,
-            scriptId: 'render_view_component'
+            scriptId: 'vr_render_view_component'
         },
         {
             name: 'Orbit Camera',
@@ -39,6 +28,11 @@ export default [{
             },
             enabled: true,
             scriptId: 'orbit_camera_controller'
+        },
+        {
+            name: 'VR Camera Controller',
+            enabled: true,
+            scriptId: 'vr_camera_controller'
         }
     ]
 }, {
@@ -122,6 +116,10 @@ export default [{
                     eventHandler: true
                 }
             }
+        },
+        {
+            name: 'VR Presenter',
+            scriptId: 'vr_presenter_component'
         }
     ]
 }];

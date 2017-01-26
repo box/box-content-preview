@@ -194,7 +194,7 @@ describe('video360', () => {
         beforeEach(() => {
             stubs.on = sandbox.stub(Video360Renderer.prototype, 'on');
             stubs.initBox3d = sandbox.stub(Video360Renderer.prototype, 'initBox3d').returns(Promise.resolve());
-            stubs.initVrIfPresent = sandbox.stub(Video360Renderer.prototype, 'initVrIfPresent');
+            stubs.initVr = sandbox.stub(Video360Renderer.prototype, 'initVr');
             stubs.create360Environment = sandbox.stub(viewer, 'create360Environment').returns(Promise.resolve());
         });
 
@@ -255,9 +255,9 @@ describe('video360', () => {
 
         it('should invoke .renderer.initVrIfPresent() on successfully creating 360 environment', (done) => {
             sandbox.stub(viewer, 'createControls');
-            stubs.initVrIfPresent.restore();
-            stubs.initVrIfPresent = sandbox.stub(Video360Renderer.prototype, 'initVrIfPresent', () => {
-                expect(stubs.initVrIfPresent).to.have.been.called;
+            stubs.initVr.restore();
+            stubs.initVr = sandbox.stub(Video360Renderer.prototype, 'initVr', () => {
+                expect(stubs.initVr).to.have.been.called;
                 done();
             });
             viewer.loadeddataHandler();

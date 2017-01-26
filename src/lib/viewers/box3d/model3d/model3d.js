@@ -29,7 +29,6 @@ const Box = global.Box || {};
 
 const DEFAULT_AXIS_UP = '+Y';
 const DEFAULT_AXIS_FORWARD = '+Z';
-const CLASS_VR_ENABLED = 'vr-enabled';
 
 /**
  * Model3d
@@ -57,7 +56,6 @@ class Model3d extends Box3D {
             up: null,
             forward: null
         };
-        this.lastVrChange = null;
     }
 
     /**
@@ -87,9 +85,6 @@ class Model3d extends Box3D {
         }
 
         this.renderer.on(EVENT_CANVAS_CLICK, this.handleCanvasClick);
-
-        // For addition/removal of VR class when display stops presenting
-        window.addEventListener('vrdisplaypresentchange', this.onVrPresentChange);
     }
 
     /**
@@ -111,15 +106,6 @@ class Model3d extends Box3D {
         }
 
         this.renderer.removeListener(EVENT_CANVAS_CLICK, this.handleCanvasClick);
-
-        window.removeEventListener('vrdisplaypresentchange', this.onVrPresentChange);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    destroy() {
-        super.destroy();
     }
 
     /**
@@ -310,7 +296,7 @@ class Model3d extends Box3D {
                 }
 
                 this.showWrapper();
-                this.renderer.initVrIfPresent();
+                this.renderer.initVr();
                 this.emit(EVENT_LOAD);
             });
     }
@@ -335,30 +321,6 @@ class Model3d extends Box3D {
     @autobind
     handleCanvasClick() {
         this.controls.hidePullups();
-    }
-
-    /**
-     * Add/remove the vr-enabled class when vr events occur
-     * @returns {void}
-     */
-    @autobind
-    onVrPresentChange(event) {
-        const vrDetail = event.detail || {};
-        const vrDevice = vrDetail.vrdisplay;
-
-        // If no device OR no display changes, get outta here
-        if (!vrDevice || this.lastVrChange === vrDevice.isPresenting) {
-            return;
-        }
-
-        if (vrDevice.isPresenting) {
-            this.wrapperEl.classList.add(CLASS_VR_ENABLED);
-        } else {
-            this.wrapperEl.classList.remove(CLASS_VR_ENABLED);
-        }
-
-        this.lastVrChange = vrDevice.isPresenting;
-        this.controls.vrEnabled = this.lastVrChange;
     }
 
     /**

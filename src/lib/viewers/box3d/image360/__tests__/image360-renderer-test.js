@@ -329,28 +329,4 @@ describe('image360-renderer', () => {
             renderer.skybox = null;
         });
     });
-
-    describe('enableCameraControls()', () => {
-        it('should call super.enableCameraControls() with "orbit_camera_controller"', () => {
-            const spy = sandbox.spy();
-            Object.defineProperty(Object.getPrototypeOf(Image360Renderer.prototype), 'enableCameraControls', {
-                value: spy
-            });
-
-            renderer.enableCameraControls();
-            expect(spy.calledWith('orbit_camera_controller')).to.be.true;
-        });
-    });
-
-    describe('disableCameraControls()', () => {
-        it('should call super.disableCameraControls() with "orbit_camera_controller"', () => {
-            const spy = sandbox.spy();
-            Object.defineProperty(Object.getPrototypeOf(Image360Renderer.prototype), 'disableCameraControls', {
-                value: spy
-            });
-
-            renderer.disableCameraControls();
-            expect(spy.calledWith('orbit_camera_controller')).to.be.true;
-        });
-    });
 });

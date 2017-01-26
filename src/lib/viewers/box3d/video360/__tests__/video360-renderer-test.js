@@ -40,32 +40,6 @@ describe('video360-renderer', () => {
         });
     });
 
-    describe('enableCameraControls()', () => {
-        it('should call super.enableCameraControls() with "orbit_camera_controller"', () => {
-            const stub = sandbox.stub();
-            Object.defineProperty(Object.getPrototypeOf(Video360Renderer.prototype), 'enableCameraControls', {
-                value: stub
-            });
-
-            renderer.enableCameraControls();
-
-            expect(stub).to.have.been.calledWith('orbit_camera_controller');
-        });
-    });
-
-    describe('disableCameraControls()', () => {
-        it('should call super.disableCameraControls() with "orbit_camera_controller"', () => {
-            const stub = sandbox.stub();
-            Object.defineProperty(Object.getPrototypeOf(Video360Renderer.prototype), 'disableCameraControls', {
-                value: stub
-            });
-
-            renderer.disableCameraControls();
-
-            expect(stub).to.have.been.calledWith('orbit_camera_controller');
-        });
-    });
-
     describe('getInputController()', () => {
         beforeEach(() => {
             renderer.box3d = {

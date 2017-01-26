@@ -92,6 +92,8 @@ describe('box3d-renderer', () => {
         let camera;
         beforeEach(() => {
             camera = {
+                setPosition: sandbox.spy(),
+                setQuaternion: sandbox.spy(),
                 trigger: sandbox.spy()
             };
 
@@ -100,21 +102,19 @@ describe('box3d-renderer', () => {
             };
         });
 
-        it('should trigger "resetOrbitCameraController" event on the camera', () => {
+        it('should set camera position and orientation to default values', () => {
+            renderer.reset();
+
+            expect(camera.setPosition.called).to.be.true;
+            expect(camera.setPosition.called).to.be.true;
+        });
+
+        it('should set camera position and orientation to default values', () => {
             camera.trigger.withArgs(RESET_CAMERA_EVENT);
 
             renderer.reset();
 
             expect(camera.trigger.withArgs(RESET_CAMERA_EVENT).called).to.be.true;
-        });
-
-        it('should not trigger "resetOrbitCameraController" event on the camera when VR is enabled', () => {
-            camera.trigger.withArgs(RESET_CAMERA_EVENT);
-
-            renderer.vrEnabled = true;
-            renderer.reset();
-
-            expect(camera.trigger.withArgs(RESET_CAMERA_EVENT).called).to.be.false;
         });
     });
 
@@ -420,8 +420,9 @@ describe('box3d-renderer', () => {
     describe('onSceneLoad()', () => {
         it('should emit a scene loaded event and init VR mode if present', () => {
             const emitSpy = sandbox.spy(renderer, 'emit');
+            sandbox.stub(renderer, 'reset');
             emitSpy.withArgs('sceneLoaded');
-            const initVRSpy = sandbox.spy(renderer, 'initVrIfPresent');
+            const initVRSpy = sandbox.stub(renderer, 'initVr');
 
             renderer.onSceneLoad();
 
@@ -501,7 +502,5 @@ describe('box3d-renderer', () => {
 
     describe('disableCameraControls()', () => {});
 
-    describe('onVrPresentChange()', () => {});
-
-    describe('initVrIfPresent()', () => {});
+    describe('initVr()', () => {});
 });

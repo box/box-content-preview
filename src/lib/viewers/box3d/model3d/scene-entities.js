@@ -10,26 +10,15 @@ function sceneEntities(prefix) {
         type: 'camera',
         parentId: 'SCENE_ID',
         properties: {
-            position: {
-                x: -0.559,
-                y: 0.197,
-                z: 0.712
-            }, // Default position of camera
-            quaternion: {
-                x: -0.101,
-                y: -0.325,
-                z: -0.035,
-                w: 0.940
-            }, // Default position of camera
             near: 0.01, // Camera near-plane distance
-            far: 6
+            far: 8
         },
         components: [
             // The render view controls how the scene is rendered: regular, UV-only, normal-only, etc.
             {
                 name: 'Render View',
                 enabled: true,
-                scriptId: 'render_view_component'
+                scriptId: 'vr_render_view_component'
             },
             // An orbit controller for rotating around the 3D model, made for preview
             {
@@ -48,6 +37,11 @@ function sceneEntities(prefix) {
                 attributes: {},
                 enabled: true,
                 scriptId: 'preview_camera_focus'
+            },
+            {
+                name: 'VR Camera Controller',
+                enabled: true,
+                scriptId: 'vr_camera_controller'
             }
         ]
     }, {
@@ -157,6 +151,14 @@ function sceneEntities(prefix) {
                 name: 'Render Modes',
                 attributes: {},
                 scriptId: 'render_modes'
+            },
+            {
+                name: 'Gamepad Input',
+                scriptId: 'gamepad_input_controller'
+            },
+            {
+                name: 'VR Presenter',
+                scriptId: 'vr_presenter_component'
             }
         ]
     }, {

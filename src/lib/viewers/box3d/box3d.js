@@ -4,6 +4,7 @@ import Base from '../base';
 import fullscreen from '../../fullscreen';
 import Box3DControls from './box3d-controls';
 import Box3DRenderer from './box3d-renderer';
+import Browser from '../../browser';
 import {
     CSS_CLASS_BOX3D,
     EVENT_ERROR,
@@ -18,6 +19,8 @@ import './box3d.scss';
 
 // Milliseconds to wait for model to load before cancelling Preview
 const LOAD_TIMEOUT = 50000;
+
+const CLASS_VR_ENABLED = 'vr-enabled';
 
 /**
  * Box3D
@@ -89,6 +92,9 @@ class Box3D extends Base {
             this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
             this.renderer.on(EVENT_ERROR, this.handleError);
         }
+
+        // For addition/removal of VR class when display stops presenting
+        window.addEventListener('vrdisplaypresentchange', this.onVrPresentChange);
     }
 
     /**
@@ -108,6 +114,8 @@ class Box3D extends Base {
             this.renderer.removeListener(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
             this.renderer.removeListener(EVENT_ERROR, this.handleError);
         }
+
+        window.removeEventListener('vrdisplaypresentchange', this.onVrPresentChange);
     }
 
     /**
@@ -170,6 +178,32 @@ class Box3D extends Base {
     @autobind
     handleToggleVr() {
         this.renderer.toggleVr();
+    }
+
+    /**
+     * Add/remove the vr-enabled class when vr events occur
+     * @returns {void}
+     */
+    @autobind
+    onVrPresentChange() {
+        // event.display should be defined but isn't when using the webvr-polyfill
+        // so we'll hack this for now.
+        const vrDevice = this.renderer.box3d.getVrDisplay();
+
+        // On desktop, we won't be removing the action bar in VR mode.
+        if (!Browser.isMobile()) {
+            return;
+        }
+
+        if (vrDevice && vrDevice.isPresenting) {
+            this.wrapperEl.classList.add(CLASS_VR_ENABLED);
+        } else {
+            this.wrapperEl.classList.remove(CLASS_VR_ENABLED);
+        }
+
+        if (this.controls) {
+            this.controls.vrEnabled = vrDevice && vrDevice.isPresenting;
+        }
     }
 
     /**
