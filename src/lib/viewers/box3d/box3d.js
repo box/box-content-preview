@@ -5,6 +5,7 @@ import fullscreen from '../../fullscreen';
 import Box3DControls from './box3d-controls';
 import Box3DRenderer from './box3d-renderer';
 import Browser from '../../browser';
+import { get } from '../../util';
 import {
     CSS_CLASS_BOX3D,
     EVENT_ERROR,
@@ -15,6 +16,7 @@ import {
     EVENT_TOGGLE_FULLSCREEN,
     EVENT_TOGGLE_VR
 } from './box3d-constants';
+import JS from './box3d-assets';
 import './box3d.scss';
 
 // Milliseconds to wait for model to load before cancelling Preview
@@ -28,21 +30,12 @@ const CLASS_VR_ENABLED = 'vr-enabled';
  * @class
  */
 class Box3D extends Base {
-
     /**
-     * Provides base functionality that ties together submodules that handle things like
-     * Rendering webgl, Rendering UI, and handling communication between these
-     *
      * @inheritdoc
-     * @constructor
-     * @param {string|HTMLElement} container - node
-     * @param {object} [options] - some options
-     * @param {string} [options.token] - OAuth2 token used for authorizing API requests
-     * @param {string} [options.api] - Base URL to use for all api requests
-     * @return {Box3D} the Box3D object instance
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
 
         this.renderer = null;
         this.controls = null;
@@ -50,14 +43,6 @@ class Box3D extends Base {
 
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_BOX3D;
-
-        const sdkOpts = {
-            token: options.token,
-            apiBase: options.api,
-            sharedLink: options.sharedLink
-        };
-
-        this.boxSdk = new BoxSDK(sdkOpts);
 
         this.loadTimeout = LOAD_TIMEOUT;
 
@@ -152,14 +137,38 @@ class Box3D extends Base {
     /**
      * Loads a 3D Scene
      *
-     * @param {string} assetUrl - The asset to load into preview
-     * @return {Promise} A promise object which will be resolved/rejected on load
+     * @return {void}
      */
-    load(assetUrlTemplate) {
-        this.renderer
-            .load(assetUrlTemplate, this.options)
-            .catch(this.handleError);
+    load() {
+        this.setup();
+
+        const { representation, token, api, sharedLink } = this.options;
+        const { data, status } = representation;
+        const { content } = data;
+        const { url_template: template } = content;
+
+        Promise.all(this.loadAssets(JS), status.getPromise()).then(() => {
+            this.boxSdk = new BoxSDK({
+                token,
+                sharedLink,
+                apiBase: api
+            });
+            this.renderer
+                .load(this.createContentUrl(template, 'entities.json'), this.options)
+                .catch(this.handleError);
+        });
         super.load();
+    }
+
+    /**
+     * Prefetches a 3D Scene
+     *
+     * @returns {void}
+     */
+    prefetch() {
+        const { url_template: template } = this.options.representation.data.content;
+        this.prefetchAssets(JS);
+        get(this.createContentUrl(template, 'entities.json'), this.appendAuthHeader(), 'any');
     }
 
     /**

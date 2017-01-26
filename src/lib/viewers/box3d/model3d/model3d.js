@@ -2,7 +2,6 @@ import autobind from 'autobind-decorator';
 import Box3D from '../box3d';
 import Model3dControls from './model3d-controls';
 import Model3dRenderer from './model3d-renderer';
-
 import {
     CAMERA_PROJECTION_PERSPECTIVE,
     EVENT_CANVAS_CLICK,
@@ -17,15 +16,8 @@ import {
     EVENT_TOGGLE_HELPERS,
     RENDER_MODE_LIT
 } from './model3d-constants';
-
-import {
-    CSS_CLASS_INVISIBLE,
-    EVENT_LOAD
-} from '../box3d-constants';
-
+import { CSS_CLASS_INVISIBLE, EVENT_LOAD } from '../box3d-constants';
 import './model3d.scss';
-
-const Box = global.Box || {};
 
 const DEFAULT_AXIS_UP = '+Y';
 const DEFAULT_AXIS_FORWARD = '+Z';
@@ -38,14 +30,11 @@ const DEFAULT_AXIS_FORWARD = '+Z';
 @autobind
 class Model3d extends Box3D {
     /**
-     * Ties together rendering, settings, and controls modules
-     * @constructor
-     * @param {string|HTMLElement} container - node
-     * @param {object} [options] - some options
-     * @return {Model3d} the Model3d object instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
 
         this.wrapperEl.classList.add(CSS_CLASS_INVISIBLE);
 
@@ -56,6 +45,16 @@ class Model3d extends Box3D {
             up: null,
             forward: null
         };
+    }
+
+    /**
+     * Returns the name of the viewer
+     *
+     * @override
+     * @returns {string} document
+     */
+    getName() {
+        return 'Model3d';
     }
 
     /**
@@ -414,7 +413,4 @@ class Model3d extends Box3D {
     }
 }
 
-Box.Preview = Box.Preview || {};
-Box.Preview.Model3d = Model3d;
-global.Box = Box;
 export default Model3d;

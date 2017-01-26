@@ -15,7 +15,6 @@ import {
 } from '../../icons/icons';
 import './presentation.scss';
 
-const Box = global.Box || {};
 const WHEEL_THROTTLE = 200;
 const PADDING_OFFSET = 30;
 const SCROLL_EVENT_OFFSET = 5;
@@ -29,14 +28,11 @@ class Presentation extends DocBase {
     //--------------------------------------------------------------------------
 
     /**
-     * [contructor]
-     *
-     * @param {string|HTMLElement} container - Container node
-     * @param {object} [options] - Configuration options
-     * @return {Presentation} Presentation instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
         this.docEl.classList.add('bp-doc-presentation');
         this.zoomLevel = 0;
     }
@@ -149,6 +145,16 @@ class Presentation extends DocBase {
         doc.classList.remove('overflow-y');
         doc.classList.add('overflow');
         return true;
+    }
+
+    /**
+     * Returns the name of the viewer
+     *
+     * @override
+     * @returns {string} presentation
+     */
+    getName() {
+        return 'Presentation';
     }
 
     //--------------------------------------------------------------------------
@@ -317,7 +323,6 @@ class Presentation extends DocBase {
         }
     }
 
-
     /**
      * Handler for 'pagesinit' event.
      *
@@ -414,8 +419,4 @@ class Presentation extends DocBase {
     }
 }
 
-
-Box.Preview = Box.Preview || {};
-Box.Preview.Presentation = Presentation;
-global.Box = Box;
 export default Presentation;

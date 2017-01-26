@@ -1,33 +1,31 @@
 import autobind from 'autobind-decorator';
-import React from 'react';
-import { render, unmountComponentAtNode } from 'react-dom';
-import { Grid } from 'react-virtualized';
 import TextBase from './text-base';
 import { createAssetUrlCreator, get } from '../../util';
 import './csv.scss';
 
-const Box = global.Box || {};
-const PADDING = 80;
-const HEIGHT_ROW = 30;
-const WIDTH_SCROLLER = 5;
-const WIDTH_COLUMN = 160;
-const WIDTH_BORDER = 2;
+const JS = ['third-party/text/papaparse.min.js', 'csv.js'];
 
 @autobind
 class CSV extends TextBase {
-
     /**
-     * [constructor]
-     *
-     * @param {string|HTMLElement} container - The container
-     * @param {Object} options - some options
-     * @return {CSV} CSV instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
+
         this.csvEl = this.containerEl.appendChild(document.createElement('div'));
         this.csvEl.className = 'bp-text bp-text-csv';
-        this.gridComponent = null;
+    }
+
+    /**
+     * Returns the name of the viewer
+     *
+     * @override
+     * @returns {string} csv
+     */
+    getName() {
+        return 'CSV';
     }
 
     /**
@@ -36,49 +34,64 @@ class CSV extends TextBase {
      * @return {void}
      */
     destroy() {
-        if (this.gridComponent) {
-            unmountComponentAtNode(this.csvEl);
-            this.gridComponent = null;
+        if (this.csvComponent) {
+            this.csvComponent.destroy();
         }
-
         super.destroy();
     }
 
     /**
      * Loads a csv file.
      *
-     * @param {string} csvUrl - The text to load
-     * @return {Promise} Promise to load a CSV
+     * @return {void}
      */
-    load(csvUrlTemplate) {
-        const { location } = this.options;
+    load() {
+        this.setup();
+
+        const { representation, location } = this.options;
+        const { data, status } = representation;
+        const { content } = data;
+        const { url_template: template } = content;
         const assetUrlCreator = createAssetUrlCreator(location);
-        const papaWorkerUrl = assetUrlCreator('third-party/text/papaparse.min.js');
+        const papaWorkerUrl = assetUrlCreator(JS[0]);
 
-        get(papaWorkerUrl, 'blob')
-        .then((papaWorkerBlob) => {
-            /* global Papa */
-            const workerSrc = URL.createObjectURL(papaWorkerBlob);
-            Papa.SCRIPT_PATH = workerSrc;
+        Promise.all(this.loadAssets(JS), status.getPromise()).then(() => {
+            get(papaWorkerUrl, 'blob')
+            .then((papaWorkerBlob) => {
+                /* global Papa */
+                const workerSrc = URL.createObjectURL(papaWorkerBlob);
+                Papa.SCRIPT_PATH = workerSrc;
 
-            const urlWithAuth = this.createContentUrlWithAuthParams(csvUrlTemplate);
-            Papa.parse(urlWithAuth, {
-                download: true,
-                error: (err, file, inputElem, reason) => {
-                    this.emit('error', reason);
-                },
-                complete: (results) => {
-                    if (this.destroyed || !results) {
-                        return;
+                const urlWithAuth = this.createContentUrlWithAuthParams(template);
+                Papa.parse(urlWithAuth, {
+                    download: true,
+                    error: (err, file, inputElem, reason) => {
+                        this.emit('error', reason);
+                    },
+                    complete: (results) => {
+                        if (this.isDestroyed() || !results) {
+                            return;
+                        }
+                        this.data = results.data;
+                        this.finishLoading();
+                        URL.revokeObjectURL(workerSrc);
                     }
-                    this.data = results.data;
-                    this.finishLoading();
-                    URL.revokeObjectURL(workerSrc);
-                }
+                });
             });
         });
 
         super.load();
+    }
+
+    /**
+     * Prefetches assets for dash.
+     *
+     * @return {void}
+     */
+    prefetch() {
+        const { url_template: template } = this.options.representation.data.content;
+        this.prefetchAssets(JS);
+        get(this.createContentUrlWithAuthParams(template), 'any');
     }
 
     /**
@@ -89,7 +102,9 @@ class CSV extends TextBase {
      * @protected
      */
     resize() {
-        this.renderCSV();
+        if (this.csvComponent) {
+            this.csvComponent.renderCSV();
+        }
         super.resize();
     }
 
@@ -100,80 +115,13 @@ class CSV extends TextBase {
      * @private
      */
     finishLoading() {
-        this.renderCSV();
+        /* global BoxCSV */
+        this.csvComponent = new BoxCSV(this.csvEl, this.data);
+        this.csvComponent.renderCSV();
         this.loadUI();
         this.loaded = true;
         this.emit('load');
     }
-
-    /**
-     * Gets row class name
-     *
-     * @param {number} row - index of the row
-     * @return {string} class name
-     * @private
-     */
-    getRowClassName(row) {
-        return row % 2 === 0 ? 'bp-text-csv-even-row' : 'bp-text-csv-odd-row';
-    }
-
-    /* eslint-disable react/prop-types */
-    /**
-     * Renders cell
-     *
-     * @param {Object} cellInfo
-     * @param {number} cellInfo.columnIndex
-     * @param {string} cellInfo.key
-     * @param {number} cellInfo.rowIndex
-     * @param {string} cellInfo.style
-     * @return {function} Cell renderer function
-     * @private
-     */
-    cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
-        const rowClass = this.getRowClassName(rowIndex);
-        return <div className={`${rowClass} bp-text-csv-cell`} key={key} style={style}>{this.data[rowIndex][columnIndex]}</div>;
-    }
-    /* eslint-enable react/prop-types */
-
-    /**
-     * Renders CSV into an html table
-     *
-     * @return {void}
-     * @private
-     */
-    renderCSV() {
-        const rowCount = this.data.length;
-        const columnCount = this.data[0].length;
-
-        const maxWidth = this.csvEl.clientWidth - PADDING + WIDTH_BORDER;
-        const maxHeight = this.csvEl.clientHeight - PADDING + WIDTH_BORDER;
-
-        const calculatedHeight = rowCount * HEIGHT_ROW;
-        const calculatedWidth = columnCount * WIDTH_COLUMN;
-
-        let columnWidth = Math.max(maxWidth / columnCount, WIDTH_COLUMN);
-        if (calculatedHeight > maxHeight && calculatedWidth < maxWidth) {
-            // Re-adjust the columnWidth when there is a vertical scrollbar but not a horizontal one
-            columnWidth = (maxWidth - WIDTH_SCROLLER - WIDTH_BORDER) / columnCount;
-        }
-
-        this.gridComponent = render(
-            <Grid
-                className='bp-text-csv-grid'
-                cellRenderer={this.cellRenderer}
-                width={maxWidth}
-                height={Math.min(maxHeight, calculatedHeight)}
-                columnCount={columnCount}
-                rowHeight={HEIGHT_ROW}
-                columnWidth={columnWidth}
-                rowCount={rowCount}
-            />,
-            this.csvEl
-        );
-    }
 }
 
-Box.Preview = Box.Preview || {};
-Box.Preview.CSV = CSV;
-global.Box = Box;
 export default CSV;

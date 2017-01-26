@@ -1,4 +1,5 @@
 import AssetLoader from '../asset-loader';
+import IFrame from './iframe';
 import { ORIGINAL_REP_NAME } from '../../constants';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
@@ -6,9 +7,7 @@ const VIEWERS = [
     {
         REP: ORIGINAL_REP_NAME,
         EXT: ['boxnote', 'boxdicom'],
-        JS: ['iframe.js'],
-        CSS: [],
-        NAME: 'IFrame'
+        NAME: IFrame
     }
 ];
 

@@ -11,17 +11,12 @@ const DEFAULT_VOLUME = 1;
 
 @autobind
 class MediaBase extends Base {
-
     /**
-     * [constructor]
-     *
-     * @override
-     * @param {string|HTMLElement} container - The container DOM node
-     * @param {object} [options] - some options
-     * @return {MediaBase} MediaBase instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
 
         // Media Wrapper
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
@@ -77,14 +72,19 @@ class MediaBase extends Base {
      * Loads a media source.
      *
      * @override
-     * @param {string} mediaUrl - The media url
      * @return {void}
      */
-    load(mediaUrlTemplate) {
-        this.mediaUrl = this.createContentUrlWithAuthParams(mediaUrlTemplate);
+    load() {
+        this.setup();
+
+        const { representation } = this.options;
+        const { data, status } = representation;
+        const { content } = data;
+        const { url_template: template } = content;
+
+        this.mediaUrl = this.createContentUrlWithAuthParams(template);
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
         this.mediaEl.addEventListener('error', this.errorHandler);
-        this.mediaEl.src = this.mediaUrl;
 
         if (Browser.isIOS()) {
             // iOS doesn't fire loadeddata event till some data loads
@@ -92,6 +92,10 @@ class MediaBase extends Base {
             // https://webkit.org/blog/6784/new-video-policies-for-ios/
             this.mediaEl.autoplay = true;
         }
+
+        status.getPromise().then(() => {
+            this.mediaEl.src = this.mediaUrl;
+        });
 
         super.load();
     }

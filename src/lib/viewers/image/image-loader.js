@@ -1,4 +1,6 @@
 import AssetLoader from '../asset-loader';
+import Image from './image';
+import MultiImage from './multi-image';
 import { ORIGINAL_REP_NAME } from '../../constants';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
@@ -8,34 +10,23 @@ const VIEWERS = [
     {
         REP: ORIGINAL_REP_NAME,
         EXT: ['svg', 'gif'],
-        JS: ['image.js'],
-        CSS: ['image.css'],
-        NAME: 'Image',
-        PREFETCH: 'img'
+        NAME: Image
     },
     {
         REP: 'multi-image',
         EXT: ['tif', 'tiff'],
-        JS: ['multi-image.js'],
-        CSS: ['multi-image.css'],
-        NAME: 'MultiImage',
-        PREFETCH: 'img'
+        NAME: MultiImage
     },
     {
         REP: 'jpg',
         EXT: ['jpeg', 'jpg'],
-        JS: ['image.js'],
-        CSS: ['image.css'],
-        NAME: 'Image',
-        PREFETCH: 'img',
+        NAME: Image,
         ASSET: '1.jpg'
     },
     {
         REP: 'png',
         EXT: ['ai', 'bmp', 'dcm', 'eps', 'gif', 'png', 'ps', 'psd', 'svs', 'tga', 'tif', 'tiff'],
-        JS: ['image.js'],
-        CSS: ['image.css'],
-        NAME: 'Image',
+        NAME: Image,
         PREFETCH: 'img',
         ASSET: '1.png'
     }

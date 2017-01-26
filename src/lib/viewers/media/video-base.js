@@ -9,17 +9,12 @@ const CLASS_PLAY_BUTTON = 'bp-media-play-button';
 
 @autobind
 class VideoBase extends MediaBase {
-
     /**
-     * [constructor]
-     *
-     * @override
-     * @param {string|HTMLElement} container - The container DOM node
-     * @param {Object} [options] - some options
-     * @return {VideoBase} VideoBase instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
 
         // Video element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));

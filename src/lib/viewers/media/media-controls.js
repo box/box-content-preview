@@ -491,7 +491,7 @@ class MediaControls extends EventEmitter {
         };
 
         // Once the filmstrip status is success, load it
-        status.success().then(this.setFilmstrip);
+        status.getPromise().then(this.setFilmstrip);
     }
 
     /**
