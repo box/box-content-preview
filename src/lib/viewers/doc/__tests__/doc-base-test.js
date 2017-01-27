@@ -1316,7 +1316,8 @@ describe('doc-base', () => {
 
             docBase.pagesinitHandler();
             expect(stubs.emit).to.be.calledWith('load', {
-                numPages: 5
+                numPages: 5,
+                skipPostload: true
             });
             expect(docBase.loaded).to.be.truthy;
         });
@@ -1340,6 +1341,11 @@ describe('doc-base', () => {
         it('should emit the pagerender event', () => {
             docBase.pagerenderedHandler(docBase.event);
             expect(stubs.emit).to.be.calledWith('pagerender');
+        });
+
+        it('should emit postload event if not already emitted', () => {
+            docBase.pagerenderedHandler(docBase.event);
+            expect(stubs.emit).to.be.calledWith('postload');
         });
 
         it('should render annotations on a page if the annotator and event page are specified', () => {

@@ -9,6 +9,7 @@ import Logger from './logger';
 import loaders from './loaders';
 import cache from './cache';
 import RepStatus from './rep-status';
+import ProgressBar from './progress-bar';
 import ErrorLoader from './viewers/error/error-loader';
 import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation, createContentUrl } from './util';
 import getTokens from './tokens';
@@ -86,6 +87,11 @@ class Preview extends EventEmitter {
         // Stop polling for rep-status
         if (this.repStatus) {
             this.repStatus.destroy();
+        }
+
+        // Cleanup progress bar
+        if (this.progressBar) {
+            this.progressBar.destroy();
         }
 
         // Destroy viewer
@@ -421,9 +427,18 @@ class Preview extends EventEmitter {
         // Parse the preview options supplied by show()
         this.parseOptions(this.previewOptions, tokenMap);
 
-        // Setup the shell and loading UI
-        this.container = setup(this.options, this.keydownHandler, this.navigateLeft, this.navigateRight, this.getGlobalMousemoveHandler());
+        // Setup the shell
+        this.container = setup(
+            this.options,
+            this.keydownHandler,
+            this.navigateLeft,
+            this.navigateRight,
+            this.getGlobalMousemoveHandler()
+        );
+
+        // Setup loading UI and progress bar
         showLoadingIndicator();
+        this.startProgressBar();
 
         // Update navigation
         showNavigation(this.file.id, this.collection);
@@ -674,6 +689,7 @@ class Preview extends EventEmitter {
         // Node requires listener attached to 'error'
         this.viewer.addListener('error', this.triggerError);
         this.viewer.addListener('viewerevent', (data) => {
+            /* istanbul ignore next */
             switch (data.event) {
                 case 'download':
                     this.download();
@@ -683,6 +699,9 @@ class Preview extends EventEmitter {
                     break;
                 case 'load':
                     this.finishLoading(data.data);
+                    break;
+                case 'postload':
+                    this.postload();
                     break;
                 case 'notification':
                     this.emit('notification', data.data);
@@ -695,7 +714,8 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Final tasks to finish loading a viewer.
+     * Finish loading a viewer - display the appropriate control buttons, re-emit the 'load' event, log
+     * the preview, and prefetch the next few files.
      *
      * @param {Object} [data] Load event data
      * @returns {void}
@@ -740,6 +760,23 @@ class Preview extends EventEmitter {
 
         // Prefetch other files
         this.prefetch();
+
+        // Skip postload if needed
+        if (!data.skipPostload) {
+            this.postload();
+        }
+    }
+
+    /**
+     * Final load tasks. Includes cleaning up preloads and the progress bar. This is separated from
+     * finishLoading() since some viewers (e.g. the document viewer) do not want to perform these final
+     * tasks until some other event has happened.
+     *
+     * @private
+     * @return {void}
+     */
+    postload() {
+        this.finishProgressBar();
     }
 
     /**
@@ -958,6 +995,29 @@ class Preview extends EventEmitter {
         }
 
         return Promise.reject();
+    }
+
+    /**
+     * Shows and starts a progress bar at the top of the preview.
+     *
+     * @private
+     * @return {void}
+     */
+    startProgressBar() {
+        this.progressBar = new ProgressBar(this.container);
+        this.progressBar.start();
+    }
+
+    /**
+     * Finishes and hides the top progress bar if present.
+     *
+     * @private
+     * @return {void}
+     */
+    finishProgressBar() {
+        if (this.progressBar) {
+            this.progressBar.finish();
+        }
     }
 
     /**

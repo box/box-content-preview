@@ -961,11 +961,12 @@ class DocBase extends Base {
         // Set current page to previously opened page or first page
         this.setPage(this.getCachedPage());
 
-        // Broadcast that preview has loaded
+        // Broadcast that preview has 'loaded' when page structure is available
         if (!this.loaded) {
             this.loaded = true;
             this.emit('load', {
-                numPages: this.pdfViewer.pagesCount
+                numPages: this.pdfViewer.pagesCount,
+                skipPostload: true // Indicate that postload event will be fired later
             });
         }
     }
@@ -996,9 +997,16 @@ class DocBase extends Base {
         }
 
         if (pageNumber) {
+            // Page rendered event
             this.emit('pagerender', {
                 page: pageNumber
             });
+
+            // Fire postload event to hide progress bar and cleanup preload after a page is rendered
+            if (!this.somePageRendered) {
+                this.emit('postload');
+                this.somePageRendered = true;
+            }
         }
     }
 

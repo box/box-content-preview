@@ -28,10 +28,9 @@ describe('progress-bar', () => {
     });
 
     describe('ProgressBar()', () => {
-        it('should set up progress bar structure and initialize progress at 0', () => {
+        it('should set up progress bar structure', () => {
             expect(mountEl.querySelector('.bp-progress-bar-container')).to.equal(progressBar.containerEl);
             expect(progressBar.progressBarEl.classList.contains('bp-progress-bar')).to.be.true;
-            expect(progressBar.progressBarEl.style.width).to.equal('0%');
         });
     });
 
@@ -57,7 +56,7 @@ describe('progress-bar', () => {
             clock.restore();
         });
 
-        it('should show the progress bar and initialize at random, low percentage', () => {
+        it('should show the progress bar and set progress to 0', () => {
             sandbox.stub(progressBar, 'showProgress');
             sandbox.stub(progressBar, 'updateProgress');
             sandbox.stub(window, 'setInterval');
@@ -65,7 +64,7 @@ describe('progress-bar', () => {
             progressBar.start();
 
             expect(progressBar.showProgress).to.be.called;
-            expect(progressBar.updateProgress).to.be.calledWith(sinon.match.number);
+            expect(progressBar.progress).to.equal(0);
         });
 
         it('should set an interval to update progress', () => {
@@ -75,9 +74,9 @@ describe('progress-bar', () => {
             progressBar.start();
 
             const currentProgress = progressBar.progress;
-            clock.tick(101);
+            clock.tick(151);
             expect(progressBar.progress).to.not.equal(currentProgress);
-            expect(progressBar.updateProgress).to.be.calledTwice;
+            expect(progressBar.updateProgress).to.be.called;
         });
 
         it('should clear the interval when progress is >= 90', () => {
@@ -89,22 +88,12 @@ describe('progress-bar', () => {
             progressBar.progress = 90;
 
             // Simulate one interval after we reach the limit
-            clock.tick(101);
+            clock.tick(151);
             expect(window.clearInterval).to.be.calledWith(progressBar.progressInterval);
         });
     });
 
     describe('finish()', () => {
-        let clock;
-
-        beforeEach(() => {
-            clock = sinon.useFakeTimers();
-        });
-
-        afterEach(() => {
-            clock.restore();
-        });
-
         it('should hide the progress bar, clear the interval, and update progress to 100', () => {
             sandbox.stub(progressBar, 'hideProgress');
             sandbox.stub(progressBar, 'updateProgress');
@@ -115,17 +104,6 @@ describe('progress-bar', () => {
             expect(progressBar.hideProgress).to.be.called;
             expect(window.clearInterval).to.be.calledWith(progressBar.progressInterval);
             expect(progressBar.updateProgress).to.be.calledWith(100);
-        });
-
-        it('should set reset progress to 0 after a delay', () => {
-            sandbox.stub(progressBar, 'hideProgress');
-            sandbox.stub(progressBar, 'updateProgress');
-            sandbox.stub(window, 'clearInterval');
-
-            progressBar.finish();
-
-            clock.tick(501);
-            expect(progressBar.updateProgress).to.be.calledWith(0);
         });
     });
 
