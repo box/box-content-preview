@@ -296,7 +296,7 @@ export function getHeaders(headers = {}, token = '', sharedLink = '', password =
         }
     }
     // Tells the backend this request is coming from preview, for API analytics
-    headers['X-Box-UI-Preview'] = true;
+    // headers['X-Box-UI-Preview'] = true;
     /* eslint-enable no-param-reassign */
     return headers;
 }
