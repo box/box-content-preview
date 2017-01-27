@@ -1,6 +1,6 @@
 # 360 Video Viewer
 
-The 360 Video viewer renders a preview of a video stored as an equirectangular projection (often recorded with a special camera).
+The 360 video viewer renders a preview of a video stored as an equirectangular projection (often recorded with a special camera).
 
 ## Screenshot
 
@@ -24,3 +24,14 @@ Currently, this previewer requires that the file be named with a '.360' preceedi
 
 `'360.3g2', '360.3gp', '360.avi', '360.m2v', '360.m2ts', '360.m4v', '360.mkv', '360.mov', '360.mp4', '360.mpeg', '360.mpg', '360.mts', '360.qt', '360.wmv'`
 
+## Events
+The 360 video viewer fires the following events
+
+| Event Name | Explanation | Event Data |
+| --- | --- | --- |
+| destroy | The preview is intentionally destroyed ||
+| load |  The preview loads | <ul> <li> {string} **error** (optional): error message </li> <li> {object} **file**: current file </li> <li> {object} **metrics**: information from the logger </li> <li> {object} **viewer**: current viewer </li> </ul> |
+| notification | A notification is displayed ||
+| navigate | The preview is shown for a given index | <ul> <li> {object} file </li> </ul> |
+| reload | The preview reloads ||
+| resize | The preview resizes |<ul> <li> {number} **height**: window height </li> <li> {number} **width**: window width </li> </ul> |

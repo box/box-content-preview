@@ -23,3 +23,21 @@ Rotating the viewer will rotate the image 90 degrees clockwise. At the default z
 | Option | Type | Description |
 | --- | --- | --- |
 | annotations | boolean | Optional. Whether annotations on content are shown. Defaults to false |
+
+## Events
+The image viewer fires the following events
+
+| Event Name | Explanation | Event Data |
+| --- | --- | --- |
+| destroy | The preview is intentionally destroyed ||
+| load |  The preview loads | <ul> <li> **error** (optional): error message </li> <li> **file**: current file </li> <li> **metrics**: information from the logger </li> <li> **viewer**: current viewer </li> </ul> |
+| notification | A notification is displayed ||
+| navigate | The preview is shown for a given index | <ul> <li> **file**: current file </li> </ul> |
+| reload | The preview reloads ||
+| resize | The preview resizes |<ul> <li> **height**: window height </li> <li> **width**: window width </li> </ul> |
+| zoom | The preview zooms in or out | <ul> <li> {number} **zoom**: new zoom value </li> <li> {boolean} **canZoomIn**: true if the viewer can zoom in more </li> <li> {boolean} **canZoomOut**: true if the viewer can zoom out more </li> </ul> |
+| pan | The preview is panning ||
+| panstart | Panning starts ||
+| panend | Panning ends ||
+| rotate | The image rotates ||
+| printsuccess | An attempt to print triggered successfully ||

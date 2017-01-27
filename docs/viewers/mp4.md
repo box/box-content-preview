@@ -24,3 +24,19 @@ The mp4 viewer uses a black background to create a better viewing experience. Vo
 ## Supported File Extensions
 
 `3g2, 3gp, avi, m2v, m2ts, m4v, mkv, mov, mp4, mpeg, mpg, ogg, mts, qt, wmv`
+
+## Events
+The MP4 viewer fires the following events
+
+| Event Name | Explanation | Event Data |
+| --- | --- | --- |
+| destroy | The preview is intentionally destroyed ||
+| load |  The preview loads | <ul> <li> **error** (optional): error message </li> <li> **file**: current file </li> <li> **metrics**: information from the logger </li> <li> **viewer**: current viewer </li> </ul> |
+| notification | A notification is displayed ||
+| navigate | The preview is shown for a given index | <ul> <li> **file**: current file </li> </ul> |
+| reload | The preview reloads ||
+| resize | The preview resizes |<ul> <li> **height**: window height </li> <li> **width**: window width </li> </ul> |
+| speedchange | Media speed changes | <ul> <li> {string} playback speed </li> </ul> |
+| play | The video plays ||
+| pause | The video pauses ||
+| seek | The video skips to a time | <ul> <li> {number} time </li> </ul> |
