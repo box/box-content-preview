@@ -1,5 +1,5 @@
 ![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg)
-![NPM version](https://img.shields.io/badge/npm-v0.98.0-blue.svg)
+![NPM version](https://img.shields.io/badge/npm-v0.99.0-blue.svg)
 
 [Box Javascript Preview SDK](https://docs.box.com/docs/box-javascript-preview-sdk)
 ===============
@@ -15,11 +15,11 @@ Preview uses the Promise object. If your browser doesn't support Promises, they 
 
 Current Version
 ---------------
-* Version: 0.98.0
+* Version: 0.99.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/platform/preview/0.98.0/en-US/preview.js
-https://cdn01.boxcdn.net/platform/preview/0.98.0/en-US/preview.css
+https://cdn01.boxcdn.net/platform/preview/0.99.0/en-US/preview.js
+https://cdn01.boxcdn.net/platform/preview/0.99.0/en-US/preview.css
 
 Usage
 -----
@@ -34,8 +34,8 @@ Usage
     <script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.min.js"></script>
 
     <!-- Latest version of Preview SDK for your locale -->
-    <script src="https://cdn01.boxcdn.net/platform/preview/0.98.0/en-US/preview.css"></script>
-    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/0.98.0/en-US/preview.js" />
+    <script src="https://cdn01.boxcdn.net/platform/preview/0.99.0/en-US/preview.css"></script>
+    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/0.99.0/en-US/preview.js" />
 </head>
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
@@ -58,10 +58,10 @@ Setup
 *Note: Do not use sudo for the commands below below. If you did, delete the ~/.npm and node_module folders and run npm install again without sudo.*
 
 1. Make sure you have Node version 4.x.
-2. Fork the upstream repo `https://gitenterprise.inside-box.net/Preview/Preview` under your LDAP account.
-3. Then clone your fork `git clone git@gitenterprise.inside-box.net:YOURLDAP/Preview.git`. This will be your origin.
+2. Fork the upstream repo `https://git.dev.box.net/Preview/Preview` under your LDAP account.
+3. Then clone your fork `git clone git@git.dev.box.net:YOURLDAP/Preview.git`. This will be your origin.
 4. `cd Preview`
-5. Add the upstream repo via `git remote add upstream git@gitenterprise.inside-box.net/Preview/Preview.git`.
+5. Add the upstream repo via `git remote add upstream git@git.dev.box.net/Preview/Preview.git`.
 6. Verify repos via `git remote -v`. You will always pull from `upstream` and push to `origin`.
 7. `npm install`
 8. `npm run build`
@@ -106,11 +106,11 @@ Similar counterparts for atom.
 `npm run release` does a release build.
 
 ### Change log
-Generate using `github_changelog_generator --github-site https://gitenterprise.inside-box.net --github-api https://gitenterprise.inside-box.net/api/v3 --token 0c280723f1ceb4dd83f934f1dc117b9f0a15a2df Preview/Preview`
+Generate using `github_changelog_generator --github-site https://git.dev.box.net --github-api https://git.dev.box.net/api/v3 --token 0c280723f1ceb4dd83f934f1dc117b9f0a15a2df Preview/Preview`
 
 Demo App
 ------------------------------
-https://gitenterprise.inside-box.net/Preview/demo
+https://git.dev.box.net/Preview/demo
 
 Initialization
 --------------

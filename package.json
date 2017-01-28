@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git@gitenterprise.inside-box.net:Preview/Preview.git"
+    "url": "git@git.dev.box.net:Preview/Preview.git"
   },
   "devDependencies": {
     "autobind-decorator": "^1.3.4",
