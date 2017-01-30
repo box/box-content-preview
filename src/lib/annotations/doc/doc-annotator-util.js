@@ -131,8 +131,8 @@ export function isPointInPolyOpt(poly, x, y) {
  * @param {HTMLElement} pageEl Page element highlight is over
  * @returns {Object} Rangy highlight object and highlight DOM elements
  */
-/* eslint-disable space-before-function-paren */
-export function getHighlightAndHighlightEls /* istanbul-ignore-next */ (highlighter, pageEl) {
+/* istanbul ignore next */
+export function getHighlightAndHighlightEls(highlighter, pageEl) {
     // We use Rangy to turn the selection into a highlight, which creates
     // spans around the selection that we can then turn into quadpoints
     const highlight = highlighter.highlightSelection('rangy-highlight', {
@@ -272,8 +272,8 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
  * element and the other 3 vertices in counterclockwise order. These are
  * in PDF default user space.
  */
-/* eslint-disable space-before-function-paren */
-export function getQuadPoints /* istanbul ignore next */ (element, pageEl, scale) {
+/* istanbul ignore next */
+export function getQuadPoints(element, pageEl, scale) {
     const quadCornerContainerEl = document.createElement('div');
     quadCornerContainerEl.classList.add('bp-quad-corner-container');
 

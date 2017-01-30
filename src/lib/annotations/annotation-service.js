@@ -118,6 +118,7 @@ class AnnotationService extends EventEmitter {
                     });
                 }
             })
+            /* istanbul ignore next */
             .catch(() => {
                 reject(new Error('Could not create annotation due to invalid or expired token'));
                 this.emit('annotationerror', {
@@ -147,23 +148,6 @@ class AnnotationService extends EventEmitter {
     }
 
     /**
-     * Update an annotation.
-     *
-     * @param {Annotation} annotation Annotation to update
-     * @returns {Promise} Promise that resolves with updated annotation
-     */
-    update(annotation) {
-        const annotationData = annotation;
-        const annotationID = annotationData.annotationID;
-
-        return new Promise((resolve, reject) => {
-            // @TODO(tjin): Call to annotations update API with annotationData
-
-            reject(new Error(`Could not update annotation with ID ${annotationID}`));
-        });
-    }
-
-    /**
      * Delete an annotation.
      *
      * @param {string} annotationID Id of annotation to delete
@@ -185,6 +169,7 @@ class AnnotationService extends EventEmitter {
                     });
                 }
             })
+            /* istanbul ignore next */
             .catch(() => {
                 reject(new Error('Could not delete annotation due to invalid or expired token'));
                 this.emit('annotationerror', {
@@ -202,35 +187,6 @@ class AnnotationService extends EventEmitter {
      */
     getThreadMap(fileVersionID) {
         return this.read(fileVersionID).then(this._createThreadMap);
-    }
-
-    /**
-     * Returns the annotation user.
-     * @TODO(tjin): Update this with API for transactional annotation user
-     * when available
-     *
-     * @returns {Promise} Promise to get annotation user
-     */
-    getAnnotationUser() {
-        return new Promise((resolve, reject) => {
-            fetch(`${this._api}/2.0/users/me`, {
-                headers: this._headers
-            })
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.type !== 'error' && data.id) {
-                    resolve({
-                        id: data.id,
-                        name: data.name
-                    });
-                } else {
-                    reject(new Error('Could not get annotation user'));
-                }
-            })
-            .catch(() => {
-                reject(new Error('Could not get annotation user'));
-            });
-        });
     }
 
     //--------------------------------------------------------------------------

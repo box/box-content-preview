@@ -79,6 +79,7 @@ class Base extends EventEmitter {
      */
     resetLoadTimeout() {
         clearTimeout(this.loadTimeoutId);
+        /* istanbul ignore next */
         this.loadTimeoutId = setTimeout(() => {
             if (document.hidden) {
                 this.resetLoadTimeout();
@@ -172,10 +173,13 @@ class Base extends EventEmitter {
      */
     addCommonListeners() {
         // Attach common full screen event listeners
+        /* istanbul ignore next */
         fullscreen.addListener('enter', () => {
             this.containerEl.classList.add(CLASS_FULLSCREEN);
             this.resize();
         });
+
+        /* istanbul ignore next */
         fullscreen.addListener('exit', () => {
             this.containerEl.classList.remove(CLASS_FULLSCREEN);
             this.resize();

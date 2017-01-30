@@ -307,6 +307,7 @@ class Annotator extends EventEmitter {
             return;
         }
 
+        /* istanbul ignore next */
         service.addListener('annotationerror', (data) => {
             let errorMessage = '';
             switch (data.reason) {
