@@ -138,6 +138,7 @@ class Video360 extends Dash {
     /**
      * @inheritdoc
      */
+    @autobind
     resize() {
         super.resize();
         if (this.renderer) {
