@@ -28,11 +28,9 @@ The Markdown viewer fires the following events
 | Event Name | Explanation | Event Data |
 | --- | --- | --- |
 | destroy | The preview is intentionally destroyed ||
-| load |  The preview loads | <ul> <li> {string} **error** (optional): error message </li> <li> {object} **file**: current file </li> <li> {object} **metrics**: information from the logger </li> <li> {object} **viewer**: current viewer </li> </ul> |
+| load |  The preview loads | 1. {string} **error** (optional): error message 2. {object} **file**: current file 3. {object} **metrics**: information from the logger 4. {object} **viewer**: current viewer |
 | notification | A notification is displayed ||
-| navigate | The preview is shown for a given index | <ul> <li> {object} file </li> </ul> |
+| navigate | The preview is shown for a given index | {object} file |
 | reload | The preview reloads ||
-| resize | The preview resizes |<ul> <li> {number} **height**: window height </li> <li> {number} **width**: window width </li> </ul> |
-| scrollstart | The viewer starts to scroll | <ul> <li> {number} **scrollTop**: number of pixels scrolled from top of viewport </li> <li> {number} **scrollLeft**: number of pixels scrolled from left of viewport </li> </ul> |
-| scrollend | The viewer stops scrolling | <ul> <li> {number} **scrollTop**: number of pixels scrolled from top of viewport </li> <li> {number} **scrollLeft**: number of pixels scrolled from left of viewport </li> </ul> |
+| resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
 | printsuccess | An attempt to print triggered successfully ||

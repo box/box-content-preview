@@ -32,13 +32,13 @@ The presentation viewer fires the following events
 | Event Name | Explanation | Event Data |
 | --- | --- | --- |
 | destroy | The preview is intentionally destroyed ||
-| load |  The preview loads | <ul> <li> **error** (optional): error message </li> <li> **file**: current file </li> <li> **metrics**: information from the logger </li> <li> **viewer**: current viewer </li> </ul> |
+| load |  The preview loads | 1. {string} **error** (optional): error message 2. {object} **file**: current file 3. {object} **metrics**: information from the logger 4. {object} **viewer**: current viewer |
 | notification | A notification is displayed ||
-| navigate | The preview is shown for a given index | <ul> <li> **file**: current file </li> </ul> |
+| navigate | The preview is shown for a given index | {object} file |
 | reload | The preview reloads ||
-| resize | The preview resizes |<ul> <li> **height**: window height </li> <li> **width**: window width </li> </ul> |
-| zoom | The preview zooms in or out | <ul> <li> {number} **zoom**: new zoom value </li> <li> {boolean} **canZoomIn**: true if the viewer can zoom in more </li> <li> {boolean} **canZoomOut**: true if the viewer can zoom out more </li> </ul> |
-| pagerendered | A page renders | <ul> <li> pageNumber: page number that is rendered </ul> </li> |
-| pagefocus | A page is visible | <ul> <li> pageNumber: page number that is focused </ul> </li> |
-| scrollstart | The viewer starts to scroll | <ul> <li> scrollTop: number of pixels scrolled from top of viewport </li> <li> scrollLeft: number of pixels scrolled from left of viewport </li> </ul> |
-| scrollend | The viewer stops scrolling | <ul> <li> scrollTop: number of pixels scrolled from top of viewport </li> <li> scrollLeft: number of pixels scrolled from left of viewport </li> </ul> |
+| resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
+| zoom | The preview zooms in or out | 1. {number} **zoom**: new zoom value 2. {boolean} **canZoomIn**: true if the viewer can zoom in more 3. {boolean} **canZoomOut**: true if the viewer can zoom out more |
+| pagerendered | A page renders | {number} page number of rendered page |
+| pagefocus | A page is visible | {number} page number of focused page |
+| scrollstart | The viewer starts to scroll | 1. {number} **scrollTop**: number of pixels scrolled from top of viewport 2. {number} **scrollLeft**: number of pixels scrolled from left of viewport |
+| scrollend | The viewer stops scrolling | 1. {number} **scrollTop**: number of pixels scrolled from top of viewport 2. {number} **scrollLeft**: number of pixels scrolled from left of viewport |
