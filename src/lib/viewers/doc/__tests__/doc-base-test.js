@@ -897,7 +897,7 @@ describe('doc-base', () => {
         it('should set external link settings', () => {
             docBase.setupPdfjs();
             expect(PDFJS.externalLinkTarget).to.equal(PDFJS.LinkTarget.BLANK);
-            expect(PDFJS.externalLinkRel).to.equal('noopener noreferrer');
+            expect(PDFJS.externalLinkRel).to.equal('noopener noreferrer nofollow');
         });
 
         it('should disable range requests if the browser is Mobile Safari', () => {

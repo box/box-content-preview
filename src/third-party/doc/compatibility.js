@@ -12,10 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* eslint strict: ["error", "function"] */
+/* eslint-disable no-extend-native */
 /* globals VBArray, PDFJS */
 
 (function compatibilityWrapper() {
   'use strict';
+
+var userAgent = navigator.userAgent;
+
+var isAndroid = /Android/.test(userAgent);
+var isIE = userAgent.indexOf('Trident') >= 0;
+var isIOS = /\b(iPad|iPhone|iPod)(?=;)/.test(userAgent);
+var isSafari = /Safari\//.test(userAgent) &&
+               !/(Chrome\/|Android\s)/.test(userAgent);
 
 // Initializing PDFJS global object here, it case if we need to change/disable
 // some PDF.js features, e.g. range requests
@@ -27,7 +37,7 @@ if (typeof PDFJS === 'undefined') {
 // Support: IE
 (function checkOnBlobSupport() {
   // sometimes IE loosing the data created with createObjectURL(), see #3977
-  if (navigator.userAgent.indexOf('Trident') >= 0) {
+  if (isIE) {
     PDFJS.disableCreateObjectURL = true;
   }
 })();
@@ -46,7 +56,6 @@ if (typeof PDFJS === 'undefined') {
     window.setTimeout(callback, 20);
   }
 
-  var isIOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
   if (isIOS) {
     // requestAnimationFrame on iOS is broken, replacing with fake one.
     window.requestAnimationFrame = fakeRequestAnimationFrame;
@@ -61,9 +70,8 @@ if (typeof PDFJS === 'undefined') {
     fakeRequestAnimationFrame;
 })();
 
+// Support: Android, iOS
 (function checkCanvasSizeLimitation() {
-  var isIOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
-  var isAndroid = /Android/g.test(navigator.userAgent);
   if (isIOS || isAndroid) {
     // 5MP
     PDFJS.maxCanvasPixels = 5242880;
@@ -73,9 +81,7 @@ if (typeof PDFJS === 'undefined') {
 // Disable fullscreen support for certain problematic configurations.
 // Support: IE11+ (when embedded).
 (function checkFullscreenSupport() {
-  var isEmbeddedIE = (navigator.userAgent.indexOf('Trident') >= 0 &&
-                      window.parent !== window);
-  if (isEmbeddedIE) {
+  if (isIE && window.parent !== window) {
     PDFJS.disableFullscreen = true;
   }
 })();

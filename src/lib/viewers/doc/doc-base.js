@@ -587,9 +587,6 @@ class DocBase extends Base {
         // Open links in new tab
         PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK;
 
-        // Prevents referrer leak and opener hijacking, see https://mathiasbynens.github.io/rel-noopener/
-        PDFJS.externalLinkRel = 'noopener noreferrer';
-
         // Disable range requests for iOS Safari - mobile Safari caches ranges incorrectly
         PDFJS.disableRange = PDFJS.disableRange || (Browser.isIOS() && Browser.getName() === 'Safari');
 
