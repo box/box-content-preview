@@ -19,6 +19,9 @@ export const CLASS_BOX_PREVIEW_MENU = 'bp-menu';
 export const CLASS_BOX_PREVIEW_MOBILE = 'bp-is-mobile';
 export const CLASS_BOX_PREVIEW_OVERLAY = 'bp-overlay';
 export const CLASS_BOX_PREVIEW_OVERLAY_WRAPPER = 'bp-overlay-wrapper';
+export const CLASS_BOX_PREVIEW_PRELOAD = 'bp-preload';
+export const CLASS_BOX_PREVIEW_PRELOAD_CONTENT = 'bp-preload-content';
+export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER = 'bp-preload-wrapper';
 export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'bp-toggle-overlay';
 export const CLASS_BOX_PREVIEW_THEME_DARK = 'bp-theme-dark';
 export const CLASS_FULLSCREEN = 'bp-is-fullscreen';
@@ -51,3 +54,4 @@ export const PERMISSION_PREVIEW = 'can_preview';
 export const API = 'https://api.box.com';
 
 export const ORIGINAL_REP_NAME = 'ORIGINAL';
+export const PRELOAD_REP_NAME = 'FIRSTPAGE';

@@ -306,9 +306,9 @@ class DocHighlightThread extends AnnotationThread {
      * @returns {void}
      * @protected
      */
+    /* istanbul ignore next */
     bindCustomListenersOnDialog() {
         // Annotation drawn
-        /* istanbul ignore next */
         this._dialog.addListener('annotationdraw', () => {
             this._state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
             window.getSelection().removeAllRanges();
@@ -316,13 +316,11 @@ class DocHighlightThread extends AnnotationThread {
         });
 
         // Annotation drawn
-        /* istanbul ignore next */
         this._dialog.addListener('annotationcommentpending', () => {
             this._state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
         });
 
         // Annotation created
-        /* istanbul ignore next */
         this._dialog.addListener('annotationcreate', (data) => {
             if (data) {
                 this._type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
@@ -335,13 +333,11 @@ class DocHighlightThread extends AnnotationThread {
         });
 
         // Annotation canceled
-        /* istanbul ignore next */
         this._dialog.addListener('annotationcancel', () => {
             this.cancelFirstComment();
         });
 
         // Annotation deleted
-        /* istanbul ignore next */
         this._dialog.addListener('annotationdelete', (data) => {
             if (data) {
                 this.deleteAnnotation(data.annotationID);
@@ -377,8 +373,8 @@ class DocHighlightThread extends AnnotationThread {
      * @returns {void}
      * @private
      */
-    /* eslint-disable space-before-function-paren */
-    _draw /* istanbul ignore next */ (fillStyle) {
+    /* istanbul ignore next */
+    _draw(fillStyle) {
         const context = this._getContext();
         if (!context) {
             return;
@@ -389,7 +385,6 @@ class DocHighlightThread extends AnnotationThread {
         const zoomScale = annotatorUtil.getScale(this._annotatedElement);
         const dimensionScale = annotatorUtil.getDimensionScale(this._location.dimensions, pageDimensions, zoomScale, PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM);
 
-        /* istanbul ignore next */
         this._location.quadPoints.forEach((quadPoint) => {
             // If needed, scale quad points comparing current dimensions with saved dimensions
             let scaledQuadPoint = quadPoint;

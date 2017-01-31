@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import cache from '../cache';
-import { getURL, getDownloadURL, isWatermarked, checkPermission, checkFeature, checkFileValid, cacheFile } from '../file';
+import { getURL, getDownloadURL, isWatermarked, checkPermission, checkFeature, checkFileValid, cacheFile, getRepresentation } from '../file';
 
 const sandbox = sinon.sandbox.create();
 
@@ -146,6 +146,33 @@ describe('file', () => {
 
             cacheFile(file);
             expect(file.representations.entries.length).to.equal(1);
+        });
+    });
+
+    describe('getRepresentation', () => {
+        it('should return null if no matching representation is found', () => {
+            const file = {
+                id: '0',
+                representations: {
+                    entries: []
+                }
+            };
+
+            expect(getRepresentation(file, 'ORIGINAL')).to.be.null;
+        });
+
+        it('should return matching representation if found', () => {
+            const originalRep = {
+                representation: 'ORIGINAL'
+            };
+            const file = {
+                id: '0',
+                representations: {
+                    entries: [originalRep]
+                }
+            };
+
+            expect(getRepresentation(file, 'ORIGINAL')).to.be.equal(originalRep);
         });
     });
 });

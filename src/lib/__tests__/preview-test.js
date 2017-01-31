@@ -55,6 +55,7 @@ describe('Preview', () => {
     describe('constructor()', () => {
         beforeEach(() => {
             sandbox.stub(util, 'findScriptLocation').returns('en-US');
+            sandbox.stub(preview, 'postload');
             stubs.preview = preview;
             stubs.location = preview.location;
         });
@@ -373,11 +374,9 @@ describe('Preview', () => {
             sandbox.stub(util, 'prefetchAssets');
         });
 
-        it('should prefetch all viewers if no viewer names are specified', () => {
-            const numViewers = preview.getViewers().length;
-
+        it('should prefetch no viewers if no viewer names are specified', () => {
             preview.prefetchViewers();
-            expect(preview.loaders[0].prefetchAssets.callCount).to.equal(numViewers);
+            expect(preview.loaders[0].prefetchAssets.callCount).to.equal(0);
         });
 
         it('should prefetch only passed in viewers', () => {
@@ -1295,9 +1294,13 @@ describe('Preview', () => {
     });
 
     describe('postload', () => {
-        it('should finish the progress bar', () => {
+        it('should hide preload and finish the progress bar', () => {
+            sandbox.stub(preview, 'hidePreload');
             sandbox.stub(preview, 'finishProgressBar');
+
             preview.postload();
+
+            expect(preview.hidePreload).to.be.called;
             expect(preview.finishProgressBar).to.be.called;
         });
     });
@@ -1412,6 +1415,7 @@ describe('Preview', () => {
         beforeEach(() => {
             stubs.unset = sandbox.stub(cache, 'unset');
             stubs.destroy = sandbox.stub(preview, 'destroy');
+            stubs.postload = sandbox.stub(preview, 'postload');
             stubs.determineViewer = sandbox.stub(ErrorLoader, 'determineViewer').returns({ NAME: 'error' });
             stubs.promiseResolve = Promise.resolve();
             stubs.load = sandbox.stub(ErrorLoader, 'load').returns(stubs.promiseResolve);
@@ -1443,11 +1447,12 @@ describe('Preview', () => {
             expect(stubs.destroy).to.not.be.called;
         });
 
-        it('should prevent any other viewers from loading, clear the cache, and destroy anything still visible', () => {
+        it('should prevent any other viewers from loading, clear the cache, complete postload tasks, and destroy anything still visible', () => {
             preview.triggerError();
             expect(preview.open).to.be.false;
             expect(stubs.unset).to.be.called;
             expect(stubs.destroy).to.be.called;
+            expect(stubs.postload).to.be.called;
         });
 
         it('should determine which viewer to load with the ErrorLoader', () => {
@@ -1648,22 +1653,19 @@ describe('Preview', () => {
 
     describe('prefetchContent()', () => {
         beforeEach(() => {
+            stubs.prefetch = sandbox.stub();
             stubs.getLoader = sandbox.stub(preview, 'getLoader').returns({
-                prefetch: sandbox.stub().returns('file')
+                prefetch: stubs.prefetch
             });
         });
 
-        it('should return the result of the loader\'s prefetch', () => {
-            const prefetch = preview.prefetchContent('file', 'token');
-            expect(prefetch).to.equal('file');
-            expect(stubs.getLoader).to.be.called;
-        });
+        it('should call the loader\'s prefetch', () => {
+            preview.options.sharedLink = 'sharedLink';
+            preview.options.sharedLinkPassword = 'pass';
 
-        it('should reject a promise if the loader does not exist', () => {
-            stubs.getLoader.returns(undefined);
-
-            const prefetch = preview.prefetchContent('file', 'token');
-            return expect(prefetch).to.be.rejected;
+            preview.prefetchContent('file', 'token');
+            expect(stubs.getLoader).to.be.calledWith('file');
+            expect(stubs.prefetch).to.be.calledWith('file', 'token', 'sharedLink', 'pass');
         });
     });
 

@@ -21,6 +21,7 @@ $header-height: 48px;
     font-smoothing: subpixel-antialiased;
     height: 100%;
     margin: 0;
+    overflow: hidden;
     padding: 0;
     position: relative;
     width: 100%;
@@ -175,6 +176,41 @@ $header-height: 48px;
             transition-delay: 0s;
             visibility: visible;
         }
+    }
+}
+
+// Used for showing preload, aka Instant Preview
+.bp-preload-wrapper {
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    opacity: 1;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: opacity .7s;
+
+    // Shift wrapper down if preview has its own header
+    &.bp-has-header {
+        top: 48px;
+    }
+
+    &.bp-is-invisible {
+        opacity: 0;
+        visibility: visible;
+    }
+
+    .bp-preload {
+        background-color: $ffive;
+        left: 0;
+        position: absolute;
+        top: 0;
+    }
+
+    .bp-preload-content {
+        background: $white url('loading-icon.gif') center no-repeat;
+        display: block;
+        margin: 15px auto 30px;
     }
 }
 

@@ -196,19 +196,17 @@ class MediaBase extends Base {
      * @emits pause
      * @return {void}
      */
+    /* istanbul ignore next */
     addEventListenersForMediaControls() {
-        /* istanbul ignore next */
         this.mediaControls.addListener('timeupdate', (value) => {
             this.mediaEl.currentTime = value * this.mediaEl.duration;
         });
 
-        /* istanbul ignore next */
         this.mediaControls.addListener('volumeupdate', (value) => {
             cache.set('media-volume', value);
             this.handleVolume();
         });
 
-        /* istanbul ignore next */
         this.mediaControls.addListener('toggleplayback', () => {
             if (this.mediaEl.paused) {
                 this.mediaEl.play();
@@ -221,7 +219,6 @@ class MediaBase extends Base {
             }
         });
 
-        /* istanbul ignore next */
         this.mediaControls.addListener('togglemute', () => {
             if (this.mediaEl.volume) {
                 this.oldVolume = this.mediaEl.volume;

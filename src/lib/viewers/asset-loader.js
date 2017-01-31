@@ -1,3 +1,4 @@
+import { getRepresentation } from '../file';
 import {
     appendAuthParams,
     prefetchAssets,
@@ -96,22 +97,28 @@ class AssetLoader {
     }
 
     /**
-     * Prefetches assets and reps
+     * Prefetches assets and representations for preview.
      *
-     * @public
-     * @param {Object} file box file
-     * @param {string} token auth token
-     * @param {Object} location asset location
-     * @param {string} sharedLink shared link
-     * @param {string} password shared link password
-     * @returns {void}
+     * @param {Object} file - Box file object
+     * @param {string} token - Box access token
+     * @param {string} sharedLink - Box shared link
+     * @param {string} sharedLinkPassword - Box shared link password
+     * @param {Object} location - Asset location object
+     * @param {string} [preload] - Is this for a preload
+     * @return {void}
      */
-    prefetch(file, token, location, sharedLink, sharedLinkPassword) {
+    prefetch(file, token, sharedLink, sharedLinkPassword, location, preload) {
         // Determine the viewer to use
         const viewer = this.determineViewer(file);
 
         // Determine the representation to use
-        const representation = this.determineRepresentation(file, viewer);
+        const representation = preload ?
+            getRepresentation(file, viewer.PRELOAD) :
+            this.determineRepresentation(file, viewer);
+        if (!representation) {
+            return;
+        }
+
         const { content, use_paged_viewer: usePagedViewer, temp_status: tempStatus } = representation;
         const status = (typeof representation.status === 'object') ? representation.status.state : tempStatus.state;
         if (status !== 'success') {
@@ -128,17 +135,24 @@ class AssetLoader {
             /* eslint-enable no-param-reassign */
         }
 
-        // DELETE LINE BELOW
-        const asset = usePagedViewer !== 'false' ? (viewer.ASSET || '') : '';
-        // DELETE LINE ABOVE
-        const url = createContentUrl(content.url_template, asset); // pass in viewer.ASSET
-        const urlWithAuth = appendAuthParams(url, token, sharedLink, sharedLinkPassword);
-
-        if (viewer.PREFETCH === 'xhr') {
-            get(urlWithAuth, 'any');
+        if (preload) {
+            // @NOTE(tjin): Temporary until conversion provides first page representation
+            const url = createContentUrl(content.url_template, 'page-1.png');
+            const urlWithAuth = appendAuthParams(url, token, sharedLink, sharedLinkPassword);
+            document.createElement('img').src = urlWithAuth;
         } else {
-            // img, audio, video tags should be fetched usign browser GET as they don't need CORS headers
-            document.createElement(viewer.PREFETCH).src = urlWithAuth;
+            // DELETE LINE BELOW
+            const asset = usePagedViewer !== 'false' ? (viewer.ASSET || '') : '';
+            // DELETE LINE ABOVE
+            const url = createContentUrl(content.url_template, asset); // pass in viewer.ASSET
+            const urlWithAuth = appendAuthParams(url, token, sharedLink, sharedLinkPassword);
+
+            if (viewer.PREFETCH === 'xhr') {
+                get(urlWithAuth, 'any');
+            } else {
+                // img, audio, video tags should be fetched using browser GET as they don't need CORS headers
+                document.createElement(viewer.PREFETCH).src = urlWithAuth;
+            }
         }
     }
 

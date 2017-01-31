@@ -13,9 +13,15 @@ import ProgressBar from './progress-bar';
 import ErrorLoader from './viewers/error/error-loader';
 import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation, createContentUrl } from './util';
 import getTokens from './tokens';
-import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid, cacheFile } from './file';
+import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid, cacheFile, addPreloadRepresentation } from './file';
 import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
-import { CLASS_NAVIGATION_VISIBILITY, PERMISSION_DOWNLOAD, PERMISSION_ANNOTATE, PERMISSION_PREVIEW, API } from './constants';
+import {
+    API,
+    CLASS_NAVIGATION_VISIBILITY,
+    PERMISSION_DOWNLOAD,
+    PERMISSION_ANNOTATE,
+    PERMISSION_PREVIEW
+} from './constants';
 import './preview.scss';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
@@ -230,30 +236,6 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Prefetches the viewers. If specific viewer names are passed in, only
-     * prefetch assets for those viewers. Otherwise, prefetch assets for
-     * all viewers.
-     *
-     * @param {string[]} [viewerNames] Names of specific viewers to prefetch assets for
-     * @returns {void}
-     */
-    prefetchViewers(viewerNames = []) {
-        let viewers = this.getViewers();
-
-        // Filter down to specified viewers
-        if (viewerNames.length) {
-            viewers = viewers.filter((viewer) => {
-                return viewerNames.indexOf(viewer.NAME) !== -1;
-            });
-        }
-
-        const loader = this.loaders[0]; // use any loader
-        viewers.forEach((viewer) => {
-            loader.prefetchAssets(viewer, this.location);
-        });
-    }
-
-    /**
      * Disables one or more viewers.
      *
      * @param {string|string[]} viewers destroys the container contents
@@ -355,6 +337,58 @@ class Preview extends EventEmitter {
         if (reloadPreview) {
             this.load(this.file);
         }
+    }
+
+    /**
+     * Prefetches viewer assets for the specified viewers.
+     *
+     * @param {string[]} [viewerNames] - Viewers to prefetch
+     * @return {void}
+     */
+    prefetchViewers(viewerNames = []) {
+        const loader = this.loaders[0]; // use any loader
+        this.getViewers()
+            .filter((viewer) => viewerNames.indexOf(viewer.NAME) !== -1)
+            .forEach((viewer) => {
+                loader.prefetchAssets(viewer, this.location);
+            });
+    }
+
+    /**
+     * Prefetches preload assets to improve performance. Preloading shows a
+     * lightweight representation of the file while the preview fully loads.
+     *
+     * @param {string} fileId - File ID
+     * @param {string} token - Access token
+     * @param {string} sharedLink - Shared link
+     * @param {string} sharedLinkPassword - Shared link password
+     */
+    prefetchPreload(fileId, token, sharedLink, sharedLinkPassword) {
+        // File must be in cache
+        const file = cache.get(fileId);
+        if (!file) {
+            return;
+        }
+
+        // Don't prefetch if appropriate viewer doesn't support preload
+        const loader = this.getLoader(file);
+        const viewer = loader.determineViewer(file);
+        if (!viewer.PRELOAD) {
+            return;
+        }
+
+        // @NOTE(tjin): Temporary until conversion provides real preload representation
+        addPreloadRepresentation(file);
+        // DELETE BLOCK ABOVE
+
+        loader.prefetch(
+            file,
+            token,
+            sharedLink,
+            sharedLinkPassword,
+            this.location,
+            true /* prefetch for preload */
+        );
     }
 
     //--------------------------------------------------------------------------
@@ -509,6 +543,9 @@ class Preview extends EventEmitter {
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;
 
+        // Enable preload (quick preview shown during loading)
+        this.options.preload = !!options.preload;
+
         // Save the files to iterate through
         this.collection = options.collection || [];
 
@@ -606,8 +643,8 @@ class Preview extends EventEmitter {
      * Determines a viewer to use, prepare static assets and representations
      * needed by the viewer, and finally load that viewer.
      *
-     * @returns {void}
      * @private
+     * @return {void}
      */
     loadViewer() {
         // If preview is closed don't do anything
@@ -627,6 +664,12 @@ class Preview extends EventEmitter {
 
         // Determine the asset loader to use
         const loader = this.getLoader(this.file);
+
+        // Show a preload of the file if available
+        /* istanbul ignore next */
+        if (this.options.preload) {
+            this.showPreload();
+        }
 
         // Determine the viewer to use
         const viewer = loader.determineViewer(this.file, Object.keys(this.disabledViewers));
@@ -717,9 +760,9 @@ class Preview extends EventEmitter {
      * Finish loading a viewer - display the appropriate control buttons, re-emit the 'load' event, log
      * the preview, and prefetch the next few files.
      *
-     * @param {Object} [data] Load event data
-     * @returns {void}
      * @private
+     * @param {Object} [data] - Load event data
+     * @return {void}
      */
     finishLoading(data = {}) {
         // Show or hide annotate/print/download buttons
@@ -776,6 +819,7 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     postload() {
+        this.hidePreload();
         this.finishProgressBar();
     }
 
@@ -867,6 +911,9 @@ class Preview extends EventEmitter {
 
         // Nuke the cache
         cache.unset(this.file.id);
+
+        // Finish postload tasks
+        this.postload();
 
         // Destroy anything still showing
         this.destroy();
@@ -983,18 +1030,57 @@ class Preview extends EventEmitter {
      * Prefetches a file's content if possible so the browser can cache the
      * content and significantly improve preview load time.
      *
-     * @param {Object} file File metadata
-     * @param {string} token Access token to fetch content with
-     * @returns {Promise} Promise that resolves when content is prefetched
      * @private
+     * @param {Object} file - Box file metadata
+     * @param {string} token - Access token
+     * @return {void}
      */
     prefetchContent(file, token) {
+        const { sharedLink, sharedLinkPassword, preload } = this.options;
         const loader = this.getLoader(file);
-        if (loader && typeof loader.prefetch === 'function') {
-            return loader.prefetch(file, token, this.location, this.options.sharedLink, this.options.sharedLinkPassword);
+        if (!loader || typeof loader.prefetch !== 'function') {
+            return;
         }
 
-        return Promise.reject();
+        // Prefetch actual preview content
+        loader.prefetch(file, token, sharedLink, sharedLinkPassword, this.location);
+
+        // Also prefetch preload content if supported
+        /* istanbul ignore next */
+        if (preload) {
+            this.prefetchPreload(file.id, token, sharedLink, sharedLinkPassword);
+        }
+    }
+
+    /**
+     * Shows the preload for current file if supported. Preloads should
+     * be a lightweight representation of the file. For example, a
+     * document preload is an image represntation of the first page.
+     *
+     * @private
+     * @return {void}
+     */
+    /* istanbul ignore next */
+    showPreload() {
+        const loader = this.getLoader(this.file);
+        if (typeof loader.showPreload === 'function') {
+            const { token, sharedLink, sharedLinkPassword } = this.options;
+            loader.showPreload(this.file, token, sharedLink, sharedLinkPassword, this.container);
+        }
+    }
+
+    /**
+     * Hides the preload for current file if supported.
+     *
+     * @private
+     * @return {void}
+     */
+    /* istanbul ignore next */
+    hidePreload() {
+        const loader = this.getLoader(this.file);
+        if (typeof loader.hidePreload === 'function') {
+            loader.hidePreload(this.container);
+        }
     }
 
     /**

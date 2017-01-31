@@ -1,5 +1,8 @@
 import AssetLoader from '../asset-loader';
-import { ORIGINAL_REP_NAME } from '../../constants';
+import DocPreloader from './doc-preloader';
+import { ORIGINAL_REP_NAME, PRELOAD_REP_NAME } from '../../constants';
+import { addPreloadRepresentation, getRepresentation } from '../../file';
+import { createContentUrl, appendAuthParams } from '../../util';
 
 const STATIC_URI = 'third-party/doc/';
 const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.min.js`, `${STATIC_URI}pdf.min.js`, `${STATIC_URI}pdf_viewer.min.js`, `${STATIC_URI}pdf.worker.min.js`, 'document.js'];
@@ -22,7 +25,8 @@ const VIEWERS = [
         JS: SCRIPTS_DOCUMENT,
         CSS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
         NAME: 'Document',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        PRELOAD: PRELOAD_REP_NAME
     },
     {
         REP: ORIGINAL_REP_NAME,
@@ -30,7 +34,8 @@ const VIEWERS = [
         JS: SCRIPTS_DOCUMENT,
         CSS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
         NAME: 'Document',
-        PREFETCH: 'xhr'
+        PREFETCH: 'xhr',
+        PRELOAD: PRELOAD_REP_NAME
     }
 ];
 
@@ -38,7 +43,8 @@ class DocLoader extends AssetLoader {
 
     /**
      * [constructor]
-     * @returns {DocLoader} DocLoader instance
+     *
+     * @return {DocLoader} DocLoader instance
      */
     constructor() {
         super();
@@ -50,9 +56,9 @@ class DocLoader extends AssetLoader {
      * one specific representation. In other words we will not have
      * two png representation entries with different properties.
      *
-     * @param {Object} file box file
-     * @param {Object} viewer the chosen viewer
-     * @returns {Object} The representation to load
+     * @param {Object} file - Box file
+     * @param {Object} viewer - Chosen Preview viewer
+     * @return {Object} The representation to load
      */
     determineRepresentation(file, viewer) {
         let repOverride;
@@ -65,6 +71,54 @@ class DocLoader extends AssetLoader {
         }
 
         return repOverride || rep;
+    }
+
+    /**
+     * Shows a preload (lightweight representation) of the document.
+     *
+     * @param {Object} file - Box file
+     * @param {string} token - Access token
+     * @param {string} sharedLink - Box shared link
+     * @param {string} sharedLinkPassword - Box shared link password
+     * @param {HTMLElement} containerEl - Preview container to render preload in
+     * @return {void}
+     */
+    /* istanbul ignore next */
+    showPreload(file, token, sharedLink, sharedLinkPassword, containerEl) {
+        // Only enable preloading for regular documents, not presentations
+        const viewer = this.determineViewer(file);
+        if (!viewer.PRELOAD) {
+            return;
+        }
+
+        // @NOTE(tjin): Temporary until conversion provides real preload representation
+        addPreloadRepresentation(file);
+        // DELETE LINE ABOVE
+
+        const preloadRep = getRepresentation(file, viewer.PRELOAD);
+        if (!preloadRep || preloadRep.status.state !== 'success') {
+            return;
+        }
+
+        // @NOTE(tjin): Temporary - real preload representation shouldn't have an asset name
+        const preloadUrl = createContentUrl(preloadRep.content.url_template, 'page-1.png');
+        if (!preloadUrl) {
+            return;
+        }
+
+        const preloadUrlWithAuth = appendAuthParams(preloadUrl, token, sharedLink, sharedLinkPassword);
+        DocPreloader.showPreload(preloadUrlWithAuth, containerEl);
+    }
+
+    /**
+     * Hides the preload if it exists.
+     *
+     * @param {HTMLElement} containerEl - Preview container that preload is rendered in
+     * @return {void}
+     */
+    /* istanbul ignore next */
+    hidePreload(containerEl) {
+        DocPreloader.hidePreload(containerEl);
     }
 }
 

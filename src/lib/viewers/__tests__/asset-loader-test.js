@@ -203,7 +203,7 @@ describe('asset-loader', () => {
             });
             sandbox.stub(loader, 'prefetchAssets');
 
-            loader.prefetch({}, '', {}, '', '');
+            loader.prefetch({}, '', '', '', {});
 
             expect(loader.prefetchAssets).to.not.have.been.called;
         });
@@ -232,7 +232,7 @@ describe('asset-loader', () => {
             sandbox.spy(util, 'appendAuthParams');
             sandbox.stub(loader, 'prefetchAssets');
 
-            loader.prefetch(file, token, location, sharedLink, password);
+            loader.prefetch(file, token, sharedLink, password, location);
 
             expect(loader.determineViewer).to.have.been.calledWith(file);
             expect(loader.determineRepresentation).to.have.been.calledWith(file, viewer);
@@ -265,7 +265,7 @@ describe('asset-loader', () => {
             sandbox.spy(util, 'appendAuthParams');
             sandbox.stub(loader, 'prefetchAssets');
 
-            loader.prefetch(file, token, location, sharedLink, password);
+            loader.prefetch(file, token, sharedLink, password, location);
 
             expect(loader.determineViewer).to.have.been.calledWith(file);
             expect(loader.determineRepresentation).to.have.been.calledWith(file, viewer);

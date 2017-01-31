@@ -43,7 +43,7 @@
 
         // Only show page loading indicator when viewer has loaded
         .bp-loaded & .loadingIcon {
-            background: url('loading-icon.gif') center no-repeat;
+            background: url('../../loading-icon.gif') center no-repeat;
         }
 
         // Fixes annotation icon broken src
