@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import Browser from '../../../browser';
 import MediaBase from '../media-base';
 import MediaControls from '../media-controls';
 import cache from '../../../cache';
@@ -70,16 +71,27 @@ describe('mp3', () => {
     });
 
     describe('load()', () => {
-        it('should load mediaUrl in the media element', () => {
+        beforeEach(() => {
             media.mediaEl = document.createElement('video');
             media.mediaEl.addEventListener = sandbox.stub();
+        });
 
+        it('should load mediaUrl in the media element', () => {
             const mediaUrl = 'www.netflix.com';
             media.load(mediaUrl);
 
             expect(media.mediaEl.addEventListener).to.be.calledWith('loadeddata', media.loadeddataHandler);
             expect(media.mediaEl.addEventListener).to.be.calledWith('error', media.errorHandler);
             expect(media.mediaEl.src).to.equal(mediaUrl);
+        });
+
+        it('should set autoplay if loaded in iOS', () => {
+            sandbox.stub(Browser, 'isIOS').returns(true);
+            const mediaUrl = 'www.netflix.com';
+
+            media.load(mediaUrl);
+
+            expect(media.mediaEl.autoplay).to.equal(true);
         });
     });
 

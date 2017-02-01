@@ -1,6 +1,7 @@
 import autobind from 'autobind-decorator';
 import Base from '../base';
 import cache from '../../cache';
+import Browser from '../../browser';
 import MediaControls from './media-controls';
 import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
 
@@ -84,6 +85,14 @@ class MediaBase extends Base {
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
         this.mediaEl.addEventListener('error', this.errorHandler);
         this.mediaEl.src = this.mediaUrl;
+
+        if (Browser.isIOS()) {
+            // iOS doesn't fire loadeddata event till some data loads
+            // Adding autoplay helps with that and itself won't autoplay.
+            // https://webkit.org/blog/6784/new-video-policies-for-ios/
+            this.mediaEl.autoplay = true;
+        }
+
         super.load();
     }
 
