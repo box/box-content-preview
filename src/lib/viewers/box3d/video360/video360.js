@@ -162,7 +162,8 @@ class Video360 extends Dash {
             loop: false,
             generateMipmaps: false,
             querySelector: `.${this.mediaContainerEl.className} video`,
-            autoPlay: false
+            autoPlay: false,
+            muted: false
         }, VIDEO_ID);
 
         // Texture props references the ID of the video texture created above, "VIDEO_ID"

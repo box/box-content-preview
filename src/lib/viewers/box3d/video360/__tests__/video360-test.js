@@ -22,7 +22,8 @@ describe('video360', () => {
         loop: false,
         generateMipmaps: false,
         querySelector: '.bp-media-container video',
-        autoPlay: false
+        autoPlay: false,
+        muted: false
     };
     // Taken from ./video360.js
     const VIDEO_TEXTURE_PROPS = {
