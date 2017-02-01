@@ -1,5 +1,23 @@
 # Change Log
 
+## [v0.100.0](https://git.dev.box.net/Preview/Preview/tree/v0.100.0) (2017-02-01)
+[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.99.0...v0.100.0)
+
+**Merged pull requests:**
+
+- Reverting extract text webpack plugin [\#954](https://git.dev.box.net/Preview/Preview/pull/954) ([tjin](https://git.dev.box.net/tjin))
+- Fix ajv module [\#953](https://git.dev.box.net/Preview/Preview/pull/953) ([tjin](https://git.dev.box.net/tjin))
+- Fixing extract text webpack plugin [\#952](https://git.dev.box.net/Preview/Preview/pull/952) ([tjin](https://git.dev.box.net/tjin))
+- Don't throw getLoader\(\) errors except in loadViewer\(\) [\#951](https://git.dev.box.net/Preview/Preview/pull/951) ([tjin](https://git.dev.box.net/tjin))
+- Upgrade pdf.js to v1.7.235 [\#949](https://git.dev.box.net/Preview/Preview/pull/949) ([tjin](https://git.dev.box.net/tjin))
+- Changed messaging for reset button and fix for resize [\#948](https://git.dev.box.net/Preview/Preview/pull/948) ([jholdstock](https://git.dev.box.net/jholdstock))
+- Adding missing VRConfig file [\#947](https://git.dev.box.net/Preview/Preview/pull/947) ([mbond](https://git.dev.box.net/mbond))
+- Better error messaging for unsupported browsers for 3D [\#945](https://git.dev.box.net/Preview/Preview/pull/945) ([tjin](https://git.dev.box.net/tjin))
+- updating table styling [\#944](https://git.dev.box.net/Preview/Preview/pull/944) ([jpress](https://git.dev.box.net/jpress))
+- Adding more istanbul ignore and deleting unused code [\#943](https://git.dev.box.net/Preview/Preview/pull/943) ([tjin](https://git.dev.box.net/tjin))
+- Update README and CHANGELOG for v0.99.0 [\#942](https://git.dev.box.net/Preview/Preview/pull/942) ([tjin](https://git.dev.box.net/tjin))
+- Instant Preview Demo [\#936](https://git.dev.box.net/Preview/Preview/pull/936) ([tjin](https://git.dev.box.net/tjin))
+
 ## [v0.99.0](https://git.dev.box.net/Preview/Preview/tree/v0.99.0) (2017-01-27)
 [Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.98.0...v0.99.0)
 
