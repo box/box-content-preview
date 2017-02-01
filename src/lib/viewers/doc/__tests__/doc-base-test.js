@@ -954,6 +954,12 @@ describe('doc-base', () => {
                 currentScale: 1
             };
             stubs.browser = sandbox.stub(Browser, 'isMobile').returns(false);
+            stubs.setupPageIds = sandbox.stub(docBase, 'setupPageIds');
+        });
+
+        it('should set up page IDs', () => {
+            docBase.initAnnotations();
+            expect(stubs.setupPageIds).to.be.called;
         });
 
         it('should allow annotations based on browser and permissions', () => {
@@ -968,6 +974,19 @@ describe('doc-base', () => {
             docBase.options.file.permissions.can_annotate = false;
             docBase.initAnnotations();
             expect(docBase.annotator._annotationService._canAnnotate).to.be.false;
+        });
+    });
+
+    describe('setupPageIds()', () => {
+        it('should add page IDs', () => {
+            const pageEl = document.createElement('div');
+            pageEl.classList.add('page');
+            pageEl.dataset.pageNumber = 2;
+            docBase.containerEl.appendChild(pageEl);
+
+            docBase.setupPageIds();
+
+            expect(pageEl.id).to.equal('bp-page-2');
         });
     });
 

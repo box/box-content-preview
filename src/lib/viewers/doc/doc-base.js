@@ -607,6 +607,8 @@ class DocBase extends Base {
      * @private
      */
     initAnnotations() {
+        this.setupPageIds();
+
         const fileVersionID = this.options.file.file_version.id;
         // Users can currently only view annotations on mobile
         const canAnnotate = !!this.options.file.permissions.can_annotate && !Browser.isMobile();
@@ -638,6 +640,24 @@ class DocBase extends Base {
             if (this.controls) {
                 this.controls.enable();
             }
+        });
+    }
+
+    /**
+     * Add page IDs to each page since annotations explicitly needs IDs per page (rangy).
+     *
+     * @private
+     * @return {void}
+     */
+    setupPageIds() {
+        const pageEls = this.containerEl.querySelectorAll('.page');
+        [].forEach.call(pageEls, (pageEl) => {
+            /* eslint-disable no-param-reassign */
+            const pageNumber = pageEl.dataset.pageNumber;
+            if (pageNumber) {
+                pageEl.id = `bp-page-${pageNumber}`;
+            }
+            /* eslint-enable no-param-reassign */
         });
     }
 
