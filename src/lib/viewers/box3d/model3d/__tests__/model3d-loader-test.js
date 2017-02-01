@@ -22,7 +22,7 @@ describe('model3d-loader', () => {
             };
 
             sandbox.stub(Browser, 'supportsModel3D').returns(false);
-            expect(() => Model3dLoader.determineViewer(file)).to.throw(Error, /browser doesn't support preview for this file type/);
+            expect(() => Model3dLoader.determineViewer(file)).to.throw(Error, /browser doesn't support preview for 3D models/);
         });
 
         it('should return viewer if browser supports 3D', () => {

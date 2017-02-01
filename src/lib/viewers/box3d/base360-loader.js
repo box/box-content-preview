@@ -1,5 +1,4 @@
 import AssetLoader from '../asset-loader';
-import Browser from '../../browser';
 import { requires360Viewer } from '../../util';
 
 class Base360Loader extends AssetLoader {
@@ -9,7 +8,7 @@ class Base360Loader extends AssetLoader {
      */
     determineViewer(file, disabledViewers = []) {
         const viewer = super.determineViewer(file, disabledViewers);
-        if (viewer && requires360Viewer(file) && Browser.hasWebGL()) {
+        if (viewer && requires360Viewer(file)) {
             return viewer;
         }
 

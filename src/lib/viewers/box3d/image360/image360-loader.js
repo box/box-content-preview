@@ -1,4 +1,6 @@
 import Base360Loader from '../base360-loader';
+import Browser from '../../../browser';
+import { replacePlaceholders } from '../../../util';
 
 const STATIC_URI = 'third-party/model3d/';
 const VIEWERS = [
@@ -29,6 +31,19 @@ class Image360Loader extends Base360Loader {
     constructor() {
         super();
         this.viewers = VIEWERS;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    determineViewer(file, disabledViewers = []) {
+        const viewer = super.determineViewer(file, disabledViewers);
+        if (viewer && !Browser.hasWebGL()) {
+            const message = replacePlaceholders(__('error_unsupported'), [__('360_images')]);
+            throw new Error(message);
+        }
+
+        return viewer;
     }
 }
 

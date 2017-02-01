@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-expressions */
 import Base360Loader from '../base360-loader';
-import Browser from '../../../browser';
 import * as util from '../../../util';
 
 let file;
@@ -32,20 +31,13 @@ describe('base360-loader', () => {
     });
 
     describe('determineViewer()', () => {
-        it('should return viewer if file requires 360 viewer and Browser supports WebGL', () => {
+        it('should return viewer if file requires 360 viewer', () => {
             sandbox.stub(util, 'requires360Viewer').returns(true);
-            sandbox.stub(Browser, 'hasWebGL').returns(true);
             expect(base360Loader.determineViewer(file)).to.equal(base360Loader.viewers[0]);
         });
 
         it('should return undefined if file does not need 360 viewer', () => {
             sandbox.stub(util, 'requires360Viewer').returns(false);
-            expect(base360Loader.determineViewer(file)).to.equal(undefined);
-        });
-
-        it('should return undefined if Browser does not support WebGL', () => {
-            sandbox.stub(util, 'requires360Viewer').returns(true);
-            sandbox.stub(Browser, 'hasWebGL').returns(false);
             expect(base360Loader.determineViewer(file)).to.equal(undefined);
         });
     });

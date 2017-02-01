@@ -22,7 +22,7 @@ describe('media-loader', () => {
             };
 
             sandbox.stub(util, 'requires360Viewer').returns(true);
-            expect(() => MediaLoader.determineViewer(file)).to.throw(Error, /browser doesn't support preview for this file type/);
+            expect(() => MediaLoader.determineViewer(file)).to.throw(Error, /browser doesn't support preview for 360-degree videos/);
         });
 
         it('should return viewer if 360 viewer is not required', () => {

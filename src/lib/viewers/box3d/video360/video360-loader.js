@@ -1,5 +1,6 @@
 import Base360Loader from '../base360-loader';
 import Browser from '../../../browser';
+import { replacePlaceholders } from '../../../util';
 
 const STATIC_URI = 'third-party/';
 const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'mts', 'qt', 'wmv'];
@@ -40,7 +41,6 @@ class Video360Loader extends Base360Loader {
      */
     determineViewer(file, disabledViewers = []) {
         const viewer = super.determineViewer(file, disabledViewers);
-
         if (viewer) {
             const name = Browser.getName();
             const isIOS = Browser.isIOS();
@@ -49,11 +49,12 @@ class Video360Loader extends Base360Loader {
             // https://bugs.webkit.org/show_bug.cgi?id=135379
             const isSupportedBrowser = BROWSERS_SUPPORTED.some((browserName) => browserName === name);
 
-            // If a 360 viewer but isn't a valid browser
-            // OR
-            // if a 360 viewer but it is on IOS
-            if (!isSupportedBrowser || isIOS) {
-                throw new Error(__('error_unsupported'));
+            // If a 360 viewer but isn't a valid browser OR
+            // If a 360 viewer but it is on IOS OR
+            // If browser doesn't support WebGL
+            if (!isSupportedBrowser || isIOS || !Browser.hasWebGL()) {
+                const message = replacePlaceholders(__('error_unsupported'), [__('360_videos')]);
+                throw new Error(message);
             }
         }
 

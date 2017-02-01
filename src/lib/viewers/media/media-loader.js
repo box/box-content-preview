@@ -1,5 +1,5 @@
 import AssetLoader from '../asset-loader';
-import { requires360Viewer } from '../../util';
+import { requires360Viewer, replacePlaceholders } from '../../util';
 import { ORIGINAL_REP_NAME } from '../../constants';
 
 const STATIC_URI = 'third-party/media/';
@@ -61,7 +61,8 @@ class MediaLoader extends AssetLoader {
     determineViewer(file, disabledViewers = []) {
         const viewer = super.determineViewer(file, disabledViewers);
         if (viewer && requires360Viewer(file)) {
-            throw new Error(__('error_unsupported'));
+            const message = replacePlaceholders(__('error_unsupported'), [__('360_videos')]);
+            throw new Error(message);
         }
 
         return viewer;
