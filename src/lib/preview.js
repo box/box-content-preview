@@ -370,8 +370,12 @@ class Preview extends EventEmitter {
             return;
         }
 
-        // Don't prefetch if appropriate viewer doesn't support preload
         const loader = this.getLoader(file);
+        if (!loader) {
+            return;
+        }
+
+        // Don't prefetch if appropriate viewer doesn't support preload
         const viewer = loader.determineViewer(file);
         if (!viewer.PRELOAD) {
             return;
@@ -663,7 +667,7 @@ class Preview extends EventEmitter {
         }
 
         // Determine the asset loader to use
-        const loader = this.getLoader(this.file);
+        const loader = this.getLoader(this.file, true /* re-throw any errors */);
 
         // Show a preload of the file if available
         /* istanbul ignore next */
@@ -1063,7 +1067,7 @@ class Preview extends EventEmitter {
     /* istanbul ignore next */
     showPreload() {
         const loader = this.getLoader(this.file);
-        if (typeof loader.showPreload === 'function') {
+        if (loader && typeof loader.showPreload === 'function') {
             const { token, sharedLink, sharedLinkPassword } = this.options;
             loader.showPreload(this.file, token, sharedLink, sharedLinkPassword, this.container);
         }
@@ -1078,7 +1082,7 @@ class Preview extends EventEmitter {
     /* istanbul ignore next */
     hidePreload() {
         const loader = this.getLoader(this.file);
-        if (typeof loader.hidePreload === 'function') {
+        if (loader && typeof loader.hidePreload === 'function') {
             loader.hidePreload(this.container);
         }
     }
@@ -1193,12 +1197,22 @@ class Preview extends EventEmitter {
     /**
      * Determines the appropriate viewer loader to use based on file information.
      *
-     * @param {Object} file File to preview
-     * @returns {Object} Loader to use
      * @private
+     * @param {Object} file - Box file to preview
+     * @param {boolean} [rethrow] - Whether or not to rethrow any errors
+     * @throws {Error} - Throws when browser doesn't support matching loader
+     * @returns {Object|null} Matching loader
      */
-    getLoader(file) {
-        return this.loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
+    getLoader(file, rethrow = false) {
+        try {
+            return this.loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
+        } catch (error) {
+            if (rethrow) {
+                throw error;
+            }
+
+            return null;
+        }
     }
 
     /**

@@ -1070,7 +1070,7 @@ describe('Preview', () => {
 
         it('should get the loader, viewer, and log the type of file', () => {
             preview.loadViewer();
-            expect(stubs.getLoader).to.be.called;
+            expect(stubs.getLoader).to.be.calledWith(sinon.match.object, true);
             expect(stubs.loader.determineViewer).to.be.called;
             expect(preview.logger.setType).to.be.called;
         });
@@ -1847,6 +1847,26 @@ describe('Preview', () => {
 
             const loader = preview.getLoader('file');
             expect(loader.name).to.equal('csv');
+        });
+
+        it('should not rethrow errors by default', () => {
+            preview.loaders = [
+                {
+                    canLoad: () => { throw new Error('test'); }
+                }
+            ];
+
+            expect(preview.getLoader('file')).to.be.null;
+        });
+
+        it('should throw errors if rethrow is true', () => {
+            preview.loaders = [
+                {
+                    canLoad: () => { throw new Error('test'); }
+                }
+            ];
+
+            expect(() => { preview.getLoader('file', true); }).to.throw(Error, /test/);
         });
     });
 
