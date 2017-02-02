@@ -1,5 +1,15 @@
 # Change Log
 
+## [v0.101.0](https://git.dev.box.net/Preview/Preview/tree/v0.101.0) (2017-02-01)
+[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.100.0...v0.101.0)
+
+**Merged pull requests:**
+
+- Fix annotations in IE11 by adding page IDs [\#958](https://git.dev.box.net/Preview/Preview/pull/958) ([tjin](https://git.dev.box.net/tjin))
+- moving iOS check to media-base to account for all media types [\#957](https://git.dev.box.net/Preview/Preview/pull/957) ([jpress](https://git.dev.box.net/jpress))
+- Set video asset property 'muted' to false [\#956](https://git.dev.box.net/Preview/Preview/pull/956) ([jholdstock](https://git.dev.box.net/jholdstock))
+- Update readme and changelog for v0.100.0 [\#955](https://git.dev.box.net/Preview/Preview/pull/955) ([tjin](https://git.dev.box.net/tjin))
+
 ## [v0.100.0](https://git.dev.box.net/Preview/Preview/tree/v0.100.0) (2017-02-01)
 [Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.99.0...v0.100.0)
 
