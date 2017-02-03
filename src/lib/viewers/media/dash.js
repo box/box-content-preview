@@ -49,8 +49,8 @@ class Dash extends VideoBase {
      */
     destroy() {
         // Log bandwidth history
-        this.emit('bandwidthHistory', this.bandwidthHistory);
-        this.emit('switchHistory', this.switchHistory);
+        this.emit('bandwidthhistory', this.bandwidthHistory);
+        this.emit('switchhistory', this.switchHistory);
 
         // Stop polling for filmstrip
         if (this.filmstripStatus) {

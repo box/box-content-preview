@@ -34,14 +34,20 @@ class TextBase extends Base {
     zoom(inOrOut) {
         const el = this.containerEl.querySelector('.bp-text');
         const size = parseInt(el.style.fontSize, 10) || 100;
+        let newFontSize = 0;
 
         if (inOrOut === 'in') {
-            el.style.fontSize = `${size + 10}%`;
+            newFontSize = `${size + 10}%`;
         } else if (inOrOut === 'out') {
-            el.style.fontSize = `${size - 10}%`;
+            newFontSize = `${size - 10}%`;
         }
 
-        this.emit('resize');
+        el.style.fontSize = newFontSize;
+        this.emit('zoom', {
+            zoom: newFontSize,
+            canZoomIn: true,
+            canZoomOut: true
+        });
     }
 
     /**

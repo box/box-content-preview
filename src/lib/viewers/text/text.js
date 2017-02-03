@@ -112,6 +112,8 @@ class PlainText extends TextBase {
         }
 
         this.printIframe();
+
+        this.emit('printsuccess');
     }
 
     //--------------------------------------------------------------------------

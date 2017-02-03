@@ -372,8 +372,6 @@ class DocBase extends Base {
             numTicks -= 1;
         } while (numTicks > 0 && newScale < MAX_SCALE);
 
-        this.setScale(newScale);
-
         if (this.pdfViewer.currentScale !== newScale) {
             this.emit('zoom', {
                 zoom: newScale,
@@ -381,6 +379,8 @@ class DocBase extends Base {
                 canZoomIn: newScale < MAX_SCALE
             });
         }
+
+        this.setScale(newScale);
     }
 
     /**
@@ -398,8 +398,6 @@ class DocBase extends Base {
             numTicks -= 1;
         } while (numTicks > 0 && newScale > MIN_SCALE);
 
-        this.setScale(newScale);
-
         if (this.pdfViewer.currentScale !== newScale) {
             this.emit('zoom', {
                 zoom: newScale,
@@ -407,6 +405,8 @@ class DocBase extends Base {
                 canZoomIn: true
             });
         }
+
+        this.setScale(newScale);
     }
 
     /**
@@ -845,7 +845,7 @@ class DocBase extends Base {
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
         // Detects scroll so an event can be fired
-        this.docEl.addEventListener('scroll', this.scrollHandler(), { passive: true });
+        this.docEl.addEventListener('scroll', this.scrollHandler);
 
         // Fullscreen
         fullscreen.addListener('enter', this.enterfullscreenHandler);
@@ -875,7 +875,7 @@ class DocBase extends Base {
             this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
-            this.docEl.removeEventListener('scroll', this.scrollHandler(), { passive: true });
+            this.docEl.removeEventListener('scroll', this.scrollHandler);
 
             if (Browser.isMobile()) {
                 if (Browser.isIOS()) {
@@ -1015,9 +1015,7 @@ class DocBase extends Base {
 
         if (pageNumber) {
             // Page rendered event
-            this.emit('pagerender', {
-                page: pageNumber
-            });
+            this.emit('pagerender', pageNumber);
 
             // Fire postload event to hide progress bar and cleanup preload after a page is rendered
             if (!this.somePageRendered) {
@@ -1061,9 +1059,7 @@ class DocBase extends Base {
             this.cachePage(pageNum);
         }
 
-        this.emit('pagefocus', {
-            page: pageNum
-        });
+        this.emit('pagefocus', pageNum);
     }
 
     /**
@@ -1100,33 +1096,29 @@ class DocBase extends Base {
      * @returns {void}
      * @private
      */
-    scrollHandler() {
-        this.throttledScrollHandler = throttle(() => {
-            // reset the scroll timer if we are continuing a scroll
-            if (this.scrollTimer) {
-                clearTimeout(this.scrollTimer);
-            }
+    scrollHandler = throttle(() => {
+        // Reset the scroll timer if we are continuing a scroll
+        if (this.scrollTimer) {
+            clearTimeout(this.scrollTimer);
+        }
 
-            // only fire the scroll start event if this is a new scroll
-            if (!this.scrollStarted) {
-                this.emit('scrollstart', {
-                    scrollTop: this.docEl.scrollTop,
-                    scrollLeft: this.docEl.scrollLeft
-                });
-                this.scrollStarted = true;
-            }
+        // only fire the scroll start event if this is a new scroll
+        if (!this.scrollStarted) {
+            this.emit('scrollstart', {
+                scrollTop: this.docEl.scrollTop,
+                scrollLeft: this.docEl.scrollLeft
+            });
+            this.scrollStarted = true;
+        }
 
-            this.scrollTimer = setTimeout(() => {
-                this.emit('scrollend', {
-                    scrollTop: this.docEl.scrollTop,
-                    scrollLeft: this.docEl.scrollLeft
-                });
-                this.scrollStarted = false;
-            }, SCROLL_END_TIMEOUT);
-        }, SCROLL_EVENT_THROTTLE_INTERVAL);
-
-        return this.throttledScrollHandler;
-    }
+        this.scrollTimer = setTimeout(() => {
+            this.emit('scrollend', {
+                scrollTop: this.docEl.scrollTop,
+                scrollLeft: this.docEl.scrollLeft
+            });
+            this.scrollStarted = false;
+        }, SCROLL_END_TIMEOUT);
+    }, SCROLL_EVENT_THROTTLE_INTERVAL);
 }
 
 export default DocBase;

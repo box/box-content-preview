@@ -54,10 +54,10 @@ describe('text-base', () => {
             textBase.containerEl.removeChild(textEl);
         });
 
-        it('should emit the resize event', () => {
+        it('should emit the zoom event', () => {
             sandbox.stub(textBase, 'emit');
             textBase.zoom();
-            expect(textBase.emit).to.have.been.calledWith('resize');
+            expect(textBase.emit).to.have.been.calledWith('zoom');
         });
 
         it('should increase font size when zooming in', () => {

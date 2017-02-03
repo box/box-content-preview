@@ -1138,7 +1138,7 @@ describe('doc-base', () => {
             expect(stubs.addEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
             expect(stubs.addEventListener).to.be.calledWith('textlayerrendered', docBase.textlayerrenderedHandler);
             expect(stubs.addEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
-            expect(stubs.addEventListener).to.be.calledWith('scroll');
+            expect(stubs.addEventListener).to.be.calledWith('scroll', docBase.scrollHandler);
 
 
             expect(stubs.addEventListener).to.not.be.calledWith('gesturestart', docBase.mobileZoomStartHandler);
@@ -1182,7 +1182,7 @@ describe('doc-base', () => {
             expect(stubs.removeEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
             expect(stubs.removeEventListener).to.be.calledWith('textlayerrendered', docBase.textlayerrenderedHandler);
             expect(stubs.removeEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
-            expect(stubs.removeEventListener).to.be.calledWith('scroll');
+            expect(stubs.removeEventListener).to.be.calledWith('scroll', docBase.scrollHandler);
         });
 
         it('should not remove the doc element listeners if the doc element does not exist', () => {
@@ -1491,7 +1491,6 @@ describe('doc-base', () => {
 
         it('should emit the scrollstart event on a new scroll', () => {
             docBase.scrollHandler();
-            docBase.throttledScrollHandler();
             expect(stubs.emit).to.be.calledWith('scrollstart');
         });
 
@@ -1499,7 +1498,6 @@ describe('doc-base', () => {
             docBase.scrollStarted = true;
 
             docBase.scrollHandler();
-            docBase.throttledScrollHandler();
             expect(stubs.emit).to.not.be.calledWith('scrollstart');
         });
 
@@ -1507,7 +1505,6 @@ describe('doc-base', () => {
             const clock = sinon.useFakeTimers();
 
             docBase.scrollHandler();
-            docBase.throttledScrollHandler();
             expect(stubs.emit).to.be.calledWith('scrollstart');
 
             clock.tick(SCROLL_END_TIMEOUT + 1);

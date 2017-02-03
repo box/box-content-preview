@@ -293,6 +293,12 @@ class Image extends Base {
         if (this.annotator) {
             this.scaleAnnotations(newWidth, newHeight);
         }
+
+        this.emit('zoom', {
+            newScale: [newWidth || width, newHeight || height],
+            canZoomIn: true,
+            canZoomOut: true
+        });
     }
 
     /**
@@ -345,6 +351,8 @@ class Image extends Base {
         } else {
             this.printframe.contentWindow.print();
         }
+
+        this.emit('printsuccess');
     }
 
 
