@@ -50,7 +50,7 @@ Usage
 
 Preview Demo
 ---------------
-View demo and code on CodePen - http://codepen.io/tonyjin/pen/gwYbVv.
+View demo and sample code on CodePen - http://codepen.io/box-platform/pen/KaQbma.
 
 
 Setup
@@ -81,15 +81,13 @@ In order for the webapp to use your static assets from your dev VM, you will nee
 
 While Developing
 ----------------
-Install the following plugins in Sublime
+Install the following plugins in your preferred editor
 
 * babel (then set JS files to use babel)
 * editorconfig
 * sublime linter
 * sublime linter contrib eslint
 * sublime linter contrib scss
-
-Similar counterparts for atom.
 
 ### NPM commands
 
@@ -104,13 +102,6 @@ Similar counterparts for atom.
 
 ### Release build
 `npm run release` does a release build.
-
-### Change log
-Generate using `github_changelog_generator --github-site https://git.dev.box.net --github-api https://git.dev.box.net/api/v3 --token 0c280723f1ceb4dd83f934f1dc117b9f0a15a2df Preview/Preview`
-
-Demo App
-------------------------------
-https://git.dev.box.net/Preview/demo
 
 Initialization
 --------------
@@ -243,96 +234,90 @@ Additional Methods
 Events
 ------
 
-The preview object exposes `addListener` and `removeListener` for binding to events. Events should be bound before calling `show()` otherwise they can be missed.
+The preview object exposes `on` and `off` for binding to events. Event listeners should be bound before the call to `show()`, otherwise events can be missed.
 
 ```javascript
 const listener = (value) => {
-    // do something with value
+    // Do something with value
 };
 
-// Attach listeners before calling show otherwise events can be missed
-Box.Preview.addListener(EVENTNAME, listener);
+// Attach listener before calling show otherwise events can be missed
+Box.Preview.on(EVENTNAME, listener);
 
 // Show a preview
 Box.Preview.show(...);
 
-// Remove listeners when needed or before hiding the preview
-Box.Preview.removeListener(EVENTNAME, listener);
+// Remove listener when needed
+Box.Preview.off(EVENTNAME, listener);
 ```
 
 EVENTNAME can be one of the following
 
-* `viewer` event will be fired when we have the viewer instance 1st available. This will be the same object that is part of the `load` event also. This event will be fired before `load` so that clients can attach their listeners before the `load` event fires.
+* `viewer` event will be fired when we have the viewer instance first available. This will be the same object that is also a property included in the `load` event. Preview fires this event before `load` so that clients can attach their listeners before the `load` event is fired.
 
-* `load` event will be fired on every preview load when `show()` is called or if inter-preview navigation is happening. The value argument will be an object containing:
+* `load` event will be fired on every preview load when `show()` is called or if inter-preview navigation occurs. The event data will contain:
 ```javascript
   {
-      error: 'message', // Error message if any that happened while loading the preview
-      viewer: {...},    // Instance of the current viewer object, only if no error message. Same value as the `viewer` event.
+      error: 'message', // Error message if any error occurred while loading
+      viewer: {...},    // Instance of the current viewer object if no error occurred
       metrics: {...},   // Performance metrics
-      file: {...}       // Box file object as returned by the [https://box-content.readme.io/reference#files](Box content API)
+      file: {...}       // Box file object with properties defined in file.js
   }
 ```
-* `navigate` event will be fired when navigation happens. This will give the file id of the file being navigated to. It will fire before a load event happens.
+* `navigate` event will be fired when navigation happens. The event includes the file ID of the file being navigated to, and this event will fire before `load`.
 
-* `notification` event will be fired when either the preview wrapper or one of the viewers wants to notify something like a warning or non-fatal error:
+* `notification` event will be fired when either the preview wrapper or one of the viewers wants to notify something like a warning or non-fatal error. The event data will contain:
 ```javascript
   {
       message: 'message', // Message to show
-      type: 'warning'    // 'warning' or 'notice' or 'error'
+      type: 'warning'    // 'warning', 'notice', or 'error'
   }
 ```
 
-* `viewerevent` Each viewer will fire its own sets of events. For example, Image viewer will fire `rotate` or `resize` etc. Another viewer may fire similar or other events. All these will be propagated on the viewer instance as shown in the examples below and even on the preview wrapper with the following data:
+* `viewerevent` Each viewer will fire its own sets of events. For example, the Image viewer will fire `rotate` or `resize`, etc. while other viewers may fire another set of events. The preview wrapper will also re-emit events at the preview level, with event data containing:
 ```javascript
   {
-      event: EVENTNAME,         // Some event
-      data: DATA,               // Some data
+      event: EVENTNAME,         // Event name
+      data: DATA,               // Event data object
       viewerName: VIEWERNAME,   // Name of the viewer. See VIEWERNAME above
       fileId: fileId            // The file id
   }
 ```
 
-### Example usages of events
+### Example event usage
 
 ```javascript
-Box.Preview.addListener('viewer', (viewer) => {
-    viewer.addListener('rotate', () => {
-        // do something
+Box.Preview.on('viewer', (viewer) => {
+    viewer.on('rotate', () => {
+        // Do something when a viewer rotates a preview
     });
 });
 
-OR
-
-Box.Preview.addListener('load', (data) => {
+Box.Preview.on('load', (data) => {
     const viewer = data.viewer;
-    viewer.addListener('rotate', () => {
-        // do something
+    viewer.on('rotate', () => {
+        // Do something when a viewer rotates a preview
     });
 });
 
-OR
-
-Box.Preview.addListener('viewerevent', (data) => {
+Box.Preview.on('viewerevent', (data) => {
     if (data.viewerName === 'Image') {
         if (data.event === 'rotate') {
-            // Do something when image rotation happens
+            // Do something when an image preview is rotated
         }
     } else if (data.viewerName === 'Image360') {
         if (data.event === 'rotate') {
-            // Do something else when 360 image rotation happens
+            // Do something different when a 360-degree image is rotated
         }
-    } else if (...) { ... }
+    } else {}
 });
 
-OR
-
-Box.Preview.addListener('rotate', (data) => {
+Box.Preview.on('rotate', (data) => {
     if (data.viewerName === 'Image') {
-        // Do something when image rotation happens
+        // Do something when an image preview is rotated
     } else if (data.viewerName === 'Image360') {
-        // Do something else when 360 image rotation happens
-    } else if (...) { ... }
+        // Do something different when a 360-degree image is rotated
+    } else {}
 });
 
 ```
