@@ -59,6 +59,7 @@
 
 // When lights are lowered, change color of loading text
 .bp-dark {
+    .bp-error,
     .bp-loading-text,
     .bp-btn-loading-download {
         color: $white;
