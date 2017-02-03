@@ -7,7 +7,7 @@ import cache from '../../../cache';
 let media;
 const sandbox = sinon.sandbox.create();
 
-describe('mp3', () => {
+describe('media-base', () => {
     before(() => {
         fixture.setBase('src/lib');
     });

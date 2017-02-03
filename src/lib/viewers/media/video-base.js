@@ -2,9 +2,9 @@ import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
 import MediaBase from './media-base';
 import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_DARK } from '../../constants';
+import { ICON_PLAY_LARGE } from '../../icons/icons';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
-const PLAY_ICON = '<svg fill="#FFF" height="48" viewBox="0 0 24 24" width="48"><path d="M8 5v14l11-7z"/><path d="M0 0h24v24H0z" fill="none"/></svg>';
 const CLASS_PLAY_BUTTON = 'bp-media-play-button';
 
 @autobind
@@ -29,7 +29,7 @@ class VideoBase extends MediaBase {
         this.playButtonEl = this.mediaContainerEl.appendChild(document.createElement('div'));
         this.playButtonEl.classList.add(CLASS_PLAY_BUTTON);
         this.playButtonEl.classList.add(CLASS_HIDDEN);
-        this.playButtonEl.innerHTML = PLAY_ICON;
+        this.playButtonEl.innerHTML = ICON_PLAY_LARGE;
 
         this.lowerLights();
     }
@@ -111,7 +111,7 @@ class VideoBase extends MediaBase {
     addEventListenersForMediaControls() {
         super.addEventListenersForMediaControls();
 
-        this.mediaControls.on('togglefullscreen', () => {
+        this.mediaControls.on('togglefullscreen', /* istanbul ignore next */ () => {
             this.toggleFullscreen();
         });
     }
