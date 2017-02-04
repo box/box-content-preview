@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import 'isomorphic-fetch';
 import fetchMock from 'fetch-mock';
 import {
@@ -21,8 +22,12 @@ import {
     del,
     put,
     checkStatus,
-    replacePlaceholders
+    replacePlaceholders,
+    disableEl,
+    enableEl
 } from '../util';
+
+import { CLASS_DISABLED } from '../constants';
 
 describe('util', () => {
     describe('checkStatus()', () => {
@@ -506,6 +511,25 @@ describe('util', () => {
 
         it('should replace with the same value if the placeholder is repeated', () => {
             expect(replacePlaceholders('{2} highlighted {2}', ['Bob', 'Suzy'])).to.equal('Suzy highlighted Suzy');
+        });
+    });
+
+    describe('disableEl()', () => {
+        it('should add the disabled class', () => {
+            const el = document.createElement('div');
+
+            disableEl(el);
+            expect(el.classList.contains('bp-is-disabled')).to.be.true;
+        });
+    });
+
+    describe('enableEl()', () => {
+        it('should remove the disabled class', () => {
+            const el = document.createElement('div');
+            el.classList.add(CLASS_DISABLED);
+
+            enableEl(el);
+            expect(el.classList.contains(CLASS_DISABLED)).to.be.false;
         });
     });
 });

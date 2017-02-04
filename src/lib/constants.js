@@ -24,6 +24,7 @@ export const CLASS_BOX_PREVIEW_PRELOAD_CONTENT = 'bp-preload-content';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER = 'bp-preload-wrapper';
 export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'bp-toggle-overlay';
 export const CLASS_BOX_PREVIEW_THEME_DARK = 'bp-theme-dark';
+export const CLASS_DISABLED = 'bp-is-disabled';
 export const CLASS_FULLSCREEN = 'bp-is-fullscreen';
 export const CLASS_INVISIBLE = 'bp-is-invisible';
 export const CLASS_IS_VISIBLE = 'bp-is-visible';

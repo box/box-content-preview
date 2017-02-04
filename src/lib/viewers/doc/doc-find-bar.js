@@ -347,6 +347,7 @@ class DocFindBar extends EventEmitter {
         if (!this.opened) {
             this.opened = true;
             this.bar.classList.remove(CLASS_HIDDEN);
+            this.emit('findbaropen');
         }
         this.findFieldEl.select();
         this.findFieldEl.focus();
@@ -369,6 +370,8 @@ class DocFindBar extends EventEmitter {
         this.opened = false;
         this.bar.classList.add(CLASS_HIDDEN);
         this.findController.active = false;
+
+        this.emit('findbarclose');
     }
 }
 
