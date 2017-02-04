@@ -10,6 +10,10 @@ http://opensource.box.com/cla
 
 To learn more about CLAs and why they are important to open source projects, please see the [Wikipedia entry](http://en.wikipedia.org/wiki/Contributor_License_Agreement).
 
+## Code of Conduct
+
+This project adheres to the [Box Open Code of Conduct](http://opensource.box.com/code-of-conduct/). By participating, you are expected to uphold this code.
+
 ## How to contribute
 
 * **File an issue** - if you found a bug, want to request an enhancement, or want to implement something (bug fix or feature).
@@ -32,7 +36,7 @@ This will create your own copy of our repository.
 The upstream source is the project under the Box organization on GitHub. To add an upstream source for this project, type:
 
 ```
-git remote add upstream git@github.com:box/t3js.git
+git remote add upstream git@github.com:box/box-js-preview-sdk.git
 ```
 
 This will come in useful later.
