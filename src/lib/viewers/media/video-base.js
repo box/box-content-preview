@@ -111,7 +111,8 @@ class VideoBase extends MediaBase {
     addEventListenersForMediaControls() {
         super.addEventListenersForMediaControls();
 
-        this.mediaControls.on('togglefullscreen', /* istanbul ignore next */ () => {
+        /* istanbul ignore next */
+        this.mediaControls.on('togglefullscreen', () => {
             this.toggleFullscreen();
         });
     }
@@ -127,6 +128,7 @@ class VideoBase extends MediaBase {
     addEventListenersForMediaElement() {
         super.addEventListenersForMediaElement();
 
+        /* istanbul ignore next */
         this.mousemoveHandler = throttle(() => {
             this.mediaControls.show();
         }, MOUSE_MOVE_TIMEOUT_IN_MILLIS);

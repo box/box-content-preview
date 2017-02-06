@@ -118,6 +118,7 @@ describe('video-base', () => {
 
             videoBase.addEventListenersForMediaElement();
 
+            expect(videoBase.mousemoveHandler).to.be.a.func;
             expect(videoBase.mediaEl.addEventListener).to.be.calledWith('mousemove', videoBase.mousemoveHandler);
             expect(videoBase.mediaEl.addEventListener).to.be.calledWith('click', videoBase.togglePlay);
             expect(videoBase.mediaEl.addEventListener).to.be.calledWith('waiting', videoBase.waitingHandler);
