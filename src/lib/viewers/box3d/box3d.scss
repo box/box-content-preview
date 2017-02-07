@@ -8,33 +8,24 @@
     position: absolute;
     top: 0;
     -webkit-touch-callout: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -webkit-user-select: none;
     user-select: none;
     width: 100%;
-
 
     // For VR mode
     &.vr-enabled {
         // Hide this NO MATTER WHAT
         .bp-controls {
-            opacity: 0!important;
+            /* stylelint-disable declaration-no-important */
+            opacity: 0 !important;
+            /* stylelint-enable declaration-no-important */
         }
     }
 }
 
 .bp-box3d canvas {
     cursor: move; /* fallback if grab cursor is unsupported */
-    cursor: -moz-grab;
-    cursor: -webkit-grab;
     cursor: grab;
     -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 }
 
@@ -43,31 +34,26 @@
 }
 
 .bp-box3d canvas:active {
-    cursor: -moz-grabbing;
-    cursor: -webkit-grabbing;
     cursor: grabbing;
 }
 
 .bp-box3d .bp-overlay-panel {
-    z-index: 2;
-    position: absolute;
-    font-size: 13px;
-    background: #FFF;
+    background: #fff;
+    border: 1px solid #caccd0;
     color: #484848;
-    margin: auto;
-    border: 0;
-    outline: 0;
-    border-color: #CACCD0;
-    border-style: solid;
-    border-width: 1px;
+    font-size: 13px;
     font-weight: 400;
+    margin: auto;
+    outline: 0;
+    position: absolute;
+    z-index: 2;
 }
 
 .bp-box3d .bp-overlay-panel span {
+    display: inline-block;
+    opacity: .7;
     position: relative;
     top: 5px;
-    display: inline-block;
-    opacity: 0.7;
 }
 
 .bp-box3d .bp-toggle-overlay .bp-menu {
@@ -77,8 +63,8 @@
 .bp-box3d li,
 .bp-box3d ul {
     list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
 }
 
 .bp-box3d input[type="checkbox"] {
@@ -87,6 +73,8 @@
 
 .bp-is-mobile {
     .bp-box3d .bp-controls {
-        opacity: 1!important;
+        /* stylelint-disable declaration-no-important */
+        opacity: 1 !important;
+        /* stylelint-enable declaration-no-important */
     }
 }

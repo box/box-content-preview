@@ -100,6 +100,17 @@ Install the following plugins in your preferred editor
 *For more script commands see `package.json`*
 *Coverage reports are available under reports/coverage*
 
+### Config files
+
+* .babelrc - https://babeljs.io/docs/usage/babelrc/
+* .editorconfig - http://editorconfig.org/
+* .eslintignore - http://eslint.org/docs/user-guide/configuring#ignoring-files-and-directories
+* .eslintrc - http://eslint.org/docs/user-guide/configuring
+* .gitignore - https://git-scm.com/docs/gitignore
+* .stylelintrc - https://stylelint.io/user-guide/configuration/
+* browserslist - https://github.com/ai/browserslist
+* postcss.config.js - https://github.com/postcss/postcss-loader
+
 ### Release build
 `npm run release` does a release build.
 

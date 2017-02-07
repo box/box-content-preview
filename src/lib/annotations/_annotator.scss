@@ -80,7 +80,6 @@ $avatar-color-9: #f22c44;
     fill: $highlight-yellow;
 }
 
-// scss-lint:disable SelectorDepth
 .bp-is-text-highlighted .bp-annotation-highlight-dialog .bp-btn-plain {
     svg {
         fill: $highlight-yellow;
@@ -94,7 +93,6 @@ $avatar-color-9: #f22c44;
         fill: $highlight-yellow-hover;
     }
 }
-// scss-lint:enable SelectorDepth
 
 .bp-btn-plain.bp-btn-annotate.bp-is-active svg {
     fill: $box-blue;
@@ -130,7 +128,6 @@ $avatar-color-9: #f22c44;
         min-height: 34px;
         padding: 7px;
         resize: vertical;
-        -webkit-transition: border-color linear .15s, box-shadow linear .1s, min-height .1s;
         transition: border-color linear .15s, box-shadow linear .1s, min-height .1s;
         width: 250px;
 
@@ -266,7 +263,6 @@ $avatar-color-9: #f22c44;
 
     svg {
         fill: fade-out($box-blue, .35);
-        -webkit-transition: fill .5s;
         transition: fill .5s;
     }
 
@@ -370,7 +366,6 @@ $avatar-color-9: #f22c44;
     cursor: default;
 
     // Overrides pdf_viewer.css
-    // scss-lint:disable SelectorFormat
     .textLayer > div {
         cursor: default;
     }
@@ -427,7 +422,6 @@ $avatar-color-9: #f22c44;
 // Annotation mode
 //------------------------------------------------------------------------------
 
-// scss-lint:disable SelectorFormat
 .bp-point-annotation-mode .page,
 .bp-point-annotation-mode .bp-annotation-layer,
 .bp-point-annotation-mode .textLayer > div,
@@ -441,14 +435,4 @@ $avatar-color-9: #f22c44;
 .bp-point-annotation-mode .textLayer > div,
 .bp-point-annotation-mode .textLayer .endOfContent {
     pointer-events: none;
-}
-
-// IE10 and IE11 don't implement custom cursors correctly, see:
-// http://stackoverflow.com/questions/7419314/custom-cursor-image-doesnt-work-in-all-ies
-// To get around this, we use absolute URLs to the cursor hosted on Box's CDN
-// scss-lint:disable SelectorFormat, UrlFormat
-.ie.bp-point-annotation-mode .page,
-.ie.bp-point-annotation-mode .bp-annotation-layer,
-.ie.bp-point-annotation-mode .textLayer > div {
-    cursor: crosshair;
 }

@@ -1,9 +1,0 @@
-options:
-  formatter: stylish
-files:
-  include: 'src/lib/**/*.s+(a|c)ss'
-rules:
-  indentation: [2, {size: 4}]
-  nesting-depth: [2, {max-depth: 5}]
-  no-qualifying-elements: [0]
-  force-pseudo-nesting: [0]

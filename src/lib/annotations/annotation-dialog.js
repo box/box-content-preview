@@ -99,7 +99,8 @@ class AnnotationDialog extends EventEmitter {
 
         // Move cursor to end of text area
         if (textAreaEl.selectionStart) {
-            textAreaEl.selectionStart = textAreaEl.selectionEnd = textAreaEl.value.length;
+            textAreaEl.selectionEnd = textAreaEl.value.length;
+            textAreaEl.selectionStart = textAreaEl.selectionEnd;
         }
 
         // If user cannot annotate, hide reply/edit/delete UI

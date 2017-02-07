@@ -52,9 +52,10 @@ describe('image360-renderer', () => {
         });
 
         it('should invoke imageAsset.destroy(), if it exists', () => {
-            const imageAsset = renderer.imageAsset = {
+            renderer.imageAsset = {
                 destroy: sandbox.stub()
             };
+            const imageAsset = renderer.imageAsset;
             renderer.destroy();
 
             expect(imageAsset.destroy).to.have.been.called;
@@ -79,9 +80,10 @@ describe('image360-renderer', () => {
         });
 
         it('should invoke textureAsset.destroy()', () => {
-            const textureAsset = renderer.textureAsset = {
+            renderer.textureAsset = {
                 destroy: sandbox.stub()
             };
+            const textureAsset = renderer.textureAsset;
 
             sandbox.stub(renderer, 'getSkyboxComponent');
             renderer.cleanupTexture();

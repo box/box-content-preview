@@ -8,23 +8,23 @@
 }
 
 .bp-media-controls-wrapper {
-    width: 100%;
-    height: 60px;
+    background-image: linear-gradient(to top, rgba($black, .6) 0%, rgba($black, 0) 100%);
     bottom: 0;
-    transition: opacity 0.3s;
+    height: 60px;
+    left: 0;
+    margin: auto;
+    opacity: 0;
     overflow: hidden;
     position: absolute;
-    margin: auto;
-    left: 0;
     right: 0;
-    opacity: 0;
-    background-image: linear-gradient(to top, rgba($black, .6) 0%, rgba($black, 0) 100%);
+    transition: opacity .3s;
+    width: 100%;
 }
 
 .bp-media-volume-scrubber-container {
     display: inline-block;
-    width: 80px;
     margin-top: 8px;
+    width: 80px;
 
     .bp-media-scrubber-handle {
         transform: scale(1);
@@ -34,34 +34,36 @@
     .bp-media-scrubber-buffered,
     .bp-media-scrubber-played,
     .bp-media-scrubber-underlay {
+        /* stylelint-disable declaration-no-important */
         transform: scaleY(1) !important;
+        /* stylelint-enable declaration-no-important */
     }
 }
 
 .bp-media-controls-container {
+    height: 40px;
     margin: 0;
     padding: 0 10px;
-    height: 40px;
     text-align: left;
 }
 
 .bp-media-controls-label,
 .bp-media-controls-btn {
-    cursor: pointer;
-    font-size: 12px;
-    height: 40px;
-    width: 45px;
-    margin: 0;
-    padding: 0;
-    outline: 0 none;
-    border: none;
-    font-weight: 400;
-    text-align: center;
     background-color: transparent;
-    display: inline-block;
-    vertical-align: top;
+    border: none;
     color: $white;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 400;
+    height: 40px;
+    margin: 0;
     opacity: .7;
+    outline: 0 none;
+    padding: 0;
+    text-align: center;
+    vertical-align: top;
+    width: 45px;
 
     &:hover {
         opacity: 1;
@@ -69,27 +71,27 @@
 }
 
 .bp-media-controls-volume-control .bp-media-controls-btn {
-    width: 36px;
     position: relative;
+    width: 36px;
 }
 
 .bp-media-controls-label {
-    margin: 0 4px;
-    width: auto;
-    line-height: 40px;
-    display: inline-block;
-    vertical-align: top;
     cursor: default;
+    display: inline-block;
+    line-height: 40px;
+    margin: 0 4px;
+    vertical-align: top;
+    width: auto;
 }
 
 .bp-media-controls-volume-wrapper,
 .bp-media-controls-volume-control {
-    width: 45px;
+    display: inline-block;
     height: 40px;
     overflow: hidden;
-    display: inline-block;
+    transition: width .2s ease-in-out;
     vertical-align: top;
-    transition: width 0.2s ease-in-out;
+    width: 45px;
 
     .bp-is-mobile & {
         display: none;
@@ -106,8 +108,8 @@
     position: relative;
 
     svg path {
-        transition: all 0.3s;
         transform-origin: 50%;
+        transition: all .3s;
     }
 
     .bp-media-settings-is-open & svg path {
@@ -122,16 +124,16 @@
 }
 
 .bp-media-controls-hd {
-    font-size: 8px;
     background: $box-blue;
-    padding: 2px 2px 2px 3px;
     border-radius: 3px;
-    position: absolute;
-    left: 22px;
     display: none;
-    letter-spacing: 0.1em;
-    line-height: 8px;
+    font-size: 8px;
     font-weight: 600;
+    left: 22px;
+    letter-spacing: .1em;
+    line-height: 8px;
+    padding: 2px 2px 2px 3px;
+    position: absolute;
 
     .bp-media-controls-is-hd & {
         display: inline;
@@ -159,8 +161,8 @@
 .bp-media-volume-icon-medium,
 .bp-media-volume-icon-high {
     display: none;
-    position: absolute;
     left: 6px;
+    position: absolute;
 }
 
 .bp-media-volume-icon-is-mute .bp-media-volume-icon-mute,

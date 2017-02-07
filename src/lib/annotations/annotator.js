@@ -11,7 +11,6 @@
 
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
-import Browser from '../browser';
 import Notification from '../notification';
 import AnnotationService from './annotation-service';
 import * as constants from './annotation-constants';
@@ -78,11 +77,6 @@ class Annotator extends EventEmitter {
     init() {
         this.setScale(1);
         this.setupAnnotations();
-
-        // Add IE-specific class for custom cursors
-        if (Browser.getName() === 'Explorer') {
-            this._annotatedElement.classList.add('ie');
-        }
     }
 
     /**

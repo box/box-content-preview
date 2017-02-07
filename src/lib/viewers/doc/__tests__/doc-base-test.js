@@ -141,7 +141,9 @@ describe('doc-base', () => {
 
     describe('load()', () => {
         it('should load a document', () => {
+            const loadFunc = Base.prototype.load;
             const url = 'test';
+
             const appendAuthStub = sandbox.stub(docBase, 'appendAuthParams').returns(`${url}authed`);
             const setupPdfjsStub = sandbox.stub(docBase, 'setupPdfjs');
             const initViewerStub = sandbox.stub(docBase, 'initViewer');
@@ -158,9 +160,11 @@ describe('doc-base', () => {
             expect(initViewerStub).to.be.calledWith(docBase.pdfUrl);
             expect(initPrintStub).to.be.called;
             expect(initFindStub).to.be.called;
-
-
             expect(Base.prototype.load).to.be.called;
+
+            Object.defineProperty(Object.getPrototypeOf(DocBase.prototype), 'load', {
+                value: loadFunc
+            });
         });
     });
 
@@ -353,6 +357,8 @@ describe('doc-base', () => {
     });
 
     describe('resize()', () => {
+        const resizeFunc = Base.prototype.resize;
+
         beforeEach(() => {
             docBase.pdfViewer = {
                 update: sandbox.stub(),
@@ -364,6 +370,12 @@ describe('doc-base', () => {
             stubs.setPage = sandbox.stub(docBase, 'setPage');
             Object.defineProperty(Object.getPrototypeOf(DocBase.prototype), 'resize', {
                 value: sandbox.stub()
+            });
+        });
+
+        afterEach(() => {
+            Object.defineProperty(Object.getPrototypeOf(DocBase.prototype), 'resize', {
+                value: resizeFunc
             });
         });
 

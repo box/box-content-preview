@@ -6,14 +6,14 @@
 
 .bp-video-360 canvas {
     cursor: move; /* fallback if grab cursor is unsupported */
-    cursor: -moz-grab;
-    cursor: -webkit-grab;
     cursor: grab;
 }
 
 .bp-is-mobile {
     .bp-media-controls-wrapper {
-        opacity: 1!important;
+        /* stylelint-disable declaration-no-important */
+        opacity: 1 !important;
+        /* stylelint-enable declaration-no-important */
     }
 }
 

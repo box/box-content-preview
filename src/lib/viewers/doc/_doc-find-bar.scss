@@ -48,8 +48,7 @@ $blue:                #00f !default;
         right: 120px;
         text-align: right;
         top: 37%;
-        -moz-user-select: none;
-        -webkit-user-select: none;
+        user-select: none;
     }
 
     .bp-doc-find-search,
@@ -97,7 +96,6 @@ $blue:                #00f !default;
     }
 }
 
-// scss-lint:disable SelectorFormat
 .textLayer {
     opacity: 1;
 
@@ -111,10 +109,6 @@ $blue:                #00f !default;
     }
 
     ::selection {
-        background-color: fade-out($blue, .8);
-    }
-
-    *::-moz-selection {
         background-color: fade-out($blue, .8);
     }
 }

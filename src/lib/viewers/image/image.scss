@@ -1,62 +1,52 @@
 @import '../../annotations/annotator';
 
 .bp-image {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 0;
-    margin: 0;
     border: 0 none;
-    width: 100%;
+    bottom: 0;
     height: 100%;
+    left: 0;
+    margin: 0;
     overflow: auto;
-    white-space: nowrap;
-    text-align: center;
-}
-
-.bp-image:before {
-    content: "";
-    height: 100%;
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.bp-image img {
-    vertical-align: middle;
+    padding: 0;
     position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    white-space: nowrap;
+    width: 100%;
+
+    &::before {
+        content: "";
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+    }
+
+    img {
+        position: absolute;
+        vertical-align: middle;
+    }
+
+    .pannable,
+    .panning {
+        cursor: move;
+    }
+
+    .zoomable {
+        cursor: pointer; /* cursor for IE 11 */
+        cursor: zoom-in;
+    }
 }
-
-.bp-image .pannable {
-    cursor: move;
-    cursor: -moz-grab;
-    cursor: -webkit-grab;
-}
-
-.bp-image .panning {
-    cursor: move;
-    cursor: -moz-grabbing;
-    cursor: -webkit-grabbing;
-}
-
-.bp-images-wrapper,
-.bp-image .zoomable {
-    cursor: pointer; /* cursor for IE9 */
-    cursor: zoom-in;
-    cursor: -moz-zoom-in;
-    cursor: -webkit-zoom-in;
-}
-
-
 
 .bp-images-wrapper {
-    padding: 0;
-    margin: 0 auto;
     border: 0 none;
+    cursor: pointer; /* cursor for IE 11 */
+    cursor: zoom-in;
+    margin: 0 auto;
+    padding: 0;
 }
 
 .bp-images img {
-    width: 100%;
     display: block;
+    width: 100%;
 }

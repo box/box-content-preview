@@ -1,4 +1,5 @@
-// Necessary components from Box UI
+/* stylelint-disable */
+// Box-specific components from internal Box UI CSS
 
 @import 'boxui-variables';
 
@@ -78,7 +79,6 @@ li {
     }
 }
 
-// scss-lint:disable MergeableSelector
 .bp-btn {
     -webkit-appearance: none;
     background-color: $white;

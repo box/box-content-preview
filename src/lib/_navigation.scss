@@ -3,23 +3,23 @@
 }
 
 .bp-navigate {
-    position: absolute;
-    white-space: nowrap;
-    top: 50%;
-    width: 50px;
-    height: 64px;
-    overflow: hidden;
-    display: block;
-    border: 0 none;
-    margin: 0;
-    cursor: pointer;
-    opacity: 0;
-    text-decoration: none;
     background-repeat: no-repeat;
+    border: 0 none;
+    cursor: pointer;
+    display: block;
+    height: 64px;
+    margin: 0;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    text-decoration: none;
+    top: 50%;
     transform: translateY(-50%);
 
     // Override default animations to only animate opacity since width animation to auto doesn't work
     transition-property: opacity;
+    white-space: nowrap;
+    width: 50px;
 
     &:hover {
         opacity: 1;

@@ -1,1 +1,2 @@
-src/third-party/**/*.js
+src/third-party/*
+dist/*

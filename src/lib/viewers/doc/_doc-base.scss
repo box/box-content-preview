@@ -1,6 +1,5 @@
 @import '../../boxui-variables';
 
-// scss-lint:disable SelectorFormat
 .bp-doc {
     bottom: 0;
     height: 100%;
@@ -16,8 +15,9 @@
 
     // Hides black canvas during rendering
     [hidden] {
-        // scss-lint:disable ImportantRule
+        /* stylelint-disable declaration-no-important */
         display: none !important;
+        /* stylelint-enable declaration-no-important */
     }
 
     &.is-safari {
@@ -28,15 +28,15 @@
     .pdfViewer .page {
         border: 0;
         border-image: none;
-        // scss-lint:disable ImportantRule
+        /* stylelint-disable declaration-no-important */
         box-sizing: content-box !important;
+        /* stylelint-enable declaration-no-important */
         margin: 0 auto;
         // We use padding instead of margin to push down since we want to
         // include this padding when PDF.js jumps to pages
         padding: 15px 0;
         position: relative;
 
-        // scss-lint:disable SelectorDepth
         .loadingIcon {
             background: none;
         }
@@ -58,9 +58,6 @@
 
         // Only allow text divs to be selected
         > div {
-            -moz-user-select: text;
-            -ms-user-select: text;
-            -webkit-user-select: text;
             user-select: text;
         }
 

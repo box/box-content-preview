@@ -1,6 +1,6 @@
 $padding: 8px;
 $item-height: 26px;
-$item-hover-color: #F6FAFD;
+$item-hover-color: #f6fafd;
 
 .bp-media-settings {
     background-color: $white;
@@ -37,14 +37,17 @@ $item-hover-color: #F6FAFD;
 
     &.bp-media-settings-show-speed,
     &.bp-media-settings-show-quality {
+        /* stylelint-disable declaration-no-important */
         height: ((4 * $item-height) + (2 * $padding)) !important;
         width: (88px + (2 * $padding)) !important;
+        /* stylelint-enable declaration-no-important */
     }
 
     &.bp-media-settings-show-speed {
+        /* stylelint-disable declaration-no-important */
         height: ((7 * $item-height) + (2 * $padding)) !important;
+        /* stylelint-enable declaration-no-important */
     }
-
 }
 
 .bp-media-settings-item,
@@ -88,7 +91,6 @@ $item-hover-color: #F6FAFD;
 }
 
 .bp-media-settings-value {
-
     color: $sunset-grey;
     font-size: 12px;
     text-align: right;

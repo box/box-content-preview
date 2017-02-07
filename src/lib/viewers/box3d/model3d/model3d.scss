@@ -13,46 +13,46 @@ $arrow-top-bottom: 4px solid transparent;
 .bp-box3d {
     .bp-settings-wrapper .bp-settings-btn:active,
     .bp-overlay span:active {
-        opacity: 1.0;
+        opacity: 1;
     }
 
     .bp-pullup {
         bottom: calc(100%);
+        padding: 0 10px 10px;
         text-align: left;
-        padding: 0 10px 10px 10px;
     }
 
     .bp-settings-panel-row {
         display: block;
         margin-top: 6px;
 
-        &:before,
-        &:after {
-            display: table;
+        &::before,
+        &::after {
             content: "";
+            display: table;
             line-height: 0;
         }
 
-        &:before {
+        &::before {
             clear: both;
             padding-top: 10px;
         }
     }
 
     .bp-settings-panel-label {
-        display: inline;
         color: $seventy-sixers;
-        margin: 4px;
+        display: inline;
         line-height: 1;
+        margin: 4px;
         white-space: nowrap;
     }
 
     .bp-panel-btn {
+        border-radius: 5px;
+        cursor: pointer;
         height: 34px;
         line-height: 34px;
-        border-radius: 5px;
         overflow: hidden;
-        cursor: pointer;
     }
 
     .bp-toggle-overlay {
@@ -61,22 +61,21 @@ $arrow-top-bottom: 4px solid transparent;
         }
 
         .bp-btn {
-            width: 100%;
-            text-align: left;
             color: #808080;
-            text-transform: none;
             font-size: 13px;
-            letter-spacing: 0px;
-            font-weight: 400;
-            padding: 5px 0 5px 10px;
             height: 34px;
+            letter-spacing: 0;
+            padding: 5px 0 5px 10px;
+            text-align: left;
+            text-transform: none;
+            width: 100%;
 
-            &:after {
-                content: "";
-                height: 0;
+            &::after {
                 border-left: 3px solid transparent;
                 border-right: 3px solid transparent;
                 border-top: 3px solid #494949;
+                content: "";
+                height: 0;
                 position: absolute;
                 right: 11px;
                 top: 15px;
@@ -87,29 +86,29 @@ $arrow-top-bottom: 4px solid transparent;
 
     .bp-overlay-panel {
         .bp-btn .bp-btn-primary {
-            margin: 6px 0 0 0;
+            margin: 6px 0 0;
         }
     }
 
     .box3d-settings-axis-widget {
-        border: 1px solid #CACCD0;
+        border: 1px solid #caccd0;
         border-bottom-width: 2px;
         border-radius: 2px;
         display: inline;
         padding-bottom: 10px;
 
         &.box3d-settings-axis-widget-x {
-            border-bottom-color: #E33D55;
+            border-bottom-color: #e33d55;
         }
 
         &.box3d-settings-axis-widget-y {
-            border-bottom-color: #26C281;
+            border-bottom-color: #26c281;
             margin-left: 4px;
             margin-right: 4px;
         }
 
         &.box3d-settings-axis-widget-z {
-            border-bottom-color: #22A7F0;
+            border-bottom-color: #22a7f0;
         }
 
         span {
@@ -122,35 +121,38 @@ $arrow-top-bottom: 4px solid transparent;
 
         .box3d-setting-axis-rotate {
             color: $box-blue;
-            padding: 0 12px;
             cursor: pointer;
             font-size: medium;
+            padding: 0 12px;
         }
 
-        .box3d-setting-axis-rotate-left:after,
-        .box3d-setting-axis-rotate-right:after {
+        .box3d-setting-axis-rotate-left::after,
+        .box3d-setting-axis-rotate-right::after {
+            border-bottom: $arrow-top-bottom;
+            border-top: $arrow-top-bottom;
             content: "";
             height: 0;
-            border-top: $arrow-top-bottom;
-            border-bottom: $arrow-top-bottom;
             position: absolute;
             top: 7px;
             width: 0;
         }
 
-        .box3d-setting-axis-rotate-left:after {
+        .box3d-setting-axis-rotate-left::after {
             @include arrow-left($fours);
+
             left: 10px;
         }
 
-        .box3d-setting-axis-rotate-right:after {
+        .box3d-setting-axis-rotate-right::after {
             @include arrow-right($fours);
+
             right: 10px;
         }
 
         .box3d-setting-axis-rotate-left:hover::after {
             @include arrow-left($eights);
         }
+
         .box3d-setting-axis-rotate-right:hover::after {
             @include arrow-right($eights);
         }
@@ -158,6 +160,7 @@ $arrow-top-bottom: 4px solid transparent;
         .box3d-setting-axis-rotate-left:active::after {
             @include arrow-left($twos);
         }
+
         .box3d-setting-axis-rotate-right:active::after {
             @include arrow-right($twos);
         }
@@ -169,24 +172,23 @@ $arrow-top-bottom: 4px solid transparent;
     }
 
     .box3d-animation-clip {
+        cursor: pointer;
         display: block;
         margin-top: 6px;
         white-space: nowrap;
-        cursor: pointer;
 
         .box3d-animation-clip-icon {
             display: inline-block;
             width: 24px;
 
             svg {
-                vertical-align: text-bottom;
                 height: 16px;
+                vertical-align: text-bottom;
             }
         }
 
         .box3d-animation-clip-value {
             display: inline;
-            width: auto;
             max-width: 183px;
             overflow-x: hidden;
             white-space: nowrap;
