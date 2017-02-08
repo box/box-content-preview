@@ -20,10 +20,7 @@
                         "src/lib/polyfill.js",
                         "src/lib/browser.js",
                         "src/lib/viewers/media/dash.js",
-                        "src/lib/viewers/media/flash.js",
-                        "src/lib/viewers/media/media-controls.js",
-                        "src/lib/viewers/media/scrubber.js",
-                        "src/lib/viewers/media/settings.js"
+                        "src/lib/viewers/media/scrubber.js"
                     ]
                 }],
                 ["babel-plugin-transform-require-ignore", { "extensions": [".scss"] }]

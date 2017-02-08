@@ -83,8 +83,8 @@ class Settings extends EventEmitter {
 
         insertTemplate(this.containerEl, SETTINGS_TEMPLATE);
 
-        this.settings = this.containerEl.lastElementChild;
-        this.settings.addEventListener('click', this.menuClickHandler);
+        this.settingsEl = this.containerEl.lastElementChild;
+        this.settingsEl.addEventListener('click', this.menuClickHandler);
         this.visible = false;
         this.init();
     }
@@ -107,8 +107,8 @@ class Settings extends EventEmitter {
      * @returns {void}
      */
     destroy() {
-        if (this.settings) {
-            this.settings.removeEventListener('click', this.menuClickHandler);
+        if (this.settingsEl) {
+            this.settingsEl.removeEventListener('click', this.menuClickHandler);
         }
         document.removeEventListener('click', this.blurHandler);
     }
@@ -118,7 +118,7 @@ class Settings extends EventEmitter {
      * @returns {void}
      */
     reset() {
-        this.settings.className = CLASS_SETTINGS;
+        this.settingsEl.className = CLASS_SETTINGS;
     }
 
     /**
@@ -129,7 +129,7 @@ class Settings extends EventEmitter {
      */
     findParentDataType(target) {
         let currentNode = target;
-        while (currentNode && currentNode !== this.settings) {
+        while (currentNode && currentNode !== this.settingsEl) {
             if (typeof currentNode.getAttribute('data-type') === 'string') {
                 return currentNode;
                 /* eslint-disable no-else-return */
@@ -165,7 +165,7 @@ class Settings extends EventEmitter {
             this.chooseOption(type, value);
         } else if (type) {
             // We are in the main menu and clicked a valid option
-            this.settings.classList.add(`bp-media-settings-show-${type}`);
+            this.settingsEl.classList.add(`bp-media-settings-show-${type}`);
         }
     }
 
@@ -187,16 +187,16 @@ class Settings extends EventEmitter {
         this.emit(type);
 
         // Figure out the target option
-        const option = this.settings.querySelector(`[data-type="${type}"][data-value="${value}"]`);
+        const option = this.settingsEl.querySelector(`[data-type="${type}"][data-value="${value}"]`);
 
         // Fetch the menu label to use
         const label = option.querySelector(SELECTOR_SETTINGS_VALUE).textContent;
 
         // Copy the value of the selected option to the main top level menu
-        this.settings.querySelector(`[data-type="${type}"] ${SELECTOR_SETTINGS_VALUE}`).textContent = label;
+        this.settingsEl.querySelector(`[data-type="${type}"] ${SELECTOR_SETTINGS_VALUE}`).textContent = label;
 
         // Remove the checkmark from the prior selected option in the sub menu
-        this.settings.querySelector(`[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`).classList.remove(CLASS_SETTINGS_SELECTED);
+        this.settingsEl.querySelector(`[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`).classList.remove(CLASS_SETTINGS_SELECTED);
 
         // Add a checkmark to the new selected option in the sub menu
         option.classList.add(CLASS_SETTINGS_SELECTED);
@@ -210,7 +210,7 @@ class Settings extends EventEmitter {
      * @returns {void}
      */
     blurHandler(event) {
-        if (!this.settings.contains(event.target)) {
+        if (!this.settingsEl.contains(event.target)) {
             this.hide();
         }
     }
