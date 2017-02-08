@@ -115,7 +115,7 @@ class Base extends EventEmitter {
      * Appends auth params to the content url
      *
      * @protected
-     * @param {string} url url to attach param to
+     * @param {string} url - url to attach param to
      * @return {string} url with appended auth params
      */
     appendAuthParams(url) {
@@ -129,8 +129,8 @@ class Base extends EventEmitter {
      * using the asset name provided from preview
      *
      * @protected
-     * @param {string} template url template to attach param to
-     * @param {string|void} [asset] optional asset name needed to access file
+     * @param {string} template - url template to attach param to
+     * @param {string|void} [asset] - optional asset name needed to access file
      * @return {string} content url
      */
     createContentUrl(template, asset) {
@@ -145,8 +145,8 @@ class Base extends EventEmitter {
      * using the asset name provided from preview
      *
      * @protected
-     * @param {string} template url template to attach param to
-     * @param {string|void} [asset] optional asset name needed to access file
+     * @param {string} template - url template to attach param to
+     * @param {string|void} [asset] - optional asset name needed to access file
      * @return {string} content url
      */
     createContentUrlWithAuthParams(template, asset) {
@@ -157,7 +157,7 @@ class Base extends EventEmitter {
      * Adds headers needed for an XHR fetch
      *
      * @protected
-     * @param {Object} [headers] optional existing headers
+     * @param {Object} [headers] - optional existing headers
      * @return {Object} fetch headers
      */
     appendAuthHeader(headers = {}) {
@@ -243,8 +243,8 @@ class Base extends EventEmitter {
      *
      * @protected
      * @emits viewerevent
-     * @param {string} event Event name
-     * @param {Object} data Event data
+     * @param {string} event - Event name
+     * @param {Object} data - Event data
      * @return {void}
      */
     emit(event, data) {
@@ -263,7 +263,7 @@ class Base extends EventEmitter {
      * we still meet the WCAG's requirement of a 200% zoom on text.
      *
      * @private
-     * @param {Event} event object
+     * @param {Event} event - object
      * @return {void}
      */
     mobileZoomStartHandler(event) {
@@ -293,7 +293,7 @@ class Base extends EventEmitter {
      * was pinching in or out. Used only by non iOS browsers
      *
      * @private
-     * @param {Event} event object
+     * @param {Event} event - object
      * @return {void}
      */
     mobileZoomChangeHandler(event) {
@@ -310,7 +310,7 @@ class Base extends EventEmitter {
      * Zooms the document in or out depending on the scale of the pinch
      *
      * @private
-     * @param {Event} event object
+     * @param {Event} event - object
      * @return {void}
      */
     mobileZoomEndHandler(event) {
@@ -344,7 +344,7 @@ class Base extends EventEmitter {
      * Retrieves the value of a viewer option.
      *
      * @protected
-     * @param {string} option to get
+     * @param {string} option - to get
      * @return {Object} Value of a viewer option
      */
     getViewerOption(option) {

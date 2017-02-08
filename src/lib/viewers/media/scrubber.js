@@ -13,12 +13,12 @@ class Scrubber extends EventEmitter {
      * Service to handle the position and movement of a slider element
      *
      * [constructor]
-     * @param {HTMLElement} containerEl container node
-     * @param {string} accessibilityText text
-     * @param {number} [value] optional initial value
-     * @param {number} [bufferedValue] optional initial buffered value
-     * @param {number} [convertedValue] optional initial converted value
-     * @returns {Scrubber} Scrubber instance
+     * @param {HTMLElement} containerEl - container node
+     * @param {string} accessibilityText - text
+     * @param {number} [value] - optional initial value
+     * @param {number} [bufferedValue] - optional initial buffered value
+     * @param {number} [convertedValue] - optional initial converted value
+     * @return {Scrubber} Scrubber instance
      */
     constructor(containerEl, accessibilityText, value = MIN_VALUE, bufferedValue = MAX_VALUE, convertedValue = MAX_VALUE) {
         super();
@@ -56,7 +56,7 @@ class Scrubber extends EventEmitter {
 
     /**
      * [destructor]
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         this.removeAllListeners();
@@ -78,8 +78,8 @@ class Scrubber extends EventEmitter {
      * Resizes the scrubber on demand by reducing the size from container
      *
      * @public
-     * @param {number} offset the the value to reduce the scrubber length by
-     * @returns {void}
+     * @param {number} offset - the the value to reduce the scrubber length by
+     * @return {void}
      */
     resize(offset) {
         this.scrubberWrapperEl.style.width = `${this.containerEl.clientWidth - offset}px`;
@@ -90,8 +90,8 @@ class Scrubber extends EventEmitter {
      * Sets the value of the scrubber handle position and moves the HTML it to this new position
      *
      * @public
-     * @param {number} value the the value to save
-     * @returns {void}
+     * @param {number} value - the the value to save
+     * @return {void}
      */
     adjustScrubberHandle() {
         // When setting widths and lefts, take into account that the handle is round
@@ -114,8 +114,8 @@ class Scrubber extends EventEmitter {
      * Sets the value of the scrubber handle position and moves the HTML it to this new position
      *
      * @public
-     * @param {number} value the the value to save
-     * @returns {void}
+     * @param {number} value - the the value to save
+     * @return {void}
      */
     setValue(value = MIN_VALUE) {
         if (value === this.value) {
@@ -136,8 +136,8 @@ class Scrubber extends EventEmitter {
      * Sets the value of the scrubber handle position and moves the HTML it to this new position
      *
      * @public
-     * @param {number} value the the value to save
-     * @returns {void}
+     * @param {number} value - the the value to save
+     * @return {void}
      */
     setBufferedValue(value = MAX_VALUE) {
         if (value === this.bufferedValue) {
@@ -156,8 +156,8 @@ class Scrubber extends EventEmitter {
      * Sets the value of the scrubber handle position and moves the HTML it to this new position
      *
      * @public
-     * @param {number} value the the value to save
-     * @returns {void}
+     * @param {number} value - the the value to save
+     * @return {void}
      */
     setConvertedValue(value = MAX_VALUE) {
         if (value === this.convertedValue) {
@@ -176,8 +176,8 @@ class Scrubber extends EventEmitter {
      * Calculates the position of the scrubber handle based on mouse action
      *
      * @private
-     * @param {Event} event the instance of the class
-     * @returns {void}
+     * @param {Event} event - the instance of the class
+     * @return {void}
      */
     scrubbingHandler(event) {
         const rect = this.scrubberEl.getBoundingClientRect();
@@ -196,8 +196,8 @@ class Scrubber extends EventEmitter {
      * since the intension of the user is to drag the handle, and not to click on the page
      *
      * @private
-     * @param {Scrubber} ctx the instance of the class
-     * @returns {void}
+     * @param {Scrubber} ctx - the instance of the class
+     * @return {void}
      */
     mouseDownHandler(event) {
         // If this is not a left click, then ignore
@@ -220,7 +220,7 @@ class Scrubber extends EventEmitter {
      * Sets the mouse move state to false thus stopping mouse action handling
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     mouseUpHandler() {
         this.scrubberWrapperEl.classList.remove(CLASS_SCRUBBER_HOVER);
@@ -230,7 +230,7 @@ class Scrubber extends EventEmitter {
     /**
      * Cleanup method for the Class
      * @public
-     * @returns {void}
+     * @return {void}
      */
     destroyDocumentHandlers() {
         document.removeEventListener('mousemove', this.scrubbingHandler);
@@ -241,7 +241,7 @@ class Scrubber extends EventEmitter {
     /**
      * Getter for the value of the scrubber handle position
      * @public
-     * @returns {number} The scrubber handle position
+     * @return {number} The scrubber handle position
      */
     getValue() {
         return this.value;
@@ -251,7 +251,7 @@ class Scrubber extends EventEmitter {
      * Returns the dom element for the scrubber handle
      *
      * @public
-     * @returns {HTMLElement} The dom element
+     * @return {HTMLElement} The dom element
      */
     getHandleEl() {
         return this.handleEl;
@@ -261,7 +261,7 @@ class Scrubber extends EventEmitter {
      * Returns the dom element for the scrubber conversion bar
      *
      * @public
-     * @returns {HTMLElement} The dom element
+     * @return {HTMLElement} The dom element
      */
     getConvertedEl() {
         return this.convertedEl;

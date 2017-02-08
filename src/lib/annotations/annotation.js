@@ -36,8 +36,8 @@ class Annotation {
     /**
      * [constructor]
      *
-     * @param {AnnotationData} data Data for constructing annotation
-     * @returns {Annotation} Instance of annotation
+     * @param {AnnotationData} data - Data for constructing annotation
+     * @return {Annotation} Instance of annotation
      */
     constructor(data) {
         this._annotationID = data.annotationID;
@@ -60,7 +60,7 @@ class Annotation {
     /**
      * Gets annotationID.
      *
-     * @returns {string} annotationID
+     * @return {string} annotationID
      */
     get annotationID() {
         return this._annotationID;
@@ -69,7 +69,7 @@ class Annotation {
     /**
      * Gets fileVersionID.
      *
-     * @returns {string} fileVersionID
+     * @return {string} fileVersionID
      */
     get fileVersionID() {
         return this._fileVersionID;
@@ -78,7 +78,7 @@ class Annotation {
     /**
      * Gets threadID.
      *
-     * @returns {string} threadID
+     * @return {string} threadID
      */
     get threadID() {
         return this._threadID;
@@ -87,7 +87,7 @@ class Annotation {
     /**
      * Gets thread.
      *
-     * @returns {string} thread
+     * @return {string} thread
      */
     get thread() {
         return this._thread;
@@ -96,7 +96,7 @@ class Annotation {
     /**
      * Gets type.
      *
-     * @returns {string} type
+     * @return {string} type
      */
     get type() {
         return this._type;
@@ -105,7 +105,7 @@ class Annotation {
     /**
      * Gets text.
      *
-     * @returns {string} text
+     * @return {string} text
      */
     get text() {
         return this._text;
@@ -114,7 +114,7 @@ class Annotation {
     /**
      * Gets location.
      *
-     * @returns {Object} location
+     * @return {Object} location
      */
     get location() {
         return this._location;
@@ -123,7 +123,7 @@ class Annotation {
     /**
      * Gets user.
      *
-     * @returns {Object} user
+     * @return {Object} user
      */
     get user() {
         return this._user;
@@ -132,7 +132,7 @@ class Annotation {
     /**
      * Gets permissions.
      *
-     * @returns {Object} permissions
+     * @return {Object} permissions
      */
     get permissions() {
         return this._permissions;
@@ -141,7 +141,7 @@ class Annotation {
     /**
      * Gets created.
      *
-     * @returns {number} created
+     * @return {number} created
      */
     get created() {
         return this._created;
@@ -150,7 +150,7 @@ class Annotation {
     /**
      * Gets modified.
      *
-     * @returns {number} modified
+     * @return {number} modified
      */
     get modified() {
         return this._modified;

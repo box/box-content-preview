@@ -9,10 +9,10 @@ class RepStatus {
     /**
      * [constructor]
      *
-     * @param {Object} representation representation object
-     * @param {Object} headers request headers
-     * @param {Object} [logger] optional logger instance
-     * @returns {RepStatus} RepStatus instance
+     * @param {Object} representation - representation object
+     * @param {Object} headers - request headers
+     * @param {Object} [logger] - optional logger instance
+     * @return {RepStatus} RepStatus instance
      */
     constructor(representation, headers, logger) {
         this.representation = representation;
@@ -28,7 +28,7 @@ class RepStatus {
     /**
      * [destructor]
      *
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         clearTimeout(this.statusTimeout);
@@ -38,7 +38,7 @@ class RepStatus {
      * Fetches status of a representation asset
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     updateStatus() {
         return get(this.representation.info.url, this.headers)
@@ -60,7 +60,7 @@ class RepStatus {
      * Gets the status of a representation asset
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     handleResponse() {
         const status = (typeof this.representation.status === 'object') ? this.representation.status.state : this.representation.temp_status.state;
@@ -96,7 +96,7 @@ class RepStatus {
      * Gets the status of a representation asset
      *
      * @public
-     * @returns {Promise} Promise to detect represenation status
+     * @return {Promise} Promise to detect represenation status
      */
     success() {
         this.handleResponse();

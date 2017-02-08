@@ -19,8 +19,8 @@ import {
 /**
  * Create a label element.
  *
- * @param {string} [text] The text to be displayed
- * @returns {HTMLElement} The newly created label element
+ * @param {string} [text] - The text to be displayed
+ * @return {HTMLElement} The newly created label element
  */
 function createLabel(text = '') {
     const label = document.createElement('div');
@@ -32,8 +32,8 @@ function createLabel(text = '') {
 /**
  * Create a button element.
  *
- * @param {string} [text] Optional text to be displayed inside of the button
- * @returns {HTMLElement} The newly created button element
+ * @param {string} [text] - Optional text to be displayed inside of the button
+ * @return {HTMLElement} The newly created button element
  */
 function createButton(text = '') {
     const button = document.createElement('button');
@@ -44,7 +44,7 @@ function createButton(text = '') {
 
 /**
  * Create a checkbox.
- * @returns {HtmlElement} The newly created checkbox element
+ * @return {HtmlElement} The newly created checkbox element
  */
 function createCheckbox() {
     const checkbox = document.createElement('input');
@@ -54,7 +54,7 @@ function createCheckbox() {
 
 /**
  * Create a pullup element.
- * @returns {HtmlElement} The newly created pullup element
+ * @return {HtmlElement} The newly created pullup element
  */
 function createPullup() {
     const pullupEl = document.createElement('div');
@@ -68,8 +68,8 @@ function createPullup() {
 /**
  * Create an element with a label, as a row.
  *
- * @param {string} [labelText] The text to display as the row label
- * @returns {HTMLElement} The row element created
+ * @param {string} [labelText] - The text to display as the row label
+ * @return {HTMLElement} The row element created
  */
 function createRow(labelText) {
     const rowEl = document.createElement('div');
@@ -86,13 +86,13 @@ function createRow(labelText) {
 /**
  * Create a dropdown for the settings panel.
  *
- * @param {string} labelText A label to display above the dropdown
- * @param {string} listText The default text to display inside of the dropdown, when closed and
+ * @param {string} labelText - A label to display above the dropdown
+ * @param {string} listText - The default text to display inside of the dropdown, when closed and
  * no other options yet selected
- * @param {Object[]} [listContent] A list of descriptors to fill the dropdown with text and actions. { text, callback }
+ * @param {Object[]} [listContent] - A list of descriptors to fill the dropdown with text and actions. { text, callback }
  * entry.text {string} Text content displayed as the dropdown item
  * entry.callback {Function} A function to be called on the 'click' event of the dropdown
- * @returns {HTMLElement} The settings dropdown that can be added to the settings panel
+ * @return {HTMLElement} The settings dropdown that can be added to the settings panel
  */
 function createDropdown(labelText = '', listText = '', listContent = []) {
     const wrapperEl = createRow(labelText);
@@ -162,9 +162,9 @@ class UIRegistry {
      *
      * @param {string} uniqueId  A unique identifier for accessing the given element
      * @param {HTMLElement} element   The element we are registering
-     * @param {string} [eventName] An event we want to bind to
+     * @param {string} [eventName] - An event we want to bind to
      * @param {Function} [callback]  A function we want to call, on the provided event happening
-     * @returns {void}
+     * @return {void}
      */
     registerItem(uniqueId, element, eventName, callback) {
         if (!uniqueId) {
@@ -199,8 +199,8 @@ class UIRegistry {
     /**
      * Unregister and remove the UI item.
      *
-     * @param {Object} item The ui item created in registerItem()
-     * @returns {void}
+     * @param {Object} item - The ui item created in registerItem()
+     * @return {void}
      */
     unregisterItem(item) {
         // Assignment for modification of properties
@@ -228,7 +228,7 @@ class UIRegistry {
     /**
      * Unregister the entire ui registry.
      *
-     * @returns {void}
+     * @return {void}
      */
     unregisterAll() {
         Object.keys(this.registry).forEach((uiItem) => {

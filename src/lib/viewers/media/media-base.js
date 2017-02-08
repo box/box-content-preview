@@ -16,8 +16,8 @@ class MediaBase extends Base {
      * [constructor]
      *
      * @override
-     * @param {string|HTMLElement} container The container DOM node
-     * @param {object} [options] some options
+     * @param {string|HTMLElement} container - The container DOM node
+     * @param {object} [options] - some options
      * @return {MediaBase} MediaBase instance
      */
     constructor(container, options) {
@@ -77,7 +77,7 @@ class MediaBase extends Base {
      * Loads a media source.
      *
      * @override
-     * @param {string} mediaUrl The media url
+     * @param {string} mediaUrl - The media url
      * @return {void}
      */
     load(mediaUrlTemplate) {
@@ -415,7 +415,7 @@ class MediaBase extends Base {
      * Handles keyboard events for media
      *
      * @protected
-     * @param {string} key keydown key
+     * @param {string} key - keydown key
      * @return {boolean} consumed or not
      */
     onKeydown(key) {

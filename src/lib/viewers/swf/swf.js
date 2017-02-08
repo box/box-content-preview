@@ -19,9 +19,9 @@ class SWF extends Base {
     /**
      * [constructor]
      *
-     * @param {string|HTMLElement} container The container
-     * @param {Object} options some options
-     * @returns {SWF} SWF instance
+     * @param {string|HTMLElement} container - The container
+     * @param {Object} options - some options
+     * @return {SWF} SWF instance
      */
     constructor(container, options) {
         super(container, options);
@@ -33,8 +33,8 @@ class SWF extends Base {
      * Loads a swf object.
      *
      * @public
-     * @param {string} swfUrl The swf to load
-     * @returns {void}
+     * @param {string} swfUrl - The swf to load
+     * @return {void}
      */
     load(swfUrlTemplate) {
         /* global swfobject */

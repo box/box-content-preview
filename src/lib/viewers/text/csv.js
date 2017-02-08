@@ -19,9 +19,9 @@ class CSV extends TextBase {
     /**
      * [constructor]
      *
-     * @param {string|HTMLElement} container The container
-     * @param {Object} options some options
-     * @returns {CSV} CSV instance
+     * @param {string|HTMLElement} container - The container
+     * @param {Object} options - some options
+     * @return {CSV} CSV instance
      */
     constructor(container, options) {
         super(container, options);
@@ -33,7 +33,7 @@ class CSV extends TextBase {
     /**
      * [destructor]
      *
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         if (this.gridComponent) {
@@ -47,8 +47,8 @@ class CSV extends TextBase {
     /**
      * Loads a csv file.
      *
-     * @param {string} csvUrl The text to load
-     * @returns {Promise} Promise to load a CSV
+     * @param {string} csvUrl - The text to load
+     * @return {Promise} Promise to load a CSV
      */
     load(csvUrlTemplate) {
         const { location } = this.options;
@@ -85,7 +85,7 @@ class CSV extends TextBase {
      * Resize handler
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     resize() {
@@ -96,7 +96,7 @@ class CSV extends TextBase {
     /**
      * Finishes loading the csv data
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     finishLoading() {
@@ -109,8 +109,8 @@ class CSV extends TextBase {
     /**
      * Gets row class name
      *
-     * @param {number} row index of the row
-     * @returns {string} class name
+     * @param {number} row - index of the row
+     * @return {string} class name
      * @private
      */
     getRowClassName(row) {
@@ -126,7 +126,7 @@ class CSV extends TextBase {
      * @param {string} cellInfo.key
      * @param {number} cellInfo.rowIndex
      * @param {string} cellInfo.style
-     * @returns {function} Cell renderer function
+     * @return {function} Cell renderer function
      * @private
      */
     cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
@@ -138,7 +138,7 @@ class CSV extends TextBase {
     /**
      * Renders CSV into an html table
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     renderCSV() {

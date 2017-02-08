@@ -25,7 +25,7 @@ class DocFindBar extends EventEmitter {
      * @constructor
      * @param  {string|HTML Element} findBar Find Bar node
      * @param  {Object} findController
-     * @returns {void}
+     * @return {void}
      */
     constructor(findBar, findController) {
         super();
@@ -58,7 +58,7 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Creates find input field, search icon and results count elements
-     * @returns {void}
+     * @return {void}
      */
     createFindField() {
         // Search Icon
@@ -81,7 +81,7 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Creates previous, next, and close buttons for find bar
-     * @returns {void}
+     * @return {void}
      */
     createFindButtons() {
         const findPreviousButton = `<button class="bp-doc-find-prev">${ICON_FIND_DROP_UP}</button>`.trim();
@@ -99,7 +99,7 @@ class DocFindBar extends EventEmitter {
      * [destructor]
      *
      * @public
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         this.currentMatch = 0;
@@ -114,7 +114,7 @@ class DocFindBar extends EventEmitter {
      * Dispatch custom find event based specified type
      * @param  {string} type
      * @param  {boolean} findPrev
-     * @returns {void}
+     * @return {void}
      */
     dispatchFindEvent(type, findPrev) {
         this.findController.executeCommand(type, {
@@ -128,7 +128,7 @@ class DocFindBar extends EventEmitter {
     /**
      * Update Find Bar UI to current match state
      * @param  {number} state FindState from PDFFindController
-     * @returns {void}
+     * @return {void}
      */
     updateUIState(state) {
         this.status = '';
@@ -156,7 +156,7 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Update results count to current match count
-     * @returns {void}
+     * @return {void}
      */
     updateUIResultsCount() {
         if (!this.findResultsCountEl) {
@@ -221,7 +221,7 @@ class DocFindBar extends EventEmitter {
     /**
      * Handler to show/hide find bar
      * @param  {Event} event
-     * @returns {void}
+     * @return {void}
      * @private
      */
     displayFindBarHandler(event) {
@@ -243,7 +243,7 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Handler to dispatch find event on input
-     * @returns {void}
+     * @return {void}
      * @private
      */
     findFieldHandler() {
@@ -254,7 +254,7 @@ class DocFindBar extends EventEmitter {
     /**
      * Handler for find keyboard short cuts
      * @param  {Event} event
-     * @returns {void}
+     * @return {void}
      * @private
      */
     barKeyDownHandler(event) {
@@ -291,7 +291,7 @@ class DocFindBar extends EventEmitter {
     /**
      * Handler to find next match count and update match count accordingly
      * @param  {boolean} clicked False when triggered through keyboard shortcut
-     * @returns {void}
+     * @return {void}
      * @private
      */
     findNextHandler(clicked) {
@@ -313,7 +313,7 @@ class DocFindBar extends EventEmitter {
     /**
      * Handler to find previous match and update match count accordingly
      * @param  {boolean} clicked False when triggered through keyboard shortcut
-     * @returns {void}
+     * @return {void}
      * @private
      */
     findPreviousHandler(clicked) {
@@ -334,7 +334,7 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Unhide Find Bar
-     * @returns {void}
+     * @return {void}
      * @private
      */
     open() {
@@ -355,7 +355,7 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Hide Find Bar
-     * @returns {void}
+     * @return {void}
      * @private
      */
     close() {

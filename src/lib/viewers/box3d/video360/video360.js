@@ -32,9 +32,9 @@ class Video360 extends Dash {
      * Ties together all 360 video rendering and controls
      *
      * @constructor
-     * @param {string|HTMLElement} container node or selector
-     * @param {Object} [options] Options to be passed to Dash. See dash.js constructor
-     * @returns {Video360} the Video360 object instance
+     * @param {string|HTMLElement} container - node or selector
+     * @param {Object} [options] - Options to be passed to Dash. See dash.js constructor
+     * @return {Video360} the Video360 object instance
      */
     constructor(container, options) {
         super(container, options);
@@ -116,7 +116,7 @@ class Video360 extends Dash {
      *
      * @method createControls
      * @private
-     * @returns {void}
+     * @return {void}
      */
     createControls() {
         this.controls = new Video360Controls(this.mediaContainerEl);
@@ -128,7 +128,7 @@ class Video360 extends Dash {
      *
      * @method destroyControls
      * @private
-     * @returns {void}
+     * @return {void}
      */
     destroyControls() {
         this.controls.removeListener(EVENT_TOGGLE_VR, this.handleToggleVr);
@@ -152,7 +152,7 @@ class Video360 extends Dash {
      *
      * @method create360Environment
      * @private
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     create360Environment() {
@@ -190,7 +190,7 @@ class Video360 extends Dash {
     /**
      * Handles toggle VR event
      *
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     handleToggleVr() {
@@ -211,7 +211,7 @@ class Video360 extends Dash {
     /**
      * Handle show VR button event
      *
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     handleShowVrButton() {
@@ -221,7 +221,7 @@ class Video360 extends Dash {
     /**
      * Handle mouseDown on the canvas, for playing video
      *
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     onCanvasMouseDown() {
@@ -231,7 +231,7 @@ class Video360 extends Dash {
     /**
      * Handle mouseUp on the canvas, for toggling play on video
      *
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     onCanvasMouseUp() {

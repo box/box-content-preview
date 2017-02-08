@@ -27,7 +27,7 @@ class DocPointThread extends AnnotationThread {
      * Shows the appropriate annotation dialog for this thread.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     showDialog() {
         // Don't show dialog if user can annotate and there is a current selection
@@ -46,7 +46,7 @@ class DocPointThread extends AnnotationThread {
      * Shows the annotation indicator.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     show() {
         const pageEl = this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`) || this._annotatedElement;
@@ -69,7 +69,7 @@ class DocPointThread extends AnnotationThread {
      * Creates the document point annotation dialog for the thread.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     createDialog() {
         this._dialog = new DocPointDialog({

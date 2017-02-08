@@ -30,9 +30,9 @@ class Image extends Base {
     /**
      * [constructor]
      *
-     * @param {string|HTMLElement} container The container
-     * @param {Object} options some options
-     * @returns {Image} Image instance
+     * @param {string|HTMLElement} container - The container
+     * @param {Object} options - some options
+     * @return {Image} Image instance
      */
     constructor(container, options) {
         super(container, options);
@@ -49,7 +49,7 @@ class Image extends Base {
 
     /**
      * [destructor]
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         // Destroy the annotator
@@ -68,8 +68,8 @@ class Image extends Base {
      * Loads an image.
      *
      * @public
-     * @param {string} imageUrl The image url
-     * @returns {void}
+     * @param {string} imageUrl - The image url
+     * @return {void}
      */
     load(imageUrlTemplate) {
         this.imageEl.addEventListener('load', this.loadHandler);
@@ -83,7 +83,7 @@ class Image extends Base {
     /**
      * Updates cursors on image content
      * @private
-     * @returns {void}
+     * @return {void}
      */
     updateCursor() {
         if (this.isPannable) {
@@ -100,7 +100,7 @@ class Image extends Base {
     /**
      * Can the viewer currently be panned
      * @private
-     * @returns {void}
+     * @return {void}
      */
     updatePannability() {
         if (!this.imageEl || (this.annotator && this.annotator.isInPointMode())) {
@@ -119,9 +119,9 @@ class Image extends Base {
 
     /**
      * Pan the image to the given x/y position
-     * @param {Event} event The mousemove event
+     * @param {Event} event - The mousemove event
      * @private
-     * @returns {void}
+     * @return {void}
      */
     pan(event) {
         if (!this.isPanning) {
@@ -138,7 +138,7 @@ class Image extends Base {
     /**
      * Stop panning the image
      * @private
-     * @returns {void}
+     * @return {void}
      */
     stopPanning() {
         this.isPanning = false;
@@ -150,9 +150,9 @@ class Image extends Base {
 
     /**
      * Start panning the image if the image is pannable
-     * @param {number} x The initial x position of the mouse
-     * @param {number} y The initial y position of the mouse
-     * @returns {void}
+     * @param {number} x - The initial x position of the mouse
+     * @param {number} y - The initial y position of the mouse
+     * @return {void}
      */
     startPanning(x, y) {
         if (!this.isPannable) {
@@ -172,7 +172,7 @@ class Image extends Base {
     /**
      * Rotate image anti-clockwise by 90 degrees
      * @public
-     * @returns {void}
+     * @return {void}
      */
     rotateLeft() {
         this.currentRotationAngle = (this.currentRotationAngle - 90) % 3600 % 360;
@@ -190,9 +190,9 @@ class Image extends Base {
 
     /**
      * Handles zoom
-     * @param {string} [type] Type of zoom in|out|reset
+     * @param {string} [type] - Type of zoom in|out|reset
      * @private
-     * @returns {void}
+     * @return {void}
      */
     zoom(type) {
         let newWidth;
@@ -308,7 +308,7 @@ class Image extends Base {
      * @param {number} width
      * @param {number} height
      * @private
-     * @returns {void}
+     * @return {void}
      */
     scaleAnnotations(width, height) {
         const scale = width ? (width / this.imageEl.naturalWidth) : (height / this.imageEl.naturalHeight);
@@ -321,7 +321,7 @@ class Image extends Base {
      * Loads controls
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     loadUI() {
         super.loadUI();
@@ -340,7 +340,7 @@ class Image extends Base {
     /**
      * Prints image using an an iframe.
      *
-     * @returns {void}
+     * @return {void}
      */
     print() {
         this.printframe = openContentInsideIframe(this.imageEl.outerHTML);
@@ -359,7 +359,7 @@ class Image extends Base {
     /**
      * Initializes annotations.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     initAnnotations() {
@@ -407,8 +407,8 @@ class Image extends Base {
      * Returns whether or not viewer is annotatable with the provided annotation
      * type.
      *
-     * @param {string} type Type of annotation
-     * @returns {boolean} Whether or not viewer is annotatable
+     * @param {string} type - Type of annotation
+     * @return {boolean} Whether or not viewer is annotatable
      */
     isAnnotatable(type) {
         if (typeof type === 'string' && type !== 'point') {
@@ -438,7 +438,7 @@ class Image extends Base {
      * Determines the left and top padding for the image file on zoom and
      * re-positions the image accordingly
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     adjustImageZoomPadding() {
@@ -478,7 +478,7 @@ class Image extends Base {
     /**
      * Binds DOM listeners for image viewer.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     bindDOMListeners() {
@@ -502,7 +502,7 @@ class Image extends Base {
     /**
      * Unbinds DOM listeners for image viewer.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     unbindDOMListeners() {
@@ -533,7 +533,7 @@ class Image extends Base {
     /**
      * Handles the loading of an image once the 'load' event has been fired
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     loadHandler = () => {
@@ -552,7 +552,7 @@ class Image extends Base {
     /**
      * Handles image element loading errors.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     errorHandler = (err) => {
@@ -570,8 +570,8 @@ class Image extends Base {
 
     /**
      * Handles mouse down event.
-     * @param {Event} event The mousemove event
-     * @returns {void}
+     * @param {Event} event - The mousemove event
+     * @return {void}
      */
     handleMouseDown(event) {
         this.didPan = false;
@@ -586,8 +586,8 @@ class Image extends Base {
 
     /**
      * Handles mouse down event.
-     * @param {Event} event The mousemove event
-     * @returns {void}
+     * @param {Event} event - The mousemove event
+     * @return {void}
      */
     handleMouseUp(event) {
         // Ignore zoom/pan mouse events if in annotation mode
@@ -615,7 +615,7 @@ class Image extends Base {
     * important for mobile devices because rotating the device doesn't triggers
     * rotateLeft()
     *
-    * @returns {void}
+    * @return {void}
     */
     handleOrientationChange() {
         this.adjustImageZoomPadding();
@@ -630,8 +630,8 @@ class Image extends Base {
 
     /**
      * Prevents drag events on the image
-     * @param {Event} event The mousemove event
-     * @returns {void}
+     * @param {Event} event - The mousemove event
+     * @return {void}
      */
     handleDragStart(event) {
         event.preventDefault();
@@ -641,7 +641,7 @@ class Image extends Base {
     /**
      * Returns click handler for toggling point annotation mode.
      *
-     * @returns {Function|null} Click handler
+     * @return {Function|null} Click handler
      */
     getPointModeClickHandler() {
         if (!this.isAnnotatable('point')) {

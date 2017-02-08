@@ -23,9 +23,9 @@ class PlainText extends TextBase {
     /**
      * [constructor]
      *
-     * @param {string|HTMLElement} container The container
-     * @param {Object} options some options
-     * @returns {PlainText} PlainText instance
+     * @param {string|HTMLElement} container - The container
+     * @param {Object} options - some options
+     * @return {PlainText} PlainText instance
      */
     constructor(container, options) {
         super(container, options);
@@ -45,7 +45,7 @@ class PlainText extends TextBase {
     /**
      * [destructor]
      *
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         const downloadBtnEl = this.textEl.querySelector('.bp-btn-download');
@@ -60,8 +60,8 @@ class PlainText extends TextBase {
     /**
      * Loads a text file.
      *
-     * @param {string} textUrl The text file to load
-     * @returns {Promise} Promise to load a text file
+     * @param {string} textUrl - The text file to load
+     * @return {Promise} Promise to load a text file
      */
     load(textUrlTemplate) {
         const url = this.createContentUrlWithAuthParams(textUrlTemplate);
@@ -96,7 +96,7 @@ class PlainText extends TextBase {
     /**
      * Prints text using an an iframe.
      *
-     * @returns {void}
+     * @return {void}
      */
     print() {
         if (!this.printReady) {
@@ -123,9 +123,9 @@ class PlainText extends TextBase {
     /**
      * Finishes loading after text is highlighted.
      *
-     * @param {string} content Text
-     * @param {boolean} isHighlighted Whether or not text is highlighted
-     * @returns {void}
+     * @param {string} content - Text
+     * @param {boolean} isHighlighted - Whether or not text is highlighted
+     * @return {void}
      * @protected
      */
     finishLoading(content, isHighlighted) {
@@ -160,8 +160,8 @@ class PlainText extends TextBase {
     /**
      * Loads highlight.js to highlight the file
      *
-     * @param {string} text The text content to load
-     * @returns {void}
+     * @param {string} text - The text content to load
+     * @return {void}
      * @private
      */
     initHighlightJs(text) {
@@ -188,7 +188,7 @@ class PlainText extends TextBase {
     /**
      * Sets up the print dialog.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     initPrint() {
@@ -218,7 +218,7 @@ class PlainText extends TextBase {
      * styles into an iframe that can be printed.
      *
      * @param {...string} stylesheets - Stylesheets needed for print
-     * @returns {void}
+     * @return {void}
      * @private
      */
     preparePrint(...stylesheets) {
@@ -244,7 +244,7 @@ class PlainText extends TextBase {
     /**
      * Prints from print iframe.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     printIframe() {
@@ -259,7 +259,7 @@ class PlainText extends TextBase {
     /**
      * Shows notification that text was truncated along with download button.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     showTruncatedDownloadButton() {
@@ -283,7 +283,7 @@ class PlainText extends TextBase {
     /**
      * Emits download event
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     download() {

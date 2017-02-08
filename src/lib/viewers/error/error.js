@@ -15,9 +15,9 @@ class PreviewError extends Base {
     /**
      * [constructor]
      *
-     * @param {string|HTMLElement} container The container
-     * @param {Object} options some options
-     * @returns {Error} Error instance
+     * @param {string|HTMLElement} container - The container
+     * @param {Object} options - some options
+     * @return {Error} Error instance
      */
     constructor(container, options) {
         super(container, options);
@@ -31,9 +31,9 @@ class PreviewError extends Base {
      * Shows an error message to the user.
      *
      * @public
-     * @param {string} url rep to load
-     * @param {string} reason error reason
-     * @returns {void}
+     * @param {string} url - rep to load
+     * @param {string} reason - error reason
+     * @return {void}
      */
     load(url, reason) {
         const file = this.options.file;
@@ -72,7 +72,7 @@ class PreviewError extends Base {
     /**
      * Adds optional download button
      * @private
-     * @returns {void}
+     * @return {void}
      */
     addDownloadButton() {
         this.downloadEl = this.infoEl.appendChild(document.createElement('div'));
@@ -87,7 +87,7 @@ class PreviewError extends Base {
     /**
      * Emits download event
      * @private
-     * @returns {void}
+     * @return {void}
      */
     download() {
         this.emit('download');
@@ -96,7 +96,7 @@ class PreviewError extends Base {
     /**
      * Destroy
      * @private
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         if (this.downloadBtnEl) {

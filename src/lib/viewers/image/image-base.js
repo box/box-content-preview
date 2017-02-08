@@ -11,7 +11,7 @@ class ImageBase extends Base {
 
     /**
      * [destructor]
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         // Destroy the controls
@@ -30,7 +30,7 @@ class ImageBase extends Base {
     /**
      * Zooms in
      * @public
-     * @returns {void}
+     * @return {void}
      */
     zoomIn() {
         this.zoom('in');
@@ -39,7 +39,7 @@ class ImageBase extends Base {
     /**
      * Zooms in
      * @public
-     * @returns {void}
+     * @return {void}
      */
     zoomOut() {
         this.zoom('out');
@@ -48,7 +48,7 @@ class ImageBase extends Base {
     /**
      * Resize image by calling zoom.
      * @public
-     * @returns {void}
+     * @return {void}
      */
     resize() {
         this.zoom();
@@ -58,7 +58,7 @@ class ImageBase extends Base {
     /**
      * Zooms in
      * @private
-     * @returns {void}
+     * @return {void}
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
@@ -70,8 +70,8 @@ class ImageBase extends Base {
      * Handles keyboard events for media
      *
      * @private
-     * @param {string} key keydown key
-     * @returns {boolean} consumed or not
+     * @param {string} key - keydown key
+     * @return {boolean} consumed or not
      */
     onKeydown(key) {
         // Return false when media controls are not ready or are focused
@@ -98,7 +98,7 @@ class ImageBase extends Base {
     /**
      * Must be implemented to zoom image
      *
-     * @returns {void}
+     * @return {void}
      */
     zoom() {}
 }

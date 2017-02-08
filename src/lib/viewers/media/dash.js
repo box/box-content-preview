@@ -20,8 +20,8 @@ class Dash extends VideoBase {
      * [constructor]
      *
      * @override
-     * @param {string|HTMLElement} container The container DOM node
-     * @param {Object} [options] some options
+     * @param {string|HTMLElement} container - The container DOM node
+     * @param {Object} [options] - some options
      * @return {Dash} Dash instance
      */
     constructor(container, options) {
@@ -73,7 +73,7 @@ class Dash extends VideoBase {
      * Loads a media source.
      *
      * @override
-     * @param {string} mediaUrl The media url
+     * @param {string} mediaUrl - The media url
      * @return {void}
      */
     load(mediaUrlTemplate) {
@@ -148,7 +148,7 @@ class Dash extends VideoBase {
      * Shows the loading indicator
      *
      * @private
-     * @param {number} id rep id
+     * @param {number} id - rep id
      * @return {void}
      */
     showLoadingIcon(id) {
@@ -184,7 +184,7 @@ class Dash extends VideoBase {
      * Handler for dd/sd/auto video
      *
      * @private
-     * @param {boolean} [adapt] enable or disable adaptation
+     * @param {boolean} [adapt] - enable or disable adaptation
      * @return {void}
      */
     enableAdaptation(adapt = true) {
@@ -454,7 +454,7 @@ class Dash extends VideoBase {
      * Handles keyboard events for media
      *
      * @override
-     * @param {string} key keydown key
+     * @param {string} key - keydown key
      * @return {boolean} consumed or not
      */
     onKeydown(key) {

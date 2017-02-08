@@ -12,8 +12,8 @@ class Controls {
     /**
      * [constructor]
      *
-     * @param {HTMLElement} container The container
-     * @returns {Controls} Instance of controls
+     * @param {HTMLElement} container - The container
+     * @return {Controls} Instance of controls
      */
     constructor(container) {
         // Maintain a list of buttons for cleanup
@@ -42,7 +42,7 @@ class Controls {
 
     /**
      * [destructor]
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         this.containerEl.removeEventListener('mousemove', this.mousemoveHandler);
@@ -60,8 +60,8 @@ class Controls {
      * Checks if the button is a preview controls button
      *
      * @private
-     * @param {HTMLElement|null} element button element
-     * @returns {boolean} true if element is a preview control button
+     * @param {HTMLElement|null} element - button element
+     * @return {boolean} true if element is a preview control button
      */
     isPreviewControlButton(element) {
         return !!element && element.classList.contains('bp-controls-btn');
@@ -69,7 +69,7 @@ class Controls {
 
     /**
      * @private
-     * @returns {void}
+     * @return {void}
      */
     resetTimeout() {
         clearTimeout(this.controlDisplayTimeoutId);
@@ -90,7 +90,7 @@ class Controls {
 
     /**
      * @private
-     * @returns {void}
+     * @return {void}
      */
     mouseenterHandler() {
         this.blockHiding = true;
@@ -98,7 +98,7 @@ class Controls {
 
     /**
      * @private
-     * @returns {void}
+     * @return {void}
      */
     mouseleaveHandler() {
         this.blockHiding = false;
@@ -106,8 +106,8 @@ class Controls {
 
     /**
      * Handles all focusin events for the module.
-     * @param {Event} event A DOM-normalized event object.
-     * @returns {void}
+     * @param {Event} event - A DOM-normalized event object.
+     * @return {void}
      */
     focusinHandler(event) {
         // When we focus onto a preview control button, show controls
@@ -118,8 +118,8 @@ class Controls {
 
     /**
      * Handles all focusout events for the module.
-     * @param {Event} event A DOM-normalized event object.
-     * @returns {void}
+     * @param {Event} event - A DOM-normalized event object.
+     * @return {void}
      */
     focusoutHandler(event) {
         // When we focus out of a control button and aren't focusing onto another control button, hide the controls
@@ -132,11 +132,11 @@ class Controls {
      * Adds buttons to controls
      *
      * @private
-     * @param {string} text button text
-     * @param {Function} handler button handler
-     * @param {string} [classList] optional class list
-     * @param {string} [buttonContent] Optional button content HTML
-     * @returns {void}
+     * @param {string} text - button text
+     * @param {Function} handler - button handler
+     * @param {string} [classList] - optional class list
+     * @param {string} [buttonContent] - Optional button content HTML
+     * @return {void}
      */
     add(text, handler, classList = '', buttonContent = '') {
         const cell = document.createElement('div');
@@ -167,7 +167,7 @@ class Controls {
     /**
      * Enables the controls.
      *
-     * @returns {void}
+     * @return {void}
      */
     enable() {
         this.controlsEl.classList.remove(CLASS_HIDDEN);
@@ -176,7 +176,7 @@ class Controls {
     /**
      * Disables the controls.
      *
-     * @returns {void}
+     * @return {void}
      */
     disable() {
         this.controlsEl.classList.add(CLASS_HIDDEN);

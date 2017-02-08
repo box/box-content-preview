@@ -24,8 +24,8 @@ class ImageAnnotator extends Annotator {
      * with the top left corner of the image as the origin.
      *
      * @override
-     * @param {Event} event DOM event
-     * @returns {Object|null} Location object
+     * @param {Event} event - DOM event
+     * @return {Object|null} Location object
      */
     getLocationFromEvent(event) {
         let location = null;
@@ -74,10 +74,10 @@ class ImageAnnotator extends Annotator {
      * it.
      *
      * @override
-     * @param {Annotation[]} annotations Annotations in thread
-     * @param {Object} location Location object
-     * @param {string} [type] Optional annotation type
-     * @returns {AnnotationThread} Created annotation thread
+     * @param {Annotation[]} annotations - Annotations in thread
+     * @param {Object} location - Location object
+     * @param {string} [type] - Optional annotation type
+     * @return {AnnotationThread} Created annotation thread
      */
     createAnnotationThread(annotations, location, type) {
         const threadParams = {
@@ -104,7 +104,7 @@ class ImageAnnotator extends Annotator {
      * Hides all annotations on the image. Also hides button in header that
      * enables point annotation mode
      *
-     * @returns {void}
+     * @return {void}
      */
     hideAllAnnotations() {
         const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
@@ -119,7 +119,7 @@ class ImageAnnotator extends Annotator {
      * Shows all annotations on the image. Shows button in header that
      * enables point annotation mode
      *
-     * @returns {void}
+     * @return {void}
      */
     showAllAnnotations() {
         const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
@@ -134,8 +134,8 @@ class ImageAnnotator extends Annotator {
      * Renders annotations from memory. Hides annotations if image is rotated
      *
      * @override
-     * @param {number} [rotationAngle] current angle image is rotated
-     * @returns {void}
+     * @param {number} [rotationAngle] - current angle image is rotated
+     * @return {void}
      * @private
      */
     renderAnnotations(rotationAngle = 0) {

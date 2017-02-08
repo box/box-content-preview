@@ -15,7 +15,7 @@ class Image360Renderer extends Box3DRenderer {
      *
      * @constructor
      * @inheritdoc
-     * @returns {Image360Renderer} Image360Renderer instance
+     * @return {Image360Renderer} Image360Renderer instance
      */
     constructor(containerEl, boxSdk) {
         super(containerEl, boxSdk);
@@ -27,7 +27,7 @@ class Image360Renderer extends Box3DRenderer {
     /**
      * Called on preview destroy
      *
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         this.cleanupTexture();
@@ -60,7 +60,7 @@ class Image360Renderer extends Box3DRenderer {
      *
      * @public
      * @method getSkyboxComponent
-     * @returns {Object} A Box3d component for skybox rendering
+     * @return {Object} A Box3d component for skybox rendering
      */
     getSkyboxComponent() {
         if (!this.skybox) {
@@ -75,7 +75,7 @@ class Image360Renderer extends Box3DRenderer {
      *
      * @inheritdoc
      * @param  {string} jsonUrl The url to the box3d json
-     * @returns {Promise} a promise that resolves with the newly created runtime
+     * @return {Promise} a promise that resolves with the newly created runtime
      */
     load(jsonUrlTemplate, options = {}) {
         const opts = options;
@@ -91,9 +91,9 @@ class Image360Renderer extends Box3DRenderer {
      * Load a box3d representation and initialize the scene.
      * @method loadBox3dFile
      * @private
-     * @param {string} fileUrl The representation URL.
-     * @param {string} assetPath The asset path needed to access file
-     * @returns {void}
+     * @param {string} fileUrl - The representation URL.
+     * @param {string} assetPath - The asset path needed to access file
+     * @return {void}
      */
     loadPanoramaFile(fileUrl, assetPath) {
         // Replace asset path for fileUrl

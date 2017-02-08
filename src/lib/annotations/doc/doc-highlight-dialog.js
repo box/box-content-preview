@@ -32,8 +32,8 @@ class DocHighlightDialog extends AnnotationDialog {
      * The annotation is still added to the thread on the server side.
      *
      * @override
-     * @param {Annotation} annotation Annotation to add
-     * @returns {void}
+     * @param {Annotation} annotation - Annotation to add
+     * @return {void}
      */
     addAnnotation(annotation) {
         // If annotation is blank then display who highlighted the text
@@ -58,7 +58,7 @@ class DocHighlightDialog extends AnnotationDialog {
      * Positions the dialog.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     position() {
         // Position it below lower right corner or center of the highlight - we need
@@ -145,7 +145,7 @@ class DocHighlightDialog extends AnnotationDialog {
      * then the user tries to add a comment after the fact.
      *
      * @param  {boolean} hasAnnotations Whether or not the dialog has comments
-     * @returns {void}
+     * @return {void}
      */
     toggleHighlightCommentsReply(hasAnnotations) {
         const commentsDialogEl = this._element.querySelector('.annotation-container');
@@ -177,7 +177,7 @@ class DocHighlightDialog extends AnnotationDialog {
      * Sets up the dialog element.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     setup(annotations) {
@@ -265,7 +265,7 @@ class DocHighlightDialog extends AnnotationDialog {
      * Binds DOM event listeners.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     bindDOMListeners() {
@@ -280,7 +280,7 @@ class DocHighlightDialog extends AnnotationDialog {
      * Unbinds DOM event listeners.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     unbindDOMListeners() {
@@ -296,7 +296,7 @@ class DocHighlightDialog extends AnnotationDialog {
      * instead of 'click'.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     keydownHandler(event) {
@@ -310,8 +310,8 @@ class DocHighlightDialog extends AnnotationDialog {
     /**
      * Mousedown handler on dialog.
      *
-     * @param {Event} event DOM event
-     * @returns {void}
+     * @param {Event} event - DOM event
+     * @return {void}
      * @protected
      */
     mousedownHandler(event) {
@@ -346,8 +346,8 @@ class DocHighlightDialog extends AnnotationDialog {
      * Toggles the highlight icon color to a darker yellow based on if the user
      * is hovering over the highlight to activate it
      *
-     * @param {string} fillStyle RGBA fill style
-     * @returns {void}
+     * @param {string} fillStyle - RGBA fill style
+     * @return {void}
      */
     toggleHighlightIcon(fillStyle) {
         const addHighlightBtn = this._element.querySelector('.bp-add-highlight-btn');
@@ -366,7 +366,7 @@ class DocHighlightDialog extends AnnotationDialog {
      * Saves or deletes the highlight annotation based on the current state of
      * the highlight
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     _toggleHighlight() {
@@ -387,7 +387,7 @@ class DocHighlightDialog extends AnnotationDialog {
 
     /**
      * Focuses on "Add a comment" textarea in the annotations dialog
-     * @returns {void}
+     * @return {void}
      */
     _focusAnnotationsTextArea() {
         const textAreaEl = this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
@@ -399,7 +399,7 @@ class DocHighlightDialog extends AnnotationDialog {
     /**
      * Calculates the dialog width if the highlighter's name is to be displayed
      * in the annotations dialog
-     * @returns {number} Annotations dialog width
+     * @return {number} Annotations dialog width
      */
     _getDialogWidth() {
         // Switches to 'visibility: hidden' to ensure that dialog takes up DOM
@@ -423,7 +423,7 @@ class DocHighlightDialog extends AnnotationDialog {
      * plain highlights
      * @param  {DOMRect} pageDimensions Dimensions of the highlight annotations dialog element
      * @param  {number} pageHeight Document page height
-     * @returns {number[]} [x,y] coordinates in DOM space in CSS
+     * @return {number[]} [x,y] coordinates in DOM space in CSS
      */
     _getScaledPDFCoordinates(pageDimensions, pageHeight) {
         const zoomScale = annotatorUtil.getScale(this._annotatedElement);

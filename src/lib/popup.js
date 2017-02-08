@@ -18,8 +18,8 @@ class Popup {
     /**
      * [constructor]
      *
-     * @param {HTMLElement} containerEl Container element
-     * @returns {Popup} Popup
+     * @param {HTMLElement} containerEl - Container element
+     * @return {Popup} Popup
      */
     constructor(containerEl) {
         this.containerEl = containerEl;
@@ -68,7 +68,7 @@ class Popup {
     /**
      * [destructor]
      *
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         if (!this.popupEl) {
@@ -86,11 +86,11 @@ class Popup {
     /**
      * Shows a popup with a message.
      *
-     * @param {string} message Popup message
-     * @param {string} buttonText Button text
-     * @param {function} [buttonHandler] Optional onclick function for the button
-     * @param {string} [buttonText] Optional text to show in button
-     * @returns {void}
+     * @param {string} message - Popup message
+     * @param {string} buttonText - Button text
+     * @param {function} [buttonHandler] - Optional onclick function for the button
+     * @param {string} [buttonText] - Optional text to show in button
+     * @return {void}
      */
     show(message, buttonText, buttonHandler) {
         this.messageEl.textContent = message;
@@ -112,7 +112,7 @@ class Popup {
     /**
      * Hides the popup message.
      *
-     * @returns {void}
+     * @return {void}
      */
     hide() {
         this.popupEl.classList.add(CLASS_HIDDEN);
@@ -121,10 +121,10 @@ class Popup {
     /**
      * Adds custom content to the modal.
      *
-     * @param {string} element DOM element
-     * @param {boolean} prepend prepends or appends the content to the content element
+     * @param {string} element - DOM element
+     * @param {boolean} prepend - prepends or appends the content to the content element
      *
-     * @returns {void}
+     * @return {void}
      */
     addContent(element, prepend) {
         const contentEl = this.contentEl;
@@ -138,7 +138,7 @@ class Popup {
     /**
      * Returns whether or not the popup is visible.
      *
-     * @returns {boolean} Whether or not popup is visible.
+     * @return {boolean} Whether or not popup is visible.
      */
     isVisible() {
         return !this.popupEl.classList.contains(CLASS_HIDDEN);
@@ -147,7 +147,7 @@ class Popup {
     /**
      * Gets whether or not the button is disabled.
      *
-     * @returns {boolean} Whether or not button is diabled
+     * @return {boolean} Whether or not button is diabled
      */
     isButtonDisabled() {
         return this.buttonDisabled;
@@ -156,7 +156,7 @@ class Popup {
     /**
      * Disbles the button element.
      *
-     * @returns {void}
+     * @return {void}
      */
     disableButton() {
         this.buttonDisabled = true;
@@ -166,7 +166,7 @@ class Popup {
     /**
      * Enables the button element.
      *
-     * @returns {void}
+     * @return {void}
      */
     enableButton() {
         this.buttonDisabled = false;
@@ -176,8 +176,8 @@ class Popup {
     /**
      * Click handler for popup.
      *
-     * @param {Event} event DOM event
-     * @returns {void}
+     * @param {Event} event - DOM event
+     * @return {void}
      */
     popupClickHandler(event) {
         event.preventDefault();
@@ -195,8 +195,8 @@ class Popup {
     }
 
     /*
-    * @param {string} key keydown key
-    * @returns {boolean} consumed or not
+    * @param {string} key - keydown key
+    * @return {boolean} consumed or not
     */
     keydownHandler(event) {
         const key = decodeKeydown(event);

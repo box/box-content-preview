@@ -40,9 +40,9 @@ class Model3d extends Box3D {
     /**
      * Ties together rendering, settings, and controls modules
      * @constructor
-     * @param {string|HTMLElement} container node
-     * @param {object} [options] some options
-     * @returns {Model3d} the Model3d object instance
+     * @param {string|HTMLElement} container - node
+     * @param {object} [options] - some options
+     * @return {Model3d} the Model3d object instance
      */
     constructor(container, options) {
         super(container, options);
@@ -113,9 +113,9 @@ class Model3d extends Box3D {
      * the model in meters. Default is 1.
      * @method setModelScale
      * @public
-     * @param {Float} newSize The size of the largest dimension of the model in metres.
+     * @param {Float} newSize - The size of the largest dimension of the model in metres.
      * Default is 1 m.
-     * @returns {void}
+     * @return {void}
      */
     setModelScale(newSize) {
         if (!this.renderer) {
@@ -134,9 +134,9 @@ class Model3d extends Box3D {
      * Sets the scale used to render the model when in VR mode.
      * @method setModelScaleVr
      * @public
-     * @param {Float} newSize The size of the largest dimension of the model in metres.
+     * @param {Float} newSize - The size of the largest dimension of the model in metres.
      * Default is 1 m.
-     * @returns {void}
+     * @return {void}
      */
     setModelScaleVr(newSize) {
         if (!this.renderer) {
@@ -157,11 +157,11 @@ class Model3d extends Box3D {
      * @public
      * @param {Vector3} position        The position in world space to position the model
      * relative to.
-     * @param {Vector3} alignmentVector An object of the form { x: x, y: y, z: z} where the
+     * @param {Vector3} alignmentVector - An object of the form { x: x, y: y, z: z} where - the
      * values for x, y and z are between -1 and +1 and specify how the object is aligned to
      * the edges of the model. e.g. { x: 0, y: -1, z: 0 } will align the bottom, centre of the
      * object to the specified position.
-     * @returns {void}
+     * @return {void}
      */
     setModelAlignment(position, alignmentVector) {
         if (this.renderer) {
@@ -182,11 +182,11 @@ class Model3d extends Box3D {
      * @public
      * @param {Vector3} position        The position in world space to position the model
      * relative to.
-     * @param {Vector3} alignmentVector An object of the form { x: x, y: y, z: z} where the
+     * @param {Vector3} alignmentVector - An object of the form { x: x, y: y, z: z} where - the
      * values for x, y and z are between -1 and +1 and specify how the object is aligned to
      * the edges of the model. e.g. { x: 0, y: -1, z: 0 } will align the bottom, centre of the
      * object to the specified position.
-     * @returns {void}
+     * @return {void}
      */
     setModelAlignmentVr(position, alignmentVector) {
         if (this.renderer) {
@@ -205,8 +205,8 @@ class Model3d extends Box3D {
      * Handle animation clip selection.
      * @method handleSelectAnimationClip
      * @private
-     * @param {string} clipId The ID of the clip that was selected.
-     * @returns {void}
+     * @param {string} clipId - The ID of the clip that was selected.
+     * @return {void}
      */
     @autobind
     handleSelectAnimationClip(clipId) {
@@ -216,7 +216,7 @@ class Model3d extends Box3D {
     /**
      * Handle model rotation event
      * @param  {Object}  axis An object describing the axis to rotate on
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     handleRotateOnAxis(axis) {
@@ -225,10 +225,10 @@ class Model3d extends Box3D {
 
     /**
      * Handle hard set of axes
-     * @param {string} upAxis Up axis for model
-     * @param {[type]} forwardAxis Forward axis for model
-     * @param {[type]} transition True to trigger a smooth rotationd transition, false for snap to rotation
-     * @returns {void}
+     * @param {string} upAxis - Up axis for model
+     * @param {[type]} forwardAxis - Forward axis for model
+     * @param {[type]} transition - True to trigger a smooth rotationd transition, false for snap to rotation
+     * @return {void}
      */
     @autobind
     handleRotationAxisSet(upAxis, forwardAxis, transition = true) {
@@ -305,7 +305,7 @@ class Model3d extends Box3D {
      * Handle animation playback (play / pause).
      * @method handleToggleAnimation
      * @private
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     handleToggleAnimation(play) {
@@ -316,7 +316,7 @@ class Model3d extends Box3D {
      * Handle canvas focus events.
      * @method handleCanvasClick
      * @private
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     handleCanvasClick() {
@@ -325,7 +325,7 @@ class Model3d extends Box3D {
 
     /**
      * Show the preview wrapper container element
-     * @returns {void}
+     * @return {void}
      */
     showWrapper() {
         this.wrapperEl.classList.remove(CSS_CLASS_INVISIBLE);
@@ -351,7 +351,7 @@ class Model3d extends Box3D {
     /**
      * Handle set render mode event
      * @param  {string} mode The selected render mode string
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     handleSetRenderMode(mode = 'Lit') {
@@ -363,8 +363,8 @@ class Model3d extends Box3D {
      * and axis markings.
      * @method handleToggleHelpers
      * @private
-     * @param {boolean} show True or false to show or hide. If not specified, the helpers will be toggled.
-     * @returns {void}
+     * @param {boolean} show - True or false to show or hide. If not specified, the helpers will be toggled.
+     * @return {void}
      */
     @autobind
     handleToggleHelpers(show) {
@@ -374,7 +374,7 @@ class Model3d extends Box3D {
     /**
      * Handle setting camera projection
      * @private
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     handleSetCameraProjection(projection) {
@@ -384,7 +384,7 @@ class Model3d extends Box3D {
     /**
      * Handle setting quality level for rendering
      * @private
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     handleSetQualityLevel(level) {
@@ -394,8 +394,8 @@ class Model3d extends Box3D {
     /**
      * Handle setting skeleton visibility.
      * @private
-     * @param {boolean} visible Indicates whether or not skeletons are visible.
-     * @returns {void}
+     * @param {boolean} visible - Indicates whether or not skeletons are visible.
+     * @return {void}
      */
     @autobind
     handleShowSkeletons(visible) {
@@ -405,8 +405,8 @@ class Model3d extends Box3D {
     /**
      * Handle setting wireframe visibility.
      * @private
-     * @param {boolean} visible Indicates whether or not wireframes are visible.
-     * @returns {void}
+     * @param {boolean} visible - Indicates whether or not wireframes are visible.
+     * @return {void}
      */
     @autobind
     handleShowWireframes(visible) {

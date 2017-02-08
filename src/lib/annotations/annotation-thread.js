@@ -45,8 +45,8 @@ class AnnotationThread extends EventEmitter {
     /**
      * [constructor]
      *
-     * @param {AnnotationThreadData} data Data for constructing thread
-     * @returns {AnnotationThread} Annotation thread instance
+     * @param {AnnotationThreadData} data - Data for constructing thread
+     * @return {AnnotationThread} Annotation thread instance
      */
     constructor(data) {
         super();
@@ -67,7 +67,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * [destructor]
      *
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         if (this._dialog) {
@@ -91,7 +91,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Hides the annotation indicator.
      *
-     * @returns {void}
+     * @return {void}
      */
     hide() {
         annotatorUtil.hideElement(this._element);
@@ -100,7 +100,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Reset state to inactive.
      *
-     * @returns {void}
+     * @return {void}
      */
     reset() {
         this._state = constants.ANNOTATION_STATE_INACTIVE;
@@ -109,7 +109,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Shows the appropriate annotation dialog for this thread.
      *
-     * @returns {void}
+     * @return {void}
      */
     showDialog() {
         // Setup the dialog element if it has not already been created
@@ -125,7 +125,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Hides the appropriate annotation dialog for this thread.
      *
-     * @returns {void}
+     * @return {void}
      */
     hideDialog() {
         if (this._dialog) {
@@ -136,9 +136,9 @@ class AnnotationThread extends EventEmitter {
     /**
      * Saves an annotation.
      *
-     * @param {string} type Type of annotation
-     * @param {string} text Text of annotation to save
-     * @returns {void}
+     * @param {string} type - Type of annotation
+     * @param {string} text - Text of annotation to save
+     * @return {void}
      */
     saveAnnotation(type, text) {
         const annotationData = this._createAnnotationData(type, text);
@@ -186,9 +186,9 @@ class AnnotationThread extends EventEmitter {
     /**
      * Deletes an annotation.
      *
-     * @param {string} annotationID ID of annotation to delete
-     * @param {boolean} [useServer] Whether or not to delete on server, default true
-     * @returns {void}
+     * @param {string} annotationID - ID of annotation to delete
+     * @param {boolean} [useServer] - Whether or not to delete on server, default true
+     * @return {void}
      */
     deleteAnnotation(annotationID, useServer = true) {
         // Ignore if no corresponding annotation exists in thread or user doesn't have permissions
@@ -244,14 +244,14 @@ class AnnotationThread extends EventEmitter {
     /**
      * Cancels the first comment on the thread
      *
-     * @returns {void}
+     * @return {void}
      */
     cancelFirstComment() {}
 
     /**
      * Must be implemented to show the annotation indicator.
      *
-     * @returns {void}
+     * @return {void}
      */
     show() {}
 
@@ -259,7 +259,7 @@ class AnnotationThread extends EventEmitter {
      * Must be implemented to create the appropriate annotation dialog and save
      * as a property on the thread.
      *
-     * @returns {void}
+     * @return {void}
      */
     createDialog() {}
 
@@ -270,7 +270,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Gets location.
      *
-     * @returns {Object} Location
+     * @return {Object} Location
      */
     get location() {
         return this._location;
@@ -279,7 +279,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Gets threadID.
      *
-     * @returns {string} threadID
+     * @return {string} threadID
      */
     get threadID() {
         return this._threadID;
@@ -288,7 +288,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Gets thread number.
      *
-     * @returns {string} thread number
+     * @return {string} thread number
      */
     get thread() {
         return this._thread;
@@ -297,7 +297,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Gets type.
      *
-     * @returns {string} type
+     * @return {string} type
      */
     get type() {
         return this._type;
@@ -306,7 +306,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Gets state.
      *
-     * @returns {string} state
+     * @return {string} state
      */
     get state() {
         return this._state;
@@ -320,7 +320,7 @@ class AnnotationThread extends EventEmitter {
      * Sets up the thread. Creates HTML for annotation indicator, sets
      * appropriate dialog, and binds event listeners.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     setup() {
@@ -339,7 +339,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Sets up indicator element.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     setupElement() {
@@ -350,7 +350,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Binds DOM event listeners for the thread.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     bindDOMListeners() {
@@ -366,7 +366,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Unbinds DOM event listeners for the thread.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     unbindDOMListeners() {
@@ -382,7 +382,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Binds custom event listeners for the dialog.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     bindCustomListenersOnDialog() {
@@ -409,7 +409,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Unbinds custom event listeners for the dialog.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     unbindCustomListenersOnDialog() {
@@ -429,7 +429,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Creates the HTML for the annotation indicator.
      *
-     * @returns {HTMLElement} HTML element
+     * @return {HTMLElement} HTML element
      * @private
      */
     _createElement() {
@@ -443,7 +443,7 @@ class AnnotationThread extends EventEmitter {
     /**
      * Mouseout handler. Hides dialog if we aren't creating the first one.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     _mouseoutHandler() {
@@ -456,8 +456,8 @@ class AnnotationThread extends EventEmitter {
      * Saves the provided annotation to the thread and dialog if appropriate
      * and resets state to inactive.
      *
-     * @param {Annotation} annotation Annotation to save
-     * @returns {void}
+     * @param {Annotation} annotation - Annotation to save
+     * @return {void}
      * @private
      */
     _saveAnnotationToThread(annotation) {
@@ -471,9 +471,9 @@ class AnnotationThread extends EventEmitter {
     /**
      * Create an annotation data object to pass to annotation service.
      *
-     * @param {string} type Type of annotation
-     * @param {string} text Annotation text
-     * @returns {Object} Annotation data
+     * @param {string} type - Type of annotation
+     * @param {string} text - Annotation text
+     * @return {Object} Annotation data
      * @private
      */
     _createAnnotationData(type, text) {

@@ -14,9 +14,9 @@ const AVATAR_COLOR_COUNT = 9; // 9 colors defined in Box React UI avatar code
 
 /**
  * Finds the closest ancestor DOM element with the specified class.
- * @param {HTMLElement} element Element to search ancestors of
- * @param {string} className Class name to query
- * @returns {HTMLElement|null} Closest ancestor with given class or null
+ * @param {HTMLElement} element - Element to search ancestors of
+ * @param {string} className - Class name to query
+ * @return {HTMLElement|null} Closest ancestor with given class or null
  */
 export function findClosestElWithClass(element, className) {
     for (let el = element; el && el !== document; el = el.parentNode) {
@@ -32,10 +32,10 @@ export function findClosestElWithClass(element, className) {
  * Finds the closest element with a data type and returns that data type. If
  * an attributeName is provided, search for that data atttribute instead of
  * data type.
- * @param {HTMLElement} element Element to find closest data type for
- * @param {string} [attributeName] Optional different data attribute to search
+ * @param {HTMLElement} element - Element to find closest data type for
+ * @param {string} [attributeName] - Optional different data attribute to search
  * for
- * @returns {string} Closest data type or empty string
+ * @return {string} Closest data type or empty string
  */
 export function findClosestDataType(element, attributeName) {
     const attributeToFind = attributeName || 'data-type';
@@ -51,8 +51,8 @@ export function findClosestDataType(element, attributeName) {
 
 /**
  * Shows the specified element or element with specified selector.
- * @param {HTMLElement|string} elementOrSelector Element or CSS selector
- * @returns {void}
+ * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
+ * @return {void}
  */
 export function showElement(elementOrSelector) {
     let element = elementOrSelector;
@@ -67,8 +67,8 @@ export function showElement(elementOrSelector) {
 
 /**
  * Hides the specified element or element with specified selector.
- * @param {HTMLElement|string} elementOrSelector Element or CSS selector
- * @returns {void}
+ * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
+ * @return {void}
  */
 export function hideElement(elementOrSelector) {
     let element = elementOrSelector;
@@ -83,8 +83,8 @@ export function hideElement(elementOrSelector) {
 
 /**
  * Shows the specified element or element with specified selector.
- * @param {HTMLElement|string} elementOrSelector Element or CSS selector
- * @returns {void}
+ * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
+ * @return {void}
  */
 export function showInvisibleElement(elementOrSelector) {
     let element = elementOrSelector;
@@ -100,8 +100,8 @@ export function showInvisibleElement(elementOrSelector) {
 /**
  * Hides the specified element or element with specified selector. The element
  * will still take up DOM space but not be visible in the UI
- * @param {HTMLElement|string} elementOrSelector Element or CSS selector
- * @returns {void}
+ * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
+ * @return {void}
  */
 export function hideElementVisibility(elementOrSelector) {
     let element = elementOrSelector;
@@ -117,9 +117,9 @@ export function hideElementVisibility(elementOrSelector) {
 /**
  * Reset textarea element - clears value, resets styles, and remove active
  * state.
- * @param {HTMLElement} element Textarea to reset
- * @param {Boolean} clearText Whether or not text in text area should be cleared
- * @returns {void}
+ * @param {HTMLElement} element - Textarea to reset
+ * @param {Boolean} clearText - Whether or not text in text area should be cleared
+ * @return {void}
  */
 export function resetTextarea(element, clearText) {
     const textareaEl = element;
@@ -138,7 +138,7 @@ export function resetTextarea(element, clearText) {
 
 /**
  * Checks whether element is fully in viewport.
- * @returns {boolean} Whether element is fully in viewport
+ * @return {boolean} Whether element is fully in viewport
  */
 export function isElementInViewport(element) {
     const dimensions = element.getBoundingClientRect();
@@ -155,10 +155,10 @@ export function isElementInViewport(element) {
  * Returns avatar image HTML for annotation dialog. This will be either an
  * image with the supplied avatar URL as a source if there is a URL passed in
  * or one generated using the initials of the annotator.
- * @param {string} avatarUrl URL of avatar photo
- * @param {string} userId User ID of annotator
- * @param {string} userName Username of annotator
- * @returns {string} HTML for profile image
+ * @param {string} avatarUrl - URL of avatar photo
+ * @param {string} userId - User ID of annotator
+ * @param {string} userName - Username of annotator
+ * @return {string} HTML for profile image
  */
 export function getAvatarHtml(avatarUrl, userId, userName) {
     if (avatarUrl !== '') {
@@ -177,8 +177,8 @@ export function getAvatarHtml(avatarUrl, userId, userName) {
 
 /**
  * Returns zoom scale of annotated element.
- * @param {HTMLElement} annotatedElement HTML element being annotated on
- * @returns {number} Zoom scale
+ * @param {HTMLElement} annotatedElement - HTML element being annotated on
+ * @return {number} Zoom scale
  */
 export function getScale(annotatedElement) {
     return parseFloat(annotatedElement.getAttribute('data-scale')) || 1;
@@ -190,7 +190,7 @@ export function getScale(annotatedElement) {
 
 /**
  * Whether or not a highlight annotation has comments or is a plain highlight
- * @param {Annotation[]} Annotations in highlight thread
+ * @param {Annotation[]} Annotations - in highlight thread
  * @return {Boolean} Whether annotation is a plain highlight annotation
  */
 export function isPlainHighlight(annotations) {
@@ -216,11 +216,11 @@ export function isHighlightAnnotation(type) {
  * the current annotated element dimensions scaled to 100% with annotated
  * element dimensions when annotations were created.
  *
- * @param {Object} dimensions Dimensions saved in annotation
- * @param {Object} fileDimensions Current annotated element dimensions
- * @param {number} zoomScale Zoom scale
- * @param {number} heightPadding Top & bottom padding for annotated element
- * @returns {Object|null} {x, y} dimension scale if needed, null otherwise
+ * @param {Object} dimensions - Dimensions saved in annotation
+ * @param {Object} fileDimensions - Current annotated element dimensions
+ * @param {number} zoomScale - Zoom scale
+ * @param {number} heightPadding - Top & bottom padding for annotated element
+ * @return {Object|null} {x, y} dimension scale if needed, null otherwise
  */
 export function getDimensionScale(dimensions, fileDimensions, zoomScale, heightPadding) {
     let dimensionScale = null;
@@ -244,8 +244,8 @@ export function getDimensionScale(dimensions, fileDimensions, zoomScale, heightP
 
 /**
  * Escapes HTML.
- * @param {string} str Input string
- * @returns {string} HTML escaped string
+ * @param {string} str - Input string
+ * @return {string} HTML escaped string
  */
 export function htmlEscape(str) {
     return `${str}`.replace(/&/g, '&amp;') // first!

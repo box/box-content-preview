@@ -13,12 +13,12 @@ const ROTATION_THRICE_DEG = -270;
 /**
  * Adjust initial annotation location according to current image rotation
  *
- * @param {number} x Annotation location x coordinate
- * @param {number} y Annotation location y coordinate
- * @param {number} rotation Current image rotation
+ * @param {number} x - Annotation location x coordinate
+ * @param {number} y - Annotation location y coordinate
+ * @param {number} rotation - Current image rotation
  * @param {Object} imageDimensions
  * @param {number} scale
- * @returns {number[]} [x,y] browser coordinates
+ * @return {number[]} [x,y] browser coordinates
  */
 export function getRotatedLocation(x, y, rotation, imageDimensions, scale) {
     const { height, width } = imageDimensions;
@@ -39,12 +39,12 @@ export function getRotatedLocation(x, y, rotation, imageDimensions, scale) {
 /**
  * Adjust initial annotation location according to current image rotation
  *
- * @param {number} x Annotation location x coordinate
- * @param {number} y Annotation location y coordinate
- * @param {number} rotation Current image rotation
+ * @param {number} x - Annotation location x coordinate
+ * @param {number} y - Annotation location y coordinate
+ * @param {number} rotation - Current image rotation
  * @param {Object} imageDimensions
  * @param {number} scale
- * @returns {number[]} [x,y] browser coordinates
+ * @return {number[]} [x,y] browser coordinates
  */
 export function getLocationWithoutRotation(x, y, rotation, imageDimensions, scale) {
     const { height, width } = imageDimensions;
@@ -65,9 +65,9 @@ export function getLocationWithoutRotation(x, y, rotation, imageDimensions, scal
 /**
  * Returns number of pixels above the image when it's not rotated
  *
- * @param {HTMLElement} imageEl HTML element for image
- * @param {boolean} isRotated Whether or not image is rotated
- * @returns {number} Number of pixels above the image
+ * @param {HTMLElement} imageEl - HTML element for image
+ * @param {boolean} isRotated - Whether or not image is rotated
+ * @return {number} Number of pixels above the image
  */
 export function getRotatedPadding(imageEl, isRotated) {
     return (isRotated ? imageEl.offsetLeft - (IMAGE_PADDING * 3 / 2) : imageEl.offsetTop);
@@ -77,9 +77,9 @@ export function getRotatedPadding(imageEl, isRotated) {
  * Returns browser coordinates given an annotation location object and
  * the HTML element being annotated on.
  *
- * @param {Object} location Annotation location object
- * @param {HTMLElement} annotatedElement HTML element being annotated on
- * @returns {number[]} [x,y] browser coordinates
+ * @param {Object} location - Annotation location object
+ * @param {HTMLElement} annotatedElement - HTML element being annotated on
+ * @return {number[]} [x,y] browser coordinates
  */
 export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     const imageEl = annotatedElement.querySelector('img');

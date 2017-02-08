@@ -11,9 +11,9 @@ class Office extends Base {
     /**
      * [constructor]
      *
-     * @param {string|HTMLElement} container The container
-     * @param {Object} options some options
-     * @returns {SWF} SWF instance
+     * @param {string|HTMLElement} container - The container
+     * @param {Object} options - some options
+     * @return {SWF} SWF instance
      */
     constructor(container, options) {
         super(container, options);
@@ -30,7 +30,7 @@ class Office extends Base {
      * Loads a xlsx file
      *
      * @public
-     * @returns {void}
+     * @return {void}
      */
     load() {
         let src = `${deduceBoxUrl(this.options.api)}/integrations/officeonline/openExcelOnlinePreviewer`;

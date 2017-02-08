@@ -45,7 +45,7 @@ class ImageLoader extends AssetLoader {
 
     /**
      * [constructor]
-     * @returns {ImageLoader} ImageLoader instance
+     * @return {ImageLoader} ImageLoader instance
      */
     constructor() {
         super();

@@ -10,9 +10,9 @@ class IFrame extends Base {
     /**
      * [constructor]
      *
-     * @param {string|HTMLElement} container The container
-     * @param {Object} options some options
-     * @returns {SWF} SWF instance
+     * @param {string|HTMLElement} container - The container
+     * @param {Object} options - some options
+     * @return {SWF} SWF instance
      */
     constructor(container, options) {
         super(container, options);
@@ -28,7 +28,7 @@ class IFrame extends Base {
      * Loads a boxnote or boxdicom file
      *
      * @public
-     * @returns {void}
+     * @return {void}
      */
     load() {
         let src = `${deduceBoxUrl(this.options.api)}`;

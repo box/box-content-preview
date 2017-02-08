@@ -10,7 +10,7 @@ class Cache {
     /**
      * [constructor]
      *
-     * @returns {Cache} Cache instance
+     * @return {Cache} Cache instance
      */
     constructor() {
         this.cache = {};
@@ -20,10 +20,10 @@ class Cache {
      * Caches a simple object in memory and in localStorage if specified.
      * Note that objects cached in localStorage will be stringified.
      *
-     * @param {string} key The cache key
-     * @param {*} value The cache value
-     * @param {boolean} useLocalStorage Whether or not to use localStorage
-     * @returns {void}
+     * @param {string} key - The cache key
+     * @param {*} value - The cache value
+     * @param {boolean} useLocalStorage - Whether or not to use localStorage
+     * @return {void}
      */
     set(key, value, useLocalStorage) {
         this.cache[key] = value;
@@ -36,8 +36,8 @@ class Cache {
     /**
      * Deletes object from in-memory cache and localStorage.
      *
-     * @param {string} key The cache key
-     * @returns {void}
+     * @param {string} key - The cache key
+     * @return {void}
      */
     unset(key) {
         if (this.localStorageAvailable()) {
@@ -50,8 +50,8 @@ class Cache {
     /**
      * Checks if cache has provided key.
      *
-     * @param {string} key The cache key
-     * @returns {boolean} Whether the cache has key
+     * @param {string} key - The cache key
+     * @return {boolean} Whether the cache has key
      */
     has(key) {
         return this.inCache(key) || this.inLocalStorage(key);
@@ -62,8 +62,8 @@ class Cache {
      * tries to fetch from localStorage. If fetched from localStorage, object
      * will be a JSON parsed object.
      *
-     * @param {string} key Key of cached object
-     * @returns {*} Cached object
+     * @param {string} key - Key of cached object
+     * @return {*} Cached object
      */
     get(key) {
         if (this.inCache(key)) {
@@ -91,8 +91,8 @@ class Cache {
     /**
      * Checks if memory cache has provided key.
      *
-     * @param {string} key The cache key
-     * @returns {boolean} Whether the cache has key
+     * @param {string} key - The cache key
+     * @return {boolean} Whether the cache has key
      */
     inCache(key) {
         return {}.hasOwnProperty.call(this.cache, key);
@@ -101,8 +101,8 @@ class Cache {
     /**
      * Checks if memory cache has provided key.
      *
-     * @param {string} key The cache key
-     * @returns {boolean} Whether the cache has key
+     * @param {string} key - The cache key
+     * @return {boolean} Whether the cache has key
      */
     inLocalStorage(key) {
         if (!this.localStorageAvailable()) {
@@ -121,7 +121,7 @@ class Cache {
      * localStorage was available the first time this is called, but becomes
      * unavailable at a later time.
      *
-     * @returns {boolean} Whether or not localStorage is available or not.
+     * @return {boolean} Whether or not localStorage is available or not.
      * @private
      */
     localStorageAvailable() {
@@ -143,8 +143,8 @@ class Cache {
      * Generates a key to use for localStorage from the provided key. This
      * should prevent name collisions.
      *
-     * @param {string} key Generate key from this key
-     * @returns {string} Generated key for localStorage
+     * @param {string} key - Generate key from this key
+     * @return {string} Generated key for localStorage
      * @private
      */
     generateKey(key) {

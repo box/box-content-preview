@@ -45,7 +45,7 @@ class TextLoader extends AssetLoader {
     /**
      * [constructor]
      *
-     * @returns {TextLoader} TextLoader instance
+     * @return {TextLoader} TextLoader instance
      */
     constructor() {
         super();

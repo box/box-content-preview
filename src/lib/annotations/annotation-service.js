@@ -26,7 +26,7 @@ class AnnotationService extends EventEmitter {
      * Generates a rfc4122v4-compliant GUID, from
      * http://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript.
      *
-     * @returns {string} UUID for annotation
+     * @return {string} UUID for annotation
      */
     static generateID() {
         /* eslint-disable */
@@ -57,8 +57,8 @@ class AnnotationService extends EventEmitter {
     /**
      * [constructor]
      *
-     * @param {AnnotationServiceData} data Annotation Service data
-     * @returns {AnnotationService} AnnotationService instance
+     * @param {AnnotationServiceData} data - Annotation Service data
+     * @return {AnnotationService} AnnotationService instance
      */
     constructor(data) {
         super();
@@ -72,8 +72,8 @@ class AnnotationService extends EventEmitter {
     /**
      * Create an annotation.
      *
-     * @param {Annotation} annotation Annotation to save
-     * @returns {Promise} Promise that resolves with created annotation
+     * @param {Annotation} annotation - Annotation to save
+     * @return {Promise} Promise that resolves with created annotation
      */
     create(annotation) {
         return new Promise((resolve, reject) => {
@@ -131,8 +131,8 @@ class AnnotationService extends EventEmitter {
     /**
      * Reads annotations from file version ID.
      *
-     * @param {string} fileVersionID File version ID to fetch annotations for
-     * @returns {Promise} Promise that resolves with fetched annotations
+     * @param {string} fileVersionID - File version ID to fetch annotations for
+     * @return {Promise} Promise that resolves with fetched annotations
      */
     read(fileVersionID) {
         this._annotations = [];
@@ -150,8 +150,8 @@ class AnnotationService extends EventEmitter {
     /**
      * Delete an annotation.
      *
-     * @param {string} annotationID Id of annotation to delete
-     * @returns {Promise} Promise to delete annotation
+     * @param {string} annotationID - Id of annotation to delete
+     * @return {Promise} Promise to delete annotation
      */
     delete(annotationID) {
         return new Promise((resolve, reject) => {
@@ -182,8 +182,8 @@ class AnnotationService extends EventEmitter {
     /**
      * Gets a map of thread ID to annotations in that thread.
      *
-     * @param {string} fileVersionID File version ID to fetch annotations for
-     * @returns {Promise} Promise that resolves with thread map
+     * @param {string} fileVersionID - File version ID to fetch annotations for
+     * @return {Promise} Promise that resolves with thread map
      */
     getThreadMap(fileVersionID) {
         return this.read(fileVersionID).then(this._createThreadMap);
@@ -196,7 +196,7 @@ class AnnotationService extends EventEmitter {
     /**
      * Gets canAnnotate.
      *
-     * @returns {boolean} Whether or not user can create or modify annotations.
+     * @return {boolean} Whether or not user can create or modify annotations.
      */
     get canAnnotate() {
         return this._canAnnotate;
@@ -205,7 +205,7 @@ class AnnotationService extends EventEmitter {
     /**
      * Gets canDelete.
      *
-     * @returns {boolean} Whether or not user can create or modify annotations.
+     * @return {boolean} Whether or not user can create or modify annotations.
      */
     get canDelete() {
         return this._canDelete;
@@ -214,7 +214,7 @@ class AnnotationService extends EventEmitter {
     /**
      * Gets user.
      *
-     * @returns {Object} User object
+     * @return {Object} User object
      */
     get user() {
         return this._user;
@@ -227,8 +227,8 @@ class AnnotationService extends EventEmitter {
     /**
      * Generates a map of thread ID to annotations in thread.
      *
-     * @param {Annotation[]} annotations Annotations to generate map from
-     * @returns {Object} Map of thread ID to annotations in that thread
+     * @param {Annotation[]} annotations - Annotations to generate map from
+     * @return {Object} Map of thread ID to annotations in that thread
      * @private
      */
     _createThreadMap(annotations) {
@@ -254,8 +254,8 @@ class AnnotationService extends EventEmitter {
     /**
      * Generates an Annotation object from an API response.
      *
-     * @param {Object} data API response data
-     * @returns {Annotation} Created annotation
+     * @param {Object} data - API response data
+     * @return {Annotation} Created annotation
      * @private
      */
     _createAnnotation(data) {
@@ -281,10 +281,10 @@ class AnnotationService extends EventEmitter {
     /**
      * Construct the URL to read annotations with a marker or limit added
      *
-     * @param {string} fileVersionID File version ID to fetch annotations for
-     * @param {string} marker marker to use if there are more than limit annotations
-     *  * @param {int} limit the amout of annotations the API will return per call
-     * @returns {Promise} Promise that resolves with fetched annotations
+     * @param {string} fileVersionID - File version ID to fetch annotations for
+     * @param {string} marker - marker to use if there are more than limit annotations
+     *  * @param {int} limit - the amout of annotations the API will return per call
+     * @return {Promise} Promise that resolves with fetched annotations
      */
     _getReadUrl(fileVersionID, marker = null, limit = null) {
         let apiUrl = `${this._api}/2.0/files/${this._fileID}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
@@ -303,10 +303,10 @@ class AnnotationService extends EventEmitter {
      * Reads annotations from file version ID starting at a marker. The default
      * limit is 100 annotations per API call.
      *
-     * @param {string} fileVersionID File version ID to fetch annotations for
-     * @param {string} marker marker to use if there are more than limit annotations
-     * @param {int} limit the amout of annotations the API will return per call
-     * @returns {void}
+     * @param {string} fileVersionID - File version ID to fetch annotations for
+     * @param {string} marker - marker to use if there are more than limit annotations
+     * @param {int} limit - the amout of annotations the API will return per call
+     * @return {void}
      */
     _readFromMarker(resolve, reject, fileVersionID, marker = null, limit = null) {
         fetch(this._getReadUrl(fileVersionID, marker, limit), {

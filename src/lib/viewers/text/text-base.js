@@ -14,7 +14,7 @@ class TextBase extends Base {
 
     /**
      * [destructor]
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         // Destroy the controls
@@ -28,8 +28,8 @@ class TextBase extends Base {
     /**
      * Zooms by increasing or decreasing font size
      * @public
-     * @param {string} inOrOut in or out
-     * @returns {void}
+     * @param {string} inOrOut - in or out
+     * @return {void}
      */
     zoom(inOrOut) {
         const el = this.containerEl.querySelector('.bp-text');
@@ -53,7 +53,7 @@ class TextBase extends Base {
     /**
      * Zooms in.
      *
-     * @returns {void}
+     * @return {void}
      * @public
      */
     zoomIn() {
@@ -63,7 +63,7 @@ class TextBase extends Base {
     /**
      * Zooms out.
      *
-     * @returns {void}
+     * @return {void}
      * @public
      */
     zoomOut() {
@@ -74,7 +74,7 @@ class TextBase extends Base {
      * Loads content.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     load() {
         // Enable text selection if user has download permissions
@@ -88,7 +88,7 @@ class TextBase extends Base {
     /**
      * Loads controls for zooming and fullscreen.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     loadUI() {
@@ -103,7 +103,7 @@ class TextBase extends Base {
      * Resize handler
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     resize() {
@@ -113,8 +113,8 @@ class TextBase extends Base {
     /**
      * Handles keyboard events for media
      *
-     * @param {string} key keydown key
-     * @returns {boolean} consumed or not
+     * @param {string} key - keydown key
+     * @return {boolean} consumed or not
      * @protected
      */
     onKeydown(key) {

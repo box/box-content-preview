@@ -27,7 +27,7 @@ class Model3dLoader extends AssetLoader {
      * Instantiates a loader for 3D model preview.
      * @constructor
      * @inheritdoc
-     * @returns {Model3dLoader} The model3d loader instance
+     * @return {Model3dLoader} The model3d loader instance
      */
     constructor() {
         super();

@@ -18,9 +18,9 @@ class Markdown extends PlainText {
     /**
      * [constructor]
      *
-     * @param {string|HTMLElement} container The container
-     * @param {Object} options some options
-     * @returns {Markdown} Markdown instance
+     * @param {string|HTMLElement} container - The container
+     * @param {Object} options - some options
+     * @return {Markdown} Markdown instance
      */
     constructor(container, options) {
         super(container, options);
@@ -35,7 +35,7 @@ class Markdown extends PlainText {
      * Prints text using an an iframe. Adds Github Markdown CSS to print styles.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     print() {
         if (!this.printReady) {
@@ -58,7 +58,7 @@ class Markdown extends PlainText {
      *
      * @override
      * @param {string} content - Markdown text
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     finishLoading(content) {
@@ -80,7 +80,7 @@ class Markdown extends PlainText {
      * Loads controls for fullscreen. Markdown viewer doesn't have zoom in or out.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     loadUI() {
@@ -92,7 +92,7 @@ class Markdown extends PlainText {
     /**
      * Initializes and returns Remarkable parser.
      *
-     * @returns {Remarkable}
+     * @return {Remarkable}
      * @private
      */
     initRemarkable() {

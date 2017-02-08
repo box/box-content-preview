@@ -29,7 +29,7 @@ class Video360Loader extends Base360Loader {
 
     /**
      * Instantiates a loader for 360 degree video preview.
-     * @returns {Video360Loader} Video360Loader instance
+     * @return {Video360Loader} Video360Loader instance
      */
     constructor() {
         super();

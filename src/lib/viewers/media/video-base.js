@@ -14,8 +14,8 @@ class VideoBase extends MediaBase {
      * [constructor]
      *
      * @override
-     * @param {string|HTMLElement} container The container DOM node
-     * @param {Object} [options] some options
+     * @param {string|HTMLElement} container - The container DOM node
+     * @param {Object} [options] - some options
      * @return {VideoBase} VideoBase instance
      */
     constructor(container, options) {

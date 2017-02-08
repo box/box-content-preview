@@ -25,7 +25,7 @@ class DocHighlightThread extends AnnotationThread {
     /**
      * Cancels the first comment on the thread
      *
-     * @returns {void}
+     * @return {void}
      */
     cancelFirstComment() {
         if (annotatorUtil.isPlainHighlight(this._annotations)) {
@@ -43,7 +43,7 @@ class DocHighlightThread extends AnnotationThread {
      * [destructor]
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         super.destroy();
@@ -59,7 +59,7 @@ class DocHighlightThread extends AnnotationThread {
      * the overlapping portion.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     hide() {
         this._draw(constants.HIGHLIGHT_ERASE_FILL_STYLE);
@@ -69,7 +69,7 @@ class DocHighlightThread extends AnnotationThread {
      * Reset state to inactive and redraw.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     reset() {
         this._state = constants.ANNOTATION_STATE_INACTIVE;
@@ -80,9 +80,9 @@ class DocHighlightThread extends AnnotationThread {
      * Saves an annotation.
      *
      * @override
-     * @param {string} type Type of annotation
-     * @param {string} text Text of annotation to save
-     * @returns {void}
+     * @param {string} type - Type of annotation
+     * @param {string} text - Text of annotation to save
+     * @return {void}
      */
     saveAnnotation(type, text) {
         super.saveAnnotation(type, text);
@@ -92,9 +92,9 @@ class DocHighlightThread extends AnnotationThread {
     /**
      * Deletes an annotation.
      *
-     * @param {string} annotationID ID of annotation to delete
-     * @param {boolean} [useServer] Whether or not to delete on server, default true
-     * @returns {void}
+     * @param {string} annotationID - ID of annotation to delete
+     * @param {boolean} [useServer] - Whether or not to delete on server, default true
+     * @return {void}
      */
     deleteAnnotation(annotationID, useServer = true) {
         super.deleteAnnotation(annotationID, useServer);
@@ -110,7 +110,7 @@ class DocHighlightThread extends AnnotationThread {
     /**
      * Mousedown handler for thread. Deletes this thread if it is still pending.
      *
-     * @returns {void}
+     * @return {void}
      */
     onMousedown() {
         // Destroy pending highlights on mousedown
@@ -129,10 +129,10 @@ class DocHighlightThread extends AnnotationThread {
      * in this method since we want to delay that drawing until all inactive
      * threads have been reset.
      *
-     * @param {Event} event Mouse event
-     * @param {boolean} consumed Whether event previously activated another
+     * @param {Event} event - Mouse event
+     * @param {boolean} consumed - Whether event previously activated another
      * highlight
-     * @returns {boolean} Whether click was in a non-pending highlight
+     * @return {boolean} Whether click was in a non-pending highlight
      */
     onClick(event, consumed) {
         // If state is in hover, it means mouse is already over this highlight
@@ -166,7 +166,7 @@ class DocHighlightThread extends AnnotationThread {
      * Sets thread state to hover or active-hover accordingly and triggers
      * dialog to remain open
      *
-     * @returns {void}
+     * @return {void}
      */
     activateDialog() {
         if (this._state === constants.ANNOTATION_STATE_ACTIVE ||
@@ -190,8 +190,8 @@ class DocHighlightThread extends AnnotationThread {
      * and reset. We don't draw hovered highlights in this method since we want
      * to delay that drawing until all inactive threads have been reset.
      *
-     * @param {Event} event Mouse event
-     * @returns {boolean} Whether we should delay drawing highlight
+     * @param {Event} event - Mouse event
+     * @return {boolean} Whether we should delay drawing highlight
      */
     onMousemove(event) {
         // If mouse is in dialog, change state to hover or active-hover
@@ -238,7 +238,7 @@ class DocHighlightThread extends AnnotationThread {
      * the highlight in active state and show the 'delete' button.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     show() {
         switch (this._state) {
@@ -265,7 +265,7 @@ class DocHighlightThread extends AnnotationThread {
      * Creates the document highlight annotation dialog for the thread.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     createDialog() {
         this._dialog = new DocHighlightDialog({
@@ -294,7 +294,7 @@ class DocHighlightThread extends AnnotationThread {
      * they are drawn onto the canvas.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     setupElement() {}
@@ -303,7 +303,7 @@ class DocHighlightThread extends AnnotationThread {
      * Binds custom event listeners for the dialog.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     /* istanbul ignore next */
@@ -351,7 +351,7 @@ class DocHighlightThread extends AnnotationThread {
      * Unbinds custom event listeners for the dialog.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     unbindCustomListenersOnDialog() {
@@ -369,8 +369,8 @@ class DocHighlightThread extends AnnotationThread {
     /**
      * Draws the highlight with the specified fill style.
      *
-     * @param {string} fillStyle RGBA fill style
-     * @returns {void}
+     * @param {string} fillStyle - RGBA fill style
+     * @return {void}
      * @private
      */
     /* istanbul ignore next */
@@ -430,8 +430,8 @@ class DocHighlightThread extends AnnotationThread {
     /**
      * Checks whether mouse is inside the highlight represented by this thread.
      *
-     * @param {Event} event Mouse event
-     * @returns {boolean} Whether or not mouse is inside highlight
+     * @param {Event} event - Mouse event
+     * @return {boolean} Whether or not mouse is inside highlight
      * @private
      */
     _isInHighlight(event) {
@@ -470,7 +470,7 @@ class DocHighlightThread extends AnnotationThread {
     /**
      * Gets the page element this thread is on.
      *
-     * @returns {HTMLElement} Page element
+     * @return {HTMLElement} Page element
      * @private
      */
     _getPageEl() {
@@ -480,7 +480,7 @@ class DocHighlightThread extends AnnotationThread {
     /**
      * Gets the context this highlight should be drawn on.
      *
-     * @returns {RenderingContext|null} Context
+     * @return {RenderingContext|null} Context
      * @private
      */
     _getContext() {

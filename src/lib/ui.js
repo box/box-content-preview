@@ -33,9 +33,9 @@ let keydownHandler;
 /**
  * Sets up the preview header.
  *
- * @param {string} headerTheme Header theme - either 'light' or 'dark'
- * @param {string} logoUrl URL of logo to use
- * @returns {void}
+ * @param {string} headerTheme - Header theme - either 'light' or 'dark'
+ * @param {string} logoUrl - URL of logo to use
+ * @return {void}
  */
 function setupHeader(headerTheme, logoUrl) {
     const headerEl = container.firstElementChild;
@@ -61,7 +61,7 @@ function setupHeader(headerTheme, logoUrl) {
 /**
  * Sets up preview loading indicator.
  *
- * @returns {void}
+ * @return {void}
  */
 function setupLoading() {
     const loadingWrapperEl = container.querySelector(SELECTOR_BOX_PREVIEW_LOADING_WRAPPER);
@@ -82,7 +82,7 @@ function setupLoading() {
 /**
  * Shows navigation arrows if there is a need
  *
- * @returns {void}
+ * @return {void}
  */
 export function showNavigation(id, collection) {
     // Before showing or updating navigation do some cleanup
@@ -136,7 +136,7 @@ export function showNavigation(id, collection) {
 /**
  * Shows the point annotate button if the viewers implement annotations
  *
- * @returns {void}
+ * @return {void}
  */
 export function showAnnotateButton(handler) {
     const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
@@ -152,8 +152,8 @@ export function showAnnotateButton(handler) {
 /**
  * Shows the print button if the viewers implement print
  *
- * @param {Function} handler Print click handler
- * @returns {void}
+ * @param {Function} handler - Print click handler
+ * @return {void}
  */
 export function showPrintButton(handler) {
     const printButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_PRINT);
@@ -169,8 +169,8 @@ export function showPrintButton(handler) {
 /**
  * Shows the download button if the viewers implement download
  *
- * @param {Function} handler Download click handler
- * @returns {void}
+ * @param {Function} handler - Download click handler
+ * @return {void}
  */
 export function showDownloadButton(handler) {
     const downloadButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
@@ -186,8 +186,8 @@ export function showDownloadButton(handler) {
 /**
  * Shows the loading download button if the viewers implement download
  *
- * @param {Function} handler Download click handler
- * @returns {void}
+ * @param {Function} handler - Download click handler
+ * @return {void}
  */
 export function showLoadingDownloadButton(handler) {
     const downloadButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
@@ -204,7 +204,7 @@ export function showLoadingDownloadButton(handler) {
  * Shows the loading indicator
  *
  * @private
- * @returns {void}
+ * @return {void}
  */
 export function showLoadingIndicator() {
     if (contentContainer) {
@@ -216,7 +216,7 @@ export function showLoadingIndicator() {
  * Hides the loading indicator
  *
  * @private
- * @returns {void}
+ * @return {void}
  */
 export function hideLoadingIndicator() {
     if (contentContainer) {
@@ -228,7 +228,7 @@ export function hideLoadingIndicator() {
  * Destroy
  *
  * @private
- * @returns {void}
+ * @return {void}
  */
 export function cleanup() {
     if (contentContainer) {
@@ -247,7 +247,7 @@ export function cleanup() {
  * Initializes the container for preview.
  *
  * @private
- * @returns {HTMLElement} Preview container
+ * @return {HTMLElement} Preview container
  */
 export function setup(options, keydown, navigateLeft, navigateRight, mousemove) {
     container = options.container;

@@ -48,7 +48,7 @@ class MediaLoader extends AssetLoader {
 
     /**
      * [constructor]
-     * @returns {MediaLoader} MediaLoader instance
+     * @return {MediaLoader} MediaLoader instance
      */
     constructor() {
         super();

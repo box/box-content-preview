@@ -9,8 +9,8 @@ class Fullscreen extends EventEmitter {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} event The mousemove event
-     * @returns {Fullscreen} Fullscreen instance
+     * @param {string|HTMLElement} event - The mousemove event
+     * @return {Fullscreen} Fullscreen instance
      */
     constructor() {
         super();
@@ -25,7 +25,7 @@ class Fullscreen extends EventEmitter {
      * Returns true if the browser supports fullscreen natively
      *
      * @private
-     * @returns {boolean} Fullscreen supported or not
+     * @return {boolean} Fullscreen supported or not
      */
     isSupported() {
         return document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled;
@@ -35,8 +35,8 @@ class Fullscreen extends EventEmitter {
      * Return true if full screen is active
      *
      * @public
-     * @param {HTMLElement} [element] fullscreen element
-     * @returns {boolean} In fullscreen or not
+     * @param {HTMLElement} [element] - fullscreen element
+     * @return {boolean} In fullscreen or not
      */
     isFullscreen(element) {
         let fullscreen;
@@ -50,8 +50,8 @@ class Fullscreen extends EventEmitter {
 
     /**
      * Fires events when the fullscreen state changes
-     * @param {HTMLElement|Event} [el] fullscreen element
-     * @returns {void}
+     * @param {HTMLElement|Event} [el] - fullscreen element
+     * @return {void}
      * @private
      */
     fullscreenchangeHandler(el) {
@@ -76,8 +76,8 @@ class Fullscreen extends EventEmitter {
      * Toggles fullscreen mode
      *
      * @private
-     * @param {HTMLElement} el fullscreen element
-     * @returns {void}
+     * @param {HTMLElement} el - fullscreen element
+     * @return {void}
      */
     toggle(el) {
         const element = el || document.documentElement;

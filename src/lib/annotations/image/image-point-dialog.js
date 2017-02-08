@@ -24,7 +24,7 @@ class ImagePointDialog extends AnnotationDialog {
      * Positions the dialog.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     position() {
         const [browserX, browserY] = imageAnnotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);

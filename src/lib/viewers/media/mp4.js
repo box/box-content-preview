@@ -11,9 +11,9 @@ class MP4 extends VideoBase {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} container The container DOM node
-     * @param {Object} [options] some options
-     * @returns {MP4} MP4 instance
+     * @param {string|HTMLElement} container - The container DOM node
+     * @param {Object} [options] - some options
+     * @return {MP4} MP4 instance
      */
     constructor(container, options) {
         super(container, options);

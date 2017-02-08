@@ -23,8 +23,8 @@ class MediaControls extends EventEmitter {
     /**
      * [constructor]
      *
-     * @param {HTMLElement} containerEl container
-     * @param {HTMLElement} mediaEl media element
+     * @param {HTMLElement} containerEl - container
+     * @param {HTMLElement} mediaEl - media element
      * @return {Controls} Controls instance
      */
     constructor(containerEl, mediaEl) {
@@ -187,7 +187,7 @@ class MediaControls extends EventEmitter {
     /**
      * Formats a number of seconds as a time string
      *
-     * @param {number} seconds seconds
+     * @param {number} seconds - seconds
      * @private
      * @return {string} A string formatted like 3:57:35
      */
@@ -204,7 +204,7 @@ class MediaControls extends EventEmitter {
     /**
      * Updates the time duration of the media file
      *
-     * @param {number} time the time length of the media file
+     * @param {number} time - the time length of the media file
      * @return {void}
      */
     setDuration(time) {
@@ -214,7 +214,7 @@ class MediaControls extends EventEmitter {
     /**
      * Updates the current time/playback position of the media file
      *
-     * @param {number} time current playback position of the media file
+     * @param {number} time - current playback position of the media file
      * @return {void}
      */
     setTimeCode(time) {
@@ -336,7 +336,7 @@ class MediaControls extends EventEmitter {
     /**
      * Sets the volume
      *
-     * @param {number} volume volume
+     * @param {number} volume - volume
      * @return {void}
      */
     updateVolumeIcon(volume) {
@@ -453,9 +453,9 @@ class MediaControls extends EventEmitter {
      * Sets up the filmstrip
      *
      * @private
-     * @param {string} url filmstrip url
-     * @param {RepStatus} status status of filmstrip
-     * @param {number} aspect ratio
+     * @param {string} url - filmstrip url
+     * @param {RepStatus} status - status of filmstrip
+     * @param {number} aspect - ratio
      * @return {void}
      */
     initFilmstrip(url, status, aspect) {
@@ -519,7 +519,7 @@ class MediaControls extends EventEmitter {
      * Adjusts the video time
      *
      * @private
-     * @param {Event} event mouse event
+     * @param {Event} event - mouse event
      * @return {void}
      */
     timeScrubbingStopHandler(event) {
@@ -542,7 +542,7 @@ class MediaControls extends EventEmitter {
      * Shows the filmstrip frame
      *
      * @private
-     * @param {Event} event mouse event
+     * @param {Event} event - mouse event
      * @return {void}
      */
     filmstripShowHandler(event) {

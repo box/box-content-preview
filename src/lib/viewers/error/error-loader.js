@@ -14,7 +14,7 @@ class ErrorLoader extends AssetLoader {
     /**
      * Instantiates a loader errors.
      * @constructor
-     * @returns {ErrorLoader} The error loader instance
+     * @return {ErrorLoader} The error loader instance
      */
     constructor() {
         super();
@@ -25,7 +25,7 @@ class ErrorLoader extends AssetLoader {
      * Determines if this loader can be used
      *
      * @override
-     * @returns {boolean} always true
+     * @return {boolean} always true
      */
     canLoad() {
         return true;
@@ -35,7 +35,7 @@ class ErrorLoader extends AssetLoader {
      * Chooses a viewer based on file extension.
      *
      * @override
-     * @returns {Object} the viewer to use
+     * @return {Object} the viewer to use
      */
     determineViewer() {
         return VIEWERS[0];
@@ -45,7 +45,7 @@ class ErrorLoader extends AssetLoader {
      * Prefetches assets
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     prefetch() {
         // no-op

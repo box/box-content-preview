@@ -2,7 +2,7 @@ import Browser from '../../../browser';
 /**
  * Returns the default scene entities array
  * @param  {string} prefix Prefix to be used for loading static assets
- * @returns {array} Array of scene entities
+ * @return {array} Array of scene entities
  */
 function sceneEntities(prefix) {
     return [{

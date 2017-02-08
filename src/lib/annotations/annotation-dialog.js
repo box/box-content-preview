@@ -40,8 +40,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * [constructor]
      *
-     * @param {AnnotationDialogData} data Data for constructing thread
-     * @returns {AnnotationDialog} Annotation dialog instance
+     * @param {AnnotationDialogData} data - Data for constructing thread
+     * @return {AnnotationDialog} Annotation dialog instance
      */
     constructor(data) {
         super();
@@ -56,7 +56,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * [destructor]
      *
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         if (this._element) {
@@ -73,7 +73,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Positions and shows the dialog.
      *
-     * @returns {void}
+     * @return {void}
      */
     show() {
         const textAreaEl = this._hasAnnotations ?
@@ -117,8 +117,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Hides the dialog.
      *
-     * @param {boolean} [noDelay] Whether or not to have a timeout delay
-     * @returns {void}
+     * @param {boolean} [noDelay] - Whether or not to have a timeout delay
+     * @return {void}
      */
     hide() {
         annotatorUtil.hideElement(this._element);
@@ -128,8 +128,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Adds an annotation to the dialog.
      *
-     * @param {Annotation} annotation Annotation to add
-     * @returns {void}
+     * @param {Annotation} annotation - Annotation to add
+     * @return {void}
      */
     addAnnotation(annotation) {
         // Show new section if needed
@@ -148,8 +148,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Removes an annotation from the dialog.
      *
-     * @param {string} annotationID ID of annotation to remove
-     * @returns {void}
+     * @param {string} annotationID - ID of annotation to remove
+     * @return {void}
      */
     removeAnnotation(annotationID) {
         const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
@@ -166,7 +166,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Gets annotation dialog.
      *
-     * @returns {HTMLElement} Dialog
+     * @return {HTMLElement} Dialog
      */
     get element() {
         return this._element;
@@ -179,7 +179,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Must be implemented to position the dialog on the preview.
      *
-     * @returns {void}
+     * @return {void}
      */
     position() {}
 
@@ -190,8 +190,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Sets up the dialog element.
      *
-     * @param {Annotation[]} Annotations to show in the dialog
-     * @returns {void}
+     * @param {Annotation[]} Annotations - to show in the dialog
+     * @return {void}
      * @protected
      */
     setup(annotations) {
@@ -242,7 +242,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Binds DOM event listeners.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     bindDOMListeners() {
@@ -257,7 +257,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Unbinds DOM event listeners.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     unbindDOMListeners() {
@@ -272,8 +272,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Keydown handler for dialog.
      *
-     * @param {Event} event DOM event
-     * @returns {void}
+     * @param {Event} event - DOM event
+     * @return {void}
      * @protected
      */
     keydownHandler(event) {
@@ -293,8 +293,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Stops propagation of DOM event.
      *
-     * @param {Event} event DOM event
-     * @returns {void}
+     * @param {Event} event - DOM event
+     * @return {void}
      * @protected
      */
     stopPropagation(event) {
@@ -304,7 +304,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Mouseenter handler. Clears hide timeout.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     mouseenterHandler() {
@@ -325,7 +325,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Mouseleave handler. Hides dialog if we aren't creating the first one.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     mouseleaveHandler() {
@@ -337,8 +337,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Click handler on dialog.
      *
-     * @param {Event} event DOM event
-     * @returns {void}
+     * @param {Event} event - DOM event
+     * @return {void}
      * @protected
      */
     clickHandler(event) {
@@ -403,8 +403,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Adds an annotation to the dialog.
      *
-     * @param {Annotation} annotation Annotation to add
-     * @returns {void}
+     * @param {Annotation} annotation - Annotation to add
+     * @return {void}
      * @private
      */
     _addAnnotationElement(annotation) {
@@ -464,7 +464,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Posts an annotation in the dialog.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     _postAnnotation() {
@@ -481,7 +481,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Cancels posting an annotation.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     _cancelAnnotation() {
@@ -491,7 +491,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Activates reply textarea.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     _activateReply() {
@@ -515,8 +515,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Deactivate reply textarea.
      *
-     * @param {Boolean} clearText Whether or not text in text area should be cleared
-     * @returns {void}
+     * @param {Boolean} clearText - Whether or not text in text area should be cleared
+     * @return {void}
      * @private
      */
     _deactivateReply(clearText) {
@@ -541,7 +541,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Posts a reply in the dialog.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     _postReply() {
@@ -558,8 +558,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Shows delete confirmation.
      *
-     * @param {string} annotationID ID of annotation to delete
-     * @returns {void}
+     * @param {string} annotationID - ID of annotation to delete
+     * @return {void}
      * @private
      */
     _showDeleteConfirmation(annotationID) {
@@ -575,8 +575,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Hides delete confirmation.
      *
-     * @param {string} annotationID ID of annotation to delete
-     * @returns {void}
+     * @param {string} annotationID - ID of annotation to delete
+     * @return {void}
      * @private
      */
     _hideDeleteConfirmation(annotationID) {
@@ -591,8 +591,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Broadcasts message to delete an annotation.
      *
-     * @param {string} annotationID ID of annotation to delete
-     * @returns {void}
+     * @param {string} annotationID - ID of annotation to delete
+     * @return {void}
      * @private
      */
     _deleteAnnotation(annotationID) {

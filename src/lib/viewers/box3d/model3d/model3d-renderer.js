@@ -65,9 +65,9 @@ class Model3dRenderer extends Box3DRenderer {
      * Creates a 3D runtime and loads in a 3D model for rendering
      * @constructor
      * @inheritdoc
-     * @param {HTMLElement} containerEl the container element
-     * @param {BoxSDK} [boxSdk] Box SDK instance, used for requests to Box
-     * @returns {Model3dRenderer} Model3dRenderer instance
+     * @param {HTMLElement} containerEl - the container element
+     * @param {BoxSDK} [boxSdk] - Box SDK instance, used for requests to Box
+     * @return {Model3dRenderer} Model3dRenderer instance
      */
     constructor(containerEl, boxSdk) {
         super(containerEl, boxSdk);
@@ -112,8 +112,8 @@ class Model3dRenderer extends Box3DRenderer {
      * Handle the canvas being clicked.
      * @method handleCanvasClick
      * @private
-     * @param {Event} event The click event.
-     * @returns {void}
+     * @param {Event} event - The click event.
+     * @return {void}
      */
     @autobind
     handleCanvasClick(event) {
@@ -124,9 +124,9 @@ class Model3dRenderer extends Box3DRenderer {
      * Load a box3d representation and initialize the scene.
      * @method loadBox3dFile
      * @private
-     * @param {string} fileUrl The representation URL.
-     * @param {string} assetPath The asset path needed to access file
-     * @returns {void}
+     * @param {string} fileUrl - The representation URL.
+     * @param {string} assetPath - The asset path needed to access file
+     * @return {void}
      */
     loadBox3dFile(fileUrl, assetPath) {
         this.box3d.canvas.addEventListener('click', this.handleCanvasClick);
@@ -163,7 +163,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Go through all materials and look for ways to turn off features to optimize perfomance.
      * @method optimizeMaterials
      * @private
-     * @returns {void}
+     * @return {void}
      */
     optimizeMaterials() {
         this.box3d.getAssetsByType('material').forEach((mat) => {
@@ -185,7 +185,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Create instances of prefabs and add them to the scene.
      * @method createPrefabInstances
      * @private
-     * @returns {void}
+     * @return {void}
      */
     createPrefabInstances() {
         const prefabs = this.box3d.getAssetsByType('prefab');
@@ -202,9 +202,9 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Create an instance of the specified prefab and add it to the scene.
-     * @param {object} prefab The prefab entity to instance.
-     * @param {object} scene The scene asset to add the instance to.
-     * @returns {void}
+     * @param {object} prefab - The prefab entity to instance.
+     * @param {object} scene - The scene asset to add the instance to.
+     * @return {void}
      */
     adjustModelForScene(instance) {
         // Scale the instance to 100 units in size.
@@ -224,7 +224,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Request from the engine, the up and forward axes.
      * @method getAxes
      * @public
-     * @returns {Promise} Resolves with the up and forward axes.
+     * @return {Promise} Resolves with the up and forward axes.
      */
     getAxes() {
         return new Promise((resolve) => {
@@ -267,8 +267,8 @@ class Model3dRenderer extends Box3DRenderer {
      * Set the current animation asset.
      * @method setAnimationAsset
      * @public
-     * @param {AnimationAsset} animation The animation asset.
-     * @returns {void}
+     * @param {AnimationAsset} animation - The animation asset.
+     * @return {void}
      */
     setAnimationAsset(animation) {
         if (!this.instance) {
@@ -284,8 +284,8 @@ class Model3dRenderer extends Box3DRenderer {
      * Set the current animation clip.
      * @method setAnimationClip
      * @public
-     * @param {string} clipId The animation clip ID.
-     * @returns {void}
+     * @param {string} clipId - The animation clip ID.
+     * @return {void}
      */
     setAnimationClip(clipId) {
         if (!this.instance) {
@@ -300,8 +300,8 @@ class Model3dRenderer extends Box3DRenderer {
      * Play / pause the current animation.
      * @method toggleAnimation
      * @public
-     * @param {boolean} play Whether to play or pause the animation.
-     * @returns {void}
+     * @param {boolean} play - Whether to play or pause the animation.
+     * @return {void}
      */
     toggleAnimation(play) {
         if (!this.instance) {
@@ -334,7 +334,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Stop the current animation and reset it to its beginning.
      * @method stopAnimation
      * @public
-     * @returns {void}
+     * @return {void}
      */
     stopAnimation() {
         if (!this.instance) {
@@ -350,7 +350,7 @@ class Model3dRenderer extends Box3DRenderer {
      * quality to try to achieve a minimum framerate.
      * @method startOptimizer
      * @private
-     * @returns {void}
+     * @return {void}
      */
     startOptimizer() {
         this.dynamicOptimizer = this.box3d.getApplication().getComponentByScriptId('dynamic_optimizer');
@@ -379,7 +379,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Handles unsupported representation errors.
      * @method onUnsupportedRepresentation
      * @private
-     * @returns {void}
+     * @return {void}
      */
     onUnsupportedRepresentation() {
         this.emit('error', new Error(__('error_format')));
@@ -389,7 +389,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Add the helpers (e.g., grid and axes) to the scene.
      * @method addHelpersToScene
      * @private
-     * @returns {void}
+     * @return {void}
      */
     addHelpersToScene() {
         const scene = this.getScene().runtimeData;
@@ -408,7 +408,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Remove the helpers (e.g., grid and axis) from the scene and cleanup their resources.
      * @method cleanupHelpers
      * @private
-     * @returns {void}
+     * @return {void}
      */
     cleanupHelpers() {
         const scene = this.getScene().runtimeData;
@@ -427,9 +427,9 @@ class Model3dRenderer extends Box3DRenderer {
     /**
      * Show, hide or toggle visibility of the helpers (e.g., grid and axes).
      * @private
-     * @param {boolean} show True or false to show or hide. If not specified, the helpers will be
+     * @param {boolean} show - True or false to show or hide. If not specified, the helpers will be
      * toggled.
-     * @returns {void}
+     * @return {void}
      */
     toggleHelpers(show) {
         const enable = show !== undefined ? show : !this.grid.visible;
@@ -444,7 +444,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Remove instances specific to this preview from the scene.
      * @method cleanupScene
      * @private
-     * @returns {void}
+     * @return {void}
      */
     cleanupScene() {
         this.cleanupHelpers();
@@ -467,7 +467,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Reset the skeleton visualization, for example, if the scene changes.
      * @method resetSkeletons
      * @public
-     * @returns {void}
+     * @return {void}
      */
     resetSkeletons() {
         if (this.box3d) {
@@ -479,8 +479,8 @@ class Model3dRenderer extends Box3DRenderer {
      * Sets the render mode.
      * @method setRenderMode
      * @public
-     * @param {string} mode The render mode.
-     * @returns {void}
+     * @param {string} mode - The render mode.
+     * @return {void}
      */
     setRenderMode(mode) {
         if (this.box3d) {
@@ -492,8 +492,8 @@ class Model3dRenderer extends Box3DRenderer {
      * Sets the projection type for the camera.
      * @method setCameraProjection
      * @public
-     * @param {string} projection The projection mode.
-     * @returns {void}
+     * @param {string} projection - The projection mode.
+     * @return {void}
      */
     setCameraProjection(projection) {
         const camera = this.getCamera();
@@ -534,7 +534,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Set the rendering quality being used. Called by UI event handlers.
      * @method setQualityLevel
      * @private
-     * @param {string} level Level name
+     * @param {string} level - Level name
      */
     setQualityLevel(level) {
         if (!this.box3d) {
@@ -561,9 +561,9 @@ class Model3dRenderer extends Box3DRenderer {
     /**
      * Setup listeners for the axis rotation events, to properly align a model over time.
      * @method listenToRotateComplete
-     * @param {Object} position {x, y, z} The position to align the model to.
-     * @param {Object} alignment {x, y, z} The alignment for setting rotation of the model.
-     * @returns {void}
+     * @param {Object} position {x, y, z} The - position to align the model to.
+     * @param {Object} alignment {x, y, z} The - alignment for setting rotation of the model.
+     * @return {void}
      */
     listenToRotateComplete(position, alignment) {
         this.isRotating = true;
@@ -589,8 +589,8 @@ class Model3dRenderer extends Box3DRenderer {
      * Rotates the loaded model on the provided axis.
      * @method rotateOnAxis
      * @public
-     * @param {Object} axis The rotation axis.
-     * @returns {void}
+     * @param {Object} axis - The rotation axis.
+     * @return {void}
      */
     rotateOnAxis(axis) {
         if (this.instance && this.box3d && !this.isRotating) {
@@ -603,10 +603,10 @@ class Model3dRenderer extends Box3DRenderer {
      * Given a set of up and forward axis keys, rotate the model.
      * @method setAxisRotation
      * @public
-     * @param {string} upAxis The axis key for the models up vector.
-     * @param {string} forwardAxis The axis key for the models forward facing vector.
-     * @param {bool} useTransition Whether or not to smoothly rotate.
-     * @returns {void}
+     * @param {string} upAxis - The axis key for the models up vector.
+     * @param {string} forwardAxis - The axis key for the models forward facing vector.
+     * @param {bool} useTransition - Whether or not to smoothly rotate.
+     * @return {void}
      */
     setAxisRotation(upAxis, forwardAxis, useTransition) {
         if (!this.instance) {
@@ -627,8 +627,8 @@ class Model3dRenderer extends Box3DRenderer {
      * Set the visibility of skeletons.
      * @method setSkeletonsVisible
      * @private
-     * @param {boolean} visible Indicates whether or not skeletons are visible.
-     * @returns {void}
+     * @param {boolean} visible - Indicates whether or not skeletons are visible.
+     * @return {void}
      */
     setSkeletonsVisible(visible) {
         if (this.box3d) {
@@ -640,8 +640,8 @@ class Model3dRenderer extends Box3DRenderer {
      * Set the visibility of wireframes.
      * @method setWireframesVisible
      * @private
-     * @param {boolean} visible Indicates whether or not wireframes are visible.
-     * @returns {void}
+     * @param {boolean} visible - Indicates whether or not wireframes are visible.
+     * @return {void}
      */
     setWireframesVisible(visible) {
         if (this.box3d) {
@@ -709,7 +709,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Update the controls for VR when enabled.
      * @method updateVrControls
      * @private
-     * @returns {void}
+     * @return {void}
      */
     updateModel3dVrControls() {
         const camera = this.getCamera().runtimeData;
@@ -721,7 +721,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Set up quality change levels for the dynamic optimizer.
      * @method createRegularQualityChangeLevels
      * @private
-     * @returns {void}
+     * @return {void}
      */
     createRegularQualityChangeLevels() {
         this.regularQualityChangeLevels = [
@@ -735,7 +735,7 @@ class Model3dRenderer extends Box3DRenderer {
      * Set up quality change levels for the dynamic optimizer when VR is enabled.
      * @method createVrQualityChangeLevels
      * @private
-     * @returns {void}
+     * @return {void}
      */
     createVrQualityChangeLevels() {
         this.vrQualityChangeLevels = [

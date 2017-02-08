@@ -13,10 +13,10 @@ const PREVIEW_CAMERA_QUATERNION = { x: 0, y: 0, z: 0, w: 1 };
 
 /**
  * Append shared link headers to an XHR Object
- * @param {XMLHttpRequest} xhr The XMLHttpRequest object to attach the header to.
- * @param {string} sharedLink The Box Content API shared link header to append to the XMLHttpRequest.
- * @param {string} [sharedLinkPassword] The password for the Box Content API shared link header.
- * @returns {void}
+ * @param {XMLHttpRequest} xhr - The XMLHttpRequest object to attach the header to.
+ * @param {string} sharedLink - The Box Content API shared link header to append to the XMLHttpRequest.
+ * @param {string} [sharedLinkPassword] - The password for the Box Content API shared link header.
+ * @return {void}
  */
 function appendSharedLinkHeaders(xhr, sharedLink, sharedLinkPassword) {
     let sharePasswordParam = '';
@@ -33,9 +33,9 @@ class Box3DRenderer extends EventEmitter {
      * Base class that handles creation of and communication with Box3DRuntime
      *
      * @constructor
-     * @param {HTMLElement} containerEl the container element
-     * @param {BoxSDK} [boxSdk] Box SDK instance, used for requests to Box
-     * @returns {Image360Renderer} Image360Renderer instance
+     * @param {HTMLElement} containerEl - the container element
+     * @param {BoxSDK} [boxSdk] - Box SDK instance, used for requests to Box
+     * @return {Image360Renderer} Image360Renderer instance
      */
     constructor(containerEl, boxSdk) {
         super();
@@ -55,13 +55,13 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Load a box3d json.
      *
-     * @param {Object} options Options object, used to initialize the Box3DRuntime
+     * @param {Object} options - Options object, used to initialize the Box3DRuntime
      * and BoxSDK
-     * @param {string} [options.token] The OAuth2 Token used for authentication of asset requests
-     * @param {string} [options.api] API URL base to make requests to
-     * @param {Object|null} [options.file] Information about the current box file we're using.
+     * @param {string} [options.token] - The OAuth2 Token used for authentication of asset requests
+     * @param {string} [options.api] - API URL base to make requests to
+     * @param {Object|null} [options.file] - Information about the current box file we're using.
      * Used to get the parent.id of the box file.
-     * @returns {Promise} A promise resulting in the newly created box3d
+     * @return {Promise} A promise resulting in the newly created box3d
      */
     load(options = {}) {
         return this.initBox3d(options);
@@ -70,7 +70,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Hide 3d preview and destroy the loader.
      *
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         this.removeListener(EVENT_TRIGGER_RENDER, this.handleOnRender);
@@ -88,7 +88,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Reset preview state to defaults.
      *
-     * @returns {void}
+     * @return {void}
      */
     reset() {
         const camera = this.getCamera();
@@ -104,7 +104,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Get the scene's camera instance.
      *
-     * @returns {Box3DEntity} The camera instance
+     * @return {Box3DEntity} The camera instance
      */
     getCamera() {
         return this.box3d ? this.box3d.getObjectById('CAMERA_ID') : null;
@@ -114,7 +114,7 @@ class Box3DRenderer extends EventEmitter {
      * Get the current aspect ratio of the preview area.
      *
      * @private
-     * @returns {number} Aspect ratio of the preview area
+     * @return {number} Aspect ratio of the preview area
      */
     getAspect() {
         const width = this.containerEl.clientWidth;
@@ -125,7 +125,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Get the scene object.
      *
-     * @returns {SceneObject} The scene object
+     * @return {SceneObject} The scene object
      */
     getScene() {
         return this.box3d ? this.box3d.getEntityById('SCENE_ID') : null;
@@ -134,7 +134,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Accessor for the runtime.
      *
-     * @returns {Object} The Box3DRuntime that belongs to this component
+     * @return {Object} The Box3DRuntime that belongs to this component
      */
     getBox3D() {
         return this.box3d;
@@ -144,10 +144,10 @@ class Box3DRenderer extends EventEmitter {
      * Configure the provided XHR object with auth token and shared link headers.
      * Used exclusively by the Box3DRuntime.
      *
-     * @param {Object} headerConfig Configuration parameters to be applied to the created XMLHttpRequest.
-     * @param {string} path The URL to the resource to load. See Box3D.XhrResourceLoader().
-     * @param {Object} params Addition parameters provided by the Box3D Runtime. See Box3D.XhrResourceLoader().
-     * @returns {Promise} A promise that resolves in the newly created and configured XMLHttpRequest object.
+     * @param {Object} headerConfig - Configuration parameters to be applied to the created XMLHttpRequest.
+     * @param {string} path - The URL to the resource to load. See Box3D.XhrResourceLoader().
+     * @param {Object} params - Addition parameters provided by the Box3D Runtime. See Box3D.XhrResourceLoader().
+     * @return {Promise} A promise that resolves in the newly created and configured XMLHttpRequest object.
      */
     configureXHR(headerConfig, path, params = {}) {
         const xhr = new XMLHttpRequest();
@@ -168,12 +168,12 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Initialize the Box3D engine.
      *
-     * @param {Object} options the preview options object
-     * @param {string} [options.token] The OAuth2 Token used for authentication of asset requests
-     * @param {string} [options.api] API URL base to make requests to
-     * @param {Object|null} [options.file] Information about the current box file we're using.
+     * @param {Object} options - the preview options object
+     * @param {string} [options.token] - The OAuth2 Token used for authentication of asset requests
+     * @param {string} [options.api] - API URL base to make requests to
+     * @param {Object|null} [options.file] - Information about the current box file we're using.
      * Used to get the parent.id of the box file.
-     * @returns {Promise} A promise that resolves with the created box3d
+     * @return {Promise} A promise that resolves with the created box3d
      */
     initBox3d(options = {}) {
         // Initialize global modules.
@@ -193,10 +193,10 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Create a new Box3D engine.
      *
-     * @param {Object} resourceLoader The resource loader used to load assets used by the box3d engine
-     * @param {Array} [sceneEntities] The descriptor of the default scene. See ./scene-entities.js
-     * @param {Object} [inputSettings] Config for the input controller of the Box3D Engine
-     * @returns {Promise} A promise that resolves with the Box3D Engine.
+     * @param {Object} resourceLoader - The resource loader used to load assets used by the box3d engine
+     * @param {Array} [sceneEntities] - The descriptor of the default scene. See ./scene-entities.js
+     * @param {Object} [inputSettings] - Config for the input controller of the Box3D Engine
+     * @return {Promise} A promise that resolves with the Box3D Engine.
      */
     createBox3d(resourceLoader, sceneEntities) {
         const box3d = new Box3D.Engine({
@@ -216,7 +216,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Enable VR and reset the scene, on scene load event fired from Box3DRuntime.
      *
-     * @returns {void}
+     * @return {void}
      */
     onSceneLoad() {
         // Reset the camera.
@@ -228,7 +228,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Toggle the VR system (HMD).
      *
-     * @returns {void}
+     * @return {void}
      */
     toggleVr() {
         if (this.vrEnabled) {
@@ -267,7 +267,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Enable the VR system (HMD).
      *
-     * @returns {void}
+     * @return {void}
      */
     enableVr() {
         if (this.vrEnabled) {
@@ -280,7 +280,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Disable the VR system (HMD).
      *
-     * @returns {void}
+     * @return {void}
      */
     disableVr() {
         if (!this.vrEnabled) {
@@ -294,7 +294,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Trigger an update and render event on the runtime.
      *
-     * @returns {void}
+     * @return {void}
      */
     handleOnRender() {
         if (!this.box3d) {
@@ -306,7 +306,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Call the onResize of the engine.
      *
-     * @returns {void}
+     * @return {void}
      */
     resize() {
         if (!this.box3d) {
@@ -318,7 +318,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Enable the regular camera controls.
      *
-     * @returns {void}
+     * @return {void}
      */
     enableCameraControls(cameraControllerId = PREVIEW_CAMERA_CONTROLLER_ID) {
         const camera = this.getCamera();
@@ -331,7 +331,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Disable the regular camera controls. Useful when VR device is controlling camera.
      *
-     * @returns {void}
+     * @return {void}
      */
     disableCameraControls(cameraControllerId = PREVIEW_CAMERA_CONTROLLER_ID) {
         const camera = this.getCamera();
@@ -344,7 +344,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Enables VR if present.
      *
-     * @returns {void}
+     * @return {void}
      */
     initVr() {
         if (Box3D.isTablet()) {

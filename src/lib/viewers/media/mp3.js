@@ -11,9 +11,9 @@ class MP3 extends MediaBase {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} container The container DOM node
-     * @param {Object} [options] some options
-     * @returns {MP3} MP3 instance
+     * @param {string|HTMLElement} container - The container DOM node
+     * @param {Object} [options] - some options
+     * @return {MP3} MP3 instance
      */
     constructor(container, options) {
         super(container, options);
@@ -30,7 +30,7 @@ class MP3 extends MediaBase {
      * Loads the controls
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     loadUI() {
         super.loadUI();

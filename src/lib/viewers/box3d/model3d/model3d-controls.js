@@ -38,7 +38,7 @@ class Model3dControls extends Box3DControls {
      * Creates UI and handles events for 3D Model Preview
      * @constructor
      * @inheritdoc
-     * @returns {Model3dControls} Model3dControls instance
+     * @return {Model3dControls} Model3dControls instance
      */
     constructor(containerEl) {
         super(containerEl);
@@ -85,7 +85,7 @@ class Model3dControls extends Box3DControls {
      * Hide any open pullups.
      * @method hidePullups
      * @public
-     * @returns {void}
+     * @return {void}
      */
     hidePullups() {
         this.animationClipsPullup.hide();
@@ -95,7 +95,7 @@ class Model3dControls extends Box3DControls {
 
     /**
      * Handle toggle Settings ui event
-     * @returns {void}
+     * @return {void}
      */
     handleToggleSettings() {
         this.animationClipsPullup.hide();
@@ -105,8 +105,8 @@ class Model3dControls extends Box3DControls {
 
     /**
      * Handle a change of render mode, from the settings panel
-     * @param {string} renderMode The render mode name to notify listeners of
-     * @returns {void}
+     * @param {string} renderMode - The render mode name to notify listeners of
+     * @return {void}
      */
     handleSetRenderMode(renderMode) {
         this.emit(EVENT_SET_RENDER_MODE, renderMode);
@@ -115,8 +115,8 @@ class Model3dControls extends Box3DControls {
 
     /**
      * Handle a change in skeleton visibility
-     * @param {boolean} visible Indicates whether or not skeletons are visible
-     * @returns {void}
+     * @param {boolean} visible - Indicates whether or not skeletons are visible
+     * @return {void}
      */
     handleSetSkeletonsVisible(visible) {
         this.emit(EVENT_SET_SKELETONS_VISIBLE, visible);
@@ -124,8 +124,8 @@ class Model3dControls extends Box3DControls {
 
     /**
      * Handle a change in wireframe visibility
-     * @param {boolean} visible Indicates whether or not wireframes are visible
-     * @returns {void}
+     * @param {boolean} visible - Indicates whether or not wireframes are visible
+     * @return {void}
      */
     handleSetWireframesVisible(visible) {
         this.emit(EVENT_SET_WIREFRAMES_VISIBLE, visible);
@@ -133,8 +133,8 @@ class Model3dControls extends Box3DControls {
 
     /**
      * Handle change of camera projection
-     * @param {string} mode The projection mode to use
-     * @returns {void}
+     * @param {string} mode - The projection mode to use
+     * @return {void}
      */
     handleSetCameraProjection(mode) {
         this.emit(EVENT_SET_CAMERA_PROJECTION, mode);
@@ -142,8 +142,8 @@ class Model3dControls extends Box3DControls {
 
     /**
      * Handle change of render quality
-     * @param {string} mode The quality level to use
-     * @returns {void}
+     * @param {string} mode - The quality level to use
+     * @return {void}
      */
     handleSetQualityLevel(level) {
         this.emit(EVENT_SET_QUALITY_LEVEL, level);
@@ -151,8 +151,8 @@ class Model3dControls extends Box3DControls {
 
     /**
      * Handle rotation on axis
-     * @param {Object} rotation Rotation axis description with axis and amount (in degrees)
-     * @returns {void}
+     * @param {Object} rotation - Rotation axis description with axis and amount (in degrees)
+     * @return {void}
      */
     handleAxisRotation(rotation) {
         this.emit(EVENT_ROTATE_ON_AXIS, rotation);
@@ -162,7 +162,7 @@ class Model3dControls extends Box3DControls {
      * Show the animation controls.
      * @method showAnimationControls
      * @public
-     * @returns {void}
+     * @return {void}
      */
     showAnimationControls() {
         if (this.animationToggleEl && this.animationClipButtonEl) {
@@ -175,7 +175,7 @@ class Model3dControls extends Box3DControls {
      * Hide the animation controls.
      * @method hideAnimationControls
      * @public
-     * @returns {void}
+     * @return {void}
      */
     hideAnimationControls() {
         if (this.animationToggleEl && this.animationClipButtonEl) {
@@ -188,8 +188,8 @@ class Model3dControls extends Box3DControls {
      * Handle animation clip selection.
      * @method handleSelectAnimationClip
      * @private
-     * @param {string} clipId The ID of the clip that was selected.
-     * @returns {void}
+     * @param {string} clipId - The ID of the clip that was selected.
+     * @return {void}
      */
     handleSelectAnimationClip(clipId) {
         this.setAnimationPlaying(false);
@@ -200,7 +200,7 @@ class Model3dControls extends Box3DControls {
      * Handle clicks on the animation clip button.
      * @method handleToggleAnimationClips
      * @private
-     * @returns {void}
+     * @return {void}
      */
     handleToggleAnimationClips() {
         this.settingsPullup.hide();
@@ -211,7 +211,7 @@ class Model3dControls extends Box3DControls {
      * Handle clicks on the animation play / pause button.
      * @method handleToggleAnimation
      * @private
-     * @returns {void}
+     * @return {void}
      */
     handleToggleAnimation() {
         this.hidePullups();
@@ -222,8 +222,8 @@ class Model3dControls extends Box3DControls {
      * Set the animation playback state, firing event EVENT_TOGGLE_ANIMATION.
      * @method setAnimationPlaying
      * @private
-     * @param {boolean} playing Whether or not the animation is playing.
-     * @returns {void}
+     * @param {boolean} playing - Whether or not the animation is playing.
+     * @return {void}
      */
     setAnimationPlaying(playing) {
         this.isAnimationPlaying = playing;
@@ -235,10 +235,10 @@ class Model3dControls extends Box3DControls {
      * Add an animation clip to the clip pullup.
      * @method addAnimationClip
      * @public
-     * @param {string} id The ID of the clip.
-     * @param {string} name The name of the clip.
-     * @param {number} duration The duration of the clip.
-     * @returns {void}
+     * @param {string} id - The ID of the clip.
+     * @param {string} name - The name of the clip.
+     * @param {number} duration - The duration of the clip.
+     * @return {void}
      */
     addAnimationClip(id, name, duration) {
         this.animationClipsPullup.addClip(id, name, duration);
@@ -248,8 +248,8 @@ class Model3dControls extends Box3DControls {
      * Select the animation clip with the specified ID.
      * @method selectAnimationClip
      * @public
-     * @param {string} clipId The ID of the clip to select.
-     * @returns {void}
+     * @param {string} clipId - The ID of the clip to select.
+     * @return {void}
      */
     selectAnimationClip(clipId) {
         this.animationClipsPullup.selectClip(clipId);
@@ -275,8 +275,8 @@ class Model3dControls extends Box3DControls {
 
     /**
      * Set the current projection mode being used by the settings pullup
-     * @param {string} mode The projection mode to set on the pullup
-     * @returns {void}
+     * @param {string} mode - The projection mode to set on the pullup
+     * @return {void}
      */
     setCurrentProjectionMode(mode) {
         this.settingsPullup.onProjectionSelected(mode);

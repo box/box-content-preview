@@ -14,8 +14,8 @@ class Notification {
     /**
      * [constructor]
      *
-     * @param {HTMLElement} containerEl Container element
-     * @returns {Notification} Notification
+     * @param {HTMLElement} containerEl - Container element
+     * @return {Notification} Notification
      */
     constructor(containerEl) {
         const uniqueLabel = `notification_${(new Date()).getTime()}_label`;
@@ -47,9 +47,9 @@ class Notification {
     /**
      * Shows a notification message.
      *
-     * @param {string} message Notification message
-     * @param {string} [buttonText] Optional text to show in button
-     * @returns {void}
+     * @param {string} message - Notification message
+     * @param {string} [buttonText] - Optional text to show in button
+     * @return {void}
      */
     show(message, buttonText) {
         this.messageEl.textContent = message;
@@ -70,7 +70,7 @@ class Notification {
     /**
      * Hides the notification message.
      *
-     * @returns {void}
+     * @return {void}
      */
     hide() {
         this.notificationEl.classList.add(CLASS_HIDDEN);
@@ -79,8 +79,8 @@ class Notification {
     /**
      * Click handler for notification.
      *
-     * @param {Event} event DOM event
-     * @returns {void}
+     * @param {Event} event - DOM event
+     * @return {void}
      */
     clickHandler(event) {
         event.stopPropagation();

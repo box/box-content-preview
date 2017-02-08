@@ -26,7 +26,7 @@ class Image360Loader extends Base360Loader {
     /**
      * Instantiates a loader for 360 degree image preview.
      * @constructor
-     * @returns {Image360Loader} The image360 loader instance
+     * @return {Image360Loader} The image360 loader instance
      */
     constructor() {
         super();

@@ -322,7 +322,7 @@ class Presentation extends DocBase {
      * Handler for 'pagesinit' event.
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     pagesinitHandler() {
         // Presentation mode is implemented by hiding all pages except for the current

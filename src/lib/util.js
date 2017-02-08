@@ -155,7 +155,7 @@ export function put(...rest) {
  * Used for downloads
  *
  * @public
- * @param {string} api api url
+ * @param {string} api - api url
  * @return {HTMLElement}
  */
 export function openUrlInsideIframe(url) {
@@ -169,7 +169,7 @@ export function openUrlInsideIframe(url) {
  * Used for printing
  *
  * @public
- * @param {string} content html content
+ * @param {string} content - html content
  * @return {HTMLElement}
  */
 export function openContentInsideIframe(content) {
@@ -183,7 +183,7 @@ export function openContentInsideIframe(content) {
  * Deduces box app url from api url
  *
  * @public
- * @param {string} api api url
+ * @param {string} api - api url
  * @return {HTMLElement}
  */
 export function deduceBoxUrl(api) {
@@ -208,7 +208,7 @@ export function deduceBoxUrl(api) {
  * Creates contextual fragment
  *
  * @public
- * @param {Element} node dom node
+ * @param {Element} node - dom node
  * @param {string} template  html template
  * @return {HTMLElement}
  */
@@ -222,7 +222,7 @@ export function createFragment(node, template) {
  * Inserts template string into dom node
  *
  * @public
- * @param {Element} node dom node
+ * @param {Element} node - dom node
  * @param {string} template  html template
  * @return {void}
  */
@@ -279,10 +279,10 @@ export function createStylesheet(url) {
  * Builds a list of required XHR headers.
  *
  * @public
- * @param {Object} [headers] optional headers
- * @param {string} [token] optional auth token
- * @param {string} [sharedLink] optional shared link
- * @param {string} [password] optional shared link password
+ * @param {Object} [headers] - optional headers
+ * @param {string} [token] - optional auth token
+ * @param {string} [sharedLink] - optional shared link
+ * @param {string} [password] - optional shared link password
  * @return {Object} Headers
  */
 export function getHeaders(headers = {}, token = '', sharedLink = '', password = '') {
@@ -307,10 +307,10 @@ export function getHeaders(headers = {}, token = '', sharedLink = '', password =
  * Appends auth params to a url
  *
  * @public
- * @param {string} url content url
- * @param {string} [token] optional auth token
- * @param {string} [sharedLink] optional shared link
- * @param {string} [password] optional shared link password
+ * @param {string} url - content url
+ * @param {string} [token] - optional auth token
+ * @param {string} [sharedLink] - optional shared link
+ * @param {string} [password] - optional shared link password
  * @return {string} content urls
  */
 export function appendAuthParams(url, token = '', sharedLink = '', password = '') {
@@ -346,8 +346,8 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
  * Create a content url from template
  *
  * @public
- * @param {string} template url template to attach param to
- * @param {string|void} [asset] optional asset name needed to access file
+ * @param {string} template - url template to attach param to
+ * @param {string|void} [asset] - optional asset name needed to access file
  * @return {string} content url
  */
 export function createContentUrl(template, asset) {
@@ -358,7 +358,7 @@ export function createContentUrl(template, asset) {
  * Factory to create asset URLs
  *
  * @public
- * @param {location} location object
+ * @param {location} location - object
  * @return {Function} factory for creating asset url
  */
 export function createAssetUrlCreator(location) {
@@ -386,7 +386,7 @@ export function createAssetUrlCreator(location) {
 /**
  * Prefetches external stylsheets or js by appending a <link rel="prefetch"> element
  *
- * @param {Array} urls asset urls
+ * @param {Array} urls - asset urls
  * @return {void}
  */
 export function prefetchAssets(urls) {
@@ -402,7 +402,7 @@ export function prefetchAssets(urls) {
 /**
  * Loads external stylsheets by appending a <link> element
  *
- * @param {Array} urls asset urls
+ * @param {Array} urls - asset urls
  * @return {void}
  */
 export function loadStylesheets(urls) {
@@ -418,7 +418,7 @@ export function loadStylesheets(urls) {
 /**
  * Loads external scripts by appending a <script> element
  *
- * @param {Array} urls asset urls
+ * @param {Array} urls - asset urls
  * @return {Promise} Promise to load scripts
  */
 export function loadScripts(urls) {
@@ -443,7 +443,7 @@ export function loadScripts(urls) {
  * Function to decode key down events into keys
  *
  * @public
- * @param {Event} event keydown event
+ * @param {Event} event - keydown event
  * @return {string} decoded keydown key
  */
 export function decodeKeydown(event) {
@@ -507,8 +507,8 @@ export function decodeKeydown(event) {
  * Find location information about a script include
  *
  * @public
- * @param {string} name script name
- * @param {HTMLScriptElement} [currentScript] current script tag
+ * @param {string} name - script name
+ * @param {HTMLScriptElement} [currentScript] - current script tag
  * @return {void}
  */
 export function findScriptLocation(name, currentScript = null) {

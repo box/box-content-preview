@@ -42,9 +42,9 @@ class DocAnnotator extends Annotator {
      * as defined by the PDF spec and page the highlight is on.
      *
      * @override
-     * @param {Event} event DOM event
-     * @param {string} annotationType Type of annotation
-     * @returns {Object|null} Location object
+     * @param {Event} event - DOM event
+     * @param {string} annotationType - Type of annotation
+     * @return {Object|null} Location object
      */
     getLocationFromEvent(event, annotationType) {
         let location = null;
@@ -142,10 +142,10 @@ class DocAnnotator extends Annotator {
      * it.
      *
      * @override
-     * @param {Annotation[]} annotations Annotations in thread
-     * @param {Object} location Location object
-     * @param {string} [type] Optional annotation type
-     * @returns {AnnotationThread} Created annotation thread
+     * @param {Annotation[]} annotations - Annotations in thread
+     * @param {Object} location - Location object
+     * @param {string} [type] - Optional annotation type
+     * @return {AnnotationThread} Created annotation thread
      */
     createAnnotationThread(annotations, location, type) {
         let thread;
@@ -183,7 +183,7 @@ class DocAnnotator extends Annotator {
      * Annotations setup.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     setupAnnotations() {
@@ -201,7 +201,7 @@ class DocAnnotator extends Annotator {
      * Binds DOM event listeners.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     bindDOMListeners() {
@@ -219,7 +219,7 @@ class DocAnnotator extends Annotator {
      * Unbinds DOM event listeners.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     unbindDOMListeners() {
@@ -237,8 +237,8 @@ class DocAnnotator extends Annotator {
      * Binds custom event listeners for a thread.
      *
      * @override
-     * @param {AnnotationThread} thread Thread to bind events to
-     * @returns {void}
+     * @param {AnnotationThread} thread - Thread to bind events to
+     * @return {void}
      * @protected
      */
     bindCustomListenersOnThread(thread) {
@@ -255,9 +255,9 @@ class DocAnnotator extends Annotator {
     /**
      * Checks whether mouse is inside any dialog on the current page
      *
-     * @param {Event} event Mouse event
-     * @param {number} page Current page number
-     * @returns {boolean} Whether or not mouse is inside a dialog on the page
+     * @param {Event} event - Mouse event
+     * @param {number} page - Current page number
+     * @return {boolean} Whether or not mouse is inside a dialog on the page
      * @protected
      */
     isInDialogOnPage(event, page) {
@@ -278,8 +278,8 @@ class DocAnnotator extends Annotator {
     /**
      * Gets threads on page
      *
-     * @param {number} page Current page number
-     * @returns {[]} Threads on page
+     * @param {number} page - Current page number
+     * @return {[]} Threads on page
      * @private
      */
     _getThreadsOnPage(page) {
@@ -294,8 +294,8 @@ class DocAnnotator extends Annotator {
      * for highlight threads. Also delegates to mousedown handler for each
      * thread.
      *
-     * @param {Event} event DOM event
-     * @returns {void}
+     * @param {Event} event - DOM event
+     * @return {void}
      * @private
      */
     _highlightMousedownHandler(event) {
@@ -315,7 +315,7 @@ class DocAnnotator extends Annotator {
      * Throttled mousemove handler over annotated element. Delegates to
      * mousemove handler of highlight threads on the page.
      *
-     * @returns {Function} mousemove handler
+     * @return {Function} mousemove handler
      * @private
      */
     _highlightMousemoveHandler() {
@@ -391,7 +391,7 @@ class DocAnnotator extends Annotator {
      * to highlight click handlers depending on whether mouse moved since
      * mousedown.
      *
-     * @param {Event} event DOM event
+     * @param {Event} event - DOM event
      * @private
      */
     _highlightMouseupHandler(event) {
@@ -413,7 +413,7 @@ class DocAnnotator extends Annotator {
      * If the user adds a comment, the type changes to
      * ANNOTATION_TYPE_HIGHLIGHT_COMMENT.
      *
-     * @param {Event} event DOM event
+     * @param {Event} event - DOM event
      * @private
      */
     _highlightCreateHandler(event) {
@@ -452,7 +452,7 @@ class DocAnnotator extends Annotator {
      * Highlight click handler. Delegates click event to click handlers for
      * threads on the page.
      *
-     * @param {Event} event DOM event
+     * @param {Event} event - DOM event
      * @private
      */
     _highlightClickHandler(event) {
@@ -493,8 +493,8 @@ class DocAnnotator extends Annotator {
     /**
      * Returns all threads with a state in the specified states.
      *
-     * @param {...string} states States of highlight threads to find
-     * @returns {AnnotationThread[]} threads with the specified states
+     * @param {...string} states - States of highlight threads to find
+     * @return {AnnotationThread[]} threads with the specified states
      * @private
      * */
     _getThreadsWithStates(...states) {
@@ -513,7 +513,7 @@ class DocAnnotator extends Annotator {
     /**
      * Show normal cursor instead of text cursor.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     _useDefaultCursor() {
@@ -523,7 +523,7 @@ class DocAnnotator extends Annotator {
     /**
      * Use text cursor.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     _removeDefaultCursor() {
@@ -533,8 +533,8 @@ class DocAnnotator extends Annotator {
     /**
      * Returns the highlight threads on the specified page.
      *
-     * @param {number} page Page to get highlight threads for
-     * @returns {DocHighlightThread[]} Highlight annotation threads
+     * @param {number} page - Page to get highlight threads for
+     * @return {DocHighlightThread[]} Highlight annotation threads
      * @private
      */
     _getHighlightThreadsOnPage(page) {
@@ -546,8 +546,8 @@ class DocAnnotator extends Annotator {
      * Shows highlight annotations for the specified page by re-drawing all
      * highlight annotations currently in memory for the specified page.
      *
-     * @param {number} page Page to draw annotations for
-     * @returns {void}
+     * @param {number} page - Page to draw annotations for
+     * @return {void}
      * @private
      */
     _showHighlightsOnPage(page) {
@@ -574,8 +574,8 @@ class DocAnnotator extends Annotator {
      * the highlighter's removeHighlights since the highlight could possibly
      * not be a true Rangy highlight object.
      *
-     * @param {Object} highlight Highlight to delete.
-     * @returns {void}
+     * @param {Object} highlight - Highlight to delete.
+     * @return {void}
      * @private
      */
     _removeRangyHighlight(highlight) {

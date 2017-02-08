@@ -17,9 +17,9 @@ class MultiImage extends ImageBase {
     /**
      * [constructor]
      *
-     * @param {string|HTMLElement} container The container
-     * @param {Object} options some options
-     * @returns {MultiImage} MultiImage instance
+     * @param {string|HTMLElement} container - The container
+     * @param {Object} options - some options
+     * @return {MultiImage} MultiImage instance
      */
     constructor(container, options) {
         super(container, options);
@@ -37,7 +37,7 @@ class MultiImage extends ImageBase {
 
     /**
      * [destructor]
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         // Remove listeners
@@ -52,8 +52,8 @@ class MultiImage extends ImageBase {
      * Loads an image.
      *
      * @pubic
-     * @param {Array} imageUrls urls for images
-     * @returns {Promise} Promise to load bunch of images
+     * @param {Array} imageUrls - urls for images
+     * @return {Promise} Promise to load bunch of images
      */
     load(imageUrlsTemplate) {
         this.imageUrls = imageUrlsTemplate;
@@ -80,8 +80,8 @@ class MultiImage extends ImageBase {
 
     /**
      * Handles mouse up event.
-     * @param {Event} event The mousemove event
-     * @returns {void}
+     * @param {Event} event - The mousemove event
+     * @return {void}
      */
     handleMouseUp(event) {
         // If this is not a left click, then ignore
@@ -94,9 +94,9 @@ class MultiImage extends ImageBase {
 
     /**
      * Handles zoom
-     * @param {string} [type] Type of zoom in|out|reset
+     * @param {string} [type] - Type of zoom in|out|reset
      * @private
-     * @returns {void}
+     * @return {void}
      */
     zoom(type) {
         let newWidth;
@@ -129,7 +129,7 @@ class MultiImage extends ImageBase {
      * Loads controls
      *
      * @private
-     * @returns {void}
+     * @return {void}
      */
     loadUI() {
         super.loadUI();

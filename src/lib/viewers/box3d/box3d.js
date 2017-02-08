@@ -35,11 +35,11 @@ class Box3D extends Base {
      *
      * @inheritdoc
      * @constructor
-     * @param {string|HTMLElement} container node
-     * @param {object} [options] some options
-     * @param {string} [options.token] OAuth2 token used for authorizing API requests
-     * @param {string} [options.api] Base URL to use for all api requests
-     * @returns {Box3D} the Box3D object instance
+     * @param {string|HTMLElement} container - node
+     * @param {object} [options] - some options
+     * @param {string} [options.token] - OAuth2 token used for authorizing API requests
+     * @param {string} [options.api] - Base URL to use for all api requests
+     * @return {Box3D} the Box3D object instance
      */
     constructor(container, options) {
         super(container, options);
@@ -68,7 +68,7 @@ class Box3D extends Base {
     /**
      * Create any submodules required for previewing this document
      *
-     * @returns {void}
+     * @return {void}
      */
     createSubModules() {
         this.controls = new Box3DControls(this.wrapperEl);
@@ -78,7 +78,7 @@ class Box3D extends Base {
     /**
      * Attaches event handlers and provides base events for controls and rendering
      *
-     * @returns {void}
+     * @return {void}
      */
     attachEventHandlers() {
         if (this.controls) {
@@ -100,7 +100,7 @@ class Box3D extends Base {
     /**
      * Detaches event handlers
      *
-     * @returns {void}
+     * @return {void}
      */
     detachEventHandlers() {
         if (this.controls) {
@@ -132,7 +132,7 @@ class Box3D extends Base {
     /**
      * Called on preview destroy and detach communication from sub modules
      *
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         super.destroy();
@@ -152,8 +152,8 @@ class Box3D extends Base {
     /**
      * Loads a 3D Scene
      *
-     * @param {string} assetUrl The asset to load into preview
-     * @returns {Promise} A promise object which will be resolved/rejected on load
+     * @param {string} assetUrl - The asset to load into preview
+     * @return {Promise} A promise object which will be resolved/rejected on load
      */
     load(assetUrlTemplate) {
         this.renderer
@@ -173,7 +173,7 @@ class Box3D extends Base {
     /**
      * Handles toggle VR event
      *
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     handleToggleVr() {
@@ -182,7 +182,7 @@ class Box3D extends Base {
 
     /**
      * Add/remove the vr-enabled class when vr events occur
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     onVrPresentChange() {
@@ -209,7 +209,7 @@ class Box3D extends Base {
     /**
      * Handle scene loaded event
      *
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     handleSceneLoaded() {
@@ -223,7 +223,7 @@ class Box3D extends Base {
     /**
      * Handle show VR button event
      *
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     handleShowVrButton() {
@@ -233,7 +233,7 @@ class Box3D extends Base {
     /**
      * Handle reset event
      *
-     * @returns {void}
+     * @return {void}
      */
     @autobind
     handleReset() {
@@ -243,8 +243,8 @@ class Box3D extends Base {
     /**
      * Handle error events and emit a message
      *
-     * @param {Error} The error that caused this to be triggered. To be emitted.
-     * @returns {void}
+     * @param {Error} The - error that caused this to be triggered. To be emitted.
+     * @return {void}
      */
     @autobind
     handleError(error) {

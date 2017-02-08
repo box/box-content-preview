@@ -18,8 +18,8 @@ class Video360Controls extends EventEmitter {
      * bar UI.
      *
      * @constructor
-     * @param {HTMLElement} containerEl The container element to put controls ui into
-     * @returns {Box3DControls} Instance of Box3DControls
+     * @param {HTMLElement} containerEl - The container element to put controls ui into
+     * @return {Box3DControls} Instance of Box3DControls
      */
     constructor(containerEl) {
         super();
@@ -36,7 +36,7 @@ class Video360Controls extends EventEmitter {
     /**
      * Add and create any UI to the container element and control bar
      *
-     * @returns {void}
+     * @return {void}
      */
     addUi() {
         const mediaControlsEl = this.el.querySelector(`.${CSS_CLASS_MEDIA_CONTROLS_CONTAINER}`);
@@ -55,7 +55,7 @@ class Video360Controls extends EventEmitter {
     /**
      * Attaches event handlers to buttons
      *
-     * @returns {void}
+     * @return {void}
      */
     attachEventHandlers() {
         if (this.vrButtonEl) {
@@ -66,7 +66,7 @@ class Video360Controls extends EventEmitter {
     /**
      * Detach event handlers from buttons
      *
-     * @returns {void}
+     * @return {void}
      */
     detachEventHandlers() {
         if (this.vrButtonEl) {
@@ -77,7 +77,7 @@ class Video360Controls extends EventEmitter {
     /**
      * Handle a toggle of VR event, and emit a message
      *
-     * @returns {void}
+     * @return {void}
      */
     handleToggleVr() {
         this.emit(EVENT_TOGGLE_VR);
@@ -86,7 +86,7 @@ class Video360Controls extends EventEmitter {
     /**
      * Enables the VR button
      *
-     * @returns {void}
+     * @return {void}
      */
     showVrButton() {
         if (this.vrButtonEl) {
@@ -97,7 +97,7 @@ class Video360Controls extends EventEmitter {
     /**
      * Destroy all controls, and this module
      *
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         this.removeAllListeners();

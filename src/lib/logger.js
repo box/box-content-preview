@@ -22,8 +22,8 @@ class Logger {
 
     /**
      * [constructor]
-     * @param {string} locale locale
-     * @returns {Logger} Logger instance
+     * @param {string} locale - locale
+     * @return {Logger} Logger instance
      */
     constructor(locale) {
         this.start = Date.now();
@@ -47,7 +47,7 @@ class Logger {
     /**
      * Marks file as cached.
      * @public
-     * @returns {void}
+     * @return {void}
      */
     setCached() {
         this.log.cache.hit = true;
@@ -56,7 +56,7 @@ class Logger {
     /**
      * Marks file as stale cache.
      * @public
-     * @returns {void}
+     * @return {void}
      */
     setCacheStale() {
         this.log.cache.stale = true;
@@ -65,7 +65,7 @@ class Logger {
     /**
      * Marks file as converted.
      * @public
-     * @returns {void}
+     * @return {void}
      */
     setUnConverted() {
         this.log.converted = false;
@@ -75,8 +75,8 @@ class Logger {
     /**
      * Sets the file object.
      * @public
-     * @param {Object} file file object
-     * @returns {void}
+     * @param {Object} file - file object
+     * @return {void}
      */
     setFile(file) {
         this.log.file = file;
@@ -85,8 +85,8 @@ class Logger {
     /**
      * Sets the file type.
      * @public
-     * @param {string} type content type
-     * @returns {void}
+     * @param {string} type - content type
+     * @return {void}
      */
     setType(type) {
         this.log.type = type;
@@ -95,8 +95,8 @@ class Logger {
     /**
      * Finishes logging.
      * @public
-     * @param {Object} count preview count
-     * @returns {Object} metrics
+     * @param {Object} count - preview count
+     * @return {Object} metrics
      */
     done(count) {
         this.log.count = count;

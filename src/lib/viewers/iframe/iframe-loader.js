@@ -16,7 +16,7 @@ class IFrameLoader extends AssetLoader {
 
     /**
      * [constructor]
-     * @returns {IFrameLoader} IFrameLoader instance
+     * @return {IFrameLoader} IFrameLoader instance
      */
     constructor() {
         super();
@@ -26,7 +26,7 @@ class IFrameLoader extends AssetLoader {
     /**
      * Override default prefetch functionality with no-op.
      * @override
-     * @returns {void}
+     * @return {void}
      */
     prefetch() {}
 }

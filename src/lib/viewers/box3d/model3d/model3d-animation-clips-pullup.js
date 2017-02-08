@@ -31,10 +31,10 @@ class Model3dAnimationClipsPullup extends EventEmitter {
      * Add an animation clip to the pullup.
      * @method addClip
      * @public
-     * @param {string} id The ID of the animation clip.
-     * @param {string} name The name of the animation clip.
-     * @param {number} duration The duration of the clip, in seconds.
-     * @returns {void}
+     * @param {string} id - The ID of the animation clip.
+     * @param {string} name - The name of the animation clip.
+     * @param {number} duration - The duration of the clip, in seconds.
+     * @return {void}
      */
     addClip(id, name, duration) {
         const clipFragment = createFragment(this.pullupEl, CLIP_TEMPLATE);
@@ -54,7 +54,7 @@ class Model3dAnimationClipsPullup extends EventEmitter {
      * Cleanup resources used by this pullup.
      * @method destroy
      * @public
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         this.pullupEl = null;
@@ -67,7 +67,7 @@ class Model3dAnimationClipsPullup extends EventEmitter {
      * @method formatDurationStr
      * @private
      * @method {number} duration The duration, in seconds.
-     * @returns {string} The time code string.
+     * @return {string} The time code string.
      */
     formatDurationStr(duration) {
         let secondsLeft = Math.floor(duration);
@@ -88,7 +88,7 @@ class Model3dAnimationClipsPullup extends EventEmitter {
      * Get the number of clips in this pullup.
      * @method getClipCount
      * @public
-     * @returns {number} The number of clips in this pullup.
+     * @return {number} The number of clips in this pullup.
      */
     getClipCount() {
         return Object.keys(this.clipEls).length;
@@ -98,8 +98,8 @@ class Model3dAnimationClipsPullup extends EventEmitter {
      * Get the clip ID for the clip at the specified index.
      * @method getClipId
      * @public
-     * @param {number} index The clip index.
-     * @returns {string} The clip ID.
+     * @param {number} index - The clip index.
+     * @return {string} The clip ID.
      */
     getClipId(index) {
         return Object.keys(this.clipEls)[index];
@@ -109,8 +109,8 @@ class Model3dAnimationClipsPullup extends EventEmitter {
      * Handle clicks on clips.
      * @method handleClipClick
      * @private
-     * @param {Event} event The click event.
-     * @returns {void}
+     * @param {Event} event - The click event.
+     * @return {void}
      */
     handleClipClick(event) {
         if (event.target) {
@@ -123,7 +123,7 @@ class Model3dAnimationClipsPullup extends EventEmitter {
      * Hide this pullup.
      * @method hide
      * @public
-     * @returns {void}
+     * @return {void}
      */
     hide() {
         this.pullupEl.classList.add(CSS_CLASS_HIDDEN);
@@ -133,9 +133,9 @@ class Model3dAnimationClipsPullup extends EventEmitter {
      * Left-pad the specified integer with zeroes.
      * @method padLeft
      * @private
-     * @param {number} x The integer to pad with zeroes.
-     * @param {number} width The total number of characters in the padded string.
-     * @returns {string} A string containing the zero-padded integer.
+     * @param {number} x - The integer to pad with zeroes.
+     * @param {number} width - The total number of characters in the padded string.
+     * @return {string} A string containing the zero-padded integer.
      */
     padLeft(x, width) {
         return x.length >= width ? x : new Array(width - x.length + 1).join('0') + x;
@@ -145,7 +145,7 @@ class Model3dAnimationClipsPullup extends EventEmitter {
      * Reset this pullup to its default state.
      * @method reset
      * @public
-     * @returns {void}
+     * @return {void}
      */
     reset() {
         if (this.getClipCount() > 0) {
@@ -157,8 +157,8 @@ class Model3dAnimationClipsPullup extends EventEmitter {
      * Select the specified clip, firing EVENT_SELECT_ANIMATION_CLIP.
      * @method selectClip
      * @public
-     * @param {string} selectedClipId The ID of the clip to select.
-     * @returns {void}
+     * @param {string} selectedClipId - The ID of the clip to select.
+     * @return {void}
      */
     selectClip(selectedClipId) {
         Object.keys(this.clipEls).forEach((clipId) => {
@@ -174,7 +174,7 @@ class Model3dAnimationClipsPullup extends EventEmitter {
      * Show this pullup.
      * @method show
      * @public
-     * @returns {void}
+     * @return {void}
      */
     show() {
         this.pullupEl.classList.remove(CSS_CLASS_HIDDEN);
@@ -184,7 +184,7 @@ class Model3dAnimationClipsPullup extends EventEmitter {
      * Toggle the visibility of this pullup.
      * @method toggle
      * @public
-     * @returns {void}
+     * @return {void}
      */
     toggle() {
         this.pullupEl.classList.toggle(CSS_CLASS_HIDDEN);

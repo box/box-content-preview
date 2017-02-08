@@ -16,7 +16,7 @@ class SwfLoader extends AssetLoader {
 
     /**
      * [constructor]
-     * @returns {SwfLoader} SwfLoader instance
+     * @return {SwfLoader} SwfLoader instance
      */
     constructor() {
         super();

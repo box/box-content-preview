@@ -29,7 +29,7 @@ class OfficeLoader extends AssetLoader {
 
     /**
      * [constructor]
-     * @returns {OfficeLoader} OfficeLoader instance
+     * @return {OfficeLoader} OfficeLoader instance
      */
     constructor() {
         super();

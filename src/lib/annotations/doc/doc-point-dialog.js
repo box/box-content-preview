@@ -23,7 +23,7 @@ class DocPointDialog extends AnnotationDialog {
      * Positions the dialog.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     position() {
         const pageEl = this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`) || this._annotatedElement;

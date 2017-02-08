@@ -15,9 +15,9 @@ class AssetLoader {
      * Determines if this loader can be used
      *
      * @public
-     * @param {Object} file box file
-     * @param {Array} [disabledViewers] List of disabled viewers
-     * @returns {boolean} Is file supported
+     * @param {Object} file - box file
+     * @param {Array} [disabledViewers] - List of disabled viewers
+     * @return {boolean} Is file supported
      */
     canLoad(file, disabledViewers = []) {
         return !!this.determineViewer(file, disabledViewers);
@@ -27,7 +27,7 @@ class AssetLoader {
      * Returns the available viewers
      *
      * @public
-     * @returns {Array} list of supported viewers
+     * @return {Array} list of supported viewers
      */
     getViewers() {
         return Array.isArray(this.viewers) ? this.viewers : [];
@@ -37,9 +37,9 @@ class AssetLoader {
      * Chooses a viewer based on file extension.
      *
      * @public
-     * @param {Object} file box file
-     * @param {Array} [disabledViewers] List of disabled viewers
-     * @returns {Object} the viewer to use
+     * @param {Object} file - box file
+     * @param {Array} [disabledViewers] - List of disabled viewers
+     * @return {Object} the viewer to use
      */
     determineViewer(file, disabledViewers = []) {
         return this.viewers.find((viewer) => {
@@ -56,9 +56,9 @@ class AssetLoader {
      * two png representation entries with different properties.
      *
      * @public
-     * @param {Object} file box file
-     * @param {Object} viewer the chosen viewer
-     * @returns {Object} the representation to load
+     * @param {Object} file - box file
+     * @param {Object} viewer - the chosen viewer
+     * @return {Object} the representation to load
      */
     determineRepresentation(file, viewer) {
         return file.representations.entries.find((entry) => viewer.REP === entry.representation);
@@ -69,8 +69,8 @@ class AssetLoader {
      * from conversion when file is not ready
      *
      * @public
-     * @param {RepStatus} instance of rep status
-     * @returns {Promise} Promise to get success status
+     * @param {RepStatus} instance - of rep status
+     * @return {Promise} Promise to get success status
      */
     determineRepresentationStatus(repStatus) {
         // Load the representation assets
@@ -81,9 +81,9 @@ class AssetLoader {
      * Loads assets needed for a preview and finally loads the viewer
      *
      * @public
-     * @param {Object} viewer chosen viewer
-     * @param {Object} location template of assets
-     * @returns {Promise} Promise to load scripts
+     * @param {Object} viewer - chosen viewer
+     * @param {Object} location - template of assets
+     * @return {Promise} Promise to load scripts
      */
     load(viewer, location) {
         // Create an asset path creator function
@@ -161,8 +161,8 @@ class AssetLoader {
      *
      * @public
      * @param {Object} viewer
-     * @param {Object} location asset location
-     * @returns {void}
+     * @param {Object} location - asset location
+     * @return {void}
      */
     prefetchAssets(viewer, location) {
         // Create an asset path creator function

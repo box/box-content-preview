@@ -26,7 +26,7 @@ class ImagePointThread extends AnnotationThread {
      * Shows the annotation indicator.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     show() {
         const [browserX, browserY] = imageAnnotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
@@ -47,7 +47,7 @@ class ImagePointThread extends AnnotationThread {
      * Creates the image point annotation dialog for the thread.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      */
     createDialog() {
         this._dialog = new ImagePointDialog({

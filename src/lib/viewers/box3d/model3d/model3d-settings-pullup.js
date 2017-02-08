@@ -110,10 +110,10 @@ class Model3DSettingsPullup extends EventEmitter {
      * Convert the callback property of a config callback to a valid callback function.
      * @method convertToValidCallback
      * @private
-     * @param {Object} configEntry A descriptor for the callback.
-     * @param {Function} configEntry.callback The callback function to search for and assign back to the entry.
-     * @param {Array} configEntry.args Arguments to be bound to the function callback.
-     * @returns {void}
+     * @param {Object} configEntry - A descriptor for the callback.
+     * @param {Function} configEntry.callback - The callback function to search for and assign back to the entry.
+     * @param {Array} configEntry.args - Arguments to be bound to the function callback.
+     * @return {void}
      */
     convertToValidCallback(configEntry) {
         const entry = configEntry;
@@ -128,7 +128,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Create the UI necessary to run the Settings panel pullup.
      * @method createUi
      * @private
-     * @returns {void}
+     * @return {void}
      */
     createUi() {
         // The containing pullup element
@@ -224,7 +224,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Create the axis rotation widget.
      * @method createAxisWidget
      * @private
-     * @returns {HtmlElement} The newly created rotation axis widget element.
+     * @return {HtmlElement} The newly created rotation axis widget element.
      */
     createAxisWidget() {
         const rowEl = createRow();
@@ -248,10 +248,10 @@ class Model3DSettingsPullup extends EventEmitter {
      * Create a single axis rotation widget.
      * @method createRotationAxis
      * @private
-     * @param {string} axisLabel The label for the axis.
-     * @param {Function} minusIconCallback Called when the "minus" icon is clicked.
-     * @param {Function} plusIconCallback Called when the "plus" icon is clicked.
-     * @returns {HtmlElement} The axis widget for the supplied axis.
+     * @param {string} axisLabel - The label for the axis.
+     * @param {Function} minusIconCallback - Called when the "minus" icon is clicked.
+     * @param {Function} plusIconCallback - Called when the "plus" icon is clicked.
+     * @return {HtmlElement} The axis widget for the supplied axis.
      */
     createRotationAxis(axisLabel, minusIconCallback, plusIconCallback) {
         const axisEl = document.createElement('div');
@@ -282,8 +282,8 @@ class Model3DSettingsPullup extends EventEmitter {
      * Emit a message with the render mode that has been selected.
      * @method onRenderModeSelected
      * @private
-     * @param {string} mode The render mode to emit a message about.
-     * @returns {void}
+     * @param {string} mode - The render mode to emit a message about.
+     * @return {void}
      */
     onRenderModeSelected(mode) {
         this.emit(EVENT_SET_RENDER_MODE, mode);
@@ -293,9 +293,9 @@ class Model3DSettingsPullup extends EventEmitter {
      * Emit an axis rotation event with the axis of rotation and direction to rotate.
      * @method onAxisRotationSelected
      * @private
-     * @param {string} rotationAxis The axis to rotate on.
-     * @param {number} direction The direction to rotate: 1 is positive rotation and -1 is negative.
-     * @returns {void}
+     * @param {string} rotationAxis - The axis to rotate on.
+     * @param {number} direction - The direction to rotate: 1 is positive rotation and -1 is negative.
+     * @return {void}
      */
     onAxisRotationSelected(rotationAxis, direction) {
         const axis = {};
@@ -307,8 +307,8 @@ class Model3DSettingsPullup extends EventEmitter {
      * Set the current projection mode being used.
      * @method onProjectionSelected
      * @private
-     * @param {string} mode The projection mode to use.
-     * @returns {void}
+     * @param {string} mode - The projection mode to use.
+     * @return {void}
      */
     onProjectionSelected(mode) {
         this.emit(EVENT_SET_CAMERA_PROJECTION, mode);
@@ -318,8 +318,8 @@ class Model3DSettingsPullup extends EventEmitter {
      * Set the current quality level used for rendering.
      * @method onQualityLevelSelected
      * @private
-     * @param {string} level The quality level to use.
-     * @returns {void}
+     * @param {string} level - The quality level to use.
+     * @return {void}
      */
     onQualityLevelSelected(level) {
         this.emit(EVENT_SET_QUALITY_LEVEL, level);
@@ -329,7 +329,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Notify listeners that the show skeletons checkbox was toggled.
      * @method onShowSkeletonsToggled
      * @private
-     * @returns {void}
+     * @return {void}
      */
     onShowSkeletonsToggled() {
         this.emit(EVENT_SET_SKELETONS_VISIBLE, this.showSkeletonsEl.checked);
@@ -339,7 +339,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Hide skeletons and uncheck check box
      * @method hideSkeletons
      * @public
-     * @returns {void}
+     * @return {void}
      */
     hideSkeletons() {
         this.showSkeletonsEl.checked = false;
@@ -350,7 +350,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Notify listeners that the show wireframes checkbox was toggled.
      * @method onShowWireframesToggled
      * @private
-     * @returns {void}
+     * @return {void}
      */
     onShowWireframesToggled() {
         this.emit(EVENT_SET_WIREFRAMES_VISIBLE, this.showWireframesEl.checked);
@@ -360,7 +360,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Hide wireframes and uncheck check box
      * @method hideWireframes
      * @public
-     * @returns {void}
+     * @return {void}
      */
     hideWireframes() {
         this.showWireframesEl.checked = false;
@@ -371,7 +371,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Reset the pullup to its default state.
      * @method reset
      * @public
-     * @returns {void}
+     * @return {void}
      */
     reset() {
         this.hideWireframes();
@@ -382,8 +382,8 @@ class Model3DSettingsPullup extends EventEmitter {
      * Set the current render mode being shown, in the dropdown label
      * @method setCurrentRenderMode
      * @public
-     * @param {string} mode The render mode name to display.
-     * @returns {void}
+     * @param {string} mode - The render mode name to display.
+     * @return {void}
      */
     setCurrentRenderMode(mode) {
         this.renderModeEl.textContent = mode;
@@ -393,8 +393,8 @@ class Model3DSettingsPullup extends EventEmitter {
      * Set the current projection mode being used, in the dropdown label.
      * @method setCurrentProjectionMode
      * @public
-     * @param {string} mode The projection mode name to display
-     * @returns {void}
+     * @param {string} mode - The projection mode name to display
+     * @return {void}
      */
     setCurrentProjectionMode(mode) {
         this.projectionEl.textContent = mode;
@@ -404,7 +404,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Show the settings panel.
      * @method show
      * @public
-     * @returns {void}
+     * @return {void}
      */
     show() {
         this.pullupEl.classList.remove(CSS_CLASS_HIDDEN);
@@ -414,7 +414,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Hide the settings panel, and close inner dropdowns.
      * @method hide
      * @public
-     * @returns {void}
+     * @return {void}
      */
     hide() {
         this.pullupEl.classList.add(CSS_CLASS_HIDDEN);
@@ -427,7 +427,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Toggle display of settings panel, make sure dropdowns are closed.
      * @method toggle
      * @public
-     * @returns {void}
+     * @return {void}
      */
     toggle() {
         this.pullupEl.classList.toggle(CSS_CLASS_HIDDEN);
@@ -440,7 +440,7 @@ class Model3DSettingsPullup extends EventEmitter {
      * Release resources created by this pullup.
      * @method destroy
      * @public
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         this.uiRegistry.unregisterAll();

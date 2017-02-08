@@ -45,7 +45,7 @@ export function getDownloadURL(id, api) {
  *
  * @param {Object} file - Box file
  * @param {string} repName - Name of representation
- * @returns {Object|null} Maching representation object or null
+ * @return {Object|null} Maching representation object or null
  */
 export function getRepresentation(file, repName) {
     return file.representations.entries.find((entry) => entry.representation === repName) || null;

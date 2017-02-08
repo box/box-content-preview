@@ -38,8 +38,8 @@ class Annotator extends EventEmitter {
     /**
      * [constructor]
      *
-     * @param {AnnotatorData} data Data for constructing an Annotator
-     * @returns {Annotator} Annotator instance
+     * @param {AnnotatorData} data - Data for constructing an Annotator
+     * @return {Annotator} Annotator instance
      */
     constructor(data) {
         super();
@@ -54,7 +54,7 @@ class Annotator extends EventEmitter {
     /**
      * [destructor]
      *
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         if (this._threads) {
@@ -72,7 +72,7 @@ class Annotator extends EventEmitter {
     /**
      * Initializes annotator.
      *
-     * @returns {void}
+     * @return {void}
      */
     init() {
         this.setScale(1);
@@ -82,7 +82,7 @@ class Annotator extends EventEmitter {
     /**
      * Fetches and shows saved annotations.
      *
-     * @returns {void}
+     * @return {void}
      */
     showAnnotations() {
         // Show annotations after we've generated an in-memory map
@@ -92,7 +92,7 @@ class Annotator extends EventEmitter {
     /**
      * Hides annotations.
      *
-     * @returns {void}
+     * @return {void}
      */
     hideAnnotations() {
         Object.keys(this._threads).forEach((page) => {
@@ -105,7 +105,7 @@ class Annotator extends EventEmitter {
     /**
      * Hides annotations on a specified page.
      *
-     * @returns {void}
+     * @return {void}
      */
     hideAnnotationsOnPage(pageNum) {
         if (this._threads[pageNum]) {
@@ -118,7 +118,7 @@ class Annotator extends EventEmitter {
     /**
      * Renders annotations from memory.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     renderAnnotations() {
@@ -132,7 +132,7 @@ class Annotator extends EventEmitter {
     /**
      * Renders annotations from memory for a specified page.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     renderAnnotationsOnPage(pageNum) {
@@ -147,7 +147,7 @@ class Annotator extends EventEmitter {
      * Sets the zoom scale.
      *
      * @param {number} scale
-     * @returns {void}
+     * @return {void}
      */
     setScale(scale) {
         this._annotatedElement.setAttribute('data-scale', scale);
@@ -157,8 +157,8 @@ class Annotator extends EventEmitter {
      * Toggles point annotation mode on and off. When point annotation mode is
      * on, clicking an area will create a point annotation at that location.
      *
-     * @param {HTMLEvent} event DOM event
-     * @returns {void}
+     * @param {HTMLEvent} event - DOM event
+     * @return {void}
      */
     togglePointModeHandler(event = {}) {
         // This unfortunately breaks encapsulation, but the header currently
@@ -207,9 +207,9 @@ class Annotator extends EventEmitter {
      * Must be implemented to return an annotation location object from the DOM
      * event.
      *
-     * @param {Event} event DOM event
-     * @param {string} annotationType Type of annotation
-     * @returns {Object} Location object
+     * @param {Event} event - DOM event
+     * @param {string} annotationType - Type of annotation
+     * @return {Object} Location object
      */
     /* eslint-disable no-unused-vars */
     getLocationFromEvent(event, annotationType) {}
@@ -219,10 +219,10 @@ class Annotator extends EventEmitter {
      * Must be implemented to create the appropriate new thread, add it to the
      * in-memory map, and return the thread.
      *
-     * @param {Annotation[]} annotations Annotations in thread
-     * @param {Object} location Location object
-     * @param {string} type Annotation type
-     * @returns {AnnotationThread} Created annotation thread
+     * @param {Annotation[]} annotations - Annotations in thread
+     * @param {Object} location - Location object
+     * @param {string} type - Annotation type
+     * @return {AnnotationThread} Created annotation thread
      */
     /* eslint-disable no-unused-vars */
     createAnnotationThread(annotations, location, type) {}
@@ -235,7 +235,7 @@ class Annotator extends EventEmitter {
     /**
      * Annotations setup.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     setupAnnotations() {
@@ -249,7 +249,7 @@ class Annotator extends EventEmitter {
      * Fetches persisted annotations, creates threads as needed, and generates
      * an in-memory map of page to threads.
      *
-     * @returns {Promise} Promise for fetching saved annotations
+     * @return {Promise} Promise for fetching saved annotations
      * @protected
      */
     fetchAnnotations() {
@@ -274,7 +274,7 @@ class Annotator extends EventEmitter {
      * annotator that needs to bind event listeners to the DOM in the normal
      * state (ie not in any annotation mode).
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     bindDOMListeners() {}
@@ -284,7 +284,7 @@ class Annotator extends EventEmitter {
      * annotator that needs to bind event listeners to the DOM in the normal
      * state (ie not in any annotation mode).
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     unbindDOMListeners() {}
@@ -292,7 +292,7 @@ class Annotator extends EventEmitter {
     /**
      * Binds custom event listeners for the Annotation Service.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     bindCustomListenersOnService() {
@@ -329,7 +329,7 @@ class Annotator extends EventEmitter {
     /**
      * Unbinds custom event listeners for the Annotation Service.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     unbindCustomListenersOnService() {
@@ -343,8 +343,8 @@ class Annotator extends EventEmitter {
     /**
      * Binds custom event listeners for a thread.
      *
-     * @param {AnnotationThread} thread Thread to bind events to
-     * @returns {void}
+     * @param {AnnotationThread} thread - Thread to bind events to
+     * @return {void}
      * @protected
      */
     bindCustomListenersOnThread(thread) {
@@ -369,8 +369,8 @@ class Annotator extends EventEmitter {
     /**
      * Unbinds custom event listeners for the thread.
      *
-     * @param {AnnotationThread} thread Thread to bind events to
-     * @returns {void}
+     * @param {AnnotationThread} thread - Thread to bind events to
+     * @return {void}
      * @protected
      */
     unbindCustomListenersOnThread(thread) {
@@ -381,7 +381,7 @@ class Annotator extends EventEmitter {
     /**
      * Binds event listeners for point annotation mode.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     bindPointModeListeners() {
@@ -391,7 +391,7 @@ class Annotator extends EventEmitter {
     /**
      * Unbinds event listeners for point annotation mode.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     unbindPointModeListeners() {
@@ -402,8 +402,8 @@ class Annotator extends EventEmitter {
      * Event handler for adding a point annotation. Creates a point annotation
      * thread at the clicked location.
      *
-     * @param {Event} event DOM event
-     * @returns {void}
+     * @param {Event} event - DOM event
+     * @return {void}
      * @protected
      */
     pointClickHandler(event) {
@@ -437,8 +437,8 @@ class Annotator extends EventEmitter {
     /**
      * Adds thread to in-memory map.
      *
-     * @param {AnnotationThread} thread Thread to add
-     * @returns {void}
+     * @param {AnnotationThread} thread - Thread to add
+     * @return {void}
      * @protected
      */
     addThreadToMap(thread) {
@@ -451,7 +451,7 @@ class Annotator extends EventEmitter {
     /**
      * Returns whether or not annotator is in point mode.
      *
-     * @returns {boolean} Whether or not in point mode
+     * @return {boolean} Whether or not in point mode
      * @protected
      */
     isInPointMode() {
@@ -465,7 +465,7 @@ class Annotator extends EventEmitter {
     /**
      * Destroys pending threads.
      *
-     * @returns {boolean} Whether or not any pending threads existed on the
+     * @return {boolean} Whether or not any pending threads existed on the
      * current file
      * @private
      */

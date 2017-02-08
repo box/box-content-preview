@@ -46,9 +46,9 @@ class DocBase extends Base {
     /**
      * [constructor]
      *
-     * @param {string|HTMLElement} container Container node
-     * @param {object} [options] Some options
-     * @returns {DocBase} DocBase instance
+     * @param {string|HTMLElement} container - Container node
+     * @param {object} [options] - Some options
+     * @return {DocBase} DocBase instance
      */
     constructor(container, options) {
         super(container, options);
@@ -72,7 +72,7 @@ class DocBase extends Base {
     /**
      * [destructor]
      *
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         this.unbindDOMListeners();
@@ -124,8 +124,8 @@ class DocBase extends Base {
     /**
      * Loads a document.
      *
-     * @param {string} pdfUrl The pdf to load
-     * @returns {Promise} Promise to load a pdf
+     * @param {string} pdfUrl - The pdf to load
+     * @return {Promise} Promise to load a pdf
      */
     load(pdfUrlTemplate) {
         this.pdfUrl = this.createContentUrlWithAuthParams(pdfUrlTemplate);
@@ -140,7 +140,7 @@ class DocBase extends Base {
 
     /**
      * Initializes the Find Bar and Find Controller
-     * @returns {void}
+     * @return {void}
      */
     initFind() {
         if (!this.findBarEl) { // doesn't initialize find controller if find bar doesn't exists
@@ -157,7 +157,7 @@ class DocBase extends Base {
     /**
      * Sets up print notification & prepare PDF for printing.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     initPrint() {
@@ -185,7 +185,7 @@ class DocBase extends Base {
     /**
      * Ensures that the print blob is loaded & updates the print UI.
      *
-     * @returns {void}
+     * @return {void}
      */
     print() {
         // If print blob is not ready, fetch it
@@ -223,7 +223,7 @@ class DocBase extends Base {
      * Re-sizing logic.
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     resize() {
@@ -250,7 +250,7 @@ class DocBase extends Base {
     /**
      * Go to previous page
      *
-     * @returns {void}
+     * @return {void}
      */
     previousPage() {
         this.setPage(this.pdfViewer.currentPageNumber - 1);
@@ -259,7 +259,7 @@ class DocBase extends Base {
     /**
      * Go to next page
      *
-     * @returns {void}
+     * @return {void}
      */
     nextPage() {
         this.setPage(this.pdfViewer.currentPageNumber + 1);
@@ -268,8 +268,8 @@ class DocBase extends Base {
     /**
      * Go to specified page
      *
-     * @param {number} pageNum Page to navigate to
-     * @returns {void}
+     * @param {number} pageNum - Page to navigate to
+     * @return {void}
      */
     setPage(pageNum) {
         if (pageNum <= 0 || pageNum > this.pdfViewer.pagesCount) {
@@ -283,7 +283,7 @@ class DocBase extends Base {
     /**
      * Gets the cached current page.
      *
-     * @returns {number} Current page
+     * @return {number} Current page
      */
     getCachedPage() {
         let page = 1;
@@ -300,8 +300,8 @@ class DocBase extends Base {
      * Sets the current page into localstorage if available. Otherwise saves
      * it in-memory as a property on the document viewer.
      *
-     * @param {number} page Current page
-     * @returns {void}
+     * @param {number} page - Current page
+     * @return {void}
      */
     cachePage(page) {
         let currentPageMap = {};
@@ -317,7 +317,7 @@ class DocBase extends Base {
      * Disables or enables previous/next pagination buttons depending on
      * current page number.
      *
-     * @returns {void}
+     * @return {void}
      */
     checkPaginationButtons() {
         const pagesCount = this.pdfViewer.pagesCount;
@@ -360,8 +360,8 @@ class DocBase extends Base {
     /**
      * Zoom into document.
      *
-     * @param {number} ticks Number of times to zoom in
-     * @returns {void}
+     * @param {number} ticks - Number of times to zoom in
+     * @return {void}
      */
     zoomIn(ticks = 1) {
         let numTicks = ticks;
@@ -386,8 +386,8 @@ class DocBase extends Base {
     /**
      * Zoom out of document.
      *
-     * @param {number} ticks Number of times to zoom out
-     * @returns {void}
+     * @param {number} ticks - Number of times to zoom out
+     * @return {void}
      */
     zoomOut(ticks = 1) {
         let numTicks = ticks;
@@ -413,8 +413,8 @@ class DocBase extends Base {
     /**
      * Sets zoom scale.
      *
-     * @param {number} scale Numerical zoom scale
-     * @returns {void}
+     * @param {number} scale - Numerical zoom scale
+     * @return {void}
      */
     setScale(scale) {
         // Redraw annotations if needed
@@ -428,8 +428,8 @@ class DocBase extends Base {
     /**
      * Rotates documents by delta degrees
      *
-     * @param {number} delta Degrees to rotate
-     * @returns {void}
+     * @param {number} delta - Degrees to rotate
+     * @return {void}
      */
     rotateLeft(delta = -90) {
         const currentPageNum = this.pdfViewer.currentPageNumber;
@@ -448,8 +448,8 @@ class DocBase extends Base {
      * Returns whether or not viewer is annotatable. If an optional type is
      * passed in, we check if that type of annotation is allowed.
      *
-     * @param {string} [type] Type of annotation
-     * @returns {boolean} Whether or not viewer is annotatable
+     * @param {string} [type] - Type of annotation
+     * @return {boolean} Whether or not viewer is annotatable
      */
     isAnnotatable(type) {
         if (typeof type === 'string' && type !== 'point' && type !== 'highlight') {
@@ -469,7 +469,7 @@ class DocBase extends Base {
     /**
      * Returns click handler for toggling point annotation mode.
      *
-     * @returns {Function|null} Click handler
+     * @return {Function|null} Click handler
      */
     getPointModeClickHandler() {
         if (!this.isAnnotatable('point')) {
@@ -482,8 +482,8 @@ class DocBase extends Base {
     /**
      * Handles keyboard events for document viewer.
      *
-     * @param {string} key keydown key
-     * @returns {boolean} consumed or not
+     * @param {string} key - keydown key
+     * @return {boolean} consumed or not
      */
     onKeydown(key) {
         switch (key) {
@@ -513,8 +513,8 @@ class DocBase extends Base {
     /**
      * Loads PDF.js with provided PDF.
      *
-     * @param {string} pdfUrl The URL of the PDF to load
-     * @returns {void}
+     * @param {string} pdfUrl - The URL of the PDF to load
+     * @return {void}
      * @protected
      */
     initViewer(pdfUrl) {
@@ -575,7 +575,7 @@ class DocBase extends Base {
     /**
      * Sets options for PDF.js.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     setupPdfjs() {
@@ -604,7 +604,7 @@ class DocBase extends Base {
     /**
      * Initializes annotations.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     initAnnotations() {
@@ -665,7 +665,7 @@ class DocBase extends Base {
     /**
      * Initializes page number selector.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     initPageNumEl() {
@@ -683,8 +683,8 @@ class DocBase extends Base {
     /**
      * Fetches PDF and converts to blob for printing.
      *
-     * @param {string} pdfUrl URL to PDF
-     * @returns {Promise} Promise setting print blob
+     * @param {string} pdfUrl - URL to PDF
+     * @return {Promise} Promise setting print blob
      * @private
      */
     fetchPrintBlob(pdfUrl) {
@@ -696,7 +696,7 @@ class DocBase extends Base {
     /**
      * Handles logic for priting the PDF representation in browser.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     browserPrint() {
@@ -752,7 +752,7 @@ class DocBase extends Base {
     /**
      * Creates UI for preview controls.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     loadUI() {
@@ -764,7 +764,7 @@ class DocBase extends Base {
     /**
      * Replaces the page number display with an input box that allows the user to type in a page number
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     showPageNumInput() {
@@ -783,7 +783,7 @@ class DocBase extends Base {
     /**
      * Hide the page number input
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     hidePageNumInput() {
@@ -795,8 +795,8 @@ class DocBase extends Base {
     /**
      * Update page number in page control widget.
      *
-     * @param {number} pageNum Number of page to update to
-     * @returns {void}
+     * @param {number} pageNum - Number of page to update to
+     * @return {void}
      * @private
      */
     updateCurrentPage(pageNum) {
@@ -828,7 +828,7 @@ class DocBase extends Base {
     /**
      * Binds DOM listeners for document viewer.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     bindDOMListeners() {
@@ -867,7 +867,7 @@ class DocBase extends Base {
     /**
      * Unbinds DOM listeners for document viewer.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     unbindDOMListeners() {
@@ -897,7 +897,7 @@ class DocBase extends Base {
     /**
      * Binds listeners for document controls. Overridden.
      *
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     bindControlListeners() {}
@@ -906,7 +906,7 @@ class DocBase extends Base {
      * Blur handler for page number input.
      *
      * @param  {Event} event Blur event
-     * @returns {void}
+     * @return {void}
      * @private
      */
     pageNumInputBlurHandler(event) {
@@ -923,8 +923,8 @@ class DocBase extends Base {
     /**
      * Keydown handler for page number input.
      *
-     * @param {Event} event Keydown event
-     * @returns {void}
+     * @param {Event} event - Keydown event
+     * @return {void}
      * @private
      */
     pageNumInputKeydownHandler(event) {
@@ -962,7 +962,7 @@ class DocBase extends Base {
     /**
      * Handler for 'pagesinit' event.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     pagesinitHandler() {
@@ -992,7 +992,7 @@ class DocBase extends Base {
     /**
      * Handler for 'pagerendered' event.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     pagerenderedHandler(event) {
@@ -1029,7 +1029,7 @@ class DocBase extends Base {
     /**
      * Handler for 'textlayerrendered' event.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     textlayerrenderedHandler() {
@@ -1045,8 +1045,8 @@ class DocBase extends Base {
     /**
      * Handler for 'pagechange' event.
      *
-     * @param {Event} event Pagechange event
-     * @returns {void}
+     * @param {Event} event - Pagechange event
+     * @return {void}
      * @private
      */
     pagechangeHandler(event) {
@@ -1067,7 +1067,7 @@ class DocBase extends Base {
      * Fullscreen entered handler. Add presentation mode class, set
      * presentation mode state, and set zoom to fullscreen zoom.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     enterfullscreenHandler() {
@@ -1081,7 +1081,7 @@ class DocBase extends Base {
      * Fullscreen exited handler. Remove presentation mode class, set
      * presentation mode state, and reset zoom.
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     exitfullscreenHandler() {
@@ -1094,7 +1094,7 @@ class DocBase extends Base {
     /**
      * Scroll handler. Fires an event on start and stop
      *
-     * @returns {void}
+     * @return {void}
      * @private
      */
     scrollHandler = throttle(() => {

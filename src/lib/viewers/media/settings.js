@@ -74,8 +74,8 @@ class Settings extends EventEmitter {
      * Service to handle the position and movement of a slider element
      *
      * [constructor]
-     * @param {HTMLElement} containerEl container node
-     * @returns {Settings} Settings menu instance
+     * @param {HTMLElement} containerEl - container node
+     * @return {Settings} Settings menu instance
      */
     constructor(containerEl) {
         super();
@@ -92,7 +92,7 @@ class Settings extends EventEmitter {
     /**
      * Inits the menu
      *
-     * @returns {void}
+     * @return {void}
      */
     init() {
         const quality = cache.get('media-quality') || 'auto';
@@ -104,7 +104,7 @@ class Settings extends EventEmitter {
 
     /**
      * [destructor]
-     * @returns {void}
+     * @return {void}
      */
     destroy() {
         if (this.settingsEl) {
@@ -115,7 +115,7 @@ class Settings extends EventEmitter {
 
     /**
      * [destructor]
-     * @returns {void}
+     * @return {void}
      */
     reset() {
         this.settingsEl.className = CLASS_SETTINGS;
@@ -124,8 +124,8 @@ class Settings extends EventEmitter {
     /**
      * Finds the parent node that has dataset type
      *
-     * @param {HTMLElement} target start dom location
-     * @returns {HTMLElement} parent that has dataset type
+     * @param {HTMLElement} target - start dom location
+     * @return {HTMLElement} parent that has dataset type
      */
     findParentDataType(target) {
         let currentNode = target;
@@ -144,8 +144,8 @@ class Settings extends EventEmitter {
     /**
      * Extracts info out of the click target
      *
-     * @param {Event} event click event
-     * @returns {void}
+     * @param {Event} event - click event
+     * @return {void}
      */
     menuClickHandler(event) {
         // Extract the parent target dataset element
@@ -172,9 +172,9 @@ class Settings extends EventEmitter {
     /**
      * Handles option selection
      *
-     * @param {string} type of menu option
-     * @param {string} value of menu option
-     * @returns {void}
+     * @param {string} type - of menu option
+     * @param {string} value - of menu option
+     * @return {void}
      */
     chooseOption(type, value) {
         // Hide the menu
@@ -206,8 +206,8 @@ class Settings extends EventEmitter {
      * Handles blur of the menu
      *
      * @private
-     * @param {Event} event click event
-     * @returns {void}
+     * @param {Event} event - click event
+     * @return {void}
      */
     blurHandler(event) {
         if (!this.settingsEl.contains(event.target)) {
@@ -219,7 +219,7 @@ class Settings extends EventEmitter {
      * Getter for the value of quality
      *
      * @public
-     * @returns {string} The quality
+     * @return {string} The quality
      */
     isVisible() {
         return this.visible;
@@ -229,7 +229,7 @@ class Settings extends EventEmitter {
      * Shows the menu
      *
      * @public
-     * @returns {void}
+     * @return {void}
      */
     show() {
         this.visible = true;
@@ -246,7 +246,7 @@ class Settings extends EventEmitter {
      * Hides the menu
      *
      * @public
-     * @returns {void}
+     * @return {void}
      */
     hide() {
         this.reset();
