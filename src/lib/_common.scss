@@ -96,8 +96,14 @@ $header-height: 48px;
         background-color: $sunset-grey;
     }
 
-    .bp-loading-text {
+    .bp-error,
+    .bp-loading-text,
+    .bp-btn-loading-download {
         color: $white;
+    }
+
+    .bp-icon {
+        opacity: .9;
     }
 }
 
