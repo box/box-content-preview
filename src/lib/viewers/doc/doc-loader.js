@@ -30,7 +30,7 @@ const VIEWERS = [
     },
     {
         REP: ORIGINAL_REP_NAME,
-        EXT: ['pdf'],
+        EXT: ['pdf', 'lcdpdf'],
         JS: SCRIPTS_DOCUMENT,
         CSS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
         NAME: 'Document',
