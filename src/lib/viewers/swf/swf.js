@@ -1,4 +1,7 @@
+import autobind from 'autobind-decorator';
 import Base from '../base';
+
+const Box = global.Box || {};
 
 const SWF_PARAMS = {
     allowfullscreen: 'true',
@@ -10,14 +13,18 @@ const SWF_PARAMS = {
     wmode: 'transparent'
 };
 
+@autobind
 class SWF extends Base {
-    /**
-     * @inheritdoc
-     */
-    setup() {
-        // Always call super 1st to have the common layout
-        super.setup();
 
+    /**
+     * [constructor]
+     *
+     * @param {string|HTMLElement} container - The container
+     * @param {Object} options - some options
+     * @return {SWF} SWF instance
+     */
+    constructor(container, options) {
+        super(container, options);
         this.playerEl = this.containerEl.appendChild(document.createElement('div'));
         this.playerEl.id = 'flash-player';
     }
@@ -26,47 +33,23 @@ class SWF extends Base {
      * Loads a swf object.
      *
      * @public
+     * @param {string} swfUrl - The swf to load
      * @return {void}
      */
-    load() {
+    load(swfUrlTemplate) {
         /* global swfobject */
-        this.setup();
-
-        const { representation } = this.options;
-        const { data, status } = representation;
-        const { content } = data;
-        const { url_template: template } = content;
-
-        Promise.all(this.loadAssets(['third-party/swf/swfobject.js']), status.getPromise()).then(() => {
-            swfobject.embedSWF(this.createContentUrlWithAuthParams(template), this.playerEl.id, '100%', '100%', '9', null, null, SWF_PARAMS, null, () => {
-                if (this.isDestroyed()) {
-                    return;
-                }
-                this.loaded = true;
-                this.emit('load');
-            });
+        swfobject.embedSWF(this.createContentUrlWithAuthParams(swfUrlTemplate), this.playerEl.id, '100%', '100%', '9', null, null, SWF_PARAMS, null, () => {
+            if (this.destroyed) {
+                return;
+            }
+            this.loaded = true;
+            this.emit('load');
         });
         super.load();
     }
-
-    /**
-     * Prefetches assets for swf.
-     *
-     * @return {void}
-     */
-    prefetch() {
-        this.prefetchAssets(['third-party/swf/swfobject.js']);
-    }
-
-    /**
-     * Returns the name of the viewer
-     *
-     * @override
-     * @returns {string} swf
-     */
-    getName() {
-        return 'SWF';
-    }
 }
 
+Box.Preview = Box.Preview || {};
+Box.Preview.SWF = SWF;
+global.Box = Box;
 export default SWF;

@@ -4,38 +4,26 @@ import './mp4.scss';
 
 const CSS_CLASS_MP4 = 'bp-media-mp4';
 
+const Box = global.Box || {};
+
 @autobind
 class MP4 extends VideoBase {
+
     /**
-     * @inheritdoc
+     * [constructor]
+     * @param {string|HTMLElement} container - The container DOM node
+     * @param {Object} [options] - some options
+     * @return {MP4} MP4 instance
      */
-    setup() {
-        // Always call super 1st to have the common layout
-        super.setup();
+    constructor(container, options) {
+        super(container, options);
 
         // mp4 specific class
         this.wrapperEl.classList.add(CSS_CLASS_MP4);
     }
-
-    /**
-     * Prefetches assets for a video.
-     *
-     * @return {void}
-     */
-    prefetch() {
-        const { url_template: template } = this.options.representation.data.content;
-        document.createElement('video').src = this.createContentUrlWithAuthParams(template);
-    }
-
-    /**
-     * Returns the name of the viewer
-     *
-     * @override
-     * @returns {string} mp4
-     */
-    getName() {
-        return 'MP4';
-    }
 }
 
+Box.Preview = Box.Preview || {};
+Box.Preview.MP4 = MP4;
+global.Box = Box;
 export default MP4;

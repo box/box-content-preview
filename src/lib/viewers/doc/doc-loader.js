@@ -1,10 +1,11 @@
 import AssetLoader from '../asset-loader';
 import DocPreloader from './doc-preloader';
+import { ORIGINAL_REP_NAME, PRELOAD_REP_NAME } from '../../constants';
 import { addPreloadRepresentation, getRepresentation } from '../../file';
 import { createContentUrl, appendAuthParams } from '../../util';
-import Doc from './document';
-import Presentation from './presentation';
-import { ORIGINAL_REP_NAME } from '../../constants';
+
+const STATIC_URI = 'third-party/doc/';
+const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.min.js`, `${STATIC_URI}pdf.min.js`, `${STATIC_URI}pdf_viewer.min.js`, `${STATIC_URI}pdf.worker.min.js`, 'document.js'];
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 // For example, a pdf file can be previewed both natively (majority use case) using the original
@@ -13,17 +14,28 @@ const VIEWERS = [
     {
         REP: 'pdf',
         EXT: ['odp', 'ppt', 'pptx'],
-        NAME: Presentation
+        JS: [`${STATIC_URI}compatibility.min.js`, `${STATIC_URI}pdf.min.js`, `${STATIC_URI}pdf_viewer.min.js`, `${STATIC_URI}pdf.worker.min.js`, 'presentation.js'],
+        CSS: [`${STATIC_URI}pdf_viewer.css`, 'presentation.css'],
+        NAME: 'Presentation',
+        PREFETCH: 'xhr'
     },
     {
         REP: 'pdf',
         EXT: ['as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'csv', 'cxx', 'diff', 'doc', 'docx', 'erb', 'gdoc', 'groovy', 'gsheet', 'h', 'haml', 'hh', 'htm', 'html', 'java', 'js', 'less', 'log', 'm', 'make', 'md', 'ml', 'mm', 'msg', 'odp', 'ods', 'odt', 'pdf', 'php', 'pl', 'plist', 'ppt', 'pptx', 'properties', 'py', 'rb', 'rst', 'rtf', 'sass', 'scala', 'scm', 'script', 'sh', 'sml', 'sql', 'tsv', 'txt', 'vi', 'vim', 'webdoc', 'wpd', 'xhtml', 'xls', 'xlsm', 'xlsx', 'xml', 'xsd', 'xsl', 'yaml'],
-        NAME: Doc
+        JS: SCRIPTS_DOCUMENT,
+        CSS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
+        NAME: 'Document',
+        PREFETCH: 'xhr',
+        PRELOAD: PRELOAD_REP_NAME
     },
     {
         REP: ORIGINAL_REP_NAME,
-        EXT: ['pdf'],
-        NAME: Doc
+        EXT: ['pdf', 'lcdpdf'],
+        JS: SCRIPTS_DOCUMENT,
+        CSS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
+        NAME: 'Document',
+        PREFETCH: 'xhr',
+        PRELOAD: PRELOAD_REP_NAME
     }
 ];
 

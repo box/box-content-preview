@@ -1,7 +1,4 @@
 import AssetLoader from '../asset-loader';
-import PlainText from './text';
-import Markdown from './markdown';
-import CSV from './csv';
 import { ORIGINAL_REP_NAME } from '../../constants';
 import { HTML_EXTENSIONS, TXT_EXTENSIONS } from './extensions';
 
@@ -13,22 +10,33 @@ const VIEWERS = [
         REP: 'text',
         EXT: ['csv', 'tsv'],
         JS: [`${STATIC_URI}papaparse.min.js`, 'csv.js'],
-        NAME: CSV
+        CSS: ['csv.css'],
+        NAME: 'CSV',
+        PREFETCH: 'xhr'
     },
     {
         REP: 'text',
         EXT: ['md'],
-        NAME: Markdown
+        JS: [`${STATIC_URI}highlight.min.js`, 'markdown.js'],
+        CSS: [`${STATIC_URI}github-markdown.css`, `${STATIC_URI}github.css`, 'markdown.css'],
+        NAME: 'Markdown',
+        PREFETCH: 'xhr'
     },
     {
         REP: ORIGINAL_REP_NAME,
         EXT: HTML_EXTENSIONS,
-        NAME: PlainText
+        JS: [`${STATIC_URI}highlight.min.js`, 'text.js'],
+        CSS: [`${STATIC_URI}github.css`, 'text.css'],
+        NAME: 'Text',
+        PREFETCH: 'xhr'
     },
     {
         REP: 'text',
         EXT: TXT_EXTENSIONS,
-        NAME: PlainText
+        JS: [`${STATIC_URI}highlight.min.js`, 'text.js'],
+        CSS: [`${STATIC_URI}github.css`, 'text.css'],
+        NAME: 'Text',
+        PREFETCH: 'xhr'
     }
 ];
 

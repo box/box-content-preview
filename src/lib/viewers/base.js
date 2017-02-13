@@ -2,15 +2,7 @@ import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import debounce from 'lodash.debounce';
 import fullscreen from '../fullscreen';
-import {
-    appendAuthParams,
-    getHeaders,
-    createContentUrl,
-    loadStylesheets,
-    loadScripts,
-    prefetchAssets,
-    createAssetUrlCreator
-} from '../util';
+import { appendAuthParams, getHeaders, createContentUrl } from '../util';
 import Browser from '../browser';
 import {
     CLASS_FULLSCREEN,
@@ -23,6 +15,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
 @autobind
 class Base extends EventEmitter {
+
     /**
      * [constructor]
      *
@@ -30,21 +23,16 @@ class Base extends EventEmitter {
      * @param {Object} options - some options
      * @return {Base} Instance of base
      */
-    constructor(options) {
+    constructor(containerEl, options) {
         super();
-        this.options = options;
-    }
 
-    /**
-     * Sets up the vewier and its DOM
-     *
-     * @return {void}
-     */
-    setup() {
+        // Save the options
+        this.options = options;
+
         // Get the container dom element if selector was passed, in tests
-        let { container } = this.options;
-        if (typeof container === 'string') {
-            container = document.querySelector(container);
+        let container = containerEl;
+        if (typeof containerEl === 'string') {
+            container = document.querySelector(containerEl);
         }
 
         // From the perspective of viewers bp holds everything
@@ -60,27 +48,6 @@ class Base extends EventEmitter {
         if (Browser.isMobile()) {
             this.containerEl.classList.add(CLASS_BOX_PREVIEW_MOBILE);
         }
-    }
-
-    /**
-     * Destroys the viewer
-     *
-     * @protected
-     * @return {void}
-     */
-    destroy() {
-        const { status } = this.options.representation || {};
-        if (status) {
-            status.destroy();
-        }
-        fullscreen.removeAllListeners();
-        document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
-        this.removeAllListeners();
-        if (this.containerEl) {
-            this.containerEl.innerHTML = '';
-        }
-        this.destroyed = true;
-        this.emit('destroy');
     }
 
     /**
@@ -145,16 +112,6 @@ class Base extends EventEmitter {
     }
 
     /**
-     * Returns the name of the viewer
-     *
-     * @protected
-     * @return {void}
-     */
-    getName() {
-        throw new Error('Viewer needs to override getName()');
-    }
-
-    /**
      * Appends auth params to the content url
      *
      * @protected
@@ -177,7 +134,9 @@ class Base extends EventEmitter {
      * @return {string} content url
      */
     createContentUrl(template, asset) {
-        return createContentUrl(template, asset);
+        const { viewerAsset = '' } = this.options;
+        const assetName = typeof asset === 'string' ? asset : viewerAsset;
+        return createContentUrl(template, assetName);
     }
 
     /**
@@ -262,6 +221,21 @@ class Base extends EventEmitter {
      */
     allowNavigationArrows() {
         return true;
+    }
+
+    /**
+     * Destroys the viewer
+     *
+     * @protected
+     * @return {void}
+     */
+    destroy() {
+        this.emit('destroy');
+        fullscreen.removeAllListeners();
+        document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
+        this.removeAllListeners();
+        this.containerEl.innerHTML = '';
+        this.destroyed = true;
     }
 
     /**
@@ -379,46 +353,6 @@ class Base extends EventEmitter {
             return viewers[viewerName][option];
         }
         return null;
-    }
-
-    /**
-     * Loads assets needed for a viewer
-     *
-     * @protected
-     * @param {Array} [js] - js assets
-     * @param {Array} [css] - css assets
-     * @return {Promise} Promise to load scripts
-     */
-    loadAssets(js, css) {
-        // Create an asset path creator function
-        const { location } = this.options;
-        const assetUrlCreator = createAssetUrlCreator(location);
-
-        // 1st load the stylesheets needed for this preview
-        loadStylesheets((css || []).map(assetUrlCreator));
-
-        // Then load the scripts needed for this preview
-        return loadScripts((js || []).map(assetUrlCreator));
-    }
-
-    /**
-     * Prefetches assets needed for a viewer
-     *
-     * @protected
-     * @param {Array} [js] - js assets
-     * @param {Array} [css] - css assets
-     * @return {void}
-     */
-    prefetchAssets(js, css) {
-        // Create an asset path creator function
-        const { location } = this.options;
-        const assetUrlCreator = createAssetUrlCreator(location);
-
-        // Prefetch the stylesheets needed for this preview
-        prefetchAssets((css || []).map(assetUrlCreator));
-
-        // Prefetch the scripts needed for this preview
-        prefetchAssets((js || []).map(assetUrlCreator));
     }
 }
 

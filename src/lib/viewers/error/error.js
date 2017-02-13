@@ -7,6 +7,8 @@ import {
 } from '../../icons/icons';
 import './error.scss';
 
+const Box = global.Box || {};
+
 @autobind
 class PreviewError extends Base {
 
@@ -17,10 +19,8 @@ class PreviewError extends Base {
      * @param {Object} options - some options
      * @return {Error} Error instance
      */
-    setup() {
-        // Always call super 1st to have the common layout
-        super.setup();
-
+    constructor(container, options) {
+        super(container, options);
         this.infoEl = this.containerEl.appendChild(document.createElement('div'));
         this.iconEl = this.infoEl.appendChild(document.createElement('div'));
         this.messageEl = this.infoEl.appendChild(document.createElement('div'));
@@ -31,12 +31,11 @@ class PreviewError extends Base {
      * Shows an error message to the user.
      *
      * @public
-     * @param {string} reason error reason
+     * @param {string} url - rep to load
+     * @param {string} reason - error reason
      * @return {void}
      */
-    load(reason) {
-        this.setup();
-
+    load(url, reason) {
         const file = this.options.file;
         let icon = ICON_FILE_DEFAULT;
         const message = reason || __('error_default');
@@ -108,4 +107,7 @@ class PreviewError extends Base {
     }
 }
 
+Box.Preview = Box.Preview || {};
+Box.Preview.PreviewError = PreviewError;
+global.Box = Box;
 export default PreviewError;

@@ -2,7 +2,7 @@ import autobind from 'autobind-decorator';
 import VideoBase from './video-base';
 import cache from '../../cache';
 import fullscreen from '../../fullscreen';
-import { getHeaders, get } from '../../util';
+import { getHeaders } from '../../util';
 import RepStatus from '../../rep-status';
 import './dash.scss';
 
@@ -10,16 +10,22 @@ const CSS_CLASS_DASH = 'bp-media-dash';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
 const SEGMENT_SIZE = 5;
 const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
-const MANIFEST = 'manifest.mpd';
+
+const Box = global.Box || {};
 
 @autobind
 class Dash extends VideoBase {
+
     /**
-     * @inheritdoc
+     * [constructor]
+     *
+     * @override
+     * @param {string|HTMLElement} container - The container DOM node
+     * @param {Object} [options] - some options
+     * @return {Dash} Dash instance
      */
-    setup() {
-        // Always call super 1st to have the common layout
-        super.setup();
+    constructor(container, options) {
+        super(container, options);
 
         // stats
         this.bandwidthHistory = [];
@@ -67,55 +73,20 @@ class Dash extends VideoBase {
      * Loads a media source.
      *
      * @override
+     * @param {string} mediaUrl - The media url
      * @return {void}
      */
-    load() {
-        this.setup();
+    load(mediaUrlTemplate) {
+        /* global shaka */
 
-        const { representation } = this.options;
-        const { data, status } = representation;
-        const { content } = data;
-        const { url_template: template } = content;
+        // Polyfill
+        shaka.polyfill.installAll();
 
-        this.mediaUrl = template;
+        this.mediaUrl = mediaUrlTemplate;
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
 
-        Promise.all(this.loadAssets(this.getJSAssets()), status.getPromise()).then(() => {
-            this.loadDashPlayer();
-            this.resetLoadTimeout();
-        });
-    }
-
-    /**
-     * Prefetches assets for dash.
-     *
-     * @return {void}
-     */
-    prefetch() {
-        const { url_template: template } = this.options.representation.data.content;
-        this.prefetchAssets(this.getJSAssets());
-        get(this.createContentUrlWithAuthParams(template, MANIFEST), 'any');
-    }
-
-    /**
-     * Returns shaka player assets.
-     * Overriden by Video360.js
-     *
-     * @protected
-     * @return {void}
-     */
-    getJSAssets() {
-        return ['third-party/media/shaka-player.js'];
-    }
-
-    /**
-     * Returns the name of the viewer
-     *
-     * @override
-     * @returns {string} dash
-     */
-    getName() {
-        return 'Dash';
+        this.loadDashPlayer();
+        this.resetLoadTimeout();
     }
 
     /**
@@ -126,9 +97,6 @@ class Dash extends VideoBase {
      * @return {void}
      */
     loadDashPlayer() {
-        /* global shaka */
-        // Polyfill
-        shaka.polyfill.installAll();
         this.adapting = true;
         this.player = new shaka.Player(this.mediaEl);
         this.player.addEventListener('adaptation', this.adaptationHandler);
@@ -159,7 +127,7 @@ class Dash extends VideoBase {
      * @return {void}
      */
     requestFilter(type, request) {
-        const asset = type === shaka.net.NetworkingEngine.RequestType.MANIFEST ? MANIFEST : undefined;
+        const asset = type !== shaka.net.NetworkingEngine.RequestType.MANIFEST ? '' : undefined;
         /* eslint-disable no-param-reassign */
         request.uris = request.uris.map((uri) => this.createContentUrlWithAuthParams(uri, asset));
         /* eslint-enable no-param-reassign */
@@ -326,7 +294,7 @@ class Dash extends VideoBase {
         const { file, token, sharedLink, sharedLinkPassword } = this.options;
         const filmstrip = file.representations.entries.find((entry) => entry.representation === 'filmstrip');
         if (filmstrip) {
-            const url = this.createContentUrlWithAuthParams(filmstrip.content.url_template);
+            const url = this.createContentUrlWithAuthParams(filmstrip.content.url_template, '');
             this.filmstripStatus = new RepStatus(filmstrip, getHeaders({}, token, sharedLink, sharedLinkPassword));
             this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect);
         }
@@ -499,4 +467,7 @@ class Dash extends VideoBase {
     }
 }
 
+Box.Preview = Box.Preview || {};
+Box.Preview.Dash = Dash;
+global.Box = Box;
 export default Dash;

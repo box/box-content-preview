@@ -1,6 +1,8 @@
 import AssetLoader from '../asset-loader';
 import { ORIGINAL_REP_NAME } from '../../constants';
 
+const STATIC_URI = 'third-party/doc/';
+const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.min.js`, `${STATIC_URI}pdf.min.js`, `${STATIC_URI}pdf_viewer.min.js`, `${STATIC_URI}pdf.worker.min.js`, 'document.js'];
 const OFFICE_CONSTRUCTOR = 'Office';
 const FIVE_MB = 5242880;
 
@@ -9,7 +11,17 @@ const VIEWERS = [
     {
         REP: ORIGINAL_REP_NAME,
         EXT: ['xlsx'],
+        JS: ['office.js'],
+        CSS: [],
         NAME: OFFICE_CONSTRUCTOR
+    },
+    {
+        REP: 'pdf',
+        EXT: ['xlsx'],
+        JS: SCRIPTS_DOCUMENT,
+        CSS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
+        NAME: 'Document',
+        PREFETCH: 'xhr'
     }
 ];
 

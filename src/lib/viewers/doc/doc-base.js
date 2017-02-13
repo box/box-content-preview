@@ -9,10 +9,18 @@ import DocAnnotator from '../../annotations/doc/doc-annotator';
 import DocFindBar from './doc-find-bar';
 import fullscreen from '../../fullscreen';
 import Popup from '../../popup';
-import { CLASS_BOX_PREVIEW_FIND_BAR, CLASS_HIDDEN } from '../../constants';
-import { get, createAssetUrlCreator, decodeKeydown } from '../../util';
-import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
-import { JS, CSS } from './doc-assets';
+import {
+    CLASS_BOX_PREVIEW_FIND_BAR,
+    CLASS_HIDDEN
+} from '../../constants';
+import {
+    get,
+    createAssetUrlCreator,
+    decodeKeydown
+} from '../../util';
+import {
+    ICON_PRINT_CHECKMARK
+} from '../../icons/icons';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
@@ -36,12 +44,14 @@ class DocBase extends Base {
     //--------------------------------------------------------------------------
 
     /**
-     * @inheritdoc
+     * [constructor]
+     *
+     * @param {string|HTMLElement} container - Container node
+     * @param {object} [options] - Some options
+     * @return {DocBase} DocBase instance
      */
-    setup() {
-        // Always call super 1st to have the common layout
-        super.setup();
-
+    constructor(container, options) {
+        super(container, options);
         this.docEl = this.containerEl.appendChild(document.createElement('div'));
         this.docEl.classList.add('bp-doc');
 
@@ -112,55 +122,20 @@ class DocBase extends Base {
     }
 
     /**
-     * Preload performance hacking
-     *
-     * @return {void}
-     */
-    preload() {
-        // do something
-    }
-
-    /**
-     * Prefetches assets for a document.
-     *
-     * @return {void}
-     */
-    prefetch() {
-        const { url_template: template } = this.options.representation.data.content;
-        this.prefetchAssets(JS, CSS);
-        get(this.createContentUrlWithAuthParams(template), 'any');
-    }
-
-    /**
      * Loads a document.
      *
-     * @public
-     * @return {void}
+     * @param {string} pdfUrl - The pdf to load
+     * @return {Promise} Promise to load a pdf
      */
-    load() {
-        this.setup();
+    load(pdfUrlTemplate) {
+        this.pdfUrl = this.createContentUrlWithAuthParams(pdfUrlTemplate);
 
-        const { representation } = this.options;
-        const { data, status } = representation;
-        const { content } = data;
-        const { url_template: template } = content;
-
-        this.pdfUrl = this.createContentUrlWithAuthParams(template);
-        this.preload();
-        Promise.all(this.loadAssets(JS, CSS), status.getPromise()).then(this.postload);
-        super.load();
-    }
-
-    /**
-     * Loads a document.
-     *
-     * @return {void}
-     */
-    postload = () => {
         this.setupPdfjs();
         this.initViewer(this.pdfUrl);
         this.initPrint();
         this.initFind();
+
+        super.load();
     }
 
     /**
@@ -1009,7 +984,7 @@ class DocBase extends Base {
             this.loaded = true;
             this.emit('load', {
                 numPages: this.pdfViewer.pagesCount,
-                endProgress: false // Indicate that viewer will end progress later
+                skipPostload: true // Indicate that postload event will be fired later
             });
         }
     }
@@ -1045,7 +1020,7 @@ class DocBase extends Base {
 
             // Fire postload event to hide progress bar and cleanup preload after a page is rendered
             if (!this.somePageRendered) {
-                this.emit('progressend');
+                this.emit('postload');
                 this.somePageRendered = true;
             }
         }

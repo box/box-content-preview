@@ -12,6 +12,8 @@ import {
 } from '../../icons/icons';
 import './document.scss';
 
+const Box = global.Box || {};
+
 @autobind
 class Document extends DocBase {
 
@@ -20,11 +22,14 @@ class Document extends DocBase {
     //--------------------------------------------------------------------------
 
     /**
-     * @inheritdoc
+     * [constructor]
+     *
+     * @param {string|HTMLElement} container - Container node
+     * @param {Object} [options] - Configuration options
+     * @return {Document} Document instance
      */
-    setup() {
-        // Always call super 1st to have the common layout
-        super.setup();
+    constructor(container, options) {
+        super(container, options);
         this.docEl.classList.add('bp-doc-document');
     }
 
@@ -51,16 +56,6 @@ class Document extends DocBase {
         }
 
         return super.onKeydown(key);
-    }
-
-    /**
-     * Returns the name of the viewer
-     *
-     * @override
-     * @returns {string} document
-     */
-    getName() {
-        return 'Document';
     }
 
     //--------------------------------------------------------------------------
@@ -90,4 +85,7 @@ class Document extends DocBase {
     }
 }
 
+Box.Preview = Box.Preview || {};
+Box.Preview.Document = Document;
+global.Box = Box;
 export default Document;

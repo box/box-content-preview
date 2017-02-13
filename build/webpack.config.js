@@ -44,7 +44,24 @@ function updateConfig(conf, language, index) {
     const config = Object.assign(conf, {
         entry: {
             preview:        [`${lib}/preview.js`],
-            csv:            [`${lib}/viewers/text/BoxCSV.js`]
+            image:          [`${lib}/viewers/image/image.js`],
+            'multi-image':  [`${lib}/viewers/image/multi-image.js`],
+            swf:            [`${lib}/viewers/swf/swf.js`],
+            text:           [`${lib}/viewers/text/text.js`],
+            csv:            [`${lib}/viewers/text/csv.js`],
+            document:       [`${lib}/viewers/doc/document.js`],
+            presentation:   [`${lib}/viewers/doc/presentation.js`],
+            markdown:       [`${lib}/viewers/text/markdown.js`],
+            mp4:            [`${lib}/viewers/media/mp4.js`],
+            mp3:            [`${lib}/viewers/media/mp3.js`],
+            dash:           [`${lib}/viewers/media/dash.js`],
+            error:          [`${lib}/viewers/error/error.js`],
+            box3d:          [`${lib}/viewers/box3d/box3d.js`],
+            model3d:        [`${lib}/viewers/box3d/model3d/model3d.js`],
+            image360:       [`${lib}/viewers/box3d/image360/image360.js`],
+            video360:       [`${lib}/viewers/box3d/video360/video360.js`],
+            iframe:         [`${lib}/viewers/iframe/iframe.js`],
+            office:         [`${lib}/viewers/office/office.js`]
         },
         output: {
             path: path.resolve('dist', version, language),

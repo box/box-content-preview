@@ -11,13 +11,6 @@ import {
 
 @autobind
 class TextBase extends Base {
-    /**
-     * @inheritdoc
-     */
-    setup() {
-        // Always call super 1st to have the common layout
-        super.setup();
-    }
 
     /**
      * [destructor]

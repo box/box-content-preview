@@ -6,14 +6,14 @@ import throttle from 'lodash.throttle';
 /* eslint-enable import/first */
 import Browser from './browser';
 import Logger from './logger';
-import RepStatus from './rep-status';
 import loaders from './loaders';
 import cache from './cache';
+import RepStatus from './rep-status';
 import ProgressBar from './progress-bar';
-import PreviewError from './viewers/error/error';
-import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
+import ErrorLoader from './viewers/error/error-loader';
+import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation, createContentUrl } from './util';
 import getTokens from './tokens';
-import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid, cacheFile } from './file';
+import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid, cacheFile, addPreloadRepresentation } from './file';
 import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
 import {
     API,
@@ -90,6 +90,11 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     destroy() {
+        // Stop polling for rep-status
+        if (this.repStatus) {
+            this.repStatus.destroy();
+        }
+
         // Cleanup progress bar
         if (this.progressBar) {
             this.progressBar.destroy();
@@ -335,17 +340,59 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * REMOVE ME
+     * Prefetches viewer assets for the specified viewers.
+     *
+     * @param {string[]} [viewerNames] - Viewers to prefetch
+     * @return {void}
      */
-    prefetchViewers() {
-        // noop
+    prefetchViewers(viewerNames = []) {
+        const loader = this.loaders[0]; // use any loader
+        this.getViewers()
+            .filter((viewer) => viewerNames.indexOf(viewer.NAME) !== -1)
+            .forEach((viewer) => {
+                loader.prefetchAssets(viewer, this.location);
+            });
     }
 
     /**
-     * REMOVE ME
+     * Prefetches preload assets to improve performance. Preloading shows a
+     * lightweight representation of the file while the preview fully loads.
+     *
+     * @param {string} fileId - File ID
+     * @param {string} token - Access token
+     * @param {string} sharedLink - Shared link
+     * @param {string} sharedLinkPassword - Shared link password
      */
-    prefetchPreload() {
-        // noop
+    prefetchPreload(fileId, token, sharedLink, sharedLinkPassword) {
+        // File must be in cache
+        const file = cache.get(fileId);
+        if (!file) {
+            return;
+        }
+
+        const loader = this.getLoader(file);
+        if (!loader) {
+            return;
+        }
+
+        // Don't prefetch if appropriate viewer doesn't support preload
+        const viewer = loader.determineViewer(file);
+        if (!viewer.PRELOAD) {
+            return;
+        }
+
+        // @NOTE(tjin): Temporary until conversion provides real preload representation
+        addPreloadRepresentation(file);
+        // DELETE BLOCK ABOVE
+
+        loader.prefetch(
+            file,
+            token,
+            sharedLink,
+            sharedLinkPassword,
+            this.location,
+            true /* prefetch for preload */
+        );
     }
 
     //--------------------------------------------------------------------------
@@ -526,17 +573,6 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Creates combined options to give to the viewer
-     *
-     * @private
-     * @param {Object} moreOptions - Options specified by show()
-     * @returns {Object} combined options
-     */
-    createViewerOptions(moreOptions) {
-        return Object.assign({}, this.options, moreOptions);
-    }
-
-    /**
      * Loads a preview from the cache.
      *
      * @return {void}
@@ -631,43 +667,63 @@ class Preview extends EventEmitter {
         }
 
         // Determine the asset loader to use
-        const loader = this.getLoader(this.file);
+        const loader = this.getLoader(this.file, true /* re-throw any errors */);
 
-        // If no loader then throw an unsupported error
-        if (!loader) {
-            throw new Error();
+        // Show a preload of the file if available
+        /* istanbul ignore next */
+        if (this.options.preload) {
+            this.showPreload();
         }
 
         // Determine the viewer to use
         const viewer = loader.determineViewer(this.file, Object.keys(this.disabledViewers));
 
-        // Determine the representation to use
-        const repData = loader.determineRepresentation(this.file, viewer);
-        const repStatus = new RepStatus(repData, this.getRequestHeaders(), this.logger);
-
-        // Instantiate the viewer
-        this.viewer = new viewer.NAME(this.createViewerOptions({
-            viewer,
-            container: this.container,
-            file: this.file,
-            representation: {
-                status: repStatus,
-                data: repData
-            }
-        }));
-
         // Log the type of file
-        this.logger.setType(this.viewer.getName());
+        this.logger.setType(viewer.NAME);
 
-        // Add listeners for viewer events
-        this.attachViewerListeners();
+        // Determine the representation to use
+        const representation = loader.determineRepresentation(this.file, viewer);
 
-        // Load the representation into the viewer
-        this.viewer.load();
+        // Load all the static assets
+        const promiseToLoadStaticAssets = loader.load(viewer, this.options.location);
+        promiseToLoadStaticAssets.catch((err) => {
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_refresh')));
+        });
 
-        // Once the viewer instance has been created, emit it so that clients can attach their events.
-        // Viewer object will still be sent along the load event also.
-        this.emit('viewer', this.viewer);
+        // Load the representation assets
+        this.repStatus = new RepStatus(representation, this.getRequestHeaders(), this.logger);
+        const promiseToGetRepresentationStatusSuccess = loader.determineRepresentationStatus(this.repStatus);
+        promiseToGetRepresentationStatusSuccess.catch((err) => {
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_reupload')));
+        });
+
+        // Proceed only when both static and representation assets have been loaded
+        Promise.all([promiseToLoadStaticAssets, promiseToGetRepresentationStatusSuccess]).then(() => {
+            // Instantiate the viewer
+            this.viewer = new Box.Preview[viewer.NAME](this.container, Object.assign({}, this.options, {
+                file: this.file,
+                viewerAsset: viewer.ASSET,
+                viewerName: viewer.NAME // name of the viewer, cannot rely on constructor.name
+            }));
+
+            // Once the viewer instance has been created, emit it so that clients can attach their events.
+            // Viewer object will still be sent along the load event also.
+            this.emit('viewer', this.viewer);
+
+            // Add listeners for viewer events
+            this.attachViewerListeners();
+
+            // -------------------- DELETE NEXT 3 LINES
+            const { content, use_paged_viewer: usePagedViewer } = representation;
+            const asset = usePagedViewer !== 'false' ? (viewer.ASSET || '') : '';
+            const url = createContentUrl(content.url_template, asset);
+            // -------------------- DELETE ABOVE 3 LINES
+
+            // Load the representation into the viewer
+            this.viewer.load(url); // pass in content.url_template
+        }).catch((err) => {
+            this.triggerError((err instanceof Error) ? err : new Error(__('error_refresh')));
+        });
     }
 
     /**
@@ -691,8 +747,8 @@ class Preview extends EventEmitter {
                 case 'load':
                     this.finishLoading(data.data);
                     break;
-                case 'progressend':
-                    this.finishProgressBar();
+                case 'postload':
+                    this.postload();
                     break;
                 case 'notification':
                     this.emit('notification', data.data);
@@ -726,52 +782,49 @@ class Preview extends EventEmitter {
             showAnnotateButton(this.viewer.getPointModeClickHandler());
         }
 
-        const { error } = data;
-        if (error) {
-            // Bump up preview count
-            this.count.error += 1;
-
-            // 'load' with { error } signifies a preview error
-            this.emit('load', {
-                error,
-                metrics: this.logger.done(this.count),
-                file: this.file
-            });
-
-            // Hookup for phantom JS health check
-            if (typeof window.callPhantom === 'function') {
-                window.callPhantom(0);
-            }
-        } else {
-            // Bump up preview count
-            this.count.success += 1;
-
-            // Finally emit the viewer instance back with a load event
-            this.emit('load', {
-                viewer: this.viewer,
-                metrics: this.logger.done(this.count),
-                file: this.file
-            });
-
-            // If there wasn't an error, use Events API to log a preview
-            this.logPreviewEvent(this.file.id, this.options);
-
-            // Hookup for phantom JS health check
-            if (typeof window.callPhantom === 'function') {
-                window.callPhantom(1);
-            }
-        }
-
-        // Finish the progress bar unless instructed not to
-        if (data.endProgress !== false) {
-            this.finishProgressBar();
-        }
-
-        // Hide the loading indicator
+        // Once the viewer loads, hide the loading indicator
         hideLoadingIndicator();
 
-        // Prefetch next few files
+        // Bump up preview count
+        this.count.success += 1;
+
+        // Finally emit the viewer instance back with a load event
+        this.emit('load', {
+            viewer: this.viewer,
+            metrics: this.logger.done(this.count),
+            file: this.file
+        });
+
+        // If there wasn't an error, use Events API to log a preview
+        if (typeof data.error !== 'string') {
+            this.logPreviewEvent(this.file.id, this.options);
+        }
+
+        // Hookup for phantom JS health check
+        if (typeof window.callPhantom === 'function') {
+            window.callPhantom(1);
+        }
+
+        // Prefetch other files
         this.prefetch();
+
+        // Skip postload if needed
+        if (!data.skipPostload) {
+            this.postload();
+        }
+    }
+
+    /**
+     * Final load tasks. Includes cleaning up preloads and the progress bar. This is separated from
+     * finishLoading() since some viewers (e.g. the document viewer) do not want to perform these final
+     * tasks until some other event has happened.
+     *
+     * @private
+     * @return {void}
+     */
+    postload() {
+        this.hidePreload();
+        this.finishProgressBar();
     }
 
     /**
@@ -863,6 +916,9 @@ class Preview extends EventEmitter {
         // Nuke the cache
         cache.unset(this.file.id);
 
+        // Finish postload tasks
+        this.postload();
+
         // Destroy anything still showing
         this.destroy();
 
@@ -870,17 +926,38 @@ class Preview extends EventEmitter {
         const logMessage = err instanceof Error ? err.message : __('error_default');
         const displayMessage = err && err.displayMessage ? err.displayMessage : logMessage;
 
-        // Instantiate the error viewer
-        this.viewer = new PreviewError(this.createViewerOptions({
-            container: this.container,
-            file: this.file
-        }));
+        const viewer = ErrorLoader.determineViewer();
+        ErrorLoader.load(viewer, this.options.location).then(() => {
+            this.viewer = new Box.Preview[viewer.NAME](this.container, Object.assign({}, this.options, {
+                file: this.file
+            }));
 
-        // Add listeners for viewer events
-        this.attachViewerListeners();
+            this.viewer.load('', displayMessage);
+            hideLoadingIndicator();
 
-        // Load the error viewer
-        this.viewer.load(displayMessage);
+            // Add listeners for viewer events
+            this.attachViewerListeners();
+
+            // Show the download button
+            if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload) {
+                showDownloadButton(this.download);
+            }
+
+            // Bump up preview count
+            this.count.error += 1;
+
+            // 'load' with { error } signifies a preview error
+            this.emit('load', {
+                error: logMessage,
+                metrics: this.logger.done(this.count),
+                file: this.file
+            });
+
+            // Hookup for phantom JS health check
+            if (typeof window.callPhantom === 'function') {
+                window.callPhantom(0);
+            }
+        });
     }
 
     /**
@@ -919,8 +996,6 @@ class Preview extends EventEmitter {
         const currentIndex = this.collection.indexOf(this.file.id);
         const filesToPrefetch = this.collection.slice(currentIndex + 1, currentIndex + PREFETCH_COUNT + 1)
             .filter((fileID) => this.prefetchedCollection.indexOf(fileID) === -1);
-
-        // Check if we need to prefetch anything
         if (filesToPrefetch.length === 0) {
             return;
         }
@@ -941,16 +1016,16 @@ class Preview extends EventEmitter {
                     // Prefetch content
                     this.prefetchContent(file, token);
                 })
-                .catch((err) => {
+                .catch(() => {
                     /* eslint-disable no-console */
-                    console.error(`Error prefetching file ID ${id} - ${err}`);
+                    console.log(`Error prefetching file ID ${id}`);
                     /* eslint-enable no-console */
                 });
             });
         })
         .catch(() => {
             /* eslint-disable no-console */
-            console.error('Error prefetching files');
+            console.log('Error prefetching files');
             /* eslint-enable no-console */
         });
     }
@@ -965,29 +1040,50 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     prefetchContent(file, token) {
+        const { sharedLink, sharedLinkPassword, preload } = this.options;
         const loader = this.getLoader(file);
-        if (!loader) {
+        if (!loader || typeof loader.prefetch !== 'function') {
             return;
         }
 
-        let viewer = loader.determineViewer(file);
-        if (!viewer) {
-            return;
+        // Prefetch actual preview content
+        loader.prefetch(file, token, sharedLink, sharedLinkPassword, this.location);
+
+        // Also prefetch preload content if supported
+        /* istanbul ignore next */
+        if (preload) {
+            this.prefetchPreload(file.id, token, sharedLink, sharedLinkPassword);
         }
+    }
 
-        const representation = loader.determineRepresentation(file, viewer);
+    /**
+     * Shows the preload for current file if supported. Preloads should
+     * be a lightweight representation of the file. For example, a
+     * document preload is an image represntation of the first page.
+     *
+     * @private
+     * @return {void}
+     */
+    /* istanbul ignore next */
+    showPreload() {
+        const loader = this.getLoader(this.file);
+        if (loader && typeof loader.showPreload === 'function') {
+            const { token, sharedLink, sharedLinkPassword } = this.options;
+            loader.showPreload(this.file, token, sharedLink, sharedLinkPassword, this.container);
+        }
+    }
 
-        viewer = new viewer.NAME(this.createViewerOptions({
-            viewer,
-            file,
-            token,
-            representation: {
-                data: representation
-            }
-        }));
-
-        if (RepStatus.isSuccess(representation) && typeof viewer.prefetch === 'function') {
-            viewer.prefetch();
+    /**
+     * Hides the preload for current file if supported.
+     *
+     * @private
+     * @return {void}
+     */
+    /* istanbul ignore next */
+    hidePreload() {
+        const loader = this.getLoader(this.file);
+        if (loader && typeof loader.hidePreload === 'function') {
+            loader.hidePreload(this.container);
         }
     }
 
@@ -1103,10 +1199,20 @@ class Preview extends EventEmitter {
      *
      * @private
      * @param {Object} file - Box file to preview
+     * @param {boolean} [rethrow] - Whether or not to rethrow any errors
+     * @throws {Error} - Throws when browser doesn't support matching loader
      * @return {Object|null} Matching loader
      */
-    getLoader(file) {
-        return this.loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
+    getLoader(file, rethrow = false) {
+        try {
+            return this.loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
+        } catch (error) {
+            if (rethrow) {
+                throw error;
+            }
+
+            return null;
+        }
     }
 
     /**
@@ -1167,6 +1273,8 @@ class Preview extends EventEmitter {
     }
 }
 
+// Export a singleton instance for preview.
 Box.Preview = new Preview();
 global.Box = Box;
-export default Preview;
+global.Preview = Preview;
+export default Box.Preview;

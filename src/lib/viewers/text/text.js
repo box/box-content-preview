@@ -7,6 +7,8 @@ import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { HIGHLIGHTTABLE_EXTENSIONS } from './extensions';
 import { get, openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
 
+const Box = global.Box || {};
+
 // Inline web worker JS
 const HIGHLIGHT_WORKER_JS = 'onmessage=function(e){importScripts(e.data.highlightSrc);postMessage(self.hljs.highlightAuto(e.data.text).value)};';
 
@@ -16,18 +18,17 @@ const SIZE_LIMIT_BYTES = 196608;
 // Time to wait before allowing user to print (we're guessing how long it takes the iframe to load)
 const PRINT_TIMEOUT_MS = 5000;
 
-const STATIC_URI = 'third-party/text/';
-const JS = [`${STATIC_URI}highlight.min.js`];
-const CSS = [`${STATIC_URI}github.css`];
-
 class PlainText extends TextBase {
-    /**
-     * @inheritdoc
-     */
-    setup() {
-        // Always call super 1st to have the common layout
-        super.setup();
 
+    /**
+     * [constructor]
+     *
+     * @param {string|HTMLElement} container - The container
+     * @param {Object} options - some options
+     * @return {PlainText} PlainText instance
+     */
+    constructor(container, options) {
+        super(container, options);
         this.textEl = this.containerEl.appendChild(document.createElement('pre'));
         this.textEl.className = 'bp-text bp-text-plain hljs';
         this.textEl.classList.add(CLASS_HIDDEN);
@@ -42,46 +43,14 @@ class PlainText extends TextBase {
     }
 
     /**
-     * Returns the name of the viewer
-     *
-     * @override
-     * @returns {string} text
-     */
-    getName() {
-        return 'Text';
-    }
-
-    /**
-     * Returns JS assets
-     *
-     * @protected
-     * @returns {string} text
-     */
-    getJS() {
-        return JS;
-    }
-
-    /**
-     * Returns CSS assets
-     *
-     * @protected
-     * @returns {string} text
-     */
-    getCSS() {
-        return CSS;
-    }
-
-    /**
      * [destructor]
      *
      * @return {void}
      */
     destroy() {
-        if (this.textEl) {
-            const downloadBtnEl = this.textEl.querySelector('.bp-btn-download');
-            if (downloadBtnEl) {
-                downloadBtnEl.removeEventListener('click', this.download.bind(this));
-            }
+        const downloadBtnEl = this.textEl.querySelector('.bp-btn-download');
+        if (downloadBtnEl) {
+            downloadBtnEl.removeEventListener('click', this.download.bind(this));
         }
 
         this.printIframe = null;
@@ -91,54 +60,37 @@ class PlainText extends TextBase {
     /**
      * Loads a text file.
      *
-     * @public
-     * @return {void}
+     * @param {string} textUrl - The text file to load
+     * @return {Promise} Promise to load a text file
      */
-    load() {
-        this.setup();
-
-        const { representation, file } = this.options;
-        const { data, status } = representation;
-        const { content } = data;
-        const { url_template: template } = content;
+    load(textUrlTemplate) {
+        const url = this.createContentUrlWithAuthParams(textUrlTemplate);
+        const { file } = this.options;
         const { size, extension } = file;
 
         this.truncated = size > SIZE_LIMIT_BYTES;
         const headers = this.truncated ? { Range: `bytes=0-${SIZE_LIMIT_BYTES}` } : {};
 
-        Promise.all(this.loadAssets(this.getJS(), this.getCSS()), status.getPromise()).then(() => {
-            get(this.createContentUrlWithAuthParams(template), headers, 'text')
-            .then((text) => {
-                if (this.isDestroyed()) {
-                    return;
-                }
+        get(url, headers, 'text')
+        .then((text) => {
+            if (this.isDestroyed()) {
+                return;
+            }
 
-                let fetchedText = text;
-                if (this.truncated) {
-                    fetchedText += '...';
-                }
+            let fetchedText = text;
+            if (this.truncated) {
+                fetchedText += '...';
+            }
 
-                // Only highlight code files
-                if (HIGHLIGHTTABLE_EXTENSIONS.indexOf(extension) === -1) {
-                    this.finishLoading(fetchedText, false);
-                } else {
-                    this.initHighlightJs(fetchedText);
-                }
-            });
+            // Only highlight code files
+            if (HIGHLIGHTTABLE_EXTENSIONS.indexOf(extension) === -1) {
+                this.finishLoading(fetchedText, false);
+            } else {
+                this.initHighlightJs(fetchedText);
+            }
         });
 
         super.load();
-    }
-
-    /**
-     * Prefetches assets for dash.
-     *
-     * @return {void}
-     */
-    prefetch() {
-        const { url_template: template } = this.options.representation.data.content;
-        this.prefetchAssets(this.getJS(), this.getCSS());
-        get(this.createContentUrlWithAuthParams(template), 'any');
     }
 
     /**
@@ -148,7 +100,7 @@ class PlainText extends TextBase {
      */
     print() {
         if (!this.printReady) {
-            this.preparePrint(this.getCSS().concat('preview.css'));
+            this.preparePrint('third-party/text/github.css', 'text.css');
 
             this.printPopup.show(__('print_loading'), __('print'), () => {
                 this.printPopup.hide();
@@ -214,7 +166,7 @@ class PlainText extends TextBase {
      */
     initHighlightJs(text) {
         const workerBlob = new Blob([HIGHLIGHT_WORKER_JS], {
-            type: 'application/javascript'
+            type: 'text/javascript'
         });
         this.workerSrc = URL.createObjectURL(workerBlob);
         const worker = new Worker(this.workerSrc);
@@ -265,11 +217,11 @@ class PlainText extends TextBase {
      * Sets up the print iframe - uses a web worker to insert text content and
      * styles into an iframe that can be printed.
      *
-     * @param {string[]} stylesheets - Stylesheets needed for print
+     * @param {...string} stylesheets - Stylesheets needed for print
      * @return {void}
      * @private
      */
-    preparePrint(stylesheets) {
+    preparePrint(...stylesheets) {
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
         this.printframe = openContentInsideIframe(this.textEl.outerHTML);
         stylesheets.forEach((stylesheet) => {
@@ -339,4 +291,7 @@ class PlainText extends TextBase {
     }
 }
 
+Box.Preview = Box.Preview || {};
+Box.Preview.Text = PlainText;
+global.Box = Box;
 export default PlainText;
