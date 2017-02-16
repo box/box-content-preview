@@ -17,7 +17,7 @@ let containerEl;
 let doc;
 let stubs = {};
 
-describe('doc-find-bar', () => {
+describe('lib/viewers/doc/document', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -26,9 +26,17 @@ describe('doc-find-bar', () => {
         fixture.load('viewers/doc/__tests__/document-test.html');
 
         containerEl = document.querySelector('.container');
-        doc = new Document(containerEl);
+        doc = new Document({
+            container: containerEl,
+            file: {
+                id: '0'
+            }
+        });
+        doc.setup();
+
         doc.pdfViewer = {
-            currentPageNumber: 0
+            currentPageNumber: 0,
+            cleanup: sandbox.stub()
         };
         doc.controls = {
             add: sandbox.stub()
@@ -38,13 +46,17 @@ describe('doc-find-bar', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        if (doc && typeof doc.destroy === 'function') {
+            doc.destroy();
+        }
         doc = null;
         stubs = {};
     });
 
-    describe('constructor()', () => {
+    describe('setup()', () => {
         it('should add the document class to the doc element', () => {
-            expect(doc.docEl.classList.contains('bp-doc-document')).to.be.true;
+            expect(doc.docEl).to.have.class('bp-doc-document');
         });
     });
 
@@ -105,7 +117,6 @@ describe('doc-find-bar', () => {
             expect(doc.controls.add).to.be.calledWith(__('zoom_out'), doc.zoomOut, 'bp-doc-zoom-out-icon', ICON_ZOOM_OUT);
             expect(doc.controls.add).to.be.calledWith(__('zoom_in'), doc.zoomIn, 'bp-doc-zoom-in-icon', ICON_ZOOM_IN);
             expect(doc.controls.add).to.be.calledWith(__('previous_page'), doc.previousPage, 'bp-doc-previous-page-icon bp-previous-page', ICON_DROP_UP);
-
 
             expect(doc.controls.add).to.be.calledWith(__('enter_page_num'), doc.showPageNumInput, 'bp-doc-page-num');
             expect(doc.controls.add).to.be.calledWith(__('next_page'), doc.nextPage, 'bp-doc-next-page-icon bp-next-page', ICON_DROP_DOWN);

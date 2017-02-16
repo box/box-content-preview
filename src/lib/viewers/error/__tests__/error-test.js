@@ -16,20 +16,27 @@ describe('error', () => {
 
     beforeEach(() => {
         fixture.load('viewers/error/__tests__/error-test.html');
-        error = new Error(document.querySelector('.container'), {
+        error = new Error({
             file: {
                 id: '1'
-            }
+            },
+            container: '.container'
         });
     });
 
     afterEach(() => {
         fixture.cleanup();
         sandbox.verifyAndRestore();
+
+        if (error && typeof error.destroy === 'function') {
+            error.destroy();
+        }
+        error = null;
     });
 
-    describe('constructor()', () => {
+    describe('setup()', () => {
         it('should set appropriate properties', () => {
+            error.setup();
             expect(error.infoEl.classList.contains('bp-error')).to.be.true;
             expect(error.iconEl instanceof HTMLElement).to.be.true;
             expect(error.iconEl.parentNode).to.equal(error.infoEl);
@@ -51,7 +58,7 @@ describe('error', () => {
 
                 const message = 'reason';
                 error.options.file.extension = extension;
-                error.load('someUrl', message);
+                error.load(message);
 
                 expect(error.iconEl).to.contain.html(expectedIcon);
                 expect(error.messageEl.textContent).to.equal(message);
@@ -64,7 +71,7 @@ describe('error', () => {
             error.options.file.permissions = {
                 can_download: true
             };
-            error.load('someUrl', 'reason');
+            error.load('reason');
 
             expect(error.addDownloadButton).to.have.been.called;
         });
@@ -73,7 +80,7 @@ describe('error', () => {
             sandbox.stub(error, 'emit');
 
             const message = 'reason';
-            error.load('someUrl', message);
+            error.load(message);
 
             expect(error.emit).to.have.been.calledWith('load', sinon.match({
                 error: message
@@ -83,6 +90,7 @@ describe('error', () => {
 
     describe('addDownloadButton()', () => {
         it('should add a download button and attach a download click handler', () => {
+            error.setup();
             sandbox.stub(error, 'download');
 
             error.addDownloadButton();
@@ -101,6 +109,7 @@ describe('error', () => {
 
     describe('download()', () => {
         it('should emit download', () => {
+            error.setup();
             sandbox.stub(error, 'emit');
             error.download();
             expect(error.emit).to.have.been.calledWith('download');
@@ -109,6 +118,7 @@ describe('error', () => {
 
     describe('destroy()', () => {
         it('should remove download button click handler', () => {
+            error.setup();
             sandbox.stub(error, 'download');
 
             error.addDownloadButton();

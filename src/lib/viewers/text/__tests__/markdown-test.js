@@ -6,7 +6,7 @@ let containerEl;
 let markdown;
 const sandbox = sinon.sandbox.create();
 
-describe('markdown', () => {
+describe('lib/viewers/text/markdown', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -14,39 +14,32 @@ describe('markdown', () => {
     beforeEach(() => {
         fixture.load('viewers/text/__tests__/markdown-test.html');
         containerEl = document.querySelector('.container');
+        markdown = new Markdown({
+            file: {
+                id: 0
+            },
+            container: containerEl
+        });
+        markdown.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+        fixture.cleanup();
 
         if (markdown && typeof markdown.destroy === 'function') {
             markdown.destroy();
         }
-
         markdown = null;
     });
 
-    describe('Markdown()', () => {
+    describe('setup()', () => {
         it('should set up the markdown container', () => {
-            markdown = new Markdown(containerEl, {
-                file: {
-                    id: 0
-                }
-            });
-
-            expect(markdown.markdownEl.classList.contains('markdown-body')).to.be.true;
+            expect(markdown.markdownEl).to.have.class('markdown-body');
         });
     });
 
     describe('print()', () => {
-        beforeEach(() => {
-            markdown = new Markdown(containerEl, {
-                file: {
-                    id: 0
-                }
-            });
-        });
-
         it('should print iframe if print is ready', () => {
             sandbox.stub(markdown, 'printIframe');
             markdown.printReady = true;
@@ -65,7 +58,7 @@ describe('markdown', () => {
 
             markdown.print();
 
-            expect(markdown.preparePrint).to.have.been.calledWith('third-party/text/github-markdown.css', 'third-party/text/github.css', 'markdown.css');
+            expect(markdown.preparePrint).to.have.been.calledWith(['third-party/text/github.css', 'third-party/text/github-markdown.css', 'preview.css']);
             expect(markdown.printPopup.show).to.have.been.calledWith('Preparing to print...', 'Print', sinon.match.func);
             expect(markdown.printPopup.disableButton).to.have.been.called;
         });
@@ -91,14 +84,6 @@ describe('markdown', () => {
     });
 
     describe('finishLoading()', () => {
-        beforeEach(() => {
-            markdown = new Markdown(containerEl, {
-                file: {
-                    id: 0
-                }
-            });
-        });
-
         it('should parse markdown and insert with innerHTML', () => {
             const content = '* sample markdown';
             const expectedMarkdown = '<ul>\n<li>sample markdown</li>\n</ul>';

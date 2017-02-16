@@ -1,4 +1,6 @@
 import AssetLoader from '../asset-loader';
+import Image from './image';
+import MultiImage from './multi-image';
 import { ORIGINAL_REP_NAME } from '../../constants';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
@@ -6,37 +8,29 @@ import { ORIGINAL_REP_NAME } from '../../constants';
 // representation but can fallback to using the png representation (for watermarked versions).
 const VIEWERS = [
     {
-        REP: ORIGINAL_REP_NAME,
-        EXT: ['svg', 'gif'],
-        JS: ['image.js'],
-        CSS: ['image.css'],
         NAME: 'Image',
-        PREFETCH: 'img'
+        CONSTRUCTOR: Image,
+        REP: ORIGINAL_REP_NAME,
+        EXT: ['svg', 'gif']
     },
     {
-        REP: 'multi-image',
-        EXT: ['tif', 'tiff'],
-        JS: ['multi-image.js'],
-        CSS: ['multi-image.css'],
         NAME: 'MultiImage',
-        PREFETCH: 'img'
+        CONSTRUCTOR: MultiImage,
+        REP: 'multi-image',
+        EXT: ['tif', 'tiff']
     },
     {
+        NAME: 'Image',
+        CONSTRUCTOR: Image,
         REP: 'jpg',
         EXT: ['jpeg', 'jpg'],
-        JS: ['image.js'],
-        CSS: ['image.css'],
-        NAME: 'Image',
-        PREFETCH: 'img',
         ASSET: '1.jpg'
     },
     {
+        NAME: 'Image',
+        CONSTRUCTOR: Image,
         REP: 'png',
         EXT: ['ai', 'bmp', 'dcm', 'eps', 'gif', 'png', 'ps', 'psd', 'svs', 'tga', 'tif', 'tiff'],
-        JS: ['image.js'],
-        CSS: ['image.css'],
-        NAME: 'Image',
-        PREFETCH: 'img',
         ASSET: '1.png'
     }
 ];

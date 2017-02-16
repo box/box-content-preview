@@ -1,4 +1,4 @@
-$box-blue: #2b90ef;
+$box-blue: #1992d4;
 
 @keyframes box-crawler {
     0%,
@@ -32,10 +32,8 @@ $box-blue: #2b90ef;
     display: flex;
     flex-direction: column;
     transition: .25s opacity, .25s transform;
-}
 
-.bp-loaded {
-    .bp-loading-wrapper {
+    .bp-loaded & {
         display: none;
     }
 }
@@ -53,9 +51,7 @@ $box-blue: #2b90ef;
 }
 
 .bp-loading-btn-container {
-    line-height: 32px;
-    margin: 0 0 15px;
-    padding-top: 15px;
+    padding: 15px 0 27px; // Same height as error viewer
     text-align: center;
 }
 

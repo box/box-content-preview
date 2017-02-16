@@ -15,7 +15,6 @@ import {
 } from '../../icons/icons';
 import './presentation.scss';
 
-const Box = global.Box || {};
 const WHEEL_THROTTLE = 200;
 const PADDING_OFFSET = 30;
 const SCROLL_EVENT_OFFSET = 5;
@@ -29,14 +28,11 @@ class Presentation extends DocBase {
     //--------------------------------------------------------------------------
 
     /**
-     * [contructor]
-     *
-     * @param {string|HTMLElement} container - Container node
-     * @param {object} [options] - Configuration options
-     * @return {Presentation} Presentation instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
         this.docEl.classList.add('bp-doc-presentation');
         this.zoomLevel = 0;
     }
@@ -109,8 +105,8 @@ class Presentation extends DocBase {
      * Handles keyboard events for presentation viewer.
      *
      * @override
-     * @param {string} key - keydown key
-     * @return {boolean} consumed or not
+     * @param {string} key - Keydown key
+     * @return {boolean} Consumed or not
      */
     onKeydown(key) {
         if (key === 'ArrowUp') {
@@ -293,7 +289,7 @@ class Presentation extends DocBase {
      * Handler for mobile scroll events.
      *
      * @private
-     * @param {object} event - scroll event
+     * @param {object} event - Scroll event
      * @return {void}
      */
     mobileScrollHandler(event) {
@@ -316,7 +312,6 @@ class Presentation extends DocBase {
             }
         }
     }
-
 
     /**
      * Handler for 'pagesinit' event.
@@ -354,7 +349,7 @@ class Presentation extends DocBase {
      * Handles scrolling the presentation by page.
      *
      * @private
-     * @param {object} event - wheel event
+     * @param {object} event - Wheel event
      * @return {Function} Throttled mousewheel handler
      */
     wheelHandler = throttle((event) => {
@@ -414,8 +409,4 @@ class Presentation extends DocBase {
     }
 }
 
-
-Box.Preview = Box.Preview || {};
-Box.Preview.Presentation = Presentation;
-global.Box = Box;
 export default Presentation;

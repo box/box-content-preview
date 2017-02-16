@@ -27,11 +27,28 @@ describe('box3d', () => {
         fixture.load('viewers/box3d/__tests__/box3d-test.html');
         containerEl = document.querySelector('.container');
         stubs.BoxSDK = sandbox.stub(window, 'BoxSDK');
-        box3d = new Box3D(containerEl, {
+        box3d = new Box3D({
             file: {
-                id: 0
+                id: 0,
+                file_version: {
+                    id: 1
+                }
+            },
+            container: containerEl,
+            representation: {
+                status: {
+                    getPromise: () => Promise.resolve(),
+                    destroy: sandbox.stub()
+                },
+                data: {
+                    content: {
+                        url_template: 'foo'
+                    }
+                }
             }
         });
+        box3d.setup();
+        box3d.postLoad();
     });
 
     afterEach(() => {
@@ -265,21 +282,16 @@ describe('box3d', () => {
     });
 
     describe('load()', () => {
-        beforeEach(() => {
+        it('should call renderer.load()', () => {
             Object.defineProperty(Object.getPrototypeOf(Box3D.prototype), 'load', {
                 value: sandbox.stub()
             });
-        });
-
-        afterEach(() => {
-            expect(Base.prototype.load).to.have.been.called;
-        });
-
-        it('should call renderer.load()', () => {
-            sandbox.stub(box3d.renderer, 'load', () => { return new Promise(() => {}, () => {}); });
-            box3d.load('');
-
-            expect(box3d.renderer.load).to.have.been.called;
+            sandbox.stub(box3d, 'loadAssets').returns(Promise.resolve());
+            sandbox.stub(box3d, 'postLoad');
+            return box3d.load().then(() => {
+                expect(box3d.postLoad).to.have.been.called;
+                expect(Base.prototype.load).to.have.been.called;
+            });
         });
     });
 

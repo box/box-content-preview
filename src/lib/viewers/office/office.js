@@ -2,21 +2,17 @@ import autobind from 'autobind-decorator';
 import Base from '../base';
 import { deduceBoxUrl } from '../../util';
 
-const Box = global.Box || {};
 const LOAD_TIMEOUT_MS = 120000;
 
 @autobind
 class Office extends Base {
-
     /**
-     * [constructor]
-     *
-     * @param {string|HTMLElement} container - The container
-     * @param {Object} options - some options
-     * @return {SWF} SWF instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
+
         this.iframeEl = this.containerEl.appendChild(document.createElement('iframe'));
         this.iframeEl.setAttribute('width', '100%');
         this.iframeEl.setAttribute('height', '100%');
@@ -33,6 +29,8 @@ class Office extends Base {
      * @return {void}
      */
     load() {
+        this.setup();
+
         let src = `${deduceBoxUrl(this.options.api)}/integrations/officeonline/openExcelOnlinePreviewer`;
         if (this.options.sharedLink) {
             // Find the shared or vanity name
@@ -58,7 +56,4 @@ class Office extends Base {
     }
 }
 
-Box.Preview = Box.Preview || {};
-Box.Preview.Office = Office;
-global.Box = Box;
 export default Office;

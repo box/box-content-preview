@@ -19,8 +19,11 @@
                         "build/**",
                         "src/lib/polyfill.js",
                         "src/lib/browser.js",
+                        "src/lib/viewers/image/multi-image.js",
                         "src/lib/viewers/media/dash.js",
-                        "src/lib/viewers/media/scrubber.js"
+                        "src/lib/viewers/media/scrubber.js",
+                        "src/lib/viewers/box3d/model3d/*.js",
+                        "src/lib/viewers/doc/doc-preloader.js"
                     ]
                 }],
                 ["babel-plugin-transform-require-ignore", { "extensions": [".scss"] }]

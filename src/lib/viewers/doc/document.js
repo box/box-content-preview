@@ -12,8 +12,6 @@ import {
 } from '../../icons/icons';
 import './document.scss';
 
-const Box = global.Box || {};
-
 @autobind
 class Document extends DocBase {
 
@@ -22,14 +20,11 @@ class Document extends DocBase {
     //--------------------------------------------------------------------------
 
     /**
-     * [constructor]
-     *
-     * @param {string|HTMLElement} container - Container node
-     * @param {Object} [options] - Configuration options
-     * @return {Document} Document instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
         this.docEl.classList.add('bp-doc-document');
     }
 
@@ -37,8 +32,8 @@ class Document extends DocBase {
      * Handles keyboard events for document viewer.
      *
      * @override
-     * @param {string} key - keydown key
-     * @return {boolean} consumed or not
+     * @param {string} key - Keydown key
+     * @return {boolean} Consumed or not
      */
     onKeydown(key) {
         if (key === 'Shift++') {
@@ -65,8 +60,8 @@ class Document extends DocBase {
     /**
      * Bind event listeners for document controls
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     bindControlListeners() {
         super.bindControlListeners();
@@ -85,7 +80,4 @@ class Document extends DocBase {
     }
 }
 
-Box.Preview = Box.Preview || {};
-Box.Preview.Document = Document;
-global.Box = Box;
 export default Document;

@@ -17,51 +17,66 @@ describe('text', () => {
     beforeEach(() => {
         fixture.load('viewers/text/__tests__/text-test.html');
         containerEl = document.querySelector('.container');
+        text = new PlainText({
+            file: {
+                id: 0,
+                permissions: {
+                    can_download: true
+                }
+            },
+            container: containerEl,
+            representation: {
+                status: {
+                    getPromise: () => Promise.resolve(),
+                    destroy: sandbox.stub()
+                },
+                data: {
+                    content: {
+                        url_template: 'foo'
+                    }
+                }
+            }
+        });
+        text.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+        fixture.cleanup();
 
         if (typeof text.destroy === 'function') {
             text.destroy();
         }
-
         text = null;
     });
 
-    describe('PlainText()', () => {
-        const initPrintFunc = PlainText.prototype.initPrint;
-
+    describe('setup()', () => {
         it('should set up proper text elements and initialize print', () => {
-            Object.defineProperty(PlainText.prototype, 'initPrint', {
-                value: sandbox.stub()
-            });
-
-            text = new PlainText(containerEl, {
+            text = new PlainText({
                 file: {
                     id: 0
-                }
+                },
+                container: containerEl
             });
+            sandbox.stub(text, 'initPrint');
+
+            text.setup();
 
             expect(text.textEl.className).to.equal('bp-text bp-text-plain hljs bp-is-hidden');
             expect(text.codeEl.parentNode === text.textEl).to.be.true;
             expect(text.truncated).to.be.false;
-            expect(PlainText.prototype.initPrint).to.have.been.called;
-
-            // Restore
-            Object.defineProperty(PlainText.prototype, 'initPrint', {
-                value: initPrintFunc
-            });
+            expect(text.initPrint).to.have.been.called;
         });
     });
 
     describe('destroy()', () => {
+        const destroyFunc = TextBase.prototype.destroy;
+
+        afterEach(() => {
+            Object.defineProperty(TextBase.prototype, 'destroy', { value: destroyFunc });
+        });
+
         it('should remove the download event listener if it exists', () => {
-            text = new PlainText(containerEl, {
-                file: {
-                    id: 0
-                }
-            });
             const downloadBtnEl = text.textEl.appendChild(document.createElement('div'));
             downloadBtnEl.classList.add('bp-btn-download');
             sandbox.stub(downloadBtnEl, 'removeEventListener');
@@ -72,40 +87,33 @@ describe('text', () => {
         });
 
         it('should call super.destroy()', () => {
-            const destroyFunc = Object.getPrototypeOf(PlainText.prototype).destroy;
-            Object.defineProperty(Object.getPrototypeOf(PlainText.prototype), 'destroy', {
-                value: sandbox.stub()
-            });
-
-            text = new PlainText(containerEl, {
-                file: {
-                    id: 0
-                }
-            });
-
+            Object.defineProperty(TextBase.prototype, 'destroy', { value: sandbox.mock() });
             text.destroy();
-
-            expect(TextBase.prototype.destroy).to.have.been.called;
-
-            // Restore
-            Object.defineProperty(Object.getPrototypeOf(PlainText.prototype), 'destroy', {
-                value: destroyFunc
-            });
         });
     });
 
     describe('load()', () => {
-        beforeEach(() => {
-            text = new PlainText(containerEl, {
-                file: {
-                    id: 0,
-                    permissions: {
-                        can_download: true
-                    }
-                }
-            });
+        const loadFunc = TextBase.prototype.load;
+
+        afterEach(() => {
+            Object.defineProperty(TextBase.prototype, 'load', { value: loadFunc });
         });
 
+        it('should fetch assets and rep and call postload', () => {
+            Object.defineProperty(TextBase.prototype, 'load', { value: sandbox.mock() });
+
+            sandbox.stub(text, 'loadAssets').returns(Promise.resolve());
+            sandbox.stub(text, 'postLoad');
+            sandbox.stub(text, 'setup');
+
+            return text.load().then(() => {
+                expect(text.setup).to.have.been.called;
+                expect(text.postLoad).to.have.been.called;
+            });
+        });
+    });
+
+    describe('postLoad()', () => {
         it('should fetch text representation with access token in query param if file is small enough', () => {
             const urlWithAccessToken = 'blah';
             const getPromise = Promise.resolve('');
@@ -113,7 +121,7 @@ describe('text', () => {
 
             sandbox.stub(util, 'get').returns(getPromise);
             sandbox.stub(text, 'createContentUrlWithAuthParams').returns(urlWithAccessToken);
-            text.load('');
+            text.postLoad();
 
             return getPromise.then(() => {
                 expect(text.truncated).to.be.false;
@@ -130,7 +138,7 @@ describe('text', () => {
             sandbox.stub(util, 'get').returns(getPromise);
             sandbox.stub(text, 'createContentUrlWithAuthParams').returns(url);
 
-            text.load(url);
+            text.postLoad();
 
             return getPromise.then(() => {
                 expect(text.truncated).to.be.true;
@@ -145,7 +153,7 @@ describe('text', () => {
             sandbox.stub(text, 'finishLoading');
             text.options.file.size = 196608 + 1; // 192KB + 1
 
-            text.load('');
+            text.postLoad();
 
             return getPromise.then(() => {
                 expect(text.finishLoading).to.have.been.calledWith(`${someText}...`, false);
@@ -160,7 +168,7 @@ describe('text', () => {
             text.options.file.size = 196608 + 1; // 192KB + 1
             text.options.file.extension = 'js'; // code extension
 
-            text.load('');
+            text.postLoad();
 
             return getPromise.then(() => {
                 expect(text.initHighlightJs).to.have.been.calledWith(`${someText}...`);
@@ -169,14 +177,6 @@ describe('text', () => {
     });
 
     describe('print()', () => {
-        beforeEach(() => {
-            text = new PlainText(containerEl, {
-                file: {
-                    id: 0
-                }
-            });
-        });
-
         it('should print iframe if print is ready', () => {
             sandbox.stub(text, 'printIframe');
             text.printReady = true;
@@ -195,19 +195,17 @@ describe('text', () => {
 
             text.print();
 
-            expect(text.preparePrint).to.have.been.calledWith('third-party/text/github.css', 'text.css');
+            expect(text.preparePrint).to.have.been.calledWith(['third-party/text/github.css', 'preview.css']);
             expect(text.printPopup.show).to.have.been.called;
             expect(text.printPopup.disableButton).to.have.been.called;
         });
     });
 
     describe('initHighlightJs()', () => {
-        beforeEach(() => {
-            text = new PlainText(containerEl, {
-                file: {
-                    id: 0
-                }
-            });
+        const postMessageFunc = Worker.prototype.postMessage;
+
+        afterEach(() => {
+            Object.defineProperty(Worker.prototype, 'postMessage', { value: postMessageFunc });
         });
 
         it('should create worker and set it up with hljs and pass in the text to convert', () => {
@@ -215,35 +213,30 @@ describe('text', () => {
             const assetUrlCreatorStub = sandbox.stub().returns(hljs);
             sandbox.stub(util, 'createAssetUrlCreator').returns(assetUrlCreatorStub);
 
-            const postMessageFunc = Worker.prototype.postMessage;
+            const someText = 'text';
             Object.defineProperty(Worker.prototype, 'postMessage', {
-                value: sandbox.stub()
+                value: sandbox.mock().withArgs({
+                    highlightSrc: hljs,
+                    text: someText
+                })
             });
 
-            const someText = 'text';
             text.initHighlightJs(someText);
 
             expect(util.createAssetUrlCreator).to.have.been.called;
             expect(assetUrlCreatorStub).to.have.been.called;
-            expect(Worker.prototype.postMessage).to.have.been.calledWith({
-                highlightSrc: hljs,
-                text: someText
-            });
-
-            // Restore
-            Object.defineProperty(Worker.prototype, 'postMessage', {
-                value: postMessageFunc
-            });
         });
     });
 
     describe('initPrint()', () => {
         beforeEach(() => {
-            text = new PlainText(containerEl, {
+            text = new PlainText({
                 file: {
                     id: 0
-                }
+                },
+                container: containerEl
             });
+            text.setup();
         });
 
         it('should initialize print popup', () => {
@@ -265,11 +258,6 @@ describe('text', () => {
 
         beforeEach(() => {
             clock = sandbox.useFakeTimers();
-            text = new PlainText(containerEl, {
-                file: {
-                    id: 0
-                }
-            });
         });
 
         afterEach(() => {
@@ -287,14 +275,14 @@ describe('text', () => {
             });
             text.options.location = 'en-US';
 
-            text.preparePrint('blah');
+            text.preparePrint(['blah']);
 
             expect(util.createAssetUrlCreator).to.have.been.calledWith(text.options.location);
             expect(util.openContentInsideIframe).to.have.been.calledWith(text.textEl.outerHTML);
             expect(text.printframe.contentDocument.head.appendChild).to.have.been.called.once;
         });
 
-        it('should enable printing via print popup after a delay', (done) => {
+        it('should enable printing via print popup after a delay', () => {
             sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub());
             sandbox.stub(util, 'createStylesheet');
             sandbox.stub(util, 'openContentInsideIframe').returns({
@@ -308,27 +296,18 @@ describe('text', () => {
             text.initPrint();
             sandbox.stub(text.printPopup, 'enableButton');
 
-            text.preparePrint();
+            text.preparePrint(['blah']);
             clock.tick(5001);
-            done();
 
             expect(text.printPopup.enableButton).to.have.been.called;
             expect(text.printPopup.messageEl.textContent).to.equal('Ready to print.');
             expect(text.printPopup.loadingIndicator.classList.contains('bp-is-hidden')).to.be.true;
             expect(text.printPopup.printCheckmark.classList.contains('bp-is-hidden')).to.be.false;
-            expect(text.printReady.to.be.true);
+            expect(text.printReady).to.be.true;
         });
     });
 
     describe('printIframe()', () => {
-        beforeEach(() => {
-            text = new PlainText(containerEl, {
-                file: {
-                    id: 0
-                }
-            });
-        });
-
         it('should focus on content window and print', () => {
             text.printframe = {
                 contentWindow: {
@@ -346,14 +325,6 @@ describe('text', () => {
     });
 
     describe('finishLoading()', () => {
-        beforeEach(() => {
-            text = new PlainText(containerEl, {
-                file: {
-                    id: 0
-                }
-            });
-        });
-
         it('should set code with innerHTML if highlighted', () => {
             const content = '<div>test</div>';
             text.finishLoading(content, true);
@@ -392,14 +363,6 @@ describe('text', () => {
     });
 
     describe('showTruncatedDownloadButton()', () => {
-        beforeEach(() => {
-            text = new PlainText(containerEl, {
-                file: {
-                    id: 0
-                }
-            });
-        });
-
         it('should set up download button and bind click handler', () => {
             const bindDownload = sandbox.stub();
             text.download = {
@@ -419,15 +382,8 @@ describe('text', () => {
 
     describe('download()', () => {
         it('should emit download', () => {
-            text = new PlainText(containerEl, {
-                file: {
-                    id: 0
-                }
-            });
             sandbox.stub(text, 'emit');
-
             text.download();
-
             expect(text.emit).to.have.been.calledWith('download');
         });
     });

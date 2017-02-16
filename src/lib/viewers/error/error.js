@@ -7,8 +7,6 @@ import {
 } from '../../icons/icons';
 import './error.scss';
 
-const Box = global.Box || {};
-
 @autobind
 class PreviewError extends Base {
 
@@ -16,11 +14,13 @@ class PreviewError extends Base {
      * [constructor]
      *
      * @param {string|HTMLElement} container - The container
-     * @param {Object} options - some options
+     * @param {Object} options - Some options
      * @return {Error} Error instance
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
+
         this.infoEl = this.containerEl.appendChild(document.createElement('div'));
         this.iconEl = this.infoEl.appendChild(document.createElement('div'));
         this.messageEl = this.infoEl.appendChild(document.createElement('div'));
@@ -28,14 +28,27 @@ class PreviewError extends Base {
     }
 
     /**
-     * Shows an error message to the user.
+     * [destructor]
      *
-     * @public
-     * @param {string} url - rep to load
-     * @param {string} reason - error reason
      * @return {void}
      */
-    load(url, reason) {
+    destroy() {
+        if (this.downloadBtnEl) {
+            this.downloadBtnEl.removeEventListener('click', this.download);
+        }
+
+        super.destroy();
+    }
+
+    /**
+     * Shows an error message to the user.
+     *
+     * @param {string} reason - Error reason
+     * @return {void}
+     */
+    load(reason) {
+        this.setup();
+
         const file = this.options.file;
         let icon = ICON_FILE_DEFAULT;
         const message = reason || __('error_default');
@@ -71,13 +84,14 @@ class PreviewError extends Base {
 
     /**
      * Adds optional download button
+     *
      * @private
      * @return {void}
      */
     addDownloadButton() {
         this.downloadEl = this.infoEl.appendChild(document.createElement('div'));
         this.downloadEl.classList.add('bp-error-download');
-        this.downloadBtnEl = this.infoEl.appendChild(document.createElement('button'));
+        this.downloadBtnEl = this.downloadEl.appendChild(document.createElement('button'));
         this.downloadBtnEl.classList.add('bp-btn');
         this.downloadBtnEl.classList.add('bp-btn-primary');
         this.downloadBtnEl.textContent = __('download');
@@ -86,28 +100,13 @@ class PreviewError extends Base {
 
     /**
      * Emits download event
+     *
      * @private
      * @return {void}
      */
     download() {
         this.emit('download');
     }
-
-    /**
-     * Destroy
-     * @private
-     * @return {void}
-     */
-    destroy() {
-        if (this.downloadBtnEl) {
-            this.downloadBtnEl.removeEventListener('click', this.download);
-        }
-
-        super.destroy();
-    }
 }
 
-Box.Preview = Box.Preview || {};
-Box.Preview.PreviewError = PreviewError;
-global.Box = Box;
 export default PreviewError;

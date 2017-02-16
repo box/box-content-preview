@@ -3,19 +3,16 @@ import Box3D from '../box3d';
 import Box3DControls from '../box3d-controls';
 import Image360Renderer from './image360-renderer';
 
-const Box = global.Box || {};
 const CSS_CLASS_IMAGE_360 = 'bp-image-360';
 const LOAD_TIMEOUT = 120000;
 
-/**
- * Image360
- * This is the entry point for the image360 preview.
- * @class
- */
 class Image360 extends Box3D {
-
-    constructor(container, options) {
-        super(container, options);
+    /**
+     * @inheritdoc
+     */
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
 
         this.wrapperEl.classList.add(CSS_CLASS_IMAGE_360);
 
@@ -34,7 +31,4 @@ class Image360 extends Box3D {
     }
 }
 
-Box.Preview = Box.Preview || {};
-Box.Preview.Image360 = Image360;
-global.Box = Box;
 export default Image360;

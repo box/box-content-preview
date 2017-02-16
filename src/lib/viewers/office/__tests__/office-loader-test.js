@@ -1,35 +1,11 @@
 import OfficeLoader from '../office-loader';
+import Office from '../office';
 
 const sandbox = sinon.sandbox.create();
 
-describe('office-loader', () => {
+describe('lib/viewers/office/office-loader', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
-    });
-
-    describe('constructor()', () => {
-        it('should have the correct viewer', () => {
-            expect(OfficeLoader.viewers[0]).to.deep.equal({
-                REP: 'ORIGINAL',
-                EXT: ['xlsx'],
-                JS: ['office.js'],
-                CSS: [],
-                NAME: 'Office'
-            });
-            expect(OfficeLoader.viewers[1]).to.deep.equal({
-                REP: 'pdf',
-                EXT: ['xlsx'],
-                JS: [
-                    'third-party/doc/compatibility.min.js',
-                    'third-party/doc/pdf.min.js',
-                    'third-party/doc/pdf_viewer.min.js',
-                    'third-party/doc/pdf.worker.min.js',
-                    'document.js'],
-                CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
-                NAME: 'Document',
-                PREFETCH: 'xhr'
-            });
-        });
     });
 
     describe('determineViewer()', () => {
@@ -48,13 +24,11 @@ describe('office-loader', () => {
             };
 
             const viewer = OfficeLoader.determineViewer(file);
-
             expect(viewer).to.deep.equal({
+                NAME: 'Office',
+                CONSTRUCTOR: Office,
                 REP: 'ORIGINAL',
-                EXT: ['xlsx'],
-                JS: ['office.js'],
-                CSS: [],
-                NAME: 'Office'
+                EXT: ['xlsx']
             });
         });
 
@@ -76,17 +50,10 @@ describe('office-loader', () => {
             };
 
             const viewer = OfficeLoader.determineViewer(file);
-
-            expect(viewer).to.deep.equal({
-                REP: 'ORIGINAL',
-                EXT: ['xlsx'],
-                JS: ['office.js'],
-                CSS: [],
-                NAME: 'Office'
-            });
+            expect(viewer.NAME).to.equal('Office');
         });
 
-        it('should choose the Document viewer if the Office viewer is disabled', () => {
+        it('should not return a viewer if the Office viewer is disabled', () => {
             const file = {
                 extension: 'xlsx',
                 size: 1000,
@@ -103,23 +70,10 @@ describe('office-loader', () => {
             };
 
             const viewer = OfficeLoader.determineViewer(file, ['Office']);
-
-            expect(viewer).to.deep.equal({
-                REP: 'pdf',
-                EXT: ['xlsx'],
-                JS: [
-                    'third-party/doc/compatibility.min.js',
-                    'third-party/doc/pdf.min.js',
-                    'third-party/doc/pdf_viewer.min.js',
-                    'third-party/doc/pdf.worker.min.js',
-                    'document.js'],
-                CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
-                NAME: 'Document',
-                PREFETCH: 'xhr'
-            });
+            expect(viewer).to.equal(undefined);
         });
 
-        it('should choose the Document viewer if the file is too large', () => {
+        it('should not return a viewer if the file is too large', () => {
             const file = {
                 extension: 'xlsx',
                 size: 5242881,
@@ -136,23 +90,10 @@ describe('office-loader', () => {
             };
 
             const viewer = OfficeLoader.determineViewer(file, []);
-
-            expect(viewer).to.deep.equal({
-                REP: 'pdf',
-                EXT: ['xlsx'],
-                JS: [
-                    'third-party/doc/compatibility.min.js',
-                    'third-party/doc/pdf.min.js',
-                    'third-party/doc/pdf_viewer.min.js',
-                    'third-party/doc/pdf.worker.min.js',
-                    'document.js'],
-                CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
-                NAME: 'Document',
-                PREFETCH: 'xhr'
-            });
+            expect(viewer).to.equal(undefined);
         });
 
-        it('should choose the Document viewer if the user does not have download permissions', () => {
+        it('should not return a viewer if the user does not have download permissions', () => {
             const file = {
                 extension: 'xlsx',
                 size: 1000,
@@ -169,23 +110,10 @@ describe('office-loader', () => {
             };
 
             const viewer = OfficeLoader.determineViewer(file, []);
-
-            expect(viewer).to.deep.equal({
-                REP: 'pdf',
-                EXT: ['xlsx'],
-                JS: [
-                    'third-party/doc/compatibility.min.js',
-                    'third-party/doc/pdf.min.js',
-                    'third-party/doc/pdf_viewer.min.js',
-                    'third-party/doc/pdf.worker.min.js',
-                    'document.js'],
-                CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
-                NAME: 'Document',
-                PREFETCH: 'xhr'
-            });
+            expect(viewer).to.equal(undefined);
         });
 
-        it('should choose the Document viewer if the file is a password-protected shared link', () => {
+        it('should not return a viewer if the file is a password-protected shared link', () => {
             const file = {
                 extension: 'xlsx',
                 size: 1000,
@@ -205,20 +133,7 @@ describe('office-loader', () => {
             };
 
             const viewer = OfficeLoader.determineViewer(file, []);
-
-            expect(viewer).to.deep.equal({
-                REP: 'pdf',
-                EXT: ['xlsx'],
-                JS: [
-                    'third-party/doc/compatibility.min.js',
-                    'third-party/doc/pdf.min.js',
-                    'third-party/doc/pdf_viewer.min.js',
-                    'third-party/doc/pdf.worker.min.js',
-                    'document.js'],
-                CSS: ['third-party/doc/pdf_viewer.css', 'document.css'],
-                NAME: 'Document',
-                PREFETCH: 'xhr'
-            });
+            expect(viewer).to.equal(undefined);
         });
     });
 });

@@ -5,12 +5,9 @@ import Dash from '../../media/dash';
 import Video360Controls from './video360-controls';
 import Video360Renderer from './video360-renderer';
 import sceneEntities from './scene-entities';
+import { EVENT_TOGGLE_VR, EVENT_SHOW_VR_BUTTON } from '../box3d-constants';
+import JS from '../box3d-assets';
 import './video360.scss';
-
-import {
-    EVENT_TOGGLE_VR,
-    EVENT_SHOW_VR_BUTTON
-} from '../box3d-constants';
 
 const CSS_CLASS_VIDEO_360 = 'bp-video-360';
 const VIDEO_ID = 'VIDEO_ID';
@@ -22,22 +19,13 @@ const VIDEO_TEXTURE_PROPS = {
     vMapping: 'clamp'
 };
 
-/**
- * Video360
- * This is the entry point for the video360 preview.
- * @class
- */
 class Video360 extends Dash {
     /**
-     * Ties together all 360 video rendering and controls
-     *
-     * @constructor
-     * @param {string|HTMLElement} container - node or selector
-     * @param {Object} [options] - Options to be passed to Dash. See dash.js constructor
-     * @return {Video360} the Video360 object instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
 
         this.renderer = null;
         this.controls = null;
@@ -49,10 +37,6 @@ class Video360 extends Dash {
         this.mediaContainerEl.style.width = '100%';
         this.mediaContainerEl.style.height = '100%';
         this.wrapperEl.classList.add(CSS_CLASS_VIDEO_360);
-
-        const sdkOpts = { token: options.token, apiBase: options.api };
-        this.boxSdk = new BoxSDK(sdkOpts);
-        this.optionsObj = options;
     }
 
     /**
@@ -92,16 +76,27 @@ class Video360 extends Dash {
     }
 
     /**
+     * Returns video 360 player assets.
+     *
+     * @override
+     * @return {void}
+     */
+    getJSAssets() {
+        return super.getJSAssets().concat(JS);
+    }
+
+    /**
      * Once video data is ready, we can create a new renderer and start rendering.
      *
      * @inheritdoc
      */
     @autobind
     loadeddataHandler() {
-        this.renderer = new Video360Renderer(this.mediaContainerEl, this.boxSdk);
+        const { token, api } = this.options;
+        this.renderer = new Video360Renderer(this.mediaContainerEl, new BoxSDK({ token, apiBase: api }));
         this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
-        this.optionsObj.sceneEntities = sceneEntities;
-        this.renderer.initBox3d(this.optionsObj)
+        this.options.sceneEntities = sceneEntities;
+        this.renderer.initBox3d(this.options)
             .then(this.create360Environment)
             .then(() => {
                 // calling super.loadeddataHandler() will ready video playback
@@ -114,7 +109,6 @@ class Video360 extends Dash {
     /**
      * Create controls for 360 video.
      *
-     * @method createControls
      * @private
      * @return {void}
      */
@@ -126,7 +120,6 @@ class Video360 extends Dash {
     /**
      * Destroy controls for 360 video.
      *
-     * @method destroyControls
      * @private
      * @return {void}
      */
@@ -150,7 +143,6 @@ class Video360 extends Dash {
      * Create the environment that will render the 360 video
      * using the Box3D runtime.
      *
-     * @method create360Environment
      * @private
      * @return {void}
      */
@@ -244,7 +236,4 @@ class Video360 extends Dash {
     }
 }
 
-Box.Preview = Box.Preview || {};
-Box.Preview.Video360 = Video360;
-global.Box = Box;
 export default Video360;

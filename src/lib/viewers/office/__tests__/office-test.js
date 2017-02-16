@@ -1,6 +1,7 @@
 import Office from '../office';
 
 const sandbox = sinon.sandbox.create();
+let office;
 
 describe('office.js', () => {
     before(() => {
@@ -9,16 +10,27 @@ describe('office.js', () => {
 
     beforeEach(() => {
         fixture.load('viewers/office/__tests__/office-test.html');
+        office = new Office({
+            container: '.container',
+            file: {
+                id: '123'
+            }
+        });
+        office.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        if (office && typeof office.destroy === 'function') {
+            office.destroy();
+        }
+        office = null;
     });
 
-    describe('constructor()', () => {
+    describe('setup()', () => {
         it('should initialize iframe element and set relevant attributes', () => {
-            const office = new Office('.container');
             expect(office.iframeEl.width).to.equal('100%');
             expect(office.iframeEl.height).to.equal('100%');
             expect(office.iframeEl.frameBorder).to.equal('0');
@@ -29,12 +41,6 @@ describe('office.js', () => {
 
     describe('load()', () => {
         it('should load a xlsx file and set the file ID in src url on load event when the file is not a shared link', (done) => {
-            const office = new Office('.container', {
-                file: {
-                    id: '123'
-                }
-            });
-
             office.on('load', () => {
                 assert.equal(office.iframeEl.src, 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?fileId=123');
                 done();
@@ -44,13 +50,15 @@ describe('office.js', () => {
         });
 
         it('should load a xlsx file and set the shared name in src url on load event when the file is a shared link', (done) => {
-            const office = new Office('.container', {
+            office = new Office({
                 sharedLink: 'https://app.box.com/s/abcd',
                 file: {
                     id: '123'
-                }
+                },
+                container: '.container'
             });
 
+            office.setup();
             office.on('load', () => {
                 assert.equal(office.iframeEl.src, 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?s=abcd&fileId=123');
                 done();
@@ -60,13 +68,15 @@ describe('office.js', () => {
         });
 
         it('should load a xlsx file and set the vanity name in src url on load event when the file is a vanity url without a subdomain', (done) => {
-            const office = new Office('.container', {
+            office = new Office({
                 sharedLink: 'https://app.box.com/v/test',
                 file: {
                     id: '123'
-                }
+                },
+                container: '.container'
             });
 
+            office.setup();
             office.on('load', () => {
                 assert.equal(office.iframeEl.src, 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=app&fileId=123');
                 done();
@@ -76,13 +86,15 @@ describe('office.js', () => {
         });
 
         it('should load a xlsx file and set the vanity name in src url on load event when the file is a vanity url with a subdomain', (done) => {
-            const office = new Office('.container', {
+            office = new Office({
                 sharedLink: 'https://cloud.app.box.com/v/test',
                 file: {
                     id: '123'
-                }
+                },
+                container: '.container'
             });
 
+            office.setup();
             office.on('load', () => {
                 assert.equal(office.iframeEl.src, 'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=cloud&fileId=123');
                 done();

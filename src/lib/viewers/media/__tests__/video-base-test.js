@@ -1,24 +1,35 @@
 /* eslint-disable no-unused-expressions */
 import VideoBase from '../video-base';
+import MediaBase from '../media-base';
 
 let videoBase;
 const sandbox = sinon.sandbox.create();
 
-describe('video-base', () => {
+describe('lib/viewers/media/video-base', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
         fixture.load('viewers/media/__tests__/video-base-test.html');
-        const options = {
+        videoBase = new VideoBase({
             file: {
                 id: 1
+            },
+            container: '.container',
+            representation: {
+                status: {
+                    getPromise: () => Promise.resolve(),
+                    destroy: sandbox.stub()
+                },
+                data: {
+                    content: {
+                        url_template: 'www.netflix.com'
+                    }
+                }
             }
-        };
-
-        const containerEl = document.querySelector('.container');
-        videoBase = new VideoBase(containerEl, options);
+        });
+        videoBase.setup();
     });
 
     afterEach(() => {
@@ -27,11 +38,10 @@ describe('video-base', () => {
         if (videoBase && typeof videoBase.destroy === 'function') {
             videoBase.destroy();
         }
-
         videoBase = null;
     });
 
-    describe('VideoBase()', () => {
+    describe('setup()', () => {
         it('should set up media element, play button, and lower lights', () => {
             const lowerLights = VideoBase.prototype.lowerLights;
 
@@ -39,8 +49,13 @@ describe('video-base', () => {
                 value: sandbox.stub()
             });
 
-            const containerEl = document.querySelector('.container');
-            videoBase = new VideoBase(containerEl, { file: { id: 1 } });
+            videoBase = new VideoBase({
+                file: {
+                    id: 1
+                },
+                container: '.container'
+            });
+            videoBase.setup();
 
             expect(videoBase.mediaEl.getAttribute('preload')).to.equal('auto');
             expect(videoBase.playButtonEl.className).to.equal('bp-media-play-button bp-is-hidden');
@@ -68,7 +83,14 @@ describe('video-base', () => {
     });
 
     describe('loadeddataHandler()', () => {
+        const loadeddataHandlerFunc = MediaBase.prototype.loadeddataHandler;
+
+        afterEach(() => {
+            Object.defineProperty(MediaBase.prototype, 'loadeddataHandler', { value: loadeddataHandlerFunc });
+        });
+
         it('should show the play button', () => {
+            Object.defineProperty(MediaBase.prototype, 'loadeddataHandler', { value: sandbox.mock() });
             sandbox.stub(videoBase, 'showPlayButton');
             videoBase.loadeddataHandler();
             expect(videoBase.showPlayButton).to.be.called;

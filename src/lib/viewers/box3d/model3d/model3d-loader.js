@@ -1,23 +1,14 @@
 import AssetLoader from '../../asset-loader';
 import Browser from '../../../browser';
 import { replacePlaceholders } from '../../../util';
+import Model3d from './model3d';
 
-const STATIC_URI = 'third-party/model3d/';
 const VIEWERS = [
     {
-        REP: '3d',
-        EXT: ['box3d', 'fbx', 'obj', 'dae', '3ds', 'ply', 'stl'],
-        JS: [
-            `${STATIC_URI}boxsdk.js`,
-            `${STATIC_URI}box3d-runtime.js`,
-            `${STATIC_URI}webvr-polyfill.js`,
-            `${STATIC_URI}WebVR/VRConfig.js`,
-            'model3d.js'
-        ],
-        CSS: ['box3d.css', 'model3d.css'],
         NAME: 'Model3d',
-        PREFETCH: 'xhr',
-        ASSET: 'entities.json'
+        CONSTRUCTOR: Model3d,
+        REP: '3d',
+        EXT: ['box3d', 'fbx', 'obj', 'dae', '3ds', 'ply', 'stl']
     }
 ];
 

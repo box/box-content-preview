@@ -63,7 +63,7 @@ class Box3DRenderer extends EventEmitter {
      * Used to get the parent.id of the box file.
      * @return {Promise} A promise resulting in the newly created box3d
      */
-    load(options = {}) {
+    load(assetUrl, options = {}) {
         return this.initBox3d(options);
     }
 

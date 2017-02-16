@@ -1,27 +1,17 @@
 import Base360Loader from '../base360-loader';
 import Browser from '../../../browser';
 import { replacePlaceholders } from '../../../util';
+import Video360 from './video360';
 
-const STATIC_URI = 'third-party/';
 const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'mts', 'qt', 'wmv'];
 const BROWSERS_SUPPORTED = ['Chrome', 'Edge', 'Firefox', 'Opera'];
 
 const VIEWERS = [
     {
-        REP: 'dash',
-        EXT: VIDEO_FORMATS,
-        JS: [
-            `${STATIC_URI}media/shaka-player.js`,
-            `${STATIC_URI}model3d/boxsdk.js`,
-            `${STATIC_URI}model3d/box3d-runtime.js`,
-            `${STATIC_URI}model3d/webvr-polyfill.js`,
-            `${STATIC_URI}model3d/WebVR/VRConfig.js`,
-            'video360.js'
-        ],
-        CSS: ['dash.css', 'video360.css'],
         NAME: 'Video360',
-        PREFETCH: 'xhr',
-        ASSET: 'manifest.mpd'
+        CONSTRUCTOR: Video360,
+        REP: 'dash',
+        EXT: VIDEO_FORMATS
     }
 ];
 

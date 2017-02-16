@@ -20,7 +20,6 @@ import {
     RENDER_MODE_NORMALS,
     RENDER_MODE_UV
 } from './model3d-constants';
-import { createContentUrl } from '../../../util';
 import Browser from '../../../browser';
 
 const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
@@ -44,15 +43,6 @@ const OPTIMIZE_FRAMETIME_THESHOLD_REGULAR_VR = 20.0; // 50 FPS
 const OPTIMIZE_FRAMETIME_THESHOLD_MOBILE_VR = 66.6; // 15 FPS
 const DEFAULT_MODEL_SIZE = 1;
 const DEFAULT_MODEL_VR_SIZE = 1.5;
-
-// A mapping of preview render mode names to Box3D render mode enum values.
-const RENDER_MODE_VALUES = {
-    [RENDER_MODE_LIT]: Box3D.RenderMode.Lit,
-    [RENDER_MODE_UNLIT]: Box3D.RenderMode.Unlit,
-    [RENDER_MODE_NORMALS]: Box3D.RenderMode.Normals,
-    [RENDER_MODE_SHAPE]: Box3D.RenderMode.Shape,
-    [RENDER_MODE_UV]: Box3D.RenderMode.UVOverlay
-};
 
 /**
  * Model3dRenderer
@@ -85,6 +75,15 @@ class Model3dRenderer extends Box3DRenderer {
         this.dynamicOptimizerEnabled = true;
         this.defaultCameraPosition = PREVIEW_CAMERA_POSITION;
         this.defaultCameraQuaternion = PREVIEW_CAMERA_QUATERNION;
+
+        // A mapping of preview render mode names to Box3D render mode enum values.
+        this.renderModeValues = {
+            [RENDER_MODE_LIT]: Box3D.RenderMode.Lit,
+            [RENDER_MODE_UNLIT]: Box3D.RenderMode.Unlit,
+            [RENDER_MODE_NORMALS]: Box3D.RenderMode.Normals,
+            [RENDER_MODE_SHAPE]: Box3D.RenderMode.Shape,
+            [RENDER_MODE_UV]: Box3D.RenderMode.UVOverlay
+        };
     }
 
     /** @inheritdoc */
@@ -97,15 +96,15 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /** @inheritdoc */
-    load(jsonUrlTemplate, options = {}) {
-        const { viewerAsset = '', location } = options;
+    load(assetUrl, options = {}) {
         // #TODO @jholdstock: set this to not reassign param
+        const { location } = options;
         /*eslint-disable*/
         options.sceneEntities = sceneEntities(location.staticBaseURI);
         /*eslint-enable*/
 
         return this.initBox3d(options)
-            .then(() => this.loadBox3dFile(jsonUrlTemplate, viewerAsset));
+            .then(() => this.loadBox3dFile(assetUrl));
     }
 
     /**
@@ -128,15 +127,12 @@ class Model3dRenderer extends Box3DRenderer {
      * @param {string} assetPath - The asset path needed to access file
      * @return {void}
      */
-    loadBox3dFile(fileUrl, assetPath) {
+    loadBox3dFile(assetUrl) {
         this.box3d.canvas.addEventListener('click', this.handleCanvasClick);
 
         // Set MatCap texture for the 'Shape' render mode
         const renderModes = this.box3d.getApplication().getComponentByScriptId('render_modes');
         renderModes.setAttribute('shapeTexture', 'MAT_CAP_TEX');
-
-        // Replace asset path for fileUrl
-        const assetUrl = createContentUrl(fileUrl, assetPath);
 
         return this.box3d.addRemoteEntities(assetUrl)
             .then((entities) => {
@@ -484,7 +480,7 @@ class Model3dRenderer extends Box3DRenderer {
      */
     setRenderMode(mode) {
         if (this.box3d) {
-            Box3D.globalEvents.trigger(EVENT_SET_RENDER_MODE, RENDER_MODE_VALUES[mode]);
+            Box3D.globalEvents.trigger(EVENT_SET_RENDER_MODE, this.renderModeValues[mode]);
         }
     }
 

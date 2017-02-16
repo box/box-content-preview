@@ -4,15 +4,12 @@ import ImageAnnotator from '../../annotations/image/image-annotator';
 import Browser from '../../browser';
 import Base from './image-base';
 import {
-  ICON_ROTATE_LEFT,
-  ICON_FULLSCREEN_IN,
-  ICON_FULLSCREEN_OUT
+    ICON_ROTATE_LEFT,
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT
 } from '../../icons/icons';
-import {
-  CLASS_INVISIBLE
- } from '../../constants';
+import { CLASS_INVISIBLE } from '../../constants';
 import { openContentInsideIframe } from '../../util';
-
 import './image.scss';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -22,20 +19,15 @@ const CSS_CLASS_IMAGE = 'bp-image';
 const IMAGE_PADDING = 15;
 const IMAGE_ZOOM_SCALE = 1.2;
 
-const Box = global.Box || {};
-
 @autobind
 class Image extends Base {
-
     /**
-     * [constructor]
-     *
-     * @param {string|HTMLElement} container - The container
-     * @param {Object} options - some options
-     * @return {Image} Image instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
+
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_IMAGE;
         this.imageEl = this.wrapperEl.appendChild(document.createElement('img'));
@@ -65,19 +57,33 @@ class Image extends Base {
     }
 
     /**
-     * Loads an image.
+     * Loads an Image.
      *
      * @public
-     * @param {string} imageUrl - The image url
      * @return {void}
      */
-    load(imageUrlTemplate) {
-        this.imageEl.addEventListener('load', this.loadHandler);
-        this.imageEl.addEventListener('error', this.errorHandler);
-        this.bindDOMListeners();
-        this.imageEl.src = this.createContentUrlWithAuthParams(imageUrlTemplate);
-
+    load() {
+        this.setup();
         super.load();
+
+        const { representation, viewer } = this.options;
+        const { data, status } = representation;
+
+        this.bindDOMListeners();
+        return status.getPromise().then(() => {
+            this.imageEl.src = this.createContentUrlWithAuthParams(data.content.url_template, viewer.ASSET);
+        }).catch(this.handleAssetError);
+    }
+
+    /**
+     * Prefetches assets for a document.
+     *
+     * @return {void}
+     */
+    prefetch() {
+        const { representation, viewer } = this.options;
+        const { url_template: template } = representation.data.content;
+        document.createElement('img').src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
     }
 
     /**
@@ -482,6 +488,8 @@ class Image extends Base {
      * @protected
      */
     bindDOMListeners() {
+        this.imageEl.addEventListener('load', this.loadHandler);
+        this.imageEl.addEventListener('error', this.errorHandler);
         this.imageEl.addEventListener('mousedown', this.handleMouseDown);
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
         this.imageEl.addEventListener('dragstart', this.handleDragStart);
@@ -512,22 +520,23 @@ class Image extends Base {
             this.imageEl.removeEventListener('mousedown', this.handleMouseDown);
             this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
             this.imageEl.removeEventListener('dragstart', this.handleDragStart);
+
+            if (Browser.isMobile()) {
+                this.imageEl.removeEventListener('orientationchange', this.handleOrientationChange);
+
+                if (Browser.isIOS()) {
+                    this.imageEl.removeEventListener('gesturestart', this.mobileZoomStartHandler);
+                    this.imageEl.removeEventListener('gestureend', this.mobileZoomEndHandler);
+                } else {
+                    this.imageEl.removeEventListener('touchstart', this.mobileZoomStartHandler);
+                    this.imageEl.removeEventListener('touchmove', this.mobileZoomChangeHandler);
+                    this.imageEl.removeEventListener('touchend', this.mobileZoomEndHandler);
+                }
+            }
         }
 
         document.removeEventListener('mousemove', this.pan);
         document.removeEventListener('mouseup', this.stopPanning);
-
-        if (Browser.isMobile()) {
-            this.imageEl.removeEventListener('orientationchange', this.handleOrientationChange);
-            if (Browser.isIOS()) {
-                this.imageEl.removeEventListener('gesturestart', this.mobileZoomStartHandler);
-                this.imageEl.removeEventListener('gestureend', this.mobileZoomEndHandler);
-            } else {
-                this.imageEl.removeEventListener('touchstart', this.mobileZoomStartHandler);
-                this.imageEl.removeEventListener('touchmove', this.mobileZoomChangeHandler);
-                this.imageEl.removeEventListener('touchend', this.mobileZoomEndHandler);
-            }
-        }
     }
 
     /**
@@ -656,7 +665,4 @@ class Image extends Base {
     }
 }
 
-Box.Preview = Box.Preview || {};
-Box.Preview.Image = Image;
-global.Box = Box;
 export default Image;

@@ -2,6 +2,7 @@
 import Presentation from '../presentation';
 import Controls from '../../../controls';
 import Browser from '../../../browser';
+import DocBase from '../doc-base';
 import { CLASS_INVISIBLE } from '../../../constants';
 import * as util from '../../../util';
 
@@ -21,7 +22,7 @@ let containerEl;
 let presentation;
 let stubs = {};
 
-describe('presentation', () => {
+describe('lib/viewers/doc/presentation', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -30,7 +31,10 @@ describe('presentation', () => {
         fixture.load('viewers/doc/__tests__/presentation-test.html');
 
         containerEl = document.querySelector('.container');
-        presentation = new Presentation(containerEl);
+        presentation = new Presentation({
+            container: containerEl
+        });
+        presentation.setup();
         presentation.pdfViewer = {
             currentPageNumber: 1,
             update: sandbox.stub(),
@@ -45,27 +49,28 @@ describe('presentation', () => {
     });
 
     afterEach(() => {
+        sandbox.verifyAndRestore();
+        fixture.cleanup();
+
         presentation.pdfViewer = null;
         presentation.controls = null;
         if (typeof presentation.destroy === 'function') {
             presentation.destroy();
         }
-
         presentation = null;
-        sandbox.verifyAndRestore();
-        fixture.cleanup();
         stubs = {};
     });
 
-    describe('constructor()', () => {
+    describe('setup()', () => {
         it('should add the document class to the doc element', () => {
-            expect(presentation.docEl.classList.contains('bp-doc-presentation')).to.be.true;
+            expect(presentation.docEl).to.have.class('bp-doc-presentation');
         });
     });
 
     describe('setPage()', () => {
         let page1;
         let page2;
+
         beforeEach(() => {
             page1 = document.createElement('div');
             page1.setAttribute('data-page-number', '1');
@@ -87,19 +92,18 @@ describe('presentation', () => {
             sandbox.stub(presentation, 'checkOverflow');
             presentation.setPage(2);
 
-            expect(page1.classList.contains(CLASS_INVISIBLE)).to.be.true;
+            expect(page1).to.have.class(CLASS_INVISIBLE);
         });
 
         it('should show the page being set', () => {
             sandbox.stub(presentation, 'checkOverflow');
             presentation.setPage(2);
 
-            expect(page2.classList.contains(CLASS_INVISIBLE)).to.be.false;
+            expect(page2).to.not.have.class(CLASS_INVISIBLE);
         });
 
         it('should update and center the page', () => {
             stubs.centerSlide = sandbox.stub(presentation, 'centerSlide');
-
             presentation.setPage(2);
 
             expect(presentation.pdfViewer.update).to.be.called;
@@ -251,34 +255,33 @@ describe('presentation', () => {
     });
 
     describe('initViewer()', () => {
-        beforeEach(() => {
-            stubs.proto = Presentation.prototype;
-        });
+        const initViewerFunc = DocBase.prototype.initViewer;
 
         afterEach(() => {
-            Presentation.prototype = stubs.proto;
+            Object.defineProperty(DocBase.prototype, 'initViewer', { value: initViewerFunc });
         });
+
         it('should overwrite the scrollPageIntoView method', () => {
             const setPageStub = sandbox.stub(presentation, 'setPage');
             const page = {
                 pageNumber: 3
             };
-            Object.defineProperty(Object.getPrototypeOf(Presentation.prototype), 'initViewer', {
-                value: sandbox.stub()
-            });
+            Object.defineProperty(DocBase.prototype, 'initViewer', { value: sandbox.stub() });
+
             presentation.initViewer('url');
             presentation.pdfViewer.scrollPageIntoView(page);
+
             expect(setPageStub).to.be.calledWith(page.pageNumber);
         });
 
         it('should set the page to 1 if a number is not passed in', () => {
             const setPageStub = sandbox.stub(presentation, 'setPage');
             const page = 'page';
-            Object.defineProperty(Object.getPrototypeOf(Presentation.prototype), 'initViewer', {
-                value: sandbox.stub()
-            });
+            Object.defineProperty(DocBase.prototype, 'initViewer', { value: sandbox.stub() });
+
             presentation.initViewer('url');
             presentation.pdfViewer.scrollPageIntoView(page);
+
             expect(setPageStub).to.be.calledWith(1);
         });
     });

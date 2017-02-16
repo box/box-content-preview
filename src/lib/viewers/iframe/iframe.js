@@ -1,21 +1,14 @@
-import autobind from 'autobind-decorator';
 import Base from '../base';
 import { deduceBoxUrl } from '../../util';
 
-const Box = global.Box || {};
-
-@autobind
 class IFrame extends Base {
-
     /**
-     * [constructor]
-     *
-     * @param {string|HTMLElement} container - The container
-     * @param {Object} options - some options
-     * @return {SWF} SWF instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
+
         this.iframeEl = this.containerEl.appendChild(document.createElement('iframe'));
         this.iframeEl.setAttribute('width', '100%');
         this.iframeEl.setAttribute('height', '100%');
@@ -27,14 +20,15 @@ class IFrame extends Base {
     /**
      * Loads a boxnote or boxdicom file
      *
-     * @public
      * @return {void}
      */
     load() {
-        let src = `${deduceBoxUrl(this.options.api)}`;
-        const sharedLink = this.options.sharedLink || '';
+        this.setup();
 
-        const extension = this.options.file.extension;
+        let src = `${deduceBoxUrl(this.options.api)}`;
+        const { file, sharedLink = '' } = this.options;
+        const { extension } = file;
+
         if (extension === 'boxnote') {
             src = `${src}/notes/${this.options.file.id}?isReadonly=1&is_preview=1`;
 
@@ -55,7 +49,4 @@ class IFrame extends Base {
     }
 }
 
-Box.Preview = Box.Preview || {};
-Box.Preview.IFrame = IFrame;
-global.Box = Box;
 export default IFrame;

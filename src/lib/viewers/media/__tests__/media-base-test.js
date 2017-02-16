@@ -7,29 +7,36 @@ import cache from '../../../cache';
 let media;
 const sandbox = sinon.sandbox.create();
 
-describe('media-base', () => {
+describe('lib/viewers/media/media-base', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
         fixture.load('viewers/media/__tests__/media-base-test.html');
-        const options = {
+        media = new MediaBase({
             file: {
                 id: 1
+            },
+            container: '.container',
+            representation: {
+                status: {
+                    getPromise: () => Promise.resolve(),
+                    destroy: sandbox.stub()
+                },
+                data: {
+                    content: {
+                        url_template: 'www.netflix.com'
+                    }
+                }
             }
-        };
-        const containerEl = document.querySelector('.container');
-        media = new MediaBase(containerEl, options);
+        });
+        media.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
-
-        if (media && typeof media.destroy === 'function') {
-            media.destroy();
-        }
-
+        media.destroy();
         media = null;
     });
 
@@ -77,20 +84,17 @@ describe('media-base', () => {
         });
 
         it('should load mediaUrl in the media element', () => {
-            const mediaUrl = 'www.netflix.com';
-            media.load(mediaUrl);
-
-            expect(media.mediaEl.addEventListener).to.be.calledWith('loadeddata', media.loadeddataHandler);
-            expect(media.mediaEl.addEventListener).to.be.calledWith('error', media.errorHandler);
-            expect(media.mediaEl.src).to.equal(mediaUrl);
+            media.load();
+            return media.options.representation.status.getPromise().then(() => {
+                expect(media.mediaEl.addEventListener).to.be.calledWith('loadeddata', media.loadeddataHandler);
+                expect(media.mediaEl.addEventListener).to.be.calledWith('error', media.errorHandler);
+                expect(media.mediaEl.src).to.equal('www.netflix.com');
+            });
         });
 
         it('should set autoplay if loaded in iOS', () => {
             sandbox.stub(Browser, 'isIOS').returns(true);
-            const mediaUrl = 'www.netflix.com';
-
-            media.load(mediaUrl);
-
+            media.load();
             expect(media.mediaEl.autoplay).to.equal(true);
         });
     });

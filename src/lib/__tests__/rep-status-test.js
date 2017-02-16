@@ -121,12 +121,12 @@ describe('RepStatus', () => {
         });
     });
 
-    describe('success()', () => {
+    describe('getPromise()', () => {
         it('handle response and return a promise', () => {
             const handleResponseStub = sandbox.stub(repStatus, 'handleResponse');
             repStatus.promise = 'promise';
 
-            const successResult = repStatus.success();
+            const successResult = repStatus.getPromise();
             assert.isTrue(handleResponseStub.called);
             assert.equal(successResult, 'promise');
         });

@@ -1,34 +1,45 @@
 import autobind from 'autobind-decorator';
-import Remarkable from 'remarkable';
-
-import './markdown.scss';
 import Controls from '../../controls';
 import PlainText from './text';
 import { CLASS_HIDDEN } from '../../constants';
-import {
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT
-} from '../../icons/icons';
+import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
+import './markdown.scss';
 
-const Box = global.Box || {};
+const STATIC_URI = 'third-party/text/';
 
 @autobind
 class Markdown extends PlainText {
-
     /**
-     * [constructor]
-     *
-     * @param {string|HTMLElement} container - The container
-     * @param {Object} options - some options
-     * @return {Markdown} Markdown instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
 
         this.codeEl.parentNode.removeChild(this.codeEl);
         this.codeEl = null;
         this.markdownEl = this.textEl.appendChild(document.createElement('article'));
         this.markdownEl.classList.add('markdown-body');
+    }
+
+    /**
+     * Returns the name of the viewer
+     *
+     * @override
+     * @returns {string} text
+     */
+    getJS() {
+        return super.getJS().concat(`${STATIC_URI}remarkable.min.js`);
+    }
+
+    /**
+     * Returns the name of the viewer
+     *
+     * @override
+     * @returns {string} text
+     */
+    getCSS() {
+        return super.getCSS().concat(`${STATIC_URI}github-markdown.css`);
     }
 
     /**
@@ -39,7 +50,7 @@ class Markdown extends PlainText {
      */
     print() {
         if (!this.printReady) {
-            this.preparePrint('third-party/text/github-markdown.css', 'third-party/text/github.css', 'markdown.css');
+            this.preparePrint(this.getCSS().concat('preview.css'));
 
             this.printPopup.show(__('print_loading'), __('print'), () => {
                 this.printPopup.hide();
@@ -96,6 +107,7 @@ class Markdown extends PlainText {
      * @private
      */
     initRemarkable() {
+        /* global Remarkable */
         /* istanbul ignore next */
         const md = new Remarkable({
             breaks: true,           // convert '\n' in paragraphs into <br>
@@ -136,7 +148,4 @@ class Markdown extends PlainText {
     }
 }
 
-Box.Preview = Box.Preview || {};
-Box.Preview.Markdown = Markdown;
-global.Box = Box;
 export default Markdown;

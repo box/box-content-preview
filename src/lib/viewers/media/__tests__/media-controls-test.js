@@ -5,7 +5,6 @@ import Settings from '../settings';
 import Scrubber from '../scrubber';
 import * as util from '../../../util';
 
-
 let mediaControls;
 let stubs;
 let clock;
@@ -569,13 +568,14 @@ describe('Media Controls', () => {
     describe('initFilmstrip', () => {
         beforeEach(() => {
             stubs.status = {
-                success: sandbox.stub().returns(Promise.resolve())
+                getPromise: sandbox.stub().returns(Promise.resolve())
             };
             mediaControls.setupScrubbers();
             stubs.handleElAddEventListener = sandbox.stub(mediaControls.timeScrubber.getHandleEl(), 'addEventListener');
             stubs.getConvertedElAddEventListener = sandbox.stub(mediaControls.timeScrubber.getConvertedEl(), 'addEventListener');
             stubs.setFilmstrip = sandbox.stub(mediaControls, 'setFilmstrip');
         });
+
         it('should give the correct class and content to the filmstrip container', () => {
             mediaControls.initFilmstrip('url', stubs.status, '380');
             expect(mediaControls.filmstripContainerEl.classList.contains('bp-media-filmstrip-container')).to.be.true;
@@ -602,11 +602,6 @@ describe('Media Controls', () => {
         it('should add the onload function to the filmstrip', () => {
             mediaControls.initFilmstrip('url', stubs.status, '380');
             expect(typeof mediaControls.filmstripEl.onload === 'function');
-        });
-
-        it('should call the success method of the status', () => {
-            mediaControls.initFilmstrip('url', stubs.status, '380');
-            expect(stubs.status.success).to.be.called;
         });
     });
 
@@ -662,7 +657,7 @@ describe('Media Controls', () => {
                 duration: 0
             };
             stubs.status = {
-                success: sandbox.stub().returns(Promise.resolve())
+                getPromise: sandbox.stub().returns(Promise.resolve())
             };
 
             mediaControls.initFilmstrip('url', stubs.status, '380');
@@ -691,7 +686,7 @@ describe('Media Controls', () => {
     describe('filmstripHideHandler', () => {
         beforeEach(() => {
             stubs.status = {
-                success: sandbox.stub().returns(Promise.resolve())
+                getPromise: sandbox.stub().returns(Promise.resolve())
             };
 
             mediaControls.initFilmstrip('url', stubs.status, '380');

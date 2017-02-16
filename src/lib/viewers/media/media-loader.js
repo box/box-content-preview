@@ -1,8 +1,10 @@
 import AssetLoader from '../asset-loader';
 import { requires360Viewer, replacePlaceholders } from '../../util';
+import MP3 from './mp3';
+import MP4 from './mp4';
+import Dash from './dash';
 import { ORIGINAL_REP_NAME } from '../../constants';
 
-const STATIC_URI = 'third-party/media/';
 const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv'];
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
@@ -10,37 +12,28 @@ const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 
 // representation but can fallback to using the mp3 representation (for watermarked versions).
 const VIEWERS = [
     {
+        NAME: 'MP3',
+        CONSTRUCTOR: MP3,
         REP: ORIGINAL_REP_NAME,
-        EXT: ['mp3'],
-        JS: ['mp3.js'],
-        CSS: ['mp3.css'],
-        NAME: 'MP3',
-        PREFETCH: 'audio'
+        EXT: ['mp3']
     },
     {
-        REP: 'dash',
-        EXT: VIDEO_FORMATS,
-        JS: [`${STATIC_URI}shaka-player.js`, 'dash.js'],
-        CSS: ['dash.css'],
         NAME: 'Dash',
-        PREFETCH: 'xhr',
-        ASSET: 'manifest.mpd'
+        CONSTRUCTOR: Dash,
+        REP: 'dash',
+        EXT: VIDEO_FORMATS
     },
     {
-        REP: 'mp4',
-        EXT: VIDEO_FORMATS,
-        JS: ['mp4.js'],
-        CSS: ['mp4.css'],
         NAME: 'MP4',
-        PREFETCH: 'video'
+        CONSTRUCTOR: MP4,
+        REP: 'mp4',
+        EXT: VIDEO_FORMATS
     },
     {
-        REP: 'mp3',
-        EXT: ['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma'],
-        JS: ['mp3.js'],
-        CSS: ['mp3.css'],
         NAME: 'MP3',
-        PREFETCH: 'audio'
+        CONSTRUCTOR: MP3,
+        REP: 'mp3',
+        EXT: ['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma']
     }
 ];
 

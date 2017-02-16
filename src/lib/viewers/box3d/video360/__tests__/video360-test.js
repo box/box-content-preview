@@ -7,12 +7,13 @@ import {
     EVENT_TOGGLE_VR,
     EVENT_SHOW_VR_BUTTON
 } from '../../box3d-constants';
+import JS from '../../box3d-assets';
 import sceneEntities from '../scene-entities';
 import fullscreen from '../../../../fullscreen';
 
-describe('video360', () => {
+describe('lib/viewers/box3d/video360/video360', () => {
     const sandbox = sinon.sandbox.create();
-    const OPTIONS = {
+    const options = {
         token: '12345572asdfliuohhr34812348960',
         file: {
             id: 'f_098765'
@@ -44,7 +45,8 @@ describe('video360', () => {
     beforeEach(() => {
         fixture.load('viewers/box3d/video360/__tests__/video360-test.html');
         containerEl = document.querySelector('.container');
-        viewer = new Video360(containerEl, OPTIONS);
+        options.container = containerEl;
+        viewer = new Video360(options);
     });
 
     afterEach(() => {
@@ -54,11 +56,14 @@ describe('video360', () => {
         if (viewer && typeof viewer.destroy === 'function') {
             viewer.destroy();
         }
-
         viewer = null;
     });
 
-    describe('constructor()', () => {
+    describe('setup()', () => {
+        beforeEach(() => {
+            viewer.setup();
+        });
+
         it('should create an empty .renderer property', () => {
             expect(viewer.renderer).to.be.null;
         });
@@ -85,14 +90,6 @@ describe('video360', () => {
 
         it('should add class bp-video-360 to the wrapperEl', () => {
             expect(viewer.wrapperEl).to.have.class('bp-video-360');
-        });
-
-        it('should assign the newly created BoxSDK to the .boxSdk property', () => {
-            expect(viewer.boxSdk).to.be.an.instanceof(BoxSDK);
-        });
-
-        it('should keep a reference of the passed on options object as .optionsObj', () => {
-            expect(viewer.optionsObj).to.deep.equal(OPTIONS);
         });
     });
 
@@ -182,6 +179,15 @@ describe('video360', () => {
         });
     });
 
+    describe('getJSAssets()', () => {
+        it('return assets including box3d-specific and WebVR JS', () => {
+            const assets = viewer.getJSAssets();
+            JS.forEach((asset) => {
+                expect(assets.indexOf(asset) !== -1).to.be.true;
+            });
+        });
+    });
+
     describe('loadeddataHandler()', () => {
         const stubs = {};
         let superLoadedData;
@@ -215,10 +221,10 @@ describe('video360', () => {
             expect(viewer.renderer).to.be.an.instanceof(Video360Renderer);
         });
 
-        it('should set .optionsObj.sceneEntities to the sceneEntities imported into Video360', (done) => {
+        it('should set .options.sceneEntities to the sceneEntities imported into Video360', (done) => {
             stubs.createControls = sandbox.stub(viewer, 'createControls', done);
             viewer.loadeddataHandler();
-            expect(viewer.optionsObj.sceneEntities).to.deep.equal(sceneEntities);
+            expect(viewer.options.sceneEntities).to.deep.equal(sceneEntities);
         });
 
         it('should add custom event handler for VR Toggle to .renderer via .renderer.on()', (done) => {
@@ -227,10 +233,10 @@ describe('video360', () => {
             expect(stubs.on).to.have.been.calledWith(EVENT_SHOW_VR_BUTTON, viewer.handleShowVrButton);
         });
 
-        it('should invoke .renderer.initBox3d() with .optionsObj', (done) => {
+        it('should invoke .renderer.initBox3d() with .options', (done) => {
             stubs.createControls = sandbox.stub(viewer, 'createControls', done);
             viewer.loadeddataHandler();
-            expect(stubs.initBox3d).to.have.been.calledWith(viewer.optionsObj);
+            expect(stubs.initBox3d).to.have.been.calledWith(viewer.options);
         });
 
         it('should invoke .create360Environment() after successfully initializing renderer', (done) => {
@@ -363,6 +369,7 @@ describe('video360', () => {
                 getScene: sandbox.stub().returns(scene)
             };
 
+            viewer.setup();
             viewer.renderer = renderer;
             createPromise = viewer.create360Environment();
         });
@@ -380,7 +387,7 @@ describe('video360', () => {
         });
 
         it('should return a promise', () => {
-            expect(createPromise).to.be.an.instanceof(Promise);
+            expect(createPromise).to.be.instanceof(Promise);
         });
 
         it('should invoke .renderer.getScene() to get the root scene from the runtime', () => {

@@ -4,19 +4,14 @@ import './mp3.scss';
 
 const CSS_CLASS_MP3 = 'bp-media-mp3';
 
-const Box = global.Box || {};
-
 @autobind
 class MP3 extends MediaBase {
-
     /**
-     * [constructor]
-     * @param {string|HTMLElement} container - The container DOM node
-     * @param {Object} [options] - some options
-     * @return {MP3} MP3 instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
 
         // mp3 specific class
         this.wrapperEl.classList.add(CSS_CLASS_MP3);
@@ -24,6 +19,16 @@ class MP3 extends MediaBase {
         // Audio element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('audio'));
         this.mediaEl.setAttribute('preload', 'auto');
+    }
+
+    /**
+     * Prefetches assets for a mp3.
+     *
+     * @return {void}
+     */
+    prefetch() {
+        const { url_template: template } = this.options.representation.data.content;
+        document.createElement('audio').src = this.createContentUrlWithAuthParams(template);
     }
 
     /**
@@ -39,7 +44,4 @@ class MP3 extends MediaBase {
     }
 }
 
-Box.Preview = Box.Preview || {};
-Box.Preview.MP3 = MP3;
-global.Box = Box;
 export default MP3;

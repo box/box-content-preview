@@ -1,27 +1,17 @@
 import AssetLoader from '../asset-loader';
+import Office from './office';
 import { ORIGINAL_REP_NAME } from '../../constants';
 
-const STATIC_URI = 'third-party/doc/';
-const SCRIPTS_DOCUMENT = [`${STATIC_URI}compatibility.min.js`, `${STATIC_URI}pdf.min.js`, `${STATIC_URI}pdf_viewer.min.js`, `${STATIC_URI}pdf.worker.min.js`, 'document.js'];
-const OFFICE_CONSTRUCTOR = 'Office';
 const FIVE_MB = 5242880;
+const OFFICE_VIEWER_NAME = 'Office';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 const VIEWERS = [
     {
+        NAME: 'Office',
+        CONSTRUCTOR: Office,
         REP: ORIGINAL_REP_NAME,
-        EXT: ['xlsx'],
-        JS: ['office.js'],
-        CSS: [],
-        NAME: OFFICE_CONSTRUCTOR
-    },
-    {
-        REP: 'pdf',
-        EXT: ['xlsx'],
-        JS: SCRIPTS_DOCUMENT,
-        CSS: [`${STATIC_URI}pdf_viewer.css`, 'document.css'],
-        NAME: 'Document',
-        PREFETCH: 'xhr'
+        EXT: ['xlsx']
     }
 ];
 
@@ -45,7 +35,7 @@ class OfficeLoader extends AssetLoader {
         // If the user does not have permission to download the file, the file is larger than 5MB, or isDisabledDueToSharedLink is true,
         // then disable the Office viewer
         if (!file.permissions.can_download || file.size > FIVE_MB || isDisabledDueToPasswordProtectedSharedLink) {
-            disabledViewers.push(OFFICE_CONSTRUCTOR);
+            disabledViewers.push(OFFICE_VIEWER_NAME);
         }
 
         return super.determineViewer(file, disabledViewers);

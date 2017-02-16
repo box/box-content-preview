@@ -2,7 +2,15 @@ import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import debounce from 'lodash.debounce';
 import fullscreen from '../fullscreen';
-import { appendAuthParams, getHeaders, createContentUrl } from '../util';
+import {
+    appendAuthParams,
+    getHeaders,
+    createContentUrl,
+    loadStylesheets,
+    loadScripts,
+    prefetchAssets,
+    createAssetUrlCreator
+} from '../util';
 import Browser from '../browser';
 import {
     CLASS_FULLSCREEN,
@@ -15,7 +23,6 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
 @autobind
 class Base extends EventEmitter {
-
     /**
      * [constructor]
      *
@@ -23,16 +30,21 @@ class Base extends EventEmitter {
      * @param {Object} options - some options
      * @return {Base} Instance of base
      */
-    constructor(containerEl, options) {
+    constructor(options) {
         super();
-
-        // Save the options
         this.options = options;
+    }
 
+    /**
+     * Sets up the vewier and its DOM
+     *
+     * @return {void}
+     */
+    setup() {
         // Get the container dom element if selector was passed, in tests
-        let container = containerEl;
-        if (typeof containerEl === 'string') {
-            container = document.querySelector(containerEl);
+        let { container } = this.options;
+        if (typeof container === 'string') {
+            container = document.querySelector(container);
         }
 
         // From the perspective of viewers bp holds everything
@@ -48,6 +60,30 @@ class Base extends EventEmitter {
         if (Browser.isMobile()) {
             this.containerEl.classList.add(CLASS_BOX_PREVIEW_MOBILE);
         }
+    }
+
+    /**
+     * Destroys the viewer
+     *
+     * @protected
+     * @return {void}
+     */
+    destroy() {
+        const { status } = this.options.representation || {};
+        if (status) {
+            status.destroy();
+        }
+
+        fullscreen.removeAllListeners();
+        document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
+        this.removeAllListeners();
+
+        if (this.containerEl) {
+            this.containerEl.innerHTML = '';
+        }
+
+        this.destroyed = true;
+        this.emit('destroy');
     }
 
     /**
@@ -86,9 +122,32 @@ class Base extends EventEmitter {
                 return;
             }
             if (!this.isLoaded() && !this.isDestroyed()) {
-                this.emit('error', new Error(__('error_refresh')));
+                this.triggerError();
             }
         }, this.loadTimeout);
+    }
+
+    /**
+     * Emits an error when an asset (static or representation) fails to load.
+     *
+     * @emits error
+     * @return {void}
+     */
+    handleAssetError = () => {
+        this.triggerError();
+        this.destroyed = true;
+    }
+
+    /**
+     * Emits error event with refresh message.
+     *
+     * @protected
+     * @emits error
+     * @param {Error} [err] - Optional error with message
+     * @return {void}
+     */
+    triggerError(err) {
+        this.emit('error', (err instanceof Error) ? err : new Error(__('error_refresh')));
     }
 
     /**
@@ -134,9 +193,7 @@ class Base extends EventEmitter {
      * @return {string} content url
      */
     createContentUrl(template, asset) {
-        const { viewerAsset = '' } = this.options;
-        const assetName = typeof asset === 'string' ? asset : viewerAsset;
-        return createContentUrl(template, assetName);
+        return createContentUrl(template, asset);
     }
 
     /**
@@ -224,21 +281,6 @@ class Base extends EventEmitter {
     }
 
     /**
-     * Destroys the viewer
-     *
-     * @protected
-     * @return {void}
-     */
-    destroy() {
-        this.emit('destroy');
-        fullscreen.removeAllListeners();
-        document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
-        this.removeAllListeners();
-        this.containerEl.innerHTML = '';
-        this.destroyed = true;
-    }
-
-    /**
      * Emits a generic viewer event
      *
      * @protected
@@ -248,12 +290,14 @@ class Base extends EventEmitter {
      * @return {void}
      */
     emit(event, data) {
+        const { file, viewer } = this.options;
+
         super.emit(event, data);
         super.emit('viewerevent', {
             event,
             data,
-            viewerName: this.options.viewerName,
-            fileId: this.options.file.id
+            viewerName: viewer ? viewer.NAME : '',
+            fileId: file.id
         });
     }
 
@@ -262,7 +306,7 @@ class Base extends EventEmitter {
      * Although W3 strongly discourages the prevention of pinch to zoom,
      * we still meet the WCAG's requirement of a 200% zoom on text.
      *
-     * @private
+     * @protected
      * @param {Event} event - object
      * @return {void}
      */
@@ -292,7 +336,7 @@ class Base extends EventEmitter {
      * Handles updates to the pinch in order to determine whether the user
      * was pinching in or out. Used only by non iOS browsers
      *
-     * @private
+     * @protected
      * @param {Event} event - object
      * @return {void}
      */
@@ -309,7 +353,7 @@ class Base extends EventEmitter {
     /**
      * Zooms the document in or out depending on the scale of the pinch
      *
-     * @private
+     * @protected
      * @param {Event} event - object
      * @return {void}
      */
@@ -348,11 +392,51 @@ class Base extends EventEmitter {
      * @return {Object} Value of a viewer option
      */
     getViewerOption(option) {
-        const { viewers, viewerName } = this.options;
-        if (viewers && viewers[viewerName]) {
-            return viewers[viewerName][option];
+        const { viewers, viewer } = this.options;
+        if (viewers && viewers[viewer.NAME]) {
+            return viewers[viewer.NAME][option];
         }
         return null;
+    }
+
+    /**
+     * Loads assets needed for a viewer
+     *
+     * @protected
+     * @param {Array} [js] - js assets
+     * @param {Array} [css] - css assets
+     * @return {Promise} Promise to load scripts
+     */
+    loadAssets(js, css) {
+        // Create an asset path creator function
+        const { location } = this.options;
+        const assetUrlCreator = createAssetUrlCreator(location);
+
+        // 1st load the stylesheets needed for this preview
+        loadStylesheets((css || []).map(assetUrlCreator));
+
+        // Then load the scripts needed for this preview
+        return loadScripts((js || []).map(assetUrlCreator));
+    }
+
+    /**
+     * Prefetches assets needed for a viewer
+     *
+     * @protected
+     * @param {Array} [js] - js assets
+     * @param {Array} [css] - css assets
+     * @return {void}
+     */
+    prefetchAssets(js, css) {
+        // Create an asset path creator function
+        const { location } = this.options;
+        const assetUrlCreator = createAssetUrlCreator(location);
+
+        // Prefetch the stylesheets needed for this preview
+        prefetchAssets((css || []).map(assetUrlCreator));
+
+        // Prefetch the scripts needed for this preview
+        prefetchAssets((js || []).map(assetUrlCreator));
     }
 }
 

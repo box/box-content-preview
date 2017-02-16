@@ -9,17 +9,12 @@ const CLASS_PLAY_BUTTON = 'bp-media-play-button';
 
 @autobind
 class VideoBase extends MediaBase {
-
     /**
-     * [constructor]
-     *
-     * @override
-     * @param {string|HTMLElement} container - The container DOM node
-     * @param {Object} [options] - some options
-     * @return {VideoBase} VideoBase instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
 
         // Video element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));
@@ -46,9 +41,11 @@ class VideoBase extends MediaBase {
             this.mediaEl.removeEventListener('click', this.togglePlay);
             this.mediaEl.removeEventListener('waiting', this.waitingHandler);
         }
+
         if (this.playButtonEl) {
             this.playButtonEl.removeEventListener('click', this.togglePlay);
         }
+
         super.destroy();
     }
 
@@ -56,7 +53,6 @@ class VideoBase extends MediaBase {
      * Handler for meta data load for the media element.
      *
      * @override
-     * @protected
      * @return {void}
      */
     loadeddataHandler() {
@@ -68,7 +64,6 @@ class VideoBase extends MediaBase {
      * Handler for play state
      *
      * @override
-     * @private
      * @return {void}
      */
     playingHandler() {
@@ -80,7 +75,6 @@ class VideoBase extends MediaBase {
      * Handler for pause state
      *
      * @override
-     * @private
      * @return {void}
      */
     pauseHandler() {
@@ -105,7 +99,6 @@ class VideoBase extends MediaBase {
      * Makes changes to the media element.
      *
      * @override
-     * @protected
      * @return {void}
      */
     addEventListenersForMediaControls() {
@@ -122,7 +115,6 @@ class VideoBase extends MediaBase {
      * Makes changes to the meida controls.
      *
      * @override
-     * @protected
      * @return {void}
      */
     addEventListenersForMediaElement() {
@@ -145,7 +137,6 @@ class VideoBase extends MediaBase {
      * senstive to the containers width.
      *
      * @override
-     * @protected
      * @return {void}
      */
     resize() {
@@ -177,6 +168,17 @@ class VideoBase extends MediaBase {
         if (this.containerEl) {
             this.containerEl.classList.add(CLASS_DARK);
         }
+    }
+
+    /**
+     * Handles keyboard events for video
+     *
+     * @override
+     * @param {string} key - Keydown key
+     * @return {boolean} Consumed or not
+     */
+    onKeyDown(key) {
+        return super.onKeyDown(key);
     }
 }
 

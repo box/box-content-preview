@@ -58,7 +58,6 @@ class MediaControls extends EventEmitter {
         this.settingsButtonEl = this.wrapperEl.querySelector('.bp-media-gear-icon');
         this.setLabel(this.settingsButtonEl, __('media_settings'));
 
-
         this.setupSettings();
         this.setupScrubbers();
         this.attachEventHandlers();
@@ -453,9 +452,9 @@ class MediaControls extends EventEmitter {
      * Sets up the filmstrip
      *
      * @private
-     * @param {string} url - filmstrip url
-     * @param {RepStatus} status - status of filmstrip
-     * @param {number} aspect - ratio
+     * @param {string} url - Filmstrip url
+     * @param {RepStatus} status - Status of filmstrip
+     * @param {number} aspect - Aspect ratio
      * @return {void}
      */
     initFilmstrip(url, status, aspect) {
@@ -470,7 +469,6 @@ class MediaControls extends EventEmitter {
 
         this.filmstripTimeEl = this.filmstripContainerEl.appendChild(document.createElement('div'));
         this.filmstripTimeEl.className = 'bp-media-filmstrip-timecode';
-
 
         const frameWidth = 90 * aspect;
 
@@ -491,7 +489,7 @@ class MediaControls extends EventEmitter {
         };
 
         // Once the filmstrip status is success, load it
-        status.success().then(this.setFilmstrip);
+        status.getPromise().then(this.setFilmstrip);
     }
 
     /**

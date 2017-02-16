@@ -2,7 +2,6 @@ import autobind from 'autobind-decorator';
 import Box3D from '../box3d';
 import Model3dControls from './model3d-controls';
 import Model3dRenderer from './model3d-renderer';
-
 import {
     CAMERA_PROJECTION_PERSPECTIVE,
     EVENT_CANVAS_CLICK,
@@ -17,15 +16,8 @@ import {
     EVENT_TOGGLE_HELPERS,
     RENDER_MODE_LIT
 } from './model3d-constants';
-
-import {
-    CSS_CLASS_INVISIBLE,
-    EVENT_LOAD
-} from '../box3d-constants';
-
+import { CSS_CLASS_INVISIBLE, EVENT_LOAD } from '../box3d-constants';
 import './model3d.scss';
-
-const Box = global.Box || {};
 
 const DEFAULT_AXIS_UP = '+Y';
 const DEFAULT_AXIS_FORWARD = '+Z';
@@ -38,14 +30,11 @@ const DEFAULT_AXIS_FORWARD = '+Z';
 @autobind
 class Model3d extends Box3D {
     /**
-     * Ties together rendering, settings, and controls modules
-     * @constructor
-     * @param {string|HTMLElement} container - node
-     * @param {object} [options] - some options
-     * @return {Model3d} the Model3d object instance
+     * @inheritdoc
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        // Always call super 1st to have the common layout
+        super.setup();
 
         this.wrapperEl.classList.add(CSS_CLASS_INVISIBLE);
 
@@ -105,7 +94,9 @@ class Model3d extends Box3D {
             this.controls.removeListener(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
         }
 
-        this.renderer.removeListener(EVENT_CANVAS_CLICK, this.handleCanvasClick);
+        if (this.renderer) {
+            this.renderer.removeListener(EVENT_CANVAS_CLICK, this.handleCanvasClick);
+        }
     }
 
     /**
@@ -208,7 +199,6 @@ class Model3d extends Box3D {
      * @param {string} clipId - The ID of the clip that was selected.
      * @return {void}
      */
-    @autobind
     handleSelectAnimationClip(clipId) {
         this.renderer.setAnimationClip(clipId);
     }
@@ -218,7 +208,6 @@ class Model3d extends Box3D {
      * @param  {Object}  axis An object describing the axis to rotate on
      * @return {void}
      */
-    @autobind
     handleRotateOnAxis(axis) {
         this.renderer.rotateOnAxis(axis);
     }
@@ -230,7 +219,6 @@ class Model3d extends Box3D {
      * @param {[type]} transition - True to trigger a smooth rotationd transition, false for snap to rotation
      * @return {void}
      */
-    @autobind
     handleRotationAxisSet(upAxis, forwardAxis, transition = true) {
         this.renderer.setAxisRotation(upAxis, forwardAxis, transition);
     }
@@ -238,7 +226,6 @@ class Model3d extends Box3D {
     /**
      * @inheritdoc
      */
-    @autobind
     handleSceneLoaded() {
         this.loaded = true;
 
@@ -307,7 +294,6 @@ class Model3d extends Box3D {
      * @private
      * @return {void}
      */
-    @autobind
     handleToggleAnimation(play) {
         this.renderer.toggleAnimation(play);
     }
@@ -318,7 +304,6 @@ class Model3d extends Box3D {
      * @private
      * @return {void}
      */
-    @autobind
     handleCanvasClick() {
         this.controls.hidePullups();
     }
@@ -353,7 +338,6 @@ class Model3d extends Box3D {
      * @param  {string} mode The selected render mode string
      * @return {void}
      */
-    @autobind
     handleSetRenderMode(mode = 'Lit') {
         this.renderer.setRenderMode(mode);
     }
@@ -366,7 +350,6 @@ class Model3d extends Box3D {
      * @param {boolean} show - True or false to show or hide. If not specified, the helpers will be toggled.
      * @return {void}
      */
-    @autobind
     handleToggleHelpers(show) {
         this.renderer.toggleHelpers(show);
     }
@@ -376,7 +359,6 @@ class Model3d extends Box3D {
      * @private
      * @return {void}
      */
-    @autobind
     handleSetCameraProjection(projection) {
         this.renderer.setCameraProjection(projection);
     }
@@ -386,7 +368,6 @@ class Model3d extends Box3D {
      * @private
      * @return {void}
      */
-    @autobind
     handleSetQualityLevel(level) {
         this.renderer.setQualityLevel(level);
     }
@@ -397,7 +378,6 @@ class Model3d extends Box3D {
      * @param {boolean} visible - Indicates whether or not skeletons are visible.
      * @return {void}
      */
-    @autobind
     handleShowSkeletons(visible) {
         this.renderer.setSkeletonsVisible(visible);
     }
@@ -408,13 +388,9 @@ class Model3d extends Box3D {
      * @param {boolean} visible - Indicates whether or not wireframes are visible.
      * @return {void}
      */
-    @autobind
     handleShowWireframes(visible) {
         this.renderer.setWireframesVisible(visible);
     }
 }
 
-Box.Preview = Box.Preview || {};
-Box.Preview.Model3d = Model3d;
-global.Box = Box;
 export default Model3d;

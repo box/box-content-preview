@@ -1,23 +1,14 @@
 import Base360Loader from '../base360-loader';
 import Browser from '../../../browser';
 import { replacePlaceholders } from '../../../util';
+import Image360 from './image360';
 
-const STATIC_URI = 'third-party/model3d/';
 const VIEWERS = [
     {
-        REP: '3d',
-        EXT: ['jpg', 'jpeg', 'png', 'ai', 'bmp', 'dcm', 'eps', 'gif', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff'],
-        JS: [
-            `${STATIC_URI}boxsdk.js`,
-            `${STATIC_URI}box3d-runtime.js`,
-            `${STATIC_URI}webvr-polyfill.js`,
-            `${STATIC_URI}WebVR/VRConfig.js`,
-            'image360.js'
-        ],
-        CSS: ['image360.css'],
         NAME: 'Image360',
-        PREFETCH: 'xhr',
-        ASSET: 'entities.json'
+        CONSTRUCTOR: Image360,
+        REP: '3d',
+        EXT: ['jpg', 'jpeg', 'png', 'ai', 'bmp', 'dcm', 'eps', 'gif', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff']
     }
 ];
 

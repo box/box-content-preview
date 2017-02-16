@@ -6,7 +6,7 @@ let containerEl;
 let textBase;
 const sandbox = sinon.sandbox.create();
 
-describe('text-base', () => {
+describe('lib/viewers/text/text-base', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -14,11 +14,13 @@ describe('text-base', () => {
     beforeEach(() => {
         fixture.load('viewers/text/__tests__/text-base-test.html');
         containerEl = document.querySelector('.container');
-        textBase = new TextBase(containerEl, {
+        textBase = new TextBase({
             file: {
                 id: 0
-            }
+            },
+            container: containerEl
         });
+        textBase.setup();
     });
 
     afterEach(() => {
@@ -95,11 +97,14 @@ describe('text-base', () => {
     });
 
     describe('loadUI()', () => {
+        const addFunc = Controls.prototype.add;
+
+        afterEach(() => {
+            Object.defineProperty(Controls.prototype, 'add', { value: addFunc });
+        });
+
         it('should setup controls and add click handlers', () => {
-            const addFunc = Controls.prototype.add;
-            Object.defineProperty(Controls.prototype, 'add', {
-                value: sandbox.stub()
-            });
+            Object.defineProperty(Controls.prototype, 'add', { value: sandbox.stub() });
 
             textBase.loadUI();
             expect(textBase.controls instanceof Controls).to.be.true;
@@ -107,11 +112,6 @@ describe('text-base', () => {
             expect(Controls.prototype.add).to.have.been.calledWith(sinon.match.string, textBase.zoomOut, sinon.match.string, sinon.match.string);
             expect(Controls.prototype.add).to.have.been.calledWith(sinon.match.string, textBase.zoomIn, sinon.match.string, sinon.match.string);
             expect(Controls.prototype.add).to.have.been.calledWith(sinon.match.string, textBase.toggleFullscreen, sinon.match.string, sinon.match.string);
-
-            // Restore
-            Object.defineProperty(Controls.prototype, 'add', {
-                value: addFunc
-            });
         });
     });
 

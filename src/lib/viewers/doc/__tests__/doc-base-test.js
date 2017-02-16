@@ -24,7 +24,6 @@ const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const SCROLL_END_TIMEOUT = 500;
 
-
 const sandbox = sinon.sandbox.create();
 let docBase;
 let containerEl;
@@ -39,29 +38,40 @@ describe('doc-base', () => {
         fixture.load('viewers/doc/__tests__/doc-base-test.html');
 
         containerEl = document.querySelector('.container');
-        const options = {
-            viewerName: 'docBaseViewer',
+        docBase = new DocBase({
+            container: containerEl,
+            representation: {
+                status: {
+                    getPromise: () => Promise.resolve(),
+                    destroy: sandbox.stub()
+                },
+                data: {
+                    content: {
+                        url_template: 'foo'
+                    }
+                }
+            },
             file: {
-                id: 0
+                id: '0'
             }
-        };
-        docBase = new DocBase(containerEl, options);
+        });
+        docBase.setup();
         stubs = {};
     });
 
     afterEach(() => {
+        sandbox.verifyAndRestore();
+        fixture.cleanup();
+
         docBase.pdfViewer = undefined;
         if (typeof docBase.destroy === 'function') {
             docBase.destroy();
         }
-
-        sandbox.verifyAndRestore();
-        fixture.cleanup();
         docBase = null;
         stubs = null;
     });
 
-    describe('constructor()', () => {
+    describe('setup()', () => {
         it('should correctly set a doc element, viewer element, and a timeout', () => {
             expect(docBase.docEl.classList.contains('bp-doc')).to.be.true;
             expect(docBase.docEl.parentNode).to.deep.equal(docBase.containerEl);
@@ -140,31 +150,43 @@ describe('doc-base', () => {
     });
 
     describe('load()', () => {
-        it('should load a document', () => {
-            const loadFunc = Base.prototype.load;
-            const url = 'test';
+        const loadFunc = Base.prototype.load;
 
-            const appendAuthStub = sandbox.stub(docBase, 'appendAuthParams').returns(`${url}authed`);
+        afterEach(() => {
+            Object.defineProperty(Base.prototype, 'load', { value: loadFunc });
+        });
+
+        it('should load a document', () => {
+            sandbox.stub(docBase, 'setup');
+            Object.defineProperty(Base.prototype, 'load', { value: sandbox.mock() });
+            sandbox.stub(docBase, 'createContentUrlWithAuthParams');
+            sandbox.stub(docBase, 'postload');
+            sandbox.stub(docBase, 'loadAssets').returns(Promise.resolve());
+
+            return docBase.load().then(() => {
+                expect(docBase.setup).to.be.called;
+                expect(docBase.createContentUrlWithAuthParams).to.be.calledWith('foo');
+                expect(docBase.postload).to.be.called;
+            });
+        });
+    });
+
+    describe('postload', () => {
+        it('should setup pdfjs, init viewer, print, and find', () => {
+            const url = 'foo';
+            docBase.pdfUrl = url;
+
             const setupPdfjsStub = sandbox.stub(docBase, 'setupPdfjs');
             const initViewerStub = sandbox.stub(docBase, 'initViewer');
             const initPrintStub = sandbox.stub(docBase, 'initPrint');
             const initFindStub = sandbox.stub(docBase, 'initFind');
-            Object.defineProperty(Object.getPrototypeOf(DocBase.prototype), 'load', {
-                value: sandbox.stub()
-            });
 
-            docBase.load(url);
-            expect(appendAuthStub).to.be.calledWith(url);
-            expect(docBase.pdfUrl).to.equal(`${url}authed`);
+            docBase.postload();
+
             expect(setupPdfjsStub).to.be.called;
             expect(initViewerStub).to.be.calledWith(docBase.pdfUrl);
             expect(initPrintStub).to.be.called;
             expect(initFindStub).to.be.called;
-            expect(Base.prototype.load).to.be.called;
-
-            Object.defineProperty(Object.getPrototypeOf(DocBase.prototype), 'load', {
-                value: loadFunc
-            });
         });
     });
 
@@ -689,34 +711,23 @@ describe('doc-base', () => {
 
     describe('isAnnotatable()', () => {
         beforeEach(() => {
-            docBase.options = {
-                viewerName: 'doc',
-                viewers: {
-                    doc: {
-                        annotations: true
-                    }
-                },
-                file: {
-                    id: 0
-                }
-            };
+            stubs.getViewerOption = sandbox.stub(docBase, 'getViewerOption');
+            stubs.getViewerOption.withArgs('annotations').returns(true);
         });
 
         it('should return false if the type is not a point or a highlight', () => {
             expect(docBase.isAnnotatable('drawing')).to.equal(false);
         });
 
-        it('should return annotations value of a specific viewer if specified', () => {
+        it('should return true if viewer option is set to true', () => {
             expect(docBase.isAnnotatable('point')).to.equal(true);
-
-            docBase.options.viewers.doc.annotations = false;
+            stubs.getViewerOption.withArgs('annotations').returns(false);
             expect(docBase.isAnnotatable('point')).to.equal(false);
         });
 
         it('should use the global show annotationsBoolean if the viewer param is not specified', () => {
-            docBase.options.viewerName = 'image';
+            stubs.getViewerOption.withArgs('annotations').returns(null);
             docBase.options.showAnnotations = true;
-
             expect(docBase.isAnnotatable('point')).to.equal(true);
 
             docBase.options.showAnnotations = false;
@@ -814,10 +825,8 @@ describe('doc-base', () => {
             const url = 'url';
             const defaultChunkSize = 262144;
 
-            docBase.options = {
-                location: {
-                    locale: 'not-en-US'
-                }
+            docBase.options.location = {
+                locale: 'not-en-US'
             };
             sandbox.stub(docBase, 'getViewerOption').returns(null);
 
@@ -838,10 +847,8 @@ describe('doc-base', () => {
             const url = 'url';
             const largeChunkSize = 1048576;
 
-            docBase.options = {
-                location: {
-                    locale: 'en-US'
-                }
+            docBase.options.location = {
+                locale: 'en-US'
             };
             sandbox.stub(docBase, 'getViewerOption').returns(null);
 
@@ -1347,8 +1354,8 @@ describe('doc-base', () => {
 
             docBase.pagesinitHandler();
             expect(stubs.emit).to.be.calledWith('load', {
-                numPages: 5,
-                skipPostload: true
+                endProgress: false,
+                numPages: 5
             });
             expect(docBase.loaded).to.be.truthy;
         });
@@ -1376,7 +1383,7 @@ describe('doc-base', () => {
 
         it('should emit postload event if not already emitted', () => {
             docBase.pagerenderedHandler(docBase.event);
-            expect(stubs.emit).to.be.calledWith('postload');
+            expect(stubs.emit).to.be.calledWith('progressend');
         });
 
         it('should render annotations on a page if the annotator and event page are specified', () => {

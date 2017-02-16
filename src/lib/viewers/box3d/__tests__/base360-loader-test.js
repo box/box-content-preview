@@ -9,12 +9,10 @@ const sandbox = sinon.sandbox.create();
 describe('base360-loader', () => {
     beforeEach(() => {
         base360Loader = new Base360Loader();
-        const some360Viewer = {
+        base360Loader.viewers = [{
             REP: 'dash',
             EXT: 'mp4'
-        };
-
-        base360Loader.viewers = [some360Viewer];
+        }];
 
         file = {
             extension: 'mp4',

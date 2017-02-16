@@ -2,9 +2,33 @@ import autobind from 'autobind-decorator';
 import { get } from './util';
 
 const STATUS_UPDATE_INTERVAL_IN_MILLIS = 2000;
+const STATUS_SUCCESS = 'success';
+const STATUS_VIEWABLE = 'viewable';
 
 @autobind
 class RepStatus {
+    /**
+     * Gets the status out of represenation
+     *
+     * @param {Object} representation - representation object
+     * @return {string} rep status instance
+     */
+    static getStatus(representation) {
+        let { status } = representation;
+        status = typeof status === 'object' ? status.state : representation.temp_status.state;
+        return status;
+    }
+
+    /**
+     * Returns if status is considered success
+     *
+     * @param {Object} representation - representation object
+     * @return {boolean} true if success or viewable
+     */
+    static isSuccess(representation) {
+        const status = RepStatus.getStatus(representation);
+        return status === STATUS_SUCCESS || status === STATUS_VIEWABLE;
+    }
 
     /**
      * [constructor]
@@ -63,14 +87,14 @@ class RepStatus {
      * @return {void}
      */
     handleResponse() {
-        const status = (typeof this.representation.status === 'object') ? this.representation.status.state : this.representation.temp_status.state;
+        const status = RepStatus.getStatus(this.representation);
         switch (status) {
             case 'error':
                 this.reject();
                 break;
 
-            case 'success':
-            case 'viewable':
+            case STATUS_SUCCESS:
+            case STATUS_VIEWABLE:
                 this.resolve();
                 break;
 
@@ -93,12 +117,12 @@ class RepStatus {
     }
 
     /**
-     * Gets the status of a representation asset
+     * Promises to return the status of a representation asset
      *
      * @public
      * @return {Promise} Promise to detect represenation status
      */
-    success() {
+    getPromise() {
         this.handleResponse();
         return this.promise;
     }

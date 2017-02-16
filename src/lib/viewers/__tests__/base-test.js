@@ -5,7 +5,6 @@ import Browser from '../../browser';
 import fullscreen from '../../fullscreen';
 import * as util from '../../util';
 
-const addCommonListeners = Base.prototype.addCommonListeners;
 let base;
 let containerEl;
 const sandbox = sinon.sandbox.create();
@@ -19,53 +18,56 @@ describe('base', () => {
         fixture.load('viewers/__tests__/base-test.html');
 
         containerEl = document.querySelector('.bp-container');
-
-        // Prevent constructor from adding too many listeners
-        Object.defineProperty(Base.prototype, 'addCommonListeners', {
-            value: sandbox.stub()
+        base = new Base({
+            container: containerEl,
+            file: {
+                id: '0'
+            }
         });
     });
 
     afterEach(() => {
-        // Test cleanup
-        Object.defineProperty(Base.prototype, 'addCommonListeners', {
-            value: addCommonListeners
-        });
+        if (base && typeof base.destroy === 'function' && !base.destroyed) {
+            base.destroy();
+        }
 
         sandbox.verifyAndRestore();
     });
 
-    describe('Base()', () => {
+    describe('setup()', () => {
         it('should set options, a container, bind event listeners, and set timeout', () => {
-            const options = {};
-            base = new Base(containerEl, options);
+            sandbox.stub(base, 'addCommonListeners');
 
-            expect(base.options).to.equal(options);
-            expect(base.containerEl).to.equal(containerEl.querySelector('.bp'));
-            expect(Base.prototype.addCommonListeners).to.have.been.called;
+            base.setup();
+
+            expect(base.options).to.deep.equal({
+                container: containerEl,
+                file: {
+                    id: '0'
+                }
+            });
+            expect(base.containerEl).to.have.class('bp');
+            expect(base.addCommonListeners).to.have.been.called;
             expect(base.loadTimeout).to.be.a.number;
         });
 
         it('should add a mobile class to the container if on mobile', () => {
             sandbox.stub(Browser, 'isMobile').returns(true);
-
-            base = new Base(containerEl);
+            base.setup();
 
             const container = document.querySelector('.bp');
-            expect(container.classList.contains('bp-is-mobile')).to.be.true;
+            expect(container).to.have.class('bp-is-mobile');
         });
     });
 
     describe('debouncedResizeHandler()', () => {
         it('should return a resize handler', () => {
-            base = new Base(containerEl);
             expect(base.debouncedResizeHandler()).to.be.a.function;
         });
     });
 
     describe('load()', () => {
         it('should call resetLoadTimeout', () => {
-            base = new Base(containerEl);
             sandbox.stub(base, 'resetLoadTimeout');
 
             base.load();
@@ -75,11 +77,11 @@ describe('base', () => {
 
     describe('resetLoadTimeout()', () => {
         it('should clear timeout and set a new timeout handler', () => {
-            base = new Base(containerEl);
             sandbox.stub(window, 'clearTimeout');
             sandbox.spy(window, 'setTimeout');
 
             base.resetLoadTimeout();
+            base.loaded = true;
 
             expect(window.clearTimeout).to.have.been.called;
             expect(window.setTimeout).to.have.been.called;
@@ -90,16 +92,34 @@ describe('base', () => {
         });
     });
 
+    describe('handleAssetError()', () => {
+        it('should trigger error and set destroyed to true', () => {
+            sandbox.stub(base, 'triggerError');
+            base.handleAssetError();
+            expect(base.triggerError).to.have.been.called;
+            expect(base.destroyed).to.be.true;
+        });
+    });
+
+    describe('triggerError()', () => {
+        it('should emit error event', () => {
+            sandbox.stub(base, 'emit');
+
+            const err = new Error('blah');
+            base.triggerError(err);
+
+            expect(base.emit).to.have.been.calledWith('error', err);
+        });
+    });
+
     describe('isLoaded()', () => {
         it('should return loaded property', () => {
-            base = new Base(containerEl);
             expect(base.isLoaded()).to.equal(base.loaded);
         });
     });
 
     describe('isDestroyed()', () => {
         it('should return loaded property', () => {
-            base = new Base(containerEl);
             expect(base.isDestroyed()).to.equal(base.destroyed);
         });
     });
@@ -111,10 +131,14 @@ describe('base', () => {
             const sharedLinkPassword = 'pass';
             const url = 'url';
 
-            base = new Base(containerEl, {
+            base = new Base({
                 token,
                 sharedLink,
-                sharedLinkPassword
+                sharedLinkPassword,
+                container: containerEl,
+                file: {
+                    id: '0'
+                }
             });
             sandbox.stub(util, 'appendAuthParams').returns(url);
 
@@ -127,31 +151,22 @@ describe('base', () => {
     describe('createContentUrl()', () => {
         it('should return content url with no asset path', () => {
             const url = 'url{asset_path}';
-
-            base = new Base(containerEl, {});
-
             sandbox.spy(util, 'createContentUrl');
+
             const result = base.createContentUrl(url, '');
             expect(result).to.equal('url');
             expect(util.createContentUrl).to.have.been.calledWith(url, '');
         });
-        it('should return content url with asset path from options', () => {
-            const url = 'url{asset_path}';
 
-            base = new Base(containerEl, {
-                viewerAsset: 'foo'
-            });
-
-            sandbox.spy(util, 'createContentUrl');
-            const result = base.createContentUrl(url);
-            expect(result).to.equal('urlfoo');
-            expect(util.createContentUrl).to.have.been.calledWith(url, 'foo');
-        });
         it('should return content url with asset path from args', () => {
             const url = 'url{asset_path}';
 
-            base = new Base(containerEl, {
-                viewerAsset: 'foo'
+            base = new Base({
+                viewer: { ASSET: 'foo' },
+                container: containerEl,
+                file: {
+                    id: '0'
+                }
             });
 
             sandbox.spy(util, 'createContentUrl');
@@ -163,7 +178,6 @@ describe('base', () => {
 
     describe('createContentUrlWithAuthParams()', () => {
         it('should return content url with no asset path', () => {
-            base = new Base(containerEl, {});
             sandbox.stub(base, 'createContentUrl').returns('foo');
             sandbox.stub(base, 'appendAuthParams').returns('bar');
             const result = base.createContentUrlWithAuthParams('boo', 'hoo');
@@ -180,10 +194,14 @@ describe('base', () => {
             const sharedLinkPassword = 'pass';
             const headers = {};
 
-            base = new Base(containerEl, {
+            base = new Base({
                 token,
                 sharedLink,
-                sharedLinkPassword
+                sharedLinkPassword,
+                container: containerEl,
+                file: {
+                    id: '0'
+                }
             });
             sandbox.stub(util, 'getHeaders').returns(headers);
 
@@ -198,13 +216,7 @@ describe('base', () => {
             sandbox.stub(fullscreen, 'addListener');
             sandbox.stub(document.defaultView, 'addEventListener');
 
-            // Restore normal 'addCommonListeners' behavior
-            Object.defineProperty(Base.prototype, 'addCommonListeners', {
-                value: addCommonListeners
-            });
-
-            // Constructor calls 'addCommonListeners'
-            base = new Base(containerEl);
+            base.addCommonListeners();
 
             expect(fullscreen.addListener).to.have.been.calledWith('enter', sinon.match.func);
             expect(fullscreen.addListener).to.have.been.calledWith('exit', sinon.match.func);
@@ -215,44 +227,35 @@ describe('base', () => {
     describe('toggleFullscreen()', () => {
         it('should toggle fullscreen', () => {
             sandbox.stub(fullscreen, 'toggle');
-
-            base = new Base(containerEl);
             base.toggleFullscreen();
-
             expect(fullscreen.toggle).to.have.been.calledWith(base.containerEl);
         });
     });
 
     describe('resize()', () => {
         it('should broadcast resize event', () => {
-            base = new Base(containerEl);
             sandbox.stub(base, 'emit');
-
             base.resize();
-
             expect(base.emit).to.have.been.calledWith('resize');
         });
     });
 
     describe('allowNavigationArrows()', () => {
         it('should return true for base viewer', () => {
-            base = new Base(containerEl);
             expect(base.allowNavigationArrows()).to.be.true;
         });
     });
 
     describe('destroy()', () => {
         it('should cleanup the base viewer', () => {
-            base = new Base(containerEl);
-            sandbox.stub(fullscreen, 'removeAllListeners');
-            sandbox.stub(document.defaultView, 'removeEventListener');
+            base.setup();
+
+            sandbox.mock(fullscreen).expects('removeAllListeners');
             sandbox.stub(base, 'removeAllListeners');
             sandbox.stub(base, 'emit');
 
             base.destroy();
 
-            expect(fullscreen.removeAllListeners).to.have.been.called;
-            expect(document.defaultView.removeEventListener).to.have.been.calledWith('resize', base.debouncedResizeHandler);
             expect(base.removeAllListeners).to.have.been.called;
             expect(base.containerEl.innerHTML).to.equal('');
             expect(base.destroyed).to.be.true;
@@ -261,28 +264,33 @@ describe('base', () => {
     });
 
     describe('emit', () => {
+        const emitFunc = EventEmitter.prototype.emit;
+
+        afterEach(() => {
+            Object.defineProperty(EventEmitter.prototype, 'emit', { value: emitFunc });
+        });
+
         it('should pass through the event as well as broadcast it as a viewer event', () => {
-            const viewerName = 'base';
             const fileID = '1';
             const event = 'someEvent';
             const data = {};
+            const viewerName = 'name';
 
-            base = new Base(containerEl, {
-                viewerName,
+            base = new Base({
+                viewer: { NAME: viewerName },
                 file: {
                     id: fileID
-                }
+                },
+                container: containerEl
             });
 
-            // This stubs out the parent 'emit' method
-            Object.defineProperty(Object.getPrototypeOf(Base.prototype), 'emit', {
-                value: sandbox.stub()
-            });
+            const emitStub = sandbox.stub();
+            Object.defineProperty(EventEmitter.prototype, 'emit', { value: emitStub });
 
             base.emit(event, data);
 
-            expect(EventEmitter.prototype.emit).to.have.been.calledWith(event, data);
-            expect(EventEmitter.prototype.emit).to.have.been.calledWithMatch('viewerevent', {
+            expect(emitStub).to.have.been.calledWith(event, data);
+            expect(emitStub).to.have.been.calledWithMatch('viewerevent', {
                 event,
                 data,
                 viewerName,
@@ -291,10 +299,18 @@ describe('base', () => {
         });
     });
 
-    let stubs = {};
-    let event = {};
     describe('Pinch to Zoom Handlers', () => {
+        let stubs = {};
+        let event = {};
+
         beforeEach(() => {
+            base = new Base({
+                container: containerEl,
+                file: {
+                    id: '123'
+                }
+            });
+            base.setup();
             event = {
                 preventDefault: sandbox.stub(),
                 stopPropagation: sandbox.stub(),
@@ -446,16 +462,44 @@ describe('base', () => {
     describe('getViewerOption', () => {
         it('should return the user-defined viewer option with the specified key if it exists', () => {
             const baz = 'captain-america';
-            base.options = {
-                viewers: {
-                    Base: {
-                        fooBar: baz
-                    }
-                },
-                viewerName: 'Base'
+            base.options.viewers = {
+                Base: {
+                    fooBar: baz
+                }
             };
+            base.options.viewer = { NAME: 'Base' };
 
             expect(base.getViewerOption('fooBar')).to.equal(baz);
+        });
+    });
+
+    describe('loadAssets()', () => {
+        it('should create an asset URL and load the relevant stylesheets and scripts', () => {
+            base.options.location = {};
+            const promise = Promise.resolve();
+
+            sandbox.stub(util, 'createAssetUrlCreator').returns(() => {});
+            sandbox.stub(util, 'loadStylesheets');
+            sandbox.stub(util, 'loadScripts').returns(promise);
+
+            const result = base.loadAssets();
+            expect(util.createAssetUrlCreator).to.have.been.calledWith(base.options.location);
+            expect(util.loadStylesheets).to.have.been.called;
+            expect(util.loadScripts).to.have.been.called;
+            expect(result).to.equal(promise);
+        });
+    });
+
+    describe('prefetchAssets()', () => {
+        it('should create an asset URL and prefetch the relevant stylesheets and scripts', () => {
+            base.options.location = {};
+
+            sandbox.stub(util, 'createAssetUrlCreator').returns(() => {});
+            sandbox.stub(util, 'prefetchAssets');
+
+            base.prefetchAssets();
+            expect(util.createAssetUrlCreator).to.have.been.calledWith(base.options.location);
+            expect(util.prefetchAssets).to.have.been.calledTwice;
         });
     });
 });
