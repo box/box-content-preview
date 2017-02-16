@@ -48,7 +48,7 @@ describe('image360-renderer', () => {
             const stub = sandbox.stub(renderer, 'cleanupTexture');
             renderer.destroy();
 
-            expect(stub).to.have.been.called;
+            expect(stub).to.be.called;
         });
 
         it('should invoke imageAsset.destroy(), if it exists', () => {
@@ -58,7 +58,7 @@ describe('image360-renderer', () => {
             const imageAsset = renderer.imageAsset;
             renderer.destroy();
 
-            expect(imageAsset.destroy).to.have.been.called;
+            expect(imageAsset.destroy).to.be.called;
         });
     });
 
@@ -76,7 +76,7 @@ describe('image360-renderer', () => {
             renderer.box3d = null;
             renderer.cleanupTexture();
 
-            expect(renderer.getSkyboxComponent).to.not.have.been.called;
+            expect(renderer.getSkyboxComponent).to.not.be.called;
         });
 
         it('should invoke textureAsset.destroy()', () => {
@@ -88,7 +88,7 @@ describe('image360-renderer', () => {
             sandbox.stub(renderer, 'getSkyboxComponent');
             renderer.cleanupTexture();
 
-            expect(textureAsset.destroy).to.have.been.called;
+            expect(textureAsset.destroy).to.be.called;
         });
 
         it('should nullify textureAsset if it exists', () => {
@@ -110,7 +110,7 @@ describe('image360-renderer', () => {
             sandbox.stub(renderer, 'getSkyboxComponent').returns(skybox);
             renderer.cleanupTexture();
 
-            expect(skybox.setAttribute).to.have.been.calledWith('skyboxTexture', null);
+            expect(skybox.setAttribute).to.be.calledWith('skyboxTexture', null);
         });
     });
 
@@ -141,7 +141,7 @@ describe('image360-renderer', () => {
 
             renderer.getSkyboxComponent();
 
-            expect(renderer.box3d.getEntityById).to.not.have.been.called;
+            expect(renderer.box3d.getEntityById).to.not.be.called;
             renderer.box3d = null;
             renderer.skybox = null;
         });
@@ -162,7 +162,7 @@ describe('image360-renderer', () => {
 
             renderer.getSkyboxComponent();
 
-            expect(renderer.box3d.getEntityById).to.have.been.called;
+            expect(renderer.box3d.getEntityById).to.be.called;
             renderer.box3d = null;
             renderer.skybox = null;
         });
@@ -273,7 +273,7 @@ describe('image360-renderer', () => {
 
             renderer.enableVr();
 
-            expect(spy).to.have.been.called;
+            expect(spy).to.be.called;
             renderer.skybox = null;
         });
 
@@ -312,7 +312,7 @@ describe('image360-renderer', () => {
 
             renderer.disableVr();
 
-            expect(spy).to.have.been.called;
+            expect(spy).to.be.called;
             renderer.skybox = null;
         });
 

@@ -234,7 +234,7 @@ describe('box3d', () => {
 
             box3d.resize();
 
-            expect(Base.prototype.resize).to.have.been.called;
+            expect(Base.prototype.resize).to.be.called;
         });
 
         it('should call renderer.resize() when it exists', () => {
@@ -245,8 +245,8 @@ describe('box3d', () => {
 
             box3d.resize();
 
-            expect(box3d.renderer.resize).to.have.been.called;
-            expect(Base.prototype.resize).to.have.been.called;
+            expect(box3d.renderer.resize).to.be.called;
+            expect(Base.prototype.resize).to.be.called;
         });
     });
 
@@ -256,7 +256,7 @@ describe('box3d', () => {
 
             box3d.destroy();
 
-            expect(box3d.detachEventHandlers).to.have.been.called;
+            expect(box3d.detachEventHandlers).to.be.called;
         });
 
         it('should call controls.destroy() if it exists', () => {
@@ -264,7 +264,7 @@ describe('box3d', () => {
 
             box3d.destroy();
 
-            expect(box3d.controls.destroy).to.have.been.called;
+            expect(box3d.controls.destroy).to.be.called;
         });
 
         it('should call renderer.destroy() if it exists', () => {
@@ -272,7 +272,7 @@ describe('box3d', () => {
 
             box3d.destroy();
 
-            expect(box3d.renderer.destroy).to.have.been.called;
+            expect(box3d.renderer.destroy).to.be.called;
         });
 
         it('should set .destroyed to true', () => {
@@ -289,8 +289,8 @@ describe('box3d', () => {
             sandbox.stub(box3d, 'loadAssets').returns(Promise.resolve());
             sandbox.stub(box3d, 'postLoad');
             return box3d.load().then(() => {
-                expect(box3d.postLoad).to.have.been.called;
-                expect(Base.prototype.load).to.have.been.called;
+                expect(box3d.postLoad).to.be.called;
+                expect(Base.prototype.load).to.be.called;
             });
         });
     });
@@ -324,7 +324,7 @@ describe('box3d', () => {
             sandbox.stub(box3d.renderer, 'toggleVr');
             box3d.handleToggleVr();
 
-            expect(box3d.renderer.toggleVr).to.have.been.called;
+            expect(box3d.renderer.toggleVr).to.be.called;
         });
     });
 
@@ -348,7 +348,7 @@ describe('box3d', () => {
             sandbox.stub(box3d.controls, 'addUi');
             box3d.handleSceneLoaded();
 
-            expect(box3d.controls.addUi).to.have.been.called;
+            expect(box3d.controls.addUi).to.be.called;
         });
     });
 
@@ -358,7 +358,7 @@ describe('box3d', () => {
 
             box3d.handleShowVrButton();
 
-            expect(box3d.controls.showVrButton).to.have.been.called;
+            expect(box3d.controls.showVrButton).to.be.called;
         });
     });
 
@@ -368,7 +368,7 @@ describe('box3d', () => {
 
             box3d.handleReset();
 
-            expect(box3d.renderer.reset).to.have.been.called;
+            expect(box3d.renderer.reset).to.be.called;
         });
     });
 
@@ -382,7 +382,7 @@ describe('box3d', () => {
 
             box3d.handleError(error);
 
-            expect(emitStub).to.have.been.called;
+            expect(emitStub).to.be.called;
         });
     });
 });

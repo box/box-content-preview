@@ -73,7 +73,7 @@ describe('error', () => {
             };
             error.load('reason');
 
-            expect(error.addDownloadButton).to.have.been.called;
+            expect(error.addDownloadButton).to.be.called;
         });
 
         it('should broadcast load', () => {
@@ -82,7 +82,7 @@ describe('error', () => {
             const message = 'reason';
             error.load(message);
 
-            expect(error.emit).to.have.been.calledWith('load', sinon.match({
+            expect(error.emit).to.be.calledWith('load', sinon.match({
                 error: message
             }));
         });
@@ -103,7 +103,7 @@ describe('error', () => {
             expect(error.downloadBtnEl.textContent).to.equal('Download');
 
             error.downloadBtnEl.dispatchEvent(new Event('click'));
-            expect(error.download).to.have.been.called;
+            expect(error.download).to.be.called;
         });
     });
 
@@ -112,7 +112,7 @@ describe('error', () => {
             error.setup();
             sandbox.stub(error, 'emit');
             error.download();
-            expect(error.emit).to.have.been.calledWith('download');
+            expect(error.emit).to.be.calledWith('download');
         });
     });
 

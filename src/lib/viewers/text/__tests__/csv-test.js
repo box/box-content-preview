@@ -78,7 +78,7 @@ describe('lib/viewers/text/csv', () => {
             sandbox.stub(csv, 'finishLoading');
 
             return csv.load().then(() => {
-                expect(URL.createObjectURL).to.have.been.calledWith(blob);
+                expect(URL.createObjectURL).to.be.calledWith(blob);
             });
         });
 
@@ -106,7 +106,7 @@ describe('lib/viewers/text/csv', () => {
             const csvUrlWithAuth = 'csvUrl?access_token=token&shared_link=sharedLink&shared_link_password=sharedLinkPassword';
 
             return csv.load().then(() => {
-                expect(window.Papa.parse).to.have.been.calledWith(csvUrlWithAuth, {
+                expect(window.Papa.parse).to.be.calledWith(csvUrlWithAuth, {
                     download: true,
                     error: sinon.match.func,
                     complete: sinon.match.func
@@ -146,9 +146,9 @@ describe('lib/viewers/text/csv', () => {
 
             csv.finishLoading();
 
-            expect(csv.loadUI).to.have.been.called;
+            expect(csv.loadUI).to.be.called;
             expect(csv.loaded).to.be.true;
-            expect(csv.emit).to.have.been.calledWith('load');
+            expect(csv.emit).to.be.calledWith('load');
         });
     });
 
@@ -190,7 +190,7 @@ describe('lib/viewers/text/csv', () => {
     //         expect(gridComponent.props.cellRenderer).to.equal(csv.cellRenderer);
     //         expect(gridComponent.props.columnCount).to.equal(2);
     //         expect(gridComponent.props.rowCount).to.equal(3);
-    //         expect(renderStub).to.have.been.calledWith(gridComponent, csv.csvEl);
+    //         expect(renderStub).to.be.calledWith(gridComponent, csv.csvEl);
     //     });
     // });
 });

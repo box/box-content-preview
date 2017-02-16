@@ -55,15 +55,15 @@ describe('video360-controls', () => {
         it('should create new bound .handleToggleVr() reference', () => {
             const bindStub = sandbox.stub(Video360Controls.prototype.handleToggleVr, 'bind');
             controls = new Video360Controls(containerEl);
-            expect(bindStub).to.have.been.calledWith(controls);
+            expect(bindStub).to.be.calledWith(controls);
         });
 
         it('should invoke .addUi() to add ui to element passed in', () => {
-            expect(controls.addUi).to.have.been.called;
+            expect(controls.addUi).to.be.called;
         });
 
         it('should invoke .attachEventHandlers() to attach handlers to vr button', () => {
-            expect(controls.attachEventHandlers).to.have.been.called;
+            expect(controls.attachEventHandlers).to.be.called;
         });
     });
 
@@ -104,33 +104,33 @@ describe('video360-controls', () => {
         });
 
         it('should search .el via .querySelector() with CSS_CLASS_MEDIA_CONTROLS_CONTAINER', () => {
-            expect(containerEl.querySelector).to.have.been.calledWith(`.${CSS_CLASS_MEDIA_CONTROLS_CONTAINER}`);
+            expect(containerEl.querySelector).to.be.calledWith(`.${CSS_CLASS_MEDIA_CONTROLS_CONTAINER}`);
         });
 
         it('should create a new button and add it to the mediaControlsEl', () => {
-            expect(document.createElement).to.have.been.calledWith('button');
-            expect(mediaControlsEl.appendChild).to.have.been.calledWith(vrButtonEl);
+            expect(document.createElement).to.be.calledWith('button');
+            expect(mediaControlsEl.appendChild).to.be.calledWith(vrButtonEl);
         });
 
         it('should add CSS_CLASS_MEDIA_CONTROL_BUTTON to .vrButtonEl', () => {
-            expect(vrButtonEl.classList.add).to.have.been.calledWith(CSS_CLASS_MEDIA_CONTROL_BUTTON);
+            expect(vrButtonEl.classList.add).to.be.calledWith(CSS_CLASS_MEDIA_CONTROL_BUTTON);
         });
 
         it('should invoke .vrButtonEl.setAttribute() with args ["aria-label", "Toggle VR display"]', () => {
-            expect(vrButtonEl.setAttribute).to.have.been.calledWith('aria-label', 'Toggle VR display');
+            expect(vrButtonEl.setAttribute).to.be.calledWith('aria-label', 'Toggle VR display');
         });
 
         it('should invoke .vrButtonEl.setAttribute() with args ["title", "Toggle VR display"]', () => {
-            expect(vrButtonEl.setAttribute).to.have.been.calledWith('title', 'Toggle VR display');
+            expect(vrButtonEl.setAttribute).to.be.calledWith('title', 'Toggle VR display');
         });
 
         it('should add CSS_CLASS_HIDDEN to .vrButtonEl', () => {
-            expect(vrButtonEl.classList.add).to.have.been.calledWith(CSS_CLASS_HIDDEN);
+            expect(vrButtonEl.classList.add).to.be.calledWith(CSS_CLASS_HIDDEN);
         });
 
         it('should create a span and add it to .vrButtonEl', () => {
-            expect(document.createElement).to.have.been.calledWith('span');
-            expect(vrButtonEl.appendChild).to.have.been.calledWith(iconSpanEl);
+            expect(document.createElement).to.be.calledWith('span');
+            expect(vrButtonEl.appendChild).to.be.calledWith(iconSpanEl);
         });
 
         it('should set the .innerHtml of the span inside of .vrButtonEl to that of the ICON_3D_VR', () => {
@@ -147,7 +147,7 @@ describe('video360-controls', () => {
             controls.vrButtonEl = vrButton;
 
             controls.attachEventHandlers();
-            expect(vrButton.addEventListener).to.have.been.calledWith('click', controls.handleToggleVr);
+            expect(vrButton.addEventListener).to.be.calledWith('click', controls.handleToggleVr);
 
             controls.vrButtonEl = null;
         });
@@ -162,7 +162,7 @@ describe('video360-controls', () => {
             controls.vrButtonEl = vrButton;
 
             controls.detachEventHandlers();
-            expect(vrButton.removeEventListener).to.have.been.calledWith('click', controls.handleToggleVr);
+            expect(vrButton.removeEventListener).to.be.calledWith('click', controls.handleToggleVr);
 
             controls.vrButtonEl = null;
         });
@@ -175,7 +175,7 @@ describe('video360-controls', () => {
             sandbox.stub(Video360Controls.prototype, 'emit');
 
             controls.handleToggleVr();
-            expect(controls.emit).to.have.been.calledWith(EVENT_TOGGLE_VR);
+            expect(controls.emit).to.be.calledWith(EVENT_TOGGLE_VR);
         });
     });
 
@@ -192,7 +192,7 @@ describe('video360-controls', () => {
 
             controls.showVrButton();
 
-            expect(vrButton.classList.remove).to.have.been.calledWith(CSS_CLASS_HIDDEN);
+            expect(vrButton.classList.remove).to.be.calledWith(CSS_CLASS_HIDDEN);
             controls.vrButtonEl = null;
         });
     });
@@ -211,12 +211,12 @@ describe('video360-controls', () => {
 
         it('should invoke .removeAllListeners()', () => {
             controls.destroy();
-            expect(controls.removeAllListeners).to.have.been.called;
+            expect(controls.removeAllListeners).to.be.called;
         });
 
         it('should invoke .detachEventHandlers()', () => {
             controls.destroy();
-            expect(controls.detachEventHandlers).to.have.been.called;
+            expect(controls.detachEventHandlers).to.be.called;
         });
 
         it('should remove .vrButtonEl from control bar, if available and exists in the DOM', () => {
@@ -229,7 +229,7 @@ describe('video360-controls', () => {
             controls.vrButtonEl = vrButton;
 
             controls.destroy();
-            expect(parent.removeChild).to.have.been.calledWith(vrButton);
+            expect(parent.removeChild).to.be.calledWith(vrButton);
         });
 
         it('should nullify .vrButtonEl', () => {

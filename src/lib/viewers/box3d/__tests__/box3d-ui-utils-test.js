@@ -356,7 +356,7 @@ describe('box3d-ui-utils', () => {
 
                 registry.registerItem(id, el, eventName, () => {});
 
-                expect(attachStub).to.have.been.called;
+                expect(attachStub).to.be.called;
             });
         });
 
@@ -390,7 +390,7 @@ describe('box3d-ui-utils', () => {
 
                 registry.unregisterItem(item);
 
-                expect(parentEl.removeChild).to.not.have.been.called;
+                expect(parentEl.removeChild).to.not.be.called;
             });
 
             it('should remove the element, for the item, from its parent element', () => {
@@ -399,7 +399,7 @@ describe('box3d-ui-utils', () => {
 
                 registry.unregisterItem(registeredItem);
 
-                expect(removeStub).to.have.been.called;
+                expect(removeStub).to.be.called;
             });
 
             it('should unbind events on an element in the registry, for an item', () => {
@@ -407,7 +407,7 @@ describe('box3d-ui-utils', () => {
 
                 registry.unregisterItem(registeredItem);
 
-                expect(removeListenerStub).to.have.been.called;
+                expect(removeListenerStub).to.be.called;
             });
 
             it('should remove the list of events from the registry, for an item', () => {
@@ -447,7 +447,7 @@ describe('box3d-ui-utils', () => {
             it('should unregister items from the registry', () => {
                 const removeListenerStub = sandbox.stub(el, 'removeEventListener');
                 registry.unregisterAll();
-                expect(removeListenerStub).to.have.been.called;
+                expect(removeListenerStub).to.be.called;
             });
 
             it('should clear the registry completely', () => {

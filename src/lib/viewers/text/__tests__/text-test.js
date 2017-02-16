@@ -65,7 +65,7 @@ describe('text', () => {
             expect(text.textEl.className).to.equal('bp-text bp-text-plain hljs bp-is-hidden');
             expect(text.codeEl.parentNode === text.textEl).to.be.true;
             expect(text.truncated).to.be.false;
-            expect(text.initPrint).to.have.been.called;
+            expect(text.initPrint).to.be.called;
         });
     });
 
@@ -83,7 +83,7 @@ describe('text', () => {
 
             text.destroy();
 
-            expect(downloadBtnEl.removeEventListener).to.have.been.calledWith('click', sinon.match.func);
+            expect(downloadBtnEl.removeEventListener).to.be.calledWith('click', sinon.match.func);
         });
 
         it('should call super.destroy()', () => {
@@ -107,8 +107,8 @@ describe('text', () => {
             sandbox.stub(text, 'setup');
 
             return text.load().then(() => {
-                expect(text.setup).to.have.been.called;
-                expect(text.postLoad).to.have.been.called;
+                expect(text.setup).to.be.called;
+                expect(text.postLoad).to.be.called;
             });
         });
     });
@@ -125,7 +125,7 @@ describe('text', () => {
 
             return getPromise.then(() => {
                 expect(text.truncated).to.be.false;
-                expect(util.get).to.have.been.calledWith(urlWithAccessToken, {}, 'text');
+                expect(util.get).to.be.calledWith(urlWithAccessToken, {}, 'text');
             });
         });
 
@@ -142,7 +142,7 @@ describe('text', () => {
 
             return getPromise.then(() => {
                 expect(text.truncated).to.be.true;
-                expect(util.get).to.have.been.calledWith(url, headersWithRange, 'text');
+                expect(util.get).to.be.calledWith(url, headersWithRange, 'text');
             });
         });
 
@@ -156,7 +156,7 @@ describe('text', () => {
             text.postLoad();
 
             return getPromise.then(() => {
-                expect(text.finishLoading).to.have.been.calledWith(`${someText}...`, false);
+                expect(text.finishLoading).to.be.calledWith(`${someText}...`, false);
             });
         });
 
@@ -171,7 +171,7 @@ describe('text', () => {
             text.postLoad();
 
             return getPromise.then(() => {
-                expect(text.initHighlightJs).to.have.been.calledWith(`${someText}...`);
+                expect(text.initHighlightJs).to.be.calledWith(`${someText}...`);
             });
         });
     });
@@ -182,7 +182,7 @@ describe('text', () => {
             text.printReady = true;
 
             text.print();
-            expect(text.printIframe).to.have.been.called;
+            expect(text.printIframe).to.be.called;
         });
 
         it('should prepare printing and show print popup if print is not ready', () => {
@@ -195,9 +195,9 @@ describe('text', () => {
 
             text.print();
 
-            expect(text.preparePrint).to.have.been.calledWith(['third-party/text/github.css', 'preview.css']);
-            expect(text.printPopup.show).to.have.been.called;
-            expect(text.printPopup.disableButton).to.have.been.called;
+            expect(text.preparePrint).to.be.calledWith(['third-party/text/github.css', 'preview.css']);
+            expect(text.printPopup.show).to.be.called;
+            expect(text.printPopup.disableButton).to.be.called;
         });
     });
 
@@ -223,8 +223,8 @@ describe('text', () => {
 
             text.initHighlightJs(someText);
 
-            expect(util.createAssetUrlCreator).to.have.been.called;
-            expect(assetUrlCreatorStub).to.have.been.called;
+            expect(util.createAssetUrlCreator).to.be.called;
+            expect(assetUrlCreatorStub).to.be.called;
         });
     });
 
@@ -277,9 +277,9 @@ describe('text', () => {
 
             text.preparePrint(['blah']);
 
-            expect(util.createAssetUrlCreator).to.have.been.calledWith(text.options.location);
-            expect(util.openContentInsideIframe).to.have.been.calledWith(text.textEl.outerHTML);
-            expect(text.printframe.contentDocument.head.appendChild).to.have.been.called.once;
+            expect(util.createAssetUrlCreator).to.be.calledWith(text.options.location);
+            expect(util.openContentInsideIframe).to.be.calledWith(text.textEl.outerHTML);
+            expect(text.printframe.contentDocument.head.appendChild).to.be.called.once;
         });
 
         it('should enable printing via print popup after a delay', () => {
@@ -299,7 +299,7 @@ describe('text', () => {
             text.preparePrint(['blah']);
             clock.tick(5001);
 
-            expect(text.printPopup.enableButton).to.have.been.called;
+            expect(text.printPopup.enableButton).to.be.called;
             expect(text.printPopup.messageEl.textContent).to.equal('Ready to print.');
             expect(text.printPopup.loadingIndicator.classList.contains('bp-is-hidden')).to.be.true;
             expect(text.printPopup.printCheckmark.classList.contains('bp-is-hidden')).to.be.false;
@@ -319,8 +319,8 @@ describe('text', () => {
 
             text.printIframe();
 
-            expect(text.printframe.contentWindow.focus).to.have.been.called;
-            expect(text.printframe.contentWindow.focus).to.have.been.called;
+            expect(text.printframe.contentWindow.focus).to.be.called;
+            expect(text.printframe.contentWindow.focus).to.be.called;
         });
     });
 
@@ -343,8 +343,8 @@ describe('text', () => {
 
             text.finishLoading('', true);
 
-            expect(text.loadUI).to.have.been.called;
-            expect(text.emit).to.have.been.calledWith('load');
+            expect(text.loadUI).to.be.called;
+            expect(text.emit).to.be.calledWith('load');
             expect(text.loaded).to.be.true;
             expect(text.textEl.classList.contains('bp-is-hidden')).to.be.false;
         });
@@ -357,8 +357,8 @@ describe('text', () => {
 
             text.finishLoading('', true);
 
-            expect(text.showTruncatedDownloadButton).to.have.been.called;
-            expect(URL.revokeObjectURL).to.have.been.calledWith(text.workerSrc);
+            expect(text.showTruncatedDownloadButton).to.be.called;
+            expect(URL.revokeObjectURL).to.be.calledWith(text.workerSrc);
         });
     });
 
@@ -376,7 +376,7 @@ describe('text', () => {
             expect(downloadBtnEl).to.not.be.null;
 
             downloadBtnEl.click();
-            expect(bindDownload).to.have.been.called;
+            expect(bindDownload).to.be.called;
         });
     });
 
@@ -384,7 +384,7 @@ describe('text', () => {
         it('should emit download', () => {
             sandbox.stub(text, 'emit');
             text.download();
-            expect(text.emit).to.have.been.calledWith('download');
+            expect(text.emit).to.be.calledWith('download');
         });
     });
 });

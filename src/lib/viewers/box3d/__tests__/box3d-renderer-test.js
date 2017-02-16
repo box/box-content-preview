@@ -53,7 +53,7 @@ describe('box3d-renderer', () => {
 
             renderer.destroy();
 
-            expect(destroyStub).to.have.been.called;
+            expect(destroyStub).to.be.called;
         });
 
         it('should fully shutdown by disabling vr and unbinding events ', () => {
@@ -192,7 +192,7 @@ describe('box3d-renderer', () => {
             const path = 'path/to/resource.psd';
             renderer.configureXHR({}, path, { isExternal: true });
 
-            expect(openSpy).to.have.been.calledWith('GET', path);
+            expect(openSpy).to.be.calledWith('GET', path);
         });
 
         it('should append "Authorization" request header to the XHR with the provided auth token', () => {
@@ -202,7 +202,7 @@ describe('box3d-renderer', () => {
 
             renderer.configureXHR({ token }, 'a/path/tp/stuff.gif', { isExternal: false });
 
-            expect(setReqHeaderSpy).to.have.been.calledWith('Authorization', expectedAuthHeaderValue);
+            expect(setReqHeaderSpy).to.be.calledWith('Authorization', expectedAuthHeaderValue);
         });
 
         it('should append "boxapi" request header to the XHR with the provided shared link', () => {
@@ -213,7 +213,7 @@ describe('box3d-renderer', () => {
 
             renderer.configureXHR({ sharedLink, token: 'asdf' }, 'some/path.png');
 
-            expect(setReqHeaderSpy).to.have.been.calledWith('boxapi', expectedAuthHeaderValue);
+            expect(setReqHeaderSpy).to.be.calledWith('boxapi', expectedAuthHeaderValue);
         });
 
         it('should append "boxapi" request header to the XHR with the shared link AND shared link password', () => {
@@ -225,7 +225,7 @@ describe('box3d-renderer', () => {
 
             renderer.configureXHR({ sharedLink, sharedLinkPassword, token: 'asdf' }, 'some/path.png');
 
-            expect(setReqHeaderSpy).to.have.been.calledWith('boxapi', expectedAuthHeaderValue);
+            expect(setReqHeaderSpy).to.be.calledWith('boxapi', expectedAuthHeaderValue);
         });
     });
 
@@ -295,7 +295,7 @@ describe('box3d-renderer', () => {
                     sceneEntities: expectedEntities
                 });
 
-                expect(creatBox3DStub).to.have.been.called;
+                expect(creatBox3DStub).to.be.called;
             });
 
             it('should produce an XhrResourceLoader which supports token, sharedLink and sharedLinkPassword', (done) => {
@@ -305,7 +305,7 @@ describe('box3d-renderer', () => {
                     const resource = loader.load('path/to/texture.jpg', window.Box3D.LoadingType.IMAGE, {});
 
                     resource.once('done', () => {
-                        expect(creatBox3DStub).to.have.been.called;
+                        expect(creatBox3DStub).to.be.called;
                         done();
                     });
                 });

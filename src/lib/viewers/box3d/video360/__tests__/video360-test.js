@@ -115,7 +115,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
             viewer.textureAsset = textureAsset;
             viewer.destroy();
 
-            expect(textureAsset.destroy).to.have.been.called;
+            expect(textureAsset.destroy).to.be.called;
         });
 
         it('should invoke videoAsset.destroy() if it exists', () => {
@@ -126,7 +126,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
             viewer.videoAsset = videoAsset;
             viewer.destroy();
 
-            expect(videoAsset.destroy).to.have.been.called;
+            expect(videoAsset.destroy).to.be.called;
         });
 
         it('should invoke .destroyControls() if it exists', () => {
@@ -135,7 +135,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
             viewer.controls = {};
             viewer.destroy();
 
-            expect(destroyStub).to.have.been.called;
+            expect(destroyStub).to.be.called;
         });
 
         describe('if renderer exists', () => {
@@ -162,19 +162,19 @@ describe('lib/viewers/box3d/video360/video360', () => {
             });
 
             it('should remove mouseDown event listener from renderer.box3d instance', () => {
-                expect(b3dMock.off).to.have.been.calledWith('mouseDown', viewer.onCanvasMouseDown);
+                expect(b3dMock.off).to.be.calledWith('mouseDown', viewer.onCanvasMouseDown);
             });
 
             it('should remove mouseUp event listener from renderer.box3d instance', () => {
-                expect(b3dMock.off).to.have.been.calledWith('mouseUp', viewer.onCanvasMouseUp);
+                expect(b3dMock.off).to.be.calledWith('mouseUp', viewer.onCanvasMouseUp);
             });
 
             it('should remove EVENT_SHOW_VR_BUTTON from renderer', () => {
-                expect(rendererMock.removeListener).to.have.been.calledWith(EVENT_SHOW_VR_BUTTON, viewer.handleShowVrButton);
+                expect(rendererMock.removeListener).to.be.calledWith(EVENT_SHOW_VR_BUTTON, viewer.handleShowVrButton);
             });
 
             it('should invoke renderer.destroy', () => {
-                expect(rendererMock.destroy).to.have.been.called;
+                expect(rendererMock.destroy).to.be.called;
             });
         });
     });
@@ -230,18 +230,18 @@ describe('lib/viewers/box3d/video360/video360', () => {
         it('should add custom event handler for VR Toggle to .renderer via .renderer.on()', (done) => {
             stubs.createControls = sandbox.stub(viewer, 'createControls', done);
             viewer.loadeddataHandler();
-            expect(stubs.on).to.have.been.calledWith(EVENT_SHOW_VR_BUTTON, viewer.handleShowVrButton);
+            expect(stubs.on).to.be.calledWith(EVENT_SHOW_VR_BUTTON, viewer.handleShowVrButton);
         });
 
         it('should invoke .renderer.initBox3d() with .options', (done) => {
             stubs.createControls = sandbox.stub(viewer, 'createControls', done);
             viewer.loadeddataHandler();
-            expect(stubs.initBox3d).to.have.been.calledWith(viewer.options);
+            expect(stubs.initBox3d).to.be.calledWith(viewer.options);
         });
 
         it('should invoke .create360Environment() after successfully initializing renderer', (done) => {
             stubs.createControls = sandbox.stub(viewer, 'createControls', () => {
-                expect(stubs.create360Environment).to.have.been.called;
+                expect(stubs.create360Environment).to.be.called;
                 done();
             });
             viewer.loadeddataHandler();
@@ -249,7 +249,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
 
         it('should invoke super.metadataloadedHandler() on successfully creating 360 environment', (done) => {
             stubs.createControls = sandbox.stub(viewer, 'createControls', () => {
-                expect(superLoadedData).to.have.been.called;
+                expect(superLoadedData).to.be.called;
                 done();
             });
             viewer.loadeddataHandler();
@@ -264,7 +264,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
             sandbox.stub(viewer, 'createControls');
             stubs.initVr.restore();
             stubs.initVr = sandbox.stub(Video360Renderer.prototype, 'initVr', () => {
-                expect(stubs.initVr).to.have.been.called;
+                expect(stubs.initVr).to.be.called;
                 done();
             });
             viewer.loadeddataHandler();
@@ -290,7 +290,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
 
         it('should attach event handler for vr toggle by invoking .controls.on() with EVENT_TOGGLE_VR and .handleToggleVr()', () => {
             viewer.createControls();
-            expect(onStub).to.have.been.calledWith(EVENT_TOGGLE_VR, viewer.handleToggleVr);
+            expect(onStub).to.be.calledWith(EVENT_TOGGLE_VR, viewer.handleToggleVr);
         });
     });
 
@@ -310,11 +310,11 @@ describe('lib/viewers/box3d/video360/video360', () => {
         });
 
         it('should remove event handler for EVENT_TOGGLE_VR by invoking .controls.removeListener() with EVENT_TOGGLE_VR and .handleToggleVr()', () => {
-            expect(controls.removeListener).to.have.been.calledWith(EVENT_TOGGLE_VR, viewer.handleToggleVr);
+            expect(controls.removeListener).to.be.calledWith(EVENT_TOGGLE_VR, viewer.handleToggleVr);
         });
 
         it('should invoke .controls.destroy()', () => {
-            expect(controls.destroy).to.have.been.called;
+            expect(controls.destroy).to.be.called;
         });
     });
 
@@ -329,7 +329,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
             };
             viewer.resize();
 
-            expect(viewer.renderer.resize).to.have.been.called;
+            expect(viewer.renderer.resize).to.be.called;
             viewer.renderer = null;
         });
     });
@@ -391,20 +391,20 @@ describe('lib/viewers/box3d/video360/video360', () => {
         });
 
         it('should invoke .renderer.getScene() to get the root scene from the runtime', () => {
-            expect(renderer.getScene).to.have.been.called;
+            expect(renderer.getScene).to.be.called;
         });
 
         it('should invoke scene.getComponentByScriptId() to get the skybox_renderer component', () => {
-            expect(scene.getComponentByScriptId).to.have.been.calledWith('skybox_renderer');
+            expect(scene.getComponentByScriptId).to.be.calledWith('skybox_renderer');
             expect(viewer.skybox).to.deep.equal(skybox);
         });
 
         it('should create a new video asset via .renderer.getBox3D().createVideo()', () => {
-            expect(box3d.createVideo).to.have.been.calledWith(VIDEO_PROPS, 'VIDEO_ID');
+            expect(box3d.createVideo).to.be.calledWith(VIDEO_PROPS, 'VIDEO_ID');
         });
 
         it('should create a new texture asset by invoking .renderer.getBox3D().createTexture2d()', () => {
-            expect(box3d.createTexture2d).to.have.been.calledWith(VIDEO_TEXTURE_PROPS, 'VIDEO_TEX_ID');
+            expect(box3d.createTexture2d).to.be.calledWith(VIDEO_TEXTURE_PROPS, 'VIDEO_TEX_ID');
         });
 
         describe('load texture asset', () => {
@@ -413,12 +413,12 @@ describe('lib/viewers/box3d/video360/video360', () => {
             });
 
             it('should invoke the texture asset\'s load() via .textureAsset.load()', () => {
-                expect(viewer.textureAsset.load).to.have.been.called;
+                expect(viewer.textureAsset.load).to.be.called;
             });
 
             it('should set the skyboxTexture attribute of the skybox component with the textureAsset via .skybox.setAttribute()', (done) => {
                 createPromise.then(() => {
-                    expect(skybox.setAttribute).to.have.been.calledWith('skyboxTexture', viewer.textureAsset.id);
+                    expect(skybox.setAttribute).to.be.calledWith('skyboxTexture', viewer.textureAsset.id);
                     done();
                 });
             });
@@ -432,7 +432,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
 
             it('should attach mouseDown event listener via .renderer.box3d.on()', (done) => {
                 createPromise.then(() => {
-                    expect(box3d.on).to.have.been.calledWith('mouseDown', viewer.onCanvasMouseDown);
+                    expect(box3d.on).to.be.calledWith('mouseDown', viewer.onCanvasMouseDown);
                     done();
                 });
             });
@@ -444,7 +444,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
             sandbox.stub(fullscreen, 'toggle');
             viewer.toggleFullscreen();
 
-            expect(fullscreen.toggle).to.have.been.calledWith(viewer.wrapperEl);
+            expect(fullscreen.toggle).to.be.calledWith(viewer.wrapperEl);
         });
     });
 
@@ -468,12 +468,12 @@ describe('lib/viewers/box3d/video360/video360', () => {
         describe('vr is enabled', () => {
             it('should invoke .renderer.toggleVr()', () => {
                 viewer.handleToggleVr();
-                expect(viewer.renderer.toggleVr).to.have.been.called;
+                expect(viewer.renderer.toggleVr).to.be.called;
             });
 
             it('should invoke .skybox.setAttribute() with "stereoEnabled" as false if vr is enabled', () => {
                 viewer.handleToggleVr();
-                expect(viewer.skybox.setAttribute).to.have.been.calledWith('stereoEnabled', false);
+                expect(viewer.skybox.setAttribute).to.be.calledWith('stereoEnabled', false);
             });
         });
 
@@ -492,18 +492,18 @@ describe('lib/viewers/box3d/video360/video360', () => {
 
             it('should not invoke .mediaEl.play() if is i playing', () => {
                 viewer.handleToggleVr();
-                expect(viewer.mediaEl.play).to.not.have.been.called;
+                expect(viewer.mediaEl.play).to.not.be.called;
             });
 
             it('should invoke .mediaEl.play() if it is currently paused', () => {
                 viewer.mediaEl.paused = true;
                 viewer.handleToggleVr();
-                expect(viewer.mediaEl.play).to.have.been.called;
+                expect(viewer.mediaEl.play).to.be.called;
             });
 
             it('should invoke .skybox.setAttribute() with "stereoEnabled" as true', () => {
                 viewer.handleToggleVr();
-                expect(viewer.skybox.setAttribute).to.have.been.calledWith('stereoEnabled', true);
+                expect(viewer.skybox.setAttribute).to.be.calledWith('stereoEnabled', true);
             });
         });
     });
@@ -514,7 +514,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
                 showVrButton: sandbox.stub()
             };
             viewer.handleShowVrButton();
-            expect(viewer.controls.showVrButton).to.have.been.called;
+            expect(viewer.controls.showVrButton).to.be.called;
 
             viewer.controls = null;
         });
@@ -531,7 +531,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
             };
 
             viewer.onCanvasMouseDown();
-            expect(box3d.once).to.have.been.calledWith('mouseUp', viewer.onCanvasMouseUp);
+            expect(box3d.once).to.be.calledWith('mouseUp', viewer.onCanvasMouseUp);
 
             viewer.renderer = null;
         });
@@ -558,7 +558,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
 
         it('should invoke .renderer.getInputController() to get the input component', () => {
             viewer.onCanvasMouseUp();
-            expect(viewer.renderer.getInputController).to.have.been.called;
+            expect(viewer.renderer.getInputController).to.be.called;
         });
 
         it('should invoke .togglePlay() if the mouse/touch has not moved since the previous mouse/touch down event', () => {
@@ -566,7 +566,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
             input.getPreviousTouchDragState.returns(false);
             viewer.onCanvasMouseUp();
 
-            expect(viewer.togglePlay).to.have.been.called;
+            expect(viewer.togglePlay).to.be.called;
         });
 
         it('should not invoke .togglePlay() if there was a touch move event since the last touch down', () => {
@@ -574,7 +574,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
             input.getPreviousTouchDragState.returns(true);
             viewer.onCanvasMouseUp();
 
-            expect(viewer.togglePlay).to.have.not.been.called;
+            expect(viewer.togglePlay).to.not.be.called;
         });
 
         it('should not invoke .togglePlay() if there was a mouse move event since the last mouse down', () => {
@@ -582,7 +582,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
             input.getPreviousTouchDragState = sandbox.stub().returns(false);
             viewer.onCanvasMouseUp();
 
-            expect(viewer.togglePlay).to.not.have.been.called;
+            expect(viewer.togglePlay).to.not.be.called;
         });
     });
 });

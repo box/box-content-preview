@@ -39,7 +39,7 @@ describe('lib/viewers/text/text-base', () => {
             };
 
             textBase.destroy();
-            expect(textBase.controls.destroy).to.have.been.called;
+            expect(textBase.controls.destroy).to.be.called;
         });
     });
 
@@ -59,7 +59,7 @@ describe('lib/viewers/text/text-base', () => {
         it('should emit the zoom event', () => {
             sandbox.stub(textBase, 'emit');
             textBase.zoom();
-            expect(textBase.emit).to.have.been.calledWith('zoom');
+            expect(textBase.emit).to.be.calledWith('zoom');
         });
 
         it('should increase font size when zooming in', () => {
@@ -78,10 +78,10 @@ describe('lib/viewers/text/text-base', () => {
             sandbox.stub(textBase, 'zoom');
 
             textBase.zoomIn();
-            expect(textBase.zoom).to.have.been.calledWith('in');
+            expect(textBase.zoom).to.be.calledWith('in');
 
             textBase.zoomOut();
-            expect(textBase.zoom).to.have.been.calledWith('out');
+            expect(textBase.zoom).to.be.calledWith('out');
         });
     });
 
@@ -109,9 +109,9 @@ describe('lib/viewers/text/text-base', () => {
             textBase.loadUI();
             expect(textBase.controls instanceof Controls).to.be.true;
             expect(Controls.prototype.add.callCount).to.equal(4);
-            expect(Controls.prototype.add).to.have.been.calledWith(sinon.match.string, textBase.zoomOut, sinon.match.string, sinon.match.string);
-            expect(Controls.prototype.add).to.have.been.calledWith(sinon.match.string, textBase.zoomIn, sinon.match.string, sinon.match.string);
-            expect(Controls.prototype.add).to.have.been.calledWith(sinon.match.string, textBase.toggleFullscreen, sinon.match.string, sinon.match.string);
+            expect(Controls.prototype.add).to.be.calledWith(sinon.match.string, textBase.zoomOut, sinon.match.string, sinon.match.string);
+            expect(Controls.prototype.add).to.be.calledWith(sinon.match.string, textBase.zoomIn, sinon.match.string, sinon.match.string);
+            expect(Controls.prototype.add).to.be.calledWith(sinon.match.string, textBase.toggleFullscreen, sinon.match.string, sinon.match.string);
         });
     });
 
@@ -124,14 +124,14 @@ describe('lib/viewers/text/text-base', () => {
             textBase.controls = {};
             sandbox.stub(textBase, 'zoomIn');
             expect(textBase.onKeydown('Shift++')).to.be.true;
-            expect(textBase.zoomIn).to.have.been.called;
+            expect(textBase.zoomIn).to.be.called;
         });
 
         it('should call zoomOut() for Shift+_', () => {
             textBase.controls = {};
             sandbox.stub(textBase, 'zoomOut');
             expect(textBase.onKeydown('Shift+_')).to.be.true;
-            expect(textBase.zoomOut).to.have.been.called;
+            expect(textBase.zoomOut).to.be.called;
         });
 
         it('should return false for other keypresses', () => {

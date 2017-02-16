@@ -45,7 +45,7 @@ describe('lib/viewers/text/markdown', () => {
             markdown.printReady = true;
 
             markdown.print();
-            expect(markdown.printIframe).to.have.been.called;
+            expect(markdown.printIframe).to.be.called;
         });
 
         it('should prepare printing and show print popup if print is not ready', () => {
@@ -58,9 +58,9 @@ describe('lib/viewers/text/markdown', () => {
 
             markdown.print();
 
-            expect(markdown.preparePrint).to.have.been.calledWith(['third-party/text/github.css', 'third-party/text/github-markdown.css', 'preview.css']);
-            expect(markdown.printPopup.show).to.have.been.calledWith('Preparing to print...', 'Print', sinon.match.func);
-            expect(markdown.printPopup.disableButton).to.have.been.called;
+            expect(markdown.preparePrint).to.be.calledWith(['third-party/text/github.css', 'third-party/text/github-markdown.css', 'preview.css']);
+            expect(markdown.printPopup.show).to.be.calledWith('Preparing to print...', 'Print', sinon.match.func);
+            expect(markdown.printPopup.disableButton).to.be.called;
         });
 
         it('should hide print popup and print iframe when print button is clicked', () => {
@@ -110,10 +110,10 @@ describe('lib/viewers/text/markdown', () => {
 
             markdown.finishLoading('');
 
-            expect(markdown.initRemarkable).to.have.been.called;
-            expect(md.render).to.have.been.called;
-            expect(markdown.loadUI).to.have.been.called;
-            expect(markdown.emit).to.have.been.calledWith('load');
+            expect(markdown.initRemarkable).to.be.called;
+            expect(md.render).to.be.called;
+            expect(markdown.loadUI).to.be.called;
+            expect(markdown.emit).to.be.calledWith('load');
             expect(markdown.loaded).to.be.true;
             expect(markdown.textEl.classList.contains('bp-is-hidden')).to.be.false;
         });

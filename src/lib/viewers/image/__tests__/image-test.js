@@ -97,8 +97,8 @@ describe('image.js', () => {
 
             image.destroy();
 
-            expect(image.annotator.removeAllListeners).to.have.been.called;
-            expect(image.annotator.destroy).to.have.been.called;
+            expect(image.annotator.removeAllListeners).to.be.called;
+            expect(image.annotator.destroy).to.be.called;
         });
 
         it('should remove all the listeners', () => {
@@ -106,7 +106,7 @@ describe('image.js', () => {
 
             image.destroy();
 
-            expect(image.unbindDOMListeners).to.have.been.called;
+            expect(image.unbindDOMListeners).to.be.called;
         });
     });
 
@@ -120,7 +120,7 @@ describe('image.js', () => {
 
             // load the image
             return image.load(imageUrl).then(() => {
-                expect(image.bindDOMListeners).to.have.been.called;
+                expect(image.bindDOMListeners).to.be.called;
             });
         });
     });
@@ -173,7 +173,7 @@ describe('image.js', () => {
 
             image.updatePannability();
 
-            expect(image.annotator.isInPointMode).to.have.been.called;
+            expect(image.annotator.isInPointMode).to.be.called;
             expect(image.didPan).to.have.been.true;
             expect(stubs.cursor).to.not.be.called;
         });
@@ -190,9 +190,9 @@ describe('image.js', () => {
             image.wrapperEl.style.width = '50px';
 
             image.updatePannability();
-            expect(image.annotator.isInPointMode).to.have.been.called;
+            expect(image.annotator.isInPointMode).to.be.called;
             expect(image.didPan).to.have.been.false;
-            expect(stubs.cursor).to.have.been.called;
+            expect(stubs.cursor).to.be.called;
         });
 
         it('should set pannability to false if rotated image is not pannable', () => {
@@ -208,9 +208,9 @@ describe('image.js', () => {
 
             image.updatePannability();
 
-            expect(image.annotator.isInPointMode).to.have.been.called;
+            expect(image.annotator.isInPointMode).to.be.called;
             expect(image.didPan).to.have.been.false;
-            expect(stubs.cursor).to.have.been.called;
+            expect(stubs.cursor).to.be.called;
         });
 
         it('should set pannability to true if non-rotated image is pannable', () => {
@@ -226,9 +226,9 @@ describe('image.js', () => {
 
             image.updatePannability();
 
-            expect(image.annotator.isInPointMode).to.have.been.called;
+            expect(image.annotator.isInPointMode).to.be.called;
             expect(image.didPan).to.have.been.false;
-            expect(stubs.cursor).to.have.been.called;
+            expect(stubs.cursor).to.be.called;
         });
 
         it('should set pannability to false if non-rotated image is not pannable', () => {
@@ -244,9 +244,9 @@ describe('image.js', () => {
 
             image.updatePannability();
 
-            expect(image.annotator.isInPointMode).to.have.been.called;
+            expect(image.annotator.isInPointMode).to.be.called;
             expect(image.didPan).to.have.been.false;
-            expect(stubs.cursor).to.have.been.called;
+            expect(stubs.cursor).to.be.called;
         });
     });
 
@@ -262,7 +262,7 @@ describe('image.js', () => {
             image.pan({});
 
             expect(image.didPan).to.be.true;
-            expect(stubs.emit).to.have.been.calledWith('pan');
+            expect(stubs.emit).to.be.calledWith('pan');
         });
 
         it('should not pan if the viewer is not already panning', () => {
@@ -271,7 +271,7 @@ describe('image.js', () => {
             image.pan({});
 
             expect(image.didPan).to.be.false;
-            expect(stubs.emit).to.not.have.been.calledWith('pan');
+            expect(stubs.emit).to.not.be.calledWith('pan');
         });
     });
 
@@ -300,7 +300,7 @@ describe('image.js', () => {
 
             expect(image.isPanning).to.be.false;
             expect(image.imageEl.classList.contains(CSS_CLASS_PANNING)).to.be.false;
-            expect(image.emit).to.not.have.been.calledWith('panstart');
+            expect(image.emit).to.not.be.calledWith('panstart');
         });
 
         it('should start panning, remove listeners, and fire "panstart" event', () => {
@@ -311,7 +311,7 @@ describe('image.js', () => {
 
             expect(image.isPanning).to.be.true;
             expect(image.imageEl.classList.contains(CSS_CLASS_PANNING)).to.be.true;
-            expect(image.emit).to.have.been.calledWith('panstart');
+            expect(image.emit).to.be.calledWith('panstart');
         });
     });
 
@@ -330,14 +330,14 @@ describe('image.js', () => {
             expect(image.currentRotationAngle).to.equal(-90);
             expect(image.imageEl.getAttribute('data-rotation-angle')).to.equal('-90');
             expect(image.imageEl.style.transform).to.equal('rotate(-90deg)');
-            expect(stubs.emit).to.have.been.calledWith('rotate');
-            expect(stubs.orientChange).to.have.been.called;
+            expect(stubs.emit).to.be.calledWith('rotate');
+            expect(stubs.orientChange).to.be.called;
         });
 
         it('should re-render annotations if annotator is initialized', () => {
             image.rotateLeft();
 
-            expect(stubs.scale).to.have.been.called;
+            expect(stubs.scale).to.be.called;
         });
     });
 
@@ -375,7 +375,7 @@ describe('image.js', () => {
                 image.zoomIn();
                 const newImageSize = image.imageEl.getBoundingClientRect();
                 expect(newImageSize.height).gt(origImageSize.height);
-                expect(stubs.adjustZoom).to.have.been.called;
+                expect(stubs.adjustZoom).to.be.called;
             });
         });
 
@@ -387,7 +387,7 @@ describe('image.js', () => {
                 image.zoomOut();
                 const newImageSize = image.imageEl.getBoundingClientRect();
                 expect(newImageSize.width).lt(origImageSize.width);
-                expect(stubs.adjustZoom).to.have.been.called;
+                expect(stubs.adjustZoom).to.be.called;
             });
 
             it('height', () => {
@@ -397,7 +397,7 @@ describe('image.js', () => {
                 image.zoomOut();
                 const newImageSize = image.imageEl.getBoundingClientRect();
                 expect(newImageSize.height).lt(origImageSize.height);
-                expect(stubs.adjustZoom).to.have.been.called;
+                expect(stubs.adjustZoom).to.be.called;
             });
         });
 
@@ -412,7 +412,7 @@ describe('image.js', () => {
             const newImageSize = image.imageEl.getBoundingClientRect();
 
             expect(newImageSize.height).gt(origImageSize.height);
-            expect(stubs.adjustZoom).to.have.been.called;
+            expect(stubs.adjustZoom).to.be.called;
         });
 
         it('should scale annotations if annotator exists', () => {
@@ -422,7 +422,7 @@ describe('image.js', () => {
             image.load(imageUrl);
 
             image.zoomIn();
-            expect(image.scaleAnnotations).to.have.been.called;
+            expect(image.scaleAnnotations).to.be.called;
         });
     });
 
@@ -437,8 +437,8 @@ describe('image.js', () => {
             const [width, height] = [100, 100];
 
             image.scaleAnnotations(width, height);
-            expect(image.annotator.setScale).to.have.been.called;
-            expect(image.annotator.renderAnnotations).to.have.been.calledWith(-90);
+            expect(image.annotator.setScale).to.be.called;
+            expect(image.annotator.renderAnnotations).to.be.calledWith(-90);
         });
     });
 
@@ -458,7 +458,7 @@ describe('image.js', () => {
             image.annotator = null;
 
             image.loadUI();
-            expect(image.controls.add).to.have.been.called; // Check that it's been called 4 times
+            expect(image.controls.add).to.be.called; // Check that it's been called 4 times
             expect(image.annotationsLoaded).to.be.false;
         });
 
@@ -468,7 +468,7 @@ describe('image.js', () => {
             };
 
             image.loadUI();
-            expect(image.annotator.showAnnotations).to.have.been.called;
+            expect(image.annotator.showAnnotations).to.be.called;
             expect(image.annotationsLoaded).to.be.true;
         });
     });
@@ -603,7 +603,7 @@ describe('image.js', () => {
         it('should adjust zoom padding accordingly if image is rotated', () => {
             stubs.rotated = sandbox.stub(image, 'isRotated').returns(true);
             image.adjustImageZoomPadding();
-            expect(stubs.rotated).to.have.been.called;
+            expect(stubs.rotated).to.be.called;
             expect(image.imageEl.style.left).to.equal('37.5px');
             expect(image.imageEl.style.top).to.equal('75px');
         });
@@ -625,28 +625,28 @@ describe('image.js', () => {
         it('should bind all default image listeners', () => {
             stubs.isMobile.returns(false);
             image.bindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('load', image.loadHandler);
-            expect(stubs.listeners).to.have.been.calledWith('error', image.errorHandler);
-            expect(stubs.listeners).to.have.been.calledWith('mousedown', image.handleMouseDown);
-            expect(stubs.listeners).to.have.been.calledWith('mouseup', image.handleMouseUp);
-            expect(stubs.listeners).to.have.been.calledWith('dragstart', image.handleDragStart);
+            expect(stubs.listeners).to.be.calledWith('load', image.loadHandler);
+            expect(stubs.listeners).to.be.calledWith('error', image.errorHandler);
+            expect(stubs.listeners).to.be.calledWith('mousedown', image.handleMouseDown);
+            expect(stubs.listeners).to.be.calledWith('mouseup', image.handleMouseUp);
+            expect(stubs.listeners).to.be.calledWith('dragstart', image.handleDragStart);
         });
 
         it('should bind all mobile and iOS listeners', () => {
             sandbox.stub(Browser, 'isIOS').returns(true);
             image.bindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('orientationchange', image.handleOrientationChange);
-            expect(stubs.listeners).to.have.been.calledWith('gesturestart', image.mobileZoomStartHandler);
-            expect(stubs.listeners).to.have.been.calledWith('gestureend', image.mobileZoomEndHandler);
+            expect(stubs.listeners).to.be.calledWith('orientationchange', image.handleOrientationChange);
+            expect(stubs.listeners).to.be.calledWith('gesturestart', image.mobileZoomStartHandler);
+            expect(stubs.listeners).to.be.calledWith('gestureend', image.mobileZoomEndHandler);
         });
 
         it('should bind all mobile and non-iOS listeners', () => {
             sandbox.stub(Browser, 'isIOS').returns(false);
             image.bindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('orientationchange', image.handleOrientationChange);
-            expect(stubs.listeners).to.have.been.calledWith('touchstart', image.mobileZoomStartHandler);
-            expect(stubs.listeners).to.have.been.calledWith('touchmove', image.mobileZoomChangeHandler);
-            expect(stubs.listeners).to.have.been.calledWith('touchend', image.mobileZoomEndHandler);
+            expect(stubs.listeners).to.be.calledWith('orientationchange', image.handleOrientationChange);
+            expect(stubs.listeners).to.be.calledWith('touchstart', image.mobileZoomStartHandler);
+            expect(stubs.listeners).to.be.calledWith('touchmove', image.mobileZoomChangeHandler);
+            expect(stubs.listeners).to.be.calledWith('touchend', image.mobileZoomEndHandler);
         });
     });
 
@@ -661,38 +661,38 @@ describe('image.js', () => {
         it('should unbind all default image listeners', () => {
             stubs.isMobile.returns(false);
             image.unbindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('load', image.loadHandler);
-            expect(stubs.listeners).to.have.been.calledWith('error', image.errorHandler);
-            expect(stubs.listeners).to.have.been.calledWith('mousedown', image.handleMouseDown);
-            expect(stubs.listeners).to.have.been.calledWith('mouseup', image.handleMouseUp);
-            expect(stubs.listeners).to.have.been.calledWith('dragstart', image.handleDragStart);
+            expect(stubs.listeners).to.be.calledWith('load', image.loadHandler);
+            expect(stubs.listeners).to.be.calledWith('error', image.errorHandler);
+            expect(stubs.listeners).to.be.calledWith('mousedown', image.handleMouseDown);
+            expect(stubs.listeners).to.be.calledWith('mouseup', image.handleMouseUp);
+            expect(stubs.listeners).to.be.calledWith('dragstart', image.handleDragStart);
         });
 
         it('should unbind all default image listeners if imageEl does not exist', () => {
             image.imageEl = null;
             stubs.isMobile.returns(false);
             image.unbindDOMListeners();
-            expect(stubs.listeners).to.not.have.been.calledWith('mousedown', image.handleMouseDown);
-            expect(stubs.listeners).to.not.have.been.calledWith('mouseup', image.handleMouseUp);
-            expect(stubs.listeners).to.not.have.been.calledWith('dragstart', image.handleDragStart);
-            expect(stubs.removeEventListener).to.have.been.calledTwice;
+            expect(stubs.listeners).to.not.be.calledWith('mousedown', image.handleMouseDown);
+            expect(stubs.listeners).to.not.be.calledWith('mouseup', image.handleMouseUp);
+            expect(stubs.listeners).to.not.be.calledWith('dragstart', image.handleDragStart);
+            expect(stubs.removeEventListener).to.be.calledTwice;
         });
 
         it('should unbind all mobile and iOS listeners', () => {
             sandbox.stub(Browser, 'isIOS').returns(true);
             image.unbindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('orientationchange', image.handleOrientationChange);
-            expect(stubs.listeners).to.have.been.calledWith('gesturestart', image.mobileZoomStartHandler);
-            expect(stubs.listeners).to.have.been.calledWith('gestureend', image.mobileZoomEndHandler);
+            expect(stubs.listeners).to.be.calledWith('orientationchange', image.handleOrientationChange);
+            expect(stubs.listeners).to.be.calledWith('gesturestart', image.mobileZoomStartHandler);
+            expect(stubs.listeners).to.be.calledWith('gestureend', image.mobileZoomEndHandler);
         });
 
         it('should unbind all mobile and non-iOS listeners', () => {
             sandbox.stub(Browser, 'isIOS').returns(false);
             image.unbindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('orientationchange', image.handleOrientationChange);
-            expect(stubs.listeners).to.have.been.calledWith('touchstart', image.mobileZoomStartHandler);
-            expect(stubs.listeners).to.have.been.calledWith('touchmove', image.mobileZoomChangeHandler);
-            expect(stubs.listeners).to.have.been.calledWith('touchend', image.mobileZoomEndHandler);
+            expect(stubs.listeners).to.be.calledWith('orientationchange', image.handleOrientationChange);
+            expect(stubs.listeners).to.be.calledWith('touchstart', image.mobileZoomStartHandler);
+            expect(stubs.listeners).to.be.calledWith('touchmove', image.mobileZoomChangeHandler);
+            expect(stubs.listeners).to.be.calledWith('touchend', image.mobileZoomEndHandler);
         });
     });
 
@@ -708,17 +708,17 @@ describe('image.js', () => {
             image.destroyed = true;
             image.loadHandler();
             expect(image.loaded).to.be.false;
-            expect(stubs.emit).to.not.have.been.called;
-            expect(stubs.zoom).to.not.have.been.called;
-            expect(stubs.loadUI).to.not.have.been.called;
+            expect(stubs.emit).to.not.be.called;
+            expect(stubs.zoom).to.not.be.called;
+            expect(stubs.loadUI).to.not.be.called;
         });
 
         it('should load UI if not destroyed', () => {
             image.loadHandler();
             expect(image.loaded).to.be.true;
-            expect(stubs.emit).to.have.been.called;
-            expect(stubs.zoom).to.have.been.called;
-            expect(stubs.loadUI).to.have.been.called;
+            expect(stubs.emit).to.be.called;
+            expect(stubs.zoom).to.be.called;
+            expect(stubs.loadUI).to.be.called;
         });
     });
 
@@ -734,10 +734,10 @@ describe('image.js', () => {
             image.errorHandler(err);
 
 
-            expect(window.console.error).to.have.been.calledWith(err);
+            expect(window.console.error).to.be.calledWith(err);
 
             err.displayMessage = 'We\'re sorry, the preview didn\'t load. Please refresh the page.';
-            expect(stubs.emit).to.have.been.calledWith('error', err);
+            expect(stubs.emit).to.be.calledWith('error', err);
         });
     });
 
@@ -762,7 +762,7 @@ describe('image.js', () => {
             event.ctrlKey = null;
             event.metaKey = 'blah';
             image.handleMouseDown(event);
-            expect(stubs.pan).to.not.have.been.called;
+            expect(stubs.pan).to.not.be.called;
         });
 
         it('should start panning if correct click type', () => {
@@ -775,7 +775,7 @@ describe('image.js', () => {
                 preventDefault: sandbox.stub()
             };
             image.handleMouseDown(event);
-            expect(stubs.pan).to.have.been.called;
+            expect(stubs.pan).to.be.called;
         });
     });
 
@@ -793,7 +793,7 @@ describe('image.js', () => {
         it('should do nothing if in point annotation mode', () => {
             stubs.point.returns(true);
             image.handleMouseUp();
-            expect(stubs.zoom).to.not.have.been.called;
+            expect(stubs.zoom).to.not.be.called;
         });
 
         it('should do nothing if incorrect click type', () => {
@@ -812,7 +812,7 @@ describe('image.js', () => {
             event.ctrlKey = null;
             event.metaKey = 'blah';
             image.handleMouseUp(event);
-            expect(stubs.zoom).to.not.have.been.called;
+            expect(stubs.zoom).to.not.be.called;
         });
 
         it('should zoom in if zoomable but not pannable', () => {
@@ -826,7 +826,7 @@ describe('image.js', () => {
             };
             image.isZoomable = true;
             image.handleMouseUp(event);
-            expect(stubs.zoom).to.have.been.calledWith('in');
+            expect(stubs.zoom).to.be.calledWith('in');
         });
 
         it('should reset zoom if mouseup was not due to end of panning', () => {
@@ -841,7 +841,7 @@ describe('image.js', () => {
             image.isZoomable = false;
             image.didPan = false;
             image.handleMouseUp(event);
-            expect(stubs.zoom).to.have.been.calledWith('reset');
+            expect(stubs.zoom).to.be.calledWith('reset');
         });
 
         it('should not zoom if mouse up was due to end of panning', () => {
@@ -856,7 +856,7 @@ describe('image.js', () => {
             image.isZoomable = false;
             image.didPan = true;
             image.handleMouseUp(event);
-            expect(stubs.zoom).to.not.have.been.called;
+            expect(stubs.zoom).to.not.be.called;
         });
     });
 
@@ -874,16 +874,16 @@ describe('image.js', () => {
         it('should adjust zoom padding if annotator does not exist', () => {
             image.annotator = null;
             image.handleOrientationChange();
-            expect(stubs.padding).to.have.been.called;
-            expect(stubs.scale).to.not.have.been.called;
-            expect(stubs.render).to.not.have.been.called;
+            expect(stubs.padding).to.be.called;
+            expect(stubs.scale).to.not.be.called;
+            expect(stubs.render).to.not.be.called;
         });
 
         it('should also re-render annotations if annotator exists', () => {
             image.handleOrientationChange();
-            expect(stubs.padding).to.have.been.called;
-            expect(stubs.scale).to.have.been.called;
-            expect(stubs.render).to.have.been.called;
+            expect(stubs.padding).to.be.called;
+            expect(stubs.scale).to.be.called;
+            expect(stubs.render).to.be.called;
         });
     });
 
@@ -894,8 +894,8 @@ describe('image.js', () => {
                 stopPropogation: sandbox.stub()
             };
             image.handleDragStart(event);
-            expect(event.preventDefault).to.have.been.called;
-            expect(event.stopPropogation).to.have.been.called;
+            expect(event.preventDefault).to.be.called;
+            expect(event.stopPropogation).to.be.called;
         });
     });
 

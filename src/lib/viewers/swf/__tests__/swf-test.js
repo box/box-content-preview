@@ -52,7 +52,7 @@ describe('lib/viewers/swf', () => {
         it('should load assets', () => {
             sandbox.stub(swf, 'prefetchAssets');
             swf.prefetch();
-            expect(swf.prefetchAssets).to.have.been.called;
+            expect(swf.prefetchAssets).to.be.called;
         });
     });
 
@@ -70,8 +70,8 @@ describe('lib/viewers/swf', () => {
             sandbox.stub(swf, 'setup');
 
             return swf.load().then(() => {
-                expect(swf.setup).to.have.been.called;
-                expect(swf.postLoad).to.have.been.called;
+                expect(swf.setup).to.be.called;
+                expect(swf.postLoad).to.be.called;
             });
         });
     });
@@ -80,7 +80,7 @@ describe('lib/viewers/swf', () => {
         it('should call embedSWF', () => {
             const spy = sandbox.spy(swfobject, 'embedSWF');
             swf.postLoad();
-            spy.should.have.been.calledWith('foo', 'flash-player', '100%', '100%', '9', null, null, {
+            spy.should.be.calledWith('foo', 'flash-player', '100%', '100%', '9', null, null, {
                 allowfullscreen: 'true',
                 allowFullScreen: 'true',
                 allownetworking: 'none',

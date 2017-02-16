@@ -61,21 +61,21 @@ describe('box3d-controls', () => {
             const stub = sandbox.stub(controls, 'addVrButton');
             controls.addUi();
 
-            expect(stub).to.have.been.called;
+            expect(stub).to.be.called;
         });
 
         it('should call .addFullscreenButton()', () => {
             const stub = sandbox.stub(controls, 'addFullscreenButton');
             controls.addUi();
 
-            expect(stub).to.have.been.called;
+            expect(stub).to.be.called;
         });
 
         it('should call .hideVrButton()', () => {
             const stub = sandbox.stub(controls, 'hideVrButton');
             controls.addUi();
 
-            expect(stub).to.have.been.called;
+            expect(stub).to.be.called;
         });
     });
 
@@ -86,11 +86,11 @@ describe('box3d-controls', () => {
         });
 
         it('should invoke controls.add() with enter fullscreen button params', () => {
-            expect(controls.controls.add).to.have.been.calledWith('Enter fullscreen', controls.handleToggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+            expect(controls.controls.add).to.be.calledWith('Enter fullscreen', controls.handleToggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
         });
 
         it('should invoke controls.add() with exit fullscreen button params', () => {
-            expect(controls.controls.add).to.have.been.calledWith('Exit fullscreen', controls.handleToggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+            expect(controls.controls.add).to.be.calledWith('Exit fullscreen', controls.handleToggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
         });
     });
 
@@ -99,7 +99,7 @@ describe('box3d-controls', () => {
             const vrAddStub = sandbox.stub(controls.controls, 'add');
             controls.addVrButton();
 
-            expect(vrAddStub).to.have.been.calledWith('Toggle VR display', controls.handleToggleVr, '', ICON_3D_VR);
+            expect(vrAddStub).to.be.calledWith('Toggle VR display', controls.handleToggleVr, '', ICON_3D_VR);
         });
     });
 
@@ -108,7 +108,7 @@ describe('box3d-controls', () => {
             const emitStub = sandbox.stub(controls, 'emit');
             controls.handleSceneLoaded();
 
-            expect(emitStub).to.have.been.calledWith(EVENT_SCENE_LOADED);
+            expect(emitStub).to.be.calledWith(EVENT_SCENE_LOADED);
         });
     });
 
@@ -117,7 +117,7 @@ describe('box3d-controls', () => {
             const emitStub = sandbox.stub(controls, 'emit');
             controls.handleToggleVr();
 
-            expect(emitStub).to.have.been.calledWith(EVENT_TOGGLE_VR);
+            expect(emitStub).to.be.calledWith(EVENT_TOGGLE_VR);
         });
     });
 
@@ -126,7 +126,7 @@ describe('box3d-controls', () => {
             const emitStub = sandbox.stub(controls, 'emit');
             controls.handleToggleFullscreen();
 
-            expect(emitStub).to.have.been.calledWith(EVENT_TOGGLE_FULLSCREEN);
+            expect(emitStub).to.be.calledWith(EVENT_TOGGLE_FULLSCREEN);
         });
     });
 
@@ -135,7 +135,7 @@ describe('box3d-controls', () => {
             const emitStub = sandbox.stub(controls, 'emit');
             controls.handleReset();
 
-            expect(emitStub).to.have.been.calledWith(EVENT_RESET);
+            expect(emitStub).to.be.calledWith(EVENT_RESET);
         });
     });
 
@@ -150,7 +150,7 @@ describe('box3d-controls', () => {
 
             controls.showVrButton();
 
-            expect(removeStub).to.have.been.calledWith(CLASS_HIDDEN);
+            expect(removeStub).to.be.calledWith(CLASS_HIDDEN);
         });
     });
 
@@ -165,7 +165,7 @@ describe('box3d-controls', () => {
 
             controls.hideVrButton();
 
-            expect(addStub).to.have.been.calledWith(CLASS_HIDDEN);
+            expect(addStub).to.be.calledWith(CLASS_HIDDEN);
         });
     });
 
@@ -186,17 +186,17 @@ describe('box3d-controls', () => {
 
         it('should element.classList.remove() with CLASS_HIDDEN from provided element if visible param is true', () => {
             controls.setElementVisibility(el, true);
-            expect(el.classList.remove).to.have.been.calledWith(CLASS_HIDDEN);
+            expect(el.classList.remove).to.be.calledWith(CLASS_HIDDEN);
         });
 
         it('should element.classList.add() with CLASS_HIDDEN to provided element if visible param is false', () => {
             controls.setElementVisibility(el, false);
-            expect(el.classList.add).to.have.been.calledWith(CLASS_HIDDEN);
+            expect(el.classList.add).to.be.calledWith(CLASS_HIDDEN);
         });
 
         it('should invoke element.classList.add() with CLASS_HIDDEN to provided element if visible param is missing', () => {
             controls.setElementVisibility(el);
-            expect(el.classList.add).to.have.been.calledWith(CLASS_HIDDEN);
+            expect(el.classList.add).to.be.calledWith(CLASS_HIDDEN);
         });
     });
 
@@ -210,7 +210,7 @@ describe('box3d-controls', () => {
 
             controls.toggleElementVisibility(el);
 
-            expect(el.classList.toggle).to.have.been.calledWith(CLASS_HIDDEN);
+            expect(el.classList.toggle).to.be.calledWith(CLASS_HIDDEN);
         });
     });
 
@@ -219,7 +219,7 @@ describe('box3d-controls', () => {
             const destroyStub = sandbox.stub(controls.controls, 'destroy');
             controls.destroy();
 
-            expect(destroyStub).to.have.been.called;
+            expect(destroyStub).to.be.called;
         });
 
         it('should not call controls.destroy() if .controls doesn\'t exist', () => {
@@ -227,7 +227,7 @@ describe('box3d-controls', () => {
             controls.controls = null;
             controls.destroy();
 
-            expect(destroyStub).to.not.have.been.called;
+            expect(destroyStub).to.not.be.called;
         });
 
         it('should nullify .controls', () => {
@@ -239,7 +239,7 @@ describe('box3d-controls', () => {
             const unregisterStub = sandbox.stub(controls.uiRegistry, 'unregisterAll');
             controls.destroy();
 
-            expect(unregisterStub).to.have.been.called;
+            expect(unregisterStub).to.be.called;
         });
 
         it('should not call uiRegistry.unregisterAll() if .uiRegistry doesn\'t exist', () => {
@@ -247,7 +247,7 @@ describe('box3d-controls', () => {
             controls.uiRegistry = null;
             controls.destroy();
 
-            expect(unregisterStub).to.not.have.been.called;
+            expect(unregisterStub).to.not.be.called;
         });
 
         it('should nullify uiRegistry', () => {

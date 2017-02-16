@@ -57,7 +57,7 @@ describe('video360-renderer', () => {
 
             const inputController = renderer.getInputController();
             expect(inputController).to.equal(renderer.inputController);
-            expect(getAppStub).to.not.have.been.called;
+            expect(getAppStub).to.not.be.called;
         });
 
         it('should return null if Application does not exist on runtime instance', () => {
@@ -74,7 +74,7 @@ describe('video360-renderer', () => {
             sandbox.stub(renderer.box3d, 'getApplication').returns(app);
             const inputController = renderer.getInputController();
 
-            expect(app.getComponentByScriptName).to.have.been.calledWith('Input Controller');
+            expect(app.getComponentByScriptName).to.be.calledWith('Input Controller');
             expect(inputController).to.exist;
         });
     });
@@ -92,7 +92,7 @@ describe('video360-renderer', () => {
             });
             renderer.destroy();
 
-            expect(destroyStub).to.have.been.called;
+            expect(destroyStub).to.be.called;
         });
     });
 });

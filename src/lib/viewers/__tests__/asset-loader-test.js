@@ -24,14 +24,14 @@ describe('asset-loader', () => {
             sandbox.stub(loader, 'determineViewer').returns({});
 
             expect(loader.canLoad({})).to.be.true;
-            expect(loader.determineViewer).to.have.been.called;
+            expect(loader.determineViewer).to.be.called;
         });
 
         it('should return false if loader can\'t find a viewer to match the file', () => {
             sandbox.stub(loader, 'determineViewer').returns(null);
 
             expect(loader.canLoad({})).to.be.false;
-            expect(loader.determineViewer).to.have.been.called;
+            expect(loader.determineViewer).to.be.called;
         });
     });
 
@@ -153,7 +153,7 @@ describe('asset-loader', () => {
 
     //         loader.prefetch({}, '', '', '', {});
 
-    //         expect(loader.prefetchAssets).to.not.have.been.called;
+    //         expect(loader.prefetchAssets).to.not.be.called;
     //     });
 
     //     it('it should determine viewer and representation and then prefetch assets via xhr', () => {
@@ -182,11 +182,11 @@ describe('asset-loader', () => {
 
     //         loader.prefetch(file, token, sharedLink, password, location);
 
-    //         expect(loader.determineViewer).to.have.been.calledWith(file);
-    //         expect(loader.determineRepresentation).to.have.been.calledWith(file, viewer);
-    //         expect(loader.prefetchAssets).to.have.been.calledWith(viewer, location);
-    //         expect(util.appendAuthParams).to.have.been.calledWith(url, token, sharedLink, password);
-    //         expect(util.get).to.have.been.calledWith('someUrl?access_token=someToken&shared_link=someLink&shared_link_password=somePass', 'any');
+    //         expect(loader.determineViewer).to.be.calledWith(file);
+    //         expect(loader.determineRepresentation).to.be.calledWith(file, viewer);
+    //         expect(loader.prefetchAssets).to.be.calledWith(viewer, location);
+    //         expect(util.appendAuthParams).to.be.calledWith(url, token, sharedLink, password);
+    //         expect(util.get).to.be.calledWith('someUrl?access_token=someToken&shared_link=someLink&shared_link_password=somePass', 'any');
     //     });
 
     //     it('should prefetch assets via img tag if prefetch strategy indicates it', () => {
@@ -215,11 +215,11 @@ describe('asset-loader', () => {
 
     //         loader.prefetch(file, token, sharedLink, password, location);
 
-    //         expect(loader.determineViewer).to.have.been.calledWith(file);
-    //         expect(loader.determineRepresentation).to.have.been.calledWith(file, viewer);
-    //         expect(loader.prefetchAssets).to.have.been.calledWith(viewer, location);
-    //         expect(util.appendAuthParams).to.have.been.calledWith(url, token, sharedLink, password);
-    //         expect(util.get).to.not.have.been.called;
+    //         expect(loader.determineViewer).to.be.calledWith(file);
+    //         expect(loader.determineRepresentation).to.be.calledWith(file, viewer);
+    //         expect(loader.prefetchAssets).to.be.calledWith(viewer, location);
+    //         expect(util.appendAuthParams).to.be.calledWith(url, token, sharedLink, password);
+    //         expect(util.get).to.not.be.called;
     //     });
     // });
 });

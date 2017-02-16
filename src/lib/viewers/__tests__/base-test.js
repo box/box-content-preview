@@ -47,7 +47,7 @@ describe('base', () => {
                 }
             });
             expect(base.containerEl).to.have.class('bp');
-            expect(base.addCommonListeners).to.have.been.called;
+            expect(base.addCommonListeners).to.be.called;
             expect(base.loadTimeout).to.be.a.number;
         });
 
@@ -71,7 +71,7 @@ describe('base', () => {
             sandbox.stub(base, 'resetLoadTimeout');
 
             base.load();
-            expect(base.resetLoadTimeout).to.have.been.called;
+            expect(base.resetLoadTimeout).to.be.called;
         });
     });
 
@@ -83,8 +83,8 @@ describe('base', () => {
             base.resetLoadTimeout();
             base.loaded = true;
 
-            expect(window.clearTimeout).to.have.been.called;
-            expect(window.setTimeout).to.have.been.called;
+            expect(window.clearTimeout).to.be.called;
+            expect(window.setTimeout).to.be.called;
             expect(base.loadTimeoutId).to.be.a.number;
 
             // Test cleanup
@@ -96,7 +96,7 @@ describe('base', () => {
         it('should trigger error and set destroyed to true', () => {
             sandbox.stub(base, 'triggerError');
             base.handleAssetError();
-            expect(base.triggerError).to.have.been.called;
+            expect(base.triggerError).to.be.called;
             expect(base.destroyed).to.be.true;
         });
     });
@@ -108,7 +108,7 @@ describe('base', () => {
             const err = new Error('blah');
             base.triggerError(err);
 
-            expect(base.emit).to.have.been.calledWith('error', err);
+            expect(base.emit).to.be.calledWith('error', err);
         });
     });
 
@@ -144,7 +144,7 @@ describe('base', () => {
 
             const result = base.appendAuthParams('');
             expect(result).to.equal(url);
-            expect(util.appendAuthParams).to.have.been.calledWith('', token, sharedLink, sharedLinkPassword);
+            expect(util.appendAuthParams).to.be.calledWith('', token, sharedLink, sharedLinkPassword);
         });
     });
 
@@ -155,7 +155,7 @@ describe('base', () => {
 
             const result = base.createContentUrl(url, '');
             expect(result).to.equal('url');
-            expect(util.createContentUrl).to.have.been.calledWith(url, '');
+            expect(util.createContentUrl).to.be.calledWith(url, '');
         });
 
         it('should return content url with asset path from args', () => {
@@ -172,7 +172,7 @@ describe('base', () => {
             sandbox.spy(util, 'createContentUrl');
             const result = base.createContentUrl(url, 'bar');
             expect(result).to.equal('urlbar');
-            expect(util.createContentUrl).to.have.been.calledWith(url, 'bar');
+            expect(util.createContentUrl).to.be.calledWith(url, 'bar');
         });
     });
 
@@ -182,8 +182,8 @@ describe('base', () => {
             sandbox.stub(base, 'appendAuthParams').returns('bar');
             const result = base.createContentUrlWithAuthParams('boo', 'hoo');
             expect(result).to.equal('bar');
-            expect(base.createContentUrl).to.have.been.calledWith('boo', 'hoo');
-            expect(base.appendAuthParams).to.have.been.calledWith('foo');
+            expect(base.createContentUrl).to.be.calledWith('boo', 'hoo');
+            expect(base.appendAuthParams).to.be.calledWith('foo');
         });
     });
 
@@ -207,7 +207,7 @@ describe('base', () => {
 
             const result = base.appendAuthHeader(headers);
             expect(result).to.equal(headers);
-            expect(util.getHeaders).to.have.been.calledWith(headers, token, sharedLink, sharedLinkPassword);
+            expect(util.getHeaders).to.be.calledWith(headers, token, sharedLink, sharedLinkPassword);
         });
     });
 
@@ -218,9 +218,9 @@ describe('base', () => {
 
             base.addCommonListeners();
 
-            expect(fullscreen.addListener).to.have.been.calledWith('enter', sinon.match.func);
-            expect(fullscreen.addListener).to.have.been.calledWith('exit', sinon.match.func);
-            expect(document.defaultView.addEventListener).to.have.been.calledWith('resize', base.debouncedResizeHandler);
+            expect(fullscreen.addListener).to.be.calledWith('enter', sinon.match.func);
+            expect(fullscreen.addListener).to.be.calledWith('exit', sinon.match.func);
+            expect(document.defaultView.addEventListener).to.be.calledWith('resize', base.debouncedResizeHandler);
         });
     });
 
@@ -228,7 +228,7 @@ describe('base', () => {
         it('should toggle fullscreen', () => {
             sandbox.stub(fullscreen, 'toggle');
             base.toggleFullscreen();
-            expect(fullscreen.toggle).to.have.been.calledWith(base.containerEl);
+            expect(fullscreen.toggle).to.be.calledWith(base.containerEl);
         });
     });
 
@@ -236,7 +236,7 @@ describe('base', () => {
         it('should broadcast resize event', () => {
             sandbox.stub(base, 'emit');
             base.resize();
-            expect(base.emit).to.have.been.calledWith('resize');
+            expect(base.emit).to.be.calledWith('resize');
         });
     });
 
@@ -256,7 +256,7 @@ describe('base', () => {
 
             base.destroy();
 
-            expect(base.removeAllListeners).to.have.been.called;
+            expect(base.removeAllListeners).to.be.called;
             expect(base.containerEl.innerHTML).to.equal('');
             expect(base.destroyed).to.be.true;
             expect(base.emit).to.be.calledWith('destroy');
@@ -289,8 +289,8 @@ describe('base', () => {
 
             base.emit(event, data);
 
-            expect(emitStub).to.have.been.calledWith(event, data);
-            expect(emitStub).to.have.been.calledWithMatch('viewerevent', {
+            expect(emitStub).to.be.calledWith(event, data);
+            expect(emitStub).to.be.calledWithMatch('viewerevent', {
                 event,
                 data,
                 viewerName,
@@ -483,9 +483,9 @@ describe('base', () => {
             sandbox.stub(util, 'loadScripts').returns(promise);
 
             const result = base.loadAssets();
-            expect(util.createAssetUrlCreator).to.have.been.calledWith(base.options.location);
-            expect(util.loadStylesheets).to.have.been.called;
-            expect(util.loadScripts).to.have.been.called;
+            expect(util.createAssetUrlCreator).to.be.calledWith(base.options.location);
+            expect(util.loadStylesheets).to.be.called;
+            expect(util.loadScripts).to.be.called;
             expect(result).to.equal(promise);
         });
     });
@@ -498,8 +498,8 @@ describe('base', () => {
             sandbox.stub(util, 'prefetchAssets');
 
             base.prefetchAssets();
-            expect(util.createAssetUrlCreator).to.have.been.calledWith(base.options.location);
-            expect(util.prefetchAssets).to.have.been.calledTwice;
+            expect(util.createAssetUrlCreator).to.be.calledWith(base.options.location);
+            expect(util.prefetchAssets).to.be.calledTwice;
         });
     });
 });

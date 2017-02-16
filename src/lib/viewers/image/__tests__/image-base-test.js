@@ -45,9 +45,9 @@ describe('image-base', () => {
 
             imageBase.destroy();
 
-            expect(imageBase.controls.destroy).to.have.been.called;
-            expect(imageBase.imageEl.removeEventListener).to.have.been.calledWith('mouseup', imageBase.handleMouseUp);
-            expect(Base.prototype.destroy).to.have.been.called;
+            expect(imageBase.controls.destroy).to.be.called;
+            expect(imageBase.imageEl.removeEventListener).to.be.calledWith('mouseup', imageBase.handleMouseUp);
+            expect(Base.prototype.destroy).to.be.called;
         });
     });
 
@@ -57,7 +57,7 @@ describe('image-base', () => {
 
             imageBase.zoomIn();
 
-            expect(imageBase.zoom).to.have.been.calledWith('in');
+            expect(imageBase.zoom).to.be.calledWith('in');
         });
     });
 
@@ -67,7 +67,7 @@ describe('image-base', () => {
 
             imageBase.zoomOut();
 
-            expect(imageBase.zoom).to.have.been.calledWith('out');
+            expect(imageBase.zoom).to.be.calledWith('out');
         });
     });
 
@@ -81,8 +81,8 @@ describe('image-base', () => {
 
             imageBase.resize();
 
-            expect(imageBase.zoom).to.have.been.called;
-            expect(Base.prototype.resize).to.have.been.called;
+            expect(imageBase.zoom).to.be.called;
+            expect(Base.prototype.resize).to.be.called;
         });
     });
 
@@ -109,7 +109,7 @@ describe('image-base', () => {
 
             const consumed = imageBase.onKeydown('Shift++');
 
-            expect(imageBase.zoomIn).to.have.been.called;
+            expect(imageBase.zoomIn).to.be.called;
             expect(consumed).to.be.true;
         });
 
@@ -120,7 +120,7 @@ describe('image-base', () => {
 
             const consumed = imageBase.onKeydown('Shift+_');
 
-            expect(imageBase.zoomOut).to.have.been.called;
+            expect(imageBase.zoomOut).to.be.called;
             expect(consumed).to.be.true;
         });
 
@@ -132,8 +132,8 @@ describe('image-base', () => {
 
             const consumed = imageBase.onKeydown();
 
-            expect(imageBase.zoomIn).to.not.have.been.called;
-            expect(imageBase.zoomOut).to.not.have.been.called;
+            expect(imageBase.zoomIn).to.not.be.called;
+            expect(imageBase.zoomOut).to.not.be.called;
             expect(consumed).to.be.false;
         });
     });
