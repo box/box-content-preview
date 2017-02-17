@@ -23,14 +23,6 @@ class IFrameLoader extends AssetLoader {
         super();
         this.viewers = VIEWERS;
     }
-
-    /**
-     * Override default prefetch functionality with no-op.
-     *
-     * @override
-     * @return {void}
-     */
-    prefetch() {}
 }
 
 export default new IFrameLoader();

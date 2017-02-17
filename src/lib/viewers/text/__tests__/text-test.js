@@ -26,14 +26,8 @@ describe('text', () => {
             },
             container: containerEl,
             representation: {
-                status: {
-                    getPromise: () => Promise.resolve(),
-                    destroy: sandbox.stub()
-                },
-                data: {
-                    content: {
-                        url_template: 'foo'
-                    }
+                content: {
+                    url_template: 'foo'
                 }
             }
         });
@@ -103,6 +97,7 @@ describe('text', () => {
             Object.defineProperty(TextBase.prototype, 'load', { value: sandbox.mock() });
 
             sandbox.stub(text, 'loadAssets').returns(Promise.resolve());
+            sandbox.stub(text, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
             sandbox.stub(text, 'postLoad');
             sandbox.stub(text, 'setup');
 
@@ -110,6 +105,54 @@ describe('text', () => {
                 expect(text.setup).to.be.called;
                 expect(text.postLoad).to.be.called;
             });
+        });
+    });
+
+    describe('prefetch()', () => {
+        it('should prefetch assets if assets is true', () => {
+            sandbox.stub(text, 'prefetchAssets');
+            text.prefetch({ assets: true, content: false });
+            expect(text.prefetchAssets).to.be.called;
+        });
+
+        it('should prefetch content if content is true and representation is ready', () => {
+            const contentUrl = 'someContentUrl';
+            sandbox.stub(text, 'createContentUrlWithAuthParams').returns(contentUrl);
+            sandbox.stub(text, 'isRepresentationReady').returns(true);
+            sandbox.mock(util).expects('get').withArgs(contentUrl, 'any');
+
+            text.prefetch({ assets: false, content: true });
+        });
+
+        it('should not prefetch content if content is true but representation is not ready', () => {
+            sandbox.stub(text, 'isRepresentationReady').returns(false);
+            sandbox.mock(util).expects('get').never();
+            text.prefetch({ assets: false, content: true });
+        });
+    });
+
+    describe('print()', () => {
+        it('should print iframe if print is ready', () => {
+            sandbox.stub(text, 'printIframe');
+            text.printReady = true;
+
+            text.print();
+            expect(text.printIframe).to.be.called;
+        });
+
+        it('should prepare printing and show print popup if print is not ready', () => {
+            sandbox.stub(text, 'preparePrint');
+            text.printReady = false;
+            text.printPopup = {
+                show: sandbox.stub(),
+                disableButton: sandbox.stub()
+            };
+
+            text.print();
+
+            expect(text.preparePrint).to.be.calledWith(['third-party/text/github.css', 'preview.css']);
+            expect(text.printPopup.show).to.be.called;
+            expect(text.printPopup.disableButton).to.be.called;
         });
     });
 
@@ -173,31 +216,6 @@ describe('text', () => {
             return getPromise.then(() => {
                 expect(text.initHighlightJs).to.be.calledWith(`${someText}...`);
             });
-        });
-    });
-
-    describe('print()', () => {
-        it('should print iframe if print is ready', () => {
-            sandbox.stub(text, 'printIframe');
-            text.printReady = true;
-
-            text.print();
-            expect(text.printIframe).to.be.called;
-        });
-
-        it('should prepare printing and show print popup if print is not ready', () => {
-            sandbox.stub(text, 'preparePrint');
-            text.printReady = false;
-            text.printPopup = {
-                show: sandbox.stub(),
-                disableButton: sandbox.stub()
-            };
-
-            text.print();
-
-            expect(text.preparePrint).to.be.calledWith(['third-party/text/github.css', 'preview.css']);
-            expect(text.printPopup.show).to.be.called;
-            expect(text.printPopup.disableButton).to.be.called;
         });
     });
 

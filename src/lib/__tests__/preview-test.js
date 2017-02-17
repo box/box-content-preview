@@ -335,44 +335,147 @@ describe('Preview', () => {
         });
     });
 
-    // describe('prefetchViewers()', () => {
-    //     beforeEach(() => {
-    //         const mockViewers = [
-    //             {
-    //                 CONSTRUCTOR: 'text'
-    //             },
-    //             {
-    //                 CONSTRUCTOR: 'csv'
-    //             },
-    //             {
-    //                 CONSTRUCTOR: 'excel'
-    //             }
-    //         ];
+    describe('prefetch()', () => {
+        let fileId;
+        let token;
+        let sharedLink;
+        let sharedLinkPassword;
+        let loader;
+        let viewer;
+        let someFile;
 
-    //         stubs.getViewers = sandbox.stub(preview, 'getViewers').returns(mockViewers);
-    //         preview.loaders = [
-    //             {
-    //                 prefetchAssets: sandbox.stub()
-    //             }
-    //         ];
+        beforeEach(() => {
+            fileId = '0';
+            token = 'someToken';
+            sharedLink = 'someSharedLink';
+            sharedLinkPassword = 'someSharedLinkPassword';
+            someFile = {};
+            loader = {
+                determineViewer: () => {},
+                determineRepresentation: () => {}
+            };
+            viewer = {
+                CONSTRUCTOR: () => {}
+            };
 
-    //         sandbox.stub(util, 'prefetchAssets');
-    //     });
+            sandbox.stub(cache, 'get').withArgs(fileId).returns(someFile);
+            sandbox.stub(preview, 'getLoader').withArgs(someFile).returns(loader);
+        });
 
-    //     it('should prefetch no viewers if no viewer names are specified', () => {
-    //         preview.prefetchViewers();
-    //         expect(preview.loaders[0].prefetchAssets.callCount).to.equal(0);
-    //     });
+        it('should short circuit if no appropriate viewer is found', () => {
+            sandbox.stub(loader, 'determineViewer').returns(null);
+            sandbox.mock(loader).expects('determineRepresentation').never();
+            sandbox.mock(viewer).expects('CONSTRUCTOR').never();
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
+        });
 
-    //     it('should prefetch only passed in viewers', () => {
-    //         const viewerToPrefetch = preview.getViewers()[0];
-    //         const viewerName = viewerToPrefetch.CONSTRUCTOR;
+        it('should get the appropriate viewer', () => {
+            sandbox.mock(loader).expects('determineViewer').withArgs(someFile).returns(viewer);
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
+        });
 
-    //         preview.prefetchViewers([viewerName]);
-    //         expect(preview.loaders[0].prefetchAssets).to.be.calledOnce;
-    //         expect(preview.loaders[0].prefetchAssets).to.be.calledWith(viewerToPrefetch);
-    //     });
-    // });
+        it('should determine representation', () => {
+            sandbox.stub(loader, 'determineViewer').returns(viewer);
+            sandbox.mock(loader).expects('determineRepresentation').withArgs(someFile, viewer);
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
+        });
+
+        it('should set sharedLink and sharedLinkPassword when preload is true', () => {
+            sandbox.stub(loader, 'determineViewer').returns(viewer);
+            sandbox.stub(preview, 'createViewerOptions');
+
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: true });
+
+            expect(preview.createViewerOptions).to.be.calledWith({
+                viewer,
+                file: someFile,
+                token,
+                representation: sinon.match.any,
+                sharedLink,
+                sharedLinkPassword
+            });
+        });
+
+        it('should prefetch assets, preload, and content if viewer defines a prefetch function and preload is false', () => {
+            viewer = {
+                CONSTRUCTOR: () => {
+                    return {
+                        prefetch: sandbox.mock().withArgs({
+                            assets: true,
+                            preload: true,
+                            content: true
+                        })
+                    };
+                }
+            };
+            sandbox.stub(loader, 'determineViewer').returns(viewer);
+
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: false });
+        });
+
+        it('should prefetch assets and preload, but not content if viewer defines a prefetch function and preload is true', () => {
+            viewer = {
+                CONSTRUCTOR: () => {
+                    return {
+                        prefetch: sandbox.mock().withArgs({
+                            assets: true,
+                            preload: true,
+                            content: false
+                        })
+                    };
+                }
+            };
+            sandbox.stub(loader, 'determineViewer').returns(viewer);
+
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: true });
+        });
+    });
+
+    describe('prefetchViewers()', () => {
+        let prefetchStub;
+
+        beforeEach(() => {
+            prefetchStub = sandbox.stub();
+            const stubViewer = () => {
+                return { prefetch: prefetchStub };
+            };
+
+            const mockViewers = [
+                {
+                    NAME: 'viewer1',
+                    CONSTRUCTOR: stubViewer
+                },
+                {
+                    NAME: 'viewer2',
+                    CONSTRUCTOR: stubViewer
+                },
+                {
+                    NAME: 'viewer3',
+                    CONSTRUCTOR: stubViewer
+                }
+            ];
+
+            stubs.getViewers = sandbox.stub(preview, 'getViewers').returns(mockViewers);
+        });
+
+        it('should prefetch no viewers if no viewer names are specified', () => {
+            preview.prefetchViewers();
+            expect(prefetchStub).to.not.be.called;
+        });
+
+        it('should prefetch only passed in viewers', () => {
+            const viewerToPrefetch = preview.getViewers()[0];
+            const viewerName = viewerToPrefetch.NAME;
+
+            preview.prefetchViewers([viewerName]);
+            expect(prefetchStub).to.be.calledOnce;
+            expect(prefetchStub).to.be.calledWith({
+                assets: true,
+                preload: false,
+                content: false
+            });
+        });
+    });
 
     describe('disableViewers()', () => {
         beforeEach(() => {
@@ -716,11 +819,6 @@ describe('Preview', () => {
             expect(preview.options.sharedLinkPassword).to.equal(stubs.sharedLinkPassword);
         });
 
-        it('should set the location that was saved', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
-            expect(stubs.assign).to.be.calledWith(preview.location);
-        });
-
         it('should save a reference to the api endpoint', () => {
             preview.parseOptions(preview.previewOptions, stubs.tokens);
             expect(preview.options.api).to.equal('endpoint');
@@ -777,6 +875,18 @@ describe('Preview', () => {
             preview.parseOptions(preview.previewOptions, stubs.tokens);
             expect(stubs.disableViewers).to.be.calledWith('Office');
             expect(stubs.enableViewers).to.be.calledWith('text');
+        });
+    });
+
+    describe('createViewerOptions()', () => {
+        it('should create viewer options with location', () => {
+            preview.location = 'someLocation';
+            expect(preview.createViewerOptions().location).to.deep.equal(preview.location);
+        });
+
+        it('should deep clone options', () => {
+            const someOption = {};
+            expect(preview.createViewerOptions({ someOption }).someOption).to.not.equal(someOption);
         });
     });
 
@@ -968,12 +1078,13 @@ describe('Preview', () => {
 
     describe('loadViewer()', () => {
         beforeEach(() => {
+            stubs.viewer = {
+                load: sandbox.stub(),
+                addListener: sandbox.stub(),
+                getName: sandbox.stub()
+            };
             function Viewer() {
-                return {
-                    load: sandbox.stub(),
-                    addListener: sandbox.stub(),
-                    getName: sandbox.stub()
-                };
+                return stubs.viewer;
             }
 
             stubs.destroy = sandbox.stub(preview, 'destroy');
@@ -1000,7 +1111,6 @@ describe('Preview', () => {
                 setType: sandbox.stub()
             };
 
-            stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.emit = sandbox.stub(preview, 'emit');
             stubs.attachViewerListeners = sandbox.stub(preview, 'attachViewerListeners');
             preview.open = true;
@@ -1063,6 +1173,20 @@ describe('Preview', () => {
             preview.loadViewer();
             expect(stubs.loader.determineRepresentation).to.be.called;
         });
+
+        it('should instantiate the viewer, set logger, attach viewer events, and load the viewer', () => {
+            preview.viewer.NAME = 'someViewerName';
+
+            preview.loadViewer();
+
+            expect(preview.logger.setType).to.be.calledWith(preview.viewer.NAME);
+            expect(stubs.viewer.load).to.be.called;
+        });
+
+        it('should emit viewer with the viewer instance', () => {
+            preview.loadViewer();
+            expect(stubs.emit).to.be.calledWith('viewer', stubs.viewer);
+        });
     });
 
     describe('attachViewerListeners()', () => {
@@ -1091,7 +1215,7 @@ describe('Preview', () => {
             stubs.hideLoadingIndicator = sandbox.stub(ui, 'hideLoadingIndicator');
             stubs.emit = sandbox.stub(preview, 'emit');
             stubs.logPreviewEvent = sandbox.stub(preview, 'logPreviewEvent');
-            stubs.prefetch = sandbox.stub(preview, 'prefetch');
+            stubs.prefetchNextFiles = sandbox.stub(preview, 'prefetchNextFiles');
             stubs.finishProgressBar = sandbox.stub(preview, 'finishProgressBar');
 
             stubs.logger = {
@@ -1241,7 +1365,7 @@ describe('Preview', () => {
 
         it('should prefetch next content', () => {
             preview.finishLoading();
-            expect(stubs.prefetch).to.be.called;
+            expect(stubs.prefetchNextFiles).to.be.called;
         });
 
         it('should postload if skipPostload is not true', () => {
@@ -1364,11 +1488,12 @@ describe('Preview', () => {
     });
 
     describe('triggerError()', () => {
+        const ErrorViewer = {
+            load: sandbox.stub(),
+            addListener: sandbox.stub()
+        };
+
         beforeEach(() => {
-            const ErrorViewer = {
-                load: sandbox.stub(),
-                addListener: sandbox.stub()
-            };
             stubs.unset = sandbox.stub(cache, 'unset');
             stubs.destroy = sandbox.stub(preview, 'destroy');
             stubs.finishLoading = sandbox.stub(preview, 'finishLoading');
@@ -1398,73 +1523,13 @@ describe('Preview', () => {
             expect(stubs.destroy).to.be.called;
         });
 
-        // it('should load the new viewer, hide the loading indicator, and attach listeners', () => {
-        //     preview.triggerError();
-        //     return stubs.promiseResolve.then(() => {
-        //         expect(preview.viewer.load).to.be.called;
-        //         expect(stubs.hideLoadingIndicator).to.be.called;
-        //         expect(stubs.attachViewerListeners).to.be.called;
-        //     });
-        // });
+        it('should get the error viewer, attach viewer listeners, and load the error viewer', () => {
+            preview.triggerError();
 
-        // it('should not show the download button if there are not file and options permissions', () => {
-        //     stubs.checkPermission.returns(false);
-        //     preview.options.showDownload = false;
-
-        //     preview.triggerError();
-        //     return stubs.promiseResolve.then(() => {
-        //         expect(stubs.showDownloadButton).to.not.be.called;
-        //     });
-        // });
-
-        // it('should not show the download button if there are file permissions but not options', () => {
-        //     stubs.checkPermission.returns(true);
-        //     preview.options.showDownload = false;
-
-        //     preview.triggerError();
-        //     return stubs.promiseResolve.then(() => {
-        //         expect(stubs.showDownloadButton).to.not.be.called;
-        //     });
-        // });
-
-        // it('should not show the download button if there are not file permissions but there are options permissions', () => {
-        //     stubs.checkPermission.returns(false);
-        //     preview.options.showDownload = true;
-
-        //     preview.triggerError();
-        //     return stubs.promiseResolve.then(() => {
-        //         expect(stubs.showDownloadButton).to.not.be.called;
-        //     });
-        // });
-
-        // it('should show the download button if there are file and options permissions', () => {
-        //     stubs.checkPermission.returns(true);
-        //     preview.options.showDownload = true;
-
-        //     preview.triggerError();
-        //     return stubs.promiseResolve.then(() => {
-        //         expect(stubs.showDownloadButton).to.be.called;
-        //     });
-        // });
-
-        // it('should bump up the preview error count, and emit a load message', () => {
-        //     preview.count.error = 0;
-
-        //     preview.triggerError();
-        //     return stubs.promiseResolve.then(() => {
-        //         expect(preview.count.error).to.equal(1);
-        //         expect(stubs.emit).to.be.calledWith('load', { error: sinon.match.string, metrics: sinon.match.any, file: sinon.match.any });
-        //     });
-        // });
-
-        // it('should make a health check if PhantomJS exists', () => {
-        //     window.callPhantom = sandbox.stub();
-
-        //     preview.triggerError();
-        //     return stubs.promiseResolve.then(() => {
-        //         expect(window.callPhantom).to.be.called;
-        //     });
-        // });
+            expect(stubs.getErrorViewer).to.be.called;
+            expect(stubs.attachViewerListeners).to.be.called;
+            expect(ErrorViewer.load).to.be.called;
+        });
     });
 
     describe('getRequestHeaders()', () => {
@@ -1504,7 +1569,7 @@ describe('Preview', () => {
         });
     });
 
-    describe('prefetch()', () => {
+    describe('prefetchNextFiles()', () => {
         beforeEach(() => {
             stubs.getTokensPromiseResolve = Promise.resolve({
                 0: 'token0',
@@ -1525,14 +1590,14 @@ describe('Preview', () => {
             stubs.getURL = sandbox.stub(file, 'getURL');
             stubs.getRequestHeaders = sandbox.stub(preview, 'getRequestHeaders');
             stubs.set = sandbox.stub(cache, 'set');
-            stubs.prefetchContent = sandbox.stub(preview, 'prefetchContent');
+            stubs.prefetch = sandbox.stub(preview, 'prefetch');
             preview.prefetchedCollection = [];
         });
 
         it('should not prefetch if there are less than 2 files to prefetch', () => {
             preview.collection = [1];
 
-            preview.prefetch();
+            preview.prefetchNextFiles();
             expect(stubs.getTokens).to.not.be.called;
         });
 
@@ -1543,7 +1608,7 @@ describe('Preview', () => {
 
             preview.collection = [1, 2, 3];
 
-            preview.prefetch();
+            preview.prefetchNextFiles();
             expect(stubs.getTokens).to.not.be.called;
         });
 
@@ -1555,7 +1620,7 @@ describe('Preview', () => {
             preview.previewOptions.token = 'token';
             preview.collection = [0, 1, 2, 3, 4, 5];
 
-            preview.prefetch();
+            preview.prefetchNextFiles();
             return stubs.getTokensPromiseResolve.then(() => {
                 expect(stubs.getTokens).to.be.calledWith([1, 2, 3, 4], 'token');
             });
@@ -1569,7 +1634,7 @@ describe('Preview', () => {
             preview.previewOptions.token = 'token';
             preview.collection = [0, 1, 2, 3, 4, 5];
 
-            preview.prefetch();
+            preview.prefetchNextFiles();
             return stubs.getTokensPromiseResolve.then(() => {
                 expect(stubs.getRequestHeaders.callCount).to.equal(PREFETCH_COUNT);
                 expect(stubs.get.callCount).to.equal(PREFETCH_COUNT);
@@ -1584,11 +1649,11 @@ describe('Preview', () => {
             preview.previewOptions.token = 'token';
             preview.collection = [0, 1, 2, 3, 4, 5];
 
-            preview.prefetch();
+            preview.prefetchNextFiles();
             return stubs.getTokensPromiseResolve.then(() => {
                 return stubs.getPromiseResolve.then(() => {
                     expect(stubs.set.callCount).to.equal(PREFETCH_COUNT);
-                    expect(stubs.prefetchContent.callCount).to.equal(PREFETCH_COUNT);
+                    expect(stubs.prefetch.callCount).to.equal(PREFETCH_COUNT);
                     expect(preview.prefetchedCollection.length).to.equal(PREFETCH_COUNT);
                 });
             });

@@ -3,10 +3,10 @@ import './polyfill';
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import throttle from 'lodash.throttle';
+import cloneDeep from 'lodash.clonedeep';
 /* eslint-enable import/first */
 import Browser from './browser';
 import Logger from './logger';
-import RepStatus from './rep-status';
 import loaders from './loaders';
 import cache from './cache';
 import ProgressBar from './progress-bar';
@@ -335,10 +335,88 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * REMOVE ME
+     * Prefetches a file's viewer assets and content if possible so the browser
+     * can cache the content and significantly improve preview load time. If
+     * preload is true, we don't prefetch the file's actual content and instead
+     * prefetch a lightweight representation, aka preload, of the file so that
+     * can be shown while the full preview is loading. For example, a document's
+     * preload representation is a jpg of the first page.
+     *
+     * Note that for prefetching to work, the same authentication params (token,
+     * shared link, shared link password) must be used when prefetching and
+     * when the actual view happens.
+     *
+     * @param {Object} options - Prefetch options
+     * @param {string} options.fileId - Box File ID
+     * @param {string} options.token - Access token
+     * @param {string} options.sharedLink - Shared link
+     * @param {string} options.sharedLinkPassword - Shared link password
+     * @param {boolean} options.preload - Is this prefetch for a preload
+     * @param {string} token - Access token
+     * @return {void}
      */
-    prefetchViewers() {
-        // noop
+    prefetch({
+        fileId,
+        token,
+        sharedLink = '',
+        sharedLinkPassword = '',
+        preload = false
+    }) {
+        const file = cache.get(fileId);
+        const loader = file ? this.getLoader(file) : null;
+        const viewer = loader ? loader.determineViewer(file) : null;
+        if (!viewer) {
+            return;
+        }
+
+        const options = {
+            viewer,
+            file,
+            token,
+            // Viewers may ignore this representation when prefetching a preload
+            representation: loader.determineRepresentation(file, viewer)
+        };
+
+        // If we are prefetching for preload, shared link and password are not set on
+        // the global this.options for the viewers to use, so we must explicitly pass
+        // them in
+        if (preload) {
+            options.sharedLink = sharedLink;
+            options.sharedLinkPassword = sharedLinkPassword;
+        }
+
+        const viewerInstance = new viewer.CONSTRUCTOR(this.createViewerOptions(options));
+        if (typeof viewerInstance.prefetch === 'function') {
+            viewerInstance.prefetch({
+                assets: true,
+                preload: true, // always prefetch preload content since it is lightweight
+                content: !preload // don't prefetch file's representation content if this is for preload
+            });
+        }
+    }
+
+    /**
+     * Prefetches static viewer assets for the specified viewers.
+     *
+     * @param {string[]} [viewerNames] - Names of viewers to prefetch, defaults to none
+     * @return {void}
+     */
+    prefetchViewers(viewerNames = []) {
+        this.getViewers()
+            .filter((viewer) => viewerNames.indexOf(viewer.NAME) !== -1)
+            .forEach((viewer) => {
+                const viewerInstance = new viewer.CONSTRUCTOR(this.createViewerOptions({
+                    viewer
+                }));
+
+                if (typeof viewerInstance.prefetch === 'function') {
+                    viewerInstance.prefetch({
+                        assets: true,
+                        preload: false,
+                        content: false
+                    });
+                }
+            });
     }
 
     /**
@@ -479,9 +557,6 @@ class Preview extends EventEmitter {
         // Shared link password
         this.options.sharedLinkPassword = options.sharedLinkPassword;
 
-        // Save the location of preview for viewers
-        this.options.location = Object.assign({}, this.location);
-
         // Save the reference to the api endpoint
         this.options.api = options.api ? options.api.replace(/\/$/, '') : API;
 
@@ -530,10 +605,10 @@ class Preview extends EventEmitter {
      *
      * @private
      * @param {Object} moreOptions - Options specified by show()
-     * @returns {Object} combined options
+     * @return {Object} combined options
      */
     createViewerOptions(moreOptions) {
-        return Object.assign({}, this.options, moreOptions);
+        return cloneDeep(Object.assign({ location: this.location }, this.options, moreOptions));
     }
 
     /**
@@ -642,18 +717,15 @@ class Preview extends EventEmitter {
         const viewer = loader.determineViewer(this.file, Object.keys(this.disabledViewers));
 
         // Determine the representation to use
-        const repData = loader.determineRepresentation(this.file, viewer);
-        const repStatus = new RepStatus(repData, this.getRequestHeaders(), this.logger);
+        const representation = loader.determineRepresentation(this.file, viewer);
 
         // Instantiate the viewer
         this.viewer = new viewer.CONSTRUCTOR(this.createViewerOptions({
             viewer,
+            representation,
             container: this.container,
             file: this.file,
-            representation: {
-                status: repStatus,
-                data: repData
-            }
+            logger: this.logger
         }));
 
         // Log the type of file
@@ -771,7 +843,7 @@ class Preview extends EventEmitter {
         hideLoadingIndicator();
 
         // Prefetch next few files
-        this.prefetch();
+        this.prefetchNextFiles();
     }
 
     /**
@@ -917,7 +989,7 @@ class Preview extends EventEmitter {
      * @private
      * @return {void}
      */
-    prefetch() {
+    prefetchNextFiles() {
         // Don't bother prefetching when there aren't more files
         if (this.collection.length < 2) {
             return;
@@ -949,8 +1021,8 @@ class Preview extends EventEmitter {
                     cacheFile(file);
                     this.prefetchedCollection.push(file.id);
 
-                    // Prefetch content
-                    this.prefetchContent(file, token);
+                    // Prefetch assets and content for file
+                    this.prefetch(file.id, token);
                 })
                 .catch((err) => {
                     /* eslint-disable no-console */
@@ -964,42 +1036,6 @@ class Preview extends EventEmitter {
             console.error('Error prefetching files');
             /* eslint-enable no-console */
         });
-    }
-
-    /**
-     * Prefetches a file's content if possible so the browser can cache the
-     * content and significantly improve preview load time.
-     *
-     * @private
-     * @param {Object} file - Box file metadata
-     * @param {string} token - Access token
-     * @return {void}
-     */
-    prefetchContent(file, token) {
-        const loader = this.getLoader(file);
-        if (!loader) {
-            return;
-        }
-
-        let viewer = loader.determineViewer(file);
-        if (!viewer) {
-            return;
-        }
-
-        const representation = loader.determineRepresentation(file, viewer);
-
-        viewer = new viewer.CONSTRUCTOR(this.createViewerOptions({
-            viewer,
-            file,
-            token,
-            representation: {
-                data: representation
-            }
-        }));
-
-        if (RepStatus.isSuccess(representation) && typeof viewer.prefetch === 'function') {
-            viewer.prefetch();
-        }
     }
 
     /**

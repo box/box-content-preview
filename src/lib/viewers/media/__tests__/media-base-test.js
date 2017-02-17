@@ -20,14 +20,8 @@ describe('lib/viewers/media/media-base', () => {
             },
             container: '.container',
             representation: {
-                status: {
-                    getPromise: () => Promise.resolve(),
-                    destroy: sandbox.stub()
-                },
-                data: {
-                    content: {
-                        url_template: 'www.netflix.com'
-                    }
+                content: {
+                    url_template: 'www.netflix.com'
                 }
             }
         });
@@ -84,8 +78,8 @@ describe('lib/viewers/media/media-base', () => {
         });
 
         it('should load mediaUrl in the media element', () => {
-            media.load();
-            return media.options.representation.status.getPromise().then(() => {
+            sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+            return media.load().then(() => {
                 expect(media.mediaEl.addEventListener).to.be.calledWith('loadeddata', media.loadeddataHandler);
                 expect(media.mediaEl.addEventListener).to.be.calledWith('error', media.errorHandler);
                 expect(media.mediaEl.src).to.equal('www.netflix.com');
@@ -94,8 +88,11 @@ describe('lib/viewers/media/media-base', () => {
 
         it('should set autoplay if loaded in iOS', () => {
             sandbox.stub(Browser, 'isIOS').returns(true);
-            media.load();
-            expect(media.mediaEl.autoplay).to.equal(true);
+
+            sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+            return media.load().then(() => {
+                expect(media.mediaEl.autoplay).to.equal(true);
+            });
         });
     });
 

@@ -24,14 +24,8 @@ describe('lib/viewers/text/csv', () => {
                 id: 0
             },
             representation: {
-                status: {
-                    getPromise: () => Promise.resolve(),
-                    destroy: sandbox.stub()
-                },
-                data: {
-                    content: {
-                        url_template: 'foo'
-                    }
+                content: {
+                    url_template: 'csvUrl{asset_path}'
                 }
             }
         };
@@ -60,6 +54,15 @@ describe('lib/viewers/text/csv', () => {
     describe('load()', () => {
         const loadFunc = TextBase.prototype.load;
 
+        beforeEach(() => {
+            sandbox.stub(URL, 'createObjectURL');
+            sandbox.stub(window.Papa, 'parse');
+            sandbox.stub(csv, 'setup');
+            sandbox.stub(csv, 'loadAssets').returns(Promise.resolve());
+            sandbox.stub(csv, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+            sandbox.stub(csv, 'finishLoading');
+        });
+
         afterEach(() => {
             Object.defineProperty(TextBase.prototype, 'load', { value: loadFunc });
         });
@@ -68,14 +71,9 @@ describe('lib/viewers/text/csv', () => {
             const blob = {};
             const workerUrl = 'workerUrl';
             sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub().returns(workerUrl));
-            sandbox.stub(URL, 'createObjectURL');
-            sandbox.stub(window.Papa, 'parse');
-
-            sandbox.stub(csv, 'setup');
             Object.defineProperty(TextBase.prototype, 'load', { value: sandbox.mock() });
-            sandbox.stub(csv, 'loadAssets').returns(Promise.resolve());
+
             sandbox.mock(util).expects('get').withArgs(workerUrl, 'blob').returns(Promise.resolve(blob));
-            sandbox.stub(csv, 'finishLoading');
 
             return csv.load().then(() => {
                 expect(URL.createObjectURL).to.be.calledWith(blob);
@@ -83,25 +81,14 @@ describe('lib/viewers/text/csv', () => {
         });
 
         it('should parse with Papaparse', () => {
-            options.representation.data.content.url_template = 'csvUrl{asset_path}';
-            csv = new CSV(options);
-            csv.setup();
-
             sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub().returns('someUrl'));
-            sandbox.stub(URL, 'createObjectURL');
-            sandbox.stub(window.Papa, 'parse');
-
-            sandbox.stub(csv, 'setup');
             Object.defineProperty(TextBase.prototype, 'load', { value: sandbox.stub() });
 
             csv.options.token = 'token';
             csv.options.sharedLink = 'sharedLink';
             csv.options.sharedLinkPassword = 'sharedLinkPassword';
 
-            sandbox.stub(csv, 'loadAssets').returns(Promise.resolve());
-
             sandbox.stub(util, 'get').returns(Promise.resolve());
-            sandbox.stub(csv, 'finishLoading');
 
             const csvUrlWithAuth = 'csvUrl?access_token=token&shared_link=sharedLink&shared_link_password=sharedLinkPassword';
 
@@ -112,6 +99,29 @@ describe('lib/viewers/text/csv', () => {
                     complete: sinon.match.func
                 });
             });
+        });
+    });
+
+    describe('prefetch()', () => {
+        it('should prefetch assets if assets is true', () => {
+            sandbox.stub(csv, 'prefetchAssets');
+            csv.prefetch({ assets: true, content: false });
+            expect(csv.prefetchAssets).to.be.called;
+        });
+
+        it('should prefetch content if content is true and representation is ready', () => {
+            const contentUrl = 'someContentUrl';
+            sandbox.stub(csv, 'createContentUrlWithAuthParams').returns(contentUrl);
+            sandbox.stub(csv, 'isRepresentationReady').returns(true);
+            sandbox.mock(util).expects('get').withArgs(contentUrl, 'any');
+
+            csv.prefetch({ assets: false, content: true });
+        });
+
+        it('should not prefetch content if content is true but representation is not ready', () => {
+            sandbox.stub(csv, 'isRepresentationReady').returns(false);
+            sandbox.mock(util).expects('get').never();
+            csv.prefetch({ assets: false, content: true });
         });
     });
 

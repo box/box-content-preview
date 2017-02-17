@@ -67,23 +67,26 @@ class Image extends Base {
         super.load();
 
         const { representation, viewer } = this.options;
-        const { data, status } = representation;
+        const template = representation.content.url_template;
 
         this.bindDOMListeners();
-        return status.getPromise().then(() => {
-            this.imageEl.src = this.createContentUrlWithAuthParams(data.content.url_template, viewer.ASSET);
+        return this.getRepStatus().getPromise().then(() => {
+            this.imageEl.src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
         }).catch(this.handleAssetError);
     }
 
     /**
-     * Prefetches assets for a document.
+     * Prefetches assets for an image.
      *
+     * @param {boolean} [options.content] - Whether or not to prefetch rep content
      * @return {void}
      */
-    prefetch() {
+    prefetch({ content = true }) {
         const { representation, viewer } = this.options;
-        const { url_template: template } = representation.data.content;
-        document.createElement('img').src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
+        if (content && this.isRepresentationReady(representation)) {
+            const template = representation.content.url_template;
+            document.createElement('img').src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
+        }
     }
 
     /**

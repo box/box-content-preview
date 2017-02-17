@@ -43,7 +43,7 @@ class SWF extends Base {
      */
     postLoad = () => {
         /* global swfobject */
-        const { url_template: template } = this.options.representation.data.content;
+        const template = this.options.representation.content.url_template;
         swfobject.embedSWF(this.createContentUrlWithAuthParams(template), this.playerEl.id, '100%', '100%', '9', null, null, SWF_PARAMS, null, () => {
             if (this.isDestroyed()) {
                 return;
@@ -56,10 +56,13 @@ class SWF extends Base {
     /**
      * Prefetches assets for swf.
      *
+     * @param {boolean} [options.assets] - Whether or not to prefetch static assets
      * @return {void}
      */
-    prefetch() {
-        this.prefetchAssets(JS);
+    prefetch({ assets = true }) {
+        if (assets) {
+            this.prefetchAssets(JS);
+        }
     }
 }
 

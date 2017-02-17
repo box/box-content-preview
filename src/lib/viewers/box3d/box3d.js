@@ -133,12 +133,25 @@ class Box3D extends Base {
     /**
      * Loads a 3D Scene
      *
+     * @return {Promise} to load assets and representation
+     */
+    load() {
+        this.setup();
+        super.load();
+        return Promise.all([this.loadAssets(JS), this.getRepStatus().getPromise()])
+            .then(this.postLoad)
+            .catch(this.handleAssetError);
+    }
+
+    /**
+     * Finishes loading a 3D scene
+     *
      * @return {void}
      */
     postLoad() {
         /* global BoxSDK */
         const { representation, token, api, sharedLink } = this.options;
-        const { url_template: template } = representation.data.content;
+        const template = representation.content.url_template;
         this.boxSdk = new BoxSDK({
             token,
             sharedLink,
@@ -152,28 +165,22 @@ class Box3D extends Base {
     }
 
     /**
-     * Loads a 3D Scene
+     * Prefetches assets for a 3D scene.
      *
-     * @return {Promise} to load assets and representation
+     * @param {boolean} [options.assets] - Whether or not to prefetch static assets
+     * @param {boolean} [options.content] - Whether or not to prefetch rep content
+     * @return {void}
      */
-    load() {
-        this.setup();
-        super.load();
-        const { status } = this.options.representation;
-        return Promise.all([this.loadAssets(JS), status.getPromise()])
-            .then(this.postLoad)
-            .catch(this.handleAssetError);
-    }
+    prefetch({ assets = true, content = true }) {
+        if (assets) {
+            this.prefetchAssets(JS);
+        }
 
-    /**
-     * Prefetches a 3D Scene
-     *
-     * @returns {void}
-     */
-    prefetch() {
-        const { url_template: template } = this.options.representation.data.content;
-        this.prefetchAssets(JS);
-        get(this.createContentUrl(template, 'entities.json'), this.appendAuthHeader(), 'any');
+        const representation = this.options.representation;
+        if (content && this.isRepresentationReady(representation)) {
+            const template = representation.content.url_template;
+            get(this.createContentUrl(template, 'entities.json'), this.appendAuthHeader(), 'any');
+        }
     }
 
     /**

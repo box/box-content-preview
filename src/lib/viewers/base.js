@@ -2,6 +2,7 @@ import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import debounce from 'lodash.debounce';
 import fullscreen from '../fullscreen';
+import RepStatus from '../rep-status';
 import {
     appendAuthParams,
     getHeaders,
@@ -15,7 +16,9 @@ import Browser from '../browser';
 import {
     CLASS_FULLSCREEN,
     CLASS_BOX_PREVIEW_MOBILE,
-    SELECTOR_BOX_PREVIEW
+    SELECTOR_BOX_PREVIEW,
+    STATUS_SUCCESS,
+    STATUS_VIEWABLE
 } from '../constants';
 
 const LOAD_TIMEOUT_MS = 180000; // 3m
@@ -33,6 +36,7 @@ class Base extends EventEmitter {
     constructor(options) {
         super();
         this.options = options;
+        this.repStatuses = [];
     }
 
     /**
@@ -69,9 +73,10 @@ class Base extends EventEmitter {
      * @return {void}
      */
     destroy() {
-        const { status } = this.options.representation || {};
-        if (status) {
-            status.destroy();
+        if (this.repStatuses) {
+            this.repStatuses.forEach((repStatus) => {
+                repStatus.destroy();
+            });
         }
 
         fullscreen.removeAllListeners();
@@ -437,6 +442,37 @@ class Base extends EventEmitter {
 
         // Prefetch the scripts needed for this preview
         prefetchAssets((js || []).map(assetUrlCreator));
+    }
+
+    /**
+     * Instantiates and returns RepStatus
+     *
+     * @param {Object} [representation] - Optional representation
+     * @return {RepStatus} Instance of RepStatus
+     */
+    getRepStatus(representation) {
+        const { token, sharedLink, sharedLinkPassword, logger } = this.options;
+        const repStatus = new RepStatus({
+            representation: representation || this.options.representation,
+            token,
+            sharedLink,
+            sharedLinkPassword,
+            logger: representation ? null : logger // Do not log to main preview status if rep is passed in
+        });
+
+        this.repStatuses.push(repStatus);
+        return repStatus;
+    }
+
+    /**
+     * Returns if representation status is considered success
+     *
+     * @param {Object} representation - Representation to check
+     * @return {boolean} Whether status is considered successful
+     */
+    isRepresentationReady(representation) {
+        const status = RepStatus.getStatus(representation);
+        return status === STATUS_SUCCESS || status === STATUS_VIEWABLE;
     }
 }
 

@@ -56,3 +56,6 @@ export const API = 'https://api.box.com';
 
 export const ORIGINAL_REP_NAME = 'ORIGINAL';
 export const PRELOAD_REP_NAME = 'FIRSTPAGE';
+
+export const STATUS_SUCCESS = 'success';
+export const STATUS_VIEWABLE = 'viewable';

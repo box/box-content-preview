@@ -177,8 +177,8 @@ class VideoBase extends MediaBase {
      * @param {string} key - Keydown key
      * @return {boolean} Consumed or not
      */
-    onKeyDown(key) {
-        return super.onKeyDown(key);
+    onKeydown(key) {
+        return super.onKeydown(key);
     }
 }
 

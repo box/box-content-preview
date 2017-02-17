@@ -40,45 +40,55 @@ class CSV extends TextBase {
         super.load();
 
         const { representation, location } = this.options;
-        const { data, status } = representation;
+        const template = representation.content.url_template;
         const assetUrlCreator = createAssetUrlCreator(location);
         const papaWorkerUrl = assetUrlCreator(JS[0]);
 
-        return Promise.all([this.loadAssets(JS), status.getPromise()]).then(() => {
-            get(papaWorkerUrl, 'blob')
-            .then((papaWorkerBlob) => {
-                /* global Papa */
-                const workerSrc = URL.createObjectURL(papaWorkerBlob);
-                Papa.SCRIPT_PATH = workerSrc;
+        return Promise.all([this.loadAssets(JS), this.getRepStatus().getPromise()])
+            .then(() => {
+                get(papaWorkerUrl, 'blob')
+                .then((papaWorkerBlob) => {
+                    /* global Papa */
+                    const workerSrc = URL.createObjectURL(papaWorkerBlob);
+                    Papa.SCRIPT_PATH = workerSrc;
 
-                const urlWithAuth = this.createContentUrlWithAuthParams(data.content.url_template);
-                Papa.parse(urlWithAuth, {
-                    download: true,
-                    error: (err, file, inputElem, reason) => {
-                        this.emit('error', reason);
-                    },
-                    complete: (results) => {
-                        if (this.isDestroyed() || !results) {
-                            return;
+                    const urlWithAuth = this.createContentUrlWithAuthParams(template);
+                    Papa.parse(urlWithAuth, {
+                        download: true,
+                        error: (err, file, inputElem, reason) => {
+                            this.emit('error', reason);
+                        },
+                        complete: (results) => {
+                            if (this.isDestroyed() || !results) {
+                                return;
+                            }
+                            this.data = results.data;
+                            this.finishLoading();
+                            URL.revokeObjectURL(workerSrc);
                         }
-                        this.data = results.data;
-                        this.finishLoading();
-                        URL.revokeObjectURL(workerSrc);
-                    }
+                    });
                 });
-            });
-        }).catch(this.handleAssetError);
+            })
+            .catch(this.handleAssetError);
     }
 
     /**
-     * Prefetches assets for dash.
+     * Prefetches assets for CSV.
      *
+     * @param {boolean} [options.assets] - Whether or not to prefetch static assets
+     * @param {boolean} [options.content] - Whether or not to prefetch rep content
      * @return {void}
      */
-    prefetch() {
-        const template = this.options.representation.data.content.url_template;
-        this.prefetchAssets(JS);
-        get(this.createContentUrlWithAuthParams(template), 'any');
+    prefetch({ assets = true, content = true }) {
+        if (assets) {
+            this.prefetchAssets(JS);
+        }
+
+        const representation = this.options.representation;
+        if (content && this.isRepresentationReady(representation)) {
+            const template = representation.content.url_template;
+            get(this.createContentUrlWithAuthParams(template), 'any');
+        }
     }
 
     /**

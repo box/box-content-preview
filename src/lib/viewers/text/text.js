@@ -46,21 +46,30 @@ class PlainText extends TextBase {
     load() {
         this.setup();
         super.load();
-        const { status } = this.options.representation;
-        return Promise.all([this.loadAssets(this.getJS(), this.getCSS()), status.getPromise()])
+
+        const loadAssetsPromise = this.loadAssets(this.getJS(), this.getCSS());
+        return Promise.all([loadAssetsPromise, this.getRepStatus().getPromise()])
             .then(this.postLoad)
             .catch(this.handleAssetError);
     }
 
     /**
-     * Prefetches assets for dash.
+     * Prefetches assets for text.
      *
+     * @param {boolean} [options.assets] - Whether or not to prefetch static assets
+     * @param {boolean} [options.content] - Whether or not to prefetch rep content
      * @return {void}
      */
-    prefetch() {
-        const { url_template: template } = this.options.representation.data.content;
-        this.prefetchAssets(this.getJS(), this.getCSS());
-        get(this.createContentUrlWithAuthParams(template), 'any');
+    prefetch({ assets = true, content = true }) {
+        if (assets) {
+            this.prefetchAssets(this.getJS(), this.getCSS());
+        }
+
+        const representation = this.options.representation;
+        if (content && this.isRepresentationReady(representation)) {
+            const template = representation.content.url_template;
+            get(this.createContentUrlWithAuthParams(template), 'any');
+        }
     }
 
     /**
@@ -175,7 +184,7 @@ class PlainText extends TextBase {
      */
     postLoad = () => {
         const { representation, file } = this.options;
-        const { url_template: template } = representation.data.content;
+        const template = representation.content.url_template;
         const { extension, size } = file;
 
         this.truncated = size > SIZE_LIMIT_BYTES;

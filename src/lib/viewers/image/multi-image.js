@@ -53,7 +53,7 @@ class MultiImage extends ImageBase {
      *
      * @pubic
      * @param {Array} imageUrls urls for images
-     * @returns {Promise} Promise to load bunch of images
+     * @return {Promise} Promise to load bunch of images
      */
     load(imageUrlsTemplate) {
         this.imageUrls = imageUrlsTemplate;

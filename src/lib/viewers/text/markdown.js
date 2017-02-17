@@ -26,7 +26,7 @@ class Markdown extends PlainText {
      * Returns the name of the viewer
      *
      * @override
-     * @returns {string} text
+     * @return {string} text
      */
     getJS() {
         return super.getJS().concat(`${STATIC_URI}remarkable.min.js`);
@@ -36,7 +36,7 @@ class Markdown extends PlainText {
      * Returns the name of the viewer
      *
      * @override
-     * @returns {string} text
+     * @return {string} text
      */
     getCSS() {
         return super.getCSS().concat(`${STATIC_URI}github-markdown.css`);

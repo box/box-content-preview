@@ -24,11 +24,15 @@ class MP3 extends MediaBase {
     /**
      * Prefetches assets for a mp3.
      *
+     * @param {boolean} [options.content] - Whether or not to prefetch rep content
      * @return {void}
      */
-    prefetch() {
-        const { url_template: template } = this.options.representation.data.content;
-        document.createElement('audio').src = this.createContentUrlWithAuthParams(template);
+    prefetch({ content = true }) {
+        const representation = this.options.representation;
+        if (content && this.isRepresentationReady(representation)) {
+            const template = representation.content.url_template;
+            document.createElement('audio').src = this.createContentUrlWithAuthParams(template);
+        }
     }
 
     /**

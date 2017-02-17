@@ -78,11 +78,7 @@ class MediaBase extends Base {
         this.setup();
         super.load();
 
-        const { representation } = this.options;
-        const { data, status } = representation;
-        const { content } = data;
-        const { url_template: template } = content;
-
+        const template = this.options.representation.content.url_template;
         this.mediaUrl = this.createContentUrlWithAuthParams(template);
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
         this.mediaEl.addEventListener('error', this.errorHandler);
@@ -94,7 +90,7 @@ class MediaBase extends Base {
             this.mediaEl.autoplay = true;
         }
 
-        return status.getPromise().then(() => {
+        return this.getRepStatus().getPromise().then(() => {
             this.mediaEl.src = this.mediaUrl;
         }).catch(this.handleAssetError);
     }

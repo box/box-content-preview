@@ -2,8 +2,8 @@ import autobind from 'autobind-decorator';
 import VideoBase from './video-base';
 import cache from '../../cache';
 import fullscreen from '../../fullscreen';
-import { getHeaders, get } from '../../util';
-import RepStatus from '../../rep-status';
+import { get } from '../../util';
+import { getRepresentation } from '../../file';
 import './dash.scss';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
@@ -71,12 +71,10 @@ class Dash extends VideoBase {
      */
     load() {
         this.setup();
-
-        const { data, status } = this.options.representation;
-        this.mediaUrl = data.content.url_template;
+        this.mediaUrl = this.options.representation.content.url_template;
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
 
-        Promise.all([this.loadAssets(this.getJSAssets()), status.getPromise()]).then(() => {
+        Promise.all([this.loadAssets(this.getJSAssets()), this.getRepStatus().getPromise()]).then(() => {
             this.loadDashPlayer();
             this.resetLoadTimeout();
         });
@@ -85,12 +83,20 @@ class Dash extends VideoBase {
     /**
      * Prefetches assets for dash.
      *
+     * @param {boolean} [options.assets] - Whether or not to prefetch static assets
+     * @param {boolean} [options.content] - Whether or not to prefetch rep content
      * @return {void}
      */
-    prefetch() {
-        const { url_template: template } = this.options.representation.data.content;
-        this.prefetchAssets(this.getJSAssets());
-        get(this.createContentUrlWithAuthParams(template, MANIFEST), 'any');
+    prefetch({ assets = true, content = true }) {
+        if (assets) {
+            this.prefetchAssets(this.getJSAssets());
+        }
+
+        const representation = this.options.representation;
+        if (content && this.isRepresentationReady(representation)) {
+            const template = representation.content.url_template;
+            get(this.createContentUrlWithAuthParams(template, MANIFEST), 'any');
+        }
     }
 
     /**
@@ -309,11 +315,10 @@ class Dash extends VideoBase {
      * @return {void}
      */
     loadFilmStrip() {
-        const { file, token, sharedLink, sharedLinkPassword } = this.options;
-        const filmstrip = file.representations.entries.find((entry) => entry.representation === 'filmstrip');
+        const filmstrip = getRepresentation(this.options.file, 'filmstrip');
         if (filmstrip) {
             const url = this.createContentUrlWithAuthParams(filmstrip.content.url_template);
-            this.filmstripStatus = new RepStatus(filmstrip, getHeaders({}, token, sharedLink, sharedLinkPassword));
+            this.filmstripStatus = this.getRepStatus(filmstrip);
             this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect);
         }
     }

@@ -38,15 +38,26 @@ describe('lib/media/mp4', () => {
     });
 
     describe('prefetch()', () => {
-        it('should prefetch content with auth params', () => {
-            const template = 'someTemplate';
+        beforeEach(() => {
             mp4.options.representation = {
-                data: { content: { url_template: template } }
+                content: {
+                    url_template: 'sometemplate'
+                }
             };
-            sandbox.stub(mp4, 'createContentUrlWithAuthParams');
+        });
 
-            mp4.prefetch();
-            expect(mp4.createContentUrlWithAuthParams).to.be.calledWith(template);
+        it('should prefetch content if content is true and representation is ready', () => {
+            sandbox.stub(mp4, 'isRepresentationReady').returns(true);
+            sandbox.stub(mp4, 'createContentUrlWithAuthParams').returns('someContentUrl');
+            mp4.prefetch({ content: true });
+            expect(mp4.createContentUrlWithAuthParams).to.be.calledWith('sometemplate');
+        });
+
+        it('should not prefetch content if content is true but representation is not ready', () => {
+            sandbox.stub(mp4, 'isRepresentationReady').returns(false);
+            sandbox.stub(mp4, 'createContentUrlWithAuthParams');
+            mp4.prefetch({ content: true });
+            expect(mp4.createContentUrlWithAuthParams).to.not.be.called;
         });
     });
 });

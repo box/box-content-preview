@@ -2,6 +2,7 @@
 import Box3D from '../box3d';
 import Base from '../../base';
 import fullscreen from '../../../fullscreen';
+import * as util from '../../../util';
 import {
     EVENT_ERROR,
     EVENT_LOAD,
@@ -36,18 +37,26 @@ describe('box3d', () => {
             },
             container: containerEl,
             representation: {
-                status: {
-                    getPromise: () => Promise.resolve(),
-                    destroy: sandbox.stub()
-                },
-                data: {
-                    content: {
-                        url_template: 'foo'
-                    }
+                content: {
+                    url_template: 'foo'
                 }
             }
         });
         box3d.setup();
+
+        sandbox.stub(box3d, 'createSubModules');
+        box3d.controls = {
+            on: () => {},
+            removeListener: () => {},
+            destroy: () => {}
+        };
+        box3d.renderer = {
+            load: () => Promise.resolve(),
+            on: () => {},
+            removeListener: () => {},
+            destroy: () => {}
+        };
+
         box3d.postLoad();
     });
 
@@ -227,26 +236,25 @@ describe('box3d', () => {
     });
 
     describe('resize()', () => {
+        const resizeFunc = Base.prototype.resize;
+
+        beforeEach(() => {
+            box3d.renderer.resize = sandbox.stub();
+        });
+
+        afterEach(() => {
+            Object.defineProperty(Base.prototype, 'resize', { value: resizeFunc });
+        });
+
         it('should call super.resize()', () => {
-            Object.defineProperty(Object.getPrototypeOf(Box3D.prototype), 'resize', {
-                value: sandbox.stub()
-            });
-
+            Object.defineProperty(Base.prototype, 'resize', { value: sandbox.mock() });
             box3d.resize();
-
-            expect(Base.prototype.resize).to.be.called;
         });
 
         it('should call renderer.resize() when it exists', () => {
-            Object.defineProperty(Object.getPrototypeOf(Box3D.prototype), 'resize', {
-                value: sandbox.stub()
-            });
-            sandbox.stub(box3d.renderer, 'resize');
-
+            Object.defineProperty(Base.prototype, 'resize', { value: sandbox.stub() });
             box3d.resize();
-
             expect(box3d.renderer.resize).to.be.called;
-            expect(Base.prototype.resize).to.be.called;
         });
     });
 
@@ -282,16 +290,65 @@ describe('box3d', () => {
     });
 
     describe('load()', () => {
+        const loadFunc = Base.prototype.load;
+
+        afterEach(() => {
+            Object.defineProperty(Base.prototype, 'load', { value: loadFunc });
+        });
+
         it('should call renderer.load()', () => {
-            Object.defineProperty(Object.getPrototypeOf(Box3D.prototype), 'load', {
-                value: sandbox.stub()
-            });
+            Object.defineProperty(Base.prototype, 'load', { value: sandbox.mock() });
             sandbox.stub(box3d, 'loadAssets').returns(Promise.resolve());
+            sandbox.stub(box3d, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
             sandbox.stub(box3d, 'postLoad');
             return box3d.load().then(() => {
                 expect(box3d.postLoad).to.be.called;
-                expect(Base.prototype.load).to.be.called;
             });
+        });
+    });
+
+    describe('postLoad()', () => {
+        it('should setup a Box SDK, create sub modules, and attach event handlers', () => {
+            sandbox.stub(box3d, 'attachEventHandlers');
+
+            box3d.postLoad();
+
+            expect(box3d.createSubModules).to.be.called;
+            expect(box3d.attachEventHandlers).to.be.called;
+            expect(box3d.boxSdk).to.be.an.object;
+        });
+
+        it('should call renderer.load() with the entities.json file and options', () => {
+            const contentUrl = 'someEntitiesJsonUrl';
+            sandbox.stub(box3d, 'createContentUrl').returns(contentUrl);
+            sandbox.mock(box3d.renderer).expects('load').withArgs(contentUrl, box3d.options).returns(Promise.resolve());
+
+            box3d.postLoad();
+        });
+    });
+
+    describe('prefetch()', () => {
+        it('should prefetch assets if assets is true', () => {
+            sandbox.stub(box3d, 'prefetchAssets');
+            box3d.prefetch({ assets: true, content: false });
+            expect(box3d.prefetchAssets).to.be.called;
+        });
+
+        it('should prefetch content if content is true and representation is ready', () => {
+            const headers = {};
+            const contentUrl = 'someContentUrl';
+            sandbox.stub(box3d, 'createContentUrl').returns(contentUrl);
+            sandbox.stub(box3d, 'appendAuthHeader').returns(headers);
+            sandbox.stub(box3d, 'isRepresentationReady').returns(true);
+            sandbox.mock(util).expects('get').withArgs(contentUrl, headers, 'any');
+
+            box3d.prefetch({ assets: false, content: true });
+        });
+
+        it('should not prefetch content if content is true but representation is not ready', () => {
+            sandbox.stub(box3d, 'isRepresentationReady').returns(false);
+            sandbox.mock(util).expects('get').never();
+            box3d.prefetch({ assets: false, content: true });
         });
     });
 
@@ -321,10 +378,8 @@ describe('box3d', () => {
 
     describe('handleToggleVr()', () => {
         it('should call renderer.toggleVr()', () => {
-            sandbox.stub(box3d.renderer, 'toggleVr');
+            box3d.renderer.toggleVr = sandbox.mock();
             box3d.handleToggleVr();
-
-            expect(box3d.renderer.toggleVr).to.be.called;
         });
     });
 
@@ -334,6 +389,7 @@ describe('box3d', () => {
             sandbox.stub(box3d, 'emit', (eventName) => {
                 eventNameUsed = eventName;
             });
+            box3d.controls.addUi = sandbox.stub();
         });
 
         afterEach(() => {
@@ -345,30 +401,22 @@ describe('box3d', () => {
             expect(box3d.loaded).to.be.true;
         });
         it('should call controls.addUi() if it exists', () => {
-            sandbox.stub(box3d.controls, 'addUi');
             box3d.handleSceneLoaded();
-
             expect(box3d.controls.addUi).to.be.called;
         });
     });
 
     describe('handleShowVrButton()', () => {
         it('should call controls.showVrButton()', () => {
-            sandbox.stub(box3d.controls, 'showVrButton');
-
+            box3d.controls.showVrButton = sandbox.mock();
             box3d.handleShowVrButton();
-
-            expect(box3d.controls.showVrButton).to.be.called;
         });
     });
 
     describe('handleReset()', () => {
         it('should call renderer.reset()', () => {
-            sandbox.stub(box3d.renderer, 'reset');
-
+            box3d.renderer.reset = sandbox.mock();
             box3d.handleReset();
-
-            expect(box3d.renderer.reset).to.be.called;
         });
     });
 

@@ -44,14 +44,8 @@ describe('image.js', () => {
                 ASSET: '1.png'
             },
             representation: {
-                status: {
-                    getPromise: () => Promise.resolve(),
-                    destroy: sandbox.stub()
-                },
-                data: {
-                    content: {
-                        url_template: 'foo'
-                    }
+                content: {
+                    url_template: 'foo'
                 }
             }
         });
@@ -111,17 +105,32 @@ describe('image.js', () => {
     });
 
     describe('load()', () => {
-        beforeEach(() => {
-            sandbox.stub(image, 'appendAuthParams').returns(imageUrl);
-        });
-
         it('should fetch the image URL and load an image', () => {
             sandbox.stub(image, 'bindDOMListeners');
+            sandbox.stub(image, 'createContentUrlWithAuthParams').returns(imageUrl);
+            sandbox.stub(image, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
 
             // load the image
             return image.load(imageUrl).then(() => {
                 expect(image.bindDOMListeners).to.be.called;
-            });
+                expect(image.createContentUrlWithAuthParams).to.be.calledWith('foo', '1.png');
+            }).catch(() => {});
+        });
+    });
+
+    describe('prefetch()', () => {
+        it('should prefetch content if content is true and representation is ready', () => {
+            sandbox.stub(image, 'isRepresentationReady').returns(true);
+            sandbox.stub(image, 'createContentUrlWithAuthParams').returns('somecontenturl');
+            image.prefetch({ content: true });
+            expect(image.createContentUrlWithAuthParams).to.be.calledWith('foo', '1.png');
+        });
+
+        it('should not prefetch content if content is true but representation is not ready', () => {
+            sandbox.stub(image, 'isRepresentationReady').returns(false);
+            sandbox.stub(image, 'createContentUrlWithAuthParams');
+            image.prefetch({ content: true });
+            expect(image.createContentUrlWithAuthParams).to.not.be.called;
         });
     });
 
@@ -355,7 +364,8 @@ describe('image.js', () => {
             image.wrapperEl.style.width = '50px';
             image.wrapperEl.style.height = '50px';
 
-            image.load(imageUrl);
+            sandbox.stub(image, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+            image.load(imageUrl).catch(() => {});
         });
 
         describe('should zoom in by modifying', () => {
@@ -404,7 +414,7 @@ describe('image.js', () => {
         it('should swap height & width when image is rotated', () => {
             sandbox.stub(image, 'isRotated').returns(true);
 
-            image.load(imageUrl);
+            image.load(imageUrl).catch(() => {});
             image.imageEl.style.width = '200px'; // ensures width > height
 
             const origImageSize = image.imageEl.getBoundingClientRect();
@@ -419,7 +429,7 @@ describe('image.js', () => {
             image.annotator = {};
             sandbox.stub(image, 'scaleAnnotations');
 
-            image.load(imageUrl);
+            image.load(imageUrl).catch(() => {});
 
             image.zoomIn();
             expect(image.scaleAnnotations).to.be.called;

@@ -123,12 +123,25 @@ class DocBase extends Base {
     /**
      * Prefetches assets for a document.
      *
+     * @param {boolean} [options.assets] - Whether or not to prefetch static assets
+     * @param {boolean} [options.preload] - Whether or not to prefetch preload content
+     * @param {boolean} [options.content] - Whether or not to prefetch rep content
      * @return {void}
      */
-    prefetch() {
-        const { url_template: template } = this.options.representation.data.content;
-        this.prefetchAssets(JS, CSS);
-        get(this.createContentUrlWithAuthParams(template), 'any');
+    prefetch({ assets = true, preload = true, content = true }) {
+        if (assets) {
+            this.prefetchAssets(JS, CSS);
+        }
+
+        if (preload && this.getViewerOption('preload') === true) {
+            // fill in later
+        }
+
+        const representation = this.options.representation;
+        if (content && this.isRepresentationReady(representation)) {
+            const template = representation.content.url_template;
+            get(this.createContentUrlWithAuthParams(template), 'any');
+        }
     }
 
     /**
@@ -141,11 +154,11 @@ class DocBase extends Base {
         this.setup();
         super.load();
 
-        const { data, status } = this.options.representation;
-        this.pdfUrl = this.createContentUrlWithAuthParams(data.content.url_template);
+        const template = this.options.representation.content.url_template;
+        this.pdfUrl = this.createContentUrlWithAuthParams(template);
 
         this.preload();
-        return Promise.all([this.loadAssets(JS, CSS), status.getPromise()])
+        return Promise.all([this.loadAssets(JS, CSS), this.getRepStatus().getPromise()])
             .then(this.postload)
             .catch(this.handleAssetError);
     }

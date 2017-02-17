@@ -8,17 +8,21 @@ let repStatus;
 const STATUS_UPDATE_INTERVAL_IN_MILLIS = 2000;
 
 describe('RepStatus', () => {
+    let rep;
+
     beforeEach(() => {
-        const rep = {
+        rep = {
             info: {
                 url: 'https://info'
             },
             links: {},
             status: {}
         };
-        const headers = {};
         const logger = () => {};
-        repStatus = new RepStatus(rep, headers, logger);
+        repStatus = new RepStatus({
+            representation: rep,
+            logger
+        });
     });
 
     afterEach(() => {
@@ -31,19 +35,34 @@ describe('RepStatus', () => {
         repStatus = null;
     });
 
-    describe('constructor()', () => {
-        it('should set the correct object properties', () => {
-            const rep = {
-                info: {
-                    url: 'https://info'
-                },
-                links: {},
-                status: {}
-            };
+    describe('getStatus()', () => {
+        it('should return the status from the representation state object', () => {
+            const status = 'someStatus';
+            expect(RepStatus.getStatus({
+                status: {
+                    state: status
+                }
+            })).to.equal(status);
+        });
+    });
 
-            assert.deepEqual(repStatus.headers, {});
-            assert.deepEqual(repStatus.representation, rep);
-            assert.deepEqual(typeof repStatus.logger, 'function');
+    describe('constructor()', () => {
+        const infoUrl = 'someUrl';
+
+        beforeEach(() => {
+            sandbox.stub(util, 'appendAuthParams').returns(infoUrl);
+        });
+
+        it('should set the correct object properties', () => {
+            repStatus = new RepStatus({
+                representation: rep,
+                logger: {}
+            });
+
+            expect(repStatus.representation).to.deep.equal(rep);
+            expect(repStatus.logger).to.be.an.object;
+            expect(repStatus.infoUrl).to.equal(infoUrl);
+            expect(repStatus.promise).to.be.a.promise;
         });
     });
 
@@ -67,9 +86,14 @@ describe('RepStatus', () => {
 
             return repStatus.updateStatus().then(() => {
                 assert.equal('success', repStatus.representation.status.state);
-
                 assert.isTrue(spy.called);
             });
+        });
+
+        it('should return a resolved promise if there is no info url', () => {
+            sandbox.mock(util).expects('get').never();
+            repStatus.infoUrl = '';
+            expect(repStatus.updateStatus()).to.be.instanceof(Promise);
         });
     });
 

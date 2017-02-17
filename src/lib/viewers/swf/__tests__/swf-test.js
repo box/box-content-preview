@@ -24,14 +24,8 @@ describe('lib/viewers/swf', () => {
             },
             container: containerEl,
             representation: {
-                status: {
-                    getPromise: () => Promise.resolve(),
-                    destroy: sandbox.stub()
-                },
-                data: {
-                    content: {
-                        url_template: 'foo'
-                    }
+                content: {
+                    url_template: 'foo'
                 }
             }
         });
@@ -46,14 +40,6 @@ describe('lib/viewers/swf', () => {
             swf.destroy();
         }
         swf = null;
-    });
-
-    describe('prefetch()', () => {
-        it('should load assets', () => {
-            sandbox.stub(swf, 'prefetchAssets');
-            swf.prefetch();
-            expect(swf.prefetchAssets).to.be.called;
-        });
     });
 
     describe('load()', () => {
@@ -78,9 +64,8 @@ describe('lib/viewers/swf', () => {
 
     describe('postLoad()', () => {
         it('should call embedSWF', () => {
-            const spy = sandbox.spy(swfobject, 'embedSWF');
-            swf.postLoad();
-            spy.should.be.calledWith('foo', 'flash-player', '100%', '100%', '9', null, null, {
+            const contentUrl = 'someurl';
+            sandbox.mock(swfobject).expects('embedSWF').withArgs(contentUrl, 'flash-player', '100%', '100%', '9', null, null, {
                 allowfullscreen: 'true',
                 allowFullScreen: 'true',
                 allownetworking: 'none',
@@ -89,6 +74,17 @@ describe('lib/viewers/swf', () => {
                 allowScriptAccess: 'never',
                 wmode: 'transparent'
             }, null, sinon.match.func);
+            sandbox.stub(swf, 'createContentUrlWithAuthParams').returns(contentUrl);
+
+            swf.postLoad();
+        });
+    });
+
+    describe('prefetch()', () => {
+        it('should prefetch assets if assets is true', () => {
+            sandbox.stub(swf, 'prefetchAssets');
+            swf.prefetch({ assets: true });
+            expect(swf.prefetchAssets).to.be.called;
         });
     });
 });

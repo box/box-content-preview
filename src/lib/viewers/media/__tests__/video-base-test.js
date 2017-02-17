@@ -17,16 +17,8 @@ describe('lib/viewers/media/video-base', () => {
                 id: 1
             },
             container: '.container',
-            representation: {
-                status: {
-                    getPromise: () => Promise.resolve(),
-                    destroy: sandbox.stub()
-                },
-                data: {
-                    content: {
-                        url_template: 'www.netflix.com'
-                    }
-                }
+            content: {
+                url_template: 'www.netflix.com'
             }
         });
         videoBase.setup();

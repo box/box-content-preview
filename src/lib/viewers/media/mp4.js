@@ -20,11 +20,15 @@ class MP4 extends VideoBase {
     /**
      * Prefetches assets for a video.
      *
+     * @param {boolean} [options.content] - Whether or not to prefetch rep content
      * @return {void}
      */
-    prefetch() {
-        const { url_template: template } = this.options.representation.data.content;
-        document.createElement('video').src = this.createContentUrlWithAuthParams(template);
+    prefetch({ content = true }) {
+        const representation = this.options.representation;
+        if (content && this.isRepresentationReady(representation)) {
+            const template = representation.content.url_template;
+            document.createElement('video').src = this.createContentUrlWithAuthParams(template);
+        }
     }
 }
 

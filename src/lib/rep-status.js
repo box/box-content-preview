@@ -1,9 +1,8 @@
 import autobind from 'autobind-decorator';
-import { get } from './util';
+import { get, appendAuthParams } from './util';
+import { STATUS_SUCCESS, STATUS_VIEWABLE } from './constants';
 
 const STATUS_UPDATE_INTERVAL_IN_MILLIS = 2000;
-const STATUS_SUCCESS = 'success';
-const STATUS_VIEWABLE = 'viewable';
 
 @autobind
 class RepStatus {
@@ -20,28 +19,22 @@ class RepStatus {
     }
 
     /**
-     * Returns if status is considered success
-     *
-     * @param {Object} representation - representation object
-     * @return {boolean} true if success or viewable
-     */
-    static isSuccess(representation) {
-        const status = RepStatus.getStatus(representation);
-        return status === STATUS_SUCCESS || status === STATUS_VIEWABLE;
-    }
-
-    /**
      * [constructor]
      *
-     * @param {Object} representation - representation object
-     * @param {Object} headers - request headers
-     * @param {Object} [logger] - optional logger instance
+     * @param {Object} options.representation - Representation object
+     * @param {string} options.token - Access token
+     * @param {string} options.sharedLink - Shared link
+     * @param {string} options.sharedLinkPassword - Shared link password
+     * @param {Object} [options.logger] - Optional logger instance
      * @return {RepStatus} RepStatus instance
      */
-    constructor(representation, headers, logger) {
+    constructor({ representation, token, sharedLink, sharedLinkPassword, logger }) {
         this.representation = representation;
         this.logger = logger;
-        this.headers = headers;
+
+        // Some representations (e.g. ORIGINAL) may not have an info url
+        const repInfo = this.representation.info;
+        this.infoUrl = repInfo ? appendAuthParams(repInfo.url, token, sharedLink, sharedLinkPassword) : '';
 
         this.promise = new Promise((resolve, reject) => {
             this.resolve = resolve;
@@ -62,10 +55,14 @@ class RepStatus {
      * Fetches status of a representation asset
      *
      * @private
-     * @return {void}
+     * @return {Promise} Promise to update status
      */
     updateStatus() {
-        return get(this.representation.info.url, this.headers)
+        if (!this.infoUrl) {
+            return Promise.resolve();
+        }
+
+        return get(this.infoUrl)
         .then((info) => {
             clearTimeout(this.statusTimeout);
 

@@ -2,6 +2,7 @@
 import EventEmitter from 'events';
 import Base from '../base';
 import Browser from '../../browser';
+import RepStatus from '../../rep-status';
 import fullscreen from '../../fullscreen';
 import * as util from '../../util';
 
@@ -247,6 +248,17 @@ describe('base', () => {
     });
 
     describe('destroy()', () => {
+        it('should clean up rep statuses', () => {
+            const destroyMock = sandbox.mock().twice();
+            base.repStatuses = [{
+                destroy: destroyMock
+            }, {
+                destroy: destroyMock
+            }];
+
+            base.destroy();
+        });
+
         it('should cleanup the base viewer', () => {
             base.setup();
 
@@ -500,6 +512,49 @@ describe('base', () => {
             base.prefetchAssets();
             expect(util.createAssetUrlCreator).to.be.calledWith(base.options.location);
             expect(util.prefetchAssets).to.be.calledTwice;
+        });
+    });
+
+    describe('getRepStatus()', () => {
+        beforeEach(() => {
+            base.options.representation = {
+                info: {
+                    url: 'someurl'
+                }
+            };
+        });
+
+        it('should create a new rep status, save, and return it', () => {
+            const repStatus = base.getRepStatus();
+            expect(base.repStatuses.find((status) => status === repStatus)).to.not.be.undefined;
+            expect(repStatus).to.be.instanceof(RepStatus);
+        });
+
+        it('should use the passed in representation', () => {
+            const representation = {
+                info: {
+                    url: 'someOtherUrl'
+                }
+            };
+            const repStatus = base.getRepStatus(representation);
+            expect(repStatus.representation).to.equal(representation);
+        });
+    });
+
+    describe('isRepresentationReady()', () => {
+        it('should return whether the representation has a successful status', () => {
+            const representation = {
+                status: {
+                    state: 'success'
+                }
+            };
+            expect(base.isRepresentationReady(representation)).to.be.true;
+
+            representation.status.state = 'viewable';
+            expect(base.isRepresentationReady(representation)).to.be.true;
+
+            representation.status.state = 'error';
+            expect(base.isRepresentationReady(representation)).to.be.false;
         });
     });
 });

@@ -41,14 +41,8 @@ describe('doc-base', () => {
         docBase = new DocBase({
             container: containerEl,
             representation: {
-                status: {
-                    getPromise: () => Promise.resolve(),
-                    destroy: sandbox.stub()
-                },
-                data: {
-                    content: {
-                        url_template: 'foo'
-                    }
+                content: {
+                    url_template: 'foo'
                 }
             },
             file: {
@@ -149,6 +143,29 @@ describe('doc-base', () => {
         });
     });
 
+    describe('prefetch()', () => {
+        it('should prefetch assets if assets is true', () => {
+            sandbox.stub(docBase, 'prefetchAssets');
+            docBase.prefetch({ assets: true, preload: false, content: false });
+            expect(docBase.prefetchAssets).to.be.called;
+        });
+
+        it('should prefetch content if content is true and representation is ready', () => {
+            const contentUrl = 'someContentUrl';
+            sandbox.stub(docBase, 'createContentUrlWithAuthParams').returns(contentUrl);
+            sandbox.stub(docBase, 'isRepresentationReady').returns(true);
+            sandbox.mock(util).expects('get').withArgs(contentUrl, 'any');
+
+            docBase.prefetch({ assets: false, preload: false, content: true });
+        });
+
+        it('should not prefetch content if content is true but representation is not ready', () => {
+            sandbox.stub(docBase, 'isRepresentationReady').returns(false);
+            sandbox.mock(util).expects('get').never();
+            docBase.prefetch({ assets: false, preload: false, content: true });
+        });
+    });
+
     describe('load()', () => {
         const loadFunc = Base.prototype.load;
 
@@ -162,6 +179,7 @@ describe('doc-base', () => {
             sandbox.stub(docBase, 'createContentUrlWithAuthParams');
             sandbox.stub(docBase, 'postload');
             sandbox.stub(docBase, 'loadAssets').returns(Promise.resolve());
+            sandbox.stub(docBase, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
 
             return docBase.load().then(() => {
                 expect(docBase.setup).to.be.called;
