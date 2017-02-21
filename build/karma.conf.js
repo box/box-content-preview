@@ -1,10 +1,25 @@
 const webpackConfig = require('./webpack.karma.config');
 
-const isSingleFile = process.env.TEST_ENV === 'single-file';
-const coverageStatements = isSingleFile ? 0 : 85;
-const coverageBranches = isSingleFile ? 0 : 80;
-const coverageFunctions = isSingleFile ? 0 : 75;
-const coverageLines = isSingleFile ? 0 : 85;
+const getTestFile = (src) => {
+    if (!src) {
+        return [
+            'src/lib/**/*-test.js',
+            'src/lib/**/*-test.html'
+        ];
+    }
+    const frags = src.split('/');
+    const fileName = frags[frags.length - 1];
+    if (!fileName) {
+        throw new Error('Incorrect path to source file');
+    }
+
+    const path = src.replace(fileName, '');
+    const base = path ? `src/lib/${path}` : 'src/lib';
+    return [
+        `${base}/__tests__/${fileName}-test.js`,
+        `${base}/__tests__/${fileName}-test.html`
+    ];
+};
 
 module.exports = (config) => config.set({
     autoWatch: false,
@@ -20,12 +35,12 @@ module.exports = (config) => config.set({
     colors: true,
 
     coverageReporter: {
-        check: {
+        check: config.src ? {} : {
             global: {
-                statements: coverageStatements,
-                branches: coverageBranches,
-                functions: coverageFunctions,
-                lines: coverageLines
+                statements: 80,
+                branches: 80,
+                functions: 80,
+                lines: 80
             }
         },
         reporters: [
@@ -50,10 +65,8 @@ module.exports = (config) => config.set({
 
     files: [
         'node_modules/babel-polyfill/dist/polyfill.js',
-        'src/lib/**/*-test.js',
-        'src/lib/**/*-test.html',
         'src/third-party/**/*.js'
-    ],
+    ].concat(getTestFile(config.src)),
 
     exclude: [],
 

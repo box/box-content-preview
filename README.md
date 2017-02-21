@@ -94,8 +94,9 @@ Install the following plugins in your preferred editor
 * `npm run build` to generate resource bundles and JS webpack bundles.
 * `npm run watch` to only generate JS webpack bundles on file changes.
 * `npm run test` launches karma tests with PhantomJS.
-* `npm run test-dev` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
-* `npm run test-file -- FILENAME` launches test for FILENAME-test.js instead of all tests.
+* `npm run test -- --src=path/to/src/FILENAME` launches test only for `src/lib/path/to/src/__tests__/FILENAME-test.js` instead of all tests.
+* `npm run debug` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
+* `npm run debug -- --src=path/to/src/FILENAME` launches debugging for `src/lib/path/to/src/__tests__/FILENAME-test.js` instead of all tests. Open the URL mentioned in the console.
 
 *For more script commands see `package.json`*
 *Coverage reports are available under reports/coverage*

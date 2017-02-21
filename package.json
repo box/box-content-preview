@@ -91,11 +91,8 @@
   },
   "scripts": {
     "test": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js",
-    "test-dev": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js --no-single-run --auto-watch",
+    "debug": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js --no-single-run --auto-watch",
     "test-release": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js",
-    "test-file": "./build/test.sh",
-    "test-cleanup": "./build/test_cleanup.sh",
-    "debug-file": "./build/debug.sh",
     "sync": "./build/push_to_dev.sh",
     "dev": "BABEL_ENV=dev NODE_ENV=dev ./node_modules/.bin/webpack --progress --colors --config build/webpack.config.js",
     "jenkins": "./node_modules/.bin/webpack --progress --colors --config build/webpack.config.js",
@@ -110,8 +107,5 @@
     "ci": "npm run clean && npm run build-rb && npm run lint && npm run test-release && npm run jenkins",
     "release": "npm run clean && npm run build-rb && npm run lint && npm run test-release && npm run prod",
     "upgrade-pdfjs": "./build/upgrade_pdfjs.sh && ./build/minify_pdfjs.sh"
-  },
-  "dependencies": {
-    "lodash.clonedeep": "^4.5.0"
   }
 }
