@@ -53,9 +53,6 @@ class DocBase extends Base {
         this.viewerEl.classList.add('pdfViewer');
         this.loadTimeout = LOAD_TIMEOUT_MS;
 
-        this.findBarEl = this.containerEl.appendChild(document.createElement('div'));
-        this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
-
         this.scaling = false;
     }
 
@@ -180,9 +177,8 @@ class DocBase extends Base {
      * @return {void}
      */
     initFind() {
-        if (!this.findBarEl) { // doesn't initialize find controller if find bar doesn't exists
-            return;
-        }
+        this.findBarEl = this.containerEl.appendChild(document.createElement('div'));
+        this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
 
         this.findController = new PDFJS.PDFFindController({
             pdfViewer: this.pdfViewer

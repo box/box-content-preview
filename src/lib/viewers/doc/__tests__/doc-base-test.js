@@ -75,11 +75,6 @@ describe('doc-base', () => {
 
             expect(docBase.loadTimeout).to.equal(LOAD_TIMEOUT_MS);
         });
-
-        it('should correctly set the find bar', () => {
-            expect(docBase.findBarEl.classList.contains(CLASS_BOX_PREVIEW_FIND_BAR)).to.be.true;
-            expect(docBase.docEl.parentNode).to.deep.equal(docBase.containerEl);
-        });
     });
 
     describe('destroy()', () => {
@@ -215,16 +210,15 @@ describe('doc-base', () => {
             };
         });
 
+        it('should correctly set the find bar', () => {
+            docBase.initFind();
+            expect(docBase.findBarEl.classList.contains(CLASS_BOX_PREVIEW_FIND_BAR)).to.be.true;
+            expect(docBase.docEl.parentNode).to.deep.equal(docBase.containerEl);
+        });
+
         it('should create and set a new findController', () => {
             docBase.initFind();
             expect(docBase.pdfViewer.setFindController).to.be.called;
-        });
-
-        it('should do nothing if there is no find bar element', () => {
-            docBase.findBarEl = null;
-
-            docBase.initFind();
-            expect(docBase.pdfViewer.setFindController).to.not.be.called;
         });
     });
 
