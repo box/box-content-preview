@@ -95,6 +95,7 @@ class Image360Renderer extends Box3DRenderer {
      * @return {void}
      */
     loadPanoramaFile(assetUrl) {
+        /* istanbul ignore next */
         return this.box3d.addRemoteEntities(assetUrl)
             .then(() => {
                 this.imageAsset = this.box3d.getAssetByType('image');

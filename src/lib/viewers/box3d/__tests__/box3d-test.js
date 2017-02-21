@@ -1,6 +1,9 @@
 /* eslint-disable no-unused-expressions */
 import Box3D from '../box3d';
+import Box3DControls from '../box3d-controls';
+import Box3DRenderer from '../box3d-renderer';
 import Base from '../../base';
+import Browser from '../../../browser';
 import fullscreen from '../../../fullscreen';
 import * as util from '../../../util';
 import {
@@ -70,6 +73,31 @@ describe('box3d', () => {
 
         box3d = undefined;
         stubs = {};
+    });
+
+    describe('createSubModules()', () => {
+        it('should create and save references to 3d controls and 3d renderer', () => {
+            box3d = new Box3D({
+                file: {
+                    id: 0,
+                    file_version: {
+                        id: 1
+                    }
+                },
+                container: containerEl,
+                representation: {
+                    content: {
+                        url_template: 'foo'
+                    }
+                }
+            });
+            box3d.setup();
+
+            box3d.createSubModules();
+
+            expect(box3d.controls).to.be.instanceof(Box3DControls);
+            expect(box3d.renderer).to.be.instanceof(Box3DRenderer);
+        });
     });
 
     describe('attachEventHandlers()', () => {
@@ -380,6 +408,47 @@ describe('box3d', () => {
         it('should call renderer.toggleVr()', () => {
             box3d.renderer.toggleVr = sandbox.mock();
             box3d.handleToggleVr();
+        });
+    });
+
+    describe('onVrPresentChange()', () => {
+        beforeEach(() => {
+            box3d.renderer.box3d = {
+                getVrDisplay: sandbox.stub().returns({
+                    isPresenting: true
+                })
+            };
+            box3d.controls.vrEnabled = false;
+        });
+
+        it('should not do anything on desktop', () => {
+            sandbox.stub(Browser, 'isMobile').returns(false);
+
+            box3d.onVrPresentChange();
+
+            expect(box3d.wrapperEl).to.not.have.class('vr-enabled');
+            expect(box3d.controls.vrEnabled).to.be.false;
+        });
+
+        it('should add vr-enabled class to wrapper and set controls property if VR is presenting on mobile', () => {
+            sandbox.stub(Browser, 'isMobile').returns(true);
+
+            box3d.onVrPresentChange();
+
+            expect(box3d.wrapperEl).to.have.class('vr-enabled');
+            expect(box3d.controls.vrEnabled).to.be.true;
+        });
+
+        it('should not add vr-enabled class to wrapper and not set controls property if on mobile, but VR is not presenting', () => {
+            box3d.renderer.box3d.getVrDisplay = sandbox.stub().returns({
+                isPresenting: false
+            });
+            sandbox.stub(Browser, 'isMobile').returns(true);
+
+            box3d.onVrPresentChange();
+
+            expect(box3d.wrapperEl).to.not.have.class('vr-enabled');
+            expect(box3d.controls.vrEnabled).to.not.be.true;
         });
     });
 
