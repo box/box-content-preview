@@ -56,6 +56,7 @@ class Scrubber extends EventEmitter {
 
     /**
      * [destructor]
+     *
      * @return {void}
      */
     destroy() {
@@ -77,7 +78,6 @@ class Scrubber extends EventEmitter {
     /**
      * Resizes the scrubber on demand by reducing the size from container
      *
-     * @public
      * @param {number} offset - the the value to reduce the scrubber length by
      * @return {void}
      */
@@ -89,7 +89,6 @@ class Scrubber extends EventEmitter {
     /**
      * Sets the value of the scrubber handle position and moves the HTML it to this new position
      *
-     * @public
      * @param {number} value - the the value to save
      * @return {void}
      */
@@ -113,7 +112,6 @@ class Scrubber extends EventEmitter {
     /**
      * Sets the value of the scrubber handle position and moves the HTML it to this new position
      *
-     * @public
      * @param {number} value - the the value to save
      * @return {void}
      */
@@ -133,9 +131,8 @@ class Scrubber extends EventEmitter {
     }
 
     /**
-     * Sets the value of the scrubber handle position and moves the HTML it to this new position
+     * Sets the value of the scrubber buffered position and moves the HTML it to this new position
      *
-     * @public
      * @param {number} value - the the value to save
      * @return {void}
      */
@@ -153,9 +150,8 @@ class Scrubber extends EventEmitter {
     }
 
     /**
-     * Sets the value of the scrubber handle position and moves the HTML it to this new position
+     * Sets the value of the scrubber converted position and moves the HTML it to this new position
      *
-     * @public
      * @param {number} value - the the value to save
      * @return {void}
      */
@@ -196,7 +192,7 @@ class Scrubber extends EventEmitter {
      * since the intension of the user is to drag the handle, and not to click on the page
      *
      * @private
-     * @param {Scrubber} ctx - the instance of the class
+     * @param {Event} event - the instance of the class
      * @return {void}
      */
     mouseDownHandler(event) {
@@ -229,7 +225,7 @@ class Scrubber extends EventEmitter {
 
     /**
      * Cleanup method for the Class
-     * @public
+     *
      * @return {void}
      */
     destroyDocumentHandlers() {
@@ -240,7 +236,7 @@ class Scrubber extends EventEmitter {
 
     /**
      * Getter for the value of the scrubber handle position
-     * @public
+     *
      * @return {number} The scrubber handle position
      */
     getValue() {
@@ -250,7 +246,6 @@ class Scrubber extends EventEmitter {
     /**
      * Returns the dom element for the scrubber handle
      *
-     * @public
      * @return {HTMLElement} The dom element
      */
     getHandleEl() {
@@ -260,7 +255,6 @@ class Scrubber extends EventEmitter {
     /**
      * Returns the dom element for the scrubber conversion bar
      *
-     * @public
      * @return {HTMLElement} The dom element
      */
     getConvertedEl() {
