@@ -1,18 +1,24 @@
 /* eslint-disable no-unused-expressions */
-import shellTemplate from '../shell.html';
 import * as constants from '../constants';
 import * as ui from '../ui';
-import * as util from '../util';
 
 const sandbox = sinon.sandbox.create();
 
-describe('ui', () => {
+describe('lib/ui', () => {
+    let containerEl;
+    let options;
+    const handler = () => {};
+
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
         fixture.load('__tests__/ui-test.html');
+        containerEl = document.querySelector('.ui');
+        options = {
+            container: containerEl
+        };
     });
 
     afterEach(() => {
@@ -20,62 +26,53 @@ describe('ui', () => {
         sandbox.verifyAndRestore();
     });
 
+    describe('cleanup()', () => {
+        it('should clean up shell and remove event listeners', () => {
+            const resultEl = ui.setup(options, handler, null, null, handler);
+            const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
+            sandbox.mock(contentContainerEl).expects('removeEventListener').withArgs('mousemove', handler);
+            sandbox.mock(document).expects('removeEventListener').withArgs('keydown', handler);
+
+            ui.cleanup();
+
+            expect(resultEl).to.be.empty;
+        });
+    });
+
     describe('setup()', () => {
         it('should setup shell structure, header, and loading state', () => {
-            const containerEl = document.querySelector('.ui');
-            const options = {
-                container: containerEl
-            };
-            const handler = () => {};
-
-            sandbox.spy(util, 'insertTemplate');
-
-            const resultEl = ui.setup(options, handler, handler, handler, handler);
+            const resultEl = ui.setup(options);
 
             // Check shell structure
-            expect(util.insertTemplate).to.have.been.calledWith(containerEl, shellTemplate);
             expect(resultEl).to.equal(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_CONTAINER));
 
             // Check header
-            expect(resultEl.firstElementChild.className).to.equal(constants.CLASS_BOX_PREVIEW_HEADER);
+            expect(resultEl).to.contain(constants.SELECTOR_BOX_PREVIEW_HEADER);
 
             // Check loading state
             const loadingWrapperEl = resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOADING_WRAPPER);
-            expect(loadingWrapperEl.querySelector(constants.SELECTOR_BOX_PREVIEW_ICON).innerHTML).to.not.equal('');
-            expect(loadingWrapperEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOADING_TEXT).textContent).to.equal('Generating Preview...');
-            expect(loadingWrapperEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD).textContent).to.equal('Download File');
+            expect(loadingWrapperEl).to.contain(constants.SELECTOR_BOX_PREVIEW_ICON);
+            expect(loadingWrapperEl).to.contain.html('Generating Preview...');
+            expect(loadingWrapperEl).to.contain.html('Download File');
         });
 
         it('should setup logo if option specifies', () => {
-            const containerEl = document.querySelector('.ui');
             const url = 'http://someurl.com/';
-            const options = {
-                container: containerEl,
-                logoUrl: url
-            };
-            const handler = () => {};
-
-            const resultEl = ui.setup(options, handler, handler, handler, handler);
+            options.logoUrl = url;
+            const resultEl = ui.setup(options);
 
             // Check logo
-            expect(resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOGO_DEFAULT).classList.contains(constants.CLASS_HIDDEN)).to.be.true;
-
-            const logoEl = resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOGO_CUSTOM);
-            expect(logoEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
-            expect(logoEl.src).to.equal(url);
+            const defaultLogoEl = resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOGO_DEFAULT);
+            const customLogoEl = resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOGO_CUSTOM);
+            expect(defaultLogoEl).to.have.class(constants.CLASS_HIDDEN);
+            expect(customLogoEl).to.not.have.class(constants.CLASS_HIDDEN);
+            expect(customLogoEl.src).to.equal(url);
         });
     });
 
     describe('visibility functions', () => {
-        let containerEl;
-
         beforeEach(() => {
-            const wrapperEl = document.querySelector('.ui');
-            const options = {
-                container: wrapperEl
-            };
-            const handler = () => {};
-            containerEl = ui.setup(options, handler, handler, handler, handler);
+            containerEl = ui.setup(options);
         });
 
         afterEach(() => {
@@ -95,119 +92,90 @@ describe('ui', () => {
             it('should remove nav event listeners if collection only has one file', () => {
                 const leftNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_LEFT);
                 const rightNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_RIGHT);
-                sandbox.stub(leftNavEl, 'removeEventListener');
-                sandbox.stub(rightNavEl, 'removeEventListener');
+                sandbox.mock(leftNavEl).expects('removeEventListener').withArgs('click');
+                sandbox.mock(rightNavEl).expects('removeEventListener').withArgs('click');
 
                 ui.showNavigation('1', ['1']);
-
-                expect(leftNavEl.removeEventListener).to.have.been.calledWith('click', sinon.match.any);
-                expect(rightNavEl.removeEventListener).to.have.been.calledWith('click', sinon.match.any);
             });
 
             it('should reset nav event listeners if collection has more than one file', () => {
                 const leftNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_LEFT);
                 const rightNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_RIGHT);
-                sandbox.stub(leftNavEl, 'removeEventListener');
-                sandbox.stub(leftNavEl, 'addEventListener');
-                sandbox.stub(rightNavEl, 'removeEventListener');
-                sandbox.stub(rightNavEl, 'addEventListener');
+                const leftNavMock = sandbox.mock(leftNavEl);
+                const rightNavMock = sandbox.mock(rightNavEl);
+
+                leftNavMock.expects('removeEventListener').withArgs('click');
+                leftNavMock.expects('addEventListener').withArgs('click');
+                rightNavMock.expects('removeEventListener').withArgs('click');
+                rightNavMock.expects('addEventListener').withArgs('click');
 
                 ui.showNavigation('1', ['1', '2']);
-
-                expect(leftNavEl.removeEventListener).to.have.been.calledWith('click', sinon.match.any);
-                expect(rightNavEl.removeEventListener).to.have.been.calledWith('click', sinon.match.any);
-                expect(leftNavEl.addEventListener).to.have.been.calledWith('click', sinon.match.any);
-                expect(rightNavEl.addEventListener).to.have.been.calledWith('click', sinon.match.any);
             });
 
             it('should show left nav arrow if passed in ID is not the first in the collection', () => {
                 const leftNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_LEFT);
-                sandbox.stub(leftNavEl.classList, 'remove');
+                sandbox.mock(leftNavEl.classList).expects('remove').withArgs(constants.CLASS_HIDDEN);
 
                 ui.showNavigation('2', ['1', '2']);
-
-                expect(leftNavEl.classList.remove).to.have.been.calledWith(constants.CLASS_HIDDEN);
             });
 
             it('should show right nav arrow if passed in ID is not the last in the collection', () => {
                 const rightNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_RIGHT);
-                sandbox.stub(rightNavEl.classList, 'remove');
+                sandbox.mock(rightNavEl.classList).expects('remove').withArgs(constants.CLASS_HIDDEN);
 
                 ui.showNavigation('1', ['1', '2']);
-
-                expect(rightNavEl.classList.remove).to.have.been.calledWith(constants.CLASS_HIDDEN);
             });
         });
 
         describe('showAnnotateButton()', () => {
             it('should set up and show annotate button', () => {
-                const handler = () => {};
-                const annotationButtonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-                annotationButtonEl.classList.add(constants.CLASS_HIDDEN);
-                sandbox.stub(annotationButtonEl, 'addEventListener');
+                const buttonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+                buttonEl.classList.add(constants.CLASS_HIDDEN);
+                sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', handler);
 
                 ui.showAnnotateButton(handler);
 
-                expect(annotationButtonEl.title).to.equal('Point annotation mode');
-                expect(annotationButtonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
-                expect(annotationButtonEl.addEventListener).to.have.been.calledWith('click', handler);
+                expect(buttonEl.title).to.equal('Point annotation mode');
+                expect(buttonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
             });
         });
 
         describe('showPrintButton()', () => {
             it('should set up and show print button', () => {
-                const handler = () => {};
-                const printButtonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_PRINT);
-                printButtonEl.classList.add(constants.CLASS_HIDDEN);
-                sandbox.stub(printButtonEl, 'addEventListener');
+                const buttonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_PRINT);
+                buttonEl.classList.add(constants.CLASS_HIDDEN);
+                sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', handler);
 
                 ui.showPrintButton(handler);
 
-                expect(printButtonEl.title).to.equal('Print');
-                expect(printButtonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
-                expect(printButtonEl.addEventListener).to.have.been.calledWith('click', handler);
+                expect(buttonEl.title).to.equal('Print');
+                expect(buttonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
             });
         });
 
         describe('showDownloadButton()', () => {
             it('should set up and show download button', () => {
-                const handler = () => {};
-                const downloadButtonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
-                downloadButtonEl.classList.add(constants.CLASS_HIDDEN);
-                sandbox.stub(downloadButtonEl, 'addEventListener');
+                const buttonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
+                buttonEl.classList.add(constants.CLASS_HIDDEN);
+                sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', handler);
 
                 ui.showDownloadButton(handler);
 
-                expect(downloadButtonEl.title).to.equal('Download');
-                expect(downloadButtonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
-                expect(downloadButtonEl.addEventListener).to.have.been.calledWith('click', handler);
+                expect(buttonEl.title).to.equal('Download');
+                expect(buttonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
             });
         });
 
         describe('showLoadingDownloadButton()', () => {
             it('should set up and show loading download button', () => {
-                const handler = () => {};
-                const downloadButtonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
-                downloadButtonEl.classList.add(constants.CLASS_INVISIBLE);
-                sandbox.stub(downloadButtonEl, 'addEventListener');
+                const buttonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
+                buttonEl.classList.add(constants.CLASS_INVISIBLE);
+                sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', handler);
 
                 ui.showLoadingDownloadButton(handler);
 
-                expect(downloadButtonEl.title).to.equal('Download');
-                expect(downloadButtonEl.classList.contains(constants.CLASS_INVISIBLE)).to.be.false;
-                expect(downloadButtonEl.addEventListener).to.have.been.calledWith('click', handler);
-            });
-
-            it('should use visibility hidden to show loading download button, not display none', () => {
-                const handler = () => {};
-                const downloadButtonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
-                downloadButtonEl.classList.add(constants.CLASS_HIDDEN);
-                downloadButtonEl.classList.add(constants.CLASS_INVISIBLE);
-
-                ui.showLoadingDownloadButton(handler);
-
-                expect(downloadButtonEl.classList.contains(constants.CLASS_INVISIBLE)).to.be.false;
-                expect(downloadButtonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.true;
+                expect(buttonEl.title).to.equal('Download');
+                expect(buttonEl.classList.contains(constants.CLASS_INVISIBLE)).to.be.false;
             });
         });
 
@@ -218,43 +186,16 @@ describe('ui', () => {
 
                 ui.showLoadingIndicator();
 
-                expect(contentContainerEl.classList.contains(constants.CLASS_PREVIEW_LOADED)).to.be.false;
+                expect(contentContainerEl).to.not.have.class(constants.CLASS_PREVIEW_LOADED);
             });
         });
 
         describe('hideLoadingIndicator()', () => {
             it('should hide loading indicator', () => {
                 const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
-                contentContainerEl.classList.remove(constants.CLASS_PREVIEW_LOADED);
-
                 ui.hideLoadingIndicator();
-
-                expect(contentContainerEl.classList.contains(constants.CLASS_PREVIEW_LOADED)).to.be.true;
+                expect(contentContainerEl).to.have.class(constants.CLASS_PREVIEW_LOADED);
             });
-        });
-    });
-
-    describe('cleanup()', () => {
-        it('should clean up shell', () => {
-            const wrapperEl = document.querySelector('.ui');
-            const options = {
-                container: wrapperEl
-            };
-            const someHandler = () => {};
-            const mousemoveHandler = () => {};
-            const keydownHandler = () => {};
-
-            const containerEl = ui.setup(options, keydownHandler, someHandler, someHandler, mousemoveHandler);
-
-            const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
-            sandbox.stub(contentContainerEl, 'removeEventListener');
-            sandbox.stub(document, 'removeEventListener');
-
-            ui.cleanup();
-
-            expect(contentContainerEl.removeEventListener).to.have.been.calledWith('mousemove', mousemoveHandler);
-            expect(containerEl.innerHTML).to.equal('');
-            expect(document.removeEventListener).to.have.been.calledWith('keydown', keydownHandler);
         });
     });
 });

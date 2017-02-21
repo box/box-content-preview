@@ -434,6 +434,19 @@ describe('image.js', () => {
             image.zoomIn();
             expect(image.scaleAnnotations).to.be.called;
         });
+
+        it('should reset dimensions and adjust padding when called with reset', () => {
+            image.imageEl.style.width = '10px';
+            image.imageEl.style.height = '20px';
+            sandbox.spy(image, 'zoom');
+
+            image.zoom('reset');
+
+            expect(image.imageEl.style.width).to.equal('');
+            expect(image.imageEl.style.height).to.equal('');
+            expect(stubs.adjustZoom).to.be.called;
+            expect(image.zoom).to.be.calledWith();
+        });
     });
 
     describe('scaleAnnotations()', () => {
@@ -917,9 +930,20 @@ describe('image.js', () => {
         });
 
         it('should return event listener', () => {
+            const event = {};
+            image.annotator = {
+                togglePointModeHandler: sandbox.mock().withArgs(event)
+            };
+            image.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
+            image.imageEl.classList.add(CSS_CLASS_PANNABLE);
             sandbox.stub(image, 'isAnnotatable').returns(true);
+
             const handler = image.getPointModeClickHandler();
             expect(handler).to.be.a('function');
+
+            handler(event);
+            expect(image.imageEl).to.not.have.class(CSS_CLASS_ZOOMABLE);
+            expect(image.imageEl).to.not.have.class(CSS_CLASS_PANNABLE);
         });
     });
 });

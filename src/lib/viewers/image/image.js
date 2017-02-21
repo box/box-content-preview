@@ -255,6 +255,7 @@ class Image extends Base {
                 // Kill further execution
                 return;
 
+            /* istanbul ignore next */
             default:
                 // If the image is overflowing the viewport, figure out by how much
                 // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
@@ -399,12 +400,14 @@ class Image extends Base {
         this.annotator.init(this);
 
         // Disables controls during point annotation mode
+        /* istanbul ignore next */
         this.annotator.addListener('pointmodeenter', () => {
             if (this.controls) {
                 this.controls.disable();
             }
         });
 
+        /* istanbul ignore next */
         this.annotator.addListener('pointmodeexit', () => {
             if (this.controls) {
                 this.controls.enable();

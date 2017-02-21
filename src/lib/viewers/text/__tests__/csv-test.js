@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-expressions */
 import React from 'react';
-import '../BoxCSV';
 import CSV from '../csv';
 import TextBase from '../text-base';
 import * as util from '../../../util';
@@ -161,46 +160,4 @@ describe('lib/viewers/text/csv', () => {
             expect(csv.emit).to.be.calledWith('load');
         });
     });
-
-    // MOVE TO BoxCSV-test.js
-    // describe('getRowClassName()', () => {
-    //     it('should return appropriate classname for row', () => {
-    //         expect(csv.getRowClassName(1)).to.equal('bp-text-csv-odd-row');
-    //         expect(csv.getRowClassName(2)).to.equal('bp-text-csv-even-row');
-    //     });
-    // });
-
-    // describe('cellRenderer()', () => {
-    //     it('should render cell with supplied properties', () => {
-    //         sandbox.stub(csv, 'getRowClassName').returns('rowClass');
-    //         csv.data = [[], [], ['some', 'stuff']];
-
-    //         const cell = csv.cellRenderer({
-    //             columnIndex: 1,
-    //             key: 'key',
-    //             rowIndex: 2,
-    //             style: 'style'
-    //         });
-
-    //         expect(cell.props.className).to.equal('rowClass bp-text-csv-cell');
-    //         expect(cell.props.children).to.equal('stuff');
-    //         expect(cell.props.style).to.equal('style');
-    //     });
-    // });
-
-    // describe('renderCSV()', () => {
-    //     it('should render Grid using calculated properties', () => {
-    //         const renderStub = sandbox.stub(ReactDOM, 'render');
-    //         csv.data = [[1, 2], [2, 3], [3, 4]];
-
-    //         csv.renderCSV();
-
-    //         const gridComponent = renderStub.firstCall.args[0];
-    //         expect(gridComponent.props.className).to.equal('bp-text-csv-grid');
-    //         expect(gridComponent.props.cellRenderer).to.equal(csv.cellRenderer);
-    //         expect(gridComponent.props.columnCount).to.equal(2);
-    //         expect(gridComponent.props.rowCount).to.equal(3);
-    //         expect(renderStub).to.be.calledWith(gridComponent, csv.csvEl);
-    //     });
-    // });
 });

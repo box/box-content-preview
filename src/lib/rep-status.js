@@ -1,10 +1,8 @@
-import autobind from 'autobind-decorator';
 import { get, appendAuthParams } from './util';
 import { STATUS_SUCCESS, STATUS_VIEWABLE } from './constants';
 
-const STATUS_UPDATE_INTERVAL_IN_MILLIS = 2000;
+const STATUS_UPDATE_INTERVAL_MS = 2000;
 
-@autobind
 class RepStatus {
     /**
      * Gets the status out of represenation
@@ -105,7 +103,7 @@ class RepStatus {
                 // Check status again after delay
                 this.statusTimeout = setTimeout(() => {
                     this.updateStatus();
-                }, STATUS_UPDATE_INTERVAL_IN_MILLIS);
+                }, STATUS_UPDATE_INTERVAL_MS);
                 break;
 
             default:

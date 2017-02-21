@@ -1,7 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import { CLASS_DISABLED } from './constants';
 
-
 const parseJSON = (response) => {
     if (response.status === 204) {
         return response;
@@ -16,7 +15,8 @@ const parseThrough = (response) => response;
 /**
  * Helper function to convert HTTP status codes into throwable errors
  *
- * @param {Response} response - fetch's Response object
+ * @private
+ * @param {Response} response - Fetch's Response object
  * @throws {Error} - Throws when the HTTP status is not 2XX
  * @return {Response} - Pass-thru the response if ther are no errors
  */
@@ -33,7 +33,8 @@ function checkStatus(response) {
 /**
  * Wrapper function for XHR post put and delete
  *
- * @return {Promise} xhr promise
+ * @private
+ * @return {Promise} XHR promise
  */
 function xhr(method, url, headers = {}, data = {}) {
     return fetch(url, {
@@ -49,7 +50,8 @@ function xhr(method, url, headers = {}, data = {}) {
  * Creates an empty iframe or uses an existing one
  * for the purposes of downloading or printing
  *
- * @return {HTMLElement} iframe
+ * @private
+ * @return {HTMLElement} Iframe
  */
 function createDownloadIframe() {
     let iframe = document.querySelector('#downloadiframe');
@@ -120,7 +122,7 @@ export function get(url, ...rest) {
  * @param {string} url - The URL to fetch
  * @param {Object} headers - Key-value map of headers
  * @param {Object} data - JS Object representation of JSON data to send
- * @return {Promise} - HTTP response
+ * @return {Promise} HTTP response
  */
 export function post(...rest) {
     return xhr('post', ...rest);
@@ -132,19 +134,19 @@ export function post(...rest) {
  * @param {string} url - The URL to fetch
  * @param {Object} headers - Key-value map of headers
  * @param {Object} data - JS Object representation of JSON data to send
- * @return {Promise} - HTTP response
+ * @return {Promise} HTTP response
  */
 export function del(...rest) {
     return xhr('delete', ...rest);
 }
 
 /**
- * HTTP PUTs a URL with JSON data
+ * HTTP PUTs a url with JSON data
  *
- * @param {string} url - The URL to fetch
+ * @param {string} url - The url to fetch
  * @param {Object} headers - Key-value map of headers
  * @param {Object} data - JS Object representation of JSON data to send
- * @return {Promise} - HTTP response
+ * @return {Promise} HTTP response
  */
 export function put(...rest) {
     return xhr('put', ...rest);
@@ -154,8 +156,7 @@ export function put(...rest) {
  * Opens url in an iframe
  * Used for downloads
  *
- * @public
- * @param {string} api - api url
+ * @param {string} api - API url
  * @return {HTMLElement}
  */
 export function openUrlInsideIframe(url) {
@@ -168,8 +169,7 @@ export function openUrlInsideIframe(url) {
  * Opens content in an iframe
  * Used for printing
  *
- * @public
- * @param {string} content - html content
+ * @param {string} content - HTML content
  * @return {HTMLElement}
  */
 export function openContentInsideIframe(content) {
@@ -180,10 +180,9 @@ export function openContentInsideIframe(content) {
 }
 
 /**
- * Deduces box app url from api url
+ * Deduces Box app url from API url
  *
- * @public
- * @param {string} api - api url
+ * @param {string} api - API url
  * @return {HTMLElement}
  */
 export function deduceBoxUrl(api) {
@@ -207,9 +206,8 @@ export function deduceBoxUrl(api) {
 /**
  * Creates contextual fragment
  *
- * @public
- * @param {Element} node - dom node
- * @param {string} template  html template
+ * @param {Element} node - DOM node
+ * @param {string} template - HTML template
  * @return {HTMLElement}
  */
 export function createFragment(node, template) {
@@ -219,10 +217,9 @@ export function createFragment(node, template) {
 }
 
 /**
- * Inserts template string into dom node
+ * Inserts template string into DOM node
  *
- * @public
- * @param {Element} node - dom node
+ * @param {Element} node - DOM node
  * @param {string} template  html template
  * @return {void}
  */
@@ -233,9 +230,8 @@ export function insertTemplate(node, template) {
 /**
  * Create <script> element to load external script
  *
- * @public
- * @param {string} url  asset url
- * @return {Array} script element
+ * @param {string} url - Asset url
+ * @return {HTMLElement} Script element
  */
 export function createScript(url) {
     const script = document.createElement('script');
@@ -249,9 +245,8 @@ export function createScript(url) {
 /**
  * Create <link> element to prefetch external resource
  *
- * @public
- * @param {string} url  asset urls
- * @return {HTMLElement} prefetch link element
+ * @param {string} url - Asset urls
+ * @return {HTMLElement} Prefetch link element
  */
 export function createPrefetch(url) {
     const link = document.createElement('link');
@@ -263,9 +258,8 @@ export function createPrefetch(url) {
 /**
  * Create <link> element to load external stylesheet
  *
- * @public
- * @param {string} url  asset urls
- * @return {HTMLElement} css link element
+ * @param {string} url - Asset urls
+ * @return {HTMLElement} CSS link element
  */
 export function createStylesheet(url) {
     const link = document.createElement('link');
@@ -278,11 +272,10 @@ export function createStylesheet(url) {
 /**
  * Builds a list of required XHR headers.
  *
- * @public
- * @param {Object} [headers] - optional headers
- * @param {string} [token] - optional auth token
- * @param {string} [sharedLink] - optional shared link
- * @param {string} [password] - optional shared link password
+ * @param {Object} [headers] - Optional headers
+ * @param {string} [token] - Optional auth token
+ * @param {string} [sharedLink] - Optional shared link
+ * @param {string} [password] - Optional shared link password
  * @return {Object} Headers
  */
 export function getHeaders(headers = {}, token = '', sharedLink = '', password = '') {
@@ -306,12 +299,11 @@ export function getHeaders(headers = {}, token = '', sharedLink = '', password =
 /**
  * Appends auth params to a url
  *
- * @public
- * @param {string} url - content url
- * @param {string} [token] - optional auth token
- * @param {string} [sharedLink] - optional shared link
- * @param {string} [password] - optional shared link password
- * @return {string} content urls
+ * @param {string} url - Content url
+ * @param {string} [token] - Optional auth token
+ * @param {string} [sharedLink] - Optional shared link
+ * @param {string} [password] - Optional shared link password
+ * @return {string} Url with auth
  */
 export function appendAuthParams(url, token = '', sharedLink = '', password = '') {
     if (!token && !sharedLink) {
@@ -345,10 +337,9 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
 /**
  * Create a content url from template
  *
- * @public
- * @param {string} template - url template to attach param to
- * @param {string|void} [asset] - optional asset name needed to access file
- * @return {string} content url
+ * @param {string} template - URL template to attach param to
+ * @param {string|void} [asset] - Optional asset name needed to access file
+ * @return {string} Content url
  */
 export function createContentUrl(template, asset) {
     return template.replace('{asset_path}', asset || '');
@@ -357,9 +348,8 @@ export function createContentUrl(template, asset) {
 /**
  * Factory to create asset URLs
  *
- * @public
- * @param {location} location - object
- * @return {Function} factory for creating asset url
+ * @param {Object} location - Location object
+ * @return {Function} Factory for creating asset url
  */
 export function createAssetUrlCreator(location) {
     const baseURI = location.baseURI;
@@ -386,7 +376,7 @@ export function createAssetUrlCreator(location) {
 /**
  * Prefetches external stylsheets or js by appending a <link rel="prefetch"> element
  *
- * @param {Array} urls - asset urls
+ * @param {Array} urls - Asset urls
  * @return {void}
  */
 export function prefetchAssets(urls) {
@@ -402,7 +392,7 @@ export function prefetchAssets(urls) {
 /**
  * Loads external stylsheets by appending a <link> element
  *
- * @param {Array} urls - asset urls
+ * @param {Array} urls - Asset urls
  * @return {void}
  */
 export function loadStylesheets(urls) {
@@ -418,7 +408,7 @@ export function loadStylesheets(urls) {
 /**
  * Loads external scripts by appending a <script> element
  *
- * @param {Array} urls - asset urls
+ * @param {Array} urls - Asset urls
  * @return {Promise} Promise to load scripts
  */
 export function loadScripts(urls) {
@@ -442,9 +432,8 @@ export function loadScripts(urls) {
 /**
  * Function to decode key down events into keys
  *
- * @public
- * @param {Event} event - keydown event
- * @return {string} decoded keydown key
+ * @param {Event} event - Keydown event
+ * @return {string} Decoded keydown key
  */
 export function decodeKeydown(event) {
     let modifier = '';
@@ -506,10 +495,9 @@ export function decodeKeydown(event) {
 /**
  * Find location information about a script include
  *
- * @public
- * @param {string} name - script name
- * @param {HTMLScriptElement} [currentScript] - current script tag
- * @return {void}
+ * @param {string} name - Script name
+ * @param {HTMLScriptElement} [currentScript] - Current script tag
+ * @return {Object} Script location object
  */
 export function findScriptLocation(name, currentScript = null) {
     const scriptSrc = currentScript
@@ -552,8 +540,9 @@ export function findScriptLocation(name, currentScript = null) {
 /**
  * Replaces variable place holders specified between {} in the string with
  * specified custom value. Localizes strings that include variables.
- * @param  {string} string String to be interpolated
- * @param  {string[]} placeholderValues Custom values to replace into string
+ *
+ * @param {string} string - String to be interpolated
+ * @param {string[]} placeholderValues - Custom values to replace into string
  * @return {string} Properly translated string with replaced custom variable
  */
 export function replacePlaceholders(string, placeholderValues) {
@@ -575,8 +564,7 @@ export function replacePlaceholders(string, placeholderValues) {
 /**
  * Check to see if a file requires a Box3D viewer to be viewed
  *
- * @public
- * @param file {Object} The file to check
+ * @param {Object} file - The file to check
  * @return {Boolean} True if the file needs a Box3D 360 degree viewer to be viewed
  */
 export function requires360Viewer(file) {
@@ -589,8 +577,7 @@ export function requires360Viewer(file) {
 /**
  * Disables a DOM element
  *
- * @public
- * @param {object} el - the element to be disabled
+ * @param {object} el - The element to be disabled
  * @return {void}
  */
 export function disableEl(el) {
@@ -600,8 +587,7 @@ export function disableEl(el) {
 /**
  * Enables a DOM element
  *
- * @public
- * @param {object} el - the element to be disabled
+ * @param {object} el - The element to be enabled
  * @return {void}
  */
 export function enableEl(el) {

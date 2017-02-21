@@ -33,6 +33,7 @@ let keydownHandler;
 /**
  * Sets up the preview header.
  *
+ * @private
  * @param {string} headerTheme - Header theme - either 'light' or 'dark'
  * @param {string} logoUrl - URL of logo to use
  * @return {void}
@@ -61,6 +62,7 @@ function setupHeader(headerTheme, logoUrl) {
 /**
  * Sets up preview loading indicator.
  *
+ * @private
  * @return {void}
  */
 function setupLoading() {
@@ -80,8 +82,81 @@ function setupLoading() {
 }
 
 /**
+ * Destroy preview container content.
+ *
+ * @return {void}
+ */
+export function cleanup() {
+    if (contentContainer) {
+        contentContainer.removeEventListener('mousemove', mousemoveHandler);
+    }
+
+    if (container) {
+        container.innerHTML = '';
+    }
+
+    // Remove keyboard events
+    document.removeEventListener('keydown', keydownHandler);
+}
+
+/**
+ * Initializes the container for preview.
+ *
+ * @param {Object} options - Setup options
+ * @param {Function} keydown - Keydown handler
+ * @param {Function} navigateLeft - Left navigation handler
+ * @param {Function} navigateRight - Right navigation handler
+ * @param {Function} mousemove - Mousemove handler
+ * @return {HTMLElement} Preview container
+ */
+export function setup(options, keydown, navigateLeft, navigateRight, mousemove) {
+    container = options.container;
+    leftHandler = navigateLeft;
+    rightHandler = navigateRight;
+    mousemoveHandler = mousemove;
+    keydownHandler = keydown;
+
+    if (typeof container === 'string') {
+        // Get the container dom element if a selector was passed instead.
+        container = document.querySelector(container);
+    } else if (!container) {
+        // Create the container if nothing was passed.
+        container = document.body;
+    }
+
+    // Clear the content
+    cleanup();
+
+    // Create the preview with absolute positioning inside a relative positioned container
+    // <bp-container>
+    //      <bp-header>
+    //      <bp>
+    //      <navigation>
+    // </bp-container>
+    insertTemplate(container, shellTemplate);
+
+    container = container.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER);
+    contentContainer = container.querySelector(SELECTOR_BOX_PREVIEW);
+
+    // Setup the header, buttons, and theme
+    if (options.header !== 'none') {
+        setupHeader(options.header, options.logoUrl);
+    }
+
+    // Setup loading indicator
+    setupLoading();
+
+    // Attach keyboard events
+    document.addEventListener('keydown', keydownHandler);
+
+    return container;
+}
+
+/**
  * Shows navigation arrows if there is a need
  *
+ * @param {number} id - File ID of current preview
+ * @param {number[]} collection - Array of File IDs being previewed
  * @return {void}
  */
 export function showNavigation(id, collection) {
@@ -136,6 +211,7 @@ export function showNavigation(id, collection) {
 /**
  * Shows the point annotate button if the viewers implement annotations
  *
+ * @param {Function} handler - Annotation button handler
  * @return {void}
  */
 export function showAnnotateButton(handler) {
@@ -213,81 +289,12 @@ export function showLoadingIndicator() {
 }
 
 /**
- * Hides the loading indicator
+ * Hides the loading indicator.
  *
- * @private
  * @return {void}
  */
 export function hideLoadingIndicator() {
     if (contentContainer) {
         contentContainer.classList.add(CLASS_PREVIEW_LOADED);
     }
-}
-
-/**
- * Destroy
- *
- * @private
- * @return {void}
- */
-export function cleanup() {
-    if (contentContainer) {
-        contentContainer.removeEventListener('mousemove', mousemoveHandler);
-    }
-
-    if (container) {
-        container.innerHTML = '';
-    }
-
-    // Remove keyboard events
-    document.removeEventListener('keydown', keydownHandler);
-}
-
-/**
- * Initializes the container for preview.
- *
- * @private
- * @return {HTMLElement} Preview container
- */
-export function setup(options, keydown, navigateLeft, navigateRight, mousemove) {
-    container = options.container;
-    leftHandler = navigateLeft;
-    rightHandler = navigateRight;
-    mousemoveHandler = mousemove;
-    keydownHandler = keydown;
-
-    if (typeof container === 'string') {
-        // Get the container dom element if a selector was passed instead.
-        container = document.querySelector(container);
-    } else if (!container) {
-        // Create the container if nothing was passed.
-        container = document.body;
-    }
-
-    // Clear the content
-    cleanup();
-
-    // Create the preview with absolute positioning inside a relative positioned container
-    // <bp-container>
-    //      <bp-header>
-    //      <bp>
-    //      <navigation>
-    // </bp-container>
-    insertTemplate(container, shellTemplate);
-
-    container = container.querySelector(SELECTOR_BOX_PREVIEW_CONTAINER);
-    contentContainer = container.querySelector(SELECTOR_BOX_PREVIEW);
-
-    // Setup the header, buttons, and theme
-    if (options.header !== 'none') {
-        setupHeader(options.header, options.logoUrl);
-    }
-
-    // Setup loading indicator
-    setupLoading();
-
-    // Attach keyboard events
-    document.addEventListener('keydown', keydownHandler);
-
-    return container;
 }

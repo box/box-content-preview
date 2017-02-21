@@ -1,320 +1,270 @@
 /* eslint-disable no-unused-expressions */
 import 'isomorphic-fetch';
 import fetchMock from 'fetch-mock';
-import {
-    openContentInsideIframe,
-    openUrlInsideIframe,
-    appendAuthParams,
-    createScript,
-    createAssetUrlCreator,
-    deduceBoxUrl,
-    insertTemplate,
-    createPrefetch,
-    createStylesheet,
-    getHeaders,
-    prefetchAssets,
-    loadStylesheets,
-    loadScripts,
-    decodeKeydown,
-    findScriptLocation,
-    get,
-    post,
-    del,
-    put,
-    checkStatus,
-    replacePlaceholders,
-    disableEl,
-    enableEl
-} from '../util';
+import * as util from '../util';
 
 import { CLASS_DISABLED } from '../constants';
 
-describe('util', () => {
-    describe('checkStatus()', () => {
-        it('should return the response if it is some kind of 200', () => {
-            const responsePromise = new Promise((resolve) => {
-                resolve({ status: 200, statusText: 'success' });
-            });
-            responsePromise.then(checkStatus).then((value) => {
-                expect(value.status).to.equal(200);
-            });
-        });
+describe('lib/util', () => {
+    describe('get()', () => {
+        const url = 'foo?bar=bum';
 
-        it('should throw an error if the response is not successful', () => {
-            const responsePromise = new Promise((resolve) => {
-                resolve({ status: 400, statusText: 'error' });
-            });
-            try {
-                responsePromise.then(checkStatus);
-            } catch (e) {
-                expect(e.response).to.equal('error');
-            }
-        });
-    });
-
-    describe('xhr()', () => {
         afterEach(() => {
             fetchMock.restore();
         });
 
-        it('should call get on URL', (done) => {
-            const url = 'foo?bar=bum';
-
-            fetchMock.get('foo?bar=bum', {
-                body: {
-                    foo: 'bar'
-                }
-            });
-
-            get(url).then(() => {
-                /* eslint-disable no-unused-expressions */
-                expect(fetchMock.called('foo?bar=bum')).to.be.true;
-                /* eslint-enable no-unused-expressions */
-                done();
+        it('should call fetch on the URL', () => {
+            fetchMock.get(url, {});
+            return util.get(url).then(() => {
+                expect(fetchMock.called(url)).to.be.true;
             });
         });
 
-        it('should call get on URL but fail with 404', (done) => {
-            const url = 'foo?bar=bum';
-
-            fetchMock.get('foo?bar=bum', {
-                body: {
-                    foo: 'bar'
-                },
-                status: 404
-            });
-
-            get(url).then(() => {
-                done('Should have failed');
-            }).catch((err) => {
-                /* eslint-disable no-unused-expressions */
-                expect(fetchMock.called('foo?bar=bum')).to.be.true;
+        it('should call fetch on URL but fail when status is 404', () => {
+            fetchMock.get(url, { status: 404 });
+            return util.get(url).catch((err) => {
+                expect(fetchMock.called(url)).to.be.true;
                 expect(err.response.status).to.equal(404);
                 expect(err.response.statusText).to.equal('Not Found');
-                /* eslint-enable no-unused-expressions */
-                done();
             });
         });
 
-        it('should call get on URL with headers', (done) => {
-            const url = 'foo?bar=bum';
-            const headers = { baz: 'but' };
+        it('should call fetch on URL with headers', () => {
+            const headers = { darth: 'vader' };
+            fetchMock.get(url, {});
 
-            fetchMock.get('foo?bar=bum', {
-                body: {
-                    foo: 'bar'
-                }
-            });
-
-            // Don't know how to check headers
-            get(url, headers).then(() => {
-                /* eslint-disable no-unused-expressions */
-                expect(fetchMock.called('foo?bar=bum')).to.be.true;
-                expect(fetchMock.lastOptions('foo?bar=bum').headers).to.deep.equal(headers);
-                /* eslint-enable no-unused-expressions */
-                done();
+            return util.get(url, headers).then(() => {
+                expect(fetchMock.called(url)).to.be.true;
+                expect(fetchMock.lastOptions(url).headers).to.deep.equal(headers);
             });
         });
 
-        it('should call get on URL with headers and type text', (done) => {
-            const url = 'foo?bar=bum';
+        it('should call fetch on URL with headers and type text', () => {
+            const responseText = 'lukeskywalker';
             const headers = { baz: 'but' };
-
-            fetchMock.get('foo?bar=bum', {
-                body: 'texttext',
+            fetchMock.get(url, {
+                body: responseText,
                 sendAsJson: false
             });
 
-            // Don't know how to check headers
-            get(url, headers, 'text').then((response) => {
-                /* eslint-disable no-unused-expressions */
-                expect(fetchMock.called('foo?bar=bum')).to.be.true;
-                expect(response).to.equal('texttext');
-                expect(fetchMock.lastOptions('foo?bar=bum').headers).to.deep.equal(headers);
-                /* eslint-enable no-unused-expressions */
-                done();
+            return util.get(url, headers, 'text').then((response) => {
+                expect(fetchMock.called(url)).to.be.true;
+                expect(response).to.equal(responseText);
+                expect(fetchMock.lastOptions(url).headers).to.deep.equal(headers);
             });
         });
 
-        it('should call get on URL with type blob', (done) => {
-            const url = 'foo?bar=bum';
+        it('should call fetch on URL with type blob', () => {
             const blob = new Blob(['text'], { type: 'text/plain' });
-
-            fetchMock.get('foo?bar=bum', {
+            fetchMock.get(url, {
                 body: blob,
                 sendAsJson: false
             });
 
-            get(url, 'blob').then((response) => {
-                /* eslint-disable no-unused-expressions */
-                expect(fetchMock.called('foo?bar=bum')).to.be.true;
+            return util.get(url, 'blob').then((response) => {
+                expect(fetchMock.called(url)).to.be.true;
                 expect(response).to.deep.equal(blob);
-                /* eslint-enable no-unused-expressions */
-                done();
             });
         });
 
-        it('should call get on URL with type text', (done) => {
-            const url = 'foo?bar=bum';
-
-            fetchMock.get('foo?bar=bum', {
-                body: 'texttext',
+        it('should call fetch on URL with type text', () => {
+            const responseText = 'darthsidious';
+            fetchMock.get(url, {
+                body: responseText,
                 sendAsJson: false
             });
 
-            // Don't know how to check headers
-            get(url, 'text').then((response) => {
-                /* eslint-disable no-unused-expressions */
-                expect(fetchMock.called('foo?bar=bum')).to.be.true;
-                expect(response).to.equal('texttext');
-                /* eslint-enable no-unused-expressions */
-                done();
+            return util.get(url, 'text').then((response) => {
+                expect(fetchMock.called(url)).to.be.true;
+                expect(response).to.equal(responseText);
             });
         });
 
-        it('should call get on URL with type any', (done) => {
-            const url = 'foo?bar=bum';
-
-            fetchMock.get('foo?bar=bum', {
-                body: 'texttext',
+        it('should call get on URL with type any', () => {
+            fetchMock.get(url, {
+                body: 'greedo',
                 sendAsJson: false
             });
 
-            // Don't know how to check headers
-            get(url, 'any').then((response) => {
-                /* eslint-disable no-unused-expressions */
-                expect(fetchMock.called('foo?bar=bum')).to.be.true;
-                expect(typeof response === 'object').to.be.true;
-                /* eslint-enable no-unused-expressions */
-                done();
+            return util.get(url, 'any').then((response) => {
+                expect(fetchMock.called(url)).to.be.true;
+                expect(response).to.be.an.object;
             });
         });
+    });
 
-        it('should call post on URL', (done) => {
-            const url = 'foo';
+    describe('post()', () => {
+        afterEach(() => {
+            fetchMock.restore();
+        });
+
+        it('should call post on URL', () => {
+            const url = 'someurl';
             const data = { bar: 'bum' };
             const headers = { baz: 'but' };
 
-            fetchMock.post('foo', {
+            fetchMock.post(url, {
                 body: {
                     foo: 'bar'
                 }
             });
 
-            post(url, headers, data).then(() => {
-                /* eslint-disable no-unused-expressions */
-                expect(JSON.parse(fetchMock.lastOptions('foo').body)).to.deep.equal(data);
-                expect(fetchMock.lastOptions('foo').headers).to.deep.equal(headers);
-                /* eslint-enable no-unused-expressions */
-                done();
+            return util.post(url, headers, data).then(() => {
+                expect(JSON.parse(fetchMock.lastOptions(url).body)).to.deep.equal(data);
+                expect(fetchMock.lastOptions(url).headers).to.deep.equal(headers);
             });
         });
+    });
 
-        it('should call put on URL', (done) => {
-            const url = 'foo';
+    describe('del()', () => {
+        afterEach(() => {
+            fetchMock.restore();
+        });
+
+        it('should call delete on URL', () => {
+            const url = 'someurl';
             const data = { bar: 'bum' };
             const headers = { baz: 'but' };
 
-            fetchMock.put('foo', {
+            fetchMock.delete(url, {
                 body: {
                     foo: 'bar'
                 }
             });
 
-            put(url, headers, data).then(() => {
-                /* eslint-disable no-unused-expressions */
-                expect(JSON.parse(fetchMock.lastOptions('foo').body)).to.deep.equal(data);
-                expect(fetchMock.lastOptions('foo').headers).to.deep.equal(headers);
-                /* eslint-enable no-unused-expressions */
-                done();
+            return util.del(url, headers, data).then(() => {
+                expect(JSON.parse(fetchMock.lastOptions(url).body)).to.deep.equal(data);
+                expect(fetchMock.lastOptions(url).headers).to.deep.equal(headers);
             });
         });
+    });
 
-        it('should call delete on URL', (done) => {
-            const url = 'foo';
+    describe('put()', () => {
+        afterEach(() => {
+            fetchMock.restore();
+        });
+
+        it('should call put on URL', () => {
+            const url = 'someurl';
             const data = { bar: 'bum' };
             const headers = { baz: 'but' };
 
-            fetchMock.delete('foo', {
+            fetchMock.put(url, {
                 body: {
                     foo: 'bar'
                 }
             });
 
-            del(url, headers, data).then(() => {
-                /* eslint-disable no-unused-expressions */
-                expect(JSON.parse(fetchMock.lastOptions('foo').body)).to.deep.equal(data);
-                expect(fetchMock.lastOptions('foo').headers).to.deep.equal(headers);
-                /* eslint-enable no-unused-expressions */
-                done();
+            return util.put(url, headers, data).then(() => {
+                expect(JSON.parse(fetchMock.lastOptions(url).body)).to.deep.equal(data);
+                expect(fetchMock.lastOptions(url).headers).to.deep.equal(headers);
             });
         });
     });
 
     describe('openUrlInsideIframe()', () => {
         it('should return a download iframe with correct source', () => {
-            const iframe = openUrlInsideIframe('foo');
-            assert.equal(iframe.getAttribute('id'), 'downloadiframe');
-            assert.equal(iframe.getAttribute('src'), 'foo');
+            const src = 'admiralackbar';
+            const iframe = util.openUrlInsideIframe(src);
+            expect(iframe.getAttribute('id')).to.equal('downloadiframe');
+            expect(iframe.getAttribute('src')).to.equal(src);
         });
     });
 
     describe('openContentInsideIframe()', () => {
         it('should return a download iframe with correct content', () => {
-            const iframe = openContentInsideIframe('foo');
-            assert.equal(iframe.contentDocument.body.innerHTML, 'foo');
+            const src = 'moncalamari';
+            const iframe = util.openContentInsideIframe(src);
+            expect(iframe.contentDocument.body.innerHTML).to.equal(src);
         });
     });
 
     describe('deduceBoxUrl()', () => {
-        it('should return correct box.com url when no api', () => {
-            assert.equal(deduceBoxUrl(), 'https://app.box.com');
+        it('should return correct box.com url when no API is passed in', () => {
+            expect(util.deduceBoxUrl()).to.equal('https://app.box.com');
         });
-        it('should return correct box.com url when public api', () => {
-            assert.equal(deduceBoxUrl('https://api.box.com'), 'https://app.box.com');
-        });
-        it('should return correct box.com url when internal api', () => {
-            assert.equal(deduceBoxUrl('https://foo.dev.box.net/api'), 'https://app.foo.inside-box.net');
-        });
-    });
 
-    describe('appendAuthParams()', () => {
-        it('should return url when no token is provided', () => {
-            const url = 'foo';
-            assert.equal(url, appendAuthParams(url));
+        it('should return correct box.com url when public API is passed in', () => {
+            expect(util.deduceBoxUrl('https://api.box.com')).to.equal('https://app.box.com');
+        });
+
+        it('should return correct dev URL when internal API is passed in', () => {
+            expect(util.deduceBoxUrl('https://foo.dev.box.net/api')).to.equal('https://app.foo.inside-box.net');
         });
     });
 
     describe('createScript()', () => {
         it('should return a script element when a url is provided', () => {
             const url = 'foo';
-            const scriptEl = createScript(url);
-            assert.ok(scriptEl instanceof HTMLElement);
-            assert.equal(scriptEl.tagName, 'SCRIPT');
-            assert.equal(scriptEl.src.indexOf(url), scriptEl.src.length - url.length);
+            const scriptEl = util.createScript(url);
+            expect(scriptEl instanceof HTMLElement).to.be.true;
+            expect(scriptEl.tagName).to.equal('SCRIPT');
+            expect(scriptEl.src.indexOf(url) !== -1).to.be.true;
+            expect(scriptEl.async).to.be.false;
         });
     });
 
     describe('createPrefetch()', () => {
         it('should return a prefetch link element when a url is provided', () => {
             const url = 'foo';
-            const linkEl = createPrefetch(url);
-            assert.ok(linkEl instanceof HTMLElement);
-            assert.equal(linkEl.tagName, 'LINK');
-            assert.equal(linkEl.rel, 'prefetch');
-            assert.equal(linkEl.href.indexOf(url), linkEl.href.length - url.length);
+            const linkEl = util.createPrefetch(url);
+            expect(linkEl instanceof HTMLElement).to.be.true;
+            expect(linkEl.tagName).to.equal('LINK');
+            expect(linkEl.rel).to.equal('prefetch');
+            expect(linkEl.href.indexOf(url) !== -1).to.be.true;
         });
     });
 
     describe('createStylesheet()', () => {
         it('should return a css link element when a url is provided', () => {
             const url = 'foo';
-            const linkEl = createStylesheet(url);
-            assert.ok(linkEl instanceof HTMLElement);
-            assert.equal(linkEl.tagName, 'LINK');
-            assert.equal(linkEl.rel, 'stylesheet');
-            assert.equal(linkEl.type, 'text/css');
-            assert.equal(linkEl.href.indexOf(url), linkEl.href.length - url.length);
+            const linkEl = util.createStylesheet(url);
+            expect(linkEl instanceof HTMLElement).to.be.true;
+            expect(linkEl.tagName).to.equal('LINK');
+            expect(linkEl.rel).to.equal('stylesheet');
+            expect(linkEl.type).to.equal('text/css');
+            expect(linkEl.href.indexOf(url) !== -1).to.be.true;
+        });
+    });
+
+    describe('getHeaders()', () => {
+        it('should return correct headers', () => {
+            const sharedLink = 'https://sharename';
+            const fooHeader = 'bar';
+            const token = 'someToken';
+            const headers = util.getHeaders({ foo: fooHeader }, token, sharedLink);
+            expect(headers.foo).to.equal(fooHeader);
+            expect(headers.Authorization).to.equal(`Bearer ${token}`);
+            expect(headers.BoxApi).to.equal(`shared_link=${sharedLink}`);
+        });
+
+        it('should return correct headers with password', () => {
+            const headers = util.getHeaders({ foo: 'bar' }, 'token', 'https://sharename', 'password');
+            assert.equal(headers.foo, 'bar');
+            assert.equal(headers.Authorization, 'Bearer token');
+            assert.equal(headers.BoxApi, 'shared_link=https://sharename&shared_link_password=password');
+        });
+    });
+
+    describe('appendAuthParams()', () => {
+        it('should return url when no token or shared link is provided', () => {
+            const url = 'foo';
+            expect(util.appendAuthParams(url)).to.equal(url);
+        });
+
+        it('should append token and shared link', () => {
+            const url = 'foo';
+            const token = 'sometoken';
+            const sharedLink = 'someSharedLink';
+            expect(util.appendAuthParams(url, token, sharedLink)).to.equal(`${url}?access_token=${token}&shared_link=${sharedLink}`);
+        });
+
+        it('should return correct url with password', () => {
+            const url = 'foobar';
+            const token = 'sometoken';
+            const sharedLink = 'someSharedLink';
+            const sharedLinkPassword = 'somePass';
+            expect(util.appendAuthParams(url, token, sharedLink, sharedLinkPassword)).to.equal(`foobar?access_token=${token}&shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}`);
         });
     });
 
@@ -324,7 +274,7 @@ describe('util', () => {
                 baseURI: 'base/',
                 staticBaseURI: 'static/'
             };
-            const assetUrlCreator = createAssetUrlCreator(location);
+            const assetUrlCreator = util.createAssetUrlCreator(location);
             assert.equal(typeof assetUrlCreator, 'function');
             assert.equal(assetUrlCreator('somename'), 'base/somename');
             assert.equal(assetUrlCreator('http://somename'), 'http://somename');
@@ -332,33 +282,7 @@ describe('util', () => {
         });
     });
 
-    describe('getHeaders()', () => {
-        it('should return correct headers', () => {
-            const headers = getHeaders({ foo: 'bar' }, 'token', 'https://sharename');
-            assert.equal(headers.foo, 'bar');
-            assert.equal(headers.Authorization, 'Bearer token');
-            assert.equal(headers.BoxApi, 'shared_link=https://sharename');
-        });
-        it('should return correct headers with password', () => {
-            const headers = getHeaders({ foo: 'bar' }, 'token', 'https://sharename', 'password');
-            assert.equal(headers.foo, 'bar');
-            assert.equal(headers.Authorization, 'Bearer token');
-            assert.equal(headers.BoxApi, 'shared_link=https://sharename&shared_link_password=password');
-        });
-    });
-
-    describe('appendAuthParams()', () => {
-        it('should return correct content url', () => {
-            const url = appendAuthParams('url?foo=bar', 'token', 'https://shared name');
-            assert.equal(url, 'url?foo=bar&access_token=token&shared_link=https://shared%20name');
-        });
-        it('should return correct content url with password', () => {
-            const url = appendAuthParams('url?foo=bar', 'token', 'https://shared name', 'password');
-            assert.equal(url, 'url?foo=bar&access_token=token&shared_link=https://shared%20name&shared_link_password=password');
-        });
-    });
-
-    describe('dom tests', () => {
+    describe('DOM tests', () => {
         before(() => {
             fixture.setBase('src/lib');
         });
@@ -375,14 +299,14 @@ describe('util', () => {
             it('should insert template into node', () => {
                 const node = document.createElement('div');
                 document.querySelector('.container').appendChild(node);
-                insertTemplate(node, '<div class="foo"></div>');
+                util.insertTemplate(node, '<div class="foo"></div>');
                 assert.equal(node.firstElementChild.className, 'foo');
             });
         });
 
         describe('prefetchAssets()', () => {
             it('should insert links into the document', () => {
-                prefetchAssets(['foo', 'bar']);
+                util.prefetchAssets(['foo', 'bar']);
                 const head = document.head;
                 assert.ok(head.querySelector('link[rel="prefetch"][href="foo"]') instanceof HTMLLinkElement);
                 assert.ok(head.querySelector('link[rel="prefetch"][href="bar"]') instanceof HTMLLinkElement);
@@ -391,7 +315,7 @@ describe('util', () => {
 
         describe('loadStylesheets()', () => {
             it('should insert styles into the document', () => {
-                loadStylesheets(['foo', 'bar']);
+                util.loadStylesheets(['foo', 'bar']);
                 const head = document.head;
                 assert.ok(head.querySelector('link[rel="stylesheet"][href="foo"]') instanceof HTMLLinkElement);
                 assert.ok(head.querySelector('link[rel="stylesheet"][href="bar"]') instanceof HTMLLinkElement);
@@ -400,7 +324,7 @@ describe('util', () => {
 
         describe('loadScripts()', () => {
             it('should insert scripts into the document', () => {
-                loadScripts(['foo', 'bar']).catch(() => {});
+                util.loadScripts(['foo', 'bar']).catch(() => {});
                 const head = document.head;
                 assert.ok(head.querySelector('script[src="foo"]') instanceof HTMLScriptElement);
                 assert.ok(head.querySelector('script[src="bar"]') instanceof HTMLScriptElement);
@@ -409,7 +333,7 @@ describe('util', () => {
 
         describe('findScriptLocation()', () => {
             it('should return location info for the script', () => {
-                const loc = findScriptLocation('file.js');
+                const loc = util.findScriptLocation('file.js');
                 assert.equal(loc.origin, 'https://hostname:100');
                 assert.equal(loc.host, 'hostname:100');
                 assert.equal(loc.hostname, 'hostname');
@@ -427,66 +351,66 @@ describe('util', () => {
 
     describe('decodeKeydown()', () => {
         it('should return empty when no key', () => {
-            assert.equal(decodeKeydown({
+            assert.equal(util.decodeKeydown({
                 key: ''
             }), '');
         });
         it('should return empty when modifier and key are same', () => {
-            assert.equal(decodeKeydown({
+            assert.equal(util.decodeKeydown({
                 key: 'Control',
                 ctrlKey: true
             }), '');
         });
         it('should return correct with ctrl modifier', () => {
-            assert.equal(decodeKeydown({
+            assert.equal(util.decodeKeydown({
                 key: '1',
                 ctrlKey: true
             }), 'Control+1');
         });
         it('should return correct with shift modifier', () => {
-            assert.equal(decodeKeydown({
+            assert.equal(util.decodeKeydown({
                 key: '1',
                 shiftKey: true
             }), 'Shift+1');
         });
         it('should return correct with meta modifier', () => {
-            assert.equal(decodeKeydown({
+            assert.equal(util.decodeKeydown({
                 key: '1',
                 metaKey: true
             }), 'Meta+1');
         });
         it('should return space key', () => {
-            assert.equal(decodeKeydown({
+            assert.equal(util.decodeKeydown({
                 key: ' '
             }), 'Space');
         });
         it('should return right arrow key', () => {
-            assert.equal(decodeKeydown({
+            assert.equal(util.decodeKeydown({
                 key: 'Right'
             }), 'ArrowRight');
         });
         it('should return left arrow key', () => {
-            assert.equal(decodeKeydown({
+            assert.equal(util.decodeKeydown({
                 key: 'Left'
             }), 'ArrowLeft');
         });
         it('should return up arrow key', () => {
-            assert.equal(decodeKeydown({
+            assert.equal(util.decodeKeydown({
                 key: 'Up'
             }), 'ArrowUp');
         });
         it('should return down arrow key', () => {
-            assert.equal(decodeKeydown({
+            assert.equal(util.decodeKeydown({
                 key: 'Down'
             }), 'ArrowDown');
         });
         it('should return esc key', () => {
-            assert.equal(decodeKeydown({
+            assert.equal(util.decodeKeydown({
                 key: 'U+001B'
             }), 'Escape');
         });
         it('should decode correct UTF8 key', () => {
-            assert.equal(decodeKeydown({
+            assert.equal(util.decodeKeydown({
                 key: 'U+0041'
             }), 'A');
         });
@@ -494,23 +418,23 @@ describe('util', () => {
 
     describe('replacePlaceholders()', () => {
         it('should replace only the placeholder with the custom value in the given string', () => {
-            expect(replacePlaceholders('{1} highlighted', ['Bob'])).to.equal('Bob highlighted');
+            expect(util.replacePlaceholders('{1} highlighted', ['Bob'])).to.equal('Bob highlighted');
         });
 
         it('should replace all placeholders with the custom value in the given string', () => {
-            expect(replacePlaceholders('{1} highlighted {2}', ['Bob', 'Suzy'])).to.equal('Bob highlighted Suzy');
+            expect(util.replacePlaceholders('{1} highlighted {2}', ['Bob', 'Suzy'])).to.equal('Bob highlighted Suzy');
         });
 
         it('should replace only placeholders that have custom value in the given string', () => {
-            expect(replacePlaceholders('{1} highlighted {2}', ['Bob'])).to.equal('Bob highlighted {2}');
+            expect(util.replacePlaceholders('{1} highlighted {2}', ['Bob'])).to.equal('Bob highlighted {2}');
         });
 
         it('should respect the order of placeholders when given an arbitrary order', () => {
-            expect(replacePlaceholders('{2} highlighted {1}', ['Bob', 'Suzy'])).to.equal('Suzy highlighted Bob');
+            expect(util.replacePlaceholders('{2} highlighted {1}', ['Bob', 'Suzy'])).to.equal('Suzy highlighted Bob');
         });
 
         it('should replace with the same value if the placeholder is repeated', () => {
-            expect(replacePlaceholders('{2} highlighted {2}', ['Bob', 'Suzy'])).to.equal('Suzy highlighted Suzy');
+            expect(util.replacePlaceholders('{2} highlighted {2}', ['Bob', 'Suzy'])).to.equal('Suzy highlighted Suzy');
         });
     });
 
@@ -518,8 +442,8 @@ describe('util', () => {
         it('should add the disabled class', () => {
             const el = document.createElement('div');
 
-            disableEl(el);
-            expect(el.classList.contains('bp-is-disabled')).to.be.true;
+            util.disableEl(el);
+            expect(el).to.have.class('bp-is-disabled');
         });
     });
 
@@ -528,8 +452,8 @@ describe('util', () => {
             const el = document.createElement('div');
             el.classList.add(CLASS_DISABLED);
 
-            enableEl(el);
-            expect(el.classList.contains(CLASS_DISABLED)).to.be.false;
+            util.enableEl(el);
+            expect(el).to.not.have.class('bp-is-disabled');
         });
     });
 });
