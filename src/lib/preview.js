@@ -580,6 +580,9 @@ class Preview extends EventEmitter {
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;
 
+        // Enable preload (quick preview shown during loading)
+        this.options.preload = !!options.preload;
+
         // Save the files to iterate through
         this.collection = options.collection || [];
 

@@ -35,9 +35,9 @@ class Document extends DocBase {
      * @inheritdoc
      */
     showPreload() {
-        const { file } = this.options;
+        const { file, preload } = this.options;
         const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
-        if (!preloadRep || !this.getViewerOption('preload')) {
+        if (!preloadRep || (!preload && !this.getViewerOption('preload'))) {
             return;
         }
 
