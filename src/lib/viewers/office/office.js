@@ -10,7 +10,7 @@ class Office extends Base {
      * @inheritdoc
      */
     setup() {
-        // Always call super 1st to have the common layout
+        // Call super() first to set up common layout
         super.setup();
 
         this.iframeEl = this.containerEl.appendChild(document.createElement('iframe'));

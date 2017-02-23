@@ -118,18 +118,18 @@ Install the following plugins in your preferred editor
 Initialization
 --------------
 
-The recommended way to show a preview is by calling `Box.Preview.show(fileId, accessToken, { options })` where `fileId` is a `Box_File` id and `accessToken` is a Box API access token. `Box.Preview` is an instance of the class `Preview`. Another way to show a preview or multiple previews on the same page is by creating instances of the `Preview` class as follows:
+The recommended way to show a preview is by calling `Box.Preview.show(fileID, accessToken, { options })` where `fileID` is a `Box_File` id and `accessToken` is a Box API access token. `Box.Preview` is an instance of the class `Preview`. Another way to show a preview or multiple previews on the same page is by creating instances of the `Preview` class as follows:
 
 ```javascript
 const preview = new Preview();
-preview.show(fileId, accessToken, { options });
+preview.show(fileID, accessToken, { options });
 ```
 
 Parameters & Options
 -------
 
 ```javascript
-Box.Preview.show(fileId, accessToken, {
+Box.Preview.show(fileID, accessToken, {
     container: '.preview-container',
     api: 'https://api.box.com',
     sharedLink: 'https://app.box.com/v/foo',
@@ -151,7 +151,7 @@ Box.Preview.show(fileId, accessToken, {
 ```
 | Parameter | Description |
 | --- | --- |
-| fileId | Box file ID |
+| fileID | Box file ID |
 | accessToken | Either a string auth token or a token generator function, see below for details |
 
 | Option | Default | Description |
@@ -201,7 +201,7 @@ function tokenGenerator(id) {
     // The fetch() API returns a promise
     return fetch(tokenServiceUrl, {
         method: 'post',
-        body: { fileIds: ids } // based on what the token service endpoint expects
+        body: { fileIDs: ids } // based on what the token service endpoint expects
     })
     .then((response) => response.json());  // OR response.text()
 }
@@ -292,7 +292,7 @@ EVENTNAME can be one of the following
       event: EVENTNAME,         // Event name
       data: DATA,               // Event data object
       viewerName: VIEWERNAME,   // Name of the viewer. See VIEWERNAME above
-      fileId: fileId            // The file id
+      fileID: fileID            // The file id
   }
 ```
 

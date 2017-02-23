@@ -18,7 +18,7 @@ class PreviewError extends Base {
      * @return {Error} Error instance
      */
     setup() {
-        // Always call super 1st to have the common layout
+        // Call super() first to set up common layout
         super.setup();
 
         this.infoEl = this.containerEl.appendChild(document.createElement('div'));

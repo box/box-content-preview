@@ -184,11 +184,6 @@ $header-height: 48px;
     top: 0;
     transition: opacity .7s;
 
-    // Shift wrapper down if preview has its own header
-    &.bp-has-header {
-        top: 48px;
-    }
-
     &.bp-is-invisible {
         opacity: 0;
         visibility: visible;

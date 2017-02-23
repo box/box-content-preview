@@ -275,7 +275,7 @@ describe('base', () => {
         });
     });
 
-    describe('emit', () => {
+    describe('emit()', () => {
         const emitFunc = EventEmitter.prototype.emit;
 
         afterEach(() => {
@@ -306,7 +306,8 @@ describe('base', () => {
                 event,
                 data,
                 viewerName,
-                fileId: fileID
+                fileId: fileID,
+                fileID
             });
         });
     });

@@ -10,7 +10,7 @@ class MP4 extends VideoBase {
      * @inheritdoc
      */
     setup() {
-        // Always call super 1st to have the common layout
+        // Call super() first to set up common layout
         super.setup();
 
         // mp4 specific class

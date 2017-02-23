@@ -9,7 +9,8 @@ import DocAnnotator from '../../annotations/doc/doc-annotator';
 import DocFindBar from './doc-find-bar';
 import fullscreen from '../../fullscreen';
 import Popup from '../../popup';
-import { CLASS_BOX_PREVIEW_FIND_BAR, CLASS_HIDDEN } from '../../constants';
+import { CLASS_BOX_PREVIEW_FIND_BAR, CLASS_HIDDEN, PRELOAD_REP_NAME } from '../../constants';
+import { getRepresentation } from '../../file';
 import { get, createAssetUrlCreator, decodeKeydown } from '../../util';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { JS, CSS } from './doc-assets';
@@ -39,7 +40,7 @@ class DocBase extends Base {
      * @inheritdoc
      */
     setup() {
-        // Always call super 1st to have the common layout
+        // Call super() first to set up common layout
         super.setup();
 
         this.docEl = this.containerEl.appendChild(document.createElement('div'));
@@ -109,15 +110,6 @@ class DocBase extends Base {
     }
 
     /**
-     * Preload performance hacking
-     *
-     * @return {void}
-     */
-    preload() {
-        // do something
-    }
-
-    /**
      * Prefetches assets for a document.
      *
      * @param {boolean} [options.assets] - Whether or not to prefetch static assets
@@ -126,19 +118,41 @@ class DocBase extends Base {
      * @return {void}
      */
     prefetch({ assets = true, preload = true, content = true }) {
+        const { file, representation } = this.options;
+
         if (assets) {
             this.prefetchAssets(JS, CSS);
         }
 
-        if (preload && this.getViewerOption('preload') === true) {
-            // fill in later
+        if (preload) {
+            const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
+            const { url_template: template } = preloadRep.content;
+            document.createElement('img').src = this.createContentUrlWithAuthParams(template);
         }
 
-        const representation = this.options.representation;
         if (content && this.isRepresentationReady(representation)) {
-            const template = representation.content.url_template;
+            const { url_template: template } = representation.content;
             get(this.createContentUrlWithAuthParams(template), 'any');
         }
+    }
+
+    /**
+     * Shows a preload (first page as an image) while the full document loads.
+     *
+     * @return {void}
+     */
+    showPreload() {
+        // no-op in base
+    }
+
+    /**
+     * Cleans up the preload (first page as an image). Should be called when full
+     * document is loaded.
+     *
+     * @return {void}
+     */
+    hidePreload() {
+        // no-op in base
     }
 
     /**
@@ -150,11 +164,11 @@ class DocBase extends Base {
     load() {
         this.setup();
         super.load();
+        this.showPreload();
 
         const template = this.options.representation.content.url_template;
         this.pdfUrl = this.createContentUrlWithAuthParams(template);
 
-        this.preload();
         return Promise.all([this.loadAssets(JS, CSS), this.getRepStatus().getPromise()])
             .then(this.postload)
             .catch(this.handleAssetError);
@@ -1053,6 +1067,7 @@ class DocBase extends Base {
 
             // Fire postload event to hide progress bar and cleanup preload after a page is rendered
             if (!this.somePageRendered) {
+                this.hidePreload();
                 this.emit('progressend');
                 this.somePageRendered = true;
             }

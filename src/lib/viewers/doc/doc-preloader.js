@@ -1,11 +1,8 @@
 import {
-    CLASS_BOX_PREVIEW_HAS_HEADER,
     CLASS_BOX_PREVIEW_PRELOAD,
     CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER,
-    CLASS_INVISIBLE,
-    SELECTOR_BOX_PREVIEW,
-    SELECTOR_BOX_PREVIEW_HEADER
+    CLASS_INVISIBLE
 } from '../../constants';
 import { hideLoadingIndicator } from '../../ui';
 
@@ -16,14 +13,12 @@ class DocPreloader {
      * while the full document loads to give the user visual feedback on the file as soon as possible.
      *
      * @param {string} contentUrlWithAuth - URL for preload content with authorization query params
-     * @param {HTMLElement} containerEl - Preview container to render preload in
+     * @param {HTMLElement} containerEl - Viewer container to render preload in
      * @return {void}
      */
-    /* istanbul ignore next */
     showPreload(contentUrlWithAuth, containerEl) {
-        const hasHeader = !!containerEl.querySelector(SELECTOR_BOX_PREVIEW_HEADER);
         const wrapperEl = document.createElement('div');
-        wrapperEl.className = `${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER} ${hasHeader ? CLASS_BOX_PREVIEW_HAS_HEADER : ''}`;
+        wrapperEl.className = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER;
         wrapperEl.innerHTML = `
             <div class="${CLASS_BOX_PREVIEW_PRELOAD} ${CLASS_INVISIBLE}">
                 <img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" src="${contentUrlWithAuth}" />
@@ -31,9 +26,7 @@ class DocPreloader {
             </div>
         `.trim();
 
-        // Insert after preview content, before navigation & progress bar
-        const contentEl = containerEl.querySelector(SELECTOR_BOX_PREVIEW);
-        containerEl.insertBefore(wrapperEl, contentEl.nextSibling);
+        containerEl.appendChild(wrapperEl);
 
         // Offset scrollbar width (if scrollbar shows up)
         this.preloadEl = wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
@@ -50,10 +43,9 @@ class DocPreloader {
     /**
      * Hides the preload if it exists.
      *
-     * @param {HTMLElement} containerEl - Preview container that preload is rendered in
+     * @param {HTMLElement} containerEl - Viewer container that preload is rendered in
      * @return {void}
      */
-    /* istanbul ignore next */
     hidePreload(containerEl) {
         let wrapperEl = containerEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER}`);
         if (!wrapperEl) {
@@ -81,7 +73,6 @@ class DocPreloader {
      * @private
      * @return {void}
      */
-    /* istanbul ignore next */
     finishPreload = () => {
         if (!this.preloadEl) {
             return;

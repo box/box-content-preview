@@ -11,7 +11,7 @@ class Image360 extends Box3D {
      * @inheritdoc
      */
     setup() {
-        // Always call super 1st to have the common layout
+        // Call super() first to set up common layout
         super.setup();
 
         this.wrapperEl.classList.add(CSS_CLASS_IMAGE_360);

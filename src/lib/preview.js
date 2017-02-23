@@ -347,7 +347,7 @@ class Preview extends EventEmitter {
      * when the actual view happens.
      *
      * @param {Object} options - Prefetch options
-     * @param {string} options.fileId - Box File ID
+     * @param {string} options.fileID - Box File ID
      * @param {string} options.token - Access token
      * @param {string} options.sharedLink - Shared link
      * @param {string} options.sharedLinkPassword - Shared link password
@@ -356,13 +356,13 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     prefetch({
-        fileId,
+        fileID,
         token,
         sharedLink = '',
         sharedLinkPassword = '',
         preload = false
     }) {
-        const file = cache.get(fileId);
+        const file = cache.get(fileID);
         const loader = file ? this.getLoader(file) : null;
         const viewer = loader ? loader.determineViewer(file) : null;
         if (!viewer) {
@@ -420,10 +420,15 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * REMOVE ME
+     * DELETE ME AFTER WEBAPP UPDATE
      */
-    prefetchPreload() {
-        // noop
+    prefetchPreload(fileID, token, sharedLink) {
+        this.prefetch({
+            fileID,
+            token,
+            sharedLink,
+            preload: true
+        });
     }
 
     //--------------------------------------------------------------------------
@@ -574,9 +579,6 @@ class Preview extends EventEmitter {
 
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;
-
-        // Enable preload (quick preview shown during loading)
-        this.options.preload = !!options.preload;
 
         // Save the files to iterate through
         this.collection = options.collection || [];

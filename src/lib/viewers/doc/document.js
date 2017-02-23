@@ -1,7 +1,10 @@
 import autobind from 'autobind-decorator';
 import pageNumTemplate from './page-num-button-content.html';
 import DocBase from './doc-base';
+import DocPreloader from './doc-preloader';
 import fullscreen from '../../fullscreen';
+import { getRepresentation } from '../../file';
+import { PRELOAD_REP_NAME } from '../../constants';
 import {
     ICON_DROP_DOWN,
     ICON_DROP_UP,
@@ -23,9 +26,31 @@ class Document extends DocBase {
      * @inheritdoc
      */
     setup() {
-        // Always call super 1st to have the common layout
+        // Call super() first to set up common layout
         super.setup();
         this.docEl.classList.add('bp-doc-document');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    showPreload() {
+        const { file } = this.options;
+        const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
+        if (!preloadRep || !this.getViewerOption('preload')) {
+            return;
+        }
+
+        const { url_template: template } = preloadRep.content;
+        const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
+        DocPreloader.showPreload(preloadUrlWithAuth, this.containerEl);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    hidePreload() {
+        DocPreloader.hidePreload(this.containerEl);
     }
 
     /**

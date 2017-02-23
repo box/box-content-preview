@@ -1,10 +1,9 @@
 import AssetLoader from '../asset-loader';
-import DocPreloader from './doc-preloader';
-import { addPreloadRepresentation, getRepresentation } from '../../file';
-import { createContentUrl, appendAuthParams } from '../../util';
+import { getRepresentation } from '../../file';
 import Doc from './document';
 import Presentation from './presentation';
-import { ORIGINAL_REP_NAME } from '../../constants';
+import RepStatus from '../../rep-status';
+import { ORIGINAL_REP_NAME, STATUS_SUCCESS } from '../../constants';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 // For example, a pdf file can be previewed both natively (majority use case) using the original
@@ -54,62 +53,14 @@ class DocLoader extends AssetLoader {
     determineRepresentation(file, viewer) {
         let repOverride;
 
-        // For PDF files, use PDF representation unless it's pending - if it is, use original rep
+        // For PDF files, use original rep unless PDF rep is successful since it'll be faster
         const rep = super.determineRepresentation(file, viewer);
-        const status = (typeof rep.status === 'object') ? rep.status.state : rep.temp_status.state;
-        if (file.extension === 'pdf' && rep.representation === 'pdf' && status === 'pending') {
-            repOverride = file.representations.entries.find((entry) => entry.representation === ORIGINAL_REP_NAME);
+        const status = RepStatus.getStatus(rep);
+        if (file.extension === 'pdf' && rep.representation === 'pdf' && status !== STATUS_SUCCESS) {
+            repOverride = getRepresentation(file, ORIGINAL_REP_NAME);
         }
 
         return repOverride || rep;
-    }
-
-    /**
-     * Shows a preload (lightweight representation) of the document.
-     *
-     * @param {Object} file - Box file
-     * @param {string} token - Access token
-     * @param {string} sharedLink - Box shared link
-     * @param {string} sharedLinkPassword - Box shared link password
-     * @param {HTMLElement} containerEl - Preview container to render preload in
-     * @return {void}
-     */
-    /* istanbul ignore next */
-    showPreload(file, token, sharedLink, sharedLinkPassword, containerEl) {
-        // Only enable preloading for regular documents, not presentations
-        const viewer = this.determineViewer(file);
-        if (!viewer.PRELOAD) {
-            return;
-        }
-
-        // @NOTE(tjin): Temporary until conversion provides real preload representation
-        addPreloadRepresentation(file);
-        // DELETE LINE ABOVE
-
-        const preloadRep = getRepresentation(file, viewer.PRELOAD);
-        if (!preloadRep || preloadRep.status.state !== 'success') {
-            return;
-        }
-
-        // @NOTE(tjin): Temporary - real preload representation shouldn't have an asset name
-        const preloadUrl = createContentUrl(preloadRep.content.url_template, 'page-1.png');
-        if (!preloadUrl) {
-            return;
-        }
-
-        const preloadUrlWithAuth = appendAuthParams(preloadUrl, token, sharedLink, sharedLinkPassword);
-        DocPreloader.showPreload(preloadUrlWithAuth, containerEl);
-    }
-
-    /**
-     * Hides the preload if it exists.
-     *
-     * @param {HTMLElement} containerEl - Preview container that preload is rendered in
-     * @return {void}
-     */
-    /* istanbul ignore next */
-    hidePreload(containerEl) {
-        DocPreloader.hidePreload(containerEl);
     }
 }
 

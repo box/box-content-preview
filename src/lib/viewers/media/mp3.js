@@ -10,7 +10,7 @@ class MP3 extends MediaBase {
      * @inheritdoc
      */
     setup() {
-        // Always call super 1st to have the common layout
+        // Call super() first to set up common layout
         super.setup();
 
         // mp3 specific class

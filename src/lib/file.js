@@ -144,7 +144,7 @@ export function addPreloadRepresentation(file) {
     // Hack to convert streaming download URL to first page rep
     const fakedUrlTemplate = file.authenticated_download_url
         .replace('files', 'internal_files')
-        .replace('content', `versions/${file.file_version.id}/representations/crocodoc/content/{asset_path}`);
+        .replace('content', `versions/${file.file_version.id}/representations/crocodoc/content/page-1.png`);
 
     // Add faked preload representation
     file.representations.entries.push({
@@ -168,6 +168,11 @@ export function addPreloadRepresentation(file) {
 export function cacheFile(file) {
     if (file.representations) {
         addOriginalRepresentation(file);
+    }
+
+    // Temporary hack before first page representation is available
+    if (['pdf', 'docx', 'doc'].indexOf(file.extension) !== -1) {
+        addPreloadRepresentation(file);
     }
 
     cache.set(file.id, file);
