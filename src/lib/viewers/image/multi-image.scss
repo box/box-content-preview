@@ -1,5 +1,8 @@
 .bp-images {
     border: 0 none;
+}
+
+.bp-images-wrapper {
     bottom: 0;
     height: 100%;
     left: 0;
@@ -24,5 +27,33 @@
 
 .bp-images img {
     display: block;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.bp-images.pannable {
+    cursor: move;
+    cursor: grab;
+}
+
+.bp-images.panning {
+    cursor: move;
+    cursor: grabbing;
+}
+
+.bp-images.zoomable {
+    cursor: pointer; /* cursor for IE11 */
+    cursor: zoom-in;
+}
+
+.bp-images {
+    border: 0 none;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.bp-images img {
+    display: block;
+    margin-bottom: 10px;
     width: 100%;
 }

@@ -3,18 +3,13 @@ import AnnotationService from '../../annotations/annotation-service';
 import ImageAnnotator from '../../annotations/image/image-annotator';
 import Browser from '../../browser';
 import Base from './image-base';
-import {
-    ICON_ROTATE_LEFT,
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT
-} from '../../icons/icons';
+import { ICON_ROTATE_LEFT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
 import { openContentInsideIframe } from '../../util';
 import './image.scss';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
-const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_IMAGE = 'bp-image';
 const IMAGE_PADDING = 15;
 const IMAGE_ZOOM_SCALE = 1.2;
@@ -59,7 +54,6 @@ class Image extends Base {
     /**
      * Loads an Image.
      *
-     * @public
      * @return {void}
      */
     load() {
@@ -90,24 +84,8 @@ class Image extends Base {
     }
 
     /**
-     * Updates cursors on image content
-     * @private
-     * @return {void}
-     */
-    updateCursor() {
-        if (this.isPannable) {
-            this.isZoomable = false;
-            this.imageEl.classList.add(CSS_CLASS_PANNABLE);
-            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
-        } else {
-            this.isZoomable = true;
-            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-            this.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
-        }
-    }
-
-    /**
      * Can the viewer currently be panned
+     *
      * @private
      * @return {void}
      */
@@ -127,60 +105,8 @@ class Image extends Base {
     }
 
     /**
-     * Pan the image to the given x/y position
-     * @param {Event} event - The mousemove event
-     * @private
-     * @return {void}
-     */
-    pan(event) {
-        if (!this.isPanning) {
-            return;
-        }
-        const offsetX = event.clientX - this.panStartX;
-        const offsetY = event.clientY - this.panStartY;
-        this.wrapperEl.scrollLeft = this.panStartScrollLeft - offsetX;
-        this.wrapperEl.scrollTop = this.panStartScrollTop - offsetY;
-        this.didPan = true;
-        this.emit('pan');
-    }
-
-    /**
-     * Stop panning the image
-     * @private
-     * @return {void}
-     */
-    stopPanning() {
-        this.isPanning = false;
-        document.removeEventListener('mousemove', this.pan);
-        document.removeEventListener('mouseup', this.stopPanning);
-        this.imageEl.classList.remove(CSS_CLASS_PANNING);
-        this.emit('panend');
-    }
-
-    /**
-     * Start panning the image if the image is pannable
-     * @param {number} x - The initial x position of the mouse
-     * @param {number} y - The initial y position of the mouse
-     * @return {void}
-     */
-    startPanning(x, y) {
-        if (!this.isPannable) {
-            return;
-        }
-        this.panStartX = x;
-        this.panStartY = y;
-        this.panStartScrollLeft = this.wrapperEl.scrollLeft;
-        this.panStartScrollTop = this.wrapperEl.scrollTop;
-        this.isPanning = true;
-        document.addEventListener('mousemove', this.pan);
-        document.addEventListener('mouseup', this.stopPanning);
-        this.imageEl.classList.add(CSS_CLASS_PANNING);
-        this.emit('panstart');
-    }
-
-    /**
      * Rotate image anti-clockwise by 90 degrees
-     * @public
+     *
      * @return {void}
      */
     rotateLeft() {
@@ -199,8 +125,9 @@ class Image extends Base {
 
     /**
      * Handles zoom
-     * @param {string} [type] - Type of zoom in|out|reset
+     *
      * @private
+     * @param {string} [type] - Type of zoom in|out|reset
      * @return {void}
      */
     zoom(type) {
@@ -315,9 +242,9 @@ class Image extends Base {
      * Scales annotations and repositions with rotation. Only one argument
      * (either height or width) is required for the scale calculations.
      *
-     * @param {number} width
-     * @param {number} height
      * @private
+     * @param {number} width - The scale width
+     * @param {number} height - The scale height
      * @return {void}
      */
     scaleAnnotations(width, height) {
@@ -336,8 +263,6 @@ class Image extends Base {
     loadUI() {
         super.loadUI();
         this.controls.add(__('rotate_left'), this.rotateLeft, 'bp-image-rotate-left-icon', ICON_ROTATE_LEFT);
-        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
 
         // Show existing annotations after image is rendered
         if (!this.annotator || this.annotationsLoaded) {
@@ -369,8 +294,8 @@ class Image extends Base {
     /**
      * Initializes annotations.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     initAnnotations() {
         // Ignore if viewer/file type is not annotatable
@@ -440,7 +365,7 @@ class Image extends Base {
     /**
      * Determines if Image file has been rotated 90 or 270 degrees to the left
      *
-     * @return {Boolean} Whether image has been rotated -90 or -270 degrees
+     * @return {boolean} Whether image has been rotated -90 or -270 degrees
      */
     isRotated() {
         return Math.abs(this.currentRotationAngle) % 180 === 90;
@@ -450,8 +375,8 @@ class Image extends Base {
      * Determines the left and top padding for the image file on zoom and
      * re-positions the image accordingly
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     adjustImageZoomPadding() {
         let leftPadding = 0;
@@ -490,55 +415,36 @@ class Image extends Base {
     /**
      * Binds DOM listeners for image viewer.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     bindDOMListeners() {
-        this.imageEl.addEventListener('load', this.loadHandler);
+        super.bindDOMListeners();
+
+        this.imageEl.addEventListener('load', this.finishLoading);
         this.imageEl.addEventListener('error', this.errorHandler);
-        this.imageEl.addEventListener('mousedown', this.handleMouseDown);
-        this.imageEl.addEventListener('mouseup', this.handleMouseUp);
-        this.imageEl.addEventListener('dragstart', this.handleDragStart);
 
         if (Browser.isMobile()) {
             this.imageEl.addEventListener('orientationchange', this.handleOrientationChange);
-            if (Browser.isIOS()) {
-                this.imageEl.addEventListener('gesturestart', this.mobileZoomStartHandler);
-                this.imageEl.addEventListener('gestureend', this.mobileZoomEndHandler);
-            } else {
-                this.imageEl.addEventListener('touchstart', this.mobileZoomStartHandler);
-                this.imageEl.addEventListener('touchmove', this.mobileZoomChangeHandler);
-                this.imageEl.addEventListener('touchend', this.mobileZoomEndHandler);
-            }
         }
     }
 
     /**
      * Unbinds DOM listeners for image viewer.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     unbindDOMListeners() {
+        super.unbindDOMListeners();
+
         if (this.imageEl) {
-            this.imageEl.removeEventListener('load', this.loadHandler);
+            this.imageEl.removeEventListener('load', this.finishLoading);
             this.imageEl.removeEventListener('error', this.errorHandler);
-            this.imageEl.removeEventListener('mousedown', this.handleMouseDown);
-            this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
-            this.imageEl.removeEventListener('dragstart', this.handleDragStart);
+        }
 
-            if (Browser.isMobile()) {
-                this.imageEl.removeEventListener('orientationchange', this.handleOrientationChange);
-
-                if (Browser.isIOS()) {
-                    this.imageEl.removeEventListener('gesturestart', this.mobileZoomStartHandler);
-                    this.imageEl.removeEventListener('gestureend', this.mobileZoomEndHandler);
-                } else {
-                    this.imageEl.removeEventListener('touchstart', this.mobileZoomStartHandler);
-                    this.imageEl.removeEventListener('touchmove', this.mobileZoomChangeHandler);
-                    this.imageEl.removeEventListener('touchend', this.mobileZoomEndHandler);
-                }
-            }
+        if (Browser.isMobile()) {
+            this.imageEl.removeEventListener('orientationchange', this.handleOrientationChange);
         }
 
         document.removeEventListener('mousemove', this.pan);
@@ -546,61 +452,8 @@ class Image extends Base {
     }
 
     /**
-     * Handles the loading of an image once the 'load' event has been fired
-     *
-     * @return {void}
-     * @private
-     */
-    loadHandler = () => {
-        if (this.destroyed) {
-            return;
-        }
-
-        this.loaded = true;
-        this.emit('load');
-        this.zoom();
-        this.imageEl.classList.remove(CLASS_INVISIBLE);
-
-        this.loadUI();
-    }
-
-    /**
-     * Handles image element loading errors.
-     *
-     * @return {void}
-     * @private
-     */
-    errorHandler = (err) => {
-        /* eslint-disable no-console */
-        console.error(err);
-        /* eslint-enable no-console */
-
-        // Display a generic error message but log the real one
-        const error = err;
-        if (err instanceof Error) {
-            error.displayMessage = __('error_refresh');
-        }
-        this.emit('error', error);
-    }
-
-    /**
      * Handles mouse down event.
-     * @param {Event} event - The mousemove event
-     * @return {void}
-     */
-    handleMouseDown(event) {
-        this.didPan = false;
-
-        // If this is not a left click, then ignore
-        // If this is a CTRL or CMD click, then ignore
-        if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
-            this.startPanning(event.clientX, event.clientY);
-            event.preventDefault();
-        }
-    }
-
-    /**
-     * Handles mouse down event.
+     *
      * @param {Event} event - The mousemove event
      * @return {void}
      */
@@ -610,20 +463,9 @@ class Image extends Base {
             return;
         }
 
-        // If this is not a left click, then ignore
-        // If this is a CTRL or CMD click, then ignore
-        if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
-            if (!this.isPannable && this.isZoomable) {
-                // If the mouse up was not due to panning, and the image is zoomable, then zoom in.
-                this.zoom('in');
-            } else if (!this.didPan) {
-                // If the mouse up was not due to ending of panning, then assume it was a regular
-                // click mouse up. In that case reset the image size, mimicking single-click-unzoom.
-                this.zoom('reset');
-            }
-            event.preventDefault();
-        }
+        super.handleMouseUp(event);
     }
+
     /**
     * Adjust padding on image rotation/zoom of images when the view port
     * orientation changes from landscape to portrait and vice versa. Especially
@@ -641,16 +483,6 @@ class Image extends Base {
             this.annotator.setScale(scale);
             this.annotator.renderAnnotations(rotationAngle);
         }
-    }
-
-    /**
-     * Prevents drag events on the image
-     * @param {Event} event - The mousemove event
-     * @return {void}
-     */
-    handleDragStart(event) {
-        event.preventDefault();
-        event.stopPropogation();
     }
 
     /**

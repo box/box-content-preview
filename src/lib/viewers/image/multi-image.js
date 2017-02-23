@@ -1,10 +1,8 @@
 import autobind from 'autobind-decorator';
 import ImageBase from './image-base';
-import {
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT
-} from '../../icons/icons';
 import './multi-image.scss';
+
+import { CLASS_INVISIBLE } from '../../constants';
 
 const CSS_CLASS_IMAGE = 'bp-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
@@ -18,78 +16,117 @@ class MultiImage extends ImageBase {
      * [constructor]
      *
      * @param {string|HTMLElement} container - The container
-     * @param {Object} options - some options
+     * @param {Object} options - Options
      * @return {MultiImage} MultiImage instance
      */
-    constructor(container, options) {
-        super(container, options);
+    setup() {
+        super.setup();
 
-        this.containerEl.appendChild(document.createElement('div'));
-        this.containerEl.firstElementChild.className = CSS_CLASS_IMAGE;
-
-        this.wrapperEl = this.containerEl.firstElementChild.appendChild(document.createElement('div'));
+        this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_IMAGE_WRAPPER;
-        this.wrapperEl.addEventListener('mouseup', this.handleMouseUp);
 
-        this.imageEls = [this.wrapperEl.appendChild(document.createElement('img'))];
+
+        this.imageEl = this.wrapperEl.appendChild(document.createElement('div'));
+        this.imageEl.className = CSS_CLASS_IMAGE;
+
+        this.singleImageEls = [this.imageEl.appendChild(document.createElement('img'))];
         this.loadTimeout = 60000;
     }
 
     /**
      * [destructor]
+     *
      * @return {void}
      */
     destroy() {
         // Remove listeners
-        if (this.wrapperEl) {
-            this.wrapperEl.removeEventListener('mouseup', this.handleMouseUp);
+        this.unbindDOMListeners();
+
+        if (this.singleImageEls && this.singleImageEls.length > 0) {
+            this.singleImageEls.forEach((el, index) => {
+                this.unbindImageListeners(index);
+            });
         }
 
         super.destroy();
     }
 
     /**
-     * Loads an image.
+     * Loads the images.
      *
-     * @pubic
-     * @param {Array} imageUrls urls for images
+     * @param {Array} imageUrls - Urls for images
      * @return {Promise} Promise to load bunch of images
      */
-    load(imageUrlsTemplate) {
-        this.imageUrls = imageUrlsTemplate;
-
-        this.imageEls[0].addEventListener('load', () => {
-            if (this.destroyed) {
-                return;
-            }
-            this.loaded = true;
-            this.emit('load');
-            this.zoom();
-            this.loadUI();
-        });
-
-        this.imageUrls.forEach((imageUrl, index) => {
-            if (index !== 0) {
-                this.imageEls[index] = this.wrapperEl.appendChild(document.createElement('img'));
-            }
-            this.imageEls[index].src = imageUrl;
-        });
-
+    load() {
+        this.setup();
         super.load();
+
+        const template = this.options.representation.content.url_template;
+        this.imageUrls = this.constructImageUrls(template);
+
+
+        // Hides images until content is loaded
+        this.imageEl.classList.add(CLASS_INVISIBLE);
+        this.bindImageListeners(0);
+        this.bindDOMListeners();
+
+        return this.getRepStatus().getPromise().then(() => {
+            this.imageUrls.forEach((imageUrl, index) => this.setupImageEls(imageUrl, index));
+        }).catch(this.handleAssetError);
     }
 
     /**
-     * Handles mouse up event.
-     * @param {Event} event - The mousemove event
+     * Generates a list of image urls from the given template.
+     *
+     * @param {string} template - Base URL for images
+     * @return {string[]} Array of image URLs
+     */
+    constructImageUrls(template) {
+        const { viewer, representation } = this.options;
+        const metadata = representation.metadata;
+        const asset = viewer.ASSET;
+
+        const urlBase = this.createContentUrlWithAuthParams(template, asset);
+
+        const urls = [];
+        for (let pageNum = 1; pageNum <= metadata.pages; pageNum++) {
+            urls.push(urlBase.replace('{page}', pageNum));
+        }
+
+        return urls;
+    }
+
+    /**
+     * Sets up each image El.
+     *
+     * @param {Object} imageUrl - Image URL.
+     * @param {number} index - Index in the image URL array.
      * @return {void}
      */
-    handleMouseUp(event) {
-        // If this is not a left click, then ignore
-        // If this is a CTRL or CMD click, then ignore
-        if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
-            this.zoom('in');
-            event.preventDefault();
+    setupImageEls(imageUrl, index) {
+        // first page is created in setup(), so we don't need create it here
+        if (index !== 0) {
+            this.singleImageEls[index] = this.imageEl.appendChild(document.createElement('img'));
+            this.bindImageListeners(index);
         }
+
+        this.singleImageEls[index].src = imageUrl;
+    }
+
+    /**
+     * Updates pannability state and cursor.
+     *
+     * @private
+     * @return {void}
+     */
+    updatePannability() {
+        if (!this.wrapperEl) {
+            return;
+        }
+
+        this.isPannable = this.imageEl.clientWidth > this.wrapperEl.clientWidth;
+        this.didPan = false;
+        this.updateCursor();
     }
 
     /**
@@ -100,8 +137,8 @@ class MultiImage extends ImageBase {
      */
     zoom(type) {
         let newWidth;
-        const viewportWidth = this.wrapperEl.parentNode.clientWidth;
-        const imageContainerWidth = this.wrapperEl.clientWidth;
+        const viewportWidth = this.imageEl.parentNode.clientWidth;
+        const imageContainerWidth = this.imageEl.clientWidth;
 
         switch (type) {
             case 'in':
@@ -117,24 +154,43 @@ class MultiImage extends ImageBase {
                 break;
         }
 
-        this.wrapperEl.style.width = `${newWidth}px`;
+        this.imageEl.style.width = `${newWidth}px`;
 
         // Fix the scroll position of the image to be centered
-        this.wrapperEl.parentNode.scrollLeft = (this.wrapperEl.parentNode.scrollWidth - viewportWidth) / 2;
+        this.imageEl.parentNode.scrollLeft = (this.imageEl.parentNode.scrollWidth - viewportWidth) / 2;
 
-        this.emit('resize');
+        this.emit('zoom');
+
+        // Give the browser some time to render before updating pannability
+        setTimeout(this.updatePannability, 50);
     }
 
     /**
-     * Loads controls
+     * Binds error and load event listeners for an image element.
      *
-     * @private
+     * @protected
      * @return {void}
      */
-    loadUI() {
-        super.loadUI();
-        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+    bindImageListeners(index) {
+        if (index === 0) {
+            this.singleImageEls[index].addEventListener('load', this.finishLoading);
+        }
+
+        this.singleImageEls[index].addEventListener('error', this.errorHandler);
+    }
+
+    /**
+     * Unbinds error and load event listeners for an image element.
+     *
+     * @protected
+     * @return {void}
+     */
+    unbindImageListeners(index) {
+        if (index === 0) {
+            this.singleImageEls[index].removeEventListener('load', this.finishLoading);
+        }
+
+        this.singleImageEls[index].removeEventListener('error', this.errorHandler);
     }
 }
 
