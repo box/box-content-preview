@@ -1,5 +1,37 @@
 # Change Log
 
+## [v0.102.0](https://git.dev.box.net/Preview/Preview/tree/v0.102.0) (2017-02-23)
+[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.101.0...v0.102.0)
+
+**Merged pull requests:**
+
+- Fix preloading [\#998](https://git.dev.box.net/Preview/Preview/pull/998) ([tjin](https://git.dev.box.net/tjin))
+- Box3d renderer test additions [\#996](https://git.dev.box.net/Preview/Preview/pull/996) ([jholdstock](https://git.dev.box.net/jholdstock))
+- Update Instant Preview code to work with refactor [\#995](https://git.dev.box.net/Preview/Preview/pull/995) ([tjin](https://git.dev.box.net/tjin))
+- multi-image-viewer after refactor [\#992](https://git.dev.box.net/Preview/Preview/pull/992) ([jpress](https://git.dev.box.net/jpress))
+- Update Box3D tests [\#991](https://git.dev.box.net/Preview/Preview/pull/991) ([tjin](https://git.dev.box.net/tjin))
+- padding added to bottom of settings panel [\#989](https://git.dev.box.net/Preview/Preview/pull/989) ([jholdstock](https://git.dev.box.net/jholdstock))
+- moving find bar el creation to initFind [\#987](https://git.dev.box.net/Preview/Preview/pull/987) ([jpress](https://git.dev.box.net/jpress))
+- Getting rid of shell scripts to hack single file testing [\#986](https://git.dev.box.net/Preview/Preview/pull/986) ([phora](https://git.dev.box.net/phora))
+- Clean up various tests [\#985](https://git.dev.box.net/Preview/Preview/pull/985) ([tjin](https://git.dev.box.net/tjin))
+- Update tests to not use 'have been called' [\#982](https://git.dev.box.net/Preview/Preview/pull/982) ([tjin](https://git.dev.box.net/tjin))
+- Refactoring prefetch code [\#981](https://git.dev.box.net/Preview/Preview/pull/981) ([tjin](https://git.dev.box.net/tjin))
+- Major Preview refactor - moving viewers into main preview.js file [\#980](https://git.dev.box.net/Preview/Preview/pull/980) ([tjin](https://git.dev.box.net/tjin))
+- Associate .lcdpdf extension with the Document viewer [\#972](https://git.dev.box.net/Preview/Preview/pull/972) ([tjin](https://git.dev.box.net/tjin))
+- Update CSS for dark header theme [\#971](https://git.dev.box.net/Preview/Preview/pull/971) ([tjin](https://git.dev.box.net/tjin))
+- Unit tests for scrubber [\#970](https://git.dev.box.net/Preview/Preview/pull/970) ([spramod](https://git.dev.box.net/spramod))
+- Unit tests for settings and removing flash.js [\#969](https://git.dev.box.net/Preview/Preview/pull/969) ([tjin](https://git.dev.box.net/tjin))
+- JSDoc Cleanup [\#968](https://git.dev.box.net/Preview/Preview/pull/968) ([tjin](https://git.dev.box.net/tjin))
+- Various cleanup tasks [\#966](https://git.dev.box.net/Preview/Preview/pull/966) ([tjin](https://git.dev.box.net/tjin))
+- Unit tests for MP4 [\#965](https://git.dev.box.net/Preview/Preview/pull/965) ([tjin](https://git.dev.box.net/tjin))
+- Adding open source boilerplate [\#963](https://git.dev.box.net/Preview/Preview/pull/963) ([tjin](https://git.dev.box.net/tjin))
+- Update README in preparation of open source [\#962](https://git.dev.box.net/Preview/Preview/pull/962) ([tjin](https://git.dev.box.net/tjin))
+- Fix error text color for dark background [\#961](https://git.dev.box.net/Preview/Preview/pull/961) ([tjin](https://git.dev.box.net/tjin))
+- Unit tests for video-base [\#960](https://git.dev.box.net/Preview/Preview/pull/960) ([tjin](https://git.dev.box.net/tjin))
+- update changelog and readme to v0.101.0 [\#959](https://git.dev.box.net/Preview/Preview/pull/959) ([jpress](https://git.dev.box.net/jpress))
+- cleaning up viewer events [\#950](https://git.dev.box.net/Preview/Preview/pull/950) ([jpress](https://git.dev.box.net/jpress))
+- new presentation layout/logic [\#908](https://git.dev.box.net/Preview/Preview/pull/908) ([jpress](https://git.dev.box.net/jpress))
+
 ## [v0.101.0](https://git.dev.box.net/Preview/Preview/tree/v0.101.0) (2017-02-01)
 [Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.100.0...v0.101.0)
 
