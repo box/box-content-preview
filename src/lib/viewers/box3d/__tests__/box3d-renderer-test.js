@@ -1,7 +1,10 @@
+/* global Box3D */
 /* eslint-disable no-unused-expressions */
 import Box3DRenderer from '../box3d-renderer';
+import { EVENT_SHOW_VR_BUTTON } from '../box3d-constants';
 
 const sandbox = sinon.sandbox.create();
+const PREVIEW_CAMERA_CONTROLLER_ID = 'orbit_camera_controller';
 
 let containerEl;
 let renderer;
@@ -44,29 +47,22 @@ describe('box3d-renderer', () => {
     describe('destroy()', () => {
         beforeEach(() => {
             renderer.box3d = {
-                destroy: sandbox.stub()
+                destroy: () => {}
             };
         });
 
         it('should call destroy on the engine', () => {
-            const destroyStub = renderer.box3d.destroy;
-
+            sandbox.mock(renderer.box3d).expects('destroy');
             renderer.destroy();
-
-            expect(destroyStub).to.be.called;
         });
 
         it('should fully shutdown by disabling vr and unbinding events ', () => {
-            const disableVrSpy = sandbox.spy(renderer, 'disableVr');
-
+            sandbox.mock(renderer).expects('disableVr');
             renderer.destroy();
-
-            expect(disableVrSpy.called).to.be.true;
         });
 
         it('should not call Box3D cleanup path if no Box3D engine', () => {
             renderer.box3d = null;
-
             renderer.destroy();
 
             expect(renderer._events.triggerRender).to.not.exist;
@@ -90,31 +86,29 @@ describe('box3d-renderer', () => {
     describe('reset()', () => {
         const RESET_CAMERA_EVENT = 'resetOrbitCameraController';
         let camera;
+        let cameraMock;
         beforeEach(() => {
             camera = {
-                setPosition: sandbox.spy(),
-                setQuaternion: sandbox.spy(),
-                trigger: sandbox.spy()
+                setPosition: () => {},
+                setQuaternion: () => {},
+                trigger: () => {}
             };
-
             renderer.box3d = {
                 getObjectById: sandbox.stub().returns(camera)
             };
+            cameraMock = sandbox.mock(camera);
         });
 
         it('should set camera position and orientation to default values', () => {
-            renderer.reset();
+            cameraMock.expects('setPosition');
+            cameraMock.expects('setQuaternion');
 
-            expect(camera.setPosition.called).to.be.true;
-            expect(camera.setPosition.called).to.be.true;
+            renderer.reset();
         });
 
         it('should set camera position and orientation to default values', () => {
-            camera.trigger.withArgs(RESET_CAMERA_EVENT);
-
+            cameraMock.expects('trigger').withArgs(RESET_CAMERA_EVENT);
             renderer.reset();
-
-            expect(camera.trigger.withArgs(RESET_CAMERA_EVENT).called).to.be.true;
         });
     });
 
@@ -419,15 +413,10 @@ describe('box3d-renderer', () => {
 
     describe('onSceneLoad()', () => {
         it('should emit a scene loaded event and init VR mode if present', () => {
-            const emitSpy = sandbox.spy(renderer, 'emit');
-            sandbox.stub(renderer, 'reset');
-            emitSpy.withArgs('sceneLoaded');
-            const initVRSpy = sandbox.stub(renderer, 'initVr');
-
+            const mock = sandbox.mock(renderer);
+            mock.expects('emit').withArgs('sceneLoaded');
+            mock.expects('initVr');
             renderer.onSceneLoad();
-
-            expect(emitSpy.withArgs('sceneLoaded').calledOnce).to.be.true;
-            expect(initVRSpy.calledOnce).to.be.true;
         });
     });
 
@@ -448,33 +437,142 @@ describe('box3d-renderer', () => {
         });
     });
 
-    describe('initCameraForVr()', () => {});
+    describe('onEnableVr()', () => {
+        let disableCameraStub;
+        let setAttribStub;
 
-    describe('enableVr()', () => {});
-
-    describe('renderVR()', () => {});
-
-    describe('disableVr()', () => {
-        it('should not run if vr is disabled', () => {
-            const disposeSpy = sandbox.spy();
-            renderer.vrControls = {
-                dispose: disposeSpy
+        beforeEach(() => {
+            disableCameraStub = sandbox.stub(renderer, 'disableCameraControls');
+            setAttribStub = sandbox.stub();
+            const box3dRenderer = { setAttribute: setAttribStub };
+            renderer.box3d = {
+                getRenderer: sandbox.stub().returns(box3dRenderer),
+                getVrDisplay: sandbox.stub().returns({ isPresenting: true })
             };
-
-            renderer.vrEnabled = false;
-            renderer.disableVr();
-
-            expect(disposeSpy.called).to.be.false;
+            renderer.onEnableVr();
         });
 
-        it('should dispose of controls, disable Box3D postupdate listener, exit VR, and reset Box3D render on demand state');
+        it('should disable all camera components', () => {
+            expect(disableCameraStub).to.be.called;
+        });
 
-        it('should disable render view component effect on active camera');
+        it('should disable render on demand for the renderer', () => {
+            expect(setAttribStub).to.be.calledWith('renderOnDemand', false);
+        });
+
+        it('should set the vrEnabled flag to true', () => {
+            expect(renderer.vrEnabled).to.be.true;
+        });
     });
 
-    describe('updateVrControls()', () => {});
+    describe('enableVr()', () => {
+        let b3dMock;
 
-    describe('handleOnRender()', () => {});
+        beforeEach(() => {
+            renderer.box3d = {
+                trigger: () => {}
+            };
+
+            b3dMock = sandbox.mock(renderer.box3d);
+        });
+
+        it('should do nothing if vr is already enabled', () => {
+            renderer.vrEnabled = true;
+            b3dMock.expects('trigger').never();
+            renderer.enableVr();
+        });
+
+        it('should trigger the "enableVrRendering" event the Box3DRuntime instance', () => {
+            b3dMock.expects('trigger').withArgs('enableVrRendering');
+            renderer.enableVr();
+        });
+    });
+
+    describe('onDisableVr()', () => {
+        let enableCameraStub;
+        let resetStub;
+        let setAttribStub;
+
+        beforeEach(() => {
+            enableCameraStub = sandbox.stub(renderer, 'enableCameraControls');
+            resetStub = sandbox.stub(renderer, 'reset');
+            setAttribStub = sandbox.stub();
+            const box3dRenderer = { setAttribute: setAttribStub };
+            renderer.box3d = {
+                getRenderer: sandbox.stub().returns(box3dRenderer),
+                getVrDisplay: sandbox.stub().returns({ isPresenting: false }),
+                trigger: sandbox.stub()
+            };
+            renderer.onDisableVr();
+        });
+
+        it('should re-enable all camera components', () => {
+            expect(enableCameraStub).to.be.called;
+        });
+
+        it('should reset the state of Preview', () => {
+            expect(resetStub).to.be.called;
+        });
+
+        it('should notify Box3D Runtime instance to trigger a resize event', () => {
+            expect(renderer.box3d.trigger).to.be.calledWith('resize');
+        });
+
+        it('should re-enable render on demand for the renderer', () => {
+            expect(setAttribStub).to.be.calledWith('renderOnDemand', true);
+        });
+
+        it('should set the vrEnabled flag to false', () => {
+            expect(renderer.vrEnabled).to.be.false;
+        });
+    });
+
+    describe('disableVr()', () => {
+        let b3dMock;
+
+        beforeEach(() => {
+            renderer.box3d = {
+                trigger: () => {}
+            };
+
+            b3dMock = sandbox.mock(renderer.box3d);
+        });
+
+        it('should do nothing if vr is already disabled', () => {
+            renderer.vrEnabled = false;
+            b3dMock.expects('trigger').never();
+            renderer.disableVr();
+        });
+
+        it('should trigger the "disableVrRendering" event on the Box3DRuntime instance', () => {
+            renderer.vrEnabled = true;
+            b3dMock.expects('trigger').withArgs('disableVrRendering');
+            renderer.disableVr();
+        });
+    });
+
+    describe('handleOnRender()', () => {
+        let b3dMock;
+
+        beforeEach(() => {
+            renderer.box3d = {
+                trigger: () => {}
+            };
+
+            b3dMock = sandbox.mock(renderer.box3d);
+        });
+
+        it('should do nothing if the runtime has been shutdown', () => {
+            renderer.box3d = undefined;
+            b3dMock.expects('trigger').never();
+            renderer.handleOnRender();
+        });
+
+        it('should trigger the "render" event on the Box3DRuntime instance', () => {
+            b3dMock.expects('trigger').withArgs('render');
+            renderer.handleOnRender();
+        });
+    });
 
     describe('resize()', () => {
         it('should do nothing if Box3D doesn\'t exist', () => {
@@ -486,21 +584,111 @@ describe('box3d-renderer', () => {
         });
 
         it('should trigger resize on Box3D', () => {
-            const triggerSpy = sandbox.spy();
-            triggerSpy.withArgs('resize');
-
             renderer.box3d = {
-                trigger: triggerSpy
+                trigger: () => {}
             };
+            sandbox.mock(renderer.box3d).expects('trigger').withArgs('resize');
             renderer.resize();
-
-            expect(triggerSpy.withArgs('resize').calledOnce).to.be.true;
         });
     });
 
-    describe('enableCameraControls()', () => {});
+    describe('enableCameraControls()', () => {
+        let cameraMock;
 
-    describe('disableCameraControls()', () => {});
+        beforeEach(() => {
+            const camera = {
+                getComponentByScriptId: () => {}
+            };
+            cameraMock = sandbox.mock(camera);
+            sandbox.stub(renderer, 'getCamera').returns(camera);
+        });
 
-    describe('initVr()', () => {});
+        it('should enable the component if it available on the camera', () => {
+            const component = { enable: sandbox.stub() };
+            cameraMock.expects('getComponentByScriptId')
+                .withArgs(PREVIEW_CAMERA_CONTROLLER_ID).returns(component);
+            renderer.enableCameraControls();
+            expect(component.enable).to.be.called;
+        });
+    });
+
+    describe('disableCameraControls()', () => {
+        let cameraMock;
+
+        beforeEach(() => {
+            const camera = {
+                getComponentByScriptId: () => {}
+            };
+            cameraMock = sandbox.mock(camera);
+            sandbox.stub(renderer, 'getCamera').returns(camera);
+        });
+
+        it('should disable the component if it available on the camera', () => {
+            const component = { disable: sandbox.stub() };
+            cameraMock.expects('getComponentByScriptId')
+                .withArgs(PREVIEW_CAMERA_CONTROLLER_ID).returns(component);
+            renderer.disableCameraControls();
+            expect(component.disable).to.be.called;
+        });
+    });
+
+    describe('initVr()', () => {
+        let box3dMock;
+        let vrPresenter;
+        let emitStub;
+        let globalBox3DMock;
+
+        beforeEach(() => {
+            vrPresenter = {
+                whenDisplaysAvailable: () => {}
+            };
+            renderer.box3d = {
+                getApplication: () => {},
+                listenTo: () => {}
+            };
+            emitStub = sandbox.stub(renderer, 'emit');
+            box3dMock = sandbox.mock(renderer.box3d);
+            globalBox3DMock = sandbox.mock(Box3D);
+        });
+
+        describe('With a valid device', () => {
+            beforeEach(() => {
+                box3dMock.expects('getApplication').returns({ getComponentByScriptId: () => vrPresenter });
+                globalBox3DMock.expects('isTablet').returns(false);
+            });
+
+            it('should emit a EVENT_SHOW_VR_BUTTON event when vr displays are ready', (done) => {
+                sandbox.stub(vrPresenter, 'whenDisplaysAvailable', (callback) => {
+                    callback([{}, {}]);
+                    done();
+                });
+                renderer.initVr();
+                expect(emitStub).to.be.calledWith(EVENT_SHOW_VR_BUTTON);
+            });
+
+            it('should add an event listeners for vr enabled/disabled events via listenTo', (done) => {
+                box3dMock.expects('listenTo').twice();
+                sandbox.stub(vrPresenter, 'whenDisplaysAvailable', (callback) => {
+                    callback([{}, {}]);
+                    done();
+                });
+                renderer.initVr();
+            });
+
+            it('should do nothing if no displays are available', (done) => {
+                sandbox.stub(vrPresenter, 'whenDisplaysAvailable', (callback) => {
+                    callback([]);
+                    done();
+                });
+                renderer.initVr();
+                expect(emitStub).to.not.be.called;
+            });
+        });
+
+        it('should do nothing if the device we\'re using is a Tablet device', () => {
+            globalBox3DMock.expects('isTablet').returns(true);
+            box3dMock.expects('getApplication').never();
+            renderer.initVr();
+        });
+    });
 });
