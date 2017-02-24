@@ -1,5 +1,21 @@
 # Change Log
 
+## [v0.104.0](https://git.dev.box.net/Preview/Preview/tree/v0.104.0) (2017-02-24)
+[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.103.0...v0.104.0)
+
+**Merged pull requests:**
+
+- Moving annotations tests into subfolders [\#1004](https://git.dev.box.net/Preview/Preview/pull/1004) ([spramod](https://git.dev.box.net/spramod))
+- Annotations bug fixes related to Preview refactor [\#1003](https://git.dev.box.net/Preview/Preview/pull/1003) ([spramod](https://git.dev.box.net/spramod))
+
+## [v0.103.0](https://git.dev.box.net/Preview/Preview/tree/v0.103.0) (2017-02-24)
+[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.102.0...v0.103.0)
+
+**Merged pull requests:**
+
+- Revert "new presentation layout/logic \(\#908\)" [\#1001](https://git.dev.box.net/Preview/Preview/pull/1001) ([jpress](https://git.dev.box.net/jpress))
+- updating changelog and readme to v0.102.0 [\#999](https://git.dev.box.net/Preview/Preview/pull/999) ([jpress](https://git.dev.box.net/jpress))
+
 ## [v0.102.0](https://git.dev.box.net/Preview/Preview/tree/v0.102.0) (2017-02-23)
 [Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.101.0...v0.102.0)
 
