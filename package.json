@@ -1,9 +1,9 @@
 {
-  "name": "preview",
+  "name": "box-content-viewer",
   "version": "0.104.0",
-  "description": "Box Preview Library",
+  "description": "Box Content Viewer",
   "author": "Box (https://www.box.com/)",
-  "license": "Apache-2.0",
+  "license": "Box Software Development Kit License Agreement",
   "repository": {
     "type": "git",
     "url": "git@git.dev.box.net:Preview/Preview.git"
@@ -76,7 +76,6 @@
     "react-addons-shallow-compare": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-virtualized": "^8.8.1",
-    "remarkable": "^1.7.1",
     "sass-loader": "^4.1.0",
     "sinon": "^1.17.6",
     "sinon-chai": "^2.8.0",
@@ -90,22 +89,20 @@
     "webpack": "^2.1.0-beta.28"
   },
   "scripts": {
-    "test": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js",
+    "build": "npm run clean && npm run build-rb && npm run lint && npm run dev",
+    "build-rb": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
+    "ci": "npm run clean && npm run build-rb && npm run lint && npm run test-release && npm run jenkins",
+    "clean": "rm -rf dist && rm -rf reports && rm -rf src/i18n/json",
     "debug": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js --no-single-run --auto-watch",
-    "test-release": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js",
-    "sync": "./build/push_to_dev.sh",
     "dev": "BABEL_ENV=dev NODE_ENV=dev ./node_modules/.bin/webpack --progress --colors --config build/webpack.config.js",
     "jenkins": "./node_modules/.bin/webpack --progress --colors --config build/webpack.config.js",
-    "prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --progress --colors --config build/webpack.config.js",
-    "watch": "BABEL_ENV=dev NODE_ENV=dev ./node_modules/.bin/webpack --watch --progress --colors --config build/webpack.config.js",
-    "clean": "rm -rf dist && rm -rf reports && rm -rf src/i18n/json",
-    "watch-rb": "mojito-rb-gen -w -s src/i18n -o src/i18n/json -b en-US.properties",
-    "build-rb": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
     "lint": "NODE_ENV=dev ./node_modules/.bin/eslint src/lib && ./node_modules/.bin/stylelint 'src/lib/**/*.scss'",
     "prepush": "npm run lint",
-    "build": "npm run clean && npm run build-rb && npm run lint && npm run dev",
-    "ci": "npm run clean && npm run build-rb && npm run lint && npm run test-release && npm run jenkins",
+    "prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --progress --colors --config build/webpack.config.js",
     "release": "npm run clean && npm run build-rb && npm run lint && npm run test-release && npm run prod",
-    "upgrade-pdfjs": "./build/upgrade_pdfjs.sh && ./build/minify_pdfjs.sh"
+    "test": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js",
+    "test-release": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js",
+    "upgrade-pdfjs": "./build/upgrade_pdfjs.sh && ./build/minify_pdfjs.sh",
+    "watch": "BABEL_ENV=dev NODE_ENV=dev ./node_modules/.bin/webpack --watch --progress --colors --config build/webpack.config.js"
   }
 }
