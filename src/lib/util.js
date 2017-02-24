@@ -1,5 +1,4 @@
 import fetch from 'isomorphic-fetch';
-import { CLASS_DISABLED } from './constants';
 
 const parseJSON = (response) => {
     if (response.status === 204) {
@@ -572,24 +571,4 @@ export function requires360Viewer(file) {
     // extension of '360' (e.g. file.360.mp4)
     const basename = file.name.slice(0, file.name.lastIndexOf('.'));
     return basename.endsWith('360');
-}
-
-/**
- * Disables a DOM element
- *
- * @param {object} el - The element to be disabled
- * @return {void}
- */
-export function disableEl(el) {
-    el.classList.add(CLASS_DISABLED);
-}
-
-/**
- * Enables a DOM element
- *
- * @param {object} el - The element to be enabled
- * @return {void}
- */
-export function enableEl(el) {
-    el.classList.remove(CLASS_DISABLED);
 }

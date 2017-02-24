@@ -446,10 +446,9 @@ class DocBase extends Base {
         } while (numTicks > 0 && newScale > MIN_SCALE);
 
         if (this.pdfViewer.currentScale !== newScale) {
-            const canZoomOut = this.zoomLevel === 0 ? false : newScale > MIN_SCALE;
             this.emit('zoom', {
                 zoom: newScale,
-                canZoomOut,
+                canZoomOut: newScale > MIN_SCALE,
                 canZoomIn: true
             });
         }

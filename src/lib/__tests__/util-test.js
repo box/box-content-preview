@@ -3,8 +3,6 @@ import 'isomorphic-fetch';
 import fetchMock from 'fetch-mock';
 import * as util from '../util';
 
-import { CLASS_DISABLED } from '../constants';
-
 describe('lib/util', () => {
     describe('get()', () => {
         const url = 'foo?bar=bum';
@@ -435,25 +433,6 @@ describe('lib/util', () => {
 
         it('should replace with the same value if the placeholder is repeated', () => {
             expect(util.replacePlaceholders('{2} highlighted {2}', ['Bob', 'Suzy'])).to.equal('Suzy highlighted Suzy');
-        });
-    });
-
-    describe('disableEl()', () => {
-        it('should add the disabled class', () => {
-            const el = document.createElement('div');
-
-            util.disableEl(el);
-            expect(el).to.have.class('bp-is-disabled');
-        });
-    });
-
-    describe('enableEl()', () => {
-        it('should remove the disabled class', () => {
-            const el = document.createElement('div');
-            el.classList.add(CLASS_DISABLED);
-
-            util.enableEl(el);
-            expect(el).to.not.have.class('bp-is-disabled');
         });
     });
 });

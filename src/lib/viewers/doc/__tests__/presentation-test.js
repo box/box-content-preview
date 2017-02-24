@@ -1,10 +1,8 @@
 /* eslint-disable no-unused-expressions */
 import Presentation from '../presentation';
-import Controls from '../../../controls';
 import Browser from '../../../browser';
 import DocBase from '../doc-base';
 import { CLASS_INVISIBLE } from '../../../constants';
-import * as util from '../../../util';
 
 import {
     ICON_DROP_DOWN,
@@ -37,8 +35,7 @@ describe('lib/viewers/doc/presentation', () => {
         presentation.setup();
         presentation.pdfViewer = {
             currentPageNumber: 1,
-            update: sandbox.stub(),
-            setFindController: sandbox.stub()
+            update: sandbox.stub()
         };
         presentation.controls = {
             add: sandbox.stub()
@@ -88,6 +85,13 @@ describe('lib/viewers/doc/presentation', () => {
             presentation.docEl.removeChild(page2);
         });
 
+        it('should check to see if overflow is present', () => {
+            const checkOverflowStub = sandbox.stub(presentation, 'checkOverflow');
+
+            presentation.setPage(2);
+            expect(checkOverflowStub).to.be.called;
+        });
+
         it('should hide the page that was previously shown', () => {
             sandbox.stub(presentation, 'checkOverflow');
             presentation.setPage(2);
@@ -100,70 +104,6 @@ describe('lib/viewers/doc/presentation', () => {
             presentation.setPage(2);
 
             expect(page2).to.not.have.class(CLASS_INVISIBLE);
-        });
-
-        it('should update and center the page', () => {
-            stubs.centerSlide = sandbox.stub(presentation, 'centerSlide');
-            presentation.setPage(2);
-
-            expect(presentation.pdfViewer.update).to.be.called;
-            expect(stubs.centerSlide).to.be.called;
-        });
-    });
-
-
-    describe('zoomIn()', () => {
-        beforeEach(() => {
-            presentation.findBar = {
-                opened: true,
-                destroy: sandbox.stub(),
-                removeListener: sandbox.stub()
-            };
-            stubs.enableEl = sandbox.stub(util, 'enableEl');
-        });
-
-        it('should do nothing if the findbar is opened', () => {
-            presentation.zoomIn();
-
-            expect(stubs.enableEl).to.not.be.called;
-        });
-
-        it('should increment the zoom level', () => {
-            presentation.findBar.opened = false;
-            presentation.zoomIn();
-
-            expect(presentation.zoomLevel).to.equal(1);
-        });
-
-        it('should enable zoom out', () => {
-            presentation.findBar.opened = false;
-            presentation.zoomIn();
-
-            expect(stubs.enableEl).to.be.called;
-        });
-    });
-
-    describe('zoomOut()', () => {
-        beforeEach(() => {
-            presentation.findBar = {
-                opened: true,
-                destroy: sandbox.stub(),
-                removeListener: sandbox.stub()
-            };
-            stubs.disableEl = sandbox.stub(util, 'disableEl');
-        });
-
-        it('should do nothing if already zoomed out all the way', () => {
-            presentation.zoomOut();
-
-            expect(presentation.zoomLevel).to.equal(0);
-        });
-
-        it('should decrement the zoom level', () => {
-            presentation.zoomLevel = 1;
-
-            presentation.zoomOut();
-            expect(presentation.zoomLevel).to.equal(0);
         });
     });
 
@@ -286,54 +226,6 @@ describe('lib/viewers/doc/presentation', () => {
         });
     });
 
-    describe('centerSlide()', () => {
-        beforeEach(() => {
-            stubs.textLayer = document.createElement('div');
-            stubs.textLayer.classList.add('textLayer');
-
-            stubs.page = {
-                clientHeight: 100,
-                style: {
-                    padding: 0
-                },
-                querySelector: sandbox.stub().returns(stubs.textLayer)
-            };
-
-            stubs.docEl = presentation.docEl;
-        });
-
-        afterEach(() => {
-            presentation.docEl = stubs.docEl;
-        });
-
-        it('should set the padding to be 0 if the page is bigger than the doc element', () => {
-            presentation.docEl = {
-                clientHeight: 0
-            };
-
-            presentation.centerSlide(stubs.page);
-            expect(stubs.page.style.padding).to.equal('0');
-        });
-
-        it('should set the padding to be half the available space', () => {
-            presentation.docEl = {
-                clientHeight: 200
-            };
-
-            presentation.centerSlide(stubs.page);
-            expect(stubs.page.style.padding).to.equal('50px 0');
-        });
-
-        it('should center the textLayer', () => {
-            presentation.docEl = {
-                clientHeight: 500
-            };
-
-            presentation.centerSlide(stubs.page);
-            expect(stubs.textLayer.style.top).to.equal('200px');
-        });
-    });
-
     describe('bindDOMListeners()', () => {
         beforeEach(() => {
             stubs.addEventListener = sandbox.stub(presentation.docEl, 'addEventListener');
@@ -342,7 +234,7 @@ describe('lib/viewers/doc/presentation', () => {
 
         it('should add a wheel handler', () => {
             presentation.bindDOMListeners();
-            expect(stubs.addEventListener).to.be.calledWith('wheel', presentation.wheelHandler);
+            expect(stubs.addEventListener).to.be.calledWith('wheel', presentation.wheelHandler());
         });
 
         it('should add a touch handlers if on mobile', () => {
@@ -363,7 +255,7 @@ describe('lib/viewers/doc/presentation', () => {
 
         it('should remove a wheel handler', () => {
             presentation.unbindDOMListeners();
-            expect(stubs.removeEventListener).to.be.calledWith('wheel', presentation.wheelHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('wheel', presentation.wheelHandler());
         });
 
         it('should remove the touchhandlers if on mobile', () => {
@@ -374,46 +266,18 @@ describe('lib/viewers/doc/presentation', () => {
             expect(stubs.removeEventListener).to.be.calledWith('touchmove', presentation.mobileScrollHandler);
             expect(stubs.removeEventListener).to.be.calledWith('touchend', presentation.mobileScrollHandler);
         });
-
-        it('should remove the findBar listeners', () => {
-            presentation.initFind();
-            stubs.removeListener = sandbox.stub(presentation.findBar, 'removeListener');
-
-            presentation.unbindDOMListeners();
-
-            expect(stubs.removeListener).to.be.calledWith('findbaropen', presentation.findBarOpenHandler);
-            expect(stubs.removeListener).to.be.calledWith('findbarclose', presentation.findBarCloseHandler);
-        });
     });
 
     describe('bindControlListeners()', () => {
-        it('should add event listeners', () => {
-            presentation.controls = new Controls(presentation.containerEl);
-            stubs.add = sandbox.spy(presentation.controls, 'add');
-
+        it('should ', () => {
             presentation.bindControlListeners();
-            expect(stubs.add).to.be.calledWith(__('zoom_out'), presentation.zoomOut, 'bp-exit-zoom-out-icon', ICON_ZOOM_OUT);
-            expect(stubs.add).to.be.calledWith(__('zoom_in'), presentation.zoomIn, 'bp-enter-zoom-in-icon', ICON_ZOOM_IN);
-            expect(stubs.add).to.be.calledWith(__('previous_page'), presentation.previousPage, 'bp-presentation-previous-page-icon bp-previous-page', ICON_DROP_UP);
-            expect(stubs.add).to.be.calledWith(__('enter_page_num'), presentation.showPageNumInput, 'bp-doc-page-num');
-            expect(stubs.add).to.be.calledWith(__('next_page'), presentation.nextPage, 'bp-presentation-next-page-icon bp-next-page', ICON_DROP_DOWN);
-            expect(stubs.add).to.be.calledWith(__('enter_fullscreen'), presentation.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-            expect(stubs.add).to.be.calledWith(__('exit_fullscreen'), presentation.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
-        });
-    });
-
-    describe('initFind()', () => {
-        it('add open and close event listeners', () => {
-            stubs.findBarOpenHandler = sandbox.stub(presentation, 'findBarOpenHandler');
-            stubs.findBarCloseHandler = sandbox.stub(presentation, 'findBarCloseHandler');
-
-            presentation.initFind();
-
-            presentation.findBar.emit('findbaropen');
-            expect(stubs.findBarOpenHandler).to.be.called;
-
-            presentation.findBar.emit('findbarclose');
-            expect(stubs.findBarCloseHandler).to.be.called;
+            expect(presentation.controls.add).to.be.calledWith(__('zoom_out'), presentation.zoomOut, 'bp-exit-zoom-out-icon', ICON_ZOOM_OUT);
+            expect(presentation.controls.add).to.be.calledWith(__('zoom_in'), presentation.zoomIn, 'bp-enter-zoom-in-icon', ICON_ZOOM_IN);
+            expect(presentation.controls.add).to.be.calledWith(__('previous_page'), presentation.previousPage, 'bp-presentation-previous-page-icon bp-previous-page', ICON_DROP_UP);
+            expect(presentation.controls.add).to.be.calledWith(__('enter_page_num'), presentation.showPageNumInput, 'bp-doc-page-num');
+            expect(presentation.controls.add).to.be.calledWith(__('next_page'), presentation.nextPage, 'bp-presentation-next-page-icon bp-next-page', ICON_DROP_DOWN);
+            expect(presentation.controls.add).to.be.calledWith(__('enter_fullscreen'), presentation.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+            expect(presentation.controls.add).to.be.calledWith(__('exit_fullscreen'), presentation.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
         });
     });
 
@@ -518,48 +382,50 @@ describe('lib/viewers/doc/presentation', () => {
             };
         });
 
-        it('should call next page if the event delta is positive', () => {
-            presentation.wheelHandler(presentation.event);
+        it('should create a new throttle if the wheel handler does not exist', () => {
+            const result = presentation.wheelHandler();
 
+            expect(result).to.equal(presentation.throttledWheelHandler);
+        });
+
+        it('should call next page if the event delta is positive', () => {
+            presentation.wheelHandler();
+
+            presentation.throttledWheelHandler(presentation.event);
             expect(stubs.nextPage).to.be.called;
         });
 
         it('should call previous page if the event delta is negative', () => {
             presentation.event.deltaY = -5;
 
-            presentation.wheelHandler(presentation.event);
+            presentation.wheelHandler();
+            presentation.throttledWheelHandler(presentation.event);
             expect(stubs.previousPage).to.be.called;
         });
-    });
 
-    describe('findBarOpenHandler()', () => {
-        beforeEach(() => {
-            stubs.checkOverflow = sandbox.stub(presentation, 'checkOverflow');
-            stubs.disableEl = sandbox.stub(util, 'disableEl');
+        it('should do nothing if x scroll is detected', () => {
+            presentation.event.deltaX = -7;
+
+            presentation.wheelHandler();
+            presentation.throttledWheelHandler(presentation.event);
+            expect(stubs.previousPage).to.not.be.called;
+            expect(stubs.nextPage).to.not.be.called;
         });
 
-        it('should reset scale and reset the zoom level if there is overflow', () => {
+        it('should do nothing if there is overflow', () => {
             stubs.checkOverflow.returns(true);
 
-            presentation.findBarOpenHandler();
-            expect(presentation.zoomLevel).to.equal(0);
-            expect(presentation.pdfViewer.currentScaleValue).to.equal('page-fit');
+            presentation.wheelHandler();
+            presentation.throttledWheelHandler(presentation.event);
+            expect(stubs.previousPage).to.not.be.called;
+            expect(stubs.nextPage).to.not.be.called;
         });
 
-        it('should disble all zooming if there is no overflow', () => {
-            stubs.checkOverflow.returns(false);
+        it('should return the original function if the wheel handler already exists', () => {
+            presentation.throttledWheelHandler = true;
+            const result = presentation.wheelHandler();
 
-            presentation.findBarOpenHandler();
-            expect(stubs.disableEl).to.be.calledTwice;
-        });
-    });
-
-    describe('findBarCloseHandler()', () => {
-        it('should enable zooming in', () => {
-            stubs.enableEl = sandbox.stub(util, 'enableEl');
-
-            presentation.findBarCloseHandler();
-            expect(stubs.enableEl).to.be.called;
+            expect(result).to.be.truthy;
         });
     });
 });

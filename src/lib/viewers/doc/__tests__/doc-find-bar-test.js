@@ -529,7 +529,6 @@ describe('doc-find-bar', () => {
             stubs.remove = sandbox.stub(docFindBar.bar.classList, 'remove');
             stubs.select = sandbox.stub(docFindBar.findFieldEl, 'select');
             stubs.focus = sandbox.stub(docFindBar.findFieldEl, 'focus');
-            stubs.emit = sandbox.stub(docFindBar, 'emit');
         });
 
         it('should repopulate and re-highlight the find field with the last search', () => {
@@ -553,7 +552,6 @@ describe('doc-find-bar', () => {
             docFindBar.open();
             expect(docFindBar.opened).to.equal(true);
             expect(stubs.remove).to.be.called;
-            expect(stubs.emit).to.be.calledWith('findbaropen');
         });
 
         it('should not open the find bar if it is already open', () => {
@@ -562,7 +560,6 @@ describe('doc-find-bar', () => {
             docFindBar.open();
             expect(docFindBar.opened).to.equal(true);
             expect(stubs.remove).to.not.be.called;
-            expect(stubs.emit).to.not.be.called;
         });
 
         it('should select and focus the find bar field', () => {
@@ -578,7 +575,6 @@ describe('doc-find-bar', () => {
         beforeEach(() => {
             stubs.findFieldHandler = sandbox.stub(docFindBar, 'findFieldHandler');
             stubs.add = sandbox.stub(docFindBar.bar.classList, 'add');
-            stubs.emit = sandbox.stub(docFindBar, 'emit');
         });
 
         it('should save and clear the current search', () => {
@@ -599,7 +595,6 @@ describe('doc-find-bar', () => {
             expect(docFindBar.opened).to.equal(false);
             expect(stubs.add).to.be.calledWith(CLASS_HIDDEN);
             expect(docFindBar.findController.active).to.equal(false);
-            expect(stubs.emit).to.be.calledWith('findbarclose');
         });
     });
 });

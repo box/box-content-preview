@@ -10,7 +10,7 @@
         bottom: 0;
         left: 0;
         margin: auto;
-        position: relative;
+        position: absolute;
         right: 0;
         top: 0;
     }
@@ -22,5 +22,9 @@
 
     &.overflow-y {
         overflow-y: scroll;
+
+        .pdfViewer .page {
+            margin-top: 5px;
+        }
     }
 }
