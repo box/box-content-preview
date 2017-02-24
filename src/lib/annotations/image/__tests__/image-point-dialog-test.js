@@ -1,26 +1,27 @@
 /* eslint-disable no-unused-expressions */
-import DocPointDialog from '../../doc/doc-point-dialog';
+import ImagePointDialog from '../image-point-dialog';
 import * as annotatorUtil from '../../annotator-util';
-import * as docAnnotatorUtil from '../../doc/doc-annotator-util';
+import * as imageAnnotatorUtil from '../image-annotator-util';
 
 let pointDialog;
 const sandbox = sinon.sandbox.create();
 
-describe('doc-point-dialog', () => {
+describe('image-point-dialog', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('annotations/__tests__/doc/doc-point-dialog-test.html');
+        fixture.load('annotations/image/__tests__/image-point-dialog-test.html');
 
-        pointDialog = new DocPointDialog({
+        pointDialog = new ImagePointDialog({
             annotatedElement: document.querySelector('.annotated-element'),
             location: {},
             annotations: [],
             canAnnotate: true
         });
         pointDialog.setup([]);
+        pointDialog._element.style.width = '282px';
     });
 
     afterEach(() => {
@@ -33,13 +34,14 @@ describe('doc-point-dialog', () => {
 
     describe('position()', () => {
         it('should position the dialog at the right place and show it', () => {
-            sandbox.stub(docAnnotatorUtil, 'getBrowserCoordinatesFromLocation').returns([1, 2]);
+            sandbox.stub(imageAnnotatorUtil, 'getBrowserCoordinatesFromLocation').returns([141, 2]);
+            sandbox.stub(annotatorUtil, 'repositionCaret');
             sandbox.stub(annotatorUtil, 'showElement');
-            sandbox.stub(docAnnotatorUtil, 'fitDialogHeightInPage');
 
             pointDialog.position();
 
-            expect(docAnnotatorUtil.getBrowserCoordinatesFromLocation).to.have.been.called;
+            expect(imageAnnotatorUtil.getBrowserCoordinatesFromLocation).to.have.been.called;
+            expect(annotatorUtil.repositionCaret).to.have.been.called;
             expect(annotatorUtil.showElement).to.have.been.called;
         });
     });

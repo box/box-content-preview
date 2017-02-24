@@ -3,7 +3,7 @@ import {
     getLocationWithoutRotation,
     getRotatedPadding,
     getBrowserCoordinatesFromLocation
-} from '../../image/image-annotator-util';
+} from '../image-annotator-util';
 
 const ROTATION_ONCE_DEG = -90;
 const ROTATION_TWICE_DEG = -180;
@@ -15,7 +15,7 @@ describe('image-annotator-util', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/__tests__/image/image-annotator-util-test.html');
+        fixture.load('annotations/image/__tests__/image-annotator-util-test.html');
     });
 
     afterEach(() => {

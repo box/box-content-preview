@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
-import DocHighlightDialog from '../../doc/doc-highlight-dialog';
-import DocHighlightThread from '../../doc/doc-highlight-thread';
+import DocHighlightDialog from '../doc-highlight-dialog';
+import DocHighlightThread from '../doc-highlight-thread';
 import AnnotationService from '../../annotation-service';
 import * as constants from '../../annotation-constants';
 import * as annotatorUtil from '../../annotator-util';
-import * as docAnnotatorUtil from '../../doc/doc-annotator-util';
+import * as docAnnotatorUtil from '../doc-annotator-util';
 
 let highlightThread;
 const sandbox = sinon.sandbox.create();
@@ -15,7 +15,7 @@ describe('doc-highlight-thread', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/__tests__/doc/doc-highlight-thread-test.html');
+        fixture.load('annotations/doc/__tests__/doc-highlight-thread-test.html');
 
         highlightThread = new DocHighlightThread({
             annotatedElement: document.querySelector('.annotated-element'),

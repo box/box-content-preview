@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-expressions */
-import ImagePointDialog from '../../image/image-point-dialog';
-import ImagePointThread from '../../image/image-point-thread';
+import ImagePointDialog from '../image-point-dialog';
+import ImagePointThread from '../image-point-thread';
 import * as annotatorUtil from '../../annotator-util';
 import * as constants from '../../annotation-constants';
-import * as imageAnnotatorUtil from '../../image/image-annotator-util';
+import * as imageAnnotatorUtil from '../image-annotator-util';
 
 let pointThread;
 const sandbox = sinon.sandbox.create();
@@ -14,7 +14,7 @@ describe('image-point-thread', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/__tests__/image/image-point-thread-test.html');
+        fixture.load('annotations/image/__tests__/image-point-thread-test.html');
 
         pointThread = new ImagePointThread({
             annotatedElement: document.querySelector('.annotated-element'),

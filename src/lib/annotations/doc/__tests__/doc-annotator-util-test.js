@@ -11,7 +11,7 @@ import {
     convertDOMSpaceToPDFSpace,
     getBrowserCoordinatesFromLocation,
     getLowerRightCornerOfLastQuadPoint
-} from '../../doc/doc-annotator-util';
+} from '../doc-annotator-util';
 
 const DIALOG_CLASS = '.bp-annotation-dialog';
 
@@ -21,7 +21,7 @@ describe('doc-annotator-util', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/__tests__/doc/doc-annotator-util-test.html');
+        fixture.load('annotations/doc/__tests__/doc-annotator-util-test.html');
     });
 
     afterEach(() => {

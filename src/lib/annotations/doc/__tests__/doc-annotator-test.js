@@ -3,11 +3,11 @@ import rangy from 'rangy';
 import Annotator from '../../annotator';
 import Annotation from '../../annotation';
 import Browser from '../../../browser';
-import DocAnnotator from '../../doc/doc-annotator';
-import DocHighlightThread from '../../doc/doc-highlight-thread';
-import DocPointThread from '../../doc/doc-point-thread';
+import DocAnnotator from '../doc-annotator';
+import DocHighlightThread from '../doc-highlight-thread';
+import DocPointThread from '../doc-point-thread';
 import * as annotatorUtil from '../../annotator-util';
-import * as docAnnotatorUtil from '../../doc/doc-annotator-util';
+import * as docAnnotatorUtil from '../doc-annotator-util';
 import * as constants from '../../annotation-constants';
 
 
@@ -21,7 +21,7 @@ describe('doc-annotator', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/__tests__/doc/doc-annotator-test.html');
+        fixture.load('annotations/doc/__tests__/doc-annotator-test.html');
 
         sandbox.stub(Browser, 'isMobile').returns(false);
 

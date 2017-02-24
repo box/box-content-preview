@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
-import ImageAnnotator from '../../image/image-annotator';
-import ImagePointThread from '../../image/image-point-thread';
+import ImageAnnotator from '../image-annotator';
+import ImagePointThread from '../image-point-thread';
 import * as annotatorUtil from '../../annotator-util';
-import * as imageAnnotatorUtil from '../../image/image-annotator-util';
+import * as imageAnnotatorUtil from '../image-annotator-util';
 
 let annotator;
 const sandbox = sinon.sandbox.create();
@@ -13,7 +13,7 @@ describe('image-annotator', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/__tests__/image/image-annotator-test.html');
+        fixture.load('annotations/image/__tests__/image-annotator-test.html');
 
         annotator = new ImageAnnotator({
             annotatedElement: document.querySelector('.annotated-element'),
