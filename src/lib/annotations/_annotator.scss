@@ -57,7 +57,8 @@ $avatar-color-9: #f22c44;
     }
 }
 
-.bp-annotation-highlight-dialog .bp-btn-plain {
+.bp-annotation-highlight-dialog .bp-btn-plain,
+.bp-annotation-highlight-dialog .bp-btn-plain:hover {
     padding-left: 5px;
     padding-right: 5px;
 
