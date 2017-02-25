@@ -77,7 +77,7 @@ class Dash extends VideoBase {
         Promise.all([this.loadAssets(this.getJSAssets()), this.getRepStatus().getPromise()]).then(() => {
             this.loadDashPlayer();
             this.resetLoadTimeout();
-        });
+        }).catch(this.handleAssetError);
     }
 
     /**
