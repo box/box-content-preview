@@ -844,6 +844,11 @@ class Preview extends EventEmitter {
             this.finishProgressBar();
         }
 
+        // Programmtically focus on the viewer after it loads
+        if (this.viewer && this.viewer.containerEl) {
+            this.viewer.containerEl.focus();
+        }
+
         // Hide the loading indicator
         hideLoadingIndicator();
 
@@ -1027,7 +1032,10 @@ class Preview extends EventEmitter {
                     this.prefetchedCollection.push(file.id);
 
                     // Prefetch assets and content for file
-                    this.prefetch(file.id, token);
+                    this.prefetch({
+                        fileID: file.id,
+                        token
+                    });
                 })
                 .catch((err) => {
                     /* eslint-disable no-console */

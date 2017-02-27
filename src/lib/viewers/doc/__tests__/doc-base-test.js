@@ -5,6 +5,7 @@ import Base from '../../base';
 import cache from '../../../cache';
 import Controls from '../../../controls';
 import fullscreen from '../../../fullscreen';
+import * as file from '../../../file';
 import * as util from '../../../util';
 
 import {
@@ -143,6 +144,42 @@ describe('doc-base', () => {
             sandbox.stub(docBase, 'prefetchAssets');
             docBase.prefetch({ assets: true, preload: false, content: false });
             expect(docBase.prefetchAssets).to.be.called;
+        });
+
+        it('should prefetch preload if preload is true and representation is ready', () => {
+            const template = 'someTemplate';
+            const preloadRep = {
+                content: {
+                    url_template: template
+                },
+                status: {
+                    state: 'success'
+                }
+            };
+            sandbox.stub(file, 'getRepresentation').returns(preloadRep);
+            sandbox.stub(docBase, 'createContentUrlWithAuthParams');
+
+            docBase.prefetch({ assets: false, preload: true, content: false });
+
+            expect(docBase.createContentUrlWithAuthParams).to.be.calledWith(template);
+        });
+
+        it('should not prefetch preload if preload is true and representation is not ready', () => {
+            const template = 'someTemplate';
+            const preloadRep = {
+                content: {
+                    url_template: template
+                },
+                status: {
+                    state: 'pending'
+                }
+            };
+            sandbox.stub(file, 'getRepresentation').returns(preloadRep);
+            sandbox.stub(docBase, 'createContentUrlWithAuthParams');
+
+            docBase.prefetch({ assets: false, preload: true, content: false });
+
+            expect(docBase.createContentUrlWithAuthParams).to.not.be.calledWith(template);
         });
 
         it('should prefetch content if content is true and representation is ready', () => {

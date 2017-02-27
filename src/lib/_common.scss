@@ -194,6 +194,10 @@ $header-height: 48px;
         left: 0;
         position: absolute;
         top: 0;
+
+        .bp-theme-dark & {
+            background-color: $sunset-grey;
+        }
     }
 
     .bp-preload-content {

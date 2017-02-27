@@ -126,8 +126,10 @@ class DocBase extends Base {
 
         if (preload) {
             const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
-            const { url_template: template } = preloadRep.content;
-            document.createElement('img').src = this.createContentUrlWithAuthParams(template);
+            if (preloadRep && this.isRepresentationReady(preloadRep)) {
+                const { url_template: template } = preloadRep.content;
+                document.createElement('img').src = this.createContentUrlWithAuthParams(template);
+            }
         }
 
         if (content && this.isRepresentationReady(representation)) {

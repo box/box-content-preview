@@ -1322,11 +1322,6 @@ describe('Preview', () => {
             expect(stubs.showAnnotateButton).to.be.called;
         });
 
-        it('should hide the loading indicator', () => {
-            preview.finishLoading();
-            expect(stubs.hideLoadingIndicator).to.be.called;
-        });
-
         it('should increment the preview count', () => {
             preview.count.success = 0;
 
@@ -1363,11 +1358,6 @@ describe('Preview', () => {
             expect(callPhantomSpy).to.be.called;
         });
 
-        it('should prefetch next content', () => {
-            preview.finishLoading();
-            expect(stubs.prefetchNextFiles).to.be.called;
-        });
-
         it('should postload if skipPostload is not true', () => {
             preview.finishLoading();
             expect(stubs.finishProgressBar).to.be.called;
@@ -1378,6 +1368,24 @@ describe('Preview', () => {
                 endProgress: false
             });
             expect(stubs.finishProgressBar).to.not.be.called;
+        });
+
+        it('should focus the viewer container', () => {
+            preview.viewer.containerEl = {
+                focus: () => {}
+            };
+            sandbox.mock(preview.viewer.containerEl).expects('focus');
+            preview.finishLoading();
+        });
+
+        it('should hide the loading indicator', () => {
+            preview.finishLoading();
+            expect(stubs.hideLoadingIndicator).to.be.called;
+        });
+
+        it('should prefetch next files', () => {
+            preview.finishLoading();
+            expect(stubs.prefetchNextFiles).to.be.called;
         });
     });
 
@@ -1658,24 +1666,6 @@ describe('Preview', () => {
                 });
             });
         });
-    });
-
-    describe('prefetchContent()', () => {
-        // beforeEach(() => {
-        //     stubs.prefetch = sandbox.stub();
-        //     stubs.getLoader = sandbox.stub(preview, 'getLoader').returns({
-        //         prefetch: stubs.prefetch
-        //     });
-        // });
-
-        // it('should call the loader\'s prefetch', () => {
-        //     preview.options.sharedLink = 'sharedLink';
-        //     preview.options.sharedLinkPassword = 'pass';
-
-        //     preview.prefetchContent('file', 'token');
-        //     expect(stubs.getLoader).to.be.calledWith('file');
-        //     expect(stubs.prefetch).to.be.calledWith('file', 'token');
-        // });
     });
 
     describe('startProgressBar()', () => {
