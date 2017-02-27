@@ -207,6 +207,14 @@ $header-height: 48px;
     }
 }
 
+.bp-popup-modal {
+    left: 0;
+    margin: 0 auto;
+    position: absolute;
+    right: 0;
+    top: 100px;
+}
+
 //---------- Override popup related CSS from _boxui.scss ----------//
 .bp-modal-dialog {
     padding: 20px;
