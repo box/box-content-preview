@@ -1,5 +1,15 @@
 # Change Log
 
+## [v0.105.0](https://git.dev.box.net/Preview/Preview/tree/v0.105.0) (2017-02-27)
+[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.104.0...v0.105.0)
+
+**Merged pull requests:**
+
+- Fix prefetching & focus [\#1008](https://git.dev.box.net/Preview/Preview/pull/1008) ([tjin](https://git.dev.box.net/tjin))
+- Add missing handleAssetError handler to dash viewer [\#1006](https://git.dev.box.net/Preview/Preview/pull/1006) ([tjin](https://git.dev.box.net/tjin))
+- updating changelog and readme to v0.104.0 [\#1005](https://git.dev.box.net/Preview/Preview/pull/1005) ([jpress](https://git.dev.box.net/jpress))
+- Update LICENSE and package.json and add THIRD\_PARTY\_LICENSES [\#1000](https://git.dev.box.net/Preview/Preview/pull/1000) ([tjin](https://git.dev.box.net/tjin))
+
 ## [v0.104.0](https://git.dev.box.net/Preview/Preview/tree/v0.104.0) (2017-02-24)
 [Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.103.0...v0.104.0)
 
