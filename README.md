@@ -34,8 +34,8 @@ Usage
     <script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.min.js"></script>
 
     <!-- Latest version of Preview SDK for your locale -->
-    <script src="https://cdn01.boxcdn.net/platform/preview/0.105.0/en-US/preview.css"></script>
-    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/0.105.0/en-US/preview.js" />
+    <script src="https://cdn01.boxcdn.net/platform/preview/0.105.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/0.105.0/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
