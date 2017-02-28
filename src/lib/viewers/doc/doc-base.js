@@ -742,7 +742,7 @@ class DocBase extends Base {
     }
 
     /**
-     * Handles logic for priting the PDF representation in browser.
+     * Handles logic for printing the PDF representation in browser.
      *
      * @return {void}
      * @private
