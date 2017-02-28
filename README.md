@@ -61,7 +61,7 @@ Setup
 2. Fork the upstream repo `https://git.dev.box.net/Preview/Preview` under your LDAP account.
 3. Then clone your fork `git clone git@git.dev.box.net:YOURLDAP/Preview.git`. This will be your origin.
 4. `cd Preview`
-5. Add the upstream repo via `git remote add upstream git@git.dev.box.net/Preview/Preview.git`.
+5. Add the upstream repo via `git remote add upstream git@git.dev.box.net:Preview/Preview.git`.
 6. Verify repos via `git remote -v`. You will always pull from `upstream` and push to `origin`.
 7. `npm install`
 8. `npm run build`
@@ -85,16 +85,15 @@ Install the following plugins in your preferred editor
 
 * babel (then set JS files to use babel)
 * editorconfig
-* sublime linter
-* sublime linter contrib eslint
-* sublime linter contrib scss
+* sublime/atom: sublime linter, sublime linter contrib eslint, sublime linter contrib scss
+* vscode: eslint, sytlelint
 
 ### NPM commands
 
 * `npm run build` to generate resource bundles and JS webpack bundles.
 * `npm run watch` to only generate JS webpack bundles on file changes.
 * `npm run test` launches karma tests with PhantomJS.
-* `npm run test -- --src=path/to/src/FILENAME` launches test only for `src/lib/path/to/src/__tests__/FILENAME-test.js` instead of all tests.
+* `npm run test -- --src=PATH/TO/SRC/FILENAME` launches test only for `src/lib/PATH/TO/SRC/__tests__/FILENAME-test.js` instead of all tests. For example, `npm run test -- --src=viewers/media/media-base` launches tests for `src/lib/viewers/media/__tests__/media-base-test.js`
 * `npm run debug` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
 * `npm run debug -- --src=path/to/src/FILENAME` launches debugging for `src/lib/path/to/src/__tests__/FILENAME-test.js` instead of all tests. Open the URL mentioned in the console.
 
