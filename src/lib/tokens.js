@@ -57,7 +57,7 @@ export default function getTokens(id, token) {
                     // Iterate over all the requested file ids
                     // and make sure we got them back otherwise
                     // throw and error about missing tokens
-                    if (!ids.every((fileID) => !!tokens[fileID])) {
+                    if (!ids.every((fileId) => !!tokens[fileId])) {
                         reject(error);
                     }
                     resolve(tokens);

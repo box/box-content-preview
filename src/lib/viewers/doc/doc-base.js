@@ -663,7 +663,7 @@ class DocBase extends Base {
         const canAnnotate = !!this.options.file.permissions.can_annotate && !Browser.isMobile();
         const annotationService = new AnnotationService({
             api: this.options.api,
-            fileID: this.options.file.id,
+            fileId: this.options.file.id,
             token: this.options.token,
             canAnnotate
         });

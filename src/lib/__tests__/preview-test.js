@@ -336,7 +336,7 @@ describe('Preview', () => {
     });
 
     describe('prefetch()', () => {
-        let fileID;
+        let fileId;
         let token;
         let sharedLink;
         let sharedLinkPassword;
@@ -345,7 +345,7 @@ describe('Preview', () => {
         let someFile;
 
         beforeEach(() => {
-            fileID = '0';
+            fileId = '0';
             token = 'someToken';
             sharedLink = 'someSharedLink';
             sharedLinkPassword = 'someSharedLinkPassword';
@@ -358,7 +358,7 @@ describe('Preview', () => {
                 CONSTRUCTOR: () => {}
             };
 
-            sandbox.stub(cache, 'get').withArgs(fileID).returns(someFile);
+            sandbox.stub(cache, 'get').withArgs(fileId).returns(someFile);
             sandbox.stub(preview, 'getLoader').withArgs(someFile).returns(loader);
         });
 
@@ -366,25 +366,25 @@ describe('Preview', () => {
             sandbox.stub(loader, 'determineViewer').returns(null);
             sandbox.mock(loader).expects('determineRepresentation').never();
             sandbox.mock(viewer).expects('CONSTRUCTOR').never();
-            preview.prefetch({ fileID, token, sharedLink, sharedLinkPassword });
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
         it('should get the appropriate viewer', () => {
             sandbox.mock(loader).expects('determineViewer').withArgs(someFile).returns(viewer);
-            preview.prefetch({ fileID, token, sharedLink, sharedLinkPassword });
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
         it('should determine representation', () => {
             sandbox.stub(loader, 'determineViewer').returns(viewer);
             sandbox.mock(loader).expects('determineRepresentation').withArgs(someFile, viewer);
-            preview.prefetch({ fileID, token, sharedLink, sharedLinkPassword });
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
         it('should set sharedLink and sharedLinkPassword when preload is true', () => {
             sandbox.stub(loader, 'determineViewer').returns(viewer);
             sandbox.stub(preview, 'createViewerOptions');
 
-            preview.prefetch({ fileID, token, sharedLink, sharedLinkPassword, preload: true });
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: true });
 
             expect(preview.createViewerOptions).to.be.calledWith({
                 viewer,
@@ -410,7 +410,7 @@ describe('Preview', () => {
             };
             sandbox.stub(loader, 'determineViewer').returns(viewer);
 
-            preview.prefetch({ fileID, token, sharedLink, sharedLinkPassword, preload: false });
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: false });
         });
 
         it('should prefetch assets and preload, but not content if viewer defines a prefetch function and preload is true', () => {
@@ -427,7 +427,7 @@ describe('Preview', () => {
             };
             sandbox.stub(loader, 'determineViewer').returns(viewer);
 
-            preview.prefetch({ fileID, token, sharedLink, sharedLinkPassword, preload: true });
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: true });
         });
     });
 

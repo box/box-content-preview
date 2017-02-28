@@ -302,8 +302,7 @@ class Base extends EventEmitter {
             event,
             data,
             viewerName: viewer ? viewer.NAME : '',
-            fileId: file.id, // @NOTE(tjin): Investigate if we can remove this
-            fileID: file.id
+            fileId: file.id
         });
     }
 

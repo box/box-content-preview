@@ -283,7 +283,7 @@ describe('base', () => {
         });
 
         it('should pass through the event as well as broadcast it as a viewer event', () => {
-            const fileID = '1';
+            const fileId = '1';
             const event = 'someEvent';
             const data = {};
             const viewerName = 'name';
@@ -291,7 +291,7 @@ describe('base', () => {
             base = new Base({
                 viewer: { NAME: viewerName },
                 file: {
-                    id: fileID
+                    id: fileId
                 },
                 container: containerEl
             });
@@ -306,8 +306,7 @@ describe('base', () => {
                 event,
                 data,
                 viewerName,
-                fileId: fileID,
-                fileID
+                fileId
             });
         });
     });

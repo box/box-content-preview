@@ -347,7 +347,7 @@ class Preview extends EventEmitter {
      * when the actual view happens.
      *
      * @param {Object} options - Prefetch options
-     * @param {string} options.fileID - Box File ID
+     * @param {string} options.fileId - Box File ID
      * @param {string} options.token - Access token
      * @param {string} options.sharedLink - Shared link
      * @param {string} options.sharedLinkPassword - Shared link password
@@ -356,13 +356,13 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     prefetch({
-        fileID,
+        fileId,
         token,
         sharedLink = '',
         sharedLinkPassword = '',
         preload = false
     }) {
-        const file = cache.get(fileID);
+        const file = cache.get(fileId);
         const loader = file ? this.getLoader(file) : null;
         const viewer = loader ? loader.determineViewer(file) : null;
         if (!viewer) {
@@ -422,9 +422,9 @@ class Preview extends EventEmitter {
     /**
      * DELETE ME AFTER WEBAPP UPDATE
      */
-    prefetchPreload(fileID, token, sharedLink) {
+    prefetchPreload(fileId, token, sharedLink) {
         this.prefetch({
-            fileID,
+            fileId,
             token,
             sharedLink,
             preload: true
@@ -861,12 +861,12 @@ class Preview extends EventEmitter {
      * preview happened for access stats, unlike the Logger, which logs preview
      * errors and performance metrics.
      *
-     * @param {string} fileID - File ID to log preview event for
+     * @param {string} fileId - File ID to log preview event for
      * @param {Object} options - File options, e.g. token, shared link
      * @return {void}
      * @private
      */
-    logPreviewEvent(fileID, options) {
+    logPreviewEvent(fileId, options) {
         this.logRetryCount = this.logRetryCount || 0;
 
         const { api, token, sharedLink, sharedLinkPassword } = options;
@@ -876,7 +876,7 @@ class Preview extends EventEmitter {
             event_type: 'preview',
             source: {
                 type: 'file',
-                id: fileID
+                id: fileId
             }
         })
         .then(() => {
@@ -893,7 +893,7 @@ class Preview extends EventEmitter {
 
             clearTimeout(this.logRetryTimeout);
             this.logRetryTimeout = setTimeout(() => {
-                this.logPreviewEvent(fileID, options);
+                this.logPreviewEvent(fileId, options);
             }, LOG_RETRY_TIMEOUT * this.logRetryCount);
         });
     }
@@ -1011,7 +1011,7 @@ class Preview extends EventEmitter {
         // Prefetch the next PREFETCH_COUNT files excluding ones we've already prefetched
         const currentIndex = this.collection.indexOf(this.file.id);
         const filesToPrefetch = this.collection.slice(currentIndex + 1, currentIndex + PREFETCH_COUNT + 1)
-            .filter((fileID) => this.prefetchedCollection.indexOf(fileID) === -1);
+            .filter((fileId) => this.prefetchedCollection.indexOf(fileId) === -1);
 
         // Check if we need to prefetch anything
         if (filesToPrefetch.length === 0) {
@@ -1033,7 +1033,7 @@ class Preview extends EventEmitter {
 
                     // Prefetch assets and content for file
                     this.prefetch({
-                        fileID: file.id,
+                        fileId: file.id,
                         token
                     });
                 })

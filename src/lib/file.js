@@ -162,7 +162,7 @@ export function addPreloadRepresentation(file) {
  * Wrapper for caching a file object. Adds the faked 'ORIGINAL' representation
  * when appropraite before caching.
  *
- * @param {Object} file - Box file or simple { id: fileID } object
+ * @param {Object} file - Box file or simple { id: fileId } object
  * @return {void}
  */
 export function cacheFile(file) {
