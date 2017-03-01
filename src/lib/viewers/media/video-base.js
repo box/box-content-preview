@@ -111,6 +111,13 @@ class VideoBase extends MediaBase {
     }
 
     /**
+     * @inheritdoc
+     */
+    showLoadingIcon() {
+        super.showLoadingIcon();
+    }
+
+    /**
      * Adds event listeners to the media element.
      * Makes changes to the meida controls.
      *

@@ -171,7 +171,7 @@ class Dash extends VideoBase {
     /**
      * Shows the loading indicator
      *
-     * @private
+     * @override
      * @param {number} id - rep id
      * @return {void}
      */

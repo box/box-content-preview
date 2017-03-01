@@ -383,7 +383,7 @@ class MediaBase extends Base {
     /**
      * Shows the loading indicator
      *
-     * @private
+     * @protected
      * @return {void}
      */
     showLoadingIcon() {
