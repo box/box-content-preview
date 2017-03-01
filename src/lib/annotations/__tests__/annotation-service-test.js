@@ -14,7 +14,7 @@ describe('annotation-service', () => {
         sandbox = sinon.sandbox.create();
         annotationService = new AnnotationService({
             api: API,
-            fileID: 1,
+            fileId: 1,
             token: 'someToken',
             canAnnotate: true
         });
@@ -451,9 +451,9 @@ describe('annotation-service', () => {
     describe('_getReadUrl()', () => {
         it('should return the original url if no limit or marker exists', () => {
             annotationService._api = 'box';
-            annotationService._fileID = 1;
+            annotationService._fileId = 1;
             const fileVersionID = 2;
-            const url = `${annotationService._api}/2.0/files/${annotationService._fileID}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
+            const url = `${annotationService._api}/2.0/files/${annotationService._fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
 
             const result = annotationService._getReadUrl(fileVersionID);
             expect(result).to.equal(url);
@@ -461,11 +461,11 @@ describe('annotation-service', () => {
 
         it('should add a marker and limit if provided', () => {
             annotationService._api = 'box';
-            annotationService._fileID = 1;
+            annotationService._fileId = 1;
             const fileVersionID = 2;
             const marker = 'next_annotation';
             const limit = 1;
-            const url = `${annotationService._api}/2.0/files/${annotationService._fileID}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions&marker=${marker}&limit=${limit}`;
+            const url = `${annotationService._api}/2.0/files/${annotationService._fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions&marker=${marker}&limit=${limit}`;
 
             const result = annotationService._getReadUrl(fileVersionID, marker, limit);
             expect(result).to.equal(url);

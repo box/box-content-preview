@@ -295,3 +295,12 @@ export function repositionCaret(dialogEl, dialogX, highlightDialogWidth, browser
     annotationCaretEl.style.left = '50%';
     return dialogX;
 }
+
+
+/**
+ * Checks thread is in a pending or pending-active state
+ * @return {boolean} Whether annotation thread is in a pending state
+ */
+export function isPending(threadState) {
+    return (constants.PENDING_STATES.indexOf(threadState) > -1);
+}

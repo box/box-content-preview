@@ -1,14 +1,16 @@
 /* eslint-disable no-unused-expressions */
 import DocHighlightDialog from '../doc-highlight-dialog';
+import Annotation from '../../annotation';
+import AnnotationDialog from '../../annotation-dialog';
 import * as annotatorUtil from '../../annotator-util';
 import * as docAnnotatorUtil from '../doc-annotator-util';
 import { CLASS_HIDDEN } from '../../../constants';
 import * as constants from '../../annotation-constants';
 
-let highlightDialog;
+let dialog;
 const sandbox = sinon.sandbox.create();
+let stubs = {};
 
-const CLASS_HIGHLIGHT_DIALOG = 'bp-highlight-dialog';
 const PAGE_PADDING_TOP = 15;
 
 describe('doc-highlight-dialog', () => {
@@ -19,7 +21,7 @@ describe('doc-highlight-dialog', () => {
     beforeEach(() => {
         fixture.load('annotations/doc/__tests__/doc-highlight-dialog-test.html');
 
-        highlightDialog = new DocHighlightDialog({
+        dialog = new DocHighlightDialog({
             annotatedElement: document.querySelector('.annotated-element'),
             location: {
                 page: 1
@@ -27,158 +29,159 @@ describe('doc-highlight-dialog', () => {
             annotations: [],
             canAnnotate: true
         });
-        highlightDialog.setup([]);
-        document.querySelector('.annotated-element').appendChild(highlightDialog._element);
+        dialog.setup([]);
+        document.querySelector('.annotated-element').appendChild(dialog._element);
+
+        stubs.emit = sandbox.stub(dialog, 'emit');
     });
 
     afterEach(() => {
+        const dialogEl = document.querySelector('.annotated-element');
+        dialogEl.parentNode.removeChild(dialogEl);
         sandbox.verifyAndRestore();
+        if (typeof dialog.destroy === 'function') {
+            dialog.destroy();
+            dialog = null;
+        }
 
-        highlightDialog = null;
+        stubs = {};
     });
 
     describe('addAnnotation()', () => {
+        beforeEach(() => {
+            stubs.addFunc = AnnotationDialog.prototype.addAnnotation;
+            Object.defineProperty(AnnotationDialog.prototype, 'addAnnotation', { value: sandbox.mock() });
+            sandbox.stub(dialog, 'position');
+        });
+
+        afterEach(() => {
+            Object.defineProperty(AnnotationDialog.prototype, 'addAnnotation', { value: stubs.addFunc });
+        });
+
         it('should add a highlight comment annotation', () => {
-            sandbox.stub(highlightDialog, 'position');
-
-            highlightDialog.addAnnotation({});
-
-            expect(highlightDialog._hasAnnotations).to.be.true;
+            dialog.addAnnotation(new Annotation({
+                text: 'blargh',
+                user: { id: 1, name: 'Bob' }
+            }));
+            expect(dialog.position).to.not.be.called;
         });
 
         it('should add a plain highlight annotation', () => {
-            sandbox.stub(highlightDialog, 'position');
-
-            highlightDialog.addAnnotation({
+            dialog.addAnnotation(new Annotation({
                 text: '',
-                user: {
-                    name: 'Bob'
-                }
-            });
+                user: { id: 1, name: 'Bob' }
+            }));
 
-            const highlightLabelEl = highlightDialog._element.querySelector('.bp-annotation-highlight-label');
-            expect(highlightLabelEl.innerHTML).to.equal('Bob highlighted');
-            expect(highlightDialog._hasAnnotations).to.be.true;
+            const highlightLabelEl = dialog._element.querySelector('.bp-annotation-highlight-label');
+            expect(highlightLabelEl).to.contain.html('Bob highlighted');
+            expect(dialog.position).to.be.called;
         });
     });
 
     describe('position()', () => {
+        beforeEach(() => {
+            stubs.scaled = sandbox.stub(dialog, 'getScaledPDFCoordinates').returns([150, 2]);
+            stubs.width = sandbox.stub(dialog, 'getDialogWidth');
+            stubs.caret = sandbox.stub(annotatorUtil, 'repositionCaret');
+            stubs.show = sandbox.stub(annotatorUtil, 'showElement');
+            stubs.fit = sandbox.stub(docAnnotatorUtil, 'fitDialogHeightInPage');
+        });
+
         it('should position the plain highlight dialog at the right place and show it', () => {
-            highlightDialog._hasComments = false;
+            dialog._hasComments = false;
+            stubs.width.returns(100);
+            stubs.caret.returns(10);
 
-            sandbox.stub(highlightDialog, '_getScaledPDFCoordinates').returns([150, 2]);
-            sandbox.stub(highlightDialog, '_getDialogWidth').returns(100);
-            sandbox.stub(annotatorUtil, 'repositionCaret').returns(10);
-            sandbox.stub(annotatorUtil, 'showElement');
-            sandbox.stub(docAnnotatorUtil, 'fitDialogHeightInPage');
+            dialog.position();
 
-            highlightDialog.position();
-
-            expect(highlightDialog._getScaledPDFCoordinates).to.have.been.called;
-            expect(highlightDialog._getDialogWidth).to.have.been.called;
-            expect(annotatorUtil.repositionCaret).to.have.been.called;
-            expect(annotatorUtil.showElement).to.have.been.called;
-            expect(highlightDialog._element.style.left).to.equal('10px');
+            expect(stubs.scaled).to.have.been.called;
+            expect(stubs.width).to.have.been.called;
+            expect(stubs.caret).to.have.been.called;
+            expect(stubs.show).to.have.been.called;
+            expect(dialog._element.style.left).to.equal('10px');
         });
 
         it('should position the highlight comments dialog at the right place and show it', () => {
-            highlightDialog._hasComments = true;
+            dialog._hasComments = true;
+            stubs.caret.returns(10);
 
-            sandbox.stub(highlightDialog, '_getScaledPDFCoordinates').returns([150, 2]);
-            sandbox.stub(highlightDialog, '_getDialogWidth');
-            sandbox.stub(annotatorUtil, 'repositionCaret').returns(10);
-            sandbox.stub(annotatorUtil, 'showElement');
-            sandbox.stub(docAnnotatorUtil, 'fitDialogHeightInPage');
+            dialog.position();
 
-            highlightDialog.position();
-
-            expect(highlightDialog._getScaledPDFCoordinates).to.have.been.called;
-            expect(highlightDialog._getDialogWidth).to.have.been.called;
-            expect(annotatorUtil.repositionCaret).to.have.been.called;
-            expect(annotatorUtil.showElement).to.have.been.called;
-            expect(highlightDialog._element.style.left).to.equal('10px');
+            expect(stubs.scaled).to.have.been.called;
+            expect(stubs.width).to.have.been.called;
+            expect(stubs.caret).to.have.been.called;
+            expect(stubs.show).to.have.been.called;
+            expect(dialog._element.style.left).to.equal('10px');
         });
 
         it('should adjust the dialog if the mouse location is above the page', () => {
-            highlightDialog._hasComments = false;
+            dialog._hasComments = false;
+            stubs.scaled.returns([150, -1]);
 
-            sandbox.stub(highlightDialog, '_getScaledPDFCoordinates').returns([150, -1]);
-            sandbox.stub(highlightDialog, '_getDialogWidth');
-            sandbox.stub(annotatorUtil, 'repositionCaret');
-            sandbox.stub(annotatorUtil, 'showElement');
-            sandbox.stub(docAnnotatorUtil, 'fitDialogHeightInPage');
+            dialog.position();
 
-            highlightDialog.position();
-
-            expect(highlightDialog._getScaledPDFCoordinates).to.have.been.called;
-            expect(highlightDialog._element.style.top).to.equal(`${PAGE_PADDING_TOP}px`);
+            expect(stubs.scaled).to.have.been.called;
+            expect(dialog._element.style.top).to.equal(`${PAGE_PADDING_TOP}px`);
         });
 
         it('should adjust the dialog if the dialog will run below the page', () => {
-            highlightDialog._hasComments = false;
+            dialog._hasComments = false;
 
-            sandbox.stub(highlightDialog, '_getScaledPDFCoordinates').returns([150, 2]);
-            sandbox.stub(highlightDialog, '_getDialogWidth');
-            sandbox.stub(annotatorUtil, 'repositionCaret');
-            sandbox.stub(annotatorUtil, 'showElement');
-            sandbox.stub(docAnnotatorUtil, 'fitDialogHeightInPage');
+            dialog.position();
 
-            highlightDialog.position();
-
-            expect(highlightDialog._getScaledPDFCoordinates).to.have.been.called;
-
-            expect(highlightDialog._element.style.top).to.equal(`${PAGE_PADDING_TOP}px`);
+            expect(stubs.scaled).to.have.been.called;
+            expect(dialog._element.style.top).to.equal(`${PAGE_PADDING_TOP}px`);
         });
     });
 
     describe('toggleHighlightDialogs()', () => {
         it('should display comments dialog on toggle when comments dialog is currently hidden', () => {
-            const commentsDialogEl = highlightDialog._element.querySelector('.annotation-container');
+            const commentsDialogEl = dialog._element.querySelector('.annotation-container');
             commentsDialogEl.classList.add(CLASS_HIDDEN);
 
             sandbox.stub(annotatorUtil, 'hideElement');
-            sandbox.stub(highlightDialog, 'position');
+            sandbox.stub(dialog, 'position');
 
-            highlightDialog.toggleHighlightDialogs();
+            dialog.toggleHighlightDialogs();
 
-            expect(highlightDialog._element.classList.contains(constants.CLASS_ANNOTATION_DIALOG)).to.be.true;
-            expect(highlightDialog.position).to.have.been.called;
+            expect(dialog._element).to.have.class(constants.CLASS_ANNOTATION_DIALOG);
+            expect(dialog.position).to.have.been.called;
         });
 
         it('should display highlight buttons dialog on toggle when comments dialog is currently shown', () => {
-            const commentsDialogEl = highlightDialog._element.querySelector('.annotation-container');
+            const commentsDialogEl = dialog._element.querySelector('.annotation-container');
             commentsDialogEl.classList.remove(CLASS_HIDDEN);
 
             sandbox.stub(annotatorUtil, 'hideElement');
-            sandbox.stub(highlightDialog, 'position');
+            sandbox.stub(dialog, 'position');
 
-            highlightDialog.toggleHighlightDialogs();
+            dialog.toggleHighlightDialogs();
 
-            expect(highlightDialog._element.classList.contains(CLASS_HIGHLIGHT_DIALOG)).to.be.true;
-            expect(highlightDialog.position).to.have.been.called;
+            expect(dialog._element).to.not.have.class(constants.CLASS_ANNOTATION_DIALOG);
+            expect(dialog.position).to.have.been.called;
         });
     });
 
     describe('toggleHighlightCommentsReply()', () => {
         it('should display "Reply" text area in dialog when multiple comments exist', () => {
-            const replyTextEl = highlightDialog._element.querySelector("[data-section='create']");
-            const commentTextEl = highlightDialog._element.querySelector("[data-section='show']");
+            const replyTextEl = dialog._element.querySelector("[data-section='create']");
+            const commentTextEl = dialog._element.querySelector("[data-section='show']");
 
-            sandbox.stub(highlightDialog, 'position');
+            sandbox.stub(dialog, 'position');
 
-            highlightDialog.toggleHighlightCommentsReply(true);
+            dialog.toggleHighlightCommentsReply(true);
 
-            expect(commentTextEl.classList.contains(CLASS_HIDDEN)).to.be.false;
-            expect(replyTextEl.classList.contains(CLASS_HIDDEN)).to.be.true;
+            expect(commentTextEl).to.not.have.class(CLASS_HIDDEN);
+            expect(replyTextEl).to.have.class(CLASS_HIDDEN);
         });
 
         it('should display "Add a comment here" text area in dialog when no comments exist', () => {
-            const replyTextEl = highlightDialog._element.querySelector("[data-section='create']");
-            const commentTextEl = highlightDialog._element.querySelector("[data-section='show']");
+            const replyTextEl = dialog._element.querySelector("[data-section='create']");
+            const commentTextEl = dialog._element.querySelector("[data-section='show']");
 
-            sandbox.stub(highlightDialog, 'position');
+            sandbox.stub(dialog, 'position');
 
-            highlightDialog.toggleHighlightCommentsReply(false);
+            dialog.toggleHighlightCommentsReply(false);
 
             expect(commentTextEl.classList.contains(CLASS_HIDDEN)).to.be.true;
             expect(replyTextEl.classList.contains(CLASS_HIDDEN)).to.be.false;
@@ -187,102 +190,102 @@ describe('doc-highlight-dialog', () => {
 
     describe('toggleHighlightIcon()', () => {
         it('should display active highlight icon when highlight is active', () => {
-            const addHighlightBtn = highlightDialog._element.querySelector('.bp-add-highlight-btn');
-
-            highlightDialog.toggleHighlightIcon(constants.HIGHLIGHT_ACTIVE_FILL_STYLE);
-
-            expect(addHighlightBtn.classList.contains('highlight-active')).to.be.true;
+            const addHighlightBtn = dialog._element.querySelector('.bp-add-highlight-btn');
+            dialog.toggleHighlightIcon(constants.HIGHLIGHT_ACTIVE_FILL_STYLE);
+            expect(addHighlightBtn).to.have.class('highlight-active');
         });
 
         it('should display normal \'text highlighted\' highlight icon when highlight is not active', () => {
-            const addHighlightBtn = highlightDialog._element.querySelector('.bp-add-highlight-btn');
-
-            highlightDialog.toggleHighlightIcon(constants.HIGHLIGHT_NORMAL_FILL_STYLE);
-
-            expect(addHighlightBtn.classList.contains('highlight-active')).to.be.false;
+            const addHighlightBtn = dialog._element.querySelector('.bp-add-highlight-btn');
+            dialog.toggleHighlightIcon(constants.HIGHLIGHT_NORMAL_FILL_STYLE);
+            expect(addHighlightBtn).to.not.have.class('highlight-active');
         });
     });
 
-    describe('_toggleHighlight()', () => {
+    describe('toggleHighlight()', () => {
         it('should delete a blank annotation if text is highlighted', () => {
-            const emitStub = sandbox.stub(highlightDialog, 'emit');
-            highlightDialog._element.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
-
-            highlightDialog._toggleHighlight();
-            expect(highlightDialog._hasComments).to.be.true;
-            expect(emitStub).to.be.calledWith('annotationdelete');
+            dialog._element.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            dialog.toggleHighlight();
+            expect(dialog._hasComments).to.be.true;
+            expect(stubs.emit).to.be.calledWith('annotationdelete');
         });
 
         it('should create a blank annotation if text is not highlighted', () => {
-            const emitStub = sandbox.stub(highlightDialog, 'emit');
-            highlightDialog._element.classList.remove(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            dialog._element.classList.remove(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
 
-            highlightDialog._toggleHighlight();
-            expect(highlightDialog._element.classList.contains(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED)).to.be.true;
-            expect(highlightDialog._hasComments).to.be.false;
-            expect(emitStub).to.be.calledWith('annotationcreate');
+            dialog.toggleHighlight();
+            expect(dialog._element).to.have.class(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            expect(dialog._hasComments).to.be.false;
+            expect(stubs.emit).to.be.calledWith('annotationcreate');
         });
     });
 
-    describe('_focusAnnotationsTextArea()', () => {
-        it('should focus the add comment area if it exists', () => {
-            const textarea = {
-                focus: sandbox.stub()
+    describe('focusAnnotationsTextArea()', () => {
+        beforeEach(() => {
+            stubs.textarea = {
+                focus: () => {}
             };
-            const querySelectorStub = sandbox.stub(highlightDialog._element, 'querySelector').returns(textarea);
-            const isInViewportStub = sandbox.stub(annotatorUtil, 'isElementInViewport').returns(true);
+            stubs.textMock = sandbox.mock(stubs.textarea);
+            sandbox.stub(dialog._element, 'querySelector').returns(stubs.textarea);
+        });
 
-            highlightDialog._focusAnnotationsTextArea();
-            expect(querySelectorStub).to.be.called;
-            expect(isInViewportStub).to.be.called;
-            expect(textarea.focus).to.be.called;
+        it('should focus the add comment area if it exists', () => {
+            stubs.textMock.expects('focus');
+            sandbox.stub(annotatorUtil, 'isElementInViewport').returns(true);
+            dialog.focusAnnotationsTextArea();
         });
 
         it('should do nothing if the add comment area does not exist', () => {
-            const textarea = {
-                focus: sandbox.stub()
-            };
-            const querySelectorStub = sandbox.stub(highlightDialog._element, 'querySelector').returns(textarea);
-            const isInViewportStub = sandbox.stub(annotatorUtil, 'isElementInViewport').returns(false);
-
-            highlightDialog._focusAnnotationsTextArea();
-            expect(querySelectorStub).to.be.called;
-            expect(isInViewportStub).to.be.called;
-            expect(textarea.focus).to.not.be.called;
+            stubs.textMock.expects('focus').never();
+            sandbox.stub(annotatorUtil, 'isElementInViewport').returns(false);
+            dialog.focusAnnotationsTextArea();
         });
     });
 
-    describe('_getDialogWidth', () => {
+    describe('getDialogWidth', () => {
         it('should calculate dialog width once annotator\'s user name has been populated', () => {
-            const highlightLabelEl = highlightDialog._element.querySelector('.bp-annotation-highlight-label');
+            const highlightLabelEl = dialog._element.querySelector('.bp-annotation-highlight-label');
             highlightLabelEl.innerHTML = 'Bob highlighted';
-            highlightDialog._element.style.width = '100px';
+            dialog._element.style.width = '100px';
 
-            const width = highlightDialog._getDialogWidth();
-
+            const width = dialog.getDialogWidth();
             expect(width).to.equal(100);
         });
 
         it('should return previously set dialog width if already calculated', () => {
-            highlightDialog._element.style.width = '252px';
-
-            const width = highlightDialog._getDialogWidth();
-
+            dialog._element.style.width = '252px';
+            const width = dialog.getDialogWidth();
             expect(width).to.equal(252); // Default comments dialog width
         });
     });
 
-    describe('_getScaledPDFCoordinates()', () => {
+    describe('getScaledPDFCoordinates()', () => {
         it('should lower right corner coordinates of dialog when a highlight does not have comments', () => {
-            highlightDialog._hasComments = false;
+            dialog._hasComments = false;
 
             sandbox.stub(annotatorUtil, 'getScale').returns(1);
-            sandbox.stub(docAnnotatorUtil, 'getLowerRightCornerOfLastQuadPoint').returns([200, 2]);
             sandbox.stub(annotatorUtil, 'getDimensionScale');
+            stubs.corner = sandbox.stub(docAnnotatorUtil, 'getLowerRightCornerOfLastQuadPoint').returns([200, 2]);
 
-            highlightDialog._getScaledPDFCoordinates({}, 100);
+            dialog.getScaledPDFCoordinates({}, 100);
 
-            expect(docAnnotatorUtil.getLowerRightCornerOfLastQuadPoint).to.have.been.called;
+            expect(stubs.corner).to.have.been.called;
+        });
+    });
+
+    describe('addAnnotationElement()', () => {
+        it('should not add a comment if the text is blank', () => {
+            dialog.addAnnotationElement(new Annotation({
+                annotationID: 1,
+                text: '',
+                user: {},
+                permissions: {}
+            }));
+            const highlight = dialog._element.querySelector('.bp-annotation-highlight-dialog');
+            const comment = document.querySelector('.annotation-comment');
+
+            expect(comment).to.be.null;
+            expect(highlight.dataset.annotationId).to.equal('1');
         });
     });
 });

@@ -1,6 +1,7 @@
 export const CLASS_ANNOTATION_BUTTON_CANCEL = 'cancel-annotation-btn';
 export const CLASS_ANNOTATION_BUTTON_POST = 'post-annotation-btn';
 export const CLASS_ANNOTATION_DIALOG = 'bp-annotation-dialog';
+export const CLASS_ANNOTATION_DIALOG_HIGHLIGHT = 'bp-highlight-dialog';
 export const CLASS_ANNOTATION_TEXT_HIGHLIGHTED = 'bp-is-text-highlighted';
 export const CLASS_ANNOTATION_POINT = 'bp-show-point-annotation-btn';
 export const CLASS_ANNOTATION_POINT_ICON = 'bp-point-annotation-icon';

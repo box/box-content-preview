@@ -117,7 +117,7 @@ class DocAnnotator extends Annotator {
             });
 
             // Remove rangy highlight and restore selection
-            this._removeRangyHighlight(highlight);
+            this.removeRangyHighlight(highlight);
             rangy.restoreSelection(savedSelection);
 
             // We save the dimensions of the annotated element scaled to 100%
@@ -175,6 +175,24 @@ class DocAnnotator extends Annotator {
         return thread;
     }
 
+    /**
+     * Renders annotations from memory for a specified page.
+     *
+     * @override
+     * @param {number} pageNum - Page number
+     * @return {void}
+     */
+    renderAnnotationsOnPage(pageNum) {
+        super.renderAnnotationsOnPage(pageNum);
+
+        // Destroy current pending highlight annotation
+        this.getHighlightThreadsOnPage(pageNum).forEach((thread) => {
+            if (annotatorUtil.isPending(thread.state)) {
+                thread.destroy();
+            }
+        });
+    }
+
     //--------------------------------------------------------------------------
     // Protected
     //--------------------------------------------------------------------------
@@ -182,9 +200,9 @@ class DocAnnotator extends Annotator {
     /**
      * Annotations setup.
      *
+     * @protected
      * @override
      * @return {void}
-     * @protected
      */
     setupAnnotations() {
         super.setupAnnotations();
@@ -200,46 +218,46 @@ class DocAnnotator extends Annotator {
     /**
      * Binds DOM event listeners.
      *
+     * @protected
      * @override
      * @return {void}
-     * @protected
      */
     bindDOMListeners() {
-        this._annotatedElement.addEventListener('mouseup', this._highlightMouseupHandler);
+        this._annotatedElement.addEventListener('mouseup', this.highlightMouseupHandler);
 
         if (this._annotationService.canAnnotate) {
-            this._annotatedElement.addEventListener('dblclick', this._highlightMouseupHandler);
-            this._annotatedElement.addEventListener('mousedown', this._highlightMousedownHandler);
-            this._annotatedElement.addEventListener('contextmenu', this._highlightMousedownHandler);
-            this._annotatedElement.addEventListener('mousemove', this._highlightMousemoveHandler());
+            this._annotatedElement.addEventListener('dblclick', this.highlightMouseupHandler);
+            this._annotatedElement.addEventListener('mousedown', this.highlightMousedownHandler);
+            this._annotatedElement.addEventListener('contextmenu', this.highlightMousedownHandler);
+            this._annotatedElement.addEventListener('mousemove', this.highlightMousemoveHandler());
         }
     }
 
     /**
      * Unbinds DOM event listeners.
      *
+     * @protected
      * @override
      * @return {void}
-     * @protected
      */
     unbindDOMListeners() {
-        this._annotatedElement.removeEventListener('mouseup', this._highlightMouseupHandler);
+        this._annotatedElement.removeEventListener('mouseup', this.highlightMouseupHandler);
 
         if (this._annotationService.canAnnotate) {
-            this._annotatedElement.removeEventListener('dblclick', this._highlightMouseupHandler);
-            this._annotatedElement.removeEventListener('mousedown', this._highlightMousedownHandler);
-            this._annotatedElement.removeEventListener('contextmenu', this._highlightMousedownHandler);
-            this._annotatedElement.removeEventListener('mousemove', this._highlightMousemoveHandler());
+            this._annotatedElement.removeEventListener('dblclick', this.highlightMouseupHandler);
+            this._annotatedElement.removeEventListener('mousedown', this.highlightMousedownHandler);
+            this._annotatedElement.removeEventListener('contextmenu', this.highlightMousedownHandler);
+            this._annotatedElement.removeEventListener('mousemove', this.highlightMousemoveHandler());
         }
     }
 
     /**
      * Binds custom event listeners for a thread.
      *
+     * @protected
      * @override
      * @param {AnnotationThread} thread - Thread to bind events to
      * @return {void}
-     * @protected
      */
     bindCustomListenersOnThread(thread) {
         super.bindCustomListenersOnThread(thread);
@@ -248,20 +266,20 @@ class DocAnnotator extends Annotator {
         // since deleting 'cuts' out the highlight, which may have been
         // overlapping with another
         thread.addListener('threaddeleted', () => {
-            this._showHighlightsOnPage(thread.location.page);
+            this.showHighlightsOnPage(thread.location.page);
         });
     }
 
     /**
      * Checks whether mouse is inside any dialog on the current page
      *
+     * @protected
      * @param {Event} event - Mouse event
      * @param {number} page - Current page number
      * @return {boolean} Whether or not mouse is inside a dialog on the page
-     * @protected
      */
     isInDialogOnPage(event, page) {
-        const threads = this._getThreadsOnPage(page);
+        const threads = this.getThreadsOnPage(page);
         let mouseInDialog = false;
 
         threads.some((thread) => {
@@ -278,11 +296,11 @@ class DocAnnotator extends Annotator {
     /**
      * Gets threads on page
      *
+     * @private
      * @param {number} page - Current page number
      * @return {[]} Threads on page
-     * @private
      */
-    _getThreadsOnPage(page) {
+    getThreadsOnPage(page) {
         const threads = this._threads ? this._threads[page] : [];
         return threads;
     }
@@ -294,18 +312,18 @@ class DocAnnotator extends Annotator {
      * for highlight threads. Also delegates to mousedown handler for each
      * thread.
      *
+     * @private
      * @param {Event} event - DOM event
      * @return {void}
-     * @private
      */
-    _highlightMousedownHandler(event) {
+    highlightMousedownHandler(event) {
         this._didMouseMove = false;
         this._isCreatingHighlight = true;
         this._mouseX = event.clientX;
         this._mouseY = event.clientY;
 
         Object.keys(this._threads).forEach((threadPage) => {
-            this._getHighlightThreadsOnPage(threadPage).forEach((thread) => {
+            this.getHighlightThreadsOnPage(threadPage).forEach((thread) => {
                 thread.onMousedown();
             });
         });
@@ -315,10 +333,10 @@ class DocAnnotator extends Annotator {
      * Throttled mousemove handler over annotated element. Delegates to
      * mousemove handler of highlight threads on the page.
      *
-     * @return {Function} mousemove handler
      * @private
+     * @return {Function} mousemove handler
      */
-    _highlightMousemoveHandler() {
+    highlightMousemoveHandler() {
         if (this._throttledHighlightMousemoveHandler) {
             return this._throttledHighlightMousemoveHandler;
         }
@@ -326,7 +344,7 @@ class DocAnnotator extends Annotator {
         this._throttledHighlightMousemoveHandler = throttle((event) => {
             // Only filter through highlight threads on the current page
             const page = docAnnotatorUtil.getPageElAndPageNumber(event.target).page;
-            const pageThreads = this._getHighlightThreadsOnPage(page);
+            const pageThreads = this.getHighlightThreadsOnPage(page);
             const delayThreads = [];
 
             pageThreads.forEach((thread) => {
@@ -360,13 +378,13 @@ class DocAnnotator extends Annotator {
             if (delayThreads.some((thread) => {
                 return constants.HOVER_STATES.indexOf(thread.state) > 1;
             })) {
-                this._useDefaultCursor();
+                this.useDefaultCursor();
                 clearTimeout(this.cursorTimeout);
             } else {
                 // Setting timeout on cursor change so cursor doesn't
                 // flicker when hovering on line spacing
                 this.cursorTimeout = setTimeout(() => {
-                    this._removeDefaultCursor();
+                    this.removeDefaultCursor();
                 }, HOVER_TIMEOUT_MS);
             }
 
@@ -391,18 +409,18 @@ class DocAnnotator extends Annotator {
      * to highlight click handlers depending on whether mouse moved since
      * mousedown.
      *
-     * @param {Event} event - DOM event
      * @private
+     * @param {Event} event - DOM event
      */
-    _highlightMouseupHandler(event) {
+    highlightMouseupHandler(event) {
         // Creating highlights is disabled on mobile for now since the
         // event we would listen to, selectionchange, fires continuously and
         // is unreliable. If the mouse moved or we double clicked text,
         // we trigger the create handler instead of the click handler
         if (!Browser.isMobile() && (this._didMouseMove || event.type === 'dblclick')) {
-            this._highlightCreateHandler(event);
+            this.highlightCreateHandler(event);
         } else {
-            this._highlightClickHandler(event);
+            this.highlightClickHandler(event);
         }
         this._isCreatingHighlight = false;
     }
@@ -413,10 +431,10 @@ class DocAnnotator extends Annotator {
      * If the user adds a comment, the type changes to
      * ANNOTATION_TYPE_HIGHLIGHT_COMMENT.
      *
-     * @param {Event} event - DOM event
      * @private
+     * @param {Event} event - DOM event
      */
-    _highlightCreateHandler(event) {
+    highlightCreateHandler(event) {
         event.stopPropagation();
 
         // Determine if any highlight threads are pending and ignore the
@@ -428,7 +446,7 @@ class DocAnnotator extends Annotator {
         // Only filter through highlight threads on the current page
         // Reset active highlight threads before creating new highlight
         const page = docAnnotatorUtil.getPageElAndPageNumber(event.target).page;
-        const activeThreads = this._getHighlightThreadsOnPage(page).filter((thread) => constants.ACTIVE_STATES.indexOf(thread.state) > -1);
+        const activeThreads = this.getHighlightThreadsOnPage(page).filter((thread) => constants.ACTIVE_STATES.indexOf(thread.state) > -1);
         activeThreads.forEach((thread) => {
             thread.reset();
         });
@@ -452,15 +470,15 @@ class DocAnnotator extends Annotator {
      * Highlight click handler. Delegates click event to click handlers for
      * threads on the page.
      *
-     * @param {Event} event - DOM event
      * @private
+     * @param {Event} event - DOM event
      */
-    _highlightClickHandler(event) {
+    highlightClickHandler(event) {
         let consumed = false;
         let activeThread = null;
 
         // Destroy any pending highlights on click outside the highlight
-        const pendingThreads = this._getThreadsWithStates(constants.PENDING_STATES);
+        const pendingThreads = this.getThreadsWithStates(constants.PENDING_STATES);
         pendingThreads.forEach((thread) => {
             if (thread.type === constants.ANNOTATION_TYPE_POINT) {
                 thread.destroy();
@@ -471,7 +489,7 @@ class DocAnnotator extends Annotator {
 
         // Only filter through highlight threads on the current page
         const page = docAnnotatorUtil.getPageElAndPageNumber(event.target).page;
-        const pageThreads = this._getHighlightThreadsOnPage(page);
+        const pageThreads = this.getHighlightThreadsOnPage(page);
         pageThreads.forEach((thread) => {
             // We use this to prevent a mousedown from activating two different
             // highlights at the same time - this tracks whether a delegated
@@ -493,11 +511,11 @@ class DocAnnotator extends Annotator {
     /**
      * Returns all threads with a state in the specified states.
      *
+     * @private
      * @param {...string} states - States of highlight threads to find
      * @return {AnnotationThread[]} threads with the specified states
-     * @private
      * */
-    _getThreadsWithStates(...states) {
+    getThreadsWithStates(...states) {
         const threads = [];
 
         Object.keys(this._threads).forEach((page) => {
@@ -513,31 +531,31 @@ class DocAnnotator extends Annotator {
     /**
      * Show normal cursor instead of text cursor.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
-    _useDefaultCursor() {
+    useDefaultCursor() {
         this._annotatedElement.classList.add('bp-use-default-cursor');
     }
 
     /**
      * Use text cursor.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
-    _removeDefaultCursor() {
+    removeDefaultCursor() {
         this._annotatedElement.classList.remove('bp-use-default-cursor');
     }
 
     /**
      * Returns the highlight threads on the specified page.
      *
+     * @private
      * @param {number} page - Page to get highlight threads for
      * @return {DocHighlightThread[]} Highlight annotation threads
-     * @private
      */
-    _getHighlightThreadsOnPage(page) {
+    getHighlightThreadsOnPage(page) {
         const threads = this._threads[page] || [];
         return threads.filter((thread) => annotatorUtil.isHighlightAnnotation(thread.type));
     }
@@ -546,11 +564,11 @@ class DocAnnotator extends Annotator {
      * Shows highlight annotations for the specified page by re-drawing all
      * highlight annotations currently in memory for the specified page.
      *
+     * @private
      * @param {number} page - Page to draw annotations for
      * @return {void}
-     * @private
      */
-    _showHighlightsOnPage(page) {
+    showHighlightsOnPage(page) {
         // let time = new Date().getTime();
 
         // Clear context if needed
@@ -561,7 +579,7 @@ class DocAnnotator extends Annotator {
             context.clearRect(0, 0, annotationLayerEl.width, annotationLayerEl.height);
         }
 
-        this._getHighlightThreadsOnPage(page).forEach((thread) => {
+        this.getHighlightThreadsOnPage(page).forEach((thread) => {
             thread.show();
         });
 
@@ -574,11 +592,11 @@ class DocAnnotator extends Annotator {
      * the highlighter's removeHighlights since the highlight could possibly
      * not be a true Rangy highlight object.
      *
+     * @private
      * @param {Object} highlight - Highlight to delete.
      * @return {void}
-     * @private
      */
-    _removeRangyHighlight(highlight) {
+    removeRangyHighlight(highlight) {
         const highlights = this._highlighter.highlights;
         if (!Array.isArray(highlights)) {
             return;

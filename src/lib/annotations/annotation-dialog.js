@@ -141,7 +141,7 @@ class AnnotationDialog extends EventEmitter {
             this._hasAnnotations = true;
         }
 
-        this._addAnnotationElement(annotation);
+        this.addAnnotationElement(annotation);
         this._deactivateReply(true); // Deactivate reply area and focus
     }
 
@@ -231,9 +231,14 @@ class AnnotationDialog extends EventEmitter {
                 </section>
             </section>`.trim();
 
+        // Adding thread number to dialog
+        if (annotations.length > 0) {
+            this._element.dataset.threadNumber = annotations[0].thread;
+        }
+
         // Add annotation elements
         annotations.forEach((annotation) => {
-            this._addAnnotationElement(annotation);
+            this.addAnnotationElement(annotation);
         });
 
         this.bindDOMListeners();
@@ -242,8 +247,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Binds DOM event listeners.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     bindDOMListeners() {
         this._element.addEventListener('keydown', this.keydownHandler);
@@ -257,8 +262,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Unbinds DOM event listeners.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     unbindDOMListeners() {
         this._element.removeEventListener('keydown', this.keydownHandler);
@@ -272,9 +277,9 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Keydown handler for dialog.
      *
+     * @protected
      * @param {Event} event - DOM event
      * @return {void}
-     * @protected
      */
     keydownHandler(event) {
         event.stopPropagation();
@@ -293,9 +298,9 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Stops propagation of DOM event.
      *
+     * @protected
      * @param {Event} event - DOM event
      * @return {void}
-     * @protected
      */
     stopPropagation(event) {
         event.stopPropagation();
@@ -304,8 +309,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Mouseenter handler. Clears hide timeout.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     mouseenterHandler() {
         if (this._element.classList.contains(CLASS_HIDDEN)) {
@@ -325,8 +330,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Mouseleave handler. Hides dialog if we aren't creating the first one.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     mouseleaveHandler() {
         if (this._hasAnnotations) {
@@ -337,9 +342,9 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Click handler on dialog.
      *
+     * @protected
      * @param {Event} event - DOM event
      * @return {void}
-     * @protected
      */
     clickHandler(event) {
         event.stopPropagation();
@@ -387,7 +392,7 @@ class AnnotationDialog extends EventEmitter {
 
             // Clicking 'Delete' button to confirm deletion
             case 'confirm-delete-btn': {
-                this._deleteAnnotation(annotationID);
+                this.deleteAnnotation(annotationID);
                 break;
             }
 
@@ -403,16 +408,11 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Adds an annotation to the dialog.
      *
+     * @private
      * @param {Annotation} annotation - Annotation to add
      * @return {void}
-     * @private
      */
-    _addAnnotationElement(annotation) {
-        // If annotation text is blank, don't add to the comments dialog
-        if (!annotation.text) {
-            return;
-        }
-
+    addAnnotationElement(annotation) {
         const userId = annotatorUtil.htmlEscape(annotation.user.id || '0');
 
         // Temporary until annotation user API is available
@@ -464,8 +464,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Posts an annotation in the dialog.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     _postAnnotation() {
         const annotationTextEl = this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
@@ -481,8 +481,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Cancels posting an annotation.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     _cancelAnnotation() {
         this.emit('annotationcancel');
@@ -491,8 +491,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Activates reply textarea.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     _activateReply() {
         const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
@@ -515,9 +515,9 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Deactivate reply textarea.
      *
+     * @private
      * @param {Boolean} clearText - Whether or not text in text area should be cleared
      * @return {void}
-     * @private
      */
     _deactivateReply(clearText) {
         if (!this._element) {
@@ -541,8 +541,8 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Posts a reply in the dialog.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     _postReply() {
         const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
@@ -558,9 +558,9 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Shows delete confirmation.
      *
+     * @private
      * @param {string} annotationID - ID of annotation to delete
      * @return {void}
-     * @private
      */
     _showDeleteConfirmation(annotationID) {
         const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
@@ -575,9 +575,9 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Hides delete confirmation.
      *
+     * @private
      * @param {string} annotationID - ID of annotation to delete
      * @return {void}
-     * @private
      */
     _hideDeleteConfirmation(annotationID) {
         const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
@@ -591,11 +591,11 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Broadcasts message to delete an annotation.
      *
+     * @private
      * @param {string} annotationID - ID of annotation to delete
      * @return {void}
-     * @private
      */
-    _deleteAnnotation(annotationID) {
+    deleteAnnotation(annotationID) {
         this.emit('annotationdelete', { annotationID });
     }
 }

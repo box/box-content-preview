@@ -1,11 +1,14 @@
 
 /* eslint-disable no-unused-expressions */
+import Annotation from '../annotation';
 import AnnotationDialog from '../annotation-dialog';
 import * as annotatorUtil from '../annotator-util';
 import * as constants from '../annotation-constants';
+import { CLASS_ACTIVE, CLASS_HIDDEN } from '../../constants';
 
-let annotationDialog;
+let dialog;
 const sandbox = sinon.sandbox.create();
+let stubs = {};
 
 describe('annotation-dialog', () => {
     before(() => {
@@ -15,198 +18,242 @@ describe('annotation-dialog', () => {
     beforeEach(() => {
         fixture.load('annotations/__tests__/annotation-dialog-test.html');
 
-        annotationDialog = new AnnotationDialog({
+        dialog = new AnnotationDialog({
             annotatedElement: document.querySelector('.annotated-element'),
             location: {},
             annotations: [],
             canAnnotate: true
         });
-        annotationDialog.setup([]);
-        document.querySelector('.annotated-element').appendChild(annotationDialog._element);
+        dialog.setup([]);
+        document.querySelector('.annotated-element').appendChild(dialog._element);
+
+        stubs.emit = sandbox.stub(dialog, 'emit');
     });
 
     afterEach(() => {
         const dialogEl = document.querySelector('.annotated-element');
         dialogEl.parentNode.removeChild(dialogEl);
         sandbox.verifyAndRestore();
-        if (typeof annotationDialog.destroy === 'function') {
-            annotationDialog.destroy();
-            annotationDialog = null;
+        if (typeof dialog.destroy === 'function') {
+            dialog.destroy();
+            dialog = null;
         }
+
+        stubs = {};
     });
 
     describe('destroy()', () => {
         it('should unbind DOM listeners and cleanup its HTML', () => {
-            const unbindStub = sandbox.stub(annotationDialog, 'unbindDOMListeners');
-            annotationDialog.destroy();
-            expect(unbindStub).to.have.been.called;
-            expect(annotationDialog._element).to.be.null;
+            const unbindStub = sandbox.stub(dialog, 'unbindDOMListeners');
+
+            dialog.destroy();
+            expect(unbindStub).to.be.called;
+            expect(dialog._element).to.be.null;
         });
     });
 
     describe('show()', () => {
+        beforeEach(() => {
+            stubs.position = sandbox.stub(dialog, 'position');
+        });
+
         it('should not re-show dialog if already shown', () => {
-            const positionStub = sandbox.stub(annotationDialog, 'position');
-            annotationDialog._hasAnnotations = true;
-            annotationDialog._activateReply();
-            annotationDialog.show();
-            expect(positionStub).to.not.have.been.called;
+            dialog._hasAnnotations = true;
+            dialog._activateReply();
+
+            dialog.show();
+            expect(stubs.position).to.not.be.called;
         });
 
         it('should position the dialog', () => {
-            const positionStub = sandbox.stub(annotationDialog, 'position');
-            annotationDialog._hasAnnotations = true;
-            annotationDialog._deactivateReply();
-            const commentsTextArea = annotationDialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            dialog._hasAnnotations = true;
+            dialog._deactivateReply();
+            const commentsTextArea = dialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
             commentsTextArea.classList.remove('bp-is-active');
-            annotationDialog.show();
-            expect(positionStub).to.have.been.called;
+
+            dialog.show();
+            expect(stubs.position).to.be.called;
         });
 
         it('should hide the reply/edit/delete UI if user cannot annotate', () => {
-            annotationDialog._canAnnotate = false;
-            annotationDialog._hasAnnotations = true;
-            annotationDialog._deactivateReply();
-            annotationDialog.show();
-            expect(annotationDialog._element.classList.contains(constants.CLASS_CANNOT_ANNOTATE)).to.be.true;
+            dialog._canAnnotate = false;
+            dialog._hasAnnotations = true;
+            dialog._deactivateReply();
+
+            dialog.show();
+            expect(dialog._element).to.have.class(constants.CLASS_CANNOT_ANNOTATE);
         });
 
         it('should focus textarea if in viewport', () => {
-            annotationDialog._canAnnotate = false;
-            annotationDialog._hasAnnotations = true;
-            annotationDialog._deactivateReply();
+            dialog._canAnnotate = false;
+            dialog._hasAnnotations = true;
+            dialog._deactivateReply();
             sandbox.stub(annotatorUtil, 'isElementInViewport').returns(true);
-            annotationDialog.show();
-            expect(document.activeElement.classList.contains('reply-textarea')).to.be.true;
+
+            dialog.show();
+            expect(document.activeElement).to.have.class('reply-textarea');
+        });
+
+        it('should activate reply textarea if dialog has annotations', () => {
+            dialog._canAnnotate = false;
+            dialog._hasAnnotations = true;
+            dialog._deactivateReply();
+            sandbox.stub(dialog, '_activateReply');
+
+            dialog.show();
+            const textArea = dialog._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            expect(textArea).to.not.have.class(CLASS_ACTIVE);
+            expect(dialog._activateReply).to.be.called;
+        });
+
+        it('should activate textarea if dialog does not have annotations', () => {
+            dialog._canAnnotate = false;
+            dialog._hasAnnotations = false;
+            dialog._deactivateReply();
+            sandbox.stub(dialog, '_activateReply');
+
+            dialog.show();
+            const textArea = dialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            expect(textArea).to.have.class(CLASS_ACTIVE);
+            expect(dialog._activateReply).to.not.be.called;
         });
     });
 
     describe('hide()', () => {
         it('should hide dialog immediately', () => {
-            annotationDialog.hide();
-
-            expect(annotationDialog._element.classList.contains('bp-is-hidden')).to.be.true;
+            dialog.hide();
+            expect(dialog._element).to.have.class(CLASS_HIDDEN);
         });
     });
 
     describe('addAnnotation()', () => {
-        it('should add annotation to the dialog and deactivate the reply area', () => {
-            const addStub = sandbox.stub(annotationDialog, '_addAnnotationElement');
-            const deactivateStub = sandbox.stub(annotationDialog, '_deactivateReply');
-            annotationDialog.addAnnotation({});
+        beforeEach(() => {
+            stubs.addEl = sandbox.stub(dialog, 'addAnnotationElement');
+            stubs.deactivate = sandbox.stub(dialog, '_deactivateReply');
+        });
 
-            expect(addStub).to.have.been.called;
-            expect(deactivateStub).to.have.been.calledWith(true);
+        it('should add annotation to the dialog and deactivate the reply area', () => {
+            dialog.addAnnotation(new Annotation({}));
+            expect(stubs.addEl).to.be.called;
+            expect(stubs.deactivate).to.be.calledWith(true);
         });
 
         it('should hide the create section and show the show section if there are no annotations', () => {
-            sandbox.stub(annotationDialog, '_addAnnotationElement');
-            sandbox.stub(annotationDialog, '_deactivateReply');
-
             // Add dialog to DOM
-            annotationDialog._annotatedElement.appendChild(annotationDialog._element);
-            annotationDialog.addAnnotation({});
+            dialog._annotatedElement.appendChild(dialog._element);
 
+            dialog.addAnnotation(new Annotation({}));
             const createSectionEl = document.querySelector('[data-section="create"]');
             const showSectionEl = document.querySelector('[data-section="show"]');
-            expect(createSectionEl.classList.contains('bp-is-hidden')).to.be.true;
-            expect(showSectionEl.classList.contains('bp-is-hidden')).to.be.false;
+            expect(createSectionEl).to.have.class(CLASS_HIDDEN);
+            expect(showSectionEl).to.not.have.class(CLASS_HIDDEN);
         });
     });
 
     describe('removeAnnotation()', () => {
         it('should remove annotation element and deactivate reply', () => {
-            const deactivateStub = sandbox.stub(annotationDialog, '_deactivateReply');
+            stubs.deactivate = sandbox.stub(dialog, '_deactivateReply');
 
-            // Add dialog to DOM
-            annotationDialog._annotatedElement.appendChild(annotationDialog._element);
-            annotationDialog.addAnnotation({
+            dialog.addAnnotation(new Annotation({
                 annotationID: 'someID',
                 text: 'blah',
                 user: {},
                 permissions: {}
-            });
-            annotationDialog.removeAnnotation('someID');
+            }));
 
-            const annotationEl = document.querySelector('[data-annotation-id="someID"]');
+            dialog.removeAnnotation('someID');
+            const annotationEl = dialog._element.querySelector('[data-annotation-id="someID"]');
             expect(annotationEl).to.be.null;
-            expect(deactivateStub).to.have.been.called;
+            expect(stubs.deactivate).to.be.called;
         });
 
         it('should not do anything if the specified annotation does not exist', () => {
-            const deactivateStub = sandbox.stub(annotationDialog, '_deactivateReply');
-            annotationDialog.removeAnnotation('someID');
-            expect(deactivateStub).to.not.have.been.called;
+            stubs.deactivate = sandbox.stub(dialog, '_deactivateReply');
+
+            dialog.removeAnnotation('someID');
+            expect(stubs.deactivate).to.not.be.called;
+        });
+    });
+
+    describe('element()', () => {
+        it('should return dialog element', () => {
+            expect(dialog.element).to.equal(dialog._element);
         });
     });
 
     describe('setup()', () => {
         it('should set up HTML element, add annotations to the dialog, and bind DOM listeners', () => {
-            const bindStub = sandbox.stub(annotationDialog, 'bindDOMListeners');
+            stubs.bind = sandbox.stub(dialog, 'bindDOMListeners');
 
-            annotationDialog.setup([{
+            const annotationData = new Annotation({
                 annotationID: 'someID',
                 text: 'blah',
                 user: {},
-                permissions: {}
-            }]);
+                permissions: {},
+                thread: 1
+            });
 
-            expect(annotationDialog._element).to.not.be.null;
-            expect(annotationDialog._element.querySelector(['[data-annotation-id="someID"]'])).to.not.be.null;
-            expect(bindStub).to.have.been.called;
+            dialog.setup([annotationData]);
+            expect(dialog._element).to.not.be.null;
+            expect(dialog._element.querySelector(['[data-annotation-id="someID"]'])).to.not.be.null;
+            expect(dialog._element.dataset.threadNumber).to.equal('1');
+            expect(stubs.bind).to.be.called;
+        });
+
+        it('should not set thread number if there are no annotations in the thread', () => {
+            dialog.setup([]);
+            expect(dialog._element.dataset.threadNumber).to.be.undefined;
         });
     });
 
     describe('bindDOMListeners()', () => {
         it('should bind DOM listeners', () => {
-            const addListenerStub = sandbox.stub(annotationDialog._element, 'addEventListener');
-            annotationDialog.bindDOMListeners();
+            stubs.add = sandbox.stub(dialog._element, 'addEventListener');
 
-            expect(addListenerStub).to.have.been.calledWith('keydown', sinon.match.func);
-            expect(addListenerStub).to.have.been.calledWith('click', sinon.match.func);
-            expect(addListenerStub).to.have.been.calledWith('mouseup', annotationDialog.stopPropagation);
-            expect(addListenerStub).to.have.been.calledWith('mouseenter', sinon.match.func);
-            expect(addListenerStub).to.have.been.calledWith('mouseleave', sinon.match.func);
-            expect(addListenerStub).to.have.been.calledWith('wheel', annotationDialog.stopPropagation);
+            dialog.bindDOMListeners();
+            expect(stubs.add).to.be.calledWith('keydown', sinon.match.func);
+            expect(stubs.add).to.be.calledWith('click', sinon.match.func);
+            expect(stubs.add).to.be.calledWith('mouseup', sinon.match.func);
+            expect(stubs.add).to.be.calledWith('mouseenter', sinon.match.func);
+            expect(stubs.add).to.be.calledWith('mouseleave', sinon.match.func);
+            expect(stubs.add).to.be.calledWith('wheel', sinon.match.func);
         });
     });
 
     describe('unbindDOMListeners()', () => {
         it('should unbind DOM listeners', () => {
-            const removeListenerStub = sandbox.stub(annotationDialog._element, 'removeEventListener');
-            annotationDialog.unbindDOMListeners();
+            stubs.remove = sandbox.stub(dialog._element, 'removeEventListener');
 
-            expect(removeListenerStub).to.have.been.calledWith('keydown', sinon.match.func);
-            expect(removeListenerStub).to.have.been.calledWith('click', sinon.match.func);
-            expect(removeListenerStub).to.have.been.calledWith('mouseup', annotationDialog.stopPropagation);
-            expect(removeListenerStub).to.have.been.calledWith('mouseenter', sinon.match.func);
-            expect(removeListenerStub).to.have.been.calledWith('mouseleave', sinon.match.func);
-            expect(removeListenerStub).to.have.been.calledWith('wheel', annotationDialog.stopPropagation);
+            dialog.unbindDOMListeners();
+            expect(stubs.remove).to.be.calledWith('keydown', sinon.match.func);
+            expect(stubs.remove).to.be.calledWith('click', sinon.match.func);
+            expect(stubs.remove).to.be.calledWith('mouseup', sinon.match.func);
+            expect(stubs.remove).to.be.calledWith('mouseenter', sinon.match.func);
+            expect(stubs.remove).to.be.calledWith('mouseleave', sinon.match.func);
+            expect(stubs.remove).to.be.calledWith('wheel', sinon.match.func);
         });
     });
 
     describe('keydownHandler()', () => {
         it('should hide the dialog when user presses Esc', () => {
-            const hideStub = sandbox.stub(annotationDialog, 'hide');
+            stubs.hide = sandbox.stub(dialog, 'hide');
 
-            annotationDialog.keydownHandler({
+            dialog.keydownHandler({
                 key: 'U+001B', // esc key
                 stopPropagation: () => {}
             });
-
-            expect(hideStub).to.have.been.called;
+            expect(stubs.hide).to.be.called;
         });
 
         it('should activate the reply area when user presses another key inside the reply area', () => {
-            const activateReplyStub = sandbox.stub(annotationDialog, '_activateReply');
+            stubs.activate = sandbox.stub(dialog, '_activateReply');
 
-            annotationDialog.keydownHandler({
+            dialog.keydownHandler({
                 key: ' ', // space
-                target: annotationDialog._element.querySelector('.reply-textarea'),
+                target: dialog._element.querySelector('.reply-textarea'),
                 stopPropagation: () => {}
             });
-
-            expect(activateReplyStub).to.have.been.called;
+            expect(stubs.activate).to.be.called;
         });
     });
 
@@ -215,319 +262,293 @@ describe('annotation-dialog', () => {
             const event = {
                 stopPropagation: () => {}
             };
-            const stopPropStub = sandbox.stub(event, 'stopPropagation');
+            stubs.stop = sandbox.stub(event, 'stopPropagation');
 
-            annotationDialog.stopPropagation(event);
-
-            expect(stopPropStub).to.have.been.called;
+            dialog.stopPropagation(event);
+            expect(stubs.stop).to.be.called;
         });
     });
 
     describe('mouseenterHandler()', () => {
+        beforeEach(() => {
+            stubs.show = sandbox.stub(annotatorUtil, 'showElement');
+        });
+
         it('should show the element only if the element is currently hidden', () => {
-            annotationDialog._element.classList.add('bp-is-hidden');
-            sandbox.stub(annotatorUtil, 'showElement');
-            annotationDialog.mouseenterHandler();
-            expect(annotatorUtil.showElement).to.have.been.called;
+            dialog._element.classList.add(CLASS_HIDDEN);
+
+            dialog.mouseenterHandler();
+            expect(annotatorUtil.showElement).to.be.called;
         });
 
         it('should do nothing if the element is already shown', () => {
-            sandbox.stub(annotatorUtil, 'showElement');
-            annotationDialog.mouseenterHandler();
-            expect(annotatorUtil.showElement).to.not.have.been.called;
+            dialog.mouseenterHandler();
+            expect(annotatorUtil.showElement).to.not.be.called;
         });
 
         it('should emit \'annotationcommentpending\' when user hovers back into a dialog that has a pending comment', () => {
-            annotationDialog._element.classList.add('bp-is-hidden');
-            sandbox.stub(annotatorUtil, 'showElement');
-            sandbox.stub(annotationDialog, 'emit');
-            const commentsTextArea = annotationDialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            dialog._element.classList.add(CLASS_HIDDEN);
+            const commentsTextArea = dialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
             commentsTextArea.textContent = 'bleh';
 
-            annotationDialog.mouseenterHandler();
-            expect(annotatorUtil.showElement).to.have.been.called;
-            expect(annotationDialog.emit).to.have.been.calledWith('annotationcommentpending');
+            dialog.mouseenterHandler();
+            expect(stubs.show).to.be.called;
+            expect(stubs.emit).to.be.calledWith('annotationcommentpending');
         });
     });
 
     describe('mouseleaveHandler()', () => {
         it('should not do anything if there are no annotations in the dialog', () => {
-            const hideStub = sandbox.stub(annotationDialog, 'hide');
+            stubs.hide = sandbox.stub(dialog, 'hide');
 
-            annotationDialog.mouseleaveHandler();
-
-            expect(hideStub).to.not.have.been.called;
+            dialog.mouseleaveHandler();
+            expect(stubs.hide).to.not.be.called;
         });
 
         it('should hide dialog if there are annotations in the dialog', () => {
-            const hideStub = sandbox.stub(annotationDialog, 'hide');
+            stubs.hide = sandbox.stub(dialog, 'hide');
 
-            annotationDialog.addAnnotation({
+            dialog.addAnnotation(new Annotation({
                 annotationID: 'someID',
                 text: 'blah',
                 user: {},
                 permissions: {}
-            });
-            annotationDialog.mouseleaveHandler();
+            }));
 
-            expect(hideStub).to.have.been.called;
+            dialog.mouseleaveHandler();
+            expect(stubs.hide).to.be.called;
         });
     });
 
     describe('clickHandler()', () => {
-        const event = {
-            stopPropagation: () => {}
-        };
+        beforeEach(() => {
+            stubs.event = {
+                stopPropagation: () => {},
+                target: document.createElement('div')
+            };
+            stubs.post = sandbox.stub(dialog, '_postAnnotation');
+            stubs.cancel = sandbox.stub(dialog, '_cancelAnnotation');
+            stubs.deactivate = sandbox.stub(dialog, '_deactivateReply');
+            stubs.activate = sandbox.stub(dialog, '_activateReply');
+            stubs.findClosest = sandbox.stub(annotatorUtil, 'findClosestDataType');
+            stubs.showDelete = sandbox.stub(dialog, '_showDeleteConfirmation');
+            stubs.hideDelete = sandbox.stub(dialog, '_hideDeleteConfirmation');
+            stubs.delete = sandbox.stub(dialog, 'deleteAnnotation');
+            stubs.reply = sandbox.stub(dialog, '_postReply');
+        });
 
         it('should post annotation when post annotation button is clicked', () => {
-            sandbox.stub(annotatorUtil, 'findClosestDataType').returns('post-annotation-btn');
-            const stub = sandbox.stub(annotationDialog, '_postAnnotation');
+            stubs.findClosest.returns('post-annotation-btn');
 
-            annotationDialog.clickHandler(event);
-
-            expect(stub).to.have.been.called;
+            dialog.clickHandler(stubs.event);
+            expect(stubs.post).to.be.called;
         });
 
         it('should cancel annotation when cancel annotation button is clicked', () => {
-            sandbox.stub(annotatorUtil, 'findClosestDataType').returns('cancel-annotation-btn');
-            const cancelStub = sandbox.stub(annotationDialog, '_cancelAnnotation');
-            const deactivateStub = sandbox.stub(annotationDialog, '_deactivateReply');
+            stubs.findClosest.returns('cancel-annotation-btn');
 
-            annotationDialog.clickHandler(event);
-
-            expect(cancelStub).to.have.been.called;
-            expect(deactivateStub).to.have.been.calledWith(true);
+            dialog.clickHandler(stubs.event);
+            expect(stubs.cancel).to.be.called;
+            expect(stubs.deactivate).to.be.calledWith(true);
         });
 
         it('should activate reply area when textarea is clicked', () => {
-            sandbox.stub(annotatorUtil, 'findClosestDataType').returns('reply-textarea');
-            const stub = sandbox.stub(annotationDialog, '_activateReply');
+            stubs.findClosest.returns('reply-textarea');
 
-            annotationDialog.clickHandler(event);
-
-            expect(stub).to.have.been.called;
+            dialog.clickHandler(stubs.event);
+            expect(stubs.activate).to.be.called;
         });
 
         it('should deactivate reply area when cancel reply button is clicked', () => {
-            sandbox.stub(annotatorUtil, 'findClosestDataType').returns('cancel-reply-btn');
-            const stub = sandbox.stub(annotationDialog, '_deactivateReply');
+            stubs.findClosest.returns('cancel-reply-btn');
 
-            annotationDialog.clickHandler(event);
-
-            expect(stub).to.have.been.calledWith(true);
+            dialog.clickHandler(stubs.event);
+            expect(stubs.deactivate).to.be.calledWith(true);
         });
 
         it('should post reply when post reply button is clicked', () => {
-            sandbox.stub(annotatorUtil, 'findClosestDataType').returns('post-reply-btn');
-            const stub = sandbox.stub(annotationDialog, '_postReply');
+            stubs.findClosest.returns('post-reply-btn');
 
-            annotationDialog.clickHandler(event);
-
-            expect(stub).to.have.been.called;
+            dialog.clickHandler(stubs.event);
+            expect(stubs.reply).to.be.called;
         });
 
         it('should show delete confirmation when delete button is clicked', () => {
-            const target = document.createElement('div');
-            event.target = target;
+            stubs.findClosest.onFirstCall().returns('delete-btn');
+            stubs.findClosest.onSecondCall().returns('someID');
 
-            const findClosestStub = sandbox.stub(annotatorUtil, 'findClosestDataType');
-            findClosestStub.onFirstCall().returns('delete-btn');
-            findClosestStub.onSecondCall().returns('someID');
-            const stub = sandbox.stub(annotationDialog, '_showDeleteConfirmation');
-
-            annotationDialog.clickHandler(event);
-
-            expect(stub).to.have.been.calledWith('someID');
+            dialog.clickHandler(stubs.event);
+            expect(stubs.showDelete).to.be.calledWith('someID');
         });
 
         it('should cancel deletion when cancel delete button is clicked', () => {
-            const target = document.createElement('div');
-            event.target = target;
+            stubs.findClosest.onFirstCall().returns('cancel-delete-btn');
+            stubs.findClosest.onSecondCall().returns('someID');
 
-            const findClosestStub = sandbox.stub(annotatorUtil, 'findClosestDataType');
-            findClosestStub.onFirstCall().returns('cancel-delete-btn');
-            findClosestStub.onSecondCall().returns('someID');
-            const stub = sandbox.stub(annotationDialog, '_hideDeleteConfirmation');
-
-            annotationDialog.clickHandler(event);
-
-            expect(stub).to.have.been.calledWith('someID');
+            dialog.clickHandler(stubs.event);
+            expect(stubs.hideDelete).to.be.calledWith('someID');
         });
 
         it('should confirm deletion when confirm delete button is clicked', () => {
-            const target = document.createElement('div');
-            event.target = target;
+            stubs.findClosest.onFirstCall().returns('confirm-delete-btn');
+            stubs.findClosest.onSecondCall().returns('someID');
 
-            const findClosestStub = sandbox.stub(annotatorUtil, 'findClosestDataType');
-            findClosestStub.onFirstCall().returns('confirm-delete-btn');
-            findClosestStub.onSecondCall().returns('someID');
-            const stub = sandbox.stub(annotationDialog, '_deleteAnnotation');
+            dialog.clickHandler(stubs.event);
+            expect(stubs.delete).to.be.calledWith('someID');
+        });
 
-            annotationDialog.clickHandler(event);
+        it('should do nothing if dataType does not match any button in the annotation dialog', () => {
+            stubs.findClosest.returns(null);
 
-            expect(stub).to.have.been.calledWith('someID');
+            dialog.clickHandler(stubs.event);
+            expect(stubs.post).to.not.be.called;
+            expect(stubs.reply).to.not.be.called;
+            expect(stubs.cancel).to.not.be.called;
+            expect(stubs.deactivate).to.not.be.called;
+            expect(stubs.activate).to.not.be.called;
+            expect(stubs.reply).to.not.be.called;
+            expect(stubs.showDelete).to.not.be.called;
+            expect(stubs.hideDelete).to.not.be.called;
+            expect(stubs.delete).to.not.be.called;
         });
     });
 
-    describe('_addAnnotationElement()', () => {
-        it('should not add a comment if the text is blank', () => {
-            annotationDialog._addAnnotationElement({
-                annotationID: 1,
-                text: '',
-                user: {},
-                permissions: {}
-            });
-            const annotationComment = document.querySelector('.annotation-comment');
-
-            expect(annotationComment).to.be.null;
-        });
-
+    describe('addAnnotationElement()', () => {
         it('should add an annotation comment if text is present', () => {
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is awesome!',
                 user: {},
                 permissions: {}
-            });
+            }));
             const annotationComment = document.querySelector('.comment-text');
-
-            expect(annotationComment.innerHTML).to.equal('the preview sdk is awesome!');
+            expect(annotationComment).to.contain.html('the preview sdk is awesome!');
         });
 
         it('should display the posting message if the user id is 0', () => {
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is awesome!',
                 user: { id: 0 },
                 permissions: {}
-            });
+            }));
             const username = document.querySelector('.user-name');
-
-            expect(username.innerHTML).to.equal(__('annotation_posting_message'));
+            expect(username).to.contain.html(__('annotation_posting_message'));
         });
 
         it('should display user name if the user id is not 0', () => {
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is awesome!',
                 user: { id: 1, name: 'user' },
                 permissions: {}
-            });
+            }));
             const username = document.querySelector('.user-name');
-
-            expect(username.innerHTML).to.equal('user');
+            expect(username).to.contain.html('user');
         });
 
         it('should hide the delete icon if the user does\'nt have delete permissions', () => {
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is amazing!',
                 user: { id: 1, name: 'user' },
                 permissions: { can_delete: false }
-            });
+            }));
             const deleteButton = document.querySelector('.delete-comment-btn');
-
-            expect(deleteButton.classList.contains('bp-is-hidden')).to.be.true;
+            expect(deleteButton).to.have.class(CLASS_HIDDEN);
         });
 
         it('should make the delete icon hidden if the delete permission is not specified', () => {
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is amazing!',
                 user: { id: 1, name: 'user' },
                 permissions: {}
-            });
+            }));
             const deleteButton = document.querySelector('.delete-comment-btn');
-
-            expect(deleteButton.classList.contains('bp-is-hidden')).to.be.true;
+            expect(deleteButton).to.have.class(CLASS_HIDDEN);
         });
 
         it('should make delete icon visible if the user has delete permission', () => {
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is amazing!',
                 user: { id: 1, name: 'user' },
                 permissions: { can_delete: true }
-            });
+            }));
             const deleteButton = document.querySelector('.delete-comment-btn');
-
-            expect(deleteButton.classList.contains('bp-is-hidden')).to.be.false;
+            expect(deleteButton).to.not.have.class(CLASS_HIDDEN);
         });
 
         it('should hide the delete confirmation UI by default', () => {
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is amazing!',
                 user: { id: 1, name: 'user' },
                 permissions: { can_delete: true }
-            });
+            }));
             const deleteConfirmation = document.querySelector('.delete-confirmation');
-
-            expect(deleteConfirmation.classList.contains('bp-is-hidden')).to.be.true;
+            expect(deleteConfirmation).to.have.class(CLASS_HIDDEN);
         });
+
         it('should correctly format the date and time in a different locale', () => {
             const date = new Date();
-            const toLocaleStringStub = sandbox.stub(Date.prototype, 'toLocaleString');
-            annotationDialog._locale = 'en-GB';
-            annotationDialog._addAnnotationElement({
+            stubs.locale = sandbox.stub(Date.prototype, 'toLocaleString');
+            dialog._locale = 'en-GB';
+
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is amazing!',
                 user: { id: 1, name: 'user' },
                 permissions: { can_delete: true },
                 created: date
-            });
-
-
-            expect(toLocaleStringStub).to.be.calledWith('en-GB');
+            }));
+            expect(stubs.locale).to.be.calledWith('en-GB');
         });
     });
 
     describe('_postAannotation()', () => {
         it('should not post an annotation to the dialog if it has no text', () => {
-            const emitStub = sandbox.stub(annotationDialog, 'emit');
-
-            annotationDialog._postAnnotation();
-            expect(emitStub).to.not.be.called;
+            dialog._postAnnotation();
+            expect(stubs.emit).to.not.be.called;
         });
 
         it('should post an annotation to the dialog if it has text', () => {
-            const emitStub = sandbox.stub(annotationDialog, 'emit');
-
             document.querySelector('textarea').innerHTML += 'the preview SDK is great!';
-            annotationDialog._postAnnotation();
-            expect(emitStub).to.have.been.calledWith('annotationcreate', { text: 'the preview SDK is great!' });
+
+            dialog._postAnnotation();
+            expect(stubs.emit).to.be.calledWith('annotationcreate', { text: 'the preview SDK is great!' });
         });
 
         it('should clear the annotation text element after posting', () => {
             const annotationTextEl = document.querySelector('textarea');
-
             annotationTextEl.innerHTML += 'the preview SDK is great!';
-            annotationDialog._postAnnotation();
-            expect(annotationTextEl.value).to.equal('');
+
+            dialog._postAnnotation();
+            expect(annotationTextEl).to.have.value('');
         });
     });
 
     describe('_cancelAnnotation()', () => {
         it('should emit the annotationcancel message', () => {
-            const emitStub = sandbox.stub(annotationDialog, 'emit');
-
-            annotationDialog._cancelAnnotation();
-            expect(emitStub).to.have.been.calledWith('annotationcancel');
+            dialog._cancelAnnotation();
+            expect(stubs.emit).to.be.calledWith('annotationcancel');
         });
     });
 
     describe('_activateReply()', () => {
         it('should do nothing if reply textarea is already active', () => {
-            const replyTextEl = annotationDialog._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            const replyTextEl = dialog._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
             replyTextEl.classList.add('bp-is-active');
             sandbox.stub(annotatorUtil, 'showElement');
-            annotationDialog._activateReply();
-            expect(annotatorUtil.showElement).to.not.have.been.called;
+
+            dialog._activateReply();
+            expect(annotatorUtil.showElement).to.not.be.called;
         });
 
         it('should show the correct UI when the reply textarea is activated', () => {
             document.querySelector('textarea').innerHTML += 'the preview SDK is great!';
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement({
                 annotationID: 1,
                 text: 'the preview sdk is amazing!',
                 user: { id: 1, name: 'user' },
@@ -536,119 +557,124 @@ describe('annotation-dialog', () => {
             const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
             const buttonContainer = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
 
-            annotationDialog._activateReply();
-            expect(replyTextEl.classList.contains('bp-is-active')).to.be.true;
-            expect(buttonContainer.classList.contains('bp-is-hidden')).to.be.false;
+            dialog._activateReply();
+            expect(replyTextEl).to.have.class(CLASS_ACTIVE);
+            expect(buttonContainer).to.not.have.class(CLASS_HIDDEN);
         });
     });
 
     describe('_deactivateReply()', () => {
+        it('should do nothing if element does not exist', () => {
+            dialog._element = null;
+            sandbox.stub(annotatorUtil, 'resetTextarea');
+
+            dialog._deactivateReply();
+            expect(annotatorUtil.resetTextarea).to.not.be.called;
+        });
+
         it('should show the correct UI when the reply textarea is deactivated', () => {
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is amazing!',
                 user: { id: 1, name: 'user' },
                 permissions: { can_delete: true }
-            });
+            }));
             const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
             const buttonContainer = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
 
-            annotationDialog._deactivateReply();
-            expect(replyTextEl.classList.contains('bp-is-active')).to.be.false;
-            expect(buttonContainer.classList.contains('bp-is-hidden')).to.be.true;
+            dialog._deactivateReply();
+            expect(replyTextEl).to.not.have.class(CLASS_ACTIVE);
+            expect(buttonContainer).to.have.class(CLASS_HIDDEN);
         });
     });
 
     describe('_postReply()', () => {
         it('should not post reply to the dialog if it has no text', () => {
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is amazing!',
                 user: { id: 1, name: 'user' },
                 permissions: { can_delete: true }
-            });
-            const emitStub = sandbox.stub(annotationDialog, 'emit');
+            }));
+            dialog._activateReply();
 
-            annotationDialog._activateReply();
-            annotationDialog._postReply();
-            expect(emitStub).to.not.be.called;
+            dialog._postReply();
+            expect(stubs.emit).to.not.be.called;
         });
 
         it('should post a reply to the dialog if it has text', () => {
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is amazing!',
                 user: { id: 1, name: 'user' },
                 permissions: { can_delete: true }
-            });
-            const emitStub = sandbox.stub(annotationDialog, 'emit');
+            }));
             const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
-
-            annotationDialog._activateReply();
+            dialog._activateReply();
             replyTextEl.innerHTML += 'the preview SDK is great!';
-            annotationDialog._postReply();
-            expect(emitStub).to.have.been.calledWith('annotationcreate', { text: 'the preview SDK is great!' });
+
+            dialog._postReply();
+            expect(stubs.emit).to.be.calledWith('annotationcreate', { text: 'the preview SDK is great!' });
         });
 
         it('should clear the reply text element after posting', () => {
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is amazing!',
                 user: { id: 1, name: 'user' },
                 permissions: { can_delete: true }
-            });
+            }));
             const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
-
-            annotationDialog._activateReply();
+            dialog._activateReply();
             replyTextEl.innerHTML += 'the preview SDK is great!';
-            annotationDialog._postReply();
-            expect(replyTextEl.value).to.equal('');
+
+            dialog._postReply();
+            expect(replyTextEl).to.have.value('');
         });
     });
 
     describe('_showDeleteConfirmation()', () => {
         it('should show the correct UI when a user clicks on delete', () => {
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is amazing!',
                 user: { id: 1, name: 'user' },
                 permissions: { can_delete: true }
-            });
+            }));
             const showElementStub = sandbox.stub(annotatorUtil, 'showElement');
 
-            annotationDialog._showDeleteConfirmation(1);
+            dialog._showDeleteConfirmation(1);
             expect(showElementStub).to.be.called;
         });
     });
 
     describe('_hideDeleteConfirmation()', () => {
         it('should show the correct UI when a user clicks cancel in the delete confirmation', () => {
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is amazing!',
                 user: { id: 1, name: 'user' },
                 permissions: { can_delete: true }
-            });
+            }));
             const hideElementStub = sandbox.stub(annotatorUtil, 'hideElement');
+            dialog._showDeleteConfirmation(1);
 
-            annotationDialog._showDeleteConfirmation(1);
-            annotationDialog._hideDeleteConfirmation(1);
+            dialog._hideDeleteConfirmation(1);
             expect(hideElementStub).to.be.called;
         });
     });
 
-    describe('_deleteAnnotation()', () => {
+    describe('deleteAnnotation()', () => {
         it('should emit the annotationdelete message', () => {
-            annotationDialog._addAnnotationElement({
+            dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
                 text: 'the preview sdk is amazing!',
                 user: { id: 1, name: 'user' },
                 permissions: { can_delete: true }
-            });
-            const emitStub = sandbox.stub(annotationDialog, 'emit');
+            }));
 
-            annotationDialog._deleteAnnotation(1);
-            expect(emitStub).to.have.been.calledWith('annotationdelete', { annotationID: 1 });
+            dialog.deleteAnnotation(1);
+            expect(stubs.emit).to.be.calledWith('annotationdelete', { annotationID: 1 });
         });
     });
 });

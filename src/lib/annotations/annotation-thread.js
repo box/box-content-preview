@@ -112,14 +112,12 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     showDialog() {
-        // Setup the dialog element if it has not already been created
+        // Prevents the annotations dialog from being created each mousemove
         if (!this._dialog._element) {
             this._dialog.setup(this._annotations);
         }
 
-        if (this._dialog) {
-            this._dialog.show();
-        }
+        this._dialog.show();
     }
 
     /**
@@ -141,7 +139,7 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     saveAnnotation(type, text) {
-        const annotationData = this._createAnnotationData(type, text);
+        const annotationData = this.createAnnotationData(type, text);
 
         // Save annotation on client
         const tempAnnotationID = AnnotationService.generateID();
@@ -154,7 +152,7 @@ class AnnotationThread extends EventEmitter {
         tempAnnotationData.created = (new Date()).getTime();
         tempAnnotationData.modified = tempAnnotationData.created;
         const tempAnnotation = new Annotation(tempAnnotationData);
-        this._saveAnnotationToThread(tempAnnotation);
+        this.saveAnnotationToThread(tempAnnotation);
 
         // Changing state from pending
         this._state = constants.ANNOTATION_STATE_HOVER;
@@ -164,15 +162,19 @@ class AnnotationThread extends EventEmitter {
             // If no temporary annotation is found, save to thread normally
             const tempIdx = this._annotations.indexOf(tempAnnotation);
             if (tempIdx === -1) {
-                this._saveAnnotationToThread(savedAnnotation);
+                this.saveAnnotationToThread(savedAnnotation);
             }
+
+            // Add thread number to associated dialog and thread
+            this._thread = this._thread || savedAnnotation._thread;
+            this._dialog._element.dataset.threadNumber = this._thread;
 
             // Otherwise, replace temporary annotation with annotation saved to server
             this._annotations[tempIdx] = savedAnnotation;
 
             if (this._dialog) {
-                this._dialog.removeAnnotation(tempAnnotationID);
                 this._dialog.addAnnotation(savedAnnotation);
+                this._dialog.removeAnnotation(tempAnnotationID);
             }
         }).catch(() => {
             // Remove temporary annotation
@@ -202,7 +204,7 @@ class AnnotationThread extends EventEmitter {
 
         // If the user doesn't have permission to delete the entire highlight
         // annotation, display the annotation as a plain highlight
-        const canDeleteAnnotation = this._annotations[0] && this._annotations[0].permissions && this._annotations[0].permissions.can_delete;
+        let canDeleteAnnotation = this._annotations.length > 0 && this._annotations[0].permissions && this._annotations[0].permissions.can_delete;
         if (annotatorUtil.isPlainHighlight(this._annotations) && !canDeleteAnnotation) {
             this.cancelFirstComment();
 
@@ -221,6 +223,7 @@ class AnnotationThread extends EventEmitter {
             .then(() => {
                 // Ensures that blank highlight comment is also deleted when removing
                 // the last comment on a highlight
+                canDeleteAnnotation = this._annotations.length > 0 && this._annotations[0].permissions && this._annotations[0].permissions.can_delete;
                 if (annotatorUtil.isPlainHighlight(this._annotations) && canDeleteAnnotation) {
                     this._annotationService.delete(this._annotations[0].annotationID);
                 }
@@ -320,8 +323,8 @@ class AnnotationThread extends EventEmitter {
      * Sets up the thread. Creates HTML for annotation indicator, sets
      * appropriate dialog, and binds event listeners.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     setup() {
         if (this._annotations.length === 0) {
@@ -339,19 +342,19 @@ class AnnotationThread extends EventEmitter {
     /**
      * Sets up indicator element.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     setupElement() {
-        this._element = this._createElement();
+        this._element = this.createElement();
         this.bindDOMListeners();
     }
 
     /**
      * Binds DOM event listeners for the thread.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     bindDOMListeners() {
         if (!this._element) {
@@ -360,14 +363,14 @@ class AnnotationThread extends EventEmitter {
 
         this._element.addEventListener('click', this.showDialog);
         this._element.addEventListener('mouseenter', this.showDialog);
-        this._element.addEventListener('mouseleave', this._mouseoutHandler);
+        this._element.addEventListener('mouseleave', this.mouseoutHandler);
     }
 
     /**
      * Unbinds DOM event listeners for the thread.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     unbindDOMListeners() {
         if (!this._element) {
@@ -376,41 +379,30 @@ class AnnotationThread extends EventEmitter {
 
         this._element.removeEventListener('click', this.showDialog);
         this._element.removeEventListener('mouseenter', this.showDialog);
-        this._element.removeEventListener('mouseleave', this._mouseoutHandler);
+        this._element.removeEventListener('mouseleave', this.mouseoutHandler);
     }
 
     /**
      * Binds custom event listeners for the dialog.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     bindCustomListenersOnDialog() {
         if (!this._dialog) {
             return;
         }
 
-        // Annotation created
-        this._dialog.addListener('annotationcreate', (data) => {
-            this.saveAnnotation(constants.ANNOTATION_TYPE_POINT, data.text);
-        });
-
-        // Annotation canceled
-        this._dialog.addListener('annotationcancel', () => {
-            this.destroy();
-        });
-
-        // Annotation deleted
-        this._dialog.addListener('annotationdelete', (data) => {
-            this.deleteAnnotation(data.annotationID);
-        });
+        this._dialog.addListener('annotationcreate', this.createAnnotation);
+        this._dialog.addListener('annotationcancel', this.destroy);
+        this._dialog.addListener('annotationdelete', this.deleteAnnotationWithID);
     }
 
     /**
      * Unbinds custom event listeners for the dialog.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     unbindCustomListenersOnDialog() {
         if (!this._dialog) {
@@ -429,10 +421,10 @@ class AnnotationThread extends EventEmitter {
     /**
      * Creates the HTML for the annotation indicator.
      *
-     * @return {HTMLElement} HTML element
      * @private
+     * @return {HTMLElement} HTML element
      */
-    _createElement() {
+    createElement() {
         const indicatorEl = document.createElement('button');
         indicatorEl.classList.add('bp-point-annotation-btn');
         indicatorEl.setAttribute('data-type', 'annotation-indicator');
@@ -443,10 +435,10 @@ class AnnotationThread extends EventEmitter {
     /**
      * Mouseout handler. Hides dialog if we aren't creating the first one.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
-    _mouseoutHandler() {
+    mouseoutHandler() {
         if (this._annotations.length !== 0) {
             this.hideDialog();
         }
@@ -456,11 +448,11 @@ class AnnotationThread extends EventEmitter {
      * Saves the provided annotation to the thread and dialog if appropriate
      * and resets state to inactive.
      *
+     * @private
      * @param {Annotation} annotation - Annotation to save
      * @return {void}
-     * @private
      */
-    _saveAnnotationToThread(annotation) {
+    saveAnnotationToThread(annotation) {
         this._annotations.push(annotation);
 
         if (this._dialog) {
@@ -471,12 +463,12 @@ class AnnotationThread extends EventEmitter {
     /**
      * Create an annotation data object to pass to annotation service.
      *
+     * @private
      * @param {string} type - Type of annotation
      * @param {string} text - Annotation text
      * @return {Object} Annotation data
-     * @private
      */
-    _createAnnotationData(type, text) {
+    createAnnotationData(type, text) {
         return {
             fileVersionID: this._fileVersionID,
             type,
@@ -486,6 +478,28 @@ class AnnotationThread extends EventEmitter {
             threadID: this._threadID,
             thread: this._thread
         };
+    }
+
+    /**
+     * Creates a new point annotation
+     *
+     * @private
+     * @param data - Annotation data
+     * @return {void}
+     */
+    createAnnotation(data) {
+        this.saveAnnotation(constants.ANNOTATION_TYPE_POINT, data.text);
+    }
+
+    /**
+     * Deletes annotation with annotationID from thread
+     *
+     * @private
+     * @param data - Annotation data
+     * @return {void}
+     */
+    deleteAnnotationWithID(data) {
+        this.deleteAnnotation(data.annotationID);
     }
 }
 

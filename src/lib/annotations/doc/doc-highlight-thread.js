@@ -62,7 +62,7 @@ class DocHighlightThread extends AnnotationThread {
      * @return {void}
      */
     hide() {
-        this._draw(constants.HIGHLIGHT_ERASE_FILL_STYLE);
+        this.draw(constants.HIGHLIGHT_ERASE_FILL_STYLE);
     }
 
     /**
@@ -159,7 +159,7 @@ class DocHighlightThread extends AnnotationThread {
      * the annotations dialog
      */
     isOnHighlight(event) {
-        return docAnnotatorUtil.isInDialog(event, this._dialog.element) || this._isInHighlight(event);
+        return docAnnotatorUtil.isInDialog(event, this._dialog.element) || this.isInHighlight(event);
     }
 
     /**
@@ -203,7 +203,7 @@ class DocHighlightThread extends AnnotationThread {
             this._state = constants.ANNOTATION_STATE_HOVER;
 
         // If mouse is in highlight, change state to hover or active-hover
-        } else if (this._isInHighlight(event)) {
+        } else if (this.isInHighlight(event)) {
             this.activateDialog();
 
         // If mouse is not in highlight, and state is active, do not override
@@ -247,14 +247,14 @@ class DocHighlightThread extends AnnotationThread {
                 break;
             case constants.ANNOTATION_STATE_INACTIVE:
                 this.hideDialog();
-                this._draw(constants.HIGHLIGHT_NORMAL_FILL_STYLE);
+                this.draw(constants.HIGHLIGHT_NORMAL_FILL_STYLE);
                 break;
             case constants.ANNOTATION_STATE_HOVER:
             case constants.ANNOTATION_STATE_ACTIVE:
             case constants.ANNOTATION_STATE_PENDING_ACTIVE:
             case constants.ANNOTATION_STATE_ACTIVE_HOVER:
                 this.showDialog();
-                this._draw(constants.HIGHLIGHT_ACTIVE_FILL_STYLE);
+                this.draw(constants.HIGHLIGHT_ACTIVE_FILL_STYLE);
                 break;
             default:
                 break;
@@ -293,18 +293,18 @@ class DocHighlightThread extends AnnotationThread {
      * No-op setup element. Highlight threads have no HTML indicator since
      * they are drawn onto the canvas.
      *
+     * @protected
      * @override
      * @return {void}
-     * @protected
      */
     setupElement() {}
 
     /**
      * Binds custom event listeners for the dialog.
      *
+     * @protected
      * @override
      * @return {void}
-     * @protected
      */
     /* istanbul ignore next */
     bindCustomListenersOnDialog() {
@@ -350,9 +350,9 @@ class DocHighlightThread extends AnnotationThread {
     /**
      * Unbinds custom event listeners for the dialog.
      *
+     * @protected
      * @override
      * @return {void}
-     * @protected
      */
     unbindCustomListenersOnDialog() {
         this.removeAllListeners('annotationdraw');
@@ -369,18 +369,18 @@ class DocHighlightThread extends AnnotationThread {
     /**
      * Draws the highlight with the specified fill style.
      *
+     * @private
      * @param {string} fillStyle - RGBA fill style
      * @return {void}
-     * @private
      */
     /* istanbul ignore next */
-    _draw(fillStyle) {
-        const context = this._getContext();
+    draw(fillStyle) {
+        const context = this.getContext();
         if (!context) {
             return;
         }
 
-        const pageDimensions = this._getPageEl().getBoundingClientRect();
+        const pageDimensions = this.getPageEl().getBoundingClientRect();
         const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
         const zoomScale = annotatorUtil.getScale(this._annotatedElement);
         const dimensionScale = annotatorUtil.getDimensionScale(this._location.dimensions, pageDimensions, zoomScale, PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM);
@@ -430,12 +430,12 @@ class DocHighlightThread extends AnnotationThread {
     /**
      * Checks whether mouse is inside the highlight represented by this thread.
      *
+     * @private
      * @param {Event} event - Mouse event
      * @return {boolean} Whether or not mouse is inside highlight
-     * @private
      */
-    _isInHighlight(event) {
-        const pageEl = this._getPageEl();
+    isInHighlight(event) {
+        const pageEl = this.getPageEl();
         const pageDimensions = pageEl.getBoundingClientRect();
         const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
         const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
@@ -470,22 +470,22 @@ class DocHighlightThread extends AnnotationThread {
     /**
      * Gets the page element this thread is on.
      *
-     * @return {HTMLElement} Page element
      * @private
+     * @return {HTMLElement} Page element
      */
-    _getPageEl() {
+    getPageEl() {
         return this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`);
     }
 
     /**
      * Gets the context this highlight should be drawn on.
      *
-     * @return {RenderingContext|null} Context
      * @private
+     * @return {RenderingContext|null} Context
      */
-    _getContext() {
+    getContext() {
         // Create annotation layer if one does not exist (e.g. first load or page resize)
-        const pageEl = this._getPageEl();
+        const pageEl = this.getPageEl();
         if (!pageEl) {
             return null;
         }

@@ -118,8 +118,8 @@ class Annotator extends EventEmitter {
     /**
      * Renders annotations from memory.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     renderAnnotations() {
         Object.keys(this._threads).forEach((page) => {
@@ -132,8 +132,9 @@ class Annotator extends EventEmitter {
     /**
      * Renders annotations from memory for a specified page.
      *
-     * @return {void}
      * @private
+     * @param {number} pageNum - Page number
+     * @return {void}
      */
     renderAnnotationsOnPage(pageNum) {
         if (this._threads[pageNum]) {
@@ -235,8 +236,8 @@ class Annotator extends EventEmitter {
     /**
      * Annotations setup.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     setupAnnotations() {
         // Map of page => [threads on page]
@@ -249,8 +250,8 @@ class Annotator extends EventEmitter {
      * Fetches persisted annotations, creates threads as needed, and generates
      * an in-memory map of page to threads.
      *
-     * @return {Promise} Promise for fetching saved annotations
      * @protected
+     * @return {Promise} Promise for fetching saved annotations
      */
     fetchAnnotations() {
         this._threads = {};
@@ -274,8 +275,8 @@ class Annotator extends EventEmitter {
      * annotator that needs to bind event listeners to the DOM in the normal
      * state (ie not in any annotation mode).
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     bindDOMListeners() {}
 
@@ -284,16 +285,16 @@ class Annotator extends EventEmitter {
      * annotator that needs to bind event listeners to the DOM in the normal
      * state (ie not in any annotation mode).
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     unbindDOMListeners() {}
 
     /**
      * Binds custom event listeners for the Annotation Service.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     bindCustomListenersOnService() {
         const service = this._annotationService;
@@ -329,8 +330,8 @@ class Annotator extends EventEmitter {
     /**
      * Unbinds custom event listeners for the Annotation Service.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     unbindCustomListenersOnService() {
         const service = this._annotationService;
@@ -343,9 +344,9 @@ class Annotator extends EventEmitter {
     /**
      * Binds custom event listeners for a thread.
      *
+     * @protected
      * @param {AnnotationThread} thread - Thread to bind events to
      * @return {void}
-     * @protected
      */
     bindCustomListenersOnThread(thread) {
         // Thread was deleted, remove from thread map
@@ -369,9 +370,9 @@ class Annotator extends EventEmitter {
     /**
      * Unbinds custom event listeners for the thread.
      *
+     * @protected
      * @param {AnnotationThread} thread - Thread to bind events to
      * @return {void}
-     * @protected
      */
     unbindCustomListenersOnThread(thread) {
         thread.removeAllListeners('threaddeleted');
@@ -381,8 +382,8 @@ class Annotator extends EventEmitter {
     /**
      * Binds event listeners for point annotation mode.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     bindPointModeListeners() {
         this._annotatedElement.addEventListener('click', this.pointClickHandler);
@@ -391,8 +392,8 @@ class Annotator extends EventEmitter {
     /**
      * Unbinds event listeners for point annotation mode.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     unbindPointModeListeners() {
         this._annotatedElement.removeEventListener('click', this.pointClickHandler);
@@ -402,9 +403,9 @@ class Annotator extends EventEmitter {
      * Event handler for adding a point annotation. Creates a point annotation
      * thread at the clicked location.
      *
+     * @protected
      * @param {Event} event - DOM event
      * @return {void}
-     * @protected
      */
     pointClickHandler(event) {
         event.stopPropagation();
@@ -437,9 +438,9 @@ class Annotator extends EventEmitter {
     /**
      * Adds thread to in-memory map.
      *
+     * @protected
      * @param {AnnotationThread} thread - Thread to add
      * @return {void}
-     * @protected
      */
     addThreadToMap(thread) {
         // Add thread to in-memory map
@@ -451,8 +452,8 @@ class Annotator extends EventEmitter {
     /**
      * Returns whether or not annotator is in point mode.
      *
-     * @return {boolean} Whether or not in point mode
      * @protected
+     * @return {boolean} Whether or not in point mode
      */
     isInPointMode() {
         return this._annotatedElement.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE);
@@ -465,9 +466,9 @@ class Annotator extends EventEmitter {
     /**
      * Destroys pending threads.
      *
+     * @private
      * @return {boolean} Whether or not any pending threads existed on the
      * current file
-     * @private
      */
     _destroyPendingThreads() {
         let hasPendingThreads = false;

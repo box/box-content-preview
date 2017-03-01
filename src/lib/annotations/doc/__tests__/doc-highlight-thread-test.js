@@ -22,7 +22,7 @@ describe('doc-highlight-thread', () => {
             annotations: [],
             annotationService: new AnnotationService({
                 api: 'https://app.box.com/api',
-                fileID: 1,
+                fileId: 1,
                 token: 'someToken',
                 canAnnotate: true
             }),
@@ -90,11 +90,11 @@ describe('doc-highlight-thread', () => {
 
     describe('hide()', () => {
         it('should erase highlight thread from the UI', () => {
-            sandbox.stub(highlightThread, '_draw');
+            sandbox.stub(highlightThread, 'draw');
 
             highlightThread.hide();
 
-            expect(highlightThread._draw).to.be.called;
+            expect(highlightThread.draw).to.be.called;
         });
     });
 
@@ -142,7 +142,7 @@ describe('doc-highlight-thread', () => {
                 ],
                 annotationService: new AnnotationService({
                     api: 'https://app.box.com/api',
-                    fileID: 1,
+                    fileId: 1,
                     token: 'someToken',
                     canAnnotate: true
                 }),
@@ -171,7 +171,7 @@ describe('doc-highlight-thread', () => {
                 ],
                 annotationService: new AnnotationService({
                     api: 'https://app.box.com/api',
-                    fileID: 1,
+                    fileId: 1,
                     token: 'someToken',
                     canAnnotate: true
                 }),
@@ -264,7 +264,7 @@ describe('doc-highlight-thread', () => {
 
     describe('isOnHighlight()', () => {
         it('should return true if mouse event is over highlight', () => {
-            sandbox.stub(highlightThread, '_isInHighlight').returns(true);
+            sandbox.stub(highlightThread, 'isInHighlight').returns(true);
 
             const result = highlightThread.isOnHighlight({});
 
@@ -272,7 +272,7 @@ describe('doc-highlight-thread', () => {
         });
 
         it('should return true if mouse event is over highlight dialog', () => {
-            sandbox.stub(highlightThread, '_isInHighlight').returns(false);
+            sandbox.stub(highlightThread, 'isInHighlight').returns(false);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(true);
 
             const result = highlightThread.isOnHighlight({});
@@ -281,7 +281,7 @@ describe('doc-highlight-thread', () => {
         });
 
         it('should return false if mouse event is neither over the highlight or the dialog', () => {
-            sandbox.stub(highlightThread, '_isInHighlight').returns(false);
+            sandbox.stub(highlightThread, 'isInHighlight').returns(false);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
 
             const result = highlightThread.isOnHighlight({});
@@ -337,7 +337,7 @@ describe('doc-highlight-thread', () => {
 
     describe('onMousemove()', () => {
         it('should delay drawing highlight if mouse is hovering over a highlight dialog and not pending comment', () => {
-            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
+            sandbox.stub(highlightThread, 'getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(true);
             highlightThread._state = constants.ANNOTATION_STATE_INACTIVE;
 
@@ -348,7 +348,7 @@ describe('doc-highlight-thread', () => {
         });
 
         it('should do nothing if mouse is hovering over a highlight dialog and pending comment', () => {
-            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
+            sandbox.stub(highlightThread, 'getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(true);
             sandbox.stub(highlightThread, 'activateDialog');
             highlightThread._state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
@@ -360,9 +360,9 @@ describe('doc-highlight-thread', () => {
         });
 
         it('should delay drawing highlight if mouse is hovering over a highlight', () => {
-            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
+            sandbox.stub(highlightThread, 'getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
-            sandbox.stub(highlightThread, '_isInHighlight').returns(true);
+            sandbox.stub(highlightThread, 'isInHighlight').returns(true);
             sandbox.stub(highlightThread, 'activateDialog');
             highlightThread._state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
 
@@ -373,9 +373,9 @@ describe('doc-highlight-thread', () => {
         });
 
         it('should delay drawing highlight if mouse is not in highlight and the state is active', () => {
-            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
+            sandbox.stub(highlightThread, 'getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
-            sandbox.stub(highlightThread, '_isInHighlight').returns(false);
+            sandbox.stub(highlightThread, 'isInHighlight').returns(false);
             highlightThread._state = constants.ANNOTATION_STATE_ACTIVE;
 
             const result = highlightThread.onMousemove({});
@@ -385,9 +385,9 @@ describe('doc-highlight-thread', () => {
         });
 
         it('should not delay drawing highlight if mouse is not in highlight and the state is not already inactive', () => {
-            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
+            sandbox.stub(highlightThread, 'getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
-            sandbox.stub(highlightThread, '_isInHighlight').returns(false);
+            sandbox.stub(highlightThread, 'isInHighlight').returns(false);
             highlightThread._state = constants.ANNOTATION_STATE_HOVER;
 
             const result = highlightThread.onMousemove({});
@@ -397,9 +397,9 @@ describe('doc-highlight-thread', () => {
         });
 
         it('should not delay drawing highlight if the state is already inactive', () => {
-            sandbox.stub(highlightThread, '_getPageEl').returns(highlightThread._annotatedElement);
+            sandbox.stub(highlightThread, 'getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(false);
-            sandbox.stub(highlightThread, '_isInHighlight').returns(false);
+            sandbox.stub(highlightThread, 'isInHighlight').returns(false);
             highlightThread._state = constants.ANNOTATION_STATE_INACTIVE;
 
             const result = highlightThread.onMousemove({});
@@ -421,24 +421,24 @@ describe('doc-highlight-thread', () => {
 
         it('should not show the dialog if the state is inactive and redraw the highlight as not active', () => {
             sandbox.stub(highlightThread, 'hideDialog');
-            sandbox.stub(highlightThread, '_draw');
+            sandbox.stub(highlightThread, 'draw');
 
             highlightThread._state = constants.ANNOTATION_STATE_INACTIVE;
             highlightThread.show();
 
             expect(highlightThread.hideDialog).to.be.called;
-            expect(highlightThread._draw).to.be.calledWith(constants.HIGHLIGHT_NORMAL_FILL_STYLE);
+            expect(highlightThread.draw).to.be.calledWith(constants.HIGHLIGHT_NORMAL_FILL_STYLE);
         });
 
         it('should show the dialog if the state is not pending and redraw the highlight as active', () => {
             sandbox.stub(highlightThread, 'showDialog');
-            sandbox.stub(highlightThread, '_draw');
+            sandbox.stub(highlightThread, 'draw');
 
             highlightThread._state = constants.ANNOTATION_STATE_HOVER;
             highlightThread.show();
 
             expect(highlightThread.showDialog).to.be.called;
-            expect(highlightThread._draw).to.be.calledWith(constants.HIGHLIGHT_ACTIVE_FILL_STYLE);
+            expect(highlightThread.draw).to.be.calledWith(constants.HIGHLIGHT_ACTIVE_FILL_STYLE);
         });
     });
 
@@ -467,22 +467,22 @@ describe('doc-highlight-thread', () => {
         });
     });
 
-    describe('_draw()', () => {
+    describe('draw()', () => {
         it('should not draw if no context exists', () => {
-            sandbox.stub(highlightThread, '_getPageEl');
-            sandbox.stub(highlightThread, '_getContext');
-            highlightThread._draw('fill');
-            expect(highlightThread._getPageEl).to.not.be.called;
+            sandbox.stub(highlightThread, 'getPageEl');
+            sandbox.stub(highlightThread, 'getContext');
+            highlightThread.draw('fill');
+            expect(highlightThread.getPageEl).to.not.be.called;
         });
     });
 
-    describe('_isInHighlight()', () => {
+    describe('isInHighlight()', () => {
         it('should not scale points if there is no dimensionScale', () => {
             const pageEl = {
                 getBoundingClientRect: sandbox.stub()
             };
             pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
-            const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(pageEl);
+            const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(pageEl);
             const dimensionScaleStub = sandbox.stub(annotatorUtil, 'getDimensionScale').returns(false);
             const quadPoint = {
                 map: sandbox.stub()
@@ -490,7 +490,7 @@ describe('doc-highlight-thread', () => {
             highlightThread._location.quadPoints = [quadPoint, quadPoint, quadPoint];
             const convertStub = sandbox.stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace').returns([0, 0, 0, 0, 0, 0, 0, 0]);
 
-            highlightThread._isInHighlight({ clientX: 0, clientY: 0 });
+            highlightThread.isInHighlight({ clientX: 0, clientY: 0 });
             expect(pageElStub).to.be.called;
             expect(pageEl.getBoundingClientRect).to.be.called;
             expect(dimensionScaleStub).to.be.called;
@@ -503,7 +503,7 @@ describe('doc-highlight-thread', () => {
                 getBoundingClientRect: sandbox.stub()
             };
             pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
-            const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(pageEl);
+            const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(pageEl);
             const dimensionScaleStub = sandbox.stub(annotatorUtil, 'getDimensionScale').returns(true);
             const quadPoint = {
                 map: sandbox.stub()
@@ -511,7 +511,7 @@ describe('doc-highlight-thread', () => {
             highlightThread._location.quadPoints = [quadPoint, quadPoint, quadPoint];
             const convertStub = sandbox.stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace').returns([0, 0, 0, 0, 0, 0, 0, 0]);
 
-            highlightThread._isInHighlight({ clientX: 0, clientY: 0 });
+            highlightThread.isInHighlight({ clientX: 0, clientY: 0 });
             expect(pageElStub).to.be.called;
             expect(pageEl.getBoundingClientRect).to.be.called;
             expect(dimensionScaleStub).to.be.called;
@@ -524,7 +524,7 @@ describe('doc-highlight-thread', () => {
                 getBoundingClientRect: sandbox.stub()
             };
             pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
-            const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(pageEl);
+            const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(pageEl);
             const dimensionScaleStub = sandbox.stub(annotatorUtil, 'getDimensionScale').returns(false);
             const quadPoint = {
                 map: sandbox.stub()
@@ -533,7 +533,7 @@ describe('doc-highlight-thread', () => {
             const convertStub = sandbox.stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace').returns([0, 0, 0, 0, 0, 0, 0, 0]);
             const pointInPolyStub = sandbox.stub(docAnnotatorUtil, 'isPointInPolyOpt');
 
-            highlightThread._isInHighlight({ clientX: 0, clientY: 0 });
+            highlightThread.isInHighlight({ clientX: 0, clientY: 0 });
             expect(pageElStub).to.be.called;
             expect(pageEl.getBoundingClientRect).to.be.called;
             expect(dimensionScaleStub).to.be.called;
@@ -543,19 +543,19 @@ describe('doc-highlight-thread', () => {
         });
     });
 
-    describe('_getPageEl()', () => {
+    describe('getPageEl()', () => {
         it('should return the result of querySelector', () => {
             const queryStub = sandbox.stub(highlightThread._annotatedElement, 'querySelector');
 
-            highlightThread._getPageEl();
+            highlightThread.getPageEl();
             expect(queryStub).to.be.called;
         });
     });
 
-    describe('_getContext()', () => {
+    describe('getContext()', () => {
         it('should return null if there is no pageEl', () => {
-            const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(false);
-            const result = highlightThread._getContext();
+            const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(false);
+            const result = highlightThread.getContext();
 
             expect(pageElStub).to.be.called;
             expect(result).to.equal(null);
@@ -572,11 +572,11 @@ describe('doc-highlight-thread', () => {
                 height: 0,
                 getContext: sandbox.stub()
             };
-            const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(pageEl);
+            const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(pageEl);
             pageEl.querySelector.returns(annotationLayer);
             annotationLayer.getContext.returns('2d context');
 
-            highlightThread._getContext();
+            highlightThread.getContext();
             expect(pageElStub).to.be.called;
             expect(annotationLayer.getContext).to.be.called;
             expect(pageEl.insertBefore).to.not.be.called;
@@ -596,13 +596,13 @@ describe('doc-highlight-thread', () => {
                     add: sandbox.stub()
                 }
             };
-            const pageElStub = sandbox.stub(highlightThread, '_getPageEl').returns(pageEl);
+            const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(pageEl);
             pageEl.querySelector.returns(undefined);
             const docStub = sandbox.stub(document, 'createElement').returns(annotationLayer);
             annotationLayer.getContext.returns('2d context');
             pageEl.getBoundingClientRect.returns({ width: 0, height: 0 });
 
-            highlightThread._getContext();
+            highlightThread.getContext();
             expect(pageElStub).to.be.called;
             expect(docStub).to.be.called;
             expect(annotationLayer.getContext).to.be.called;

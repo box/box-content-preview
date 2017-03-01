@@ -45,7 +45,7 @@ class AnnotationService extends EventEmitter {
      * The data object for constructing an Annotation Service.
      * @typedef {Object} AnnotationServiceData
      * @property {string} api API root
-     * @property {string} fileID File ID
+     * @property {string} fileId File ID
      * @property {string} token Access token
      * @property {boolean} canAnnotate Can user annotate
      */
@@ -63,7 +63,7 @@ class AnnotationService extends EventEmitter {
     constructor(data) {
         super();
         this._api = data.api;
-        this._fileID = data.fileID;
+        this._fileId = data.fileId;
         this._headers = getHeaders({}, data.token);
         this._canAnnotate = data.canAnnotate;
         this._user = ANONYMOUS_USER;
@@ -227,9 +227,9 @@ class AnnotationService extends EventEmitter {
     /**
      * Generates a map of thread ID to annotations in thread.
      *
+     * @private
      * @param {Annotation[]} annotations - Annotations to generate map from
      * @return {Object} Map of thread ID to annotations in that thread
-     * @private
      */
     _createThreadMap(annotations) {
         const threadMap = {};
@@ -254,9 +254,9 @@ class AnnotationService extends EventEmitter {
     /**
      * Generates an Annotation object from an API response.
      *
+     * @private
      * @param {Object} data - API response data
      * @return {Annotation} Created annotation
-     * @private
      */
     _createAnnotation(data) {
         return new Annotation({
@@ -281,13 +281,14 @@ class AnnotationService extends EventEmitter {
     /**
      * Construct the URL to read annotations with a marker or limit added
      *
+     * @private
      * @param {string} fileVersionID - File version ID to fetch annotations for
      * @param {string} marker - marker to use if there are more than limit annotations
      *  * @param {int} limit - the amout of annotations the API will return per call
      * @return {Promise} Promise that resolves with fetched annotations
      */
     _getReadUrl(fileVersionID, marker = null, limit = null) {
-        let apiUrl = `${this._api}/2.0/files/${this._fileID}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
+        let apiUrl = `${this._api}/2.0/files/${this._fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
         if (marker) {
             apiUrl += `&marker=${marker}`;
         }
@@ -303,6 +304,7 @@ class AnnotationService extends EventEmitter {
      * Reads annotations from file version ID starting at a marker. The default
      * limit is 100 annotations per API call.
      *
+     * @private
      * @param {string} fileVersionID - File version ID to fetch annotations for
      * @param {string} marker - marker to use if there are more than limit annotations
      * @param {int} limit - the amout of annotations the API will return per call

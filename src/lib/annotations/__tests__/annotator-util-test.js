@@ -14,7 +14,8 @@ import {
     isHighlightAnnotation,
     getDimensionScale,
     htmlEscape,
-    repositionCaret
+    repositionCaret,
+    isPending
 } from '../annotator-util';
 import * as constants from '../annotation-constants';
 
@@ -306,6 +307,20 @@ describe('annotator-util', () => {
             const annotationCaretEl = dialogEl.querySelector('.bp-annotation-caret');
             expect(dialogX).to.equal(initX); // dialog x unchanged
             expect(annotationCaretEl.style.left).to.equal('50%'); // caret centered with dialog
+        });
+    });
+
+    describe('isPending()', () => {
+        it('return true if thread is pending or pending-active', () => {
+            expect(isPending(constants.ANNOTATION_STATE_PENDING)).to.be.true;
+            expect(isPending(constants.ANNOTATION_STATE_PENDING_ACTIVE)).to.be.true;
+        });
+
+        it('return false if thread is notpending', () => {
+            expect(isPending(constants.ANNOTATION_STATE_ACTIVE)).to.be.false;
+            expect(isPending(constants.ANNOTATION_STATE_ACTIVE_HOVER)).to.be.false;
+            expect(isPending(constants.ANNOTATION_STATE_HOVER)).to.be.false;
+            expect(isPending(constants.ANNOTATION_STATE_INACTIVE)).to.be.false;
         });
     });
 });
