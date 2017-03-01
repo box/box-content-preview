@@ -124,7 +124,7 @@ class DocBase extends Base {
             this.prefetchAssets(JS, CSS);
         }
 
-        if (preload) {
+        if (preload && this.getViewerOption('preload')) {
             const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
             if (preloadRep && this.isRepresentationReady(preloadRep)) {
                 const { url_template: template } = preloadRep.content;

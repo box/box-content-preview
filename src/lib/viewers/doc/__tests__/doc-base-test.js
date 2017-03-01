@@ -146,6 +146,25 @@ describe('doc-base', () => {
             expect(docBase.prefetchAssets).to.be.called;
         });
 
+        it('should not fetch preload if preload is true and representation is ready but preload option is false', () => {
+            const template = 'someTemplate';
+            const preloadRep = {
+                content: {
+                    url_template: template
+                },
+                status: {
+                    state: 'success'
+                }
+            };
+            sandbox.stub(file, 'getRepresentation').returns(preloadRep);
+            sandbox.stub(docBase, 'createContentUrlWithAuthParams');
+            sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(false);
+
+            docBase.prefetch({ assets: false, preload: true, content: false });
+
+            expect(docBase.createContentUrlWithAuthParams).to.not.be.called;
+        });
+
         it('should prefetch preload if preload is true and representation is ready', () => {
             const template = 'someTemplate';
             const preloadRep = {
@@ -158,6 +177,7 @@ describe('doc-base', () => {
             };
             sandbox.stub(file, 'getRepresentation').returns(preloadRep);
             sandbox.stub(docBase, 'createContentUrlWithAuthParams');
+            sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
 
             docBase.prefetch({ assets: false, preload: true, content: false });
 
@@ -176,6 +196,7 @@ describe('doc-base', () => {
             };
             sandbox.stub(file, 'getRepresentation').returns(preloadRep);
             sandbox.stub(docBase, 'createContentUrlWithAuthParams');
+            sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
 
             docBase.prefetch({ assets: false, preload: true, content: false });
 
