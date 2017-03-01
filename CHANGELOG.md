@@ -1,5 +1,20 @@
 # Change Log
 
+## [v0.106.0](https://git.dev.box.net/Preview/Preview/tree/v0.106.0) (2017-03-01)
+[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.105.0...v0.106.0)
+
+**Merged pull requests:**
+
+- Only prefetch preload rep for next files if preload option is specified [\#1017](https://git.dev.box.net/Preview/Preview/pull/1017) ([tjin](https://git.dev.box.net/tjin))
+- fixing quality change for video [\#1016](https://git.dev.box.net/Preview/Preview/pull/1016) ([jpress](https://git.dev.box.net/jpress))
+- Removing underscores from all annotations private methods [\#1015](https://git.dev.box.net/Preview/Preview/pull/1015) ([spramod](https://git.dev.box.net/spramod))
+- Use CamelCase fileId instead of fileID [\#1010](https://git.dev.box.net/Preview/Preview/pull/1010) ([tjin](https://git.dev.box.net/tjin))
+- updating changelog and readme to v0.105.0 [\#1009](https://git.dev.box.net/Preview/Preview/pull/1009) ([jpress](https://git.dev.box.net/jpress))
+- positioning print popup [\#1007](https://git.dev.box.net/Preview/Preview/pull/1007) ([jpress](https://git.dev.box.net/jpress))
+- Annotations fixes when browser window is resized [\#997](https://git.dev.box.net/Preview/Preview/pull/997) ([spramod](https://git.dev.box.net/spramod))
+- Updating README and gitignore [\#993](https://git.dev.box.net/Preview/Preview/pull/993) ([bhuh](https://git.dev.box.net/bhuh))
+- Add ability to print xlsx files from the Office viewer. [\#983](https://git.dev.box.net/Preview/Preview/pull/983) ([jedwards](https://git.dev.box.net/jedwards))
+
 ## [v0.105.0](https://git.dev.box.net/Preview/Preview/tree/v0.105.0) (2017-02-27)
 [Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.104.0...v0.105.0)
 
