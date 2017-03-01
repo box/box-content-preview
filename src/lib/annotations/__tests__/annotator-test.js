@@ -177,7 +177,7 @@ describe('annotator', () => {
 
     describe('togglePointModeHandler()', () => {
         it('should turn annotation mode on if it is off', () => {
-            const destroyStub = sandbox.stub(annotator, '_destroyPendingThreads');
+            const destroyStub = sandbox.stub(annotator, 'destroyPendingThreads');
             sandbox.stub(annotator, 'isInPointMode').returns(false);
             sandbox.stub(annotator.notification, 'show');
             sandbox.stub(annotator, 'emit');
@@ -195,7 +195,7 @@ describe('annotator', () => {
         });
 
         it('should turn annotation mode off if it is on', () => {
-            const destroyStub = sandbox.stub(annotator, '_destroyPendingThreads');
+            const destroyStub = sandbox.stub(annotator, 'destroyPendingThreads');
             sandbox.stub(annotator, 'isInPointMode').returns(true);
             sandbox.stub(annotator.notification, 'hide');
             sandbox.stub(annotator, 'emit');
@@ -341,7 +341,7 @@ describe('annotator', () => {
         };
 
         it('should not do anything if there are pending threads', () => {
-            sandbox.stub(annotator, '_destroyPendingThreads').returns(true);
+            sandbox.stub(annotator, 'destroyPendingThreads').returns(true);
             sandbox.stub(annotator, 'getLocationFromEvent');
             sandbox.stub(annotator, 'createAnnotationThread').returns(stubs.thread);
             sandbox.stub(annotator, 'bindCustomListenersOnThread');
@@ -356,7 +356,7 @@ describe('annotator', () => {
         });
 
         it('should not create a thread if a location object cannot be inferred from the event', () => {
-            sandbox.stub(annotator, '_destroyPendingThreads').returns(false);
+            sandbox.stub(annotator, 'destroyPendingThreads').returns(false);
             sandbox.stub(annotator, 'getLocationFromEvent').returns(null);
             sandbox.stub(annotator, 'createAnnotationThread').returns(stubs.thread);
             sandbox.stub(annotator, 'bindCustomListenersOnThread');
@@ -371,7 +371,7 @@ describe('annotator', () => {
         });
 
         it('should create, show, and bind listeners to a thread', () => {
-            sandbox.stub(annotator, '_destroyPendingThreads').returns(false);
+            sandbox.stub(annotator, 'destroyPendingThreads').returns(false);
             sandbox.stub(annotator, 'getLocationFromEvent').returns({});
             sandbox.stub(annotator, 'createAnnotationThread').returns(stubs.thread);
             sandbox.stub(annotator, 'bindCustomListenersOnThread');
@@ -419,7 +419,7 @@ describe('annotator', () => {
         });
     });
 
-    describe('_destroyPendingThreads', () => {
+    describe('destroyPendingThreads', () => {
         beforeEach(() => {
             stubs.thread = {
                 location: {
@@ -436,7 +436,7 @@ describe('annotator', () => {
             const destroyStub = sandbox.stub(stubs.thread, 'destroy');
             annotator.init();
             annotator.addThreadToMap(stubs.thread);
-            const destroyed = annotator._destroyPendingThreads();
+            const destroyed = annotator.destroyPendingThreads();
 
             expect(destroyStub).to.be.called;
             expect(destroyed).to.equal(true);
@@ -445,7 +445,7 @@ describe('annotator', () => {
         it('should not destroy and return false if there are no threads', () => {
             const destroyStub = sandbox.stub(stubs.thread, 'destroy');
             annotator.init();
-            const destroyed = annotator._destroyPendingThreads();
+            const destroyed = annotator.destroyPendingThreads();
 
             expect(destroyStub).to.not.be.called;
             expect(destroyed).to.equal(false);
@@ -456,7 +456,7 @@ describe('annotator', () => {
             const destroyStub = sandbox.stub(stubs.thread, 'destroy');
             annotator.init();
             annotator.addThreadToMap(stubs.thread);
-            const destroyed = annotator._destroyPendingThreads();
+            const destroyed = annotator.destroyPendingThreads();
 
             expect(destroyStub).to.not.be.called;
             expect(destroyed).to.equal(false);
@@ -478,7 +478,7 @@ describe('annotator', () => {
             annotator.init();
             annotator.addThreadToMap(stubs.thread);
             annotator.addThreadToMap(pendingThread);
-            const destroyed = annotator._destroyPendingThreads();
+            const destroyed = annotator.destroyPendingThreads();
 
             expect(destroyStub).to.not.be.called;
             expect(destroyStub2).to.be.called;

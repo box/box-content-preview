@@ -103,7 +103,7 @@ class AnnotationService extends EventEmitter {
                         can_edit: true,
                         can_delete: true
                     };
-                    const createdAnnotation = this._createAnnotation(tempData);
+                    const createdAnnotation = this.createAnnotation(tempData);
 
                     // Set user if not set already
                     if (this._user.id === '0') {
@@ -143,7 +143,7 @@ class AnnotationService extends EventEmitter {
             reject = failure;
         });
 
-        this._readFromMarker(resolve, reject, fileVersionID);
+        this.readFromMarker(resolve, reject, fileVersionID);
         return promise;
     }
 
@@ -186,7 +186,7 @@ class AnnotationService extends EventEmitter {
      * @return {Promise} Promise that resolves with thread map
      */
     getThreadMap(fileVersionID) {
-        return this.read(fileVersionID).then(this._createThreadMap);
+        return this.read(fileVersionID).then(this.createThreadMap);
     }
 
     //--------------------------------------------------------------------------
@@ -231,7 +231,7 @@ class AnnotationService extends EventEmitter {
      * @param {Annotation[]} annotations - Annotations to generate map from
      * @return {Object} Map of thread ID to annotations in that thread
      */
-    _createThreadMap(annotations) {
+    createThreadMap(annotations) {
         const threadMap = {};
 
         // Construct map of thread ID to annotations
@@ -258,7 +258,7 @@ class AnnotationService extends EventEmitter {
      * @param {Object} data - API response data
      * @return {Annotation} Created annotation
      */
-    _createAnnotation(data) {
+    createAnnotation(data) {
         return new Annotation({
             annotationID: data.id,
             fileVersionID: data.item.id,
@@ -287,7 +287,7 @@ class AnnotationService extends EventEmitter {
      *  * @param {int} limit - the amout of annotations the API will return per call
      * @return {Promise} Promise that resolves with fetched annotations
      */
-    _getReadUrl(fileVersionID, marker = null, limit = null) {
+    getReadUrl(fileVersionID, marker = null, limit = null) {
         let apiUrl = `${this._api}/2.0/files/${this._fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
         if (marker) {
             apiUrl += `&marker=${marker}`;
@@ -310,8 +310,8 @@ class AnnotationService extends EventEmitter {
      * @param {int} limit - the amout of annotations the API will return per call
      * @return {void}
      */
-    _readFromMarker(resolve, reject, fileVersionID, marker = null, limit = null) {
-        fetch(this._getReadUrl(fileVersionID, marker, limit), {
+    readFromMarker(resolve, reject, fileVersionID, marker = null, limit = null) {
+        fetch(this.getReadUrl(fileVersionID, marker, limit), {
             headers: this._headers })
         .then((response) => response.json())
         .then((data) => {
@@ -322,11 +322,11 @@ class AnnotationService extends EventEmitter {
                 });
             } else {
                 data.entries.forEach((annotationData) => {
-                    this._annotations.push(this._createAnnotation(annotationData));
+                    this._annotations.push(this.createAnnotation(annotationData));
                 });
 
                 if (data.next_marker) {
-                    this._readFromMarker(resolve, reject, fileVersionID, data.next_marker, limit);
+                    this.readFromMarker(resolve, reject, fileVersionID, data.next_marker, limit);
                 } else {
                     resolve(this._annotations);
                 }

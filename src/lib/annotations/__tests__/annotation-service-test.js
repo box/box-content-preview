@@ -265,7 +265,7 @@ describe('annotation-service', () => {
         // @TODO(tjin): Test when getAnnotationUser() is updated after the release of transactional users
     });
 
-    describe('_createThreadMap()', () => {
+    describe('createThreadMap()', () => {
         it('should create a thread map with the correct annotations, in the correct order', () => {
             // Dates are provided as a string format from the API such as "2016-10-30T14:19:56",
             // ensures that the method converts to a Date() format for comparison/sorting
@@ -314,7 +314,7 @@ describe('annotation-service', () => {
 
             });
 
-            const threadMap = annotationService._createThreadMap([annotation1, annotation2, annotation3, annotation4]);
+            const threadMap = annotationService.createThreadMap([annotation1, annotation2, annotation3, annotation4]);
 
             expect(threadMap[annotation1.threadID].length).to.equal(3);
             expect(threadMap[annotation1.threadID][0]).to.equal(annotation1);
@@ -324,7 +324,7 @@ describe('annotation-service', () => {
         });
     });
 
-    describe('_createAnnotation()', () => {
+    describe('createAnnotation()', () => {
         it('should call the Annotation constructor', () => {
             const data = {
                 fileVersionID: 2,
@@ -338,15 +338,15 @@ describe('annotation-service', () => {
                 details: { threadID: 1 },
                 created_by: { id: 1 }
             };
-            const annotation1 = annotationService._createAnnotation(data);
+            const annotation1 = annotationService.createAnnotation(data);
 
             expect(annotation1 instanceof Annotation).to.be.true;
         });
     });
 
-    describe('_readFromMarker()', () => {
+    describe('readFromMarker()', () => {
         it('should get subsequent annotations if a marker is present', () => {
-            const markerUrl = annotationService._getReadUrl(2, 'a', 1);
+            const markerUrl = annotationService.getReadUrl(2, 'a', 1);
 
             const annotation2 = new Annotation({
                 fileVersionID: 2,
@@ -384,7 +384,7 @@ describe('annotation-service', () => {
             });
 
             annotationService._annotations = [];
-            annotationService._readFromMarker(resolve, reject, 2, 'a', 1);
+            annotationService.readFromMarker(resolve, reject, 2, 'a', 1);
             promise.then((result) => {
                 expect(result.length).to.equal(1);
                 expect(result[0].text).to.equal(annotation2.text);
@@ -393,7 +393,7 @@ describe('annotation-service', () => {
         });
 
         it('should reject with an error and show a notification if there was a problem reading', () => {
-            const markerUrl = annotationService._getReadUrl(2, 'a', 1);
+            const markerUrl = annotationService.getReadUrl(2, 'a', 1);
 
             fetchMock.mock(markerUrl, {
                 body: {
@@ -410,7 +410,7 @@ describe('annotation-service', () => {
             });
 
             annotationService._annotations = [];
-            annotationService._readFromMarker(resolve, reject, 2, 'a', 1);
+            annotationService.readFromMarker(resolve, reject, 2, 'a', 1);
             return promise.then(
                 () => {
                     throw new Error('Annotation should not have been deleted');
@@ -424,7 +424,7 @@ describe('annotation-service', () => {
         });
 
         it('should reject with an error and show a notification if the token is invalid', () => {
-            const markerUrl = annotationService._getReadUrl(2, 'a', 1);
+            const markerUrl = annotationService.getReadUrl(2, 'a', 1);
 
             fetchMock.mock(markerUrl, 401);
             const emitStub = sandbox.stub(annotationService, 'emit');
@@ -437,7 +437,7 @@ describe('annotation-service', () => {
             });
 
             annotationService._annotations = [];
-            annotationService._readFromMarker(resolve, reject, 2, 'a', 1);
+            annotationService.readFromMarker(resolve, reject, 2, 'a', 1);
             return promise.catch(
                 (error) => {
                     expect(error.message).to.equal('Could not read annotations from file due to invalid or expired token');
@@ -448,14 +448,14 @@ describe('annotation-service', () => {
         });
     });
 
-    describe('_getReadUrl()', () => {
+    describe('getReadUrl()', () => {
         it('should return the original url if no limit or marker exists', () => {
             annotationService._api = 'box';
             annotationService._fileId = 1;
             const fileVersionID = 2;
             const url = `${annotationService._api}/2.0/files/${annotationService._fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
 
-            const result = annotationService._getReadUrl(fileVersionID);
+            const result = annotationService.getReadUrl(fileVersionID);
             expect(result).to.equal(url);
         });
 
@@ -467,7 +467,7 @@ describe('annotation-service', () => {
             const limit = 1;
             const url = `${annotationService._api}/2.0/files/${annotationService._fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions&marker=${marker}&limit=${limit}`;
 
-            const result = annotationService._getReadUrl(fileVersionID, marker, limit);
+            const result = annotationService.getReadUrl(fileVersionID, marker, limit);
             expect(result).to.equal(url);
         });
     });

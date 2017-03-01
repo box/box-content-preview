@@ -170,7 +170,7 @@ class Annotator extends EventEmitter {
             buttonEl = containerEl ? containerEl.querySelector('.bp-btn-annotate') : null;
         }
 
-        this._destroyPendingThreads();
+        this.destroyPendingThreads();
 
         // If in annotation mode, turn it off
         if (this.isInPointMode()) {
@@ -412,7 +412,7 @@ class Annotator extends EventEmitter {
 
         // Determine if a point annotation dialog is already open and close the
         // current open dialog
-        const hasPendingThreads = this._destroyPendingThreads();
+        const hasPendingThreads = this.destroyPendingThreads();
         if (hasPendingThreads) {
             return;
         }
@@ -470,7 +470,7 @@ class Annotator extends EventEmitter {
      * @return {boolean} Whether or not any pending threads existed on the
      * current file
      */
-    _destroyPendingThreads() {
+    destroyPendingThreads() {
         let hasPendingThreads = false;
         Object.keys(this._threads).forEach((page) => {
             this._threads[page]

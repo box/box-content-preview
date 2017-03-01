@@ -92,7 +92,7 @@ class AnnotationDialog extends EventEmitter {
 
         // Activate appropriate textarea
         if (this._hasAnnotations) {
-            this._activateReply();
+            this.activateReply();
         } else {
             textAreaEl.classList.add(CLASS_ACTIVE);
         }
@@ -122,7 +122,7 @@ class AnnotationDialog extends EventEmitter {
      */
     hide() {
         annotatorUtil.hideElement(this._element);
-        this._deactivateReply();
+        this.deactivateReply();
     }
 
     /**
@@ -142,7 +142,7 @@ class AnnotationDialog extends EventEmitter {
         }
 
         this.addAnnotationElement(annotation);
-        this._deactivateReply(true); // Deactivate reply area and focus
+        this.deactivateReply(true); // Deactivate reply area and focus
     }
 
     /**
@@ -155,7 +155,7 @@ class AnnotationDialog extends EventEmitter {
         const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
         if (annotationEl) {
             annotationEl.parentNode.removeChild(annotationEl);
-            this._deactivateReply(); // Deactivate reply area and focus
+            this.deactivateReply(); // Deactivate reply area and focus
         }
     }
 
@@ -290,7 +290,7 @@ class AnnotationDialog extends EventEmitter {
         } else {
             const dataType = annotatorUtil.findClosestDataType(event.target);
             if (dataType === 'reply-textarea') {
-                this._activateReply();
+                this.activateReply();
             }
         }
     }
@@ -323,7 +323,7 @@ class AnnotationDialog extends EventEmitter {
             }
 
             // Ensure textarea stays open
-            this._activateReply();
+            this.activateReply();
         }
     }
 
@@ -356,38 +356,38 @@ class AnnotationDialog extends EventEmitter {
         switch (dataType) {
             // Clicking 'Post' button to create an annotation
             case 'post-annotation-btn':
-                this._postAnnotation();
+                this.postAnnotation();
                 break;
 
             // Clicking 'Cancel' button to cancel the annotation
             case 'cancel-annotation-btn':
-                this._cancelAnnotation();
-                this._deactivateReply(true);
+                this.cancelAnnotation();
+                this.deactivateReply(true);
                 break;
 
             // Clicking inside reply text area
             case 'reply-textarea':
-                this._activateReply();
+                this.activateReply();
                 break;
 
             // Canceling a reply
             case 'cancel-reply-btn':
-                this._deactivateReply(true);
+                this.deactivateReply(true);
                 break;
 
             // Clicking 'Post' button to create a reply annotation
             case 'post-reply-btn':
-                this._postReply();
+                this.postReply();
                 break;
 
             // Clicking trash icon to initiate deletion
             case 'delete-btn':
-                this._showDeleteConfirmation(annotationID);
+                this.showDeleteConfirmation(annotationID);
                 break;
 
             // Clicking 'Cancel' button to cancel deletion
             case 'cancel-delete-btn':
-                this._hideDeleteConfirmation(annotationID);
+                this.hideDeleteConfirmation(annotationID);
                 break;
 
             // Clicking 'Delete' button to confirm deletion
@@ -467,7 +467,7 @@ class AnnotationDialog extends EventEmitter {
      * @private
      * @return {void}
      */
-    _postAnnotation() {
+    postAnnotation() {
         const annotationTextEl = this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
         const text = annotationTextEl.value;
         if (text.trim() === '') {
@@ -484,7 +484,7 @@ class AnnotationDialog extends EventEmitter {
      * @private
      * @return {void}
      */
-    _cancelAnnotation() {
+    cancelAnnotation() {
         this.emit('annotationcancel');
     }
 
@@ -494,7 +494,7 @@ class AnnotationDialog extends EventEmitter {
      * @private
      * @return {void}
      */
-    _activateReply() {
+    activateReply() {
         const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
 
         // Don't activate if reply textarea is already active
@@ -519,7 +519,7 @@ class AnnotationDialog extends EventEmitter {
      * @param {Boolean} clearText - Whether or not text in text area should be cleared
      * @return {void}
      */
-    _deactivateReply(clearText) {
+    deactivateReply(clearText) {
         if (!this._element) {
             return;
         }
@@ -544,7 +544,7 @@ class AnnotationDialog extends EventEmitter {
      * @private
      * @return {void}
      */
-    _postReply() {
+    postReply() {
         const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
         const text = replyTextEl.value;
         if (text.trim() === '') {
@@ -562,7 +562,7 @@ class AnnotationDialog extends EventEmitter {
      * @param {string} annotationID - ID of annotation to delete
      * @return {void}
      */
-    _showDeleteConfirmation(annotationID) {
+    showDeleteConfirmation(annotationID) {
         const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
         const deleteConfirmationEl = annotationEl.querySelector('.delete-confirmation');
         const cancelDeleteButtonEl = annotationEl.querySelector('.cancel-delete-btn');
@@ -579,7 +579,7 @@ class AnnotationDialog extends EventEmitter {
      * @param {string} annotationID - ID of annotation to delete
      * @return {void}
      */
-    _hideDeleteConfirmation(annotationID) {
+    hideDeleteConfirmation(annotationID) {
         const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
         const deleteConfirmationEl = annotationEl.querySelector('.delete-confirmation');
         const deleteButtonEl = annotationEl.querySelector('.delete-comment-btn');
