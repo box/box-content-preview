@@ -74,7 +74,7 @@ class Dash extends VideoBase {
         this.mediaUrl = this.options.representation.content.url_template;
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
 
-        Promise.all([this.loadAssets(this.getJSAssets()), this.getRepStatus().getPromise()]).then(() => {
+        return Promise.all([this.loadAssets(this.getJSAssets()), this.getRepStatus().getPromise()]).then(() => {
             this.loadDashPlayer();
             this.resetLoadTimeout();
         }).catch(this.handleAssetError);
@@ -205,7 +205,7 @@ class Dash extends VideoBase {
     }
 
     /**
-     * Handler for dd/sd/auto video
+     * Enables or disables automatic adaptation
      *
      * @private
      * @param {boolean} [adapt] - enable or disable adaptation
@@ -415,31 +415,39 @@ class Dash extends VideoBase {
     }
 
     /**
+     * Get bandwidth tracking stats
+     *
+     * @private
+     * @return {void}
+     */
+    getBandwidthInterval() {
+        if (this.isDestroyed() || !this.player || !this.player.getStats || this.mediaEl.paused || this.mediaEl.ended) {
+            return;
+        }
+
+        const stats = this.player.getStats();
+        const bandwidth = stats.estimatedBandwidth;
+
+        // Streaming representation history
+        const stream = stats.streamBandwidth;
+        const switchHistory = stats.switchHistory;
+        this.bandwidthHistory.push({ bandwidth, stream });
+        this.switchHistory.push({ switchHistory, stream });
+
+        // If stats element exists then show it visually
+        if (this.statsEl) {
+            this.statsEl.textContent = `${Math.round(bandwidth / 1000)} kbps`;
+        }
+    }
+
+    /**
      * Tracks bandwidth
      *
      * @private
      * @return {void}
      */
     startBandwidthTracking() {
-        this.statsIntervalId = setInterval(() => {
-            if (this.isDestroyed() || !this.player || !this.player.getStats || this.mediaEl.paused || this.mediaEl.ended) {
-                return;
-            }
-
-            const stats = this.player.getStats();
-            const bandwidth = stats.estimatedBandwidth;
-
-            // Streaming representation history
-            const stream = stats.streamBandwidth;
-            const switchHistory = stats.switchHistory;
-            this.bandwidthHistory.push({ bandwidth, stream });
-            this.switchHistory.push({ switchHistory, stream });
-
-            // If stats element exists then show it visually
-            if (this.statsEl) {
-                this.statsEl.textContent = `${Math.round(bandwidth / 1000)} kbps`;
-            }
-        }, 3000);
+        this.statsIntervalId = setInterval(this.getBandwidthInterval, 3000);
     }
 
     /**
