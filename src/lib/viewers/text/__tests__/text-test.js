@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
-import Browser from '../../../browser';
+import Browser from '../../../Browser';
 import PlainText from '../text';
-import Popup from '../../../popup';
+import Popup from '../../../Popup';
 import TextBase from '../text-base';
 import * as util from '../../../util';
 

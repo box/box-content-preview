@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Video360Loader from '../video360-loader';
-import Browser from '../../../../browser';
+import Browser from '../../../../Browser';
 
 const sandbox = sinon.sandbox.create();
 

@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-expressions */
 import EventEmitter from 'events';
 import Base from '../base';
-import Browser from '../../browser';
-import RepStatus from '../../rep-status';
-import fullscreen from '../../fullscreen';
+import Browser from '../../Browser';
+import RepStatus from '../../RepStatus';
+import fullscreen from '../../Fullscreen';
 import * as util from '../../util';
 
 let base;

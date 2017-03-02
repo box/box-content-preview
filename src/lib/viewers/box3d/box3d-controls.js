@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
-import Controls from '../../controls';
+import Controls from '../../Controls';
 import {
     EVENT_RESET,
     EVENT_SCENE_LOADED,

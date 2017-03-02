@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-expressions */
 import Dash from '../dash';
 import VideoBase from '../video-base';
-import cache from '../../../cache';
-import fullscreen from '../../../fullscreen';
+import cache from '../../../Cache';
+import fullscreen from '../../../Fullscreen';
+import * as util from '../../../util';
 
 let dash;
 let stubs = {};
@@ -114,15 +115,14 @@ describe('dash', () => {
             sandbox.stub(dash, 'loadDashPlayer');
             sandbox.stub(dash, 'resetLoadTimeout');
             sandbox.stub(dash, 'loadAssets');
+            sandbox.stub(dash, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
             sandbox.stub(Promise, 'all').returns(stubs.promise);
 
-            dash.load();
-
-            expect(dash.setup).to.be.called;
             return dash.load().then(() => {
+                expect(dash.setup).to.be.called;
                 expect(dash.loadDashPlayer).to.be.called;
                 expect(dash.resetLoadTimeout).to.be.called;
-            });
+            }).catch(() => {});
         });
     });
 
@@ -134,27 +134,31 @@ describe('dash', () => {
         });
 
         it('should prefetch static assets assets if assets are true', () => {
-            dash.prefetch({ assets: true });
+            dash.prefetch({ assets: true, content: false });
             expect(stubs.prefetchAssets).to.be.called;
         });
 
         it('should not prefetch rep content if content is false', () => {
+            sandbox.mock(util).expects('get').never();
             dash.prefetch({ assets: false, content: false });
             expect(stubs.prefetchAssets).to.not.be.called;
-            expect(stubs.createUrl).to.not.be.called;
         });
 
         it('should not prefetch rep content if representation is not ready', () => {
             stubs.repReady.returns(false);
+            sandbox.mock(util).expects('get').never();
+
             dash.prefetch({ assets: false, content: true });
             expect(stubs.prefetchAssets).to.not.be.called;
-            expect(stubs.createUrl).to.not.be.called;
         });
 
         it('should prefetch rep content if representation is ready', () => {
+            const contentUrl = 'someUrl';
+            stubs.createUrl.returns(contentUrl);
+            sandbox.mock(util).expects('get').withArgs(contentUrl, 'any');
+
             dash.prefetch({ assets: false, content: true });
             expect(stubs.prefetchAssets).to.not.be.called;
-            expect(stubs.createUrl).to.be.called;
         });
     });
 
@@ -385,6 +389,7 @@ describe('dash', () => {
                 }
             };
             stubs.createUrl = sandbox.stub(dash, 'createContentUrlWithAuthParams');
+            sandbox.stub(dash, 'getRepStatus');
         });
 
         it('should do nothing if the filmstrip does not exist', () => {

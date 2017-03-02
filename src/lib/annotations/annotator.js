@@ -11,7 +11,7 @@
 
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
-import Notification from '../notification';
+import Notification from '../Notification';
 import AnnotationService from './annotation-service';
 import * as constants from './annotation-constants';
 import { CLASS_ACTIVE } from '../constants';

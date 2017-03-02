@@ -1,8 +1,8 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import debounce from 'lodash.debounce';
-import fullscreen from '../fullscreen';
-import RepStatus from '../rep-status';
+import fullscreen from '../Fullscreen';
+import RepStatus from '../RepStatus';
 import {
     appendAuthParams,
     getHeaders,
@@ -12,7 +12,7 @@ import {
     prefetchAssets,
     createAssetUrlCreator
 } from '../util';
-import Browser from '../browser';
+import Browser from '../Browser';
 import {
     CLASS_FULLSCREEN,
     CLASS_BOX_PREVIEW_MOBILE,

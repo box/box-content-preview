@@ -1,4 +1,4 @@
-import Browser from '../../../browser';
+import Browser from '../../../Browser';
 
 export default [{
     id: 'CAMERA_ID',

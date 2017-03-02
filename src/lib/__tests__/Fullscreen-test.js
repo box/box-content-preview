@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-expressions */
-import fullscreen from '../fullscreen';
+import fullscreen from '../Fullscreen';
 import {
     CLASS_FULLSCREEN
 } from '../constants';
 
 const sandbox = sinon.sandbox.create();
 
-describe('fullscreen', () => {
+describe('lib/Fullscreen', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
     });

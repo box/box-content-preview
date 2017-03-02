@@ -3,7 +3,7 @@ import EventEmitter from 'events';
 import controlsTemplate from './media-controls.html';
 import Scrubber from './scrubber';
 import Settings from './settings';
-import fullscreen from '../../fullscreen';
+import fullscreen from '../../Fullscreen';
 import { insertTemplate } from '../../util';
 
 const SHOW_CONTROLS_CLASS = 'bp-media-controls-is-visible';

@@ -1,5 +1,5 @@
 import AssetLoader from '../../asset-loader';
-import Browser from '../../../browser';
+import Browser from '../../../Browser';
 import { replacePlaceholders } from '../../../util';
 import Model3d from './model3d';
 

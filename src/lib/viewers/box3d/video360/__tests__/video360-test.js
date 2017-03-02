@@ -9,7 +9,7 @@ import {
 } from '../../box3d-constants';
 import JS from '../../box3d-assets';
 import sceneEntities from '../scene-entities';
-import fullscreen from '../../../../fullscreen';
+import fullscreen from '../../../../Fullscreen';
 
 describe('lib/viewers/box3d/video360/video360', () => {
     const sandbox = sinon.sandbox.create();

@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
-import cache from '../../cache';
+import cache from '../../Cache';
 import { insertTemplate } from '../../util';
 import { ICON_ARROW_LEFT, ICON_ARROW_RIGHT, ICON_CHECK_MARK } from '../../icons/icons';
 

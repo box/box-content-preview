@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
 import ImageBase from '../image-base';
 import Base from '../../base';
-import Browser from '../../../browser';
-import fullscreen from '../../../fullscreen';
+import Browser from '../../../Browser';
+import fullscreen from '../../../Fullscreen';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';

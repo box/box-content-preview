@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Settings from '../settings';
-import cache from '../../../cache';
+import cache from '../../../Cache';
 
 let settings;
 const sandbox = sinon.sandbox.create();

@@ -1,5 +1,3 @@
-import autobind from 'autobind-decorator';
-
 const MIME_H264_BASELINE = 'video/mp4; codecs="avc1.42E01E"';
 const MIME_H264_MAIN = 'video/mp4; codecs="avc1.4D401E"';
 const MIME_H264_HIGH = 'video/mp4; codecs="avc1.64001E"';
@@ -10,7 +8,6 @@ let name;
 let gl;
 let supportsWebGL;
 
-@autobind
 class Browser {
 
     static getName() {

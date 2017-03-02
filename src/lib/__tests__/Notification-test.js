@@ -1,17 +1,17 @@
 /* eslint-disable no-unused-expressions */
-import Notification from '../notification';
+import Notification from '../Notification';
 
 let notif;
 
 const sandbox = sinon.sandbox.create();
 
-describe('Notification', () => {
+describe('lib/Notification', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('__tests__/notification-test.html');
+        fixture.load('__tests__/Notification-test.html');
         notif = new Notification(document.getElementById('test-notif-container'));
     });
 

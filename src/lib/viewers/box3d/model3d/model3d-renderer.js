@@ -20,7 +20,7 @@ import {
     RENDER_MODE_NORMALS,
     RENDER_MODE_UV
 } from './model3d-constants';
-import Browser from '../../../browser';
+import Browser from '../../../Browser';
 
 const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
 const FLOOR_VECTOR = { x: 0, y: -1, z: 0 };

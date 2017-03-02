@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-expressions */
 import fetchMock from 'fetch-mock';
-import '../preview';
-import ProgressBar from '../progress-bar';
+import '../Preview';
+import ProgressBar from '../ProgressBar';
 import loaders from '../loaders';
-import Logger from '../logger';
-import Browser from '../browser';
-import cache from '../cache';
+import Logger from '../Logger';
+import Browser from '../Browser';
+import cache from '../Cache';
 import * as ui from '../ui';
 import * as file from '../file';
 import * as util from '../util';
@@ -25,13 +25,13 @@ let stubs = {};
 let preview = Box.Preview;
 let containerEl;
 
-describe('Preview', () => {
+describe('lib/Preview', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('__tests__/preview-test.html');
+        fixture.load('__tests__/Preview-test.html');
         containerEl = document.querySelector('.container');
         preview = Box.Preview;
         preview.container = containerEl;

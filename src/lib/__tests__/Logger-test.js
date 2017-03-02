@@ -1,7 +1,7 @@
-import Logger from '../logger';
+import Logger from '../Logger';
 
 let logger;
-describe('Logger', () => {
+describe('lib/Logger', () => {
     beforeEach(() => {
         logger = new Logger('FOO');
     });

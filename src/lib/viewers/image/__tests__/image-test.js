@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Image from '../image';
-import Browser from '../../../browser';
+import Browser from '../../../Browser';
 import * as util from '../../../util';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';

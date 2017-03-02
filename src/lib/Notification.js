@@ -3,12 +3,10 @@
  * @author tjin
  */
 
-import autobind from 'autobind-decorator';
 import { CLASS_HIDDEN } from './constants';
 
 const HIDE_TIMEOUT_MS = 5000; // 5s
 
-@autobind
 class Notification {
 
     /**
@@ -82,7 +80,7 @@ class Notification {
      * @param {Event} event - DOM event
      * @return {void}
      */
-    clickHandler(event) {
+    clickHandler = (event) => {
         event.stopPropagation();
 
         if (event.target === this.buttonEl) {

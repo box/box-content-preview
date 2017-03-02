@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import MediaControls from '../media-controls';
-import fullscreen from '../../../fullscreen';
+import fullscreen from '../../../Fullscreen';
 import Settings from '../settings';
 import Scrubber from '../scrubber';
 import * as util from '../../../util';

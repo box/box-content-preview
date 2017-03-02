@@ -1,5 +1,5 @@
 import Base360Loader from '../base360-loader';
-import Browser from '../../../browser';
+import Browser from '../../../Browser';
 import { replacePlaceholders } from '../../../util';
 import Image360 from './image360';
 

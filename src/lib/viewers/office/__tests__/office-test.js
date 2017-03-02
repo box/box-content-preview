@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Base from '../../base';
-import Browser from '../../../browser';
+import Browser from '../../../Browser';
 import Office from '../office';
 import * as util from '../../../util';
 import { CLASS_HIDDEN } from '../../../constants';

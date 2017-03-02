@@ -2,7 +2,7 @@ import autobind from 'autobind-decorator';
 import pageNumTemplate from './page-num-button-content.html';
 import DocBase from './doc-base';
 import DocPreloader from './doc-preloader';
-import fullscreen from '../../fullscreen';
+import fullscreen from '../../Fullscreen';
 import { getRepresentation } from '../../file';
 import { PRELOAD_REP_NAME } from '../../constants';
 import {

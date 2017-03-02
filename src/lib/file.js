@@ -1,4 +1,4 @@
-import cache from './cache';
+import cache from './Cache';
 import { ORIGINAL_REP_NAME, PRELOAD_REP_NAME } from './constants';
 
 // List of Box Content API fields that the Preview SDK requires for every file. Updating this list is most likely

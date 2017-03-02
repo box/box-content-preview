@@ -1,9 +1,9 @@
 import autobind from 'autobind-decorator';
 import Base from '../base';
-import fullscreen from '../../fullscreen';
+import fullscreen from '../../Fullscreen';
 import Box3DControls from './box3d-controls';
 import Box3DRenderer from './box3d-renderer';
-import Browser from '../../browser';
+import Browser from '../../Browser';
 import { get } from '../../util';
 import {
     CSS_CLASS_BOX3D,

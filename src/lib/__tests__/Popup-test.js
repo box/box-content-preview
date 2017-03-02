@@ -1,18 +1,18 @@
 /* eslint-disable no-unused-expressions */
 import { CLASS_HIDDEN } from '../constants';
-import Popup from '../popup';
+import Popup from '../Popup';
 
 let popup;
 
 const sandbox = sinon.sandbox.create();
 
-describe('Popup', () => {
+describe('lib/Popup', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('__tests__/popup-test.html');
+        fixture.load('__tests__/Popup-test.html');
         popup = new Popup(document.getElementById('test-popup-container'));
     });
 

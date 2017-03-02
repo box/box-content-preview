@@ -1,15 +1,13 @@
-import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import {
     CLASS_FULLSCREEN
 } from './constants';
 
-@autobind
 class Fullscreen extends EventEmitter {
 
     /**
      * [constructor]
-     * @param {string|HTMLElement} event - The mousemove event
+     *
      * @return {Fullscreen} Fullscreen instance
      */
     constructor() {
@@ -50,11 +48,12 @@ class Fullscreen extends EventEmitter {
 
     /**
      * Fires events when the fullscreen state changes
-     * @param {HTMLElement|Event} [el] - fullscreen element
-     * @return {void}
+     *
      * @private
+     * @param {HTMLElement|Event} [el] - Fullscreen element
+     * @return {void}
      */
-    fullscreenchangeHandler(el) {
+    fullscreenchangeHandler = (el) => {
         let enter = false;
 
         if (this.isSupported()) {

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import Controls from '../../../controls';
+import Controls from '../../../Controls';
 import TextBase from '../text-base';
 
 let containerEl;

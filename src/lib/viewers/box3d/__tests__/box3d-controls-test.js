@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Box3DControls from '../box3d-controls';
-import Controls from '../../../controls';
+import Controls from '../../../Controls';
 import { UIRegistry } from '../box3d-ui-utils';
 import { CLASS_HIDDEN } from '../../../constants';
 import {

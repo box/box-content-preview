@@ -1,6 +1,3 @@
-import autobind from 'autobind-decorator';
-
-@autobind
 class Cache {
 
     //--------------------------------------------------------------------------

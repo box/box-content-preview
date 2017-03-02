@@ -5,11 +5,11 @@ import EventEmitter from 'events';
 import throttle from 'lodash.throttle';
 import cloneDeep from 'lodash.clonedeep';
 /* eslint-enable import/first */
-import Browser from './browser';
-import Logger from './logger';
+import Browser from './Browser';
+import Logger from './Logger';
 import loaders from './loaders';
-import cache from './cache';
-import ProgressBar from './progress-bar';
+import cache from './Cache';
+import ProgressBar from './ProgressBar';
 import PreviewError from './viewers/error/error';
 import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
 import getTokens from './tokens';
@@ -22,7 +22,7 @@ import {
     PERMISSION_ANNOTATE,
     PERMISSION_PREVIEW
 } from './constants';
-import './preview.scss';
+import './Preview.scss';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
 const PREFETCH_COUNT = 4; // number of files to prefetch

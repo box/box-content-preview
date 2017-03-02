@@ -3,7 +3,7 @@ import rangy from 'rangy';
 import Annotator from '../../annotator';
 import Annotation from '../../annotation';
 import AnnotationThread from '../../annotation-thread';
-import Browser from '../../../browser';
+import Browser from '../../../Browser';
 import DocAnnotator from '../doc-annotator';
 import DocHighlightThread from '../doc-highlight-thread';
 import DocPointThread from '../doc-point-thread';

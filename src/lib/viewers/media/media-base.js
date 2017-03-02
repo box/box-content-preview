@@ -1,7 +1,7 @@
 import autobind from 'autobind-decorator';
 import Base from '../base';
-import cache from '../../cache';
-import Browser from '../../browser';
+import cache from '../../Cache';
+import Browser from '../../Browser';
 import MediaControls from './media-controls';
 import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
 

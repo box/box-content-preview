@@ -1,7 +1,7 @@
 import autobind from 'autobind-decorator';
-import Controls from '../../controls';
+import Controls from '../../Controls';
 import Base from '../base';
-import Browser from '../../browser';
+import Browser from '../../Browser';
 import {
     ICON_ZOOM_IN,
     ICON_ZOOM_OUT,

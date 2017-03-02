@@ -1,5 +1,5 @@
 import autobind from 'autobind-decorator';
-import Controls from '../../controls';
+import Controls from '../../Controls';
 import Base from '../base';
 import { CLASS_SELECTABLE } from '../../constants';
 import {

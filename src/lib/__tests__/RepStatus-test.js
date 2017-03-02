@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import RepStatus from '../rep-status';
+import RepStatus from '../RepStatus';
 import * as util from '../util';
 
 const sandbox = sinon.sandbox.create();
@@ -7,7 +7,7 @@ let repStatus;
 
 const STATUS_UPDATE_INTERVAL_MS = 2000;
 
-describe('lib/rep-status', () => {
+describe('lib/RepStatus', () => {
     let rep;
 
     beforeEach(() => {

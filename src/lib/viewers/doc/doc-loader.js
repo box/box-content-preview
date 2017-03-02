@@ -2,7 +2,7 @@ import AssetLoader from '../asset-loader';
 import { getRepresentation } from '../../file';
 import Doc from './document';
 import Presentation from './presentation';
-import RepStatus from '../../rep-status';
+import RepStatus from '../../RepStatus';
 import { ORIGINAL_REP_NAME, STATUS_SUCCESS } from '../../constants';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.

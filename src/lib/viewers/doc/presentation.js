@@ -1,7 +1,7 @@
 import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
 import pageNumTemplate from './page-num-button-content.html';
-import Browser from '../../browser';
+import Browser from '../../Browser';
 import DocBase from './doc-base';
 import { CLASS_INVISIBLE } from '../../constants';
 import {

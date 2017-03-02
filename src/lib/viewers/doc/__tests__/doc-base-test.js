@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
 import DocBase from '../doc-base';
-import Browser from '../../../browser';
+import Browser from '../../../Browser';
 import Base from '../../base';
-import cache from '../../../cache';
-import Controls from '../../../controls';
-import fullscreen from '../../../fullscreen';
+import cache from '../../../Cache';
+import Controls from '../../../Controls';
+import fullscreen from '../../../Fullscreen';
 import * as file from '../../../file';
 import * as util from '../../../util';
 

@@ -1,5 +1,5 @@
 import autobind from 'autobind-decorator';
-import Controls from '../../controls';
+import Controls from '../../Controls';
 import PlainText from './text';
 import { CLASS_HIDDEN } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';

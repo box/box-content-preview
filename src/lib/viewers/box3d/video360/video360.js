@@ -1,6 +1,6 @@
 /* global BoxSDK */
 import autobind from 'autobind-decorator';
-import fullscreen from '../../../fullscreen';
+import fullscreen from '../../../Fullscreen';
 import Dash from '../../media/dash';
 import Video360Controls from './video360-controls';
 import Video360Renderer from './video360-renderer';

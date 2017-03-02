@@ -1,17 +1,17 @@
 /* eslint-disable no-unused-expressions */
-import ProgressBar from '../progress-bar';
+import ProgressBar from '../ProgressBar';
 
 let mountEl;
 let progressBar;
 const sandbox = sinon.sandbox.create();
 
-describe('lib/progress-bar', () => {
+describe('lib/ProgressBar', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('__tests__/progress-bar-test.html');
+        fixture.load('__tests__/ProgressBar-test.html');
         mountEl = document.querySelector('.mount');
         progressBar = new ProgressBar(mountEl);
     });

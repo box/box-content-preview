@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import Controls from '../controls';
+import Controls from '../Controls';
 import { CLASS_HIDDEN } from './../constants';
 
 let controls;
@@ -9,13 +9,13 @@ const sandbox = sinon.sandbox.create();
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 
-describe('controls', () => {
+describe('lib/Controls', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('__tests__/controls-test.html');
+        fixture.load('__tests__/Controls-test.html');
         controls = new Controls(document.getElementById('test-controls-container'));
     });
 

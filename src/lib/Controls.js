@@ -1,12 +1,9 @@
-import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
-
 import { CLASS_HIDDEN } from './constants';
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
 
-@autobind
 class Controls {
 
     /**
@@ -27,11 +24,6 @@ class Controls {
 
         this.controlsEl = this.controlsWrapperEl.appendChild(document.createElement('div'));
         this.controlsEl.className = 'bp-controls';
-
-        this.mousemoveHandler = throttle(() => {
-            this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
-            this.resetTimeout();
-        }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS - 500);
 
         this.containerEl.addEventListener('mousemove', this.mousemoveHandler);
         this.controlsEl.addEventListener('mouseenter', this.mouseenterHandler);
@@ -89,27 +81,43 @@ class Controls {
     }
 
     /**
+     * Mouse move handler
+     *
      * @private
      * @return {void}
      */
-    mouseenterHandler() {
+    mousemoveHandler = throttle(() => {
+        this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
+        this.resetTimeout();
+    }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS - 500);
+
+    /**
+     * Mouse enter handler
+     *
+     * @private
+     * @return {void}
+     */
+    mouseenterHandler = () => {
         this.blockHiding = true;
     }
 
     /**
+     * Mouse leave handler
+     *
      * @private
      * @return {void}
      */
-    mouseleaveHandler() {
+    mouseleaveHandler = () => {
         this.blockHiding = false;
     }
 
     /**
      * Handles all focusin events for the module.
+     *
      * @param {Event} event - A DOM-normalized event object.
      * @return {void}
      */
-    focusinHandler(event) {
+    focusinHandler = (event) => {
         // When we focus onto a preview control button, show controls
         if (this.isPreviewControlButton(event.target)) {
             this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
@@ -118,10 +126,11 @@ class Controls {
 
     /**
      * Handles all focusout events for the module.
+     *
      * @param {Event} event - A DOM-normalized event object.
      * @return {void}
      */
-    focusoutHandler(event) {
+    focusoutHandler = (event) => {
         // When we focus out of a control button and aren't focusing onto another control button, hide the controls
         if (this.isPreviewControlButton(event.target) && !this.isPreviewControlButton(event.relatedTarget)) {
             this.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);

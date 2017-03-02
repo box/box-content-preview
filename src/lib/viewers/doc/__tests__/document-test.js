@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Document from '../document';
-import fullscreen from '../../../fullscreen';
+import fullscreen from '../../../Fullscreen';
 import {
     ICON_DROP_DOWN,
     ICON_DROP_UP,

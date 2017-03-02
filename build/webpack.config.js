@@ -43,7 +43,7 @@ const languages = isRelease ? [
 function updateConfig(conf, language, index) {
     const config = Object.assign(conf, {
         entry: {
-            preview:        [`${lib}/preview.js`],
+            preview:        [`${lib}/Preview.js`],
             csv:            [`${lib}/viewers/text/BoxCSV.js`]
         },
         output: {

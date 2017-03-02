@@ -1,4 +1,4 @@
-import Browser from '../../browser';
+import Browser from '../../Browser';
 /**
  * Returns the default scene entities array
  * @return {array} Array of scene entities

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Model3dLoader from '../model3d-loader';
-import Browser from '../../../../browser';
+import Browser from '../../../../Browser';
 
 const sandbox = sinon.sandbox.create();
 

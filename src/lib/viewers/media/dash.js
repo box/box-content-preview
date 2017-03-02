@@ -1,7 +1,7 @@
 import autobind from 'autobind-decorator';
 import VideoBase from './video-base';
-import cache from '../../cache';
-import fullscreen from '../../fullscreen';
+import cache from '../../Cache';
+import fullscreen from '../../Fullscreen';
 import { get } from '../../util';
 import { getRepresentation } from '../../file';
 import './dash.scss';

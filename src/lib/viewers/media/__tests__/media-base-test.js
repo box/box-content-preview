@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
-import Browser from '../../../browser';
+import Browser from '../../../Browser';
 import MediaBase from '../media-base';
 import MediaControls from '../media-controls';
-import cache from '../../../cache';
+import cache from '../../../Cache';
 
 let media;
 const sandbox = sinon.sandbox.create();

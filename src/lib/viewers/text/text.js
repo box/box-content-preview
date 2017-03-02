@@ -1,7 +1,7 @@
 import './text.scss';
 import TextBase from './text-base';
-import Browser from '../../browser';
-import Popup from '../../popup';
+import Browser from '../../Browser';
+import Popup from '../../Popup';
 import { CLASS_HIDDEN } from '../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { HIGHLIGHTTABLE_EXTENSIONS } from './extensions';

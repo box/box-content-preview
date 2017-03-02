@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Image360Loader from '../image360-loader';
-import Browser from '../../../../browser';
+import Browser from '../../../../Browser';
 
 const sandbox = sinon.sandbox.create();
 

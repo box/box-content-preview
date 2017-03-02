@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Markdown from '../markdown';
-import Popup from '../../../popup';
+import Popup from '../../../Popup';
 
 let containerEl;
 let markdown;

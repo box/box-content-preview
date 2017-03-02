@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Presentation from '../presentation';
-import Browser from '../../../browser';
+import Browser from '../../../Browser';
 import DocBase from '../doc-base';
 import { CLASS_INVISIBLE } from '../../../constants';
 

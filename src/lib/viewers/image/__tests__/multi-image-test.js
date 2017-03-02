@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import MultiImage from '../multi-image';
-import fullscreen from '../../../fullscreen';
-import Browser from '../../../browser';
+import fullscreen from '../../../Fullscreen';
+import Browser from '../../../Browser';
 
 const CLASS_INVISIBLE = 'bp-is-invisible';
 

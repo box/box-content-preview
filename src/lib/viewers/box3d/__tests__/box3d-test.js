@@ -3,8 +3,8 @@ import Box3D from '../box3d';
 import Box3DControls from '../box3d-controls';
 import Box3DRenderer from '../box3d-renderer';
 import Base from '../../base';
-import Browser from '../../../browser';
-import fullscreen from '../../../fullscreen';
+import Browser from '../../../Browser';
+import fullscreen from '../../../Fullscreen';
 import * as util from '../../../util';
 import {
     EVENT_ERROR,

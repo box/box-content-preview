@@ -1,5 +1,5 @@
 import 'mock-local-storage';
-import cache from '../cache';
+import cache from '../Cache';
 
 const sandbox = sinon.sandbox.create();
 

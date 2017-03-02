@@ -14,7 +14,7 @@ import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 import throttle from 'lodash.throttle';
 import autobind from 'autobind-decorator';
 import Annotator from '../annotator';
-import Browser from '../../browser';
+import Browser from '../../Browser';
 import DocHighlightThread from './doc-highlight-thread';
 import DocPointThread from './doc-point-thread';
 import * as annotatorUtil from '../annotator-util';

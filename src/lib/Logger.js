@@ -1,5 +1,4 @@
-import autobind from 'autobind-decorator';
-import Browser from './browser';
+import Browser from './Browser';
 
 const BROWSER_INFO = {
     name: Browser.getName(),
@@ -17,7 +16,6 @@ const BROWSER_INFO = {
     }
 };
 
-@autobind
 class Logger {
 
     /**

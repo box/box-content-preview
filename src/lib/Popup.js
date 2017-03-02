@@ -3,7 +3,6 @@
  * @author jpress
  */
 
-import autobind from 'autobind-decorator';
 import { CLASS_HIDDEN } from './constants';
 import {
     ICON_CLOSE
@@ -12,7 +11,6 @@ import {
     decodeKeydown
 } from './util';
 
-@autobind
 class Popup {
 
     /**
@@ -179,7 +177,7 @@ class Popup {
      * @param {Event} event - DOM event
      * @return {void}
      */
-    popupClickHandler(event) {
+    popupClickHandler = (event) => {
         event.preventDefault();
         event.stopPropagation();
 
@@ -194,11 +192,13 @@ class Popup {
         }
     }
 
-    /*
-    * @param {string} key - keydown key
-    * @return {boolean} consumed or not
-    */
-    keydownHandler(event) {
+    /**
+     * Keydown handler for popup
+     *
+     * @param {string} key - Keydown key
+     * @return {boolean} Consumed or not
+     */
+    keydownHandler = (event) => {
         const key = decodeKeydown(event);
         switch (key) {
             case 'Esc':

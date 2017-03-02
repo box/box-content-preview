@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
-import cache from '../cache';
+import cache from '../Cache';
 import { getURL, getDownloadURL, isWatermarked, checkPermission, checkFeature, checkFileValid, cacheFile, getRepresentation } from '../file';
 
 const sandbox = sinon.sandbox.create();
 
-describe('file', () => {
+describe('lib/file', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
     });
