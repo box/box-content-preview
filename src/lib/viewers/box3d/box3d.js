@@ -252,7 +252,9 @@ class Box3D extends Base {
      * @return {void}
      */
     handleReset() {
-        this.renderer.reset();
+        if (this.renderer) {
+            this.renderer.reset();
+        }
     }
 
     /**

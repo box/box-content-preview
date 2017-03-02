@@ -73,7 +73,9 @@ class Model3d extends Box3D {
             this.controls.on(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
         }
 
-        this.renderer.on(EVENT_CANVAS_CLICK, this.handleCanvasClick);
+        if (this.renderer) {
+            this.renderer.on(EVENT_CANVAS_CLICK, this.handleCanvasClick);
+        }
     }
 
     /**
@@ -108,17 +110,18 @@ class Model3d extends Box3D {
      * Default is 1 m.
      * @return {void}
      */
+    /* istanbul ignore next: @mbond has gotten rid of this in his incoming branch */
     setModelScale(newSize) {
         if (!this.renderer) {
             return;
         }
+
         this.renderer.modelSize = newSize;
-        if (!this.renderer.instance) {
+        if (!this.renderer.instance || this.renderer.vrEnabled) {
             return;
         }
-        if (!this.renderer.vrEnabled) {
-            this.renderer.instance.scaleToSize(newSize);
-        }
+
+        this.renderer.instance.scaleToSize(newSize);
     }
 
     /**
@@ -129,17 +132,18 @@ class Model3d extends Box3D {
      * Default is 1 m.
      * @return {void}
      */
+    /* istanbul ignore next: @mbond has gotten rid of this in his incoming branch */
     setModelScaleVr(newSize) {
         if (!this.renderer) {
             return;
         }
+
         this.renderer.modelVrSize = newSize;
-        if (!this.renderer.instance) {
+        if (!this.renderer.instance || !this.renderer.vrEnabled) {
             return;
         }
-        if (this.renderer.vrEnabled) {
-            this.renderer.instance.scaleToSize(newSize);
-        }
+
+        this.renderer.instance.scaleToSize(newSize);
     }
 
     /**
@@ -154,17 +158,19 @@ class Model3d extends Box3D {
      * object to the specified position.
      * @return {void}
      */
+    /* istanbul ignore next: @mbond has gotten rid of this in his incoming branch */
     setModelAlignment(position, alignmentVector) {
-        if (this.renderer) {
-            this.renderer.modelAlignmentPosition = position;
-            this.renderer.modelAlignmentVector = alignmentVector;
-            if (!this.renderer.instance) {
-                return;
-            }
-            if (!this.renderer.vrEnabled) {
-                this.renderer.instance.alignToPosition(position, alignmentVector);
-            }
+        if (!this.renderer) {
+            return;
         }
+
+        this.renderer.modelAlignmentPosition = position;
+        this.renderer.modelAlignmentVector = alignmentVector;
+        if (!this.renderer.instance || this.renderer.vrEnabled) {
+            return;
+        }
+
+        this.renderer.instance.alignToPosition(position, alignmentVector);
     }
 
     /**
@@ -179,17 +185,18 @@ class Model3d extends Box3D {
      * object to the specified position.
      * @return {void}
      */
+    /* istanbul ignore next: @mbond has gotten rid of this in his incoming branch */
     setModelAlignmentVr(position, alignmentVector) {
-        if (this.renderer) {
-            this.renderer.modelVrAlignmentPosition = position;
-            this.renderer.modelVrAlignmentVector = alignmentVector;
-            if (!this.renderer.instance) {
-                return;
-            }
-            if (this.renderer.vrEnabled) {
-                this.renderer.instance.alignToPosition(position, alignmentVector);
-            }
+        if (!this.renderer) {
+            return;
         }
+        this.renderer.modelVrAlignmentPosition = position;
+        this.renderer.modelVrAlignmentVector = alignmentVector;
+        if (!this.renderer.instance || !this.renderer.vrEnabled) {
+            return;
+        }
+
+        this.renderer.instance.alignToPosition(position, alignmentVector);
     }
 
     /**
@@ -215,8 +222,8 @@ class Model3d extends Box3D {
     /**
      * Handle hard set of axes
      * @param {string} upAxis - Up axis for model
-     * @param {[type]} forwardAxis - Forward axis for model
-     * @param {[type]} transition - True to trigger a smooth rotationd transition, false for snap to rotation
+     * @param {string} forwardAxis - Forward axis for model
+     * @param {boolean} transition - True to trigger a smooth rotationd transition, false for snap to rotation
      * @return {void}
      */
     handleRotationAxisSet(upAxis, forwardAxis, transition = true) {
@@ -228,9 +235,8 @@ class Model3d extends Box3D {
      */
     handleSceneLoaded() {
         this.loaded = true;
-
         // Get scene defaults for up/forward axes, and render mode
-        this.boxSdk.getMetadataClient().get(this.options.file.id, 'global', 'box3d')
+        return this.boxSdk.getMetadataClient().get(this.options.file.id, 'global', 'box3d')
             .then((response) => {
                 // Treat non-200 responses as errors.
                 if (response.status !== 200) {
@@ -239,59 +245,82 @@ class Model3d extends Box3D {
 
                 return response.response;
             })
-            .catch((err) => {
-                /* eslint-disable no-console */
-                console.error('Error loading metadata:', err.toString());
-                /* eslint-enable no-console */
-
-                // Continue with default settings.
-                return {};
-            })
+            .catch(this.onMetadataError)
             .then((defaults) => {
+                if (this.controls) {
+                    this.controls.addUi();
+                }
+
                 this.axes.up = defaults.upAxis || DEFAULT_AXIS_UP;
                 this.axes.forward = defaults.forwardAxis || DEFAULT_AXIS_FORWARD;
                 this.renderMode = defaults.defaultRenderMode || RENDER_MODE_LIT;
                 this.projection = defaults.cameraProjection || CAMERA_PROJECTION_PERSPECTIVE;
-
-                this.controls.addUi();
 
                 if (this.axes.up !== DEFAULT_AXIS_UP || this.axes.forward !== DEFAULT_AXIS_FORWARD) {
                     this.handleRotationAxisSet(this.axes.up, this.axes.forward, false);
                 }
 
                 // Update controls ui
-                this.controls.setCurrentProjectionMode(this.projection);
-                this.controls.handleSetRenderMode(this.renderMode);
-                this.controls.handleSetSkeletonsVisible(false);
-                this.controls.handleSetWireframesVisible(false);
+                this.handleReset();
 
                 // Initialize animation controls when animations are present.
-                const animations = this.renderer.box3d.getEntitiesByType('animation');
-                if (animations.length > 0) {
-                    const clipIds = animations[0].getClipIds();
-
-                    clipIds.forEach((clipId) => {
-                        const clip = animations[0].getClip(clipId);
-                        const duration = clip.stop - clip.start;
-                        this.controls.addAnimationClip(clipId, clip.name, duration);
-                    });
-
-                    if (clipIds.length > 0) {
-                        this.controls.showAnimationControls();
-                        this.controls.selectAnimationClip(clipIds[0]);
-                    }
-                }
+                this.populateAnimationControls();
 
                 this.showWrapper();
                 this.renderer.initVr();
                 this.emit(EVENT_LOAD);
+
+                return true;
             });
+    }
+
+    /**
+     * Handle error triggered by metadata load issues
+     * @param err {Error} The error thrown when trying to load metadata
+     * @return {void}
+     */
+    onMetadataError(err) {
+        /* eslint-disable no-console */
+        console.error('Error loading metadata:', err.toString());
+        /* eslint-enable no-console */
+
+        // Continue with default settings.
+        return {};
+    }
+
+    /**
+     * Populate control bar with animation playback UI.
+     * @method populateAnimationControls
+     * @private
+     * @return {void}
+     */
+    populateAnimationControls() {
+        if (!this.controls) {
+            return;
+        }
+
+        const animations = this.renderer.box3d.getEntitiesByType('animation');
+        if (animations.length > 0) {
+            const clipIds = animations[0].getClipIds();
+
+            clipIds.forEach((clipId) => {
+                const clip = animations[0].getClip(clipId);
+                const duration = clip.stop - clip.start;
+                this.controls.addAnimationClip(clipId, clip.name, duration);
+            });
+
+            if (clipIds.length > 0) {
+                this.controls.showAnimationControls();
+                this.controls.selectAnimationClip(clipIds[0]);
+            }
+        }
     }
 
     /**
      * Handle animation playback (play / pause).
      * @method handleToggleAnimation
      * @private
+     * @param {boolean} play True to force the animation to play.
      * @return {void}
      */
     handleToggleAnimation(play) {
@@ -321,16 +350,23 @@ class Model3d extends Box3D {
      */
     handleReset() {
         super.handleReset();
-        this.handleRotationAxisSet(this.axes.up, this.axes.forward, true);
-        this.controls.handleSetRenderMode(this.renderMode);
-        this.controls.setCurrentProjectionMode(this.projection);
 
-        if (this.renderer.vrEnabled) {
-            const camera = this.renderer.getCamera();
-            this.renderer.initCameraForVr(camera);
+        if (this.controls) {
+            this.controls.handleSetRenderMode(this.renderMode);
+            this.controls.setCurrentProjectionMode(this.projection);
+            this.controls.handleSetSkeletonsVisible(false);
+            this.controls.handleSetWireframesVisible(false);
         }
 
-        this.renderer.stopAnimation();
+        if (this.renderer) {
+            this.handleRotationAxisSet(this.axes.up, this.axes.forward, true);
+            this.renderer.stopAnimation();
+
+            if (this.renderer.vrEnabled) {
+                const camera = this.renderer.getCamera();
+                this.renderer.initCameraForVr(camera);
+            }
+        }
     }
 
     /**

@@ -22,7 +22,7 @@ let containerEl;
 let box3d;
 let stubs = {};
 
-describe('box3d', () => {
+describe('lib/viewers/box3d/box3d', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
