@@ -43,7 +43,6 @@ class Model3dControls extends Box3DControls {
     constructor(containerEl) {
         super(containerEl);
         this.animationClipsPullup = new Model3DAnimationClipsPullup(containerEl);
-        this.settingsPanelEl = null;
         this.settingsPullup = new Model3DSettingsPullup();
         this.isAnimationPlaying = false;
     }
@@ -51,7 +50,7 @@ class Model3dControls extends Box3DControls {
     /** @inheritdoc */
     addUi() {
         // Reset button
-        this.resetButtonEl = this.controls.add(__('box3d_reset_camera'), this.handleReset, '', ICON_3D_RESET);
+        this.resetButtonEl = this.controls.add(__('box3d_reset'), this.handleReset, '', ICON_3D_RESET);
 
         // Animation controls
         this.animationClipsPullup.addListener(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
@@ -65,7 +64,6 @@ class Model3dControls extends Box3DControls {
         this.hideVrButton();
 
         // Settings panel
-        this.settingsPanelEl = this.settingsPullup.pullupEl;
         this.settingsPullup.addListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
         this.settingsPullup.addListener(EVENT_SET_SKELETONS_VISIBLE, this.handleSetSkeletonsVisible);
         this.settingsPullup.addListener(EVENT_SET_WIREFRAMES_VISIBLE, this.handleSetWireframesVisible);
@@ -73,7 +71,7 @@ class Model3dControls extends Box3DControls {
         this.settingsPullup.addListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.addListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
         this.settingsButtonEl = this.controls.add(__('box3d_settings'), this.handleToggleSettings, '', ICON_GEAR);
-        this.settingsButtonEl.parentNode.appendChild(this.settingsPanelEl);
+        this.settingsButtonEl.parentNode.appendChild(this.settingsPullup.pullupEl);
 
         // Fullscreen button
         this.addFullscreenButton();
@@ -165,10 +163,12 @@ class Model3dControls extends Box3DControls {
      * @return {void}
      */
     showAnimationControls() {
-        if (this.animationToggleEl && this.animationClipButtonEl) {
-            this.animationToggleEl.classList.remove(CSS_CLASS_HIDDEN);
-            this.animationClipButtonEl.classList.remove(CSS_CLASS_HIDDEN);
+        if (!this.animationToggleEl || !this.animationClipButtonEl) {
+            return;
         }
+
+        this.animationToggleEl.classList.remove(CSS_CLASS_HIDDEN);
+        this.animationClipButtonEl.classList.remove(CSS_CLASS_HIDDEN);
     }
 
     /**
@@ -178,10 +178,12 @@ class Model3dControls extends Box3DControls {
      * @return {void}
      */
     hideAnimationControls() {
-        if (this.animationToggleEl && this.animationClipButtonEl) {
-            this.animationToggleEl.classList.add(CSS_CLASS_HIDDEN);
-            this.animationClipButtonEl.classList.add(CSS_CLASS_HIDDEN);
+        if (!this.animationToggleEl || !this.animationClipButtonEl) {
+            return;
         }
+
+        this.animationToggleEl.classList.add(CSS_CLASS_HIDDEN);
+        this.animationClipButtonEl.classList.add(CSS_CLASS_HIDDEN);
     }
 
     /**
@@ -258,16 +260,6 @@ class Model3dControls extends Box3DControls {
     /**
      * @inheritdoc
      */
-    handleReset() {
-        super.handleReset();
-        this.hidePullups();
-        this.settingsPullup.reset();
-        this.setAnimationPlaying(false);
-    }
-
-    /**
-     * @inheritdoc
-     */
     handleToggleFullscreen() {
         super.handleToggleFullscreen();
         this.hidePullups();
@@ -281,6 +273,16 @@ class Model3dControls extends Box3DControls {
     setCurrentProjectionMode(mode) {
         this.settingsPullup.onProjectionSelected(mode);
         this.settingsPullup.setCurrentProjectionMode(mode);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    handleReset() {
+        super.handleReset();
+        this.hidePullups();
+        this.settingsPullup.reset();
+        this.setAnimationPlaying(false);
     }
 
     /**
@@ -302,7 +304,6 @@ class Model3dControls extends Box3DControls {
         this.settingsPullup.removeListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.removeListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
         this.settingsPullup.destroy();
-        this.settingsPanelEl = null;
         this.settingsPullup = null;
 
         super.destroy();
