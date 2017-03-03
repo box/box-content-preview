@@ -51,7 +51,8 @@ export const PERMISSION_DOWNLOAD = 'can_download';
 export const PERMISSION_ANNOTATE = 'can_annotate';
 export const PERMISSION_PREVIEW = 'can_preview';
 
-export const API = 'https://api.box.com';
+export const API_HOST = 'https://api.box.com';
+export const APP_HOST = 'https://app.box.com';
 
 export const ORIGINAL_REP_NAME = 'ORIGINAL';
 export const PRELOAD_REP_NAME = 'FIRSTPAGE';

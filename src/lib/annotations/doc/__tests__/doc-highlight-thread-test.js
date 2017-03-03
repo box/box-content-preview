@@ -21,7 +21,7 @@ describe('doc-highlight-thread', () => {
             annotatedElement: document.querySelector('.annotated-element'),
             annotations: [],
             annotationService: new AnnotationService({
-                api: 'https://app.box.com/api',
+                apiHost: 'https://app.box.com/api',
                 fileId: 1,
                 token: 'someToken',
                 canAnnotate: true
@@ -141,7 +141,7 @@ describe('doc-highlight-thread', () => {
                     { permissions: { can_delete: false } }
                 ],
                 annotationService: new AnnotationService({
-                    api: 'https://app.box.com/api',
+                    apiHost: 'https://app.box.com/api',
                     fileId: 1,
                     token: 'someToken',
                     canAnnotate: true
@@ -170,7 +170,7 @@ describe('doc-highlight-thread', () => {
                     { permissions: { can_delete: true } }
                 ],
                 annotationService: new AnnotationService({
-                    api: 'https://app.box.com/api',
+                    apiHost: 'https://app.box.com/api',
                     fileId: 1,
                     token: 'someToken',
                     canAnnotate: true

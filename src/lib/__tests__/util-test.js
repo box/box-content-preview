@@ -177,20 +177,6 @@ describe('lib/util', () => {
         });
     });
 
-    describe('deduceBoxUrl()', () => {
-        it('should return correct box.com url when no API is passed in', () => {
-            expect(util.deduceBoxUrl()).to.equal('https://app.box.com');
-        });
-
-        it('should return correct box.com url when public API is passed in', () => {
-            expect(util.deduceBoxUrl('https://api.box.com')).to.equal('https://app.box.com');
-        });
-
-        it('should return correct dev URL when internal API is passed in', () => {
-            expect(util.deduceBoxUrl('https://foo.dev.box.net/api')).to.equal('https://app.foo.inside-box.net');
-        });
-    });
-
     describe('createScript()', () => {
         it('should return a script element when a url is provided', () => {
             const url = 'foo';

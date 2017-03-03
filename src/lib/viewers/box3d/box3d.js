@@ -150,12 +150,12 @@ class Box3D extends Base {
      */
     postLoad() {
         /* global BoxSDK */
-        const { representation, token, api, sharedLink } = this.options;
+        const { representation, token, apiHost, sharedLink } = this.options;
         const template = representation.content.url_template;
         this.boxSdk = new BoxSDK({
             token,
             sharedLink,
-            apiBase: api
+            apiBase: apiHost
         });
         this.createSubModules();
         this.attachEventHandlers();

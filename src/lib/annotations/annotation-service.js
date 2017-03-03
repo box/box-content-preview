@@ -44,7 +44,7 @@ class AnnotationService extends EventEmitter {
     /**
      * The data object for constructing an Annotation Service.
      * @typedef {Object} AnnotationServiceData
-     * @property {string} api API root
+     * @property {string} apiHost API root
      * @property {string} fileId File ID
      * @property {string} token Access token
      * @property {boolean} canAnnotate Can user annotate
@@ -62,7 +62,7 @@ class AnnotationService extends EventEmitter {
      */
     constructor(data) {
         super();
-        this._api = data.api;
+        this._api = data.apiHost;
         this._fileId = data.fileId;
         this._headers = getHeaders({}, data.token);
         this._canAnnotate = data.canAnnotate;

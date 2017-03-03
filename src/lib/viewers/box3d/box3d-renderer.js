@@ -58,7 +58,7 @@ class Box3DRenderer extends EventEmitter {
      * @param {Object} options - Options object, used to initialize the Box3DRuntime
      * and BoxSDK
      * @param {string} [options.token] - The OAuth2 Token used for authentication of asset requests
-     * @param {string} [options.api] - API URL base to make requests to
+     * @param {string} [options.apiHost] - API URL base to make requests to
      * @param {Object|null} [options.file] - Information about the current box file we're using.
      * Used to get the parent.id of the box file.
      * @return {Promise} A promise resulting in the newly created box3d
@@ -170,7 +170,7 @@ class Box3DRenderer extends EventEmitter {
      *
      * @param {Object} options - the preview options object
      * @param {string} [options.token] - The OAuth2 Token used for authentication of asset requests
-     * @param {string} [options.api] - API URL base to make requests to
+     * @param {string} [options.apiHost] - API URL base to make requests to
      * @param {Object|null} [options.file] - Information about the current box file we're using.
      * Used to get the parent.id of the box file.
      * @return {Promise} A promise that resolves with the created box3d

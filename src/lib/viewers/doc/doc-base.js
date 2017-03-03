@@ -375,7 +375,7 @@ class DocBase extends Base {
         const previousPageButtonEl = this.containerEl.querySelector('.bp-previous-page');
         const nextPageButtonEl = this.containerEl.querySelector('.bp-next-page');
 
-        // Disable page number selector for Safari fullscreen, see https://jira.inside-box.net/browse/COXP-997
+        // Safari disables keyboard input in fullscreen
         const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen(this.containerEl);
 
         // Disable page number selector if there is only one page or less
@@ -662,7 +662,7 @@ class DocBase extends Base {
         // Users can currently only view annotations on mobile
         const canAnnotate = !!this.options.file.permissions.can_annotate && !Browser.isMobile();
         const annotationService = new AnnotationService({
-            api: this.options.api,
+            apiHost: this.options.apiHost,
             fileId: this.options.file.id,
             token: this.options.token,
             canAnnotate

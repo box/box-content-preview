@@ -5,7 +5,7 @@ import Popup from '../../Popup';
 import { CLASS_HIDDEN } from '../../constants';
 import { getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
-import { deduceBoxUrl, get } from '../../util';
+import { get } from '../../util';
 
 const LOAD_TIMEOUT_MS = 120000;
 const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -153,24 +153,24 @@ class Office extends Base {
         this.iframeEl.setAttribute('frameborder', 0);
         this.iframeEl.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
 
-        let src = `${deduceBoxUrl(this.options.api)}/integrations/officeonline/openExcelOnlinePreviewer`;
-        if (this.options.sharedLink) {
+        const { appHost, file, sharedLink } = this.options;
+        let src = `${appHost}/integrations/officeonline/openExcelOnlinePreviewer`;
+        if (sharedLink) {
             // Find the shared or vanity name
-            const sharedName = this.options.sharedLink.split('/s/')[1];
+            const sharedName = sharedLink.split('/s/')[1];
             if (sharedName) {
-                src += `?s=${sharedName}&fileId=${this.options.file.id}`;
+                src += `?s=${sharedName}&fileId=${file.id}`;
             } else {
-                // Core logic in Box_Context::get_enterprise_id_from_request() expects to find the vanity link's subdomain
-                // in $_GET['vanity_subdomain'], so we need to add it to src
                 const tempAnchor = document.createElement('a');
-                tempAnchor.href = this.options.sharedLink;
+                tempAnchor.href = sharedLink;
                 const vanitySubdomain = tempAnchor.hostname.split('.')[0];
                 const vanityName = tempAnchor.pathname.split('/v/')[1];
-                src += `?v=${vanityName}&vanity_subdomain=${vanitySubdomain}&fileId=${this.options.file.id}`;
+                src += `?v=${vanityName}&vanity_subdomain=${vanitySubdomain}&fileId=${file.id}`;
             }
         } else {
-            src += `?fileId=${this.options.file.id}`;
+            src += `?fileId=${file.id}`;
         }
+
         this.iframeEl.src = src;
     }
 

@@ -13,6 +13,8 @@ let office;
 let stubs = {};
 
 describe('office.js', () => {
+    let clock;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -28,9 +30,11 @@ describe('office.js', () => {
         stubs = {
             setupPDFUrl: sandbox.stub(office, 'setupPDFUrl')
         };
+        clock = sinon.useFakeTimers();
     });
 
     afterEach(() => {
+        clock.restore();
         sandbox.verifyAndRestore();
         fixture.cleanup();
 
@@ -84,6 +88,10 @@ describe('office.js', () => {
     });
 
     describe('setupIframe()', () => {
+        beforeEach(() => {
+            office.options.appHost = 'https://app.box.com';
+        });
+
         it('should initialize iframe element and set relevant attributes', () => {
             expect(office.iframeEl.width).to.equal('100%');
             expect(office.iframeEl.height).to.equal('100%');
@@ -116,64 +124,17 @@ describe('office.js', () => {
         });
     });
 
-    describe('initPrint()', () => {
-        it('should add print checkmark', () => {
-            office.initPrint();
-            const mockCheckmark = document.createElement('div');
-            mockCheckmark.innerHTML = `${ICON_PRINT_CHECKMARK}`.trim();
-            expect(office.printPopup.printCheckmark.innerHTML).to.equal(mockCheckmark.innerHTML);
-        });
-
-        it('should hide the print checkmark', () => {
-            office.initPrint();
-            expect(office.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN));
-        });
-
-        it('should add the loading indicator', () => {
-            office.initPrint();
-            const mockIndicator = document.createElement('div');
-            mockIndicator.innerHTML = `
-            <div></div>
-            <div></div>
-            <div></div>
-            `.trim();
-            expect(office.printPopup.loadingIndicator.innerHTML).to.equal(mockIndicator.innerHTML);
-            expect(office.printPopup.loadingIndicator.classList.contains('bp-crawler')).to.be.true;
-        });
-    });
-
     describe('print()', () => {
-        let clock;
-
         beforeEach(() => {
-            clock = sinon.useFakeTimers();
             office.printBlob = undefined;
-            stubs.fetchPrintBlob = sandbox.stub(office, 'fetchPrintBlob').returns({
-                then: sandbox.stub()
-            });
+            stubs.fetchPrintBlob = sandbox.stub(office, 'fetchPrintBlob').returns(Promise.resolve());
             office.initPrint();
             stubs.show = sandbox.stub(office.printPopup, 'show');
-        });
-
-        afterEach(() => {
-            clock.restore();
         });
 
         it('should request the print blob if it is not ready', () => {
             office.print();
             expect(stubs.fetchPrintBlob).to.be.called;
-        });
-
-        it('should show the print popup and disable the print button if the blob is not ready', () => {
-            sandbox.stub(office.printPopup, 'disableButton');
-
-            office.print();
-            clock.tick(PRINT_DIALOG_TIMEOUT_MS + 1);
-
-            expect(stubs.show).to.be.calledWith(__('print_loading'), __('print'), sinon.match.func);
-            expect(office.printPopup.disableButton).to.be.called;
-
-            clock.restore();
         });
 
         it('should directly print if print blob is ready and the print dialog hasn\'t been shown yet', () => {
@@ -195,6 +156,18 @@ describe('office.js', () => {
             expect(office.browserPrint).to.be.called;
         });
 
+        it('should show the print popup and disable the print button if the blob is not ready', () => {
+            sandbox.stub(office.printPopup, 'disableButton');
+
+            office.print();
+            clock.tick(PRINT_DIALOG_TIMEOUT_MS + 1);
+
+            expect(stubs.show).to.be.calledWith(__('print_loading'), __('print'), sinon.match.func);
+            expect(office.printPopup.disableButton).to.be.called;
+
+            clock.restore();
+        });
+
         it('should update the print popup UI if popup is visible and there is no current print timeout', () => {
             office.printBlob = {};
 
@@ -206,6 +179,20 @@ describe('office.js', () => {
             expect(office.printPopup.messageEl.textContent).to.equal(__('print_ready'));
             expect(office.printPopup.loadingIndicator.classList.contains(CLASS_HIDDEN)).to.be.true;
             expect(office.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN)).to.be.false;
+        });
+    });
+
+    describe('initPrint()', () => {
+        it('should add print checkmark', () => {
+            office.initPrint();
+            const mockCheckmark = document.createElement('div');
+            mockCheckmark.innerHTML = `${ICON_PRINT_CHECKMARK}`.trim();
+            expect(office.printPopup.printCheckmark.innerHTML).to.equal(mockCheckmark.innerHTML);
+        });
+
+        it('should hide the print checkmark', () => {
+            office.initPrint();
+            expect(office.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN));
         });
     });
 
@@ -264,20 +251,18 @@ describe('office.js', () => {
         });
 
         it('should use a timeout in safari', () => {
-            let clock = sinon.useFakeTimers();
             window.navigator.msSaveOrOpenBlob = undefined;
             stubs.open.returns(stubs.printResult);
             stubs.browser.returns('Safari');
 
             office.browserPrint();
             clock.tick(PRINT_TIMEOUT_MS + 1);
+
             expect(stubs.createObject).to.be.calledWith(office.printBlob);
             expect(stubs.open).to.be.called;
             expect(stubs.browser).to.be.called;
             expect(stubs.printResult.print).to.be.called;
             expect(stubs.emit).to.be.called;
-
-            clock = undefined;
         });
     });
 
@@ -290,7 +275,7 @@ describe('office.js', () => {
         });
 
         it('should get and return the blob', () => {
-            office.fetchPrintBlob('url');
+            office.fetchPrintBlob('url').catch(() => {});
 
             return stubs.promise.then((blob) => {
                 expect(stubs.get).to.be.called;

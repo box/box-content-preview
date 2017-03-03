@@ -22,22 +22,22 @@ const FILE_FIELDS = [
  * Returns the Box file Content API URL with relevant fields
  *
  * @param {string} id - Box file ID
- * @param {string} api - Box API base url
+ * @param {string} apiHost - Box API base url
  * @return {string} API url
  */
-export function getURL(id, api) {
-    return `${api}/2.0/files/${id}?fields=${FILE_FIELDS.join(',')}`;
+export function getURL(id, apiHost) {
+    return `${apiHost}/2.0/files/${id}?fields=${FILE_FIELDS.join(',')}`;
 }
 
 /**
  * Returns the Box file Content API URL
  *
  * @param {string} id - Box file ID
- * @param {string} api - Box API base URL
+ * @param {string} apiHost - Box API base URL
  * @return {string} API url
  */
-export function getDownloadURL(id, api) {
-    return `${api}/2.0/files/${id}?fields=download_url`;
+export function getDownloadURL(id, apiHost) {
+    return `${apiHost}/2.0/files/${id}?fields=download_url`;
 }
 
 /**

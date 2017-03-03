@@ -1,17 +1,18 @@
 ![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg)
 ![NPM version](https://img.shields.io/badge/npm-v0.106.0-blue.svg)
 
-[Box Javascript Preview SDK](https://docs.box.com/docs/box-javascript-preview-sdk)
-===============
+[Box Preview](https://docs.box.com/docs/box-preview)
+====================================================
+The Box Preview Javascript library allows developers to easily embed high quality and interactive previews of Box files in their desktop or mobile web application. The library fetches information about the file and its converted representations through the Box API, chooses the appropriate viewer for the file type, dynamically loads the necessary static assets and file representations, and finally renders the file. Box Preview also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
 
-The Box Javascript Preview SDK makes it easy for developers to embed previews of Box files in a web application. The SDK fetches information about the file and its converted representations through the Box Content API, chooses the appropriate viewer for the file type, dynamically loads the static assets and file representations needed, and finally renders the preview client-side. The SDK also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
+This library powers Preview in the main Box web application as well as the 'expiring embed' Box API endpoint.
 
 Browser Support
 ---------------
 * Desktop Chrome, Firefox, Safari, Edge, and Internet Explorer 11
 * Limited support for mobile web - previews will render but some controls may not work
 
-Preview uses the Promise object. If your browser doesn't support Promises, they can be polyfilled by including a promise library (e.g. Bluebird - https://cdn.jsdelivr.net/bluebird/latest/bluebird.min.js) before including any other script.
+If your browser doesn't support Promises, include a polyfill (e.g. Bluebird) before the main Preview script.
 
 Current Version
 ---------------
@@ -21,17 +22,29 @@ Current Version
 https://cdn01.boxcdn.net/platform/preview/0.106.0/en-US/preview.js
 https://cdn01.boxcdn.net/platform/preview/0.106.0/en-US/preview.css
 
+Supported Locales
+-----------------
+To use a different locale, replace `en-US` in the URLs above with any of the following supported locales.
+
+`en-AU`, `en-CA`, `en-GB`, `en-US`, `da-DK`, `de-DE`, `es-ES`, `fi-FI`, `fr-CA`, `fr-FR`, `it-IT`, `ja-JP`, `ko-KR`, `nb-NO`, `nl-NL`, `pl-PL`, `pt-BR`, `ru-RU`, `sv-SE`, `tr-TR`, `zh-CN`, `zh-TW`
+
+Supported File Types
+--------------------
+Box Preview supports 100+ file types, including most document and image formats, HD video, 3D models, 360-degress images, and 360-degree videos. You can find the full list of supported file types at https://community.box.com/t5/Managing-Your-Content/What-file-types-and-fonts-are-supported-by-Box-s-Content-Preview/ta-p/327#FileTypesSupported.
+
 Usage
 -----
+You can self-host the Box Preview and Promise libraries or reference the versions hosted on the Box CDN.
+
 ```html
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
     <meta charset="utf-8" />
-    <title>Preview SDK Demo</title>
+    <title>Box Preview Demo</title>
 
-    <!-- Polyfill promise API if using Internet Explorer 11 -->
-    <script src="https://cdn.jsdelivr.net/bluebird/latest/bluebird.min.js"></script>
+    <!-- Polyfill Promise API if using Internet Explorer 11 -->
+    <script src="https://cdn01.boxcdn.net/js/vendor/bluebird/bluebird-core-some-any-cancel-settle-2.9.34.js"></script>
 
     <!-- Latest version of Preview SDK for your locale -->
     <script src="https://cdn01.boxcdn.net/platform/preview/0.106.0/en-US/preview.js"></script>
@@ -48,75 +61,18 @@ Usage
 </html>
 ```
 
-Preview Demo
----------------
-View demo and sample code on CodePen - http://codepen.io/box-platform/pen/KaQbma.
+CORS (Cross-Origin Resource Sharing)
+------------------------------------
+For security purposes, you must whitelist your application's HTTP origin, omitting any trailing slash, in the configuration section of the Developer Console. For example, CodePen's domain is whitelisted for the demo application below.
 
+![Screenshot of CORS whitelist](images/cors.png)
 
-Setup
------
-*Note: Do not use sudo for the commands below below. If you did, delete the ~/.npm and node_module folders and run npm install again without sudo.*
-
-1. Make sure you have Node version 4.x.
-2. Fork the upstream repo `https://git.dev.box.net/Preview/Preview` under your LDAP account.
-3. Then clone your fork `git clone git@git.dev.box.net:YOURLDAP/Preview.git`. This will be your origin.
-4. `cd Preview`
-5. Add the upstream repo via `git remote add upstream git@git.dev.box.net:Preview/Preview.git`.
-6. Verify repos via `git remote -v`. You will always pull from `upstream` and push to `origin`.
-7. `npm install`
-8. `npm run build`
-
-*Note: If you get a rsync error while running the build for the 1st time, it probably failed to copy the built assets to your dev VM. In that case go to your dev VM and manually create the folder `/box/www/assets` and give it 777 permissions via `chmod 777 assets`. This folder acts as your static server for local development.*
-
-**Update webapp conf override (developers only)**
-
-In order for the webapp to use your static assets from your dev VM, you will need to add entries for yourself in `preview.conf` which requires an appconf push to dev. You will need to edit the following sections of the file
-
-* under "path": `path<username> = content-experience`
-* under "hosts": `hostname<username> = username.dev.box.net`
-* under "files_app": `version<username> = dev`
-* under "expiring_embed": `version<username> = dev`
-
- Follow instructions here `https://confluence.inside-box.net/display/ETO/Appconf+User+Guide#AppconfUserGuide-DevWorkflow`. If you are a developer, you would want an entry in there pointing to your dev VM with version set to `dev`. If you are not a developer, then you do not need to modify this file and it will automatically use the version thats deployed to our live CDNs.
-
-While Developing
-----------------
-Install the following plugins in your preferred editor
-
-* babel (then set JS files to use babel)
-* editorconfig
-* sublime/atom: sublime linter, sublime linter contrib eslint, sublime linter contrib scss
-* vscode: eslint, sytlelint
-
-### NPM commands
-
-* `npm run build` to generate resource bundles and JS webpack bundles.
-* `npm run watch` to only generate JS webpack bundles on file changes.
-* `npm run test` launches karma tests with PhantomJS.
-* `npm run test -- --src=PATH/TO/SRC/FILENAME` launches test only for `src/lib/PATH/TO/SRC/__tests__/FILENAME-test.js` instead of all tests. For example, `npm run test -- --src=viewers/media/media-base` launches tests for `src/lib/viewers/media/__tests__/media-base-test.js`
-* `npm run debug` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
-* `npm run debug -- --src=path/to/src/FILENAME` launches debugging for `src/lib/path/to/src/__tests__/FILENAME-test.js` instead of all tests. Open the URL mentioned in the console.
-
-*For more script commands see `package.json`*
-*Coverage reports are available under reports/coverage*
-
-### Config files
-
-* .babelrc - https://babeljs.io/docs/usage/babelrc/
-* .editorconfig - http://editorconfig.org/
-* .eslintignore - http://eslint.org/docs/user-guide/configuring#ignoring-files-and-directories
-* .eslintrc - http://eslint.org/docs/user-guide/configuring
-* .gitignore - https://git-scm.com/docs/gitignore
-* .stylelintrc - https://stylelint.io/user-guide/configuration/
-* browserslist - https://github.com/ai/browserslist
-* postcss.config.js - https://github.com/postcss/postcss-loader
-
-### Release build
-`npm run release` does a release build.
+Demo
+----
+View a demo and sample code on CodePen - http://codepen.io/box-platform/pen/KaQbma.
 
 Initialization
 --------------
-
 The recommended way to show a preview is by calling `Box.Preview.show(fileId, accessToken, { options })` where `fileId` is a `Box_File` id and `accessToken` is a Box API access token. `Box.Preview` is an instance of the class `Preview`. Another way to show a preview or multiple previews on the same page is by creating instances of the `Preview` class as follows:
 
 ```javascript
@@ -126,26 +82,16 @@ preview.show(fileId, accessToken, { options });
 
 Parameters & Options
 -------
-
 ```javascript
 Box.Preview.show(fileId, accessToken, {
     container: '.preview-container',
-    api: 'https://api.box.com',
     sharedLink: 'https://app.box.com/v/foo',
     sharedLinkPassword: 'bar',
     collection: [FILE_ID, '123', '234', ...],
     header: 'light',
     logoUrl: 'http://i.imgur.com/xh8j3E2.png',
     showAnnotations: true,
-    showDownload: true,
-    viewers: {
-        VIEWERNAME: {
-            disabled: true,
-            annotations: true
-            ...
-        },
-        ...
-    }
+    showDownload: true
 });
 ```
 | Parameter | Description |
@@ -156,7 +102,6 @@ Box.Preview.show(fileId, accessToken, {
 | Option | Default | Description |
 | --- | --- | --- |
 | container | document.body | DOM node or selector where Preview should be placed |
-| api | https://api.box.com | Root API URL |
 | sharedLink |  | Shared link URL |
 | sharedLinkPassword |  | Shared link password |
 | collection |  | List of file IDs to iterate over for previewing |
@@ -165,62 +110,24 @@ Box.Preview.show(fileId, accessToken, {
 | showAnnotations | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. |
 | showDownload | false | Whether download button is shown |
 | useHotkeys | true | Whether hotkeys (keyboard shortcuts) are enabled |
-| viewers |  | Arguments to pass on to viewers |
-| { VIEWERNAME } |  | Name of the viewer, see below for more details |
-| {{ disabled }} | false | Disables the viewer |
-| {{ annotations }} | false | Enables annotations for the viewer |
 
-Authentication Token
---------------------
-
-The Preview SDK needs an authentication token to make Box Content API calls. The value passed in for the token option above can be either a string token or a token generator function. If a string is passed in, it is assumed that the token never expires or changes. If, however, the token expires or changes over time, then a generator function should be passed in instead. The generator function should take in a file id or a list of file ids as the argument. It should return a `Promise` which should resolve to either a string token (for example when the same token is being used for all files) or a JSON map of { file id: token } pairs. A sample implementation is below:
-
-```javascript
-/**
- * Auth token generator function.
- * @param {string|Array} id - File id or array of file ids
- * @return {Promise} Promise to resolve to a map of ids and tokens or just a string token
- */
-function tokenGenerator(id) {
-    // id can be a single file id or an array of ids, normalizing to an array
-    const ids = Array.isArray(id) ? id : [id];
-
-    // Get tokens for all files with ids
-    // via some mechanism or network request
-    //    response should look like
-    //    {
-    //        id1: 'token1',
-    //        id2: 'token2',
-    //        id3: 'token3'
-    //        ...
-    //    }
-    //      -- OR --
-    //       'token'
-    //
-    // The fetch() API returns a promise
-    return fetch(tokenServiceUrl, {
-        method: 'post',
-        body: { fileIds: ids } // based on what the token service endpoint expects
-    })
-    .then((response) => response.json());  // OR response.text()
-}
-```
+Access Token
+------------
+Box Preview needs an access token to make Box API calls. You can either get an access token from the token endpoint (https://docs.box.com/reference#token) or generate a developer token on your application management page (https://blog.box.com/blog/introducing-developer-tokens/).
 
 Viewers
 -------
-
-The name of a viewer can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. This list of possible viewers can also be discovered by calling `Box.Preview.getViewers()`.
+The name of a viewer can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. Call `Box.Preview.getViewers()` to get the list of possible viewers.
 
 Additional Methods
 ------------------
-
 `Box.Preview.hide()` hides the preview.
 
 `Box.Preview.updateCollection(/* Array[file ids] */ collection)` updates the collection to navigate through. Assumes the currently visible file is part of this new collection.
 
 `Box.Preview.getCurrentCollection()` returns the current collection if any.
 
-`Box.Preview.getCurrentFile()` returns the current file being previewed if any. The file object structure is the same as returned by the [https://box-content.readme.io/reference#files](Box content API).
+`Box.Preview.getCurrentFile()` returns the current file being previewed if any. The file object structure is the same as returned by the [https://docs.box.com/reference#files](Box API).
 
 `Box.Preview.getCurrentViewer()` returns the current viewer instance. May be undefined if the viewer isn't ready yet and waiting on conversion to happen.
 
@@ -244,7 +151,6 @@ Additional Methods
 
 Events
 ------
-
 The preview object exposes `on` and `off` for binding to events. Event listeners should be bound before the call to `show()`, otherwise events can be missed.
 
 ```javascript
@@ -296,7 +202,6 @@ EVENTNAME can be one of the following
 ```
 
 ### Example event usage
-
 ```javascript
 Box.Preview.on('viewer', (viewer) => {
     viewer.on('rotate', () => {
@@ -330,18 +235,56 @@ Box.Preview.on('rotate', (data) => {
         // Do something different when a 360-degree image is rotated
     } else {}
 });
-
 ```
+
+Development Setup
+-----------------
+1. Install Node v4.4.3 or higher and NPM v4.1.2 or higher.
+2. Fork the upstream repo `https://github.com/box/box-preview`.
+3. Clone your fork locally `git clone git@github.com:[YOUR GITHUB USERNAME]/box-preview.git`.
+4. Navigate to the cloned folder `cd box-preview`
+5. Add the upstream repo to your remotes `git remote add upstream git@github.com:box/box-preview.git`.
+6. Verify your remotes are properly set up `git remote -v`. You should pull updates from the Box repo `upstream` and push changes to your fork `origin`.
+7. Install dependencies `npm install`
+8. Test your first build! `npm run build`
+
+While Developing
+----------------
+Install the following plugins in your preferred editor
+
+* Editor Config (standardizes basic editor configuration)
+* ESLint (Javascript linting)
+* Stylelint (CSS linting)
+
+### NPM commands
+
+* `npm run build` to generate resource bundles and JS webpack bundles.
+* `npm run watch` to only generate JS webpack bundles on file changes.
+* `npm run test` launches karma tests with PhantomJS.
+* `npm run test -- --src=PATH/TO/SRC/FILENAME` launches test only for `src/lib/PATH/TO/SRC/__tests__/FILENAME-test.js` instead of all tests. For example, `npm run test -- --src=viewers/media/media-base` launches tests for `src/lib/viewers/media/__tests__/media-base-test.js`
+* `npm run debug` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
+* `npm run debug -- --src=path/to/src/FILENAME` launches debugging for `src/lib/path/to/src/__tests__/FILENAME-test.js` instead of all tests. Open the URL mentioned in the console.
+
+For more script commands see `package.json`. Test coverage reports are available under reports/coverage.
+
+### Config files
+
+* .babelrc - https://babeljs.io/docs/usage/babelrc/
+* .editorconfig - http://editorconfig.org/
+* .eslintignore - http://eslint.org/docs/user-guide/configuring#ignoring-files-and-directories
+* .eslintrc - http://eslint.org/docs/user-guide/configuring
+* .gitignore - https://git-scm.com/docs/gitignore
+* .stylelintrc - https://stylelint.io/user-guide/configuration/
+* browserslist - https://github.com/ai/browserslist
+* postcss.config.js - https://github.com/postcss/postcss-loader
 
 Support
 -------
-
 Need to contact us directly? Email oss@box.com and be sure to include the name of this project in the subject.
 
 Copyright and License
 ---------------------
-
-Copyright 2017 Box, Inc. All rights reserved.
+Copyright 2016-2017 Box, Inc. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

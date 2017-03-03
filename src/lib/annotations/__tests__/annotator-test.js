@@ -263,7 +263,7 @@ describe('annotator', () => {
 
         it('should add an event listener', () => {
             annotator._annotationService = new AnnotationService({
-                api: 'API',
+                apiHost: 'API',
                 fileId: 1,
                 token: 'someToken',
                 canAnnotate: true,
@@ -288,7 +288,7 @@ describe('annotator', () => {
 
         it('should remove an event listener', () => {
             annotator._annotationService = new AnnotationService({
-                api: 'API',
+                apiHost: 'API',
                 fileId: 1,
                 token: 'someToken',
                 canAnnotate: true,

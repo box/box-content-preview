@@ -4,7 +4,7 @@ import '../../polyfill';
 import Annotation from '../annotation';
 import AnnotationService from '../annotation-service';
 
-const API = 'https://app.box.com/api';
+const API_HOST = 'https://app.box.com/api';
 
 let annotationService;
 let sandbox;
@@ -13,7 +13,7 @@ describe('annotation-service', () => {
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         annotationService = new AnnotationService({
-            api: API,
+            apiHost: API_HOST,
             fileId: 1,
             token: 'someToken',
             canAnnotate: true
@@ -46,7 +46,7 @@ describe('annotation-service', () => {
             text: 'blah',
             location: { x: 0, y: 0 }
         });
-        const url = `${API}/2.0/annotations`;
+        const url = `${API_HOST}/2.0/annotations`;
 
         it('should create annotation and return created object', () => {
             fetchMock.mock(url, {
@@ -102,7 +102,7 @@ describe('annotation-service', () => {
     });
 
     describe('read()', () => {
-        const url = `${API}/2.0/files/1/annotations?version=2&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
+        const url = `${API_HOST}/2.0/files/1/annotations?version=2&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
 
         it('should return array of annotations for the specified file and file version', () => {
             const annotation1 = new Annotation({
@@ -187,7 +187,7 @@ describe('annotation-service', () => {
     });
 
     describe('delete()', () => {
-        const url = `${API}/2.0/annotations/3`;
+        const url = `${API_HOST}/2.0/annotations/3`;
 
 
         it('should successfully delete the annotation', () => {

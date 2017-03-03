@@ -1,5 +1,4 @@
 import Base from '../base';
-import { deduceBoxUrl } from '../../util';
 
 class IFrame extends Base {
     /**
@@ -25,12 +24,12 @@ class IFrame extends Base {
     load() {
         this.setup();
 
-        let src = `${deduceBoxUrl(this.options.api)}`;
-        const { file, sharedLink = '' } = this.options;
+        let src = '';
+        const { file, sharedLink = '', appHost } = this.options;
         const { extension } = file;
 
         if (extension === 'boxnote') {
-            src = `${src}/notes/${this.options.file.id}?isReadonly=1&is_preview=1`;
+            src = `${appHost}/notes/${file.id}?isReadonly=1&is_preview=1`;
 
             // Append shared name if needed, Box Notes uses ?s=SHARED_NAME
             const sharedNameIndex = sharedLink.indexOf('/s/');
@@ -39,7 +38,7 @@ class IFrame extends Base {
                 src = `${src}&s=${sharedName}`;
             }
         } else if (extension === 'boxdicom') {
-            src = `${src}/dicom_viewer/${this.options.file.id}`;
+            src = `${appHost}/dicom_viewer/${file.id}`;
         }
 
         this.iframeEl.src = src;

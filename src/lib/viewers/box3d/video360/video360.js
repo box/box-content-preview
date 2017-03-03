@@ -92,8 +92,8 @@ class Video360 extends Dash {
      */
     @autobind
     loadeddataHandler() {
-        const { token, api } = this.options;
-        this.renderer = new Video360Renderer(this.mediaContainerEl, new BoxSDK({ token, apiBase: api }));
+        const { token, apiHost } = this.options;
+        this.renderer = new Video360Renderer(this.mediaContainerEl, new BoxSDK({ token, apiBase: apiHost }));
         this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
         this.options.sceneEntities = sceneEntities;
         this.renderer.initBox3d(this.options)

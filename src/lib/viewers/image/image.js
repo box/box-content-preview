@@ -309,7 +309,7 @@ class Image extends Base {
 
         const fileVersionID = this.options.file.file_version.id;
         const annotationService = new AnnotationService({
-            api: this.options.api,
+            apiHost: this.options.apiHost,
             fileId: this.options.file.id,
             token: this.options.token,
             canAnnotate

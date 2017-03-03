@@ -16,7 +16,8 @@ import getTokens from './tokens';
 import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid, cacheFile } from './file';
 import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
 import {
-    API,
+    API_HOST,
+    APP_HOST,
     CLASS_NAVIGATION_VISIBILITY,
     PERMISSION_DOWNLOAD,
     PERMISSION_ANNOTATE,
@@ -309,7 +310,7 @@ class Preview extends EventEmitter {
      */
     download() {
         if (checkPermission(this.file, PERMISSION_DOWNLOAD)) {
-            get(getDownloadURL(this.file.id, this.options.api), this.getRequestHeaders())
+            get(getDownloadURL(this.file.id, this.options.apiHost), this.getRequestHeaders())
             .then((data) => {
                 openUrlInsideIframe(data.download_url);
             });
@@ -562,8 +563,11 @@ class Preview extends EventEmitter {
         // Shared link password
         this.options.sharedLinkPassword = options.sharedLinkPassword;
 
-        // Save the reference to the api endpoint
-        this.options.api = options.api ? options.api.replace(/\/$/, '') : API;
+        // Save reference to API host
+        this.options.apiHost = options.apiHost ? options.apiHost.replace(/\/$/, '') : API_HOST;
+
+        // Save reference to the app host
+        this.options.appHost = options.appHost ? options.appHost.replace(/\/$/, '') : APP_HOST;
 
         // Show or hide the header
         this.options.header = options.header || 'light';
@@ -640,7 +644,7 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     loadFromServer() {
-        get(getURL(this.file.id, this.options.api), this.getRequestHeaders())
+        get(getURL(this.file.id, this.options.apiHost), this.getRequestHeaders())
         .then(this.handleLoadResponse)
         .catch(this.triggerFetchError);
     }
@@ -869,10 +873,10 @@ class Preview extends EventEmitter {
     logPreviewEvent(fileId, options) {
         this.logRetryCount = this.logRetryCount || 0;
 
-        const { api, token, sharedLink, sharedLinkPassword } = options;
+        const { apiHost, token, sharedLink, sharedLinkPassword } = options;
         const headers = getHeaders({}, token, sharedLink, sharedLinkPassword);
 
-        post(`${api}/2.0/events`, headers, {
+        post(`${apiHost}/2.0/events`, headers, {
             event_type: 'preview',
             source: {
                 type: 'file',
@@ -1025,7 +1029,7 @@ class Preview extends EventEmitter {
                 const token = tokenMap[id];
 
                 // Prefetch and cache file information and content
-                get(getURL(id, this.options.api), this.getRequestHeaders(token))
+                get(getURL(id, this.options.apiHost), this.getRequestHeaders(token))
                 .then((file) => {
                     // Cache file info
                     cacheFile(file);

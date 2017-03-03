@@ -9,7 +9,7 @@ import cache from '../Cache';
 import * as ui from '../ui';
 import * as file from '../file';
 import * as util from '../util';
-import { API, CLASS_NAVIGATION_VISIBILITY } from '../constants';
+import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
 
 const tokens = require('../tokens');
 
@@ -768,7 +768,8 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             stubs.sharedLink = 'www.app.box.com/shared';
             stubs.sharedLinkPassword = 'password';
-            stubs.api = 'endpoint/';
+            stubs.apiHost = 'endpoint/';
+            stubs.appHost = 'https://host.app.box.com';
             stubs.header = 'dark';
             stubs.logoUrl = 'www.app.box.com/logo';
             stubs.collection = ['file0', 'file1'];
@@ -777,7 +778,8 @@ describe('lib/Preview', () => {
                 container: containerEl,
                 sharedLink: stubs.sharedLink,
                 sharedLinkPassword: stubs.sharedLinkPassword,
-                api: stubs.api,
+                apiHost: stubs.apiHost,
+                appHost: stubs.appHost,
                 header: stubs.header,
                 logoUrl: stubs.logoUrl,
                 showDownload: true,
@@ -819,14 +821,24 @@ describe('lib/Preview', () => {
             expect(preview.options.sharedLinkPassword).to.equal(stubs.sharedLinkPassword);
         });
 
-        it('should save a reference to the api endpoint', () => {
+        it('should save a reference to the api host', () => {
             preview.parseOptions(preview.previewOptions, stubs.tokens);
-            expect(preview.options.api).to.equal('endpoint');
+            expect(preview.options.apiHost).to.equal('endpoint');
 
-            preview.previewOptions.api = undefined;
-
+            // Check default
+            preview.previewOptions.apiHost = undefined;
             preview.parseOptions(preview.previewOptions, stubs.tokens);
-            expect(preview.options.api).to.equal('https://api.box.com');
+            expect(preview.options.apiHost).to.equal('https://api.box.com');
+        });
+
+        it('should save a reference to the app host', () => {
+            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            expect(preview.options.appHost).to.equal(stubs.appHost);
+
+            // Check default
+            preview.previewOptions.appHost = undefined;
+            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            expect(preview.options.appHost).to.equal('https://app.box.com');
         });
 
         it('should set whether to show the header or a custom logo', () => {
@@ -1393,7 +1405,7 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             stubs.promiseResolve = Promise.resolve({});
             stubs.getHeaders = sandbox.stub(util, 'getHeaders');
-            stubs.url = `${API}/2.0/events`;
+            stubs.url = `${API_HOST}/2.0/events`;
         });
 
         it('should get the headers for the post request', () => {
@@ -1432,7 +1444,7 @@ describe('lib/Preview', () => {
             preview.logRetryCount = 3;
             preview.logRetryTimeout = undefined;
 
-            preview.logPreviewEvent(0, { api: API });
+            preview.logPreviewEvent(0, { apiHost: API_HOST });
             return stubs.promiseResolve.catch(() => {
                 expect(preview.logRetryCount).to.equal(4);
                 expect(preview.logRetryTimeout).to.not.equal(undefined);

@@ -155,7 +155,7 @@ export function put(...rest) {
  * Opens url in an iframe
  * Used for downloads
  *
- * @param {string} api - API url
+ * @param {string} url - URL to open
  * @return {HTMLElement}
  */
 export function openUrlInsideIframe(url) {
@@ -176,30 +176,6 @@ export function openContentInsideIframe(content) {
     iframe.contentDocument.body.innerHTML = content;
     iframe.contentDocument.close();
     return iframe;
-}
-
-/**
- * Deduces Box app url from API url
- *
- * @param {string} api - API url
- * @return {HTMLElement}
- */
-export function deduceBoxUrl(api) {
-    let origin;
-
-    if (api && api.endsWith('/api')) {
-        // This is an internal url
-        origin = api.replace('/api', '');
-        const userDomain = origin.match(/^https:\/\/(.*)\.dev\.box\.net$/);
-        if (Array.isArray(userDomain) && userDomain[1]) {
-            origin = `https://app.${userDomain[1]}.inside-box.net`;
-        }
-    } else {
-        // This is an external url
-        origin = 'https://app.box.com';
-    }
-
-    return origin;
 }
 
 /**
