@@ -81,7 +81,7 @@ class Image360Renderer extends Box3DRenderer {
         const opts = options;
         opts.sceneEntities = opts.sceneEntities || sceneEntities;
 
-        return this.initBox3d(opts)
+        return super.load(assetUrl, opts)
             .then(this.loadPanoramaFile.bind(this, assetUrl))
             .then(this.onSceneLoad.bind(this));
     }

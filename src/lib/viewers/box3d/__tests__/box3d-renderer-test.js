@@ -4,7 +4,7 @@ import Box3DRenderer from '../box3d-renderer';
 import { EVENT_SHOW_VR_BUTTON } from '../box3d-constants';
 
 const sandbox = sinon.sandbox.create();
-const PREVIEW_CAMERA_CONTROLLER_ID = 'orbit_camera_controller';
+const PREVIEW_CAMERA_CONTROLLER_ID = 'orbit_camera';
 
 let containerEl;
 let renderer;
@@ -84,7 +84,6 @@ describe('box3d-renderer', () => {
     });
 
     describe('reset()', () => {
-        const RESET_CAMERA_EVENT = 'resetOrbitCameraController';
         let camera;
         let cameraMock;
         beforeEach(() => {
@@ -103,11 +102,6 @@ describe('box3d-renderer', () => {
             cameraMock.expects('setPosition');
             cameraMock.expects('setQuaternion');
 
-            renderer.reset();
-        });
-
-        it('should set camera position and orientation to default values', () => {
-            cameraMock.expects('trigger').withArgs(RESET_CAMERA_EVENT);
             renderer.reset();
         });
     });
@@ -662,6 +656,7 @@ describe('box3d-renderer', () => {
                     callback([{}, {}]);
                     done();
                 });
+                sandbox.stub(renderer, 'createVrGamepads', () => {});
                 renderer.initVr();
                 expect(emitStub).to.be.calledWith(EVENT_SHOW_VR_BUTTON);
             });
@@ -672,6 +667,7 @@ describe('box3d-renderer', () => {
                     callback([{}, {}]);
                     done();
                 });
+                sandbox.stub(renderer, 'createVrGamepads', () => {});
                 renderer.initVr();
             });
 

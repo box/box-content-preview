@@ -120,30 +120,8 @@ class Model3d extends Box3D {
         if (!this.renderer.instance || this.renderer.vrEnabled) {
             return;
         }
-
         this.renderer.instance.scaleToSize(newSize);
-    }
-
-    /**
-     * Sets the scale used to render the model when in VR mode.
-     * @method setModelScaleVr
-     * @public
-     * @param {Float} newSize - The size of the largest dimension of the model in metres.
-     * Default is 1 m.
-     * @return {void}
-     */
-    /* istanbul ignore next: @mbond has gotten rid of this in his incoming branch */
-    setModelScaleVr(newSize) {
-        if (!this.renderer) {
-            return;
-        }
-
-        this.renderer.modelVrSize = newSize;
-        if (!this.renderer.instance || !this.renderer.vrEnabled) {
-            return;
-        }
-
-        this.renderer.instance.scaleToSize(newSize);
+        this.renderer.reset();
     }
 
     /**
@@ -163,40 +141,13 @@ class Model3d extends Box3D {
         if (!this.renderer) {
             return;
         }
-
         this.renderer.modelAlignmentPosition = position;
         this.renderer.modelAlignmentVector = alignmentVector;
-        if (!this.renderer.instance || this.renderer.vrEnabled) {
+        if (!this.renderer.instance) {
             return;
         }
-
         this.renderer.instance.alignToPosition(position, alignmentVector);
-    }
-
-    /**
-     * Set the position of the model in VR mode relative a point and the model's bounding box.
-     * @method setModelAlignmentVr
-     * @public
-     * @param {Vector3} position        The position in world space to position the model
-     * relative to.
-     * @param {Vector3} alignmentVector - An object of the form { x: x, y: y, z: z} where - the
-     * values for x, y and z are between -1 and +1 and specify how the object is aligned to
-     * the edges of the model. e.g. { x: 0, y: -1, z: 0 } will align the bottom, centre of the
-     * object to the specified position.
-     * @return {void}
-     */
-    /* istanbul ignore next: @mbond has gotten rid of this in his incoming branch */
-    setModelAlignmentVr(position, alignmentVector) {
-        if (!this.renderer) {
-            return;
-        }
-        this.renderer.modelVrAlignmentPosition = position;
-        this.renderer.modelVrAlignmentVector = alignmentVector;
-        if (!this.renderer.instance || !this.renderer.vrEnabled) {
-            return;
-        }
-
-        this.renderer.instance.alignToPosition(position, alignmentVector);
+        this.renderer.reset();
     }
 
     /**
@@ -268,6 +219,7 @@ class Model3d extends Box3D {
 
                 this.showWrapper();
                 this.renderer.initVr();
+                this.renderer.initVrGamepadControls();
                 this.emit(EVENT_LOAD);
 
                 return true;
@@ -361,11 +313,6 @@ class Model3d extends Box3D {
         if (this.renderer) {
             this.handleRotationAxisSet(this.axes.up, this.axes.forward, true);
             this.renderer.stopAnimation();
-
-            if (this.renderer.vrEnabled) {
-                const camera = this.renderer.getCamera();
-                this.renderer.initCameraForVr(camera);
-            }
         }
     }
 

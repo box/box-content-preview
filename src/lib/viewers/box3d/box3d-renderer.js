@@ -7,9 +7,12 @@ import {
     EVENT_TRIGGER_RENDER
 } from './box3d-constants';
 
-const PREVIEW_CAMERA_CONTROLLER_ID = 'orbit_camera_controller';
+const PREVIEW_CAMERA_CONTROLLER_ID = 'orbit_camera';
 const PREVIEW_CAMERA_POSITION = { x: 0, y: 0, z: 0 };
 const PREVIEW_CAMERA_QUATERNION = { x: 0, y: 0, z: 0, w: 1 };
+const OCULUS_TOUCH_LEFT = 'oculusTouchLeft';
+const OCULUS_TOUCH_RIGHT = 'oculusTouchRight';
+const HTC_VIVE = 'viveController';
 
 /**
  * Append shared link headers to an XHR Object
@@ -45,6 +48,7 @@ class Box3DRenderer extends EventEmitter {
         // tracked for cleanup during recycling of box3d runtime
         this.assets = [];
         this.vrEnabled = false;
+        this.vrGamepads = [];
         this.box3d = null;
         this.boxSdk = boxSdk;
         this.on(EVENT_TRIGGER_RENDER, this.handleOnRender);
@@ -55,6 +59,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Load a box3d json.
      *
+     * @param {Object} assetUrl - Url template.
      * @param {Object} options - Options object, used to initialize the Box3DRuntime
      * and BoxSDK
      * @param {string} [options.token] - The OAuth2 Token used for authentication of asset requests
@@ -64,6 +69,7 @@ class Box3DRenderer extends EventEmitter {
      * @return {Promise} A promise resulting in the newly created box3d
      */
     load(assetUrl, options = {}) {
+        this.staticBaseURI = options && options.location ? options.location.staticBaseURI : '';
         return this.initBox3d(options);
     }
 
@@ -97,7 +103,6 @@ class Box3DRenderer extends EventEmitter {
         if (camera) {
             camera.setPosition(this.defaultCameraPosition.x, this.defaultCameraPosition.y, this.defaultCameraPosition.z);
             camera.setQuaternion(this.defaultCameraQuaternion.x, this.defaultCameraQuaternion.y, this.defaultCameraQuaternion.z, this.defaultCameraQuaternion.w);
-            camera.trigger('resetOrbitCameraController');
         }
     }
 
@@ -219,7 +224,7 @@ class Box3DRenderer extends EventEmitter {
      * @return {void}
      */
     onSceneLoad() {
-        // Reset the camera.
+        // Reset the scene.
         this.reset();
         this.emit(EVENT_SCENE_LOADED);
         this.initVr();
@@ -240,26 +245,31 @@ class Box3DRenderer extends EventEmitter {
 
     /**
      * Handle returning behaviour to normal after leaving VR.
+     *
+     * @return {void}
      */
     onDisableVr() {
         this.enableCameraControls();
-        this.reset();
         this.box3d.trigger('resize');
         const renderer = this.box3d.getRenderer();
         renderer.setAttribute('renderOnDemand', true);
-
+        this.hideVrGamepads();
         const display = this.box3d.getVrDisplay();
         this.vrEnabled = display && display.isPresenting;
+        this.reset();
     }
 
     /**
      * Handle turning on VR.
+     *
+     * @return {void}
      */
     onEnableVr() {
         this.disableCameraControls();
         // Render every frame to make sure that we're as responsive as possible.
         const renderer = this.box3d.getRenderer();
         renderer.setAttribute('renderOnDemand', false);
+        this.showVrGamepads();
         const display = this.box3d.getVrDisplay();
         this.vrEnabled = display && display.isPresenting;
     }
@@ -352,14 +362,98 @@ class Box3DRenderer extends EventEmitter {
         }
 
         const app = this.box3d.getApplication();
-        const vrPresenter = app.getComponentByScriptId('vr_presenter_component');
+        const vrPresenter = app.getComponentByScriptId('vr_presenter');
         vrPresenter.whenDisplaysAvailable((displays) => {
             if (displays.length) {
                 this.emit(EVENT_SHOW_VR_BUTTON);
                 this.box3d.listenTo(this.box3d, 'vrRenderingDisabled', this.onDisableVr.bind(this));
                 this.box3d.listenTo(this.box3d, 'vrRenderingEnabled', this.onEnableVr.bind(this));
+
+                this.createVrGamepads();
             }
         });
+    }
+
+    /**
+     * Create two Box3D objects that represent left and right VR hand controllers.
+     * If appropriate controllers are detected, models will be loaded and rendered into the scene.
+     * @return {void}
+     */
+    createVrGamepads() {
+        if (this.vrGamepads.length) {
+            return;
+        }
+
+        this.vrGamepads = [Box3D.Handedness.Left, Box3D.Handedness.Right].map((handedness) => this.createVrGamepad(handedness));
+    }
+
+    /**
+     * Create and return a Box3D object that tracks with the VR hand controller and renders the appropriate model.
+     * @param {Box3D.Handedness} handedness The preferred hand that this object will represent.
+     * @return {Box3D.NodeObject} The object that represents the controller.
+     */
+    createVrGamepad(handedness) {
+        const controller = this.box3d.createNode();
+
+        const onGamepadModelLoad = (entities) => {
+            const prefab = entities.find((e) => {
+                return e.type === 'prefab';
+            });
+            const prefabAsset = this.box3d.getAssetById(prefab.id);
+            controller.addChild(prefabAsset.createInstance());
+            if (this.vrEnabled) {
+                this.showVrGamepads();
+            } else {
+                this.hideVrGamepads();
+            }
+        };
+
+        const onGamepadFound = (gamepad) => {
+            let controllerName = null;
+            if (gamepad.id.indexOf('Oculus') > -1) {
+                switch (gamepad.hand) {
+                    case 'left':
+                        controllerName = OCULUS_TOUCH_LEFT;
+                        break;
+                    default:
+                        controllerName = OCULUS_TOUCH_RIGHT;
+                        break;
+                }
+            } else if (gamepad.id.indexOf('OpenVR') > -1) {
+                controllerName = HTC_VIVE;
+                // Both left and right Vive controllers use the same model so, if the promise
+                // already exists, use it.
+                if (this.vrGamepadLoadPromise) {
+                    this.vrGamepadLoadPromise.then(onGamepadModelLoad);
+                    return;
+                }
+            }
+            this.vrGamepadLoadPromise = this.box3d.addRemoteEntities(`${this.staticBaseURI}third-party/model3d/WebVR/${controllerName}/entities.json`);
+            this.vrGamepadLoadPromise.then(onGamepadModelLoad);
+        };
+
+        const handController = controller.addComponent('motion_gamepad_device', { handPreference: handedness });
+        controller.addComponent('intersection_checker', { objectTypeFilter: ['mesh'] });
+        this.getScene().addChild(controller);
+        handController.whenGamepadFound(onGamepadFound);
+
+        return controller;
+    }
+
+    /**
+     * Mark the VR hand controllers and being visible.
+     * @return {void}
+     */
+    showVrGamepads() {
+        this.vrGamepads.forEach((pad) => pad.setProperty('visible', true));
+    }
+
+    /**
+     * Mark the VR hand controllers and being invisible.
+     * @return {void}
+     */
+    hideVrGamepads() {
+        this.vrGamepads.forEach((pad) => pad.setProperty('visible', false));
     }
 }
 

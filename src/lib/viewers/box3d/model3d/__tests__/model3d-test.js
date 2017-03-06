@@ -67,7 +67,7 @@ describe('lib/viewers/box3d/model3d/model3d', () => {
             load: () => Promise.resolve(),
             initVr: () => {},
             getCamera: () => {},
-            initCameraForVr: () => {},
+            initVrGamepadControls: () => {},
             on: () => {},
             removeListener: () => {},
             removeAllListeners: () => {},
@@ -565,11 +565,13 @@ describe('lib/viewers/box3d/model3d/model3d', () => {
     });
 
     describe('handleReset()', () => {
-        it('should initialize a camera for VR mode', () => {
-            model3d.renderer.vrEnabled = true;
+        it('should reset control settings', () => {
+            sandbox.mock(model3d.controls).expects('handleSetRenderMode');
+            sandbox.mock(model3d.controls).expects('setCurrentProjectionMode');
+            sandbox.mock(model3d.controls).expects('handleSetSkeletonsVisible');
+            sandbox.mock(model3d.controls).expects('handleSetWireframesVisible');
             const renderMock = sandbox.mock(model3d.renderer);
-            renderMock.expects('getCamera').returns({});
-            renderMock.expects('initCameraForVr').once();
+            renderMock.expects('stopAnimation').once();
             model3d.handleReset();
         });
     });

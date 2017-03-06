@@ -95,6 +95,7 @@ class Video360 extends Dash {
         const { token, apiHost } = this.options;
         this.renderer = new Video360Renderer(this.mediaContainerEl, new BoxSDK({ token, apiBase: apiHost }));
         this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
+        this.renderer.staticBaseURI = this.options.location.staticBaseURI;
         this.options.sceneEntities = sceneEntities;
         this.renderer.initBox3d(this.options)
             .then(this.create360Environment)

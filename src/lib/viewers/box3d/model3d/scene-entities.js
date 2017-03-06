@@ -18,25 +18,24 @@ function sceneEntities(prefix) {
             {
                 name: 'Render View',
                 enabled: true,
-                scriptId: 'vr_render_view_component'
+                scriptId: 'vr_render_view'
             },
             // An orbit controller for rotating around the 3D model, made for preview
             {
-                name: 'Preview Camera',
+                name: 'Orbit Camera',
                 attributes: {
-                    orbitDistanceMin: 0.02, // Minimum camera distance
-                    orbitDistanceMax: 3, // Maximum camera distance
+                    zoomPerspectiveBounds: { x: 0.02, y: 90 },
                     useKeyboard: false,
                     enablePan: true
                 },
                 enabled: true,
-                scriptId: 'orbit_camera_controller'
+                scriptId: 'orbit_camera'
             },
             {
-                name: 'Preview Camera Focus',
+                name: 'Orbit Camera Focus',
                 attributes: {},
                 enabled: true,
-                scriptId: 'preview_camera_focus'
+                scriptId: 'orbit_camera_focus'
             },
             {
                 name: 'VR Camera Controller',
@@ -60,7 +59,7 @@ function sceneEntities(prefix) {
                     radianceMapHalfGloss: 'HDR_ENV_MAP_CUBE_1',
                     radianceMap: 'HDR_ENV_MAP_CUBE_0'
                 },
-                scriptId: 'light_environment_component'
+                scriptId: 'light_environment'
             }
         ]
     }, {
@@ -107,34 +106,34 @@ function sceneEntities(prefix) {
             },
             {
                 name: 'Input',
-                scriptId: 'input_controller_component',
+                scriptId: 'input',
                 enabled: true,
                 attributes: {
                     mouseEvents: {
                         enable: true,
                         scroll: true,
-                        scroll_preventDefault: true,
+                        preventScrollDefault: true,
                         move: true,
                         down: true,
-                        down_preventDefault: false,
+                        preventDownDefault: false,
                         up: true,
-                        double_click: true,
+                        doubleClick: true,
                         leave: true,
                         contextMenu: true,
-                        contextMenu_preventDefault: true,
+                        preventContextMenuDefault: true,
                         dragBufferDistance: 12,
                         eventHandler: true
                     },
                     touchEvents: {
                         enable: true,
                         start: true,
-                        start_preventDefault: false,
+                        preventStartDefault: false,
                         end: true,
                         doubleTap: true,
                         cancel: true,
                         leave: true,
                         move: true,
-                        move_preventDefault: true,
+                        preventMoveDefault: true,
                         dragBufferDistance: 12,
                         eventHandler: true
                     },
@@ -153,12 +152,8 @@ function sceneEntities(prefix) {
                 scriptId: 'render_modes'
             },
             {
-                name: 'Gamepad Input',
-                scriptId: 'gamepad_input_controller'
-            },
-            {
                 name: 'VR Presenter',
-                scriptId: 'vr_presenter_component'
+                scriptId: 'vr_presenter'
             }
         ]
     }, {
@@ -300,7 +295,7 @@ function sceneEntities(prefix) {
         components: [
             {
                 name: 'Convert Panorama To CubeMap',
-                scriptId: 'panorama_to_cubemap_script',
+                scriptId: 'panorama_to_cube_map',
                 enabled: true,
                 attributes: {
                     inputTexture: 'HDR_ENV_MAP_0'
@@ -323,7 +318,7 @@ function sceneEntities(prefix) {
         components: [
             {
                 name: 'Convert Panorama To CubeMap',
-                scriptId: 'panorama_to_cubemap_script',
+                scriptId: 'panorama_to_cube_map',
                 enabled: true,
                 attributes: {
                     inputTexture: 'HDR_ENV_MAP_1'
@@ -346,7 +341,7 @@ function sceneEntities(prefix) {
         components: [
             {
                 name: 'Convert Panorama To CubeMap',
-                scriptId: 'panorama_to_cubemap_script',
+                scriptId: 'panorama_to_cube_map',
                 enabled: true,
                 attributes: {
                     inputTexture: 'HDR_ENV_MAP_2'

@@ -1,6 +1,7 @@
 /* global Box3D, THREE */
 import autobind from 'autobind-decorator';
 import Box3DRenderer from '../box3d-renderer';
+import Model3dVrControls from './model3d-vr-controls';
 import sceneEntities from './scene-entities';
 import {
     CAMERA_PROJECTION_PERSPECTIVE,
@@ -20,6 +21,9 @@ import {
     RENDER_MODE_NORMALS,
     RENDER_MODE_UV
 } from './model3d-constants';
+import {
+    EVENT_SCENE_LOADED
+} from '../box3d-constants';
 import Browser from '../../../Browser';
 
 const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
@@ -42,7 +46,6 @@ const OPTIMIZE_FRAMETIME_THESHOLD_MOBILE = 66.6; // 15 FPS
 const OPTIMIZE_FRAMETIME_THESHOLD_REGULAR_VR = 20.0; // 50 FPS
 const OPTIMIZE_FRAMETIME_THESHOLD_MOBILE_VR = 66.6; // 15 FPS
 const DEFAULT_MODEL_SIZE = 1;
-const DEFAULT_MODEL_VR_SIZE = 1.5;
 
 /**
  * Model3dRenderer
@@ -67,11 +70,8 @@ class Model3dRenderer extends Box3DRenderer {
         this.axisDisplay = null;
         this.isRotating = false;
         this.modelSize = DEFAULT_MODEL_SIZE;
-        this.modelVrSize = DEFAULT_MODEL_VR_SIZE;
         this.modelAlignmentPosition = ORIGIN_VECTOR;
-        this.modelAlignmentVector = ORIGIN_VECTOR;
-        this.modelVrAlignmentPosition = ORIGIN_VECTOR;
-        this.modelVrAlignmentVector = FLOOR_VECTOR;
+        this.modelAlignmentVector = FLOOR_VECTOR;
         this.dynamicOptimizerEnabled = true;
         this.defaultCameraPosition = PREVIEW_CAMERA_POSITION;
         this.defaultCameraQuaternion = PREVIEW_CAMERA_QUATERNION;
@@ -88,7 +88,9 @@ class Model3dRenderer extends Box3DRenderer {
 
     /** @inheritdoc */
     destroy() {
-        this.box3d.canvas.removeEventListener('click', this.handleCanvasClick);
+        if (this.box3d && this.box3d.canvas) {
+            this.box3d.canvas.removeEventListener('click', this.handleCanvasClick);
+        }
 
         this.cleanupScene();
 
@@ -103,7 +105,7 @@ class Model3dRenderer extends Box3DRenderer {
         options.sceneEntities = sceneEntities(location.staticBaseURI);
         /*eslint-enable*/
 
-        return this.initBox3d(options)
+        return super.load(assetUrl, options)
             .then(() => this.loadBox3dFile(assetUrl));
     }
 
@@ -229,12 +231,42 @@ class Model3dRenderer extends Box3DRenderer {
     }
 
     /** @inheritdoc */
+    reset() {
+        super.reset();
+        const camera = this.getCamera();
+        if (!camera) {
+            return;
+        }
+
+        const orbitController = camera.getComponentByScriptId('orbit_camera');
+        if (!orbitController) {
+            return;
+        }
+
+        if (this.instance.runtimeData) {
+            this.instance.computeBounds();
+            const bounds = this.instance.getBounds();
+            const maxDimension = new THREE.Vector3();
+            maxDimension.subVectors(bounds.max, bounds.min);
+            this.instance.runtimeData.updateMatrixWorld();
+            maxDimension.applyMatrix4(this.instance.runtimeData.matrixWorld);
+            const center = this.instance.getCenter();
+            center.applyMatrix4(this.instance.runtimeData.matrixWorld);
+            // Set the origin point (so that we always point at the center of the model when the camera reloads)
+            orbitController.originPoint.copy(center);
+            orbitController.setPivotPosition(center);
+            orbitController.setOrbitDistance(Math.max(Math.max(maxDimension.x, maxDimension.y), maxDimension.z));
+        }
+    }
+
+    /** @inheritdoc */
     onSceneLoad() {
+        this.reset();
+
         // Reset the skeleton visualization.
         this.resetSkeletons();
 
-        // Unload the intermediate HDR maps that are no longer needed.
-        super.onSceneLoad();
+        this.emit(EVENT_SCENE_LOADED);
 
         // Should wait until all textures are fully loaded before trying to measure performance.
         // Once they're loaded, start the dynamic optimizer.
@@ -393,7 +425,6 @@ class Model3dRenderer extends Box3DRenderer {
         this.grid.material.transparent = true;
         this.grid.material.blending = THREE.MultiplyBlending;
         scene.add(this.grid);
-        this.grid.visible = false;
 
         this.axisDisplay = new THREE.AxisHelper(0.5);
         scene.add(this.axisDisplay);
@@ -407,12 +438,17 @@ class Model3dRenderer extends Box3DRenderer {
      * @return {void}
      */
     cleanupHelpers() {
+        if (!this.getScene()) {
+            return;
+        }
+
         const scene = this.getScene().runtimeData;
         if (this.grid) {
             scene.remove(this.grid);
             this.grid.material.dispose();
             this.grid.geometry.dispose();
         }
+
         if (this.axisDisplay) {
             scene.remove(this.axisDisplay);
             this.axisDisplay.material.dispose();
@@ -428,11 +464,8 @@ class Model3dRenderer extends Box3DRenderer {
      * @return {void}
      */
     toggleHelpers(show) {
-        const enable = show !== undefined ? show : !this.grid.visible;
+        const enable = show !== undefined ? show : !this.axisDisplay.visible;
         this.axisDisplay.visible = enable;
-        if (!this.vrEnabled || !this.vrDeviceHasPosition) {
-            this.grid.visible = enable;
-        }
         this.box3d.needsRender = true;
     }
 
@@ -520,10 +553,6 @@ class Model3dRenderer extends Box3DRenderer {
             default:
                 break;
         }
-
-        if (!this.vrEnabled) {
-            camera.trigger('resetOrbitCameraController');
-        }
     }
 
     /**
@@ -591,7 +620,15 @@ class Model3dRenderer extends Box3DRenderer {
     rotateOnAxis(axis) {
         if (this.instance && this.box3d && !this.isRotating) {
             this.box3d.trigger('rotate_on_axis', axis, true);
-            this.listenToRotateComplete(this.modelAlignmentPosition, this.modelAlignmentVector);
+
+            // Calculate centre of model in world space so that we can rotate smoothly about it.
+            const alignPosition = new THREE.Vector3();
+            this.instance.getCenter(alignPosition);
+            if (this.instance.runtimeData) {
+                alignPosition.applyMatrix4(this.instance.runtimeData.matrixWorld);
+            }
+
+            this.listenToRotateComplete(alignPosition, ORIGIN_VECTOR);
         }
     }
 
@@ -611,9 +648,7 @@ class Model3dRenderer extends Box3DRenderer {
 
         // Set up the rotation listener before triggering "set_axes". The order is important because
         // when useTransition is false, the "axis_transition_complete" event is fired immediately.
-        const alignPosition = this.vrEnabled ? this.modelVrAlignmentPosition : this.modelAlignmentPosition;
-        const alignVector = this.vrEnabled ? this.modelVrAlignmentVector : this.modelAlignmentVector;
-        this.listenToRotateComplete(alignPosition, alignVector);
+        this.listenToRotateComplete(this.modelAlignmentPosition, this.modelAlignmentVector);
 
         // Modify the axes.
         this.box3d.trigger('set_axes', upAxis, forwardAxis, useTransition);
@@ -663,16 +698,13 @@ class Model3dRenderer extends Box3DRenderer {
         }
 
         // Scale the instance for VR.
-        this.instance.scaleToSize(this.modelVrSize);
         const display = this.box3d.getVrDisplay();
         this.vrDeviceHasPosition = display.capabilities.hasPosition;
         if (this.vrDeviceHasPosition) {
-            this.instance.alignToPosition(this.modelVrAlignmentPosition, this.modelVrAlignmentVector);
             this.grid.visible = true;
         } else {
             // Enable position-less camera controls
             this.box3d.on('update', this.updateModel3dVrControls, this);
-            this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
         }
     }
 
@@ -687,15 +719,9 @@ class Model3dRenderer extends Box3DRenderer {
             }
         }
 
-        if (this.instance) {
-            this.instance.scaleToSize(this.modelSize);
-            this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
-        }
-
         if (!this.vrDeviceHasPosition) {
             // Disable position-less camera controls
             this.box3d.off('update', this.updateModel3dVrControls, this);
-            this.grid.visible = false;
         }
 
         super.onDisableVr();
@@ -711,6 +737,15 @@ class Model3dRenderer extends Box3DRenderer {
         const camera = this.getCamera().runtimeData;
         camera.position.set(0, 0, 1.0);
         camera.position.applyQuaternion(camera.quaternion);
+    }
+
+    /**
+     * Create the module that handles VR hand controller interaction with the model.
+     * @private
+     * @return {void}
+     */
+    initVrGamepadControls() {
+        this.vrControls = new Model3dVrControls(this.vrGamepads, this.box3d);
     }
 
     /**

@@ -24,7 +24,7 @@ class Video360Renderer extends Box3DRenderer {
                 return null;
             }
 
-            this.inputController = app.getComponentByScriptName('Input Controller');
+            this.inputController = app.getComponentByScriptName('Input');
         }
 
         return this.inputController;

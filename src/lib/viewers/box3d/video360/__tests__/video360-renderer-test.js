@@ -74,7 +74,7 @@ describe('video360-renderer', () => {
             sandbox.stub(renderer.box3d, 'getApplication').returns(app);
             const inputController = renderer.getInputController();
 
-            expect(app.getComponentByScriptName).to.be.calledWith('Input Controller');
+            expect(app.getComponentByScriptName).to.be.calledWith('Input');
             expect(inputController).to.exist;
         });
     });

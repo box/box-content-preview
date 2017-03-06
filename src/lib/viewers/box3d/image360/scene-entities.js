@@ -5,8 +5,8 @@ export default [{
     type: 'camera',
     parentId: 'SCENE_ID',
     properties: {
-        near: 10, // Camera near-plane distance
-        far: 1200,
+        near: 0.05, // Camera near-plane distance
+        far: 200,
         fov: 70
     },
     components: [
@@ -14,20 +14,18 @@ export default [{
         {
             name: 'Render View',
             enabled: true,
-            scriptId: 'vr_render_view_component'
+            scriptId: 'vr_render_view'
         },
         {
             name: 'Orbit Camera',
             attributes: {
-                enablePan: false,
-                enableZoom: false,
+                panEnabled: false,
+                zoomEnabled: false,
                 inertialDamping: 0.2,
-                invertX: true,
-                invertY: true,
                 lookSpeed: 0.5
             },
             enabled: true,
-            scriptId: 'orbit_camera_controller'
+            scriptId: 'orbit_camera'
         },
         {
             name: 'VR Camera Controller',
@@ -77,35 +75,35 @@ export default [{
         },
         {
             name: 'Input',
-            scriptId: 'input_controller_component',
+            scriptId: 'input',
             isBuiltIn: true,
             enabled: true,
             attributes: {
                 mouseEvents: {
                     enable: true,
                     scroll: true,
-                    scroll_preventDefault: true,
+                    preventScrollDefault: true,
                     move: true,
                     down: true,
-                    down_preventDefault: false,
+                    preventDownDefault: false,
                     up: true,
-                    double_click: true,
+                    doubleClick: true,
                     leave: true,
                     contextMenu: true,
-                    contextMenu_preventDefault: true,
+                    preventContextMenuDefault: true,
                     dragBufferDistance: 12,
                     eventHandler: true
                 },
                 touchEvents: {
                     enable: true,
                     start: true,
-                    start_preventDefault: false,
+                    preventStartDefault: false,
                     end: true,
                     doubleTap: true,
                     cancel: true,
                     leave: true,
                     move: true,
-                    move_preventDefault: true,
+                    preventMoveDefault: true,
                     dragBufferDistance: 12,
                     eventHandler: true
                 },
@@ -120,7 +118,7 @@ export default [{
         },
         {
             name: 'VR Presenter',
-            scriptId: 'vr_presenter_component'
+            scriptId: 'vr_presenter'
         }
     ]
 }];

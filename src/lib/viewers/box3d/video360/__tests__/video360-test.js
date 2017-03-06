@@ -46,6 +46,7 @@ describe('lib/viewers/box3d/video360/video360', () => {
         fixture.load('viewers/box3d/video360/__tests__/video360-test.html');
         containerEl = document.querySelector('.container');
         options.container = containerEl;
+        options.location = {};
         viewer = new Video360(options);
     });
 
