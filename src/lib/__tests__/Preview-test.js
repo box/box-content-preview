@@ -1187,11 +1187,16 @@ describe('lib/Preview', () => {
         });
 
         it('should instantiate the viewer, set logger, attach viewer events, and load the viewer', () => {
-            preview.viewer.NAME = 'someViewerName';
+            stubs.loader.determineViewer.returns({
+                CONSTRUCTOR: () => {
+                    return stubs.viewer;
+                },
+                NAME: 'someViewerName'
+            });
 
             preview.loadViewer();
 
-            expect(preview.logger.setType).to.be.calledWith(preview.viewer.NAME);
+            expect(preview.logger.setType).to.be.calledWith('someViewerName');
             expect(stubs.viewer.load).to.be.called;
         });
 
