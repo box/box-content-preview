@@ -135,7 +135,7 @@ describe('scrubber', () => {
             scrubber.scrubbingHandler({ pageX: 100 });
 
             expect(stubs.setValue).to.be.calledWith(1);
-            expect(stubs.emit).to.be.calledWith('valuechange', 1);
+            expect(stubs.emit).to.be.calledWith('valuechange');
         });
     });
 

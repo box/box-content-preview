@@ -193,6 +193,20 @@ describe('Media Controls', () => {
         });
     });
 
+    describe('getTimeFromScrubber()', () => {
+        it('should compute the right time', () => {
+            mediaControls.mediaEl = {
+                duration: 100
+            };
+            mediaControls.setupScrubbers();
+            sandbox.stub(mediaControls.timeScrubber, 'getValue').returns(0.3);
+
+            const time = mediaControls.getTimeFromScrubber();
+
+            expect(time).to.equal(30);
+        });
+    });
+
     describe('formatTime', () => {
         it('should correctly format 3 hours', () => {
             const result = mediaControls.formatTime(10800);
@@ -271,30 +285,11 @@ describe('Media Controls', () => {
     });
 
     describe('toggleMute', () => {
-        beforeEach(() => {
-            stubs.emit = sandbox.stub(mediaControls, 'emit');
-            stubs.setLabel = sandbox.stub(mediaControls, 'setLabel');
-        });
-
         it('should emit a togglemute message', () => {
-            mediaControls.volButtonEl.title = __('media_mute');
+            stubs.emit = sandbox.stub(mediaControls, 'emit');
 
             mediaControls.toggleMute();
             expect(stubs.emit).to.be.calledWith('togglemute');
-        });
-
-        it('should toggle the volume button\'s label to unmute if muted', () => {
-            mediaControls.volButtonEl.title = __('media_mute');
-
-            mediaControls.toggleMute();
-            expect(stubs.setLabel).to.be.calledWith(mediaControls.volButtonEl, __('media_unmute'));
-        });
-
-        it('should toggle the volume button\'s label to mute if unmuted', () => {
-            mediaControls.volButtonEl.title = __('media_unmute');
-
-            mediaControls.toggleMute();
-            expect(stubs.setLabel).to.be.calledWith(mediaControls.volButtonEl, __('media_mute'));
         });
     });
 

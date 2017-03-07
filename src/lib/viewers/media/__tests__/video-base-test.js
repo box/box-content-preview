@@ -92,7 +92,10 @@ describe('lib/viewers/media/video-base', () => {
     describe('playingHandler()', () => {
         it('should hide the play button', () => {
             sandbox.stub(videoBase, 'hidePlayButton');
+            videoBase.loadeddataHandler(); // load media controls UI
+
             videoBase.playingHandler();
+
             expect(videoBase.hidePlayButton).to.be.called;
         });
     });
@@ -100,7 +103,10 @@ describe('lib/viewers/media/video-base', () => {
     describe('pauseHandler()', () => {
         it('should show the play button', () => {
             sandbox.stub(videoBase, 'showPlayButton');
+            videoBase.loadeddataHandler(); // load media controls UI
+
             videoBase.pauseHandler();
+
             expect(videoBase.showPlayButton).to.be.called;
         });
     });

@@ -220,6 +220,30 @@ describe('lib/viewers/media/media-base', () => {
         });
     });
 
+    describe('setMediaTime()', () => {
+        it('should set the time on the media element', () => {
+            media.mediaEl = document.createElement('video');
+            const newTime = 3.14;
+
+            media.setMediaTime(newTime);
+
+            expect(media.mediaEl.currentTime).to.equal(newTime);
+        });
+    });
+
+    describe('setVolume()', () => {
+        it('should set volume', () => {
+            sandbox.stub(media, 'handleVolume');
+            cache.set('media-volume', 0.314);
+            const newVol = 0.159;
+
+            media.setVolume(newVol);
+
+            expect(cache.get('media-volume')).to.equal(newVol);
+            expect(media.handleVolume).to.be.called;
+        });
+    });
+
     describe('updateVolumeIcon()', () => {
         it('should update the controls volume icon', () => {
             media.mediaControls = {
@@ -330,6 +354,80 @@ describe('lib/viewers/media/media-base', () => {
             expect(media.mediaControls.setTimeCode).to.be.calledWith(0);
             expect(media.hideLoadingIcon).to.be.called;
             expect(media.pauseHandler).to.be.called;
+        });
+    });
+
+    describe('togglePlay()', () => {
+        it('should pause and emit if media element was playing', () => {
+            media.mediaEl = {
+                paused: false,
+                ended: false,
+                pause: sandbox.stub(),
+                play: sandbox.stub()
+            };
+            sandbox.stub(media, 'emit');
+
+            media.togglePlay();
+
+            expect(media.mediaEl.pause.callCount).to.equal(1);
+            expect(media.mediaEl.play.callCount).to.equal(0);
+            expect(media.emit).to.be.calledWith('pause');
+        });
+
+        it('should play, emit, and honor speed/volume settings if media element was paused', () => {
+            media.mediaEl = {
+                paused: true,
+                ended: false,
+                pause: sandbox.stub(),
+                play: sandbox.stub()
+            };
+            sandbox.stub(media, 'emit');
+            sandbox.stub(media, 'handleSpeed');
+            sandbox.stub(media, 'handleVolume');
+
+            media.togglePlay();
+
+            expect(media.mediaEl.pause.callCount).to.equal(0);
+            expect(media.mediaEl.play.callCount).to.equal(1);
+            expect(media.handleSpeed).to.be.called;
+            expect(media.handleVolume).to.be.called;
+            expect(media.emit).to.be.calledWith('play');
+        });
+    });
+
+    describe('toggleMute()', () => {
+        it('should mute if volume was on', () => {
+            media.mediaEl = {
+                volume: 0.3
+            };
+
+            media.toggleMute();
+
+            expect(media.mediaEl.volume).to.equal(0);
+        });
+
+        it('should restore old volume if volume was muted', () => {
+            const oldVol = 0.3;
+            media.mediaEl = {
+                volume: 0
+            };
+            media.oldVolume = oldVol;
+
+            media.toggleMute();
+
+            expect(media.mediaEl.volume).to.equal(oldVol);
+        });
+
+        it('should leave no change if called twice', () => {
+            const vol = 0.3;
+            media.mediaEl = {
+                volume: vol
+            };
+
+            media.toggleMute();
+            media.toggleMute();
+
+            expect(media.mediaEl.volume).to.equal(vol);
         });
     });
 

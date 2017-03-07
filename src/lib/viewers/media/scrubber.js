@@ -183,7 +183,7 @@ class Scrubber extends EventEmitter {
         newValue = Math.max(Math.min(newValue, MAX_VALUE), MIN_VALUE);
 
         this.setValue(newValue);
-        this.emit('valuechange', newValue);
+        this.emit('valuechange');
     }
 
     /**

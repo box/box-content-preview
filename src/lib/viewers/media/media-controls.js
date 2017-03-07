@@ -166,6 +166,16 @@ class MediaControls extends EventEmitter {
     }
 
     /**
+     * Computes time in seconds represented by the time-scrubber
+     *
+     * @private
+     * @return {number} Time in seconds
+     */
+    getTimeFromScrubber() {
+        return this.timeScrubber.getValue() * this.mediaEl.duration;
+    }
+
+    /**
      * Attaches scrubbers
      *
      * @private
@@ -173,13 +183,14 @@ class MediaControls extends EventEmitter {
      */
     setupScrubbers() {
         this.timeScrubber = new Scrubber(this.timeScrubberEl, __('media_time_slider'), 0, 0, 1);
-        this.timeScrubber.on('valuechange', (value) => {
-            this.emit('timeupdate', value);
+        this.timeScrubber.on('valuechange', () => {
+            const newTime = this.getTimeFromScrubber();
+            this.emit('timeupdate', newTime);
         });
 
         this.volScrubber = new Scrubber(this.volScrubberEl, __('media_volume_slider'), 1, 1, 1);
-        this.volScrubber.on('valuechange', (value) => {
-            this.emit('volumeupdate', value);
+        this.volScrubber.on('valuechange', () => {
+            this.emit('volumeupdate', this.volScrubber.getValue());
         });
     }
 
@@ -243,8 +254,6 @@ class MediaControls extends EventEmitter {
      */
     toggleMute() {
         this.emit('togglemute');
-        const muteTitle = this.volButtonEl.title === __('media_mute') ? __('media_unmute') : __('media_mute');
-        this.setLabel(this.volButtonEl, muteTitle);
     }
 
     /**
