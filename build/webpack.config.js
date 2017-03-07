@@ -79,7 +79,7 @@ function updateConfig(conf, language, index) {
         }));
 
         // Add license message to top of code
-        config.plugins.push(new BannerPlugin('Box Javascript Preview SDK | Copyright 2016 Box | Licenses: https://cloud.box.com/v/preview-licenses-v1'));
+        config.plugins.push(new BannerPlugin('Box Preview JavaScript Library | Copyright 2016-2017 Box | Licenses: https://cloud.box.com/v/preview-licenses-v1'));
     }
 
     // Add the babel loader
