@@ -26,6 +26,7 @@
       "representations": [
         {
           "src": "images/2048/1.jpg",
+          "isExternal": true,
           "contentType": "image/jpeg",
           "contentLength": 212753,
           "channels": [
@@ -42,6 +43,7 @@
         },
         {
           "src": "images/1024/1.jpg",
+          "isExternal": true,
           "contentType": "image/jpeg",
           "contentLength": 77971,
           "channels": [
@@ -58,6 +60,7 @@
         },
         {
           "src": "images/512/1.jpg",
+          "isExternal": true,
           "contentType": "image/jpeg",
           "contentLength": 31059,
           "channels": [
@@ -74,6 +77,7 @@
         },
         {
           "src": "images/256/1.jpg",
+          "isExternal": true,
           "contentType": "image/jpeg",
           "contentLength": 13922,
           "channels": [
@@ -90,6 +94,7 @@
         },
         {
           "src": "images/128/1.jpg",
+          "isExternal": true,
           "contentType": "image/jpeg",
           "contentLength": 7376,
           "channels": [
@@ -106,6 +111,7 @@
         },
         {
           "src": "images/64/1.jpg",
+          "isExternal": true,
           "contentType": "image/jpeg",
           "contentLength": 4783,
           "channels": [
@@ -146,6 +152,7 @@
       "representations": [
         {
           "src": "images/2048/2.jpg",
+          "isExternal": true,
           "contentType": "image/jpeg",
           "contentLength": 556049,
           "channels": [
@@ -162,6 +169,7 @@
         },
         {
           "src": "images/1024/2.jpg",
+          "isExternal": true,
           "contentType": "image/jpeg",
           "contentLength": 160563,
           "channels": [
@@ -178,6 +186,7 @@
         },
         {
           "src": "images/512/2.jpg",
+          "isExternal": true,
           "contentType": "image/jpeg",
           "contentLength": 55557,
           "channels": [
@@ -194,6 +203,7 @@
         },
         {
           "src": "images/256/2.jpg",
+          "isExternal": true,
           "contentType": "image/jpeg",
           "contentLength": 23244,
           "channels": [
@@ -210,6 +220,7 @@
         },
         {
           "src": "images/128/2.jpg",
+          "isExternal": true,
           "contentType": "image/jpeg",
           "contentLength": 11078,
           "channels": [
@@ -226,6 +237,7 @@
         },
         {
           "src": "images/64/2.jpg",
+          "isExternal": true,
           "contentType": "image/jpeg",
           "contentLength": 6055,
           "channels": [
@@ -1565,6 +1577,7 @@
       "properties": {
         "name": "geometry.bin",
         "src": "geometry.bin",
+        "isExternal": true,
         "contentLength": 457908,
         "accessors": {
           "bf12e4ff-48d8-462e-8c1c-193287eaf08c": {

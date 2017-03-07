@@ -28,6 +28,7 @@ import Browser from '../../../Browser';
 
 const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
 const FLOOR_VECTOR = { x: 0, y: -1, z: 0 };
+const IDENTITY_QUATERNION = { x: 0, y: 0, z: 0, w: 1 };
 
 const PREVIEW_CAMERA_POSITION = {
     x: -0.559,
@@ -194,28 +195,12 @@ class Model3dRenderer extends Box3DRenderer {
         // Create a single parent for all instances.
         const parent = this.box3d.createNode();
         prefabs.forEach((prefab) => parent.addChild(prefab.createInstance()));
+        this.instance = parent;
         this.getScene().addChild(parent);
-        this.adjustModelForScene(parent);
-    }
-
-    /**
-     * Create an instance of the specified prefab and add it to the scene.
-     * @param {object} prefab - The prefab entity to instance.
-     * @param {object} scene - The scene asset to add the instance to.
-     * @return {void}
-     */
-    adjustModelForScene(instance) {
-        // Scale the instance to 100 units in size.
-        instance.scaleToSize(this.modelSize);
-
-        // Center the instance.
-        instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
-
         // Add components to the instance.
-        instance.addComponent('preview_axis_rotation', {}, `axis_rotation_${instance.id}`);
-        instance.addComponent('animation', {}, `animation_${instance.id}`);
-
-        this.instance = instance;
+        parent.addComponent('preview_axis_rotation', {}, `axis_rotation_${parent.id}`);
+        parent.addComponent('animation', {}, `animation_${parent.id}`);
+        this.resetModel();
     }
 
     /**
@@ -232,7 +217,33 @@ class Model3dRenderer extends Box3DRenderer {
 
     /** @inheritdoc */
     reset() {
+        this.resetModel();
         super.reset();
+    }
+
+    resetModel() {
+        if (!this.instance) {
+            return;
+        }
+
+        // Reset the transforms of the instances under the root.
+        this.instance.getChildren().forEach((instance) => {
+            instance.setPosition(ORIGIN_VECTOR.x, ORIGIN_VECTOR.y, ORIGIN_VECTOR.z);
+            instance.setQuaternion(IDENTITY_QUATERNION.x, IDENTITY_QUATERNION.y, IDENTITY_QUATERNION.z, IDENTITY_QUATERNION.w);
+        });
+
+        this.instance.computeBounds();
+
+        // Scale the instance to the defined size.
+        this.instance.scaleToSize(this.modelSize);
+
+        // Align the instance.
+        this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
+    }
+
+    /** @inheritdoc */
+    resetView() {
+        super.resetView();
         const camera = this.getCamera();
         if (!camera) {
             return;
@@ -242,14 +253,14 @@ class Model3dRenderer extends Box3DRenderer {
         if (!orbitController) {
             return;
         }
-
         if (this.instance.runtimeData) {
             this.instance.computeBounds();
             const bounds = this.instance.getBounds();
+            this.instance.runtimeData.updateMatrixWorld();
+            bounds.min.applyMatrix4(this.instance.runtimeData.matrixWorld);
+            bounds.max.applyMatrix4(this.instance.runtimeData.matrixWorld);
             const maxDimension = new THREE.Vector3();
             maxDimension.subVectors(bounds.max, bounds.min);
-            this.instance.runtimeData.updateMatrixWorld();
-            maxDimension.applyMatrix4(this.instance.runtimeData.matrixWorld);
             const center = this.instance.getCenter();
             center.applyMatrix4(this.instance.runtimeData.matrixWorld);
             // Set the origin point (so that we always point at the center of the model when the camera reloads)

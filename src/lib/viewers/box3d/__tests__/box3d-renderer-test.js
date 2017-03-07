@@ -489,7 +489,7 @@ describe('box3d-renderer', () => {
 
         beforeEach(() => {
             enableCameraStub = sandbox.stub(renderer, 'enableCameraControls');
-            resetStub = sandbox.stub(renderer, 'reset');
+            resetStub = sandbox.stub(renderer, 'resetView');
             setAttribStub = sandbox.stub();
             const box3dRenderer = { setAttribute: setAttribStub };
             renderer.box3d = {
@@ -504,7 +504,7 @@ describe('box3d-renderer', () => {
             expect(enableCameraStub).to.be.called;
         });
 
-        it('should reset the state of Preview', () => {
+        it('should reset the state of camera view', () => {
             expect(resetStub).to.be.called;
         });
 

@@ -10,7 +10,7 @@ function sceneEntities() {
         parentId: 'SCENE_ID',
         properties: {
             near: 0.01, // Camera near-plane distance
-            far: 8
+            far: 100
         },
         components: [
             // The render view controls how the scene is rendered: regular, UV-only, normal-only, etc.

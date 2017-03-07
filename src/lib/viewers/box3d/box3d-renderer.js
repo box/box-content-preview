@@ -97,6 +97,15 @@ class Box3DRenderer extends EventEmitter {
      * @return {void}
      */
     reset() {
+        this.resetView();
+    }
+
+    /**
+     * Reset the camera settings to defaults.
+     *
+     * @return {void}
+     */
+    resetView() {
         const camera = this.getCamera();
 
         // Reset camera settings to default.
@@ -256,7 +265,7 @@ class Box3DRenderer extends EventEmitter {
         this.hideVrGamepads();
         const display = this.box3d.getVrDisplay();
         this.vrEnabled = display && display.isPresenting;
-        this.reset();
+        this.resetView();
     }
 
     /**
@@ -428,7 +437,7 @@ class Box3DRenderer extends EventEmitter {
                     return;
                 }
             }
-            this.vrGamepadLoadPromise = this.box3d.addRemoteEntities(`${this.staticBaseURI}third-party/model3d/WebVR/${controllerName}/entities.json`);
+            this.vrGamepadLoadPromise = this.box3d.addRemoteEntities(`${this.staticBaseURI}third-party/model3d/WebVR/${controllerName}/entities.json`, { isExternal: true });
             this.vrGamepadLoadPromise.then(onGamepadModelLoad);
         };
 
