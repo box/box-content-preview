@@ -9,6 +9,7 @@ const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
 const DEFAULT_VOLUME = 1;
 const MEDIA_VOLUME_CACHE_KEY = 'media-volume';
+const MEDIA_VOLUME_INCREMENT = 0.05;
 
 @autobind
 class MediaBase extends Base {
@@ -413,6 +414,44 @@ class MediaBase extends Base {
     }
 
     /**
+     * Seeks forwards/backwards from current point
+     *
+     * @private
+     * @param {number} increment - Increment in seconds. Negative to seek backwards, positive to seek forwards
+     * @return {void}
+     */
+    quickSeek(increment) {
+        let newTime = this.mediaEl.currentTime + increment;
+        // Make sure it's within bounds
+        newTime = Math.max(0, Math.min(newTime, this.mediaEl.duration));
+        this.setMediaTime(newTime);
+    }
+
+    /**
+     * Increases volume by a small increment
+     *
+     * @private
+     * @return {void}
+     */
+    increaseVolume() {
+        let newVol = Math.round((this.mediaEl.volume + MEDIA_VOLUME_INCREMENT) * 100) / 100;
+        newVol = Math.min(1, newVol);
+        this.setVolume(newVol);
+    }
+
+    /**
+     * Decreases volume by a small increment
+     *
+     * @private
+     * @return {void}
+     */
+    decreaseVolume() {
+        let newVol = Math.round((this.mediaEl.volume - MEDIA_VOLUME_INCREMENT) * 100) / 100;
+        newVol = Math.max(0, newVol);
+        this.setVolume(newVol);
+    }
+
+    /**
      * Handles keyboard events for media
      *
      * @protected
@@ -425,12 +464,47 @@ class MediaBase extends Base {
             return false;
         }
 
-        if (key === 'Space') {
-            this.togglePlay();
-            return true;
+        const k = key.toLowerCase();
+        switch (k) {
+            case 'space':
+            case 'k':
+                this.togglePlay();
+                break;
+            case 'arrowleft':
+                this.quickSeek(-5);
+                break;
+            case 'j':
+                this.quickSeek(-10);
+                break;
+            case 'arrowright':
+                this.quickSeek(5);
+                break;
+            case 'l':
+                this.quickSeek(10);
+                break;
+            case '0':
+            case 'home':
+                this.setMediaTime(0);
+                break;
+            case 'arrowup':
+                this.increaseVolume();
+                break;
+            case 'arrowdown':
+                this.decreaseVolume();
+                break;
+            case 'f':
+            case 'shift+f':
+                this.mediaControls.toggleFullscreen();
+                break;
+            case 'm':
+            case 'shift+m':
+                this.toggleMute();
+                break;
+            default:
+                return false;
         }
-
-        return false;
+        this.mediaControls.show();
+        return true;
     }
 }
 

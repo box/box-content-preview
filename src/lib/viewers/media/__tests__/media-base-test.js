@@ -26,6 +26,19 @@ describe('lib/viewers/media/media-base', () => {
             }
         });
         media.setup();
+        media.mediaControls = {
+            addListener: sandbox.stub(),
+            destroy: sandbox.stub(),
+            isFocused: sandbox.stub(),
+            removeAllListeners: sandbox.stub(),
+            setTimeCode: sandbox.stub(),
+            show: sandbox.stub(),
+            showPauseIcon: sandbox.stub(),
+            showPlayIcon: sandbox.stub(),
+            toggleFullscreen: sandbox.stub(),
+            updateProgress: sandbox.stub(),
+            updateVolumeIcon: sandbox.stub()
+        };
     });
 
     afterEach(() => {
@@ -44,11 +57,6 @@ describe('lib/viewers/media/media-base', () => {
 
     describe('destroy()', () => {
         it('should clean up media controls', () => {
-            media.mediaControls = {
-                removeAllListeners: sandbox.stub(),
-                destroy: sandbox.stub()
-            };
-
             media.destroy();
 
             expect(media.mediaControls.removeAllListeners).to.be.called;
@@ -188,12 +196,6 @@ describe('lib/viewers/media/media-base', () => {
 
     describe('addEventListenersForMediaControls()', () => {
         it('should add event listeners for time and volume updates, play and mute toggles, and speed change', () => {
-            media.mediaControls = {
-                addListener: sandbox.stub(),
-                destroy: () => {},
-                removeAllListeners: () => {}
-            };
-
             media.addEventListenersForMediaControls();
 
             expect(media.mediaControls.addListener).to.be.calledWith('timeupdate', sinon.match.func);
@@ -206,11 +208,6 @@ describe('lib/viewers/media/media-base', () => {
 
     describe('setTimeCode()', () => {
         it('should set the current time in controls', () => {
-            media.mediaControls = {
-                setTimeCode: sandbox.stub(),
-                destroy: () => {},
-                removeAllListeners: () => {}
-            };
             const currentTime = 1337;
             media.mediaEl = { currentTime };
 
@@ -246,11 +243,6 @@ describe('lib/viewers/media/media-base', () => {
 
     describe('updateVolumeIcon()', () => {
         it('should update the controls volume icon', () => {
-            media.mediaControls = {
-                updateVolumeIcon: sandbox.stub(),
-                destroy: () => {},
-                removeAllListeners: () => {}
-            };
             const volume = 1337;
             media.mediaEl = { volume };
 
@@ -262,11 +254,6 @@ describe('lib/viewers/media/media-base', () => {
 
     describe('playingHandler()', () => {
         it('should show pause icon, hide loading icon, and handle speed and volume', () => {
-            media.mediaControls = {
-                showPauseIcon: sandbox.stub(),
-                destroy: () => {},
-                removeAllListeners: () => {}
-            };
             sandbox.stub(media, 'hideLoadingIcon');
             sandbox.stub(media, 'handleSpeed');
             sandbox.stub(media, 'handleVolume');
@@ -282,12 +269,6 @@ describe('lib/viewers/media/media-base', () => {
 
     describe('progressHandler()', () => {
         it('should update controls progress', () => {
-            media.mediaControls = {
-                updateProgress: sandbox.stub(),
-                destroy: () => {},
-                removeAllListeners: () => {}
-            };
-
             media.progressHandler();
 
             expect(media.mediaControls.updateProgress).to.be.called;
@@ -296,12 +277,6 @@ describe('lib/viewers/media/media-base', () => {
 
     describe('pauseHandler()', () => {
         it('should show the controls play icon', () => {
-            media.mediaControls = {
-                showPlayIcon: sandbox.stub(),
-                destroy: () => {},
-                removeAllListeners: () => {}
-            };
-
             media.pauseHandler();
 
             expect(media.mediaControls.showPlayIcon).to.be.called;
@@ -341,11 +316,6 @@ describe('lib/viewers/media/media-base', () => {
 
     describe('resetPlayIcon()', () => {
         it('should set media controls timecode, hide loading icon, and pause', () => {
-            media.mediaControls = {
-                setTimeCode: sandbox.stub(),
-                destroy: () => {},
-                removeAllListeners: () => {}
-            };
             sandbox.stub(media, 'hideLoadingIcon');
             sandbox.stub(media, 'pauseHandler');
 
@@ -465,38 +435,202 @@ describe('lib/viewers/media/media-base', () => {
         });
     });
 
+    describe('quickSeek()', () => {
+        it('should seek with positive increments', () => {
+            media.mediaEl = {
+                currentTime: 30,
+                duration: 60
+            };
+            sandbox.stub(media, 'setMediaTime');
+
+            media.quickSeek(5);
+
+            expect(media.setMediaTime).calledWith(35);
+        });
+
+        it('should seek with negative increments', () => {
+            media.mediaEl = {
+                currentTime: 30,
+                duration: 60
+            };
+            sandbox.stub(media, 'setMediaTime');
+
+            media.quickSeek(-5);
+
+            expect(media.setMediaTime).calledWith(25);
+        });
+
+        it('should not go beyond beginning of video', () => {
+            media.mediaEl = {
+                currentTime: 3,
+                duration: 60
+            };
+            sandbox.stub(media, 'setMediaTime');
+
+            media.quickSeek(-5);
+
+            expect(media.setMediaTime).calledWith(0);
+        });
+
+        it('should not go beyond end of video', () => {
+            media.mediaEl = {
+                currentTime: 57,
+                duration: 60
+            };
+            sandbox.stub(media, 'setMediaTime');
+
+            media.quickSeek(5);
+
+            expect(media.setMediaTime).calledWith(60);
+        });
+    });
+
+    describe('increaseVolume', () => {
+        it('should not exceed maximum volume', () => {
+            media.mediaEl = {
+                volume: 0.99
+            };
+            sandbox.stub(media, 'setVolume');
+
+            media.increaseVolume();
+
+            expect(media.setVolume).calledWith(1);
+        });
+    });
+
+    describe('decreaseVolume', () => {
+        it('should not fall below minimum volume', () => {
+            media.mediaEl = {
+                volume: 0.01
+            };
+            sandbox.stub(media, 'setVolume');
+
+            media.decreaseVolume();
+
+            expect(media.setVolume).calledWith(0);
+        });
+    });
+
     describe('onKeydown()', () => {
         it('should return false if media controls are not initialized or if media controls are focused', () => {
-            media.mediaControls = null;
+            media.mediaControls.isFocused.returns(true);
             expect(media.onKeydown()).to.be.false;
 
-            media.mediaControls = {
-                isFocused: () => { return true; },
-                destroy: () => {},
-                removeAllListeners: () => {}
-            };
+            media.mediaControls = null;
             expect(media.onKeydown()).to.be.false;
         });
 
-        it('should return toggle play and return true if space is pressed', () => {
-            media.mediaControls = {
-                isFocused: () => { return false; },
-                destroy: () => {},
-                removeAllListeners: () => {}
-            };
+        it('should toggle play and return true on Space', () => {
             sandbox.stub(media, 'togglePlay');
 
             expect(media.onKeydown('Space')).to.be.true;
             expect(media.togglePlay).to.be.called;
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should toggle play and return true on k', () => {
+            sandbox.stub(media, 'togglePlay');
+
+            expect(media.onKeydown('k')).to.be.true;
+            expect(media.togglePlay).to.be.called;
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should seek backwards 5 seconds and return true on ArrowLeft', () => {
+            sandbox.stub(media, 'quickSeek');
+
+            expect(media.onKeydown('ArrowLeft')).to.be.true;
+            expect(media.quickSeek).calledWith(-5);
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should seek backwards 10 seconds and return true on j', () => {
+            sandbox.stub(media, 'quickSeek');
+
+            expect(media.onKeydown('j')).to.be.true;
+            expect(media.quickSeek).calledWith(-10);
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should seek forwards 5 seconds and return true on ArrowRight', () => {
+            sandbox.stub(media, 'quickSeek');
+
+            expect(media.onKeydown('ArrowRight')).to.be.true;
+            expect(media.quickSeek).calledWith(5);
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should seek forwards 10 seconds and return true on l', () => {
+            sandbox.stub(media, 'quickSeek');
+
+            expect(media.onKeydown('l')).to.be.true;
+            expect(media.quickSeek).calledWith(10);
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should go to beginning of video and return true on 0', () => {
+            sandbox.stub(media, 'setMediaTime');
+
+            expect(media.onKeydown('0')).to.be.true;
+            expect(media.setMediaTime).calledWith(0);
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should go to beginning of video and return true on Home', () => {
+            sandbox.stub(media, 'setMediaTime');
+
+            expect(media.onKeydown('Home')).to.be.true;
+            expect(media.setMediaTime).calledWith(0);
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should increase volume and return true on ArrowUp', () => {
+            sandbox.stub(media, 'increaseVolume');
+
+            expect(media.onKeydown('ArrowUp')).to.be.true;
+            expect(media.increaseVolume).to.be.called;
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should decrease volume and return true on ArrowDown', () => {
+            sandbox.stub(media, 'decreaseVolume');
+
+            expect(media.onKeydown('ArrowDown')).to.be.true;
+            expect(media.decreaseVolume).to.be.called;
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should toggle fullscreen and return true on f', () => {
+            expect(media.onKeydown('f')).to.be.true;
+            expect(media.mediaControls.toggleFullscreen).to.be.called;
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should toggle fullscreen and return true on Shift+F', () => {
+            expect(media.onKeydown('Shift+F')).to.be.true;
+            expect(media.mediaControls.toggleFullscreen).to.be.called;
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should toggle mute and return true on m', () => {
+            sandbox.stub(media, 'toggleMute');
+
+            expect(media.onKeydown('m')).to.be.true;
+            expect(media.toggleMute).to.be.called;
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should toggle mute and return true on Shift+M', () => {
+            sandbox.stub(media, 'toggleMute');
+
+            expect(media.onKeydown('Shift+M')).to.be.true;
+            expect(media.toggleMute).to.be.called;
+            expect(media.mediaControls.show).to.be.called;
         });
 
         it('should return false if another key is pressed', () => {
-            media.mediaControls = {
-                isFocused: () => { return false; },
-                destroy: () => {},
-                removeAllListeners: () => {}
-            };
             expect(media.onKeydown('Esc')).to.be.false;
+            expect(media.mediaControls.show.callCount).to.equal(0);
         });
     });
 });
