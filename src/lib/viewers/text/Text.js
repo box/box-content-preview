@@ -1,11 +1,11 @@
 import './Text.scss';
 import TextBase from './TextBase';
 import Browser from '../../Browser';
-import Popup from '../../Popup';
 import { CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
-import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
+
 import { HIGHLIGHTTABLE_EXTENSIONS } from './extensions';
 import { get, openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
+import { initPrintPopup, enablePrintPopup } from '../../print-util';
 
 // Inline web worker JS
 const HIGHLIGHT_WORKER_JS = 'onmessage=function(e){importScripts(e.data.highlightSrc);postMessage(self.hljs.highlightAuto(e.data.text).value)};';
@@ -35,6 +35,11 @@ class PlainText extends TextBase {
         }
 
         this.printIframe = null;
+
+        if (this.printPopup) {
+            this.printPopup.destroy();
+        }
+
         super.destroy();
     }
 
@@ -116,7 +121,7 @@ class PlainText extends TextBase {
         // Whether or not we truncated text shown due to performance issues
         this.truncated = false;
 
-        this.initPrint();
+        this.printPopup = initPrintPopup(this.containerEl);
     }
 
     /**
@@ -238,33 +243,6 @@ class PlainText extends TextBase {
         });
     }
 
-    /**
-     * Sets up the print dialog.
-     *
-     * @private
-     * @return {void}
-     */
-    initPrint() {
-        this.printPopup = new Popup(this.containerEl);
-
-        const printCheckmark = document.createElement('div');
-        printCheckmark.className = `bp-print-check ${CLASS_HIDDEN}`;
-        printCheckmark.innerHTML = ICON_PRINT_CHECKMARK.trim();
-
-        const loadingIndicator = document.createElement('div');
-        loadingIndicator.classList.add('bp-crawler');
-        loadingIndicator.innerHTML = `
-            <div></div>
-            <div></div>
-            <div></div>`.trim();
-
-        this.printPopup.addContent(loadingIndicator, true);
-        this.printPopup.addContent(printCheckmark, true);
-
-        // Save a reference so they can be hidden or shown later.
-        this.printPopup.loadingIndicator = loadingIndicator;
-        this.printPopup.printCheckmark = printCheckmark;
-    }
 
     /**
      * Sets up the print iframe - uses a web worker to insert text content and
@@ -284,10 +262,7 @@ class PlainText extends TextBase {
         setTimeout(() => {
             if (this.printPopup) {
                 // Update popup UI to reflect that print is ready
-                this.printPopup.enableButton();
-                this.printPopup.messageEl.textContent = __('print_ready');
-                this.printPopup.loadingIndicator.classList.add(CLASS_HIDDEN);
-                this.printPopup.printCheckmark.classList.remove(CLASS_HIDDEN);
+                enablePrintPopup(this.printPopup);
             }
 
             this.printReady = true;

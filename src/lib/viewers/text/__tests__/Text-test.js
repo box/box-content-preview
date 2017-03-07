@@ -5,6 +5,7 @@ import Popup from '../../../Popup';
 import TextBase from '../TextBase';
 import * as util from '../../../util';
 import { TEXT_STATIC_ASSETS_VERSION } from '../../../constants';
+import * as printUtil from '../../../print-util';
 
 let containerEl;
 let text;
@@ -53,14 +54,14 @@ describe('lib/viewers/text/Text', () => {
                 },
                 container: containerEl
             });
-            sandbox.stub(text, 'initPrint');
+            sandbox.spy(printUtil, 'initPrint');
 
             text.setup();
 
             expect(text.textEl.className).to.equal('bp-text bp-text-plain hljs bp-is-hidden');
             expect(text.codeEl.parentNode === text.textEl).to.be.true;
             expect(text.truncated).to.be.false;
-            expect(text.initPrint).to.be.called;
+            expect(printUtil.initPrint).to.be.called;
         });
     });
 
