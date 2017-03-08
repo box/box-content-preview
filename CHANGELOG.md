@@ -1,5 +1,25 @@
 # Change Log
 
+## [v0.107.0](https://git.dev.box.net/Preview/Preview/tree/v0.107.0) (2017-03-07)
+[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.106.0...v0.107.0)
+
+**Merged pull requests:**
+
+- Fix preview performance logging [\#1032](https://git.dev.box.net/Preview/Preview/pull/1032) ([tjin](https://git.dev.box.net/tjin))
+- Updating the Box3D runtime to fix a camera focus problem [\#1031](https://git.dev.box.net/Preview/Preview/pull/1031) ([mbond](https://git.dev.box.net/mbond))
+- Update coverage and license notification [\#1030](https://git.dev.box.net/Preview/Preview/pull/1030) ([tjin](https://git.dev.box.net/tjin))
+- Fixing orbit distance calculation to account for three.js not using h… [\#1028](https://git.dev.box.net/Preview/Preview/pull/1028) ([mbond](https://git.dev.box.net/mbond))
+- Minor refactor media base [\#1026](https://git.dev.box.net/Preview/Preview/pull/1026) ([bhuh](https://git.dev.box.net/bhuh))
+- Adding vr controls to preview [\#1025](https://git.dev.box.net/Preview/Preview/pull/1025) ([mbond](https://git.dev.box.net/mbond))
+- Remove internal URLs from code base [\#1024](https://git.dev.box.net/Preview/Preview/pull/1024) ([tjin](https://git.dev.box.net/tjin))
+- Model3d controls tests [\#1022](https://git.dev.box.net/Preview/Preview/pull/1022) ([jholdstock](https://git.dev.box.net/jholdstock))
+- Update files in base lib directory to follow new naming convention [\#1021](https://git.dev.box.net/Preview/Preview/pull/1021) ([tjin](https://git.dev.box.net/tjin))
+- updated readme and changelog for v0.106.0 [\#1020](https://git.dev.box.net/Preview/Preview/pull/1020) ([jpress](https://git.dev.box.net/jpress))
+- Setting line-height for annotations textareas so that placeholder text is not misaligned [\#1019](https://git.dev.box.net/Preview/Preview/pull/1019) ([spramod](https://git.dev.box.net/spramod))
+- Accessibility shortcuts 3 [\#1018](https://git.dev.box.net/Preview/Preview/pull/1018) ([bhuh](https://git.dev.box.net/bhuh))
+- Model3d js tests and some cleanup [\#1011](https://git.dev.box.net/Preview/Preview/pull/1011) ([jholdstock](https://git.dev.box.net/jholdstock))
+- Unit tests for dash [\#988](https://git.dev.box.net/Preview/Preview/pull/988) ([spramod](https://git.dev.box.net/spramod))
+
 ## [v0.106.0](https://git.dev.box.net/Preview/Preview/tree/v0.106.0) (2017-03-01)
 [Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.105.0...v0.106.0)
 
