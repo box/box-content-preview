@@ -604,8 +604,16 @@ class Model3dRenderer extends Box3DRenderer {
     listenToRotateComplete(position, alignment) {
         this.isRotating = true;
 
-        const postUpdate = () => {
-            if (this.instance) {
+        const postUpdate = (finalize) => {
+            if (!this.instance) {
+                return;
+            }
+            // If this is the final alignment, make sure that it puts the model where the settings
+            // indicate it should be. This is necessary if a call to setModelAlignment is made during
+            // the rotation, for example.
+            if (finalize) {
+                this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
+            } else {
                 this.instance.alignToPosition(position, alignment);
             }
         };
@@ -615,7 +623,7 @@ class Model3dRenderer extends Box3DRenderer {
 
         // Once transition complete, start updating and allow for another rotation
         this.instance.once('axis_transition_complete', () => {
-            postUpdate();
+            postUpdate(true);
             this.box3d.off('postUpdate', postUpdate);
             this.isRotating = false;
         });
