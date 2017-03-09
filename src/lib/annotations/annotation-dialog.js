@@ -82,7 +82,7 @@ class AnnotationDialog extends EventEmitter {
 
         // Don't re-position if reply textarea is already active
         const textareaIsActive = textAreaEl.classList.contains(CLASS_ACTIVE);
-        if (textareaIsActive) {
+        if (textareaIsActive && this._element.parentNode) {
             return;
         }
 

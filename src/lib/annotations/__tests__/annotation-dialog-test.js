@@ -57,12 +57,28 @@ describe('annotation-dialog', () => {
             stubs.position = sandbox.stub(dialog, 'position');
         });
 
-        it('should not re-show dialog if already shown', () => {
+        it('should not re-show dialog if already shown on page', () => {
             dialog._hasAnnotations = true;
             dialog.activateReply();
 
             dialog.show();
             expect(stubs.position).to.not.be.called;
+        });
+
+        it('should not re-position dialog if already shown on page', () => {
+            dialog._hasAnnotations = true;
+
+            // Deactivates dialog textarea
+            dialog.deactivateReply();
+            const commentsTextArea = dialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            commentsTextArea.classList.remove('bp-is-active');
+
+            // Removes dialog from page
+            dialog._element.parentNode.removeChild(dialog._element);
+            dialog.activateReply();
+
+            dialog.show();
+            expect(stubs.position).to.be.called;
         });
 
         it('should position the dialog', () => {
