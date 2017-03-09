@@ -13,7 +13,8 @@ import {
     EVENT_SET_WIREFRAMES_VISIBLE,
     GRID_SIZE,
     GRID_SECTIONS,
-    GRID_COLOR,
+    GRID_COLOR_METRE,
+    GRID_COLOR_HALF_METRE,
     QUALITY_LEVEL_FULL,
     RENDER_MODE_LIT,
     RENDER_MODE_UNLIT,
@@ -432,7 +433,7 @@ class Model3dRenderer extends Box3DRenderer {
      */
     addHelpersToScene() {
         const scene = this.getScene().runtimeData;
-        this.grid = new THREE.GridHelper(GRID_SIZE, GRID_SECTIONS, GRID_COLOR, GRID_COLOR);
+        this.grid = new THREE.GridHelper(GRID_SIZE, GRID_SECTIONS, GRID_COLOR_METRE, GRID_COLOR_HALF_METRE);
         this.grid.material.transparent = true;
         this.grid.material.blending = THREE.MultiplyBlending;
         scene.add(this.grid);
@@ -719,9 +720,7 @@ class Model3dRenderer extends Box3DRenderer {
         // Scale the instance for VR.
         const display = this.box3d.getVrDisplay();
         this.vrDeviceHasPosition = display.capabilities.hasPosition;
-        if (this.vrDeviceHasPosition) {
-            this.grid.visible = true;
-        } else {
+        if (!this.vrDeviceHasPosition) {
             // Enable position-less camera controls
             this.box3d.on('update', this.updateModel3dVrControls, this);
         }
@@ -753,9 +752,16 @@ class Model3dRenderer extends Box3DRenderer {
      * @return {void}
      */
     updateModel3dVrControls() {
-        const camera = this.getCamera().runtimeData;
-        camera.position.set(0, 0, 1.0);
+        const cameraObject = this.getCamera();
+        const orbitController = cameraObject.getComponentByScriptId('orbit_camera');
+        if (!orbitController) {
+            return;
+        }
+
+        const camera = cameraObject.runtimeData;
+        camera.position.set(0, 0, orbitController.getOrbitDistance());
         camera.position.applyQuaternion(camera.quaternion);
+        camera.position.add(orbitController.originPoint);
     }
 
     /**

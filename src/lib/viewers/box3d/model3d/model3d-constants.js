@@ -15,8 +15,9 @@ export const EVENT_TOGGLE_HELPERS = 'toggleHelpers';
 
 // 3D Scene Params
 export const GRID_SECTIONS = 10;
-export const GRID_SIZE = 5;
-export const GRID_COLOR = 0xaaaaaa;
+export const GRID_SIZE = 10;
+export const GRID_COLOR_METRE = 0x001122;
+export const GRID_COLOR_HALF_METRE = 0xaaaaaa;
 
 // CSS
 export const CSS_CLASS_ANIMATION_CLIP_PULLUP = 'box3d-animation-clip-pullup';

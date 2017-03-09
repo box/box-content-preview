@@ -64,6 +64,7 @@ module.exports = (config) => config.set({
     ],
 
     files: [
+        'src/third-party/model3d/three.min.js',
         'node_modules/babel-polyfill/dist/polyfill.js',
         'src/third-party/**/*.js'
     ].concat(getTestFile(config.src)),
