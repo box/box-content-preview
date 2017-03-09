@@ -1,5 +1,15 @@
 # Change Log
 
+## [v0.108.0](https://git.dev.box.net/Preview/Preview/tree/v0.108.0) (2017-03-09)
+[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.107.0...v0.108.0)
+
+**Merged pull requests:**
+
+- Re-attaching annotations dialog to the page on browser resize [\#1037](https://git.dev.box.net/Preview/Preview/pull/1037) ([spramod](https://git.dev.box.net/spramod))
+- Fix issue where VR controls for cardboard viewers dont center on the … [\#1036](https://git.dev.box.net/Preview/Preview/pull/1036) ([mbond](https://git.dev.box.net/mbond))
+- Fix for setting model scale or alignment not being applied due to axi… [\#1034](https://git.dev.box.net/Preview/Preview/pull/1034) ([mbond](https://git.dev.box.net/mbond))
+- updating changelog and readme to v0.107.0 [\#1033](https://git.dev.box.net/Preview/Preview/pull/1033) ([jpress](https://git.dev.box.net/jpress))
+
 ## [v0.107.0](https://git.dev.box.net/Preview/Preview/tree/v0.107.0) (2017-03-07)
 [Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.106.0...v0.107.0)
 
