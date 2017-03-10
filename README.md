@@ -12,7 +12,7 @@ Browser Support
 * Desktop Chrome, Firefox, Safari, Edge, and Internet Explorer 11
 * Limited support for mobile web - previews will render but some controls may not work
 
-If your browser doesn't support Promises, include a polyfill (e.g. Bluebird) before the main Preview script.
+If your browser doesn't natively Promises, include a Promise library (e.g. Bluebird) before the main Preview script.
 
 Current Version
 ---------------
@@ -43,7 +43,7 @@ You can self-host the Box Preview and Promise libraries or reference the version
     <meta charset="utf-8" />
     <title>Box Preview Demo</title>
 
-    <!-- Polyfill Promise API if using Internet Explorer 11 -->
+    <!-- Include Promise library if using Internet Explorer 11 -->
     <script src="https://cdn01.boxcdn.net/js/vendor/bluebird/bluebird-core-some-any-cancel-settle-2.9.34.js"></script>
 
     <!-- Latest version of Preview SDK for your locale -->
@@ -239,11 +239,11 @@ Box.Preview.on('rotate', (data) => {
 
 Development Setup
 -----------------
-1. Install Node v4.4.3 or higher and NPM v4.1.2 or higher.
-2. Fork the upstream repo `https://github.com/box/box-preview`.
-3. Clone your fork locally `git clone git@github.com:[YOUR GITHUB USERNAME]/box-preview.git`.
-4. Navigate to the cloned folder `cd box-preview`
-5. Add the upstream repo to your remotes `git remote add upstream git@github.com:box/box-preview.git`.
+1. Install Node v6.10.0 or higher and NPM v3.10.10 or higher.
+2. Fork the upstream repo `https://github.com/box/box-content-preview`.
+3. Clone your fork locally `git clone git@github.com:[YOUR GITHUB USERNAME]/box-content-preview.git`.
+4. Navigate to the cloned folder `cd box-content-preview`
+5. Add the upstream repo to your remotes `git remote add upstream git@github.com:box/box-content-preview.git`.
 6. Verify your remotes are properly set up `git remote -v`. You should pull updates from the Box repo `upstream` and push changes to your fork `origin`.
 7. Install dependencies `npm install`
 8. Test your first build! `npm run build`
