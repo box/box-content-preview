@@ -233,6 +233,18 @@ class Annotator extends EventEmitter {
         this._threads = {};
         this.bindDOMListeners();
         this.bindCustomListenersOnService(this._annotationService);
+
+        /* istanbul ignore next */
+        this.addListener('annotationerror', (data) => {
+            let errorMessage = '';
+            switch (data.reason) {
+                case 'validation':
+                    errorMessage = __('annotations_load_error');
+                    break;
+                default:
+            }
+            this.notification.show(errorMessage);
+        });
     }
 
     /**
@@ -253,8 +265,10 @@ class Annotator extends EventEmitter {
                     const firstAnnotation = annotations[0];
                     const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
 
-                    // Bind events on thread
-                    this.bindCustomListenersOnThread(thread);
+                    // Bind events on valid annotation thread
+                    if (thread) {
+                        this.bindCustomListenersOnThread(thread);
+                    }
                 });
             });
     }
@@ -432,6 +446,13 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     addThreadToMap(thread) {
+        if (!thread.type || !thread.location) {
+            this.emit('annotationerror', {
+                reason: 'validation'
+            });
+            return;
+        }
+
         // Add thread to in-memory map
         const page = thread.location.page || 1; // Defaults to page 1 if thread has no page
         this._threads[page] = this._threads[page] || [];

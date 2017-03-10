@@ -66,7 +66,8 @@ class Notification {
      * @return {void}
      */
     hide() {
-        this.notificationEl.classList.add(CLASS_HIDDEN);
+        const notificationEl = document.querySelector('.bp-notification');
+        notificationEl.classList.add(CLASS_HIDDEN);
     }
 
     /**
