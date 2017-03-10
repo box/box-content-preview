@@ -20,7 +20,7 @@ export default [{
             name: 'Orbit Camera',
             attributes: {
                 panEnabled: false,
-                zoomEnabled: false,
+                zoomEnabled: true,
                 inertialDamping: 0.2,
                 lookSpeed: 0.5
             },
