@@ -2,6 +2,7 @@ const path = require('path');
 const I18nPlugin = require('i18n-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const DefinePlugin = require('webpack').DefinePlugin;
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
@@ -24,7 +25,9 @@ module.exports = (language) => {
                         loader: [
                             {
                                 loader: 'css-loader',
-                                options: { importLoaders: 1 }
+                                options: {
+                                    importLoaders: 1
+                                }
                             },
                             {
                                 loader: 'postcss-loader'
@@ -70,6 +73,13 @@ module.exports = (language) => {
                 'process.env': {
                     NODE_ENV: JSON.stringify(process.env.NODE_ENV),
                     BABEL_ENV: JSON.stringify(process.env.BABEL_ENV)
+                }
+            }),
+
+            // Re-optimize CSS after extract text so we can remove duplicate rules
+            new OptimizeCssAssetsPlugin({
+                cssProcessorOptions: {
+                    safe: true
                 }
             })
         ],
