@@ -36,7 +36,8 @@ The MP4 viewer fires the following events
 | navigate | The preview is shown for a given index | {object} file |
 | reload | The preview reloads ||
 | resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
-| speedchange | Media speed changes | {string} playback speed |
+| ratechange | Media speed changes | {string} playback speed |
+| volumechange | The media volume changes | {number} volume between 0 and 1 |
 | play | The video plays ||
 | pause | The video pauses ||
-| seek | The video skips to a time | {number} time |
+| seeked | The video skips to a time | {number} time |

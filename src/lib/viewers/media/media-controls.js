@@ -140,7 +140,7 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     handleSpeed() {
-        this.emit('speedchange');
+        this.emit('ratechange');
     }
 
     /**

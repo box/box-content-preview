@@ -147,11 +147,11 @@ describe('Media Controls', () => {
     });
 
     describe('handleSpeed', () => {
-        it('should emit the speedchange event', () => {
+        it('should emit the ratechange event', () => {
             stubs.emit = sandbox.stub(mediaControls, 'emit');
 
             mediaControls.handleSpeed();
-            expect(stubs.emit).to.be.calledWith('speedchange');
+            expect(stubs.emit).to.be.calledWith('ratechange');
         });
     });
 

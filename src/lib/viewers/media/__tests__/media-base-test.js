@@ -5,6 +5,7 @@ import MediaControls from '../media-controls';
 import cache from '../../../Cache';
 
 let media;
+let stubs;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/media/media-base', () => {
@@ -14,6 +15,7 @@ describe('lib/viewers/media/media-base', () => {
 
     beforeEach(() => {
         fixture.load('viewers/media/__tests__/media-base-test.html');
+        stubs = {};
         media = new MediaBase({
             file: {
                 id: 1
@@ -45,6 +47,7 @@ describe('lib/viewers/media/media-base', () => {
         sandbox.verifyAndRestore();
         media.destroy();
         media = null;
+        stubs = null;
     });
 
     describe('MediaBase()', () => {
@@ -152,21 +155,34 @@ describe('lib/viewers/media/media-base', () => {
 
             media.handleSpeed();
 
-            expect(media.emit).to.be.calledWith('speedchange', speed);
+            expect(media.emit).to.be.calledWith('ratechange', speed);
             expect(media.mediaEl.playbackRate).to.equal(speed);
         });
     });
 
     describe('handleVolume()', () => {
+        beforeEach(() => {
+            stubs.volume = 50;
+            stubs.has = sandbox.stub(cache, 'has').withArgs('media-volume').returns(true);
+            stubs.get = sandbox.stub(cache, 'get').withArgs('media-volume').returns(stubs.volume);
+            stubs.debouncedEmit = sandbox.stub(media, 'debouncedEmit');
+        });
+
         it('should set volume from cache', () => {
-            const volume = 50;
-            sandbox.stub(cache, 'has').withArgs('media-volume').returns(true);
-            sandbox.stub(cache, 'get').withArgs('media-volume').returns(volume);
             media.mediaEl = document.createElement('video');
 
             media.handleVolume();
+            expect(media.mediaEl.volume).to.equal(stubs.volume);
+        });
 
-            expect(media.mediaEl.volume).to.equal(volume);
+        it('should set emit volumechange if the volume has changed', () => {
+            media.mediaEl = document.createElement('video');
+            media.mediaEl.volume = 0;
+
+
+            media.handleVolume();
+
+            expect(stubs.debouncedEmit).to.be.calledWith('volume', 50);
         });
     });
 
@@ -288,12 +304,13 @@ describe('lib/viewers/media/media-base', () => {
             sandbox.stub(media, 'hideLoadingIcon');
             const currentTime = 20;
             media.mediaEl = { currentTime };
-            sandbox.stub(media, 'emit');
+            stubs.debouncedEmit = sandbox.stub(media, 'debouncedEmit');
+
 
             media.seekHandler();
 
             expect(media.hideLoadingIcon).to.be.called;
-            expect(media.emit).to.be.calledWith('seek', currentTime);
+            expect(media.debouncedEmit).to.be.calledWith('seeked', currentTime);
         });
     });
 

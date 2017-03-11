@@ -1,4 +1,5 @@
 import autobind from 'autobind-decorator';
+import debounce from 'lodash.debounce';
 import Base from '../base';
 import cache from '../../Cache';
 import Browser from '../../Browser';
@@ -10,6 +11,8 @@ const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
 const DEFAULT_VOLUME = 1;
 const MEDIA_VOLUME_CACHE_KEY = 'media-volume';
 const MEDIA_VOLUME_INCREMENT = 0.05;
+const EMIT_WAIT_TIME_IN_MILLIS = 100;
+
 
 @autobind
 class MediaBase extends Base {
@@ -146,6 +149,7 @@ class MediaBase extends Base {
         if (err instanceof Error) {
             error.displayMessage = __('error_refresh');
         }
+
         this.emit('error', error);
     }
 
@@ -153,14 +157,15 @@ class MediaBase extends Base {
      * Handler for playback rate
      *
      * @private
-     * @emits speedchange
+     * @emits ratechange
      * @return {void}
      */
     handleSpeed() {
         const speed = cache.get('media-speed') - 0;
-        if (speed && this.mediaEl.playbackRate !== speed) {
-            this.emit('speedchange', speed);
+        if (speed && this.mediaEl.playbackRate !== speed && this.mediaEl.playbackRate > 0) {
+            this.emit('ratechange', speed);
         }
+
         this.mediaEl.playbackRate = speed;
     }
 
@@ -168,15 +173,27 @@ class MediaBase extends Base {
      * Handler for volume
      *
      * @private
+     * @emits volume
      * @return {void}
      */
     handleVolume() {
-        if (cache.has(MEDIA_VOLUME_CACHE_KEY)) {
-            this.mediaEl.volume = cache.get(MEDIA_VOLUME_CACHE_KEY);
-        } else {
-            this.mediaEl.volume = DEFAULT_VOLUME;
+        const volume = cache.has(MEDIA_VOLUME_CACHE_KEY) ? cache.get(MEDIA_VOLUME_CACHE_KEY) : DEFAULT_VOLUME;
+
+        if (this.mediaEl.volume !== volume) {
+            this.debouncedEmit('volume', volume);
+            this.mediaEl.volume = volume;
         }
     }
+
+    /**
+     * Resize handler
+     *
+     * @private
+     * @return {Function} debounced resize handler
+     */
+    debouncedEmit = debounce((event, data) => {
+        this.emit(event, data);
+    }, EMIT_WAIT_TIME_IN_MILLIS);
 
     /**
      * Loads the controls
@@ -200,8 +217,6 @@ class MediaBase extends Base {
      * Makes changes to the media element.
      *
      * @protected
-     * @emits play
-     * @emits pause
      * @return {void}
      */
     addEventListenersForMediaControls() {
@@ -293,12 +308,12 @@ class MediaBase extends Base {
      * Emits the seek event and hides the loading icon.
      *
      * @private
-     * @emits seek
+     * @emits seeked
      * @return {void}
      */
     seekHandler() {
         this.hideLoadingIcon();
-        this.emit('seek', this.mediaEl.currentTime);
+        this.debouncedEmit('seeked', this.mediaEl.currentTime);
     }
 
     /**
@@ -341,6 +356,8 @@ class MediaBase extends Base {
      * Toggle playback
      *
      * @private
+     * @emits play
+     * @emits pause
      * @return {void}
      */
     togglePlay() {

@@ -35,3 +35,12 @@ The 360 video viewer fires the following events
 | navigate | The preview is shown for a given index | {object} file |
 | reload | The preview reloads ||
 | resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
+| ratechange | The media speed changes | {string} playback speed |
+| volumechange | The media volume changes | {number} volume between 0 and 1|
+| qualitychange | The video quality changes | {string} media quality |
+| bandwidthhistory | Gives bandwidth history when the preview is destroyed | {array} bandwidth information |
+| switchhistory | Gives quality switching history when the preview is destroyed | {array} quality switch objects |
+| adaptation | Quality adapts to a change in bandwidth | {number} bandwidth |
+| play | The video plays ||
+| pause | The video pauses ||
+| seeked | The video skips to a time | {number} time |
