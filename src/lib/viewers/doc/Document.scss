@@ -2,7 +2,7 @@
 @import 'doc-base';
 @import './DocFindBar';
 
-.bp-doc-document {
+.bp .bp-doc.bp-doc-document {
     // Force scrollbar to be visible to standardize page width
     overflow-y: scroll;
 }

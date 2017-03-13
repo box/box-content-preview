@@ -179,6 +179,7 @@ $header-height: 48px;
     left: 0;
     margin: 0;
     opacity: 1;
+    overflow-y: scroll;
     position: absolute;
     right: 0;
     top: 0;
@@ -191,9 +192,6 @@ $header-height: 48px;
 
     .bp-preload {
         background-color: $ffive;
-        left: 0;
-        position: absolute;
-        top: 0;
 
         .bp-theme-dark & {
             background-color: $sunset-grey;

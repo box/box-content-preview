@@ -9,7 +9,12 @@ import DocAnnotator from '../../annotations/doc/doc-annotator';
 import DocFindBar from './DocFindBar';
 import fullscreen from '../../Fullscreen';
 import Popup from '../../Popup';
-import { CLASS_BOX_PREVIEW_FIND_BAR, CLASS_HIDDEN, PRELOAD_REP_NAME } from '../../constants';
+import {
+    CLASS_BOX_PREVIEW_FIND_BAR,
+    CLASS_HIDDEN,
+    CLASS_IS_SCROLLABLE,
+    PRELOAD_REP_NAME
+} from '../../constants';
 import { getRepresentation } from '../../file';
 import { get, createAssetUrlCreator, decodeKeydown } from '../../util';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
@@ -124,11 +129,13 @@ class DocBase extends Base {
             this.prefetchAssets(JS, CSS);
         }
 
-        if (preload && this.getViewerOption('preload')) {
+        if (preload) {
             const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
             if (preloadRep && this.isRepresentationReady(preloadRep)) {
                 const { url_template: template } = preloadRep.content;
-                document.createElement('img').src = this.createContentUrlWithAuthParams(template);
+
+                // Prefetch as blob since preload needs to load image as a blob
+                get(this.createContentUrlWithAuthParams(template), 'blob');
             }
         }
 
@@ -561,9 +568,9 @@ class DocBase extends Base {
     /**
      * Loads PDF.js with provided PDF.
      *
-     * @param {string} pdfUrl - The URL of the PDF to load
-     * @return {void}
      * @protected
+     * @param {string} pdfUrl - The URL of the PDF to load
+     * @return {Promise} Promise to initialize Viewer
      */
     initViewer(pdfUrl) {
         // Initialize PDF.js in container
@@ -585,6 +592,8 @@ class DocBase extends Base {
                 DEFAULT_RANGE_REQUEST_CHUNK_SIZE;
         }
 
+        this.bindDOMListeners();
+
         // Load PDF from representation URL
         this.pdfLoadingTask = PDFJS.getDocument({
             url: pdfUrl,
@@ -592,7 +601,7 @@ class DocBase extends Base {
         });
 
         // Set document for PDF.js
-        this.pdfLoadingTask.then((doc) => {
+        return this.pdfLoadingTask.then((doc) => {
             this.pdfViewer.setDocument(doc);
 
             const linkService = this.pdfViewer.linkService;
@@ -612,8 +621,6 @@ class DocBase extends Base {
             }
             this.triggerError(err);
         });
-
-        this.bindDOMListeners();
     }
 
     //--------------------------------------------------------------------------
@@ -1026,6 +1033,9 @@ class DocBase extends Base {
 
         // Set current page to previously opened page or first page
         this.setPage(this.getCachedPage());
+
+        // Make document scrollable after pages are set up so scrollbars don't mess with autoscaling
+        this.docEl.classList.add(CLASS_IS_SCROLLABLE);
 
         // Broadcast that preview has 'loaded' when page structure is available
         if (!this.loaded) {

@@ -1,5 +1,5 @@
 import cache from './Cache';
-import { ORIGINAL_REP_NAME, PRELOAD_REP_NAME } from './constants';
+import { ORIGINAL_REP_NAME } from './constants';
 
 // List of Box Content API fields that the Preview SDK requires for every file. Updating this list is most likely
 // a breaking change and should be done with care. Clients that leverage functionality dependent on this format
@@ -129,36 +129,6 @@ function addOriginalRepresentation(file) {
 }
 
 /**
- * Temporary function to add a faked preload representation until conversion supplies
- * real first page representation. DO NOT USE.
- *
- * @param {Object} file - Box file
- * @return {void}
- */
-/* istanbul ignore next */
-export function addPreloadRepresentation(file) {
-    if (getRepresentation(file, PRELOAD_REP_NAME)) {
-        return;
-    }
-
-    // Hack to convert streaming download URL to first page rep
-    const fakedUrlTemplate = file.authenticated_download_url
-        .replace('files', 'internal_files')
-        .replace('content', `versions/${file.file_version.id}/representations/crocodoc/content/page-1.png`);
-
-    // Add faked preload representation
-    file.representations.entries.push({
-        content: {
-            url_template: fakedUrlTemplate
-        },
-        representation: PRELOAD_REP_NAME,
-        status: {
-            state: 'success'
-        }
-    });
-}
-
-/**
  * Wrapper for caching a file object. Adds the faked 'ORIGINAL' representation
  * when appropraite before caching.
  *
@@ -168,11 +138,6 @@ export function addPreloadRepresentation(file) {
 export function cacheFile(file) {
     if (file.representations) {
         addOriginalRepresentation(file);
-    }
-
-    // Temporary hack before first page representation is available
-    if (['pdf', 'docx', 'doc'].indexOf(file.extension) !== -1) {
-        addPreloadRepresentation(file);
     }
 
     cache.set(file.id, file);

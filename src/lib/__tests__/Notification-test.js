@@ -39,6 +39,10 @@ describe('lib/Notification', () => {
     });
 
     describe('show()', () => {
+        beforeEach(() => {
+            sandbox.stub(window, 'setTimeout');
+        });
+
         it('should properly show the notification', () => {
             notif.show('test', 'test');
             assert.equal(notif.notificationEl.className, 'bp-notification');
@@ -62,7 +66,7 @@ describe('lib/Notification', () => {
     describe('hide()', () => {
         it('should be properly hidden', () => {
             notif.hide();
-            assert.equal(notif.notificationEl.className, 'bp-notification bp-is-hidden');
+            expect(notif.notificationEl).to.have.class('bp-is-hidden');
         });
     });
 

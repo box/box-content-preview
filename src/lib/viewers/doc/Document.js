@@ -35,9 +35,14 @@ class Document extends DocBase {
      * @inheritdoc
      */
     showPreload() {
-        const { file, preload } = this.options;
+        // Don't show preload if there's a cached page since preloads are only for the 1st page
+        if (this.getCachedPage() !== 1) {
+            return;
+        }
+
+        const { file } = this.options;
         const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
-        if (!preloadRep || (!preload && !this.getViewerOption('preload'))) {
+        if (!preloadRep || !this.getViewerOption('preload')) {
             return;
         }
 
@@ -50,7 +55,7 @@ class Document extends DocBase {
      * @inheritdoc
      */
     hidePreload() {
-        DocPreloader.hidePreload(this.containerEl);
+        DocPreloader.hidePreload();
     }
 
     /**

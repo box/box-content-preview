@@ -6,7 +6,7 @@
     left: 0;
     letter-spacing: normal; // Reset Box UI
     margin: 0;
-    overflow: auto;
+    overflow: hidden;
     position: absolute;
     right: 0;
     top: 0;
@@ -24,6 +24,12 @@
         // Fixes bug in Safari https://css-tricks.com/forums/topic/safari-for-ios-z-index-ordering-bug-while-scrolling-a-page-with-a-fixed-element/
         transform: translate3d(0, 0, 0);
     }
+
+    // Fixes vertical scroll issue - scrollbars should be disabled until after preview is loaded
+    &.bp-is-scrollable {
+        overflow: auto;
+    }
+
     //---------- Override CSS from generic PDFJS viewer build ----------//
     .pdfViewer .page {
         border: 0;

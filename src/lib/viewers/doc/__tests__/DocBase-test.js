@@ -142,27 +142,9 @@ describe('src/lib/viewers/doc/DocBase', () => {
     describe('prefetch()', () => {
         it('should prefetch assets if assets is true', () => {
             sandbox.stub(docBase, 'prefetchAssets');
+            sandbox.stub(util, 'get');
             docBase.prefetch({ assets: true, preload: false, content: false });
             expect(docBase.prefetchAssets).to.be.called;
-        });
-
-        it('should not fetch preload if preload is true and representation is ready but preload option is false', () => {
-            const template = 'someTemplate';
-            const preloadRep = {
-                content: {
-                    url_template: template
-                },
-                status: {
-                    state: 'success'
-                }
-            };
-            sandbox.stub(file, 'getRepresentation').returns(preloadRep);
-            sandbox.stub(docBase, 'createContentUrlWithAuthParams');
-            sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(false);
-
-            docBase.prefetch({ assets: false, preload: true, content: false });
-
-            expect(docBase.createContentUrlWithAuthParams).to.not.be.called;
         });
 
         it('should prefetch preload if preload is true and representation is ready', () => {
@@ -175,9 +157,9 @@ describe('src/lib/viewers/doc/DocBase', () => {
                     state: 'success'
                 }
             };
+            sandbox.stub(util, 'get');
             sandbox.stub(file, 'getRepresentation').returns(preloadRep);
             sandbox.stub(docBase, 'createContentUrlWithAuthParams');
-            sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
 
             docBase.prefetch({ assets: false, preload: true, content: false });
 
@@ -194,9 +176,9 @@ describe('src/lib/viewers/doc/DocBase', () => {
                     state: 'pending'
                 }
             };
+            sandbox.stub(util, 'get');
             sandbox.stub(file, 'getRepresentation').returns(preloadRep);
             sandbox.stub(docBase, 'createContentUrlWithAuthParams');
-            sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
 
             docBase.prefetch({ assets: false, preload: true, content: false });
 
@@ -339,8 +321,6 @@ describe('src/lib/viewers/doc/DocBase', () => {
 
             expect(stubs.show).to.be.calledWith(__('print_loading'), __('print'), sinon.match.func);
             expect(docBase.printPopup.disableButton).to.be.called;
-
-            clock.restore();
         });
 
         it('should directly print if print blob is ready and the print dialog hasn\'t been shown yet', () => {
@@ -877,13 +857,9 @@ describe('src/lib/viewers/doc/DocBase', () => {
             const rangeChunkSize = 100;
 
             sandbox.stub(docBase, 'getViewerOption').returns(rangeChunkSize);
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
-            const promise = Promise.resolve({});
-            sandbox.stub(PDFJS, 'getDocument').returns(promise);
-
-            docBase.initViewer(url);
-
-            return promise.then(() => {
+            return docBase.initViewer(url).then(() => {
                 expect(PDFJS.getDocument).to.be.calledWith({
                     url,
                     rangeChunkSize
@@ -899,13 +875,9 @@ describe('src/lib/viewers/doc/DocBase', () => {
                 locale: 'not-en-US'
             };
             sandbox.stub(docBase, 'getViewerOption').returns(null);
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
-            const promise = Promise.resolve({});
-            sandbox.stub(PDFJS, 'getDocument').returns(promise);
-
-            docBase.initViewer(url);
-
-            return promise.then(() => {
+            return docBase.initViewer(url).then(() => {
                 expect(PDFJS.getDocument).to.be.calledWith({
                     url,
                     rangeChunkSize: defaultChunkSize
@@ -921,13 +893,9 @@ describe('src/lib/viewers/doc/DocBase', () => {
                 locale: 'en-US'
             };
             sandbox.stub(docBase, 'getViewerOption').returns(null);
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
-            const promise = Promise.resolve({});
-            sandbox.stub(PDFJS, 'getDocument').returns(promise);
-
-            docBase.initViewer(url);
-
-            return promise.then(() => {
+            return docBase.initViewer(url).then(() => {
                 expect(PDFJS.getDocument).to.be.calledWith({
                     url,
                     rangeChunkSize: largeChunkSize
@@ -939,18 +907,13 @@ describe('src/lib/viewers/doc/DocBase', () => {
             const doc = {
                 url: 'url'
             };
-            const promise = Promise.resolve(doc);
-            const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(
-                promise
-            );
+            const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
             sandbox.stub(docBase, 'getViewerOption').returns(100);
 
-            docBase.initViewer('url');
-            expect(stubs.pdfViewerStub).to.be.called;
-            expect(getDocumentStub).to.be.called;
-            expect(stubs.bindDOMListeners).to.be.called;
-
-            return promise.then(() => {
+            return docBase.initViewer('url').then(() => {
+                expect(stubs.pdfViewerStub).to.be.called;
+                expect(getDocumentStub).to.be.called;
+                expect(stubs.bindDOMListeners).to.be.called;
                 expect(stubs.pdfViewer.setDocument).to.be.called;
                 expect(stubs.pdfViewer.linkService.setDocument).to.be.called;
             });
@@ -1115,18 +1078,12 @@ describe('src/lib/viewers/doc/DocBase', () => {
 
     describe('fetchPrintBlob()', () => {
         beforeEach(() => {
-            stubs.promise = Promise.resolve({ blob: 'blob' });
-            stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
-            stubs.appendAuthHeader = sandbox.stub(docBase, 'appendAuthHeader');
-            docBase.initPrint();
+            stubs.get = sandbox.stub(util, 'get').returns(Promise.resolve('blob'));
         });
 
-        it('should get and return the blob', () => {
-            docBase.fetchPrintBlob('url');
-
-            return stubs.promise.then((blob) => {
-                expect(stubs.get).to.be.called;
-                expect(blob.blob).to.equal('blob');
+        it('should get and set the blob', () => {
+            return docBase.fetchPrintBlob('url').then(() => {
+                expect(docBase.printBlob).to.equal('blob');
             });
         });
     });
@@ -1401,7 +1358,7 @@ describe('src/lib/viewers/doc/DocBase', () => {
             expect(stubs.initAnnotations).to.be.called;
         });
 
-        it('should load UI, check the pagination buttons, and set the page', () => {
+        it('should load UI, check the pagination buttons, set the page, and make document scrollable', () => {
             stubs.isAnnotatable.returns(false);
             docBase.pdfViewer = {
                 currentScale: 'unknown'
@@ -1412,6 +1369,7 @@ describe('src/lib/viewers/doc/DocBase', () => {
             expect(stubs.loadUI).to.be.called;
             expect(stubs.checkPaginationButtons).to.be.called;
             expect(stubs.setPage).to.be.called;
+            expect(docBase.docEl).to.have.class('bp-is-scrollable');
         });
 
         it('should broadcast that the preview is loaded if it hasn\'t already', () => {

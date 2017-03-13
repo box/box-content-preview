@@ -46,6 +46,26 @@ class ImageLoader extends AssetLoader {
         super();
         this.viewers = VIEWERS;
     }
+
+    /**
+     * Chooses a representation. Assumes that there will be only
+     * one specific representation. In other words we will not have
+     * two png representation entries with different properties.
+     *
+     * @param {Object} file - Box file
+     * @param {Object} viewer - Chosen Preview viewer
+     * @return {Object} The representation to load
+     */
+    determineRepresentation(file, viewer) {
+        return file.representations.entries.find((entry) => {
+            // Do not use the dimensions=1024x1024&paged=false rep that is for document preloading
+            if (entry.properties && entry.properties.paged === 'false') {
+                return false;
+            }
+
+            return viewer.REP === entry.representation;
+        });
+    }
 }
 
 export default new ImageLoader();

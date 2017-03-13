@@ -51,12 +51,16 @@ class ProgressBar {
 
         this.progress = 0;
         this.progressInterval = setInterval(() => {
-            if (this.progress >= 90) {
+            // Randomly up to 80%, then slowly approaching 95
+            if (this.progress >= 95) {
                 clearInterval(this.progressInterval);
                 return;
+            } else if (this.progress >= 80) {
+                this.progress += Math.random();
+            } else {
+                this.progress += Math.random() * 5;
             }
 
-            this.progress += Math.random() * 5;
             this.updateProgress(this.progress);
         }, PROGRESS_INTERVAL_MS);
     }

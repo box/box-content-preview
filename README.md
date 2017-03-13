@@ -12,7 +12,7 @@ Browser Support
 * Desktop Chrome, Firefox, Safari, Edge, and Internet Explorer 11
 * Limited support for mobile web - previews will render but some controls may not work
 
-If your browser doesn't natively Promises, include a Promise library (e.g. Bluebird) before the main Preview script.
+If your browser doesn't natively support Promises, include a Promise library (e.g. Bluebird) before the main Preview script.
 
 Current Version
 ---------------

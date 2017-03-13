@@ -79,7 +79,7 @@ function updateConfig(conf, language, index) {
             sourceMap: false
         }));
 
-        // Re-optimize CSS after extract text so we can remove duplicate rules
+        // Optimize CSS - minimize, remove comments and duplicate rules
         config.plugins.push(new OptimizeCssAssetsPlugin({
             cssProcessorOptions: {
                 safe: true

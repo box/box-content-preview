@@ -72,12 +72,12 @@ describe('lib/ProgressBar', () => {
             expect(progressBar.progress).to.not.equal(0);
         });
 
-        it('should clear the interval when progress is >= 90', () => {
+        it('should clear the interval when progress is >= 95', () => {
             sandbox.stub(progressBar, 'showProgress');
             sandbox.mock(window).expects('clearInterval').withArgs(sinon.match.number);
 
             progressBar.start();
-            progressBar.progress = 90;
+            progressBar.progress = 95;
 
             // Simulate one progress bar tick after we reach the limit
             clock.tick(151);

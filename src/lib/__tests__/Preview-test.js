@@ -396,7 +396,7 @@ describe('lib/Preview', () => {
             });
         });
 
-        it('should prefetch assets, preload, and content if viewer defines a prefetch function and preload is false', () => {
+        it('should prefetch assets, preload, and content if viewer defines a prefetch function and preload is false, but viewer preload option is true', () => {
             viewer = {
                 CONSTRUCTOR: () => {
                     return {
@@ -404,7 +404,26 @@ describe('lib/Preview', () => {
                             assets: true,
                             preload: true,
                             content: true
-                        })
+                        }),
+                        getViewerOption: sandbox.stub().withArgs('preload').returns(true)
+                    };
+                }
+            };
+            sandbox.stub(loader, 'determineViewer').returns(viewer);
+
+            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: false });
+        });
+
+        it('should prefetch assets and content but not preload if viewer defines a prefetch function and preload is false, and viewer preload option is false', () => {
+            viewer = {
+                CONSTRUCTOR: () => {
+                    return {
+                        prefetch: sandbox.mock().withArgs({
+                            assets: true,
+                            preload: false,
+                            content: true
+                        }),
+                        getViewerOption: sandbox.stub().withArgs('preload').returns(false)
                     };
                 }
             };
@@ -1562,8 +1581,7 @@ describe('lib/Preview', () => {
             stubs.canPlayDash = sandbox.stub(Browser, 'canPlayDash').returns(false);
             stubs.getHeaders = sandbox.stub(util, 'getHeaders');
             stubs.headers = {
-                'X-Rep-Hints': '[3d][pdf][text][jpg?dimensions=2048x2048,jpg?dimensions=1024x1024,' +
-                'png?dimensions=2048x2048,png?dimensions=1024x1024][mp3]'
+                'X-Rep-Hints': '[3d][pdf][text][mp3][jpg?dimensions=1024x1024&paged=false][jpg?dimensions=2048x2048,png?dimensions=2048x2048]'
             };
 
             preview.options.sharedLink = 'link';

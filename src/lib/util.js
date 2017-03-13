@@ -548,3 +548,17 @@ export function requires360Viewer(file) {
     const basename = file.name.slice(0, file.name.lastIndexOf('.'));
     return basename.endsWith('360');
 }
+
+/**
+ * Set width/height for an element.
+ *
+ * @param {HTMLElement} element - HTML element
+ * @param {number} width - Width in pixels
+ * @param {number} height - Height in pixels
+ */
+export function setDimensions(element, width, height) {
+    /* eslint-disable no-param-reassign */
+    element.style.width = `${width}px`;
+    element.style.height = `${height}px`;
+    /* eslint-enable no-param-reassign */
+}

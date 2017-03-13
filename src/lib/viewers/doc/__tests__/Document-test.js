@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-expressions */
 import Document from '../Document';
+import DocPreloader from '../DocPreloader';
 import fullscreen from '../../../Fullscreen';
+import * as file from '../../../file';
 import {
     ICON_DROP_DOWN,
     ICON_DROP_UP,
@@ -9,7 +11,6 @@ import {
     ICON_ZOOM_IN,
     ICON_ZOOM_OUT
 } from '../../../icons/icons';
-
 
 const sandbox = sinon.sandbox.create();
 
@@ -57,6 +58,58 @@ describe('lib/viewers/doc/Document', () => {
     describe('setup()', () => {
         it('should add the document class to the doc element', () => {
             expect(doc.docEl).to.have.class('bp-doc-document');
+        });
+    });
+
+    describe('showPreload()', () => {
+        it('should not do anything if there is a previously cached page', () => {
+            sandbox.stub(doc, 'getCachedPage').returns(2);
+            sandbox.mock(DocPreloader).expects('showPreload').never();
+
+            doc.showPreload();
+        });
+
+        it('should not do anything if no preload rep is found', () => {
+            doc.options.file = {};
+            sandbox.stub(doc, 'getCachedPage').returns(1);
+            sandbox.stub(doc, 'getViewerOption').withArgs('preload').returns(true);
+            sandbox.stub(file, 'getRepresentation').returns(null);
+            sandbox.mock(DocPreloader).expects('showPreload').never();
+
+            doc.showPreload();
+        });
+
+        it('should not do anything if preload option is not set', () => {
+            doc.options.file = {};
+            sandbox.stub(doc, 'getCachedPage').returns(1);
+            sandbox.stub(doc, 'getViewerOption').withArgs('preload').returns(false);
+            sandbox.stub(file, 'getRepresentation').returns(null);
+            sandbox.mock(DocPreloader).expects('showPreload').never();
+
+            doc.showPreload();
+        });
+
+        it('should show preload with correct authd URL', () => {
+            const preloadUrl = 'someUrl';
+            doc.options.file = {};
+            sandbox.stub(doc, 'getCachedPage').returns(1);
+            sandbox.stub(file, 'getRepresentation').returns({
+                content: {
+                    url_template: ''
+                }
+            });
+            sandbox.stub(doc, 'getViewerOption').withArgs('preload').returns(true);
+            sandbox.stub(doc, 'createContentUrlWithAuthParams').returns(preloadUrl);
+            sandbox.mock(DocPreloader).expects('showPreload').withArgs(preloadUrl, doc.containerEl);
+
+            doc.showPreload();
+        });
+    });
+
+    describe('hidePreload', () => {
+        it('should hide the preload', () => {
+            sandbox.mock(DocPreloader).expects('hidePreload');
+            doc.hidePreload();
         });
     });
 

@@ -2,9 +2,22 @@ import {
     CLASS_BOX_PREVIEW_PRELOAD,
     CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
     CLASS_BOX_PREVIEW_PRELOAD_WRAPPER,
-    CLASS_INVISIBLE
+    CLASS_INVISIBLE,
+    CLASS_PREVIEW_LOADED
 } from '../../constants';
+import { get, setDimensions } from '../../util';
 import { hideLoadingIndicator } from '../../ui';
+
+const EXIF_COMMENT_TAG_NAME = 'UserComment'; // Read EXIF data from 'UserComment' tag
+const EXIF_COMMENT_REGEX = /pdfWidth:([0-9.]+)pts,pdfHeight:([0-9.]+)pts,numPages:([0-9]+)/;
+
+const PDF_UNIT_TO_CSS_PIXEL = 4 / 3; // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
+const PDFJS_MAX_AUTO_SCALE = 1.25; // Should match MAX_AUTO_SCALE in pdf_viewer.js
+const PDFJS_WIDTH_PADDING_PX = 40; // Should match SCROLLBAR_PADDING in pdf_viewer.js
+const PDFJS_HEIGHT_PADDING_PX = 5; // Should match VERTICAL_PADDING in pdf_viewer.js
+
+const NUM_PAGES_DEFAULT = 2; // Default to 2 pages for preload if true number of pages cannot be read
+const NUM_PAGES_MAX = 500; // Don't show more than 500 placeholder pages
 
 class DocPreloader {
 
@@ -12,122 +25,222 @@ class DocPreloader {
      * Shows a preload of the document by showing the first page as an image. This should be called
      * while the full document loads to give the user visual feedback on the file as soon as possible.
      *
-     * @param {string} contentUrlWithAuth - URL for preload content with authorization query params
+     * @param {string} preloadUrlWithAuth - URL for preload content with authorization query params
      * @param {HTMLElement} containerEl - Viewer container to render preload in
-     * @return {void}
+     * @return {Promise} Promise to show preload
      */
-    showPreload(contentUrlWithAuth, containerEl) {
-        const wrapperEl = document.createElement('div');
-        wrapperEl.className = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER;
-        wrapperEl.innerHTML = `
-            <div class="${CLASS_BOX_PREVIEW_PRELOAD} ${CLASS_INVISIBLE}">
-                <img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" src="${contentUrlWithAuth}" />
-                <div class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}"></div>
-            </div>
-        `.trim();
+    showPreload(preloadUrlWithAuth, containerEl) {
+        this.containerEl = containerEl;
 
-        containerEl.appendChild(wrapperEl);
+        // Need to load image as a blob to read EXIF
+        return get(preloadUrlWithAuth, 'blob').then((imgBlob) => {
+            if (this.checkDocumentLoaded()) {
+                return;
+            }
 
-        // Offset scrollbar width (if scrollbar shows up)
-        this.preloadEl = wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
-        this.preloadEl.style.overflow = 'scroll';
-        this.preloadEl.style.right = `${this.preloadEl.offsetWidth - this.preloadEl.clientWidth}px`;
-        this.preloadEl.style.overflow = 'auto';
+            this.srcUrl = URL.createObjectURL(imgBlob);
 
-        // Resize preload representation after it loads to be as close as possible to
-        // true document size. Scale algorithm is adapted from _setScale() in pdf_viewer.js
-        const imageEl = this.preloadEl.querySelector(`img.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
-        imageEl.addEventListener('load', this.finishPreload);
+            this.wrapperEl = document.createElement('div');
+            this.wrapperEl.className = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER;
+            this.wrapperEl.innerHTML = `
+                <div class="${CLASS_BOX_PREVIEW_PRELOAD} ${CLASS_INVISIBLE}">
+                    <img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" src="${this.srcUrl}" />
+                </div>
+            `.trim();
+
+            this.containerEl.appendChild(this.wrapperEl);
+            this.preloadEl = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
+            this.imageEl = this.preloadEl.querySelector(`img.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
+            this.bindDOMListeners();
+        });
     }
 
     /**
      * Hides the preload if it exists.
      *
-     * @param {HTMLElement} containerEl - Viewer container that preload is rendered in
      * @return {void}
      */
-    hidePreload(containerEl) {
-        let wrapperEl = containerEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD_WRAPPER}`);
-        if (!wrapperEl) {
+    hidePreload() {
+        if (!this.wrapperEl) {
             return;
         }
 
-        wrapperEl.classList.add(CLASS_INVISIBLE);
+        this.restoreScrollPosition();
+        this.unbindDOMListeners();
 
-        // Remove wrapper after animation has finished
-        wrapperEl.addEventListener('transitionend', (event) => {
-            if (event.propertyName === 'opacity') {
-                if (wrapperEl.parentNode) {
-                    wrapperEl.parentNode.removeChild(wrapperEl);
-                }
+        this.wrapperEl.parentNode.removeChild(this.wrapperEl);
+        this.wrapperEl = undefined;
+        this.preloadEl = undefined;
+        this.imageEl = undefined;
 
-                wrapperEl = undefined;
+        if (this.srcUrl) {
+            URL.revokeObjectURL(this.srcUrl);
+        }
+    }
+
+    /**
+     * Binds event listeners for preload
+     *
+     * @private
+     * @return {void}
+     */
+    bindDOMListeners() {
+        this.imageEl.addEventListener('load', this.loadHandler);
+    }
+
+    /**
+     * Unbinds event listeners for preload
+     *
+     * @private
+     * @return {void}
+     */
+    unbindDOMListeners() {
+        this.imageEl.removeEventListener('load', this.loadHandler);
+    }
+
+    /**
+     * Set the real pdf.js document's scroll position to be the same as the preload scroll position.
+     *
+     * @private
+     * @return {void}
+     */
+    restoreScrollPosition() {
+        const scrollTop = this.wrapperEl.scrollTop;
+        const docEl = this.wrapperEl.parentNode.querySelector('.bp-doc');
+        if (docEl && scrollTop > 0) {
+            docEl.scrollTop = scrollTop;
+        }
+    }
+
+    /**
+     * Finish preloading by properly scaling preload image to be as close as possible to the
+     * true size of the pdf.js document, showing the preload, and hiding the loading indicator.
+     *
+     * @private
+     * @return {Promise} Promise to scale and show preload
+     */
+    loadHandler = () => {
+        if (!this.preloadEl || !this.imageEl) {
+            return Promise.resolve();
+        }
+
+        // Calculate pdf width, height, and number of pages from EXIF if possible
+        return this.readEXIF(this.imageEl).then((pdfData) => {
+            const { pdfWidth, pdfHeight, numPages } = pdfData;
+            const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
+            this.scaleAndShowPreload(scaledWidth, scaledHeight, Math.min(numPages, NUM_PAGES_MAX));
+
+        // Otherwise, use the preload image's natural dimensions as a base to scale from
+        }).catch(() => {
+            const { naturalWidth: pdfWidth, naturalHeight: pdfHeight } = this.imageEl;
+            const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
+            this.scaleAndShowPreload(scaledWidth, scaledHeight, NUM_PAGES_DEFAULT);
+        });
+    }
+
+    /**
+     * Reads EXIF from preload JPG for PDF width, height, and numPages. This is currently encoded
+     * by Box Conversion into the preload JPG itself, but eventually this information will be
+     * available as a property on the preload representation object.
+     *
+     * @private
+     * @param {HTMLElement} imageEl - Preload image element
+     * @return {Promise} Promise that resolves with PDF width, PDF height, and num pages
+     */
+    readEXIF(imageEl) {
+        return new Promise((resolve, reject) => {
+            try {
+                /* global EXIF */
+                EXIF.getData(imageEl, () => {
+                    const userCommentRaw = EXIF.getTag(imageEl, EXIF_COMMENT_TAG_NAME);
+                    const userComment = userCommentRaw.map((c) => String.fromCharCode(c)).join('');
+                    const match = EXIF_COMMENT_REGEX.exec(userComment);
+
+                    if (match && match.length === 4) {
+                        resolve({
+                            pdfWidth: parseInt(match[1], 10) * PDF_UNIT_TO_CSS_PIXEL,
+                            pdfHeight: parseInt(match[2], 10) * PDF_UNIT_TO_CSS_PIXEL,
+                            numPages: parseInt(match[3], 10)
+                        });
+                    } else {
+                        reject('No valid EXIF data found');
+                    }
+                });
+            } catch (e) {
+                reject('Error reading EXIF data');
             }
         });
     }
 
     /**
-     * Finish preloading by properly sizing preload content and hiding normal
-     * loading indicator.
+     * Returns scaled PDF dimensions using same algorithm as pdf.js up to a maximum of 1.25x zoom.
      *
      * @private
+     * @param {number} pdfWidth - Width of PDF in pixels
+     * @param {number} pdfHeight - Height of PDF in pixels
+     * @return {Object} Scaled width and height in pixels
+     */
+    getScaledDimensions(pdfWidth, pdfHeight) {
+        const { clientWidth, clientHeight } = this.wrapperEl;
+        const widthScale = (clientWidth - PDFJS_WIDTH_PADDING_PX) / pdfWidth;
+        const heightScale = (clientHeight - PDFJS_HEIGHT_PADDING_PX) / pdfHeight;
+        const isLandscape = pdfWidth > pdfHeight;
+
+        let scale = isLandscape ? Math.min(heightScale, widthScale) : widthScale;
+        scale = Math.min(PDFJS_MAX_AUTO_SCALE, scale);
+
+        return {
+            scaledWidth: Math.floor(scale * pdfWidth),
+            scaledHeight: Math.floor(scale * pdfHeight)
+        };
+    }
+
+    /**
+     * Set scaled dimensions for the preload image and show.
+     *
+     * @private
+     * @param {number} scaledWidth - Width in pixels to scale preload to
+     * @param {number} scaledHeight - Height in pixels to scale preload to
+     * @param {number} numPages - Number of pages to show for preload
      * @return {void}
      */
-    finishPreload = () => {
-        if (!this.preloadEl) {
+    scaleAndShowPreload(scaledWidth, scaledHeight, numPages) {
+        if (this.checkDocumentLoaded()) {
             return;
         }
 
-        const imageEl = this.preloadEl.querySelector(`img.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
-        const placeholderEl = this.preloadEl.querySelector(`div.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
+        // Set image dimensions
+        setDimensions(this.imageEl, scaledWidth, scaledHeight);
 
-        const { naturalHeight: imgHeight, naturalWidth: imgWidth } = imageEl;
-        const { clientHeight, clientWidth } = this.preloadEl;
-        const heightScale = (clientHeight - 5) / imgHeight;
-        const widthScale = (clientWidth - 40) / imgWidth;
-        let scale = 1;
-
-        // pdf.js scales a standard PowerPoint pptx (as PDF) to 1045x588. 1045/1024 ~ 1.02
-        const MAX_LANDSCAPE_SCALE = 1.02;
-        const MAX_LANDSCAPE_WIDTH = 1045;
-
-        // pdf.js scales a standard Word docx to 1019x1319. 1319/1024 ~ 1.288
-        const MAX_PORTRAIT_SCALE = 1.288;
-        const MAX_PORTRAIT_WIDTH = 1019;
-
-        // @NOTE(tjin): This scale isn't guaranteed to scale the image to the same size pdf.js will
-        // eventually auto-size to since at this point, we don't have the true PDF size.
-        const isLandscape = imgWidth > imgHeight;
-        if (isLandscape) {
-            scale = Math.min(heightScale, widthScale);
-            scale = Math.min(MAX_LANDSCAPE_SCALE, scale);
-        } else {
-            scale = widthScale;
-            scale = Math.min(MAX_PORTRAIT_SCALE, scale);
+        // Add and scale correct number of placeholder elements
+        for (let i = 0; i < numPages - 1; i++) {
+            const placeholderEl = document.createElement('div');
+            placeholderEl.className = CLASS_BOX_PREVIEW_PRELOAD_CONTENT;
+            setDimensions(placeholderEl, scaledWidth, scaledHeight);
+            this.preloadEl.appendChild(placeholderEl);
         }
-
-        // Set maximum width to MAX_LANDSCAPE|PORTRAIT_WIDTH
-        const tempWidth = scale * imgWidth;
-        if (isLandscape && tempWidth > MAX_LANDSCAPE_WIDTH) {
-            scale = MAX_LANDSCAPE_WIDTH / imgWidth;
-        } else if (tempWidth > MAX_PORTRAIT_WIDTH) {
-            scale = MAX_PORTRAIT_WIDTH / imgWidth;
-        }
-
-        const scaledHeight = Math.floor(scale * imgHeight);
-        const scaledWidth = Math.floor(scale * imgWidth);
-
-        // Set image and placeholder height
-        imageEl.style.height = `${scaledHeight}px`;
-        imageEl.style.width = `${scaledWidth}px`;
-        placeholderEl.style.height = `${scaledHeight}px`;
-        placeholderEl.style.width = `${scaledWidth}px`;
 
         // Hide the preview-level loading indicator
         hideLoadingIndicator();
 
         // Show preload element after content is properly sized
         this.preloadEl.classList.remove(CLASS_INVISIBLE);
+    }
+
+    /**
+     * Check if full document is already loaded - if so, hide the preload.
+     *
+     * @private
+     * @return {boolean} Whether document is already loaded
+     */
+    checkDocumentLoaded() {
+        // If document is already loaded, hide the preload and short circuit
+        if (this.containerEl.classList.contains(CLASS_PREVIEW_LOADED)) {
+            this.hidePreload();
+            return true;
+        }
+
+        return false;
     }
 }
 

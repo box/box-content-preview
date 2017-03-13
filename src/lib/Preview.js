@@ -21,7 +21,12 @@ import {
     CLASS_NAVIGATION_VISIBILITY,
     PERMISSION_DOWNLOAD,
     PERMISSION_ANNOTATE,
-    PERMISSION_PREVIEW
+    PERMISSION_PREVIEW,
+    X_REP_HINT_BASE,
+    X_REP_HINT_DOC_THUMBNAIL,
+    X_REP_HINT_IMAGE,
+    X_REP_HINT_VIDEO_DASH,
+    X_REP_HINT_VIDEO_MP4
 } from './constants';
 import './Preview.scss';
 
@@ -363,10 +368,23 @@ class Preview extends EventEmitter {
         sharedLinkPassword = '',
         preload = false
     }) {
-        const file = cache.get(fileId);
-        const loader = file ? this.getLoader(file) : null;
-        const viewer = loader ? loader.determineViewer(file) : null;
-        if (!viewer) {
+        let file;
+        let loader;
+        let viewer;
+
+        // Determining the viewer could throw an error
+        try {
+            file = cache.get(fileId);
+            loader = this.getLoader(file);
+            viewer = loader.determineViewer(file);
+
+            if (!viewer) {
+                return;
+            }
+        } catch (err) {
+            /* eslint-disable no-console */
+            console.error(`Error prefetching file ID ${fileId} - ${err}`);
+            /* eslint-enable no-console */
             return;
         }
 
@@ -390,8 +408,10 @@ class Preview extends EventEmitter {
         if (typeof viewerInstance.prefetch === 'function') {
             viewerInstance.prefetch({
                 assets: true,
-                preload: true, // always prefetch preload content since it is lightweight
-                content: !preload // don't prefetch file's representation content if this is for preload
+                // Prefetch preload if explicitly requested or if viewer has 'preload' option set
+                preload: preload || viewerInstance.getViewerOption('preload'),
+                // Don't prefetch file's representation content if this is for preload
+                content: !preload
             });
         }
     }
@@ -418,18 +438,6 @@ class Preview extends EventEmitter {
                     });
                 }
             });
-    }
-
-    /**
-     * DELETE ME AFTER WEBAPP UPDATE
-     */
-    prefetchPreload(fileId, token, sharedLink) {
-        this.prefetch({
-            fileId,
-            token,
-            sharedLink,
-            preload: true
-        });
     }
 
     //--------------------------------------------------------------------------
@@ -583,9 +591,6 @@ class Preview extends EventEmitter {
 
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;
-
-        // Enable preload (quick preview shown during loading)
-        this.options.preload = !!options.preload;
 
         // Save the files to iterate through
         this.collection = options.collection || [];
@@ -988,11 +993,11 @@ class Preview extends EventEmitter {
      * @return {Object} Headers
      */
     getRequestHeaders(token) {
-        const videoHints = Browser.canPlayDash() ? '[dash,mp4][filmstrip]' : '[mp4]';
+        const videoHint = Browser.canPlayDash() ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
         const headers = {
-            'X-Rep-Hints': '[3d][pdf][text][jpg?dimensions=2048x2048,jpg?dimensions=1024x1024,' +
-                `png?dimensions=2048x2048,png?dimensions=1024x1024][mp3]${videoHints}`
+            'X-Rep-Hints': `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`
         };
+
         return getHeaders(headers, token || this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
     }
 

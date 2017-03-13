@@ -421,4 +421,17 @@ describe('lib/util', () => {
             expect(util.replacePlaceholders('{2} highlighted {2}', ['Bob', 'Suzy'])).to.equal('Suzy highlighted Suzy');
         });
     });
+
+    describe('setDimensions()', () => {
+        it('should set dimensions for the specified element', () => {
+            const element = document.createElement('div');
+            const width = 100;
+            const height = 200;
+
+            util.setDimensions(element, width, height);
+
+            expect(element.style.width).to.equal(`${width}px`);
+            expect(element.style.height).to.equal(`${height}px`);
+        });
+    });
 });
