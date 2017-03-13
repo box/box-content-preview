@@ -15,7 +15,6 @@ import {
 import './Presentation.scss';
 
 const WHEEL_THROTTLE = 200;
-const PRESENTATION_MODE_STATE = 3;
 const PADDING_OFFSET = 30;
 const SCROLL_EVENT_OFFSET = 5;
 
@@ -36,21 +35,25 @@ class Presentation extends DocBase {
     }
 
     /**
-     * Go to specified page. We implement presentation mode by hiding the
-     * previous current page and showing the new page.
+     * Go to specified page. We implement presentation mode by hiding all pages
+     * except for the page we are going to.
      *
      * @param {number} pageNum Page to navigate to
-     * @returns {void}
+     * @return {void}
      */
     setPage(pageNum) {
         this.checkOverflow();
 
-        let pageEl = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
-        pageEl.classList.add(CLASS_INVISIBLE);
+        // Hide all pages
+        const pages = this.docEl.querySelectorAll('.page');
+        [].forEach.call(pages, (pageEl) => {
+            pageEl.classList.add(CLASS_INVISIBLE);
+        });
 
         super.setPage(pageNum);
 
-        pageEl = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
+        // Show page we are navigating to
+        const pageEl = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
         pageEl.classList.remove(CLASS_INVISIBLE);
 
         this.pdfViewer.update();
@@ -78,28 +81,27 @@ class Presentation extends DocBase {
     /**
      * Determines if the document has overflow and adjusts the CSS accordingly.
      *
-     * @returns {boolean}
+     * @return {boolean}
      */
     checkOverflow() {
         const doc = this.docEl;
         // Getting the page element to compare to the doc height/width
-        const page = this.docEl.firstChild.firstChild;
+        const page = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
         const hasXOverflow = page.clientWidth > doc.clientWidth;
         const hasYOverflow = page.clientHeight - PADDING_OFFSET > doc.clientHeight;
-        if (!hasXOverflow && !hasYOverflow) {
-            doc.classList.remove('overflow');
-            doc.classList.remove('overflow-y');
-            return false;
-        } else if (hasYOverflow) {
-            doc.classList.add('overflow');
-            doc.classList.add('overflow-y');
-            return true;
+
+        doc.classList.remove('overflow-x');
+        doc.classList.remove('overflow-y');
+
+        if (hasXOverflow) {
+            doc.classList.add('overflow-x');
         }
 
-        // only x overflow
-        doc.classList.remove('overflow-y');
-        doc.classList.add('overflow');
-        return true;
+        if (hasYOverflow) {
+            doc.classList.add('overflow-y');
+        }
+
+        return hasXOverflow || hasYOverflow;
     }
 
     //--------------------------------------------------------------------------
@@ -111,22 +113,12 @@ class Presentation extends DocBase {
      *
      * @override
      * @param {string} pdfUrl The URL of the PDF to load
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     initViewer(pdfUrl) {
         super.initViewer(pdfUrl);
-        this.pdfViewer.presentationModeState = PRESENTATION_MODE_STATE;
-        this.initialDocHeight = this.docEl.clientHeight;
-        // Overwrite scrollPageIntoView for presentations since we have custom pagination behavior
-        this.pdfViewer.scrollPageIntoView = (pageObj) => {
-            let pageNum = pageObj;
-            if (typeof pageNum !== 'number') {
-                pageNum = pageObj.pageNumber || 1;
-            }
-
-            this.setPage(pageNum);
-        };
+        this.overwritePdfViewerBehavior();
     }
 
     //--------------------------------------------------------------------------
@@ -137,7 +129,7 @@ class Presentation extends DocBase {
     * Binds DOM listeners for presentation viewer.
     *
     * @override
-    * @returns {void}
+    * @return {void}
     * @protected
     */
     bindDOMListeners() {
@@ -155,7 +147,7 @@ class Presentation extends DocBase {
     * Unbinds DOM listeners for presentation viewer.
     *
     * @override
-    * @returns {void}
+    * @return {void}
     * @protected
     */
     unbindDOMListeners() {
@@ -173,7 +165,7 @@ class Presentation extends DocBase {
      * Adds event listeners for presentation controls
      *
      * @override
-     * @returns {void}
+     * @return {void}
      * @protected
      */
     bindControlListeners() {
@@ -241,9 +233,8 @@ class Presentation extends DocBase {
     }
 
     /**
-     * Mousewheel handler - scrolls presentations by page
+     * Page change handler.
      *
-     * @returns {Function} Throttled mousewheel handler
      * @private
      * @return {void}
      */
@@ -275,6 +266,44 @@ class Presentation extends DocBase {
         }
 
         return this.throttledWheelHandler;
+    }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
+    /**
+     * Overwrite some pdf_viewer.js behavior for presentations.
+     *
+     * @private
+     * @return {void}
+     */
+    overwritePdfViewerBehavior() {
+        // Overwrite scrollPageIntoView for presentations since we have custom pagination behavior
+        this.pdfViewer.scrollPageIntoView = (pageObj) => {
+            let pageNum = pageObj;
+            if (typeof pageNum !== 'number') {
+                pageNum = pageObj.pageNumber || 1;
+            }
+
+            this.setPage(pageNum);
+        };
+
+        // Overwrite _getVisiblePages for presentations to always calculate instead of fetching visible
+        // elements since we lay out presentations differently
+        this.pdfViewer._getVisiblePages = () => {
+            const currentPageObj = this.pdfViewer._pages[this.pdfViewer._currentPageNumber - 1];
+            const visible = [{
+                id: currentPageObj.id,
+                view: currentPageObj
+            }];
+
+            return {
+                first: currentPageObj,
+                last: currentPageObj,
+                views: visible
+            };
+        };
     }
 }
 

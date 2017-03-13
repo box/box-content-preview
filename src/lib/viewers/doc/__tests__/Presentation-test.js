@@ -67,22 +67,30 @@ describe('lib/viewers/doc/Presentation', () => {
     describe('setPage()', () => {
         let page1;
         let page2;
+        let page3;
 
         beforeEach(() => {
             page1 = document.createElement('div');
             page1.setAttribute('data-page-number', '1');
+            page1.classList.add('page');
 
             page2 = document.createElement('div');
             page2.setAttribute('data-page-number', '2');
-            page2.className = CLASS_INVISIBLE;
+            page2.classList.add(CLASS_INVISIBLE, 'page');
+
+            page3 = document.createElement('div');
+            page3.setAttribute('data-page-number', '3');
+            page3.classList.add('page');
 
             presentation.docEl.appendChild(page1);
             presentation.docEl.appendChild(page2);
+            presentation.docEl.appendChild(page3);
         });
 
         afterEach(() => {
             presentation.docEl.removeChild(page1);
             presentation.docEl.removeChild(page2);
+            presentation.docEl.removeChild(page3);
         });
 
         it('should check to see if overflow is present', () => {
@@ -92,11 +100,12 @@ describe('lib/viewers/doc/Presentation', () => {
             expect(checkOverflowStub).to.be.called;
         });
 
-        it('should hide the page that was previously shown', () => {
+        it('should all other pages', () => {
             sandbox.stub(presentation, 'checkOverflow');
             presentation.setPage(2);
 
             expect(page1).to.have.class(CLASS_INVISIBLE);
+            expect(page3).to.have.class(CLASS_INVISIBLE);
         });
 
         it('should show the page being set', () => {
@@ -141,55 +150,46 @@ describe('lib/viewers/doc/Presentation', () => {
 
     describe('checkOverflow()', () => {
         beforeEach(() => {
-            stubs.docEl = {
-                clientHeight: 0,
-                clientWidth: 0,
-                classList: {
-                    add: sandbox.stub(),
-                    remove: sandbox.stub()
-                },
-                addEventListener: sandbox.stub(),
-                removeEventListener: sandbox.stub(),
-                firstChild: {
-                    firstChild: {
-                        clientHeight: 0,
-                        clientWidth: 0
-                    }
-                }
-            };
+            stubs.page1 = document.createElement('div');
+            stubs.page1.setAttribute('data-page-number', '1');
+            stubs.page1.classList.add('page');
 
-            presentation.docEl = stubs.docEl;
+            presentation.docEl.appendChild(stubs.page1);
         });
 
+        afterEach(() => {
+            presentation.docEl.removeChild(stubs.page1);
+        });
+
+
         it('should remove the both overflow classes and return false if there is no overflow', () => {
-            stubs.docEl.clientWidth = 100;
-            stubs.docEl.clientHeight = 100;
+            presentation.docEl.style.width = '100px';
+            presentation.docEl.style.height = '100px';
 
             const result = presentation.checkOverflow();
-            expect(stubs.docEl.classList.remove).to.be.calledWith('overflow');
-            expect(stubs.docEl.classList.remove).to.be.calledWith('overflow-y');
+            expect(presentation.docEl).to.not.have.class('overflow-x');
+            expect(presentation.docEl).to.not.have.class('overflow-y');
             expect(result).to.equal(false);
         });
 
-        it('should add both overflow classes and return true if there is y overflow', () => {
-            stubs.docEl.clientWidth = 100;
-            stubs.docEl.clientHeight = 100;
-            stubs.docEl.firstChild.firstChild.clientHeight = 500;
+        it('should add overflow-y class and return true if there is y overflow', () => {
+            stubs.page1.style.height = '500px';
+            presentation.docEl.style.width = '100px';
+            presentation.docEl.style.height = '100px';
 
             const result = presentation.checkOverflow();
-            expect(stubs.docEl.classList.add).to.be.calledWith('overflow');
-            expect(stubs.docEl.classList.add).to.be.calledWith('overflow-y');
+            expect(presentation.docEl).to.have.class('overflow-y');
             expect(result).to.equal(true);
         });
 
-        it('should remove the y overflow class, add the overflow class, and return true if there is x overflow', () => {
-            stubs.docEl.clientWidth = 100;
-            stubs.docEl.clientHeight = 100;
-            stubs.docEl.firstChild.firstChild.clientWidth = 500;
+        it('should add the overflow-x class and return true if there is x overflow', () => {
+            stubs.page1.style.width = '500px';
+            presentation.docEl.style.width = '100px';
+            presentation.docEl.style.height = '100px';
 
             const result = presentation.checkOverflow();
-            expect(stubs.docEl.classList.add).to.be.calledWith('overflow');
-            expect(stubs.docEl.classList.remove).to.be.calledWith('overflow-y');
+            expect(presentation.docEl).to.have.class('overflow-x');
+            expect(presentation.docEl).to.not.have.class('overflow-y');
             expect(result).to.equal(true);
         });
     });
@@ -202,27 +202,12 @@ describe('lib/viewers/doc/Presentation', () => {
         });
 
         it('should overwrite the scrollPageIntoView method', () => {
-            const setPageStub = sandbox.stub(presentation, 'setPage');
-            const page = {
-                pageNumber: 3
-            };
+            const stub = sandbox.stub(presentation, 'overwritePdfViewerBehavior');
             Object.defineProperty(DocBase.prototype, 'initViewer', { value: sandbox.stub() });
 
             presentation.initViewer('url');
-            presentation.pdfViewer.scrollPageIntoView(page);
 
-            expect(setPageStub).to.be.calledWith(page.pageNumber);
-        });
-
-        it('should set the page to 1 if a number is not passed in', () => {
-            const setPageStub = sandbox.stub(presentation, 'setPage');
-            const page = 'page';
-            Object.defineProperty(DocBase.prototype, 'initViewer', { value: sandbox.stub() });
-
-            presentation.initViewer('url');
-            presentation.pdfViewer.scrollPageIntoView(page);
-
-            expect(setPageStub).to.be.calledWith(1);
+            expect(stub).to.be.called;
         });
     });
 
@@ -349,22 +334,30 @@ describe('lib/viewers/doc/Presentation', () => {
 
     describe('pagesInitHandler()', () => {
         beforeEach(() => {
-            const page1 = document.createElement('div');
-            page1.setAttribute('data-page-number', '1');
-            page1.className = 'page';
+            stubs.setPage = sandbox.stub(presentation, 'setPage');
+            stubs.page1 = document.createElement('div');
+            stubs.page1.setAttribute('data-page-number', '1');
+            stubs.page1.className = 'page';
 
-            const page2 = document.createElement('div');
-            page2.setAttribute('data-page-number', '2');
-            page2.className = 'page';
-            document.querySelector('.pdfViewer').appendChild(page1);
-            document.querySelector('.pdfViewer').appendChild(page2);
-            stubs.page2Add = sandbox.stub(page2.classList, 'add');
+            stubs.page2 = document.createElement('div');
+            stubs.page2.setAttribute('data-page-number', '2');
+            stubs.page2.className = 'page';
+
+            stubs.page3 = document.createElement('div');
+            stubs.page3.setAttribute('data-page-number', '3');
+            stubs.page3.className = 'page';
+
+            document.querySelector('.pdfViewer').appendChild(stubs.page1);
+            document.querySelector('.pdfViewer').appendChild(stubs.page2);
+            document.querySelector('.pdfViewer').appendChild(stubs.page3);
         });
 
         it('should hide all pages except for the first one', () => {
             presentation.pagesinitHandler();
 
-            expect(stubs.page2Add).to.be.calledOnce;
+            expect(stubs.page1).to.not.have.class(CLASS_INVISIBLE);
+            expect(stubs.page2).to.have.class(CLASS_INVISIBLE);
+            expect(stubs.page3).to.have.class(CLASS_INVISIBLE);
         });
     });
 
@@ -426,6 +419,40 @@ describe('lib/viewers/doc/Presentation', () => {
             const result = presentation.wheelHandler();
 
             expect(result).to.be.truthy;
+        });
+    });
+
+
+    describe('overwritePdfViewerBehavior()', () => {
+        it('should overwrite the scrollPageIntoView method', () => {
+            const setPageStub = sandbox.stub(presentation, 'setPage');
+            const page = {
+                pageNumber: 3
+            };
+            Object.defineProperty(DocBase.prototype, 'initViewer', { value: sandbox.stub() });
+
+            presentation.overwritePdfViewerBehavior();
+            presentation.pdfViewer.scrollPageIntoView(page);
+
+            expect(setPageStub).to.be.calledWith(page.pageNumber);
+        });
+
+        it('should overwrite the _getVisiblePages method', () => {
+            presentation.pdfViewer = {
+                _pages: {
+                    0: {
+                        id: 1,
+                        view: 'pageObj'
+                    }
+                },
+                _currentPageNumber: 1
+            };
+
+            presentation.overwritePdfViewerBehavior();
+            const result = presentation.pdfViewer._getVisiblePages();
+
+            expect(result.first.id).to.equal(1);
+            expect(result.last.id).to.equal(1);
         });
     });
 });
