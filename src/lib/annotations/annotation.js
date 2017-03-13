@@ -1,8 +1,3 @@
-/**
- * @fileoverview Annotation class that represents an annotation.
- * @author tjin
- */
-
 import autobind from 'autobind-decorator';
 
 @autobind

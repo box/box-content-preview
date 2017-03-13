@@ -1,10 +1,3 @@
-/**
- * @fileoverview The highlight dialog class manages a simple dialog for
- * highlight threads that contains either an add or delete button and
- * broadcasts events.
- * @author tjin
- */
-
 import autobind from 'autobind-decorator';
 import AnnotationDialog from '../annotation-dialog';
 import * as annotatorUtil from '../annotator-util';

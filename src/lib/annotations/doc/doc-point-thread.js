@@ -1,9 +1,3 @@
-/**
- * @fileoverview The doc point thread class manages a document's point
- * annotation indicator element and dialogs for creating/deleting annotations.
- * @author tjin
- */
-
 import autobind from 'autobind-decorator';
 import AnnotationThread from '../annotation-thread';
 import DocPointDialog from './doc-point-dialog';

@@ -1,12 +1,3 @@
-/**
- * @fileoverview The annotation dialog class manages a dialog's HTML, event
- * handlers, and broadcasting annotations CRUD events.
- *
- * The following abstract methods must be implemented by a child class:
- * position() - position the dialog on the file using the location property
- * @author tjin
- */
-
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import * as annotatorUtil from './annotator-util';

@@ -1,9 +1,3 @@
-/**
- * @fileoverview The image point dialog class manages a image annotation
- * dialog's HTML, event handlers, and events.
- * @author spramod
- */
-
 import autobind from 'autobind-decorator';
 import AnnotationDialog from '../annotation-dialog';
 import * as annotatorUtil from '../annotator-util';

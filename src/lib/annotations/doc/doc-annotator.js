@@ -1,9 +1,3 @@
-/**
- * @fileoverview Document annotator class. Extends base annotator class
- * with highlight annotations.
- * @author tjin
- */
-
 import rangy from 'rangy';
 /* eslint-disable no-unused-vars */
 // Workaround for rangy npm issue: https://github.com/timdown/rangy/issues/342

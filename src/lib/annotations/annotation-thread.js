@@ -1,14 +1,3 @@
-/**
- * @fileoverview Base annotation thread class. This implements a 'thread' with
- * annotations that manages an indicator element (point icon in the case of
- * point annotations) and dialogs for creating/deleting annotations.
- *
- * The following abstract methods must be implemented by a child class:
- * show() - show the annotation indicator
- * createDialog() - create appropriate annotation dialog
- * @author tjin
- */
-
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import Annotation from './annotation';

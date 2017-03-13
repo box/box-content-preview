@@ -1,8 +1,3 @@
-/**
- * @fileoverview Manages notification popups
- * @author tjin
- */
-
 import { CLASS_HIDDEN } from './constants';
 
 const HIDE_TIMEOUT_MS = 5000; // 5s

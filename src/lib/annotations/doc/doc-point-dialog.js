@@ -1,9 +1,3 @@
-/**
- * @fileoverview The doc point dialog class manages a document annotation
- * dialog's HTML, event handlers, and events.
- * @author tjin
- */
-
 import autobind from 'autobind-decorator';
 import AnnotationDialog from '../annotation-dialog';
 import * as annotatorUtil from '../annotator-util';

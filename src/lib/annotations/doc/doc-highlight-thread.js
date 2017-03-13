@@ -1,9 +1,3 @@
-/**
- * @fileoverview Highlight thread. This implements an annotation thread that
- * contains a single highlight annotation.
- * @author tjin
- */
-
 import autobind from 'autobind-decorator';
 import AnnotationThread from '../annotation-thread';
 import DocHighlightDialog from './doc-highlight-dialog';

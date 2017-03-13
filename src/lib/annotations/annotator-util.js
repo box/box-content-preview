@@ -1,8 +1,3 @@
-/**
- * @fileoverview Annotator utility functions.
- * @author tjin
- */
-
 import { CLASS_ACTIVE, CLASS_HIDDEN, CLASS_INVISIBLE } from '../constants';
 import * as constants from './annotation-constants';
 

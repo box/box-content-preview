@@ -1,8 +1,3 @@
-/**
- * @fileoverview Manages modal popups
- * @author jpress
- */
-
 import { CLASS_HIDDEN } from './constants';
 import {
     ICON_CLOSE

@@ -1,8 +1,3 @@
-/**
- * @fileoverview Document annotator utility functions.
- * @author tjin
- */
-
 import * as annotatorUtil from '../annotator-util';
 
 const PREVIEW_PRESENTATION_CLASS = 'bp-doc-presentation';

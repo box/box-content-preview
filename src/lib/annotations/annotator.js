@@ -1,14 +1,3 @@
-/**
- * @fileoverview Base annotator class that implements point annotations.
- * Viewer-specific annotations should extend this for other annotation types
- * or to modify point annotation behavior.
- *
- * The following abstract methods must be implemented by a child class:
- * getLocationFromEvent() - get annotation location from DOM event
- * createAnnotationThread() - create and cache appropriate annotation thread
- * @author tjin
- */
-
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import Notification from '../Notification';

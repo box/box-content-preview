@@ -1,9 +1,3 @@
-/**
- * @fileoverview Annotations service that performs annotations CRUD using the
- * Box content API.
- * @author tjin
- */
-
 import EventEmitter from 'events';
 import fetch from 'isomorphic-fetch';
 import autobind from 'autobind-decorator';

@@ -1,9 +1,3 @@
-/**
- * @fileoverview The image point thread class manages a image's point
- * annotation indicator element and dialogs for creating/deleting annotations.
- * @author spramod
- */
-
 import autobind from 'autobind-decorator';
 import AnnotationThread from '../annotation-thread';
 import ImagePointDialog from './image-point-dialog';

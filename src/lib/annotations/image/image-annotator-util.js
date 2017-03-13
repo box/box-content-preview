@@ -1,8 +1,3 @@
-/**
- * @fileoverview Image annotator utility functions.
- * @author spramod
- */
-
 import * as annotatorUtil from '../annotator-util';
 
 const IMAGE_PADDING = 15;

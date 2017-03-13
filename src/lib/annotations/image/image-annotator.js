@@ -1,8 +1,3 @@
-/**
- * @fileoverview Image annotator class. Extends base annotator class
- * @author spramod
- */
-
 import autobind from 'autobind-decorator';
 import Annotator from '../annotator';
 import ImagePointThread from './image-point-thread';
