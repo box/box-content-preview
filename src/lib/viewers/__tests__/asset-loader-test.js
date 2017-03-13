@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import AssetLoader from '../asset-loader';
+import AssetLoader from '../AssetLoader';
 
 let loader;
 const sandbox = sinon.sandbox.create();

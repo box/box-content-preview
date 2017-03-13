@@ -23,7 +23,7 @@
                         "src/lib/viewers/box3d/model3d/model3d-renderer.js",
                         "src/lib/viewers/box3d/model3d/model3d-settings-pullup.js",
                         "src/lib/viewers/box3d/**/scene-entities.js",
-                        "src/lib/viewers/doc/doc-preloader.js"
+                        "src/lib/viewers/doc/DocPreloader.js"
                     ]
                 }],
                 ["babel-plugin-transform-require-ignore", { "extensions": [".scss"] }]

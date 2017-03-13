@@ -1,5 +1,5 @@
 import autobind from 'autobind-decorator';
-import Base from '../base';
+import Base from '../Base';
 import fullscreen from '../../Fullscreen';
 import Box3DControls from './box3d-controls';
 import Box3DRenderer from './box3d-renderer';

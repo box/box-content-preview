@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
 import debounce from 'lodash.debounce';
-import Base from '../base';
+import Base from '../Base';
 import cache from '../../Cache';
 import Browser from '../../Browser';
 import MediaControls from './media-controls';

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import EventEmitter from 'events';
-import Base from '../base';
+import Base from '../Base';
 import Browser from '../../Browser';
 import RepStatus from '../../RepStatus';
 import fullscreen from '../../Fullscreen';

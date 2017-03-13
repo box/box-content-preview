@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import Image from '../image';
+import Image from '../Image';
 import Browser from '../../../Browser';
 import * as util from '../../../util';
 
@@ -13,14 +13,14 @@ let stubs = {};
 let containerEl;
 let clock;
 
-describe('image.js', () => {
+describe('lib/viewers/image/Image', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
         clock = sinon.useFakeTimers();
-        fixture.load('viewers/image/__tests__/image-test.html');
+        fixture.load('viewers/image/__tests__/Image-test.html');
         containerEl = document.querySelector('.container');
         image = new Image({
             container: containerEl,

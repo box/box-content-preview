@@ -1,4 +1,4 @@
-import AssetLoader from '../asset-loader';
+import AssetLoader from '../AssetLoader';
 import { requires360Viewer, replacePlaceholders } from '../../util';
 import MP3 from './mp3';
 import MP4 from './mp4';

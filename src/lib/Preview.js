@@ -10,7 +10,7 @@ import Logger from './Logger';
 import loaders from './loaders';
 import cache from './Cache';
 import ProgressBar from './ProgressBar';
-import PreviewError from './viewers/error/error';
+import PreviewError from './viewers/error/PreviewError';
 import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
 import getTokens from './tokens';
 import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid, cacheFile } from './file';

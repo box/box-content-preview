@@ -2,7 +2,7 @@
 import Box3D from '../box3d';
 import Box3DControls from '../box3d-controls';
 import Box3DRenderer from '../box3d-renderer';
-import Base from '../../base';
+import Base from '../../Base';
 import Browser from '../../../Browser';
 import fullscreen from '../../../Fullscreen';
 import * as util from '../../../util';

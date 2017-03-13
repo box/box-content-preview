@@ -1,0 +1,8 @@
+@import '../../annotations/annotator';
+@import 'doc-base';
+@import './DocFindBar';
+
+.bp-doc-document {
+    // Force scrollbar to be visible to standardize page width
+    overflow-y: scroll;
+}

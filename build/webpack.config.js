@@ -7,6 +7,7 @@ const path = require('path');
 const commonConfig = require('./webpack.common.config');
 const RsyncPlugin = require('./RsyncPlugin');
 const UglifyJsPlugin = require('webpack').optimize.UglifyJsPlugin;
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const BannerPlugin = require('webpack').BannerPlugin;
 const version = isRelease ? require('../package.json').version : 'dev';
 
@@ -76,6 +77,13 @@ function updateConfig(conf, language, index) {
             },
             comments: false, // Remove comments
             sourceMap: false
+        }));
+
+        // Re-optimize CSS after extract text so we can remove duplicate rules
+        config.plugins.push(new OptimizeCssAssetsPlugin({
+            cssProcessorOptions: {
+                safe: true
+            }
         }));
 
         // Add license message to top of code
