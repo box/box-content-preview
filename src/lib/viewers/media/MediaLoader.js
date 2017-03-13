@@ -1,8 +1,8 @@
 import AssetLoader from '../AssetLoader';
 import { requires360Viewer, replacePlaceholders } from '../../util';
-import MP3 from './mp3';
-import MP4 from './mp4';
-import Dash from './dash';
+import MP3 from './MP3';
+import MP4 from './MP4';
+import Dash from './Dash';
 import { ORIGINAL_REP_NAME } from '../../constants';
 
 const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv'];

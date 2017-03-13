@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
-import MediaControls from '../media-controls';
+import MediaControls from '../MediaControls';
 import fullscreen from '../../../Fullscreen';
-import Settings from '../settings';
-import Scrubber from '../scrubber';
+import Settings from '../Settings';
+import Scrubber from '../Scrubber';
 import * as util from '../../../util';
 
 let mediaControls;
@@ -15,14 +15,14 @@ const CRAWLER = '<div class="bp-media-crawler-wrapper"><div class="bp-crawler"><
 const sandbox = sinon.sandbox.create();
 
 
-describe('Media Controls', () => {
+describe('lib/viewers/media/MediaControls', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
         stubs = {};
-        fixture.load('viewers/media/__tests__/media-controls-test.html');
+        fixture.load('viewers/media/__tests__/MediaControls-test.html');
     });
 
     afterEach(() => {

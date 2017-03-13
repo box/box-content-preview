@@ -1,16 +1,16 @@
 /* eslint-disable no-unused-expressions */
-import MP4 from '../mp4';
+import MP4 from '../MP4';
 
 const sandbox = sinon.sandbox.create();
 let mp4;
 
-describe('lib/media/mp4', () => {
+describe('lib/viewers/media/MP4', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/mp4-test.html');
+        fixture.load('viewers/media/__tests__/MP4-test.html');
         const containerEl = document.querySelector('.container');
         mp4 = new MP4({
             container: containerEl,

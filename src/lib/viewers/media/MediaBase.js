@@ -3,7 +3,7 @@ import debounce from 'lodash.debounce';
 import Base from '../Base';
 import cache from '../../Cache';
 import Browser from '../../Browser';
-import MediaControls from './media-controls';
+import MediaControls from './MediaControls';
 import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
 
 const CSS_CLASS_MEDIA = 'bp-media';

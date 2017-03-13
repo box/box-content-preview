@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
-import MediaBase from './media-base';
+import MediaBase from './MediaBase';
 import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_DARK } from '../../constants';
 import { ICON_PLAY_LARGE } from '../../icons/icons';
 

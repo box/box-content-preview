@@ -1,18 +1,18 @@
 /* eslint-disable no-unused-expressions */
-import Scrubber from '../scrubber';
+import Scrubber from '../Scrubber';
 
 let scrubber;
 let stubs = {};
 const CLASS_SCRUBBER_HOVER = 'bp-media-scrubber-hover';
 const sandbox = sinon.sandbox.create();
 
-describe('scrubber', () => {
+describe('lib/viewers/media/Scrubber', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/scrubber-test.html');
+        fixture.load('viewers/media/__tests__/Scrubber-test.html');
         const containerEl = document.querySelector('.container');
         scrubber = new Scrubber(containerEl, '');
     });

@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
-import MediaBase from './media-base';
-import './mp3.scss';
+import MediaBase from './MediaBase';
+import './MP3.scss';
 
 const CSS_CLASS_MP3 = 'bp-media-mp3';
 

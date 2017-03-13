@@ -1,10 +1,10 @@
 import autobind from 'autobind-decorator';
-import VideoBase from './video-base';
+import VideoBase from './VideoBase';
 import cache from '../../Cache';
 import fullscreen from '../../Fullscreen';
 import { get } from '../../util';
 import { getRepresentation } from '../../file';
-import './dash.scss';
+import './Dash.scss';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';

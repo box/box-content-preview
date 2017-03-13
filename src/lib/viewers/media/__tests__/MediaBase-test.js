@@ -1,20 +1,20 @@
 /* eslint-disable no-unused-expressions */
 import Browser from '../../../Browser';
-import MediaBase from '../media-base';
-import MediaControls from '../media-controls';
+import MediaBase from '../MediaBase';
+import MediaControls from '../MediaControls';
 import cache from '../../../Cache';
 
 let media;
 let stubs;
 const sandbox = sinon.sandbox.create();
 
-describe('lib/viewers/media/media-base', () => {
+describe('lib/viewers/media/MediaBase', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/media-base-test.html');
+        fixture.load('viewers/media/__tests__/MediaBase-test.html');
         stubs = {};
         media = new MediaBase({
             file: {

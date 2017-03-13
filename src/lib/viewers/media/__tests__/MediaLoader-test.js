@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-expressions */
-import MediaLoader from '../media-loader';
+import MediaLoader from '../MediaLoader';
 import * as util from '../../../util';
 
 const sandbox = sinon.sandbox.create();
 
-describe('media-loader', () => {
+describe('lib/viewers/media/MediaLoader', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
     });

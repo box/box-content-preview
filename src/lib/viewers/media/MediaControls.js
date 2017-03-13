@@ -1,8 +1,8 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
-import controlsTemplate from './media-controls.html';
-import Scrubber from './scrubber';
-import Settings from './settings';
+import controlsTemplate from './MediaControls.html';
+import Scrubber from './Scrubber';
+import Settings from './Settings';
 import fullscreen from '../../Fullscreen';
 import { insertTemplate } from '../../util';
 

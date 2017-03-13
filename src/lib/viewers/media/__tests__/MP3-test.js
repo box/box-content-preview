@@ -1,17 +1,17 @@
 /* eslint-disable no-unused-expressions */
-import MP3 from '../mp3';
-import MediaBase from '../media-base';
+import MP3 from '../MP3';
+import MediaBase from '../MediaBase';
 
 const sandbox = sinon.sandbox.create();
 let mp3;
 
-describe('lib/viewers/media/mp3', () => {
+describe('lib/viewers/media/MP3', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/mp3-test.html');
+        fixture.load('viewers/media/__tests__/MP3-test.html');
         const containerEl = document.querySelector('.container');
         mp3 = new MP3({
             container: containerEl,

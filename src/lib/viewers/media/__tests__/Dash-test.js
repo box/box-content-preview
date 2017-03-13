@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
-import Dash from '../dash';
-import VideoBase from '../video-base';
+import Dash from '../Dash';
+import VideoBase from '../VideoBase';
 import cache from '../../../Cache';
 import fullscreen from '../../../Fullscreen';
 import * as util from '../../../util';
@@ -13,13 +13,13 @@ const CSS_CLASS_HD = 'bp-media-controls-is-hd';
 
 const sandbox = sinon.sandbox.create();
 
-describe('dash', () => {
+describe('lib/viewers/media/Dash', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/dash-test.html');
+        fixture.load('viewers/media/__tests__/Dash-test.html');
         const containerEl = document.querySelector('.container');
 
         dash = new Dash({

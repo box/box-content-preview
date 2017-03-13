@@ -261,7 +261,7 @@ Install the following plugins in your preferred editor
 * `npm run build` to generate resource bundles and JS webpack bundles.
 * `npm run watch` to only generate JS webpack bundles on file changes.
 * `npm run test` launches karma tests with PhantomJS.
-* `npm run test -- --src=PATH/TO/SRC/FILENAME` launches test only for `src/lib/PATH/TO/SRC/__tests__/FILENAME-test.js` instead of all tests. For example, `npm run test -- --src=viewers/media/media-base` launches tests for `src/lib/viewers/media/__tests__/media-base-test.js`
+* `npm run test -- --src=PATH/TO/SRC/FILENAME` launches test only for `src/lib/PATH/TO/SRC/__tests__/FILENAME-test.js` instead of all tests. For example, `npm run test -- --src=viewers/media/MediaBase` launches tests for `src/lib/viewers/media/__tests__/MediaBase-test.js`
 * `npm run debug` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
 * `npm run debug -- --src=path/to/src/FILENAME` launches debugging for `src/lib/path/to/src/__tests__/FILENAME-test.js` instead of all tests. Open the URL mentioned in the console.
 

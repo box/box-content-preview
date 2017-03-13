@@ -1,17 +1,17 @@
 /* eslint-disable no-unused-expressions */
-import Settings from '../settings';
+import Settings from '../Settings';
 import cache from '../../../Cache';
 
 let settings;
 const sandbox = sinon.sandbox.create();
 
-describe('settings', () => {
+describe('lib/viewers/media/Settings', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/settings-test.html');
+        fixture.load('viewers/media/__tests__/Settings-test.html');
         const containerEl = document.querySelector('.container');
         settings = new Settings(containerEl);
     });

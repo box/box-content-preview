@@ -1,17 +1,17 @@
 /* eslint-disable no-unused-expressions */
-import VideoBase from '../video-base';
-import MediaBase from '../media-base';
+import VideoBase from '../VideoBase';
+import MediaBase from '../MediaBase';
 
 let videoBase;
 const sandbox = sinon.sandbox.create();
 
-describe('lib/viewers/media/video-base', () => {
+describe('lib/viewers/media/VideoBase', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/video-base-test.html');
+        fixture.load('viewers/media/__tests__/VideoBase-test.html');
         videoBase = new VideoBase({
             file: {
                 id: 1
