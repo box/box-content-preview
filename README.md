@@ -1,11 +1,11 @@
 ![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg)
 ![NPM version](https://img.shields.io/badge/npm-v0.108.0-blue.svg)
 
-[Box Preview](https://docs.box.com/docs/box-preview)
-====================================================
-The Box Preview Javascript library allows developers to easily embed high quality and interactive previews of Box files in their desktop or mobile web application. The library fetches information about the file and its converted representations through the Box API, chooses the appropriate viewer for the file type, dynamically loads the necessary static assets and file representations, and finally renders the file. Box Preview also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
+[Box Content Preview](https://docs.box.com/docs/box-content-preview)
+====================================================================
+The Box Content Preview Javascript UI Kit allows developers to easily embed high quality and interactive previews of Box files in their desktop or mobile web application. The library fetches information about the file and its converted representations through the Box API, chooses the appropriate viewer for the file type, dynamically loads the necessary static assets and file representations, and finally renders the file. Box Content Preview also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
 
-This library powers Preview in the main Box web application as well as the 'expiring embed' Box API endpoint.
+This UI Kit powers Preview in the main Box web application as well as the 'expiring embed' Box API endpoint.
 
 Browser Support
 ---------------
@@ -30,18 +30,18 @@ To use a different locale, replace `en-US` in the URLs above with any of the fol
 
 Supported File Types
 --------------------
-Box Preview supports 100+ file types, including most document and image formats, HD video, 3D models, 360-degress images, and 360-degree videos. You can find the full list of supported file types at https://community.box.com/t5/Managing-Your-Content/What-file-types-and-fonts-are-supported-by-Box-s-Content-Preview/ta-p/327#FileTypesSupported.
+Box Content Preview supports 100+ file types, including most document and image formats, HD video, 3D models, 360-degress images, and 360-degree videos. You can find the full list of supported file types at https://community.box.com/t5/Managing-Your-Content/What-file-types-and-fonts-are-supported-by-Box-s-Content-Preview/ta-p/327#FileTypesSupported.
 
 Usage
 -----
-You can self-host the Box Preview and Promise libraries or reference the versions hosted on the Box CDN.
+You can self-host the Box Content Preview UI Kit and Promise library or reference the versions hosted on the Box CDN.
 
 ```html
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
     <meta charset="utf-8" />
-    <title>Box Preview Demo</title>
+    <title>Box Content Preview Demo</title>
 
     <!-- Include Promise library if using Internet Explorer 11 -->
     <script src="https://cdn01.boxcdn.net/js/vendor/bluebird/bluebird-core-some-any-cancel-settle-2.9.34.js"></script>
@@ -113,7 +113,7 @@ Box.Preview.show(fileId, accessToken, {
 
 Access Token
 ------------
-Box Preview needs an access token to make Box API calls. You can either get an access token from the token endpoint (https://docs.box.com/reference#token) or generate a developer token on your application management page (https://blog.box.com/blog/introducing-developer-tokens/).
+Box Content Preview needs an access token to make Box API calls. You can either get an access token from the token endpoint (https://docs.box.com/reference#token) or generate a developer token on your application management page (https://blog.box.com/blog/introducing-developer-tokens/).
 
 Viewers
 -------
@@ -239,14 +239,15 @@ Box.Preview.on('rotate', (data) => {
 
 Development Setup
 -----------------
-1. Install Node v6.10.0 or higher and NPM v3.10.10 or higher.
+1. Install Node v6.10.0 or higher.
+2. Install yarn package manager `https://yarnpkg.com/en/docs/install`. Alternatively, you can replace any `yarn` command with `npm`.
 2. Fork the upstream repo `https://github.com/box/box-content-preview`.
 3. Clone your fork locally `git clone git@github.com:[YOUR GITHUB USERNAME]/box-content-preview.git`.
 4. Navigate to the cloned folder `cd box-content-preview`
 5. Add the upstream repo to your remotes `git remote add upstream git@github.com:box/box-content-preview.git`.
 6. Verify your remotes are properly set up `git remote -v`. You should pull updates from the Box repo `upstream` and push changes to your fork `origin`.
-7. Install dependencies `npm install`
-8. Test your first build! `npm run build`
+7. Install dependencies `yarn install`
+8. Test your first build! `yarn run build`
 
 While Developing
 ----------------
@@ -256,14 +257,14 @@ Install the following plugins in your preferred editor
 * ESLint (Javascript linting)
 * Stylelint (CSS linting)
 
-### NPM commands
+### Yarn commands
 
-* `npm run build` to generate resource bundles and JS webpack bundles.
-* `npm run watch` to only generate JS webpack bundles on file changes.
-* `npm run test` launches karma tests with PhantomJS.
-* `npm run test -- --src=PATH/TO/SRC/FILENAME` launches test only for `src/lib/PATH/TO/SRC/__tests__/FILENAME-test.js` instead of all tests. For example, `npm run test -- --src=viewers/media/MediaBase` launches tests for `src/lib/viewers/media/__tests__/MediaBase-test.js`
-* `npm run debug` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
-* `npm run debug -- --src=path/to/src/FILENAME` launches debugging for `src/lib/path/to/src/__tests__/FILENAME-test.js` instead of all tests. Open the URL mentioned in the console.
+* `yarn run build` to generate resource bundles and JS webpack bundles.
+* `yarn run watch` to only generate JS webpack bundles on file changes.
+* `yarn run test` launches karma tests with PhantomJS.
+* `yarn run test -- --src=PATH/TO/SRC/FILENAME` launches test only for `src/lib/PATH/TO/SRC/__tests__/FILENAME-test.js` instead of all tests. For example, `yarn run test -- --src=viewers/media/MediaBase` launches tests for `src/lib/viewers/media/__tests__/MediaBase-test.js`. This also works for directories, e.g. `yarn run test -- --src=viewers/doc/`.
+* `yarn run debug` launches karma tests with PhantomJS for debugging. Open the URL mentioned in the console.
+* `yarn run debug -- --src=path/to/src/FILENAME` launches debugging for `src/lib/path/to/src/__tests__/FILENAME-test.js` instead of all tests. Open the URL mentioned in the console.
 
 For more script commands see `package.json`. Test coverage reports are available under reports/coverage.
 

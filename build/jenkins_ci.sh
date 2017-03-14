@@ -2,11 +2,19 @@
 
 export NODE_PATH=$NODE_PATH:./node_modules
 
+move_reports() {
+    echo "--------------------------------------------------------------------------"
+    echo "Moving test reports to ./reports/coverage.xml and ./reports/results.xml"
+    echo "--------------------------------------------------------------------------"
+    mv ./reports/coverage/cobertura/*/cobertura-coverage.xml ./reports/cobertura.xml;
+    mv ./reports/coverage/junit/*/junit.xml ./reports/junit.xml;
+}
+
 # Clean node modules, re-install dependencies, and build assets
 build_assets() {
 
     echo "-------------------------------------------------------------------------------------------------"
-    echo "Installing node modules from http://maven-vip.dev.box.net:8150/nexus/content/groups/npm-all/"
+    echo "Installing node modules"
     echo "-------------------------------------------------------------------------------------------------"
     if npm install; then
         echo "----------------------------------------------------"
@@ -28,10 +36,12 @@ build_assets() {
         echo "----------------------------------------------------"
         echo "Built CI assets for version" $VERSION
         echo "----------------------------------------------------"
+        move_reports
     else
         echo "----------------------------------------------------"
         echo "Failed to build CI assets!"
         echo "----------------------------------------------------"
+        move_reports
         exit 1;
     fi
 }

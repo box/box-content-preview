@@ -7,6 +7,14 @@ const getTestFile = (src) => {
             'src/lib/**/*-test.html'
         ];
     }
+
+    if (src.lastIndexOf('/') === src.length - 1) {
+        return [
+            `src/lib/${src}**/*-test.js`,
+            `src/lib/${src}**/*-test.html`
+        ];
+    }
+
     const frags = src.split('/');
     const fileName = frags[frags.length - 1];
     if (!fileName) {
@@ -46,10 +54,19 @@ module.exports = (config) => config.set({
         reporters: [
             {
                 type: 'html',
-                dir: 'reports/coverage'
+                dir: 'reports/coverage/html'
+            },
+            {
+                type: 'cobertura',
+                dir: 'reports/coverage/cobertura'
             },
             { type: 'text' }
         ]
+    },
+
+    junitReporter: {
+        outputDir: 'reports/coverage/junit',
+        outputFile: 'junit.xml'
     },
 
     frameworks: [
@@ -82,7 +99,7 @@ module.exports = (config) => config.set({
 
     port: 9876,
 
-    reporters: ['mocha', 'coverage'],
+    reporters: ['mocha', 'coverage', 'junit'],
 
     logLevel: config.LOG_INFO,
 

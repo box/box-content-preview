@@ -3,6 +3,13 @@
 export NODE_PATH=$NODE_PATH:./node_modules
 export PATH=/box/www/devtools/bin:$PATH  # Add devtools to PATH so rpm-to-artifactory will work
 
+move_reports() {
+    echo "--------------------------------------------------------------------------"
+    echo "Moving test reports to ./reports/coverage.xml and ./reports/results.xml"
+    echo "--------------------------------------------------------------------------"
+    mv ./reports/coverage/cobertura/*/cobertura-coverage.xml ./reports/cobertura.xml;
+    mv ./reports/coverage/junit/*/junit.xml ./reports/junit.xml;
+}
 
 # Asset package name
 KIND="content-experience-assets"
@@ -126,10 +133,12 @@ build_assets() {
         echo "----------------------------------------------------"
         echo "Built release assets for version" $VERSION
         echo "----------------------------------------------------"
+        move_reports
     else
         echo "----------------------------------------------------"
         echo "Failed to build release assets!"
         echo "----------------------------------------------------"
+        move_reports
         exit 1;
     fi
 }
