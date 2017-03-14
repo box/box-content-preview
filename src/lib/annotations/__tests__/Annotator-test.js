@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
-import Annotator from '../annotator';
+import Annotator from '../Annotator';
 import * as constants from '../annotation-constants';
-import AnnotationService from '../annotation-service';
+import AnnotationService from '../AnnotationService';
 
 let annotator;
 let stubs = {};
@@ -13,7 +13,7 @@ describe('annotator', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/__tests__/annotator-test.html');
+        fixture.load('annotations/__tests__/Annotator-test.html');
 
         annotator = new Annotator({
             annotatedElement: document.querySelector('.annotated-element'),

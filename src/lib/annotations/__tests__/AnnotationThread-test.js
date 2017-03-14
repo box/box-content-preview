@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
-import AnnotationThread from '../annotation-thread';
-import Annotation from '../annotation';
+import AnnotationThread from '../AnnotationThread';
+import Annotation from '../Annotation';
 import * as annotatorUtil from '../annotator-util';
 import * as constants from '../annotation-constants';
 import { CLASS_HIDDEN } from '../../constants';
@@ -15,7 +15,7 @@ describe('annotation-thread', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/__tests__/annotation-thread-test.html');
+        fixture.load('annotations/__tests__/AnnotationThread-test.html');
 
         thread = new AnnotationThread({
             annotatedElement: document.querySelector('.annotated-element'),

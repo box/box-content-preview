@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
-import AnnotationThread from '../annotation-thread';
-import DocPointDialog from './doc-point-dialog';
+import AnnotationThread from '../AnnotationThread';
+import DocPointDialog from './DocPointDialog';
 import * as annotatorUtil from '../annotator-util';
 import * as constants from '../annotation-constants';
 import * as docAnnotatorUtil from './doc-annotator-util';

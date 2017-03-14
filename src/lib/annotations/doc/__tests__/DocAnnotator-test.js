@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-expressions */
 import rangy from 'rangy';
-import Annotator from '../../annotator';
-import Annotation from '../../annotation';
-import AnnotationThread from '../../annotation-thread';
+import Annotator from '../../Annotator';
+import Annotation from '../../Annotation';
+import AnnotationThread from '../../AnnotationThread';
 import Browser from '../../../Browser';
-import DocAnnotator from '../doc-annotator';
-import DocHighlightThread from '../doc-highlight-thread';
-import DocPointThread from '../doc-point-thread';
+import DocAnnotator from '../DocAnnotator';
+import DocHighlightThread from '../DocHighlightThread';
+import DocPointThread from '../DocPointThread';
 import * as annotatorUtil from '../../annotator-util';
 import * as docAnnotatorUtil from '../doc-annotator-util';
 import * as constants from '../../annotation-constants';
@@ -22,7 +22,7 @@ describe('doc-annotator', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/doc/__tests__/doc-annotator-test.html');
+        fixture.load('annotations/doc/__tests__/DocAnnotator-test.html');
 
         sandbox.stub(Browser, 'isMobile').returns(false);
 

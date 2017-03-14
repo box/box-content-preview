@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import fetch from 'isomorphic-fetch';
 import autobind from 'autobind-decorator';
-import Annotation from './annotation';
+import Annotation from './Annotation';
 import { getHeaders } from '../util';
 
 const ANONYMOUS_USER = {

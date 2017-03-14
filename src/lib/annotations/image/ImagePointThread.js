@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
-import AnnotationThread from '../annotation-thread';
-import ImagePointDialog from './image-point-dialog';
+import AnnotationThread from '../AnnotationThread';
+import ImagePointDialog from './ImagePointDialog';
 import * as annotatorUtil from '../annotator-util';
 import * as imageAnnotatorUtil from './image-annotator-util';
 import * as constants from '../annotation-constants';

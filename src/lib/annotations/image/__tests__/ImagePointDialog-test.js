@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import ImagePointDialog from '../image-point-dialog';
+import ImagePointDialog from '../ImagePointDialog';
 import * as annotatorUtil from '../../annotator-util';
 import * as imageAnnotatorUtil from '../image-annotator-util';
 
@@ -12,7 +12,7 @@ describe('image-point-dialog', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/image/__tests__/image-point-dialog-test.html');
+        fixture.load('annotations/image/__tests__/ImagePointDialog-test.html');
 
         pointDialog = new ImagePointDialog({
             annotatedElement: document.querySelector('.annotated-element'),

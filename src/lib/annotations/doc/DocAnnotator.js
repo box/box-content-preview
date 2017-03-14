@@ -7,10 +7,10 @@ import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 /* eslint-enable no-unused-vars */
 import throttle from 'lodash.throttle';
 import autobind from 'autobind-decorator';
-import Annotator from '../annotator';
+import Annotator from '../Annotator';
 import Browser from '../../Browser';
-import DocHighlightThread from './doc-highlight-thread';
-import DocPointThread from './doc-point-thread';
+import DocHighlightThread from './DocHighlightThread';
+import DocPointThread from './DocPointThread';
 import * as annotatorUtil from '../annotator-util';
 import * as constants from '../annotation-constants';
 import * as docAnnotatorUtil from './doc-annotator-util';

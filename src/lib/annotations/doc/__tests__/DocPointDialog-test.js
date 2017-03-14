@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import DocPointDialog from '../doc-point-dialog';
+import DocPointDialog from '../DocPointDialog';
 import * as annotatorUtil from '../../annotator-util';
 import * as docAnnotatorUtil from '../doc-annotator-util';
 
@@ -12,7 +12,7 @@ describe('doc-point-dialog', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/doc/__tests__/doc-point-dialog-test.html');
+        fixture.load('annotations/doc/__tests__/DocPointDialog-test.html');
 
         pointDialog = new DocPointDialog({
             annotatedElement: document.querySelector('.annotated-element'),

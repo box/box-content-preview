@@ -1,5 +1,5 @@
 import autobind from 'autobind-decorator';
-import AnnotationDialog from '../annotation-dialog';
+import AnnotationDialog from '../AnnotationDialog';
 import * as annotatorUtil from '../annotator-util';
 import * as imageAnnotatorUtil from './image-annotator-util';
 

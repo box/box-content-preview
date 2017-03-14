@@ -1,7 +1,7 @@
 
 /* eslint-disable no-unused-expressions */
-import Annotation from '../annotation';
-import AnnotationDialog from '../annotation-dialog';
+import Annotation from '../Annotation';
+import AnnotationDialog from '../AnnotationDialog';
 import * as annotatorUtil from '../annotator-util';
 import * as constants from '../annotation-constants';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../../constants';
@@ -16,7 +16,7 @@ describe('annotation-dialog', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/__tests__/annotation-dialog-test.html');
+        fixture.load('annotations/__tests__/AnnotationDialog-test.html');
 
         dialog = new AnnotationDialog({
             annotatedElement: document.querySelector('.annotated-element'),

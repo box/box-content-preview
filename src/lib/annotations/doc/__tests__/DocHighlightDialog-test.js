@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
-import DocHighlightDialog from '../doc-highlight-dialog';
-import Annotation from '../../annotation';
-import AnnotationDialog from '../../annotation-dialog';
+import DocHighlightDialog from '../DocHighlightDialog';
+import Annotation from '../../Annotation';
+import AnnotationDialog from '../../AnnotationDialog';
 import * as annotatorUtil from '../../annotator-util';
 import * as docAnnotatorUtil from '../doc-annotator-util';
 import { CLASS_HIDDEN } from '../../../constants';
@@ -19,7 +19,7 @@ describe('doc-highlight-dialog', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/doc/__tests__/doc-highlight-dialog-test.html');
+        fixture.load('annotations/doc/__tests__/DocHighlightDialog-test.html');
 
         dialog = new DocHighlightDialog({
             annotatedElement: document.querySelector('.annotated-element'),

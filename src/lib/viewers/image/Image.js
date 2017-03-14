@@ -1,6 +1,6 @@
 import autobind from 'autobind-decorator';
-import AnnotationService from '../../annotations/annotation-service';
-import ImageAnnotator from '../../annotations/image/image-annotator';
+import AnnotationService from '../../annotations/AnnotationService';
+import ImageAnnotator from '../../annotations/image/ImageAnnotator';
 import Browser from '../../Browser';
 import Base from './ImageBase';
 import { ICON_ROTATE_LEFT } from '../../icons/icons';

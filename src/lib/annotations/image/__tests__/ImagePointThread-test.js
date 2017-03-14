@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
-import ImagePointDialog from '../image-point-dialog';
-import ImagePointThread from '../image-point-thread';
+import ImagePointDialog from '../ImagePointDialog';
+import ImagePointThread from '../ImagePointThread';
 import * as annotatorUtil from '../../annotator-util';
 import * as constants from '../../annotation-constants';
 import * as imageAnnotatorUtil from '../image-annotator-util';
@@ -14,7 +14,7 @@ describe('image-point-thread', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/image/__tests__/image-point-thread-test.html');
+        fixture.load('annotations/image/__tests__/ImagePointThread-test.html');
 
         pointThread = new ImagePointThread({
             annotatedElement: document.querySelector('.annotated-element'),

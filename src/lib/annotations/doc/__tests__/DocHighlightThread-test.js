@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
-import DocHighlightDialog from '../doc-highlight-dialog';
-import DocHighlightThread from '../doc-highlight-thread';
-import AnnotationService from '../../annotation-service';
+import DocHighlightDialog from '../DocHighlightDialog';
+import DocHighlightThread from '../DocHighlightThread';
+import AnnotationService from '../../AnnotationService';
 import * as constants from '../../annotation-constants';
 import * as annotatorUtil from '../../annotator-util';
 import * as docAnnotatorUtil from '../doc-annotator-util';
@@ -15,7 +15,7 @@ describe('doc-highlight-thread', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/doc/__tests__/doc-highlight-thread-test.html');
+        fixture.load('annotations/doc/__tests__/DocHighlightThread-test.html');
 
         highlightThread = new DocHighlightThread({
             annotatedElement: document.querySelector('.annotated-element'),

@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
 import fetchMock from 'fetch-mock';
 import '../../polyfill';
-import Annotation from '../annotation';
-import AnnotationService from '../annotation-service';
+import Annotation from '../Annotation';
+import AnnotationService from '../AnnotationService';
 
 const API_HOST = 'https://app.box.com/api';
 
