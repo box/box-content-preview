@@ -43,10 +43,10 @@ const PREVIEW_CAMERA_QUATERNION = {
     w: 0.940
 };
 
-const OPTIMIZE_FRAMETIME_THESHOLD_REGULAR = 30; // 20 FPS
-const OPTIMIZE_FRAMETIME_THESHOLD_MOBILE = 66.6; // 15 FPS
-const OPTIMIZE_FRAMETIME_THESHOLD_REGULAR_VR = 20.0; // 50 FPS
-const OPTIMIZE_FRAMETIME_THESHOLD_MOBILE_VR = 66.6; // 15 FPS
+const OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR = 30; // 20 FPS
+const OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE = 66.6; // 15 FPS
+const OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR_VR = 20.0; // 50 FPS
+const OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE_VR = 66.6; // 15 FPS
 const DEFAULT_MODEL_SIZE = 1;
 
 /**
@@ -58,6 +58,7 @@ const DEFAULT_MODEL_SIZE = 1;
 class Model3dRenderer extends Box3DRenderer {
     /**
      * Creates a 3D runtime and loads in a 3D model for rendering
+     *
      * @constructor
      * @inheritdoc
      * @param {HTMLElement} containerEl - the container element
@@ -90,9 +91,11 @@ class Model3dRenderer extends Box3DRenderer {
 
     /** @inheritdoc */
     destroy() {
-        if (this.box3d && this.box3d.canvas) {
-            this.box3d.canvas.removeEventListener('click', this.handleCanvasClick);
+        if (!this.box3d) {
+            return;
         }
+
+        this.box3d.canvas.removeEventListener('click', this.handleCanvasClick);
 
         this.cleanupScene();
 
@@ -101,19 +104,21 @@ class Model3dRenderer extends Box3DRenderer {
 
     /** @inheritdoc */
     load(assetUrl, options = {}) {
-        // #TODO @jholdstock: set this to not reassign param
-        const { location } = options;
-        /*eslint-disable*/
-        options.sceneEntities = sceneEntities(location.staticBaseURI);
-        /*eslint-enable*/
+        const opts = {
+            ...options
+        };
+        const { location } = opts;
+        if (location) {
+            opts.sceneEntities = sceneEntities(location.staticBaseURI);
+        }
 
-        return super.load(assetUrl, options)
-            .then(() => this.loadBox3dFile(assetUrl));
+        return this.initBox3d(opts)
+            .then(this.loadBox3dFile.bind(this, assetUrl));
     }
 
     /**
      * Handle the canvas being clicked.
-     * @method handleCanvasClick
+     *
      * @private
      * @param {Event} event - The click event.
      * @return {void}
@@ -125,7 +130,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Load a box3d representation and initialize the scene.
-     * @method loadBox3dFile
+     *
      * @private
      * @param {string} fileUrl - The representation URL.
      * @param {string} assetPath - The asset path needed to access file
@@ -139,29 +144,40 @@ class Model3dRenderer extends Box3DRenderer {
         renderModes.setAttribute('shapeTexture', 'MAT_CAP_TEX');
 
         return this.box3d.addRemoteEntities(assetUrl)
-            .then((entities) => {
-                const scene = this.getScene();
+            .then((entities) => this.setupScene(entities), () => this.onUnsupportedRepresentation());
+    }
 
-                if (this.box3d && scene) {
-                    this.optimizeMaterials();
-                    this.createPrefabInstances();
-                    this.addHelpersToScene();
-                    scene.when('load', () => this.onSceneLoad());
+    /**
+     * Setup scene ground visualization grid, optimize materials for rendering, and create prefabs to
+     * create the scene with.
+     *
+     * @private
+     * @param {Box3DEntity[]} entities - A list of Box3DEntities to add to the scene and render.
+     * @return {void}
+     */
+    setupScene(entities) {
+        const scene = this.getScene();
+        if (!scene) {
+            return;
+        }
 
-                    // make sure we add ALL assets to the asset list to destroy
-                    entities.forEach((entity) => {
-                        if (entity.id === entity.parentAssetId) {
-                            const asset = this.box3d.getAssetById(entity.id);
-                            this.assets.push(asset);
-                        }
-                    });
-                }
-            }, () => this.onUnsupportedRepresentation());
+        this.optimizeMaterials();
+        this.createPrefabInstances();
+        this.addHelpersToScene();
+        scene.when('load', () => this.onSceneLoad());
+
+        // Make sure we add ALL assets to the asset list to destroy
+        entities.forEach((entity) => {
+            if (entity.id === entity.parentAssetId) {
+                const asset = this.box3d.getAssetById(entity.id);
+                this.assets.push(asset);
+            }
+        });
     }
 
     /**
      * Go through all materials and look for ways to turn off features to optimize perfomance.
-     * @method optimizeMaterials
+     *
      * @private
      * @return {void}
      */
@@ -170,10 +186,12 @@ class Model3dRenderer extends Box3DRenderer {
             if (mat.getProperty('roughness') <= 0.01 && !mat.getProperty('glossMap')) {
                 mat.setProperty('envMapGlossVariance', false);
             }
+
             if (mat.getProperty('roughness') >= 0.99) {
                 mat.setProperty('envMapGlossVariance', false);
                 mat.enableFeature('specular', false);
             }
+
             // Normal maps don't work nicely on mobile right now.
             if (Browser.isMobile()) {
                 mat.enableFeature('normals', false);
@@ -183,7 +201,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Create instances of prefabs and add them to the scene.
-     * @method createPrefabInstances
+     *
      * @private
      * @return {void}
      */
@@ -198,15 +216,32 @@ class Model3dRenderer extends Box3DRenderer {
         prefabs.forEach((prefab) => parent.addChild(prefab.createInstance()));
         this.instance = parent;
         this.getScene().addChild(parent);
+        this.adjustModelForScene(parent);
+
+        this.instance = parent;
+    }
+
+    /**
+     * Create an instance of the specified prefab and add it to the scene.
+     * @param {object} prefab - The prefab entity to instance.
+     * @param {object} scene - The scene asset to add the instance to.
+     * @return {void}
+     */
+    adjustModelForScene(instance) {
+        // Scale the instance to 100 units in size.
+        instance.scaleToSize(this.modelSize);
+
+        // Center the instance.
+        instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
+
         // Add components to the instance.
-        parent.addComponent('preview_axis_rotation', {}, `axis_rotation_${parent.id}`);
-        parent.addComponent('animation', {}, `animation_${parent.id}`);
-        this.resetModel();
+        instance.addComponent('preview_axis_rotation', {}, `axis_rotation_${instance.id}`);
+        instance.addComponent('animation', {}, `animation_${instance.id}`);
     }
 
     /**
      * Request from the engine, the up and forward axes.
-     * @method getAxes
+     *
      * @public
      * @return {Promise} Resolves with the up and forward axes.
      */
@@ -222,6 +257,11 @@ class Model3dRenderer extends Box3DRenderer {
         super.reset();
     }
 
+    /**
+     * Reset the model and all of its children to the origin and preset position.
+     *
+     * @return {void}
+     */
     resetModel() {
         if (!this.instance) {
             return;
@@ -251,24 +291,27 @@ class Model3dRenderer extends Box3DRenderer {
         }
 
         const orbitController = camera.getComponentByScriptId('orbit_camera');
-        if (!orbitController) {
+        if (!orbitController || !this.instance.runtimeData) {
             return;
         }
-        if (this.instance.runtimeData) {
-            this.instance.computeBounds();
-            const bounds = this.instance.getBounds();
-            this.instance.runtimeData.updateMatrixWorld();
-            bounds.min.applyMatrix4(this.instance.runtimeData.matrixWorld);
-            bounds.max.applyMatrix4(this.instance.runtimeData.matrixWorld);
-            const maxDimension = new THREE.Vector3();
-            maxDimension.subVectors(bounds.max, bounds.min);
-            const center = this.instance.getCenter();
-            center.applyMatrix4(this.instance.runtimeData.matrixWorld);
-            // Set the origin point (so that we always point at the center of the model when the camera reloads)
-            orbitController.originPoint.copy(center);
-            orbitController.setPivotPosition(center);
-            orbitController.setOrbitDistance(Math.max(Math.max(maxDimension.x, maxDimension.y), maxDimension.z));
-        }
+
+        this.instance.computeBounds();
+
+        const bounds = this.instance.getBounds();
+        this.instance.runtimeData.updateMatrixWorld();
+        bounds.min.applyMatrix4(this.instance.runtimeData.matrixWorld);
+        bounds.max.applyMatrix4(this.instance.runtimeData.matrixWorld);
+
+        const maxDimension = new THREE.Vector3();
+        maxDimension.subVectors(bounds.max, bounds.min);
+
+        const center = this.instance.getCenter();
+        center.applyMatrix4(this.instance.runtimeData.matrixWorld);
+
+        // Set the origin point (so that we always point at the center of the model when the camera reloads)
+        orbitController.originPoint.copy(center);
+        orbitController.setPivotPosition(center);
+        orbitController.setOrbitDistance(Math.max(Math.max(maxDimension.x, maxDimension.y), maxDimension.z));
     }
 
     /** @inheritdoc */
@@ -305,7 +348,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Set the current animation asset.
-     * @method setAnimationAsset
+     *
      * @public
      * @param {AnimationAsset} animation - The animation asset.
      * @return {void}
@@ -322,7 +365,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Set the current animation clip.
-     * @method setAnimationClip
+     *
      * @public
      * @param {string} clipId - The animation clip ID.
      * @return {void}
@@ -338,7 +381,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Play / pause the current animation.
-     * @method toggleAnimation
+     *
      * @public
      * @param {boolean} play - Whether to play or pause the animation.
      * @return {void}
@@ -349,7 +392,7 @@ class Model3dRenderer extends Box3DRenderer {
         }
 
         const component = this.instance.getComponentByScriptId('animation');
-        const animation = component.asset;
+        const animation = component ? component.asset : undefined;
         if (!animation) {
             return;
         }
@@ -372,7 +415,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Stop the current animation and reset it to its beginning.
-     * @method stopAnimation
+     *
      * @public
      * @return {void}
      */
@@ -388,36 +431,33 @@ class Model3dRenderer extends Box3DRenderer {
     /**
      * Start the component that measures performance and dynamically scales material and rendering
      * quality to try to achieve a minimum framerate.
-     * @method startOptimizer
+     *
      * @private
      * @return {void}
      */
     startOptimizer() {
         this.dynamicOptimizer = this.box3d.getApplication().getComponentByScriptId('dynamic_optimizer');
 
-        if (this.dynamicOptimizer) {
-            this.createRegularQualityChangeLevels();
-            this.createVrQualityChangeLevels();
-
-            if (this.dynamicOptimizerEnabled) {
-                this.dynamicOptimizer.enable();
-            } else {
-                this.dynamicOptimizer.disable();
-            }
-
-            this.dynamicOptimizer.setQualityChangeLevels(this.regularQualityChangeLevels);
-
-            if (Browser.isMobile()) {
-                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_MOBILE);
-            } else {
-                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_REGULAR);
-            }
+        if (!this.dynamicOptimizer) {
+            return;
         }
+
+        this.createRegularQualityChangeLevels();
+        this.createVrQualityChangeLevels();
+
+        /* eslint-disable no-unused-expressions */
+        this.dynamicOptimizerEnabled ? this.dynamicOptimizer.enable() : this.dynamicOptimizer.disable();
+        /* eslint-enable no-unused-expressions */
+
+        this.dynamicOptimizer.setQualityChangeLevels(this.regularQualityChangeLevels);
+        const threshold = Browser.isMobile() ? OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE : OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR;
+
+        this.dynamicOptimizer.setFrameTimeThreshold(threshold);
     }
 
     /**
      * Handles unsupported representation errors.
-     * @method onUnsupportedRepresentation
+     *
      * @private
      * @return {void}
      */
@@ -427,12 +467,16 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Add the helpers (e.g., grid and axes) to the scene.
-     * @method addHelpersToScene
+     *
      * @private
      * @return {void}
      */
     addHelpersToScene() {
-        const scene = this.getScene().runtimeData;
+        const scene = this.getScene() ? this.getScene().runtimeData : undefined;
+        if (!scene) {
+            return;
+        }
+
         this.grid = new THREE.GridHelper(GRID_SIZE, GRID_SECTIONS, GRID_COLOR_METRE, GRID_COLOR_HALF_METRE);
         this.grid.material.transparent = true;
         this.grid.material.blending = THREE.MultiplyBlending;
@@ -445,16 +489,16 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Remove the helpers (e.g., grid and axis) from the scene and cleanup their resources.
-     * @method cleanupHelpers
+     *
      * @private
      * @return {void}
      */
     cleanupHelpers() {
-        if (!this.getScene()) {
+        const scene = this.getScene() ? this.getScene().runtimeData : undefined;
+        if (!scene) {
             return;
         }
 
-        const scene = this.getScene().runtimeData;
         if (this.grid) {
             scene.remove(this.grid);
             this.grid.material.dispose();
@@ -470,6 +514,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Show, hide or toggle visibility of the helpers (e.g., grid and axes).
+     *
      * @private
      * @param {boolean} show - True or false to show or hide. If not specified, the helpers will be
      * toggled.
@@ -483,7 +528,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Remove instances specific to this preview from the scene.
-     * @method cleanupScene
+     *
      * @private
      * @return {void}
      */
@@ -506,7 +551,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Reset the skeleton visualization, for example, if the scene changes.
-     * @method resetSkeletons
+     *
      * @public
      * @return {void}
      */
@@ -518,7 +563,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Sets the render mode.
-     * @method setRenderMode
+     *
      * @public
      * @param {string} mode - The render mode.
      * @return {void}
@@ -531,7 +576,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Sets the projection type for the camera.
-     * @method setCameraProjection
+     *
      * @public
      * @param {string} projection - The projection mode.
      * @return {void}
@@ -557,7 +602,7 @@ class Model3dRenderer extends Box3DRenderer {
 
             case CAMERA_PROJECTION_PERSPECTIVE:
                 camera.setProperties({
-                    aspect: this.getAspect(),
+                    aspect,
                     cameraType: 'perspective'
                 });
                 break;
@@ -569,7 +614,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Set the rendering quality being used. Called by UI event handlers.
-     * @method setQualityLevel
+     *
      * @private
      * @param {string} level - Level name
      */
@@ -597,7 +642,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Setup listeners for the axis rotation events, to properly align a model over time.
-     * @method listenToRotateComplete
+     *
      * @param {Object} position {x, y, z} The - position to align the model to.
      * @param {Object} alignment {x, y, z} The - alignment for setting rotation of the model.
      * @return {void}
@@ -632,29 +677,30 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Rotates the loaded model on the provided axis.
-     * @method rotateOnAxis
+     *
      * @public
      * @param {Object} axis - The rotation axis.
      * @return {void}
      */
     rotateOnAxis(axis) {
-        if (this.instance && this.box3d && !this.isRotating) {
-            this.box3d.trigger('rotate_on_axis', axis, true);
-
-            // Calculate centre of model in world space so that we can rotate smoothly about it.
-            const alignPosition = new THREE.Vector3();
-            this.instance.getCenter(alignPosition);
-            if (this.instance.runtimeData) {
-                alignPosition.applyMatrix4(this.instance.runtimeData.matrixWorld);
-            }
-
-            this.listenToRotateComplete(alignPosition, ORIGIN_VECTOR);
+        if (!this.instance || !this.box3d || this.isRotating) {
+            return;
         }
+
+        this.box3d.trigger('rotate_on_axis', axis, true);
+
+        // Calculate centre of model in world space so that we can rotate smoothly about it.
+        const alignPosition = this.instance.getCenter();
+        if (this.instance.runtimeData) {
+            alignPosition.applyMatrix4(this.instance.runtimeData.matrixWorld);
+        }
+
+        this.listenToRotateComplete(alignPosition, ORIGIN_VECTOR);
     }
 
     /**
      * Given a set of up and forward axis keys, rotate the model.
-     * @method setAxisRotation
+     *
      * @public
      * @param {string} upAxis - The axis key for the models up vector.
      * @param {string} forwardAxis - The axis key for the models forward facing vector.
@@ -676,7 +722,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Set the visibility of skeletons.
-     * @method setSkeletonsVisible
+     *
      * @private
      * @param {boolean} visible - Indicates whether or not skeletons are visible.
      * @return {void}
@@ -689,7 +735,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Set the visibility of wireframes.
-     * @method setWireframesVisible
+     *
      * @private
      * @param {boolean} visible - Indicates whether or not wireframes are visible.
      * @return {void}
@@ -710,17 +756,17 @@ class Model3dRenderer extends Box3DRenderer {
 
         if (this.dynamicOptimizer) {
             this.dynamicOptimizer.setQualityChangeLevels(this.vrQualityChangeLevels);
-            if (Browser.isMobile()) {
-                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_MOBILE_VR);
-            } else {
-                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_REGULAR_VR);
-            }
+
+            const threshold = Browser.isMobile() ? OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE_VR : OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR_VR;
+            this.dynamicOptimizer.setFrameTimeThreshold(threshold);
         }
 
         // Scale the instance for VR.
         const display = this.box3d.getVrDisplay();
-        this.vrDeviceHasPosition = display.capabilities.hasPosition;
-        if (!this.vrDeviceHasPosition) {
+        this.vrDeviceHasPosition = display ? display.capabilities.hasPosition : undefined;
+        if (this.vrDeviceHasPosition) {
+            this.grid.visible = true;
+        } else {
             // Enable position-less camera controls
             this.box3d.on('update', this.updateModel3dVrControls, this);
         }
@@ -730,11 +776,9 @@ class Model3dRenderer extends Box3DRenderer {
     onDisableVr() {
         if (this.dynamicOptimizer) {
             this.dynamicOptimizer.setQualityChangeLevels(this.regularQualityChangeLevels);
-            if (Browser.isMobile()) {
-                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_REGULAR);
-            } else {
-                this.dynamicOptimizer.setFrameTimeThreshold(OPTIMIZE_FRAMETIME_THESHOLD_MOBILE);
-            }
+
+            const threshold = Browser.isMobile() ? OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE : OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR;
+            this.dynamicOptimizer.setFrameTimeThreshold(threshold);
         }
 
         if (!this.vrDeviceHasPosition) {
@@ -747,7 +791,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Update the controls for VR when enabled.
-     * @method updateVrControls
+     *
      * @private
      * @return {void}
      */
@@ -766,6 +810,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Create the module that handles VR hand controller interaction with the model.
+     *
      * @private
      * @return {void}
      */
@@ -775,7 +820,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Set up quality change levels for the dynamic optimizer.
-     * @method createRegularQualityChangeLevels
+     *
      * @private
      * @return {void}
      */
@@ -789,7 +834,7 @@ class Model3dRenderer extends Box3DRenderer {
 
     /**
      * Set up quality change levels for the dynamic optimizer when VR is enabled.
-     * @method createVrQualityChangeLevels
+     *
      * @private
      * @return {void}
      */
