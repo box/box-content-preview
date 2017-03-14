@@ -1,11 +1,11 @@
 import ImageLoader from './viewers/image/ImageLoader';
-import Image360Loader from './viewers/box3d/image360/image360-loader';
+import Image360Loader from './viewers/box3d/image360/Image360Loader';
 import SWFLoader from './viewers/swf/SWFLoader';
 import TextLoader from './viewers/text/TextLoader';
 import MediaLoader from './viewers/media/MediaLoader';
-import Video360Loader from './viewers/box3d/video360/video360-loader';
+import Video360Loader from './viewers/box3d/video360/Video360Loader';
 import DocLoader from './viewers/doc/DocLoader';
-import Model3dLoader from './viewers/box3d/model3d/model3d-loader';
+import Model3dLoader from './viewers/box3d/model3d/Model3dLoader';
 import IFrameLoader from './viewers/iframe/IFrameLoader';
 import OfficeLoader from './viewers/office/OfficeLoader';
 

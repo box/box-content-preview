@@ -19,11 +19,11 @@
                         "build/**",
                         "src/lib/polyfill.js",
                         "src/lib/browser.js",
-                        "src/lib/viewers/box3d/model3d/model3d-animation-clips-pullup.js",
-                        "src/lib/viewers/box3d/model3d/model3d-settings-pullup.js",
-                        "src/lib/viewers/box3d/model3d/model3d-vr-controls.js",
-                        "src/lib/viewers/box3d/**/scene-entities.js",
-                        "src/lib/viewers/box3d/**-constants.js",
+                        "src/lib/viewers/box3d/model3d/Model3dAnimationClipsPullup.js",
+                        "src/lib/viewers/box3d/model3d/model3dSettingsPullup.js",
+                        "src/lib/viewers/box3d/model3d/Model3dVrControls.js",
+                        "src/lib/viewers/box3d/**/SceneEntities.js",
+                        "src/lib/viewers/box3d/**Constants.js",
                         "src/lib/viewers/doc/doc-preloader.js"
                     ]
                 }],
