@@ -509,6 +509,12 @@ class MediaBase extends Base {
             case 'arrowdown':
                 this.decreaseVolume();
                 break;
+            case 'shift+>':
+                this.mediaControls.increaseSpeed();
+                break;
+            case 'shift+<':
+                this.mediaControls.decreaseSpeed();
+                break;
             case 'f':
             case 'shift+f':
                 this.mediaControls.toggleFullscreen();

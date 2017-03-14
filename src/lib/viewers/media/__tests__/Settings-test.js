@@ -33,6 +33,47 @@ describe('lib/viewers/media/Settings', () => {
         });
     });
 
+    describe('MEDIA_SPEEDS', () => {
+        it('should be aligned with speed options in template', () => {
+            const speedElements = [...document.querySelectorAll('.bp-media-settings-sub-item.bp-media-settings-options-speed[data-type="speed"]')];
+            const dataValues = speedElements.map((elem) => elem.getAttribute('data-value'));
+            const mediaSpeeds = settings.getMediaSpeeds();
+            expect(mediaSpeeds).to.deep.equal(dataValues);
+        });
+    });
+
+    describe('increaseSpeed()', () => {
+        it('should increase speed one step', () => {
+            settings.chooseOption('speed', '1.25');
+            settings.increaseSpeed();
+            const speed = cache.get('media-speed');
+            expect(speed).to.equal('1.5');
+        });
+
+        it('should not increase speed after max', () => {
+            settings.chooseOption('speed', '2.0');
+            settings.increaseSpeed();
+            const speed = cache.get('media-speed');
+            expect(speed).to.equal('2.0');
+        });
+    });
+
+    describe('decreaseSpeed()', () => {
+        it('should decrease speed one step', () => {
+            settings.chooseOption('speed', '1.5');
+            settings.decreaseSpeed();
+            const speed = cache.get('media-speed');
+            expect(speed).to.equal('1.25');
+        });
+
+        it('should not decrease speed after min', () => {
+            settings.chooseOption('speed', '0.5');
+            settings.decreaseSpeed();
+            const speed = cache.get('media-speed');
+            expect(speed).to.equal('0.25');
+        });
+    });
+
     describe('destroy()', () => {
         it('should remove event listeners on settings element and document', () => {
             sandbox.stub(settings.settingsEl, 'removeEventListener');

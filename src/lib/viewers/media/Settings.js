@@ -9,6 +9,14 @@ const CLASS_SETTINGS_SELECTED = 'bp-media-settings-selected';
 const CLASS_SETTINGS_OPEN = 'bp-media-settings-is-open';
 const SELECTOR_SETTINGS_SUB_ITEM = '.bp-media-settings-sub-item';
 const SELECTOR_SETTINGS_VALUE = '.bp-media-settings-value';
+const MEDIA_SPEEDS = [
+    '0.25',
+    '0.5',
+    '1.0',
+    '1.25',
+    '1.5',
+    '2.0'
+];
 
 const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
     <div class="bp-media-settings-item bp-media-settings-item-speed" data-type="speed">
@@ -119,6 +127,42 @@ class Settings extends EventEmitter {
      */
     reset() {
         this.settingsEl.className = CLASS_SETTINGS;
+    }
+
+    /**
+     * Getter for testing purposes
+     *
+     * @private
+     * @return {array}
+     */
+    getMediaSpeeds() {
+        return MEDIA_SPEEDS;
+    }
+
+    /**
+     * Increases the speed one step. If already maximum, does nothing
+     *
+     * @return {void}
+     */
+    increaseSpeed() {
+        const current = parseFloat(cache.get('media-speed') || '1.0');
+        const higherSpeeds = MEDIA_SPEEDS.filter((speed) => parseFloat(speed) > current);
+        if (higherSpeeds.length > 0) {
+            this.chooseOption('speed', higherSpeeds[0]);
+        }
+    }
+
+    /**
+     * Decreases the speed one step. If already minimum, does nothing
+     *
+     * @return {void}
+     */
+    decreaseSpeed() {
+        const current = parseFloat(cache.get('media-speed') || '1.0');
+        const lowerSpeeds = MEDIA_SPEEDS.filter((speed) => parseFloat(speed) < current);
+        if (lowerSpeeds.length > 0) {
+            this.chooseOption('speed', lowerSpeeds[lowerSpeeds.length - 1]);
+        }
     }
 
     /**

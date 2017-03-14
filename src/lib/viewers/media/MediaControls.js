@@ -358,6 +358,24 @@ class MediaControls extends EventEmitter {
     }
 
     /**
+     * Increases the speed one step. If already maximum, does nothing
+     *
+     * @return {void}
+     */
+    increaseSpeed() {
+        this.settings.increaseSpeed();
+    }
+
+    /**
+     * Decreases the speed one step. If already minimum, does nothing
+     *
+     * @return {void}
+     */
+    decreaseSpeed() {
+        this.settings.decreaseSpeed();
+    }
+
+    /**
      * Attaches event handlers to buttons
      *
      * @return {void}

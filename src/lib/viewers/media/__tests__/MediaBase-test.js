@@ -39,7 +39,9 @@ describe('lib/viewers/media/MediaBase', () => {
             showPlayIcon: sandbox.stub(),
             toggleFullscreen: sandbox.stub(),
             updateProgress: sandbox.stub(),
-            updateVolumeIcon: sandbox.stub()
+            updateVolumeIcon: sandbox.stub(),
+            increaseSpeed: sandbox.stub(),
+            decreaseSpeed: sandbox.stub()
         };
     });
 
@@ -614,6 +616,18 @@ describe('lib/viewers/media/MediaBase', () => {
 
             expect(media.onKeydown('ArrowDown')).to.be.true;
             expect(media.decreaseVolume).to.be.called;
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should increase speed and return true on Shift+>', () => {
+            expect(media.onKeydown('Shift+>')).to.be.true;
+            expect(media.mediaControls.increaseSpeed).to.be.called;
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should increase speed and return true on Shift+<', () => {
+            expect(media.onKeydown('Shift+<')).to.be.true;
+            expect(media.mediaControls.decreaseSpeed).to.be.called;
             expect(media.mediaControls.show).to.be.called;
         });
 
