@@ -211,6 +211,7 @@ describe('lib/util', () => {
         });
     });
 
+    /* eslint-disable no-undef */
     describe('getHeaders()', () => {
         it('should return correct headers', () => {
             const sharedLink = 'https://sharename';
@@ -220,6 +221,8 @@ describe('lib/util', () => {
             expect(headers.foo).to.equal(fooHeader);
             expect(headers.Authorization).to.equal(`Bearer ${token}`);
             expect(headers.BoxApi).to.equal(`shared_link=${sharedLink}`);
+            expect(headers['X-Box-Client-Name']).to.equal('Box Content Preview');
+            expect(headers['X-Box-Client-Version']).to.equal(__VERSION__);
         });
 
         it('should return correct headers with password', () => {
@@ -227,6 +230,8 @@ describe('lib/util', () => {
             assert.equal(headers.foo, 'bar');
             assert.equal(headers.Authorization, 'Bearer token');
             assert.equal(headers.BoxApi, 'shared_link=https://sharename&shared_link_password=password');
+            assert.equal(headers['X-Box-Client-Name'], 'Box Content Preview');
+            assert.equal(headers['X-Box-Client-Version'], __VERSION__);
         });
     });
 
@@ -240,7 +245,7 @@ describe('lib/util', () => {
             const url = 'foo';
             const token = 'sometoken';
             const sharedLink = 'someSharedLink';
-            expect(util.appendAuthParams(url, token, sharedLink)).to.equal(`${url}?access_token=${token}&shared_link=${sharedLink}`);
+            expect(util.appendAuthParams(url, token, sharedLink)).to.equal(`${url}?access_token=${token}&shared_link=${sharedLink}&box_client_name=Box%20Content%20Preview&box_client_version=${__VERSION__}`);
         });
 
         it('should return correct url with password', () => {
@@ -248,7 +253,22 @@ describe('lib/util', () => {
             const token = 'sometoken';
             const sharedLink = 'someSharedLink';
             const sharedLinkPassword = 'somePass';
-            expect(util.appendAuthParams(url, token, sharedLink, sharedLinkPassword)).to.equal(`foobar?access_token=${token}&shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}`);
+            expect(util.appendAuthParams(url, token, sharedLink, sharedLinkPassword)).to.equal(`foobar?access_token=${token}&shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}&box_client_name=Box%20Content%20Preview&box_client_version=${__VERSION__}`);
+        });
+    });
+    /* eslint-enable no-undef */
+
+    describe('createContentUrl()', () => {
+        it('should return correct content url when no asset name', () => {
+            expect(util.createContentUrl('foo{asset_path}', null)).to.equal('foo');
+        });
+
+        it('should return correct content url with asset name', () => {
+            expect(util.createContentUrl('foo{asset_path}', 'bar')).to.equal('foobar');
+        });
+
+        it('should return correct content url when no asset_path', () => {
+            expect(util.createContentUrl('foo', 'bar')).to.equal('foo');
         });
     });
 
@@ -422,6 +442,16 @@ describe('lib/util', () => {
         });
     });
 
+    describe('requires360Viewer()', () => {
+        it('should return true for file name with 360 before extension', () => {
+            expect(util.requires360Viewer({ name: '360.foo' })).to.be.true;
+        });
+
+        it('should return false for file name with no 360 before extension', () => {
+            expect(util.requires360Viewer({ name: 'foo' })).to.be.false;
+        });
+    });
+
     describe('setDimensions()', () => {
         it('should set dimensions for the specified element', () => {
             const element = document.createElement('div');
@@ -432,6 +462,16 @@ describe('lib/util', () => {
 
             expect(element.style.width).to.equal(`${width}px`);
             expect(element.style.height).to.equal(`${height}px`);
+        });
+    });
+
+    describe('requires360Viewer()', () => {
+        it('should return true for file name with 360 before extension', () => {
+            expect(util.requires360Viewer({ name: '360.foo' })).to.be.true;
+        });
+
+        it('should return false for file name with no 360 before extension', () => {
+            expect(util.requires360Viewer({ name: 'foo' })).to.be.false;
         });
     });
 });

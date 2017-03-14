@@ -79,6 +79,7 @@ describe('lib/viewers/text/CSV', () => {
             });
         });
 
+        /* eslint-disable no-undef */
         it('should parse with Papaparse', () => {
             sandbox.stub(util, 'createAssetUrlCreator').returns(sandbox.stub().returns('someUrl'));
             Object.defineProperty(TextBase.prototype, 'load', { value: sandbox.stub() });
@@ -89,7 +90,7 @@ describe('lib/viewers/text/CSV', () => {
 
             sandbox.stub(util, 'get').returns(Promise.resolve());
 
-            const csvUrlWithAuth = 'csvUrl?access_token=token&shared_link=sharedLink&shared_link_password=sharedLinkPassword';
+            const csvUrlWithAuth = `csvUrl?access_token=token&shared_link=sharedLink&shared_link_password=sharedLinkPassword&box_client_name=Box%20Content%20Preview&box_client_version=${__VERSION__}`;
 
             return csv.load().then(() => {
                 expect(window.Papa.parse).to.be.calledWith(csvUrlWithAuth, {
@@ -99,6 +100,7 @@ describe('lib/viewers/text/CSV', () => {
                 });
             });
         });
+        /* eslint-enable no-undef */
     });
 
     describe('prefetch()', () => {

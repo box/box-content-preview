@@ -1,4 +1,5 @@
 const path = require('path');
+const pkg = require('../package.json');
 const I18nPlugin = require('i18n-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const DefinePlugin = require('webpack').DefinePlugin;
@@ -69,6 +70,8 @@ module.exports = (language) => {
             }),
             new I18nPlugin(langJson),
             new DefinePlugin({
+                __NAME__: JSON.stringify(pkg.description),
+                __VERSION__: JSON.stringify(pkg.version),
                 'process.env': {
                     NODE_ENV: JSON.stringify(process.env.NODE_ENV),
                     BABEL_ENV: JSON.stringify(process.env.BABEL_ENV)

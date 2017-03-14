@@ -1,5 +1,14 @@
 import fetch from 'isomorphic-fetch';
 
+const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
+const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
+const PARAM_CLIENT_NAME = 'box_client_name';
+const PARAM_CLIENT_VERSION = 'box_client_version';
+/* eslint-disable no-undef */
+const NAME = __NAME__;
+const VERSION = __VERSION__;
+/* eslint-enable no-undef */
+
 const parseJSON = (response) => {
     if (response.status === 204) {
         return response;
@@ -265,8 +274,16 @@ export function getHeaders(headers = {}, token = '', sharedLink = '', password =
             headers.BoxApi = `${headers.BoxApi}&shared_link_password=${password}`;
         }
     }
-    // Tells the backend this request is coming from preview, for API analytics
-    // headers['X-Box-UI-Preview'] = true;
+
+    // Following headers are for API analytics
+    if (NAME) {
+        headers[HEADER_CLIENT_NAME] = NAME;
+    }
+
+    if (VERSION) {
+        headers[HEADER_CLIENT_VERSION] = VERSION;
+    }
+
     /* eslint-enable no-param-reassign */
     return headers;
 }
@@ -304,6 +321,15 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
         if (password) {
             params = `${params}&shared_link_password=${encodeURI(password)}`;
         }
+    }
+
+    // Following params are for API analytics
+    if (NAME) {
+        params = `${params}&${PARAM_CLIENT_NAME}=${encodeURI(NAME)}`;
+    }
+
+    if (VERSION) {
+        params = `${params}&${PARAM_CLIENT_VERSION}=${encodeURI(VERSION)}`;
     }
 
     return `${url}${delim}${params}`;

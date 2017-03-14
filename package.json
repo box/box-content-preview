@@ -1,7 +1,7 @@
 {
-  "name": "box-preview",
+  "name": "box-content-preview",
   "version": "0.108.0",
-  "description": "Box Preview",
+  "description": "Box Content Preview",
   "author": "Box (https://www.box.com/)",
   "license": "Box Software Development Kit License Agreement",
   "repository": {
