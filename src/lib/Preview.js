@@ -78,7 +78,7 @@ class Preview extends EventEmitter {
             this.disabledViewers[viewerName] = 1;
         });
 
-        // Auth token
+        // Access token
         this.token = '';
 
         // Default list of loaders for viewers
@@ -780,10 +780,8 @@ class Preview extends EventEmitter {
                 case 'progressend':
                     this.finishProgressBar();
                     break;
-                case 'notification':
-                    this.emit('notification', data.data);
-                    break;
                 default:
+                    // This includes 'notification', 'preload' and others
                     this.emit(data.event, data.data);
                     this.emit('viewerevent', data);
             }
@@ -989,7 +987,7 @@ class Preview extends EventEmitter {
      * Builds a list of required XHR headers.
      *
      * @private
-     * @param {string} [token] - Auth token
+     * @param {string} [token] - Access token
      * @return {Object} Headers
      */
     getRequestHeaders(token) {

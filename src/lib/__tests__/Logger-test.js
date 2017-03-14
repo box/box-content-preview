@@ -1,12 +1,15 @@
 import Logger from '../Logger';
 
 let logger;
+const sandbox = sinon.sandbox.create();
+
 describe('lib/Logger', () => {
     beforeEach(() => {
         logger = new Logger('FOO');
     });
 
     afterEach(() => {
+        sandbox.verifyAndRestore();
         logger = null;
     });
 
@@ -28,16 +31,13 @@ describe('lib/Logger', () => {
     });
 
     it('should set and get correctly', () => {
-        const now = Date.now();
+        const dateStub = sandbox.stub(Date, 'now').returns(0);
         logger.setCached();
         logger.setCacheStale();
         logger.setFile({ id: 1 });
         logger.setType('BAR');
 
-        while (Date.now() - now > 100) {
-            // do nothing
-        }
-
+        dateStub.returns(100);
         logger.setUnConverted();
 
         const log = logger.done();
@@ -54,6 +54,16 @@ describe('lib/Logger', () => {
 
         assert.ok(log.cache.hit, 'Cache should be hit');
         assert.ok(log.cache.stale, 'Cache should be stale');
+    });
+
+    describe('getElapsedTime()', () => {
+        it('it should return time elapsed since initialization', () => {
+            const dateStub = sandbox.stub(Date, 'now').returns(0);
+            logger = new Logger({});
+
+            dateStub.returns(10);
+            expect(logger.getElapsedTime()).to.equal(10);
+        });
     });
 
     describe('setCached()', () => {

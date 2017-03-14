@@ -151,7 +151,7 @@ Additional Methods
 
 Events
 ------
-The preview object exposes `on` and `off` for binding to events. Event listeners should be bound before the call to `show()`, otherwise events can be missed.
+The preview object exposes `addListener` and `removeListener` for binding to events. Event listeners should be bound before `show()` is called, otherwise events can be missed.
 
 ```javascript
 const listener = (value) => {
@@ -159,13 +159,13 @@ const listener = (value) => {
 };
 
 // Attach listener before calling show otherwise events can be missed
-Box.Preview.on(EVENTNAME, listener);
+Box.Preview.addListener(EVENTNAME, listener);
 
 // Show a preview
 Box.Preview.show(...);
 
-// Remove listener when needed
-Box.Preview.off(EVENTNAME, listener);
+// Remove listener when appropriate
+Box.Preview.removeListener(EVENTNAME, listener);
 ```
 
 EVENTNAME can be one of the following
@@ -203,20 +203,20 @@ EVENTNAME can be one of the following
 
 ### Example event usage
 ```javascript
-Box.Preview.on('viewer', (viewer) => {
-    viewer.on('rotate', () => {
+Box.Preview.addListener('viewer', (viewer) => {
+    viewer.addListener('rotate', () => {
         // Do something when a viewer rotates a preview
     });
 });
 
-Box.Preview.on('load', (data) => {
+Box.Preview.addListener('load', (data) => {
     const viewer = data.viewer;
-    viewer.on('rotate', () => {
+    viewer.addListener('rotate', () => {
         // Do something when a viewer rotates a preview
     });
 });
 
-Box.Preview.on('viewerevent', (data) => {
+Box.Preview.addListener('viewerevent', (data) => {
     if (data.viewerName === 'Image') {
         if (data.event === 'rotate') {
             // Do something when an image preview is rotated
@@ -228,7 +228,7 @@ Box.Preview.on('viewerevent', (data) => {
     } else {}
 });
 
-Box.Preview.on('rotate', (data) => {
+Box.Preview.addListener('rotate', (data) => {
     if (data.viewerName === 'Image') {
         // Do something when an image preview is rotated
     } else if (data.viewerName === 'Image360') {

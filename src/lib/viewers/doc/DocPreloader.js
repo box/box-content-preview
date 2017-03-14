@@ -1,3 +1,4 @@
+import EventEmitter from 'events';
 import {
     CLASS_BOX_PREVIEW_PRELOAD,
     CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
@@ -19,7 +20,7 @@ const PDFJS_HEIGHT_PADDING_PX = 5; // Should match VERTICAL_PADDING in pdf_viewe
 const NUM_PAGES_DEFAULT = 2; // Default to 2 pages for preload if true number of pages cannot be read
 const NUM_PAGES_MAX = 500; // Don't show more than 500 placeholder pages
 
-class DocPreloader {
+class DocPreloader extends EventEmitter {
 
     /**
      * Shows a preload of the document by showing the first page as an image. This should be called
@@ -225,6 +226,9 @@ class DocPreloader {
 
         // Show preload element after content is properly sized
         this.preloadEl.classList.remove(CLASS_INVISIBLE);
+
+        // Emit message that preload has occurred
+        this.emit('preload');
     }
 
     /**
@@ -244,4 +248,4 @@ class DocPreloader {
     }
 }
 
-export default new DocPreloader();
+export default DocPreloader;

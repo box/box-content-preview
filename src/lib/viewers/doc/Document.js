@@ -29,6 +29,22 @@ class Document extends DocBase {
         // Call super() first to set up common layout
         super.setup();
         this.docEl.classList.add('bp-doc-document');
+
+        // Set up preloader
+        this.docPreloader = new DocPreloader();
+        this.docPreloader.addListener('preload', () => {
+            this.emit('preload', {
+                elapsedTime: this.options.logger.getElapsedTime()
+            });
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    destroy() {
+        super.destroy();
+        this.docPreloader.removeAllListeners('preload');
     }
 
     /**
@@ -48,14 +64,14 @@ class Document extends DocBase {
 
         const { url_template: template } = preloadRep.content;
         const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
-        DocPreloader.showPreload(preloadUrlWithAuth, this.containerEl);
+        this.docPreloader.showPreload(preloadUrlWithAuth, this.containerEl);
     }
 
     /**
      * @inheritdoc
      */
     hidePreload() {
-        DocPreloader.hidePreload();
+        this.docPreloader.hidePreload();
     }
 
     /**

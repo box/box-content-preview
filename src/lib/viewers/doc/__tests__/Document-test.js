@@ -56,15 +56,26 @@ describe('lib/viewers/doc/Document', () => {
     });
 
     describe('setup()', () => {
-        it('should add the document class to the doc element', () => {
+        it('should add the document class to the doc element and set up preloader', () => {
             expect(doc.docEl).to.have.class('bp-doc-document');
+            expect(doc.docPreloader).to.be.instanceof(DocPreloader);
+        });
+    });
+
+    describe('destroy()', () => {
+        it('should remove listeners from preloader', () => {
+            doc.docPreloader = {
+                removeAllListeners: sandbox.mock().withArgs('preload')
+            };
+            doc.destroy();
+            doc = null; // Don't call destroy again during cleanup
         });
     });
 
     describe('showPreload()', () => {
         it('should not do anything if there is a previously cached page', () => {
             sandbox.stub(doc, 'getCachedPage').returns(2);
-            sandbox.mock(DocPreloader).expects('showPreload').never();
+            sandbox.mock(doc.docPreloader).expects('showPreload').never();
 
             doc.showPreload();
         });
@@ -74,7 +85,7 @@ describe('lib/viewers/doc/Document', () => {
             sandbox.stub(doc, 'getCachedPage').returns(1);
             sandbox.stub(doc, 'getViewerOption').withArgs('preload').returns(true);
             sandbox.stub(file, 'getRepresentation').returns(null);
-            sandbox.mock(DocPreloader).expects('showPreload').never();
+            sandbox.mock(doc.docPreloader).expects('showPreload').never();
 
             doc.showPreload();
         });
@@ -84,7 +95,7 @@ describe('lib/viewers/doc/Document', () => {
             sandbox.stub(doc, 'getCachedPage').returns(1);
             sandbox.stub(doc, 'getViewerOption').withArgs('preload').returns(false);
             sandbox.stub(file, 'getRepresentation').returns(null);
-            sandbox.mock(DocPreloader).expects('showPreload').never();
+            sandbox.mock(doc.docPreloader).expects('showPreload').never();
 
             doc.showPreload();
         });
@@ -100,7 +111,7 @@ describe('lib/viewers/doc/Document', () => {
             });
             sandbox.stub(doc, 'getViewerOption').withArgs('preload').returns(true);
             sandbox.stub(doc, 'createContentUrlWithAuthParams').returns(preloadUrl);
-            sandbox.mock(DocPreloader).expects('showPreload').withArgs(preloadUrl, doc.containerEl);
+            sandbox.mock(doc.docPreloader).expects('showPreload').withArgs(preloadUrl, doc.containerEl);
 
             doc.showPreload();
         });
@@ -108,7 +119,7 @@ describe('lib/viewers/doc/Document', () => {
 
     describe('hidePreload', () => {
         it('should hide the preload', () => {
-            sandbox.mock(DocPreloader).expects('hidePreload');
+            sandbox.mock(doc.docPreloader).expects('hidePreload');
             doc.hidePreload();
         });
     });

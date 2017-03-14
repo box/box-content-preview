@@ -20,7 +20,8 @@ class Logger {
 
     /**
      * [constructor]
-     * @param {string} locale - locale
+     *
+     * @param {string} locale - Locale
      * @return {Logger} Logger instance
      */
     constructor(locale) {
@@ -43,8 +44,17 @@ class Logger {
     }
 
     /**
+     * Return elapsed time since logger was initialized.
+     *
+     * @return {number} Time in ms since initialization
+     */
+    getElapsedTime() {
+        return Date.now() - this.start;
+    }
+
+    /**
      * Marks file as cached.
-     * @public
+     *
      * @return {void}
      */
     setCached() {
@@ -53,7 +63,7 @@ class Logger {
 
     /**
      * Marks file as stale cache.
-     * @public
+     *
      * @return {void}
      */
     setCacheStale() {
@@ -62,7 +72,7 @@ class Logger {
 
     /**
      * Marks file as converted.
-     * @public
+     *
      * @return {void}
      */
     setUnConverted() {
@@ -72,7 +82,7 @@ class Logger {
 
     /**
      * Sets the file object.
-     * @public
+     *
      * @param {Object} file - file object
      * @return {void}
      */
@@ -82,7 +92,7 @@ class Logger {
 
     /**
      * Sets the file type.
-     * @public
+     *
      * @param {string} type - content type
      * @return {void}
      */
@@ -92,7 +102,7 @@ class Logger {
 
     /**
      * Finishes logging.
-     * @public
+     *
      * @param {Object} count - preview count
      * @return {Object} metrics
      */

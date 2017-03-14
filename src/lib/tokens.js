@@ -29,7 +29,7 @@ function createIdTokenMap(ids, token) {
  * @return {void}
  */
 export default function getTokens(id, token) {
-    // Auth token should be available
+    // Access token should be available
     if (!token || !id) {
         return Promise.reject(error);
     }
