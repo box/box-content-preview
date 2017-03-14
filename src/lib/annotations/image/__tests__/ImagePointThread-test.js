@@ -1,14 +1,14 @@
 /* eslint-disable no-unused-expressions */
 import ImagePointDialog from '../ImagePointDialog';
 import ImagePointThread from '../ImagePointThread';
-import * as annotatorUtil from '../../annotator-util';
-import * as constants from '../../annotation-constants';
-import * as imageAnnotatorUtil from '../image-annotator-util';
+import * as annotatorUtil from '../../annotatorUtil';
+import * as constants from '../../annotationConstants';
+import * as imageAnnotatorUtil from '../imageAnnotatorUtil';
 
 let pointThread;
 const sandbox = sinon.sandbox.create();
 
-describe('image-point-thread', () => {
+describe('lib/annotations/image/ImagePointThread', () => {
     before(() => {
         fixture.setBase('src/lib');
     });

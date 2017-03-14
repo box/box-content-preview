@@ -11,9 +11,9 @@ import Annotator from '../Annotator';
 import Browser from '../../Browser';
 import DocHighlightThread from './DocHighlightThread';
 import DocPointThread from './DocPointThread';
-import * as annotatorUtil from '../annotator-util';
-import * as constants from '../annotation-constants';
-import * as docAnnotatorUtil from './doc-annotator-util';
+import * as annotatorUtil from '../annotatorUtil';
+import * as constants from '../annotationConstants';
+import * as docAnnotatorUtil from './docAnnotatorUtil';
 
 const MOUSEMOVE_THROTTLE_MS = 50;
 const PAGE_PADDING_BOTTOM = 15;

@@ -1,9 +1,9 @@
 import autobind from 'autobind-decorator';
 import AnnotationThread from '../AnnotationThread';
 import DocHighlightDialog from './DocHighlightDialog';
-import * as annotatorUtil from '../annotator-util';
-import * as constants from '../annotation-constants';
-import * as docAnnotatorUtil from './doc-annotator-util';
+import * as annotatorUtil from '../annotatorUtil';
+import * as constants from '../annotationConstants';
+import * as docAnnotatorUtil from './docAnnotatorUtil';
 
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;

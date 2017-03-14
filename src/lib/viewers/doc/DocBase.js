@@ -18,7 +18,7 @@ import {
 import { getRepresentation } from '../../file';
 import { get, createAssetUrlCreator, decodeKeydown } from '../../util';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
-import { JS, CSS } from './doc-assets';
+import { JS, CSS } from './docAssets';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;

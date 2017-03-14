@@ -1,4 +1,4 @@
-import * as annotatorUtil from '../annotator-util';
+import * as annotatorUtil from '../annotatorUtil';
 
 const IMAGE_PADDING = 15;
 const ROTATION_ONCE_DEG = -90;

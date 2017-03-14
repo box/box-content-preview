@@ -2,15 +2,15 @@
 /* eslint-disable no-unused-expressions */
 import Annotation from '../Annotation';
 import AnnotationDialog from '../AnnotationDialog';
-import * as annotatorUtil from '../annotator-util';
-import * as constants from '../annotation-constants';
+import * as annotatorUtil from '../annotatorUtil';
+import * as constants from '../annotationConstants';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../../constants';
 
 let dialog;
 const sandbox = sinon.sandbox.create();
 let stubs = {};
 
-describe('annotation-dialog', () => {
+describe('lib/annotations/AnnotationDialog', () => {
     before(() => {
         fixture.setBase('src/lib');
     });

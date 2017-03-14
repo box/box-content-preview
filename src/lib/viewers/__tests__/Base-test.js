@@ -10,13 +10,13 @@ let base;
 let containerEl;
 const sandbox = sinon.sandbox.create();
 
-describe('base', () => {
+describe('lib/viewers/Base', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/__tests__/base-test.html');
+        fixture.load('viewers/__tests__/Base-test.html');
 
         containerEl = document.querySelector('.bp-container');
         base = new Base({

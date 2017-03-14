@@ -1,7 +1,7 @@
 import autobind from 'autobind-decorator';
 import AnnotationDialog from '../AnnotationDialog';
-import * as annotatorUtil from '../annotator-util';
-import * as docAnnotatorUtil from './doc-annotator-util';
+import * as annotatorUtil from '../annotatorUtil';
+import * as docAnnotatorUtil from './docAnnotatorUtil';
 
 const PAGE_PADDING_TOP = 15;
 const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;

@@ -2,10 +2,10 @@
 import DocHighlightDialog from '../DocHighlightDialog';
 import Annotation from '../../Annotation';
 import AnnotationDialog from '../../AnnotationDialog';
-import * as annotatorUtil from '../../annotator-util';
-import * as docAnnotatorUtil from '../doc-annotator-util';
+import * as annotatorUtil from '../../annotatorUtil';
+import * as docAnnotatorUtil from '../docAnnotatorUtil';
 import { CLASS_HIDDEN } from '../../../constants';
-import * as constants from '../../annotation-constants';
+import * as constants from '../../annotationConstants';
 
 let dialog;
 const sandbox = sinon.sandbox.create();
@@ -13,7 +13,7 @@ let stubs = {};
 
 const PAGE_PADDING_TOP = 15;
 
-describe('doc-highlight-dialog', () => {
+describe('lib/annotations/doc/DocHighlightDialog', () => {
     before(() => {
         fixture.setBase('src/lib');
     });

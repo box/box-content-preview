@@ -16,12 +16,12 @@ import {
     htmlEscape,
     repositionCaret,
     isPending
-} from '../annotator-util';
-import * as constants from '../annotation-constants';
+} from '../annotatorUtil';
+import * as constants from '../annotationConstants';
 
 const DIALOG_WIDTH = 81;
 
-describe('annotator-util', () => {
+describe('lib/annotations/annotatorUtil', () => {
     let childEl;
     let parentEl;
 
@@ -30,7 +30,7 @@ describe('annotator-util', () => {
     });
 
     beforeEach(() => {
-        fixture.load('annotations/__tests__/annotator-util-test.html');
+        fixture.load('annotations/__tests__/annotatorUtil-test.html');
 
         childEl = document.querySelector('.child');
         parentEl = document.querySelector('.parent');

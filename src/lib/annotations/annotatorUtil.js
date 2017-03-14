@@ -1,5 +1,5 @@
 import { CLASS_ACTIVE, CLASS_HIDDEN, CLASS_INVISIBLE } from '../constants';
-import * as constants from './annotation-constants';
+import * as constants from './annotationConstants';
 
 const AVATAR_COLOR_COUNT = 9; // 9 colors defined in Box React UI avatar code
 

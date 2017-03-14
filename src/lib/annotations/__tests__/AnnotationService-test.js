@@ -9,7 +9,7 @@ const API_HOST = 'https://app.box.com/api';
 let annotationService;
 let sandbox;
 
-describe('annotation-service', () => {
+describe('lib/annotations/AnnotationService', () => {
     beforeEach(() => {
         sandbox = sinon.sandbox.create();
         annotationService = new AnnotationService({

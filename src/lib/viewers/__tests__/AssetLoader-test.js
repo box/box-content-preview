@@ -4,7 +4,7 @@ import AssetLoader from '../AssetLoader';
 let loader;
 const sandbox = sinon.sandbox.create();
 
-describe('asset-loader', () => {
+describe('lib/viewers/AssetLoader', () => {
     beforeEach(() => {
         loader = new AssetLoader();
     });

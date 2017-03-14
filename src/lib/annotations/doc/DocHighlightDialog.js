@@ -1,9 +1,9 @@
 import autobind from 'autobind-decorator';
 import AnnotationDialog from '../AnnotationDialog';
-import * as annotatorUtil from '../annotator-util';
-import * as docAnnotatorUtil from './doc-annotator-util';
+import * as annotatorUtil from '../annotatorUtil';
+import * as docAnnotatorUtil from './docAnnotatorUtil';
 import { CLASS_HIDDEN, CLASS_ACTIVE } from '../../constants';
-import * as constants from '../annotation-constants';
+import * as constants from '../annotationConstants';
 import { replacePlaceholders, decodeKeydown } from '../../util';
 import { ICON_HIGHLIGHT, ICON_HIGHLIGHT_COMMENT } from '../../icons/icons';
 

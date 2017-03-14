@@ -1,8 +1,8 @@
 import autobind from 'autobind-decorator';
 import Annotator from '../Annotator';
 import ImagePointThread from './ImagePointThread';
-import * as annotatorUtil from '../annotator-util';
-import * as imageAnnotatorUtil from './image-annotator-util';
+import * as annotatorUtil from '../annotatorUtil';
+import * as imageAnnotatorUtil from './imageAnnotatorUtil';
 import { SELECTOR_BOX_PREVIEW_BTN_ANNOTATE } from '../../constants';
 
 @autobind

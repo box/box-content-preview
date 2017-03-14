@@ -1,5 +1,5 @@
 import autobind from 'autobind-decorator';
-import pageNumTemplate from './page-num-button-content.html';
+import pageNumTemplate from './pageNumButtonContent.html';
 import DocBase from './DocBase';
 import DocPreloader from './DocPreloader';
 import fullscreen from '../../Fullscreen';

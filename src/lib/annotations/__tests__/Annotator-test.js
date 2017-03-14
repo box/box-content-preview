@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-expressions */
 import Annotator from '../Annotator';
-import * as constants from '../annotation-constants';
+import * as constants from '../annotationConstants';
 import AnnotationService from '../AnnotationService';
 
 let annotator;
 let stubs = {};
 const sandbox = sinon.sandbox.create();
 
-describe('annotator', () => {
+describe('lib/annotations/Annotator', () => {
     before(() => {
         fixture.setBase('src/lib');
     });

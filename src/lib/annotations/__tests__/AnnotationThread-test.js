@@ -1,15 +1,15 @@
 /* eslint-disable no-unused-expressions */
 import AnnotationThread from '../AnnotationThread';
 import Annotation from '../Annotation';
-import * as annotatorUtil from '../annotator-util';
-import * as constants from '../annotation-constants';
+import * as annotatorUtil from '../annotatorUtil';
+import * as constants from '../annotationConstants';
 import { CLASS_HIDDEN } from '../../constants';
 
 let thread;
 const sandbox = sinon.sandbox.create();
 let stubs = {};
 
-describe('annotation-thread', () => {
+describe('lib/annotations/AnnotationThread', () => {
     before(() => {
         fixture.setBase('src/lib');
     });

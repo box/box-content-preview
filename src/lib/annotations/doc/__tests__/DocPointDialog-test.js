@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-expressions */
 import DocPointDialog from '../DocPointDialog';
-import * as annotatorUtil from '../../annotator-util';
-import * as docAnnotatorUtil from '../doc-annotator-util';
+import * as annotatorUtil from '../../annotatorUtil';
+import * as docAnnotatorUtil from '../docAnnotatorUtil';
 
 let pointDialog;
 const sandbox = sinon.sandbox.create();
 
-describe('doc-point-dialog', () => {
+describe('lib/annotations/doc/DocPointDialog', () => {
     before(() => {
         fixture.setBase('src/lib');
     });

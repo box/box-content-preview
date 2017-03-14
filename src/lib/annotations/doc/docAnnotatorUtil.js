@@ -1,4 +1,4 @@
-import * as annotatorUtil from '../annotator-util';
+import * as annotatorUtil from '../annotatorUtil';
 
 const PREVIEW_PRESENTATION_CLASS = 'bp-doc-presentation';
 const PAGE_PADDING_BOTTOM = 15;

@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-expressions */
 import ImagePointDialog from '../ImagePointDialog';
-import * as annotatorUtil from '../../annotator-util';
-import * as imageAnnotatorUtil from '../image-annotator-util';
+import * as annotatorUtil from '../../annotatorUtil';
+import * as imageAnnotatorUtil from '../imageAnnotatorUtil';
 
 let pointDialog;
 const sandbox = sinon.sandbox.create();
 
-describe('image-point-dialog', () => {
+describe('lib/annotations/image/ImagePointDialog', () => {
     before(() => {
         fixture.setBase('src/lib');
     });

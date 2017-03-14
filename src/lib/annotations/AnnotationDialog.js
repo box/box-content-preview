@@ -1,7 +1,7 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
-import * as annotatorUtil from './annotator-util';
-import * as constants from './annotation-constants';
+import * as annotatorUtil from './annotatorUtil';
+import * as constants from './annotationConstants';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 import { decodeKeydown } from '../util';
 import { ICON_DELETE } from '../icons/icons';

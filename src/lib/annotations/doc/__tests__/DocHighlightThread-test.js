@@ -2,14 +2,14 @@
 import DocHighlightDialog from '../DocHighlightDialog';
 import DocHighlightThread from '../DocHighlightThread';
 import AnnotationService from '../../AnnotationService';
-import * as constants from '../../annotation-constants';
-import * as annotatorUtil from '../../annotator-util';
-import * as docAnnotatorUtil from '../doc-annotator-util';
+import * as constants from '../../annotationConstants';
+import * as annotatorUtil from '../../annotatorUtil';
+import * as docAnnotatorUtil from '../docAnnotatorUtil';
 
 let highlightThread;
 const sandbox = sinon.sandbox.create();
 
-describe('doc-highlight-thread', () => {
+describe('lib/annotations/doc/DocHighlightThread', () => {
     before(() => {
         fixture.setBase('src/lib');
     });

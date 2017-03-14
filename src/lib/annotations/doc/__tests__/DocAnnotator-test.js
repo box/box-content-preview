@@ -7,16 +7,16 @@ import Browser from '../../../Browser';
 import DocAnnotator from '../DocAnnotator';
 import DocHighlightThread from '../DocHighlightThread';
 import DocPointThread from '../DocPointThread';
-import * as annotatorUtil from '../../annotator-util';
-import * as docAnnotatorUtil from '../doc-annotator-util';
-import * as constants from '../../annotation-constants';
+import * as annotatorUtil from '../../annotatorUtil';
+import * as docAnnotatorUtil from '../docAnnotatorUtil';
+import * as constants from '../../annotationConstants';
 
 
 let annotator;
 let stubs = {};
 const sandbox = sinon.sandbox.create();
 
-describe('doc-annotator', () => {
+describe('lib/annotations/doc/DocAnnotator', () => {
     before(() => {
         fixture.setBase('src/lib');
     });

@@ -2,8 +2,8 @@ import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import Annotation from './Annotation';
 import AnnotationService from './AnnotationService';
-import * as annotatorUtil from './annotator-util';
-import * as constants from './annotation-constants';
+import * as annotatorUtil from './annotatorUtil';
+import * as constants from './annotationConstants';
 import { ICON_PLACED_ANNOTATION } from '../icons/icons';
 
 @autobind

@@ -1,9 +1,9 @@
 import autobind from 'autobind-decorator';
 import AnnotationThread from '../AnnotationThread';
 import ImagePointDialog from './ImagePointDialog';
-import * as annotatorUtil from '../annotator-util';
-import * as imageAnnotatorUtil from './image-annotator-util';
-import * as constants from '../annotation-constants';
+import * as annotatorUtil from '../annotatorUtil';
+import * as imageAnnotatorUtil from './imageAnnotatorUtil';
+import * as constants from '../annotationConstants';
 
 const POINT_ANNOTATION_ICON_HEIGHT = 31;
 const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;

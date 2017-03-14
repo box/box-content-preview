@@ -2,14 +2,14 @@
 import DocPointDialog from '../DocPointDialog';
 import DocPointThread from '../DocPointThread';
 import AnnotationThread from '../../AnnotationThread';
-import * as annotatorUtil from '../../annotator-util';
-import * as constants from '../../annotation-constants';
-import * as docAnnotatorUtil from '../doc-annotator-util';
+import * as annotatorUtil from '../../annotatorUtil';
+import * as constants from '../../annotationConstants';
+import * as docAnnotatorUtil from '../docAnnotatorUtil';
 
 let pointThread;
 const sandbox = sinon.sandbox.create();
 
-describe('doc-point-thread', () => {
+describe('lib/annotations/doc/DocPointThread', () => {
     before(() => {
         fixture.setBase('src/lib');
     });

@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-expressions */
 import ImageAnnotator from '../ImageAnnotator';
 import ImagePointThread from '../ImagePointThread';
-import * as annotatorUtil from '../../annotator-util';
-import * as imageAnnotatorUtil from '../image-annotator-util';
+import * as annotatorUtil from '../../annotatorUtil';
+import * as imageAnnotatorUtil from '../imageAnnotatorUtil';
 
 let annotator;
 const sandbox = sinon.sandbox.create();
 
-describe('image-annotator', () => {
+describe('lib/annotations/image/ImageAnnotator', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
