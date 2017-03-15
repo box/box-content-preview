@@ -5,6 +5,7 @@ import Base from '../../Base';
 import cache from '../../../Cache';
 import Controls from '../../../Controls';
 import fullscreen from '../../../Fullscreen';
+import DocPreloader from '../DocPreloader';
 import * as file from '../../../file';
 import * as util from '../../../util';
 
@@ -187,6 +188,17 @@ describe('src/lib/viewers/doc/DocBase', () => {
             expect(docBase.createContentUrlWithAuthParams).to.not.be.calledWith(template);
         });
 
+        it('should not prefetch preload if file is watermarked', () => {
+            docBase.options.file.watermark_info = {
+                is_watermarked: true
+            };
+            sandbox.stub(docBase, 'createContentUrlWithAuthParams');
+
+            docBase.prefetch({ assets: false, preload: true, content: false });
+
+            expect(docBase.createContentUrlWithAuthParams).to.not.be.called;
+        });
+
         it('should prefetch content if content is true and representation is ready', () => {
             const contentUrl = 'someContentUrl';
             sandbox.stub(docBase, 'createContentUrlWithAuthParams').returns(contentUrl);
@@ -200,6 +212,88 @@ describe('src/lib/viewers/doc/DocBase', () => {
             sandbox.stub(docBase, 'isRepresentationReady').returns(false);
             sandbox.mock(util).expects('get').never();
             docBase.prefetch({ assets: false, preload: false, content: true });
+        });
+
+        it('should not prefetch content if file is watermarked', () => {
+            docBase.options.file.watermark_info = {
+                is_watermarked: true
+            };
+            sandbox.mock(util).expects('get').never();
+            docBase.prefetch({ assets: false, preload: false, content: true });
+        });
+    });
+
+    describe('showPreload()', () => {
+        beforeEach(() => {
+            docBase.preloader = new DocPreloader();
+        });
+
+        it('should not do anything if there is a previously cached page', () => {
+            sandbox.stub(docBase, 'getCachedPage').returns(2);
+            sandbox.mock(docBase.preloader).expects('showPreload').never();
+
+            docBase.showPreload();
+        });
+
+        it('should not do anything if no preload rep is found', () => {
+            docBase.options.file = {};
+            sandbox.stub(docBase, 'getCachedPage').returns(1);
+            sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
+            sandbox.stub(file, 'getRepresentation').returns(null);
+            sandbox.mock(docBase.preloader).expects('showPreload').never();
+
+            docBase.showPreload();
+        });
+
+        it('should not do anything if preload option is not set', () => {
+            docBase.options.file = {};
+            sandbox.stub(docBase, 'getCachedPage').returns(1);
+            sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(false);
+            sandbox.stub(file, 'getRepresentation').returns(null);
+            sandbox.mock(docBase.preloader).expects('showPreload').never();
+
+            docBase.showPreload();
+        });
+
+        it('should not do anything if file is watermarked', () => {
+            docBase.options.file = {
+                watermark_info: {
+                    is_watermarked: true
+                }
+            };
+            sandbox.stub(docBase, 'getCachedPage').returns(1);
+            sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
+            sandbox.stub(file, 'getRepresentation').returns({});
+            sandbox.mock(docBase.preloader).expects('showPreload').never();
+
+            docBase.showPreload();
+        });
+
+        it('should show preload with correct authed URL', () => {
+            const preloadUrl = 'someUrl';
+            docBase.options.file = {};
+            sandbox.stub(docBase, 'getCachedPage').returns(1);
+            sandbox.stub(file, 'getRepresentation').returns({
+                content: {
+                    url_template: ''
+                }
+            });
+            sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
+            sandbox.stub(docBase, 'createContentUrlWithAuthParams').returns(preloadUrl);
+            sandbox.mock(docBase.preloader).expects('showPreload').withArgs(preloadUrl, docBase.containerEl);
+
+            docBase.showPreload();
+        });
+    });
+
+    describe('hidePreload', () => {
+        beforeEach(() => {
+            docBase.preloader = new DocPreloader();
+        });
+
+        it('should hide the preload', () => {
+            sandbox.mock(docBase.preloader).expects('hidePreload');
+            docBase.hidePreload();
         });
     });
 
@@ -1231,7 +1325,7 @@ describe('src/lib/viewers/doc/DocBase', () => {
             stubs.isIOS = sandbox.stub(Browser, 'isIOS');
         });
 
-        it('should remove the doc element listeners if the doc element exists', () => {
+        it('should remove the docBase element listeners if the docBase element exists', () => {
             docBase.unbindDOMListeners();
             expect(stubs.removeEventListener).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
             expect(stubs.removeEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);

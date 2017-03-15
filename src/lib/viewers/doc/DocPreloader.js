@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import {
     CLASS_BOX_PREVIEW_PRELOAD,
     CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
-    CLASS_BOX_PREVIEW_PRELOAD_WRAPPER,
+    CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT,
     CLASS_INVISIBLE,
     CLASS_PREVIEW_LOADED
 } from '../../constants';
@@ -12,7 +12,7 @@ import { hideLoadingIndicator } from '../../ui';
 const EXIF_COMMENT_TAG_NAME = 'UserComment'; // Read EXIF data from 'UserComment' tag
 const EXIF_COMMENT_REGEX = /pdfWidth:([0-9.]+)pts,pdfHeight:([0-9.]+)pts,numPages:([0-9]+)/;
 
-const PDF_UNIT_TO_CSS_PIXEL = 4 / 3; // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
+const PDFJS_CSS_UNITS = 96.0 / 72.0; // Should match CSS_UNITS in pdf_viewer.js
 const PDFJS_MAX_AUTO_SCALE = 1.25; // Should match MAX_AUTO_SCALE in pdf_viewer.js
 const PDFJS_WIDTH_PADDING_PX = 40; // Should match SCROLLBAR_PADDING in pdf_viewer.js
 const PDFJS_HEIGHT_PADDING_PX = 5; // Should match VERTICAL_PADDING in pdf_viewer.js
@@ -20,7 +20,18 @@ const PDFJS_HEIGHT_PADDING_PX = 5; // Should match VERTICAL_PADDING in pdf_viewe
 const NUM_PAGES_DEFAULT = 2; // Default to 2 pages for preload if true number of pages cannot be read
 const NUM_PAGES_MAX = 500; // Don't show more than 500 placeholder pages
 
+const ACCEPTABLE_RATIO_DIFFERENCE = 0.025; // Acceptable difference in ratio of PDF dimensions to image dimensions
+
 class DocPreloader extends EventEmitter {
+    /**
+     * [constructor]
+     *
+     * @return {DocPreloader} DocPreloader instance
+     */
+    constructor() {
+        super();
+        this.wrapperClassName = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT;
+    }
 
     /**
      * Shows a preload of the document by showing the first page as an image. This should be called
@@ -42,7 +53,7 @@ class DocPreloader extends EventEmitter {
             this.srcUrl = URL.createObjectURL(imgBlob);
 
             this.wrapperEl = document.createElement('div');
-            this.wrapperEl.className = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER;
+            this.wrapperEl.className = this.wrapperClassName;
             this.wrapperEl.innerHTML = `
                 <div class="${CLASS_BOX_PREVIEW_PRELOAD} ${CLASS_INVISIBLE}">
                     <img class="${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}" src="${this.srcUrl}" />
@@ -54,6 +65,40 @@ class DocPreloader extends EventEmitter {
             this.imageEl = this.preloadEl.querySelector(`img.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
             this.bindDOMListeners();
         });
+    }
+
+    /**
+     * Set scaled dimensions for the preload image and show.
+     *
+     * @param {number} scaledWidth - Width in pixels to scale preload to
+     * @param {number} scaledHeight - Height in pixels to scale preload to
+     * @param {number} numPages - Number of pages to show for preload
+     * @return {void}
+     */
+    scaleAndShowPreload(scaledWidth, scaledHeight, numPages) {
+        if (this.checkDocumentLoaded()) {
+            return;
+        }
+
+        // Set image dimensions
+        setDimensions(this.imageEl, scaledWidth, scaledHeight);
+
+        // Add and scale correct number of placeholder elements
+        for (let i = 0; i < numPages - 1; i++) {
+            const placeholderEl = document.createElement('div');
+            placeholderEl.className = CLASS_BOX_PREVIEW_PRELOAD_CONTENT;
+            setDimensions(placeholderEl, scaledWidth, scaledHeight);
+            this.preloadEl.appendChild(placeholderEl);
+        }
+
+        // Hide the preview-level loading indicator
+        hideLoadingIndicator();
+
+        // Show preload element after content is properly sized
+        this.preloadEl.classList.remove(CLASS_INVISIBLE);
+
+        // Emit message that preload has occurred
+        this.emit('preload');
     }
 
     /**
@@ -157,15 +202,48 @@ class DocPreloader extends EventEmitter {
                     const userComment = userCommentRaw.map((c) => String.fromCharCode(c)).join('');
                     const match = EXIF_COMMENT_REGEX.exec(userComment);
 
-                    if (match && match.length === 4) {
-                        resolve({
-                            pdfWidth: parseInt(match[1], 10) * PDF_UNIT_TO_CSS_PIXEL,
-                            pdfHeight: parseInt(match[2], 10) * PDF_UNIT_TO_CSS_PIXEL,
-                            numPages: parseInt(match[3], 10)
-                        });
-                    } else {
+                    // There should be 3 pieces of metadata: PDF width, PDF height, and num pages
+                    if (!match || match.length !== 4) {
                         reject('No valid EXIF data found');
+                        return;
                     }
+
+                    // Convert PDF Units to CSS Pixels
+                    let pdfWidth = parseInt(match[1], 10) * PDFJS_CSS_UNITS;
+                    let pdfHeight = parseInt(match[2], 10) * PDFJS_CSS_UNITS;
+                    const numPages = parseInt(match[3], 10);
+
+                    // Validate number of pages
+                    if (numPages <= 0) {
+                        reject('EXIF num pages data is invalid');
+                        return;
+                    }
+
+                    // Validate PDF width and height by comparing ratio to preload image dimension ratio
+                    const pdfRatio = pdfWidth / pdfHeight;
+                    const imageRatio = imageEl.naturalWidth / imageEl.naturalHeight;
+
+                    if (Math.abs(pdfRatio - imageRatio) > ACCEPTABLE_RATIO_DIFFERENCE) {
+                        const rotatedPdfRatio = pdfHeight / pdfWidth;
+
+                        // Check if ratio is valid after height and width are swapped since PDF may be rotated
+                        if (Math.abs(rotatedPdfRatio - imageRatio) > ACCEPTABLE_RATIO_DIFFERENCE) {
+                            reject('EXIF PDF width and height are invalid');
+                            return;
+                        }
+
+                        // Swap PDF width and height if swapped ratio seems correct
+                        const tempWidth = pdfWidth;
+                        pdfWidth = pdfHeight;
+                        pdfHeight = tempWidth;
+                    }
+
+                    // Resolve with valid PDF width, height, and num pages
+                    resolve({
+                        pdfWidth,
+                        pdfHeight,
+                        numPages
+                    });
                 });
             } catch (e) {
                 reject('Error reading EXIF data');
@@ -194,41 +272,6 @@ class DocPreloader extends EventEmitter {
             scaledWidth: Math.floor(scale * pdfWidth),
             scaledHeight: Math.floor(scale * pdfHeight)
         };
-    }
-
-    /**
-     * Set scaled dimensions for the preload image and show.
-     *
-     * @private
-     * @param {number} scaledWidth - Width in pixels to scale preload to
-     * @param {number} scaledHeight - Height in pixels to scale preload to
-     * @param {number} numPages - Number of pages to show for preload
-     * @return {void}
-     */
-    scaleAndShowPreload(scaledWidth, scaledHeight, numPages) {
-        if (this.checkDocumentLoaded()) {
-            return;
-        }
-
-        // Set image dimensions
-        setDimensions(this.imageEl, scaledWidth, scaledHeight);
-
-        // Add and scale correct number of placeholder elements
-        for (let i = 0; i < numPages - 1; i++) {
-            const placeholderEl = document.createElement('div');
-            placeholderEl.className = CLASS_BOX_PREVIEW_PRELOAD_CONTENT;
-            setDimensions(placeholderEl, scaledWidth, scaledHeight);
-            this.preloadEl.appendChild(placeholderEl);
-        }
-
-        // Hide the preview-level loading indicator
-        hideLoadingIndicator();
-
-        // Show preload element after content is properly sized
-        this.preloadEl.classList.remove(CLASS_INVISIBLE);
-
-        // Emit message that preload has occurred
-        this.emit('preload');
     }
 
     /**
