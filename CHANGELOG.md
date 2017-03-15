@@ -1,5 +1,36 @@
 # Change Log
 
+## [Unreleased](https://git.dev.box.net/Preview/Preview/tree/HEAD)
+
+[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.109.0...HEAD)
+
+**Merged pull requests:**
+
+## [v0.109.0](https://git.dev.box.net/Preview/Preview/tree/v0.109.0) (2017-03-14)
+[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.108.0...v0.109.0)
+
+**Merged pull requests:**
+
+- Rename 3d files [\#1054](https://git.dev.box.net/Preview/Preview/pull/1054) ([jholdstock](https://git.dev.box.net/jholdstock))
+- Emit event when Instant Preview is loaded [\#1055](https://git.dev.box.net/Preview/Preview/pull/1055) ([tjin](https://git.dev.box.net/tjin))
+- More file renaming [\#1053](https://git.dev.box.net/Preview/Preview/pull/1053) ([tjin](https://git.dev.box.net/tjin))
+- Model3d renderer tests and refactor [\#1051](https://git.dev.box.net/Preview/Preview/pull/1051) ([jholdstock](https://git.dev.box.net/jholdstock))
+- Add code coverage to Jenkins CI and release builds [\#1050](https://git.dev.box.net/Preview/Preview/pull/1050) ([tjin](https://git.dev.box.net/tjin))
+- Renaming annotation files to match class name [\#1049](https://git.dev.box.net/Preview/Preview/pull/1049) ([spramod](https://git.dev.box.net/spramod))
+- Renaming media viewers and associated files [\#1048](https://git.dev.box.net/Preview/Preview/pull/1048) ([jpress](https://git.dev.box.net/jpress))
+- Removing @fileoverview and @author tags from all Annotations, Notification, Popup files [\#1047](https://git.dev.box.net/Preview/Preview/pull/1047) ([spramod](https://git.dev.box.net/spramod))
+- Rename viewer files [\#1046](https://git.dev.box.net/Preview/Preview/pull/1046) ([tjin](https://git.dev.box.net/tjin))
+- Fix presentation viewer [\#1045](https://git.dev.box.net/Preview/Preview/pull/1045) ([jpress](https://git.dev.box.net/jpress))
+- Add CSS optimization [\#1044](https://git.dev.box.net/Preview/Preview/pull/1044) ([tjin](https://git.dev.box.net/tjin))
+- Turning on zoom for 360 viewers [\#1042](https://git.dev.box.net/Preview/Preview/pull/1042) ([mbond](https://git.dev.box.net/mbond))
+- Update package.json and README for Node v6.10.0 [\#1041](https://git.dev.box.net/Preview/Preview/pull/1041) ([tjin](https://git.dev.box.net/tjin))
+- Updating preload to use real document thumbnail rep [\#1040](https://git.dev.box.net/Preview/Preview/pull/1040) ([tjin](https://git.dev.box.net/tjin))
+- Updating maxsize clamp for image360 [\#1039](https://git.dev.box.net/Preview/Preview/pull/1039) ([mbond](https://git.dev.box.net/mbond))
+- updating changelog and readme to v0.108.0 [\#1038](https://git.dev.box.net/Preview/Preview/pull/1038) ([jpress](https://git.dev.box.net/jpress))
+- Adding hotkeys to change video speed [\#1035](https://git.dev.box.net/Preview/Preview/pull/1035) ([bhuh](https://git.dev.box.net/bhuh))
+- Hooking up analytics headers [\#1014](https://git.dev.box.net/Preview/Preview/pull/1014) ([tjin](https://git.dev.box.net/tjin))
+- adding volumechange event, speedchange edge case [\#1012](https://git.dev.box.net/Preview/Preview/pull/1012) ([jpress](https://git.dev.box.net/jpress))
+
 ## [v0.108.0](https://git.dev.box.net/Preview/Preview/tree/v0.108.0) (2017-03-09)
 [Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.107.0...v0.108.0)
 
