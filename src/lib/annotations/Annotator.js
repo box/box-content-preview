@@ -236,14 +236,12 @@ class Annotator extends EventEmitter {
 
         /* istanbul ignore next */
         this.addListener('annotationerror', (data) => {
-            let errorMessage = '';
             switch (data.reason) {
                 case 'validation':
-                    errorMessage = __('annotations_load_error');
+                    this.notification.show(__('annotations_load_error'));
                     break;
                 default:
             }
-            this.notification.show(errorMessage);
         });
     }
 
@@ -307,26 +305,23 @@ class Annotator extends EventEmitter {
 
         /* istanbul ignore next */
         service.addListener('annotationerror', (data) => {
-            let errorMessage = '';
             switch (data.reason) {
                 case 'read':
-                    errorMessage = __('annotations_load_error');
+                    this.notification.show(__('annotations_load_error'));
                     break;
                 case 'create':
-                    errorMessage = __('annotations_create_error');
+                    this.notification.show(__('annotations_create_error'));
                     this.showAnnotations();
                     break;
                 case 'delete':
-                    errorMessage = __('annotations_delete_error');
+                    this.notification.show(__('annotations_delete_error'));
                     this.showAnnotations();
                     break;
                 case 'authorization':
-                    errorMessage = __('annotations_authorization_error');
+                    this.notification.show(__('annotations_authorization_error'));
                     break;
                 default:
-
             }
-            this.notification.show(errorMessage);
         });
     }
 
