@@ -26,21 +26,24 @@ describe('lib/annotations/Annotator', () => {
             hide: sandbox.stub(),
             addListener: sandbox.stub(),
             unbindCustomListenersOnThread: sandbox.stub(),
-            removeAllListeners: sandbox.stub()
+            removeAllListeners: sandbox.stub(),
+            type: 'type'
         };
         stubs.thread2 = {
             show: sandbox.stub(),
             hide: sandbox.stub(),
             addListener: sandbox.stub(),
             unbindCustomListenersOnThread: sandbox.stub(),
-            removeAllListeners: sandbox.stub()
+            removeAllListeners: sandbox.stub(),
+            type: 'type'
         };
         stubs.thread3 = {
             show: sandbox.stub(),
             hide: sandbox.stub(),
             addListener: sandbox.stub(),
             unbindCustomListenersOnThread: sandbox.stub(),
-            removeAllListeners: sandbox.stub()
+            removeAllListeners: sandbox.stub(),
+            type: 'type'
         };
     });
 
@@ -86,8 +89,8 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.init();
 
-            expect(scaleStub).to.have.been.called;
-            expect(setupAnnotations).to.have.been.called;
+            expect(scaleStub).to.be.called;
+            expect(setupAnnotations).to.be.called;
         });
     });
 
@@ -99,9 +102,9 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.showAnnotations();
 
-            expect(fetchStub).to.have.been.called;
+            expect(fetchStub).to.be.called;
             return fetchPromise.then(() => {
-                expect(renderStub).to.have.been.called;
+                expect(renderStub).to.be.called;
             });
         });
     });
@@ -115,9 +118,9 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.hideAnnotations();
 
-            expect(stubs.thread.hide).to.have.been.called;
-            expect(stubs.thread2.hide).to.have.been.called;
-            expect(stubs.thread3.hide).to.have.been.called;
+            expect(stubs.thread.hide).to.be.called;
+            expect(stubs.thread2.hide).to.be.called;
+            expect(stubs.thread3.hide).to.be.called;
         });
     });
 
@@ -130,9 +133,9 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.hideAnnotationsOnPage('1');
 
-            expect(stubs.thread.hide).to.have.been.called;
-            expect(stubs.thread2.hide).to.have.not.been.called;
-            expect(stubs.thread3.hide).to.have.not.been.called;
+            expect(stubs.thread.hide).to.be.called;
+            expect(stubs.thread2.hide).to.not.be.called;
+            expect(stubs.thread3.hide).to.not.be.called;
         });
     });
 
@@ -145,9 +148,9 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.renderAnnotations();
 
-            expect(stubs.thread.show).to.have.been.called;
-            expect(stubs.thread2.show).to.have.been.called;
-            expect(stubs.thread3.show).to.have.been.called;
+            expect(stubs.thread.show).to.be.called;
+            expect(stubs.thread2.show).to.be.called;
+            expect(stubs.thread3.show).to.be.called;
         });
     });
 
@@ -162,9 +165,9 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.renderAnnotationsOnPage('1');
 
-            expect(stubs.thread.show).to.have.been.called;
-            expect(stubs.thread2.show).to.have.not.been.called;
-            expect(stubs.thread3.show).to.have.not.been.called;
+            expect(stubs.thread.show).to.be.called;
+            expect(stubs.thread2.show).to.not.be.called;
+            expect(stubs.thread3.show).to.not.be.called;
         });
     });
 
@@ -186,12 +189,12 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.togglePointModeHandler();
 
-            expect(destroyStub).to.have.been.called;
-            expect(annotator.notification.show).to.have.been.called;
-            expect(annotator.emit).to.have.been.calledWith('pointmodeenter');
+            expect(destroyStub).to.be.called;
+            expect(annotator.notification.show).to.be.called;
+            expect(annotator.emit).to.be.calledWith('pointmodeenter');
             expect(document.querySelector('.annotated-element').classList.contains(constants.CLASS_ANNOTATION_POINT_MODE)).to.be.true;
-            expect(annotator.unbindDOMListeners).to.have.been.called;
-            expect(annotator.bindPointModeListeners).to.have.been.called;
+            expect(annotator.unbindDOMListeners).to.be.called;
+            expect(annotator.bindPointModeListeners).to.be.called;
         });
 
         it('should turn annotation mode off if it is on', () => {
@@ -204,12 +207,12 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.togglePointModeHandler();
 
-            expect(destroyStub).to.have.been.called;
-            expect(annotator.notification.hide).to.have.been.called;
-            expect(annotator.emit).to.have.been.calledWith('pointmodeexit');
+            expect(destroyStub).to.be.called;
+            expect(annotator.notification.hide).to.be.called;
+            expect(annotator.emit).to.be.calledWith('pointmodeexit');
             expect(document.querySelector('.annotated-element').classList.contains(constants.CLASS_ANNOTATION_POINT_MODE)).to.be.false;
-            expect(annotator.unbindPointModeListeners).to.have.been.called;
-            expect(annotator.bindDOMListeners).to.have.been.called;
+            expect(annotator.unbindPointModeListeners).to.be.called;
+            expect(annotator.bindDOMListeners).to.be.called;
         });
     });
 
@@ -222,12 +225,34 @@ describe('lib/annotations/Annotator', () => {
             annotator.setupAnnotations();
 
             expect(Object.keys(annotator._threads).length === 0).to.be.true;
-            expect(annotator.bindDOMListeners).to.have.been.called;
-            expect(annotator.bindCustomListenersOnService).to.have.been.called;
+            expect(annotator.bindDOMListeners).to.be.called;
+            expect(annotator.bindCustomListenersOnService).to.be.called;
         });
     });
 
     describe('fetchAnnotations', () => {
+        it('should reset thread map and create a new thread map by fetching annotation data from the server', () => {
+            const threadMap = {
+                someID: [{}, {}],
+                someID2: [{}]
+            };
+            const threadPromise = Promise.resolve(threadMap);
+            annotator._annotationService = {
+                getThreadMap: sandbox.stub().returns(threadPromise)
+            };
+            sandbox.stub(annotator, 'createAnnotationThread').returns(stubs.thread);
+            sandbox.stub(annotator, 'bindCustomListenersOnThread');
+
+            const result = annotator.fetchAnnotations();
+
+            return threadPromise.then(() => {
+                expect(Object.keys(annotator._threads).length === 0).to.be.true;
+                expect(annotator.createAnnotationThread).to.be.calledTwice;
+                expect(annotator.bindCustomListenersOnThread).to.be.calledTwice;
+                expect(result).to.be.an.object;
+            });
+        });
+
         it('should reset thread map and create a new thread map by fetching annotation data from the server', () => {
             const threadMap = {
                 someID: [{}, {}],
@@ -244,8 +269,8 @@ describe('lib/annotations/Annotator', () => {
 
             return threadPromise.then(() => {
                 expect(Object.keys(annotator._threads).length === 0).to.be.true;
-                expect(annotator.createAnnotationThread).to.have.been.calledTwice;
-                expect(annotator.bindCustomListenersOnThread).to.have.been.calledTwice;
+                expect(annotator.createAnnotationThread).to.be.calledTwice;
+                expect(annotator.bindCustomListenersOnThread).to.not.be.called;
                 expect(result).to.be.an.object;
             });
         });
@@ -258,7 +283,7 @@ describe('lib/annotations/Annotator', () => {
             };
 
             annotator.bindCustomListenersOnService();
-            expect(annotator._annotationService.addListener).to.have.not.been.called;
+            expect(annotator._annotationService.addListener).to.not.be.called;
         });
 
         it('should add an event listener', () => {
@@ -272,7 +297,7 @@ describe('lib/annotations/Annotator', () => {
             const addListenerStub = sandbox.stub(annotator._annotationService, 'addListener');
 
             annotator.bindCustomListenersOnService();
-            expect(addListenerStub).to.have.been.called;
+            expect(addListenerStub).to.be.called;
         });
     });
 
@@ -283,7 +308,7 @@ describe('lib/annotations/Annotator', () => {
             };
 
             annotator.unbindCustomListenersOnService();
-            expect(annotator._annotationService.removeListener).to.have.not.been.called;
+            expect(annotator._annotationService.removeListener).to.not.be.called;
         });
 
         it('should remove an event listener', () => {
@@ -297,7 +322,7 @@ describe('lib/annotations/Annotator', () => {
             const removeListenerStub = sandbox.stub(annotator._annotationService, 'removeAllListeners');
 
             annotator.unbindCustomListenersOnService();
-            expect(removeListenerStub).to.have.been.called;
+            expect(removeListenerStub).to.be.called;
         });
     });
 
@@ -305,8 +330,8 @@ describe('lib/annotations/Annotator', () => {
         it('should bind custom listeners on the thread', () => {
             annotator.bindCustomListenersOnThread(stubs.thread);
 
-            expect(stubs.thread.addListener).to.have.been.calledWith('threaddeleted', sinon.match.func);
-            expect(stubs.thread.addListener).to.have.been.calledWith('threadcleanup', sinon.match.func);
+            expect(stubs.thread.addListener).to.be.calledWith('threaddeleted', sinon.match.func);
+            expect(stubs.thread.addListener).to.be.calledWith('threadcleanup', sinon.match.func);
         });
     });
 
@@ -314,8 +339,8 @@ describe('lib/annotations/Annotator', () => {
         it('should unbind custom listeners from the thread', () => {
             annotator.unbindCustomListenersOnThread(stubs.thread);
 
-            expect(stubs.thread.removeAllListeners).to.have.been.calledWith('threaddeleted');
-            expect(stubs.thread.removeAllListeners).to.have.been.calledWith('threadcleanup');
+            expect(stubs.thread.removeAllListeners).to.be.calledWith('threaddeleted');
+            expect(stubs.thread.removeAllListeners).to.be.calledWith('threadcleanup');
         });
     });
 
@@ -323,7 +348,7 @@ describe('lib/annotations/Annotator', () => {
         it('should bind point mode click handler', () => {
             sandbox.stub(annotator._annotatedElement, 'addEventListener');
             annotator.bindPointModeListeners();
-            expect(annotator._annotatedElement.addEventListener).to.have.been.calledWith('click', annotator.pointClickHandler);
+            expect(annotator._annotatedElement.addEventListener).to.be.calledWith('click', annotator.pointClickHandler);
         });
     });
 
@@ -331,7 +356,7 @@ describe('lib/annotations/Annotator', () => {
         it('should unbind point mode click handler', () => {
             sandbox.stub(annotator._annotatedElement, 'removeEventListener');
             annotator.unbindPointModeListeners();
-            expect(annotator._annotatedElement.removeEventListener).to.have.been.calledWith('click', annotator.pointClickHandler);
+            expect(annotator._annotatedElement.removeEventListener).to.be.calledWith('click', annotator.pointClickHandler);
         });
     });
 
@@ -349,10 +374,10 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.pointClickHandler(event);
 
-            expect(annotator.getLocationFromEvent).to.not.have.been.called;
-            expect(stubs.thread.show).to.not.have.been.called;
-            expect(annotator.bindCustomListenersOnThread).to.not.have.been.called;
-            expect(annotator.togglePointModeHandler).to.not.have.been.called;
+            expect(annotator.getLocationFromEvent).to.not.be.called;
+            expect(stubs.thread.show).to.not.be.called;
+            expect(annotator.bindCustomListenersOnThread).to.not.be.called;
+            expect(annotator.togglePointModeHandler).to.not.be.called;
         });
 
         it('should not create a thread if a location object cannot be inferred from the event', () => {
@@ -364,10 +389,10 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.pointClickHandler(event);
 
-            expect(annotator.getLocationFromEvent).to.have.been.called;
-            expect(stubs.thread.show).to.not.have.been.called;
-            expect(annotator.bindCustomListenersOnThread).to.not.have.been.called;
-            expect(annotator.togglePointModeHandler).to.have.been.called;
+            expect(annotator.getLocationFromEvent).to.be.called;
+            expect(stubs.thread.show).to.not.be.called;
+            expect(annotator.bindCustomListenersOnThread).to.not.be.called;
+            expect(annotator.togglePointModeHandler).to.be.called;
         });
 
         it('should create, show, and bind listeners to a thread', () => {
@@ -379,18 +404,20 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.pointClickHandler(event);
 
-            expect(annotator.getLocationFromEvent).to.have.been.called;
-            expect(stubs.thread.show).to.have.been.called;
-            expect(annotator.bindCustomListenersOnThread).to.have.been.called;
-            expect(annotator.togglePointModeHandler).to.have.been.called;
+            expect(annotator.getLocationFromEvent).to.be.called;
+            expect(stubs.thread.show).to.be.called;
+            expect(annotator.bindCustomListenersOnThread).to.be.called;
+            expect(annotator.togglePointModeHandler).to.be.called;
         });
     });
 
     describe('addToThreadMap', () => {
-        it('should add thread to the thread map', () => {
+        it('should add valid threads to the thread map', () => {
             stubs.thread.location = { page: 2 };
             stubs.thread2.location = { page: 3 };
             stubs.thread3.location = { page: 2 };
+            const invalidThread = { type: 'type' };
+            const invalidThread2 = { location: 'type' };
 
             annotator.init();
             annotator.addThreadToMap(stubs.thread);
@@ -401,6 +428,8 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.addThreadToMap(stubs.thread2);
             annotator.addThreadToMap(stubs.thread3);
+            annotator.addThreadToMap(invalidThread);
+            annotator.addThreadToMap(invalidThread2);
 
             expect(annotator._threads).to.deep.equal({
                 2: [stubs.thread, stubs.thread3],
@@ -425,6 +454,7 @@ describe('lib/annotations/Annotator', () => {
                 location: {
                     page: 2
                 },
+                type: 'type',
                 state: constants.ANNOTATION_STATE_PENDING,
                 destroy: () => {},
                 unbindCustomListenersOnThread: sandbox.stub(),
@@ -468,6 +498,7 @@ describe('lib/annotations/Annotator', () => {
                 location: {
                     page: 2
                 },
+                type: 'type',
                 state: constants.ANNOTATION_STATE_PENDING,
                 destroy: () => {},
                 unbindCustomListenersOnThread: sandbox.stub(),
