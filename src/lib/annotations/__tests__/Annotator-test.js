@@ -22,29 +22,34 @@ describe('lib/annotations/Annotator', () => {
         });
 
         stubs.thread = {
-            show: sandbox.stub(),
-            hide: sandbox.stub(),
-            addListener: sandbox.stub(),
-            unbindCustomListenersOnThread: sandbox.stub(),
-            removeAllListeners: sandbox.stub(),
+            show: () => {},
+            hide: () => {},
+            addListener: () => {},
+            unbindCustomListenersOnThread: () => {},
+            removeAllListeners: () => {},
             type: 'type'
         };
+        stubs.threadMock = sandbox.mock(stubs.thread);
+
         stubs.thread2 = {
-            show: sandbox.stub(),
-            hide: sandbox.stub(),
-            addListener: sandbox.stub(),
-            unbindCustomListenersOnThread: sandbox.stub(),
-            removeAllListeners: sandbox.stub(),
+            show: () => {},
+            hide: () => {},
+            addListener: () => {},
+            unbindCustomListenersOnThread: () => {},
+            removeAllListeners: () => {},
             type: 'type'
         };
+        stubs.threadMock2 = sandbox.mock(stubs.thread2);
+
         stubs.thread3 = {
-            show: sandbox.stub(),
-            hide: sandbox.stub(),
-            addListener: sandbox.stub(),
-            unbindCustomListenersOnThread: sandbox.stub(),
-            removeAllListeners: sandbox.stub(),
+            show: () => {},
+            hide: () => {},
+            addListener: () => {},
+            unbindCustomListenersOnThread: () => {},
+            removeAllListeners: () => {},
             type: 'type'
         };
+        stubs.threadMock3 = sandbox.mock(stubs.thread3);
     });
 
     afterEach(() => {
@@ -72,7 +77,6 @@ describe('lib/annotations/Annotator', () => {
             const unbindCustomStub = sandbox.stub(annotator, 'unbindCustomListenersOnThread');
             const unbindDOMStub = sandbox.stub(annotator, 'unbindDOMListeners');
             const unbindCustomListenersOnService = sandbox.stub(annotator, 'unbindCustomListenersOnService');
-
 
             annotator.destroy();
 
@@ -116,11 +120,10 @@ describe('lib/annotations/Annotator', () => {
                 2: [stubs.thread2, stubs.thread3]
             };
 
+            stubs.threadMock.expects('hide');
+            stubs.threadMock2.expects('hide');
+            stubs.threadMock3.expects('hide');
             annotator.hideAnnotations();
-
-            expect(stubs.thread.hide).to.be.called;
-            expect(stubs.thread2.hide).to.be.called;
-            expect(stubs.thread3.hide).to.be.called;
         });
     });
 
@@ -131,11 +134,10 @@ describe('lib/annotations/Annotator', () => {
                 2: [stubs.thread2, stubs.thread3]
             };
 
+            stubs.threadMock.expects('hide');
+            stubs.threadMock2.expects('hide').never();
+            stubs.threadMock3.expects('hide').never();
             annotator.hideAnnotationsOnPage('1');
-
-            expect(stubs.thread.hide).to.be.called;
-            expect(stubs.thread2.hide).to.not.be.called;
-            expect(stubs.thread3.hide).to.not.be.called;
         });
     });
 
@@ -146,11 +148,10 @@ describe('lib/annotations/Annotator', () => {
                 2: [stubs.thread2, stubs.thread3]
             };
 
+            stubs.threadMock.expects('show');
+            stubs.threadMock2.expects('show');
+            stubs.threadMock3.expects('show');
             annotator.renderAnnotations();
-
-            expect(stubs.thread.show).to.be.called;
-            expect(stubs.thread2.show).to.be.called;
-            expect(stubs.thread3.show).to.be.called;
         });
     });
 
@@ -163,54 +164,59 @@ describe('lib/annotations/Annotator', () => {
                 2: [stubs.thread2, stubs.thread3]
             };
 
+            stubs.threadMock.expects('show');
+            stubs.threadMock2.expects('show').never();
+            stubs.threadMock3.expects('show').never();
             annotator.renderAnnotationsOnPage('1');
-
-            expect(stubs.thread.show).to.be.called;
-            expect(stubs.thread2.show).to.not.be.called;
-            expect(stubs.thread3.show).to.not.be.called;
         });
     });
 
     describe('setScale()', () => {
         it('should set a data-scale attribute on the annotated element', () => {
             annotator.setScale(10);
-            expect(document.querySelector('.annotated-element').getAttribute('data-scale')).to.equal('10');
+            const annotatedEl = document.querySelector('.annotated-element');
+            expect(annotatedEl).to.have.attribute('data-scale', '10');
         });
     });
 
     describe('togglePointModeHandler()', () => {
-        it('should turn annotation mode on if it is off', () => {
-            const destroyStub = sandbox.stub(annotator, 'destroyPendingThreads');
-            sandbox.stub(annotator, 'isInPointMode').returns(false);
+        beforeEach(() => {
+            stubs.pointMode = sandbox.stub(annotator, 'isInPointMode');
             sandbox.stub(annotator.notification, 'show');
+            sandbox.stub(annotator.notification, 'hide');
             sandbox.stub(annotator, 'emit');
             sandbox.stub(annotator, 'unbindDOMListeners');
+            sandbox.stub(annotator, 'bindDOMListeners');
             sandbox.stub(annotator, 'bindPointModeListeners');
+            sandbox.stub(annotator, 'unbindPointModeListeners');
+        });
+
+        it('should turn annotation mode on if it is off', () => {
+            const destroyStub = sandbox.stub(annotator, 'destroyPendingThreads');
+            stubs.pointMode.returns(false);
 
             annotator.togglePointModeHandler();
 
+            const annotatedEl = document.querySelector('.annotated-element');
             expect(destroyStub).to.be.called;
             expect(annotator.notification.show).to.be.called;
             expect(annotator.emit).to.be.calledWith('pointmodeenter');
-            expect(document.querySelector('.annotated-element').classList.contains(constants.CLASS_ANNOTATION_POINT_MODE)).to.be.true;
+            expect(annotatedEl).to.have.class(constants.CLASS_ANNOTATION_POINT_MODE);
             expect(annotator.unbindDOMListeners).to.be.called;
             expect(annotator.bindPointModeListeners).to.be.called;
         });
 
         it('should turn annotation mode off if it is on', () => {
             const destroyStub = sandbox.stub(annotator, 'destroyPendingThreads');
-            sandbox.stub(annotator, 'isInPointMode').returns(true);
-            sandbox.stub(annotator.notification, 'hide');
-            sandbox.stub(annotator, 'emit');
-            sandbox.stub(annotator, 'bindDOMListeners');
-            sandbox.stub(annotator, 'unbindPointModeListeners');
+            stubs.pointMode.returns(true);
 
             annotator.togglePointModeHandler();
 
+            const annotatedEl = document.querySelector('.annotated-element');
             expect(destroyStub).to.be.called;
             expect(annotator.notification.hide).to.be.called;
             expect(annotator.emit).to.be.calledWith('pointmodeexit');
-            expect(document.querySelector('.annotated-element').classList.contains(constants.CLASS_ANNOTATION_POINT_MODE)).to.be.false;
+            expect(annotatedEl).to.not.have.class(constants.CLASS_ANNOTATION_POINT_MODE);
             expect(annotator.unbindPointModeListeners).to.be.called;
             expect(annotator.bindDOMListeners).to.be.called;
         });
@@ -220,32 +226,39 @@ describe('lib/annotations/Annotator', () => {
         it('should initialize thread map and bind DOM listeners', () => {
             sandbox.stub(annotator, 'bindDOMListeners');
             sandbox.stub(annotator, 'bindCustomListenersOnService');
-
+            sandbox.stub(annotator, 'addListener');
 
             annotator.setupAnnotations();
 
             expect(Object.keys(annotator._threads).length === 0).to.be.true;
             expect(annotator.bindDOMListeners).to.be.called;
             expect(annotator.bindCustomListenersOnService).to.be.called;
+            expect(annotator.addListener).to.be.calledWith('annotationerror', sinon.match.func);
         });
     });
 
     describe('fetchAnnotations', () => {
-        it('should reset thread map and create a new thread map by fetching annotation data from the server', () => {
+        beforeEach(() => {
+            annotator._annotationService = {
+                getThreadMap: () => {}
+            };
+            stubs.serviceMock = sandbox.mock(annotator._annotationService);
+
             const threadMap = {
                 someID: [{}, {}],
                 someID2: [{}]
             };
-            const threadPromise = Promise.resolve(threadMap);
-            annotator._annotationService = {
-                getThreadMap: sandbox.stub().returns(threadPromise)
-            };
+            stubs.threadPromise = Promise.resolve(threadMap);
+            stubs.serviceMock.expects('getThreadMap').returns(stubs.threadPromise);
+        });
+
+        it('should reset thread map and create a new thread map by fetching annotation data from the server', () => {
             sandbox.stub(annotator, 'createAnnotationThread').returns(stubs.thread);
             sandbox.stub(annotator, 'bindCustomListenersOnThread');
 
             const result = annotator.fetchAnnotations();
 
-            return threadPromise.then(() => {
+            return stubs.threadPromise.then(() => {
                 expect(Object.keys(annotator._threads).length === 0).to.be.true;
                 expect(annotator.createAnnotationThread).to.be.calledTwice;
                 expect(annotator.bindCustomListenersOnThread).to.be.calledTwice;
@@ -254,20 +267,12 @@ describe('lib/annotations/Annotator', () => {
         });
 
         it('should reset thread map and create a new thread map by fetching annotation data from the server', () => {
-            const threadMap = {
-                someID: [{}, {}],
-                someID2: [{}]
-            };
-            const threadPromise = Promise.resolve(threadMap);
-            annotator._annotationService = {
-                getThreadMap: sandbox.stub().returns(threadPromise)
-            };
             sandbox.stub(annotator, 'createAnnotationThread');
             sandbox.stub(annotator, 'bindCustomListenersOnThread');
 
             const result = annotator.fetchAnnotations();
 
-            return threadPromise.then(() => {
+            return stubs.threadPromise.then(() => {
                 expect(Object.keys(annotator._threads).length === 0).to.be.true;
                 expect(annotator.createAnnotationThread).to.be.calledTwice;
                 expect(annotator.bindCustomListenersOnThread).to.not.be.called;
@@ -297,7 +302,7 @@ describe('lib/annotations/Annotator', () => {
             const addListenerStub = sandbox.stub(annotator._annotationService, 'addListener');
 
             annotator.bindCustomListenersOnService();
-            expect(addListenerStub).to.be.called;
+            expect(addListenerStub).to.be.calledWith('annotationerror', sinon.match.func);
         });
     });
 
@@ -328,19 +333,17 @@ describe('lib/annotations/Annotator', () => {
 
     describe('bindCustomListenersOnThread', () => {
         it('should bind custom listeners on the thread', () => {
+            stubs.threadMock.expects('addListener').withArgs('threaddeleted', sinon.match.func);
+            stubs.threadMock.expects('addListener').withArgs('threadcleanup', sinon.match.func);
             annotator.bindCustomListenersOnThread(stubs.thread);
-
-            expect(stubs.thread.addListener).to.be.calledWith('threaddeleted', sinon.match.func);
-            expect(stubs.thread.addListener).to.be.calledWith('threadcleanup', sinon.match.func);
         });
     });
 
     describe('unbindCustomListenersOnThread', () => {
         it('should unbind custom listeners from the thread', () => {
+            stubs.threadMock.expects('removeAllListeners').withArgs('threaddeleted');
+            stubs.threadMock.expects('removeAllListeners').withArgs('threadcleanup');
             annotator.unbindCustomListenersOnThread(stubs.thread);
-
-            expect(stubs.thread.removeAllListeners).to.be.calledWith('threaddeleted');
-            expect(stubs.thread.removeAllListeners).to.be.calledWith('threadcleanup');
         });
     });
 
@@ -365,47 +368,48 @@ describe('lib/annotations/Annotator', () => {
             stopPropagation: () => {}
         };
 
-        it('should not do anything if there are pending threads', () => {
-            sandbox.stub(annotator, 'destroyPendingThreads').returns(true);
-            sandbox.stub(annotator, 'getLocationFromEvent');
-            sandbox.stub(annotator, 'createAnnotationThread').returns(stubs.thread);
+        beforeEach(() => {
+            stubs.destroy = sandbox.stub(annotator, 'destroyPendingThreads');
+            stubs.create = sandbox.stub(annotator, 'createAnnotationThread');
+            stubs.getLocation = sandbox.stub(annotator, 'getLocationFromEvent');
             sandbox.stub(annotator, 'bindCustomListenersOnThread');
             sandbox.stub(annotator, 'togglePointModeHandler');
+        });
 
+        it('should not do anything if there are pending threads', () => {
+            stubs.destroy.returns(true);
+            stubs.create.returns(stubs.thread);
+
+            stubs.threadMock.expects('show').never();
             annotator.pointClickHandler(event);
 
             expect(annotator.getLocationFromEvent).to.not.be.called;
-            expect(stubs.thread.show).to.not.be.called;
             expect(annotator.bindCustomListenersOnThread).to.not.be.called;
             expect(annotator.togglePointModeHandler).to.not.be.called;
         });
 
         it('should not create a thread if a location object cannot be inferred from the event', () => {
-            sandbox.stub(annotator, 'destroyPendingThreads').returns(false);
-            sandbox.stub(annotator, 'getLocationFromEvent').returns(null);
-            sandbox.stub(annotator, 'createAnnotationThread').returns(stubs.thread);
-            sandbox.stub(annotator, 'bindCustomListenersOnThread');
-            sandbox.stub(annotator, 'togglePointModeHandler');
+            stubs.destroy.returns(false);
+            stubs.getLocation.returns(null);
+            stubs.create.returns(stubs.thread);
 
+            stubs.threadMock.expects('show').never();
             annotator.pointClickHandler(event);
 
             expect(annotator.getLocationFromEvent).to.be.called;
-            expect(stubs.thread.show).to.not.be.called;
             expect(annotator.bindCustomListenersOnThread).to.not.be.called;
             expect(annotator.togglePointModeHandler).to.be.called;
         });
 
         it('should create, show, and bind listeners to a thread', () => {
-            sandbox.stub(annotator, 'destroyPendingThreads').returns(false);
-            sandbox.stub(annotator, 'getLocationFromEvent').returns({});
-            sandbox.stub(annotator, 'createAnnotationThread').returns(stubs.thread);
-            sandbox.stub(annotator, 'bindCustomListenersOnThread');
-            sandbox.stub(annotator, 'togglePointModeHandler');
+            stubs.destroy.returns(false);
+            stubs.getLocation.returns({});
+            stubs.create.returns(stubs.thread);
 
+            stubs.threadMock.expects('show');
             annotator.pointClickHandler(event);
 
             expect(annotator.getLocationFromEvent).to.be.called;
-            expect(stubs.thread.show).to.be.called;
             expect(annotator.bindCustomListenersOnThread).to.be.called;
             expect(annotator.togglePointModeHandler).to.be.called;
         });
@@ -416,8 +420,8 @@ describe('lib/annotations/Annotator', () => {
             stubs.thread.location = { page: 2 };
             stubs.thread2.location = { page: 3 };
             stubs.thread3.location = { page: 2 };
-            const invalidThread = { type: 'type' };
-            const invalidThread2 = { location: 'type' };
+            const noLocationThread = { type: 'type' };
+            const noTypeThread = { location: 'location' };
 
             annotator.init();
             annotator.addThreadToMap(stubs.thread);
@@ -428,8 +432,8 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.addThreadToMap(stubs.thread2);
             annotator.addThreadToMap(stubs.thread3);
-            annotator.addThreadToMap(invalidThread);
-            annotator.addThreadToMap(invalidThread2);
+            annotator.addThreadToMap(noLocationThread);
+            annotator.addThreadToMap(noTypeThread);
 
             expect(annotator._threads).to.deep.equal({
                 2: [stubs.thread, stubs.thread3],
@@ -451,68 +455,60 @@ describe('lib/annotations/Annotator', () => {
     describe('destroyPendingThreads', () => {
         beforeEach(() => {
             stubs.thread = {
-                location: {
-                    page: 2
-                },
+                location: { page: 2 },
                 type: 'type',
                 state: constants.ANNOTATION_STATE_PENDING,
                 destroy: () => {},
-                unbindCustomListenersOnThread: sandbox.stub(),
-                removeAllListeners: sandbox.stub()
+                unbindCustomListenersOnThread: () => {},
+                removeAllListeners: () => {}
             };
+            stubs.threadMock = sandbox.mock(stubs.thread);
         });
 
         it('should destroy and return true if there are any pending threads', () => {
-            const destroyStub = sandbox.stub(stubs.thread, 'destroy');
             annotator.init();
             annotator.addThreadToMap(stubs.thread);
+            stubs.threadMock.expects('destroy');
             const destroyed = annotator.destroyPendingThreads();
-
-            expect(destroyStub).to.be.called;
             expect(destroyed).to.equal(true);
         });
 
         it('should not destroy and return false if there are no threads', () => {
-            const destroyStub = sandbox.stub(stubs.thread, 'destroy');
             annotator.init();
+            stubs.threadMock.expects('destroy').never();
             const destroyed = annotator.destroyPendingThreads();
-
-            expect(destroyStub).to.not.be.called;
             expect(destroyed).to.equal(false);
         });
 
         it('should not destroy and return false if the threads are not pending', () => {
             stubs.thread.state = 'NOT_PENDING';
-            const destroyStub = sandbox.stub(stubs.thread, 'destroy');
             annotator.init();
             annotator.addThreadToMap(stubs.thread);
+            stubs.threadMock.expects('destroy').never();
             const destroyed = annotator.destroyPendingThreads();
-
-            expect(destroyStub).to.not.be.called;
             expect(destroyed).to.equal(false);
         });
 
         it('should destroy only pending threads, and return true', () => {
             stubs.thread.state = 'NOT_PENDING';
             const pendingThread = {
-                location: {
-                    page: 2
-                },
+                location: { page: 2 },
                 type: 'type',
                 state: constants.ANNOTATION_STATE_PENDING,
                 destroy: () => {},
-                unbindCustomListenersOnThread: sandbox.stub(),
-                removeAllListeners: sandbox.stub()
+                unbindCustomListenersOnThread: () => {},
+                removeAllListeners: () => {}
             };
-            const destroyStub = sandbox.stub(stubs.thread, 'destroy');
-            const destroyStub2 = sandbox.stub(pendingThread, 'destroy');
+            stubs.pendingMock = sandbox.mock(pendingThread);
+
             annotator.init();
             annotator.addThreadToMap(stubs.thread);
             annotator.addThreadToMap(pendingThread);
+
+            stubs.threadMock.expects('destroy').never();
+            stubs.pendingMock.expects('destroy');
             const destroyed = annotator.destroyPendingThreads();
 
-            expect(destroyStub).to.not.be.called;
-            expect(destroyStub2).to.be.called;
             expect(destroyed).to.equal(true);
         });
     });
