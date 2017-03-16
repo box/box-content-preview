@@ -147,7 +147,7 @@ describe('lib/viewers/media/MediaBase', () => {
         });
     });
 
-    describe('handleSpeed()', () => {
+    describe('handleRate()', () => {
         it('should emit speed change if speed has changed', () => {
             const speed = 2;
             sandbox.stub(media, 'emit');
@@ -155,7 +155,7 @@ describe('lib/viewers/media/MediaBase', () => {
             media.mediaEl = document.createElement('video');
             media.mediaEl.playbackRate = 1;
 
-            media.handleSpeed();
+            media.handleRate();
 
             expect(media.emit).to.be.calledWith('ratechange', speed);
             expect(media.mediaEl.playbackRate).to.equal(speed);
@@ -220,7 +220,7 @@ describe('lib/viewers/media/MediaBase', () => {
             expect(media.mediaControls.addListener).to.be.calledWith('volumeupdate', sinon.match.func);
             expect(media.mediaControls.addListener).to.be.calledWith('toggleplayback', sinon.match.func);
             expect(media.mediaControls.addListener).to.be.calledWith('togglemute', sinon.match.func);
-            expect(media.mediaControls.addListener).to.be.calledWith('speedchange', sinon.match.func);
+            expect(media.mediaControls.addListener).to.be.calledWith('ratechange', sinon.match.func);
         });
     });
 
@@ -273,14 +273,14 @@ describe('lib/viewers/media/MediaBase', () => {
     describe('playingHandler()', () => {
         it('should show pause icon, hide loading icon, and handle speed and volume', () => {
             sandbox.stub(media, 'hideLoadingIcon');
-            sandbox.stub(media, 'handleSpeed');
+            sandbox.stub(media, 'handleRate');
             sandbox.stub(media, 'handleVolume');
 
             media.playingHandler();
 
             expect(media.mediaControls.showPauseIcon).to.be.called;
             expect(media.hideLoadingIcon).to.be.called;
-            expect(media.handleSpeed).to.be.called;
+            expect(media.handleRate).to.be.called;
             expect(media.handleVolume).to.be.called;
         });
     });
@@ -371,14 +371,14 @@ describe('lib/viewers/media/MediaBase', () => {
                 play: sandbox.stub()
             };
             sandbox.stub(media, 'emit');
-            sandbox.stub(media, 'handleSpeed');
+            sandbox.stub(media, 'handleRate');
             sandbox.stub(media, 'handleVolume');
 
             media.togglePlay();
 
             expect(media.mediaEl.pause.callCount).to.equal(0);
             expect(media.mediaEl.play.callCount).to.equal(1);
-            expect(media.handleSpeed).to.be.called;
+            expect(media.handleRate).to.be.called;
             expect(media.handleVolume).to.be.called;
             expect(media.emit).to.be.calledWith('play');
         });

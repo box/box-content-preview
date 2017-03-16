@@ -123,7 +123,7 @@ describe('lib/viewers/media/MediaControls', () => {
 
             mediaControls.destroy();
             expect(stubs.genericEl.removeListener).to.be.calledWith('quality', mediaControls.handleQuality);
-            expect(stubs.genericEl.removeListener).to.be.calledWith('speed', mediaControls.handleSpeed);
+            expect(stubs.genericEl.removeListener).to.be.calledWith('speed', mediaControls.handleRate);
             expect(stubs.genericEl.destroy);
             expect(mediaControls.settings).to.equal(undefined);
         });
@@ -146,11 +146,11 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('handleSpeed', () => {
+    describe('handleRate', () => {
         it('should emit the ratechange event', () => {
             stubs.emit = sandbox.stub(mediaControls, 'emit');
 
-            mediaControls.handleSpeed();
+            mediaControls.handleRate();
             expect(stubs.emit).to.be.calledWith('ratechange');
         });
     });
@@ -171,7 +171,7 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.setupSettings();
             expect(mediaControls.settings instanceof Settings);
             expect(settingsStub).to.be.calledWith('quality', mediaControls.handleQuality);
-            expect(settingsStub).to.be.calledWith('speed', mediaControls.handleSpeed);
+            expect(settingsStub).to.be.calledWith('speed', mediaControls.handleRate);
         });
     });
 

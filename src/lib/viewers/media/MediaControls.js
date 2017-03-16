@@ -89,7 +89,7 @@ class MediaControls extends EventEmitter {
 
         if (this.settings) {
             this.settings.removeListener('quality', this.handleQuality);
-            this.settings.removeListener('speed', this.handleSpeed);
+            this.settings.removeListener('speed', this.handleRate);
             this.settings.destroy();
             this.settings = undefined;
         }
@@ -139,7 +139,7 @@ class MediaControls extends EventEmitter {
      * @private
      * @return {void}
      */
-    handleSpeed() {
+    handleRate() {
         this.emit('ratechange');
     }
 
@@ -162,7 +162,7 @@ class MediaControls extends EventEmitter {
     setupSettings() {
         this.settings = new Settings(this.containerEl);
         this.settings.addListener('quality', this.handleQuality);
-        this.settings.addListener('speed', this.handleSpeed);
+        this.settings.addListener('speed', this.handleRate);
     }
 
     /**

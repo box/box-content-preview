@@ -160,7 +160,7 @@ class MediaBase extends Base {
      * @emits ratechange
      * @return {void}
      */
-    handleSpeed() {
+    handleRate() {
         const speed = cache.get('media-speed') - 0;
         if (speed && this.mediaEl.playbackRate !== speed && this.mediaEl.playbackRate > 0) {
             this.emit('ratechange', speed);
@@ -224,7 +224,7 @@ class MediaBase extends Base {
         this.mediaControls.addListener('volumeupdate', this.setVolume);
         this.mediaControls.addListener('toggleplayback', this.togglePlay);
         this.mediaControls.addListener('togglemute', this.toggleMute);
-        this.mediaControls.addListener('speedchange', this.handleSpeed);
+        this.mediaControls.addListener('ratechange', this.handleRate);
     }
 
     /**
@@ -280,7 +280,7 @@ class MediaBase extends Base {
     playingHandler() {
         this.mediaControls.showPauseIcon();
         this.hideLoadingIcon();
-        this.handleSpeed();
+        this.handleRate();
         this.handleVolume();
     }
 
@@ -364,7 +364,7 @@ class MediaBase extends Base {
         if (this.mediaEl.paused) {
             this.mediaEl.play();
             this.emit('play');
-            this.handleSpeed();
+            this.handleRate();
             this.handleVolume();
         } else {
             this.mediaEl.pause();
