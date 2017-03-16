@@ -19,14 +19,6 @@ module.exports = (language) => {
         module: {
             rules: [
                 {
-                    test: /\.js$/,
-                    loader: 'babel-loader',
-                    exclude: [
-                        path.resolve('src/third-party'),
-                        path.resolve('node_modules')
-                    ]
-                },
-                {
                     test: /\.s?css$/,
                     loader: ExtractTextPlugin.extract({
                         fallbackLoader: 'style-loader',

@@ -90,6 +90,17 @@ function updateConfig(conf, language, index) {
         config.plugins.push(new BannerPlugin('Box Preview JavaScript Library | Copyright 2016-2017 Box | Licenses: https://cloud.box.com/v/preview-licenses-v1'));
     }
 
+    // Add the babel loader
+    config.module.rules.push({
+        test: /\.js$/,
+        loader: 'babel-loader',
+        exclude: [
+            path.resolve('src/third-party'),
+            path.resolve('node_modules')
+        ],
+        options: {}
+    });
+
     return config;
 }
 

@@ -16,7 +16,7 @@ build_assets() {
     echo "-------------------------------------------------------------------------------------------------"
     echo "Installing node modules"
     echo "-------------------------------------------------------------------------------------------------"
-    if yarn install; then
+    if npm install; then
         echo "----------------------------------------------------"
         echo "Installed node modules."
         echo "----------------------------------------------------"
@@ -32,7 +32,7 @@ build_assets() {
     echo "Starting CI build for version" $VERSION
     echo "----------------------------------------------------"
 
-    if yarn run ci; then
+    if npm run ci; then
         echo "----------------------------------------------------"
         echo "Built CI assets for version" $VERSION
         echo "----------------------------------------------------"

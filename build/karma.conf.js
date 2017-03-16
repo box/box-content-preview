@@ -8,7 +8,7 @@ const getTestFile = (src) => {
         ];
     }
 
-    if (src.endsWith('/')) {
+    if (src.lastIndexOf('/') === src.length - 1) {
         return [
             `src/lib/${src}**/*-test.js`,
             `src/lib/${src}**/*-test.html`

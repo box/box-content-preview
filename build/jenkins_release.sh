@@ -113,7 +113,7 @@ build_assets() {
     echo "--------------------------------------------------"
     echo "Installing node modules"
     echo "--------------------------------------------------"
-    if yarn install; then
+    if npm install; then
         echo "----------------------------------------------------"
         echo "Installed node modules."
         echo "----------------------------------------------------"
@@ -129,7 +129,7 @@ build_assets() {
     echo "Starting release build for version" $VERSION
     echo "----------------------------------------------------"
 
-    if yarn run release; then
+    if npm run release; then
         echo "----------------------------------------------------"
         echo "Built release assets for version" $VERSION
         echo "----------------------------------------------------"
