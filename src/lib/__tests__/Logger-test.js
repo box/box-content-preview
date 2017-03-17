@@ -56,16 +56,6 @@ describe('lib/Logger', () => {
         assert.ok(log.cache.stale, 'Cache should be stale');
     });
 
-    describe('getElapsedTime()', () => {
-        it('it should return time elapsed since initialization', () => {
-            const dateStub = sandbox.stub(Date, 'now').returns(0);
-            logger = new Logger({});
-
-            dateStub.returns(10);
-            expect(logger.getElapsedTime()).to.equal(10);
-        });
-    });
-
     describe('setCached()', () => {
         it('should indicate a cache hit', () => {
             logger.setCached();
@@ -79,6 +69,17 @@ describe('lib/Logger', () => {
             logger.setUnConverted();
 
             assert.notOk(logger.log.converted);
+        });
+    });
+
+    describe('setPreloaded()', () => {
+        it('should set preloaded time', () => {
+            logger.start = 0;
+            sandbox.stub(Date, 'now').returns(100);
+
+            logger.setPreloaded();
+
+            expect(logger.log.time.preload).to.equal(100);
         });
     });
 

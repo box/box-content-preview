@@ -44,15 +44,6 @@ class Logger {
     }
 
     /**
-     * Return elapsed time since logger was initialized.
-     *
-     * @return {number} Time in ms since initialization
-     */
-    getElapsedTime() {
-        return Date.now() - this.start;
-    }
-
-    /**
      * Marks file as cached.
      *
      * @return {void}
@@ -81,6 +72,15 @@ class Logger {
     }
 
     /**
+     * Marks file as preloaded.
+     *
+     * @return {void}
+     */
+    setPreloaded() {
+        this.log.time.preload = Date.now() - this.start;
+    }
+
+    /**
      * Sets the file object.
      *
      * @param {Object} file - file object
@@ -103,8 +103,8 @@ class Logger {
     /**
      * Finishes logging.
      *
-     * @param {Object} count - preview count
-     * @return {Object} metrics
+     * @param {Object} count - Preview count
+     * @return {Object} Metrics object
      */
     done(count) {
         this.log.count = count;

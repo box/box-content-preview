@@ -33,9 +33,7 @@ class Document extends DocBase {
         // Set up preloader
         this.docPreloader = new DocPreloader();
         this.docPreloader.addListener('preload', () => {
-            this.emit('preload', {
-                elapsedTime: this.options.logger.getElapsedTime()
-            });
+            this.options.logger.setPreloaded();
         });
     }
 
