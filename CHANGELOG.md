@@ -2,16 +2,28 @@
 
 ## [Unreleased](https://git.dev.box.net/Preview/Preview/tree/HEAD)
 
-[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.109.0...HEAD)
+[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.110.0...HEAD)
 
 **Merged pull requests:**
+
+## [v0.110.0](https://git.dev.box.net/Preview/Preview/tree/v0.110.0) (2017-03-16)
+[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.109.0...v0.110.0)
+
+- Upgrading packages [\#1063](https://git.dev.box.net/Preview/Preview/pull/1063) ([phora](https://git.dev.box.net/phora))
+
+**Merged pull requests:**
+
+- Revert "Upgrading packages \(\#1061\)" [\#1062](https://git.dev.box.net/Preview/Preview/pull/1062) ([tjin](https://git.dev.box.net/tjin))
+- Upgrading packages [\#1061](https://git.dev.box.net/Preview/Preview/pull/1061) ([phora](https://git.dev.box.net/phora))
+- fixing speedchange [\#1059](https://git.dev.box.net/Preview/Preview/pull/1059) ([jpress](https://git.dev.box.net/jpress))
+- updating changelog and readme to v0.109.0 [\#1057](https://git.dev.box.net/Preview/Preview/pull/1057) ([jpress](https://git.dev.box.net/jpress))
+- Rename 3d files [\#1054](https://git.dev.box.net/Preview/Preview/pull/1054) ([jholdstock](https://git.dev.box.net/jholdstock))
 
 ## [v0.109.0](https://git.dev.box.net/Preview/Preview/tree/v0.109.0) (2017-03-14)
 [Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.108.0...v0.109.0)
 
 **Merged pull requests:**
 
-- Rename 3d files [\#1054](https://git.dev.box.net/Preview/Preview/pull/1054) ([jholdstock](https://git.dev.box.net/jholdstock))
 - Emit event when Instant Preview is loaded [\#1055](https://git.dev.box.net/Preview/Preview/pull/1055) ([tjin](https://git.dev.box.net/tjin))
 - More file renaming [\#1053](https://git.dev.box.net/Preview/Preview/pull/1053) ([tjin](https://git.dev.box.net/tjin))
 - Model3d renderer tests and refactor [\#1051](https://git.dev.box.net/Preview/Preview/pull/1051) ([jholdstock](https://git.dev.box.net/jholdstock))
