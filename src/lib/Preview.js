@@ -737,13 +737,14 @@ class Preview extends EventEmitter {
         const representation = loader.determineRepresentation(this.file, viewer);
 
         // Instantiate the viewer
-        this.viewer = new viewer.CONSTRUCTOR(this.createViewerOptions({
+        const viewerOptions = this.createViewerOptions({
             viewer,
             representation,
             container: this.container,
-            file: this.file,
-            logger: this.logger
-        }));
+            file: this.file
+        });
+        viewerOptions.logger = this.logger; // Don't clone the logger since it needs to track metrics
+        this.viewer = new viewer.CONSTRUCTOR(viewerOptions);
 
         // Add listeners for viewer events
         this.attachViewerListeners();
