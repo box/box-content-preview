@@ -126,12 +126,12 @@ $avatar-color-9: #f22c44;
         font-size: 13px;
         height: 34px;
         line-height: 13px;
-        max-width: 250px;
+        max-width: 235px;
         min-height: 34px;
         padding: 7px;
         resize: vertical;
         transition: border-color linear .15s, box-shadow linear .1s, min-height .1s;
-        width: 250px;
+        width: 235px;
 
         &.bp-is-active {
             min-height: 68px;

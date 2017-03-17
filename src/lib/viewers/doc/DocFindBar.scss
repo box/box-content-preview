@@ -10,7 +10,7 @@ $blue:                #00f !default;
     font-size: 12px;
     padding: 6px;
     position: absolute;
-    right: 17px;
+    right: 17px; // Prevents overlap with scroll-bar
     top: 0;
 
     // Removes "clear field" x at the end of input fields in IE10+ on Windows 8+
