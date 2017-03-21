@@ -112,7 +112,7 @@ class Model3dRenderer extends Box3DRenderer {
             opts.sceneEntities = sceneEntities(location.staticBaseURI);
         }
 
-        return this.initBox3d(opts)
+        return super.load(assetUrl, opts)
             .then(this.loadBox3dFile.bind(this, assetUrl));
     }
 
@@ -182,7 +182,7 @@ class Model3dRenderer extends Box3DRenderer {
      * @return {void}
      */
     optimizeMaterials() {
-        this.box3d.getAssetsByType('material').forEach((mat) => {
+        this.box3d.getAssetsByType(Box3D.MaterialAsset).forEach((mat) => {
             if (mat.getProperty('roughness') <= 0.01 && !mat.getProperty('glossMap')) {
                 mat.setProperty('envMapGlossVariance', false);
             }

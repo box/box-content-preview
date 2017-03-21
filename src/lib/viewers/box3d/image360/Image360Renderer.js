@@ -98,7 +98,7 @@ class Image360Renderer extends Box3DRenderer {
         /* istanbul ignore next */
         return this.box3d.addRemoteEntities(assetUrl)
             .then(() => {
-                this.imageAsset = this.box3d.getAssetByType('image');
+                this.imageAsset = this.box3d.getAssetByType(Box3D.ImageAsset);
                 this.textureAsset = this.box3d.createTexture2d();
                 this.textureAsset.setProperties({
                     imageId: this.imageAsset.id,
