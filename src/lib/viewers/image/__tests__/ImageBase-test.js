@@ -193,11 +193,11 @@ describe('lib/viewers/image/ImageBase', () => {
     });
 
     describe('loadUI()', () => {
-        it('should create controls and add control buttons for zoom and fullscreen', () => {
+        it('should create controls and add control buttons for zoom', () => {
             imageBase.loadUI();
 
             expect(imageBase.controls).to.not.be.undefined;
-            expect(imageBase.controls.buttonRefs.length).to.equal(4);
+            expect(imageBase.controls.buttonRefs.length).to.equal(2);
         });
     });
 

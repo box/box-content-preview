@@ -378,20 +378,15 @@ describe('lib/viewers/image/Image', () => {
     describe('loadUI()', () => {
         beforeEach(() => {
             image.annotationsLoaded = false;
-
-            Object.defineProperty(Object.getPrototypeOf(Image.prototype), 'loadUI', {
-                value: sandbox.stub()
-            });
-            image.controls = {
-                add: sandbox.stub()
-            };
         });
 
-        it('should load UI & controls', () => {
+        it('should load UI & controls for zoom', () => {
             image.annotator = null;
 
             image.loadUI();
-            expect(image.controls.add).to.be.called; // Check that it's been called 4 times
+
+            expect(image.controls).to.not.be.undefined;
+            expect(image.controls.buttonRefs.length).to.equal(5);
             expect(image.annotationsLoaded).to.be.false;
         });
 

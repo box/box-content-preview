@@ -2,6 +2,7 @@ import autobind from 'autobind-decorator';
 import ImageBase from './ImageBase';
 import './MultiImage.scss';
 
+import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
 
 const CSS_CLASS_IMAGE = 'bp-images';
@@ -13,11 +14,7 @@ const Box = global.Box || {};
 class MultiImage extends ImageBase {
 
     /**
-     * [constructor]
-     *
-     * @param {string|HTMLElement} container - The container
-     * @param {Object} options - Options
-     * @return {MultiImage} MultiImage instance
+     * @inheritdoc
      */
     setup() {
         super.setup();
@@ -163,6 +160,18 @@ class MultiImage extends ImageBase {
 
         // Give the browser some time to render before updating pannability
         setTimeout(this.updatePannability, 50);
+    }
+
+    /**
+     * Adds UI controls
+     *
+     * @override
+     * @return {void}
+     */
+    loadUI() {
+        super.loadUI();
+        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 
     /**

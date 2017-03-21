@@ -3,7 +3,7 @@ import AnnotationService from '../../annotations/AnnotationService';
 import ImageAnnotator from '../../annotations/image/ImageAnnotator';
 import Browser from '../../Browser';
 import Base from './ImageBase';
-import { ICON_ROTATE_LEFT } from '../../icons/icons';
+import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
 import { openContentInsideIframe } from '../../util';
 import './Image.scss';
@@ -257,12 +257,14 @@ class Image extends Base {
     /**
      * Loads controls
      *
-     * @private
+     * @override
      * @return {void}
      */
     loadUI() {
         super.loadUI();
         this.controls.add(__('rotate_left'), this.rotateLeft, 'bp-image-rotate-left-icon', ICON_ROTATE_LEFT);
+        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
 
         // Show existing annotations after image is rendered
         if (!this.annotator || this.annotationsLoaded) {

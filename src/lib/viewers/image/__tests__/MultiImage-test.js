@@ -10,6 +10,7 @@ let multiImage;
 let stubs = {};
 let options;
 let clock;
+let containerEl;
 
 
 describe('lib/viewers/image/MultiImage', () => {
@@ -22,6 +23,7 @@ describe('lib/viewers/image/MultiImage', () => {
         clock = sinon.useFakeTimers();
         sandbox.stub(Browser, 'isMobile').returns(false);
         fixture.load('viewers/image/__tests__/MultiImage-test.html');
+        containerEl = document.querySelector('.container');
         stubs.emit = sandbox.stub(fullscreen, 'addListener');
         options = {
             file: {
@@ -31,7 +33,7 @@ describe('lib/viewers/image/MultiImage', () => {
             viewer: {
                 ASSET: '{page}.png'
             },
-            container: '.bp-container',
+            container: containerEl,
             representation: {
                 content: {
                     url_template: 'link'
@@ -57,6 +59,7 @@ describe('lib/viewers/image/MultiImage', () => {
         multiImage = null;
         clock.restore();
         clock = null;
+        containerEl = null;
     });
 
     describe('destroy()', () => {
@@ -235,6 +238,16 @@ describe('lib/viewers/image/MultiImage', () => {
             clock.tick(51);
             expect(stubs.zoomEmit).to.be.called;
             expect(stubs.updatePannability).to.be.called;
+        });
+    });
+
+    describe('loadUI()', () => {
+        it('should create controls and add control buttons for fullscreen', () => {
+            multiImage.setup();
+            multiImage.loadUI();
+
+            expect(multiImage.controls).to.not.be.undefined;
+            expect(multiImage.controls.buttonRefs.length).to.equal(4);
         });
     });
 

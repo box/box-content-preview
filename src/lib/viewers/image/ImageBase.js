@@ -4,9 +4,7 @@ import Base from '../Base';
 import Browser from '../../Browser';
 import {
     ICON_ZOOM_IN,
-    ICON_ZOOM_OUT,
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT
+    ICON_ZOOM_OUT
 } from '../../icons/icons';
 
 import { CLASS_INVISIBLE } from '../../constants';
@@ -170,8 +168,6 @@ class ImageBase extends Base {
         this.controls = new Controls(this.containerEl);
         this.controls.add(__('zoom_out'), this.zoomOut, 'bp-image-zoom-out-icon', ICON_ZOOM_OUT);
         this.controls.add(__('zoom_in'), this.zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
-        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 
 
