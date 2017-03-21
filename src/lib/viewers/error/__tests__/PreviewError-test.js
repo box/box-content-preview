@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Error from '../PreviewError';
+import * as file from '../../../file';
+import { PERMISSION_DOWNLOAD } from '../../../constants';
 import {
     ICON_FILE_DEFAULT,
     ICON_FILE_ZIP,
@@ -67,10 +69,8 @@ describe('lib/viewers/error/PreviewError', () => {
 
         it('should add download button if file has permissions', () => {
             sandbox.stub(error, 'addDownloadButton');
+            sandbox.stub(file, 'checkPermission').withArgs(error.options.file, PERMISSION_DOWNLOAD).returns(true);
 
-            error.options.file.permissions = {
-                can_download: true
-            };
             error.load('reason');
 
             expect(error.addDownloadButton).to.be.called;

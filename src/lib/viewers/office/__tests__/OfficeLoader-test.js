@@ -1,29 +1,34 @@
 import OfficeLoader from '../OfficeLoader';
 import Office from '../Office';
+import * as file from '../../../file';
+import { PERMISSION_DOWNLOAD } from '../../../constants';
 
 const sandbox = sinon.sandbox.create();
+let fakeFile;
 
 describe('lib/viewers/office/OfficeLoader', () => {
+    beforeEach(() => {
+        fakeFile = {
+            extension: 'xlsx',
+            size: 1000,
+            permissions: {
+                can_download: true
+            },
+            representations: {
+                entries: [{
+                    representation: 'ORIGINAL'
+                }]
+            }
+        };
+    });
+
     afterEach(() => {
         sandbox.verifyAndRestore();
     });
 
     describe('determineViewer()', () => {
         it('should choose the Office viewer if it is not disabled and the file is ok', () => {
-            const file = {
-                extension: 'xlsx',
-                size: 1000,
-                permissions: {
-                    can_download: true
-                },
-                representations: {
-                    entries: [{
-                        representation: 'ORIGINAL'
-                    }]
-                }
-            };
-
-            const viewer = OfficeLoader.determineViewer(file);
+            const viewer = OfficeLoader.determineViewer(fakeFile);
             expect(viewer).to.deep.equal({
                 NAME: 'Office',
                 CONSTRUCTOR: Office,
@@ -33,106 +38,37 @@ describe('lib/viewers/office/OfficeLoader', () => {
         });
 
         it('should choose the Office viewer if it is not disabled and the file is a shared link that is not password-protected', () => {
-            const file = {
-                extension: 'xlsx',
-                size: 1000,
-                permissions: {
-                    can_download: true
-                },
-                representations: {
-                    entries: [{
-                        representation: 'ORIGINAL'
-                    }]
-                },
-                shared_link: {
-                    is_password_enabled: false
-                }
+            fakeFile.shared_link = {
+                is_password_enabled: false
             };
 
-            const viewer = OfficeLoader.determineViewer(file);
+            const viewer = OfficeLoader.determineViewer(fakeFile);
             expect(viewer.NAME).to.equal('Office');
         });
 
         it('should not return a viewer if the Office viewer is disabled', () => {
-            const file = {
-                extension: 'xlsx',
-                size: 1000,
-                permissions: {
-                    can_download: true
-                },
-                representations: {
-                    entries: [{
-                        representation: 'ORIGINAL'
-                    }, {
-                        representation: 'pdf'
-                    }]
-                }
-            };
-
-            const viewer = OfficeLoader.determineViewer(file, ['Office']);
+            const viewer = OfficeLoader.determineViewer(fakeFile, ['Office']);
             expect(viewer).to.equal(undefined);
         });
 
         it('should not return a viewer if the file is too large', () => {
-            const file = {
-                extension: 'xlsx',
-                size: 5242881,
-                permissions: {
-                    can_download: true
-                },
-                representations: {
-                    entries: [{
-                        representation: 'ORIGINAL'
-                    }, {
-                        representation: 'pdf'
-                    }]
-                }
-            };
-
-            const viewer = OfficeLoader.determineViewer(file, []);
+            fakeFile.size = 5242881;
+            const viewer = OfficeLoader.determineViewer(fakeFile, []);
             expect(viewer).to.equal(undefined);
         });
 
         it('should not return a viewer if the user does not have download permissions', () => {
-            const file = {
-                extension: 'xlsx',
-                size: 1000,
-                permissions: {
-                    can_download: false
-                },
-                representations: {
-                    entries: [{
-                        representation: 'ORIGINAL'
-                    }, {
-                        representation: 'pdf'
-                    }]
-                }
-            };
-
-            const viewer = OfficeLoader.determineViewer(file, []);
+            sandbox.stub(file, 'checkPermission').withArgs(fakeFile, PERMISSION_DOWNLOAD).returns(false);
+            const viewer = OfficeLoader.determineViewer(fakeFile, []);
             expect(viewer).to.equal(undefined);
         });
 
         it('should not return a viewer if the file is a password-protected shared link', () => {
-            const file = {
-                extension: 'xlsx',
-                size: 1000,
-                permissions: {
-                    can_download: true
-                },
-                representations: {
-                    entries: [{
-                        representation: 'ORIGINAL'
-                    }, {
-                        representation: 'pdf'
-                    }]
-                },
-                shared_link: {
-                    is_password_enabled: true
-                }
+            fakeFile.shared_link = {
+                is_password_enabled: true
             };
 
-            const viewer = OfficeLoader.determineViewer(file, []);
+            const viewer = OfficeLoader.determineViewer(fakeFile, []);
             expect(viewer).to.equal(undefined);
         });
     });

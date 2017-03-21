@@ -1,7 +1,8 @@
 import autobind from 'autobind-decorator';
 import Controls from '../../Controls';
 import Base from '../Base';
-import { CLASS_IS_SELECTABLE } from '../../constants';
+import { checkPermission } from '../../file';
+import { CLASS_IS_SELECTABLE, PERMISSION_DOWNLOAD } from '../../constants';
 import {
     ICON_ZOOM_IN,
     ICON_ZOOM_OUT,
@@ -85,7 +86,7 @@ class TextBase extends Base {
      */
     load() {
         // Enable text selection if user has download permissions
-        if (this.options.file.permissions.can_download) {
+        if (checkPermission(this.options.file, PERMISSION_DOWNLOAD)) {
             this.containerEl.classList.add(CLASS_IS_SELECTABLE);
         }
 

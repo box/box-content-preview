@@ -13,9 +13,11 @@ import {
     CLASS_BOX_PREVIEW_FIND_BAR,
     CLASS_HIDDEN,
     CLASS_IS_SCROLLABLE,
+    PERMISSION_ANNOTATE,
+    PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME
 } from '../../constants';
-import { getRepresentation } from '../../file';
+import { checkPermission, getRepresentation } from '../../file';
 import { get, createAssetUrlCreator, decodeKeydown } from '../../util';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { JS, CSS } from './docAssets';
@@ -283,7 +285,7 @@ class DocBase extends Base {
      * @protected
      */
     resize() {
-        if (!this.pdfViewer.pageViewsReady) {
+        if (!this.pdfViewer || !this.pdfViewer.pageViewsReady) {
             return;
         }
 
@@ -295,9 +297,9 @@ class DocBase extends Base {
 
         this.setPage(currentPageNumber);
 
-        // Redraw annotations if needed
+        // Update annotations scale
         if (this.annotator) {
-            this.annotator.setScale(this.pdfViewer.currentScale);
+            this.annotator.setScale(this.pdfViewer.currentScale); // Set scale to current numerical scale
         }
 
         super.resize();
@@ -635,9 +637,10 @@ class DocBase extends Base {
      */
     setupPdfjs() {
         // Set PDFJS worker & character maps
-        const assetUrlCreator = createAssetUrlCreator(this.options.location);
+        const { file, location } = this.options;
+        const assetUrlCreator = createAssetUrlCreator(location);
         PDFJS.workerSrc = assetUrlCreator('third-party/doc/pdf.worker.min.js');
-        PDFJS.cMapUrl = `${this.options.location.staticBaseURI}third-party/doc/cmaps/`;
+        PDFJS.cMapUrl = `${location.staticBaseURI}third-party/doc/cmaps/`;
         PDFJS.cMapPacked = true;
 
         // Open links in new tab
@@ -648,12 +651,10 @@ class DocBase extends Base {
 
         // Disable range requests for watermarked files since they are streamed
         PDFJS.disableRange = PDFJS.disableRange ||
-            (this.options.file.watermark_info && this.options.file.watermark_info.is_watermarked);
+            (file.watermark_info && file.watermark_info.is_watermarked);
 
         // Disable text layer if user doesn't have download permissions
-        PDFJS.disableTextLayer = this.options.file && this.options.file.permissions ?
-            !this.options.file.permissions.can_download :
-            false;
+        PDFJS.disableTextLayer = !checkPermission(file, PERMISSION_DOWNLOAD);
     }
 
     /**
@@ -665,13 +666,14 @@ class DocBase extends Base {
     initAnnotations() {
         this.setupPageIds();
 
-        const fileVersionID = this.options.file.file_version.id;
+        const { apiHost, file, location, token } = this.options;
+        const fileVersionID = file.file_version.id;
         // Users can currently only view annotations on mobile
-        const canAnnotate = !!this.options.file.permissions.can_annotate && !Browser.isMobile();
+        const canAnnotate = checkPermission(file, PERMISSION_ANNOTATE) && !Browser.isMobile();
         const annotationService = new AnnotationService({
-            apiHost: this.options.apiHost,
-            fileId: this.options.file.id,
-            token: this.options.token,
+            apiHost,
+            fileId: file.id,
+            token,
             canAnnotate
         });
 
@@ -680,7 +682,7 @@ class DocBase extends Base {
             annotatedElement: this.docEl,
             annotationService,
             fileVersionID,
-            locale: this.options.location.locale
+            locale: location.locale
         });
         this.annotator.init();
         this.annotator.setScale(this.pdfViewer.currentScale);

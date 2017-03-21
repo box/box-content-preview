@@ -3,8 +3,9 @@ import AnnotationService from '../../annotations/AnnotationService';
 import ImageAnnotator from '../../annotations/image/ImageAnnotator';
 import Browser from '../../Browser';
 import Base from './ImageBase';
+import { checkPermission } from '../../file';
 import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
-import { CLASS_INVISIBLE } from '../../constants';
+import { CLASS_INVISIBLE, PERMISSION_ANNOTATE } from '../../constants';
 import { openContentInsideIframe } from '../../util';
 import './Image.scss';
 
@@ -306,14 +307,15 @@ class Image extends Base {
         }
 
         // Users can currently only view annotations on mobile
-        const canAnnotate = !!this.options.file.permissions.can_annotate && !Browser.isMobile();
+        const { apiHost, file, location, token } = this.options;
+        const canAnnotate = checkPermission(file, PERMISSION_ANNOTATE) && !Browser.isMobile();
         this.canAnnotate = canAnnotate;
 
-        const fileVersionID = this.options.file.file_version.id;
+        const fileVersionID = file.file_version.id;
         const annotationService = new AnnotationService({
-            apiHost: this.options.apiHost,
-            fileId: this.options.file.id,
-            token: this.options.token,
+            apiHost,
+            fileId: file.id,
+            token,
             canAnnotate
         });
 
@@ -322,7 +324,7 @@ class Image extends Base {
             annotatedElement: this.wrapperEl,
             annotationService,
             fileVersionID,
-            locale: this.options.location.locale
+            locale: location.locale
         });
         this.annotator.init(this);
 

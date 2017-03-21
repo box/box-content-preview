@@ -1,7 +1,9 @@
 /* eslint-disable no-unused-expressions */
 import Image from '../Image';
 import Browser from '../../../Browser';
+import * as file from '../../../file';
 import * as util from '../../../util';
+import { PERMISSION_ANNOTATE } from '../../../constants';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
@@ -449,6 +451,7 @@ describe('lib/viewers/image/Image', () => {
         beforeEach(() => {
             stubs.annotatable = sandbox.stub(image, 'isAnnotatable');
             stubs.isMobile = sandbox.stub(Browser, 'isMobile').returns(false);
+            stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             image.options.location = {
                 locale: 'en-US'
             };
@@ -463,6 +466,7 @@ describe('lib/viewers/image/Image', () => {
         });
 
         it('should init annotations if user can annotate', () => {
+            stubs.checkPermission.withArgs(image.options.file, PERMISSION_ANNOTATE).returns(true);
             stubs.annotatable.returns(true);
 
             image.initAnnotations();
@@ -471,7 +475,7 @@ describe('lib/viewers/image/Image', () => {
         });
 
         it('should init annotations if user cannot annotate', () => {
-            image.options.file.permissions.can_annotate = false;
+            stubs.checkPermission.withArgs(image.options.file, PERMISSION_ANNOTATE).returns(false);
             stubs.annotatable.returns(true);
 
             image.initAnnotations();

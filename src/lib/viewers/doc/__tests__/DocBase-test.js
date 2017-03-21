@@ -10,7 +10,9 @@ import * as util from '../../../util';
 
 import {
     CLASS_BOX_PREVIEW_FIND_BAR,
-    CLASS_HIDDEN
+    CLASS_HIDDEN,
+    PERMISSION_ANNOTATE,
+    PERMISSION_DOWNLOAD
 } from '../../../constants';
 
 import {
@@ -451,11 +453,16 @@ describe('src/lib/viewers/doc/DocBase', () => {
             });
         });
 
+        it('should do nothing if pdfViewer does not exist', () => {
+            docBase.pdfViewer = null;
+            docBase.resize();
+            expect(Base.prototype.resize).to.not.be.called;
+        });
+
         it('should do nothing if the page views are not ready', () => {
             docBase.pdfViewer.pageViewsReady = false;
-
             docBase.resize();
-            expect(docBase.pdfViewer.update).to.not.be.called;
+            expect(Base.prototype.resize).to.not.be.called;
         });
 
         it('should update the pdfViewer and reset the page', () => {
@@ -924,6 +931,7 @@ describe('src/lib/viewers/doc/DocBase', () => {
         beforeEach(() => {
             stubs.urlCreator = sandbox.stub(util, 'createAssetUrlCreator').returns(() => { return 'asset'; });
             stubs.browser = sandbox.stub(Browser, 'getName').returns('Safari');
+            stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             docBase.options = {
                 location: {
                     staticBaseURI: 'test/'
@@ -975,13 +983,11 @@ describe('src/lib/viewers/doc/DocBase', () => {
         });
 
         it('should disable or enable text layer based on download permissions', () => {
-            docBase.options.file.permissions.can_download = true;
-
+            stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
             docBase.setupPdfjs();
             expect(PDFJS.disableTextLayer).to.be.false;
 
-            docBase.options.file.permissions.can_download = false;
-
+            stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(false);
             docBase.setupPdfjs();
             expect(PDFJS.disableTextLayer).to.be.true;
         });
@@ -1007,6 +1013,7 @@ describe('src/lib/viewers/doc/DocBase', () => {
             };
             stubs.browser = sandbox.stub(Browser, 'isMobile').returns(false);
             stubs.setupPageIds = sandbox.stub(docBase, 'setupPageIds');
+            stubs.checkPermission = sandbox.stub(file, 'checkPermission');
         });
 
         it('should set up page IDs', () => {
@@ -1015,15 +1022,17 @@ describe('src/lib/viewers/doc/DocBase', () => {
         });
 
         it('should allow annotations based on browser and permissions', () => {
+            stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_ANNOTATE).returns(true);
             docBase.initAnnotations();
             expect(docBase.annotator._annotationService._canAnnotate).to.be.true;
 
             stubs.browser.returns(true);
+            stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_ANNOTATE).returns(true);
             docBase.initAnnotations();
             expect(docBase.annotator._annotationService._canAnnotate).to.be.false;
 
             stubs.browser.returns(false);
-            docBase.options.file.permissions.can_annotate = false;
+            stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_ANNOTATE).returns(false);
             docBase.initAnnotations();
             expect(docBase.annotator._annotationService._canAnnotate).to.be.false;
         });

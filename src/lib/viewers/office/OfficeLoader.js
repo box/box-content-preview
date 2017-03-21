@@ -1,6 +1,7 @@
 import AssetLoader from '../AssetLoader';
 import Office from './Office';
-import { ORIGINAL_REP_NAME } from '../../constants';
+import { checkPermission } from '../../file';
+import { ORIGINAL_REP_NAME, PERMISSION_DOWNLOAD } from '../../constants';
 
 const FIVE_MB = 5242880;
 const OFFICE_VIEWER_NAME = 'Office';
@@ -34,7 +35,7 @@ class OfficeLoader extends AssetLoader {
         const isDisabledDueToPasswordProtectedSharedLink = file.shared_link && file.shared_link.is_password_enabled;
         // If the user does not have permission to download the file, the file is larger than 5MB, or isDisabledDueToSharedLink is true,
         // then disable the Office viewer
-        if (!file.permissions.can_download || file.size > FIVE_MB || isDisabledDueToPasswordProtectedSharedLink) {
+        if (!checkPermission(file, PERMISSION_DOWNLOAD) || file.size > FIVE_MB || isDisabledDueToPasswordProtectedSharedLink) {
             disabledViewers.push(OFFICE_VIEWER_NAME);
         }
 

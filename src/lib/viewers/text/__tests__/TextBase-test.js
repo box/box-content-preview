@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-expressions */
 import Controls from '../../../Controls';
 import TextBase from '../TextBase';
+import * as file from '../../../file';
+import { PERMISSION_DOWNLOAD } from '../../../constants';
 
 let containerEl;
 let textBase;
@@ -87,10 +89,7 @@ describe('lib/viewers/text/TextBase', () => {
 
     describe('load()', () => {
         it('should add selectable class if user has download permissions', () => {
-            textBase.options.file.permissions = {
-                can_download: true
-            };
-
+            sandbox.stub(file, 'checkPermission').withArgs(textBase.options.file, PERMISSION_DOWNLOAD).returns(true);
             textBase.load();
             expect(textBase.containerEl.classList.contains('bp-is-selectable')).to.be.true;
         });

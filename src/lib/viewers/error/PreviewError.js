@@ -1,10 +1,8 @@
 import autobind from 'autobind-decorator';
 import Base from '../Base';
-import {
-    ICON_FILE_DEFAULT,
-    ICON_FILE_ZIP,
-    ICON_FILE_MEDIA
-} from '../../icons/icons';
+import { checkPermission } from '../../file';
+import { PERMISSION_DOWNLOAD } from '../../constants';
+import { ICON_FILE_DEFAULT, ICON_FILE_MEDIA, ICON_FILE_ZIP } from '../../icons/icons';
 import './PreviewError.scss';
 
 @autobind
@@ -49,7 +47,7 @@ class PreviewError extends Base {
     load(reason) {
         this.setup();
 
-        const file = this.options.file;
+        const { file } = this.options;
         let icon = ICON_FILE_DEFAULT;
         const message = reason || __('error_default');
 
@@ -72,7 +70,7 @@ class PreviewError extends Base {
         this.messageEl.textContent = message;
 
         // Add optional download button
-        if (file && file.permissions && file.permissions.can_download) {
+        if (checkPermission(file, PERMISSION_DOWNLOAD)) {
             this.addDownloadButton();
         }
 
