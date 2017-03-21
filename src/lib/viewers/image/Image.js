@@ -327,6 +327,8 @@ class Image extends Base {
         // Disables controls during point annotation mode
         /* istanbul ignore next */
         this.annotator.addListener('pointmodeenter', () => {
+            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
             if (this.controls) {
                 this.controls.disable();
             }
@@ -334,6 +336,7 @@ class Image extends Base {
 
         /* istanbul ignore next */
         this.annotator.addListener('pointmodeexit', () => {
+            this.updateCursor();
             if (this.controls) {
                 this.controls.enable();
             }
