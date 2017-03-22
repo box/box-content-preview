@@ -3,7 +3,7 @@
 The image viewer renders previews of image files.
 
 ## Screenshot
-![Screenshot of image viewer](images/image.png)
+![Screenshot of image viewer](../../../../images/image.png)
 
 ## Behavior
 Rotating the viewer will rotate the image 90 degrees clockwise. At the default zoom level, clicking on the image will zoom in once. When zoomed in, clicking on the document will return to the default zoom level. When zoomed out, clicking on the document will zoom in until the original zoom level is reached.

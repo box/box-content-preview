@@ -4,7 +4,7 @@ The Model3D viewer renders previews of 3d model files and allows you to enable d
 
 ## Screenshot
 
-![Screenshot of Model3D viewer](images/model3d.png)
+![Screenshot of Model3D viewer](../../../../../images/model3d.png)
 
 ## Behavior
 

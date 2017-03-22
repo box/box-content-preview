@@ -4,7 +4,7 @@ The Office viewer renders previews of Microsoft Office documents by embedding an
 
 ## Screenshot
 
-![Screenshot of office viewer](images/office.png)
+![Screenshot of office viewer](../../../../images/office.png)
 
 ## Behavior
 
