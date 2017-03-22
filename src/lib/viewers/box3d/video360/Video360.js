@@ -6,7 +6,7 @@ import Video360Controls from './Video360Controls';
 import Video360Renderer from './Video360Renderer';
 import sceneEntities from './SceneEntities';
 import { EVENT_TOGGLE_VR, EVENT_SHOW_VR_BUTTON } from '../Box3dConstants';
-import JS from '../Box3dAssets';
+import JS from '../box3dAssets';
 import './Video360.scss';
 
 const CSS_CLASS_VIDEO_360 = 'bp-video-360';
