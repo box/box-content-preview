@@ -251,7 +251,7 @@ class Model3d extends Box3D {
             return;
         }
 
-        const animations = this.renderer.box3d.getEntitiesByType(Box3D.AnimationAsset);
+        const animations = this.renderer.box3d.getEntitiesByClass(Box3D.AnimationAsset);
         if (animations.length > 0) {
             const clipIds = animations[0].getClipIds();
 
