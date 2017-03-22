@@ -1,4 +1,4 @@
-# Change Log
+# Historical Change Log
 
 ## [v0.111.0](https://git.dev.box.net/Preview/Preview/tree/v0.111.0) (2017-03-21)
 [Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.110.0...v0.111.0)

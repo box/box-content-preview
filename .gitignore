@@ -5,6 +5,6 @@ node_modules
 .DS_Store
 npm-debug.log
 reports
-dist
+dist/dev
 src/i18n/json
 jsconfig.json

@@ -16,7 +16,7 @@ If your browser doesn't natively support Promises, include a Promise library (e.
 
 Current Version
 ---------------
-* Version: 0.111.0
+* Version: v0.111.0
 * Locale: en-US
 
 https://cdn01.boxcdn.net/platform/preview/0.111.0/en-US/preview.js
@@ -276,6 +276,7 @@ For more script commands see `package.json`. Test coverage reports are available
 * .eslintrc - http://eslint.org/docs/user-guide/configuring
 * .gitignore - https://git-scm.com/docs/gitignore
 * .stylelintrc - https://stylelint.io/user-guide/configuration/
+* .travis.yml - https://docs.travis-ci.com/user/customizing-the-build
 * browserslist - https://github.com/ai/browserslist
 * postcss.config.js - https://github.com/postcss/postcss-loader
 
