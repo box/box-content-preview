@@ -123,10 +123,16 @@ build_assets() {
 
 # Check out latest code from git, build assets, increment version, and push t
 push_new_release() {
-    Update to latest code on Github master
+    # Update to latest code on Github master
     git checkout master || exit 1
-    git add remote github-upstream git@github.com:box/box-content-preview.git || exit 1
-    git fetch github-upstream || exit 1
+
+    if git remote get-url github-upstream; then
+        git fetch github-upstream;
+    else
+       git remote add github-upstream git@github.com:box/box-content-preview.git
+       git fetch github-upstream;
+    fi;
+
     git reset --hard github-upstream/master || exit 1
     git clean -fdX || exit 1
 
