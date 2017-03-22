@@ -4,7 +4,7 @@ The 360 image viewer renders a preview of an image stored as an equirectangular 
 
 ## Screenshot
 
-![Screenshot of 360 image viewer](images/image360.png)
+![Screenshot of 360 image viewer](../../../../../images/image360.png)
 
 ## Behavior
 
