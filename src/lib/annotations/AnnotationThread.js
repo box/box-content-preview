@@ -40,10 +40,6 @@ class AnnotationThread extends EventEmitter {
     constructor(data) {
         super();
 
-        if (!data.location || !data.type) {
-            return;
-        }
-
         this._annotatedElement = data.annotatedElement;
         this._annotations = data.annotations || [];
         this._annotationService = data.annotationService;

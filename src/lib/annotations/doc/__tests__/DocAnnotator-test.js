@@ -196,6 +196,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         beforeEach(() => {
             stubs.addThread = sandbox.stub(annotator, 'addThreadToMap');
             stubs.setupFunc = AnnotationThread.prototype.setup;
+            stubs.validateThread = sandbox.stub(annotatorUtil, 'validateThreadParams').returns(true);
         });
 
         afterEach(() => {
@@ -236,6 +237,16 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(thread.threadID).to.equal(annotation.threadID);
             expect(thread.thread).to.equal(annotation.thread);
             expect(thread instanceof DocHighlightThread).to.be.true;
+        });
+
+        it('should emit error and return undefined if thread params are invalid', () => {
+            stubs.validateThread.returns(false);
+            sandbox.stub(annotator, 'emit');
+            const thread = annotator.createAnnotationThread([], {}, 'highlight');
+            expect(thread instanceof DocHighlightThread).to.be.false;
+            expect(annotator.emit).to.be.calledWith('annotationerror', {
+                reason: 'validation'
+            });
         });
     });
 

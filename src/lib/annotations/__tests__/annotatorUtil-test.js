@@ -15,7 +15,9 @@ import {
     getDimensionScale,
     htmlEscape,
     repositionCaret,
-    isPending
+    isPending,
+    checkThreadValid,
+    validateThreadParams
 } from '../annotatorUtil';
 import * as constants from '../annotationConstants';
 
@@ -311,16 +313,62 @@ describe('lib/annotations/annotatorUtil', () => {
     });
 
     describe('isPending()', () => {
-        it('return true if thread is pending or pending-active', () => {
+        it('should return true if thread is pending or pending-active', () => {
             expect(isPending(constants.ANNOTATION_STATE_PENDING)).to.be.true;
             expect(isPending(constants.ANNOTATION_STATE_PENDING_ACTIVE)).to.be.true;
         });
 
-        it('return false if thread is notpending', () => {
+        it('should return false if thread is notpending', () => {
             expect(isPending(constants.ANNOTATION_STATE_ACTIVE)).to.be.false;
             expect(isPending(constants.ANNOTATION_STATE_ACTIVE_HOVER)).to.be.false;
             expect(isPending(constants.ANNOTATION_STATE_HOVER)).to.be.false;
             expect(isPending(constants.ANNOTATION_STATE_INACTIVE)).to.be.false;
+        });
+    });
+
+    describe('checkThreadValid()', () => {
+        it('should return false if the thread is null or missing any expected property', () => {
+            expect(checkThreadValid(null)).to.be.false;
+
+            expect(checkThreadValid({
+                _annotationID: 123,
+                _fileVersionID: 123,
+                _threadID: 123
+            })).to.be.false;
+        });
+
+        it('should return true if the thread is has all expected property', () => {
+            const thread = {
+                _annotationID: 123,
+                _fileVersionID: 123,
+                _location: {},
+                _permissions: {},
+                _thread: 1,
+                _threadID: 123,
+                _type: 'point',
+                _user: {}
+            };
+            expect(checkThreadValid(thread)).to.be.true;
+        });
+    });
+
+    describe('validateThreadParams()', () => {
+        it('should return false if the thread is null or missing any expected params', () => {
+            expect(validateThreadParams(null)).to.be.false;
+            expect(validateThreadParams({ fileVersionID: 123 })).to.be.false;
+        });
+
+        it('should return true if the thread is has all expected params', () => {
+            const threadParams = {
+                annotatedElement: {},
+                annotations: [],
+                annotationService: {},
+                fileVersionID: 123,
+                location: {},
+                locale: 'en-US',
+                type: 'point'
+            };
+            expect(validateThreadParams(threadParams)).to.be.true;
         });
     });
 });

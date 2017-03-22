@@ -2,6 +2,7 @@ import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
+import * as annotatorUtil from './annotatorUtil';
 import * as constants from './annotationConstants';
 import { CLASS_ACTIVE } from '../constants';
 
@@ -261,11 +262,15 @@ class Annotator extends EventEmitter {
                 Object.keys(threadMap).forEach((threadID) => {
                     const annotations = threadMap[threadID];
                     const firstAnnotation = annotations[0];
-                    const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
 
                     // Bind events on valid annotation thread
-                    if (thread) {
+                    if (annotatorUtil.checkThreadValid(firstAnnotation)) {
+                        const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
                         this.bindCustomListenersOnThread(thread);
+                    } else {
+                        this.emit('annotationerror', {
+                            reason: 'validation'
+                        });
                     }
                 });
             });
@@ -305,22 +310,27 @@ class Annotator extends EventEmitter {
 
         /* istanbul ignore next */
         service.addListener('annotationerror', (data) => {
+            let errorMessage = '';
             switch (data.reason) {
                 case 'read':
-                    this.notification.show(__('annotations_load_error'));
+                    errorMessage = __('annotations_load_error');
                     break;
                 case 'create':
-                    this.notification.show(__('annotations_create_error'));
+                    errorMessage = __('annotations_create_error');
                     this.showAnnotations();
                     break;
                 case 'delete':
-                    this.notification.show(__('annotations_delete_error'));
+                    errorMessage = __('annotations_delete_error');
                     this.showAnnotations();
                     break;
                 case 'authorization':
-                    this.notification.show(__('annotations_authorization_error'));
+                    errorMessage = __('annotations_authorization_error');
                     break;
                 default:
+            }
+
+            if (errorMessage) {
+                this.notification.show(errorMessage);
             }
         });
     }
@@ -441,7 +451,7 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     addThreadToMap(thread) {
-        if (!thread.type || !thread.location) {
+        if (!annotatorUtil.checkThreadValid(thread)) {
             this.emit('annotationerror', {
                 reason: 'validation'
             });

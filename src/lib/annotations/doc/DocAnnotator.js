@@ -159,6 +159,13 @@ class DocAnnotator extends Annotator {
             threadParams.thread = annotations[0]._thread;
         }
 
+        if (!annotatorUtil.validateThreadParams(threadParams)) {
+            this.emit('annotationerror', {
+                reason: 'validation'
+            });
+            return thread;
+        }
+
         if (annotatorUtil.isHighlightAnnotation(type)) {
             thread = new DocHighlightThread(threadParams);
         } else {
@@ -454,10 +461,12 @@ class DocAnnotator extends Annotator {
         // Create and show pending annotation thread
         const thread = this.createAnnotationThread([], location, constants.ANNOTATION_TYPE_HIGHLIGHT);
 
-        thread.show();
+        if (thread) {
+            thread.show();
 
-        // Bind events on thread
-        this.bindCustomListenersOnThread(thread);
+            // Bind events on thread
+            this.bindCustomListenersOnThread(thread);
+        }
     }
 
     /**

@@ -62,12 +62,14 @@ class Notification {
 
     /**
      * Hides the notification message.
+     * Does nothing if the notification is already hidden.
      *
      * @return {void}
      */
     hide() {
-        const notificationEl = document.querySelector('.bp-notification');
-        notificationEl.classList.add(CLASS_HIDDEN);
+        if (this.notificationEl) {
+            this.notificationEl.classList.add(CLASS_HIDDEN);
+        }
     }
 
     /**
