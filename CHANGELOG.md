@@ -1,15 +1,23 @@
 # Change Log
 
-## [Unreleased](https://git.dev.box.net/Preview/Preview/tree/HEAD)
-
-[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.110.0...HEAD)
+## [v0.111.0](https://git.dev.box.net/Preview/Preview/tree/v0.111.0) (2017-03-21)
+[Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.110.0...v0.111.0)
 
 **Merged pull requests:**
 
+- Update license notification banner in code [\#1075](https://git.dev.box.net/Preview/Preview/pull/1075) ([tjin](https://git.dev.box.net/tjin))
+- Updating runtime and fixing loading of controller models for VR [\#1073](https://git.dev.box.net/Preview/Preview/pull/1073) ([mbond](https://git.dev.box.net/mbond))
+- Use checkPermission instead of looking at permission field directly [\#1072](https://git.dev.box.net/Preview/Preview/pull/1072) ([tjin](https://git.dev.box.net/tjin))
+- Ensures cursor is updated when entering/exiting point annotation mode [\#1071](https://git.dev.box.net/Preview/Preview/pull/1071) ([spramod](https://git.dev.box.net/spramod))
+- fixing control bar order for image files [\#1070](https://git.dev.box.net/Preview/Preview/pull/1070) ([jpress](https://git.dev.box.net/jpress))
+- Don't clone logger into viewers [\#1068](https://git.dev.box.net/Preview/Preview/pull/1068) ([tjin](https://git.dev.box.net/tjin))
+- Changelog and readme [\#1067](https://git.dev.box.net/Preview/Preview/pull/1067) ([jpress](https://git.dev.box.net/jpress))
+- Tweak preload metrics [\#1066](https://git.dev.box.net/Preview/Preview/pull/1066) ([tjin](https://git.dev.box.net/tjin))
+- added comment for scroll bar padding for find bar. shaved text area... [\#1065](https://git.dev.box.net/Preview/Preview/pull/1065) ([jholdstock](https://git.dev.box.net/jholdstock))
+- Upgrading packages [\#1063](https://git.dev.box.net/Preview/Preview/pull/1063) ([phora](https://git.dev.box.net/phora))
+
 ## [v0.110.0](https://git.dev.box.net/Preview/Preview/tree/v0.110.0) (2017-03-16)
 [Full Changelog](https://git.dev.box.net/Preview/Preview/compare/v0.109.0...v0.110.0)
-
-- Upgrading packages [\#1063](https://git.dev.box.net/Preview/Preview/pull/1063) ([phora](https://git.dev.box.net/phora))
 
 **Merged pull requests:**
 
