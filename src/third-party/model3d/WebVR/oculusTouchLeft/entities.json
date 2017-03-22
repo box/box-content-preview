@@ -25,27 +25,10 @@
       },
       "representations": [
         {
-          "src": "images/2048/1.jpg",
+          "src": "../oculusTouchImages/1024/1.jpg",
           "isExternal": true,
           "contentType": "image/jpeg",
-          "contentLength": 212753,
-          "channels": [
-            "red",
-            "green",
-            "blue"
-          ],
-          "colorspace": "srgb",
-          "compression": "jpeg",
-          "depth": 8,
-          "width": 2048,
-          "height": 2048,
-          "sequenceLength": 1
-        },
-        {
-          "src": "images/1024/1.jpg",
-          "isExternal": true,
-          "contentType": "image/jpeg",
-          "contentLength": 77971,
+          "contentLength": 124848,
           "channels": [
             "red",
             "green",
@@ -59,58 +42,7 @@
           "sequenceLength": 1
         },
         {
-          "src": "images/512/1.jpg",
-          "isExternal": true,
-          "contentType": "image/jpeg",
-          "contentLength": 31059,
-          "channels": [
-            "red",
-            "green",
-            "blue"
-          ],
-          "colorspace": "srgb",
-          "compression": "jpeg",
-          "depth": 8,
-          "width": 512,
-          "height": 512,
-          "sequenceLength": 1
-        },
-        {
-          "src": "images/256/1.jpg",
-          "isExternal": true,
-          "contentType": "image/jpeg",
-          "contentLength": 13922,
-          "channels": [
-            "red",
-            "green",
-            "blue"
-          ],
-          "colorspace": "srgb",
-          "compression": "jpeg",
-          "depth": 8,
-          "width": 256,
-          "height": 256,
-          "sequenceLength": 1
-        },
-        {
-          "src": "images/128/1.jpg",
-          "isExternal": true,
-          "contentType": "image/jpeg",
-          "contentLength": 7376,
-          "channels": [
-            "red",
-            "green",
-            "blue"
-          ],
-          "colorspace": "srgb",
-          "compression": "jpeg",
-          "depth": 8,
-          "width": 128,
-          "height": 128,
-          "sequenceLength": 1
-        },
-        {
-          "src": "images/64/1.jpg",
+          "src": "../oculusTouchImages/64/1.jpg",
           "isExternal": true,
           "contentType": "image/jpeg",
           "contentLength": 4783,
@@ -151,24 +83,7 @@
       },
       "representations": [
         {
-          "src": "images/2048/2.jpg",
-          "isExternal": true,
-          "contentType": "image/jpeg",
-          "contentLength": 556049,
-          "channels": [
-            "red",
-            "green",
-            "blue"
-          ],
-          "colorspace": "srgb",
-          "compression": "jpeg",
-          "depth": 8,
-          "width": 2048,
-          "height": 2048,
-          "sequenceLength": 1
-        },
-        {
-          "src": "images/1024/2.jpg",
+          "src": "../oculusTouchImages/1024/2.jpg",
           "isExternal": true,
           "contentType": "image/jpeg",
           "contentLength": 160563,
@@ -185,61 +100,10 @@
           "sequenceLength": 1
         },
         {
-          "src": "images/512/2.jpg",
+          "src": "../oculusTouchImages/64/2.jpg",
           "isExternal": true,
           "contentType": "image/jpeg",
-          "contentLength": 55557,
-          "channels": [
-            "red",
-            "green",
-            "blue"
-          ],
-          "colorspace": "srgb",
-          "compression": "jpeg",
-          "depth": 8,
-          "width": 512,
-          "height": 512,
-          "sequenceLength": 1
-        },
-        {
-          "src": "images/256/2.jpg",
-          "isExternal": true,
-          "contentType": "image/jpeg",
-          "contentLength": 23244,
-          "channels": [
-            "red",
-            "green",
-            "blue"
-          ],
-          "colorspace": "srgb",
-          "compression": "jpeg",
-          "depth": 8,
-          "width": 256,
-          "height": 256,
-          "sequenceLength": 1
-        },
-        {
-          "src": "images/128/2.jpg",
-          "isExternal": true,
-          "contentType": "image/jpeg",
-          "contentLength": 11078,
-          "channels": [
-            "red",
-            "green",
-            "blue"
-          ],
-          "colorspace": "srgb",
-          "compression": "jpeg",
-          "depth": 8,
-          "width": 128,
-          "height": 128,
-          "sequenceLength": 1
-        },
-        {
-          "src": "images/64/2.jpg",
-          "isExternal": true,
-          "contentType": "image/jpeg",
-          "contentLength": 6055,
+          "contentLength": 94767,
           "channels": [
             "red",
             "green",
@@ -255,119 +119,6 @@
       ],
       "parentId": null,
       "parentAssetId": "add8306f-68e8-4da5-a1a1-4efffbca856b"
-    },
-    {
-      "type": "texture2D",
-      "id": "df4f8e95-c846-48b4-b869-17d68d4aa510",
-      "sid": "26",
-      "properties": {
-        "useMipmap": false,
-        "cropLeft": 0,
-        "textureUse": "standard",
-        "name": "external_controller01_col.png",
-        "uvSet": "default",
-        "mappingType": "uv",
-        "wrapModeV": "repeat",
-        "wrapModeU": "repeat",
-        "uvSwap": false,
-        "alphaSource": "none",
-        "premultiplyAlpha": true,
-        "cropRight": 0,
-        "rotation": {
-          "y": 0,
-          "x": 0,
-          "z": 0
-        },
-        "scaling": {
-          "y": 1,
-          "x": 1,
-          "z": 1
-        },
-        "alpha": 1,
-        "translation": {
-          "y": 0,
-          "x": 0,
-          "z": 0
-        },
-        "cropTop": 0,
-        "cropBottom": 0,
-        "useMaterial": false,
-        "imageId": "6dd2354b-b42d-439d-8fd8-43de965d39e1"
-      },
-      "parentId": null,
-      "parentAssetId": "df4f8e95-c846-48b4-b869-17d68d4aa510"
-    },
-    {
-      "type": "material",
-      "id": "7ac9977e-8c0e-4342-9f34-d2eec46899d3",
-      "sid": "27",
-      "properties": {
-        "shadingModel": "phong",
-        "transparencyFactor": 0,
-        "displacementColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "bump": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "reflectionFactor": 1,
-        "shininess": 20,
-        "vectorDisplacementColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "emissive": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "ambient": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "normalMap": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "diffuse": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "reflection": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "displacementFactor": 1,
-        "transparentColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "ambientFactor": 1,
-        "diffuseFactor": 1,
-        "specularFactor": 1,
-        "specular": {
-          "r": 0.4,
-          "b": 0.4,
-          "g": 0.4
-        },
-        "diffuseTexture": "df4f8e95-c846-48b4-b869-17d68d4aa510",
-        "vectorDisplacementFactor": 1,
-        "emissiveFactor": 1,
-        "bumpFactor": 1,
-        "name": "external_contoller_01:blinn1SG"
-      },
-      "parentId": null,
-      "parentAssetId": "7ac9977e-8c0e-4342-9f34-d2eec46899d3"
     },
     {
       "type": "meshGeometry",
@@ -525,125 +276,12 @@
         "name": "Body",
         "geometryId": "0a8bb532-336d-4113-83ee-2bd0f01326ce",
         "materials": [
-          "7ac9977e-8c0e-4342-9f34-d2eec46899d3"
+          "454ab699-0ba7-4f05-887f-5c02ccd3ab9d"
         ]
       },
       "children": [],
       "parentId": "6f63ec4c-8e35-499a-9e7d-ecad3e33299d",
       "parentAssetId": "a0fb22a0-7840-42f6-85ae-6d81ac1ad840"
-    },
-    {
-      "type": "texture2D",
-      "id": "558bef44-a99d-4ad0-b720-ce9a505a185e",
-      "sid": "26",
-      "properties": {
-        "useMipmap": false,
-        "cropLeft": 0,
-        "textureUse": "standard",
-        "name": "external_controller01_col.png",
-        "uvSet": "default",
-        "mappingType": "uv",
-        "wrapModeV": "repeat",
-        "wrapModeU": "repeat",
-        "uvSwap": false,
-        "alphaSource": "none",
-        "premultiplyAlpha": true,
-        "cropRight": 0,
-        "rotation": {
-          "y": 0,
-          "x": 0,
-          "z": 0
-        },
-        "scaling": {
-          "y": 1,
-          "x": 1,
-          "z": 1
-        },
-        "alpha": 1,
-        "translation": {
-          "y": 0,
-          "x": 0,
-          "z": 0
-        },
-        "cropTop": 0,
-        "cropBottom": 0,
-        "useMaterial": false,
-        "imageId": "6dd2354b-b42d-439d-8fd8-43de965d39e1"
-      },
-      "parentId": null,
-      "parentAssetId": "558bef44-a99d-4ad0-b720-ce9a505a185e"
-    },
-    {
-      "type": "material",
-      "id": "0b654d6d-1d34-4f87-ac92-3df0488f5565",
-      "sid": "27",
-      "properties": {
-        "shadingModel": "phong",
-        "transparencyFactor": 0,
-        "displacementColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "bump": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "reflectionFactor": 1,
-        "shininess": 20,
-        "vectorDisplacementColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "emissive": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "ambient": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "normalMap": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "diffuse": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "reflection": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "displacementFactor": 1,
-        "transparentColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "ambientFactor": 1,
-        "diffuseFactor": 1,
-        "specularFactor": 1,
-        "specular": {
-          "r": 0.4,
-          "b": 0.4,
-          "g": 0.4
-        },
-        "diffuseTexture": "558bef44-a99d-4ad0-b720-ce9a505a185e",
-        "vectorDisplacementFactor": 1,
-        "emissiveFactor": 1,
-        "bumpFactor": 1,
-        "name": "external_contoller_01:blinn1SG"
-      },
-      "parentId": null,
-      "parentAssetId": "0b654d6d-1d34-4f87-ac92-3df0488f5565"
     },
     {
       "type": "meshGeometry",
@@ -698,125 +336,12 @@
         "name": "Oculus Menu",
         "geometryId": "e4d961a4-aedc-404c-bcb6-9721ec653679",
         "materials": [
-          "0b654d6d-1d34-4f87-ac92-3df0488f5565"
+          "454ab699-0ba7-4f05-887f-5c02ccd3ab9d"
         ]
       },
       "children": [],
       "parentId": "70e9fb0f-4abd-47f1-8977-3bf23cc8a871",
       "parentAssetId": "7f15546b-af72-4e9c-b6fa-accf0b800a02"
-    },
-    {
-      "type": "texture2D",
-      "id": "36e7f8f6-528b-4f5f-9b2f-01d8f2b3208b",
-      "sid": "26",
-      "properties": {
-        "useMipmap": false,
-        "cropLeft": 0,
-        "textureUse": "standard",
-        "name": "external_controller01_col.png",
-        "uvSet": "default",
-        "mappingType": "uv",
-        "wrapModeV": "repeat",
-        "wrapModeU": "repeat",
-        "uvSwap": false,
-        "alphaSource": "none",
-        "premultiplyAlpha": true,
-        "cropRight": 0,
-        "rotation": {
-          "y": 0,
-          "x": 0,
-          "z": 0
-        },
-        "scaling": {
-          "y": 1,
-          "x": 1,
-          "z": 1
-        },
-        "alpha": 1,
-        "translation": {
-          "y": 0,
-          "x": 0,
-          "z": 0
-        },
-        "cropTop": 0,
-        "cropBottom": 0,
-        "useMaterial": false,
-        "imageId": "6dd2354b-b42d-439d-8fd8-43de965d39e1"
-      },
-      "parentId": null,
-      "parentAssetId": "36e7f8f6-528b-4f5f-9b2f-01d8f2b3208b"
-    },
-    {
-      "type": "material",
-      "id": "5b169274-db89-451c-9f7c-525147209a31",
-      "sid": "27",
-      "properties": {
-        "shadingModel": "phong",
-        "transparencyFactor": 0,
-        "displacementColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "bump": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "reflectionFactor": 1,
-        "shininess": 20,
-        "vectorDisplacementColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "emissive": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "ambient": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "normalMap": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "diffuse": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "reflection": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "displacementFactor": 1,
-        "transparentColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "ambientFactor": 1,
-        "diffuseFactor": 1,
-        "specularFactor": 1,
-        "specular": {
-          "r": 0.4,
-          "b": 0.4,
-          "g": 0.4
-        },
-        "diffuseTexture": "36e7f8f6-528b-4f5f-9b2f-01d8f2b3208b",
-        "vectorDisplacementFactor": 1,
-        "emissiveFactor": 1,
-        "bumpFactor": 1,
-        "name": "external_contoller_01:blinn1SG"
-      },
-      "parentId": null,
-      "parentAssetId": "5b169274-db89-451c-9f7c-525147209a31"
     },
     {
       "type": "meshGeometry",
@@ -871,125 +396,12 @@
         "name": "Button X",
         "geometryId": "306c4219-44bf-4d6a-81b1-9f44fa0314fb",
         "materials": [
-          "5b169274-db89-451c-9f7c-525147209a31"
+          "454ab699-0ba7-4f05-887f-5c02ccd3ab9d"
         ]
       },
       "children": [],
       "parentId": "11e35bc8-2fe8-46bb-93f7-60d215f04d71",
       "parentAssetId": "4b655f7c-59a9-46fd-86bb-28fbe07c01b7"
-    },
-    {
-      "type": "texture2D",
-      "id": "87c7006e-945d-4a8d-8591-b21cfe82fb6c",
-      "sid": "26",
-      "properties": {
-        "useMipmap": false,
-        "cropLeft": 0,
-        "textureUse": "standard",
-        "name": "external_controller01_col.png",
-        "uvSet": "default",
-        "mappingType": "uv",
-        "wrapModeV": "repeat",
-        "wrapModeU": "repeat",
-        "uvSwap": false,
-        "alphaSource": "none",
-        "premultiplyAlpha": true,
-        "cropRight": 0,
-        "rotation": {
-          "y": 0,
-          "x": 0,
-          "z": 0
-        },
-        "scaling": {
-          "y": 1,
-          "x": 1,
-          "z": 1
-        },
-        "alpha": 1,
-        "translation": {
-          "y": 0,
-          "x": 0,
-          "z": 0
-        },
-        "cropTop": 0,
-        "cropBottom": 0,
-        "useMaterial": false,
-        "imageId": "6dd2354b-b42d-439d-8fd8-43de965d39e1"
-      },
-      "parentId": null,
-      "parentAssetId": "87c7006e-945d-4a8d-8591-b21cfe82fb6c"
-    },
-    {
-      "type": "material",
-      "id": "753f261c-5eac-48fc-9094-ca5318f49606",
-      "sid": "27",
-      "properties": {
-        "shadingModel": "phong",
-        "transparencyFactor": 0,
-        "displacementColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "bump": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "reflectionFactor": 1,
-        "shininess": 20,
-        "vectorDisplacementColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "emissive": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "ambient": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "normalMap": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "diffuse": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "reflection": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "displacementFactor": 1,
-        "transparentColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "ambientFactor": 1,
-        "diffuseFactor": 1,
-        "specularFactor": 1,
-        "specular": {
-          "r": 0.4,
-          "b": 0.4,
-          "g": 0.4
-        },
-        "diffuseTexture": "87c7006e-945d-4a8d-8591-b21cfe82fb6c",
-        "vectorDisplacementFactor": 1,
-        "emissiveFactor": 1,
-        "bumpFactor": 1,
-        "name": "external_contoller_01:blinn1SG"
-      },
-      "parentId": null,
-      "parentAssetId": "753f261c-5eac-48fc-9094-ca5318f49606"
     },
     {
       "type": "meshGeometry",
@@ -1044,7 +456,7 @@
         "name": "Button Y",
         "geometryId": "2330a720-b7b2-4370-b479-04ec8b9768a4",
         "materials": [
-          "753f261c-5eac-48fc-9094-ca5318f49606"
+          "454ab699-0ba7-4f05-887f-5c02ccd3ab9d"
         ]
       },
       "children": [],
@@ -1110,7 +522,7 @@
           "g": 0
         },
         "reflectionFactor": 1,
-        "shininess": 20,
+        "shininess": 300,
         "vectorDisplacementColor": {
           "r": 0,
           "b": 0,
@@ -1132,9 +544,9 @@
           "g": 0
         },
         "diffuse": {
-          "r": 0,
-          "b": 0,
-          "g": 0
+          "r": 1,
+          "b": 1,
+          "g": 1
         },
         "reflection": {
           "r": 0,
@@ -1151,11 +563,12 @@
         "diffuseFactor": 1,
         "specularFactor": 1,
         "specular": {
-          "r": 0.4,
-          "b": 0.4,
-          "g": 0.4
+          "r": 1,
+          "b": 1,
+          "g": 1
         },
         "diffuseTexture": "0b1758ad-443e-460f-b27e-e70bc0c71a85",
+        "shininessTexture": "c81363a4-434d-4f70-94bf-daeb39b35337",
         "vectorDisplacementFactor": 1,
         "emissiveFactor": 1,
         "bumpFactor": 1,
@@ -1232,7 +645,7 @@
         "useMipmap": false,
         "cropLeft": 0,
         "textureUse": "standard",
-        "name": "external_controller01_col.png",
+        "name": "external_controller01_spec.png",
         "uvSet": "default",
         "mappingType": "uv",
         "wrapModeV": "repeat",
@@ -1260,82 +673,10 @@
         "cropTop": 0,
         "cropBottom": 0,
         "useMaterial": false,
-        "imageId": "6dd2354b-b42d-439d-8fd8-43de965d39e1"
+        "imageId": "add8306f-68e8-4da5-a1a1-4efffbca856b"
       },
       "parentId": null,
       "parentAssetId": "c81363a4-434d-4f70-94bf-daeb39b35337"
-    },
-    {
-      "type": "material",
-      "id": "61c3cf07-78af-46b7-a03b-0dad73cdf0ec",
-      "sid": "27",
-      "properties": {
-        "shadingModel": "phong",
-        "transparencyFactor": 0,
-        "displacementColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "bump": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "reflectionFactor": 1,
-        "shininess": 20,
-        "vectorDisplacementColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "emissive": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "ambient": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "normalMap": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "diffuse": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "reflection": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "displacementFactor": 1,
-        "transparentColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "ambientFactor": 1,
-        "diffuseFactor": 1,
-        "specularFactor": 1,
-        "specular": {
-          "r": 0.4,
-          "b": 0.4,
-          "g": 0.4
-        },
-        "diffuseTexture": "c81363a4-434d-4f70-94bf-daeb39b35337",
-        "vectorDisplacementFactor": 1,
-        "emissiveFactor": 1,
-        "bumpFactor": 1,
-        "name": "external_contoller_01:blinn1SG"
-      },
-      "parentId": null,
-      "parentAssetId": "61c3cf07-78af-46b7-a03b-0dad73cdf0ec"
     },
     {
       "type": "meshGeometry",
@@ -1390,125 +731,12 @@
         "name": "Thumbstick",
         "geometryId": "982c9270-6401-480f-9ed9-2e327eed164b",
         "materials": [
-          "61c3cf07-78af-46b7-a03b-0dad73cdf0ec"
+          "454ab699-0ba7-4f05-887f-5c02ccd3ab9d"
         ]
       },
       "children": [],
       "parentId": "84e8592c-b519-4e71-a1db-d6f405d7c930",
       "parentAssetId": "2de6f3ab-d637-483e-8fcf-38833634d2b8"
-    },
-    {
-      "type": "texture2D",
-      "id": "8fe8aa3c-a2d8-4326-82c1-183db1ef18c4",
-      "sid": "26",
-      "properties": {
-        "useMipmap": false,
-        "cropLeft": 0,
-        "textureUse": "standard",
-        "name": "external_controller01_col.png",
-        "uvSet": "default",
-        "mappingType": "uv",
-        "wrapModeV": "repeat",
-        "wrapModeU": "repeat",
-        "uvSwap": false,
-        "alphaSource": "none",
-        "premultiplyAlpha": true,
-        "cropRight": 0,
-        "rotation": {
-          "y": 0,
-          "x": 0,
-          "z": 0
-        },
-        "scaling": {
-          "y": 1,
-          "x": 1,
-          "z": 1
-        },
-        "alpha": 1,
-        "translation": {
-          "y": 0,
-          "x": 0,
-          "z": 0
-        },
-        "cropTop": 0,
-        "cropBottom": 0,
-        "useMaterial": false,
-        "imageId": "6dd2354b-b42d-439d-8fd8-43de965d39e1"
-      },
-      "parentId": null,
-      "parentAssetId": "8fe8aa3c-a2d8-4326-82c1-183db1ef18c4"
-    },
-    {
-      "type": "material",
-      "id": "8176d867-300a-4d91-aefe-88509861490a",
-      "sid": "27",
-      "properties": {
-        "shadingModel": "phong",
-        "transparencyFactor": 0,
-        "displacementColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "bump": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "reflectionFactor": 1,
-        "shininess": 20,
-        "vectorDisplacementColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "emissive": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "ambient": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "normalMap": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "diffuse": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "reflection": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "displacementFactor": 1,
-        "transparentColor": {
-          "r": 0,
-          "b": 0,
-          "g": 0
-        },
-        "ambientFactor": 1,
-        "diffuseFactor": 1,
-        "specularFactor": 1,
-        "specular": {
-          "r": 0.4,
-          "b": 0.4,
-          "g": 0.4
-        },
-        "diffuseTexture": "8fe8aa3c-a2d8-4326-82c1-183db1ef18c4",
-        "vectorDisplacementFactor": 1,
-        "emissiveFactor": 1,
-        "bumpFactor": 1,
-        "name": "external_contoller_01:blinn1SG"
-      },
-      "parentId": null,
-      "parentAssetId": "8176d867-300a-4d91-aefe-88509861490a"
     },
     {
       "type": "meshGeometry",
@@ -1563,7 +791,7 @@
         "name": "Trigger",
         "geometryId": "33f11b9a-87a4-4d18-a21b-450c07cae8b7",
         "materials": [
-          "8176d867-300a-4d91-aefe-88509861490a"
+          "454ab699-0ba7-4f05-887f-5c02ccd3ab9d"
         ]
       },
       "children": [],
