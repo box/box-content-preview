@@ -31,6 +31,7 @@ const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
 const FLOOR_VECTOR = { x: 0, y: -1, z: 0 };
 const IDENTITY_QUATERNION = { x: 0, y: 0, z: 0, w: 1 };
 
+const PREVIEW_CAMERA_ORBIT_DISTANCE_FACTOR = 1.5;
 const PREVIEW_CAMERA_POSITION = {
     x: -0.559,
     y: 0.197,
@@ -311,7 +312,8 @@ class Model3dRenderer extends Box3DRenderer {
         // Set the origin point (so that we always point at the center of the model when the camera reloads)
         orbitController.originPoint.copy(center);
         orbitController.setPivotPosition(center);
-        orbitController.setOrbitDistance(Math.max(Math.max(maxDimension.x, maxDimension.y), maxDimension.z));
+        const distance = PREVIEW_CAMERA_ORBIT_DISTANCE_FACTOR * Math.max(Math.max(maxDimension.x, maxDimension.y), maxDimension.z);
+        orbitController.setOrbitDistance(distance);
     }
 
     /** @inheritdoc */
