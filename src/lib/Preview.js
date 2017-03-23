@@ -43,12 +43,14 @@ const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 class Preview extends EventEmitter {
     /**
      * Indicates id preview is open or not
+     *
      * @property {boolean}
      */
     open = false;
 
     /**
      * Some analytics that span across preview sessions
+     *
      * @property {Object}
      */
     count = {
@@ -59,90 +61,105 @@ class Preview extends EventEmitter {
 
     /**
      * Current file being previewed
+     *
      * @property {Object}
      */
     file = {};
 
     /**
      * User passed in preview options
+     *
      * @property {Object}
      */
     previewOptions = {};
 
     /**
      * Calculated preview options
+     *
      * @property {Object}
      */
     options = {};
 
     /**
      * Map of disabled viewers
+     *
      * @property {Object}
      */
     disabledViewers = {};
 
     /**
      * Auth token
+     *
      * @property {string}
      */
     token = '';
 
     /**
      * The current viewer
+     *
      * @property {Object}
      */
     viewer;
 
     /**
      * Collection of file ids
+     *
      * @property {string[]}
      */
     collection = [];
 
     /**
      * User passed in preview options
+     *
      * @property {AssetLoader[]}
      */
     loaders = loaderList;
 
     /**
      * Progress bar instance
+     *
      * @property {Object}
      */
     progressBar;
 
     /**
      * Logger instance
+     *
      * @property {Object}
      */
     logger;
 
     /**
      * Retry count for network errors
+     *
      * @property {number}
      */
     retryCount = 0;
 
     /**
      * Retry count for preview logging
+     *
      * @property {number}
      */
     logRetryCount = 0;
 
     /**
      * Retry timeout id
+     *
      * @property {number}
      */
     retryTimeout;
 
     /**
      * DOM container for preview
+     *
      * @property {HTMLElement}
      */
     container;
 
     /**
      * Mouse move handler function
+     *
      * @property {function}
      */
     throttledMousemoveHandler;
