@@ -1,11 +1,11 @@
 import autobind from 'autobind-decorator';
 import Controls from '../../Controls';
 import PlainText from './Text';
-import { CLASS_HIDDEN } from '../../constants';
+import { CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import './Markdown.scss';
 
-const STATIC_URI = 'third-party/text/';
+const STATIC_URI = `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/`;
 
 @autobind
 class Markdown extends PlainText {
