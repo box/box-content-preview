@@ -526,8 +526,8 @@ describe('lib/viewers/box3d/model3d/Model3d', () => {
             });
         });
 
-        it('should should invoke console.error() when issues loading metadata', (done) => {
-            const errStub = sandbox.stub(console, 'error');
+        it('should should invoke onMetadataError() when issues loading metadata', (done) => {
+            const errStub = sandbox.stub(model3d, 'onMetadataError');
             const meta = {
                 get: () => Promise.resolve({ status: 404, response: { status: 'metadata not found' } })
             };
@@ -542,6 +542,7 @@ describe('lib/viewers/box3d/model3d/Model3d', () => {
         });
 
         it('should still advance the promise chain for ui setup after failed metadata load', (done) => {
+            sandbox.stub(model3d, 'onMetadataError');
             const addUi = sandbox.stub(model3d.controls, 'addUi');
             const meta = {
                 get: () => Promise.resolve({ status: 404, response: { status: 'metadata not found' } })
