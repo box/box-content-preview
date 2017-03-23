@@ -53,7 +53,8 @@ You can self-host the Box Content Preview UI Kit and Promise library or referenc
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
     <script>
-        Box.Preview.show('93392244621', 'EqFyi1Yq1tD9mxY8F38sxDfp73pFd7FP', {
+        var preview = new Box.Preview();
+        preview.show('93392244621', 'EqFyi1Yq1tD9mxY8F38sxDfp73pFd7FP', {
     	    container: '.preview-container'
         });
     </script>
@@ -73,17 +74,18 @@ View a demo and sample code on CodePen - http://codepen.io/box-platform/pen/KaQb
 
 Initialization
 --------------
-The recommended way to show a preview is by calling `Box.Preview.show(fileId, accessToken, { options })` where `fileId` is a `Box_File` id and `accessToken` is a Box API access token. `Box.Preview` is an instance of the class `Preview`. Another way to show a preview or multiple previews on the same page is by creating instances of the `Preview` class as follows:
-
 ```javascript
-const preview = new Preview();
+var preview = new Box.Preview();
 preview.show(fileId, accessToken, { options });
 ```
+Where `fileId` is a string `Box_File` id and `accessToken` is a Box API access token.
+
 
 Parameters & Options
 -------
 ```javascript
-Box.Preview.show(fileId, accessToken, {
+var preview = new Box.Preview();
+preview.show(fileId, accessToken, {
     container: '.preview-container',
     sharedLink: 'https://app.box.com/v/foo',
     sharedLinkPassword: 'bar',
@@ -117,55 +119,56 @@ Box Content Preview needs an access token to make Box API calls. You can either 
 
 Viewers
 -------
-The name of a viewer can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. Call `Box.Preview.getViewers()` to get the list of possible viewers.
+The name of a viewer can be one of the following `Document`, `Presentation`, `MP3`, `MP4`, `Dash`, `Image`, `Text`, `SWF`, `Image360`, `Video360`, `Model3d`, `CSV`, `Markdown`. Call `preview.getViewers()` to get the list of possible viewers.
 
 Additional Methods
 ------------------
-`Box.Preview.hide()` hides the preview.
+`preview.hide()` hides the preview.
 
-`Box.Preview.updateCollection(/* Array[file ids] */ collection)` updates the collection to navigate through. Assumes the currently visible file is part of this new collection.
+`preview.updateCollection(/* Array[file ids] */ collection)` updates the collection to navigate through. Assumes the currently visible file is part of this new collection.
 
-`Box.Preview.getCurrentCollection()` returns the current collection if any.
+`preview.getCurrentCollection()` returns the current collection if any.
 
-`Box.Preview.getCurrentFile()` returns the current file being previewed if any. The file object structure is the same as returned by the [https://docs.box.com/reference#files](Box API).
+`preview.getCurrentFile()` returns the current file being previewed if any. The file object structure is the same as returned by the [https://docs.box.com/reference#files](Box API).
 
-`Box.Preview.getCurrentViewer()` returns the current viewer instance. May be undefined if the viewer isn't ready yet and waiting on conversion to happen.
+`preview.getCurrentViewer()` returns the current viewer instance. May be undefined if the viewer isn't ready yet and waiting on conversion to happen.
 
-`Box.Preview.enableViewers(/* String|Array[String] */ viewers)` enables one or more viewers based on VIEWERNAME.
+`preview.enableViewers(/* String|Array[String] */ viewers)` enables one or more viewers based on VIEWERNAME.
 
-`Box.Preview.disableViewers(/* String|Array[String] */ viewers)` disables one or more viewers based on VIEWERNAME. Viewers can also be disabled by setting `disabled: true` on the specific viewer option inside options.
+`preview.disableViewers(/* String|Array[String] */ viewers)` disables one or more viewers based on VIEWERNAME. Viewers can also be disabled by setting `disabled: true` on the specific viewer option inside options.
 
-`Box.Preview.enableHotkeys()` enables hotkeys (keyboard shortcuts).
+`preview.enableHotkeys()` enables hotkeys (keyboard shortcuts).
 
-`Box.Preview.disableHotkeys()` disables hotkeys (keyboard shortcuts).
+`preview.disableHotkeys()` disables hotkeys (keyboard shortcuts).
 
-`Box.Preview.print()` prints the file if printable.
+`preview.print()` prints the file if printable.
 
-`Box.Preview.download()` downloads the file if downloadable.
+`preview.download()` downloads the file if downloadable.
 
-`Box.Preview.resize()` resizes the current preview if applicable. This function only needs to be called when preview's viewport has changed while the window object has not. If the window is resizing, then preview will automatically resize itself.
+`preview.resize()` resizes the current preview if applicable. This function only needs to be called when preview's viewport has changed while the window object has not. If the window is resizing, then preview will automatically resize itself.
 
-`Box.Preview.getViewers()` lists all the available viewers.
+`preview.getViewers()` lists all the available viewers.
 
-`Box.Preview.prefetchViewers()` prefetches the static assets for all the available viewers for browser to cache for performance.
+`preview.prefetchViewers()` prefetches the static assets for all the available viewers for browser to cache for performance.
 
 Events
 ------
 The preview object exposes `addListener` and `removeListener` for binding to events. Event listeners should be bound before `show()` is called, otherwise events can be missed.
 
 ```javascript
-const listener = (value) => {
+var preview = new Box.Preview();
+var listener = (value) => {
     // Do something with value
 };
 
 // Attach listener before calling show otherwise events can be missed
-Box.Preview.addListener(EVENTNAME, listener);
+preview.addListener(EVENTNAME, listener);
 
 // Show a preview
-Box.Preview.show(...);
+preview.show(...);
 
 // Remove listener when appropriate
-Box.Preview.removeListener(EVENTNAME, listener);
+preview.removeListener(EVENTNAME, listener);
 ```
 
 EVENTNAME can be one of the following
@@ -203,20 +206,20 @@ EVENTNAME can be one of the following
 
 ### Example event usage
 ```javascript
-Box.Preview.addListener('viewer', (viewer) => {
+preview.addListener('viewer', (viewer) => {
     viewer.addListener('rotate', () => {
         // Do something when a viewer rotates a preview
     });
 });
 
-Box.Preview.addListener('load', (data) => {
-    const viewer = data.viewer;
+preview.addListener('load', (data) => {
+    var viewer = data.viewer;
     viewer.addListener('rotate', () => {
         // Do something when a viewer rotates a preview
     });
 });
 
-Box.Preview.addListener('viewerevent', (data) => {
+preview.addListener('viewerevent', (data) => {
     if (data.viewerName === 'Image') {
         if (data.event === 'rotate') {
             // Do something when an image preview is rotated
@@ -228,7 +231,7 @@ Box.Preview.addListener('viewerevent', (data) => {
     } else {}
 });
 
-Box.Preview.addListener('rotate', (data) => {
+preview.addListener('rotate', (data) => {
     if (data.viewerName === 'Image') {
         // Do something when an image preview is rotated
     } else if (data.viewerName === 'Image360') {

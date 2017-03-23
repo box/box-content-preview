@@ -50,8 +50,20 @@ Create a branch with a descriptive name, such as `add-search`.
 As you develop code, continue to push code to your remote feature branch. Please make sure to include the issue number you're addressing in your commit message, such as:
 
 ```
-git commit -m "Adding search (fixes #123)"
+Tag: Short description (fixes #1234)
+
+Longer description here if necessary
 ```
+The Tag is one of the following:
+
+* `Fix` - for a bug fix.
+* `Update` - for a backwards-compatible enhancement or a change to a rule that increases the number of reported problems.
+* `New` - implemented a new feature.
+* `Breaking` - for a backwards-incompatible enhancement or feature.
+* `Docs` - changes to documentation only.
+* `Build` - changes to build process only.
+* `Upgrade` - for a dependency upgrade.
+* `Chore` - for refactoring, adding tests, etc. (anything that isn’t user-facing).
 
 This helps us out by allowing us to track which issue your commit relates to.
 
@@ -74,6 +86,7 @@ Make sure that all tests are passing before submitting a pull request.
 
 ### Step 8: Send the pull request
 
-Send the pull request from your feature branch to us. Be sure to include a description that lets us know what work you did.
+Send the pull request from your feature branch to us. Be sure to include a description (as mentioned above in step 5) that lets us know what work you did.
 
 Keep in mind that we like to see one issue addressed per pull request, as this helps keep our git history clean and we can more easily track down issues.
+
