@@ -289,13 +289,15 @@ describe('lib/viewers/box3d/Box3dRenderer', () => {
             it('should produce an XhrResourceLoader which supports token, sharedLink and sharedLinkPassword', (done) => {
                 const creatBox3DStub = sandbox.stub(renderer, 'createBox3d', (loader) => {
                     sandbox.stub(loader.queue, 'add', (fn) => fn());
+                    const resource = {
+                        once: (event, cb) => cb()
+                    };
+                    sandbox.stub(loader, 'load', () => resource);
 
-                    const resource = loader.load('path/to/texture.jpg', window.Box3D.LoadingType.IMAGE, {});
+                    loader.load('path/to/texture.jpg', window.Box3D.LoadingType.IMAGE, {});
 
-                    resource.once('done', () => {
-                        expect(creatBox3DStub).to.be.called;
-                        done();
-                    });
+                    expect(creatBox3DStub).to.be.called;
+                    done();
                 });
 
                 renderer.initBox3d({

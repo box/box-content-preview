@@ -608,6 +608,7 @@ describe('lib/viewers/box3d/model3d/Model3dRenderer', () => {
         const animations = [];
         const images = [];
         const videos = [];
+        let startOptimizerStub;
 
         beforeEach(() => {
             sandbox.stub(renderer.box3d, 'getEntitiesByType', (type) => {
@@ -622,6 +623,7 @@ describe('lib/viewers/box3d/model3d/Model3dRenderer', () => {
                         return [];
                 }
             });
+            startOptimizerStub = sandbox.stub(renderer, 'startOptimizer');
         });
 
         afterEach(() => {
@@ -631,21 +633,26 @@ describe('lib/viewers/box3d/model3d/Model3dRenderer', () => {
         });
 
         it('should reset the scene via reset()', () => {
+            sandbox.stub(Promise, 'all').returns({ then: () => {} });
             renderMock.expects('reset');
             renderer.onSceneLoad();
         });
 
         it('should collect all assets that are loading', () => {
+            sandbox.stub(Promise, 'all').returns({ then: () => {} });
             const anim = {
-                isLoading: sandbox.stub().returns(true)
+                isLoading: sandbox.stub().returns(true),
+                when: sandbox.stub()
             };
             animations.push(anim);
             const image = {
-                isLoading: sandbox.stub().returns(false)
+                isLoading: sandbox.stub().returns(false),
+                when: sandbox.stub()
             };
             images.push(image);
             const video = {
-                isLoading: sandbox.stub().returns(false)
+                isLoading: sandbox.stub().returns(false),
+                when: sandbox.stub()
             };
             videos.push(video);
             sandbox.mock(animations).expects('concat').withArgs(images, videos)
@@ -658,6 +665,7 @@ describe('lib/viewers/box3d/model3d/Model3dRenderer', () => {
         });
 
         it('should add listeners for filtered assets to load', () => {
+            sandbox.stub(Promise, 'all').returns({ then: () => {} });
             const anim = {
                 isLoading: sandbox.stub().returns(true),
                 when: sandbox.stub()
@@ -671,14 +679,13 @@ describe('lib/viewers/box3d/model3d/Model3dRenderer', () => {
         });
 
         it('should invoke resize', () => {
+            sandbox.stub(Promise, 'all').returns({ then: () => {} });
             renderMock.expects('resize');
             renderer.onSceneLoad();
         });
 
         describe('when assets fully loaded', () => {
-            let startStub;
             beforeEach(() => {
-                startStub = sandbox.stub(renderer, 'startOptimizer');
                 sandbox.stub(Promise, 'all').returns({
                     then: (callback) => callback()
                 });
@@ -686,7 +693,7 @@ describe('lib/viewers/box3d/model3d/Model3dRenderer', () => {
 
             it('should invoke startOptimizer()', () => {
                 renderer.onSceneLoad();
-                expect(startStub).to.be.called;
+                expect(startOptimizerStub).to.be.called;
             });
 
             it('should set the current animation to the first animation asset', () => {
@@ -1018,6 +1025,7 @@ describe('lib/viewers/box3d/model3d/Model3dRenderer', () => {
         });
 
         it('should not remove the grid if there is none', () => {
+            sandbox.stub(renderer, 'getScene').returns(scene);
             renderer.grid = undefined;
             renderer.axisDisplay = undefined;
             sandbox.mock(scene.runtimeData).expects('remove').withArgs(grid).never();
@@ -1025,6 +1033,7 @@ describe('lib/viewers/box3d/model3d/Model3dRenderer', () => {
         });
 
         it('should remove the grid from the scene', () => {
+            sandbox.stub(renderer, 'getScene').returns(scene);
             renderer.axisDisplay = undefined;
             sandbox.mock(scene.runtimeData).expects('remove').withArgs(grid);
             renderer.cleanupHelpers();

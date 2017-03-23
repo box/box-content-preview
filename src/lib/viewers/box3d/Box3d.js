@@ -15,7 +15,7 @@ import {
     EVENT_TOGGLE_FULLSCREEN,
     EVENT_TOGGLE_VR
 } from './Box3dConstants';
-import JS from './Box3dAssets';
+import JS from './box3dAssets';
 import './Box3d.scss';
 
 // Milliseconds to wait for model to load before cancelling Preview
