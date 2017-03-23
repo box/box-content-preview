@@ -53,7 +53,7 @@ You can self-host the Box Content Preview UI Kit and Promise library or referenc
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
     <script>
-        const preview = new Box.Preview();
+        var preview = new Box.Preview();
         preview.show('93392244621', 'EqFyi1Yq1tD9mxY8F38sxDfp73pFd7FP', {
     	    container: '.preview-container'
         });
@@ -75,7 +75,7 @@ View a demo and sample code on CodePen - http://codepen.io/box-platform/pen/KaQb
 Initialization
 --------------
 ```javascript
-const preview = new Box.Preview();
+var preview = new Box.Preview();
 preview.show(fileId, accessToken, { options });
 ```
 Where `fileId` is a string `Box_File` id and `accessToken` is a Box API access token.
@@ -84,7 +84,7 @@ Where `fileId` is a string `Box_File` id and `accessToken` is a Box API access t
 Parameters & Options
 -------
 ```javascript
-const preview = new Box.Preview();
+var preview = new Box.Preview();
 preview.show(fileId, accessToken, {
     container: '.preview-container',
     sharedLink: 'https://app.box.com/v/foo',
@@ -156,8 +156,8 @@ Events
 The preview object exposes `addListener` and `removeListener` for binding to events. Event listeners should be bound before `show()` is called, otherwise events can be missed.
 
 ```javascript
-const preview = new Box.Preview();
-const listener = (value) => {
+var preview = new Box.Preview();
+var listener = (value) => {
     // Do something with value
 };
 
@@ -213,7 +213,7 @@ preview.addListener('viewer', (viewer) => {
 });
 
 preview.addListener('load', (data) => {
-    const viewer = data.viewer;
+    var viewer = data.viewer;
     viewer.addListener('rotate', () => {
         // Do something when a viewer rotates a preview
     });
