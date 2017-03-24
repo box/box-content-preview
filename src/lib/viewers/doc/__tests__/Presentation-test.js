@@ -2,6 +2,7 @@
 import Presentation from '../Presentation';
 import Browser from '../../../Browser';
 import DocBase from '../DocBase';
+import PresentationPreloader from '../PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../../constants';
 
 import {
@@ -33,13 +34,17 @@ describe('lib/viewers/doc/Presentation', () => {
             container: containerEl
         });
         presentation.setup();
+
         presentation.pdfViewer = {
             currentPageNumber: 1,
-            update: sandbox.stub()
+            update: sandbox.stub(),
+            cleanup: sandbox.stub()
         };
+
         presentation.controls = {
             add: sandbox.stub()
         };
+
         presentation.options = {
             file: 'file'
         };
@@ -49,18 +54,36 @@ describe('lib/viewers/doc/Presentation', () => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
 
-        presentation.pdfViewer = null;
-        presentation.controls = null;
-        if (typeof presentation.destroy === 'function') {
+        if (presentation && typeof presentation.destroy === 'function') {
+            presentation.pdfViewer = undefined;
             presentation.destroy();
         }
+
         presentation = null;
         stubs = {};
     });
 
     describe('setup()', () => {
-        it('should add the document class to the doc element', () => {
+        it('should add the document class to the doc element and set up preloader', () => {
             expect(presentation.docEl).to.have.class('bp-doc-presentation');
+            expect(presentation.preloader).to.be.instanceof(PresentationPreloader);
+        });
+    });
+
+    describe('destroy()', () => {
+        const destroyFunc = DocBase.prototype.destroy;
+
+        afterEach(() => {
+            Object.defineProperty(DocBase.prototype, 'destroy', { value: destroyFunc });
+        });
+
+        it('should remove listeners from preloader', () => {
+            Object.defineProperty(DocBase.prototype, 'destroy', { value: sandbox.stub() });
+            presentation.preloader = {
+                removeAllListeners: sandbox.mock().withArgs('preload')
+            };
+            presentation.destroy();
+            presentation = null; // Don't call destroy again during cleanup
         });
     });
 
