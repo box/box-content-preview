@@ -416,45 +416,42 @@ describe('lib/viewers/image/Image', () => {
 
     describe('print()', () => {
         beforeEach(() => {
-            stubs.iframe = {
-                contentWindow: {
-                    focus: sandbox.stub(),
-                    print: sandbox.stub(),
-                    document: {
-                        execCommand: sandbox.stub()
-                    }
-                }
-            };
+            stubs.mockIframe = util.openContentInsideIframe(image.imageEl.outerHTML);
+            stubs.focus = sandbox.stub(stubs.mockIframe.contentWindow, 'focus');
+            stubs.execCommand = sandbox.stub(stubs.mockIframe.contentWindow.document, 'execCommand');
+            stubs.print = sandbox.stub(stubs.mockIframe.contentWindow, 'print');
 
-            stubs.openContentInsideIframe = sandbox.stub(util, 'openContentInsideIframe').returns(stubs.iframe);
+            stubs.openContentInsideIframe = sandbox.stub(util, 'openContentInsideIframe').returns(stubs.mockIframe);
             stubs.getName = sandbox.stub(Browser, 'getName');
         });
 
-        it('should open the content inside an iframe, and focus', () => {
+        it('should open the content inside an iframe, center, and focus', () => {
             image.print();
             expect(stubs.openContentInsideIframe).to.be.called;
-            expect(stubs.iframe.contentWindow.focus).to.be.called;
+            expect(image.printImage.style.display).to.equal('block');
+            expect(image.printImage.style.margin).to.equal('0px auto');
+            expect(stubs.focus).to.be.called;
         });
 
         it('should execute the print command if the browser is Explorer', () => {
             stubs.getName.returns('Explorer');
 
             image.print();
-            expect(stubs.iframe.contentWindow.document.execCommand).to.be.calledWith('print', false, null);
+            expect(stubs.execCommand).to.be.calledWith('print', false, null);
         });
 
         it('should execute the print command if the browser is Edge', () => {
             stubs.getName.returns('Edge');
 
             image.print();
-            expect(stubs.iframe.contentWindow.document.execCommand).to.be.calledWith('print', false, null);
+            expect(stubs.execCommand).to.be.calledWith('print', false, null);
         });
 
         it('should call the contentWindow print for other browsers', () => {
             stubs.getName.returns('Chrome');
 
             image.print();
-            expect(stubs.iframe.contentWindow.print).to.be.called;
+            expect(stubs.print).to.be.called;
         });
     });
 
