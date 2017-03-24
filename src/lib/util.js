@@ -520,7 +520,7 @@ export function findScriptLocation(name, currentScript = null) {
     const version = pathFragments[fragmentLength - 3];
     const query = anchor.search;
     const baseURI = anchor.href.replace(fileName, '').replace(query, '');
-    const staticBaseURI = baseURI.replace(`${locale}/`, '');
+    const staticBaseURI = baseURI.replace(`${version}/${locale}/`, '');
 
     return {
         origin: anchor.origin,

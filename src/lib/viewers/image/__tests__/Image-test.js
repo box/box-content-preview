@@ -131,6 +131,17 @@ describe('lib/viewers/image/Image', () => {
             image.prefetch({ content: true });
             expect(image.createContentUrlWithAuthParams).to.not.be.called;
         });
+
+        it('should not prefetch content if file is watermarked', () => {
+            image.options.file.watermark_info = {
+                is_watermarked: true
+            };
+            sandbox.stub(image, 'createContentUrlWithAuthParams');
+
+            image.prefetch({ content: true });
+
+            expect(image.createContentUrlWithAuthParams).to.not.be.called;
+        });
     });
 
 

@@ -1,9 +1,10 @@
 import autobind from 'autobind-decorator';
 import TextBase from './TextBase';
 import { createAssetUrlCreator, get } from '../../util';
+import { TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import './CSV.scss';
 
-const JS = ['third-party/text/papaparse.min.js', 'csv.js'];
+const JS = [`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/papaparse.min.js`, 'csv.js'];
 
 @autobind
 class CSV extends TextBase {

@@ -1,4 +1,6 @@
 import Browser from '../../../Browser';
+import { MODEL3D_STATIC_ASSETS_VERSION } from '../../../constants';
+
 /**
  * Returns the default scene entities array
  * @param  {string} prefix Prefix to be used for loading static assets
@@ -175,7 +177,7 @@ function sceneEntities(prefix) {
             stream: false
         },
         representations: [{
-            src: `${prefix}third-party/model3d/matcap.png`,
+            src: `${prefix}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/matcap.png`,
             isExternal: true,
             contentType: 'image/png',
             contentEncoding: 'identity',
@@ -194,7 +196,7 @@ function sceneEntities(prefix) {
             encoding: 'linear'
         },
         representations: [{
-            src: `${prefix}third-party/model3d/HDR_Env0.png`,
+            src: `${prefix}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/HDR_Env0.png`,
             isExternal: true,
             contentType: 'image/png',
             contentEncoding: 'identity',
@@ -214,7 +216,7 @@ function sceneEntities(prefix) {
             encoding: 'linear'
         },
         representations: [{
-            src: `${prefix}third-party/model3d/HDR_Env1.png`,
+            src: `${prefix}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/HDR_Env1.png`,
             isExternal: true,
             contentType: 'image/png',
             contentEncoding: 'identity',
@@ -234,7 +236,7 @@ function sceneEntities(prefix) {
             encoding: 'linear'
         },
         representations: [{
-            src: `${prefix}third-party/model3d/HDR_Env2.png`,
+            src: `${prefix}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/HDR_Env2.png`,
             isExternal: true,
             contentType: 'image/png',
             contentEncoding: 'identity',

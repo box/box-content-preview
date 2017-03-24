@@ -77,8 +77,10 @@ class Image extends Base {
      * @return {void}
      */
     prefetch({ content = true }) {
-        const { representation, viewer } = this.options;
-        if (content && this.isRepresentationReady(representation)) {
+        const { file, representation, viewer } = this.options;
+        const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
+
+        if (content && !isWatermarked && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
             document.createElement('img').src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
         }

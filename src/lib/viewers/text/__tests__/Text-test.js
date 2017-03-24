@@ -4,6 +4,7 @@ import PlainText from '../Text';
 import Popup from '../../../Popup';
 import TextBase from '../TextBase';
 import * as util from '../../../util';
+import { TEXT_STATIC_ASSETS_VERSION } from '../../../constants';
 
 let containerEl;
 let text;
@@ -150,7 +151,7 @@ describe('lib/viewers/text/Text', () => {
 
             text.print();
 
-            expect(text.preparePrint).to.be.calledWith(['third-party/text/github.css', 'preview.css']);
+            expect(text.preparePrint).to.be.calledWith([`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.css`, 'preview.css']);
             expect(text.printPopup.show).to.be.called;
             expect(text.printPopup.disableButton).to.be.called;
         });

@@ -1,4 +1,6 @@
-const STATIC_URI = 'third-party/model3d/';
+import { MODEL3D_STATIC_ASSETS_VERSION } from '../../constants';
+
+const STATIC_URI = `third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/`;
 const JS = [
     `${STATIC_URI}boxsdk.min.js`,
     `${STATIC_URI}three.min.js`,
