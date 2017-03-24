@@ -348,7 +348,7 @@ describe('lib/util', () => {
                 assert.equal(loc.pathname, '/path/version/locale/file.js');
                 assert.equal(loc.version, 'version');
                 assert.equal(loc.baseURI, 'https://hostname:100/path/version/locale/');
-                assert.equal(loc.staticBaseURI, 'https://hostname:100/path/version/');
+                assert.equal(loc.staticBaseURI, 'https://hostname:100/path/');
             });
         });
     });

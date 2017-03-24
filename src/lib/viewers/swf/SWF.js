@@ -1,4 +1,5 @@
 import Base from '../Base';
+import { SWF_STATIC_ASSETS_VERSION } from '../../constants';
 
 const SWF_PARAMS = {
     allowfullscreen: 'true',
@@ -10,7 +11,7 @@ const SWF_PARAMS = {
     wmode: 'transparent'
 };
 
-const JS = ['third-party/swf/swfobject.js'];
+const JS = [`third-party/swf/${SWF_STATIC_ASSETS_VERSION}/swfobject.js`];
 
 class SWF extends Base {
     /**
