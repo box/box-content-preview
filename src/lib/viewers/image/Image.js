@@ -284,6 +284,10 @@ class Image extends Base {
         this.printframe = openContentInsideIframe(this.imageEl.outerHTML);
         this.printframe.contentWindow.focus();
 
+        this.printImage = this.printframe.contentDocument.querySelector('img');
+        this.printImage.style.display = 'block';
+        this.printImage.style.margin = '0 auto';
+
         if (Browser.getName() === 'Explorer' || Browser.getName() === 'Edge') {
             this.printframe.contentWindow.document.execCommand('print', false, null);
         } else {
