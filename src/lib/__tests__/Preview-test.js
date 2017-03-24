@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import fetchMock from 'fetch-mock';
-import '../Preview';
+import Preview from '../Preview';
 import ProgressBar from '../ProgressBar';
 import loaders from '../loaders';
 import Logger from '../Logger';
@@ -22,7 +22,7 @@ const KEYDOWN_EXCEPTIONS = ['INPUT', 'SELECT', 'TEXTAREA']; // Ignore keydown ev
 const sandbox = sinon.sandbox.create();
 
 let stubs = {};
-let preview = Box.Preview;
+let preview;
 let containerEl;
 
 describe('lib/Preview', () => {
@@ -33,9 +33,9 @@ describe('lib/Preview', () => {
     beforeEach(() => {
         fixture.load('__tests__/Preview-test.html');
         containerEl = document.querySelector('.container');
-        preview = Box.Preview;
+        sandbox.stub(util, 'findScriptLocation').returns('en-US');
+        preview = new Preview();
         preview.container = containerEl;
-        preview.viewer = {};
         stubs = {};
     });
 
@@ -43,17 +43,13 @@ describe('lib/Preview', () => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
         fetchMock.restore();
-
-        if (typeof preview.destroy === 'function') {
-            preview.destroy();
-        }
+        preview.destroy();
         preview = null;
         stubs = null;
     });
 
     describe('constructor()', () => {
         beforeEach(() => {
-            sandbox.stub(util, 'findScriptLocation').returns('en-US');
             stubs.preview = preview;
             stubs.location = preview.location;
         });
@@ -63,12 +59,10 @@ describe('lib/Preview', () => {
         });
 
         it('should set the preview to be closed', () => {
-            preview.constructor();
             expect(preview.open).to.be.false;
         });
 
         it('should initialize the various preview objects', () => {
-            preview.constructor();
             expect(preview.count.success).to.equal(0);
             expect(preview.count.error).to.equal(0);
             expect(preview.count.navigation).to.equal(0);
@@ -524,7 +518,7 @@ describe('lib/Preview', () => {
 
             preview.disableViewers(Object.keys(viewersToEnable));
             preview.enableViewers(Object.keys(viewersToEnable));
-            expect(preview.disabledViewers).to.deep.equal({});
+            expect(preview.disabledViewers).to.deep.equal({ Office: 1 });
         });
 
         it('should enable a single viewer that is passed in', () => {
@@ -1015,6 +1009,9 @@ describe('lib/Preview', () => {
 
         it('should save a reference to the file and update the logger', () => {
             preview.open = true;
+            preview.file = {
+                id: 0
+            };
 
             preview.handleLoadResponse(stubs.file);
             expect(preview.file).to.equal(stubs.file);
@@ -1023,6 +1020,10 @@ describe('lib/Preview', () => {
 
         it('should get the latest cache, then update it with the new file', () => {
             preview.open = true;
+            preview.file = {
+                id: 0
+            };
+
             stubs.get.returns({
                 file_version: {
                     sha1: 0
@@ -1040,6 +1041,10 @@ describe('lib/Preview', () => {
         it('should not cache the file if the file is watermarked', () => {
             stubs.file.watermark_info.is_watermarked = true;
             preview.open = true;
+            preview.file = {
+                id: 0
+            };
+
             stubs.get.returns({
                 file_version: {
                     sha1: 0
@@ -1053,6 +1058,11 @@ describe('lib/Preview', () => {
         });
 
         it('should set the cache stale and re-load the viewer if the file is not in the cache', () => {
+            preview.open = true;
+            preview.file = {
+                id: 0
+            };
+
             stubs.get.returns(false);
 
             preview.handleLoadResponse(stubs.file);
@@ -1061,6 +1071,11 @@ describe('lib/Preview', () => {
         });
 
         it('should set the cache stale and re-load the viewer if the file version is not in the cache', () => {
+            preview.open = true;
+            preview.file = {
+                id: 0
+            };
+
             stubs.get.returns({
                 file_version: false
             });
@@ -1071,6 +1086,11 @@ describe('lib/Preview', () => {
         });
 
         it('should set the cache stale and re-load the viewer if the cached sha1 does not match the files sha1', () => {
+            preview.open = true;
+            preview.file = {
+                id: 0
+            };
+
             stubs.get.returns({
                 file_version: {
                     sha1: 0
@@ -1085,6 +1105,11 @@ describe('lib/Preview', () => {
         });
 
         it('should set the cache stale and re-load the viewer if the file is watermarked', () => {
+            preview.open = true;
+            preview.file = {
+                id: 0
+            };
+
             stubs.file.watermark_info.is_watermarked = true;
             stubs.get.returns({
                 file_version: {
@@ -1100,6 +1125,11 @@ describe('lib/Preview', () => {
         });
 
         it('should trigger an error if any cache or load operations fail', () => {
+            preview.open = true;
+            preview.file = {
+                id: 0
+            };
+
             stubs.get.throws(new Error());
 
             preview.handleLoadResponse(stubs.file);
@@ -1258,12 +1288,15 @@ describe('lib/Preview', () => {
                 done: sandbox.stub()
             };
 
+            preview.file = {
+                id: 0
+            };
+
             preview.viewer = {
                 getPointModeClickHandler: sandbox.stub()
             };
 
             preview.logger = stubs.logger;
-            preview.download = 'download';
             preview.options.showDownload = true;
             stubs.isMobile.returns(false);
             stubs.checkPermission.returns(true);
@@ -1280,7 +1313,7 @@ describe('lib/Preview', () => {
             stubs.checkPermission.returns(true);
 
             preview.finishLoading();
-            expect(stubs.showDownloadButton).to.be.calledWith('download');
+            expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
         });
 
         it('should show download button if it is requested in the options', () => {
@@ -1293,7 +1326,7 @@ describe('lib/Preview', () => {
             preview.options.showDownload = true;
 
             preview.finishLoading();
-            expect(stubs.showDownloadButton).to.be.calledWith('download');
+            expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
         });
 
         it('should show download button if not on mobile', () => {
@@ -1306,7 +1339,7 @@ describe('lib/Preview', () => {
             stubs.isMobile.returns(false);
 
             preview.finishLoading();
-            expect(stubs.showDownloadButton).to.be.calledWith('download');
+            expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
         });
 
         it('should show print button if print is supported', () => {
@@ -1733,10 +1766,6 @@ describe('lib/Preview', () => {
     });
 
     describe('getGlobalMousemoveHandler()', () => {
-        beforeEach(() => {
-            preview.throttledMousemoveHandler = undefined;
-        });
-
         it('should return the throttled mouse move handler if it already exists', () => {
             preview.throttledMousemoveHandler = true;
 
@@ -1781,7 +1810,9 @@ describe('lib/Preview', () => {
         it('should set a timeout to remove the arrows if the container exists', () => {
             const clock = sinon.useFakeTimers();
             const handler = preview.getGlobalMousemoveHandler();
-            preview.viewer.allowNavigationArrows = sandbox.stub();
+            preview.viewer = {
+                allowNavigationArrows: sandbox.stub()
+            };
 
             handler();
             clock.tick(MOUSEMOVE_THROTTLE + 1);

@@ -4,6 +4,7 @@ import VideoBase from '../VideoBase';
 import cache from '../../../Cache';
 import fullscreen from '../../../Fullscreen';
 import * as util from '../../../util';
+import { MEDIA_STATIC_ASSETS_VERSION } from '../../../constants';
 
 let dash;
 let stubs = {};
@@ -164,7 +165,7 @@ describe('lib/viewers/media/Dash', () => {
 
     describe('getJSAssets()', () => {
         it('should return shaka player assets', () => {
-            const assets = ['third-party/media/shaka-player.compiled.js'];
+            const assets = [`third-party/media/${MEDIA_STATIC_ASSETS_VERSION}/shaka-player.compiled.js`];
             const returnedAssets = dash.getJSAssets();
             expect(returnedAssets).to.deep.equal(assets);
         });

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Markdown from '../Markdown';
 import Popup from '../../../Popup';
+import { TEXT_STATIC_ASSETS_VERSION } from '../../../constants';
 
 let containerEl;
 let markdown;
@@ -58,7 +59,7 @@ describe('lib/viewers/text/Markdown', () => {
 
             markdown.print();
 
-            expect(markdown.preparePrint).to.be.calledWith(['third-party/text/github.css', 'third-party/text/github-markdown.css', 'preview.css']);
+            expect(markdown.preparePrint).to.be.calledWith([`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.css`, `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github-markdown.css`, 'preview.css']);
             expect(markdown.printPopup.show).to.be.calledWith('Preparing to print...', 'Print', sinon.match.func);
             expect(markdown.printPopup.disableButton).to.be.called;
         });

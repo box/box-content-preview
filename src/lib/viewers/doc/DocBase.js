@@ -13,6 +13,7 @@ import {
     CLASS_BOX_PREVIEW_FIND_BAR,
     CLASS_HIDDEN,
     CLASS_IS_SCROLLABLE,
+    DOC_STATIC_ASSETS_VERSION,
     PERMISSION_ANNOTATE,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME
@@ -639,8 +640,8 @@ class DocBase extends Base {
         // Set PDFJS worker & character maps
         const { file, location } = this.options;
         const assetUrlCreator = createAssetUrlCreator(location);
-        PDFJS.workerSrc = assetUrlCreator('third-party/doc/pdf.worker.min.js');
-        PDFJS.cMapUrl = `${location.staticBaseURI}third-party/doc/cmaps/`;
+        PDFJS.workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
+        PDFJS.cMapUrl = `${location.staticBaseURI}third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/`;
         PDFJS.cMapPacked = true;
 
         // Open links in new tab
