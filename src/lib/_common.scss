@@ -173,38 +173,6 @@ $header-height: 48px;
     }
 }
 
-// Used for showing preload, aka Instant Preview
-.bp-preload-wrapper {
-    bottom: 0;
-    left: 0;
-    margin: 0;
-    opacity: 1;
-    overflow-y: scroll;
-    position: absolute;
-    right: 0;
-    top: 0;
-    transition: opacity .7s;
-
-    &.bp-is-invisible {
-        opacity: 0;
-        visibility: visible;
-    }
-
-    .bp-preload {
-        background-color: $ffive;
-
-        .bp-theme-dark & {
-            background-color: $sunset-grey;
-        }
-    }
-
-    .bp-preload-content {
-        background: $white url('loadingIcon.gif') center no-repeat;
-        display: block;
-        margin: 15px auto 30px;
-    }
-}
-
 .bp-popup-modal {
     left: 0;
     margin: 0 auto;

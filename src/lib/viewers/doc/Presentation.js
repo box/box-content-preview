@@ -3,6 +3,7 @@ import throttle from 'lodash.throttle';
 import pageNumTemplate from './pageNumButtonContent.html';
 import Browser from '../../Browser';
 import DocBase from './DocBase';
+import PresentationPreloader from './PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../constants';
 import {
     ICON_DROP_DOWN,
@@ -32,6 +33,20 @@ class Presentation extends DocBase {
         // Call super() first to set up common layout
         super.setup();
         this.docEl.classList.add('bp-doc-presentation');
+
+        // Set up preloader
+        this.preloader = new PresentationPreloader();
+        this.preloader.addListener('preload', () => {
+            this.options.logger.setPreloaded();
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    destroy() {
+        super.destroy();
+        this.preloader.removeAllListeners('preload');
     }
 
     /**

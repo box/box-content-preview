@@ -471,9 +471,8 @@ class Preview extends EventEmitter {
         // Determining the viewer could throw an error
         try {
             file = cache.get(fileId);
-            loader = this.getLoader(file);
-            viewer = loader.determineViewer(file);
-
+            loader = file ? this.getLoader(file) : null;
+            viewer = loader ? loader.determineViewer(file) : null;
             if (!viewer) {
                 return;
             }

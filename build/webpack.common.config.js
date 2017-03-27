@@ -62,7 +62,7 @@ module.exports = (language) => {
                     test: /\.(jpe?g|png|gif|woff2|woff)$/,
                     loader: 'file-loader',
                     options: {
-                        name: '[path][name].[ext]'
+                        name: '[name].[ext]'
                     },
                     exclude: [
                         path.resolve('src/third-party'),
