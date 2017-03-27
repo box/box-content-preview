@@ -37,6 +37,7 @@ class Annotator extends EventEmitter {
         this._annotationService = data.annotationService;
         this._fileVersionID = data.fileVersionID;
         this._locale = data.locale;
+        this.validationErrorDisplayed = false;
 
         this.notification = new Notification(this._annotatedElement);
     }
@@ -239,7 +240,7 @@ class Annotator extends EventEmitter {
         this.addListener('annotationerror', (data) => {
             switch (data.reason) {
                 case 'validation':
-                    this.notification.show(__('annotations_load_error'));
+                    this.handleValidationError();
                     break;
                 default:
             }
@@ -451,13 +452,6 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     addThreadToMap(thread) {
-        if (!annotatorUtil.checkThreadValid(thread)) {
-            this.emit('annotationerror', {
-                reason: 'validation'
-            });
-            return;
-        }
-
         // Add thread to in-memory map
         const page = thread.location.page || 1; // Defaults to page 1 if thread has no page
         this._threads[page] = this._threads[page] || [];
@@ -497,6 +491,22 @@ class Annotator extends EventEmitter {
                 });
         });
         return hasPendingThreads;
+    }
+
+    /**
+     * Displays annotation validation error notification once on load. Does
+     * nothing if notification was already displayed once.
+     *
+     * @private
+     * @return {void}
+     */
+    handleValidationError() {
+        if (this.validationErrorDisplayed) {
+            return;
+        }
+
+        this.notification.show(__('annotations_load_error'));
+        this.validationErrorDisplayed = true;
     }
 }
 

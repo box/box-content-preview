@@ -419,18 +419,6 @@ describe('lib/annotations/Annotator', () => {
     });
 
     describe('addToThreadMap', () => {
-        it('should emit an error message and do nothing if thread is invalid', () => {
-            stubs.thread.location = { page: 2 };
-            sandbox.stub(annotatorUtil, 'checkThreadValid').returns(false);
-
-            annotator.init();
-            annotator.addThreadToMap(stubs.thread);
-            expect(annotator.emit).to.be.calledWith('annotationerror', {
-                reason: 'validation'
-            });
-            expect(annotator._threads).to.deep.equal({});
-        });
-
         it('should add valid threads to the thread map', () => {
             sandbox.stub(annotatorUtil, 'checkThreadValid').returns(true);
             stubs.thread.location = { page: 2 };
@@ -523,6 +511,24 @@ describe('lib/annotations/Annotator', () => {
             const destroyed = annotator.destroyPendingThreads();
 
             expect(destroyed).to.equal(true);
+        });
+    });
+
+    describe('handleValidationError()', () => {
+        it('should do nothing if a validation notification was already displayed', () => {
+            annotator.validationErrorDisplayed = true;
+            stubs.showNotification = sandbox.stub(annotator.notification, 'show');
+            annotator.handleValidationError();
+            expect(stubs.showNotification).to.not.be.called;
+            expect(annotator.validationErrorDisplayed).to.be.true;
+        });
+
+        it('should display validation error notification on first error', () => {
+            annotator.validationErrorDisplayed = false;
+            stubs.showNotification = sandbox.stub(annotator.notification, 'show');
+            annotator.handleValidationError();
+            expect(stubs.showNotification).to.be.called;
+            expect(annotator.validationErrorDisplayed).to.be.true;
         });
     });
 });

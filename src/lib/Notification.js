@@ -61,8 +61,7 @@ class Notification {
     }
 
     /**
-     * Hides the notification message.
-     * Does nothing if the notification is already hidden.
+     * Hides the notification message. Does nothing if the notification is already hidden.
      *
      * @return {void}
      */
