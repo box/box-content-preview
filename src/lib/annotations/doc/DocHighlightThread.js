@@ -188,8 +188,11 @@ class DocHighlightThread extends AnnotationThread {
      * @return {boolean} Whether we should delay drawing highlight
      */
     onMousemove(event) {
+        if (docAnnotatorUtil.hasActivePendingDialog(this._annotatedElement)) {
+            return false;
+
         // If mouse is in dialog, change state to hover or active-hover
-        if (docAnnotatorUtil.isInDialog(event, this._dialog.element)) {
+        } else if (docAnnotatorUtil.isInDialog(event, this._dialog.element)) {
             // Keeps dialog open if comment is pending
             if (this._state === constants.ANNOTATION_STATE_PENDING_ACTIVE) {
                 return false;
