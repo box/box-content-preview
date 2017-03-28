@@ -1247,6 +1247,7 @@ describe('lib/Preview', () => {
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             stubs.checkFeature = sandbox.stub(file, 'checkFeature');
             stubs.isMobile = sandbox.stub(Browser, 'isMobile');
+            stubs.canDownload = sandbox.stub(Browser, 'canDownload');
             stubs.showDownloadButton = sandbox.stub(ui, 'showDownloadButton');
             stubs.showPrintButton = sandbox.stub(ui, 'showPrintButton');
             stubs.showAnnotateButton = sandbox.stub(ui, 'showAnnotateButton');
@@ -1270,7 +1271,7 @@ describe('lib/Preview', () => {
 
             preview.logger = stubs.logger;
             preview.options.showDownload = true;
-            stubs.isMobile.returns(false);
+            stubs.canDownload.returns(true);
             stubs.checkPermission.returns(true);
             stubs.checkFeature.returns(true);
         });
@@ -1301,14 +1302,14 @@ describe('lib/Preview', () => {
             expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
         });
 
-        it('should show download button if not on mobile', () => {
-            stubs.isMobile.returns(true);
+        it('should show download button if download is supported by browser', () => {
+            stubs.canDownload.returns(false);
 
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.not.be.called;
 
 
-            stubs.isMobile.returns(false);
+            stubs.canDownload.returns(true);
 
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
