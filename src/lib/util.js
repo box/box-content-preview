@@ -343,7 +343,12 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
  * @return {string} Content url
  */
 export function createContentUrl(template, asset) {
-    return template.replace('{asset_path}', asset || '');
+    // @NOTE(tjin): Remove the next 3 lines after reps API is stabilized after 4/6/17
+    /* eslint-disable no-param-reassign */
+    template = template.replace('{asset_path}', asset || '');
+    /* eslint-enable no-param-reassign */
+
+    return template.replace('{+asset_path}', asset || '');
 }
 
 /**
@@ -497,14 +502,10 @@ export function decodeKeydown(event) {
  * Find location information about a script include
  *
  * @param {string} name - Script name
- * @param {HTMLScriptElement} [currentScript] - Current script tag
  * @return {Object} Script location object
  */
-export function findScriptLocation(name, currentScript = null) {
-    const scriptSrc = currentScript
-                        ? currentScript.src
-                        : document.querySelector(`script[src*="/${name}"]`).src;
-
+export function findScriptLocation(name) {
+    const scriptSrc = document.querySelector(`script[src*="/${name}"]`).src;
     if (!scriptSrc) {
         throw new Error('Missing or malformed preview library');
     }

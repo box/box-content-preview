@@ -383,7 +383,8 @@ describe('lib/viewers/media/Dash', () => {
                             { representation: 'dash' },
                             {
                                 representation: 'filmstrip',
-                                content: { url_template: '' }
+                                content: { url_template: '' },
+                                metadata: { interval: 1 }
                             }
                         ]
                     }
@@ -395,6 +396,34 @@ describe('lib/viewers/media/Dash', () => {
 
         it('should do nothing if the filmstrip does not exist', () => {
             dash.options.file.representations.entries = [];
+            dash.loadFilmStrip();
+            expect(stubs.createUrl).to.not.be.called;
+        });
+
+        it('should do nothing if the filmstrip metadata field does not exist', () => {
+            dash.options.file.representations.entries[1] = {
+                representation: 'filmstrip',
+                content: { url_template: '' }
+                // Missing metadata field
+            };
+            dash.loadFilmStrip();
+            expect(stubs.createUrl).to.not.be.called;
+        });
+
+        it('should do nothing if the filmstrip interval does not exist', () => {
+            dash.options.file.representations.entries[1].metadata = {};
+            dash.loadFilmStrip();
+            expect(stubs.createUrl).to.not.be.called;
+        });
+
+        it('should do nothing if the filmstrip interval is 0', () => {
+            dash.options.file.representations.entries[1].metadata.interval = 0;
+            dash.loadFilmStrip();
+            expect(stubs.createUrl).to.not.be.called;
+        });
+
+        it('should do nothing if the filmstrip interval is negative', () => {
+            dash.options.file.representations.entries[1].metadata.interval = -2;
             dash.loadFilmStrip();
             expect(stubs.createUrl).to.not.be.called;
         });
