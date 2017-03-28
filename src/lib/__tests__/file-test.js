@@ -1,6 +1,16 @@
 /* eslint-disable no-unused-expressions */
 import cache from '../Cache';
-import { getURL, getDownloadURL, isWatermarked, checkPermission, checkFeature, checkFileValid, cacheFile, getRepresentation } from '../file';
+import {
+    getURL,
+    getDownloadURL,
+    isWatermarked,
+    checkPermission,
+    checkFeature,
+    checkFileValid,
+    cacheFile,
+    uncacheFile,
+    getRepresentation
+} from '../file';
 
 const sandbox = sinon.sandbox.create();
 
@@ -146,6 +156,19 @@ describe('lib/file', () => {
 
             cacheFile(file);
             expect(file.representations.entries.length).to.equal(1);
+        });
+    });
+
+    describe('uncacheFile', () => {
+        it('should uncache a file', () => {
+            const file = {
+                id: '0'
+            };
+            cache.set(file.id, file);
+
+            uncacheFile(file);
+
+            expect(cache.get(file.id)).to.be.undefined;
         });
     });
 
