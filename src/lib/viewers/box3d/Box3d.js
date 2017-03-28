@@ -77,6 +77,8 @@ class Box3D extends Base {
 
         // For addition/removal of VR class when display stops presenting
         window.addEventListener('vrdisplaypresentchange', this.onVrPresentChange);
+        window.addEventListener('vrdisplayactivate', this.handleEnableVr);
+        window.addEventListener('vrdisplaydeactivate', this.handleDisableVr);
     }
 
     /**
@@ -98,6 +100,8 @@ class Box3D extends Base {
         }
 
         window.removeEventListener('vrdisplaypresentchange', this.onVrPresentChange);
+        window.removeEventListener('vrdisplayactivate', this.handleEnableVr);
+        window.removeEventListener('vrdisplaydeactivate', this.handleDisableVr);
     }
 
     /**
@@ -197,6 +201,24 @@ class Box3D extends Base {
      */
     handleToggleVr() {
         this.renderer.toggleVr();
+    }
+
+    /**
+     * Handles enabling VR
+     *
+     * @return {void}
+     */
+    handleEnableVr() {
+        this.renderer.enableVr();
+    }
+
+    /**
+     * Handles disabling VR
+     *
+     * @return {void}
+     */
+    handleDisableVr() {
+        this.renderer.disableVr();
     }
 
     /**
