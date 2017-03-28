@@ -481,10 +481,12 @@ class MediaControls extends EventEmitter {
      * @param {string} url - Filmstrip url
      * @param {RepStatus} status - Status of filmstrip
      * @param {number} aspect - Aspect ratio
+     * @param {number} interval - Seconds per frame of the filmstrip
      * @return {void}
      */
-    initFilmstrip(url, status, aspect) {
+    initFilmstrip(url, status, aspect, interval) {
         this.filmstripUrl = url;
+        this.filmstripInterval = interval;
 
         this.filmstripContainerEl = this.containerEl.appendChild(document.createElement('div'));
         this.filmstripContainerEl.className = 'bp-media-filmstrip-container';
@@ -578,7 +580,7 @@ class MediaControls extends EventEmitter {
         const rect = this.containerEl.getBoundingClientRect();
         const pageX = event.pageX; // get the mouse X position
         const time = ((pageX - rect.left) * this.mediaEl.duration) / rect.width; // given the mouse X position, get the relative time
-        const frame = Math.floor(time); // filmstrip has frames every 1sec, get the frame number to show
+        const frame = Math.floor(time / this.filmstripInterval); // get the frame number to show
         let frameWidth = this.filmstripEl.naturalWidth / 100; // calculate the frame width based on the filmstrip width with each row having 100 frames
         let left = -1 * (frame % 100) * frameWidth; // there are 100 frames per row, get the frame position in a given row
         let top = -90 * Math.floor((frame / 100)); // get the row number if there are more than 1 row. Each row is 90px high.

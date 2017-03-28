@@ -319,8 +319,9 @@ class Dash extends VideoBase {
         const filmstrip = getRepresentation(this.options.file, 'filmstrip');
         if (filmstrip) {
             const url = this.createContentUrlWithAuthParams(filmstrip.content.url_template);
+            const interval = filmstrip.metadata ? filmstrip.metadata.interval : 1;
             this.filmstripStatus = this.getRepStatus(filmstrip);
-            this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect);
+            this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect, interval);
         }
     }
 
