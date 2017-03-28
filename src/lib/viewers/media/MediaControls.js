@@ -481,7 +481,7 @@ class MediaControls extends EventEmitter {
      * @param {string} url - Filmstrip url
      * @param {RepStatus} status - Status of filmstrip
      * @param {number} aspect - Aspect ratio
-     * @param {number} interval - Seconds per frame of the filmstrip
+     * @param {number} interval - The filmstrip has one frame every 'interval' seconds
      * @return {void}
      */
     initFilmstrip(url, status, aspect, interval) {
@@ -572,7 +572,7 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     filmstripShowHandler(event) {
-        // Don't show the filstrip when settings menu is open
+        // Don't show the filmstrip when settings menu is open
         if (this.isSettingsVisible()) {
             return;
         }
@@ -593,7 +593,7 @@ class MediaControls extends EventEmitter {
             frameWidth = 160;
         }
 
-        // The filstrip container positioning should fall within the viewport of the video itself. Relative to the video it
+        // The filmstrip container positioning should fall within the viewport of the video itself. Relative to the video it
         // should be left positioned 0 <= filmstrip frame <= (video.width - filmstrip frame.width)
         const minLeft = Math.max(0, pageX - rect.left - (frameWidth / 2)); // don't allow the image to bleed out of the video viewport left edge
         const maxLeft = Math.min(minLeft, rect.width - frameWidth); // don't allow the image to bleed out of the video viewport right edge
