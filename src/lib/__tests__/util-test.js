@@ -260,11 +260,11 @@ describe('lib/util', () => {
 
     describe('createContentUrl()', () => {
         it('should return correct content url when no asset name', () => {
-            expect(util.createContentUrl('foo{asset_path}', null)).to.equal('foo');
+            expect(util.createContentUrl('foo{+asset_path}', null)).to.equal('foo');
         });
 
         it('should return correct content url with asset name', () => {
-            expect(util.createContentUrl('foo{asset_path}', 'bar')).to.equal('foobar');
+            expect(util.createContentUrl('foo{+asset_path}', 'bar')).to.equal('foobar');
         });
 
         it('should return correct content url when no asset_path', () => {

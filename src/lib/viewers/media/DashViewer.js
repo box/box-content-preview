@@ -317,10 +317,10 @@ class DashViewer extends VideoBaseViewer {
      */
     loadFilmStrip() {
         const filmstrip = getRepresentation(this.options.file, 'filmstrip');
-        if (filmstrip) {
+        if (filmstrip && filmstrip.metadata && filmstrip.metadata.interval > 0) {
             const url = this.createContentUrlWithAuthParams(filmstrip.content.url_template);
             this.filmstripStatus = this.getRepStatus(filmstrip);
-            this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect);
+            this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect, filmstrip.metadata.interval);
         }
     }
 

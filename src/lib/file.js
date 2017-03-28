@@ -142,3 +142,13 @@ export function cacheFile(file) {
 
     cache.set(file.id, file);
 }
+
+/**
+ * Wrapper for uncaching a file object.
+ *
+ * @param {Object} file - Box file or simple { id: fileId } object
+ * @return {void}
+ */
+export function uncacheFile(file) {
+    cache.unset(file.id);
+}
