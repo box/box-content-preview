@@ -43,6 +43,7 @@ import {
     API_HOST,
     APP_HOST,
     CLASS_NAVIGATION_VISIBILITY,
+    FILE_EXT_ERROR_MAP,
     PERMISSION_DOWNLOAD,
     PERMISSION_ANNOTATE,
     PERMISSION_PREVIEW,
@@ -834,7 +835,7 @@ class Preview extends EventEmitter {
 
         // If no loader then throw an unsupported error
         if (!loader) {
-            throw new Error();
+            throw new Error(FILE_EXT_ERROR_MAP[this.file.extension]);
         }
 
         // Determine the viewer to use
