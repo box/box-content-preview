@@ -47,7 +47,7 @@ class PreviewError extends Base {
     load(reason) {
         this.setup();
 
-        const { file } = this.options;
+        const { file, showDownload } = this.options;
         let icon = ICON_FILE_DEFAULT;
         const message = reason || __('error_default');
 
@@ -70,7 +70,7 @@ class PreviewError extends Base {
         this.messageEl.textContent = message;
 
         // Add optional download button
-        if (checkPermission(file, PERMISSION_DOWNLOAD)) {
+        if (checkPermission(file, PERMISSION_DOWNLOAD) && showDownload) {
             this.addDownloadButton();
         }
 
