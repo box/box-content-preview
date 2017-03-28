@@ -127,16 +127,6 @@ describe('lib/Preview', () => {
             stubs.load = sandbox.stub(preview, 'load');
         });
 
-        it('should set the preview options DEPRECATED REMOVE ME EVENTUALLY', () => {
-            const options = {
-                token: 'token',
-                viewer: 'viewer'
-            };
-
-            preview.show('file', options);
-            expect(preview.previewOptions).to.deep.equal(options);
-        });
-
         it('should set the preview options with string token', () => {
             preview.show('file', 'token', { viewer: 'viewer' });
             expect(preview.previewOptions).to.deep.equal({
@@ -166,7 +156,7 @@ describe('lib/Preview', () => {
                 preview.show('file');
             } catch (e) {
                 expect(spy.threw());
-                expect(e.message).to.equal('Missing Auth Token!');
+                expect(e.message).to.equal('Missing access token!');
             }
         });
     });
@@ -633,10 +623,10 @@ describe('lib/Preview', () => {
         });
 
         it('should reload preview by default', () => {
-            preview.file = {};
+            preview.file = { id: '1' };
             sandbox.stub(preview, 'load');
             preview.updateToken('dr-strange');
-            expect(preview.load).to.be.calledWith(preview.file);
+            expect(preview.load).to.be.calledWith(preview.file.id);
         });
 
         it('should not reload preview if reloadPreview is false', () => {
@@ -659,60 +649,45 @@ describe('lib/Preview', () => {
 
             stubs.getTokens = sandbox.stub(tokens, 'default').returns(stubs.promise);
             stubs.loadPreviewWithTokens = sandbox.stub(preview, 'loadPreviewWithTokens');
-            stubs.get = sandbox.stub(cache, 'get').returns('file');
+            stubs.get = sandbox.stub(cache, 'get');
             stubs.destroy = sandbox.stub(preview, 'destroy');
         });
 
         it('should cleanup any existing viewer', () => {
-            preview.load({ id: 0 });
+            preview.load('0');
             expect(stubs.destroy).to.be.called;
         });
 
         it('should set the preview to open, and initialize the performance logger', () => {
-            preview.load({ id: 0 });
+            preview.load('0');
             expect(preview.open).to.be.true;
             expect(preview.logger instanceof Logger);
         });
 
         it('should clear the retry timeout', () => {
-            preview.load({ id: 0 });
+            preview.load('0');
             expect(preview.retryTimeout).to.equal(undefined);
-        });
-
-        it('should set the file based on input', () => {
-            preview.load('file');
-            expect(stubs.get).to.be.called;
-            expect(preview.file).to.equal('file');
-
-            stubs.get.returns(false);
-
-            preview.load('file');
-            expect(stubs.get).to.be.called;
-            expect(preview.file).to.deep.equal({ id: 'file' });
-
-            preview.load({ id: 0 });
-            expect(preview.file).to.deep.equal({ id: 0 });
         });
 
         it('should set the retry count', () => {
             preview.retryCount = 0;
-            preview.file.id = 0;
+            preview.file.id = '0';
 
-            preview.load({ id: 0 });
+            preview.load('0');
             expect(preview.retryCount).to.equal(1);
 
             preview.file = undefined;
 
-            preview.load({ id: 0 });
+            preview.load('0');
             expect(preview.retryCount).to.equal(0);
         });
 
         it('should get the tokens and either handle the response or error', () => {
             preview.previewOptions.token = 'token';
 
-            preview.load({ id: 0 });
+            preview.load('0');
             return stubs.promise.then(() => {
-                expect(stubs.getTokens).to.be.calledWith(0, 'token');
+                expect(stubs.getTokens).to.be.calledWith('0', 'token');
                 expect(stubs.loadPreviewWithTokens).to.be.called;
             });
         });
@@ -727,7 +702,6 @@ describe('lib/Preview', () => {
             stubs.startProgressBar = sandbox.stub(preview, 'startProgressBar');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             stubs.showNavigation = sandbox.stub(ui, 'showNavigation');
-            stubs.set = sandbox.stub(cache, 'set');
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
             stubs.loadFromCache = sandbox.stub(preview, 'loadFromCache');
         });
@@ -754,10 +728,9 @@ describe('lib/Preview', () => {
             expect(stubs.startProgressBar).to.be.called;
         });
 
-        it('should show navigation and cache the file', () => {
+        it('should show navigation', () => {
             preview.loadPreviewWithTokens({});
             expect(stubs.showNavigation).to.be.called;
-            expect(stubs.set).to.be.called;
         });
 
         it('should load from cache if the file is valid', () => {
@@ -975,6 +948,7 @@ describe('lib/Preview', () => {
             stubs.set = sandbox.stub(cache, 'set');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.loadViewer = sandbox.stub(preview, 'loadViewer');
+            stubs.checkFileValid = sandbox.stub(file, 'checkFileValid').returns(true);
             stubs.file = {
                 id: 0,
                 name: 'file',
@@ -1070,15 +1044,13 @@ describe('lib/Preview', () => {
             expect(stubs.loadViewer).to.be.called;
         });
 
-        it('should set the cache stale and re-load the viewer if the file version is not in the cache', () => {
+        it('should set the cache stale and re-load the viewer if the cached file is not valid', () => {
             preview.open = true;
             preview.file = {
                 id: 0
             };
 
-            stubs.get.returns({
-                file_version: false
-            });
+            stubs.checkFileValid.returns(false);
 
             preview.handleLoadResponse(stubs.file);
             expect(preview.logger.setCacheStale).to.be.called;

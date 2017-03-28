@@ -67,13 +67,34 @@ describe('lib/viewers/error/PreviewError', () => {
             });
         });
 
-        it('should add download button if file has permissions', () => {
+        it('should add download button if file has permissions and showDownload option is set', () => {
             sandbox.stub(error, 'addDownloadButton');
             sandbox.stub(file, 'checkPermission').withArgs(error.options.file, PERMISSION_DOWNLOAD).returns(true);
+            error.options.showDownload = true;
 
             error.load('reason');
 
             expect(error.addDownloadButton).to.be.called;
+        });
+
+        it('should not add download button if file does not have download permissions', () => {
+            sandbox.stub(error, 'addDownloadButton');
+            sandbox.stub(file, 'checkPermission').withArgs(error.options.file, PERMISSION_DOWNLOAD).returns(false);
+            error.options.showDownload = true;
+
+            error.load('reason');
+
+            expect(error.addDownloadButton).to.not.be.called;
+        });
+
+        it('should not add download button if showDownload option is not set', () => {
+            sandbox.stub(error, 'addDownloadButton');
+            sandbox.stub(file, 'checkPermission').withArgs(error.options.file, PERMISSION_DOWNLOAD).returns(true);
+            error.options.showDownload = false;
+
+            error.load('reason');
+
+            expect(error.addDownloadButton).to.not.be.called;
         });
 
         it('should broadcast load', () => {
