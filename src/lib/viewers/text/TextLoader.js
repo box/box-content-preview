@@ -1,7 +1,7 @@
 import AssetLoader from '../AssetLoader';
-import PlainText from './Text';
-import Markdown from './Markdown';
-import CSV from './CSV';
+import PlainTextViewer from './PlainTextViewer';
+import MarkdownViewer from './MarkdownViewer';
+import CSVViewer from './CSVViewer';
 import { ORIGINAL_REP_NAME } from '../../constants';
 import { HTML_EXTENSIONS, TXT_EXTENSIONS } from './extensions';
 
@@ -9,25 +9,25 @@ import { HTML_EXTENSIONS, TXT_EXTENSIONS } from './extensions';
 const VIEWERS = [
     {
         NAME: 'CSV',
-        CONSTRUCTOR: CSV,
+        CONSTRUCTOR: CSVViewer,
         REP: 'text',
         EXT: ['csv', 'tsv']
     },
     {
         NAME: 'Markdown',
-        CONSTRUCTOR: Markdown,
+        CONSTRUCTOR: MarkdownViewer,
         REP: 'text',
         EXT: ['md']
     },
     {
         NAME: 'Text',
-        CONSTRUCTOR: PlainText,
+        CONSTRUCTOR: PlainTextViewer,
         REP: ORIGINAL_REP_NAME,
         EXT: HTML_EXTENSIONS
     },
     {
         NAME: 'Text',
-        CONSTRUCTOR: PlainText,
+        CONSTRUCTOR: PlainTextViewer,
         REP: 'text',
         EXT: TXT_EXTENSIONS
     }

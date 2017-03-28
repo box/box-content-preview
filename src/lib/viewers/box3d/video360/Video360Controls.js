@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import {
     EVENT_TOGGLE_VR
-} from '../Box3dConstants';
+} from '../box3DConstants';
 import {
     ICON_3D_VR
 } from '../../../icons/icons';

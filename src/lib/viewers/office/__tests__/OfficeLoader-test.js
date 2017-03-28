@@ -1,5 +1,5 @@
 import OfficeLoader from '../OfficeLoader';
-import Office from '../Office';
+import OfficeViewer from '../OfficeViewer';
 import * as file from '../../../file';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
 
@@ -31,7 +31,7 @@ describe('lib/viewers/office/OfficeLoader', () => {
             const viewer = OfficeLoader.determineViewer(fakeFile);
             expect(viewer).to.deep.equal({
                 NAME: 'Office',
-                CONSTRUCTOR: Office,
+                CONSTRUCTOR: OfficeViewer,
                 REP: 'ORIGINAL',
                 EXT: ['xlsx']
             });

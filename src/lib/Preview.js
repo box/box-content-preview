@@ -10,7 +10,7 @@ import Logger from './Logger';
 import loaderList from './loaders';
 import cache from './Cache';
 import ProgressBar from './ProgressBar';
-import PreviewError from './viewers/error/PreviewError';
+import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
 import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
 import getTokens from './tokens';
 import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid, cacheFile } from './file';
@@ -1035,7 +1035,7 @@ class Preview extends EventEmitter {
      * @return {PreviewError} PreviewError instance
      */
     getErrorViewer() {
-        return new PreviewError(this.createViewerOptions({
+        return new PreviewErrorViewer(this.createViewerOptions({
             viewer: { NAME: 'Error' },
             container: this.container,
             file: this.file

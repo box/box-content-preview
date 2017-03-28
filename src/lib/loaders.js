@@ -5,7 +5,7 @@ import TextLoader from './viewers/text/TextLoader';
 import MediaLoader from './viewers/media/MediaLoader';
 import Video360Loader from './viewers/box3d/video360/Video360Loader';
 import DocLoader from './viewers/doc/DocLoader';
-import Model3dLoader from './viewers/box3d/model3d/Model3dLoader';
+import Model3DLoader from './viewers/box3d/model3d/Model3DLoader';
 import IFrameLoader from './viewers/iframe/IFrameLoader';
 import OfficeLoader from './viewers/office/OfficeLoader';
 
@@ -19,6 +19,6 @@ export default [
     MediaLoader,
     Image360Loader,
     ImageLoader,
-    Model3dLoader,
+    Model3DLoader,
     IFrameLoader
 ];

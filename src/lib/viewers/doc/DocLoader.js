@@ -1,7 +1,7 @@
 import AssetLoader from '../AssetLoader';
 import { getRepresentation } from '../../file';
-import Doc from './Document';
-import Presentation from './Presentation';
+import DocumentViewer from './DocumentViewer';
+import PresentationViewer from './PresentationViewer';
 import RepStatus from '../../RepStatus';
 import { ORIGINAL_REP_NAME, STATUS_SUCCESS } from '../../constants';
 
@@ -11,19 +11,19 @@ import { ORIGINAL_REP_NAME, STATUS_SUCCESS } from '../../constants';
 const VIEWERS = [
     {
         NAME: 'Presentation',
-        CONSTRUCTOR: Presentation,
+        CONSTRUCTOR: PresentationViewer,
         REP: 'pdf',
         EXT: ['odp', 'ppt', 'pptx']
     },
     {
         NAME: 'Document',
-        CONSTRUCTOR: Doc,
+        CONSTRUCTOR: DocumentViewer,
         REP: 'pdf',
         EXT: ['as', 'as3', 'asm', 'bat', 'c', 'cc', 'cmake', 'cpp', 'cs', 'css', 'csv', 'cxx', 'diff', 'doc', 'docx', 'erb', 'gdoc', 'groovy', 'gsheet', 'h', 'haml', 'hh', 'htm', 'html', 'java', 'js', 'less', 'log', 'm', 'make', 'md', 'ml', 'mm', 'msg', 'odp', 'ods', 'odt', 'pdf', 'php', 'pl', 'plist', 'ppt', 'pptx', 'properties', 'py', 'rb', 'rst', 'rtf', 'sass', 'scala', 'scm', 'script', 'sh', 'sml', 'sql', 'tsv', 'txt', 'vi', 'vim', 'webdoc', 'wpd', 'xhtml', 'xls', 'xlsm', 'xlsx', 'xml', 'xsd', 'xsl', 'yaml']
     },
     {
         NAME: 'Document',
-        CONSTRUCTOR: Doc,
+        CONSTRUCTOR: DocumentViewer,
         REP: ORIGINAL_REP_NAME,
         EXT: ['pdf', 'lcdpdf']
     }
