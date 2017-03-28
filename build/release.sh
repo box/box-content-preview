@@ -13,6 +13,11 @@ minor_release=false
 patch_release=false
 
 
+lint_and_test() {
+    yarn run lint && yarn run test
+}
+
+
 increment_version() {
     # Old version
     OLD_VERSION=$(./build/current_version.sh)
@@ -21,17 +26,17 @@ increment_version() {
         echo "----------------------------------------------------"
         echo "Bumping major version..."
         echo "----------------------------------------------------"
-        npm version major
+        npm --no-git-tag-version version major
     elif $minor_release; then
         echo "----------------------------------------------------"
         echo "Bumping minor version..."
         echo "----------------------------------------------------"
-        npm version minor
+        npm --no-git-tag-version version minor
     elif $patch_release; then
         echo "----------------------------------------------------"
         echo "Bumping patch version..."
         echo "----------------------------------------------------"
-        npm version patch
+        npm --no-git-tag-version version patch
     fi
 
     # The current version being built
@@ -41,9 +46,19 @@ increment_version() {
 
 update_changelog() {
     echo "----------------------------------------------------"
-    echo "Updating changelog"
+    echo "Generating CHANGELOG.md"
     echo "----------------------------------------------------"
-    github_changelog_generator box/box-content-preview --base HISTORY.md
+
+    if github_changelog_generator box/box-content-preview; then
+        echo "----------------------------------------------------"
+        echo "Built CHANGELOG successfully"
+        echo "----------------------------------------------------"
+    else
+        echo "----------------------------------------------------"
+        echo "Error: Could not build the CHANGELOG for this version"
+        echo "----------------------------------------------------"
+        exit 1
+    fi
 }
 
 
@@ -64,18 +79,17 @@ update_readme() {
 
 push_to_github() {
     # Add new files
-    git add -A
-    git commit --amend --no-edit --no-verify
+    git add -am $VERSION
 
     # Re-tag head including new files
-    git tag -f "v$VERSION"
+    git tag -a v$VERSION -m $VERSION
 
     echo "----------------------------------------------------"
     echo "Master version is now at" $VERSION
     echo "----------------------------------------------------"
 
     # Push to Github including tags
-    if git push origin master --tags --no-verify --force; then
+    if git push github-upstream master --tags --no-verify; then
         echo "----------------------------------------------------"
         echo "Pushed version" $VERSION "to git successfully"
         echo "----------------------------------------------------"
@@ -84,39 +98,6 @@ push_to_github() {
         echo "Error while pushing version" $VERSION "to git"
         echo "----------------------------------------------------"
         exit 1
-    fi
-}
-
-
-# Clean node modules, re-install dependencies, and build assets
-build_assets() {
-    echo "--------------------------------------------------"
-    echo "Installing node modules"
-    echo "--------------------------------------------------"
-    if yarn install; then
-        echo "----------------------------------------------------"
-        echo "Installed node modules."
-        echo "----------------------------------------------------"
-    else
-        echo "----------------------------------------------------"
-        echo "Failed to install node modules!"
-        echo "----------------------------------------------------"
-        exit 1;
-    fi
-
-    echo "----------------------------------------------------"
-    echo "Starting release build for version" $VERSION
-    echo "----------------------------------------------------"
-
-    if yarn run release; then
-        echo "----------------------------------------------------"
-        echo "Built release assets for version" $VERSION
-        echo "----------------------------------------------------"
-    else
-        echo "----------------------------------------------------"
-        echo "Failed to build release assets!"
-        echo "----------------------------------------------------"
-        exit 1;
     fi
 }
 
@@ -134,13 +115,13 @@ push_new_release() {
     fi;
 
     git reset --hard github-upstream/master || exit 1
-    git clean -fdX || exit 1
+    git clean -f || exit 1
+
+    # Run linting and tests
+    lint_and_test
 
     # Bump the version number
     increment_version
-
-    # Build assets into dist/
-    build_assets
 
     # Update changelog
     update_changelog
