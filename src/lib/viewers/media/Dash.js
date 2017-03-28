@@ -319,6 +319,7 @@ class Dash extends VideoBase {
         const filmstrip = getRepresentation(this.options.file, 'filmstrip');
         if (filmstrip) {
             const url = this.createContentUrlWithAuthParams(filmstrip.content.url_template);
+            // The filmstrip has one frame every 'interval' seconds
             const interval = filmstrip.metadata ? filmstrip.metadata.interval : 1;
             this.filmstripStatus = this.getRepStatus(filmstrip);
             this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect, interval);
