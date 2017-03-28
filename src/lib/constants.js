@@ -83,3 +83,5 @@ export const FILE_EXT_ERROR_MAP = {
     pages: __('error_iwork'),
     keynote: __('error_iwork')
 };
+
+export const PREVIEW_SCRIPT_NAME = 'preview.js';

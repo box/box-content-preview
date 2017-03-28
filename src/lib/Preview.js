@@ -18,7 +18,8 @@ import {
     decodeKeydown,
     openUrlInsideIframe,
     getHeaders,
-    findScriptLocation } from './util';
+    findScriptLocation
+} from './util';
 import {
     getURL,
     getDownloadURL,
@@ -47,6 +48,7 @@ import {
     PERMISSION_DOWNLOAD,
     PERMISSION_ANNOTATE,
     PERMISSION_PREVIEW,
+    PREVIEW_SCRIPT_NAME,
     X_REP_HINT_BASE,
     X_REP_HINT_DOC_THUMBNAIL,
     X_REP_HINT_IMAGE,
@@ -208,7 +210,7 @@ class Preview extends EventEmitter {
         // All preview assets are relative to preview.js. Here we create a location
         // object that mimics the window location object and points to where
         // preview.js is loaded from by the browser.
-        this.location = findScriptLocation('preview.js', document.currentScript);
+        this.location = findScriptLocation(PREVIEW_SCRIPT_NAME);
     }
 
     /**
@@ -242,6 +244,9 @@ class Preview extends EventEmitter {
         // Save a reference to the options to be used later
         if (typeof token === 'string' || typeof token === 'function') {
             this.previewOptions = Object.assign({}, options, { token });
+        } else if (token) {
+            // @TODO(tjin): Remove this after expiring embed updates to new calling pattern
+            this.previewOptions = Object.assign({}, token || {});
         } else {
             throw new Error('Missing access token!');
         }
