@@ -76,3 +76,10 @@ export const MEDIA_STATIC_ASSETS_VERSION = '0.112.0';
 export const MODEL3D_STATIC_ASSETS_VERSION = '0.112.0';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';
 export const TEXT_STATIC_ASSETS_VERSION = '0.112.0';
+
+//  Maps file extension to error message.
+export const FILE_EXT_ERROR_MAP = {
+    numbers: __('error_iwork'),
+    pages: __('error_iwork'),
+    keynote: __('error_iwork')
+};
