@@ -502,14 +502,10 @@ export function decodeKeydown(event) {
  * Find location information about a script include
  *
  * @param {string} name - Script name
- * @param {HTMLScriptElement} [currentScript] - Current script tag
  * @return {Object} Script location object
  */
-export function findScriptLocation(name, currentScript = null) {
-    const scriptSrc = currentScript
-                        ? currentScript.src
-                        : document.querySelector(`script[src*="/${name}"]`).src;
-
+export function findScriptLocation(name) {
+    const scriptSrc = document.querySelector(`script[src*="/${name}"]`).src;
     if (!scriptSrc) {
         throw new Error('Missing or malformed preview library');
     }
