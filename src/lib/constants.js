@@ -21,7 +21,8 @@ export const CLASS_BOX_PREVIEW_OVERLAY = 'bp-overlay';
 export const CLASS_BOX_PREVIEW_OVERLAY_WRAPPER = 'bp-overlay-wrapper';
 export const CLASS_BOX_PREVIEW_PRELOAD = 'bp-preload';
 export const CLASS_BOX_PREVIEW_PRELOAD_CONTENT = 'bp-preload-content';
-export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER = 'bp-preload-wrapper';
+export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT = 'bp-document-preload-wrapper';
+export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION = 'bp-presentation-preload-wrapper';
 export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'bp-toggle-overlay';
 export const CLASS_BOX_PREVIEW_THEME_DARK = 'bp-theme-dark';
 export const CLASS_FULLSCREEN = 'bp-is-fullscreen';
@@ -67,3 +68,20 @@ export const X_REP_HINT_DOC_THUMBNAIL = '[jpg?dimensions=1024x1024&paged=false]'
 export const X_REP_HINT_IMAGE = '[jpg?dimensions=2048x2048,png?dimensions=2048x2048]';
 export const X_REP_HINT_VIDEO_DASH = '[dash,mp4][filmstrip]';
 export const X_REP_HINT_VIDEO_MP4 = '[mp4]';
+
+// These should be updated to match the Preview version in package.json
+// whenever a file in that third party directory is updated
+export const DOC_STATIC_ASSETS_VERSION = '0.112.0';
+export const MEDIA_STATIC_ASSETS_VERSION = '0.112.0';
+export const MODEL3D_STATIC_ASSETS_VERSION = '0.112.0';
+export const SWF_STATIC_ASSETS_VERSION = '0.112.0';
+export const TEXT_STATIC_ASSETS_VERSION = '0.112.0';
+
+//  Maps file extension to error message.
+export const FILE_EXT_ERROR_MAP = {
+    numbers: __('error_iwork'),
+    pages: __('error_iwork'),
+    keynote: __('error_iwork')
+};
+
+export const PREVIEW_SCRIPT_NAME = 'preview.js';

@@ -77,8 +77,10 @@ class Image extends Base {
      * @return {void}
      */
     prefetch({ content = true }) {
-        const { representation, viewer } = this.options;
-        if (content && this.isRepresentationReady(representation)) {
+        const { file, representation, viewer } = this.options;
+        const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
+
+        if (content && !isWatermarked && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
             document.createElement('img').src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
         }
@@ -283,6 +285,10 @@ class Image extends Base {
     print() {
         this.printframe = openContentInsideIframe(this.imageEl.outerHTML);
         this.printframe.contentWindow.focus();
+
+        this.printImage = this.printframe.contentDocument.querySelector('img');
+        this.printImage.style.display = 'block';
+        this.printImage.style.margin = '0 auto';
 
         if (Browser.getName() === 'Explorer' || Browser.getName() === 'Edge') {
             this.printframe.contentWindow.document.execCommand('print', false, null);

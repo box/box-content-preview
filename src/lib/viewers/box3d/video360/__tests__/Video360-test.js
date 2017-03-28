@@ -7,7 +7,7 @@ import {
     EVENT_TOGGLE_VR,
     EVENT_SHOW_VR_BUTTON
 } from '../../Box3dConstants';
-import JS from '../../Box3dAssets';
+import JS from '../../box3dAssets';
 import sceneEntities from '../SceneEntities';
 import fullscreen from '../../../../Fullscreen';
 

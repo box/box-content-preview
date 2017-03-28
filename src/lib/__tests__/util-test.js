@@ -260,11 +260,11 @@ describe('lib/util', () => {
 
     describe('createContentUrl()', () => {
         it('should return correct content url when no asset name', () => {
-            expect(util.createContentUrl('foo{asset_path}', null)).to.equal('foo');
+            expect(util.createContentUrl('foo{+asset_path}', null)).to.equal('foo');
         });
 
         it('should return correct content url with asset name', () => {
-            expect(util.createContentUrl('foo{asset_path}', 'bar')).to.equal('foobar');
+            expect(util.createContentUrl('foo{+asset_path}', 'bar')).to.equal('foobar');
         });
 
         it('should return correct content url when no asset_path', () => {
@@ -348,7 +348,7 @@ describe('lib/util', () => {
                 assert.equal(loc.pathname, '/path/version/locale/file.js');
                 assert.equal(loc.version, 'version');
                 assert.equal(loc.baseURI, 'https://hostname:100/path/version/locale/');
-                assert.equal(loc.staticBaseURI, 'https://hostname:100/path/version/');
+                assert.equal(loc.staticBaseURI, 'https://hostname:100/path/');
             });
         });
     });

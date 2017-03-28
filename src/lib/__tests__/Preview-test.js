@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import fetchMock from 'fetch-mock';
-import '../Preview';
+import Preview from '../Preview';
 import ProgressBar from '../ProgressBar';
 import loaders from '../loaders';
 import Logger from '../Logger';
@@ -22,7 +22,7 @@ const KEYDOWN_EXCEPTIONS = ['INPUT', 'SELECT', 'TEXTAREA']; // Ignore keydown ev
 const sandbox = sinon.sandbox.create();
 
 let stubs = {};
-let preview = Box.Preview;
+let preview;
 let containerEl;
 
 describe('lib/Preview', () => {
@@ -33,9 +33,9 @@ describe('lib/Preview', () => {
     beforeEach(() => {
         fixture.load('__tests__/Preview-test.html');
         containerEl = document.querySelector('.container');
-        preview = Box.Preview;
+        sandbox.stub(util, 'findScriptLocation').returns('en-US');
+        preview = new Preview();
         preview.container = containerEl;
-        preview.viewer = {};
         stubs = {};
     });
 
@@ -43,17 +43,13 @@ describe('lib/Preview', () => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
         fetchMock.restore();
-
-        if (typeof preview.destroy === 'function') {
-            preview.destroy();
-        }
+        preview.destroy();
         preview = null;
         stubs = null;
     });
 
     describe('constructor()', () => {
         beforeEach(() => {
-            sandbox.stub(util, 'findScriptLocation').returns('en-US');
             stubs.preview = preview;
             stubs.location = preview.location;
         });
@@ -63,12 +59,10 @@ describe('lib/Preview', () => {
         });
 
         it('should set the preview to be closed', () => {
-            preview.constructor();
             expect(preview.open).to.be.false;
         });
 
         it('should initialize the various preview objects', () => {
-            preview.constructor();
             expect(preview.count.success).to.equal(0);
             expect(preview.count.error).to.equal(0);
             expect(preview.count.navigation).to.equal(0);
@@ -133,16 +127,6 @@ describe('lib/Preview', () => {
             stubs.load = sandbox.stub(preview, 'load');
         });
 
-        it('should set the preview options DEPRECATED REMOVE ME EVENTUALLY', () => {
-            const options = {
-                token: 'token',
-                viewer: 'viewer'
-            };
-
-            preview.show('file', options);
-            expect(preview.previewOptions).to.deep.equal(options);
-        });
-
         it('should set the preview options with string token', () => {
             preview.show('file', 'token', { viewer: 'viewer' });
             expect(preview.previewOptions).to.deep.equal({
@@ -172,7 +156,7 @@ describe('lib/Preview', () => {
                 preview.show('file');
             } catch (e) {
                 expect(spy.threw());
-                expect(e.message).to.equal('Missing Auth Token!');
+                expect(e.message).to.equal('Missing access token!');
             }
         });
     });
@@ -524,7 +508,7 @@ describe('lib/Preview', () => {
 
             preview.disableViewers(Object.keys(viewersToEnable));
             preview.enableViewers(Object.keys(viewersToEnable));
-            expect(preview.disabledViewers).to.deep.equal({});
+            expect(preview.disabledViewers).to.deep.equal({ Office: 1 });
         });
 
         it('should enable a single viewer that is passed in', () => {
@@ -639,10 +623,10 @@ describe('lib/Preview', () => {
         });
 
         it('should reload preview by default', () => {
-            preview.file = {};
+            preview.file = { id: '1' };
             sandbox.stub(preview, 'load');
             preview.updateToken('dr-strange');
-            expect(preview.load).to.be.calledWith(preview.file);
+            expect(preview.load).to.be.calledWith(preview.file.id);
         });
 
         it('should not reload preview if reloadPreview is false', () => {
@@ -665,60 +649,45 @@ describe('lib/Preview', () => {
 
             stubs.getTokens = sandbox.stub(tokens, 'default').returns(stubs.promise);
             stubs.loadPreviewWithTokens = sandbox.stub(preview, 'loadPreviewWithTokens');
-            stubs.get = sandbox.stub(cache, 'get').returns('file');
+            stubs.get = sandbox.stub(cache, 'get');
             stubs.destroy = sandbox.stub(preview, 'destroy');
         });
 
         it('should cleanup any existing viewer', () => {
-            preview.load({ id: 0 });
+            preview.load('0');
             expect(stubs.destroy).to.be.called;
         });
 
         it('should set the preview to open, and initialize the performance logger', () => {
-            preview.load({ id: 0 });
+            preview.load('0');
             expect(preview.open).to.be.true;
             expect(preview.logger instanceof Logger);
         });
 
         it('should clear the retry timeout', () => {
-            preview.load({ id: 0 });
+            preview.load('0');
             expect(preview.retryTimeout).to.equal(undefined);
-        });
-
-        it('should set the file based on input', () => {
-            preview.load('file');
-            expect(stubs.get).to.be.called;
-            expect(preview.file).to.equal('file');
-
-            stubs.get.returns(false);
-
-            preview.load('file');
-            expect(stubs.get).to.be.called;
-            expect(preview.file).to.deep.equal({ id: 'file' });
-
-            preview.load({ id: 0 });
-            expect(preview.file).to.deep.equal({ id: 0 });
         });
 
         it('should set the retry count', () => {
             preview.retryCount = 0;
-            preview.file.id = 0;
+            preview.file.id = '0';
 
-            preview.load({ id: 0 });
+            preview.load('0');
             expect(preview.retryCount).to.equal(1);
 
             preview.file = undefined;
 
-            preview.load({ id: 0 });
+            preview.load('0');
             expect(preview.retryCount).to.equal(0);
         });
 
         it('should get the tokens and either handle the response or error', () => {
             preview.previewOptions.token = 'token';
 
-            preview.load({ id: 0 });
+            preview.load('0');
             return stubs.promise.then(() => {
-                expect(stubs.getTokens).to.be.calledWith(0, 'token');
+                expect(stubs.getTokens).to.be.calledWith('0', 'token');
                 expect(stubs.loadPreviewWithTokens).to.be.called;
             });
         });
@@ -733,7 +702,6 @@ describe('lib/Preview', () => {
             stubs.startProgressBar = sandbox.stub(preview, 'startProgressBar');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             stubs.showNavigation = sandbox.stub(ui, 'showNavigation');
-            stubs.set = sandbox.stub(cache, 'set');
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
             stubs.loadFromCache = sandbox.stub(preview, 'loadFromCache');
         });
@@ -760,10 +728,9 @@ describe('lib/Preview', () => {
             expect(stubs.startProgressBar).to.be.called;
         });
 
-        it('should show navigation and cache the file', () => {
+        it('should show navigation', () => {
             preview.loadPreviewWithTokens({});
             expect(stubs.showNavigation).to.be.called;
-            expect(stubs.set).to.be.called;
         });
 
         it('should load from cache if the file is valid', () => {
@@ -981,6 +948,7 @@ describe('lib/Preview', () => {
             stubs.set = sandbox.stub(cache, 'set');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.loadViewer = sandbox.stub(preview, 'loadViewer');
+            stubs.checkFileValid = sandbox.stub(file, 'checkFileValid').returns(true);
             stubs.file = {
                 id: 0,
                 name: 'file',
@@ -1015,6 +983,9 @@ describe('lib/Preview', () => {
 
         it('should save a reference to the file and update the logger', () => {
             preview.open = true;
+            preview.file = {
+                id: 0
+            };
 
             preview.handleLoadResponse(stubs.file);
             expect(preview.file).to.equal(stubs.file);
@@ -1023,6 +994,10 @@ describe('lib/Preview', () => {
 
         it('should get the latest cache, then update it with the new file', () => {
             preview.open = true;
+            preview.file = {
+                id: 0
+            };
+
             stubs.get.returns({
                 file_version: {
                     sha1: 0
@@ -1040,6 +1015,10 @@ describe('lib/Preview', () => {
         it('should not cache the file if the file is watermarked', () => {
             stubs.file.watermark_info.is_watermarked = true;
             preview.open = true;
+            preview.file = {
+                id: 0
+            };
+
             stubs.get.returns({
                 file_version: {
                     sha1: 0
@@ -1053,6 +1032,11 @@ describe('lib/Preview', () => {
         });
 
         it('should set the cache stale and re-load the viewer if the file is not in the cache', () => {
+            preview.open = true;
+            preview.file = {
+                id: 0
+            };
+
             stubs.get.returns(false);
 
             preview.handleLoadResponse(stubs.file);
@@ -1060,10 +1044,13 @@ describe('lib/Preview', () => {
             expect(stubs.loadViewer).to.be.called;
         });
 
-        it('should set the cache stale and re-load the viewer if the file version is not in the cache', () => {
-            stubs.get.returns({
-                file_version: false
-            });
+        it('should set the cache stale and re-load the viewer if the cached file is not valid', () => {
+            preview.open = true;
+            preview.file = {
+                id: 0
+            };
+
+            stubs.checkFileValid.returns(false);
 
             preview.handleLoadResponse(stubs.file);
             expect(preview.logger.setCacheStale).to.be.called;
@@ -1071,6 +1058,11 @@ describe('lib/Preview', () => {
         });
 
         it('should set the cache stale and re-load the viewer if the cached sha1 does not match the files sha1', () => {
+            preview.open = true;
+            preview.file = {
+                id: 0
+            };
+
             stubs.get.returns({
                 file_version: {
                     sha1: 0
@@ -1085,6 +1077,11 @@ describe('lib/Preview', () => {
         });
 
         it('should set the cache stale and re-load the viewer if the file is watermarked', () => {
+            preview.open = true;
+            preview.file = {
+                id: 0
+            };
+
             stubs.file.watermark_info.is_watermarked = true;
             stubs.get.returns({
                 file_version: {
@@ -1100,6 +1097,11 @@ describe('lib/Preview', () => {
         });
 
         it('should trigger an error if any cache or load operations fail', () => {
+            preview.open = true;
+            preview.file = {
+                id: 0
+            };
+
             stubs.get.throws(new Error());
 
             preview.handleLoadResponse(stubs.file);
@@ -1258,12 +1260,15 @@ describe('lib/Preview', () => {
                 done: sandbox.stub()
             };
 
+            preview.file = {
+                id: 0
+            };
+
             preview.viewer = {
                 getPointModeClickHandler: sandbox.stub()
             };
 
             preview.logger = stubs.logger;
-            preview.download = 'download';
             preview.options.showDownload = true;
             stubs.isMobile.returns(false);
             stubs.checkPermission.returns(true);
@@ -1280,7 +1285,7 @@ describe('lib/Preview', () => {
             stubs.checkPermission.returns(true);
 
             preview.finishLoading();
-            expect(stubs.showDownloadButton).to.be.calledWith('download');
+            expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
         });
 
         it('should show download button if it is requested in the options', () => {
@@ -1293,7 +1298,7 @@ describe('lib/Preview', () => {
             preview.options.showDownload = true;
 
             preview.finishLoading();
-            expect(stubs.showDownloadButton).to.be.calledWith('download');
+            expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
         });
 
         it('should show download button if not on mobile', () => {
@@ -1306,7 +1311,7 @@ describe('lib/Preview', () => {
             stubs.isMobile.returns(false);
 
             preview.finishLoading();
-            expect(stubs.showDownloadButton).to.be.calledWith('download');
+            expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
         });
 
         it('should show print button if print is supported', () => {
@@ -1733,10 +1738,6 @@ describe('lib/Preview', () => {
     });
 
     describe('getGlobalMousemoveHandler()', () => {
-        beforeEach(() => {
-            preview.throttledMousemoveHandler = undefined;
-        });
-
         it('should return the throttled mouse move handler if it already exists', () => {
             preview.throttledMousemoveHandler = true;
 
@@ -1781,7 +1782,9 @@ describe('lib/Preview', () => {
         it('should set a timeout to remove the arrows if the container exists', () => {
             const clock = sinon.useFakeTimers();
             const handler = preview.getGlobalMousemoveHandler();
-            preview.viewer.allowNavigationArrows = sandbox.stub();
+            preview.viewer = {
+                allowNavigationArrows: sandbox.stub()
+            };
 
             handler();
             clock.tick(MOUSEMOVE_THROTTLE + 1);

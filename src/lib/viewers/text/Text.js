@@ -2,7 +2,7 @@ import './Text.scss';
 import TextBase from './TextBase';
 import Browser from '../../Browser';
 import Popup from '../../Popup';
-import { CLASS_HIDDEN } from '../../constants';
+import { CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { HIGHLIGHTTABLE_EXTENSIONS } from './extensions';
 import { get, openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
@@ -16,7 +16,7 @@ const SIZE_LIMIT_BYTES = 196608;
 // Time to wait before allowing user to print (we're guessing how long it takes the iframe to load)
 const PRINT_TIMEOUT_MS = 5000;
 
-const STATIC_URI = 'third-party/text/';
+const STATIC_URI = `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/`;
 const JS = [`${STATIC_URI}highlight.min.js`];
 const CSS = [`${STATIC_URI}github.css`];
 
@@ -231,7 +231,7 @@ class PlainText extends TextBase {
 
         // Give worker location of highlight.js and text content to highlight
         const assetUrlCreator = createAssetUrlCreator(this.options.location);
-        const highlightSrc = assetUrlCreator('third-party/text/highlight.min.js');
+        const highlightSrc = assetUrlCreator(`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/highlight.min.js`);
         worker.postMessage({
             highlightSrc,
             text

@@ -13,6 +13,7 @@ import {
     CLASS_BOX_PREVIEW_FIND_BAR,
     CLASS_HIDDEN,
     CLASS_IS_SCROLLABLE,
+    DOC_STATIC_ASSETS_VERSION,
     PERMISSION_ANNOTATE,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME
@@ -126,12 +127,13 @@ class DocBase extends Base {
      */
     prefetch({ assets = true, preload = true, content = true }) {
         const { file, representation } = this.options;
+        const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
 
         if (assets) {
             this.prefetchAssets(JS, CSS);
         }
 
-        if (preload) {
+        if (preload && !isWatermarked) {
             const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
             if (preloadRep && this.isRepresentationReady(preloadRep)) {
                 const { url_template: template } = preloadRep.content;
@@ -141,7 +143,7 @@ class DocBase extends Base {
             }
         }
 
-        if (content && this.isRepresentationReady(representation)) {
+        if (content && !isWatermarked && this.isRepresentationReady(representation)) {
             const { url_template: template } = representation.content;
             get(this.createContentUrlWithAuthParams(template), 'any');
         }
@@ -153,7 +155,23 @@ class DocBase extends Base {
      * @return {void}
      */
     showPreload() {
-        // no-op in base
+        const { file } = this.options;
+        const isWatermarked = file && file.watermark_info && file.watermark_info.is_watermarked;
+
+        // Don't show preload if there's a cached page since preloads are only for the 1st page
+        // Also don't show preloads for watermarked files
+        if (!this.preloader || isWatermarked || this.getCachedPage() !== 1) {
+            return;
+        }
+
+        const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
+        if (!preloadRep || !this.getViewerOption('preload')) {
+            return;
+        }
+
+        const { url_template: template } = preloadRep.content;
+        const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
+        this.preloader.showPreload(preloadUrlWithAuth, this.containerEl);
     }
 
     /**
@@ -163,7 +181,9 @@ class DocBase extends Base {
      * @return {void}
      */
     hidePreload() {
-        // no-op in base
+        if (this.preloader) {
+            this.preloader.hidePreload();
+        }
     }
 
     /**
@@ -639,8 +659,8 @@ class DocBase extends Base {
         // Set PDFJS worker & character maps
         const { file, location } = this.options;
         const assetUrlCreator = createAssetUrlCreator(location);
-        PDFJS.workerSrc = assetUrlCreator('third-party/doc/pdf.worker.min.js');
-        PDFJS.cMapUrl = `${location.staticBaseURI}third-party/doc/cmaps/`;
+        PDFJS.workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
+        PDFJS.cMapUrl = `${location.staticBaseURI}third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/`;
         PDFJS.cMapPacked = true;
 
         // Open links in new tab

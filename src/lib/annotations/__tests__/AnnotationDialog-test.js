@@ -1,4 +1,3 @@
-
 /* eslint-disable no-unused-expressions */
 import Annotation from '../Annotation';
 import AnnotationDialog from '../AnnotationDialog';
@@ -32,7 +31,10 @@ describe('lib/annotations/AnnotationDialog', () => {
 
     afterEach(() => {
         const dialogEl = document.querySelector('.annotated-element');
-        dialogEl.parentNode.removeChild(dialogEl);
+        if (dialogEl && dialogEl.parentNode) {
+            dialogEl.parentNode.removeChild(dialogEl);
+        }
+
         sandbox.verifyAndRestore();
         if (typeof dialog.destroy === 'function') {
             dialog.destroy();

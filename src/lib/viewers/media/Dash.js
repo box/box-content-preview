@@ -4,6 +4,7 @@ import cache from '../../Cache';
 import fullscreen from '../../Fullscreen';
 import { get } from '../../util';
 import { getRepresentation } from '../../file';
+import { MEDIA_STATIC_ASSETS_VERSION } from '../../constants';
 import './Dash.scss';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
@@ -107,7 +108,7 @@ class Dash extends VideoBase {
      * @return {void}
      */
     getJSAssets() {
-        return ['third-party/media/shaka-player.compiled.js'];
+        return [`third-party/media/${MEDIA_STATIC_ASSETS_VERSION}/shaka-player.compiled.js`];
     }
 
     /**
@@ -316,10 +317,10 @@ class Dash extends VideoBase {
      */
     loadFilmStrip() {
         const filmstrip = getRepresentation(this.options.file, 'filmstrip');
-        if (filmstrip) {
+        if (filmstrip && filmstrip.metadata && filmstrip.metadata.interval > 0) {
             const url = this.createContentUrlWithAuthParams(filmstrip.content.url_template);
             this.filmstripStatus = this.getRepStatus(filmstrip);
-            this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect);
+            this.mediaControls.initFilmstrip(url, this.filmstripStatus, this.aspect, filmstrip.metadata.interval);
         }
     }
 

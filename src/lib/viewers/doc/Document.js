@@ -3,8 +3,6 @@ import pageNumTemplate from './pageNumButtonContent.html';
 import DocBase from './DocBase';
 import DocPreloader from './DocPreloader';
 import fullscreen from '../../Fullscreen';
-import { getRepresentation } from '../../file';
-import { PRELOAD_REP_NAME } from '../../constants';
 import {
     ICON_DROP_DOWN,
     ICON_DROP_UP,
@@ -31,8 +29,8 @@ class Document extends DocBase {
         this.docEl.classList.add('bp-doc-document');
 
         // Set up preloader
-        this.docPreloader = new DocPreloader();
-        this.docPreloader.addListener('preload', () => {
+        this.preloader = new DocPreloader();
+        this.preloader.addListener('preload', () => {
             this.options.logger.setPreloaded();
         });
     }
@@ -42,34 +40,7 @@ class Document extends DocBase {
      */
     destroy() {
         super.destroy();
-        this.docPreloader.removeAllListeners('preload');
-    }
-
-    /**
-     * @inheritdoc
-     */
-    showPreload() {
-        // Don't show preload if there's a cached page since preloads are only for the 1st page
-        if (this.getCachedPage() !== 1) {
-            return;
-        }
-
-        const { file } = this.options;
-        const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
-        if (!preloadRep || !this.getViewerOption('preload')) {
-            return;
-        }
-
-        const { url_template: template } = preloadRep.content;
-        const preloadUrlWithAuth = this.createContentUrlWithAuthParams(template);
-        this.docPreloader.showPreload(preloadUrlWithAuth, this.containerEl);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    hidePreload() {
-        this.docPreloader.hidePreload();
+        this.preloader.removeAllListeners('preload');
     }
 
     /**
