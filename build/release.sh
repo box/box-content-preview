@@ -26,17 +26,17 @@ increment_version() {
         echo "----------------------------------------------------"
         echo "Bumping major version..."
         echo "----------------------------------------------------"
-        npm --no-git-tag-version version major
+        npm version major
     elif $minor_release; then
         echo "----------------------------------------------------"
         echo "Bumping minor version..."
         echo "----------------------------------------------------"
-        npm --no-git-tag-version version minor
+        npm version minor
     elif $patch_release; then
         echo "----------------------------------------------------"
         echo "Bumping patch version..."
         echo "----------------------------------------------------"
-        npm --no-git-tag-version version patch
+        npm version patch
     fi
 
     # The current version being built
@@ -46,16 +46,16 @@ increment_version() {
 
 update_changelog() {
     echo "----------------------------------------------------"
-    echo "Generating CHANGELOG.md"
+    echo "Updating CHANGELOG.md"
     echo "----------------------------------------------------"
 
     if github_changelog_generator box/box-content-preview; then
         echo "----------------------------------------------------"
-        echo "Built CHANGELOG successfully"
+        echo "Updated CHANGELOG successfully"
         echo "----------------------------------------------------"
     else
         echo "----------------------------------------------------"
-        echo "Error: Could not build the CHANGELOG for this version"
+        echo "Error: Could not update the CHANGELOG for this version"
         echo "----------------------------------------------------"
         exit 1
     fi
@@ -81,8 +81,8 @@ push_to_github() {
     # Add new files
     git commit -am $VERSION
 
-    # Re-tag head including new files
-    git tag -a v$VERSION -m $VERSION
+    # Force update tag after updating files
+    git tag -f v$VERSION
 
     echo "----------------------------------------------------"
     echo "Master version is now at" $VERSION
