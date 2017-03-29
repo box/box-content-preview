@@ -26,17 +26,17 @@ increment_version() {
         echo "----------------------------------------------------"
         echo "Bumping major version..."
         echo "----------------------------------------------------"
-        npm version major
+        npm --no-git-tag-version version major
     elif $minor_release; then
         echo "----------------------------------------------------"
         echo "Bumping minor version..."
         echo "----------------------------------------------------"
-        npm version minor
+        npm --no-git-tag-version version minor
     elif $patch_release; then
         echo "----------------------------------------------------"
         echo "Bumping patch version..."
         echo "----------------------------------------------------"
-        npm version patch
+        npm --no-git-tag-version version patch
     fi
 
     # The current version being built
@@ -49,7 +49,7 @@ update_changelog() {
     echo "Updating CHANGELOG.md"
     echo "----------------------------------------------------"
 
-    if github_changelog_generator box/box-content-preview; then
+    if github_changelog_generator box/box-content-preview --future-release v$VERSION; then
         echo "----------------------------------------------------"
         echo "Updated CHANGELOG successfully"
         echo "----------------------------------------------------"
@@ -79,10 +79,10 @@ update_readme() {
 
 push_to_github() {
     # Add new files
-    git commit -a --amend --no-verify --no-edit
+    git commit -am $VERSION
 
     # Force update tag after updating files
-    git tag -f v$VERSION
+    git tag -a v$VERSION -m $VERSION
 
     echo "----------------------------------------------------"
     echo "Master version is now at" $VERSION

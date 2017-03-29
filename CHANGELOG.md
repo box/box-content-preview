@@ -1,8 +1,7 @@
 # Change Log
 
-## [Unreleased](https://github.com/box/box-content-preview/tree/HEAD)
-
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.113.0...HEAD)
+## [v0.114.0](https://github.com/box/box-content-preview/tree/v0.114.0) (2017-03-29)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.113.0...v0.114.0)
 
 **Merged pull requests:**
 
