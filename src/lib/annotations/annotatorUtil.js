@@ -311,27 +311,6 @@ export function isPending(threadState) {
 
 /**
  * Checks whether annotation thread is valid by checking whether each property
- * in FIELDS on the specified file object is defined.
- *
- * @param {Object} thread - Annotation thread params to check
- * @return {boolean} Whether or not annotation thread is valid
- */
-export function checkThreadValid(thread) {
-    if (thread) {
-        return !!(thread._annotationID &&
-            thread._fileVersionID &&
-            thread._location &&
-            thread._permissions &&
-            thread._thread &&
-            thread._threadID &&
-            thread._type &&
-            thread._user);
-    }
-    return false;
-}
-
-/**
- * Checks whether annotation thread is valid by checking whether each property
  * in THREAD_PARAMS on the specified file object is defined.
  *
  * @param {Object} thread - Annotation thread params to check

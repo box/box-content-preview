@@ -160,9 +160,7 @@ class DocAnnotator extends Annotator {
         }
 
         if (!annotatorUtil.validateThreadParams(threadParams)) {
-            this.emit('annotationerror', {
-                reason: 'validation'
-            });
+            this.handleValidationError();
             return thread;
         }
 

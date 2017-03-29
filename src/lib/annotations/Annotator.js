@@ -2,7 +2,6 @@ import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
-import * as annotatorUtil from './annotatorUtil';
 import * as constants from './annotationConstants';
 import { CLASS_ACTIVE } from '../constants';
 
@@ -235,16 +234,6 @@ class Annotator extends EventEmitter {
         this._threads = {};
         this.bindDOMListeners();
         this.bindCustomListenersOnService(this._annotationService);
-
-        /* istanbul ignore next */
-        this.addListener('annotationerror', (data) => {
-            switch (data.reason) {
-                case 'validation':
-                    this.handleValidationError();
-                    break;
-                default:
-            }
-        });
     }
 
     /**
@@ -265,14 +254,8 @@ class Annotator extends EventEmitter {
                     const firstAnnotation = annotations[0];
 
                     // Bind events on valid annotation thread
-                    if (annotatorUtil.checkThreadValid(firstAnnotation)) {
-                        const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
-                        this.bindCustomListenersOnThread(thread);
-                    } else {
-                        this.emit('annotationerror', {
-                            reason: 'validation'
-                        });
-                    }
+                    const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
+                    this.bindCustomListenersOnThread(thread);
                 });
             });
     }

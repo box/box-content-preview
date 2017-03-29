@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Annotator from '../Annotator';
 import * as constants from '../annotationConstants';
-import * as annotatorUtil from '../annotatorUtil';
 import AnnotationService from '../AnnotationService';
 
 let annotator;
@@ -234,7 +233,6 @@ describe('lib/annotations/Annotator', () => {
             expect(Object.keys(annotator._threads).length === 0).to.be.true;
             expect(annotator.bindDOMListeners).to.be.called;
             expect(annotator.bindCustomListenersOnService).to.be.called;
-            expect(annotator.addListener).to.be.calledWith('annotationerror', sinon.match.func);
         });
     });
 
@@ -253,8 +251,7 @@ describe('lib/annotations/Annotator', () => {
             stubs.serviceMock.expects('getThreadMap').returns(stubs.threadPromise);
         });
 
-        it('should reset and create a new thread map by fetching annotation data from the server if the first annotation in the thread is valid', () => {
-            sandbox.stub(annotatorUtil, 'checkThreadValid').returns(true);
+        it('should reset and create a new thread map by fetching annotation data from the server', () => {
             sandbox.stub(annotator, 'createAnnotationThread').returns(stubs.thread);
             sandbox.stub(annotator, 'bindCustomListenersOnThread');
 
@@ -264,21 +261,6 @@ describe('lib/annotations/Annotator', () => {
                 expect(Object.keys(annotator._threads).length === 0).to.be.true;
                 expect(annotator.createAnnotationThread).to.be.calledTwice;
                 expect(annotator.bindCustomListenersOnThread).to.be.calledTwice;
-                expect(result).to.be.an.object;
-            });
-        });
-
-        it('should reset and not create a new thread mapif the first annotation in the thread is not valid', () => {
-            sandbox.stub(annotatorUtil, 'checkThreadValid').returns(false);
-            sandbox.stub(annotator, 'createAnnotationThread');
-            sandbox.stub(annotator, 'bindCustomListenersOnThread');
-
-            const result = annotator.fetchAnnotations();
-
-            return stubs.threadPromise.then(() => {
-                expect(Object.keys(annotator._threads).length === 0).to.be.true;
-                expect(annotator.createAnnotationThread).to.not.be.called;
-                expect(annotator.bindCustomListenersOnThread).to.not.be.called;
                 expect(result).to.be.an.object;
             });
         });
@@ -420,7 +402,6 @@ describe('lib/annotations/Annotator', () => {
 
     describe('addToThreadMap', () => {
         it('should add valid threads to the thread map', () => {
-            sandbox.stub(annotatorUtil, 'checkThreadValid').returns(true);
             stubs.thread.location = { page: 2 };
             stubs.thread2.location = { page: 3 };
             stubs.thread3.location = { page: 2 };
@@ -463,7 +444,6 @@ describe('lib/annotations/Annotator', () => {
                 removeAllListeners: () => {}
             };
             stubs.threadMock = sandbox.mock(stubs.thread);
-            sandbox.stub(annotatorUtil, 'checkThreadValid').returns(true);
         });
 
         it('should destroy and return true if there are any pending threads', () => {

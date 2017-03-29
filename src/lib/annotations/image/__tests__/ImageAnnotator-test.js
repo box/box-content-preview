@@ -90,20 +90,20 @@ describe('lib/annotations/image/ImageAnnotator', () => {
         it('should create, add point thread to internal map, and return it', () => {
             sandbox.stub(annotatorUtil, 'validateThreadParams').returns(true);
             sandbox.stub(annotator, 'addThreadToMap');
+            sandbox.stub(annotator, 'handleValidationError');
             const thread = annotator.createAnnotationThread([], {}, 'point');
 
             expect(annotator.addThreadToMap).to.have.been.called;
             expect(thread instanceof ImagePointThread).to.be.true;
+            expect(annotator.handleValidationError).to.not.be.called;
         });
 
         it('should emit error and return undefined if thread params are invalid', () => {
             sandbox.stub(annotatorUtil, 'validateThreadParams').returns(false);
-            sandbox.stub(annotator, 'emit');
+            sandbox.stub(annotator, 'handleValidationError');
             const thread = annotator.createAnnotationThread([], {}, 'point');
             expect(thread instanceof ImagePointThread).to.be.false;
-            expect(annotator.emit).to.be.calledWith('annotationerror', {
-                reason: 'validation'
-            });
+            expect(annotator.handleValidationError).to.be.called;
         });
     });
 
