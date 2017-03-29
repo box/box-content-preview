@@ -79,7 +79,7 @@ update_readme() {
 
 push_to_github() {
     # Add new files
-    git commit -am $VERSION
+    git commit -a --amend --no-verify --no-edit
 
     # Force update tag after updating files
     git tag -f v$VERSION
