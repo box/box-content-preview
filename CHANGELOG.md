@@ -1,8 +1,36 @@
 # Change Log
 
-## [Unreleased](https://github.com/box/box-content-preview/tree/HEAD)
+## [v0.114.0](https://github.com/box/box-content-preview/tree/v0.114.0) (2017-03-29)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.113.0...v0.114.0)
 
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.111.0...HEAD)
+**Merged pull requests:**
+
+- Chore: Update release script [\#31](https://github.com/box/box-content-preview/pull/31) ([tonyjin](https://github.com/tonyjin))
+
+## [v0.113.0](https://github.com/box/box-content-preview/tree/v0.113.0) (2017-03-28)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.112.0...v0.113.0)
+
+**Merged pull requests:**
+
+- Chore: Separate tagging from build [\#30](https://github.com/box/box-content-preview/pull/30) ([tonyjin](https://github.com/tonyjin))
+- Fix: Bug fixes for expiring embed Preview [\#28](https://github.com/box/box-content-preview/pull/28) ([tonyjin](https://github.com/tonyjin))
+- New: adding error messages for iWork files [\#27](https://github.com/box/box-content-preview/pull/27) ([jeremypress](https://github.com/jeremypress))
+- Fix: Don't show error download btn if option is not set [\#25](https://github.com/box/box-content-preview/pull/25) ([tonyjin](https://github.com/tonyjin))
+- Chore: Preview.js cleanup and slight refactor [\#24](https://github.com/box/box-content-preview/pull/24) ([tonyjin](https://github.com/tonyjin))
+- Filmstrip interval should be determined from rep metadata field [\#23](https://github.com/box/box-content-preview/pull/23) ([bhh1988](https://github.com/bhh1988))
+- Breaking: Support {+asset\_path} to follow RFC6570 [\#22](https://github.com/box/box-content-preview/pull/22) ([tonyjin](https://github.com/tonyjin))
+- Fix: Guard against unsupported lose\_context extension on IE11 and Edge [\#21](https://github.com/box/box-content-preview/pull/21) ([MiiBond](https://github.com/MiiBond))
+- New: centering image prints [\#18](https://github.com/box/box-content-preview/pull/18) ([jeremypress](https://github.com/jeremypress))
+- Chore: Remove dist folder from repo [\#16](https://github.com/box/box-content-preview/pull/16) ([tonyjin](https://github.com/tonyjin))
+- Chore: Separately version third-party assets [\#15](https://github.com/box/box-content-preview/pull/15) ([tonyjin](https://github.com/tonyjin))
+- New: Enable activation/deactivation of VR when headset put on/off [\#13](https://github.com/box/box-content-preview/pull/13) ([MiiBond](https://github.com/MiiBond))
+- New: Preload for presentation viewer [\#12](https://github.com/box/box-content-preview/pull/12) ([tonyjin](https://github.com/tonyjin))
+- Release: 0.112.0 [\#11](https://github.com/box/box-content-preview/pull/11) ([tonyjin](https://github.com/tonyjin))
+- Update: Added Box branding to Vive controllers. [\#10](https://github.com/box/box-content-preview/pull/10) ([MiiBond](https://github.com/MiiBond))
+- Breaking: Switching to Preview class instead of Preview singleton [\#7](https://github.com/box/box-content-preview/pull/7) ([priyajeet](https://github.com/priyajeet))
+
+## [v0.112.0](https://github.com/box/box-content-preview/tree/v0.112.0) (2017-03-22)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.111.0...v0.112.0)
 
 **Merged pull requests:**
 
