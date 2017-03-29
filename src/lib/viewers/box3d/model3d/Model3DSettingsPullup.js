@@ -6,7 +6,7 @@ import {
     createLabel,
     createPullup,
     createRow
-} from '../Box3DUiUtils';
+} from '../Box3DUIUtils';
 import {
     AXIS_X,
     AXIS_Y,

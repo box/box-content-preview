@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Box3DControls from '../Box3DControls';
 import Controls from '../../../Controls';
-import { UIRegistry } from '../Box3DUiUtils';
+import { UIRegistry } from '../Box3DUIUtils';
 import { CLASS_HIDDEN } from '../../../constants';
 import {
     ICON_FULLSCREEN_IN,

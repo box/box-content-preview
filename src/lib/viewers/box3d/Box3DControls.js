@@ -14,7 +14,7 @@ import {
 } from '../../icons/icons';
 
 import { CLASS_HIDDEN } from '../../constants';
-import { UIRegistry } from './Box3DUiUtils';
+import { UIRegistry } from './Box3DUIUtils';
 
 @autobind
 class Box3DControls extends EventEmitter {

@@ -6,7 +6,7 @@ import {
     EVENT_SELECT_ANIMATION_CLIP
 } from './model3DConstants';
 
-import { createPullup, UIRegistry } from '../Box3DUiUtils';
+import { createPullup, UIRegistry } from '../Box3DUIUtils';
 import { ICON_CHECK_MARK } from '../../../icons/icons';
 import { createFragment } from '../../../util';
 

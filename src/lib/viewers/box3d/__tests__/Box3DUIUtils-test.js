@@ -7,7 +7,7 @@ import {
     createPullup,
     createRow,
     UIRegistry
-} from '../Box3DUiUtils';
+} from '../Box3DUIUtils';
 
 import {
     CSS_CLASS_OVERLAY,
@@ -31,13 +31,13 @@ const sandbox = sinon.sandbox.create();
 
 let containerEl;
 
-describe('lib/viewers/box3d/Box3DUiUtils', () => {
+describe('lib/viewers/box3d/Box3DUIUtils', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/box3d/__tests__/Box3DUiUtils-test.html');
+        fixture.load('viewers/box3d/__tests__/Box3DUIUtils-test.html');
         containerEl = document.querySelector('.container');
     });
 
