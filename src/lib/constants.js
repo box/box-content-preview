@@ -81,7 +81,7 @@ export const TEXT_STATIC_ASSETS_VERSION = '0.112.0';
 export const FILE_EXT_ERROR_MAP = {
     numbers: __('error_iwork'),
     pages: __('error_iwork'),
-    keynote: __('error_iwork')
+    key: __('error_iwork')
 };
 
 export const PREVIEW_SCRIPT_NAME = 'preview.js';
