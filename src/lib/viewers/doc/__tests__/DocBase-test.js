@@ -1485,7 +1485,6 @@ describe('src/lib/viewers/doc/DocBase', () => {
 
             docBase.pagesinitHandler();
             expect(stubs.emit).to.be.calledWith('load', {
-                endProgress: false,
                 numPages: 5
             });
             expect(docBase.loaded).to.be.truthy;
