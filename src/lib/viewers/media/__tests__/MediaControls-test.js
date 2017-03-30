@@ -572,30 +572,30 @@ describe('lib/viewers/media/MediaControls', () => {
         });
 
         it('should give the correct class and content to the filmstrip container', () => {
-            mediaControls.initFilmstrip('url', stubs.status, '380');
+            mediaControls.initFilmstrip('url', stubs.status, '380', 1);
             expect(mediaControls.filmstripContainerEl.classList.contains('bp-media-filmstrip-container')).to.be.true;
             expect(mediaControls.filmstripContainerEl.innerHTML.includes(CRAWLER)).to.be.true;
         });
 
         it('should give the correct class to the filmstrip', () => {
-            mediaControls.initFilmstrip('url', stubs.status, '380');
+            mediaControls.initFilmstrip('url', stubs.status, '380', 1);
             expect(mediaControls.filmstripEl.classList.contains('bp-media-filmstrip')).to.be.true;
         });
 
         it('should give the correct class to the filmstrip time element', () => {
-            mediaControls.initFilmstrip('url', stubs.status, '380');
+            mediaControls.initFilmstrip('url', stubs.status, '380', 1);
             expect(mediaControls.filmstripTimeEl.classList.contains('bp-media-filmstrip-timecode')).to.be.true;
         });
 
         it('should add the correct eventListeners to the handle and converted time scrubber elements', () => {
-            mediaControls.initFilmstrip('url', stubs.status, '380');
+            mediaControls.initFilmstrip('url', stubs.status, '380', 1);
             expect(stubs.handleElAddEventListener).to.be.calledWith('mousedown', mediaControls.timeScrubbingStartHandler);
             expect(stubs.getConvertedElAddEventListener).to.be.calledWith('mousemove', mediaControls.filmstripShowHandler);
             expect(stubs.getConvertedElAddEventListener).to.be.calledWith('mouseleave', mediaControls.filmstripHideHandler);
         });
 
         it('should add the onload function to the filmstrip', () => {
-            mediaControls.initFilmstrip('url', stubs.status, '380');
+            mediaControls.initFilmstrip('url', stubs.status, '380', 1);
             expect(typeof mediaControls.filmstripEl.onload === 'function');
         });
     });
@@ -655,7 +655,7 @@ describe('lib/viewers/media/MediaControls', () => {
                 getPromise: sandbox.stub().returns(Promise.resolve())
             };
 
-            mediaControls.initFilmstrip('url', stubs.status, '380');
+            mediaControls.initFilmstrip('url', stubs.status, '380', 1);
         });
 
         it('should do nothing if the settings are visible', () => {
@@ -684,7 +684,7 @@ describe('lib/viewers/media/MediaControls', () => {
                 getPromise: sandbox.stub().returns(Promise.resolve())
             };
 
-            mediaControls.initFilmstrip('url', stubs.status, '380');
+            mediaControls.initFilmstrip('url', stubs.status, '380', 1);
             mediaControls.isScrubbing = false;
         });
 

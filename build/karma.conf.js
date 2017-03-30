@@ -1,5 +1,7 @@
 const webpackConfig = require('./webpack.karma.config');
 
+const MODEL3D_STATIC_ASSETS_VERSION = '0.112.0';
+
 const getTestFile = (src) => {
     if (!src) {
         return [
@@ -81,7 +83,7 @@ module.exports = (config) => config.set({
     ],
 
     files: [
-        'src/third-party/model3d/three.min.js',
+        `src/third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/three.min.js`,
         'node_modules/babel-polyfill/dist/polyfill.js',
         'src/third-party/**/*.js'
     ].concat(getTestFile(config.src)),

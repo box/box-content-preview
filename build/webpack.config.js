@@ -13,7 +13,7 @@ const version = isRelease ? require('../package.json').version : 'dev';
 
 const lib = path.resolve('src/lib');
 const thirdParty = path.resolve('src/third-party');
-const staticFolder = path.resolve('dist', version);
+const staticFolder = path.resolve('dist');
 
 const languages = isRelease ? [
     'en-AU',

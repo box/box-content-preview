@@ -11,17 +11,44 @@ import loaderList from './loaders';
 import cache from './Cache';
 import ProgressBar from './ProgressBar';
 import PreviewError from './viewers/error/PreviewError';
-import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
 import getTokens from './tokens';
-import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid, cacheFile } from './file';
-import { setup, cleanup, showLoadingIndicator, hideLoadingIndicator, showDownloadButton, showLoadingDownloadButton, showAnnotateButton, showPrintButton, showNavigation } from './ui';
+import {
+    get,
+    post,
+    decodeKeydown,
+    openUrlInsideIframe,
+    getHeaders,
+    findScriptLocation
+} from './util';
+import {
+    getURL,
+    getDownloadURL,
+    checkPermission,
+    checkFeature,
+    checkFileValid,
+    cacheFile,
+    uncacheFile
+} from './file';
+import {
+    setup,
+    cleanup,
+    showLoadingIndicator,
+    hideLoadingIndicator,
+    showDownloadButton,
+    showLoadingDownloadButton,
+    showAnnotateButton,
+    showPrintButton,
+    showNavigation
+} from './ui';
 import {
     API_HOST,
     APP_HOST,
     CLASS_NAVIGATION_VISIBILITY,
+    FILE_EXT_ERROR_MAP,
     PERMISSION_DOWNLOAD,
     PERMISSION_ANNOTATE,
     PERMISSION_PREVIEW,
+    PREVIEW_SCRIPT_NAME,
     X_REP_HINT_BASE,
     X_REP_HINT_DOC_THUMBNAIL,
     X_REP_HINT_IMAGE,
@@ -183,7 +210,7 @@ class Preview extends EventEmitter {
         // All preview assets are relative to preview.js. Here we create a location
         // object that mimics the window location object and points to where
         // preview.js is loaded from by the browser.
-        this.location = findScriptLocation('preview.js', document.currentScript);
+        this.location = findScriptLocation(PREVIEW_SCRIPT_NAME);
     }
 
     /**
@@ -208,24 +235,24 @@ class Preview extends EventEmitter {
     /**
      * Primary function for showing a preview of a file.
      *
-     * @param {String|Object} file - Box File ID or well-formed file object
-     * @param {String|Function} token - auth token string or generator function
+     * @param {string} fileId - Box File ID
+     * @param {string|Function} token - auth token string or generator function
      * @param {Object} [options] - Optional preview options
      * @return {void}
      */
-    show(file, token, options = {}) {
+    show(fileId, token, options = {}) {
         // Save a reference to the options to be used later
         if (typeof token === 'string' || typeof token === 'function') {
             this.previewOptions = Object.assign({}, options, { token });
         } else if (token) {
-            // @TODO Remove this use case after a few releases and webapp upgrade
+            // @TODO(tjin): Remove this after expiring embed updates to new calling pattern
             this.previewOptions = Object.assign({}, token || {});
         } else {
-            throw new Error('Missing Auth Token!');
+            throw new Error('Missing access token!');
         }
 
         // load the preview
-        this.load(file);
+        this.load(fileId);
     }
 
     /**
@@ -422,7 +449,7 @@ class Preview extends EventEmitter {
      * Updates the token Preview uses. Passed in parameter can either be a
      * string token or token generation function. See tokens.js.
      *
-     * @param {string|function} tokenOrTokenFunc - Either an access token or token
+     * @param {string|Function} tokenOrTokenFunc - Either an access token or token
      * generator function
      * @param {boolean} [reloadPreview] - Whether or not to reload the current
      * preview with the updated token, defaults to true
@@ -432,7 +459,7 @@ class Preview extends EventEmitter {
         this.previewOptions.token = tokenOrTokenFunc;
 
         if (reloadPreview) {
-            this.load(this.file);
+            this.load(this.file.id);
         }
     }
 
@@ -471,9 +498,8 @@ class Preview extends EventEmitter {
         // Determining the viewer could throw an error
         try {
             file = cache.get(fileId);
-            loader = this.getLoader(file);
-            viewer = loader.determineViewer(file);
-
+            loader = file ? this.getLoader(file) : null;
+            viewer = loader ? loader.determineViewer(file) : null;
             if (!viewer) {
                 return;
             }
@@ -544,10 +570,10 @@ class Preview extends EventEmitter {
      * Initial method for loading a preview.
      *
      * @private
-     * @param {string|Object} file - File ID or well-formed file object to preview
+     * @param {string} fileId - Box File ID
      * @return {void}
      */
-    load(file) {
+    load(fileId) {
         // Clean up any existing previews before loading
         this.destroy();
 
@@ -561,29 +587,19 @@ class Preview extends EventEmitter {
         clearTimeout(this.retryTimeout);
 
         // Save reference to the currently shown file, if any
-        const current = this.file ? this.file.id : undefined;
+        const currentFileId = this.file ? this.file.id : undefined;
 
-        // Check if a file id was passed in or a well formed file object
-        // Cache the file in the files array so that we don't prefetch it.
-        // If we don't have the file data, we create an empty file object.
-        // If we have the file data, we just use that.
-        if (typeof file === 'string') {
-            // String file id was passed in, check if its in the cache
-            this.file = cache.get(file) || { id: file };
-        } else {
-            // File object was passed in, treat it like cached
-            this.file = file;
-        }
+        // Use cached file data if available, otherwise create empty file object
+        this.file = cache.get(fileId) || { id: fileId };
 
-        // If we are trying to load the same file again, only try 5 times
-        // Don't want to try to load the file multiple times in
-        if (this.file.id === current) {
+        // Retry up to RETRY_COUNT if we are reloading same file
+        if (this.file.id === currentFileId) {
             this.retryCount += 1;
         } else {
             this.retryCount = 0;
         }
 
-        // Fetch access tokens before doing anything
+        // Fetch access tokens before proceeding
         getTokens(this.file.id, this.previewOptions.token)
         .then(this.loadPreviewWithTokens)
         .catch(this.triggerFetchError);
@@ -622,12 +638,9 @@ class Preview extends EventEmitter {
         // Update navigation
         showNavigation(this.file.id, this.collection);
 
-        // Cache the file
-        cacheFile(this.file);
-
-        // Normalize files array by putting current file inside it
-        // if it was is empty. If its not empty, then it is assumed
-        // that current file is already inside files array.
+        // If preview collection is empty, create a collection of one with the
+        // current file ID. Otherwise, assume the current file ID is already in
+        // the collection.
         if (this.collection.length === 0) {
             this.collection = [this.file.id];
         }
@@ -769,21 +782,28 @@ class Preview extends EventEmitter {
             this.logger.setFile(file);
 
             // Keep reference to previously cached file version
-            const cached = cache.get(file.id);
+            const cachedFile = cache.get(file.id);
 
-            // Check if cache is stale or if updated file info is watermarked
+            // Explicitly uncache watermarked files, otherwise update cache
             const isWatermarked = file.watermark_info && file.watermark_info.is_watermarked;
-            const isStale = !cached || !cached.file_version || cached.file_version.sha1 !== file.file_version.sha1;
-
-            // Don't cache watermarked files, update cache otherwise
             if (isWatermarked) {
-                cache.unset(file.id);
+                uncacheFile(file);
             } else {
                 cacheFile(file);
             }
 
-            // Reload if needed
-            if (isStale || isWatermarked) {
+            // Should load/reload viewer if:
+            // - File isn't cached
+            // - Cached file isn't valid
+            // - Cached file is stale
+            // - File is watermarked
+            const shouldLoadViewer =
+                !cachedFile ||
+                !checkFileValid(cachedFile) ||
+                cachedFile.file_version.sha1 !== file.file_version.sha1 ||
+                isWatermarked;
+
+            if (shouldLoadViewer) {
                 this.logger.setCacheStale();
                 this.loadViewer();
             }
@@ -820,7 +840,7 @@ class Preview extends EventEmitter {
 
         // If no loader then throw an unsupported error
         if (!loader) {
-            throw new Error();
+            throw new Error(FILE_EXT_ERROR_MAP[this.file.extension]);
         }
 
         // Determine the viewer to use
@@ -895,7 +915,7 @@ class Preview extends EventEmitter {
      */
     finishLoading(data = {}) {
         // Show or hide annotate/print/download buttons
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && !Browser.isMobile()) {
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
             showDownloadButton(this.download);
 
             if (checkFeature(this.viewer, 'print')) {
@@ -1228,10 +1248,10 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     navigateToIndex(index) {
-        const file = this.collection[index];
-        this.emit('navigate', file);
+        const fileId = this.collection[index];
+        this.emit('navigate', fileId);
         this.count.navigation += 1;
-        this.load(file);
+        this.load(fileId);
     }
 
     /**

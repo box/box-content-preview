@@ -6,6 +6,7 @@ import {
     EVENT_SCENE_LOADED,
     EVENT_TRIGGER_RENDER
 } from './Box3dConstants';
+import { MODEL3D_STATIC_ASSETS_VERSION } from '../../constants';
 
 const PREVIEW_CAMERA_CONTROLLER_ID = 'orbit_camera';
 const PREVIEW_CAMERA_POSITION = { x: 0, y: 0, z: 0 };
@@ -437,7 +438,7 @@ class Box3DRenderer extends EventEmitter {
                     return;
                 }
             }
-            this.vrGamepadLoadPromise = this.box3d.addRemoteEntities(`${this.staticBaseURI}third-party/model3d/WebVR/${controllerName}/entities.json`, { isExternal: true });
+            this.vrGamepadLoadPromise = this.box3d.addRemoteEntities(`${this.staticBaseURI}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${controllerName}/entities.json`, { isExternal: true });
             this.vrGamepadLoadPromise.then(onGamepadModelLoad);
         };
 
