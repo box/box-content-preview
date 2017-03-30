@@ -129,7 +129,7 @@ Additional Methods
 
 `preview.getCurrentCollection()` returns the current collection if any.
 
-`preview.getCurrentFile()` returns the current file being previewed if any. The file object structure is the same as returned by the [https://docs.box.com/reference#files](Box API).
+`preview.getCurrentFile()` returns the current file being previewed if any. The file object structure is the same as returned by the [Box API](https://docs.box.com/reference#files).
 
 `preview.getCurrentViewer()` returns the current viewer instance. May be undefined if the viewer isn't ready yet and waiting on conversion to happen.
 
