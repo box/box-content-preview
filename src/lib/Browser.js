@@ -225,7 +225,7 @@ class Browser {
      * @return {boolean} true if browser supports download
      */
     static isMobile() {
-        return (('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch));
+        return /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent);
     }
 
     /**
