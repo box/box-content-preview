@@ -222,10 +222,20 @@ class Browser {
      * Returns whether the browser is a mobile browser. Taken from Modernizr:
      * https://github.com/Modernizr/Modernizr/blob/master/feature-detects/touchevents.js
      *
-     * @return {boolean} true if browser is mobile
+     * @return {boolean} true if browser supports download
      */
     static isMobile() {
         return (('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch));
+    }
+
+    /**
+     * Returns whether the browser can download via HTML5. taken from Modernizr:
+     * https://github.com/Modernizr/Modernizr/blob/master/feature-detects/a/download.js
+     *
+     * @return {boolean} true if browser supports download
+     */
+    static canDownload() {
+        return !window.externalHost && 'download' in document.createElement('a');
     }
 
     /**

@@ -915,7 +915,7 @@ class Preview extends EventEmitter {
      */
     finishLoading(data = {}) {
         // Show or hide annotate/print/download buttons
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && !Browser.isMobile()) {
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
             showDownloadButton(this.download);
 
             if (checkFeature(this.viewer, 'print')) {
