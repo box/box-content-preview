@@ -1328,12 +1328,21 @@ describe('lib/Preview', () => {
 
         it('should show download button if download is supported by browser', () => {
             stubs.canDownload.returns(false);
+            stubs.isMobile.returns(true);
 
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.not.be.called;
 
+            stubs.canDownload.returns(false);
+            stubs.isMobile.returns(false);
+
+            preview.finishLoading();
+            expect(stubs.showDownloadButton).to.be.called;
+
 
             stubs.canDownload.returns(true);
+            stubs.isMobile.returns(false);
+
 
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
