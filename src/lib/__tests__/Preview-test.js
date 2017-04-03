@@ -1195,6 +1195,30 @@ describe('lib/Preview', () => {
             expect(stubs.showLoadingDownloadButton).to.be.called;
         });
 
+        it('should throw a generic error if there is no loader for general file types', () => {
+            preview.file.extension = 'zip';
+            stubs.getLoader.returns(undefined);
+            const spy = sandbox.spy(preview, 'loadViewer');
+
+            try {
+                preview.loadViewer();
+            } catch (e) {
+                expect(spy.threw('Error', __('error_default')));
+            }
+        });
+
+        it('should throw a specific error if there is no loader for a specific file type', () => {
+            preview.file.extension = 'key';
+            stubs.getLoader.returns(undefined);
+            const spy = sandbox.spy(preview, 'loadViewer');
+
+            try {
+                preview.loadViewer();
+            } catch (e) {
+                expect(spy.threw('Error', __('error_iwork')));
+            }
+        });
+
         it('should get the loader, viewer, and log the type of file', () => {
             preview.loadViewer();
             expect(stubs.getLoader).to.be.calledWith(sinon.match.object);

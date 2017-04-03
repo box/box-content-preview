@@ -16,6 +16,8 @@ const VOLUME_LEVEL_CLASS_NAMES = [
     'bp-media-volume-icon-is-high'
 ];
 const CRAWLER = '<div class="bp-media-crawler-wrapper"><div class="bp-crawler"><div></div><div></div><div></div></div></div>';
+const FILMSTRIP_FRAMES_PER_ROW = 100;
+const FILMSTRIP_FRAME_HEIGHT = 90;
 
 @autobind
 class MediaControls extends EventEmitter {
@@ -498,12 +500,13 @@ class MediaControls extends EventEmitter {
         this.filmstripTimeEl = this.filmstripContainerEl.appendChild(document.createElement('div'));
         this.filmstripTimeEl.className = 'bp-media-filmstrip-timecode';
 
-        const frameWidth = 90 * aspect;
+        const frameWidth = FILMSTRIP_FRAME_HEIGHT * aspect;
 
         // Unfortunately the filmstrip is jpg. jpg files have a width limit.
-        // So ffmpeg ends up creating filmstrip elements in seperate rows.
-        // Each row is 90px high. Only 100 frames per row. Each frame is in the
-        // same aspect ratio as the original video.
+        // So ffmpeg ends up creating filmstrip elements in separate rows.
+        // Each row is FILMSTRIP_FRAME_HEIGHT px high. Only
+        // FILMSTRIP_FRAMES_PER_ROW frames per row. Each frame is in the same
+        // aspect ratio as the original video.
 
         this.timeScrubber.getHandleEl().addEventListener('mousedown', this.timeScrubbingStartHandler);
         this.timeScrubber.getConvertedEl().addEventListener('mousemove', this.filmstripShowHandler);
@@ -557,11 +560,48 @@ class MediaControls extends EventEmitter {
         document.removeEventListener('mousemove', this.filmstripShowHandler);
 
         if (!this.timeScrubberEl.contains(event.target)) {
-            // Don't hide the film strip if we were hovering over the scrubber when
+            // Don't hide the filmstrip if we were hovering over the scrubber when
             // mouse up happened. Since we show film strip on hover. On all other cases
             // hide the film strip as scrubbing has stopped and no one is hovering over the scrubber.
             this.filmstripContainerEl.style.display = 'none';
         }
+    }
+
+    /**
+     * Returns offset into filmstrip and filmstrip container position
+     *
+     * @private
+     * @param {number} pageX - Mouse X position
+     * @param {number} rectLeft - Left position of the bounding rectangle
+     * @param {number} rectWidth - Width of the bounding rectangle
+     * @param {number} filmstripWidth - Pixel width of the filmstrip
+     * @return {Object}
+     */
+    computeFilmstripPositions(pageX, rectLeft, rectWidth, filmstripWidth) {
+        const time = ((pageX - rectLeft) * this.mediaEl.duration) / rectWidth; // given the mouse X position, get the relative time
+        const frame = Math.floor(time / this.filmstripInterval); // get the frame number to show
+        let frameWidth = filmstripWidth / FILMSTRIP_FRAMES_PER_ROW; // calculate the frame width based on the filmstrip width
+        let left = -1 * (frame % FILMSTRIP_FRAMES_PER_ROW) * frameWidth; // get the frame position in a given row
+        let top = -FILMSTRIP_FRAME_HEIGHT * Math.floor((frame / FILMSTRIP_FRAMES_PER_ROW)); // get the row number if there is more than 1 row.
+
+        // If the filmstrip is not ready yet, we are using a placeholder
+        // which has a fixed dimension of 160 x 90
+        if (!filmstripWidth) {
+            left = 0;
+            top = 0;
+            frameWidth = 160;
+        }
+
+        // The filmstrip container positioning should fall within the viewport of the video itself. Relative to the video it
+        // should be left positioned 0 <= filmstrip frame <= (video.width - filmstrip frame.width)
+        const minLeft = Math.max(0, pageX - rectLeft - (frameWidth / 2)); // don't allow the image to bleed out of the video viewport left edge
+        const containerLeft = Math.min(minLeft, rectWidth - frameWidth); // don't allow the image to bleed out of the video viewport right edge
+        return {
+            time,
+            left,
+            top,
+            containerLeft
+        };
     }
 
     /**
@@ -579,30 +619,13 @@ class MediaControls extends EventEmitter {
 
         const rect = this.containerEl.getBoundingClientRect();
         const pageX = event.pageX; // get the mouse X position
-        const time = ((pageX - rect.left) * this.mediaEl.duration) / rect.width; // given the mouse X position, get the relative time
-        const frame = Math.floor(time / this.filmstripInterval); // get the frame number to show
-        let frameWidth = this.filmstripEl.naturalWidth / 100; // calculate the frame width based on the filmstrip width with each row having 100 frames
-        let left = -1 * (frame % 100) * frameWidth; // there are 100 frames per row, get the frame position in a given row
-        let top = -90 * Math.floor((frame / 100)); // get the row number if there are more than 1 row. Each row is 90px high.
+        const filmstripPositions = this.computeFilmstripPositions(pageX, rect.left, rect.width, this.filmstripEl.naturalWidth);
 
-        // If the filmstrip is not ready yet, we are using a placeholder
-        // which has a fixed dimension of 160 x 90
-        if (!this.filmstripEl.naturalWidth) {
-            left = 0;
-            top = 0;
-            frameWidth = 160;
-        }
-
-        // The filmstrip container positioning should fall within the viewport of the video itself. Relative to the video it
-        // should be left positioned 0 <= filmstrip frame <= (video.width - filmstrip frame.width)
-        const minLeft = Math.max(0, pageX - rect.left - (frameWidth / 2)); // don't allow the image to bleed out of the video viewport left edge
-        const maxLeft = Math.min(minLeft, rect.width - frameWidth); // don't allow the image to bleed out of the video viewport right edge
-
-        this.filmstripEl.style.left = `${left}px`;
-        this.filmstripEl.style.top = `${top}px`;
+        this.filmstripEl.style.left = `${filmstripPositions.left}px`;
+        this.filmstripEl.style.top = `${filmstripPositions.top}px`;
         this.filmstripContainerEl.style.display = 'block';
-        this.filmstripContainerEl.style.left = `${maxLeft}px`;
-        this.filmstripTimeEl.textContent = this.formatTime(time);
+        this.filmstripContainerEl.style.left = `${filmstripPositions.containerLeft}px`;
+        this.filmstripTimeEl.textContent = this.formatTime(filmstripPositions.time);
     }
 
     /**
