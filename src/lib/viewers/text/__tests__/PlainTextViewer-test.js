@@ -151,7 +151,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
 
             text.print();
 
-            expect(text.preparePrint).to.be.calledWith([`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.css`, 'preview.css']);
+            expect(text.preparePrint).to.be.calledWith([`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`, 'preview.css']);
             expect(text.printPopup.show).to.be.called;
             expect(text.printPopup.disableButton).to.be.called;
         });

@@ -649,13 +649,19 @@ describe('lib/viewers/media/MediaControls', () => {
             stubs.isSettingsVisible = sandbox.stub(mediaControls, 'isSettingsVisible');
             stubs.formatTime = sandbox.stub(mediaControls, 'formatTime');
             mediaControls.mediaEl = {
-                duration: 0
+                duration: 3600
             };
             stubs.status = {
                 getPromise: sandbox.stub().returns(Promise.resolve())
             };
 
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
+            sandbox.stub(mediaControls, 'computeFilmstripPositions').returns({
+                time: 10,
+                left: -100,
+                top: -180,
+                containerLeft: 20
+            });
         });
 
         it('should do nothing if the settings are visible', () => {
@@ -666,15 +672,100 @@ describe('lib/viewers/media/MediaControls', () => {
         });
 
         it('should correctly style the filmstrip and format the time element', () => {
-            // unable to test case where the filmstrip placeholder is not used
             stubs.isSettingsVisible.returns(false);
 
             mediaControls.filmstripShowHandler(stubs.event);
-            expect(mediaControls.filmstripEl.style.left).to.equal('0px');
-            expect(mediaControls.filmstripEl.style.top).to.equal('0px');
+            expect(mediaControls.filmstripEl.style.left).to.equal('-100px');
+            expect(mediaControls.filmstripEl.style.top).to.equal('-180px');
             expect(mediaControls.filmstripContainerEl.style.display).to.equal('block');
             expect(mediaControls.filmstripContainerEl.style.left).to.equal('20px');
-            expect(stubs.formatTime).to.be.called;
+            expect(stubs.formatTime).to.be.calledWith(10);
+        });
+    });
+
+    describe('computeFilmstripPositions', () => {
+        it('should compute correct positions when filmstrip not ready', () => {
+            mediaControls.mediaEl = {
+                duration: 100
+            };
+            mediaControls.filmstripInterval = 1;
+
+            const positions = mediaControls.computeFilmstripPositions(400, 200, 1000, null);
+
+            expect(positions.time).to.equal(20);
+            expect(positions.left).to.equal(0);
+            expect(positions.top).to.equal(0);
+            expect(positions.containerLeft).to.equal(120);
+        });
+
+        it('should compute correct horizontal offset into filmstrip', () => {
+            mediaControls.mediaEl = {
+                duration: 100
+            };
+            mediaControls.filmstripInterval = 1;
+
+            const positions = mediaControls.computeFilmstripPositions(400, 200, 1000, 16000);
+
+            expect(positions.time).to.equal(20);
+            expect(positions.left).to.equal(-3200);
+            expect(positions.top).to.equal(0);
+            expect(positions.containerLeft).to.equal(120);
+        });
+
+        it('should compute correct vertical offset into filmstrip', () => {
+            mediaControls.mediaEl = {
+                duration: 1100
+            };
+            mediaControls.filmstripInterval = 1;
+
+            const positions = mediaControls.computeFilmstripPositions(400, 200, 1000, 16000);
+
+            expect(positions.time).to.equal(220);
+            expect(positions.left).to.equal(-3200);
+            expect(positions.top).to.equal(-180);
+            expect(positions.containerLeft).to.equal(120);
+        });
+
+        it('should compute correct offset into filmstrip with different interval', () => {
+            mediaControls.mediaEl = {
+                duration: 2000
+            };
+            mediaControls.filmstripInterval = 5;
+
+            const positions = mediaControls.computeFilmstripPositions(800, 200, 1000, 16000);
+
+            expect(positions.time).to.equal(1200);
+            expect(positions.left).to.equal(-6400);
+            expect(positions.top).to.equal(-180);
+            expect(positions.containerLeft).to.equal(520);
+        });
+
+        it('should compute correct container position when hovering near left boundary', () => {
+            mediaControls.mediaEl = {
+                duration: 100
+            };
+            mediaControls.filmstripInterval = 1;
+
+            const positions = mediaControls.computeFilmstripPositions(210, 200, 1000, 16000);
+
+            expect(positions.time).to.equal(1);
+            expect(positions.left).to.equal(-160);
+            expect(positions.top).to.equal(0);
+            expect(positions.containerLeft).to.equal(0);
+        });
+
+        it('should compute correct container position when hovering near right boundary', () => {
+            mediaControls.mediaEl = {
+                duration: 100
+            };
+            mediaControls.filmstripInterval = 1;
+
+            const positions = mediaControls.computeFilmstripPositions(1190, 200, 1000, 16000);
+
+            expect(positions.time).to.equal(99);
+            expect(positions.left).to.equal(-15840);
+            expect(positions.top).to.equal(0);
+            expect(positions.containerLeft).to.equal(840);
         });
     });
 
