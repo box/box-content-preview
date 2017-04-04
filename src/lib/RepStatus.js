@@ -1,9 +1,10 @@
+import EventEmitter from 'events';
 import { get, appendAuthParams } from './util';
 import { STATUS_SUCCESS, STATUS_VIEWABLE } from './constants';
 
 const STATUS_UPDATE_INTERVAL_MS = 2000;
 
-class RepStatus {
+class RepStatus extends EventEmitter {
     /**
      * Gets the status out of represenation
      *
@@ -27,6 +28,7 @@ class RepStatus {
      * @return {RepStatus} RepStatus instance
      */
     constructor({ representation, token, sharedLink, sharedLinkPassword, logger }) {
+        super();
         this.representation = representation;
         this.logger = logger;
 
@@ -99,6 +101,8 @@ class RepStatus {
                 if (this.logger) {
                     this.logger.setUnConverted();
                 }
+
+                this.emit('conversionpending');
 
                 // Check status again after delay
                 this.statusTimeout = setTimeout(() => {
