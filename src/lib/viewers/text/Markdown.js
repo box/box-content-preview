@@ -39,7 +39,7 @@ class Markdown extends PlainText {
      * @return {string} text
      */
     getCSS() {
-        return super.getCSS().concat(`${STATIC_URI}github-markdown.css`);
+        return super.getCSS().concat(`${STATIC_URI}github-markdown.min.css`);
     }
 
     /**

@@ -8,4 +8,4 @@ export const JS = [
     `${STATIC_URI}pdf.worker.min.js`,
     `${STATIC_URI}exif.min.js`
 ];
-export const CSS = [`${STATIC_URI}pdf_viewer.css`];
+export const CSS = [`${STATIC_URI}pdf_viewer.min.css`];
