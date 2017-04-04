@@ -219,13 +219,23 @@ class Browser {
     }
 
     /**
-     * Returns whether the browser is a mobile browser. Taken from Modernizr:
-     * https://github.com/Modernizr/Modernizr/blob/master/feature-detects/touchevents.js
+     * Returns whether the browser is a mobile browser.
      *
-     * @return {boolean} true if browser is mobile
+     * @return {boolean} true if browser supports download
      */
     static isMobile() {
-        return (('ontouchstart' in window) || (window.DocumentTouch && document instanceof DocumentTouch));
+        // Relying on the user agent to avoid desktop browsers on machines with touch screens.
+        return /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent);
+    }
+
+    /**
+     * Returns whether the browser can download via HTML5. taken from Modernizr:
+     * https://github.com/Modernizr/Modernizr/blob/master/feature-detects/a/download.js
+     * Currently not supported by IE11 or Safari 10.0 http://caniuse.com/#feat=download
+     * @return {boolean} true if browser supports download
+     */
+    static canDownload() {
+        return !window.externalHost && 'download' in document.createElement('a');
     }
 
     /**
