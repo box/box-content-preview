@@ -18,7 +18,7 @@ const PRINT_TIMEOUT_MS = 5000;
 
 const STATIC_URI = `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/`;
 const JS = [`${STATIC_URI}highlight.min.js`];
-const CSS = [`${STATIC_URI}github.css`];
+const CSS = [`${STATIC_URI}github.min.css`];
 
 class PlainText extends TextBase {
     /**

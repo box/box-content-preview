@@ -65,7 +65,7 @@ The Tag is one of the following:
 * `Upgrade` - for a dependency upgrade.
 * `Chore` - for refactoring, adding tests, etc. (anything that isn’t user-facing).
 
-This helps us out by allowing us to track which issue your commit relates to.
+The message summary should be a one-sentence description of the change, and it must be 72 characters in length or shorter. If the pull request addresses an issue, then the issue number should be mentioned at the end.
 
 Keep a separate feature branch for each issue you want to address.
 
@@ -89,4 +89,3 @@ Make sure that all tests are passing before submitting a pull request.
 Send the pull request from your feature branch to us. Be sure to include a description (as mentioned above in step 5) that lets us know what work you did.
 
 Keep in mind that we like to see one issue addressed per pull request, as this helps keep our git history clean and we can more easily track down issues.
-
