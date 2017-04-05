@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import fetchMock from 'fetch-mock';
 import Preview from '../Preview';
-import ProgressBar from '../ProgressBar';
 import loaders from '../loaders';
 import Logger from '../Logger';
 import Browser from '../Browser';
@@ -84,22 +83,6 @@ describe('lib/Preview', () => {
             stubs.viewer = {
                 destroy: sandbox.stub()
             };
-
-            stubs.progressBar = {
-                destroy: sandbox.stub()
-            };
-        });
-
-        it('should destroy the progress bar if it exists', () => {
-            preview.progressBar = undefined;
-
-            preview.destroy();
-            expect(stubs.progressBar.destroy).to.not.be.called;
-
-            preview.progressBar = stubs.progressBar;
-
-            preview.destroy();
-            expect(preview.progressBar.destroy).to.be.called;
         });
 
         it('should destroy the viewer if it exists', () => {
@@ -699,7 +682,6 @@ describe('lib/Preview', () => {
             stubs.parseOptions = sandbox.stub(preview, 'parseOptions');
             stubs.setup = sandbox.stub(ui, 'setup');
             stubs.showLoadingIndicator = sandbox.stub(ui, 'showLoadingIndicator');
-            stubs.startProgressBar = sandbox.stub(preview, 'startProgressBar');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             stubs.showNavigation = sandbox.stub(ui, 'showNavigation');
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
@@ -721,11 +703,10 @@ describe('lib/Preview', () => {
             expect(stubs.parseOptions).to.be.called;
         });
 
-        it('should setup the container and show the loading indicator and progress bar', () => {
+        it('should setup the container and show the loading indicator', () => {
             preview.loadPreviewWithTokens({});
             expect(stubs.setup).to.be.called;
             expect(stubs.showLoadingIndicator).to.be.called;
-            expect(stubs.startProgressBar).to.be.called;
         });
 
         it('should show navigation', () => {
@@ -1279,7 +1260,6 @@ describe('lib/Preview', () => {
             stubs.emit = sandbox.stub(preview, 'emit');
             stubs.logPreviewEvent = sandbox.stub(preview, 'logPreviewEvent');
             stubs.prefetchNextFiles = sandbox.stub(preview, 'prefetchNextFiles');
-            stubs.finishProgressBar = sandbox.stub(preview, 'finishProgressBar');
 
             stubs.logger = {
                 done: sandbox.stub()
@@ -1431,18 +1411,6 @@ describe('lib/Preview', () => {
 
             preview.finishLoading();
             expect(callPhantomSpy).to.be.called;
-        });
-
-        it('should postload if skipPostload is not true', () => {
-            preview.finishLoading();
-            expect(stubs.finishProgressBar).to.be.called;
-        });
-
-        it('should skip postload if skipPostload is true', () => {
-            preview.finishLoading({
-                endProgress: false
-            });
-            expect(stubs.finishProgressBar).to.not.be.called;
         });
 
         it('should focus the viewer container', () => {
@@ -1739,35 +1707,6 @@ describe('lib/Preview', () => {
                     expect(preview.prefetchedCollection.length).to.equal(PREFETCH_COUNT);
                 });
             });
-        });
-    });
-
-    describe('startProgressBar()', () => {
-        it('should initialize the progress bar and start it', () => {
-            const start = ProgressBar.prototype.start;
-            Object.defineProperty(ProgressBar.prototype, 'start', {
-                value: sandbox.stub()
-            });
-
-            preview.startProgressBar();
-
-            expect(preview.progressBar instanceof ProgressBar).to.be.true;
-            expect(ProgressBar.prototype.start).to.be.called;
-
-            Object.defineProperty(ProgressBar.prototype, 'start', {
-                value: start
-            });
-        });
-    });
-
-    describe('finishProgressBar()', () => {
-        it('should finish the progress bar', () => {
-            preview.startProgressBar();
-            sandbox.stub(preview.progressBar, 'finish');
-
-            preview.finishProgressBar();
-
-            expect(preview.progressBar.finish).to.be.called;
         });
     });
 

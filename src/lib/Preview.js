@@ -9,7 +9,6 @@ import Browser from './Browser';
 import Logger from './Logger';
 import loaderList from './loaders';
 import cache from './Cache';
-import ProgressBar from './ProgressBar';
 import PreviewError from './viewers/error/PreviewError';
 import getTokens from './tokens';
 import {
@@ -143,13 +142,6 @@ class Preview extends EventEmitter {
     loaders = loaderList;
 
     /**
-     * Progress bar instance
-     *
-     * @property {Object}
-     */
-    progressBar;
-
-    /**
      * Logger instance
      *
      * @property {Object}
@@ -219,11 +211,6 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     destroy() {
-        // Cleanup progress bar
-        if (this.progressBar) {
-            this.progressBar.destroy();
-        }
-
         // Destroy viewer
         if (this.viewer && typeof this.viewer.destroy === 'function') {
             this.viewer.destroy();
@@ -631,9 +618,8 @@ class Preview extends EventEmitter {
             this.getGlobalMousemoveHandler()
         );
 
-        // Setup loading UI and progress bar
+        // Setup loading UI
         showLoadingIndicator();
-        this.startProgressBar();
 
         // Update navigation
         showNavigation(this.file.id, this.collection);
@@ -894,9 +880,6 @@ class Preview extends EventEmitter {
                 case 'load':
                     this.finishLoading(data.data);
                     break;
-                case 'progressend':
-                    this.finishProgressBar();
-                    break;
                 default:
                     // This includes 'notification', 'preload' and others
                     this.emit(data.event, data.data);
@@ -964,12 +947,7 @@ class Preview extends EventEmitter {
             }
         }
 
-        // Finish the progress bar unless instructed not to
-        if (data.endProgress !== false) {
-            this.finishProgressBar();
-        }
-
-        // Programmtically focus on the viewer after it loads
+        // Programmatically focus on the viewer after it loads
         if (this.viewer && this.viewer.containerEl) {
             this.viewer.containerEl.focus();
         }
@@ -1174,29 +1152,6 @@ class Preview extends EventEmitter {
             console.error('Error prefetching files');
             /* eslint-enable no-console */
         });
-    }
-
-    /**
-     * Shows and starts a progress bar at the top of the preview.
-     *
-     * @private
-     * @return {void}
-     */
-    startProgressBar() {
-        this.progressBar = new ProgressBar(this.container);
-        this.progressBar.start();
-    }
-
-    /**
-     * Finishes and hides the top progress bar if present.
-     *
-     * @private
-     * @return {void}
-     */
-    finishProgressBar() {
-        if (this.progressBar) {
-            this.progressBar.finish();
-        }
     }
 
     /**

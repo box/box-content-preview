@@ -1063,8 +1063,7 @@ class DocBase extends Base {
         if (!this.loaded) {
             this.loaded = true;
             this.emit('load', {
-                numPages: this.pdfViewer.pagesCount,
-                endProgress: false // Indicate that viewer will end progress later
+                numPages: this.pdfViewer.pagesCount
             });
         }
     }
