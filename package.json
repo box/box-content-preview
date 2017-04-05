@@ -38,6 +38,7 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
+    "executable": "^4.1.0",
     "extract-text-webpack-plugin": "2.1.0",
     "fetch-mock": "^5.9.4",
     "fetch-mock-forwarder": "^1.0.0",
@@ -89,7 +90,8 @@
     "stylelint-config-standard": "^16.0.0",
     "stylelint-order": "^0.4.1",
     "url-loader": "^0.5.8",
-    "webpack": "^2.2.1"
+    "webpack": "^2.2.1",
+    "webpack-shell-plugin": "^0.5.0"
   },
   "scripts": {
     "build": "yarn run clean && yarn run build-rb && yarn run lint && yarn run dev",

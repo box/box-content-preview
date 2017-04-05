@@ -2,6 +2,7 @@ node_modules
 *.swp
 *.iml
 .idea
+build/rsync.sh
 .DS_Store
 npm-debug.log
 reports
