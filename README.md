@@ -251,6 +251,12 @@ Development Setup
 6. Verify your remotes are properly set up `git remote -v`. You should pull updates from the Box repo `upstream` and push changes to your fork `origin`.
 7. Install dependencies `yarn install`
 8. Test your first build! `yarn run build`
+9. To automatically rsync files after a Webpack build, add a build/rsync.json file with a `location` field. This file should look like:
+```
+{
+    "location": "YOUR_DESIRED_RSYNC_LOCATION_HERE"
+}
+```
 
 While Developing
 ----------------
