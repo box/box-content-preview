@@ -844,22 +844,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
     });
 
-    describe('rotateLeft()', () => {
-        it('should set the pdf viewer rotation, update the viewer, and reset the page', () => {
-            docBase.pdfViewer = {
-                currentPageNumber: 1,
-                update: sandbox.stub()
-            };
-            const setPageStub = sandbox.stub(docBase, 'setPage');
-            const rotation = 180;
-
-            docBase.rotateLeft(rotation);
-            expect(setPageStub).to.be.called;
-            expect(docBase.pdfViewer.update).to.be.called;
-            expect(docBase.pdfViewer.pagesRotation).to.equal(rotation);
-        });
-    });
-
     describe('isAnnotatable()', () => {
         beforeEach(() => {
             stubs.getViewerOption = sandbox.stub(docBase, 'getViewerOption');

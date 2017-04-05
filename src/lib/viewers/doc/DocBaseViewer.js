@@ -503,25 +503,6 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Rotates documents by delta degrees
-     *
-     * @param {number} delta - Degrees to rotate
-     * @return {void}
-     */
-    rotateLeft(delta = -90) {
-        const currentPageNum = this.pdfViewer.currentPageNumber;
-
-        // Calculate and set rotation
-        this.pageRotation = this.pageRotation || 0;
-        this.pageRotation = (this.pageRotation + 360 + delta) % 360;
-        this.pdfViewer.pagesRotation = this.pageRotation;
-
-        // Re-render and scroll to appropriate page
-        this.pdfViewer.update();
-        this.setPage(currentPageNum);
-    }
-
-    /**
      * Returns whether or not viewer is annotatable. If an optional type is
      * passed in, we check if that type of annotation is allowed.
      *
