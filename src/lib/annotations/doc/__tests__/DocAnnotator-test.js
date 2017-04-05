@@ -196,6 +196,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         beforeEach(() => {
             stubs.addThread = sandbox.stub(annotator, 'addThreadToMap');
             stubs.setupFunc = AnnotationThread.prototype.setup;
+            stubs.validateThread = sandbox.stub(annotatorUtil, 'validateThreadParams').returns(true);
+            sandbox.stub(annotator, 'handleValidationError');
         });
 
         afterEach(() => {
@@ -206,18 +208,21 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             const thread = annotator.createAnnotationThread([], {}, 'highlight');
             expect(stubs.addThread).to.have.been.called;
             expect(thread instanceof DocHighlightThread).to.be.true;
+            expect(annotator.handleValidationError).to.not.be.called;
         });
 
         it('should create, add highlight comment thread to internal map, and return it', () => {
             const thread = annotator.createAnnotationThread([], {}, 'highlight-comment');
             expect(stubs.addThread).to.have.been.called;
             expect(thread instanceof DocHighlightThread).to.be.true;
+            expect(annotator.handleValidationError).to.not.be.called;
         });
 
         it('should create, add point thread to internal map, and return it', () => {
             const thread = annotator.createAnnotationThread([], {}, 'point');
             expect(stubs.addThread).to.have.been.called;
             expect(thread instanceof DocPointThread).to.be.true;
+            expect(annotator.handleValidationError).to.not.be.called;
         });
 
         it('should create, add highlight thread to internal map with appropriate parameters', () => {
@@ -236,6 +241,15 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(thread.threadID).to.equal(annotation.threadID);
             expect(thread.thread).to.equal(annotation.thread);
             expect(thread instanceof DocHighlightThread).to.be.true;
+            expect(annotator.handleValidationError).to.not.be.called;
+        });
+
+        it('should emit error and return undefined if thread params are invalid', () => {
+            stubs.validateThread.returns(false);
+            sandbox.stub(annotator, 'emit');
+            const thread = annotator.createAnnotationThread([], {}, 'highlight');
+            expect(thread instanceof DocHighlightThread).to.be.false;
+            expect(annotator.handleValidationError).to.be.called;
         });
     });
 

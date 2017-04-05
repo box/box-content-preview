@@ -2,6 +2,15 @@ import { CLASS_ACTIVE, CLASS_HIDDEN, CLASS_INVISIBLE } from '../constants';
 import * as constants from './annotationConstants';
 
 const AVATAR_COLOR_COUNT = 9; // 9 colors defined in Box React UI avatar code
+const THREAD_PARAMS = [
+    'annotatedElement',
+    'annotations',
+    'annotationService',
+    'fileVersionID',
+    'locale',
+    'location',
+    'type'
+];
 
 //------------------------------------------------------------------------------
 // DOM Utils
@@ -298,4 +307,18 @@ export function repositionCaret(dialogEl, dialogX, highlightDialogWidth, browser
  */
 export function isPending(threadState) {
     return (constants.PENDING_STATES.indexOf(threadState) > -1);
+}
+
+/**
+ * Checks whether annotation thread is valid by checking whether each property
+ * in THREAD_PARAMS on the specified file object is defined.
+ *
+ * @param {Object} thread - Annotation thread params to check
+ * @return {boolean} Whether or not annotation thread has all the required params
+ */
+export function validateThreadParams(thread) {
+    if (thread) {
+        return THREAD_PARAMS.every((param) => typeof thread[param] !== 'undefined');
+    }
+    return false;
 }
