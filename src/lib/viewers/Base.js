@@ -75,6 +75,7 @@ class Base extends EventEmitter {
     destroy() {
         if (this.repStatuses) {
             this.repStatuses.forEach((repStatus) => {
+                repStatus.removeListener('conversionpending', this.resetLoadTimeout);
                 repStatus.destroy();
             });
         }
@@ -115,10 +116,10 @@ class Base extends EventEmitter {
      * Sets a timeout for loading.
      *
      * @protected
-     * @emits error
+     * @emits Error
      * @return {void}
      */
-    resetLoadTimeout() {
+    resetLoadTimeout = () => {
         clearTimeout(this.loadTimeoutId);
         /* istanbul ignore next */
         this.loadTimeoutId = setTimeout(() => {
@@ -459,6 +460,9 @@ class Base extends EventEmitter {
             sharedLinkPassword,
             logger: representation ? null : logger // Do not log to main preview status if rep is passed in
         });
+
+        // Don't time out while conversion is pending
+        repStatus.addListener('conversionpending', this.resetLoadTimeout);
 
         this.repStatuses.push(repStatus);
         return repStatus;
