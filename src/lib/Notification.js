@@ -61,12 +61,14 @@ class Notification {
     }
 
     /**
-     * Hides the notification message.
+     * Hides the notification message. Does nothing if the notification is already hidden.
      *
      * @return {void}
      */
     hide() {
-        this.notificationEl.classList.add(CLASS_HIDDEN);
+        if (this.notificationEl) {
+            this.notificationEl.classList.add(CLASS_HIDDEN);
+        }
     }
 
     /**
