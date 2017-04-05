@@ -75,22 +75,28 @@ class ImageAnnotator extends Annotator {
      * @return {AnnotationThread} Created annotation thread
      */
     createAnnotationThread(annotations, location, type) {
+        let thread;
         const threadParams = {
             annotatedElement: this._annotatedElement,
             annotations,
             annotationService: this._annotationService,
             fileVersionID: this._fileVersionID,
+            locale: this._locale,
             location,
-            type,
-            locale: this.locale
+            type
         };
+
+        if (!annotatorUtil.validateThreadParams(threadParams)) {
+            this.handleValidationError();
+            return thread;
+        }
 
         // Set existing thread ID if created with annotations
         if (annotations.length > 0) {
             threadParams.threadID = annotations[0].threadID;
         }
 
-        const thread = new ImagePointThread(threadParams);
+        thread = new ImagePointThread(threadParams);
         this.addThreadToMap(thread);
         return thread;
     }
