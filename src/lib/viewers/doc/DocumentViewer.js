@@ -32,6 +32,7 @@ class DocumentViewer extends DocBaseViewer {
         this.preloader = new DocPreloader();
         this.preloader.addListener('preload', () => {
             this.options.logger.setPreloaded();
+            this.resetLoadTimeout(); // Some content is visible - reset load timeout
         });
     }
 

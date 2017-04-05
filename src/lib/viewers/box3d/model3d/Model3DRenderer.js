@@ -145,7 +145,7 @@ class Model3DRenderer extends Box3DRenderer {
         renderModes.setAttribute('shapeTexture', 'MAT_CAP_TEX');
 
         return this.box3d.addRemoteEntities(assetUrl)
-            .then((entities) => this.setupScene(entities), () => this.onUnsupportedRepresentation());
+            .then(() => this.setupScene(), () => this.onUnsupportedRepresentation());
     }
 
     /**
@@ -153,10 +153,9 @@ class Model3DRenderer extends Box3DRenderer {
      * create the scene with.
      *
      * @private
-     * @param {Box3DEntity[]} entities - A list of Box3DEntities to add to the scene and render.
      * @return {void}
      */
-    setupScene(entities) {
+    setupScene() {
         const scene = this.getScene();
         if (!scene) {
             return;
@@ -166,14 +165,6 @@ class Model3DRenderer extends Box3DRenderer {
         this.createPrefabInstances();
         this.addHelpersToScene();
         scene.when('load', () => this.onSceneLoad());
-
-        // Make sure we add ALL assets to the asset list to destroy
-        entities.forEach((entity) => {
-            if (entity.id === entity.parentAssetId) {
-                const asset = this.box3d.getAssetById(entity.id);
-                this.assets.push(asset);
-            }
-        });
     }
 
     /**
@@ -311,15 +302,13 @@ class Model3DRenderer extends Box3DRenderer {
 
         // Set the origin point (so that we always point at the center of the model when the camera reloads)
         orbitController.originPoint.copy(center);
-        orbitController.setPivotPosition(center);
+        orbitController.reset();
         const distance = PREVIEW_CAMERA_ORBIT_DISTANCE_FACTOR * Math.max(Math.max(maxDimension.x, maxDimension.y), maxDimension.z);
         orbitController.setOrbitDistance(distance);
     }
 
     /** @inheritdoc */
     onSceneLoad() {
-        this.reset();
-
         // Reset the skeleton visualization.
         this.resetSkeletons();
 
@@ -536,18 +525,6 @@ class Model3DRenderer extends Box3DRenderer {
      */
     cleanupScene() {
         this.cleanupHelpers();
-
-        if (this.instance) {
-            this.instance.destroy();
-            this.instance = null;
-        }
-
-        this.assets.forEach((asset) => {
-            asset.destroy();
-        });
-
-        this.assets.length = 0;
-
         this.resetSkeletons();
     }
 
@@ -589,29 +566,20 @@ class Model3DRenderer extends Box3DRenderer {
             return;
         }
 
-        const aspect = this.getAspect();
-
         switch (projection) {
             case CAMERA_PROJECTION_ORTHOGRAPHIC:
-                camera.setProperties({
-                    top: 0.5,
-                    bottom: -0.5,
-                    left: -0.5 * aspect,
-                    right: 0.5 * aspect,
-                    cameraType: 'orthographic'
-                });
+                camera.setProperty('cameraType', 'orthographic');
                 break;
 
             case CAMERA_PROJECTION_PERSPECTIVE:
-                camera.setProperties({
-                    aspect,
-                    cameraType: 'perspective'
-                });
+                camera.setProperty('cameraType', 'perspective');
                 break;
 
             default:
                 break;
         }
+
+        this.resetView();
     }
 
     /**

@@ -1,5 +1,26 @@
 # Change Log
 
+## [v0.115.0](https://github.com/box/box-content-preview/tree/v0.115.0) (2017-04-05)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.114.0...v0.115.0)
+
+**Merged pull requests:**
+
+- Chore: Add support for build/rsync.json for local development [\#49](https://github.com/box/box-content-preview/pull/49) ([tonyjin](https://github.com/tonyjin))
+- Update: Don't time out during conversion [\#46](https://github.com/box/box-content-preview/pull/46) ([tonyjin](https://github.com/tonyjin))
+- Chore: Minify third party CSS with cssnano [\#45](https://github.com/box/box-content-preview/pull/45) ([tonyjin](https://github.com/tonyjin))
+- Chore: Upgrading PDF.js to 1.7.401 [\#44](https://github.com/box/box-content-preview/pull/44) ([jeremypress](https://github.com/jeremypress))
+- Build: Updating upgrade\_pdfjs script [\#43](https://github.com/box/box-content-preview/pull/43) ([jeremypress](https://github.com/jeremypress))
+- Update Translations [\#40](https://github.com/box/box-content-preview/pull/40) ([boxmoji](https://github.com/boxmoji))
+- Chore: Fixing link in README [\#38](https://github.com/box/box-content-preview/pull/38) ([pramodsum](https://github.com/pramodsum))
+- Build: Adding commit linting [\#37](https://github.com/box/box-content-preview/pull/37) ([jeremypress](https://github.com/jeremypress))
+- Fix: replacing .keynote extension with .key [\#36](https://github.com/box/box-content-preview/pull/36) ([jeremypress](https://github.com/jeremypress))
+- Chore: isMobile refactor [\#35](https://github.com/box/box-content-preview/pull/35) ([jeremypress](https://github.com/jeremypress))
+- Chore: Adding browser canDownload check [\#34](https://github.com/box/box-content-preview/pull/34) ([jeremypress](https://github.com/jeremypress))
+- Chore: Refactor filmstripShowHandler for testability [\#33](https://github.com/box/box-content-preview/pull/33) ([bhh1988](https://github.com/bhh1988))
+- Chore: Continuing to fix release script [\#32](https://github.com/box/box-content-preview/pull/32) ([tonyjin](https://github.com/tonyjin))
+- Fix: Validating annotation thread params [\#17](https://github.com/box/box-content-preview/pull/17) ([pramodsum](https://github.com/pramodsum))
+- Update: Updating box ui colors [\#14](https://github.com/box/box-content-preview/pull/14) ([priyajeet](https://github.com/priyajeet))
+
 ## [v0.114.0](https://github.com/box/box-content-preview/tree/v0.114.0) (2017-03-29)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.113.0...v0.114.0)
 

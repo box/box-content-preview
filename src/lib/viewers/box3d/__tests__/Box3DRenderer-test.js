@@ -122,17 +122,6 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
         });
     });
 
-    describe('getAspect()', () => {
-        it('should return aspect ratio of container element', () => {
-            renderer.containerEl = {
-                clientWidth: 5,
-                clientHeight: 10
-            };
-
-            expect(renderer.getAspect()).to.equal(0.5);
-        });
-    });
-
     describe('getScene()', () => {
         it('should return the scene prefab that exists in the Box3D runtime', () => {
             renderer.box3d = {

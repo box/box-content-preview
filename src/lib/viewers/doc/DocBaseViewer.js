@@ -25,7 +25,7 @@ import { JS, CSS } from './docAssets';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
-const LOAD_TIMEOUT_MS = 300000; // 5 min timeout
+const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const MAX_SCALE = 10.0;

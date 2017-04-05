@@ -186,9 +186,8 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         });
 
         it('should setup the scene via setupScene() if it can successfully load the model', (done) => {
-            const entities = [];
-            renderMock.expects('setupScene').withArgs(entities);
-            sandbox.mock(renderer.box3d).expects('addRemoteEntities').returns(Promise.resolve(entities));
+            renderMock.expects('setupScene').called;
+            sandbox.mock(renderer.box3d).expects('addRemoteEntities').returns(Promise.resolve());
             renderer.loadBox3dFile('').then(() => done());
         });
 
@@ -241,39 +240,6 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             sandbox.stub(renderer, 'getScene').returns(scene);
             sandbox.mock(scene).expects('when').withArgs('load');
             renderer.setupScene([]);
-        });
-
-        it('should track ONLY the asset entities added to the scene, for cleanup later', () => {
-            const one = {
-                id: '1',
-                parentAssetId: '1',
-                destroy: () => {}
-            };
-            const two = {
-                id: '2',
-                parentAssetId: '2',
-                destroy: () => {}
-            };
-            const fail = {
-                id: '3',
-                parentAssetId: 'another_entity',
-                destroy: () => {}
-            };
-            const entities = [one, two, fail];
-            sandbox.stub(renderer.box3d, 'getAssetById', (id) => {
-                switch (id) {
-                    case '1':
-                        return one;
-                    case '2':
-                        return two;
-                    default:
-                        return undefined;
-                }
-            });
-            sandbox.stub(renderer, 'getScene').returns(scene);
-            renderer.setupScene(entities);
-
-            expect(renderer.assets).to.deep.equal([one, two]);
         });
     });
 
@@ -532,8 +498,8 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             sandbox.stub(THREE.Vector3.prototype, 'applyMatrix4');
             orbitComp = {
                 originPoint: new THREE.Vector3(),
-                setPivotPosition: () => {},
-                setOrbitDistance: () => {}
+                setOrbitDistance: () => {},
+                reset: () => {}
             };
             camera = {
                 getComponentByScriptId: () => {}
@@ -586,11 +552,9 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.resetView();
         });
 
-        it('should set the pivot point of the orbitController component to the center of the model', () => {
-            const center = new THREE.Vector3(9, 9, 9);
+        it('should call the reset method of the orbitController component', () => {
             sandbox.mock(camera).expects('getComponentByScriptId').returns(orbitComp);
-            sandbox.mock(renderer.instance).expects('getCenter').returns(center);
-            sandbox.mock(orbitComp).expects('setPivotPosition').withArgs(center);
+            sandbox.mock(orbitComp).expects('reset');
             renderer.resetView();
         });
 
@@ -599,7 +563,6 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             sandbox.mock(orbitComp).expects('setOrbitDistance');
             sandbox.mock(camera).expects('getComponentByScriptId').returns(orbitComp);
             sandbox.mock(renderer.instance).expects('getCenter').returns(center);
-            sandbox.mock(orbitComp).expects('setPivotPosition').withArgs(center);
             renderer.resetView();
         });
     });
@@ -630,12 +593,6 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             animations.length = 0;
             images.length = 0;
             videos.length = 0;
-        });
-
-        it('should reset the scene via reset()', () => {
-            sandbox.stub(Promise, 'all').returns({ then: () => {} });
-            renderMock.expects('reset');
-            renderer.onSceneLoad();
         });
 
         it('should collect all assets that are loading', () => {
@@ -1104,25 +1061,6 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.cleanupScene();
         });
 
-        it('should destroy the model instance if it exists', () => {
-            const inst = {
-                destroy: sandbox.stub()
-            };
-            renderer.instance = inst;
-            renderer.cleanupScene();
-            expect(inst.destroy).to.be.called;
-            expect(renderer.instance).to.not.exist;
-        });
-
-        it('should destroy all assets that were tracked', () => {
-            const asset = {
-                destroy: sandbox.stub()
-            };
-            renderer.assets.push(asset);
-            renderer.cleanupScene();
-            expect(asset.destroy).to.be.called;
-        });
-
         it('should invoke resetSkeletons()', () => {
             sandbox.mock(renderer).expects('resetSkeletons');
             renderer.cleanupScene();
@@ -1159,32 +1097,22 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         let camera;
         beforeEach(() => {
             camera = {
-                setProperties: () => {}
+                setProperty: () => {},
+                getProperty: () => { return 'perspective'; }
             };
         });
 
-        it('should do nothing if no camera is present', () => {
+        it('should not throw error if no camera is present', () => {
             const mock = sandbox.mock(renderer);
-            mock.expects('getAspect').never();
             mock.expects('getCamera').returns(undefined);
-            renderer.setCameraProjection(CAMERA_PROJECTION_PERSPECTIVE);
-        });
-
-        it('should get the aspect ratio of the camera for operations', () => {
-            const mock = sandbox.mock(renderer);
-            mock.expects('getAspect');
-            mock.expects('getCamera').returns(camera);
-            renderer.setCameraProjection(CAMERA_PROJECTION_PERSPECTIVE);
+            expect(renderer.setCameraProjection(CAMERA_PROJECTION_PERSPECTIVE)).to.not.throw;
         });
 
         it('should set the perspective properties of the camera if perspective mode is selected', (done) => {
             sandbox.stub(renderer, 'getCamera').returns(camera);
-            sandbox.stub(renderer, 'getAspect').returns(2);
-            sandbox.stub(camera, 'setProperties', (props) => {
-                expect(props).to.deep.equal({
-                    aspect: 2,
-                    cameraType: 'perspective'
-                });
+            sandbox.stub(camera, 'setProperty', (prop, value) => {
+                expect(prop).to.equal('cameraType');
+                expect(value).to.equal('perspective');
                 done();
             });
             renderer.setCameraProjection(CAMERA_PROJECTION_PERSPECTIVE);
@@ -1192,15 +1120,9 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
         it('should set the orthographic properties of the camera if ortho mode is selected', (done) => {
             sandbox.stub(renderer, 'getCamera').returns(camera);
-            sandbox.stub(renderer, 'getAspect').returns(2);
-            sandbox.stub(camera, 'setProperties', (props) => {
-                expect(props).to.deep.equal({
-                    top: 0.5,
-                    bottom: -0.5,
-                    left: -1,
-                    right: 1,
-                    cameraType: 'orthographic'
-                });
+            sandbox.stub(camera, 'setProperty', (prop, value) => {
+                expect(prop).to.equal('cameraType');
+                expect(value).to.equal('orthographic');
                 done();
             });
             renderer.setCameraProjection(CAMERA_PROJECTION_ORTHOGRAPHIC);
@@ -1208,8 +1130,8 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
         it('should do nothing for unrecognized projection type', () => {
             sandbox.stub(renderer, 'getCamera').returns(camera);
-            sandbox.stub(renderer, 'getAspect').returns(2);
-            sandbox.mock(camera).expects('setProperties').never();
+            sandbox.stub(renderer, 'resetView');
+            sandbox.mock(camera).expects('setProperty').never();
             renderer.setCameraProjection('weak_perspective_projection');
         });
     });

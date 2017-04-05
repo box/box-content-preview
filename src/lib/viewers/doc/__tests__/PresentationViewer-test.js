@@ -64,9 +64,22 @@ describe('lib/viewers/doc/PresentationViewer', () => {
     });
 
     describe('setup()', () => {
-        it('should add the document class to the doc element and set up preloader', () => {
+        it('should add the presentation class to the presentation element and set up preloader', () => {
             expect(presentation.docEl).to.have.class('bp-doc-presentation');
             expect(presentation.preloader).to.be.instanceof(PresentationPreloader);
+        });
+
+        it('should set logger to be preloaded and reset load timeout when preload event is received', () => {
+            presentation.options.logger = {
+                setPreloaded: sandbox.stub()
+            };
+            stubs.setPreloaded = presentation.options.logger.setPreloaded;
+            stubs.resetLoadTimeout = sandbox.stub(presentation, 'resetLoadTimeout');
+
+            presentation.preloader.emit('preload');
+
+            expect(stubs.setPreloaded).to.be.called;
+            expect(stubs.resetLoadTimeout).to.be.called;
         });
     });
 

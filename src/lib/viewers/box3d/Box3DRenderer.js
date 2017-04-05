@@ -45,9 +45,6 @@ class Box3DRenderer extends EventEmitter {
         super();
 
         this.containerEl = containerEl;
-        // Instances and assets created, that are not scene default entities, are
-        // tracked for cleanup during recycling of box3d runtime
-        this.assets = [];
         this.vrEnabled = false;
         this.vrGamepads = [];
         this.box3d = null;
@@ -123,18 +120,6 @@ class Box3DRenderer extends EventEmitter {
      */
     getCamera() {
         return this.box3d ? this.box3d.getObjectById('CAMERA_ID') : null;
-    }
-
-    /**
-     * Get the current aspect ratio of the preview area.
-     *
-     * @private
-     * @return {number} Aspect ratio of the preview area
-     */
-    getAspect() {
-        const width = this.containerEl.clientWidth;
-        const height = this.containerEl.clientHeight;
-        return width / height;
     }
 
     /**
