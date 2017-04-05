@@ -10,6 +10,15 @@ const UglifyJsPlugin = require('webpack').optimize.UglifyJsPlugin;
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const BannerPlugin = require('webpack').BannerPlugin;
 const version = isRelease ? require('../package.json').version : 'dev';
+const fs = require('fs');
+
+let rsyncLocation = '';
+if (fs.existsSync('build/rsync.json')) {
+    /* eslint-disable */
+    const rsyncConf = require('./rsync.json');
+    rsyncLocation = rsyncConf.location;
+    /* eslint-enable */
+}
 
 const lib = path.resolve('src/lib');
 const thirdParty = path.resolve('src/third-party');
@@ -58,13 +67,13 @@ function updateConfig(conf, language, index) {
         config.plugins.push(new RsyncPlugin(thirdParty, staticFolder));
     }
 
-    // If this is not a release and not CI build
-    //      add the Rsync plugin for local development where copying to dev VM is needed.
-    //      change source maps to be inline
     if (isDev) {
-        /* eslint-disable no-template-curly-in-string */
-        config.plugins.push(new RsyncPlugin('dist/.', '${USER}@${USER}.dev.box.net:/box/www/assets/content-experience'));
-        /* eslint-enable no-template-curly-in-string */
+        // If build/rsync.json exists, rsync bundled files to specified directory
+        if (rsyncLocation) {
+            config.plugins.push(new RsyncPlugin('dist/.', rsyncLocation));
+        }
+
+        // Add inline source map
         config.devtool = 'inline-source-map';
     }
 
