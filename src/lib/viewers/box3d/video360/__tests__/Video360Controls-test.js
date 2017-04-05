@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Video360Controls from '../Video360Controls';
 import { ICON_3D_VR } from '../../../../icons/icons';
-import { EVENT_TOGGLE_VR } from '../../Box3dConstants';
+import { EVENT_TOGGLE_VR } from '../../box3DConstants';
 
 const sandbox = sinon.sandbox.create();
 

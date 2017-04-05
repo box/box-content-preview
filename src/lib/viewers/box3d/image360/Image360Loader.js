@@ -1,12 +1,12 @@
 import Base360Loader from '../Base360Loader';
 import Browser from '../../../Browser';
 import { replacePlaceholders } from '../../../util';
-import Image360 from './Image360';
+import Image360Viewer from './Image360Viewer';
 
 const VIEWERS = [
     {
         NAME: 'Image360',
-        CONSTRUCTOR: Image360,
+        CONSTRUCTOR: Image360Viewer,
         REP: '3d',
         EXT: ['jpg', 'jpeg', 'png', 'ai', 'bmp', 'dcm', 'eps', 'gif', 'ps', 'psd', 'svg', 'svs', 'tga', 'tif', 'tiff']
     }

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import DocLoader from '../DocLoader';
-import Doc from '../Document';
+import DocumentViewer from '../DocumentViewer';
 
 const sandbox = sinon.sandbox.create();
 
@@ -33,7 +33,7 @@ describe('lib/viewers/doc/DocLoader', () => {
 
             viewer = {
                 NAME: 'Document',
-                CONSTRUCTOR: Doc,
+                CONSTRUCTOR: DocumentViewer,
                 REP: 'pdf',
                 EXT: ['docx']
             };

@@ -1,6 +1,6 @@
 import AssetLoader from '../AssetLoader';
-import Image from './Image';
-import MultiImage from './MultiImage';
+import ImageViewer from './ImageViewer';
+import MultiImageViewer from './MultiImageViewer';
 import { ORIGINAL_REP_NAME } from '../../constants';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
@@ -9,27 +9,27 @@ import { ORIGINAL_REP_NAME } from '../../constants';
 const VIEWERS = [
     {
         NAME: 'Image',
-        CONSTRUCTOR: Image,
+        CONSTRUCTOR: ImageViewer,
         REP: ORIGINAL_REP_NAME,
         EXT: ['svg', 'gif']
     },
     {
         NAME: 'MultiImage',
-        CONSTRUCTOR: MultiImage,
+        CONSTRUCTOR: MultiImageViewer,
         REP: 'png',
         EXT: ['tif', 'tiff'],
         ASSET: '{page}.png'
     },
     {
         NAME: 'Image',
-        CONSTRUCTOR: Image,
+        CONSTRUCTOR: ImageViewer,
         REP: 'jpg',
         EXT: ['jpeg', 'jpg'],
         ASSET: '1.jpg'
     },
     {
         NAME: 'Image',
-        CONSTRUCTOR: Image,
+        CONSTRUCTOR: ImageViewer,
         REP: 'png',
         EXT: ['ai', 'bmp', 'dcm', 'eps', 'gif', 'png', 'ps', 'psd', 'svs', 'tga', 'tif', 'tiff'],
         ASSET: '1.png'

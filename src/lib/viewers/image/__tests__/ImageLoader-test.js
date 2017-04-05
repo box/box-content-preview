@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import ImageLoader from '../ImageLoader';
-import Image from '../Image';
+import ImageViewer from '../ImageViewer';
 
 const sandbox = sinon.sandbox.create();
 
@@ -34,7 +34,7 @@ describe('lib/viewers/image/ImageLoader', () => {
 
             viewer = {
                 NAME: 'Image',
-                CONSTRUCTOR: Image,
+                CONSTRUCTOR: ImageViewer,
                 REP: 'jpg',
                 EXT: ['jpg']
             };

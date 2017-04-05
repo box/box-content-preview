@@ -1,5 +1,5 @@
 import AssetLoader from '../AssetLoader';
-import Office from './Office';
+import OfficeViewer from './OfficeViewer';
 import { checkPermission } from '../../file';
 import { ORIGINAL_REP_NAME, PERMISSION_DOWNLOAD } from '../../constants';
 
@@ -10,7 +10,7 @@ const OFFICE_VIEWER_NAME = 'Office';
 const VIEWERS = [
     {
         NAME: 'Office',
-        CONSTRUCTOR: Office,
+        CONSTRUCTOR: OfficeViewer,
         REP: ORIGINAL_REP_NAME,
         EXT: ['xlsx']
     }

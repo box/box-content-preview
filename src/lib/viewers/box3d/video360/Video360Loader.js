@@ -1,7 +1,7 @@
 import Base360Loader from '../Base360Loader';
 import Browser from '../../../Browser';
 import { replacePlaceholders } from '../../../util';
-import Video360 from './Video360';
+import Video360Viewer from './Video360Viewer';
 
 const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'mts', 'qt', 'wmv'];
 const BROWSERS_SUPPORTED = ['Chrome', 'Edge', 'Firefox', 'Opera'];
@@ -9,7 +9,7 @@ const BROWSERS_SUPPORTED = ['Chrome', 'Edge', 'Firefox', 'Opera'];
 const VIEWERS = [
     {
         NAME: 'Video360',
-        CONSTRUCTOR: Video360,
+        CONSTRUCTOR: Video360Viewer,
         REP: 'dash',
         EXT: VIDEO_FORMATS
     }

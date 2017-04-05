@@ -1,12 +1,12 @@
 import AssetLoader from '../AssetLoader';
-import IFrame from './IFrame';
+import IFrameViewer from './IFrameViewer';
 import { ORIGINAL_REP_NAME } from '../../constants';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 const VIEWERS = [
     {
         NAME: 'IFrame',
-        CONSTRUCTOR: IFrame,
+        CONSTRUCTOR: IFrameViewer,
         REP: ORIGINAL_REP_NAME,
         EXT: ['boxnote', 'boxdicom']
     }

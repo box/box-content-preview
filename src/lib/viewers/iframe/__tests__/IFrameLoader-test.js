@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import IFrameLoader from '../IFrameLoader';
-import IFrame from '../IFrame';
+import IFrameViewer from '../IFrameViewer';
 
 const sandbox = sinon.sandbox.create();
 
@@ -13,7 +13,7 @@ describe('lib/viewers/iframe/IFrameLoader', () => {
         const iframeViewer = IFrameLoader.viewers[0];
         expect(iframeViewer).to.deep.equal({
             NAME: 'IFrame',
-            CONSTRUCTOR: IFrame,
+            CONSTRUCTOR: IFrameViewer,
             REP: 'ORIGINAL',
             EXT: ['boxnote', 'boxdicom']
         });
