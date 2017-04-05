@@ -20,7 +20,7 @@ import {
     ICON_PRINT_CHECKMARK
 } from '../../../icons/icons';
 
-const LOAD_TIMEOUT_MS = 300000; // 5 min timeout
+const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const DEFAULT_SCALE_DELTA = 1.1;

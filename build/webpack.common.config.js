@@ -20,7 +20,7 @@ module.exports = (language) => {
             rules: [
                 {
                     test: /\.js$/,
-                    loader: 'babel-loader',
+                    use: 'babel-loader',
                     exclude: [
                         path.resolve('src/third-party'),
                         path.resolve('node_modules')
@@ -29,8 +29,8 @@ module.exports = (language) => {
                 {
                     test: /\.s?css$/,
                     loader: ExtractTextPlugin.extract({
-                        fallbackLoader: 'style-loader',
-                        loader: [
+                        fallback: 'style-loader',
+                        use: [
                             {
                                 loader: 'css-loader',
                                 options: {

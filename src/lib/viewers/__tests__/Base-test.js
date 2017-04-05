@@ -250,9 +250,12 @@ describe('lib/viewers/Base', () => {
     describe('destroy()', () => {
         it('should clean up rep statuses', () => {
             const destroyMock = sandbox.mock().twice();
+            const removeListenerMock = sandbox.mock().twice();
             base.repStatuses = [{
+                removeListener: removeListenerMock,
                 destroy: destroyMock
             }, {
+                removeListener: removeListenerMock,
                 destroy: destroyMock
             }];
 

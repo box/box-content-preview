@@ -130,9 +130,12 @@ describe('lib/RepStatus', () => {
                 setUnConverted: () => {}
             };
             sandbox.mock(repStatus.logger).expects('setUnConverted');
+            sandbox.stub(repStatus, 'emit');
             repStatus.representation.status.state = 'pending';
 
             repStatus.handleResponse();
+
+            expect(repStatus.emit).to.be.calledWith('conversionpending');
         });
 
         it('should update status after a timeout', () => {
