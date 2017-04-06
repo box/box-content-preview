@@ -280,6 +280,7 @@ For more script commands see `package.json`. Test coverage reports are available
 ### Config files
 
 * .babelrc - https://babeljs.io/docs/usage/babelrc/
+* .conventional-changelog-lintrc - https://github.com/marionebl/conventional-changelog-lint
 * .editorconfig - http://editorconfig.org/
 * .eslintignore - http://eslint.org/docs/user-guide/configuring#ignoring-files-and-directories
 * .eslintrc - http://eslint.org/docs/user-guide/configuring
