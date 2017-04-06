@@ -31,7 +31,7 @@ class Model3DLoader extends AssetLoader {
     determineViewer(file, disabledViewers = []) {
         const viewer = super.determineViewer(file, disabledViewers);
 
-        if (!Browser.supportsModel3D()) {
+        if (viewer && !Browser.supportsModel3D()) {
             const message = replacePlaceholders(__('error_unsupported'), [__('3d_models')]);
             throw new Error(message);
         }
