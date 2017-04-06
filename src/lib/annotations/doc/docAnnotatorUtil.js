@@ -1,6 +1,7 @@
 import * as annotatorUtil from '../annotatorUtil';
 
 const PREVIEW_PRESENTATION_CLASS = 'bp-doc-presentation';
+const CLASS_ANNOTATION_TEXT_HIGHLIGHTED = 'bp-is-text-highlighted';
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 const HEIGHT_PADDING = 30;
@@ -75,6 +76,22 @@ export function hasActiveDialog(annotatedEl) {
     const highlightDialogEl = annotatedEl.querySelector('.bp-highlight-dialog:not(.bp-is-hidden)');
 
     return !!(commentsDialogEl || highlightDialogEl);
+}
+
+/**
+ * Checks if there is a pending highlight annotation that is currently active in the annotated document
+ *
+ * @param {HTMLElement} annotatedEl - Annotated document
+ * @return {boolean} Whether or not a pending highlight dialog is active
+ * @private
+ */
+export function hasActivePendingDialog(annotatedEl) {
+    const highlightDialogEl = annotatedEl.querySelector('.bp-highlight-dialog:not(.bp-is-hidden)');
+
+    if (highlightDialogEl) {
+        return !highlightDialogEl.classList.contains(CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+    }
+    return false;
 }
 
 /**

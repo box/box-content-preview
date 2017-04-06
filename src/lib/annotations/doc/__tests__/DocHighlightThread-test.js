@@ -336,6 +336,16 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
     });
 
     describe('onMousemove()', () => {
+        it('should do nothing if a new highlight annotation is in a pending state', () => {
+            sandbox.stub(docAnnotatorUtil, 'hasActivePendingDialog').returns(true);
+            sandbox.stub(docAnnotatorUtil, 'isInDialog');
+
+            const result = highlightThread.onMousemove({});
+
+            expect(result).to.be.false;
+            expect(docAnnotatorUtil.isInDialog).to.not.be.called;
+        });
+
         it('should delay drawing highlight if mouse is hovering over a highlight dialog and not pending comment', () => {
             sandbox.stub(highlightThread, 'getPageEl').returns(highlightThread._annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(true);

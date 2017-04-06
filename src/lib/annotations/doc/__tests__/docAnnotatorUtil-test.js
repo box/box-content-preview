@@ -4,6 +4,7 @@ import {
     getPageElAndPageNumber,
     isInDialog,
     hasActiveDialog,
+    hasActivePendingDialog,
     fitDialogHeightInPage,
     isPointInPolyOpt,
     isSelectionPresent,
@@ -87,7 +88,7 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
             expect(result).to.be.false;
         });
 
-        it('should return true if an annotion dialog is open', () => {
+        it('should return true if an annotation dialog is open', () => {
             const docEl = document.querySelector('.annotatedElement');
             const currDialogEl = document.querySelector(DIALOG_CLASS);
             currDialogEl.classList.add('bp-is-hidden');
@@ -97,6 +98,39 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
             docEl.appendChild(openDialogEl);
 
             const result = hasActiveDialog(document);
+            expect(result).to.be.true;
+        });
+    });
+
+    describe('hasActivePendingDialog()', () => {
+        it('should return false if no annotation dialog is open', () => {
+            const currDialogEl = document.querySelector(DIALOG_CLASS);
+            currDialogEl.classList.add('bp-is-hidden');
+            const result = hasActivePendingDialog(document);
+            expect(result).to.be.false;
+        });
+
+        it('should return false if active annotation dialog is not pending', () => {
+            const docEl = document.querySelector('.annotatedElement');
+            const openDialogEl = document.createElement('div');
+            openDialogEl.classList.add('bp-highlight-dialog');
+            openDialogEl.classList.add('bp-is-text-highlighted');
+            docEl.appendChild(openDialogEl);
+
+            const result = hasActivePendingDialog(document);
+            expect(result).to.be.false;
+        });
+
+        it('should return true if a pending annotation dialog is open', () => {
+            const docEl = document.querySelector('.annotatedElement');
+            const currDialogEl = document.querySelector(DIALOG_CLASS);
+            currDialogEl.classList.add('bp-is-hidden');
+
+            const openDialogEl = document.createElement('div');
+            openDialogEl.classList.add('bp-highlight-dialog');
+            docEl.appendChild(openDialogEl);
+
+            const result = hasActivePendingDialog(document);
             expect(result).to.be.true;
         });
     });
