@@ -49,7 +49,7 @@ update_changelog() {
     echo "Updating CHANGELOG.md"
     echo "----------------------------------------------------"
 
-    if github_changelog_generator box/box-content-preview --future-release v$VERSION; then
+    if conventional-changelog -i CHANGELOG.md -s -p eslint; then
         echo "----------------------------------------------------"
         echo "Updated CHANGELOG successfully"
         echo "----------------------------------------------------"
