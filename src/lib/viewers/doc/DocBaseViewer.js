@@ -229,7 +229,12 @@ class DocBaseViewer extends BaseViewer {
             pdfViewer: this.pdfViewer
         });
         this.pdfViewer.setFindController(this.findController);
-        this.findBar = new DocFindBar(this.findBarEl, this.findController);
+
+        // Only initialize the find bar if the user has download permissions on
+        // the file. Users without download permissions shouldn't be able to
+        // interact with the text layer
+        const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
+        this.findBar = new DocFindBar(this.findBarEl, this.findController, canDownload);
     }
 
     /**

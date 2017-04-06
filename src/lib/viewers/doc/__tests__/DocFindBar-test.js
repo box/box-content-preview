@@ -41,7 +41,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
             pdfViewer
         });
 
-        docFindBar = new DocFindBar(findBarEl, findController);
+        docFindBar = new DocFindBar(findBarEl, findController, true);
     });
 
     afterEach(() => {
@@ -64,6 +64,7 @@ describe('lib/viewers/doc/DocFindBar', () => {
             expect(docFindBar.bar).to.equal(findBarEl);
             expect(docFindBar.findController).to.equal(findController);
             expect(docFindBar.currentMatch).to.equal(0);
+            expect(docFindBar.canDownload).to.be.true;
         });
 
         it('should override find controller methods', () => {
@@ -298,6 +299,15 @@ describe('lib/viewers/doc/DocFindBar', () => {
                 stopPropagation: sandbox.stub()
             };
             stubs.close = sandbox.stub(docFindBar, 'close');
+        });
+
+        it('should prevent default but not open the find bar if downloads are disabled', () => {
+            docFindBar.canDownload = false;
+            stubs.decodeKeydown.returns('meta+f');
+
+            docFindBar.displayFindBarHandler(stubs.event);
+            expect(stubs.open).to.not.be.called;
+            expect(stubs.event.preventDefault).to.be.called;
         });
 
         it('should open and prevent default if meta+f is entered', () => {

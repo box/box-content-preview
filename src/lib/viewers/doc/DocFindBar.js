@@ -27,13 +27,14 @@ class DocFindBar extends EventEmitter {
      * @param  {Object} findController
      * @return {void}
      */
-    constructor(findBar, findController) {
+    constructor(findBar, findController, canDownload) {
         super();
 
         this.opened = false;
         this.bar = findBar;
         this.findController = findController;
         this.currentMatch = 0;
+        this.canDownload = canDownload;
 
         if (this.findController === null) {
             throw new Error('DocFindBar cannot be used without a PDFFindController instance.');
@@ -233,7 +234,9 @@ class DocFindBar extends EventEmitter {
             case 'meta+g':
             case 'control+g':
             case 'f3':
-                this.open();
+                if (this.canDownload) {
+                    this.open();
+                }
                 event.preventDefault();
                 break;
             default:
