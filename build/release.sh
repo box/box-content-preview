@@ -26,17 +26,17 @@ increment_version() {
         echo "----------------------------------------------------"
         echo "Bumping major version..."
         echo "----------------------------------------------------"
-        npm --no-git-tag-version version major
+        npm version major
     elif $minor_release; then
         echo "----------------------------------------------------"
         echo "Bumping minor version..."
         echo "----------------------------------------------------"
-        npm --no-git-tag-version version minor
+        npm version minor
     elif $patch_release; then
         echo "----------------------------------------------------"
         echo "Bumping patch version..."
         echo "----------------------------------------------------"
-        npm --no-git-tag-version version patch
+        npm version patch
     fi
 
     # The current version being built
@@ -49,7 +49,7 @@ update_changelog() {
     echo "Updating CHANGELOG.md"
     echo "----------------------------------------------------"
 
-    if conventional-changelog -i CHANGELOG.md -s -p eslint; then
+    if ./node_modules/.bin/conventional-changelog -i CHANGELOG.md -s -p eslint; then
         echo "----------------------------------------------------"
         echo "Updated CHANGELOG successfully"
         echo "----------------------------------------------------"
@@ -79,10 +79,10 @@ update_readme() {
 
 push_to_github() {
     # Add new files
-    git commit -am $VERSION
+    git commit -a --amend --no-edit --no-verify
 
     # Force update tag after updating files
-    git tag -a v$VERSION -m $VERSION
+    git tag -f -a v$VERSION -m $VERSION
 
     echo "----------------------------------------------------"
     echo "Master version is now at" $VERSION
@@ -108,10 +108,10 @@ push_new_release() {
     git checkout master || exit 1
 
     if git remote get-url github-upstream; then
-        git fetch github-upstream;
+        git fetch github-upstream --tags;
     else
        git remote add github-upstream git@github.com:box/box-content-preview.git
-       git fetch github-upstream;
+       git fetch github-upstream --tags;
     fi;
 
     git reset --hard github-upstream/master || exit 1
