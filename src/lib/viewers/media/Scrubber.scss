@@ -1,0 +1,79 @@
+.bp-media-scrubber-container {
+    height: 16px;
+    position: relative;
+    width: 100%;
+}
+
+.bp-media-scrubber-wrapper {
+    height: 100%;
+    left: 50%;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.bp-media-scrubber {
+    height: 3px;
+    left: -50%;
+    position: absolute;
+    top: 9px; /* Wrapper is 20px high. Bar is 3px high leaving 17px. 9px for top buffer and 8px for bottom. */
+    width: 100%;
+}
+
+.bp-media-scrubber-converted,
+.bp-media-scrubber-buffered,
+.bp-media-scrubber-played,
+.bp-media-scrubber-underlay {
+    height: 3px;
+    position: absolute;
+    transition: transform .1s ease-in-out; /* timing is double of handle timing since bar scales to 2 instead of 1 */
+}
+
+.bp-media-scrubber-converted {
+    background-color: rgba($white, .5);
+    cursor: pointer;
+}
+
+.bp-media-scrubber-buffered {
+    background-color: $white;
+    height: 3px;
+    position: absolute;
+}
+
+.bp-media-scrubber-played {
+    background-color: $box-blue;
+    cursor: pointer;
+}
+
+.bp-media-scrubber-underlay {
+    cursor: not-allowed;
+    width: 100%;
+}
+
+.bp-media-scrubber-handle {
+    background-color: $box-blue;
+    border-radius: 6px;
+    cursor: pointer;
+    height: 12px;
+    position: absolute;
+    top: -4.25px;
+    transform: scale(0);
+    transition: transform .05s ease-in-out; /* timing is half of bar timing since handle scales to 1 instead of 2 */
+    width: 12px;
+}
+
+.bp-media-scrubber-container:hover .bp-media-scrubber-handle,
+.bp-media-scrubber-container .bp-media-scrubber-hover .bp-media-scrubber-handle {
+    transform: scale(1);
+}
+
+.bp-media-scrubber-container:hover .bp-media-scrubber-converted,
+.bp-media-scrubber-container:hover .bp-media-scrubber-buffered,
+.bp-media-scrubber-container:hover .bp-media-scrubber-played,
+.bp-media-scrubber-container:hover .bp-media-scrubber-underlay,
+.bp-media-scrubber-container .bp-media-scrubber-hover .bp-media-scrubber-converted,
+.bp-media-scrubber-container .bp-media-scrubber-hover .bp-media-scrubber-buffered,
+.bp-media-scrubber-container .bp-media-scrubber-hover .bp-media-scrubber-played,
+.bp-media-scrubber-container .bp-media-scrubber-hover .bp-media-scrubber-underlay {
+    transform: scaleY(2);
+}

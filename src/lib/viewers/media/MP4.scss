@@ -1,0 +1,35 @@
+@import 'mediaBase';
+
+.bp-media-mp4 {
+    video {
+        cursor: none;
+        display: block;
+        max-height: 100%;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .bp-media-controls-is-visible {
+        video {
+            cursor: pointer;
+        }
+    }
+
+    .bp-is-fullscreen & .bp-media-container {
+        width: 100%;
+    }
+
+    .bp-media-settings-item-quality,
+    .bp-image-switch-360-icon {
+        display: none;
+    }
+
+    .bp-media-controls-label,
+    .bp-media-controls-btn {
+        opacity: .9;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}

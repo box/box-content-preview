@@ -1,0 +1,11 @@
+@import '../../boxuiVariables';
+
+.bp-error {
+    color: $twos;
+    font-size: 14px;
+    text-align: center;
+
+    .bp-error-download {
+        padding-top: 20px;
+    }
+}

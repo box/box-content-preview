@@ -1,0 +1,34 @@
+// Configuration for Babel transpilation
+{
+    "presets": [
+        ["es2015", { "modules": false }],
+        "es2016",
+        "react"
+    ],
+    "plugins": [
+        "transform-class-properties",
+        "transform-object-rest-spread",
+        "transform-decorators-legacy"
+    ],
+    "env": {
+        "test": {
+            "plugins": [
+                ["istanbul", {
+                    "exclude": [
+                        "**/*-test.js",
+                        "build/**",
+                        "src/lib/polyfill.js",
+                        "src/lib/browser.js",
+                        "src/lib/viewers/box3d/model3d/Model3dAnimationClipsPullup.js",
+                        "src/lib/viewers/box3d/model3d/model3dSettingsPullup.js",
+                        "src/lib/viewers/box3d/model3d/Model3dVrControls.js",
+                        "src/lib/viewers/box3d/**/SceneEntities.js",
+                        "src/lib/viewers/box3d/**Constants.js",
+                        "src/lib/viewers/doc/doc-preloader.js"
+                    ]
+                }],
+                ["babel-plugin-transform-require-ignore", { "extensions": [".scss"] }]
+            ]
+        }
+    }
+}

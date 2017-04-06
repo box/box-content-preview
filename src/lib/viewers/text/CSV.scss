@@ -1,0 +1,76 @@
+@import '../../boxuiVariables';
+
+.bp-text-csv {
+    align-items: center;
+    bottom: 0;
+    color: $black;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    left: 0;
+    margin: 0;
+    overflow: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+    user-select: none;
+    white-space: pre;
+    word-break: normal;
+    word-wrap: normal;
+
+    .bp-is-selectable & {
+        user-select: auto;
+    }
+
+    .bp-text-csv-grid {
+        border: 1px solid $off-white;
+        width: 100%;
+
+        &:focus {
+            border-color: darken($sf-fog, 14%);
+            box-shadow: 0 1px 2px fade-out($black, .9);
+            outline: 0;
+        }
+    }
+
+    .bp-text-csv-odd-row {
+        background-color: $haze;
+    }
+
+    .bp-text-csv-cell {
+        border-right: 1px solid $off-white;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: center;
+        overflow: auto;
+        padding: 0 .5em;
+        width: 100%;
+    }
+
+    ::-webkit-scrollbar {
+        height: 5px;
+        width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background-color: $off-white;
+        border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:vertical {
+        background-color: rgba($black, .2);
+        border-radius: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb:horizontal:hover,
+    ::-webkit-scrollbar-thumb:vertical:hover {
+        background: rgba($black, .4);
+    }
+
+    ::-webkit-scrollbar-thumb:horizontal {
+        background-color: rgba($black, .2);
+        border-radius: 6px;
+    }
+}

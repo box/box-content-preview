@@ -1,0 +1,8 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "typescript.validate.enable": false,
+    "typescript.format.enable": false,
+    "flow.useNPMPackagedFlow": true,
+    "flow.enabled": false,
+    "javascript.validate.enable": false
+}

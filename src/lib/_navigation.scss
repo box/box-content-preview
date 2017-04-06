@@ -1,0 +1,45 @@
+.bp-is-fullscreen .bp-navigate {
+    display: none;
+}
+
+.bp-navigate {
+    background-repeat: no-repeat;
+    border: 0 none;
+    cursor: pointer;
+    display: block;
+    height: 64px;
+    margin: 0;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    text-decoration: none;
+    top: 50%;
+    transform: translateY(-50%);
+
+    // Override default animations to only animate opacity since width animation to auto doesn't work
+    transition-property: opacity;
+    white-space: nowrap;
+    width: 50px;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.bp-is-navigation-visible .bp-navigate {
+    opacity: .8;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.bp-navigate-left {
+    border-radius: 0 2px 2px 0;
+    left: 0;
+}
+
+.bp-navigate-right {
+    border-radius: 2px 0 0 2px;
+    right: 0;
+}

@@ -1,0 +1,250 @@
+@import 'boxui';
+
+$header-height: 48px;
+
+.bp-is-hidden {
+    /* stylelint-disable declaration-no-important */
+    display: none !important;
+    /* stylelint-enable declaration-no-important */
+}
+
+.bp-container,
+.bp-container * {
+    /* stylelint-disable declaration-no-important */
+    box-sizing: border-box !important;
+    /* stylelint-enable declaration-no-important */
+}
+
+.bp-container {
+    border: 0 none;
+    font-size: 13px;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+    position: relative;
+    width: 100%;
+
+    a {
+        color: $seesee;
+    }
+}
+
+.bp-header {
+    align-items: center;
+    background-color: $white;
+    border-bottom: 1px solid $seesee;
+    display: flex;
+    height: $header-height;
+    justify-content: space-between;
+    padding: 0 20px;
+
+    + .bp:not(.bp-is-fullscreen) {
+        top: $header-height;
+    }
+
+    .bp-custom-logo {
+        max-height: 30px;
+    }
+
+    .bp-default-logo svg {
+        fill: $box-blue;
+    }
+}
+
+.bp-header-btns {
+    button {
+        padding: 0 10px;
+
+        svg {
+            fill: lighten($better-black, 15%);
+            vertical-align: middle;
+        }
+
+        &:hover {
+            padding: 0 10px; // Override btn-plain
+
+            svg {
+                fill: $better-black;
+            }
+        }
+    }
+}
+
+// Dark theme for header
+.bp-theme-dark {
+    .bp-header {
+        background-color: fade-out($black, .15);
+        border-bottom: 0;
+    }
+
+    .bp-header-btns button {
+        svg {
+            fill: fade-out($white, .1);
+        }
+
+        &:hover svg {
+            fill: $white;
+        }
+    }
+
+    .bp-default-logo svg {
+        fill: $white;
+    }
+
+    .bp {
+        background-color: $sunset-grey;
+    }
+
+    .bp-error,
+    .bp-loading-text,
+    .bp-btn-loading-download {
+        color: $white;
+    }
+
+    .bp-icon {
+        opacity: .9;
+    }
+}
+
+.bp {
+    align-items: center;
+    background-color: $ffive;
+    border: 0 none;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    left: 0;
+    margin: 0;
+    -webkit-overflow-scrolling: touch;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    &.bp-dark {
+        background-color: $black;
+    }
+}
+
+.accessibility-hidden {
+    left: -9999px;
+    position: absolute;
+    top: auto; // Some browsers ignore left without a top
+}
+
+.bp-no-user-highlight {
+    -webkit-touch-callout: none;
+    user-select: none;
+}
+
+.bp-is-invisible {
+    visibility: hidden;
+}
+
+.bp-has-header .bp-notifications-wrapper {
+    top: 48px;
+}
+
+.bp-toggle-overlay {
+    > button {
+        margin-bottom: 0;
+        margin-left: 0;
+    }
+}
+
+.bp-overlay-wrapper {
+    display: inherit;
+    position: relative;
+
+    .bp-overlay {
+        margin-top: 5px;
+    }
+
+    &.bp-is-visible {
+        .bp-overlay {
+            opacity: 1;
+            pointer-events: all;
+            transform: rotateY(0deg) rotateX(0deg);
+            transition-delay: 0s;
+            visibility: visible;
+        }
+    }
+}
+
+.bp-popup-modal {
+    left: 0;
+    margin: 0 auto;
+    position: absolute;
+    right: 0;
+    top: 100px;
+}
+
+//---------- Override popup related CSS from _boxui.scss ----------//
+.bp-modal-dialog {
+    padding: 20px;
+    width: 380px;
+
+    // Prevents modal from becoming taller when crawler is swapped with print checkmark
+    .bp-print-check {
+        height: 16px;
+    }
+
+    // Fix crawler appearance
+    .bp-crawler {
+        font-size: 0;
+        height: 16px;
+        margin: 0 auto;
+        white-space: nowrap;
+        width: 10px;
+    }
+}
+
+.bp-modal-header {
+    display: block;
+    float: right;
+    height: 0;
+    width: 100%;
+}
+
+.bp-modal-content {
+    text-align: center;
+
+    .bp-modal-message {
+        color: $fours;
+        margin: 10px 0 20px;
+    }
+}
+
+.bp-modal-close-button {
+    float: right;
+
+    svg {
+        fill: $downtown-grey;
+        height: 24px;
+        pointer-events: none;
+        width: 24px;
+    }
+}
+
+.bp-modal-actions {
+    justify-content: flex-start;
+    margin: 20px;
+}
+
+.bp-modal-backdrop {
+    background-color: $black;
+    height: 100%;
+    position: fixed;
+    width: 100%;
+}
+
+.bp-popup-btn {
+    margin: 0 auto;
+}
+
+// z-index as the base modal
+.bp-popup-modal {
+    z-index: 160; // follows bp-modal from boxui
+}

@@ -1,0 +1,18 @@
+@import '../../media/Dash';
+
+.bp-video-360 .bp-media-container {
+    display: flex;
+}
+
+.bp-video-360 canvas {
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+}
+
+.bp-is-mobile {
+    .bp-media-controls-wrapper {
+        /* stylelint-disable declaration-no-important */
+        opacity: 1 !important;
+        /* stylelint-enable declaration-no-important */
+    }
+}

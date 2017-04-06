@@ -1,0 +1,80 @@
+.bp-box3d {
+    border: 0 none;
+    display: flex;
+    height: 100%;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    -webkit-touch-callout: none;
+    user-select: none;
+    width: 100%;
+
+    // For VR mode
+    &.vr-enabled {
+        // Hide this NO MATTER WHAT
+        .bp-controls {
+            /* stylelint-disable declaration-no-important */
+            opacity: 0 !important;
+            /* stylelint-enable declaration-no-important */
+        }
+    }
+}
+
+.bp-box3d canvas {
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    -webkit-touch-callout: none;
+    user-select: none;
+}
+
+.bp-box3d.bp-invisible {
+    visibility: hidden;
+}
+
+.bp-box3d canvas:active {
+    cursor: grabbing;
+}
+
+.bp-box3d .bp-overlay-panel {
+    background: #fff;
+    border: 1px solid #caccd0;
+    color: #484848;
+    font-size: 13px;
+    font-weight: 400;
+    margin: auto;
+    outline: 0;
+    position: absolute;
+    z-index: 2;
+}
+
+.bp-box3d .bp-overlay-panel span {
+    display: inline-block;
+    opacity: .7;
+    position: relative;
+    top: 5px;
+}
+
+.bp-box3d .bp-toggle-overlay .bp-menu {
+    min-width: 196px;
+}
+
+.bp-box3d li,
+.bp-box3d ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.bp-box3d input[type="checkbox"] {
+    opacity: 1;
+}
+
+.bp-is-mobile {
+    .bp-box3d .bp-controls {
+        /* stylelint-disable declaration-no-important */
+        opacity: 1 !important;
+        /* stylelint-enable declaration-no-important */
+    }
+}

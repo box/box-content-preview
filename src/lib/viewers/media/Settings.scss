@@ -1,0 +1,165 @@
+$padding: 8px;
+$item-height: 26px;
+$item-hover-color: #f6fafd;
+
+.bp-media-settings {
+    background-color: $white;
+    border: 1px solid $sf-fog;
+    border-radius: 2px;
+    bottom: 60px;
+    color: $fours;
+    display: none;
+    font-size: 10px;
+    height: 2 * ($item-height + $padding + 1px);
+    line-height: $item-height - $padding;
+    margin: 0;
+    overflow: hidden;
+    padding: $padding;
+    position: absolute;
+    right: 16px;
+    transition: width .2s, height .2s;
+    width: 148px;
+
+    .bp-media-settings-is-open & {
+        display: block;
+    }
+
+    // For MP3 and MP4 we only have speed option
+    .bp-media-mp4 &,
+    .bp-media-mp3 & {
+        height: $item-height + (2 * ($padding + 1px));
+    }
+
+    .bp-media-mp3 & {
+        bottom: 65px;
+        right: 0;
+    }
+
+    &.bp-media-settings-show-speed,
+    &.bp-media-settings-show-quality {
+        /* stylelint-disable declaration-no-important */
+        height: ((4 * $item-height) + (2 * $padding)) !important;
+        width: (88px + (2 * $padding)) !important;
+        /* stylelint-enable declaration-no-important */
+    }
+
+    &.bp-media-settings-show-speed {
+        /* stylelint-disable declaration-no-important */
+        height: ((7 * $item-height) + (2 * $padding)) !important;
+        /* stylelint-enable declaration-no-important */
+    }
+}
+
+.bp-media-settings-item,
+.bp-media-settings-sub-item {
+    cursor: pointer;
+    height: $item-height;
+    overflow: hidden;
+    padding: $padding / 2;
+    white-space: nowrap;
+}
+
+.bp-media-settings-item:hover,
+.bp-media-settings-sub-item:hover {
+    background-color: $item-hover-color;
+
+    .bp-media-settings-label {
+        color: lighten($blue-steel, 50%);
+    }
+
+    .bp-media-settings-value {
+        color: $blue-steel;
+    }
+}
+
+.bp-media-settings-item .bp-media-settings-label,
+.bp-media-settings-item .bp-media-settings-value,
+.bp-media-settings-sub-item .bp-media-settings-label,
+.bp-media-settings-sub-item .bp-media-settings-value {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.bp-media-settings-item .bp-media-settings-label {
+    color: $downtown-grey;
+    font-size: 11px;
+    font-weight: 400;
+    padding-left: $padding / 2;
+    text-align: left;
+    text-transform: uppercase;
+    width: 55px;
+}
+
+.bp-media-settings-value {
+    color: $sunset-grey;
+    font-size: 12px;
+    text-align: right;
+
+    .bp-media-settings-item & {
+        color: $sunset-grey;
+        font-weight: 400;
+        width: 48px;
+    }
+
+    .bp-media-settings-sub-item & {
+        width: 30px;
+    }
+
+    .bp-media-settings-selected & {
+        color: $box-blue;
+    }
+}
+
+.bp-media-settings-sub-item .bp-media-settings-label {
+    color: $downtown-grey;
+    font-weight: 400;
+    text-align: center;
+    text-transform: uppercase;
+    width: 48px;
+}
+
+.bp-media-settings-options-quality,
+.bp-media-settings-options-speed,
+.bp-media-settings-show-speed .bp-media-settings-item,
+.bp-media-settings-show-quality .bp-media-settings-item {
+    display: none;
+}
+
+.bp-media-settings-show-speed .bp-media-settings-options-speed,
+.bp-media-settings-show-quality .bp-media-settings-options-quality {
+    display: block;
+}
+
+.bp-media-settings-arrow {
+    display: inline-block;
+    height: 18px;
+    vertical-align: middle;
+    width: 18px;
+
+    svg {
+        height: 18px;
+        width: 18px;
+    }
+}
+
+.bp-media-settings-icon {
+    display: inline-block;
+    height: 16px;
+    text-align: center;
+    vertical-align: middle;
+    visibility: hidden;
+    width: 30px;
+
+    svg {
+        height: 16px;
+        width: 16px;
+    }
+
+    .bp-media-settings-selected & {
+        visibility: visible;
+    }
+
+    &:hover svg {
+        fill: $white;
+    }
+}

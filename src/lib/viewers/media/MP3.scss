@@ -1,0 +1,23 @@
+@import 'mediaBase';
+
+.bp-media-mp3 {
+    .bp-media-container {
+        height: 60px; // same as controls
+        overflow: visible; // to show settings popup
+        width: 360px;
+    }
+
+    .bp-media-fullscreen-icon {
+        display: none;
+    }
+
+    .bp-media-controls-wrapper {
+        background: $black;
+        opacity: 1;
+    }
+
+    .bp-media-settings-item-quality,
+    .bp-image-switch-360-icon {
+        display: none;
+    }
+}

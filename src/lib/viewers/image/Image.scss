@@ -1,0 +1,52 @@
+@import '../../annotations/Annotator';
+
+.bp-image {
+    border: 0 none;
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    margin: 0;
+    overflow: auto;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    white-space: nowrap;
+    width: 100%;
+
+    &::before {
+        content: "";
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+    }
+
+    img {
+        position: absolute;
+        vertical-align: middle;
+    }
+
+    .pannable,
+    .panning {
+        cursor: move;
+    }
+
+    .zoomable {
+        cursor: pointer; /* cursor for IE 11 */
+        cursor: zoom-in;
+    }
+}
+
+.bp-images-wrapper {
+    border: 0 none;
+    cursor: pointer; /* cursor for IE 11 */
+    cursor: zoom-in;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.bp-images img {
+    display: block;
+    width: 100%;
+}

@@ -1,0 +1,59 @@
+.bp-images {
+    border: 0 none;
+}
+
+.bp-images-wrapper {
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    margin: 0;
+    overflow: auto;
+    padding: 0;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.bp-images-wrapper {
+    border: 0 none;
+    cursor: pointer; /* cursor for IE 11 */
+    cursor: zoom-in;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.bp-images img {
+    display: block;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.bp-images.pannable {
+    cursor: move;
+    cursor: grab;
+}
+
+.bp-images.panning {
+    cursor: move;
+    cursor: grabbing;
+}
+
+.bp-images.zoomable {
+    cursor: pointer; /* cursor for IE11 */
+    cursor: zoom-in;
+}
+
+.bp-images {
+    border: 0 none;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.bp-images img {
+    display: block;
+    margin-bottom: 10px;
+    width: 100%;
+}

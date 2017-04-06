@@ -1,0 +1,78 @@
+@import 'mediaBase';
+
+.bp-media-dash {
+    video {
+        cursor: none;
+        display: block;
+        max-height: 100%;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .bp-media-controls-label,
+    .bp-media-controls-btn {
+        opacity: .9;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .bp-media-controls-is-visible {
+        video {
+            cursor: pointer;
+        }
+    }
+}
+
+.bp-is-fullscreen {
+    .bp-media-dash {
+        .bp-media-container {
+            width: 100%;
+        }
+    }
+}
+
+.bp-media-filmstrip-container {
+    border: 1px solid $sunset-grey;
+    bottom: 60px;
+    display: none;
+    height: 110px; // 90px filmstrip frame height + 20px for timecode
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    width: 160px;
+}
+
+.bp-media-filmstrip {
+    position: relative;
+}
+
+.bp-media-filmstrip-timecode {
+    background-color: $twos;
+    bottom: 0;
+    color: $white;
+    font-size: 13px;
+    line-height: 18px; // 110px container height - 2px border - 90px filmstrip frame height
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    z-index: 1;
+}
+
+.bp-media-crawler-wrapper {
+    left: 50%;
+    margin: -15px 0 0 -5px;
+    position: relative;
+    top: 50%;
+    width: 10px;
+    z-index: 1;
+}
+
+.bp-media-dash-stats {
+    color: $white;
+    font-size: 24px;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}

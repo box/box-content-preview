@@ -1,0 +1,114 @@
+$medium-aquamarine:   #5aeda8 !default;
+$moon-yellow:         #ffba1a !default;
+$blue:                #00f !default;
+
+.bp-find-bar {
+    background: $white;
+    border: 1px solid fade-out($black, .95);
+    box-shadow: 0 1px 0 fade-out($white, .95) fade-out($black, .95);
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    padding: 6px;
+    position: absolute;
+    right: 17px; // Prevents overlap with scroll-bar
+    top: 0;
+
+    // Removes "clear field" x at the end of input fields in IE10+ on Windows 8+
+    ::-ms-clear {
+        display: none;
+    }
+
+    .bp-doc-find-field {
+        border: 1px solid fade-out($black, .95);
+        border-radius: 2px 0 0 2px;
+        box-shadow: 0 1px 0 fade-out($white, .95) fade-out($black, .95);
+        color: $better-black;
+        height: 34px;
+        line-height: 20px;
+        outline-style: none;
+        padding: 6px 6px 6px 25px;
+        transition-duration: 150ms;
+        transition-property: background-color, border-color, box-shadow;
+        transition-timing-function: ease;
+        width: 200px;
+
+        &:focus,
+        &:hover {
+            border-color: $box-blue;
+        }
+    }
+
+    .bp-doc-find-results-count {
+        color: fade-out($better-black, .75);
+        cursor: default;
+        line-height: 1;
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        right: 120px;
+        text-align: right;
+        top: 37%;
+        user-select: none;
+    }
+
+    .bp-doc-find-search,
+    .bp-doc-find-prev,
+    .bp-doc-find-next,
+    .bp-doc-find-close {
+        background: none;
+        border: 1px solid $off-white;
+        display: inline-block;
+        height: 34px;
+        line-height: 1;
+        margin-top: -1px;
+        vertical-align: middle;
+        width: 34px;
+
+        .icon {
+            fill: fade-out($better-black, .25);
+        }
+    }
+
+    .bp-doc-find-search {
+        border: 0;
+        left: 5px;
+        line-height: 1;
+        margin: 0;
+        padding: 6px;
+        position: absolute;
+        text-align: left;
+        top: 15%;
+    }
+
+    .bp-doc-find-close {
+        border: 0;
+        padding: 6px;
+
+        &:hover .icon {
+            fill: $better-black;
+        }
+    }
+
+    .bp-find-match-not-found,
+    .bp-find-match-not-found:hover,
+    .bp-find-match-not-found:focus {
+        border-color: fade-out($great-balls-of-fire, .5);
+    }
+}
+
+.textLayer {
+    opacity: 1;
+
+    .highlight {
+        background-color: fade-out($moon-yellow, .5);
+        border-radius: 0;
+
+        &.selected {
+            background-color: fade-out($medium-aquamarine, .5);
+        }
+    }
+
+    ::selection {
+        background-color: fade-out($blue, .8);
+    }
+}

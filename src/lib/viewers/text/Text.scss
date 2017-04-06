@@ -1,0 +1,57 @@
+@import '../../boxuiVariables';
+
+.bp-text-plain {
+    background-color: $white;
+    bottom: 0;
+    left: 0;
+    margin: 0;
+    overflow: auto;
+    position: absolute;
+    right: 0;
+    text-align: left;
+    top: 0;
+    user-select: none;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+
+    .bp-is-selectable & {
+        user-select: auto;
+    }
+
+    /* Override Github CSS */
+    .bp & {
+        padding: 20px 50px;
+    }
+
+    /* Override Box UI */
+    ol,
+    ul {
+        list-style: initial;
+    }
+}
+
+.bp-text-truncated {
+    font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    // Pad bottom so controls dont overlap
+    padding-bottom: 75px;
+    text-align: center;
+
+    p {
+        margin: 10px 0;
+    }
+}
+
+@media print {
+    .bp-text-plain {
+        margin: 0;
+        overflow: visible;
+        padding: 0;
+        position: static;
+        word-wrap: break-word;
+    }
+
+    .bp-text-truncated .bp-btn-download {
+        display: none;
+    }
+}
