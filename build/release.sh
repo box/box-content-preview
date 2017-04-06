@@ -49,7 +49,7 @@ update_changelog() {
     echo "Updating CHANGELOG.md"
     echo "----------------------------------------------------"
 
-    if github_changelog_generator box/box-content-preview --future-release v$VERSION; then
+    if github_changelog_generator box/box-content-preview --future-release v$VERSION --since-tag v$OLD_VERSION; then
         echo "----------------------------------------------------"
         echo "Updated CHANGELOG successfully"
         echo "----------------------------------------------------"
