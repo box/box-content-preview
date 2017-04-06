@@ -52,6 +52,8 @@ class Box3DRenderer extends EventEmitter {
         this.on(EVENT_TRIGGER_RENDER, this.handleOnRender);
         this.defaultCameraPosition = PREVIEW_CAMERA_POSITION;
         this.defaultCameraQuaternion = PREVIEW_CAMERA_QUATERNION;
+        this.vrGamepadLoadPromises = {};
+        this.vrCommonLoadPromise = null;
     }
 
     /**
@@ -405,7 +407,9 @@ class Box3DRenderer extends EventEmitter {
 
         const onGamepadFound = (gamepad) => {
             let controllerName = null;
+            let commonEntities = null;
             if (gamepad.id.indexOf('Oculus') > -1) {
+                commonEntities = 'oculusTouchCommon';
                 switch (gamepad.hand) {
                     case 'left':
                         controllerName = OCULUS_TOUCH_LEFT;
@@ -416,15 +420,25 @@ class Box3DRenderer extends EventEmitter {
                 }
             } else if (gamepad.id.indexOf('OpenVR') > -1) {
                 controllerName = HTC_VIVE;
-                // Both left and right Vive controllers use the same model so, if the promise
-                // already exists, use it.
-                if (this.vrGamepadLoadPromise) {
-                    this.vrGamepadLoadPromise.then(onGamepadModelLoad);
-                    return;
+            }
+            // If there are common entities for left-right controllers, load them first.
+            if (!this.vrCommonLoadPromise) {
+                if (commonEntities) {
+                    this.vrCommonLoadPromise = this.box3d.addRemoteEntities(
+                        `${this.staticBaseURI}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${commonEntities}/entities.json`, { isExternal: true });
+                } else {
+                    this.vrCommonLoadPromise = Promise.resolve();
                 }
             }
-            this.vrGamepadLoadPromise = this.box3d.addRemoteEntities(`${this.staticBaseURI}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${controllerName}/entities.json`, { isExternal: true });
-            this.vrGamepadLoadPromise.then(onGamepadModelLoad);
+            if (!this.vrGamepadLoadPromises[controllerName]) {
+                this.vrCommonLoadPromise.then(() => {
+                    this.vrGamepadLoadPromises[controllerName] = this.box3d.addRemoteEntities(
+                        `${this.staticBaseURI}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${controllerName}/entities.json`, { isExternal: true });
+                    this.vrGamepadLoadPromises[controllerName].then(onGamepadModelLoad);
+                });
+            } else {
+                this.vrGamepadLoadPromises[controllerName].then(onGamepadModelLoad);
+            }
         };
 
         const handController = controller.addComponent('motion_gamepad_device', { handPreference: handedness });
