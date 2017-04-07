@@ -1,6 +1,6 @@
 const webpackConfig = require('./webpack.karma.config');
 
-const DOC_STATIC_ASSETS_VERSION = '0.114.0';
+const DOC_STATIC_ASSETS_VERSION = '0.118.0';
 const MEDIA_STATIC_ASSETS_VERSION = '0.112.0';
 const MODEL3D_STATIC_ASSETS_VERSION = '0.115.0';
 const SWF_STATIC_ASSETS_VERSION = '0.112.0';
