@@ -56,16 +56,15 @@ class MultiImageViewer extends ImageBaseViewer {
         this.setup();
         super.load();
 
-        const template = this.options.representation.content.url_template;
-        this.imageUrls = this.constructImageUrls(template);
-
-
         // Hides images until content is loaded
         this.imageEl.classList.add(CLASS_INVISIBLE);
         this.bindImageListeners(0);
         this.bindDOMListeners();
 
         return this.getRepStatus().getPromise().then(() => {
+            const template = this.options.representation.content.url_template;
+            this.imageUrls = this.constructImageUrls(template);
+
             this.imageUrls.forEach((imageUrl, index) => this.setupImageEls(imageUrl, index));
         }).catch(this.handleAssetError);
     }

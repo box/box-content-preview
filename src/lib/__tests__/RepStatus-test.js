@@ -74,19 +74,40 @@ describe('lib/RepStatus', () => {
     });
 
     describe('updateStatus()', () => {
+        const state = 'success';
+        beforeEach(() => {
+            sandbox.stub(repStatus, 'handleResponse');
+        });
+
         it('should fetch latest status', () => {
-            const state = 'success';
             sandbox.mock(util).expects('get').returns(Promise.resolve({
                 status: {
                     state
                 }
             }));
+
             sandbox.mock(window).expects('clearTimeout').withArgs(repStatus.statusTimeout);
-            sandbox.stub(repStatus, 'handleResponse');
 
             return repStatus.updateStatus().then(() => {
                 expect(repStatus.representation.status.state).to.equal(state);
                 expect(repStatus.handleResponse).to.be.called;
+            });
+        });
+
+        it('should update provided metadata', () => {
+            sandbox.mock(util).expects('get').returns(Promise.resolve({
+                status: {
+                    state
+                },
+                metadata: {
+                    pages: 10
+                }
+            }));
+
+            return repStatus.updateStatus().then(() => {
+                expect(repStatus.representation.status.state).to.equal(state);
+                expect(repStatus.handleResponse).to.be.called;
+                expect(repStatus.representation.metadata.pages).to.equal(10);
             });
         });
 
