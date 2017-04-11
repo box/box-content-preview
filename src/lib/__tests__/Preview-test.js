@@ -1122,6 +1122,7 @@ describe('lib/Preview', () => {
 
             stubs.destroy = sandbox.stub(preview, 'destroy');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(true);
+            stubs.canDownload = sandbox.stub(Browser, 'canDownload').returns(false);
             stubs.showLoadingDownloadButton = sandbox.stub(ui, 'showLoadingDownloadButton');
             stubs.loadPromiseResolve = Promise.resolve();
             stubs.determineRepresentationStatusPromise = Promise.resolve();
@@ -1167,7 +1168,7 @@ describe('lib/Preview', () => {
             }
         });
 
-        it('should show the loading download button if there are sufficient permissions', () => {
+        it('should show the loading download button if there are sufficient permissions and support', () => {
             stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(false);
             preview.options.showDownload = false;
 
@@ -1190,6 +1191,16 @@ describe('lib/Preview', () => {
 
             stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(true);
             preview.options.showDownload = true;
+            stubs.canDownload.returns(false);
+            preview.destroy();
+
+            preview.loadViewer({});
+            expect(stubs.showLoadingDownloadButton).to.not.be.called;
+
+            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(true);
+            preview.options.showDownload = true;
+            stubs.canDownload.returns(true);
+
 
             preview.loadViewer({});
             expect(stubs.showLoadingDownloadButton).to.be.called;
@@ -1300,7 +1311,7 @@ describe('lib/Preview', () => {
             stubs.checkFeature.returns(true);
         });
 
-        it('should show download button if there is download permission', () => {
+        it('should only show download button if there is download permission', () => {
             stubs.checkPermission.returns(false);
 
             preview.finishLoading();
@@ -1328,13 +1339,11 @@ describe('lib/Preview', () => {
 
         it('should show download button if download is supported by browser', () => {
             stubs.canDownload.returns(false);
-            stubs.isMobile.returns(true);
 
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.not.be.called;
 
-            stubs.canDownload.returns(false);
-            stubs.isMobile.returns(false);
+            stubs.canDownload.returns(true);
 
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.be.called;

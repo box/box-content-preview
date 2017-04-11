@@ -830,8 +830,8 @@ class Preview extends EventEmitter {
             throw new Error(__('error_permissions'));
         }
 
-        // Show download button if download permissions exist and preview options allow
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload) {
+        // Show download button if download permissions exist, options allow, and browser has ability
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
             showLoadingDownloadButton(this.download);
         }
 
@@ -916,7 +916,7 @@ class Preview extends EventEmitter {
     finishLoading(data = {}) {
         // Show or hide annotate/print/download buttons
         // canDownload is not supported by all of our browsers, so for now we need to check isMobile
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && (Browser.canDownload() || !Browser.isMobile())) {
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
             showDownloadButton(this.download);
 
             if (checkFeature(this.viewer, 'print') && !Browser.isMobile()) {

@@ -235,7 +235,7 @@ class Browser {
      * @return {boolean} true if browser supports download
      */
     static canDownload() {
-        return !window.externalHost && 'download' in document.createElement('a');
+        return !Browser.isMobile() || (!window.externalHost && 'download' in document.createElement('a'));
     }
 
     /**
