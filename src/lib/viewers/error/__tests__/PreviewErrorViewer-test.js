@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import PreviewErrorViewer from '../PreviewErrorViewer';
+import Browser from '../../../Browser';
 import * as file from '../../../file';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
 import {
@@ -91,6 +92,15 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             sandbox.stub(error, 'addDownloadButton');
             sandbox.stub(file, 'checkPermission').withArgs(error.options.file, PERMISSION_DOWNLOAD).returns(true);
             error.options.showDownload = false;
+
+            error.load('reason');
+
+            expect(error.addDownloadButton).to.not.be.called;
+        });
+
+        it('should not add download button if the browser cannot download', () => {
+            sandbox.stub(error, 'addDownloadButton');
+            sandbox.stub(Browser, 'canDownload').returns(false);
 
             error.load('reason');
 

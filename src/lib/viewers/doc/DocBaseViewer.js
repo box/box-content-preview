@@ -30,8 +30,9 @@ const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
-const DEFAULT_RANGE_REQUEST_CHUNK_SIZE = 262144; // 256KB
+const DEFAULT_RANGE_REQUEST_CHUNK_SIZE = 393216; // 384KB
 const LARGE_RANGE_REQUEST_CHUNK_SIZE = 1048576; // 1MB
+const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const IS_SAFARI_CLASS = 'is-safari';
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
@@ -661,6 +662,9 @@ class DocBaseViewer extends BaseViewer {
 
         // Disable text layer if user doesn't have download permissions
         PDFJS.disableTextLayer = !checkPermission(file, PERMISSION_DOWNLOAD);
+
+        // Decrease mobile canvas size to ~3MP (1920x1536)
+        PDFJS.maxCanvasPixels = Browser.isMobile() ? MOBILE_MAX_CANVAS_SIZE : PDFJS.maxCanvasPixels;
     }
 
     /**

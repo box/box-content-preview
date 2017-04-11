@@ -27,6 +27,7 @@ const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const SCROLL_END_TIMEOUT = 500;
+const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 
 const sandbox = sinon.sandbox.create();
 let docBase;
@@ -39,7 +40,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/doc/__tests__/DocBase-test.html');
+        fixture.load('viewers/doc/__tests__/DocBaseViewer-test.html');
 
         containerEl = document.querySelector('.container');
         docBase = new DocBaseViewer({
@@ -954,7 +955,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should set a default chunk size if no viewer option set and locale is not en-US', () => {
             const url = 'url';
-            const defaultChunkSize = 262144;
+            const defaultChunkSize = 393216; // 384KB
 
             docBase.options.location = {
                 locale: 'not-en-US'
@@ -972,7 +973,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should set a large chunk size if no viewer option set and locale is en-US', () => {
             const url = 'url';
-            const largeChunkSize = 1048576;
+            const largeChunkSize = 1048576; // 1MB
 
             docBase.options.location = {
                 locale: 'en-US'
@@ -1055,7 +1056,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should enable range requests if the file and browser meet the conditions', () => {
             stubs.browser.returns('Chrome');
-
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.false;
         });
@@ -1068,6 +1068,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(false);
             docBase.setupPdfjs();
             expect(PDFJS.disableTextLayer).to.be.true;
+        });
+
+        it('should decrease max canvas size to 3MP if on mobile', () => {
+            sandbox.stub(Browser, 'isMobile').returns(true);
+            docBase.setupPdfjs();
+            expect(PDFJS.maxCanvasPixels).to.equal(MOBILE_MAX_CANVAS_SIZE);
         });
     });
 

@@ -16,7 +16,6 @@ git clone https://github.com/mozilla/pdfjs-dist.git
 
 echo "-----------------------------------------------------------------------------------"
 echo "Copying relevant files to Preview third-party dir..."
-echo "Note that we are NOT copying compatibility.js - that needs to be manually updated"
 echo "-----------------------------------------------------------------------------------"
 cp pdfjs-dist/build/pdf.js src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/
 cp pdfjs-dist/build/pdf.worker.js src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/
