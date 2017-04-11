@@ -255,6 +255,15 @@ class Browser {
     static isAndroid() {
         return /Android/g.test(navigator.userAgent);
     }
+
+    /**
+     * Returns whether or not the device is running IOS 10.3.X that has Font Ligature rendering issue.
+     *
+     * @return {boolean} True if device is running IOS 10.3.x
+     */
+    static isIOSWithFontIssue() {
+        return Browser.isMobile() && Browser.isIOS() && /(?:OS\s)10_3/i.test(navigator.userAgent);
+    }
 }
 
 export default Browser;
