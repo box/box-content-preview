@@ -16,8 +16,7 @@ java -jar build/closure-compiler-v20161201.jar --rewrite_polyfills false --langu
 echo "-----------------------------------------------------------------------------------"
 echo "Minifying pdf.js CSS with cssnano"
 echo "-----------------------------------------------------------------------------------"
-./node_modules/.bin/cssnano
-src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf_viewer.css src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf_viewer.min.css
+./node_modules/.bin/cssnano src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf_viewer.css src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf_viewer.min.css
 echo "-----------------------------------------------------------------------------------"
 echo "Successfully updated and minified pdf.js files!"
 echo "-----------------------------------------------------------------------------------"
