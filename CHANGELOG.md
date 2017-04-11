@@ -1,5 +1,18 @@
 # Change Log
 
+## [v0.119.0](https://github.com/box/box-content-preview/tree/v0.119.0) (2017-04-11)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.118.0...v0.119.0)
+
+**Merged pull requests:**
+
+- Disable font faces on safari 10\_3 [\#67](https://github.com/box/box-content-preview/pull/67) ([JustinHoldstock](https://github.com/JustinHoldstock))
+- Update: Decrease mobile web max pdf.js canvas size to 3MP [\#66](https://github.com/box/box-content-preview/pull/66) ([tonyjin](https://github.com/tonyjin))
+- Chore: Removing unneeded compatibility.js from pdf.js [\#65](https://github.com/box/box-content-preview/pull/65) ([tonyjin](https://github.com/tonyjin))
+- Update: Increase default doc chunk size to 384KB [\#64](https://github.com/box/box-content-preview/pull/64) ([tonyjin](https://github.com/tonyjin))
+- Update: Upgrade pdf.js to v1.8.175 [\#63](https://github.com/box/box-content-preview/pull/63) ([tonyjin](https://github.com/tonyjin))
+- Fix: Hiding download button in all cases if browser cannot download [\#61](https://github.com/box/box-content-preview/pull/61) ([jeremypress](https://github.com/jeremypress))
+- Chore: Update changelog generator to ignore old pull requests [\#59](https://github.com/box/box-content-preview/pull/59) ([tonyjin](https://github.com/tonyjin))
+
 ## [v0.118.0](https://github.com/box/box-content-preview/tree/v0.118.0) (2017-04-06)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.117.0...v0.118.0)
 
