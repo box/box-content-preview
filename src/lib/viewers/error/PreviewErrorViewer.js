@@ -1,6 +1,7 @@
 import autobind from 'autobind-decorator';
 import BaseViewer from '../BaseViewer';
 import { checkPermission } from '../../file';
+import Browser from '../../Browser';
 import { PERMISSION_DOWNLOAD } from '../../constants';
 import { ICON_FILE_DEFAULT, ICON_FILE_MEDIA, ICON_FILE_ZIP } from '../../icons/icons';
 import './PreviewError.scss';
@@ -70,7 +71,7 @@ class PreviewErrorViewer extends BaseViewer {
         this.messageEl.textContent = message;
 
         // Add optional download button
-        if (checkPermission(file, PERMISSION_DOWNLOAD) && showDownload) {
+        if (checkPermission(file, PERMISSION_DOWNLOAD) && showDownload && Browser.canDownload()) {
             this.addDownloadButton();
         }
 
