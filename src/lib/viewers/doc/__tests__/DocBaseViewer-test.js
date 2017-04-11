@@ -39,7 +39,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/doc/__tests__/DocBase-test.html');
+        fixture.load('viewers/doc/__tests__/DocBaseViewer-test.html');
 
         containerEl = document.querySelector('.container');
         docBase = new DocBaseViewer({
@@ -954,7 +954,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should set a default chunk size if no viewer option set and locale is not en-US', () => {
             const url = 'url';
-            const defaultChunkSize = 262144;
+            const defaultChunkSize = 393216; // 384KB
 
             docBase.options.location = {
                 locale: 'not-en-US'
@@ -972,7 +972,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should set a large chunk size if no viewer option set and locale is en-US', () => {
             const url = 'url';
-            const largeChunkSize = 1048576;
+            const largeChunkSize = 1048576; // 1MB
 
             docBase.options.location = {
                 locale: 'en-US'
