@@ -39,7 +39,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/doc/__tests__/DocBase-test.html');
+        fixture.load('viewers/doc/__tests__/DocBaseViewer-test.html');
 
         containerEl = document.querySelector('.container');
         docBase = new DocBaseViewer({
@@ -1002,6 +1002,27 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.pdfViewer.setDocument).to.be.called;
                 expect(stubs.pdfViewer.linkService.setDocument).to.be.called;
             });
+        });
+
+        // NOTE: Change this after refactoring Browser.js
+        it('should test user agent if on Safari Mobile for IOS 10.3', () => {
+            const doc = {
+                url: 'url'
+            };
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
+            sandbox.stub(docBase, 'getViewerOption').returns(100);
+            docBase.options.location = {
+                locale: 'en-US'
+            };
+            const getStub = sandbox.stub(Browser, 'getName').returns('Safari');
+            const mobileStub = sandbox.stub(Browser, 'isMobile').returns(true);
+
+            docBase.initViewer('url');
+
+            // Mobile stub cannot be called if get stub is never called.
+            // See note for this test, for more info.
+            expect(getStub).to.be.called;
+            expect(mobileStub).to.be.called;
         });
     });
 
