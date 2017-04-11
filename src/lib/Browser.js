@@ -262,7 +262,7 @@ class Browser {
      * @return {boolean} True if device is running IOS 10.3.x
      */
     static isIOSWithFontIssue() {
-        return Browser.isMobile() && Browser.isIOS() && /(?:OS\s)10_3/i.test(navigator.userAgent);
+        return Browser.isIOS() && /(?:OS\s)10_3/i.test(navigator.userAgent);
     }
 }
 
