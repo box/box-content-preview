@@ -589,6 +589,10 @@ class DocBaseViewer extends BaseViewer {
             enhanceTextSelection: true // improves text selection if true
         });
 
+        // Disable font faces on IOS 10.3.X
+        // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
+        PDFJS.disableFontFace = PDFJS.disableFontFace || Browser.isIOSWithFontIssue();
+
         // Use chunk size set in viewer options if available
         let rangeChunkSize = this.getViewerOption('rangeChunkSize');
 

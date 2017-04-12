@@ -1004,6 +1004,27 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.pdfViewer.linkService.setDocument).to.be.called;
             });
         });
+
+        // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
+        it('should test user agent if on Safari Mobile for IOS 10.3', () => {
+            const doc = {
+                url: 'url'
+            };
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
+            sandbox.stub(docBase, 'getViewerOption').returns(100);
+            docBase.options.location = {
+                locale: 'en-US'
+            };
+
+            const getStub = sandbox.stub(Browser, 'isIOSWithFontIssue').returns(true);
+
+            docBase.initViewer('url');
+
+            // Mobile stub cannot be called if get stub is never called.
+            // See note for this test, for more info.
+            expect(getStub).to.be.called;
+            expect(PDFJS.disableFontFace).to.be.true;
+        });
     });
 
     describe('setupPdfjs()', () => {
