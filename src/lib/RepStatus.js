@@ -66,6 +66,10 @@ class RepStatus extends EventEmitter {
         .then((info) => {
             clearTimeout(this.statusTimeout);
 
+            if (info.metadata) {
+                this.representation.metadata = info.metadata;
+            }
+
             const status = (typeof info.status === 'object') ? info.status.state : info.temp_status.state;
             if (typeof this.representation.status === 'object') {
                 this.representation.status.state = status;
