@@ -22,13 +22,13 @@ class MultiImageAnnotator extends ImageAnnotator {
         const location = super.getLocationFromEvent(event);
 
         if (!location) {
-            return location;
+            return null;
         }
 
         // If no page was selected, ignore
         const page = Number(event.target.getAttribute('data-page-number'));
         if (!page) {
-            return location;
+            return null;
         }
 
         return { page, ...location };

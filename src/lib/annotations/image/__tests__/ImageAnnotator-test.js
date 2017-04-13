@@ -43,6 +43,7 @@ describe('lib/annotations/image/ImageAnnotator', () => {
 
         afterEach(() => {
             event = undefined;
+            target = undefined;
         });
 
         it('should not return a location if image isn\'t inside viewer', () => {
@@ -75,21 +76,18 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             const y = 200;
             const dimensions = {
                 x: 100,
-                y: 200
+                y: 100
             };
-            const imageEl = annotator._annotatedElement.querySelector('img');
             sandbox.stub(annotatorUtil, 'findClosestDataType').returns('not-a-dialog');
             sandbox.stub(annotatorUtil, 'getScale').returns(1);
             sandbox.stub(imageAnnotatorUtil, 'getLocationWithoutRotation').returns([x, y]);
-
-            target.getBoundingClientRect.returns(dimensions);
+            target.getBoundingClientRect.returns({ width: 100, height: 100 });
 
             const location = annotator.getLocationFromEvent(event);
-// console.error(location.imageEl, location.dimensions)
             expect(location).to.deep.equal({
                 x,
                 y,
-                imageEl,
+                imageEl: target,
                 dimensions
             });
         });
@@ -113,6 +111,15 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             const thread = annotator.createAnnotationThread([], {}, 'point');
             expect(thread instanceof ImagePointThread).to.be.false;
             expect(annotator.handleValidationError).to.be.called;
+        });
+
+        it('should group annotations on the same thread if there is more than one', () => {
+            sandbox.stub(annotatorUtil, 'validateThreadParams').returns(true);
+            sandbox.stub(annotator, 'addThreadToMap');
+            sandbox.stub(annotator, 'handleValidationError');
+            const id = 'abcde';
+            const thread = annotator.createAnnotationThread([{ threadID: id }, { threadID: '09876' }], {}, 'point');
+            expect(thread._threadID).to.equal(id);
         });
     });
 
