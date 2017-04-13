@@ -85,8 +85,9 @@ class TextBaseViewer extends BaseViewer {
      * @return {void}
      */
     load() {
-        // Enable text selection if user has download permissions
-        if (checkPermission(this.options.file, PERMISSION_DOWNLOAD)) {
+        // Enable text selection if user has download permissions and 'disableTextLayer' option is not true
+        if (checkPermission(this.options.file, PERMISSION_DOWNLOAD) &&
+            !this.getViewerOption('disableTextLayer')) {
             this.containerEl.classList.add(CLASS_IS_SELECTABLE);
         }
 

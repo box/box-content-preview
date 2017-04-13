@@ -1032,6 +1032,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             stubs.urlCreator = sandbox.stub(util, 'createAssetUrlCreator').returns(() => { return 'asset'; });
             stubs.browser = sandbox.stub(Browser, 'getName').returns('Safari');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
+            stubs.getViewerOption = sandbox.stub(docBase, 'getViewerOption');
             docBase.options = {
                 location: {
                     staticBaseURI: 'test/'
@@ -1088,6 +1089,15 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(false);
             docBase.setupPdfjs();
+            expect(PDFJS.disableTextLayer).to.be.true;
+        });
+
+        it('should disable the text layer if disableTextLayer viewer option is set', () => {
+            stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_DOWNLOAD).returns(true);
+            stubs.getViewerOption.withArgs('disableTextLayer').returns(true);
+
+            docBase.setupPdfjs();
+
             expect(PDFJS.disableTextLayer).to.be.true;
         });
 
