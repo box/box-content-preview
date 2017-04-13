@@ -1,4 +1,5 @@
 import autobind from 'autobind-decorator';
+import AnnotationService from '../../annotations/AnnotationService';
 import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
@@ -7,7 +8,8 @@ import {
     ICON_ZOOM_OUT
 } from '../../icons/icons';
 
-import { CLASS_INVISIBLE } from '../../constants';
+import { CLASS_INVISIBLE, PERMISSION_ANNOTATE } from '../../constants';
+import { checkPermission } from '../../file';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -15,6 +17,38 @@ const CSS_CLASS_PANNABLE = 'pannable';
 
 @autobind
 class ImageBaseViewer extends BaseViewer {
+
+    /**
+     * [constructor]
+     *
+     * @inheritdoc
+     */
+    constructor(options) {
+        super(options);
+
+        this.imageEl = undefined;
+        this.annotationTypes = [];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    setup() {
+        super.setup();
+
+        this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
+    }
+
+    /**
+     * Loads the image type.
+     *
+     * @return {void}
+     */
+    load() {
+        super.load();
+        this.initAnnotations();
+        this.bindDOMListeners();
+    }
 
     /**
      * [destructor]
@@ -32,6 +66,12 @@ class ImageBaseViewer extends BaseViewer {
             this.imageEl.removeEventListener('mouseup', this.handleMouseUp);
         }
 
+        // Destroy the annotator
+        if (this.annotator && typeof this.annotator.destroy === 'function') {
+            this.annotator.removeAllListeners('pointmodeenter');
+            this.annotator.destroy();
+        }
+
         super.destroy();
     }
 
@@ -47,6 +87,7 @@ class ImageBaseViewer extends BaseViewer {
 
         this.zoom();
         this.loadUI();
+        this.showAnnotations();
 
         this.imageEl.classList.remove(CLASS_INVISIBLE);
         this.loaded = true;
@@ -170,6 +211,94 @@ class ImageBaseViewer extends BaseViewer {
         this.controls.add(__('zoom_in'), this.zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
     }
 
+    /**
+     * Initializes annotations.
+     *
+     * @private
+     * @return {void}
+     */
+    initAnnotations() {
+        // Ignore if viewer/file type is not annotatable
+        if (!this.isAnnotatable()) {
+            return;
+        }
+
+        // Users can currently only view annotations on mobile
+        const { apiHost, file, token } = this.options;
+        const canAnnotate = checkPermission(file, PERMISSION_ANNOTATE) && !Browser.isMobile();
+        this.canAnnotate = canAnnotate;
+
+        const fileVersionID = file.file_version.id;
+        const annotationService = new AnnotationService({
+            apiHost,
+            fileId: file.id,
+            token,
+            canAnnotate
+        });
+
+        this.createAnnotator(fileVersionID, annotationService);
+    }
+
+    /**
+     * Adds annotations to the preview.
+     *
+     * @protected
+     * @return {void}
+     */
+    showAnnotations() {
+        // Show existing annotations after image is rendered
+        if (!this.annotator || this.annotationsLoaded) {
+            return;
+        }
+
+        this.annotator.showAnnotations();
+        this.annotationsLoaded = true;
+    }
+
+    /**
+     * Returns whether or not viewer is annotatable with the provided annotation
+     * type.
+     *
+     * @protected
+     * @param {string} type - Type of annotation
+     * @return {boolean} Whether or not viewer is annotatable
+     */
+    isAnnotatable(type) {
+        const typeIsAllowed = this.annotationTypes.some((allowed) => {
+            return allowed === type;
+        });
+
+        if (typeof type === 'string' && !typeIsAllowed) {
+            return false;
+        }
+
+        // Respect viewer-specific annotation option if it is set
+        const viewerAnnotations = this.getViewerOption('annotations');
+        if (typeof viewerAnnotations === 'boolean') {
+            return viewerAnnotations;
+        }
+
+        // Otherwise, use global preview annotation option
+        return this.options.showAnnotations;
+    }
+
+    /**
+     * Returns click handler for toggling point annotation mode.
+     *
+     * @private
+     * @return {Function|null} Click handler
+     */
+    getPointModeClickHandler() {
+        if (!this.isAnnotatable('point')) {
+            return null;
+        }
+
+        return (event = {}) => {
+            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+            this.annotator.togglePointModeHandler(event);
+        };
+    }
 
     /**
      * Binds DOM listeners for image viewers.
@@ -269,6 +398,11 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleMouseDown(event) {
+        // Ignore zoom/pan mouse events if in annotation mode
+        if (this.annotator && this.annotator.isInPointMode()) {
+            return;
+        }
+
         const { button, ctrlKey, metaKey, clientX, clientY } = event;
         this.didPan = false;
 
@@ -287,6 +421,11 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleMouseUp(event) {
+        // Ignore zoom/pan mouse events if in annotation mode
+        if (this.annotator && this.annotator.isInPointMode()) {
+            return;
+        }
+
         const { button, ctrlKey, metaKey } = event;
 
         // If this is not a left click, then ignore
@@ -312,7 +451,7 @@ class ImageBaseViewer extends BaseViewer {
      */
     cancelDragEvent(event) {
         event.preventDefault();
-        event.stopPropogation();
+        event.stopPropagation();
     }
 
 
@@ -321,11 +460,34 @@ class ImageBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
 
     /**
-     * Must be implemented to zoom image.
-     *
+     * Handles zoom
+     * @param {string} [type] - Type of zoom in|out|reset
+     * @private
      * @return {void}
      */
-    zoom() {}
+    /* istanbul ignore next */
+    zoom(/* type */) {}
+
+    /**
+     * Must be implemented to create annotators.
+     *
+     * @param {string} fileVersionID The file version id of the file to annotate.
+     * @param {AnnotationService} annotationService An instance of the annotation service.
+     */
+    /* istanbul ignore next */
+    createAnnotator(/* fileVersionID, annotationService */) {}
+
+
+    /** Scales annotations and repositions. Only one argument
+     * (either height or width) is required for the scale calculations.
+     *
+     * @private
+     * @param {number} width - The scale width
+     * @param {number} height - The scale height
+     * @return {void}
+     */
+    /* istanbul ignore next */
+    scaleAnnotations(/* width, height */) {}
 }
 
 export default ImageBaseViewer;

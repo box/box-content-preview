@@ -37,6 +37,7 @@ class BaseViewer extends EventEmitter {
         super();
         this.options = options;
         this.repStatuses = [];
+        this.annotationsLoaded = false;
     }
 
     /**
@@ -478,6 +479,18 @@ class BaseViewer extends EventEmitter {
         const status = RepStatus.getStatus(representation);
         return status === STATUS_SUCCESS || status === STATUS_VIEWABLE;
     }
+
+    //--------------------------------------------------------------------------
+    // Abstract
+    //--------------------------------------------------------------------------
+
+    /**
+     * Returns click handler for toggling point annotation mode.
+     *
+     * @abstract
+     * @return {Function|null} Click handler
+     */
+    getPointModeClickHandler() {}
 }
 
 export default BaseViewer;

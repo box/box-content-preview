@@ -77,14 +77,14 @@ export function getRotatedPadding(imageEl, isRotated) {
  * @return {number[]} [x,y] browser coordinates
  */
 export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
-    const imageEl = annotatedElement.querySelector('img');
+    const imageEl = annotatedElement.querySelector(`[data-page-number="${location.page}"]`) || annotatedElement.querySelector('img');
     const wrapperDimensions = annotatedElement.getBoundingClientRect();
     const imageDimensions = imageEl.getBoundingClientRect();
     const scale = annotatorUtil.getScale(annotatedElement);
 
     // Get image padding
-    const topPadding = imageDimensions.top - wrapperDimensions.top;
-    const leftPadding = imageDimensions.left - wrapperDimensions.left;
+    const topPadding = imageDimensions.top - wrapperDimensions.top + annotatedElement.scrollTop;
+    const leftPadding = imageDimensions.left - wrapperDimensions.left + annotatedElement.scrollLeft;
 
     // Adjust annotation location if image is rotated
     const rotation = Number(imageEl.getAttribute('data-rotation-angle'));

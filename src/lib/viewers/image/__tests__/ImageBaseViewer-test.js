@@ -2,6 +2,7 @@
 import ImageBaseViewer from '../ImageBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
+import AnnotationService from '../../../annotations/AnnotationService';
 import fullscreen from '../../../Fullscreen';
 
 const CSS_CLASS_PANNING = 'panning';
@@ -20,7 +21,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/image/__tests__/ImageBase-test.html');
+        fixture.load('viewers/image/__tests__/ImageBaseViewer-test.html');
         stubs.emit = sandbox.stub(fullscreen, 'addListener');
         containerEl = document.querySelector('.container');
         imageBase = new ImageBaseViewer(containerEl);
@@ -32,7 +33,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
 
-        if (typeof imageBase.destroy === 'function') {
+        if (imageBase && typeof imageBase.destroy === 'function') {
             imageBase.destroy();
         }
 
@@ -57,6 +58,51 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(imageBase.controls.destroy).to.be.called;
             expect(imageBase.imageEl.removeEventListener).to.be.calledWith('mouseup', imageBase.handleMouseUp);
             expect(BaseViewer.prototype.destroy).to.be.called;
+        });
+
+        it('should remove all event listeners from the annotator and destroy it', () => {
+            imageBase.annotator = {
+                destroy: sandbox.stub(),
+                removeAllListeners: sandbox.stub()
+            };
+
+            imageBase.destroy();
+
+            expect(imageBase.annotator.removeAllListeners).to.be.calledWith('pointmodeenter');
+            expect(imageBase.annotator.destroy).to.be.called;
+        });
+    });
+
+    describe('setup()', () => {
+        it('should create a div to wrap viewer content in', () => {
+            Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'setup', {
+                value: sandbox.stub()
+            });
+
+            imageBase.setup();
+            expect(imageBase.wrapperEl).to.be.an.instanceof(HTMLElement);
+        });
+    });
+
+    describe('load()', () => {
+        beforeEach(() => {
+            Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'load', {
+                value: sandbox.stub()
+            });
+        });
+
+        it('should attempt to initialize an annotator', () => {
+            const annotationInit = sandbox.stub(imageBase, 'initAnnotations');
+            imageBase.load();
+
+            expect(annotationInit).to.be.called;
+        });
+
+        it('should bind a series of events to the DOM', () => {
+            const domBind = sandbox.stub(imageBase, 'bindDOMListeners');
+            imageBase.load();
+
+            expect(domBind).to.be.called;
         });
     });
 
@@ -201,6 +247,148 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         });
     });
 
+    describe('initAnnotations()', () => {
+        it('should do nothing if the file cannot be annotated', () => {
+            const createStub = sandbox.stub(imageBase, 'createAnnotator');
+            imageBase.initAnnotations();
+            expect(createStub).to.not.be.called;
+        });
+
+        describe('annotations enabled for the file', () => {
+            const id = '123';
+            const versionId = '665';
+            const apiHost = 'http://www/box.com/annotations';
+            beforeEach(() => {
+                sandbox.stub(imageBase, 'isAnnotatable').returns(true);
+                imageBase.options = {
+                    apiHost,
+                    file: {
+                        id,
+                        file_version: {
+                            id: versionId
+                        }
+                    }
+                };
+            });
+
+            it('should invoke createAnnotator() with an annotator service instance', (done) => {
+                sandbox.stub(imageBase, 'createAnnotator').callsFake((vid, annotator) => {
+                    expect(annotator).to.be.an.instanceof(AnnotationService);
+                    done();
+                });
+
+                imageBase.initAnnotations();
+            });
+
+            it('should mark annotations as view only if mobile', () => {
+                imageBase.options.file.permissions = {
+                    can_annotate: true
+                };
+
+                sandbox.stub(Browser, 'isMobile').returns(true);
+
+                imageBase.initAnnotations();
+                expect(imageBase.canAnnotate).to.be.false;
+            });
+
+            it('should mark annotations as view only if user does not have anotate permissions', () => {
+                imageBase.options.file.permissions = {
+                    can_annotate: false
+                };
+
+                sandbox.stub(Browser, 'isMobile').returns(false);
+
+                imageBase.initAnnotations();
+                expect(imageBase.canAnnotate).to.be.false;
+            });
+        });
+    });
+
+    describe('showAnnotations()', () => {
+        it('should do nothing if no annotator available', () => {
+            imageBase.annotator = undefined;
+            imageBase.showAnnotations();
+            expect(imageBase.annotationsLoaded).to.be.false;
+        });
+
+        it('should do nothing if the annotations haven\'t been loaded', () => {
+            imageBase.annotator = {
+                showAnnotations: sandbox.stub()
+            };
+            imageBase.annotationsLoaded = true;
+            imageBase.showAnnotations();
+            expect(imageBase.annotator.showAnnotations).to.not.be.called;
+        });
+
+        it('should invoke showAnnotations() on the annotator', () => {
+            imageBase.annotator = {
+                showAnnotations: sandbox.stub()
+            };
+            imageBase.showAnnotations();
+            expect(imageBase.annotator.showAnnotations).to.be.called;
+        });
+
+        it('should set annotationsLoaded to true', () => {
+            imageBase.annotator = {
+                showAnnotations: sandbox.stub()
+            };
+            imageBase.showAnnotations();
+            expect(imageBase.annotationsLoaded).to.be.true;
+        });
+    });
+
+    describe('isAnnotatable()', () => {
+        beforeEach(() => {
+            const viewer = { NAME: 'ImageBase', annotations: true };
+            imageBase.options.viewers = { ImageBase: viewer };
+            imageBase.options.viewer = viewer;
+            imageBase.annotationTypes = ['point'];
+        });
+
+        it('should return false if not using point annotations', () => {
+            const result = imageBase.isAnnotatable('highlight');
+            expect(result).to.be.false;
+        });
+
+        it('should return viewer permissions if set', () => {
+            expect(imageBase.isAnnotatable('point')).to.be.true;
+            imageBase.options.viewers.ImageBase.annotations = false;
+            expect(imageBase.isAnnotatable('point')).to.be.false;
+        });
+
+        it('should return global preview permissions if viewer permissions is not set', () => {
+            imageBase.options.showAnnotations = true;
+            imageBase.options.viewers.ImageBase.annotations = 'notboolean';
+            const result = imageBase.isAnnotatable('point');
+            expect(result).to.be.true;
+        });
+    });
+
+    describe('getPointModeClickHandler()', () => {
+        it('should do nothing if not annotatable', () => {
+            sandbox.stub(imageBase, 'isAnnotatable').returns(false);
+            const handler = imageBase.getPointModeClickHandler();
+            expect(handler).to.be.null;
+        });
+
+        it('should return event listener', () => {
+            const event = {};
+            imageBase.annotator = {
+                togglePointModeHandler: sandbox.mock().withArgs(event)
+            };
+            imageBase.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
+            imageBase.imageEl.classList.add(CSS_CLASS_PANNABLE);
+            sandbox.stub(imageBase, 'isAnnotatable').returns(true);
+
+            const handler = imageBase.getPointModeClickHandler();
+            expect(handler).to.be.a('function');
+
+            handler(event);
+            expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_ZOOMABLE);
+            expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_PANNABLE);
+        });
+    });
+
     describe('handleMouseDown()', () => {
         beforeEach(() => {
             stubs.pan = sandbox.stub(imageBase, 'startPanning');
@@ -225,6 +413,22 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.pan).to.not.have.been.called;
         });
 
+        it('should do nothing if there annotator is in point placement mode', () => {
+            const event = {
+                button: 1,
+                ctrlKey: null,
+                metaKey: null,
+                clientX: 1,
+                clientY: 1,
+                preventDefault: sandbox.stub()
+            };
+            imageBase.annotator = {
+                isInPointMode: sandbox.stub().returns(true)
+            };
+            imageBase.handleMouseDown(event);
+            expect(stubs.pan).to.not.be.called;
+        });
+
         it('should start panning if correct click type', () => {
             const event = {
                 button: 1,
@@ -244,6 +448,22 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             stubs.pan = sandbox.stub(imageBase, 'stopPanning');
             stubs.zoom = sandbox.stub(imageBase, 'zoom');
             imageBase.isPanning = false;
+        });
+
+        it('should do nothing if there annotator is in point placement mode', () => {
+            const event = {
+                button: 1,
+                ctrlKey: null,
+                metaKey: null,
+                clientX: 1,
+                clientY: 1,
+                preventDefault: sandbox.stub()
+            };
+            imageBase.annotator = {
+                isInPointMode: sandbox.stub().returns(true)
+            };
+            imageBase.handleMouseUp(event);
+            expect(stubs.pan).to.not.be.called;
         });
 
         it('should do nothing if incorrect click type', () => {
@@ -314,11 +534,11 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         it('should prevent drag events on the image', () => {
             const event = {
                 preventDefault: sandbox.stub(),
-                stopPropogation: sandbox.stub()
+                stopPropagation: sandbox.stub()
             };
             imageBase.cancelDragEvent(event);
             expect(event.preventDefault).to.be.called;
-            expect(event.stopPropogation).to.be.called;
+            expect(event.stopPropagation).to.be.called;
         });
     });
 
@@ -490,6 +710,13 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.emit).to.have.been.called;
             expect(stubs.zoom).to.have.been.called;
             expect(stubs.loadUI).to.have.been.called;
+        });
+
+        it('should show annotations after image is ready', () => {
+            const showStub = sandbox.stub(imageBase, 'showAnnotations');
+
+            imageBase.finishLoading();
+            expect(showStub).to.be.called;
         });
     });
 });

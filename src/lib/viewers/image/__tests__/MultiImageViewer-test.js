@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import MultiImageViewer from '../MultiImageViewer';
+import MultiImageAnnotator from '../../../annotations/image/MultiImageAnnotator';
 import fullscreen from '../../../Fullscreen';
 import Browser from '../../../Browser';
 
@@ -22,7 +23,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
     beforeEach(() => {
         clock = sinon.useFakeTimers();
         sandbox.stub(Browser, 'isMobile').returns(false);
-        fixture.load('viewers/image/__tests__/MultiImage-test.html');
+        fixture.load('viewers/image/__tests__/MultiImageViewer-test.html');
         containerEl = document.querySelector('.container');
         stubs.emit = sandbox.stub(fullscreen, 'addListener');
         options = {
@@ -121,7 +122,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             multiImage.setup();
             stubs.bindImageListeners = sandbox.stub(multiImage, 'bindImageListeners');
             stubs.singleImageEl = {
-                src: undefined
+                src: undefined,
+                setAttribute: sandbox.stub(),
+                classList: {
+                    add: sandbox.stub()
+                }
             };
         });
 
@@ -142,6 +147,22 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
             multiImage.setupImageEls('file/100/content/{page}.png', 0);
             expect(multiImage.singleImageEls[0].src).to.be.equal('file/100/content/{page}.png');
+        });
+
+        it('should add a page number attribute to each image, as one more than the index', () => {
+            multiImage.singleImageEls = {
+                0: stubs.singleImageEl
+            };
+            multiImage.setupImageEls('file/100/content/{page}.png', 0);
+            expect(stubs.singleImageEl.setAttribute).to.be.calledWith('data-page-number', 1);
+        });
+
+        it('should add the class "image-page" to each image', () => {
+            multiImage.singleImageEls = {
+                0: stubs.singleImageEl
+            };
+            multiImage.setupImageEls('file/100/content/{page}.png', 0);
+            expect(stubs.singleImageEl.classList.add).to.be.calledWith('image-page');
         });
     });
 
@@ -239,6 +260,13 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(stubs.zoomEmit).to.be.called;
             expect(stubs.updatePannability).to.be.called;
         });
+
+        it('should scale annotations if an annotator is present', () => {
+            const scaleStub = sandbox.stub(multiImage, 'scaleAnnotations');
+            multiImage.annotator = sandbox.stub();
+            multiImage.zoom();
+            expect(scaleStub).to.be.called;
+        });
     });
 
     describe('loadUI()', () => {
@@ -294,6 +322,57 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         it('should remove the error event listener', () => {
             multiImage.unbindImageListeners(1);
             expect(multiImage.singleImageEls[1].removeEventListener).to.be.calledWith('error', sinon.match.func);
+        });
+    });
+
+    describe('scaleAnnotations()', () => {
+        beforeEach(() => {
+            multiImage.singleImageEls = [
+                {
+                    naturalWidth: 100,
+                    naturalHeight: 100
+                }
+            ];
+        });
+
+        it('should scale annotations accordingly', () => {
+            multiImage.annotator = {
+                setScale: sandbox.stub(),
+                renderAnnotations: sandbox.stub()
+            };
+
+            const [width, height] = [200, 200];
+
+            multiImage.scaleAnnotations(width, height);
+            expect(multiImage.annotator.setScale).to.be.calledWith(2);
+            expect(multiImage.annotator.renderAnnotations).to.be.called;
+        });
+    });
+
+    describe('createAnnotator()', () => {
+        let initStub;
+
+        beforeEach(() => {
+            initStub = sandbox.stub(MultiImageAnnotator.prototype, 'init');
+            multiImage.wrapperEl = document.createElement('div');
+        });
+
+        it('should create an instance of an ImageAnnotator', () => {
+            multiImage.createAnnotator();
+            expect(multiImage.annotator).to.be.an.instanceof(MultiImageAnnotator);
+            expect(initStub).to.be.called;
+        });
+
+        it('should add an event listener for Point Mode Enter, on the annotator', () => {
+            const enterStub = sandbox.stub(MultiImageAnnotator.prototype, 'addListener');
+            multiImage.createAnnotator();
+            expect(enterStub).to.be.calledWith('pointmodeenter');
+        });
+
+        it('should add an event listener for Point Mode Exit, on the annotator', () => {
+            const enterStub = sandbox.stub(MultiImageAnnotator.prototype, 'addListener');
+            multiImage.createAnnotator();
+            expect(enterStub).to.be.calledWith('pointmodeexit');
         });
     });
 });
