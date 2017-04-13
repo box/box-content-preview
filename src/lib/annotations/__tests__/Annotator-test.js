@@ -252,7 +252,9 @@ describe('lib/annotations/Annotator', () => {
         });
 
         it('should reset and create a new thread map by fetching annotation data from the server', () => {
-            sandbox.stub(annotator, 'createAnnotationThread').returns(stubs.thread);
+            stubs.createThread = sandbox.stub(annotator, 'createAnnotationThread');
+            stubs.createThread.onFirstCall();
+            stubs.createThread.onSecondCall().returns(stubs.thread);
             sandbox.stub(annotator, 'bindCustomListenersOnThread');
 
             const result = annotator.fetchAnnotations();
@@ -260,7 +262,7 @@ describe('lib/annotations/Annotator', () => {
             return stubs.threadPromise.then(() => {
                 expect(Object.keys(annotator._threads).length === 0).to.be.true;
                 expect(annotator.createAnnotationThread).to.be.calledTwice;
-                expect(annotator.bindCustomListenersOnThread).to.be.calledTwice;
+                expect(annotator.bindCustomListenersOnThread).to.be.calledOnce;
                 expect(result).to.be.an.object;
             });
         });
@@ -371,6 +373,17 @@ describe('lib/annotations/Annotator', () => {
             expect(annotator.getLocationFromEvent).to.not.be.called;
             expect(annotator.bindCustomListenersOnThread).to.not.be.called;
             expect(annotator.togglePointModeHandler).to.not.be.called;
+        });
+
+        it('should not do anything if thread is invalid', () => {
+            stubs.destroy.returns(false);
+
+            stubs.threadMock.expects('show').never();
+            annotator.pointClickHandler(event);
+
+            expect(annotator.getLocationFromEvent).to.be.called;
+            expect(annotator.togglePointModeHandler).to.be.called;
+            expect(annotator.bindCustomListenersOnThread).to.not.be.called;
         });
 
         it('should not create a thread if a location object cannot be inferred from the event', () => {
