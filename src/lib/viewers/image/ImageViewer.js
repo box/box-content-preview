@@ -508,10 +508,10 @@ class ImageViewer extends ImageBaseViewer {
             return null;
         }
 
-        return (event = {}) => {
+        return () => {
             this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
             this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-            this.annotator.togglePointModeHandler(event);
+            this.emit('togglepointannotationmode');
         };
     }
 }
