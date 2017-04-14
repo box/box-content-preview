@@ -255,7 +255,9 @@ class Annotator extends EventEmitter {
 
                     // Bind events on valid annotation thread
                     const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
-                    this.bindCustomListenersOnThread(thread);
+                    if (thread) {
+                        this.bindCustomListenersOnThread(thread);
+                    }
                 });
             });
     }
@@ -421,10 +423,13 @@ class Annotator extends EventEmitter {
 
         // Create new thread with no annotations, show indicator, and show dialog
         const thread = this.createAnnotationThread([], location, constants.ANNOTATION_TYPE_POINT);
-        thread.show();
 
-        // Bind events on thread
-        this.bindCustomListenersOnThread(thread);
+        if (thread) {
+            thread.show();
+
+            // Bind events on thread
+            this.bindCustomListenersOnThread(thread);
+        }
     }
 
     /**
