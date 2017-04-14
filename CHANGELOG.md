@@ -1,5 +1,13 @@
 # Change Log
 
+## [v0.119.1](https://github.com/box/box-content-preview/tree/v0.119.1) (2017-04-12)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.119.0...v0.119.1)
+
+**Merged pull requests:**
+
+- Fix: adding patch to options check in release script [\#69](https://github.com/box/box-content-preview/pull/69) ([jeremypress](https://github.com/jeremypress))
+- Fix: updating metadata from repStatus [\#60](https://github.com/box/box-content-preview/pull/60) ([jeremypress](https://github.com/jeremypress))
+
 ## [v0.119.0](https://github.com/box/box-content-preview/tree/v0.119.0) (2017-04-11)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.118.0...v0.119.0)
 
