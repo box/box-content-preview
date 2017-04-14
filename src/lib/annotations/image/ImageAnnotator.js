@@ -25,32 +25,26 @@ class ImageAnnotator extends Annotator {
     getLocationFromEvent(event) {
         let location = null;
 
-        // Get image tag inside viewer
-        const imageEl = this._annotatedElement.querySelector('img');
-        if (!imageEl) {
+        // If we haven't click on an image, don't annotate.
+        const target = event.target;
+        if (target.nodeName !== 'IMG') {
             return location;
         }
 
         // If click is inside an annotation dialog, ignore
-        const dataType = annotatorUtil.findClosestDataType(this._annotatedElement);
+        const dataType = annotatorUtil.findClosestDataType(target);
         if (dataType === 'annotation-dialog' || dataType === 'annotation-indicator') {
             return location;
         }
 
         // Location based only on image position
-        const imageDimensions = imageEl.getBoundingClientRect();
-        let [x, y] = [(event.clientX - imageDimensions.left), (event.clientY - imageDimensions.top)];
-
-        // If click isn't in image area, ignore
-        if (event.clientX > imageDimensions.right || event.clientX < imageDimensions.left ||
-            event.clientY > imageDimensions.bottom || event.clientY < imageDimensions.top) {
-            return location;
-        }
+        const imageDimensions = target.getBoundingClientRect();
+        const [x, y] = [(event.clientX - imageDimensions.left), (event.clientY - imageDimensions.top)];
 
         // Scale location coordinates according to natural image size
         const scale = annotatorUtil.getScale(this._annotatedElement);
-        const rotation = Number(imageEl.getAttribute('data-rotation-angle'));
-        [x, y] = imageAnnotatorUtil.getLocationWithoutRotation(x / scale, y / scale, rotation, imageDimensions, scale);
+        const rotation = Number(target.getAttribute('data-rotation-angle'));
+        const [scaledX, scaledY] = imageAnnotatorUtil.getLocationWithoutRotation(x / scale, y / scale, rotation, imageDimensions, scale);
 
         // We save the dimensions of the annotated element so we can
         // compare to the element being rendered on and scale as appropriate
@@ -59,7 +53,7 @@ class ImageAnnotator extends Annotator {
             y: imageDimensions.height / scale
         };
 
-        location = { x, y, imageEl, dimensions };
+        location = { x: scaledX, y: scaledY, imageEl: target, dimensions };
 
         return location;
     }
@@ -144,18 +138,19 @@ class ImageAnnotator extends Annotator {
 
         // Only show/hide point annotation button if user has the appropriate
         // permissions
-        if (this._annotationService.canAnnotate) {
-            // Hide create annotations button if image is rotated
-            // TODO(@spramod) actually adjust getLocationFromEvent method in
-            // annotator to get correct location rather than disabling the creation
-            // of annotations on rotated images
-            const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+        if (!this._annotationService.canAnnotate) {
+            return;
+        }
+        // Hide create annotations button if image is rotated
+        // TODO(@spramod) actually adjust getLocationFromEvent method in
+        // annotator to get correct location rather than disabling the creation
+        // of annotations on rotated images
+        const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
 
-            if (rotationAngle !== 0) {
-                annotatorUtil.hideElement(annotateButton);
-            } else {
-                annotatorUtil.showElement(annotateButton);
-            }
+        if (rotationAngle !== 0) {
+            annotatorUtil.hideElement(annotateButton);
+        } else {
+            annotatorUtil.showElement(annotateButton);
         }
     }
 }

@@ -1,12 +1,16 @@
 import autobind from 'autobind-decorator';
+import MultiImageAnnotator from '../../annotations/image/MultiImageAnnotator';
 import ImageBaseViewer from './ImageBaseViewer';
 import './MultiImage.scss';
 
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
 
+const CSS_CLASS_ZOOMABLE = 'zoomable';
+const CSS_CLASS_PANNABLE = 'pannable';
 const CSS_CLASS_IMAGE = 'bp-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
+const ANNOTATION_TYPES = ['point'];
 
 @autobind
 class MultiImageViewer extends ImageBaseViewer {
@@ -17,7 +21,6 @@ class MultiImageViewer extends ImageBaseViewer {
     setup() {
         super.setup();
 
-        this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_IMAGE_WRAPPER;
 
 
@@ -26,6 +29,8 @@ class MultiImageViewer extends ImageBaseViewer {
 
         this.singleImageEls = [this.imageEl.appendChild(document.createElement('img'))];
         this.loadTimeout = 60000;
+
+        this.annotationTypes = [...ANNOTATION_TYPES];
     }
 
     /**
@@ -34,9 +39,6 @@ class MultiImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     destroy() {
-        // Remove listeners
-        this.unbindDOMListeners();
-
         if (this.singleImageEls && this.singleImageEls.length > 0) {
             this.singleImageEls.forEach((el, index) => {
                 this.unbindImageListeners(index);
@@ -59,7 +61,6 @@ class MultiImageViewer extends ImageBaseViewer {
         // Hides images until content is loaded
         this.imageEl.classList.add(CLASS_INVISIBLE);
         this.bindImageListeners(0);
-        this.bindDOMListeners();
 
         return this.getRepStatus().getPromise().then(() => {
             const template = this.options.representation.content.url_template;
@@ -104,6 +105,10 @@ class MultiImageViewer extends ImageBaseViewer {
             this.bindImageListeners(index);
         }
 
+        // Set page number for annotation lookup. Page is index + 1.
+        this.singleImageEls[index].setAttribute('data-page-number', index + 1);
+        this.singleImageEls[index].classList.add('image-page');
+        // Load the image
         this.singleImageEls[index].src = imageUrl;
     }
 
@@ -114,49 +119,13 @@ class MultiImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     updatePannability() {
-        if (!this.wrapperEl) {
+        if (!this.wrapperEl || (this.annotator && this.annotator.isInPointMode())) {
             return;
         }
 
         this.isPannable = this.imageEl.clientWidth > this.wrapperEl.clientWidth;
         this.didPan = false;
         this.updateCursor();
-    }
-
-    /**
-     * Handles zoom
-     * @param {string} [type] - Type of zoom in|out|reset
-     * @private
-     * @return {void}
-     */
-    zoom(type) {
-        let newWidth;
-        const viewportWidth = this.imageEl.parentNode.clientWidth;
-        const imageContainerWidth = this.imageEl.clientWidth;
-
-        switch (type) {
-            case 'in':
-                newWidth = imageContainerWidth + 100;
-                break;
-
-            case 'out':
-                newWidth = imageContainerWidth - 100;
-                break;
-
-            default:
-                newWidth = viewportWidth;
-                break;
-        }
-
-        this.imageEl.style.width = `${newWidth}px`;
-
-        // Fix the scroll position of the image to be centered
-        this.imageEl.parentNode.scrollLeft = (this.imageEl.parentNode.scrollWidth - viewportWidth) / 2;
-
-        this.emit('zoom');
-
-        // Give the browser some time to render before updating pannability
-        setTimeout(this.updatePannability, 50);
     }
 
     /**
@@ -197,6 +166,87 @@ class MultiImageViewer extends ImageBaseViewer {
         }
 
         this.singleImageEls[index].removeEventListener('error', this.errorHandler);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    zoom(type) {
+        let newWidth;
+        const viewportWidth = this.imageEl.parentNode.clientWidth;
+        const imageContainerWidth = this.imageEl.clientWidth;
+
+        switch (type) {
+            case 'in':
+                newWidth = imageContainerWidth + 100;
+                break;
+
+            case 'out':
+                newWidth = imageContainerWidth - 100;
+                break;
+
+            default:
+                newWidth = viewportWidth;
+                break;
+        }
+
+        this.imageEl.style.width = `${newWidth}px`;
+
+        // Fix the scroll position of the image to be centered
+        this.wrapperEl.scrollLeft = (this.wrapperEl.scrollWidth - viewportWidth) / 2;
+
+        if (this.annotator) {
+            this.scaleAnnotations(this.imageEl.offsetWidth, this.imageEl.offsetHeight);
+        }
+
+        this.emit('zoom');
+
+        // Give the browser some time to render before updating pannability
+        setTimeout(this.updatePannability, 50);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    scaleAnnotations(width, height) {
+        // Grab the first page image dimensions
+        const imageEl = this.singleImageEls[0];
+        const scale = width ? (width / imageEl.naturalWidth) : (height / imageEl.naturalHeight);
+        this.annotator.setScale(scale);
+        this.annotator.renderAnnotations();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    createAnnotator(fileVersionID, annotationService) {
+        const { location } = this.options;
+        // Construct and init annotator
+        this.annotator = new MultiImageAnnotator({
+            annotatedElement: this.wrapperEl,
+            annotationService,
+            fileVersionID,
+            locale: location ? location.locale : undefined
+        });
+        this.annotator.init(this);
+
+        // Disables controls during point annotation mode
+        /* istanbul ignore next */
+        this.annotator.addListener('pointmodeenter', () => {
+            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+            if (this.controls) {
+                this.controls.disable();
+            }
+        });
+
+        /* istanbul ignore next */
+        this.annotator.addListener('pointmodeexit', () => {
+            this.updateCursor();
+            if (this.controls) {
+                this.controls.enable();
+            }
+        });
     }
 }
 

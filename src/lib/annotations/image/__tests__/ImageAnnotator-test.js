@@ -14,7 +14,6 @@ describe('lib/annotations/image/ImageAnnotator', () => {
 
     beforeEach(() => {
         fixture.load('annotations/image/__tests__/ImageAnnotator-test.html');
-
         annotator = new ImageAnnotator({
             annotatedElement: document.querySelector('.annotated-element'),
             annotationService: {},
@@ -29,38 +28,46 @@ describe('lib/annotations/image/ImageAnnotator', () => {
     });
 
     describe('getLocationFromEvent()', () => {
+        let event;
+        let target;
+        beforeEach(() => {
+            target = {
+                nodeName: 'IMG',
+                getBoundingClientRect: sandbox.stub(),
+                getAttribute: sandbox.stub().withArgs('data-rotation-angle').returns(0)
+            };
+            event = {
+                target
+            };
+        });
+
+        afterEach(() => {
+            event = undefined;
+            target = undefined;
+        });
+
         it('should not return a location if image isn\'t inside viewer', () => {
             const tempAnnotator = new ImageAnnotator({
                 annotatedElement: document.createElement('div'),
                 annotationService: {},
                 fileVersionID: 1
             });
-
-            const location = tempAnnotator.getLocationFromEvent({});
+            target.nodeName = 'div';
+            const location = tempAnnotator.getLocationFromEvent(event);
             expect(location).to.be.null;
         });
 
         it('should not return a location if click is on dialog', () => {
             sandbox.stub(annotatorUtil, 'findClosestDataType').returns('annotation-dialog');
 
-            const location = annotator.getLocationFromEvent({});
+            const location = annotator.getLocationFromEvent(event);
             expect(location).to.be.null;
         });
 
         it('should not return a location if click is on annotation indicator', () => {
             sandbox.stub(annotatorUtil, 'findClosestDataType').returns('annotation-indicator');
 
-            const location = annotator.getLocationFromEvent({});
-            expect(location).to.be.null;
-        });
-
-        it('should not return a location if click isn\'t in image area', () => {
-            sandbox.stub(annotatorUtil, 'findClosestDataType').returns('not-a-dialog');
-
-            const location = annotator.getLocationFromEvent({
-                clientX: -1,
-                clientY: -1
-            });
+            const location = annotator.getLocationFromEvent(event);
             expect(location).to.be.null;
         });
 
@@ -69,18 +76,18 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             const y = 200;
             const dimensions = {
                 x: 100,
-                y: 200
+                y: 100
             };
-            const imageEl = annotator._annotatedElement.querySelector('img');
             sandbox.stub(annotatorUtil, 'findClosestDataType').returns('not-a-dialog');
             sandbox.stub(annotatorUtil, 'getScale').returns(1);
             sandbox.stub(imageAnnotatorUtil, 'getLocationWithoutRotation').returns([x, y]);
+            target.getBoundingClientRect.returns({ width: 100, height: 100 });
 
-            const location = annotator.getLocationFromEvent({});
+            const location = annotator.getLocationFromEvent(event);
             expect(location).to.deep.equal({
                 x,
                 y,
-                imageEl,
+                imageEl: target,
                 dimensions
             });
         });
@@ -105,6 +112,15 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             expect(thread instanceof ImagePointThread).to.be.false;
             expect(annotator.handleValidationError).to.be.called;
         });
+
+        it('should group annotations on the same thread if there is more than one', () => {
+            sandbox.stub(annotatorUtil, 'validateThreadParams').returns(true);
+            sandbox.stub(annotator, 'addThreadToMap');
+            sandbox.stub(annotator, 'handleValidationError');
+            const id = 'abcde';
+            const thread = annotator.createAnnotationThread([{ threadID: id }, { threadID: '09876' }], {}, 'point');
+            expect(thread._threadID).to.equal(id);
+        });
     });
 
     describe('hideAllAnnotations()', () => {
@@ -122,6 +138,39 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             const annotation = document.querySelector('.bp-point-annotation-btn');
             const classList = Array.from(annotation.classList);
             expect(classList).to.not.include('bp-is-hidden');
+        });
+    });
+
+    describe('renderAnnotations()', () => {
+        let hide;
+        let show;
+        beforeEach(() => {
+            hide = sandbox.stub(annotatorUtil, 'hideElement');
+            show = sandbox.stub(annotatorUtil, 'showElement');
+            Object.defineProperty(Object.getPrototypeOf(ImageAnnotator.prototype), 'renderAnnotations', {
+                value: sandbox.stub()
+            });
+        });
+
+        it('should do nothing if the annotator is not allowed to annotate', () => {
+            annotator._annotationService.canAnnotate = false;
+            annotator.renderAnnotations();
+            expect(hide).to.not.be.called;
+            expect(show).to.not.be.called;
+        });
+
+        it('should not hide the annotate button if the image has not been rotated', () => {
+            annotator._annotationService.canAnnotate = true;
+            annotator.renderAnnotations(0);
+            expect(hide).to.not.be.called;
+            expect(show).to.be.called;
+        });
+
+        it('should hide the annotate button if the image has been rotated', () => {
+            annotator._annotationService.canAnnotate = true;
+            annotator.renderAnnotations(180);
+            expect(hide).to.be.called;
+            expect(show).to.not.be.called;
         });
     });
 });
