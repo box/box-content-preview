@@ -18,7 +18,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/error/__tests__/PreviewError-test.html');
+        fixture.load('viewers/error/__tests__/PreviewErrorViewer-test.html');
         error = new PreviewErrorViewer({
             file: {
                 id: '1'

@@ -13,7 +13,7 @@ describe('lib/viewers/text/MarkdownViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/text/__tests__/Markdown-test.html');
+        fixture.load('viewers/text/__tests__/MarkdownViewer-test.html');
         containerEl = document.querySelector('.container');
         markdown = new MarkdownViewer({
             file: {

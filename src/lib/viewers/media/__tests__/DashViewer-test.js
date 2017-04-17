@@ -20,7 +20,7 @@ describe('lib/viewers/media/DashViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/Dash-test.html');
+        fixture.load('viewers/media/__tests__/DashViewer-test.html');
         const containerEl = document.querySelector('.container');
 
         dash = new DashViewer({

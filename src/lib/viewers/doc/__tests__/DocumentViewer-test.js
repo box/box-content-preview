@@ -24,7 +24,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/doc/__tests__/Document-test.html');
+        fixture.load('viewers/doc/__tests__/DocumentViewer-test.html');
 
         containerEl = document.querySelector('.container');
         doc = new DocumentViewer({

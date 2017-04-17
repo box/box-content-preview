@@ -15,7 +15,7 @@ describe('lib/viewers/box3d/image360/Image360Viewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/box3d/image360/__tests__/Image360-test.html');
+        fixture.load('viewers/box3d/image360/__tests__/Image360Viewer-test.html');
         containerEl = document.querySelector('.container');
         viewer = new Image360Viewer({
             container: containerEl,

@@ -10,7 +10,7 @@ describe('lib/viewers/media/MP4Viewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/MP4-test.html');
+        fixture.load('viewers/media/__tests__/MP4Viewer-test.html');
         const containerEl = document.querySelector('.container');
         mp4 = new MP4Viewer({
             container: containerEl,

@@ -26,7 +26,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/box3d/model3d/__tests__/Model3D-test.html');
+        fixture.load('viewers/box3d/model3d/__tests__/Model3DViewer-test.html');
         containerEl = document.querySelector('.container');
         stubs.BoxSDK = sandbox.stub(window, 'BoxSDK');
         model3d = new Model3DViewer({

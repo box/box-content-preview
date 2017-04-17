@@ -13,7 +13,7 @@ describe('lib/viewers/SWFViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/swf/__tests__/SWF-test.html');
+        fixture.load('viewers/swf/__tests__/SWFViewer-test.html');
         containerEl = document.querySelector('.container');
         swf = new SWFViewer({
             file: {

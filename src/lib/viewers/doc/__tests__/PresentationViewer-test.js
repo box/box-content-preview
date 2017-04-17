@@ -27,7 +27,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/doc/__tests__/Presentation-test.html');
+        fixture.load('viewers/doc/__tests__/PresentationViewer-test.html');
 
         containerEl = document.querySelector('.container');
         presentation = new PresentationViewer({

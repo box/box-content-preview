@@ -11,7 +11,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/VideoBase-test.html');
+        fixture.load('viewers/media/__tests__/VideoBaseViewer-test.html');
         videoBase = new VideoBaseViewer({
             file: {
                 id: 1
