@@ -667,7 +667,8 @@ class DocBaseViewer extends BaseViewer {
             (file.watermark_info && file.watermark_info.is_watermarked);
 
         // Disable text layer if user doesn't have download permissions
-        PDFJS.disableTextLayer = !checkPermission(file, PERMISSION_DOWNLOAD);
+        PDFJS.disableTextLayer = !checkPermission(file, PERMISSION_DOWNLOAD) ||
+            !!this.getViewerOption('disableTextLayer');
 
         // Decrease mobile canvas size to ~3MP (1920x1536)
         PDFJS.maxCanvasPixels = Browser.isMobile() ? MOBILE_MAX_CANVAS_SIZE : PDFJS.maxCanvasPixels;
