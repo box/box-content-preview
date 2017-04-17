@@ -78,7 +78,7 @@ module.exports = (language) => {
             }),
             new I18nPlugin(langJson),
             new DefinePlugin({
-                __NAME__: JSON.stringify(pkg.description),
+                __NAME__: JSON.stringify(pkg.name),
                 __VERSION__: JSON.stringify(pkg.version),
                 'process.env': {
                     NODE_ENV: JSON.stringify(process.env.NODE_ENV),
