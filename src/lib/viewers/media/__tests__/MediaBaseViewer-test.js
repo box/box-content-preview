@@ -14,7 +14,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/MediaBase-test.html');
+        fixture.load('viewers/media/__tests__/MediaBaseViewer-test.html');
         stubs = {};
         media = new MediaBaseViewer({
             file: {

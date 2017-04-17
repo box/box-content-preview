@@ -20,7 +20,7 @@ describe('lib/viewers/office/OfficeViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/office/__tests__/Office-test.html');
+        fixture.load('viewers/office/__tests__/OfficeViewer-test.html');
         office = new OfficeViewer({
             container: '.container',
             file: {

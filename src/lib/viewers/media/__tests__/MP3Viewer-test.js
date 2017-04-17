@@ -11,7 +11,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/MP3-test.html');
+        fixture.load('viewers/media/__tests__/MP3Viewer-test.html');
         const containerEl = document.querySelector('.container');
         mp3 = new MP3Viewer({
             container: containerEl,

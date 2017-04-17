@@ -14,7 +14,7 @@ describe('lib/viewers/text/TextBaseViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/text/__tests__/TextBase-test.html');
+        fixture.load('viewers/text/__tests__/TextBaseViewer-test.html');
         containerEl = document.querySelector('.container');
         textBase = new TextBaseViewer({
             file: {

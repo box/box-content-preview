@@ -16,7 +16,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/text/__tests__/Text-test.html');
+        fixture.load('viewers/text/__tests__/PlainTextViewer-test.html');
         containerEl = document.querySelector('.container');
         text = new PlainTextViewer({
             file: {

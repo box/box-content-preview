@@ -15,7 +15,7 @@ describe('lib/viewers/text/CSVViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/text/__tests__/CSV-test.html');
+        fixture.load('viewers/text/__tests__/CSVViewer-test.html');
         containerEl = document.querySelector('.container');
         options = {
             container: containerEl,

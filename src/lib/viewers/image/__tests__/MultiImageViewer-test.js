@@ -22,7 +22,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
     beforeEach(() => {
         clock = sinon.useFakeTimers();
         sandbox.stub(Browser, 'isMobile').returns(false);
-        fixture.load('viewers/image/__tests__/MultiImage-test.html');
+        fixture.load('viewers/image/__tests__/MultiImageViewer-test.html');
         containerEl = document.querySelector('.container');
         stubs.emit = sandbox.stub(fullscreen, 'addListener');
         options = {

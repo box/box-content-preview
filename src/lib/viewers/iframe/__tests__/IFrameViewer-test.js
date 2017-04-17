@@ -10,7 +10,7 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/iframe/__tests__/IFrame-test.html');
+        fixture.load('viewers/iframe/__tests__/IFrameViewer-test.html');
         containerEl = document.querySelector('.container');
         iframe = new IFrameViewer({
             container: containerEl,

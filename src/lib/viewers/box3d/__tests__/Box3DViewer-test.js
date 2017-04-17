@@ -28,7 +28,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/box3d/__tests__/Box3D-test.html');
+        fixture.load('viewers/box3d/__tests__/Box3DViewer-test.html');
         containerEl = document.querySelector('.container');
         stubs.BoxSDK = sandbox.stub(window, 'BoxSDK');
         box3d = new Box3DViewer({
