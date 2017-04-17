@@ -36,7 +36,6 @@ import {
     hideLoadingIndicator,
     showDownloadButton,
     showLoadingDownloadButton,
-    showAnnotateButton,
     showPrintButton,
     showNavigation
 } from './ui';
@@ -46,7 +45,6 @@ import {
     CLASS_NAVIGATION_VISIBILITY,
     FILE_EXT_ERROR_MAP,
     PERMISSION_DOWNLOAD,
-    PERMISSION_ANNOTATE,
     PERMISSION_PREVIEW,
     PREVIEW_SCRIPT_NAME,
     X_REP_HINT_BASE,
@@ -922,10 +920,6 @@ class Preview extends EventEmitter {
             if (checkFeature(this.viewer, 'print') && !Browser.isMobile()) {
                 showPrintButton(this.print);
             }
-        }
-
-        if (checkPermission(this.file, PERMISSION_ANNOTATE) && !Browser.isMobile() && checkFeature(this.viewer, 'isAnnotatable', 'point')) {
-            showAnnotateButton(this.viewer.getPointModeClickHandler());
         }
 
         const { error } = data;

@@ -51,6 +51,7 @@ class ImageBaseViewer extends BaseViewer {
         this.imageEl.classList.remove(CLASS_INVISIBLE);
         this.loaded = true;
         this.emit('load');
+        this.emit('viewerloaded');
     }
 
     /**
