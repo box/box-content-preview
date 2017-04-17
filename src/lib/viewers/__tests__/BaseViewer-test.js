@@ -16,7 +16,7 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     beforeEach(() => {
-        fixture.load('viewers/__tests__/Base-test.html');
+        fixture.load('viewers/__tests__/BaseViewer-test.html');
 
         containerEl = document.querySelector('.bp-container');
         base = new BaseViewer({
@@ -215,6 +215,7 @@ describe('lib/viewers/BaseViewer', () => {
     describe('addCommonListeners()', () => {
         it('should append common event listeners', () => {
             sandbox.stub(fullscreen, 'addListener');
+            sandbox.stub(base, 'addListener');
             sandbox.stub(document.defaultView, 'addEventListener');
 
             base.addCommonListeners();
@@ -222,6 +223,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(fullscreen.addListener).to.be.calledWith('enter', sinon.match.func);
             expect(fullscreen.addListener).to.be.calledWith('exit', sinon.match.func);
             expect(document.defaultView.addEventListener).to.be.calledWith('resize', base.debouncedResizeHandler);
+            expect(base.addListener).to.be.calledWith('togglepointannotationmode', sinon.match.func);
         });
     });
 

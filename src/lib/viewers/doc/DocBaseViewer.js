@@ -540,7 +540,9 @@ class DocBaseViewer extends BaseViewer {
             return null;
         }
 
-        return this.annotator.togglePointModeHandler;
+        return () => {
+            this.emit('togglepointannotationmode');
+        };
     }
 
     /**

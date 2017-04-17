@@ -250,6 +250,11 @@ class BaseViewer extends EventEmitter {
 
         // Add a resize handler for the window
         document.defaultView.addEventListener('resize', this.debouncedResizeHandler);
+
+        /* istanbul ignore next */
+        this.addListener('togglepointannotationmode', () => {
+            this.annotator.togglePointModeHandler();
+        });
     }
 
     /**
