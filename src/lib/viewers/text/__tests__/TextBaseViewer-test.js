@@ -91,7 +91,16 @@ describe('lib/viewers/text/TextBaseViewer', () => {
         it('should add selectable class if user has download permissions', () => {
             sandbox.stub(file, 'checkPermission').withArgs(textBase.options.file, PERMISSION_DOWNLOAD).returns(true);
             textBase.load();
-            expect(textBase.containerEl.classList.contains('bp-is-selectable')).to.be.true;
+            expect(textBase.containerEl).to.have.class('bp-is-selectable');
+        });
+
+        it('should not add selectable class if disableTextViewer option is true', () => {
+            sandbox.stub(file, 'checkPermission').withArgs(textBase.options.file, PERMISSION_DOWNLOAD).returns(true);
+            sandbox.stub(textBase, 'getViewerOption').withArgs('disableTextLayer').returns(true);
+
+            textBase.load();
+
+            expect(textBase.containerEl).to.not.have.class('bp-is-selectable');
         });
     });
 
