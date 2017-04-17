@@ -884,13 +884,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should return the toggle point mode handler', () => {
             stubs.isAnnotatable.returns(true);
+            sandbox.stub(docBase, 'emit');
             docBase.annotator = {
-                togglePointModeHandler: 'handler'
+                togglePointModeHandler: () => {}
             };
 
             const handler = docBase.getPointModeClickHandler();
             expect(stubs.isAnnotatable).to.be.called;
-            expect(handler).to.equal('handler');
+            expect(handler).to.be.a('function');
+
+            handler(event);
+            expect(docBase.emit).to.have.been.calledWith('togglepointannotationmode');
         });
     });
 
