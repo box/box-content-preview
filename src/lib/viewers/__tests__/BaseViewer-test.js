@@ -5,9 +5,12 @@ import Browser from '../../Browser';
 import RepStatus from '../../RepStatus';
 import fullscreen from '../../Fullscreen';
 import * as util from '../../util';
+import * as file from '../../file';
+import * as constants from '../../constants';
 
 let base;
 let containerEl;
+let stubs = {};
 const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/BaseViewer', () => {
@@ -38,6 +41,7 @@ describe('lib/viewers/BaseViewer', () => {
     describe('setup()', () => {
         it('should set options, a container, bind event listeners, and set timeout', () => {
             sandbox.stub(base, 'addCommonListeners');
+            sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
 
             base.setup();
 
@@ -54,6 +58,7 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should add a mobile class to the container if on mobile', () => {
             sandbox.stub(Browser, 'isMobile').returns(true);
+            sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
             base.setup();
 
             const container = document.querySelector('.bp');
@@ -224,6 +229,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(fullscreen.addListener).to.be.calledWith('exit', sinon.match.func);
             expect(document.defaultView.addEventListener).to.be.calledWith('resize', base.debouncedResizeHandler);
             expect(base.addListener).to.be.calledWith('togglepointannotationmode', sinon.match.func);
+            expect(base.addListener).to.be.calledWith('viewerloaded', sinon.match.func);
         });
     });
 
@@ -265,6 +271,8 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should cleanup the base viewer', () => {
+            sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
+            sandbox.stub(base, 'initAnnotator');
             base.setup();
 
             sandbox.mock(fullscreen).expects('removeAllListeners');
@@ -317,7 +325,6 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('Pinch to Zoom Handlers', () => {
-        let stubs = {};
         let event = {};
 
         beforeEach(() => {
@@ -327,6 +334,8 @@ describe('lib/viewers/BaseViewer', () => {
                     id: '123'
                 }
             });
+            sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
+            sandbox.stub(base, 'initAnnotator');
             base.setup();
             event = {
                 preventDefault: sandbox.stub(),
@@ -560,6 +569,143 @@ describe('lib/viewers/BaseViewer', () => {
 
             representation.status.state = 'error';
             expect(base.isRepresentationReady(representation)).to.be.false;
+        });
+    });
+
+    describe('initAnnotator()', () => {
+        beforeEach(() => {
+            base.options.viewer = {
+                NAME: Document
+            };
+
+            stubs.annotatorLoader = {
+                TYPE: ['point', 'highlight']
+            };
+            stubs.isAnnotatable = sandbox.stub(base, 'isAnnotatable').returns(true);
+            sandbox.stub(base, 'initAnnotations');
+            sandbox.stub(base, 'showAnnotateButton');
+            stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(false);
+        });
+
+        it('should initialize the appropriate annotator for the current viewer', () => {
+            class AnnotatorLoader {
+                determineAnnotator() {
+                    return stubs.annotatorLoader;
+                }
+            }
+            sandbox.stub(Browser, 'isMobile').returns(false);
+            stubs.checkPermission.returns(true);
+
+            window.AnnotatorLoader = AnnotatorLoader;
+            base.initAnnotator();
+            expect(base.initAnnotations).to.be.called;
+            expect(base.showAnnotateButton).to.be.called;
+        });
+
+        it('should not display the point annotation button if the user does not have the appropriate permissions', () => {
+            class AnnotatorLoader {
+                determineAnnotator() {}
+            }
+            window.AnnotatorLoader = AnnotatorLoader;
+
+            base.initAnnotator();
+            expect(base.initAnnotations).to.not.be.called;
+            expect(base.showAnnotateButton).to.not.be.called;
+        });
+
+        it('should not initialize an annotator if no loader was found', () => {
+            class AnnotatorLoader {
+                determineAnnotator() {}
+            }
+            window.AnnotatorLoader = AnnotatorLoader;
+            base.initAnnotator();
+            expect(base.initAnnotations).to.not.be.called;
+            expect(base.showAnnotateButton).to.not.be.called;
+        });
+
+        it('should not initialize an annotator if the viewer is not annotatable', () => {
+            class AnnotatorLoader {
+                determineAnnotator() {
+                    return stubs.annotatorLoader;
+                }
+            }
+            window.AnnotatorLoader = AnnotatorLoader;
+            stubs.isAnnotatable.returns(false);
+            base.initAnnotator();
+            expect(base.initAnnotations).to.not.be.called;
+            expect(base.showAnnotateButton).to.not.be.called;
+        });
+    });
+
+    describe('initAnnotations()', () => {
+        it('should initialize the annotator', () => {
+            base.options = {
+                container: document,
+                file: {
+                    file_version: {
+                        id: 123
+                    }
+                },
+                location: {
+                    locale: 'en-US'
+                }
+            };
+            base.annotator = {
+                init: sandbox.stub()
+            };
+            base.annotatorLoader = {
+                CONSTRUCTOR: sandbox.stub().returns(base.annotator)
+            };
+            base.initAnnotations();
+            expect(base.annotator.init).to.be.called;
+        });
+    });
+
+    describe('isAnnotatable()', () => {
+        beforeEach(() => {
+            stubs.getViewerOption = sandbox.stub(base, 'getViewerOption');
+            stubs.getViewerOption.withArgs('annotations').returns(true);
+            base.annotationTypes = ['point', 'highlight'];
+        });
+
+        it('should return false if the type is not supported by the viewer', () => {
+            expect(base.isAnnotatable('drawing')).to.equal(false);
+        });
+
+        it('should return true if viewer option is set to true', () => {
+            expect(base.isAnnotatable('point')).to.equal(true);
+            stubs.getViewerOption.withArgs('annotations').returns(false);
+            expect(base.isAnnotatable('point')).to.equal(false);
+        });
+
+        it('should use the global show annotationsBoolean if the viewer param is not specified', () => {
+            base.annotationTypes = null;
+            stubs.getViewerOption.withArgs('annotations').returns(null);
+            base.options.showAnnotations = true;
+            expect(base.isAnnotatable()).to.equal(true);
+
+            base.options.showAnnotations = false;
+            expect(base.isAnnotatable()).to.equal(false);
+        });
+    });
+
+    describe('showAnnotateButton()', () => {
+        it('should set up and show annotate button', () => {
+            const buttonEl = document.createElement('div');
+            buttonEl.classList.add('bp-btn-annotate');
+            buttonEl.classList.add(constants.CLASS_HIDDEN);
+            base.options = {
+                container: document,
+                file: {
+                    id: 123
+                }
+            };
+            containerEl.appendChild(buttonEl);
+            sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', base.handler);
+
+            base.showAnnotateButton(base.handler);
+            expect(buttonEl.title).to.equal('Point annotation mode');
+            expect(buttonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
         });
     });
 });

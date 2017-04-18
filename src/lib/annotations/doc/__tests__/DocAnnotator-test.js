@@ -27,10 +27,14 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         sandbox.stub(Browser, 'isMobile').returns(false);
 
         annotator = new DocAnnotator({
-            annotatedElement: document.querySelector('.annotated-element'),
+            canAnnotate: true,
+            container: document,
             annotationService: {},
-            fileVersionID: 1
+            fileVersionID: 1,
+            options: {}
         });
+        annotator.annotatedElement = annotator.getAnnotatedEl(document);
+        annotator.annotationService = {};
 
         stubs.getPage = sandbox.stub(docAnnotatorUtil, 'getPageElAndPageNumber');
     });
@@ -42,6 +46,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator = null;
         }
         stubs = {};
+    });
+
+    describe('getAnnotatedEl()', () => {
+        it('should set the annotated element as the document', () => {
+            expect(annotator.annotatedElement).to.not.be.null;
+        });
     });
 
     describe('getLocationFromEvent()', () => {

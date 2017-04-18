@@ -1285,7 +1285,6 @@ describe('lib/Preview', () => {
             stubs.canDownload = sandbox.stub(Browser, 'canDownload');
             stubs.showDownloadButton = sandbox.stub(ui, 'showDownloadButton');
             stubs.showPrintButton = sandbox.stub(ui, 'showPrintButton');
-            stubs.showAnnotateButton = sandbox.stub(ui, 'showAnnotateButton');
             stubs.hideLoadingIndicator = sandbox.stub(ui, 'hideLoadingIndicator');
             stubs.emit = sandbox.stub(preview, 'emit');
             stubs.logPreviewEvent = sandbox.stub(preview, 'logPreviewEvent');
@@ -1367,43 +1366,6 @@ describe('lib/Preview', () => {
 
             preview.finishLoading();
             expect(stubs.showPrintButton).to.be.called;
-        });
-
-        it('should show the annotation button if you have annotation permissions', () => {
-            stubs.checkPermission.onCall(1).returns(false).onCall(2).returns(true);
-
-
-            preview.finishLoading();
-            expect(stubs.showAnnotateButton).to.not.be.called;
-
-            stubs.checkPermission.onCall(3).returns(true);
-
-            preview.finishLoading();
-            expect(stubs.showAnnotateButton).to.be.called;
-        });
-
-        it('should show the annotation button if you are not on a mobile browser', () => {
-            stubs.isMobile.returns(true);
-
-            preview.finishLoading();
-            expect(stubs.showAnnotateButton).to.not.be.called;
-
-            stubs.isMobile.returns(false);
-
-            preview.finishLoading();
-            expect(stubs.showAnnotateButton).to.be.called;
-        });
-
-        it('should show the annotation button if the viewer has annotation functionality', () => {
-            stubs.checkFeature.returns(false);
-
-            preview.finishLoading();
-            expect(stubs.showAnnotateButton).to.not.be.called;
-
-            stubs.checkFeature.returns(true);
-
-            preview.finishLoading();
-            expect(stubs.showAnnotateButton).to.be.called;
         });
 
         it('should increment the preview count', () => {
