@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Controls from '../../../Controls';
 import TextBaseViewer from '../TextBaseViewer';
+import BaseViewer from '../../BaseViewer';
 import * as file from '../../../file';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
 
@@ -9,12 +10,14 @@ let textBase;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/text/TextBaseViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/text/__tests__/TextBase-test.html');
+        fixture.load('viewers/text/__tests__/TextBaseViewer-test.html');
         containerEl = document.querySelector('.container');
         textBase = new TextBaseViewer({
             file: {
@@ -22,11 +25,15 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             },
             container: containerEl
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        textBase.containerEl = containerEl;
         textBase.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
         if (typeof textBase.destroy === 'function') {
             textBase.destroy();
         }
@@ -91,7 +98,16 @@ describe('lib/viewers/text/TextBaseViewer', () => {
         it('should add selectable class if user has download permissions', () => {
             sandbox.stub(file, 'checkPermission').withArgs(textBase.options.file, PERMISSION_DOWNLOAD).returns(true);
             textBase.load();
-            expect(textBase.containerEl.classList.contains('bp-is-selectable')).to.be.true;
+            expect(textBase.containerEl).to.have.class('bp-is-selectable');
+        });
+
+        it('should not add selectable class if disableTextViewer option is true', () => {
+            sandbox.stub(file, 'checkPermission').withArgs(textBase.options.file, PERMISSION_DOWNLOAD).returns(true);
+            sandbox.stub(textBase, 'getViewerOption').withArgs('disableTextLayer').returns(true);
+
+            textBase.load();
+
+            expect(textBase.containerEl).to.not.have.class('bp-is-selectable');
         });
     });
 

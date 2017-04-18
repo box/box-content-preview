@@ -1,16 +1,19 @@
 import IFrameViewer from '../IFrameViewer';
+import BaseViewer from '../../BaseViewer';
 
 const sandbox = sinon.sandbox.create();
 let containerEl;
 let iframe;
 
 describe('lib/viewers/iframe/IFrameViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/iframe/__tests__/IFrame-test.html');
+        fixture.load('viewers/iframe/__tests__/IFrameViewer-test.html');
         containerEl = document.querySelector('.container');
         iframe = new IFrameViewer({
             container: containerEl,
@@ -19,11 +22,16 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
                 extension: 'boxnote'
             }
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        iframe.containerEl = containerEl;
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (iframe && typeof iframe.destroy === 'function') {
             iframe.destroy();

@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import ImageViewer from '../ImageViewer';
+import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import * as file from '../../../file';
 import * as util from '../../../util';
@@ -16,13 +17,15 @@ let containerEl;
 let clock;
 
 describe('lib/viewers/image/ImageViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
         clock = sinon.useFakeTimers();
-        fixture.load('viewers/image/__tests__/Image-test.html');
+        fixture.load('viewers/image/__tests__/ImageViewer-test.html');
         containerEl = document.querySelector('.container');
         image = new ImageViewer({
             container: containerEl,
@@ -45,6 +48,9 @@ describe('lib/viewers/image/ImageViewer', () => {
                 }
             }
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        image.containerEl = containerEl;
         image.setup();
     });
 
@@ -52,6 +58,8 @@ describe('lib/viewers/image/ImageViewer', () => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
         clock.restore();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (image && typeof image.destroy === 'function') {
             image.destroy();
@@ -70,6 +78,8 @@ describe('lib/viewers/image/ImageViewer', () => {
             });
             sandbox.stub(image, 'initAnnotations');
 
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+            image.containerEl = containerEl;
             image.setup();
 
             expect(image.wrapperEl).to.have.class('bp-image');
@@ -709,8 +719,9 @@ describe('lib/viewers/image/ImageViewer', () => {
         it('should return event listener', () => {
             const event = {};
             image.annotator = {
-                togglePointModeHandler: sandbox.mock().withArgs(event)
+                togglePointModeHandler: () => {}
             };
+            sandbox.stub(image, 'emit');
             image.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
             image.imageEl.classList.add(CSS_CLASS_PANNABLE);
             sandbox.stub(image, 'isAnnotatable').returns(true);
@@ -721,6 +732,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             handler(event);
             expect(image.imageEl).to.not.have.class(CSS_CLASS_ZOOMABLE);
             expect(image.imageEl).to.not.have.class(CSS_CLASS_PANNABLE);
+            expect(image.emit).to.have.been.calledWith('togglepointannotationmode');
         });
     });
 });

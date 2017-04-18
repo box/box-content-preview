@@ -1,31 +1,40 @@
 /* eslint-disable no-unused-expressions */
 import VideoBaseViewer from '../VideoBaseViewer';
 import MediaBaseViewer from '../MediaBaseViewer';
+import BaseViewer from '../../BaseViewer';
 
+let containerEl;
 let videoBase;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/media/VideoBaseViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/VideoBase-test.html');
+        fixture.load('viewers/media/__tests__/VideoBaseViewer-test.html');
+        containerEl = document.querySelector('.container');
         videoBase = new VideoBaseViewer({
             file: {
                 id: 1
             },
-            container: '.container',
+            container: containerEl,
             content: {
                 url_template: 'www.netflix.com'
             }
         });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        videoBase.containerEl = containerEl;
         videoBase.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (videoBase && typeof videoBase.destroy === 'function') {
             videoBase.destroy();
@@ -45,8 +54,10 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 file: {
                     id: 1
                 },
-                container: '.container'
+                container: containerEl
             });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+            videoBase.containerEl = containerEl;
             videoBase.setup();
 
             expect(videoBase.mediaEl.getAttribute('preload')).to.equal('auto');

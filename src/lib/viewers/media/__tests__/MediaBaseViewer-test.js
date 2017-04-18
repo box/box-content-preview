@@ -1,32 +1,40 @@
 /* eslint-disable no-unused-expressions */
 import Browser from '../../../Browser';
 import MediaBaseViewer from '../MediaBaseViewer';
+import BaseViewer from '../../BaseViewer';
 import MediaControls from '../MediaControls';
 import cache from '../../../Cache';
 
 let media;
 let stubs;
+let containerEl;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/media/MediaBaseViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/MediaBase-test.html');
+        fixture.load('viewers/media/__tests__/MediaBaseViewer-test.html');
         stubs = {};
+        containerEl = document.querySelector('.container');
         media = new MediaBaseViewer({
             file: {
                 id: 1
             },
-            container: '.container',
+            container: containerEl,
             representation: {
                 content: {
                     url_template: 'www.netflix.com'
                 }
             }
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        media.containerEl = containerEl;
         media.setup();
         media.mediaControls = {
             addListener: sandbox.stub(),
@@ -47,6 +55,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
         media.destroy();
         media = null;
         stubs = null;

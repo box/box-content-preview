@@ -1,17 +1,20 @@
 /* eslint-disable no-unused-expressions */
 import MP3Viewer from '../MP3Viewer';
 import MediaBaseViewer from '../MediaBaseViewer';
+import BaseViewer from '../../BaseViewer';
 
 const sandbox = sinon.sandbox.create();
 let mp3;
 
 describe('lib/viewers/media/MP3Viewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/MP3-test.html');
+        fixture.load('viewers/media/__tests__/MP3Viewer-test.html');
         const containerEl = document.querySelector('.container');
         mp3 = new MP3Viewer({
             container: containerEl,
@@ -19,11 +22,17 @@ describe('lib/viewers/media/MP3Viewer', () => {
                 id: 1
             }
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        mp3.containerEl = containerEl;
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
+
         if (mp3 && typeof mp3.destroy === 'function') {
             mp3.destroy();
         }

@@ -2,6 +2,7 @@
 import React from 'react';
 import CSVViewer from '../CSVViewer';
 import TextBaseViewer from '../TextBaseViewer';
+import BaseViewer from '../../BaseViewer';
 import * as util from '../../../util';
 
 let containerEl;
@@ -10,12 +11,14 @@ let csv;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/text/CSVViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/text/__tests__/CSV-test.html');
+        fixture.load('viewers/text/__tests__/CSVViewer-test.html');
         containerEl = document.querySelector('.container');
         options = {
             container: containerEl,
@@ -30,12 +33,16 @@ describe('lib/viewers/text/CSVViewer', () => {
         };
 
         csv = new CSVViewer(options);
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        csv.containerEl = containerEl;
         csv.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (typeof csv.destroy === 'function') {
             csv.destroy();
@@ -90,7 +97,7 @@ describe('lib/viewers/text/CSVViewer', () => {
 
             sandbox.stub(util, 'get').returns(Promise.resolve());
 
-            const csvUrlWithAuth = `csvUrl?access_token=token&shared_link=sharedLink&shared_link_password=sharedLinkPassword&box_client_name=Box%20Content%20Preview&box_client_version=${__VERSION__}`;
+            const csvUrlWithAuth = `csvUrl?access_token=token&shared_link=sharedLink&shared_link_password=sharedLinkPassword&box_client_name=box-content-preview&box_client_version=${__VERSION__}`;
 
             return csv.load().then(() => {
                 expect(window.Papa.parse).to.be.calledWith(csvUrlWithAuth, {

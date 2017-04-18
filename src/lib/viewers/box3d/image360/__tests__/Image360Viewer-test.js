@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Image360Viewer from '../Image360Viewer';
+import BaseViewer from '../../../BaseViewer';
 import Box3DControls from '../../Box3DControls';
 import Image360Renderer from '../Image360Renderer';
 
@@ -9,13 +10,14 @@ const CSS_CLASS_IMAGE_360 = 'bp-image-360';
 describe('lib/viewers/box3d/image360/Image360Viewer', () => {
     let containerEl;
     let viewer;
+    const setupFunc = BaseViewer.prototype.setup;
 
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/box3d/image360/__tests__/Image360-test.html');
+        fixture.load('viewers/box3d/image360/__tests__/Image360Viewer-test.html');
         containerEl = document.querySelector('.container');
         viewer = new Image360Viewer({
             container: containerEl,
@@ -24,11 +26,15 @@ describe('lib/viewers/box3d/image360/Image360Viewer', () => {
                 id: '0'
             }
         });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        viewer.containerEl = containerEl;
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (viewer && typeof viewer.destroy === 'function') {
             viewer.destroy();

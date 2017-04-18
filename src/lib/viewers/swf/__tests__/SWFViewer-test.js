@@ -8,12 +8,14 @@ let swf;
 let containerEl;
 
 describe('lib/viewers/SWFViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/swf/__tests__/SWF-test.html');
+        fixture.load('viewers/swf/__tests__/SWFViewer-test.html');
         containerEl = document.querySelector('.container');
         swf = new SWFViewer({
             file: {
@@ -29,12 +31,17 @@ describe('lib/viewers/SWFViewer', () => {
                 }
             }
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        swf.containerEl = containerEl;
         swf.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (swf && typeof swf.destroy === 'function') {
             swf.destroy();

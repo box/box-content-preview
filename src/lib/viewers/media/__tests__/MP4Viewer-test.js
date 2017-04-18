@@ -1,16 +1,19 @@
 /* eslint-disable no-unused-expressions */
 import MP4Viewer from '../MP4Viewer';
+import BaseViewer from '../../BaseViewer';
 
 const sandbox = sinon.sandbox.create();
 let mp4;
 
 describe('lib/viewers/media/MP4Viewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        fixture.load('viewers/media/__tests__/MP4-test.html');
+        fixture.load('viewers/media/__tests__/MP4Viewer-test.html');
         const containerEl = document.querySelector('.container');
         mp4 = new MP4Viewer({
             container: containerEl,
@@ -18,11 +21,17 @@ describe('lib/viewers/media/MP4Viewer', () => {
                 id: 1
             }
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        mp4.containerEl = containerEl;
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
+
         if (mp4 && typeof mp4.destroy === 'function') {
             mp4.destroy();
         }
