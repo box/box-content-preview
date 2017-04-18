@@ -1,21 +1,5 @@
 import Browser from './Browser';
 
-const BROWSER_INFO = {
-    name: Browser.getName(),
-    swf: Browser.hasFlash(),
-    svg: Browser.hasSVG(),
-    mse: Browser.hasMSE(),
-    webgl: Browser.hasWebGL(),
-    mp3: Browser.canPlayMP3(),
-    dash: Browser.canPlayDash(),
-    box3d: Browser.supportsModel3D(),
-    h264: {
-        baseline: Browser.canPlayH264Baseline(),
-        main: Browser.canPlayH264Main(),
-        high: Browser.canPlayH264High()
-    }
-};
-
 /* eslint-disable no-undef */
 const CLIENT_NAME = __NAME__;
 const CLIENT_VERSION = __VERSION__;
@@ -34,7 +18,7 @@ class Logger {
         this.log = {
             locale,
             event: 'preview',
-            browser: BROWSER_INFO,
+            browser: this.getBrowserInfo(),
             client: {
                 name: CLIENT_NAME,
                 version: CLIENT_VERSION
@@ -48,6 +32,29 @@ class Logger {
                 conversion: 0,
                 rendering: 0,
                 total: 0
+            }
+        };
+    }
+
+    /**
+     * Gets browser capability information.
+     *
+     * @return {Object} Browser capability information
+     */
+    getBrowserInfo() {
+        return {
+            name: Browser.getName(),
+            swf: Browser.hasFlash(),
+            svg: Browser.hasSVG(),
+            mse: Browser.hasMSE(),
+            webgl: Browser.hasWebGL(),
+            mp3: Browser.canPlayMP3(),
+            dash: Browser.canPlayDash(),
+            box3d: Browser.supportsModel3D(),
+            h264: {
+                baseline: Browser.canPlayH264Baseline(),
+                main: Browser.canPlayH264Main(),
+                high: Browser.canPlayH264High()
             }
         };
     }
