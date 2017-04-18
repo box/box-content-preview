@@ -8,6 +8,9 @@ import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
 
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
+const OFFICE_ONLINE_IFRAME_NAME = 'office-online-iframe';
+const EXCEL_ONLINE_URL = 'https://excel.officeapps.live.com/x/_layouts/xlembed.aspx';
+
 const sandbox = sinon.sandbox.create();
 let office;
 let stubs = {};
@@ -28,7 +31,18 @@ describe('lib/viewers/office/OfficeViewer', () => {
             container: containerEl,
             file: {
                 id: '123'
-            }
+            },
+            viewers: {
+                Office: {
+                    shouldUsePlatformSetup: false
+                }
+            },
+            location: {
+                locale: 'en-US'
+            },
+            appHost: 'app.box.com',
+            apiHost: 'app.box.com',
+            token: 'token'
         });
         stubs = {
             setupPDFUrl: sandbox.stub(office, 'setupPDFUrl')
@@ -48,24 +62,34 @@ describe('lib/viewers/office/OfficeViewer', () => {
         if (office && typeof office.destroy === 'function') {
             office.destroy();
         }
+
+        stubs = null;
         office = null;
     });
 
     describe('setup()', () => {
+        beforeEach(() => {
+            stubs.setupIframe = sandbox.stub(office, 'setupIframe');
+            stubs.initPrint = sandbox.stub(office, 'initPrint');
+        });
+
         it('should set up the Office viewer', () => {
-            const testStubs = {
-                setupIframe: sandbox.stub(office, 'setupIframe'),
-                initPrint: sandbox.stub(office, 'initPrint')
-            };
             office.setup();
-            expect(testStubs.setupIframe).to.be.called;
-            expect(testStubs.initPrint).to.be.called;
+            expect(stubs.setupIframe).to.be.called;
+            expect(stubs.initPrint).to.be.called;
             expect(stubs.setupPDFUrl).to.be.called;
         });
-    });
 
-    beforeEach(() => {
-        office.setup();
+        it('should not use the platform setup if the option is passed in', () => {
+            office.setup();
+            expect(office.platformSetup).to.be.false;
+        });
+
+        it('should use the platform setup if no option is passed in', () => {
+            office.options.viewers = {};
+            office.setup();
+            expect(office.platformSetup).to.be.true;
+        });
     });
 
     describe('destroy()', () => {
@@ -96,38 +120,136 @@ describe('lib/viewers/office/OfficeViewer', () => {
 
     describe('setupIframe()', () => {
         beforeEach(() => {
-            office.options.appHost = 'https://app.box.com';
+            stubs.createIframeElement = sandbox.spy(office, 'createIframeElement');
+            stubs.form = {
+                submit: sandbox.stub()
+            };
+
+            stubs.createFormElement = sandbox.stub(office, 'createFormElement').returns(stubs.form);
+            stubs.setupRunmodeURL = sandbox.stub(office, 'setupRunmodeURL').returns('src');
         });
 
-        it('should initialize iframe element and set relevant attributes', () => {
-            expect(office.iframeEl.width).to.equal('100%');
-            expect(office.iframeEl.height).to.equal('100%');
-            expect(office.iframeEl.frameBorder).to.equal('0');
-            expect(office.iframeEl.sandbox.toString()).to.equal('allow-scripts allow-same-origin allow-forms allow-popups');
-            expect(office.loadTimeout).to.equal(120000);
-        });
-
-        it('should load a xlsx file and set the file ID in src url on load event when the file is not a shared link', () => {
+        it('should create the iframeEl', () => {
             office.setupIframe();
-            expect(office.iframeEl.src).to.equal('https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?fileId=123');
+
+            expect(stubs.createIframeElement).to.be.called;
+        });
+
+        it('should finish setting up the iframe if using platform setup', () => {
+            office.platformSetup = true;
+            office.setupIframe();
+
+            const iframeEl = office.containerEl.querySelector(`#${OFFICE_ONLINE_IFRAME_NAME}`);
+            expect(iframeEl.name).to.equal(OFFICE_ONLINE_IFRAME_NAME);
+            expect(iframeEl.id).to.equal(OFFICE_ONLINE_IFRAME_NAME);
+        });
+
+        it('should setup and submit the form if using the platform setup', () => {
+            office.platformSetup = true;
+            office.setupIframe();
+
+            expect(stubs.createFormElement).to.be.calledWith(office.options.appHost, office.options.file.id, office.options.sharedLink, office.options.location.locale);
+            expect(stubs.form.submit).to.be.called;
+        });
+
+
+        it('should set the iframe source and sandbox attribute if not using the platform setup', () => {
+            office.setupIframe();
+
+            const iframeEl = office.containerEl.querySelector('iframe');
+            expect(iframeEl.src.endsWith('src')).to.be.true;
+        });
+    });
+    describe('setupRunmodeURL()', () => {
+        it('should load a xlsx file and set the file ID in src url on load event when the file is not a shared link', () => {
+            const src = office.setupRunmodeURL(office.options.appHost, office.options.file.id, office.options.sharedLink);
+            expect(src).to.equal('app.box.com/integrations/officeonline/openExcelOnlinePreviewer?fileId=123');
         });
 
         it('should load a xlsx file and set the shared name in src url on load event when the file is a shared link', () => {
             office.options.sharedLink = 'https://app.box.com/s/abcd';
-            office.setupIframe();
-            expect(office.iframeEl.src).to.equal('https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?s=abcd&fileId=123');
+            const src = office.setupRunmodeURL(office.options.appHost, office.options.file.id, office.options.sharedLink);
+            expect(src).to.equal('app.box.com/integrations/officeonline/openExcelOnlinePreviewer?s=abcd&fileId=123');
         });
 
         it('should load a xlsx file and set the vanity name in src url on load event when the file is a vanity url without a subdomain', () => {
             office.options.sharedLink = 'https://app.box.com/v/test';
-            office.setupIframe();
-            expect(office.iframeEl.src).to.equal('https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=app&fileId=123');
+            const src = office.setupRunmodeURL(office.options.appHost, office.options.file.id, office.options.sharedLink);
+            expect(src).to.equal('app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=app&fileId=123');
         });
 
         it('should load a xlsx file and set the vanity name in src url on load event when the file is a vanity url with a subdomain', () => {
             office.options.sharedLink = 'https://cloud.app.box.com/v/test';
-            office.setupIframe();
-            expect(office.iframeEl.src).to.equal('https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=cloud&fileId=123');
+            const src = office.setupRunmodeURL(office.options.appHost, office.options.file.id, office.options.sharedLink);
+            expect(src).to.equal('app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=cloud&fileId=123');
+        });
+    });
+
+    describe('setupWOPISrc()', () => {
+        it('should append the file ID if there is no shared link', () => {
+            const src = office.setupWOPISrc(office.options.apiHost, office.options.file.id, office.options.sharedLink);
+            expect(src).to.equal('app.box.com/wopi/files/123');
+        });
+
+        it('should append the shared name and file ID if there is a shared link', () => {
+            office.options.sharedLink = 'https://app.box.com/s/abcd';
+            const src = office.setupWOPISrc(office.options.apiHost, office.options.file.id, office.options.sharedLink);
+            expect(src).to.equal('app.box.com/wopi/files/s_abcd_f_123');
+        });
+
+        it('should not append the shared name if there is a vanity link', () => {
+            office.options.sharedLink = 'https://app.box.com/v/abcd';
+            const src = office.setupWOPISrc(office.options.apiHost, office.options.file.id, office.options.sharedLink);
+            expect(src.includes('s_')).to.be.false;
+        });
+    });
+
+    describe('createIframeElement()', () => {
+        it('should initialize iframe element and set relevant attributes', () => {
+            const iframeEl = office.createIframeElement();
+
+            expect(iframeEl.width).to.equal('100%');
+            expect(iframeEl.height).to.equal('100%');
+            expect(iframeEl.frameBorder).to.equal('0');
+        });
+
+        it('should allow fullscreen if using the platform setup', () => {
+            office.platformSetup = true;
+            const iframeEl = office.createIframeElement();
+
+            expect(iframeEl.getAttribute('allowfullscreen')).to.equal('true');
+        });
+
+        it('should set the frame as sandbox if not using the platform setup', () => {
+            const iframeEl = office.createIframeElement();
+            expect(iframeEl.getAttribute('sandbox')).to.equal('allow-scripts allow-same-origin allow-forms allow-popups');
+        });
+    });
+
+    describe('createFormElement()', () => {
+        beforeEach(() => {
+            stubs.setupWOPISrc = sandbox.stub(office, 'setupWOPISrc').returns('src');
+            stubs.formEl = office.createFormElement(office.options.apiHost, office.options.file.id, office.options.sharedLink, office.options.location.locale);
+        });
+
+        it('should correctly set the action URL', () => {
+            expect(stubs.formEl.getAttribute('action')).to.equal(`${EXCEL_ONLINE_URL}?ui=${office.options.location.locale}&rs=${office.options.location.locale}&WOPISrc=src&sc=o_${location.origin}`);
+            expect(stubs.formEl.getAttribute('method')).to.equal('POST');
+            expect(stubs.formEl.getAttribute('target')).to.equal(OFFICE_ONLINE_IFRAME_NAME);
+        });
+
+        it('should correctly set the token', () => {
+            const tokenInputEl = stubs.formEl.querySelector('input[name="access_token"]');
+            expect(tokenInputEl.getAttribute('name')).to.equal('access_token');
+            expect(tokenInputEl.getAttribute('value')).to.equal('token');
+            expect(tokenInputEl.getAttribute('type')).to.equal('hidden');
+        });
+
+        it('should correctly set the token time to live', () => {
+            const tokenInputEl = stubs.formEl.querySelector('input[name="access_token_TTL"]');
+            expect(tokenInputEl.getAttribute('name')).to.equal('access_token_TTL');
+            expect(tokenInputEl.getAttribute('value')).to.not.equal(undefined);
+            expect(tokenInputEl.getAttribute('type')).to.equal('hidden');
         });
     });
 

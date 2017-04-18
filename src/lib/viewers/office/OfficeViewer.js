@@ -10,6 +10,12 @@ import { get } from '../../util';
 const LOAD_TIMEOUT_MS = 120000;
 const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
+const PREVIEW_TOKEN_LIFESPAN = 28800000;
+
+// @TODO(jpress): replace with discovery and XML parsing once Microsoft allows CORS
+const EXCEL_ONLINE_URL = 'https://excel.officeapps.live.com/x/_layouts/xlembed.aspx';
+const OFFICE_ONLINE_IFRAME_NAME = 'office-online-iframe';
+const MESSAGE_HOST_READY = 'Host_PostmessageReady';
 
 @autobind
 class OfficeViewer extends BaseViewer {
@@ -24,6 +30,9 @@ class OfficeViewer extends BaseViewer {
     setup() {
         // Call super() first to set up common layout
         super.setup();
+        // Set to false only in the WebApp, everywhere else we want to avoid hitting a runmodes.
+        // This flag will be removed once we run the entire integration through the client.
+        this.platformSetup = this.options.viewers.Office ? !!this.options.viewers.Office.shouldUsePlatformSetup : true;
         this.setupIframe();
         this.initPrint();
         this.setupPDFUrl();
@@ -147,31 +156,136 @@ class OfficeViewer extends BaseViewer {
      * @return {void}
      */
     setupIframe() {
-        this.iframeEl = this.containerEl.appendChild(document.createElement('iframe'));
-        this.iframeEl.setAttribute('width', '100%');
-        this.iframeEl.setAttribute('height', '100%');
-        this.iframeEl.setAttribute('frameborder', 0);
-        this.iframeEl.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
+        const { appHost, apiHost, file, sharedLink, location: { locale } } = this.options;
+        const iframeEl = this.createIframeElement();
+        this.containerEl.appendChild(iframeEl);
 
-        const { appHost, file, sharedLink } = this.options;
+        if (this.platformSetup) {
+            const formEl = this.createFormElement(apiHost, file.id, sharedLink, locale);
+            formEl.submit();
+
+            // Tell Office Online that we are ready to receive messages
+            iframeEl.contentWindow.postMessage(MESSAGE_HOST_READY, window.location.origin);
+        } else {
+            iframeEl.src = this.setupRunmodeURL(appHost, file.id, sharedLink);
+        }
+    }
+
+    /**
+     * Sets up the runmode URL that fills a wrapper iframe around the Office Online iframe.
+     *
+     * @private
+     * @param {string} appHost - Application host
+     * @param {string} fileId - File ID
+     * @param {string} sharedLink - Shared link which may be a vanity URL
+     * @return {string} Runmode URL
+     */
+    setupRunmodeURL(appHost, fileId, sharedLink) {
+        // @TODO(jpress): Combine with setupWopiSrc Logic when removing the platform fork
         let src = `${appHost}/integrations/officeonline/openExcelOnlinePreviewer`;
+
         if (sharedLink) {
             // Find the shared or vanity name
             const sharedName = sharedLink.split('/s/')[1];
             if (sharedName) {
-                src += `?s=${sharedName}&fileId=${file.id}`;
+                src = `${src}?s=${sharedName}&fileId=${fileId}`;
             } else {
                 const tempAnchor = document.createElement('a');
                 tempAnchor.href = sharedLink;
                 const vanitySubdomain = tempAnchor.hostname.split('.')[0];
                 const vanityName = tempAnchor.pathname.split('/v/')[1];
-                src += `?v=${vanityName}&vanity_subdomain=${vanitySubdomain}&fileId=${file.id}`;
+                src = `${src}?v=${vanityName}&vanity_subdomain=${vanitySubdomain}&fileId=${fileId}`;
             }
         } else {
-            src += `?fileId=${file.id}`;
+            src = `${src}?fileId=${fileId}`;
         }
 
-        this.iframeEl.src = src;
+        return src;
+    }
+
+    /**
+     * Sets up the WOPI src that is used in the Office Online action URL.
+     *
+     * @private
+     * @param {string} apiHost - API Host
+     * @param {string} fileId - File ID
+     * @param {string} sharedLink - Shared link which may be a vanity URL
+     * @return {string} WOPI src URL
+     */
+    setupWOPISrc(apiHost, fileId, sharedLink) {
+        // @TODO(jpress): add support for vanity URLs once WOPI API is updated
+        let wopiSrc = `${apiHost}/wopi/files/`;
+
+        if (sharedLink) {
+            const sharedName = sharedLink.split('/s/')[1];
+            if (sharedName) {
+                wopiSrc = `${wopiSrc}s_${sharedName}_f_`;
+            }
+        }
+
+        return `${wopiSrc}${fileId}`;
+    }
+
+    /**
+     * Creates the iframe element used for both the platform and webapp setup.
+     *
+     * @private
+     * @return {HTMLElement} Iframe element
+     */
+    createIframeElement() {
+        const iframeEl = document.createElement('iframe');
+        iframeEl.setAttribute('width', '100%');
+        iframeEl.setAttribute('height', '100%');
+        iframeEl.setAttribute('frameborder', 0);
+        iframeEl.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups');
+
+        if (this.platformSetup) {
+            iframeEl.setAttribute('allowfullscreen', 'true');
+            iframeEl.name = OFFICE_ONLINE_IFRAME_NAME;
+            iframeEl.id = OFFICE_ONLINE_IFRAME_NAME;
+        }
+
+        return iframeEl;
+    }
+
+    /**
+     * Sets up the form that will be posted to the Office Online viewer. The form
+     * includes an access token, the token's time to live, and an action URL that
+     * Micrsoft uses to hit our WOPI endpoint.
+     *
+     * @private
+     * @param {string} apiHost - API host
+     * @param {string} fileId - File ID
+     * @param {string} sharedLink - Shared link which may be a vanity URL
+     * @param {string} locale - Locale
+     * @return {HTMLElement} Form element
+     */
+    createFormElement(apiHost, fileId, sharedLink, locale) {
+        // Setting the action URL
+        const WOPISrc = this.setupWOPISrc(apiHost, fileId, sharedLink);
+        const origin = { origin: window.location.origin };
+        const formEl = this.containerEl.appendChild(document.createElement('form'));
+        // @TODO(jpress): add suport for iframe performance logging via App_LoadingStatus message
+        formEl.setAttribute('action', `${EXCEL_ONLINE_URL}?ui=${locale}&rs=${locale}&WOPISrc=${WOPISrc}&sc=${JSON.stringify(origin)}`);
+        formEl.setAttribute('method', 'POST');
+        formEl.setAttribute('target', OFFICE_ONLINE_IFRAME_NAME);
+
+        // Setting the token
+        const tokenInput = document.createElement('input');
+        tokenInput.setAttribute('name', 'access_token');
+        tokenInput.setAttribute('value', `${this.options.token}`);
+        tokenInput.setAttribute('type', 'hidden');
+
+        // Calculating and setting the time to live
+        const ttl = Date.now() + PREVIEW_TOKEN_LIFESPAN;
+        const ttlInput = document.createElement('input');
+        ttlInput.setAttribute('name', 'access_token_TTL');
+        ttlInput.setAttribute('value', ttl);
+        ttlInput.setAttribute('type', 'hidden');
+
+        formEl.appendChild(tokenInput);
+        formEl.appendChild(ttlInput);
+        return formEl;
     }
 
     /**
