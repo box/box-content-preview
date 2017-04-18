@@ -16,26 +16,15 @@ const ANNOTATORS = [
     }
 ];
 
-class AnnotatorLoader {
+class BoxAnnotations {
 
     /**
      * [constructor]
      *
-     * @return {AnnotatorLoader} AnnotatorLoader instance
+     * @return {BoxAnnotations} BoxAnnotations instance
      */
     constructor() {
         this.annotators = ANNOTATORS;
-    }
-
-    /**
-     * Determines if this loader can be used
-     *
-     * @param {Object} viewer - Viewer
-     * @param {Array} [disabledAnnotators] - List of disabled annotators
-     * @return {boolean} Is file supported
-     */
-    canLoad(viewer, disabledAnnotators = []) {
-        return !!this.determineAnnotator(viewer, disabledAnnotators);
     }
 
     /**
@@ -55,14 +44,11 @@ class AnnotatorLoader {
      * @return {Object} The annotator to use
      */
     determineAnnotator(viewer, disabledAnnotators = []) {
-        return this.annotators.find((annotator) => {
-            if (disabledAnnotators.indexOf(annotator.NAME) > -1) {
-                return false;
-            }
-            return annotator.VIEWER.indexOf(viewer) > -1;
-        });
+        return this.annotators.find((annotator) =>
+            !(disabledAnnotators.includes(annotator.NAME)) && annotator.VIEWER.includes(viewer)
+        );
     }
 }
 
-global.AnnotatorLoader = AnnotatorLoader;
-export default AnnotatorLoader;
+global.BoxAnnotations = BoxAnnotations;
+export default BoxAnnotations;

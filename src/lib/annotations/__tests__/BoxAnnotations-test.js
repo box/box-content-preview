@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-expressions */
-import AnnotatorLoader from '../AnnotatorLoader';
+import BoxAnnotations from '../BoxAnnotations';
 
 let loader;
 const sandbox = sinon.sandbox.create();
 
-describe('lib/annotators/AnnotatorLoader', () => {
+describe('lib/annotators/BoxAnnotations', () => {
     beforeEach(() => {
-        loader = new AnnotatorLoader();
+        loader = new BoxAnnotations();
     });
 
     afterEach(() => {

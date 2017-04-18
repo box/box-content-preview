@@ -588,7 +588,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should initialize the appropriate annotator for the current viewer', () => {
-            class AnnotatorLoader {
+            class BoxAnnotations {
                 determineAnnotator() {
                     return stubs.annotatorLoader;
                 }
@@ -596,17 +596,17 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(Browser, 'isMobile').returns(false);
             stubs.checkPermission.returns(true);
 
-            window.AnnotatorLoader = AnnotatorLoader;
+            window.BoxAnnotations = BoxAnnotations;
             base.initAnnotator();
             expect(base.initAnnotations).to.be.called;
             expect(base.showAnnotateButton).to.be.called;
         });
 
         it('should not display the point annotation button if the user does not have the appropriate permissions', () => {
-            class AnnotatorLoader {
+            class BoxAnnotations {
                 determineAnnotator() {}
             }
-            window.AnnotatorLoader = AnnotatorLoader;
+            window.BoxAnnotations = BoxAnnotations;
 
             base.initAnnotator();
             expect(base.initAnnotations).to.not.be.called;
@@ -614,22 +614,22 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should not initialize an annotator if no loader was found', () => {
-            class AnnotatorLoader {
+            class BoxAnnotations {
                 determineAnnotator() {}
             }
-            window.AnnotatorLoader = AnnotatorLoader;
+            window.BoxAnnotations = BoxAnnotations;
             base.initAnnotator();
             expect(base.initAnnotations).to.not.be.called;
             expect(base.showAnnotateButton).to.not.be.called;
         });
 
         it('should not initialize an annotator if the viewer is not annotatable', () => {
-            class AnnotatorLoader {
+            class BoxAnnotations {
                 determineAnnotator() {
                     return stubs.annotatorLoader;
                 }
             }
-            window.AnnotatorLoader = AnnotatorLoader;
+            window.BoxAnnotations = BoxAnnotations;
             stubs.isAnnotatable.returns(false);
             base.initAnnotator();
             expect(base.initAnnotations).to.not.be.called;

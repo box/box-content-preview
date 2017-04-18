@@ -55,7 +55,7 @@ function updateConfig(conf, language, index) {
         entry: {
             preview:        [`${lib}/Preview.js`],
             csv:            [`${lib}/viewers/text/BoxCSV.js`],
-            annotations:    [`${lib}/annotations/AnnotatorLoader.js`]
+            annotations:    [`${lib}/annotations/BoxAnnotations.js`]
         },
         output: {
             path: path.resolve('dist', version, language),

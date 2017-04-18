@@ -514,8 +514,8 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     initAnnotator() {
-        /* global AnnotatorLoader */
-        this.loader = new AnnotatorLoader();
+        /* global BoxAnnotations */
+        this.loader = new BoxAnnotations();
 
         this.annotatorLoader = this.loader.determineAnnotator(this.options.viewer.NAME);
         if (this.annotatorLoader) {
