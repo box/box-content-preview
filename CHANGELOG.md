@@ -1,5 +1,23 @@
 # Change Log
 
+## [v0.120.0](https://github.com/box/box-content-preview/tree/v0.120.0) (2017-04-18)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.119.1...v0.120.0)
+
+**Merged pull requests:**
+
+- Fix: Prevent WebGL error when prefetching Preview.js [\#82](https://github.com/box/box-content-preview/pull/82) ([jeremypress](https://github.com/jeremypress))
+- Chore: Mock super.setup\(\) in all Viewer unit tests [\#81](https://github.com/box/box-content-preview/pull/81) ([pramodsum](https://github.com/pramodsum))
+- Update: Add client information to performance logging [\#80](https://github.com/box/box-content-preview/pull/80) ([tonyjin](https://github.com/tonyjin))
+- Update: Changing analytics client name to 'box-content-preview' [\#79](https://github.com/box/box-content-preview/pull/79) ([tonyjin](https://github.com/tonyjin))
+- Chore: Rename test-html files and update fixture loading [\#78](https://github.com/box/box-content-preview/pull/78) ([JustinHoldstock](https://github.com/JustinHoldstock))
+- Chore: Triggering point annotation mode by emitting a message [\#77](https://github.com/box/box-content-preview/pull/77) ([pramodsum](https://github.com/pramodsum))
+- Chore: Updating annotations icons to the new Box blue [\#76](https://github.com/box/box-content-preview/pull/76) ([pramodsum](https://github.com/pramodsum))
+- Fix: Only bind custom listeners when annotation threads exist [\#74](https://github.com/box/box-content-preview/pull/74) ([pramodsum](https://github.com/pramodsum))
+- Fix: Handle text representation error [\#72](https://github.com/box/box-content-preview/pull/72) ([tonyjin](https://github.com/tonyjin))
+- Update: Add disableTextLayer option for doc and text viewers [\#71](https://github.com/box/box-content-preview/pull/71) ([tonyjin](https://github.com/tonyjin))
+- Update Translations [\#70](https://github.com/box/box-content-preview/pull/70) ([boxmoji](https://github.com/boxmoji))
+- Update: Disabling font loading API for pdf.js to prevent glitches [\#68](https://github.com/box/box-content-preview/pull/68) ([tonyjin](https://github.com/tonyjin))
+
 ## [v0.119.1](https://github.com/box/box-content-preview/tree/v0.119.1) (2017-04-12)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.119.0...v0.119.1)
 
