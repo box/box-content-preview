@@ -207,7 +207,8 @@ class PlainTextViewer extends TextBaseViewer {
             } else {
                 this.initHighlightJs(fetchedText);
             }
-        });
+        })
+        .catch(this.handleAssetError);
     }
 
     /**
