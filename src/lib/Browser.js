@@ -163,6 +163,12 @@ class Browser {
     static hasWebGL() {
         if (!gl) {
             const canvas = document.createElement('canvas');
+            // Should stop 'Rats! WebGL hit a snag' error when checking WebGL support
+            canvas.addEventListener('webglcontextlost', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+
 
             try {
                 gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
