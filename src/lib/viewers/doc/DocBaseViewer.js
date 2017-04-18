@@ -8,26 +8,26 @@ import Controls from '../../Controls';
 import DocAnnotator from '../../annotations/doc/DocAnnotator';
 import DocFindBar from './DocFindBar';
 import fullscreen from '../../Fullscreen';
-import Popup from '../../Popup';
+import {
+    get,
+    createAssetUrlCreator,
+    decodeKeydown
+} from '../../util';
 import {
     CLASS_BOX_PREVIEW_FIND_BAR,
-    CLASS_HIDDEN,
     CLASS_IS_SCROLLABLE,
     DOC_STATIC_ASSETS_VERSION,
     PERMISSION_ANNOTATE,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME
 } from '../../constants';
-import { checkPermission, getRepresentation } from '../../file';
-import { get, createAssetUrlCreator, decodeKeydown } from '../../util';
-import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { JS, CSS } from './docAssets';
+import { getRepresentation, checkPermission } from '../../file';
+import * as printUtil from '../../print-util';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
-const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
-const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
-const PRINT_DIALOG_TIMEOUT_MS = 500;
+const LOAD_TIMEOUT_MS = 300000; // 5 min timeout
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const DEFAULT_RANGE_REQUEST_CHUNK_SIZE = 393216; // 384KB
@@ -36,6 +36,7 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const IS_SAFARI_CLASS = 'is-safari';
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
+const PRINT_DIALOG_TIMEOUT_MS = 500; // Wait before showing popup
 const SCROLL_END_TIMEOUT = Browser.isMobile() ? 500 : 250;
 
 @autobind
@@ -74,9 +75,6 @@ class DocBaseViewer extends BaseViewer {
     destroy() {
         this.unbindDOMListeners();
 
-        // Clean up print blob
-        this.printBlob = null;
-
         if (this.controls && typeof this.controls.destroy === 'function') {
             this.controls.destroy();
         }
@@ -111,8 +109,10 @@ class DocBaseViewer extends BaseViewer {
             }
         }
 
-        if (this.printPopup) {
+        if (this.printPopup && typeof this.printPopup.destroy === 'function') {
             this.printPopup.destroy();
+            this.printBlob = undefined;
+            this.printDialogTimeout = undefined;
         }
 
         super.destroy();
@@ -214,7 +214,7 @@ class DocBaseViewer extends BaseViewer {
     postload = () => {
         this.setupPdfjs();
         this.initViewer(this.pdfUrl);
-        this.initPrint();
+        this.printPopup = printUtil.initPrintPopup(this.containerEl);
         this.initFind();
     }
 
@@ -239,67 +239,37 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Sets up print notification & prepare PDF for printing.
-     *
-     * @return {void}
-     * @private
-     */
-    initPrint() {
-        this.printPopup = new Popup(this.containerEl);
-
-        const printCheckmark = document.createElement('div');
-        printCheckmark.className = `bp-print-check ${CLASS_HIDDEN}`;
-        printCheckmark.innerHTML = ICON_PRINT_CHECKMARK.trim();
-
-        const loadingIndicator = document.createElement('div');
-        loadingIndicator.classList.add('bp-crawler');
-        loadingIndicator.innerHTML = `
-            <div></div>
-            <div></div>
-            <div></div>`.trim();
-
-        this.printPopup.addContent(loadingIndicator, true);
-        this.printPopup.addContent(printCheckmark, true);
-
-        // Save a reference so they can be hidden or shown later.
-        this.printPopup.loadingIndicator = loadingIndicator;
-        this.printPopup.printCheckmark = printCheckmark;
-    }
-
-    /**
-     * Ensures that the print blob is loaded & updates the print UI.
+     * Sets up and triggers print of the PDF representation.
      *
      * @return {void}
      */
     print() {
-        // If print blob is not ready, fetch it
         if (!this.printBlob) {
-            this.fetchPrintBlob(this.pdfUrl).then(this.print);
+            get(this.pdfUrl, 'blob')
+                .then((blob) => {
+                    this.printBlob = blob;
+                })
+                .then(this.finishPrint);
 
-            // Show print dialog after PRINT_DIALOG_TIMEOUT_MS
             this.printDialogTimeout = setTimeout(() => {
-                this.printPopup.show(__('print_loading'), __('print'), () => {
-                    this.printPopup.hide();
-                    this.browserPrint();
-                });
-
-                this.printPopup.disableButton();
+                clearTimeout(this.printDialogTimeout);
                 this.printDialogTimeout = null;
+                printUtil.showPrintPopup(this.printPopup, this.finishPrint);
             }, PRINT_DIALOG_TIMEOUT_MS);
-            return;
-        }
-
-        // Immediately print if either printing is ready within PRINT_DIALOG_TIMEOUT_MS
-        // or if popup is not visible (e.g. from initiating print again)
-        if (this.printDialogTimeout || !this.printPopup.isVisible()) {
-            clearTimeout(this.printDialogTimeout);
-            this.browserPrint();
         } else {
-            // Update popup UI to reflect that print is ready
-            this.printPopup.enableButton();
-            this.printPopup.messageEl.textContent = __('print_ready');
-            this.printPopup.loadingIndicator.classList.add(CLASS_HIDDEN);
-            this.printPopup.printCheckmark.classList.remove(CLASS_HIDDEN);
+            this.finishPrint();
+        }
+    }
+
+    /**
+     * Executes the print and emits the result.
+     *
+     * @return {void}
+     */
+    finishPrint = () => {
+        const printNotification = printUtil.printPDF(this.printBlob, this.printDialogTimeout, this.printPopup);
+        if (printNotification !== '') {
+            this.emit(printNotification);
         }
     }
 
@@ -752,75 +722,6 @@ class DocBaseViewer extends BaseViewer {
         // Keep reference to page number input and current page elements
         this.pageNumInputEl = pageNumEl.querySelector('.bp-doc-page-num-input');
         this.currentPageEl = pageNumEl.querySelector('.bp-doc-current-page');
-    }
-
-    /**
-     * Fetches PDF and converts to blob for printing.
-     *
-     * @param {string} pdfUrl - URL to PDF
-     * @return {Promise} Promise setting print blob
-     * @private
-     */
-    fetchPrintBlob(pdfUrl) {
-        return get(pdfUrl, 'blob').then((blob) => {
-            this.printBlob = blob;
-        });
-    }
-
-    /**
-     * Handles logic for printing the PDF representation in browser.
-     *
-     * @return {void}
-     * @private
-     */
-    browserPrint() {
-        // For IE & Edge, use the open or save dialog since we can't open
-        // in a new tab due to security restrictions, see:
-        // http://stackoverflow.com/questions/24007073/open-links-made-by-createobjecturl-in-ie11
-        if (typeof window.navigator.msSaveOrOpenBlob === 'function') {
-            const printResult = window.navigator.msSaveOrOpenBlob(this.printBlob, 'print.pdf');
-
-            // If open/save notification is not shown, broadcast error
-            if (!printResult) {
-                this.emit('printerror');
-            } else {
-                this.emit('printsuccess');
-            }
-
-        // For other browsers, open and print in a new tab
-        } else {
-            const printURL = URL.createObjectURL(this.printBlob);
-            const printResult = window.open(printURL);
-
-            // Open print popup if possible
-            if (printResult && typeof printResult.print === 'function') {
-                const browser = Browser.getName();
-
-                // Chrome supports printing on load
-                if (browser === 'Chrome') {
-                    printResult.addEventListener('load', () => {
-                        printResult.print();
-                    });
-
-                // Safari print on load produces blank page, so we use a timeout
-                } else if (browser === 'Safari') {
-                    setTimeout(() => {
-                        printResult.print();
-                    }, SAFARI_PRINT_TIMEOUT_MS);
-                }
-
-                // Firefox has a blocking bug: https://bugzilla.mozilla.org/show_bug.cgi?id=911444
-            }
-
-            // If new window/tab was blocked, broadcast error
-            if (!printResult || printResult.closed || typeof printResult.closed === 'undefined') {
-                this.emit('printerror');
-            } else {
-                this.emit('printsuccess');
-            }
-
-            URL.revokeObjectURL(printURL);
-        }
     }
 
     /**

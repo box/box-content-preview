@@ -1,13 +1,8 @@
 /* eslint-disable no-unused-expressions */
 import BaseViewer from '../../BaseViewer';
-import Browser from '../../../Browser';
 import OfficeViewer from '../OfficeViewer';
-import * as util from '../../../util';
-import { CLASS_HIDDEN } from '../../../constants';
-import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
+import * as printUtil from '../../../print-util';
 
-const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
-const PRINT_DIALOG_TIMEOUT_MS = 500;
 const sandbox = sinon.sandbox.create();
 let office;
 let stubs = {};
@@ -48,7 +43,7 @@ describe('lib/viewers/office/OfficeViewer', () => {
         it('should set up the Office viewer', () => {
             const testStubs = {
                 setupIframe: sandbox.stub(office, 'setupIframe'),
-                initPrint: sandbox.stub(office, 'initPrint')
+                initPrint: sandbox.stub(printUtil, 'initPrint')
             };
             office.setup();
             expect(testStubs.setupIframe).to.be.called;
@@ -62,10 +57,10 @@ describe('lib/viewers/office/OfficeViewer', () => {
     });
 
     describe('destroy()', () => {
-        it('should clear the print blob', () => {
-            office.printBlob = {};
+        it('should destroy print related objects', () => {
+            const printDestroyStub = sandbox.spy(printUtil, 'destroyPrint');
             office.destroy();
-            expect(office.printBlob).to.equal(null);
+            expect(printDestroyStub).to.be.called;
         });
     });
 
@@ -121,171 +116,6 @@ describe('lib/viewers/office/OfficeViewer', () => {
             office.options.sharedLink = 'https://cloud.app.box.com/v/test';
             office.setupIframe();
             expect(office.iframeEl.src).to.equal('https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=cloud&fileId=123');
-        });
-    });
-
-    describe('print()', () => {
-        beforeEach(() => {
-            office.printBlob = undefined;
-            stubs.fetchPrintBlob = sandbox.stub(office, 'fetchPrintBlob').returns({
-                then: sandbox.stub()
-            });
-            office.initPrint();
-            stubs.show = sandbox.stub(office.printPopup, 'show');
-        });
-
-        it('should request the print blob if it is not ready', () => {
-            office.print();
-            expect(stubs.fetchPrintBlob).to.be.called;
-        });
-
-        it('should directly print if print blob is ready and the print dialog hasn\'t been shown yet', () => {
-            office.printBlob = {};
-            office.printDialogTimeout = setTimeout(() => {});
-            sandbox.stub(office, 'browserPrint');
-
-            office.print();
-            expect(office.browserPrint).to.be.called;
-        });
-
-        it('should directly print if print blob is ready and the print dialog isn\'t visible', () => {
-            office.printBlob = {};
-            office.printDialogTimeout = null;
-            sandbox.stub(office.printPopup, 'isVisible').returns(false);
-            sandbox.stub(office, 'browserPrint');
-
-            office.print();
-            expect(office.browserPrint).to.be.called;
-        });
-
-        it('should show the print popup and disable the print button if the blob is not ready', () => {
-            sandbox.stub(office.printPopup, 'disableButton');
-
-            office.print();
-            clock.tick(PRINT_DIALOG_TIMEOUT_MS + 1);
-
-            expect(stubs.show).to.be.calledWith(__('print_loading'), __('print'), sinon.match.func);
-            expect(office.printPopup.disableButton).to.be.called;
-
-            clock.restore();
-        });
-
-        it('should update the print popup UI if popup is visible and there is no current print timeout', () => {
-            office.printBlob = {};
-
-            sandbox.stub(office.printPopup, 'isVisible').returns(true);
-
-            office.print();
-
-            expect(office.printPopup.buttonEl.classList.contains('is-disabled')).to.be.false;
-            expect(office.printPopup.messageEl.textContent).to.equal(__('print_ready'));
-            expect(office.printPopup.loadingIndicator.classList.contains(CLASS_HIDDEN)).to.be.true;
-            expect(office.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN)).to.be.false;
-        });
-    });
-
-    describe('initPrint()', () => {
-        it('should add print checkmark', () => {
-            office.initPrint();
-            const mockCheckmark = document.createElement('div');
-            mockCheckmark.innerHTML = `${ICON_PRINT_CHECKMARK}`.trim();
-            expect(office.printPopup.printCheckmark.innerHTML).to.equal(mockCheckmark.innerHTML);
-        });
-
-        it('should hide the print checkmark', () => {
-            office.initPrint();
-            expect(office.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN));
-        });
-    });
-
-    describe('browserPrint()', () => {
-        beforeEach(() => {
-            stubs.emit = sandbox.stub(office, 'emit');
-            stubs.createObject = sandbox.stub(URL, 'createObjectURL');
-            stubs.open = sandbox.stub(window, 'open').returns(false);
-            stubs.browser = sandbox.stub(Browser, 'getName').returns('Chrome');
-            stubs.revokeObjectURL = sandbox.stub(URL, 'revokeObjectURL');
-            stubs.printResult = {
-                print: sandbox.stub(),
-                addEventListener: sandbox.stub()
-            };
-            office.printBlob = true;
-            window.navigator.msSaveOrOpenBlob = sandbox.stub().returns(true);
-        });
-
-        it('should use the open or save dialog if on IE or Edge', () => {
-            office.browserPrint();
-            expect(window.navigator.msSaveOrOpenBlob).to.be.called;
-            expect(stubs.emit).to.be.called;
-        });
-
-        it('should use the open or save dialog if on IE or Edge and emit a message', () => {
-            office.browserPrint();
-            expect(window.navigator.msSaveOrOpenBlob).to.be.called;
-            expect(stubs.emit).to.be.called;
-        });
-
-        it('should emit an error message if the print result fails on IE or Edge', () => {
-            window.navigator.msSaveOrOpenBlob.returns(false);
-
-            office.browserPrint();
-            expect(window.navigator.msSaveOrOpenBlob).to.be.called;
-            expect(stubs.emit).to.be.calledWith('printerror');
-        });
-
-        it('should open the pdf in a new tab if not on IE or Edge', () => {
-            window.navigator.msSaveOrOpenBlob = undefined;
-
-            office.browserPrint();
-            expect(stubs.createObject).to.be.calledWith(office.printBlob);
-            expect(stubs.open).to.be.called.with;
-            expect(stubs.emit).to.be.called;
-        });
-
-        it('should print on load in the chrome browser', () => {
-            window.navigator.msSaveOrOpenBlob = undefined;
-            stubs.open.returns(stubs.printResult);
-
-
-            office.browserPrint();
-            expect(stubs.createObject).to.be.calledWith(office.printBlob);
-            expect(stubs.open).to.be.called.with;
-            expect(stubs.browser).to.be.called;
-            expect(stubs.emit).to.be.called;
-            expect(stubs.revokeObjectURL).to.be.called;
-        });
-
-        it('should use a timeout in safari', () => {
-            window.navigator.msSaveOrOpenBlob = undefined;
-            stubs.open.returns(stubs.printResult);
-            stubs.browser.returns('Safari');
-
-            office.browserPrint();
-            clock.tick(PRINT_TIMEOUT_MS + 1000);
-
-            expect(stubs.createObject).to.be.calledWith(office.printBlob);
-            expect(stubs.open).to.be.called;
-            expect(stubs.browser).to.be.called;
-            expect(stubs.printResult.print).to.be.called;
-            expect(stubs.emit).to.be.called;
-        });
-    });
-
-    describe('fetchPrintBlob()', () => {
-        beforeEach(() => {
-            stubs.promise = Promise.resolve({ blob: 'blob' });
-            stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
-            stubs.appendAuthHeader = sandbox.stub(office, 'appendAuthHeader');
-            office.initPrint();
-        });
-
-        it('should get and return the blob', () => {
-            office.fetchPrintBlob('url');
-
-            return stubs.promise.then((blob) => {
-                expect(stubs.get).to.be.called;
-                expect(blob.blob).to.equal('blob');
-            });
         });
     });
 });

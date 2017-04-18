@@ -1,15 +1,11 @@
 import autobind from 'autobind-decorator';
 import BaseViewer from '../BaseViewer';
-import Browser from '../../Browser';
-import Popup from '../../Popup';
-import { CLASS_HIDDEN } from '../../constants';
-import { getRepresentation } from '../../file';
-import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { get } from '../../util';
+import { getRepresentation } from '../../file';
+import * as printUtil from '../../print-util';
 
 const LOAD_TIMEOUT_MS = 120000;
-const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
-const PRINT_DIALOG_TIMEOUT_MS = 500;
+const PRINT_DIALOG_TIMEOUT_MS = 500; // Wait before showing popup
 
 @autobind
 class OfficeViewer extends BaseViewer {
@@ -25,7 +21,7 @@ class OfficeViewer extends BaseViewer {
         // Call super() first to set up common layout
         super.setup();
         this.setupIframe();
-        this.initPrint();
+        this.printPopup = printUtil.initPrintPopup(this.containerEl);
         this.setupPDFUrl();
 
         // Timeout for loading the preview
@@ -38,11 +34,7 @@ class OfficeViewer extends BaseViewer {
      * @return {void}
      */
     destroy() {
-        // Clean up print blob
-        this.printBlob = null;
-        if (this.printPopup) {
-            this.printPopup.destroy();
-        }
+        this.printPopup.destroy();
         super.destroy();
     }
 
@@ -59,73 +51,39 @@ class OfficeViewer extends BaseViewer {
     }
 
     /**
-     * Prints text using an an iframe.
+     * Sets up and triggers print of the PDF representation.
      *
      * @return {void}
      */
     print() {
-        // If print blob is not ready, fetch it
         if (!this.printBlob) {
-            this.fetchPrintBlob(this.pdfUrl).then(this.print);
+            get(this.pdfUrl, 'blob')
+                .then((blob) => {
+                    this.printBlob = blob;
+                }).then(this.finishPrint);
 
-            // Show print dialog after PRINT_DIALOG_TIMEOUT_MS
             this.printDialogTimeout = setTimeout(() => {
-                this.printPopup.show(__('print_loading'), __('print'), () => {
-                    this.printPopup.hide();
-                    this.browserPrint();
-                });
-
-                this.printPopup.disableButton();
+                clearTimeout(this.printDialogTimeout);
                 this.printDialogTimeout = null;
+                printUtil.showPrintPopup(this.printPopup, this.finishPrint);
             }, PRINT_DIALOG_TIMEOUT_MS);
-            return;
-        }
-
-        // Immediately print if either printing is ready within PRINT_DIALOG_TIMEOUT_MS
-        // or if popup is not visible (e.g. from initiating print again)
-        if (this.printDialogTimeout || !this.printPopup.isVisible()) {
-            clearTimeout(this.printDialogTimeout);
-            this.browserPrint();
         } else {
-            // Update popup UI to reflect that print is ready
-            this.printPopup.enableButton();
-            this.printPopup.messageEl.textContent = __('print_ready');
-            this.printPopup.loadingIndicator.classList.add(CLASS_HIDDEN);
-            this.printPopup.printCheckmark.classList.remove(CLASS_HIDDEN);
+            this.finishPrint();
         }
     }
-
-    //--------------------------------------------------------------------------
-    // Private
-    //--------------------------------------------------------------------------
 
     /**
-     * Sets up the print dialog.
+     * Executes the print and emits the result.
      *
-     * @private
      * @return {void}
      */
-    initPrint() {
-        this.printPopup = new Popup(this.containerEl);
-
-        const printCheckmark = document.createElement('div');
-        printCheckmark.className = `bp-print-check ${CLASS_HIDDEN}`;
-        printCheckmark.innerHTML = ICON_PRINT_CHECKMARK.trim();
-
-        const loadingIndicator = document.createElement('div');
-        loadingIndicator.classList.add('bp-crawler');
-        loadingIndicator.innerHTML = `
-            <div></div>
-            <div></div>
-            <div></div>`.trim();
-
-        this.printPopup.addContent(loadingIndicator, true);
-        this.printPopup.addContent(printCheckmark, true);
-
-        // Save a reference so they can be hidden or shown later.
-        this.printPopup.loadingIndicator = loadingIndicator;
-        this.printPopup.printCheckmark = printCheckmark;
+    finishPrint = () => {
+        const printNotification = printUtil.printPDF(this.printBlob, this.printDialogTimeout, this.printPopup);
+        if (printNotification !== '') {
+            this.emit(printNotification);
+        }
     }
+
 
     /**
      * Sets up the PDF url that is used for printing.
@@ -172,75 +130,6 @@ class OfficeViewer extends BaseViewer {
         }
 
         this.iframeEl.src = src;
-    }
-
-    /**
-     * Fetches PDF and converts to blob for printing.
-     *
-     * @private
-     * @param {string} pdfUrl - PDF URL
-     * @return {Promise} Promise setting print blob
-     */
-    fetchPrintBlob(pdfUrl) {
-        return get(pdfUrl, 'blob').then((blob) => {
-            this.printBlob = blob;
-        });
-    }
-
-    /**
-     * Handles logic for printing the PDF representation in browser.
-     *
-     * @private
-     * @return {void}
-     */
-    browserPrint() {
-        // For IE & Edge, use the open or save dialog since we can't open
-        // in a new tab due to security restrictions, see:
-        // http://stackoverflow.com/questions/24007073/open-links-made-by-createobjecturl-in-ie11
-        if (typeof window.navigator.msSaveOrOpenBlob === 'function') {
-            const printResult = window.navigator.msSaveOrOpenBlob(this.printBlob, 'print.pdf');
-
-            // If open/save notification is not shown, broadcast error
-            if (!printResult) {
-                this.emit('printerror');
-            } else {
-                this.emit('printsuccess');
-            }
-
-        // For other browsers, open and print in a new tab
-        } else {
-            const printURL = URL.createObjectURL(this.printBlob);
-            const printResult = window.open(printURL);
-
-            // Open print popup if possible
-            if (printResult && typeof printResult.print === 'function') {
-                const browser = Browser.getName();
-
-                // Chrome supports printing on load
-                if (browser === 'Chrome') {
-                    printResult.addEventListener('load', () => {
-                        printResult.print();
-                    });
-
-                // Safari print on load produces blank page, so we use a timeout
-                } else if (browser === 'Safari') {
-                    setTimeout(() => {
-                        printResult.print();
-                    }, SAFARI_PRINT_TIMEOUT_MS);
-                }
-
-                // Firefox has a blocking bug: https://bugzilla.mozilla.org/show_bug.cgi?id=911444
-            }
-
-            // If new window/tab was blocked, broadcast error
-            if (!printResult || printResult.closed || typeof printResult.closed === 'undefined') {
-                this.emit('printerror');
-            } else {
-                this.emit('printsuccess');
-            }
-
-            URL.revokeObjectURL(printURL);
-        }
     }
 }
 

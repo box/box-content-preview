@@ -8,21 +8,15 @@ import fullscreen from '../../../Fullscreen';
 import DocPreloader from '../DocPreloader';
 import * as file from '../../../file';
 import * as util from '../../../util';
+import * as printUtil from '../../../print-util';
 
 import {
     CLASS_BOX_PREVIEW_FIND_BAR,
-    CLASS_HIDDEN,
     PERMISSION_ANNOTATE,
     PERMISSION_DOWNLOAD
 } from '../../../constants';
 
-import {
-    ICON_PRINT_CHECKMARK
-} from '../../../icons/icons';
-
-const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
-const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
-const PRINT_DIALOG_TIMEOUT_MS = 500;
+const LOAD_TIMEOUT_MS = 300000; // 5 min timeout
 const DEFAULT_SCALE_DELTA = 1.1;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
@@ -83,12 +77,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     });
 
     describe('destroy()', () => {
-        it('should unbind listeners and clear the print blob', () => {
+        it('should unbind listeners', () => {
             const unbindDOMListenersStub = sandbox.stub(docBase, 'unbindDOMListeners');
 
             docBase.destroy();
             expect(unbindDOMListenersStub).to.be.called;
-            expect(docBase.printBlob).to.equal(null);
         });
 
         it('should destroy the controls', () => {
@@ -140,6 +133,16 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.destroy();
             expect(docBase.pdfViewer.cleanup).to.be.called;
             expect(docBase.pdfViewer.pdfDocument.destroy).to.be.called;
+        });
+
+        it('should clean up the print popup, blob, and timeout', () => {
+            docBase.printPopup = printUtil.initPrint(docBase.containerEl);
+            const destroySpy = sandbox.spy(docBase.printPopup, 'destroy');
+
+            docBase.destroy();
+            expect(destroySpy).to.be.called;
+            expect(docBase.printBlob).to.equal(undefined);
+            expect(docBase.printDialogTimeout).to.equal(undefined);
         });
     });
 
@@ -328,7 +331,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             const setupPdfjsStub = sandbox.stub(docBase, 'setupPdfjs');
             const initViewerStub = sandbox.stub(docBase, 'initViewer');
-            const initPrintStub = sandbox.stub(docBase, 'initPrint');
+            const initPrintStub = sandbox.stub(printUtil, 'initPrint');
             const initFindStub = sandbox.stub(docBase, 'initFind');
 
             docBase.postload();
@@ -359,35 +362,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
     });
 
-    describe('initPrint()', () => {
-        it('should add print checkmark', () => {
-            docBase.initPrint();
-
-            const mockCheckmark = document.createElement('div');
-            mockCheckmark.innerHTML = `${ICON_PRINT_CHECKMARK}`.trim();
-            expect(docBase.printPopup.printCheckmark.innerHTML).to.equal(mockCheckmark.innerHTML);
-        });
-
-        it('should hide the print checkmark', () => {
-            docBase.initPrint();
-
-            expect(docBase.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN));
-        });
-
-        it('should add the loading indicator', () => {
-            docBase.initPrint();
-
-            const mockIndicator = document.createElement('div');
-            mockIndicator.innerHTML = `
-            <div></div>
-            <div></div>
-            <div></div>
-            `.trim();
-            expect(docBase.printPopup.loadingIndicator.innerHTML).to.equal(mockIndicator.innerHTML);
-            expect(docBase.printPopup.loadingIndicator.classList.contains('bp-crawler')).to.be.true;
-        });
-    });
-
     describe('print()', () => {
         let clock;
 
@@ -405,123 +379,54 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             clock.restore();
         });
 
-        it('should request the print blob if it is not ready', () => {
-            docBase.print();
-            expect(stubs.fetchPrintBlob).to.be.called;
+        it('should fetch the print blob and call print again', () => {
+
         });
 
-        it('should show the print popup and disable the print button if the blob is not ready', () => {
-            sandbox.stub(docBase.printPopup, 'disableButton');
+        it('should start the print timeout', () => {
 
-            docBase.print();
-            clock.tick(PRINT_DIALOG_TIMEOUT_MS + 1);
-
-            expect(stubs.show).to.be.calledWith(__('print_loading'), __('print'), sinon.match.func);
-            expect(docBase.printPopup.disableButton).to.be.called;
         });
 
-        it('should directly print if print blob is ready and the print dialog hasn\'t been shown yet', () => {
-            docBase.printBlob = {};
-            docBase.printDialogTimeout = setTimeout(() => {});
-            sandbox.stub(docBase, 'browserPrint');
+        it('should print right away if the blob is ready', () => {
 
-            docBase.print();
-            expect(docBase.browserPrint).to.be.called;
         });
 
-        it('should directly print if print blob is ready and the print dialog isn\'t visible', () => {
-            docBase.printBlob = {};
-            docBase.printDialogTimeout = null;
-            sandbox.stub(docBase.printPopup, 'isVisible').returns(false);
-            sandbox.stub(docBase, 'browserPrint');
+        it('should enable the popup if the print popup is visible and the blob is ready', () => {
 
-            docBase.print();
-            expect(docBase.browserPrint).to.be.called;
-        });
-
-        it('should update the print popup UI if popup is visible and there is no current print timeout', () => {
-            docBase.printBlob = {};
-
-            sandbox.stub(docBase.printPopup, 'isVisible').returns(true);
-
-            docBase.print();
-
-            expect(docBase.printPopup.buttonEl.classList.contains('is-disabled')).to.be.false;
-            expect(docBase.printPopup.messageEl.textContent).to.equal(__('print_ready'));
-            expect(docBase.printPopup.loadingIndicator.classList.contains(CLASS_HIDDEN)).to.be.true;
-            expect(docBase.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN)).to.be.false;
         });
     });
 
-    describe('browserPrint()', () => {
+    describe('setPrintTimeout()', () => {
+        let clock;
+
         beforeEach(() => {
-            stubs.emit = sandbox.stub(docBase, 'emit');
-            stubs.createObject = sandbox.stub(URL, 'createObjectURL');
-            stubs.open = sandbox.stub(window, 'open').returns(false);
-            stubs.browser = sandbox.stub(Browser, 'getName').returns('Chrome');
-            stubs.revokeObjectURL = sandbox.stub(URL, 'revokeObjectURL');
-            stubs.printResult = { print: sandbox.stub(), addEventListener: sandbox.stub() };
-            docBase.printBlob = true;
-            window.navigator.msSaveOrOpenBlob = sandbox.stub().returns(true);
+            clock = sinon.useFakeTimers();
+            docBase.printBlob = undefined;
+            stubs.fetchPrintBlob = sandbox.stub(docBase, 'fetchPrintBlob').returns({
+                then: sandbox.stub()
+            });
+            docBase.initPrint();
+            stubs.show = sandbox.stub(docBase.printPopup, 'show');
         });
 
-        it('should use the open or save dialog if on IE or Edge', () => {
-            docBase.browserPrint();
-            expect(window.navigator.msSaveOrOpenBlob).to.be.called;
-            expect(stubs.emit).to.be.called;
+        afterEach(() => {
+            clock.restore();
         });
 
-        it('should use the open or save dialog if on IE or Edge and emit a message', () => {
-            docBase.browserPrint();
-            expect(window.navigator.msSaveOrOpenBlob).to.be.called;
-            expect(stubs.emit).to.be.called;
+        it('should fetch the print blob and call print again', () => {
+
         });
 
-        it('should emit an error message if the print result fails on IE or Edge', () => {
-            window.navigator.msSaveOrOpenBlob.returns(false);
+        it('should start the print timeout', () => {
 
-            docBase.browserPrint();
-            expect(window.navigator.msSaveOrOpenBlob).to.be.called;
-            expect(stubs.emit).to.be.calledWith('printerror');
         });
 
-        it('should open the pdf in a new tab if not on IE or Edge', () => {
-            window.navigator.msSaveOrOpenBlob = undefined;
+        it('should print right away if the blob is ready', () => {
 
-            docBase.browserPrint();
-            expect(stubs.createObject).to.be.calledWith(docBase.printBlob);
-            expect(stubs.open).to.be.called.with;
-            expect(stubs.emit).to.be.called;
         });
 
-        it('should print on load in the chrome browser', () => {
-            window.navigator.msSaveOrOpenBlob = undefined;
-            stubs.open.returns(stubs.printResult);
+        it('should enable the popup if the print popup is visible and the blob is ready', () => {
 
-
-            docBase.browserPrint();
-            expect(stubs.createObject).to.be.calledWith(docBase.printBlob);
-            expect(stubs.open).to.be.called.with;
-            expect(stubs.browser).to.be.called;
-            expect(stubs.emit).to.be.called;
-            expect(stubs.revokeObjectURL).to.be.called;
-        });
-
-        it('should use a timeout in safari', () => {
-            let clock = sinon.useFakeTimers();
-            window.navigator.msSaveOrOpenBlob = undefined;
-            stubs.open.returns(stubs.printResult);
-            stubs.browser.returns('Safari');
-
-            docBase.browserPrint();
-            clock.tick(PRINT_TIMEOUT_MS + 1);
-            expect(stubs.createObject).to.be.calledWith(docBase.printBlob);
-            expect(stubs.open).to.be.called;
-            expect(stubs.browser).to.be.called;
-            expect(stubs.printResult.print).to.be.called;
-            expect(stubs.emit).to.be.called;
-
-            clock = undefined;
         });
     });
 
@@ -1201,18 +1106,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             expect(docBase.pageNumInputEl).to.equal(stubs.totalPageEl);
             expect(docBase.currentPageEl).to.equal(stubs.totalPageEl);
-        });
-    });
-
-    describe('fetchPrintBlob()', () => {
-        beforeEach(() => {
-            stubs.get = sandbox.stub(util, 'get').returns(Promise.resolve('blob'));
-        });
-
-        it('should get and set the blob', () => {
-            return docBase.fetchPrintBlob('url').then(() => {
-                expect(docBase.printBlob).to.equal('blob');
-            });
         });
     });
 
