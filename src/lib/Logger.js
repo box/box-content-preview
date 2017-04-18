@@ -16,6 +16,11 @@ const BROWSER_INFO = {
     }
 };
 
+/* eslint-disable no-undef */
+const CLIENT_NAME = __NAME__;
+const CLIENT_VERSION = __VERSION__;
+/* eslint-enable no-undef */
+
 class Logger {
 
     /**
@@ -30,6 +35,10 @@ class Logger {
             locale,
             event: 'preview',
             browser: BROWSER_INFO,
+            client: {
+                name: CLIENT_NAME,
+                version: CLIENT_VERSION
+            },
             converted: true,
             cache: {
                 hit: false,

@@ -5,8 +5,8 @@ const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
 const PARAM_CLIENT_NAME = 'box_client_name';
 const PARAM_CLIENT_VERSION = 'box_client_version';
 /* eslint-disable no-undef */
-const NAME = __NAME__;
-const VERSION = __VERSION__;
+const CLIENT_NAME = __NAME__;
+const CLIENT_VERSION = __VERSION__;
 /* eslint-enable no-undef */
 
 const parseJSON = (response) => {
@@ -276,12 +276,12 @@ export function getHeaders(headers = {}, token = '', sharedLink = '', password =
     }
 
     // Following headers are for API analytics
-    if (NAME) {
-        headers[HEADER_CLIENT_NAME] = NAME;
+    if (CLIENT_NAME) {
+        headers[HEADER_CLIENT_NAME] = CLIENT_NAME;
     }
 
-    if (VERSION) {
-        headers[HEADER_CLIENT_VERSION] = VERSION;
+    if (CLIENT_VERSION) {
+        headers[HEADER_CLIENT_VERSION] = CLIENT_VERSION;
     }
 
     /* eslint-enable no-param-reassign */
@@ -324,12 +324,12 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
     }
 
     // Following params are for API analytics
-    if (NAME) {
-        params = `${params}&${PARAM_CLIENT_NAME}=${encodeURI(NAME)}`;
+    if (CLIENT_NAME) {
+        params = `${params}&${PARAM_CLIENT_NAME}=${encodeURI(CLIENT_NAME)}`;
     }
 
-    if (VERSION) {
-        params = `${params}&${PARAM_CLIENT_VERSION}=${encodeURI(VERSION)}`;
+    if (CLIENT_VERSION) {
+        params = `${params}&${PARAM_CLIENT_VERSION}=${encodeURI(CLIENT_VERSION)}`;
     }
 
     return `${url}${delim}${params}`;

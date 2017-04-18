@@ -221,7 +221,7 @@ describe('lib/util', () => {
             expect(headers.foo).to.equal(fooHeader);
             expect(headers.Authorization).to.equal(`Bearer ${token}`);
             expect(headers.BoxApi).to.equal(`shared_link=${sharedLink}`);
-            expect(headers['X-Box-Client-Name']).to.equal('box-content-preview');
+            expect(headers['X-Box-Client-Name']).to.equal(__NAME__);
             expect(headers['X-Box-Client-Version']).to.equal(__VERSION__);
         });
 
@@ -230,7 +230,7 @@ describe('lib/util', () => {
             assert.equal(headers.foo, 'bar');
             assert.equal(headers.Authorization, 'Bearer token');
             assert.equal(headers.BoxApi, 'shared_link=https://sharename&shared_link_password=password');
-            assert.equal(headers['X-Box-Client-Name'], 'box-content-preview');
+            assert.equal(headers['X-Box-Client-Name'], __NAME__);
             assert.equal(headers['X-Box-Client-Version'], __VERSION__);
         });
     });
@@ -245,7 +245,7 @@ describe('lib/util', () => {
             const url = 'foo';
             const token = 'sometoken';
             const sharedLink = 'someSharedLink';
-            expect(util.appendAuthParams(url, token, sharedLink)).to.equal(`${url}?access_token=${token}&shared_link=${sharedLink}&box_client_name=box-content-preview&box_client_version=${__VERSION__}`);
+            expect(util.appendAuthParams(url, token, sharedLink)).to.equal(`${url}?access_token=${token}&shared_link=${sharedLink}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`);
         });
 
         it('should return correct url with password', () => {
@@ -253,7 +253,7 @@ describe('lib/util', () => {
             const token = 'sometoken';
             const sharedLink = 'someSharedLink';
             const sharedLinkPassword = 'somePass';
-            expect(util.appendAuthParams(url, token, sharedLink, sharedLinkPassword)).to.equal(`foobar?access_token=${token}&shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}&box_client_name=box-content-preview&box_client_version=${__VERSION__}`);
+            expect(util.appendAuthParams(url, token, sharedLink, sharedLinkPassword)).to.equal(`foobar?access_token=${token}&shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`);
         });
     });
     /* eslint-enable no-undef */
