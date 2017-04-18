@@ -21,16 +21,16 @@ class ImagePointDialog extends AnnotationDialog {
      * @return {void}
      */
     position() {
-        const [browserX, browserY] = imageAnnotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
+        const [browserX, browserY] = imageAnnotatorUtil.getBrowserCoordinatesFromLocation(this.location, this.annotatedElement);
 
         // Show dialog so we can get width
-        this._annotatedElement.appendChild(this._element);
-        annotatorUtil.showElement(this._element);
-        const dialogDimensions = this._element.getBoundingClientRect();
+        this.annotatedElement.appendChild(this.element);
+        annotatorUtil.showElement(this.element);
+        const dialogDimensions = this.element.getBoundingClientRect();
         const dialogWidth = dialogDimensions.width;
 
         // Get image tag inside viewer
-        const imageEl = this._annotatedElement.querySelector('img');
+        const imageEl = this.annotatedElement.querySelector('img');
         if (!imageEl) {
             return;
         }
@@ -44,12 +44,12 @@ class ImagePointDialog extends AnnotationDialog {
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing
         // else we can do
-        const pageWidth = (imageEl.clientWidth > this._annotatedElement.clientWidth) ? imageEl.clientWidth : this._annotatedElement.clientWidth;
-        dialogLeftX = annotatorUtil.repositionCaret(this._element, dialogLeftX, dialogWidth, browserX, pageWidth);
+        const pageWidth = (imageEl.clientWidth > this.annotatedElement.clientWidth) ? imageEl.clientWidth : this.annotatedElement.clientWidth;
+        dialogLeftX = annotatorUtil.repositionCaret(this.element, dialogLeftX, dialogWidth, browserX, pageWidth);
 
         // Position the dialog
-        this._element.style.left = `${dialogLeftX}px`;
-        this._element.style.top = `${dialogTopY + PAGE_PADDING_TOP - POINT_ANNOTATION_ICON_HEIGHT + POINT_ANNOTATION_ICON_DOT_HEIGHT}px`;
+        this.element.style.left = `${dialogLeftX}px`;
+        this.element.style.top = `${dialogTopY + PAGE_PADDING_TOP - POINT_ANNOTATION_ICON_HEIGHT + POINT_ANNOTATION_ICON_DOT_HEIGHT}px`;
     }
 }
 

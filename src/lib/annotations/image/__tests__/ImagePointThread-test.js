@@ -39,9 +39,9 @@ describe('lib/annotations/image/ImagePointThread', () => {
             pointThread.show();
 
             expect(imageAnnotatorUtil.getBrowserCoordinatesFromLocation).to.have.been.calledWith(
-                pointThread._location,
-                pointThread._annotatedElement);
-            expect(annotatorUtil.showElement).to.have.been.calledWith(pointThread._element);
+                pointThread.location,
+                pointThread.annotatedElement);
+            expect(annotatorUtil.showElement).to.have.been.calledWith(pointThread.element);
         });
 
         it('should show the dialog if the state is pending', () => {
@@ -49,7 +49,7 @@ describe('lib/annotations/image/ImagePointThread', () => {
             sandbox.stub(annotatorUtil, 'showElement');
             sandbox.stub(pointThread, 'showDialog');
 
-            pointThread._state = constants.ANNOTATION_STATE_PENDING;
+            pointThread.state = constants.ANNOTATION_STATE_PENDING;
             pointThread.show();
 
             expect(pointThread.showDialog).to.have.been.called;
@@ -60,7 +60,7 @@ describe('lib/annotations/image/ImagePointThread', () => {
             sandbox.stub(annotatorUtil, 'showElement');
             sandbox.stub(pointThread, 'showDialog');
 
-            pointThread._state = constants.ANNOTATION_STATE_INACTIVE;
+            pointThread.state = constants.ANNOTATION_STATE_INACTIVE;
             pointThread.show();
 
             expect(pointThread.showDialog).to.not.have.been.called;
@@ -70,7 +70,7 @@ describe('lib/annotations/image/ImagePointThread', () => {
     describe('createDialog', () => {
         it('should initialize an appropriate dialog', () => {
             pointThread.createDialog();
-            expect(pointThread._dialog instanceof ImagePointDialog).to.be.true;
+            expect(pointThread.dialog instanceof ImagePointDialog).to.be.true;
         });
     });
 });

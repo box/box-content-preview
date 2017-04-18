@@ -35,17 +35,17 @@ class Annotation {
      * @return {Annotation} Instance of annotation
      */
     constructor(data) {
-        this._annotationID = data.annotationID;
-        this._fileVersionID = data.fileVersionID;
-        this._threadID = data.threadID;
-        this._thread = data.thread;
-        this._type = data.type;
-        this._text = data.text;
-        this._location = data.location;
-        this._user = data.user;
-        this._permissions = data.permissions;
-        this._created = data.created;
-        this._modified = data.modified;
+        this.annotationID = data.annotationID;
+        this.fileVersionID = data.fileVersionID;
+        this.threadID = data.threadID;
+        this.thread = data.thread;
+        this.type = data.type;
+        this.text = data.text;
+        this.location = data.location;
+        this.user = data.user;
+        this.permissions = data.permissions;
+        this.created = data.created;
+        this.modified = data.modified;
     }
 
     //--------------------------------------------------------------------------
@@ -58,7 +58,7 @@ class Annotation {
      * @return {string} annotationID
      */
     get annotationID() {
-        return this._annotationID;
+        return this.annotationID;
     }
 
     /**
@@ -67,7 +67,7 @@ class Annotation {
      * @return {string} fileVersionID
      */
     get fileVersionID() {
-        return this._fileVersionID;
+        return this.fileVersionID;
     }
 
     /**
@@ -76,7 +76,7 @@ class Annotation {
      * @return {string} threadID
      */
     get threadID() {
-        return this._threadID;
+        return this.threadID;
     }
 
     /**
@@ -85,7 +85,7 @@ class Annotation {
      * @return {string} thread
      */
     get thread() {
-        return this._thread;
+        return this.thread;
     }
 
     /**
@@ -94,7 +94,7 @@ class Annotation {
      * @return {string} type
      */
     get type() {
-        return this._type;
+        return this.type;
     }
 
     /**
@@ -103,7 +103,7 @@ class Annotation {
      * @return {string} text
      */
     get text() {
-        return this._text;
+        return this.text;
     }
 
     /**
@@ -112,7 +112,7 @@ class Annotation {
      * @return {Object} location
      */
     get location() {
-        return this._location;
+        return this.location;
     }
 
     /**
@@ -121,7 +121,7 @@ class Annotation {
      * @return {Object} user
      */
     get user() {
-        return this._user;
+        return this.user;
     }
 
     /**
@@ -130,7 +130,7 @@ class Annotation {
      * @return {Object} permissions
      */
     get permissions() {
-        return this._permissions;
+        return this.permissions;
     }
 
     /**
@@ -139,7 +139,7 @@ class Annotation {
      * @return {number} created
      */
     get created() {
-        return this._created;
+        return this.created;
     }
 
     /**
@@ -148,7 +148,7 @@ class Annotation {
      * @return {number} modified
      */
     get modified() {
-        return this._modified;
+        return this.modified;
     }
 }
 

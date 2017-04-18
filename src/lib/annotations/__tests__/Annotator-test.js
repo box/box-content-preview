@@ -71,7 +71,7 @@ describe('lib/annotations/Annotator', () => {
 
     describe('destroy()', () => {
         it('should unbind custom listeners on thread and unbind DOM listeners', () => {
-            annotator._threads = {
+            annotator.threads = {
                 1: [stubs.thread]
             };
 
@@ -116,7 +116,7 @@ describe('lib/annotations/Annotator', () => {
 
     describe('hideAnnotations()', () => {
         it('should call hide on each thread in map', () => {
-            annotator._threads = {
+            annotator.threads = {
                 1: [stubs.thread],
                 2: [stubs.thread2, stubs.thread3]
             };
@@ -130,7 +130,7 @@ describe('lib/annotations/Annotator', () => {
 
     describe('hideAnnotationsOnPage()', () => {
         it('should call hide on each thread in map on page 1', () => {
-            annotator._threads = {
+            annotator.threads = {
                 1: [stubs.thread],
                 2: [stubs.thread2, stubs.thread3]
             };
@@ -144,7 +144,7 @@ describe('lib/annotations/Annotator', () => {
 
     describe('renderAnnotations()', () => {
         it('should call show on each thread', () => {
-            annotator._threads = {
+            annotator.threads = {
                 1: [stubs.thread],
                 2: [stubs.thread2, stubs.thread3]
             };
@@ -160,7 +160,7 @@ describe('lib/annotations/Annotator', () => {
         it('should call show on each thread', () => {
             stubs.thread2.location = { page: 2 };
             stubs.thread3.location = { page: 2 };
-            annotator._threads = {
+            annotator.threads = {
                 1: [stubs.thread],
                 2: [stubs.thread2, stubs.thread3]
             };
@@ -230,7 +230,7 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.setupAnnotations();
 
-            expect(Object.keys(annotator._threads).length === 0).to.be.true;
+            expect(Object.keys(annotator.threads).length === 0).to.be.true;
             expect(annotator.bindDOMListeners).to.be.called;
             expect(annotator.bindCustomListenersOnService).to.be.called;
         });
@@ -238,10 +238,10 @@ describe('lib/annotations/Annotator', () => {
 
     describe('fetchAnnotations', () => {
         beforeEach(() => {
-            annotator._annotationService = {
+            annotator.annotationService = {
                 getThreadMap: () => {}
             };
-            stubs.serviceMock = sandbox.mock(annotator._annotationService);
+            stubs.serviceMock = sandbox.mock(annotator.annotationService);
 
             const threadMap = {
                 someID: [{}, {}],
@@ -260,7 +260,7 @@ describe('lib/annotations/Annotator', () => {
             const result = annotator.fetchAnnotations();
 
             return stubs.threadPromise.then(() => {
-                expect(Object.keys(annotator._threads).length === 0).to.be.true;
+                expect(Object.keys(annotator.threads).length === 0).to.be.true;
                 expect(annotator.createAnnotationThread).to.be.calledTwice;
                 expect(annotator.bindCustomListenersOnThread).to.be.calledOnce;
                 expect(result).to.be.an.object;
@@ -270,23 +270,23 @@ describe('lib/annotations/Annotator', () => {
 
     describe('bindCustomListenersOnService', () => {
         it('should do nothing if the service does not exist', () => {
-            annotator._annotationService = {
+            annotator.annotationService = {
                 addListener: sandbox.stub()
             };
 
             annotator.bindCustomListenersOnService();
-            expect(annotator._annotationService.addListener).to.not.be.called;
+            expect(annotator.annotationService.addListener).to.not.be.called;
         });
 
         it('should add an event listener', () => {
-            annotator._annotationService = new AnnotationService({
+            annotator.annotationService = new AnnotationService({
                 apiHost: 'API',
                 fileId: 1,
                 token: 'someToken',
                 canAnnotate: true,
                 canDelete: true
             });
-            const addListenerStub = sandbox.stub(annotator._annotationService, 'addListener');
+            const addListenerStub = sandbox.stub(annotator.annotationService, 'addListener');
 
             annotator.bindCustomListenersOnService();
             expect(addListenerStub).to.be.calledWith('annotationerror', sinon.match.func);
@@ -295,23 +295,23 @@ describe('lib/annotations/Annotator', () => {
 
     describe('unbindCustomListenersOnService', () => {
         it('should do nothing if the service does not exist', () => {
-            annotator._annotationService = {
+            annotator.annotationService = {
                 removeListener: sandbox.stub()
             };
 
             annotator.unbindCustomListenersOnService();
-            expect(annotator._annotationService.removeListener).to.not.be.called;
+            expect(annotator.annotationService.removeListener).to.not.be.called;
         });
 
         it('should remove an event listener', () => {
-            annotator._annotationService = new AnnotationService({
+            annotator.annotationService = new AnnotationService({
                 apiHost: 'API',
                 fileId: 1,
                 token: 'someToken',
                 canAnnotate: true,
                 canDelete: true
             });
-            const removeListenerStub = sandbox.stub(annotator._annotationService, 'removeAllListeners');
+            const removeListenerStub = sandbox.stub(annotator.annotationService, 'removeAllListeners');
 
             annotator.unbindCustomListenersOnService();
             expect(removeListenerStub).to.be.called;
@@ -336,17 +336,17 @@ describe('lib/annotations/Annotator', () => {
 
     describe('bindPointModeListeners', () => {
         it('should bind point mode click handler', () => {
-            sandbox.stub(annotator._annotatedElement, 'addEventListener');
+            sandbox.stub(annotator.annotatedElement, 'addEventListener');
             annotator.bindPointModeListeners();
-            expect(annotator._annotatedElement.addEventListener).to.be.calledWith('click', annotator.pointClickHandler);
+            expect(annotator.annotatedElement.addEventListener).to.be.calledWith('click', annotator.pointClickHandler);
         });
     });
 
     describe('unbindPointModeListeners', () => {
         it('should unbind point mode click handler', () => {
-            sandbox.stub(annotator._annotatedElement, 'removeEventListener');
+            sandbox.stub(annotator.annotatedElement, 'removeEventListener');
             annotator.unbindPointModeListeners();
-            expect(annotator._annotatedElement.removeEventListener).to.be.calledWith('click', annotator.pointClickHandler);
+            expect(annotator.annotatedElement.removeEventListener).to.be.calledWith('click', annotator.pointClickHandler);
         });
     });
 
@@ -422,14 +422,14 @@ describe('lib/annotations/Annotator', () => {
             annotator.init();
             annotator.addThreadToMap(stubs.thread);
 
-            expect(annotator._threads).to.deep.equal({
+            expect(annotator.threads).to.deep.equal({
                 2: [stubs.thread]
             });
 
             annotator.addThreadToMap(stubs.thread2);
             annotator.addThreadToMap(stubs.thread3);
 
-            expect(annotator._threads).to.deep.equal({
+            expect(annotator.threads).to.deep.equal({
                 2: [stubs.thread, stubs.thread3],
                 3: [stubs.thread2]
             });
@@ -438,10 +438,10 @@ describe('lib/annotations/Annotator', () => {
 
     describe('isInPointMode', () => {
         it('should return whether the annotator is in point mode or not', () => {
-            annotator._annotatedElement.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
+            annotator.annotatedElement.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
             expect(annotator.isInPointMode()).to.be.true;
 
-            annotator._annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
+            annotator.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
             expect(annotator.isInPointMode()).to.be.false;
         });
     });

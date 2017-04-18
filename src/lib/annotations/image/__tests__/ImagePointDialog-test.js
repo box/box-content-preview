@@ -21,7 +21,7 @@ describe('lib/annotations/image/ImagePointDialog', () => {
             canAnnotate: true
         });
         pointDialog.setup([]);
-        pointDialog._element.style.width = '282px';
+        pointDialog.element.style.width = '282px';
     });
 
     afterEach(() => {

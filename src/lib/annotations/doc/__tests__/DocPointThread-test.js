@@ -35,7 +35,7 @@ describe('lib/annotations/doc/DocPointThread', () => {
 
     describe('showDialog', () => {
         it('should not call parent showDialog if user can annotate and there is a selection present', () => {
-            pointThread._annotationService.canAnnotate = true;
+            pointThread.annotationService.canAnnotate = true;
             sandbox.stub(docAnnotatorUtil, 'isSelectionPresent').returns(true);
 
             // This stubs out a parent method by forcing the method we care about
@@ -51,7 +51,7 @@ describe('lib/annotations/doc/DocPointThread', () => {
         });
 
         it('should call parent showDialog if user can\'t annotate', () => {
-            pointThread._annotationService.canAnnotate = false;
+            pointThread.annotationService.canAnnotate = false;
             Object.defineProperty(Object.getPrototypeOf(DocPointThread.prototype), 'showDialog', {
                 value: sandbox.stub()
             });
@@ -62,7 +62,7 @@ describe('lib/annotations/doc/DocPointThread', () => {
         });
 
         it('should call parent showDialog if there isn\'t a selection present', () => {
-            pointThread._annotationService.canAnnotate = true;
+            pointThread.annotationService.canAnnotate = true;
             sandbox.stub(docAnnotatorUtil, 'isSelectionPresent').returns(false);
             Object.defineProperty(Object.getPrototypeOf(DocPointThread.prototype), 'showDialog', {
                 value: sandbox.stub()
@@ -82,9 +82,9 @@ describe('lib/annotations/doc/DocPointThread', () => {
             pointThread.show();
 
             expect(docAnnotatorUtil.getBrowserCoordinatesFromLocation).to.have.been.calledWith(
-                pointThread._location,
-                pointThread._annotatedElement);
-            expect(annotatorUtil.showElement).to.have.been.calledWith(pointThread._element);
+                pointThread.location,
+                pointThread.annotatedElement);
+            expect(annotatorUtil.showElement).to.have.been.calledWith(pointThread.element);
         });
 
         it('should show the dialog if the state is pending', () => {
@@ -92,7 +92,7 @@ describe('lib/annotations/doc/DocPointThread', () => {
             sandbox.stub(annotatorUtil, 'showElement');
             sandbox.stub(pointThread, 'showDialog');
 
-            pointThread._state = constants.ANNOTATION_STATE_PENDING;
+            pointThread.state = constants.ANNOTATION_STATE_PENDING;
             pointThread.show();
 
             expect(pointThread.showDialog).to.have.been.called;
@@ -103,7 +103,7 @@ describe('lib/annotations/doc/DocPointThread', () => {
             sandbox.stub(annotatorUtil, 'showElement');
             sandbox.stub(pointThread, 'showDialog');
 
-            pointThread._state = constants.ANNOTATION_STATE_INACTIVE;
+            pointThread.state = constants.ANNOTATION_STATE_INACTIVE;
             pointThread.show();
 
             expect(pointThread.showDialog).to.not.have.been.called;
@@ -113,7 +113,7 @@ describe('lib/annotations/doc/DocPointThread', () => {
     describe('createDialog', () => {
         it('should initialize an appropriate dialog', () => {
             pointThread.createDialog();
-            expect(pointThread._dialog instanceof DocPointDialog).to.be.true;
+            expect(pointThread.dialog instanceof DocPointDialog).to.be.true;
         });
     });
 });
