@@ -256,55 +256,6 @@ class AnnotationThread extends EventEmitter {
     createDialog() {}
 
     //--------------------------------------------------------------------------
-    // Getters
-    //--------------------------------------------------------------------------
-
-    /**
-     * Gets location.
-     *
-     * @return {Object} Location
-     */
-    get location() {
-        return this.location;
-    }
-
-    /**
-     * Gets threadID.
-     *
-     * @return {string} threadID
-     */
-    get threadID() {
-        return this.threadID;
-    }
-
-    /**
-     * Gets thread number.
-     *
-     * @return {string} thread number
-     */
-    get thread() {
-        return this.thread;
-    }
-
-    /**
-     * Gets type.
-     *
-     * @return {string} type
-     */
-    get type() {
-        return this.type;
-    }
-
-    /**
-     * Gets state.
-     *
-     * @return {string} state
-     */
-    get state() {
-        return this.state;
-    }
-
-    //--------------------------------------------------------------------------
     // Protected
     //--------------------------------------------------------------------------
 

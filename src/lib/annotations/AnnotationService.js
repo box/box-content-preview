@@ -184,37 +184,6 @@ class AnnotationService extends EventEmitter {
     }
 
     //--------------------------------------------------------------------------
-    // Getters
-    //--------------------------------------------------------------------------
-
-    /**
-     * Gets canAnnotate.
-     *
-     * @return {boolean} Whether or not user can create or modify annotations.
-     */
-    get canAnnotate() {
-        return this.canAnnotate;
-    }
-
-    /**
-     * Gets canDelete.
-     *
-     * @return {boolean} Whether or not user can create or modify annotations.
-     */
-    get canDelete() {
-        return this.canDelete;
-    }
-
-    /**
-     * Gets user.
-     *
-     * @return {Object} User object
-     */
-    get user() {
-        return this.user;
-    }
-
-    //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
 
