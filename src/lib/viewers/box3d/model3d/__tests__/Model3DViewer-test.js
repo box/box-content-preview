@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Model3DViewer from '../Model3DViewer';
+import BaseViewer from '../../../BaseViewer';
 import Model3DControls from '../Model3DControls';
 import Model3DRenderer from '../Model3DRenderer';
 import {
@@ -21,6 +22,8 @@ let model3d;
 let stubs = {};
 
 describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -43,6 +46,9 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                 }
             }
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        model3d.containerEl = containerEl;
         model3d.setup();
 
         sandbox.stub(model3d, 'createSubModules');
@@ -92,6 +98,8 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
         fixture.cleanup();
         stubs = {};
 
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
+
         if (model3d && typeof model3d.destroy === 'function') {
             model3d.destroy();
         }
@@ -115,6 +123,8 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
                     }
                 }
             });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+            m3d.containerEl = containerEl;
             m3d.setup();
 
             m3d.createSubModules();

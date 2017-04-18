@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import DocumentViewer from '../DocumentViewer';
 import DocBaseViewer from '../DocBaseViewer';
+import BaseViewer from '../../BaseViewer';
 import DocPreloader from '../DocPreloader';
 import fullscreen from '../../../Fullscreen';
 import {
@@ -19,6 +20,8 @@ let doc;
 let stubs = {};
 
 describe('lib/viewers/doc/DocumentViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -33,6 +36,9 @@ describe('lib/viewers/doc/DocumentViewer', () => {
                 id: '0'
             }
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        doc.containerEl = containerEl;
         doc.setup();
 
         doc.pdfViewer = {
@@ -47,6 +53,8 @@ describe('lib/viewers/doc/DocumentViewer', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (doc && typeof doc.destroy === 'function') {
             doc.destroy();

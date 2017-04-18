@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import PreviewErrorViewer from '../PreviewErrorViewer';
+import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import * as file from '../../../file';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
@@ -11,25 +12,33 @@ import {
 
 const sandbox = sinon.sandbox.create();
 let error;
+let containerEl;
 
 describe('lib/viewers/error/PreviewErrorViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
         fixture.load('viewers/error/__tests__/PreviewErrorViewer-test.html');
+        containerEl = document.querySelector('.container');
         error = new PreviewErrorViewer({
             file: {
                 id: '1'
             },
-            container: '.container'
+            container: containerEl
         });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        error.containerEl = containerEl;
     });
 
     afterEach(() => {
         fixture.cleanup();
         sandbox.verifyAndRestore();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (error && typeof error.destroy === 'function') {
             error.destroy();

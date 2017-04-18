@@ -35,6 +35,8 @@ let containerEl;
 let stubs = {};
 
 describe('src/lib/viewers/doc/DocBaseViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -54,6 +56,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 id: '0'
             }
         });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        docBase.containerEl = containerEl;
         docBase.setup();
         stubs = {};
     });
@@ -61,6 +65,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         docBase.pdfViewer = undefined;
         if (typeof docBase.destroy === 'function') {

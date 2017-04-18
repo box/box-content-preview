@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import MultiImageViewer from '../MultiImageViewer';
 import fullscreen from '../../../Fullscreen';
+import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 
 const CLASS_INVISIBLE = 'bp-is-invisible';
@@ -15,6 +16,8 @@ let containerEl;
 
 describe('lib/viewers/image/MultiImageViewer', () => {
     stubs.errorHandler = MultiImageViewer.prototype.errorHandler;
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -45,9 +48,14 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         };
 
         multiImage = new MultiImageViewer(options);
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        multiImage.containerEl = containerEl;
     });
 
     afterEach(() => {
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
+
         if (multiImage && multiImage.imagesEl) {
             multiImage.destroy();
         }

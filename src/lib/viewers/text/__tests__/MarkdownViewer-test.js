@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import MarkdownViewer from '../MarkdownViewer';
+import BaseViewer from '../../BaseViewer';
 import Popup from '../../../Popup';
 import { TEXT_STATIC_ASSETS_VERSION } from '../../../constants';
 
@@ -8,6 +9,8 @@ let markdown;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/text/MarkdownViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -21,12 +24,17 @@ describe('lib/viewers/text/MarkdownViewer', () => {
             },
             container: containerEl
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        markdown.containerEl = containerEl;
         markdown.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (markdown && typeof markdown.destroy === 'function') {
             markdown.destroy();
