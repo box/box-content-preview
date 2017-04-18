@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import Logger from '../Logger';
 
 let logger;
@@ -28,6 +29,11 @@ describe('lib/Logger', () => {
 
         assert.notOk(log.cache.hit, 'Cache should not be hit');
         assert.notOk(log.cache.stale, 'Cache should not be stale');
+
+        /* eslint-disable no-undef */
+        expect(log.client.name).to.equal(__NAME__);
+        expect(log.client.version).to.equal(__VERSION__);
+        /* eslint-enable no-undef */
     });
 
     it('should set and get correctly', () => {
