@@ -11,9 +11,11 @@ const PRINT_DIALOG_TIMEOUT_MS = 500;
 const sandbox = sinon.sandbox.create();
 let office;
 let stubs = {};
+let containerEl;
 
 describe('lib/viewers/office/OfficeViewer', () => {
     let clock;
+    const setupFunc = BaseViewer.prototype.setup;
 
     before(() => {
         fixture.setBase('src/lib');
@@ -21,8 +23,9 @@ describe('lib/viewers/office/OfficeViewer', () => {
 
     beforeEach(() => {
         fixture.load('viewers/office/__tests__/OfficeViewer-test.html');
+        containerEl = document.querySelector('.container');
         office = new OfficeViewer({
-            container: '.container',
+            container: containerEl,
             file: {
                 id: '123'
             }
@@ -31,12 +34,16 @@ describe('lib/viewers/office/OfficeViewer', () => {
             setupPDFUrl: sandbox.stub(office, 'setupPDFUrl')
         };
         clock = sinon.useFakeTimers();
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        office.containerEl = containerEl;
     });
 
     afterEach(() => {
         clock.restore();
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (office && typeof office.destroy === 'function') {
             office.destroy();

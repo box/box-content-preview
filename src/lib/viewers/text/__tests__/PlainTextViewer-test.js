@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Browser from '../../../Browser';
 import PlainTextViewer from '../PlainTextViewer';
+import BaseViewer from '../../BaseViewer';
 import Popup from '../../../Popup';
 import TextBaseViewer from '../TextBaseViewer';
 import * as util from '../../../util';
@@ -11,6 +12,8 @@ let text;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/text/PlainTextViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -32,12 +35,17 @@ describe('lib/viewers/text/PlainTextViewer', () => {
                 }
             }
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        text.containerEl = containerEl;
         text.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (typeof text.destroy === 'function') {
             text.destroy();
@@ -54,6 +62,8 @@ describe('lib/viewers/text/PlainTextViewer', () => {
                 container: containerEl
             });
             sandbox.stub(text, 'initPrint');
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+            text.containerEl = containerEl;
 
             text.setup();
 
@@ -255,6 +265,8 @@ describe('lib/viewers/text/PlainTextViewer', () => {
                 },
                 container: containerEl
             });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+            text.containerEl = containerEl;
             text.setup();
         });
 

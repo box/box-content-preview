@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import ImageViewer from '../ImageViewer';
+import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import * as file from '../../../file';
 import * as util from '../../../util';
@@ -16,6 +17,8 @@ let containerEl;
 let clock;
 
 describe('lib/viewers/image/ImageViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -45,6 +48,9 @@ describe('lib/viewers/image/ImageViewer', () => {
                 }
             }
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        image.containerEl = containerEl;
         image.setup();
     });
 
@@ -52,6 +58,8 @@ describe('lib/viewers/image/ImageViewer', () => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
         clock.restore();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (image && typeof image.destroy === 'function') {
             image.destroy();
@@ -70,6 +78,8 @@ describe('lib/viewers/image/ImageViewer', () => {
             });
             sandbox.stub(image, 'initAnnotations');
 
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+            image.containerEl = containerEl;
             image.setup();
 
             expect(image.wrapperEl).to.have.class('bp-image');

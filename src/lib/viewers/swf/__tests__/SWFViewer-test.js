@@ -8,6 +8,8 @@ let swf;
 let containerEl;
 
 describe('lib/viewers/SWFViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -29,12 +31,17 @@ describe('lib/viewers/SWFViewer', () => {
                 }
             }
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        swf.containerEl = containerEl;
         swf.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (swf && typeof swf.destroy === 'function') {
             swf.destroy();

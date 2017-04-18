@@ -23,6 +23,8 @@ let box3d;
 let stubs = {};
 
 describe('lib/viewers/box3d/Box3DViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -45,6 +47,9 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
                 }
             }
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        box3d.containerEl = containerEl;
         box3d.setup();
 
         sandbox.stub(box3d, 'createSubModules');
@@ -66,6 +71,8 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (box3d && typeof box3d.destroy === 'function') {
             box3d.destroy();
@@ -91,6 +98,8 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
                     }
                 }
             });
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+            box3d.containerEl = containerEl;
             box3d.setup();
 
             box3d.createSubModules();
@@ -325,6 +334,8 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
         });
 
         it('should call renderer.load()', () => {
+            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+            box3d.containerEl = containerEl;
             Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
             sandbox.stub(box3d, 'loadAssets').returns(Promise.resolve());
             sandbox.stub(box3d, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
