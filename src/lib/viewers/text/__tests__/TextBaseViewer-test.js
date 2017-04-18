@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Controls from '../../../Controls';
 import TextBaseViewer from '../TextBaseViewer';
+import BaseViewer from '../../BaseViewer';
 import * as file from '../../../file';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
 
@@ -9,6 +10,8 @@ let textBase;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/text/TextBaseViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -22,11 +25,15 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             },
             container: containerEl
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        textBase.containerEl = containerEl;
         textBase.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
         if (typeof textBase.destroy === 'function') {
             textBase.destroy();
         }

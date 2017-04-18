@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import PresentationViewer from '../PresentationViewer';
+import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import DocBaseViewer from '../DocBaseViewer';
 import PresentationPreloader from '../PresentationPreloader';
@@ -22,6 +23,8 @@ let presentation;
 let stubs = {};
 
 describe('lib/viewers/doc/PresentationViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -33,6 +36,9 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         presentation = new PresentationViewer({
             container: containerEl
         });
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        presentation.containerEl = containerEl;
         presentation.setup();
 
         presentation.pdfViewer = {
@@ -53,6 +59,8 @@ describe('lib/viewers/doc/PresentationViewer', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (presentation && typeof presentation.destroy === 'function') {
             presentation.pdfViewer = undefined;

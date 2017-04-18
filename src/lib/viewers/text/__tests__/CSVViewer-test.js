@@ -2,6 +2,7 @@
 import React from 'react';
 import CSVViewer from '../CSVViewer';
 import TextBaseViewer from '../TextBaseViewer';
+import BaseViewer from '../../BaseViewer';
 import * as util from '../../../util';
 
 let containerEl;
@@ -10,6 +11,8 @@ let csv;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/text/CSVViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -30,12 +33,16 @@ describe('lib/viewers/text/CSVViewer', () => {
         };
 
         csv = new CSVViewer(options);
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        csv.containerEl = containerEl;
         csv.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (typeof csv.destroy === 'function') {
             csv.destroy();

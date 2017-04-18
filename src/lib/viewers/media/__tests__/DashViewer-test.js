@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import DashViewer from '../DashViewer';
 import VideoBaseViewer from '../VideoBaseViewer';
+import BaseViewer from '../../BaseViewer';
 import cache from '../../../Cache';
 import fullscreen from '../../../Fullscreen';
 import * as util from '../../../util';
@@ -15,6 +16,8 @@ const CSS_CLASS_HD = 'bp-media-controls-is-hd';
 const sandbox = sinon.sandbox.create();
 
 describe('lib/viewers/media/DashViewer', () => {
+    const setupFunc = BaseViewer.prototype.setup;
+
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -69,11 +72,15 @@ describe('lib/viewers/media/DashViewer', () => {
         };
         stubs.mockControls = sandbox.mock(dash.mediaControls);
 
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        dash.containerEl = containerEl;
         dash.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (dash && typeof dash.destroy === 'function' && !dash.destroyed) {
             dash.destroy();
