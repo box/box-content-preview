@@ -25,7 +25,7 @@ import {
     STATUS_VIEWABLE
 } from '../constants';
 
-const JS = ['annotations.js'];
+const ANNOTATIONS_JS = ['annotations.js'];
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
@@ -71,12 +71,14 @@ class BaseViewer extends EventEmitter {
         }
 
         // Attempts to load annotations assets and initializes annotations if
-        // the assets are available
-        this.loadAssets(JS)
-            .then(() => {
-                this.annotationsLoaded = true;
-            })
-            .catch(this.handleAssetError);
+        // the assets are available and showAnnotations flag is true
+        if (this.options.showAnnotations) {
+            this.loadAssets(ANNOTATIONS_JS)
+                .then(() => {
+                    this.annotationsLoaded = true;
+                })
+                .catch(this.handleAssetError);
+        }
     }
 
     /**
@@ -269,8 +271,8 @@ class BaseViewer extends EventEmitter {
             this.annotator.togglePointModeHandler();
         });
 
-        this.addListener('viewerloaded', () => {
-            if (this.annotationsLoaded) {
+        this.addListener('load', () => {
+            if (this.annotationsLoaded && this.options.showAnnotations) {
                 this.initAnnotator();
             }
         });

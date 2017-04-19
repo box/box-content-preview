@@ -1025,7 +1025,6 @@ class DocBaseViewer extends BaseViewer {
                 numPages: this.pdfViewer.pagesCount,
                 endProgress: false // Indicate that viewer will end progress later
             });
-            this.emit('viewerloaded');
         }
     }
 
@@ -1063,7 +1062,7 @@ class DocBaseViewer extends BaseViewer {
      * @private
      */
     textlayerrenderedHandler() {
-        this.emit('viewerloaded');
+        this.emit('load');
     }
 
     /**

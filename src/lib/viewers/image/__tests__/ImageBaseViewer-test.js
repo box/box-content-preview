@@ -488,7 +488,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             expect(imageBase.loaded).to.be.true;
             expect(stubs.emit).to.have.been.calledWith('load');
-            expect(stubs.emit).to.have.been.calledWith('viewerloaded');
+            expect(stubs.emit).to.have.been.calledWith('load');
             expect(stubs.zoom).to.have.been.called;
             expect(stubs.loadUI).to.have.been.called;
         });

@@ -32,13 +32,13 @@ class Annotator extends EventEmitter {
      */
     constructor(data) {
         super();
-        this.annotatedElement = data.annotatedElement;
-        this.annotationService = data.annotationService;
+
+        this.canAnnotate = data.canAnnotate;
+        this.container = data.container;
+        this.options = data.options;
         this.fileVersionID = data.fileVersionID;
         this.locale = data.locale;
         this.validationErrorDisplayed = false;
-
-        this.notification = new Notification(this.annotatedElement);
     }
 
     /**

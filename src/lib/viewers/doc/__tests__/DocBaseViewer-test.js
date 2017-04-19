@@ -1496,7 +1496,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should do nothing if the annotator does not exist or if the annotations are loaded', () => {
             stubs.emit = sandbox.stub(docBase, 'emit');
             docBase.textlayerrenderedHandler();
-            expect(stubs.emit).to.be.calledWith('viewerloaded');
+            expect(stubs.emit).to.be.calledWith('load');
         });
     });
 

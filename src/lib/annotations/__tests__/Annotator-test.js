@@ -302,27 +302,17 @@ describe('lib/annotations/Annotator', () => {
                 expect(addListenerStub).to.be.calledWith('annotationerror', sinon.match.func);
             });
         });
-    });
 
-    describe('unbindCustomListenersOnService', () => {
-        it('should do nothing if the service does not exist', () => {
-            annotator.annotationService = {
-                removeListener: sandbox.stub()
-            };
 
-            annotator.unbindCustomListenersOnService();
-            expect(annotator.annotationService.removeListener).to.not.be.called;
-        });
+        describe('unbindCustomListenersOnService', () => {
+            it('should do nothing if the service does not exist', () => {
+                annotator.annotationService = {
+                    removeListener: sandbox.stub()
+                };
 
-        it('should remove an event listener', () => {
-            annotator.annotationService = new AnnotationService({
-                apiHost: 'API',
-                fileId: 1,
-                token: 'someToken',
-                canAnnotate: true,
-                canDelete: true
+                annotator.unbindCustomListenersOnService();
+                expect(annotator.annotationService.removeListener).to.not.be.called;
             });
-            const removeListenerStub = sandbox.stub(annotator.annotationService, 'removeAllListeners');
 
             it('should remove an event listener', () => {
                 annotator.annotationService = new AnnotationService({

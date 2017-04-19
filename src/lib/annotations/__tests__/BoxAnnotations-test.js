@@ -19,22 +19,6 @@ describe('lib/annotators/BoxAnnotations', () => {
         loader = null;
     });
 
-    describe('canLoad()', () => {
-        it('should return true if loader can find an annotator to match the annotator', () => {
-            sandbox.stub(loader, 'determineAnnotator').returns({});
-
-            expect(loader.canLoad({})).to.be.true;
-            expect(loader.determineAnnotator).to.be.called;
-        });
-
-        it('should return false if loader can\'t find an annotator to match the annotator', () => {
-            sandbox.stub(loader, 'determineAnnotator').returns(null);
-
-            expect(loader.canLoad({})).to.be.false;
-            expect(loader.determineAnnotator).to.be.called;
-        });
-    });
-
     describe('getAnnotators()', () => {
         it('should return the loader\'s annotators', () => {
             expect(loader.getAnnotators()).to.deep.equal(loader.annotators);

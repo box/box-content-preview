@@ -42,6 +42,7 @@ describe('lib/viewers/BaseViewer', () => {
         it('should set options, a container, bind event listeners, and set timeout', () => {
             sandbox.stub(base, 'addCommonListeners');
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
+            base.options.showAnnotations = true;
 
             base.setup();
 
@@ -49,11 +50,13 @@ describe('lib/viewers/BaseViewer', () => {
                 container: containerEl,
                 file: {
                     id: '0'
-                }
+                },
+                showAnnotations: true
             });
             expect(base.containerEl).to.have.class('bp');
             expect(base.addCommonListeners).to.be.called;
             expect(base.loadTimeout).to.be.a.number;
+            expect(base.loadAssets).to.be.called;
         });
 
         it('should add a mobile class to the container if on mobile', () => {
@@ -63,6 +66,13 @@ describe('lib/viewers/BaseViewer', () => {
 
             const container = document.querySelector('.bp');
             expect(container).to.have.class('bp-is-mobile');
+        });
+
+        it('should not load annotations assets if global preview showAnnotations option is false', () => {
+            sandbox.stub(base, 'addCommonListeners');
+            sandbox.stub(base, 'loadAssets');
+            base.options.showAnnotations = false;
+            expect(base.loadAssets).to.not.be.called;
         });
     });
 
@@ -229,7 +239,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(fullscreen.addListener).to.be.calledWith('exit', sinon.match.func);
             expect(document.defaultView.addEventListener).to.be.calledWith('resize', base.debouncedResizeHandler);
             expect(base.addListener).to.be.calledWith('togglepointannotationmode', sinon.match.func);
-            expect(base.addListener).to.be.calledWith('viewerloaded', sinon.match.func);
+            expect(base.addListener).to.be.calledWith('load', sinon.match.func);
         });
     });
 

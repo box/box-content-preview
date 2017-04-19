@@ -33,7 +33,7 @@ describe('lib/annotations/image/ImageAnnotator', () => {
     });
 
     describe('getAnnotatedEl()', () => {
-        it('should set the annotated element as the document', () => {
+        it('should return the annotated element as the document', () => {
             expect(annotator.annotatedElement).to.not.be.null;
         });
     });
