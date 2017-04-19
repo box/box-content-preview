@@ -1,5 +1,12 @@
 # Change Log
 
+## [v0.120.1](https://github.com/box/box-content-preview/tree/v0.120.1) (2017-04-19)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.120.0...v0.120.1)
+
+**Merged pull requests:**
+
+- Update: Tweak pdf.js range requests for improved performance [\#84](https://github.com/box/box-content-preview/pull/84) ([tonyjin](https://github.com/tonyjin))
+
 ## [v0.120.0](https://github.com/box/box-content-preview/tree/v0.120.0) (2017-04-18)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.119.1...v0.120.0)
 

@@ -1,5 +1,5 @@
 ![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg)
-![NPM version](https://img.shields.io/badge/npm-v0.120.0-blue.svg)
+![NPM version](https://img.shields.io/badge/npm-v0.120.1-blue.svg)
 
 [Box Content Preview](https://docs.box.com/docs/box-content-preview)
 ====================================================================
@@ -16,11 +16,11 @@ If your browser doesn't natively support Promises, include a Promise library (e.
 
 Current Version
 ---------------
-* Version: v0.120.0
+* Version: v0.120.1
 * Locale: en-US
 
-https://cdn01.boxcdn.net/platform/preview/0.120.0/en-US/preview.js
-https://cdn01.boxcdn.net/platform/preview/0.120.0/en-US/preview.css
+https://cdn01.boxcdn.net/platform/preview/0.120.1/en-US/preview.js
+https://cdn01.boxcdn.net/platform/preview/0.120.1/en-US/preview.css
 
 Supported Locales
 -----------------
@@ -47,8 +47,8 @@ You can self-host the Box Content Preview UI Kit and Promise library or referenc
     <script src="https://cdn01.boxcdn.net/js/vendor/bluebird/bluebird-core-some-any-cancel-settle-2.9.34.js"></script>
 
     <!-- Latest version of Preview SDK for your locale -->
-    <script src="https://cdn01.boxcdn.net/platform/preview/0.120.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/0.120.0/en-US/preview.css" />
+    <script src="https://cdn01.boxcdn.net/platform/preview/0.120.1/en-US/preview.js"></script>
+    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/0.120.1/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
