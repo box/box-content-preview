@@ -965,7 +965,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should set a default chunk size if no viewer option set and locale is not en-US', () => {
             const url = 'url';
-            const defaultChunkSize = 393216; // 384KB
+            const defaultChunkSize = 524288; // 512KB
 
             docBase.options.location = {
                 locale: 'not-en-US'
@@ -1048,6 +1048,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     staticBaseURI: 'test/'
                 },
                 file: {
+                    size: 10000000,
+                    extension: 'pdf',
                     watermark_info: {
                         is_watermarked: false
                     },
@@ -1071,23 +1073,29 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(PDFJS.externalLinkRel).to.equal('noopener noreferrer nofollow');
         });
 
-        it('should disable range requests if the browser is Mobile Safari', () => {
-            sandbox.stub(Browser, 'isIOS').returns(true);
+        it('should disable range requests if the file is smaller than 4MB and is not an Excel file', () => {
+            docBase.options.file.size = 100;
+            docBase.options.extension = 'pdf';
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.true;
+        });
+
+        it('should not disable range requests if the file is an Excel file', () => {
+            docBase.options.extension = 'xlsx';
+            docBase.setupPdfjs();
+            expect(PDFJS.disableRange).to.be.false;
         });
 
         it('should disable range requests if the file is watermarked', () => {
-            // file is watermarked
-            stubs.browser.returns('Chrome');
             docBase.options.file.watermark_info.is_watermarked = true;
-
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.true;
         });
 
-        it('should enable range requests if the file and browser meet the conditions', () => {
-            stubs.browser.returns('Chrome');
+        it('should enable range requests if the file is greater than 4MB, is not Excel, and is not watermarked', () => {
+            docBase.options.size = 10000000;
+            docBase.options.extension = 'pdf';
+            docBase.options.file.watermark_info.is_watermarked = false;
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.false;
         });

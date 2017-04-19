@@ -30,8 +30,10 @@ const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
-const DEFAULT_RANGE_REQUEST_CHUNK_SIZE = 393216; // 384KB
+const DEFAULT_RANGE_REQUEST_CHUNK_SIZE = 524288; // 512KB
 const LARGE_RANGE_REQUEST_CHUNK_SIZE = 1048576; // 1MB
+const MINIMUM_RANGE_REQUEST_FILE_SIZE = 4194304; // 4MB
+const DISABLE_RANGE_REQUEST_EXENSIONS = ['xls', 'xlsm', 'xlsx'];
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const IS_SAFARI_CLASS = 'is-safari';
@@ -226,6 +228,7 @@ class DocBaseViewer extends BaseViewer {
         this.findBarEl = this.containerEl.appendChild(document.createElement('div'));
         this.findBarEl.classList.add(CLASS_BOX_PREVIEW_FIND_BAR);
 
+        /* global PDFJS */
         this.findController = new PDFJS.PDFFindController({
             pdfViewer: this.pdfViewer
         });
@@ -651,6 +654,7 @@ class DocBaseViewer extends BaseViewer {
     setupPdfjs() {
         // Set PDFJS worker & character maps
         const { file, location } = this.options;
+        const { size, extension, watermark_info: watermarkInfo } = file;
         const assetUrlCreator = createAssetUrlCreator(location);
         PDFJS.workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
         PDFJS.cMapUrl = `${location.staticBaseURI}third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/`;
@@ -659,12 +663,16 @@ class DocBaseViewer extends BaseViewer {
         // Open links in new tab
         PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK;
 
-        // Disable range requests for iOS Safari - mobile Safari caches ranges incorrectly
-        PDFJS.disableRange = PDFJS.disableRange || (Browser.isIOS() && Browser.getName() === 'Safari');
+        // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (4MB) except for
+        // Excel files since their representations can be many times larger than the original file. Remove
+        // the Excel check once WinExcel starts generating appropriately-sized representations. This
+        // also overrides any range request disabling that may be set by pdf.js's compatbility checking
+        // since the browsers we support should all be able to properly handle range requests
+        PDFJS.disableRange = size < MINIMUM_RANGE_REQUEST_FILE_SIZE &&
+            !DISABLE_RANGE_REQUEST_EXENSIONS.includes(extension);
 
         // Disable range requests for watermarked files since they are streamed
-        PDFJS.disableRange = PDFJS.disableRange ||
-            (file.watermark_info && file.watermark_info.is_watermarked);
+        PDFJS.disableRange = PDFJS.disableRange || (watermarkInfo && watermarkInfo.is_watermarked);
 
         // Disable text layer if user doesn't have download permissions
         PDFJS.disableTextLayer = !checkPermission(file, PERMISSION_DOWNLOAD) ||

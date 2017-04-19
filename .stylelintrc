@@ -10,6 +10,6 @@
         "value-no-vendor-prefix": true,
         "number-leading-zero": never,
         "declaration-no-important": true,
-        "order/declaration-block-properties-alphabetical-order": [true, { "severity": "warning" }]
+        "order/properties-alphabetical-order": [true, { "severity": "warning" }]
     }
 }
