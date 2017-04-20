@@ -72,7 +72,7 @@ export const X_REP_HINT_VIDEO_MP4 = '[mp4]';
 // These should be updated to match the Preview version in package.json
 // whenever a file in that third party directory is updated
 export const DOC_STATIC_ASSETS_VERSION = '0.119.0';
-export const MEDIA_STATIC_ASSETS_VERSION = '0.112.0';
+export const MEDIA_STATIC_ASSETS_VERSION = '0.120.1';
 export const MODEL3D_STATIC_ASSETS_VERSION = '0.115.0';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';
 export const TEXT_STATIC_ASSETS_VERSION = '0.114.0';
