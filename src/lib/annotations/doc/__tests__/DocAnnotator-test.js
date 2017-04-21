@@ -290,15 +290,15 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
     describe('bindDOMListeners()', () => {
         beforeEach(() => {
-            annotator._annotatedElement = {
+            annotator.annotatedElement = {
                 addEventListener: () => {},
                 removeEventListener: () => {}
             };
-            stubs.elMock = sandbox.mock(annotator._annotatedElement);
+            stubs.elMock = sandbox.mock(annotator.annotatedElement);
         });
 
         it('shouldn\'t bind DOM listeners if user cannot annotate except mouseup', () => {
-            annotator._annotationService.canAnnotate = false;
+            annotator.annotationService.canAnnotate = false;
 
             stubs.elMock.expects('addEventListener').withArgs('mouseup', sinon.match.func);
             stubs.elMock.expects('addEventListener').withArgs('dblclick', sinon.match.func).never();
@@ -309,7 +309,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should bind DOM listeners if user can annotate', () => {
-            annotator._annotationService.canAnnotate = true;
+            annotator.annotationService.canAnnotate = true;
 
             stubs.elMock.expects('addEventListener').withArgs('mouseup', sinon.match.func);
             stubs.elMock.expects('addEventListener').withArgs('dblclick', sinon.match.func);
@@ -322,14 +322,14 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
     describe('unbindDOMListeners()', () => {
         beforeEach(() => {
-            annotator._annotatedElement = {
+            annotator.annotatedElement = {
                 removeEventListener: () => {}
             };
-            stubs.elMock = sandbox.mock(annotator._annotatedElement);
+            stubs.elMock = sandbox.mock(annotator.annotatedElement);
         });
 
         it('should not unbind DOM listeners if user cannot annotate except mouseup', () => {
-            annotator._annotationService.canAnnotate = false;
+            annotator.annotationService.canAnnotate = false;
 
             stubs.elMock.expects('removeEventListener').withArgs('mouseup', sinon.match.func);
             stubs.elMock.expects('removeEventListener').withArgs('mousedown', sinon.match.func).never();
@@ -340,7 +340,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should unbind DOM listeners if user can annotate', () => {
-            annotator._annotationService.canAnnotate = true;
+            annotator.annotationService.canAnnotate = true;
 
             stubs.elMock.expects('removeEventListener').withArgs('mouseup', sinon.match.func);
             stubs.elMock.expects('removeEventListener').withArgs('mousedown', sinon.match.func);
@@ -371,7 +371,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
     describe('isInDialogOnPage()', () => {
         beforeEach(() => {
-            const threads = [{ _dialog: { element: {} } }];
+            const threads = [{ dialog: { element: {} } }];
             sandbox.stub(annotator, 'getThreadsOnPage').returns(threads);
             stubs.inDialog = sandbox.stub(docAnnotatorUtil, 'isInDialog');
         });
@@ -410,7 +410,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.threadMock = sandbox.mock(thread);
             stubs.threadMock.expects('onMousedown');
             stubs.highlights = sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns([thread]);
-            annotator._threads = { 1: [thread] };
+            annotator.threads = { 1: [thread] };
 
             annotator.highlightMousedownHandler({ clientX: 1, clientY: 1 });
             expect(stubs.highlights).to.be.called;
@@ -419,7 +419,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
     describe('highlightMousemoveHandler()', () => {
         beforeEach(() => {
-            annotator._throttledHighlightMousemoveHandler = false;
+            annotator.throttledHighlightMousemoveHandler = false;
 
             stubs.thread = {
                 onMousemove: () => {},
@@ -446,7 +446,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should do nothing if the throttledHighlightMousemoveHandler already exists', () => {
-            annotator._throttledHighlightMousemoveHandler = true;
+            annotator.throttledHighlightMousemoveHandler = true;
             stubs.threadMock.expects('onMousemove').returns(false).never();
             stubs.delayMock.expects('onMousemove').returns(true).never();
 
@@ -485,7 +485,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         it('should not trigger other highlights if user is creating a new highlight', () => {
             stubs.getThreads.returns([]);
-            annotator._isCreatingHighlight = true;
+            annotator.isCreatingHighlight = true;
             stubs.delayMock.expects('show').never();
             stubs.delayMock.expects('hideDialog').never();
             annotator.highlightMousemoveHandler()({ clientX: 3, clientY: 3 });
@@ -493,22 +493,22 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         it('should set _didMouseMove to true if the mouse was moved enough', () => {
             stubs.getThreads.returns([]);
-            annotator._mouseX = 0;
-            annotator._mouseY = 0;
+            annotator.mouseX = 0;
+            annotator.mouseY = 0;
 
             annotator.highlightMousemoveHandler()({ clientX: 10, clientY: 10 });
 
-            expect(annotator._didMouseMove).to.equal(true);
+            expect(annotator.didMouseMove).to.equal(true);
         });
 
         it('should not set _didMouseMove to true if the mouse was not moved enough', () => {
             stubs.getThreads.returns([]);
-            annotator._mouseX = 0;
-            annotator._mouseY = 0;
+            annotator.mouseX = 0;
+            annotator.mouseY = 0;
 
             annotator.highlightMousemoveHandler()({ clientX: 3, clientY: 3 });
 
-            expect(annotator._didMouseMove).to.equal(undefined);
+            expect(annotator.didMouseMove).to.equal(undefined);
         });
 
         it('should switch to the text cursor if mouse is no longer hovering over a highlight', () => {
@@ -543,14 +543,14 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.highlightMouseupHandler({ type: 'dblclick' });
             expect(stubs.create).to.be.called;
             expect(stubs.click).to.not.be.called;
-            expect(annotator._isCreatingHighlight).to.be.false;
+            expect(annotator.isCreatingHighlight).to.be.false;
         });
 
         it('should call highlightClickHandler if not on mobile, and the mouse did not move', () => {
             annotator.highlightMouseupHandler({ x: 0, y: 0 });
             expect(stubs.create).to.not.be.called;
             expect(stubs.click).to.be.called;
-            expect(annotator._isCreatingHighlight).to.be.false;
+            expect(annotator.isCreatingHighlight).to.be.false;
         });
     });
 
@@ -694,7 +694,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 unbindCustomListenersOnThread: sandbox.stub(),
                 removeAllListeners: sandbox.stub()
             };
-            annotator._threads = { 0: [thread1, thread2], 1: [thread3] };
+            annotator.threads = { 0: [thread1, thread2], 1: [thread3] };
 
             const threads = annotator.getThreadsWithStates(constants.ANNOTATION_STATE_HOVER);
             expect(threads).to.deep.equal([thread1, thread2]);
@@ -704,14 +704,14 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     describe('useDefaultCursor()', () => {
         it('should use the default cursor instead of the text cursor', () => {
             annotator.useDefaultCursor();
-            expect(annotator._annotatedElement).to.have.class('bp-use-default-cursor');
+            expect(annotator.annotatedElement).to.have.class('bp-use-default-cursor');
         });
     });
 
     describe('removeDefaultCursor()', () => {
         it('should use the text cursor instead of the default cursor', () => {
             annotator.removeDefaultCursor();
-            expect(annotator._annotatedElement).to.not.have.class('bp-use-default-cursor');
+            expect(annotator.annotatedElement).to.not.have.class('bp-use-default-cursor');
         });
     });
 
@@ -722,7 +722,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 unbindCustomListenersOnThread: sandbox.stub(),
                 removeAllListeners: sandbox.stub()
             };
-            annotator._threads = { 0: [thread] };
+            annotator.threads = { 0: [thread] };
             stubs.isHighlight = sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(thread);
 
             const threads = annotator.getHighlightThreadsOnPage(0);
@@ -736,16 +736,16 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.getContext = sandbox.stub();
             stubs.clearRect = sandbox.stub();
 
-            annotator._annotatedElement = {
+            annotator.annotatedElement = {
                 querySelector: () => {},
                 getContext: () => {},
                 clearRect: () => {}
             };
-            stubs.mock = sandbox.mock(annotator._annotatedElement);
+            stubs.mock = sandbox.mock(annotator.annotatedElement);
         });
 
         afterEach(() => {
-            annotator._annotatedElement = document.querySelector('.annotated-element');
+            annotator.annotatedElement = document.querySelector('.annotated-element');
         });
 
         it('should not call clearRect or getContext if there is already an annotationLayerEl', () => {
@@ -759,7 +759,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should not call clearRect or getContext if there is not an annotationLayerEl', () => {
-            stubs.mock.expects('querySelector').returns(annotator._annotatedElement);
+            stubs.mock.expects('querySelector').returns(annotator.annotatedElement);
             stubs.mock.expects('querySelector').returns(undefined);
             stubs.mock.expects('clearRect').never();
             stubs.mock.expects('getContext').never();
@@ -770,9 +770,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should call clearRect or getContext if there is an annotationLayerEl', () => {
-            stubs.mock.expects('querySelector').returns(annotator._annotatedElement);
-            stubs.mock.expects('querySelector').returns(annotator._annotatedElement);
-            stubs.mock.expects('getContext').returns(annotator._annotatedElement);
+            stubs.mock.expects('querySelector').returns(annotator.annotatedElement);
+            stubs.mock.expects('querySelector').returns(annotator.annotatedElement);
+            stubs.mock.expects('getContext').returns(annotator.annotatedElement);
             stubs.mock.expects('clearRect');
             const threadsOnPageStub = sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns([]);
 
@@ -781,9 +781,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('show all the highlights on the page after clearing', () => {
-            stubs.mock.expects('querySelector').returns(annotator._annotatedElement);
-            stubs.mock.expects('querySelector').returns(annotator._annotatedElement);
-            stubs.mock.expects('getContext').returns(annotator._annotatedElement);
+            stubs.mock.expects('querySelector').returns(annotator.annotatedElement);
+            stubs.mock.expects('querySelector').returns(annotator.annotatedElement);
+            stubs.mock.expects('getContext').returns(annotator.annotatedElement);
             stubs.mock.expects('clearRect');
 
             const thread = { show: () => {} };
@@ -798,12 +798,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
     describe('removeRangyHighlight()', () => {
         it('should do nothing if there is not an array of highlights', () => {
-            annotator._highlighter = {
+            annotator.highlighter = {
                 highlights: [{ id: 1 }, { id: 2 }, { id: 3 }],
                 filter: () => {},
                 removeHighlights: () => {}
             };
-            stubs.highlighterMock = sandbox.mock(annotator._highlighter);
+            stubs.highlighterMock = sandbox.mock(annotator.highlighter);
             stubs.highlighterMock.expects('filter').never();
             stubs.highlighterMock.expects('removeHighlights').never();
             sandbox.stub(Array, 'isArray').returns(false);
@@ -812,7 +812,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should call removeHighlights on any matching highlight ids', () => {
-            annotator._highlighter = {
+            annotator.highlighter = {
                 highlights: {
                     filter: () => {},
                     ids: [1, 2, 3, 4]
@@ -820,11 +820,11 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 filter: () => {},
                 removeHighlights: () => {}
             };
-            stubs.highlighterMock = sandbox.mock(annotator._highlighter);
-            stubs.highlighterMock.expects('removeHighlights').withArgs(annotator._highlighter.highlights.ids[0]);
+            stubs.highlighterMock = sandbox.mock(annotator.highlighter);
+            stubs.highlighterMock.expects('removeHighlights').withArgs(annotator.highlighter.highlights.ids[0]);
 
-            stubs.highlightMock = sandbox.mock(annotator._highlighter.highlights);
-            stubs.highlightMock.expects('filter').returns(annotator._highlighter.highlights.ids[0]);
+            stubs.highlightMock = sandbox.mock(annotator.highlighter.highlights);
+            stubs.highlightMock.expects('filter').returns(annotator.highlighter.highlights.ids[0]);
 
             sandbox.stub(Array, 'isArray').returns(true);
 

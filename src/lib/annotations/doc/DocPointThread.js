@@ -25,7 +25,7 @@ class DocPointThread extends AnnotationThread {
      */
     showDialog() {
         // Don't show dialog if user can annotate and there is a current selection
-        if (this._annotationService.canAnnotate && docAnnotatorUtil.isSelectionPresent()) {
+        if (this.annotationService.canAnnotate && docAnnotatorUtil.isSelectionPresent()) {
             return;
         }
 
@@ -43,18 +43,18 @@ class DocPointThread extends AnnotationThread {
      * @return {void}
      */
     show() {
-        const pageEl = this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`) || this._annotatedElement;
-        const [browserX, browserY] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
+        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`) || this.annotatedElement;
+        const [browserX, browserY] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(this.location, this.annotatedElement);
 
         // Position and append to page
-        this._element.style.left = `${browserX - (POINT_ANNOTATION_ICON_WIDTH / 2)}px`;
+        this.element.style.left = `${browserX - (POINT_ANNOTATION_ICON_WIDTH / 2)}px`;
         // Add 15px for vertical padding on page
-        this._element.style.top = `${browserY - POINT_ANNOTATION_ICON_HEIGHT + (POINT_ANNOTATION_ICON_DOT_HEIGHT / 2) + PAGE_PADDING_TOP}px`;
-        pageEl.appendChild(this._element);
+        this.element.style.top = `${browserY - POINT_ANNOTATION_ICON_HEIGHT + (POINT_ANNOTATION_ICON_DOT_HEIGHT / 2) + PAGE_PADDING_TOP}px`;
+        pageEl.appendChild(this.element);
 
-        annotatorUtil.showElement(this._element);
+        annotatorUtil.showElement(this.element);
 
-        if (this._state === constants.ANNOTATION_STATE_PENDING) {
+        if (this.state === constants.ANNOTATION_STATE_PENDING) {
             this.showDialog();
         }
     }
@@ -66,12 +66,12 @@ class DocPointThread extends AnnotationThread {
      * @return {void}
      */
     createDialog() {
-        this._dialog = new DocPointDialog({
-            annotatedElement: this._annotatedElement,
-            annotations: this._annotations,
-            locale: this._locale,
-            location: this._location,
-            canAnnotate: this._annotationService.canAnnotate
+        this.dialog = new DocPointDialog({
+            annotatedElement: this.annotatedElement,
+            annotations: this.annotations,
+            locale: this.locale,
+            location: this.location,
+            canAnnotate: this.annotationService.canAnnotate
         });
     }
 }

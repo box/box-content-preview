@@ -383,7 +383,7 @@ describe('lib/annotations/AnnotationService', () => {
                 reject = failure;
             });
 
-            annotationService._annotations = [];
+            annotationService.annotations = [];
             annotationService.readFromMarker(resolve, reject, 2, 'a', 1);
             promise.then((result) => {
                 expect(result.length).to.equal(1);
@@ -409,7 +409,7 @@ describe('lib/annotations/AnnotationService', () => {
                 reject = failure;
             });
 
-            annotationService._annotations = [];
+            annotationService.annotations = [];
             annotationService.readFromMarker(resolve, reject, 2, 'a', 1);
             return promise.then(
                 () => {
@@ -436,7 +436,7 @@ describe('lib/annotations/AnnotationService', () => {
                 reject = failure;
             });
 
-            annotationService._annotations = [];
+            annotationService.annotations = [];
             annotationService.readFromMarker(resolve, reject, 2, 'a', 1);
             return promise.catch(
                 (error) => {
@@ -450,22 +450,22 @@ describe('lib/annotations/AnnotationService', () => {
 
     describe('getReadUrl()', () => {
         it('should return the original url if no limit or marker exists', () => {
-            annotationService._api = 'box';
-            annotationService._fileId = 1;
+            annotationService.api = 'box';
+            annotationService.fileId = 1;
             const fileVersionID = 2;
-            const url = `${annotationService._api}/2.0/files/${annotationService._fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
+            const url = `${annotationService.api}/2.0/files/${annotationService.fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
 
             const result = annotationService.getReadUrl(fileVersionID);
             expect(result).to.equal(url);
         });
 
         it('should add a marker and limit if provided', () => {
-            annotationService._api = 'box';
-            annotationService._fileId = 1;
+            annotationService.api = 'box';
+            annotationService.fileId = 1;
             const fileVersionID = 2;
             const marker = 'next_annotation';
             const limit = 1;
-            const url = `${annotationService._api}/2.0/files/${annotationService._fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions&marker=${marker}&limit=${limit}`;
+            const url = `${annotationService.api}/2.0/files/${annotationService.fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions&marker=${marker}&limit=${limit}`;
 
             const result = annotationService.getReadUrl(fileVersionID, marker, limit);
             expect(result).to.equal(url);

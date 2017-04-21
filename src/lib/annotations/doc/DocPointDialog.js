@@ -20,13 +20,13 @@ class DocPointDialog extends AnnotationDialog {
      * @return {void}
      */
     position() {
-        const pageEl = this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`) || this._annotatedElement;
-        const [browserX, browserY] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(this._location, this._annotatedElement);
+        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`) || this.annotatedElement;
+        const [browserX, browserY] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(this.location, this.annotatedElement);
 
         // Show dialog so we can get width
-        pageEl.appendChild(this._element);
-        annotatorUtil.showElement(this._element);
-        const dialogDimensions = this._element.getBoundingClientRect();
+        pageEl.appendChild(this.element);
+        annotatorUtil.showElement(this.element);
+        const dialogDimensions = this.element.getBoundingClientRect();
         const dialogWidth = dialogDimensions.width;
         const pageDimensions = pageEl.getBoundingClientRect();
 
@@ -37,12 +37,12 @@ class DocPointDialog extends AnnotationDialog {
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing
         // else we can do
-        dialogLeftX = annotatorUtil.repositionCaret(this._element, dialogLeftX, dialogWidth, browserX, pageDimensions.width);
+        dialogLeftX = annotatorUtil.repositionCaret(this.element, dialogLeftX, dialogWidth, browserX, pageDimensions.width);
 
         // Position the dialog
-        this._element.style.left = `${dialogLeftX}px`;
-        this._element.style.top = `${dialogTopY + PAGE_PADDING_TOP}px`;
-        docAnnotatorUtil.fitDialogHeightInPage(this._annotatedElement, this._element, pageDimensions.height, dialogTopY);
+        this.element.style.left = `${dialogLeftX}px`;
+        this.element.style.top = `${dialogTopY + PAGE_PADDING_TOP}px`;
+        docAnnotatorUtil.fitDialogHeightInPage(this.annotatedElement, this.element, pageDimensions.height, dialogTopY);
     }
 }
 
