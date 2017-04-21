@@ -2,30 +2,49 @@ const MIME_H264_BASELINE = 'video/mp4; codecs="avc1.42E01E"';
 const MIME_H264_MAIN = 'video/mp4; codecs="avc1.4D401E"';
 const MIME_H264_HIGH = 'video/mp4; codecs="avc1.64001E"';
 const EXT_STANDARD_DERIVATIVES = 'OES_standard_derivatives';
-const USER_AGENT = navigator.userAgent;
+const EXT_LOSE_CONTEXT = 'WEBGL_lose_context';
 
+let userAgent = navigator.userAgent;
 let name;
 let gl;
 let supportsWebGL;
 
 class Browser {
+    /**
+     * Override the current user agent.
+     *
+     * @public
+     * @param {string} newUserAgent The new user agent to use for all browser compatibility testing.
+     * @return {void}
+     */
+    static overrideUserAgent(newUserAgent) {
+        userAgent = newUserAgent;
+        // Nullify old name to be refreshed on next "getName()" call.
+        name = null;
+    }
 
+    /**
+     * Get the name of the current browser.
+     *
+     * @public
+     * @return {string} The name of the browser.
+     */
     static getName() {
         if (name) {
             return name;
         }
 
-        if (USER_AGENT.indexOf('Edge/') > 0) {
+        if (userAgent.indexOf('Edge/') > 0) {
             name = 'Edge';
-        } else if (USER_AGENT.indexOf('OPR/') > 0) {
+        } else if (userAgent.indexOf('OPR/') > 0 || userAgent.indexOf('Opera/') > 0) {
             name = 'Opera';
-        } else if (USER_AGENT.indexOf('Chrome/') > 0) {
+        } else if (userAgent.indexOf('Chrome/') > 0) {
             name = 'Chrome';
-        } else if (USER_AGENT.indexOf('Safari/') > 0) {
+        } else if (userAgent.indexOf('Safari/') > 0) {
             name = 'Safari';
-        } else if (USER_AGENT.indexOf('Trident/') > 0) {
+        } else if (userAgent.indexOf('Trident/') > 0) {
             name = 'Explorer';
-        } else if (USER_AGENT.indexOf('Firefox/') > 0) {
+        } else if (userAgent.indexOf('Firefox/') > 0) {
             name = 'Firefox';
         }
 
@@ -165,7 +184,9 @@ class Browser {
             const canvas = document.createElement('canvas');
             // Should stop 'Rats! WebGL hit a snag' error when checking WebGL support
             canvas.addEventListener('webglcontextlost', (e) => {
+                /* istanbul ignore next*/
                 e.preventDefault();
+                /* istanbul ignore next*/
                 e.stopPropagation();
             });
 
@@ -179,6 +200,25 @@ class Browser {
         }
 
         return supportsWebGL;
+    }
+
+    /**
+     * Clean up the old WebGL context used by hasWebGL().
+     *
+     * @public
+     * @return {void}
+     */
+    static clearGLContext() {
+        if (!gl) {
+            return;
+        }
+
+        const loseExt = gl.getExtension(EXT_LOSE_CONTEXT);
+        if (loseExt && typeof loseExt.loseContext === 'function') {
+            loseExt.loseContext();
+        }
+
+        gl = null;
     }
 
     /**
@@ -231,7 +271,7 @@ class Browser {
      */
     static isMobile() {
         // Relying on the user agent to avoid desktop browsers on machines with touch screens.
-        return /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent);
+        return /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(userAgent);
     }
 
     /**
@@ -250,7 +290,7 @@ class Browser {
      * @return {boolean} true if the device is running IOS
      */
     static isIOS() {
-        return /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+        return /(iPad|iPhone|iPod)/g.test(userAgent);
     }
 
     /**
@@ -259,7 +299,7 @@ class Browser {
      * @return {boolean} true if the device is running Android
      */
     static isAndroid() {
-        return /Android/g.test(navigator.userAgent);
+        return /Android/g.test(userAgent);
     }
 
     /**
@@ -268,7 +308,7 @@ class Browser {
      * @return {boolean} True if device is running IOS 10.3.x
      */
     static isIOSWithFontIssue() {
-        return Browser.isIOS() && /(?:OS\s)10_3/i.test(navigator.userAgent);
+        return Browser.isIOS() && /(?:OS\s)10_3/i.test(userAgent);
     }
 }
 
