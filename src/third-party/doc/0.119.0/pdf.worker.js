@@ -24466,6 +24466,9 @@ AnnotationFactory.prototype = {
         return new LinkAnnotation(parameters);
       case 'Text':
         return new TextAnnotation(parameters);
+      case 'FreeText':
+        console.log('Free Text yo');
+        return new FreeTextAnnotation(parameters);
       case 'Widget':
         var fieldType = Util.getInheritableProperty(dict, 'FT');
         fieldType = isName(fieldType) ? fieldType.name : null;
@@ -24520,6 +24523,7 @@ var Annotation = function AnnotationClosure() {
     this.setFlags(dict.get('F'));
     this.setRectangle(dict.getArray('Rect'));
     this.setColor(dict.getArray('C'));
+    this.setContents(dict.getArray('Contents'));
     this.setBorderStyle(dict);
     this.setAppearance(dict);
     this.data = {};
@@ -24592,6 +24596,9 @@ var Annotation = function AnnotationClosure() {
           this.color = rgbColor;
           break;
       }
+    },
+    setContents: function Annotation_setContent(contents) {
+      this.contents = contents || '';
     },
     setBorderStyle: function Annotation_setBorderStyle(borderStyle) {
       this.borderStyle = new AnnotationBorderStyle();
@@ -24950,6 +24957,19 @@ var TextAnnotation = function TextAnnotationClosure() {
   }
   Util.inherit(TextAnnotation, Annotation, {});
   return TextAnnotation;
+}();
+var FreeTextAnnotation = function FreeTextAnnotationClosure() {
+  var DEFAULT_ICON_SIZE = 22;
+  function FreeTextAnnotation(parameters) {
+    Annotation.call(this, parameters);
+    this.data.annotationType = AnnotationType.FREETEXT;
+    this.data.rect[1] = this.data.rect[3] - DEFAULT_ICON_SIZE;
+    this.data.rect[2] = this.data.rect[0] + DEFAULT_ICON_SIZE;
+    this.data.name = parameters.dict.has('Contents') ? parameters.dict.get('Contents') : '';
+    this._preparePopup(parameters.dict);
+  }
+  Util.inherit(FreeTextAnnotation, Annotation, {});
+  return FreeTextAnnotation;
 }();
 var LinkAnnotation = function LinkAnnotationClosure() {
   function LinkAnnotation(params) {

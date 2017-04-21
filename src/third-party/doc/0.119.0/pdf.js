@@ -1493,6 +1493,8 @@ AnnotationElementFactory.prototype = {
         return new LinkAnnotationElement(parameters);
       case AnnotationType.TEXT:
         return new TextAnnotationElement(parameters);
+      case AnnotationType.FREETEXT:
+        return new FreeTextAnnotationElement(parameters);
       case AnnotationType.WIDGET:
         var fieldType = parameters.data.fieldType;
         switch (fieldType) {
@@ -1692,6 +1694,27 @@ var TextAnnotationElement = function TextAnnotationElementClosure() {
     }
   });
   return TextAnnotationElement;
+}();
+var FreeTextAnnotationElement = function FreeTextAnnotationElementClosure() {
+  function FreeTextAnnotationElement(parameters) {
+    var isRenderable = !!(parameters.data.hasPopup || parameters.data.title || parameters.data.contents);
+    AnnotationElement.call(this, parameters, isRenderable);
+  }
+  Util.inherit(FreeTextAnnotationElement, AnnotationElement, {
+    render: function FreeTextAnnotationElement_render() {
+      this.container.className = 'freeTextAnnotation';
+      var text = document.createElement('div');
+      text.style.height = this.container.style.height;
+      text.style.width = this.container.style.width;
+      text.style.visibility = 'hidden';
+      text.dataset.l10nId = 'free_text_annotation_type';
+      text.dataset.annotationTitle = this.data.title;
+      text.textContent = this.data.contents;
+      this.container.appendChild(text);
+      return this.container;
+    }
+  });
+  return FreeTextAnnotationElement;
 }();
 var WidgetAnnotationElement = function WidgetAnnotationElementClosure() {
   function WidgetAnnotationElement(parameters, isRenderable) {
