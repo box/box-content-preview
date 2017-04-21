@@ -1157,17 +1157,17 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should allow annotations based on browser and permissions', () => {
             stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_ANNOTATE).returns(true);
             docBase.initAnnotations();
-            expect(docBase.annotator._annotationService._canAnnotate).to.be.true;
+            expect(docBase.annotator.annotationService.canAnnotate).to.be.true;
 
             stubs.browser.returns(true);
             stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_ANNOTATE).returns(true);
             docBase.initAnnotations();
-            expect(docBase.annotator._annotationService._canAnnotate).to.be.false;
+            expect(docBase.annotator.annotationService.canAnnotate).to.be.false;
 
             stubs.browser.returns(false);
             stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_ANNOTATE).returns(false);
             docBase.initAnnotations();
-            expect(docBase.annotator._annotationService._canAnnotate).to.be.false;
+            expect(docBase.annotator.annotationService.canAnnotate).to.be.false;
         });
     });
 

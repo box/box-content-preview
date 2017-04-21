@@ -28,7 +28,7 @@ describe('lib/annotations/AnnotationThread', () => {
             type: 'point'
         });
 
-        thread._dialog = {
+        thread.dialog = {
             addListener: () => {},
             addAnnotation: () => {},
             destroy: () => {},
@@ -37,9 +37,9 @@ describe('lib/annotations/AnnotationThread', () => {
             show: () => {},
             hide: () => {}
         };
-        stubs.dialogMock = sandbox.mock(thread._dialog);
+        stubs.dialogMock = sandbox.mock(thread.dialog);
 
-        thread._annotationService = {
+        thread.annotationService = {
             user: { id: '1' }
         };
 
@@ -47,7 +47,7 @@ describe('lib/annotations/AnnotationThread', () => {
     });
 
     afterEach(() => {
-        thread._annotationService = undefined;
+        thread.annotationService = undefined;
         sandbox.verifyAndRestore();
         if (typeof stubs.destroy === 'function') {
             stubs.destroy();
@@ -71,27 +71,27 @@ describe('lib/annotations/AnnotationThread', () => {
     describe('hide()', () => {
         it('should hide the thread element', () => {
             thread.hide();
-            expect(thread._element).to.have.class(CLASS_HIDDEN);
+            expect(thread.element).to.have.class(CLASS_HIDDEN);
         });
     });
 
     describe('reset()', () => {
         it('should set the thread state to inactive', () => {
             thread.reset();
-            expect(thread._state).to.equal(constants.ANNOTATION_STATE_INACTIVE);
+            expect(thread.state).to.equal(constants.ANNOTATION_STATE_INACTIVE);
         });
     });
 
     describe('showDialog()', () => {
         it('should setup the thread dialog if the dialog element does not already exist', () => {
-            thread._dialog._element = null;
+            thread.dialog.element = null;
             stubs.dialogMock.expects('setup');
             stubs.dialogMock.expects('show');
             thread.showDialog();
         });
 
         it('should not setup the thread dialog if the dialog element already exists', () => {
-            thread._dialog._element = {};
+            thread.dialog.element = {};
             stubs.dialogMock.expects('setup').never();
             stubs.dialogMock.expects('show');
             thread.showDialog();
@@ -188,7 +188,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 type: 'point'
             });
 
-            thread._dialog = {
+            thread.dialog = {
                 addListener: () => {},
                 addAnnotation: () => {},
                 destroy: () => {},
@@ -197,7 +197,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 hide: () => {},
                 removeAnnotation: () => {}
             };
-            stubs.dialogMock = sandbox.mock(thread._dialog);
+            stubs.dialogMock = sandbox.mock(thread.dialog);
 
             stubs.delete = sandbox.stub(annotationService, 'delete');
             stubs.isPlain = sandbox.stub(annotatorUtil, 'isPlainHighlight');
@@ -212,7 +212,7 @@ describe('lib/annotations/AnnotationThread', () => {
 
         it('should remove the relevant annotation from its dialog if the deleted annotation was not the last one', () => {
             // Add another annotation to thread so 'someID' isn't the only annotation
-            thread._annotations.push(stubs.annotation2);
+            thread.annotations.push(stubs.annotation2);
             stubs.dialogMock.expects('removeAnnotation').withArgs('someID');
             thread.deleteAnnotation('someID', false);
         });
@@ -225,7 +225,7 @@ describe('lib/annotations/AnnotationThread', () => {
 
         it('should make also delete blank highlight comment from the server when removing the last comment on a highlight thread', () => {
             stubs.annotation2.permissions.can_delete = false;
-            thread._annotations.push(stubs.annotation2);
+            thread.annotations.push(stubs.annotation2);
             stubs.isPlain.returns(true);
             stubs.delete.returns(Promise.resolve());
             thread.deleteAnnotation('someID', true);
@@ -248,7 +248,7 @@ describe('lib/annotations/AnnotationThread', () => {
         });
 
         it('should toggle highlight dialogs with the delete of the last comment if user does not have permission to delete the entire annotation', () => {
-            thread._annotations.push(stubs.annotation2);
+            thread.annotations.push(stubs.annotation2);
             stubs.isPlain.returns(true);
             thread.deleteAnnotation('someID', false);
             expect(stubs.cancel).to.be.called;
@@ -257,7 +257,7 @@ describe('lib/annotations/AnnotationThread', () => {
 
         it('should destroy the annotation with the delete of the last comment if the user has permissions', () => {
             stubs.annotation2.permissions.can_delete = true;
-            thread._annotations.push(stubs.annotation2);
+            thread.annotations.push(stubs.annotation2);
             stubs.isPlain.returns(true);
             thread.deleteAnnotation('someID', false);
             expect(stubs.cancel).to.not.be.called;
@@ -267,31 +267,31 @@ describe('lib/annotations/AnnotationThread', () => {
 
     describe('location()', () => {
         it('should get location', () => {
-            expect(thread.location).to.equal(thread._location);
+            expect(thread.location).to.equal(thread.location);
         });
     });
 
     describe('threadID()', () => {
         it('should get threadID', () => {
-            expect(thread.threadID).to.equal(thread._threadID);
+            expect(thread.threadID).to.equal(thread.threadID);
         });
     });
 
     describe('thread()', () => {
         it('should get thread', () => {
-            expect(thread.thread).to.equal(thread._thread);
+            expect(thread.thread).to.equal(thread.thread);
         });
     });
 
     describe('type()', () => {
         it('should get type', () => {
-            expect(thread.type).to.equal(thread._type);
+            expect(thread.type).to.equal(thread.type);
         });
     });
 
     describe('state()', () => {
         it('should get state', () => {
-            expect(thread.state).to.equal(thread._state);
+            expect(thread.state).to.equal(thread.state);
         });
     });
 
@@ -311,7 +311,7 @@ describe('lib/annotations/AnnotationThread', () => {
 
         it('should set state to pending if thread is initialized with no annotations', () => {
             thread.setup();
-            expect(thread._state).to.equal(constants.ANNOTATION_STATE_PENDING);
+            expect(thread.state).to.equal(constants.ANNOTATION_STATE_PENDING);
         });
 
         it('should set state to inactive if thread is initialized with annotations', () => {
@@ -327,7 +327,7 @@ describe('lib/annotations/AnnotationThread', () => {
             });
 
             thread.setup();
-            expect(thread._state).to.equal(constants.ANNOTATION_STATE_INACTIVE);
+            expect(thread.state).to.equal(constants.ANNOTATION_STATE_INACTIVE);
         });
     });
 
@@ -336,16 +336,16 @@ describe('lib/annotations/AnnotationThread', () => {
             stubs.bind = sandbox.stub(thread, 'bindDOMListeners');
 
             thread.setupElement();
-            expect(thread._element instanceof HTMLElement).to.be.true;
-            expect(thread._element).to.have.class('bp-point-annotation-btn');
+            expect(thread.element instanceof HTMLElement).to.be.true;
+            expect(thread.element).to.have.class('bp-point-annotation-btn');
             expect(stubs.bind).to.be.called;
         });
     });
 
     describe('bindDOMListeners()', () => {
         it('should bind DOM listeners', () => {
-            thread._element = document.createElement('div');
-            stubs.add = sandbox.stub(thread._element, 'addEventListener');
+            thread.element = document.createElement('div');
+            stubs.add = sandbox.stub(thread.element, 'addEventListener');
 
             thread.bindDOMListeners();
             expect(stubs.add).to.be.calledWith('click', sinon.match.func);
@@ -356,8 +356,8 @@ describe('lib/annotations/AnnotationThread', () => {
 
     describe('unbindDOMListeners()', () => {
         it('should unbind DOM listeners', () => {
-            thread._element = document.createElement('div');
-            stubs.remove = sandbox.stub(thread._element, 'removeEventListener');
+            thread.element = document.createElement('div');
+            stubs.remove = sandbox.stub(thread.element, 'removeEventListener');
 
             thread.unbindDOMListeners();
             expect(stubs.remove).to.be.calledWith('click', sinon.match.func);
@@ -368,7 +368,7 @@ describe('lib/annotations/AnnotationThread', () => {
 
     describe('bindCustomListenersOnDialog()', () => {
         it('should do nothing if dialog does not exist', () => {
-            thread._dialog = null;
+            thread.dialog = null;
             stubs.dialogMock.expects('addListener').never();
             thread.bindCustomListenersOnDialog();
         });
@@ -383,7 +383,7 @@ describe('lib/annotations/AnnotationThread', () => {
 
     describe('unbindCustomListenersOnDialog()', () => {
         it('should do nothing if dialog does not exist', () => {
-            thread._dialog = null;
+            thread.dialog = null;
             stubs.dialogMock.expects('removeAllListeners').never();
             thread.unbindCustomListenersOnDialog();
         });
@@ -423,7 +423,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 created: Date.now()
             });
 
-            thread._annotations = [annotation];
+            thread.annotations = [annotation];
             thread.mouseoutHandler();
             expect(stubs.hide).to.be.called;
         });
@@ -431,8 +431,8 @@ describe('lib/annotations/AnnotationThread', () => {
 
     describe('saveAnnotationToThread()', () => {
         it('should push the annotation, and add to the dialog when the dialog exists', () => {
-            stubs.add = sandbox.stub(thread._dialog, 'addAnnotation');
-            stubs.push = sandbox.stub(thread._annotations, 'push');
+            stubs.add = sandbox.stub(thread.dialog, 'addAnnotation');
+            stubs.push = sandbox.stub(thread.annotations, 'push');
             const annotation = new Annotation({
                 fileVersionID: '2',
                 threadID: '1',
@@ -449,7 +449,7 @@ describe('lib/annotations/AnnotationThread', () => {
         });
 
         it('should not try to push an annotation to the dialog if it doesn\'t exist', () => {
-            stubs.add = sandbox.stub(thread._dialog, 'addAnnotation');
+            stubs.add = sandbox.stub(thread.dialog, 'addAnnotation');
             const annotation = new Annotation({
                 fileVersionID: '2',
                 threadID: '1',
@@ -460,7 +460,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 created: Date.now()
             });
 
-            thread._dialog = undefined;
+            thread.dialog = undefined;
             thread.saveAnnotationToThread(annotation);
             expect(stubs.add).to.not.be.called;
         });
@@ -469,9 +469,9 @@ describe('lib/annotations/AnnotationThread', () => {
     describe('createAnnotationDialog()', () => {
         it('should correctly create the annotation data object', () => {
             const annotationData = thread.createAnnotationData('highlight', 'test');
-            expect(annotationData.location).to.equal(thread._location);
-            expect(annotationData.fileVersionID).to.equal(thread._fileVersionID);
-            expect(annotationData.thread).to.equal(thread._thread);
+            expect(annotationData.location).to.equal(thread.location);
+            expect(annotationData.fileVersionID).to.equal(thread.fileVersionID);
+            expect(annotationData.thread).to.equal(thread.thread);
             expect(annotationData.user.id).to.equal('1');
         });
     });

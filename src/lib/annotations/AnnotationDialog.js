@@ -37,11 +37,11 @@ class AnnotationDialog extends EventEmitter {
     constructor(data) {
         super();
 
-        this._annotatedElement = data.annotatedElement;
-        this._location = data.location;
-        this._hasAnnotations = data.annotations.length > 0;
-        this._canAnnotate = data.canAnnotate;
-        this._locale = data.locale;
+        this.annotatedElement = data.annotatedElement;
+        this.location = data.location;
+        this.hasAnnotations = data.annotations.length > 0;
+        this.canAnnotate = data.canAnnotate;
+        this.locale = data.locale;
     }
 
     /**
@@ -50,14 +50,14 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     destroy() {
-        if (this._element) {
+        if (this.element) {
             this.unbindDOMListeners();
 
-            if (this._element.parentNode) {
-                this._element.parentNode.removeChild(this._element);
+            if (this.element.parentNode) {
+                this.element.parentNode.removeChild(this.element);
             }
 
-            this._element = null;
+            this.element = null;
         }
     }
 
@@ -67,13 +67,13 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     show() {
-        const textAreaEl = this._hasAnnotations ?
-            this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA) :
-            this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+        const textAreaEl = this.hasAnnotations ?
+            this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA) :
+            this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
 
         // Don't re-position if reply textarea is already active
         const textareaIsActive = textAreaEl.classList.contains(CLASS_ACTIVE);
-        if (textareaIsActive && this._element.parentNode) {
+        if (textareaIsActive && this.element.parentNode) {
             return;
         }
 
@@ -82,7 +82,7 @@ class AnnotationDialog extends EventEmitter {
         this.position();
 
         // Activate appropriate textarea
-        if (this._hasAnnotations) {
+        if (this.hasAnnotations) {
             this.activateReply();
         } else {
             textAreaEl.classList.add(CLASS_ACTIVE);
@@ -95,8 +95,8 @@ class AnnotationDialog extends EventEmitter {
         }
 
         // If user cannot annotate, hide reply/edit/delete UI
-        if (!this._canAnnotate) {
-            this._element.classList.add(constants.CLASS_CANNOT_ANNOTATE);
+        if (!this.canAnnotate) {
+            this.element.classList.add(constants.CLASS_CANNOT_ANNOTATE);
         }
 
         // Focus the textarea if visible
@@ -112,7 +112,7 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     hide() {
-        annotatorUtil.hideElement(this._element);
+        annotatorUtil.hideElement(this.element);
         this.deactivateReply();
     }
 
@@ -124,12 +124,12 @@ class AnnotationDialog extends EventEmitter {
      */
     addAnnotation(annotation) {
         // Show new section if needed
-        if (!this._hasAnnotations) {
-            const createSectionEl = this._element.querySelector('[data-section="create"]');
-            const showSectionEl = this._element.querySelector('[data-section="show"]');
+        if (!this.hasAnnotations) {
+            const createSectionEl = this.element.querySelector('[data-section="create"]');
+            const showSectionEl = this.element.querySelector('[data-section="show"]');
             annotatorUtil.hideElement(createSectionEl);
             annotatorUtil.showElement(showSectionEl);
-            this._hasAnnotations = true;
+            this.hasAnnotations = true;
         }
 
         this.addAnnotationElement(annotation);
@@ -143,24 +143,11 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     removeAnnotation(annotationID) {
-        const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
+        const annotationEl = this.element.querySelector(`[data-annotation-id="${annotationID}"]`);
         if (annotationEl) {
             annotationEl.parentNode.removeChild(annotationEl);
             this.deactivateReply(); // Deactivate reply area and focus
         }
-    }
-
-    //--------------------------------------------------------------------------
-    // Getters
-    //--------------------------------------------------------------------------
-
-    /**
-     * Gets annotation dialog.
-     *
-     * @return {HTMLElement} Dialog
-     */
-    get element() {
-        return this._element;
     }
 
     //--------------------------------------------------------------------------
@@ -187,10 +174,10 @@ class AnnotationDialog extends EventEmitter {
      */
     setup(annotations) {
         // Generate HTML of dialog
-        this._element = document.createElement('div');
-        this._element.setAttribute('data-type', 'annotation-dialog');
-        this._element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
-        this._element.innerHTML = `
+        this.element = document.createElement('div');
+        this.element.setAttribute('data-type', 'annotation-dialog');
+        this.element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
+        this.element.innerHTML = `
             <div class="bp-annotation-caret"></div>
             <div class="annotation-container">
                 <section class="${annotations.length ? CLASS_HIDDEN : ''}" data-section="create">
@@ -224,7 +211,7 @@ class AnnotationDialog extends EventEmitter {
 
         // Adding thread number to dialog
         if (annotations.length > 0) {
-            this._element.dataset.threadNumber = annotations[0].thread;
+            this.element.dataset.threadNumber = annotations[0].thread;
         }
 
         // Add annotation elements
@@ -242,12 +229,12 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     bindDOMListeners() {
-        this._element.addEventListener('keydown', this.keydownHandler);
-        this._element.addEventListener('click', this.clickHandler);
-        this._element.addEventListener('mouseup', this.stopPropagation);
-        this._element.addEventListener('mouseenter', this.mouseenterHandler);
-        this._element.addEventListener('mouseleave', this.mouseleaveHandler);
-        this._element.addEventListener('wheel', this.stopPropagation);
+        this.element.addEventListener('keydown', this.keydownHandler);
+        this.element.addEventListener('click', this.clickHandler);
+        this.element.addEventListener('mouseup', this.stopPropagation);
+        this.element.addEventListener('mouseenter', this.mouseenterHandler);
+        this.element.addEventListener('mouseleave', this.mouseleaveHandler);
+        this.element.addEventListener('wheel', this.stopPropagation);
     }
 
     /**
@@ -257,12 +244,12 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     unbindDOMListeners() {
-        this._element.removeEventListener('keydown', this.keydownHandler);
-        this._element.removeEventListener('click', this.clickHandler);
-        this._element.removeEventListener('mouseup', this.stopPropagation);
-        this._element.removeEventListener('mouseenter', this.mouseenterHandler);
-        this._element.removeEventListener('mouseleave', this.mouseleaveHandler);
-        this._element.removeEventListener('wheel', this.stopPropagation);
+        this.element.removeEventListener('keydown', this.keydownHandler);
+        this.element.removeEventListener('click', this.clickHandler);
+        this.element.removeEventListener('mouseup', this.stopPropagation);
+        this.element.removeEventListener('mouseenter', this.mouseenterHandler);
+        this.element.removeEventListener('mouseleave', this.mouseleaveHandler);
+        this.element.removeEventListener('wheel', this.stopPropagation);
     }
 
     /**
@@ -304,11 +291,11 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     mouseenterHandler() {
-        if (this._element.classList.contains(CLASS_HIDDEN)) {
-            annotatorUtil.showElement(this._element);
+        if (this.element.classList.contains(CLASS_HIDDEN)) {
+            annotatorUtil.showElement(this.element);
 
-            const replyTextArea = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
-            const commentsTextArea = this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            const replyTextArea = this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            const commentsTextArea = this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
             if (replyTextArea.textContent !== '' || commentsTextArea.textContent !== '') {
                 this.emit('annotationcommentpending');
             }
@@ -325,7 +312,7 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     mouseleaveHandler() {
-        if (this._hasAnnotations) {
+        if (this.hasAnnotations) {
             this.hide();
         }
     }
@@ -417,7 +404,7 @@ class AnnotationDialog extends EventEmitter {
         const avatarUrl = annotatorUtil.htmlEscape(annotation.user.avatarUrl || '');
         const avatarHtml = annotatorUtil.getAvatarHtml(avatarUrl, userId, userName);
         const created = new Date(annotation.created).toLocaleString(
-            this._locale, { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }
+            this.locale, { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }
         );
         const text = annotatorUtil.htmlEscape(annotation.text);
 
@@ -448,7 +435,7 @@ class AnnotationDialog extends EventEmitter {
                 </div>
             </div>`.trim();
 
-        const annotationContainerEl = this._element.querySelector(constants.SELECTOR_COMMENTS_CONTAINER);
+        const annotationContainerEl = this.element.querySelector(constants.SELECTOR_COMMENTS_CONTAINER);
         annotationContainerEl.appendChild(annotationEl);
     }
 
@@ -459,7 +446,7 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     postAnnotation() {
-        const annotationTextEl = this._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+        const annotationTextEl = this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
         const text = annotationTextEl.value;
         if (text.trim() === '') {
             return;
@@ -486,7 +473,7 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     activateReply() {
-        const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+        const replyTextEl = this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
 
         // Don't activate if reply textarea is already active
         const isActive = replyTextEl.classList.contains(CLASS_ACTIVE);
@@ -499,7 +486,7 @@ class AnnotationDialog extends EventEmitter {
         annotatorUtil.showElement(replyButtonEls);
 
         // Auto scroll annotations dialog to bottom where new comment was added
-        const annotationsEl = this._element.querySelector('.annotation-container');
+        const annotationsEl = this.element.querySelector('.annotation-container');
         annotationsEl.scrollTop = annotationsEl.scrollHeight - annotationsEl.clientHeight;
     }
 
@@ -511,11 +498,11 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     deactivateReply(clearText) {
-        if (!this._element) {
+        if (!this.element) {
             return;
         }
 
-        const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+        const replyTextEl = this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
         const replyButtonEls = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
         annotatorUtil.resetTextarea(replyTextEl, clearText);
         annotatorUtil.hideElement(replyButtonEls);
@@ -525,7 +512,7 @@ class AnnotationDialog extends EventEmitter {
         }
 
         // Auto scroll annotations dialog to bottom where new comment was added
-        const annotationsEl = this._element.querySelector('.annotation-container');
+        const annotationsEl = this.element.querySelector('.annotation-container');
         annotationsEl.scrollTop = annotationsEl.scrollHeight - annotationsEl.clientHeight;
     }
 
@@ -536,7 +523,7 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     postReply() {
-        const replyTextEl = this._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+        const replyTextEl = this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
         const text = replyTextEl.value;
         if (text.trim() === '') {
             return;
@@ -554,7 +541,7 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     showDeleteConfirmation(annotationID) {
-        const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
+        const annotationEl = this.element.querySelector(`[data-annotation-id="${annotationID}"]`);
         const deleteConfirmationEl = annotationEl.querySelector('.delete-confirmation');
         const cancelDeleteButtonEl = annotationEl.querySelector('.cancel-delete-btn');
         const deleteButtonEl = annotationEl.querySelector('.delete-comment-btn');
@@ -571,7 +558,7 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     hideDeleteConfirmation(annotationID) {
-        const annotationEl = this._element.querySelector(`[data-annotation-id="${annotationID}"]`);
+        const annotationEl = this.element.querySelector(`[data-annotation-id="${annotationID}"]`);
         const deleteConfirmationEl = annotationEl.querySelector('.delete-confirmation');
         const deleteButtonEl = annotationEl.querySelector('.delete-comment-btn');
         annotatorUtil.showElement(deleteButtonEl);

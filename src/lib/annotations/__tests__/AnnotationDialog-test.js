@@ -24,7 +24,7 @@ describe('lib/annotations/AnnotationDialog', () => {
             canAnnotate: true
         });
         dialog.setup([]);
-        document.querySelector('.annotated-element').appendChild(dialog._element);
+        document.querySelector('.annotated-element').appendChild(dialog.element);
 
         stubs.emit = sandbox.stub(dialog, 'emit');
     });
@@ -50,7 +50,7 @@ describe('lib/annotations/AnnotationDialog', () => {
 
             dialog.destroy();
             expect(unbindStub).to.be.called;
-            expect(dialog._element).to.be.null;
+            expect(dialog.element).to.be.null;
         });
     });
 
@@ -60,7 +60,7 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should not re-show dialog if already shown on page', () => {
-            dialog._hasAnnotations = true;
+            dialog.hasAnnotations = true;
             dialog.activateReply();
 
             dialog.show();
@@ -68,15 +68,15 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should not re-position dialog if already shown on page', () => {
-            dialog._hasAnnotations = true;
+            dialog.hasAnnotations = true;
 
             // Deactivates dialog textarea
             dialog.deactivateReply();
-            const commentsTextArea = dialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            const commentsTextArea = dialog.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
             commentsTextArea.classList.remove('bp-is-active');
 
             // Removes dialog from page
-            dialog._element.parentNode.removeChild(dialog._element);
+            dialog.element.parentNode.removeChild(dialog.element);
             dialog.activateReply();
 
             dialog.show();
@@ -84,9 +84,9 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should position the dialog', () => {
-            dialog._hasAnnotations = true;
+            dialog.hasAnnotations = true;
             dialog.deactivateReply();
-            const commentsTextArea = dialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            const commentsTextArea = dialog.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
             commentsTextArea.classList.remove('bp-is-active');
 
             dialog.show();
@@ -94,17 +94,17 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should hide the reply/edit/delete UI if user cannot annotate', () => {
-            dialog._canAnnotate = false;
-            dialog._hasAnnotations = true;
+            dialog.canAnnotate = false;
+            dialog.hasAnnotations = true;
             dialog.deactivateReply();
 
             dialog.show();
-            expect(dialog._element).to.have.class(constants.CLASS_CANNOT_ANNOTATE);
+            expect(dialog.element).to.have.class(constants.CLASS_CANNOT_ANNOTATE);
         });
 
         it('should focus textarea if in viewport', () => {
-            dialog._canAnnotate = false;
-            dialog._hasAnnotations = true;
+            dialog.canAnnotate = false;
+            dialog.hasAnnotations = true;
             dialog.deactivateReply();
             sandbox.stub(annotatorUtil, 'isElementInViewport').returns(true);
 
@@ -113,25 +113,25 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should activate reply textarea if dialog has annotations', () => {
-            dialog._canAnnotate = false;
-            dialog._hasAnnotations = true;
+            dialog.canAnnotate = false;
+            dialog.hasAnnotations = true;
             dialog.deactivateReply();
             sandbox.stub(dialog, 'activateReply');
 
             dialog.show();
-            const textArea = dialog._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            const textArea = dialog.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
             expect(textArea).to.not.have.class(CLASS_ACTIVE);
             expect(dialog.activateReply).to.be.called;
         });
 
         it('should activate textarea if dialog does not have annotations', () => {
-            dialog._canAnnotate = false;
-            dialog._hasAnnotations = false;
+            dialog.canAnnotate = false;
+            dialog.hasAnnotations = false;
             dialog.deactivateReply();
             sandbox.stub(dialog, 'activateReply');
 
             dialog.show();
-            const textArea = dialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            const textArea = dialog.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
             expect(textArea).to.have.class(CLASS_ACTIVE);
             expect(dialog.activateReply).to.not.be.called;
         });
@@ -140,7 +140,7 @@ describe('lib/annotations/AnnotationDialog', () => {
     describe('hide()', () => {
         it('should hide dialog immediately', () => {
             dialog.hide();
-            expect(dialog._element).to.have.class(CLASS_HIDDEN);
+            expect(dialog.element).to.have.class(CLASS_HIDDEN);
         });
     });
 
@@ -158,7 +158,7 @@ describe('lib/annotations/AnnotationDialog', () => {
 
         it('should hide the create section and show the show section if there are no annotations', () => {
             // Add dialog to DOM
-            dialog._annotatedElement.appendChild(dialog._element);
+            dialog.annotatedElement.appendChild(dialog.element);
 
             dialog.addAnnotation(new Annotation({}));
             const createSectionEl = document.querySelector('[data-section="create"]');
@@ -180,7 +180,7 @@ describe('lib/annotations/AnnotationDialog', () => {
             }));
 
             dialog.removeAnnotation('someID');
-            const annotationEl = dialog._element.querySelector('[data-annotation-id="someID"]');
+            const annotationEl = dialog.element.querySelector('[data-annotation-id="someID"]');
             expect(annotationEl).to.be.null;
             expect(stubs.deactivate).to.be.called;
         });
@@ -195,7 +195,7 @@ describe('lib/annotations/AnnotationDialog', () => {
 
     describe('element()', () => {
         it('should return dialog element', () => {
-            expect(dialog.element).to.equal(dialog._element);
+            expect(dialog.element).to.equal(dialog.element);
         });
     });
 
@@ -212,21 +212,21 @@ describe('lib/annotations/AnnotationDialog', () => {
             });
 
             dialog.setup([annotationData]);
-            expect(dialog._element).to.not.be.null;
-            expect(dialog._element.querySelector(['[data-annotation-id="someID"]'])).to.not.be.null;
-            expect(dialog._element.dataset.threadNumber).to.equal('1');
+            expect(dialog.element).to.not.be.null;
+            expect(dialog.element.querySelector(['[data-annotation-id="someID"]'])).to.not.be.null;
+            expect(dialog.element.dataset.threadNumber).to.equal('1');
             expect(stubs.bind).to.be.called;
         });
 
         it('should not set thread number if there are no annotations in the thread', () => {
             dialog.setup([]);
-            expect(dialog._element.dataset.threadNumber).to.be.undefined;
+            expect(dialog.element.dataset.threadNumber).to.be.undefined;
         });
     });
 
     describe('bindDOMListeners()', () => {
         it('should bind DOM listeners', () => {
-            stubs.add = sandbox.stub(dialog._element, 'addEventListener');
+            stubs.add = sandbox.stub(dialog.element, 'addEventListener');
 
             dialog.bindDOMListeners();
             expect(stubs.add).to.be.calledWith('keydown', sinon.match.func);
@@ -240,7 +240,7 @@ describe('lib/annotations/AnnotationDialog', () => {
 
     describe('unbindDOMListeners()', () => {
         it('should unbind DOM listeners', () => {
-            stubs.remove = sandbox.stub(dialog._element, 'removeEventListener');
+            stubs.remove = sandbox.stub(dialog.element, 'removeEventListener');
 
             dialog.unbindDOMListeners();
             expect(stubs.remove).to.be.calledWith('keydown', sinon.match.func);
@@ -268,7 +268,7 @@ describe('lib/annotations/AnnotationDialog', () => {
 
             dialog.keydownHandler({
                 key: ' ', // space
-                target: dialog._element.querySelector('.reply-textarea'),
+                target: dialog.element.querySelector('.reply-textarea'),
                 stopPropagation: () => {}
             });
             expect(stubs.activate).to.be.called;
@@ -293,7 +293,7 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should show the element only if the element is currently hidden', () => {
-            dialog._element.classList.add(CLASS_HIDDEN);
+            dialog.element.classList.add(CLASS_HIDDEN);
 
             dialog.mouseenterHandler();
             expect(annotatorUtil.showElement).to.be.called;
@@ -305,8 +305,8 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should emit \'annotationcommentpending\' when user hovers back into a dialog that has a pending comment', () => {
-            dialog._element.classList.add(CLASS_HIDDEN);
-            const commentsTextArea = dialog._element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+            dialog.element.classList.add(CLASS_HIDDEN);
+            const commentsTextArea = dialog.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
             commentsTextArea.textContent = 'bleh';
 
             dialog.mouseenterHandler();
@@ -512,7 +512,7 @@ describe('lib/annotations/AnnotationDialog', () => {
         it('should correctly format the date and time in a different locale', () => {
             const date = new Date();
             stubs.locale = sandbox.stub(Date.prototype, 'toLocaleString');
-            dialog._locale = 'en-GB';
+            dialog.locale = 'en-GB';
 
             dialog.addAnnotationElement(new Annotation({
                 annotationID: 1,
@@ -556,7 +556,7 @@ describe('lib/annotations/AnnotationDialog', () => {
 
     describe('activateReply()', () => {
         it('should do nothing if reply textarea is already active', () => {
-            const replyTextEl = dialog._element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            const replyTextEl = dialog.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
             replyTextEl.classList.add('bp-is-active');
             sandbox.stub(annotatorUtil, 'showElement');
 
@@ -583,7 +583,7 @@ describe('lib/annotations/AnnotationDialog', () => {
 
     describe('deactivateReply()', () => {
         it('should do nothing if element does not exist', () => {
-            dialog._element = null;
+            dialog.element = null;
             sandbox.stub(annotatorUtil, 'resetTextarea');
 
             dialog.deactivateReply();

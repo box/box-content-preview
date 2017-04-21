@@ -40,15 +40,15 @@ class AnnotationThread extends EventEmitter {
     constructor(data) {
         super();
 
-        this._annotatedElement = data.annotatedElement;
-        this._annotations = data.annotations || [];
-        this._annotationService = data.annotationService;
-        this._fileVersionID = data.fileVersionID;
-        this._location = data.location;
-        this._threadID = data.threadID || AnnotationService.generateID();
-        this._thread = data.thread || '';
-        this._type = data.type;
-        this._locale = data.locale;
+        this.annotatedElement = data.annotatedElement;
+        this.annotations = data.annotations || [];
+        this.annotationService = data.annotationService;
+        this.fileVersionID = data.fileVersionID;
+        this.location = data.location;
+        this.threadID = data.threadID || AnnotationService.generateID();
+        this.thread = data.thread || '';
+        this.type = data.type;
+        this.locale = data.locale;
 
         this.setup();
     }
@@ -59,19 +59,19 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     destroy() {
-        if (this._dialog) {
+        if (this.dialog) {
             this.unbindCustomListenersOnDialog();
-            this._dialog.destroy();
+            this.dialog.destroy();
         }
 
-        if (this._element) {
+        if (this.element) {
             this.unbindDOMListeners();
 
-            if (this._element.parentNode) {
-                this._element.parentNode.removeChild(this._element);
+            if (this.element.parentNode) {
+                this.element.parentNode.removeChild(this.element);
             }
 
-            this._element = null;
+            this.element = null;
         }
 
         this.emit('threaddeleted');
@@ -83,7 +83,7 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     hide() {
-        annotatorUtil.hideElement(this._element);
+        annotatorUtil.hideElement(this.element);
     }
 
     /**
@@ -92,7 +92,7 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     reset() {
-        this._state = constants.ANNOTATION_STATE_INACTIVE;
+        this.state = constants.ANNOTATION_STATE_INACTIVE;
     }
 
     /**
@@ -102,11 +102,11 @@ class AnnotationThread extends EventEmitter {
      */
     showDialog() {
         // Prevents the annotations dialog from being created each mousemove
-        if (!this._dialog._element) {
-            this._dialog.setup(this._annotations);
+        if (!this.dialog.element) {
+            this.dialog.setup(this.annotations);
         }
 
-        this._dialog.show();
+        this.dialog.show();
     }
 
     /**
@@ -115,8 +115,8 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     hideDialog() {
-        if (this._dialog) {
-            this._dialog.hide();
+        if (this.dialog) {
+            this.dialog.hide();
         }
     }
 
@@ -144,26 +144,26 @@ class AnnotationThread extends EventEmitter {
         this.saveAnnotationToThread(tempAnnotation);
 
         // Changing state from pending
-        this._state = constants.ANNOTATION_STATE_HOVER;
+        this.state = constants.ANNOTATION_STATE_HOVER;
 
         // Save annotation on server
-        this._annotationService.create(annotationData).then((savedAnnotation) => {
+        this.annotationService.create(annotationData).then((savedAnnotation) => {
             // If no temporary annotation is found, save to thread normally
-            const tempIdx = this._annotations.indexOf(tempAnnotation);
+            const tempIdx = this.annotations.indexOf(tempAnnotation);
             if (tempIdx === -1) {
                 this.saveAnnotationToThread(savedAnnotation);
             }
 
             // Add thread number to associated dialog and thread
-            this._thread = this._thread || savedAnnotation._thread;
-            this._dialog._element.dataset.threadNumber = this._thread;
+            this.thread = this.thread || savedAnnotation.thread;
+            this.dialog.element.dataset.threadNumber = this.thread;
 
             // Otherwise, replace temporary annotation with annotation saved to server
-            this._annotations[tempIdx] = savedAnnotation;
+            this.annotations[tempIdx] = savedAnnotation;
 
-            if (this._dialog) {
-                this._dialog.addAnnotation(savedAnnotation);
-                this._dialog.removeAnnotation(tempAnnotationID);
+            if (this.dialog) {
+                this.dialog.addAnnotation(savedAnnotation);
+                this.dialog.removeAnnotation(tempAnnotationID);
             }
         }).catch(() => {
             // Remove temporary annotation
@@ -183,42 +183,42 @@ class AnnotationThread extends EventEmitter {
      */
     deleteAnnotation(annotationID, useServer = true) {
         // Ignore if no corresponding annotation exists in thread or user doesn't have permissions
-        const annotation = this._annotations.find((annot) => annot.annotationID === annotationID);
+        const annotation = this.annotations.find((annot) => annot.annotationID === annotationID);
         if (!annotation || (annotation.permissions && !annotation.permissions.can_delete)) {
             return;
         }
 
         // Delete annotation on client
-        this._annotations = this._annotations.filter((annot) => annot.annotationID !== annotationID);
+        this.annotations = this.annotations.filter((annot) => annot.annotationID !== annotationID);
 
         // If the user doesn't have permission to delete the entire highlight
         // annotation, display the annotation as a plain highlight
-        let canDeleteAnnotation = this._annotations.length > 0 && this._annotations[0].permissions && this._annotations[0].permissions.can_delete;
-        if (annotatorUtil.isPlainHighlight(this._annotations) && !canDeleteAnnotation) {
+        let canDeleteAnnotation = this.annotations.length > 0 && this.annotations[0].permissions && this.annotations[0].permissions.can_delete;
+        if (annotatorUtil.isPlainHighlight(this.annotations) && !canDeleteAnnotation) {
             this.cancelFirstComment();
 
         // If this annotation was the last one in the thread, destroy the thread
-        } else if (this._annotations.length === 0 || annotatorUtil.isPlainHighlight(this._annotations)) {
+        } else if (this.annotations.length === 0 || annotatorUtil.isPlainHighlight(this.annotations)) {
             this.destroy();
 
         // Otherwise, remove deleted annotation from dialog
-        } else if (this._dialog) {
-            this._dialog.removeAnnotation(annotationID);
+        } else if (this.dialog) {
+            this.dialog.removeAnnotation(annotationID);
         }
 
         // Delete annotation on server
         if (useServer) {
-            this._annotationService.delete(annotationID)
+            this.annotationService.delete(annotationID)
             .then(() => {
                 // Ensures that blank highlight comment is also deleted when removing
                 // the last comment on a highlight
-                canDeleteAnnotation = this._annotations.length > 0 && this._annotations[0].permissions && this._annotations[0].permissions.can_delete;
-                if (annotatorUtil.isPlainHighlight(this._annotations) && canDeleteAnnotation) {
-                    this._annotationService.delete(this._annotations[0].annotationID);
+                canDeleteAnnotation = this.annotations.length > 0 && this.annotations[0].permissions && this.annotations[0].permissions.can_delete;
+                if (annotatorUtil.isPlainHighlight(this.annotations) && canDeleteAnnotation) {
+                    this.annotationService.delete(this.annotations[0].annotationID);
                 }
 
                 // Broadcast thread cleanup if needed
-                if (this._annotations.length === 0) {
+                if (this.annotations.length === 0) {
                     this.emit('threadcleanup');
                 }
             })
@@ -256,55 +256,6 @@ class AnnotationThread extends EventEmitter {
     createDialog() {}
 
     //--------------------------------------------------------------------------
-    // Getters
-    //--------------------------------------------------------------------------
-
-    /**
-     * Gets location.
-     *
-     * @return {Object} Location
-     */
-    get location() {
-        return this._location;
-    }
-
-    /**
-     * Gets threadID.
-     *
-     * @return {string} threadID
-     */
-    get threadID() {
-        return this._threadID;
-    }
-
-    /**
-     * Gets thread number.
-     *
-     * @return {string} thread number
-     */
-    get thread() {
-        return this._thread;
-    }
-
-    /**
-     * Gets type.
-     *
-     * @return {string} type
-     */
-    get type() {
-        return this._type;
-    }
-
-    /**
-     * Gets state.
-     *
-     * @return {string} state
-     */
-    get state() {
-        return this._state;
-    }
-
-    //--------------------------------------------------------------------------
     // Protected
     //--------------------------------------------------------------------------
 
@@ -316,10 +267,10 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     setup() {
-        if (this._annotations.length === 0) {
-            this._state = constants.ANNOTATION_STATE_PENDING;
+        if (this.annotations.length === 0) {
+            this.state = constants.ANNOTATION_STATE_PENDING;
         } else {
-            this._state = constants.ANNOTATION_STATE_INACTIVE;
+            this.state = constants.ANNOTATION_STATE_INACTIVE;
         }
 
         this.createDialog();
@@ -335,7 +286,7 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     setupElement() {
-        this._element = this.createElement();
+        this.element = this.createElement();
         this.bindDOMListeners();
     }
 
@@ -346,13 +297,13 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     bindDOMListeners() {
-        if (!this._element) {
+        if (!this.element) {
             return;
         }
 
-        this._element.addEventListener('click', this.showDialog);
-        this._element.addEventListener('mouseenter', this.showDialog);
-        this._element.addEventListener('mouseleave', this.mouseoutHandler);
+        this.element.addEventListener('click', this.showDialog);
+        this.element.addEventListener('mouseenter', this.showDialog);
+        this.element.addEventListener('mouseleave', this.mouseoutHandler);
     }
 
     /**
@@ -362,13 +313,13 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     unbindDOMListeners() {
-        if (!this._element) {
+        if (!this.element) {
             return;
         }
 
-        this._element.removeEventListener('click', this.showDialog);
-        this._element.removeEventListener('mouseenter', this.showDialog);
-        this._element.removeEventListener('mouseleave', this.mouseoutHandler);
+        this.element.removeEventListener('click', this.showDialog);
+        this.element.removeEventListener('mouseenter', this.showDialog);
+        this.element.removeEventListener('mouseleave', this.mouseoutHandler);
     }
 
     /**
@@ -378,13 +329,13 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     bindCustomListenersOnDialog() {
-        if (!this._dialog) {
+        if (!this.dialog) {
             return;
         }
 
-        this._dialog.addListener('annotationcreate', this.createAnnotation);
-        this._dialog.addListener('annotationcancel', this.destroy);
-        this._dialog.addListener('annotationdelete', this.deleteAnnotationWithID);
+        this.dialog.addListener('annotationcreate', this.createAnnotation);
+        this.dialog.addListener('annotationcancel', this.destroy);
+        this.dialog.addListener('annotationdelete', this.deleteAnnotationWithID);
     }
 
     /**
@@ -394,13 +345,13 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     unbindCustomListenersOnDialog() {
-        if (!this._dialog) {
+        if (!this.dialog) {
             return;
         }
 
-        this._dialog.removeAllListeners('annotationcreate');
-        this._dialog.removeAllListeners('annotationcancel');
-        this._dialog.removeAllListeners('annotationdelete');
+        this.dialog.removeAllListeners('annotationcreate');
+        this.dialog.removeAllListeners('annotationcancel');
+        this.dialog.removeAllListeners('annotationdelete');
     }
 
     //--------------------------------------------------------------------------
@@ -428,7 +379,7 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     mouseoutHandler() {
-        if (this._annotations.length !== 0) {
+        if (this.annotations.length !== 0) {
             this.hideDialog();
         }
     }
@@ -442,10 +393,10 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     saveAnnotationToThread(annotation) {
-        this._annotations.push(annotation);
+        this.annotations.push(annotation);
 
-        if (this._dialog) {
-            this._dialog.addAnnotation(annotation);
+        if (this.dialog) {
+            this.dialog.addAnnotation(annotation);
         }
     }
 
@@ -459,13 +410,13 @@ class AnnotationThread extends EventEmitter {
      */
     createAnnotationData(type, text) {
         return {
-            fileVersionID: this._fileVersionID,
+            fileVersionID: this.fileVersionID,
             type,
             text,
-            location: this._location,
-            user: this._annotationService.user,
-            threadID: this._threadID,
-            thread: this._thread
+            location: this.location,
+            user: this.annotationService.user,
+            threadID: this.threadID,
+            thread: this.thread
         };
     }
 

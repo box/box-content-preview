@@ -22,12 +22,12 @@ class DocHighlightThread extends AnnotationThread {
      * @return {void}
      */
     cancelFirstComment() {
-        if (annotatorUtil.isPlainHighlight(this._annotations)) {
-            this._dialog.toggleHighlightDialogs();
+        if (annotatorUtil.isPlainHighlight(this.annotations)) {
+            this.dialog.toggleHighlightDialogs();
             this.reset();
 
             // Reset type from highlight-comment to highlight
-            this._type = constants.ANNOTATION_TYPE_HIGHLIGHT;
+            this.type = constants.ANNOTATION_TYPE_HIGHLIGHT;
         } else {
             this.destroy();
         }
@@ -42,7 +42,7 @@ class DocHighlightThread extends AnnotationThread {
     destroy() {
         super.destroy();
 
-        if (this._state === constants.ANNOTATION_STATE_PENDING) {
+        if (this.state === constants.ANNOTATION_STATE_PENDING) {
             window.getSelection().removeAllRanges();
         }
     }
@@ -66,7 +66,7 @@ class DocHighlightThread extends AnnotationThread {
      * @return {void}
      */
     reset() {
-        this._state = constants.ANNOTATION_STATE_INACTIVE;
+        this.state = constants.ANNOTATION_STATE_INACTIVE;
         this.show();
     }
 
@@ -95,8 +95,8 @@ class DocHighlightThread extends AnnotationThread {
 
         // Hide delete button on plain highlights if user doesn't have
         // permissions
-        if (this._annotations.length && this._annotations[0].permissions && !this._annotations[0].permissions.can_delete) {
-            const addHighlightBtn = this._dialog._element.querySelector('.bp-add-highlight-btn');
+        if (this.annotations.length && this.annotations[0].permissions && !this.annotations[0].permissions.can_delete) {
+            const addHighlightBtn = this.dialog.element.querySelector('.bp-add-highlight-btn');
             annotatorUtil.hideElement(addHighlightBtn);
         }
     }
@@ -108,7 +108,7 @@ class DocHighlightThread extends AnnotationThread {
      */
     onMousedown() {
         // Destroy pending highlights on mousedown
-        if (this._state === constants.ANNOTATION_STATE_PENDING) {
+        if (this.state === constants.ANNOTATION_STATE_PENDING) {
             this.destroy();
         }
     }
@@ -131,10 +131,10 @@ class DocHighlightThread extends AnnotationThread {
     onClick(event, consumed) {
         // If state is in hover, it means mouse is already over this highlight
         // so we can skip the is in highlight calculation
-        if (!consumed && (this._state === constants.ANNOTATION_STATE_HOVER ||
-            this._state === constants.ANNOTATION_STATE_ACTIVE_HOVER ||
+        if (!consumed && (this.state === constants.ANNOTATION_STATE_HOVER ||
+            this.state === constants.ANNOTATION_STATE_ACTIVE_HOVER ||
             this.isOnHighlight(event))) {
-            this._state = constants.ANNOTATION_STATE_ACTIVE;
+            this.state = constants.ANNOTATION_STATE_ACTIVE;
             return true;
         }
 
@@ -153,7 +153,7 @@ class DocHighlightThread extends AnnotationThread {
      * the annotations dialog
      */
     isOnHighlight(event) {
-        return docAnnotatorUtil.isInDialog(event, this._dialog.element) || this.isInHighlight(event);
+        return docAnnotatorUtil.isInDialog(event, this.dialog.element) || this.isInHighlight(event);
     }
 
     /**
@@ -163,18 +163,18 @@ class DocHighlightThread extends AnnotationThread {
      * @return {void}
      */
     activateDialog() {
-        if (this._state === constants.ANNOTATION_STATE_ACTIVE ||
-            this._state === constants.ANNOTATION_STATE_ACTIVE_HOVER) {
-            this._state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
+        if (this.state === constants.ANNOTATION_STATE_ACTIVE ||
+            this.state === constants.ANNOTATION_STATE_ACTIVE_HOVER) {
+            this.state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
         } else {
-            this._state = constants.ANNOTATION_STATE_HOVER;
+            this.state = constants.ANNOTATION_STATE_HOVER;
         }
 
         // Setup the dialog element if it has not already been created
-        if (!this._dialog._element) {
-            this._dialog.setup(this._annotations);
+        if (!this.dialog.element) {
+            this.dialog.setup(this.annotations);
         }
-        this._dialog.mouseenterHandler();
+        this.dialog.mouseenterHandler();
         clearTimeout(this.hoverTimeoutHandler);
     }
 
@@ -189,23 +189,23 @@ class DocHighlightThread extends AnnotationThread {
      */
     onMousemove(event) {
         // If mouse is in dialog, change state to hover or active-hover
-        if (docAnnotatorUtil.isInDialog(event, this._dialog.element)) {
+        if (docAnnotatorUtil.isInDialog(event, this.dialog.element)) {
             // Keeps dialog open if comment is pending
-            if (this._state === constants.ANNOTATION_STATE_PENDING_ACTIVE) {
+            if (this.state === constants.ANNOTATION_STATE_PENDING_ACTIVE) {
                 return false;
             }
-            this._state = constants.ANNOTATION_STATE_HOVER;
+            this.state = constants.ANNOTATION_STATE_HOVER;
 
         // If mouse is in highlight, change state to hover or active-hover
         } else if (this.isInHighlight(event)) {
             this.activateDialog();
 
         // If mouse is not in highlight, and state is active, do not override
-        } else if (this._state === constants.ANNOTATION_STATE_ACTIVE) {
+        } else if (this.state === constants.ANNOTATION_STATE_ACTIVE) {
             // No-op
 
         // If mouse is not in highlight and state is not already inactive, reset
-        } else if (this._state !== constants.ANNOTATION_STATE_INACTIVE) {
+        } else if (this.state !== constants.ANNOTATION_STATE_INACTIVE) {
             // Add timeout before resettting highlight to inactive so
             // hovering over line breaks doesn't cause flickering
             this.hoverTimeoutHandler = setTimeout(() => {
@@ -235,7 +235,7 @@ class DocHighlightThread extends AnnotationThread {
      * @return {void}
      */
     show() {
-        switch (this._state) {
+        switch (this.state) {
             case constants.ANNOTATION_STATE_PENDING:
                 this.showDialog();
                 break;
@@ -262,19 +262,19 @@ class DocHighlightThread extends AnnotationThread {
      * @return {void}
      */
     createDialog() {
-        this._dialog = new DocHighlightDialog({
-            annotatedElement: this._annotatedElement,
-            annotations: this._annotations,
-            locale: this._locale,
-            location: this._location,
-            canAnnotate: this._annotationService.canAnnotate
+        this.dialog = new DocHighlightDialog({
+            annotatedElement: this.annotatedElement,
+            annotations: this.annotations,
+            locale: this.locale,
+            location: this.location,
+            canAnnotate: this.annotationService.canAnnotate
         });
 
         // Ensures that previously created annotations have the right type
-        if (this._annotations.length) {
-            if ((this._annotations[0].text !== '' || this._annotations.length > 1) &&
-                this._type === constants.ANNOTATION_TYPE_HIGHLIGHT) {
-                this._type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
+        if (this.annotations.length) {
+            if ((this.annotations[0].text !== '' || this.annotations.length > 1) &&
+                this.type === constants.ANNOTATION_TYPE_HIGHLIGHT) {
+                this.type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
             }
         }
     }
@@ -303,40 +303,40 @@ class DocHighlightThread extends AnnotationThread {
     /* istanbul ignore next */
     bindCustomListenersOnDialog() {
         // Annotation drawn
-        this._dialog.addListener('annotationdraw', () => {
-            this._state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
+        this.dialog.addListener('annotationdraw', () => {
+            this.state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
             window.getSelection().removeAllRanges();
             this.show();
         });
 
         // Annotation drawn
-        this._dialog.addListener('annotationcommentpending', () => {
-            this._state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
+        this.dialog.addListener('annotationcommentpending', () => {
+            this.state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
         });
 
         // Annotation created
-        this._dialog.addListener('annotationcreate', (data) => {
+        this.dialog.addListener('annotationcreate', (data) => {
             if (data) {
-                this._type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
-                this._dialog.toggleHighlightCommentsReply(this._annotations.length);
+                this.type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
+                this.dialog.toggleHighlightCommentsReply(this.annotations.length);
             } else {
-                this._type = constants.ANNOTATION_TYPE_HIGHLIGHT;
+                this.type = constants.ANNOTATION_TYPE_HIGHLIGHT;
             }
 
-            this.saveAnnotation(this._type, data ? data.text : '');
+            this.saveAnnotation(this.type, data ? data.text : '');
         });
 
         // Annotation canceled
-        this._dialog.addListener('annotationcancel', () => {
+        this.dialog.addListener('annotationcancel', () => {
             this.cancelFirstComment();
         });
 
         // Annotation deleted
-        this._dialog.addListener('annotationdelete', (data) => {
+        this.dialog.addListener('annotationdelete', (data) => {
             if (data) {
                 this.deleteAnnotation(data.annotationID);
             } else {
-                this.deleteAnnotation(this._annotations[0].annotationID);
+                this.deleteAnnotation(this.annotations[0].annotationID);
             }
         });
     }
@@ -376,10 +376,10 @@ class DocHighlightThread extends AnnotationThread {
 
         const pageDimensions = this.getPageEl().getBoundingClientRect();
         const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
-        const zoomScale = annotatorUtil.getScale(this._annotatedElement);
-        const dimensionScale = annotatorUtil.getDimensionScale(this._location.dimensions, pageDimensions, zoomScale, PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM);
+        const zoomScale = annotatorUtil.getScale(this.annotatedElement);
+        const dimensionScale = annotatorUtil.getDimensionScale(this.location.dimensions, pageDimensions, zoomScale, PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM);
 
-        this._location.quadPoints.forEach((quadPoint) => {
+        this.location.quadPoints.forEach((quadPoint) => {
             // If needed, scale quad points comparing current dimensions with saved dimensions
             let scaledQuadPoint = quadPoint;
             if (dimensionScale) {
@@ -413,8 +413,8 @@ class DocHighlightThread extends AnnotationThread {
                 context.fill();
 
                 // Update highlight icon hover to appropriate color
-                if (this._dialog._element) {
-                    this._dialog.toggleHighlightIcon(fillStyle);
+                if (this.dialog.element) {
+                    this.dialog.toggleHighlightIcon(fillStyle);
                 }
             }
         });
@@ -433,14 +433,14 @@ class DocHighlightThread extends AnnotationThread {
         const pageDimensions = pageEl.getBoundingClientRect();
         const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
         const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
-        const zoomScale = annotatorUtil.getScale(this._annotatedElement);
-        const dimensionScale = annotatorUtil.getDimensionScale(this._location.dimensions, pageDimensions, zoomScale, PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM);
+        const zoomScale = annotatorUtil.getScale(this.annotatedElement);
+        const dimensionScale = annotatorUtil.getDimensionScale(this.location.dimensions, pageDimensions, zoomScale, PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM);
 
         // DOM coordinates with respect to the page
         const x = event.clientX - pageDimensions.left;
         const y = event.clientY - pageTop;
 
-        return this._location.quadPoints.some((quadPoint) => {
+        return this.location.quadPoints.some((quadPoint) => {
             // If needed, scale quad points comparing current dimensions with saved dimensions
             let scaledQuadPoint = quadPoint;
             if (dimensionScale) {
@@ -468,7 +468,7 @@ class DocHighlightThread extends AnnotationThread {
      * @return {HTMLElement} Page element
      */
     getPageEl() {
-        return this._annotatedElement.querySelector(`[data-page-number="${this._location.page}"]`);
+        return this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
     }
 
     /**

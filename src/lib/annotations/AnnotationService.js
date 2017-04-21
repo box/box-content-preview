@@ -56,11 +56,11 @@ class AnnotationService extends EventEmitter {
      */
     constructor(data) {
         super();
-        this._api = data.apiHost;
-        this._fileId = data.fileId;
-        this._headers = getHeaders({}, data.token);
-        this._canAnnotate = data.canAnnotate;
-        this._user = ANONYMOUS_USER;
+        this.api = data.apiHost;
+        this.fileId = data.fileId;
+        this.headers = getHeaders({}, data.token);
+        this.canAnnotate = data.canAnnotate;
+        this.user = ANONYMOUS_USER;
     }
 
     /**
@@ -71,9 +71,9 @@ class AnnotationService extends EventEmitter {
      */
     create(annotation) {
         return new Promise((resolve, reject) => {
-            fetch(`${this._api}/2.0/annotations`, {
+            fetch(`${this.api}/2.0/annotations`, {
                 method: 'POST',
-                headers: this._headers,
+                headers: this.headers,
                 body: JSON.stringify({
                     item: {
                         type: 'file_version',
@@ -100,8 +100,8 @@ class AnnotationService extends EventEmitter {
                     const createdAnnotation = this.createAnnotation(tempData);
 
                     // Set user if not set already
-                    if (this._user.id === '0') {
-                        this._user = createdAnnotation.user;
+                    if (this.user.id === '0') {
+                        this.user = createdAnnotation.user;
                     }
 
                     resolve(createdAnnotation);
@@ -129,7 +129,7 @@ class AnnotationService extends EventEmitter {
      * @return {Promise} Promise that resolves with fetched annotations
      */
     read(fileVersionID) {
-        this._annotations = [];
+        this.annotations = [];
         let resolve;
         let reject;
         const promise = new Promise((success, failure) => {
@@ -149,9 +149,9 @@ class AnnotationService extends EventEmitter {
      */
     delete(annotationID) {
         return new Promise((resolve, reject) => {
-            fetch(`${this._api}/2.0/annotations/${annotationID}`, {
+            fetch(`${this.api}/2.0/annotations/${annotationID}`, {
                 method: 'DELETE',
-                headers: this._headers
+                headers: this.headers
             })
             .then((response) => {
                 if (response.status === 204) {
@@ -181,37 +181,6 @@ class AnnotationService extends EventEmitter {
      */
     getThreadMap(fileVersionID) {
         return this.read(fileVersionID).then(this.createThreadMap);
-    }
-
-    //--------------------------------------------------------------------------
-    // Getters
-    //--------------------------------------------------------------------------
-
-    /**
-     * Gets canAnnotate.
-     *
-     * @return {boolean} Whether or not user can create or modify annotations.
-     */
-    get canAnnotate() {
-        return this._canAnnotate;
-    }
-
-    /**
-     * Gets canDelete.
-     *
-     * @return {boolean} Whether or not user can create or modify annotations.
-     */
-    get canDelete() {
-        return this._canDelete;
-    }
-
-    /**
-     * Gets user.
-     *
-     * @return {Object} User object
-     */
-    get user() {
-        return this._user;
     }
 
     //--------------------------------------------------------------------------
@@ -282,7 +251,7 @@ class AnnotationService extends EventEmitter {
      * @return {Promise} Promise that resolves with fetched annotations
      */
     getReadUrl(fileVersionID, marker = null, limit = null) {
-        let apiUrl = `${this._api}/2.0/files/${this._fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
+        let apiUrl = `${this.api}/2.0/files/${this.fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
         if (marker) {
             apiUrl += `&marker=${marker}`;
         }
@@ -306,7 +275,7 @@ class AnnotationService extends EventEmitter {
      */
     readFromMarker(resolve, reject, fileVersionID, marker = null, limit = null) {
         fetch(this.getReadUrl(fileVersionID, marker, limit), {
-            headers: this._headers })
+            headers: this.headers })
         .then((response) => response.json())
         .then((data) => {
             if (data.type === 'error' || !Array.isArray(data.entries)) {
@@ -316,13 +285,13 @@ class AnnotationService extends EventEmitter {
                 });
             } else {
                 data.entries.forEach((annotationData) => {
-                    this._annotations.push(this.createAnnotation(annotationData));
+                    this.annotations.push(this.createAnnotation(annotationData));
                 });
 
                 if (data.next_marker) {
                     this.readFromMarker(resolve, reject, fileVersionID, data.next_marker, limit);
                 } else {
-                    resolve(this._annotations);
+                    resolve(this.annotations);
                 }
             }
         })

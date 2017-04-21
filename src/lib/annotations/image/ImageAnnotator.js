@@ -26,13 +26,13 @@ class ImageAnnotator extends Annotator {
         let location = null;
 
         // Get image tag inside viewer
-        const imageEl = this._annotatedElement.querySelector('img');
+        const imageEl = this.annotatedElement.querySelector('img');
         if (!imageEl) {
             return location;
         }
 
         // If click is inside an annotation dialog, ignore
-        const dataType = annotatorUtil.findClosestDataType(this._annotatedElement);
+        const dataType = annotatorUtil.findClosestDataType(this.annotatedElement);
         if (dataType === 'annotation-dialog' || dataType === 'annotation-indicator') {
             return location;
         }
@@ -48,7 +48,7 @@ class ImageAnnotator extends Annotator {
         }
 
         // Scale location coordinates according to natural image size
-        const scale = annotatorUtil.getScale(this._annotatedElement);
+        const scale = annotatorUtil.getScale(this.annotatedElement);
         const rotation = Number(imageEl.getAttribute('data-rotation-angle'));
         [x, y] = imageAnnotatorUtil.getLocationWithoutRotation(x / scale, y / scale, rotation, imageDimensions, scale);
 
@@ -77,11 +77,11 @@ class ImageAnnotator extends Annotator {
     createAnnotationThread(annotations, location, type) {
         let thread;
         const threadParams = {
-            annotatedElement: this._annotatedElement,
+            annotatedElement: this.annotatedElement,
             annotations,
-            annotationService: this._annotationService,
-            fileVersionID: this._fileVersionID,
-            locale: this._locale,
+            annotationService: this.annotationService,
+            fileVersionID: this.fileVersionID,
+            locale: this.locale,
             location,
             type
         };
@@ -109,7 +109,7 @@ class ImageAnnotator extends Annotator {
      */
     hideAllAnnotations() {
         const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-        const annotations = this._annotatedElement.getElementsByClassName('bp-point-annotation-btn');
+        const annotations = this.annotatedElement.getElementsByClassName('bp-point-annotation-btn');
         for (let i = 0; i < annotations.length; i++) {
             annotatorUtil.hideElement(annotations[i]);
         }
@@ -124,7 +124,7 @@ class ImageAnnotator extends Annotator {
      */
     showAllAnnotations() {
         const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-        const annotations = this._annotatedElement.getElementsByClassName('bp-point-annotation-btn');
+        const annotations = this.annotatedElement.getElementsByClassName('bp-point-annotation-btn');
         for (let i = 0; i < annotations.length; i++) {
             annotatorUtil.showElement(annotations[i]);
         }
@@ -144,7 +144,7 @@ class ImageAnnotator extends Annotator {
 
         // Only show/hide point annotation button if user has the appropriate
         // permissions
-        if (this._annotationService.canAnnotate) {
+        if (this.annotationService.canAnnotate) {
             // Hide create annotations button if image is rotated
             // TODO(@spramod) actually adjust getLocationFromEvent method in
             // annotator to get correct location rather than disabling the creation

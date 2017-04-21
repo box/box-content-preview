@@ -71,7 +71,7 @@ describe('lib/annotations/image/ImageAnnotator', () => {
                 x: 100,
                 y: 200
             };
-            const imageEl = annotator._annotatedElement.querySelector('img');
+            const imageEl = annotator.annotatedElement.querySelector('img');
             sandbox.stub(annotatorUtil, 'findClosestDataType').returns('not-a-dialog');
             sandbox.stub(annotatorUtil, 'getScale').returns(1);
             sandbox.stub(imageAnnotatorUtil, 'getLocationWithoutRotation').returns([x, y]);
