@@ -35,3 +35,9 @@ echo "--------------------------------------------------------------------------
 echo "Disabling font loading API to prevent font glitches..."
 echo "-----------------------------------------------------------------------------------"
 sed -e 's/FontLoader\.isFontLoadingAPISupported = /FontLoader\.isFontLoadingAPISupported = false; \/\/ /' -i '' src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf.js
+
+# Decreased default cached pages size to 5 on mobile web to lower memory usage
+echo "-----------------------------------------------------------------------------------"
+echo "Decreasing # of cached pages on mobile web"
+echo "-----------------------------------------------------------------------------------"
+sed -e 's@var DEFAULT_CACHE_SIZE = 10;@var DEFAULT_CACHE_SIZE = /iphone|ipad|ipod|android|blackberry|bb10|mini|windows\sce|palm/i.test(navigator.userAgent) ? 5 : 10;@' -i '' src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf_viewer.js
