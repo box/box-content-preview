@@ -483,6 +483,13 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.annotator).to.be.undefined;
         });
 
+        it('should do nothing if expiring embed is a shared link', () => {
+            stubs.annotatable.returns(true);
+            image.options.sharedLink = 'url';
+            image.initAnnotations();
+            expect(image.annotator).to.be.undefined;
+        });
+
         it('should init annotations if user can annotate', () => {
             stubs.checkPermission.withArgs(image.options.file, PERMISSION_ANNOTATE).returns(true);
             stubs.annotatable.returns(true);

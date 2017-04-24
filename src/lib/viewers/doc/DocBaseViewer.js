@@ -691,8 +691,15 @@ class DocBaseViewer extends BaseViewer {
     initAnnotations() {
         this.setupPageIds();
 
-        const { apiHost, file, location, token } = this.options;
+        const { apiHost, file, location, token, sharedLink } = this.options;
         const fileVersionID = file.file_version.id;
+
+        // Do not initialize annotations for shared links
+        // TODO(@spramod): Determine the expected behavior on shared links
+        if (sharedLink) {
+            return;
+        }
+
         // Users can currently only view annotations on mobile
         const canAnnotate = checkPermission(file, PERMISSION_ANNOTATE) && !Browser.isMobile();
         const annotationService = new AnnotationService({

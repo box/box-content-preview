@@ -1154,6 +1154,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(stubs.setupPageIds).to.be.called;
         });
 
+        it('should do nothing if expiring embed is a shared link', () => {
+            stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_ANNOTATE).returns(true);
+            docBase.options.sharedLink = 'url';
+            docBase.initAnnotations();
+            expect(docBase.annotator).to.be.undefined;
+        });
+
         it('should allow annotations based on browser and permissions', () => {
             stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_ANNOTATE).returns(true);
             docBase.initAnnotations();
