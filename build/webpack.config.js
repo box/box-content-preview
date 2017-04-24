@@ -54,7 +54,8 @@ function updateConfig(conf, language, index) {
     const config = Object.assign(conf, {
         entry: {
             preview:        [`${lib}/Preview.js`],
-            csv:            [`${lib}/viewers/text/BoxCSV.js`]
+            csv:            [`${lib}/viewers/text/BoxCSV.js`],
+            annotations:    [`${lib}/annotations/BoxAnnotations.js`]
         },
         output: {
             path: path.resolve('dist', version, language),

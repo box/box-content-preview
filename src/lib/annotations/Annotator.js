@@ -32,13 +32,13 @@ class Annotator extends EventEmitter {
      */
     constructor(data) {
         super();
-        this.annotatedElement = data.annotatedElement;
-        this.annotationService = data.annotationService;
+
+        this.canAnnotate = data.canAnnotate;
+        this.container = data.container;
+        this.options = data.options;
         this.fileVersionID = data.fileVersionID;
         this.locale = data.locale;
         this.validationErrorDisplayed = false;
-
-        this.notification = new Notification(this.annotatedElement);
     }
 
     /**
@@ -65,8 +65,29 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     init() {
+        this.annotatedElement = this.getAnnotatedEl(this.container);
+        this.annotationService = this.initAnnotationService(this.options);
+        this.notification = new Notification(this.annotatedElement);
+
         this.setScale(1);
         this.setupAnnotations();
+        this.showAnnotations();
+    }
+
+    /**
+     * Initializes the Annotation Service with appropriate options
+     *
+     * @param {Object} options - Options passed from the viewer to the annotator
+     * @return {AnnotationService} AnnotationService instance
+     */
+    initAnnotationService(options) {
+        const { apiHost, fileId, token } = options;
+        return new AnnotationService({
+            apiHost,
+            fileId,
+            token,
+            canAnnotate: this.canAnnotate
+        });
     }
 
     /**
@@ -217,6 +238,16 @@ class Annotator extends EventEmitter {
      */
     /* eslint-disable no-unused-vars */
     createAnnotationThread(annotations, location, type) {}
+    /* eslint-enable no-unused-vars */
+
+    /**
+    * Must be implemented to determine the annotated element in the viewer.
+    *
+    * @param {HTMLElement} containerEl - Container element for the viewer
+    * @return {HTMLElement} Annotated element in the viewer
+    */
+    /* eslint-disable no-unused-vars */
+    getAnnotatedEl(containerEl) {}
     /* eslint-enable no-unused-vars */
 
     //--------------------------------------------------------------------------
