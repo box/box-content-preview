@@ -71,8 +71,11 @@ class BaseViewer extends EventEmitter {
         }
 
         // Attempts to load annotations assets and initializes annotations if
-        // the assets are available and showAnnotations flag is true
-        if (this.options.showAnnotations) {
+        // the assets are available, the showAnnotations flag is true, and the
+        // expiring embed is not a shared link
+        // TODO(@spramod): Determine the expected behavior on shared links
+        const { showAnnotations, sharedLink } = this.options;
+        if (showAnnotations && !sharedLink) {
             this.loadAssets(ANNOTATIONS_JS)
                 .then(() => {
                     this.annotationsLoaded = true;
@@ -273,7 +276,7 @@ class BaseViewer extends EventEmitter {
 
         this.addListener('load', () => {
             if (this.annotationsLoaded && this.options.showAnnotations) {
-                this.initAnnotator();
+                this.loadAnnotator();
             }
         });
     }
@@ -510,12 +513,12 @@ class BaseViewer extends EventEmitter {
     //--------------------------------------------------------------------------
 
     /**
-     * Initializes the appropriate annotator and loads the file's annotations
+     * Loads the appropriate annotator and loads the file's annotations
      *
      * @protected
      * @return {void}
      */
-    initAnnotator() {
+    loadAnnotator() {
         /* global BoxAnnotations */
         this.loader = new BoxAnnotations();
 

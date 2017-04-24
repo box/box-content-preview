@@ -74,6 +74,13 @@ describe('lib/viewers/BaseViewer', () => {
             base.options.showAnnotations = false;
             expect(base.loadAssets).to.not.be.called;
         });
+
+        it('should not load annotations assets if expiring embed is a shared link', () => {
+            sandbox.stub(base, 'addCommonListeners');
+            sandbox.stub(base, 'loadAssets');
+            base.options.sharedLink = 'url';
+            expect(base.loadAssets).to.not.be.called;
+        });
     });
 
     describe('debouncedResizeHandler()', () => {
@@ -282,7 +289,7 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should cleanup the base viewer', () => {
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
-            sandbox.stub(base, 'initAnnotator');
+            sandbox.stub(base, 'loadAnnotator');
             base.setup();
 
             sandbox.mock(fullscreen).expects('removeAllListeners');
@@ -345,7 +352,7 @@ describe('lib/viewers/BaseViewer', () => {
                 }
             });
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
-            sandbox.stub(base, 'initAnnotator');
+            sandbox.stub(base, 'loadAnnotator');
             base.setup();
             event = {
                 preventDefault: sandbox.stub(),
@@ -582,7 +589,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('initAnnotator()', () => {
+    describe('loadAnnotator()', () => {
         beforeEach(() => {
             base.options.viewer = {
                 NAME: Document
@@ -597,7 +604,7 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(false);
         });
 
-        it('should initialize the appropriate annotator for the current viewer', () => {
+        it('should load the appropriate annotator for the current viewer', () => {
             class BoxAnnotations {
                 determineAnnotator() {
                     return stubs.annotatorLoader;
@@ -607,7 +614,7 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.checkPermission.returns(true);
 
             window.BoxAnnotations = BoxAnnotations;
-            base.initAnnotator();
+            base.loadAnnotator();
             expect(base.initAnnotations).to.be.called;
             expect(base.showAnnotateButton).to.be.called;
         });
@@ -618,22 +625,22 @@ describe('lib/viewers/BaseViewer', () => {
             }
             window.BoxAnnotations = BoxAnnotations;
 
-            base.initAnnotator();
+            base.loadAnnotator();
             expect(base.initAnnotations).to.not.be.called;
             expect(base.showAnnotateButton).to.not.be.called;
         });
 
-        it('should not initialize an annotator if no loader was found', () => {
+        it('should not load an annotator if no loader was found', () => {
             class BoxAnnotations {
                 determineAnnotator() {}
             }
             window.BoxAnnotations = BoxAnnotations;
-            base.initAnnotator();
+            base.loadAnnotator();
             expect(base.initAnnotations).to.not.be.called;
             expect(base.showAnnotateButton).to.not.be.called;
         });
 
-        it('should not initialize an annotator if the viewer is not annotatable', () => {
+        it('should not load an annotator if the viewer is not annotatable', () => {
             class BoxAnnotations {
                 determineAnnotator() {
                     return stubs.annotatorLoader;
@@ -641,7 +648,7 @@ describe('lib/viewers/BaseViewer', () => {
             }
             window.BoxAnnotations = BoxAnnotations;
             stubs.isAnnotatable.returns(false);
-            base.initAnnotator();
+            base.loadAnnotator();
             expect(base.initAnnotations).to.not.be.called;
             expect(base.showAnnotateButton).to.not.be.called;
         });

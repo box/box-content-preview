@@ -447,13 +447,6 @@ describe('lib/viewers/image/ImageViewer', () => {
             Object.defineProperty(BaseViewer.prototype, 'initAnnotations', { value: initFunc });
         });
 
-        it('should do nothing if expiring embed is a shared link', () => {
-            stubs.annotatable.returns(true);
-            image.options.sharedLink = 'url';
-            image.initAnnotations();
-            expect(image.annotator).to.be.undefined;
-        });
-
         it('should init annotations if user can annotate', () => {
             Object.defineProperty(BaseViewer.prototype, 'initAnnotations', { value: sandbox.mock() });
             image.annotator = {

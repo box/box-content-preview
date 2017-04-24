@@ -215,8 +215,6 @@ class DocBaseViewer extends BaseViewer {
         this.initViewer(this.pdfUrl);
         this.initPrint();
         this.initFind();
-
-        this.setScale(this.pdfViewer.currentScale);
     }
 
     /**
