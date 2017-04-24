@@ -313,7 +313,14 @@ class ImageViewer extends ImageBaseViewer {
         }
 
         // Users can currently only view annotations on mobile
-        const { apiHost, file, location, token } = this.options;
+        const { apiHost, file, location, token, sharedLink } = this.options;
+
+        // Do not initialize annotations for shared links
+        // TODO(@spramod): Determine the expected behavior on shared links
+        if (sharedLink) {
+            return;
+        }
+
         const canAnnotate = checkPermission(file, PERMISSION_ANNOTATE) && !Browser.isMobile();
         this.canAnnotate = canAnnotate;
 
