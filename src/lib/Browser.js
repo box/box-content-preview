@@ -15,7 +15,7 @@ class Browser {
      * Override the current user agent.
      *
      * @public
-     * @param {string} newUserAgent The new user agent to use for all browser compatibility testing.
+     * @param {string} newUserAgent - The new user agent to use for all browser compatibility testing.
      * @return {void}
      */
     static overrideUserAgent(newUserAgent) {

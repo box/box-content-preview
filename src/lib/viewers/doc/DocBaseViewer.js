@@ -27,15 +27,16 @@ const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
-const DEFAULT_RANGE_REQUEST_CHUNK_SIZE = 524288; // 512KB
-const LARGE_RANGE_REQUEST_CHUNK_SIZE = 1048576; // 1MB
-const MINIMUM_RANGE_REQUEST_FILE_SIZE = 4194304; // 4MB
-const DISABLE_RANGE_REQUEST_EXENSIONS = ['xls', 'xlsm', 'xlsx'];
-const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const IS_SAFARI_CLASS = 'is-safari';
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const SCROLL_END_TIMEOUT = Browser.isMobile() ? 500 : 250;
+
+const RANGE_REQUEST_CHUNK_SIZE_US = 1048576; // 1MB
+const RANGE_REQUEST_CHUNK_SIZE_NON_US = 524288; // 512KB
+const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 5242880; // 5MB
+const DISABLE_RANGE_REQUEST_EXENSIONS = ['xls', 'xlsm', 'xlsx'];
+const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 
 @autobind
 class DocBaseViewer extends BaseViewer {
@@ -56,6 +57,17 @@ class DocBaseViewer extends BaseViewer {
 
         if (Browser.getName() === 'Safari') {
             this.docEl.classList.add(IS_SAFARI_CLASS);
+        }
+
+        this.isMobile = Browser.isMobile();
+
+        // We disable native pinch-to-zoom and double tap zoom on mobile to force users to use
+        // our viewer's zoom controls
+        if (this.isMobile) {
+            const metaEl = document.createElement('meta');
+            metaEl.setAttribute('name', 'viewport');
+            metaEl.setAttribute('content', 'width=device-width, initial-scale=1, user-scalable=no');
+            document.getElementsByTagName('head')[0].appendChild(metaEl);
         }
 
         this.viewerEl = this.docEl.appendChild(document.createElement('div'));
@@ -566,12 +578,9 @@ class DocBaseViewer extends BaseViewer {
         this.pdfViewer = new PDFJS.PDFViewer({
             container: this.docEl,
             linkService: new PDFJS.PDFLinkService(),
-            enhanceTextSelection: true // improves text selection if true
+            // Enhanced text selection uses more memory, so disable on mobile
+            enhanceTextSelection: !this.isMobile
         });
-
-        // Disable font faces on IOS 10.3.X
-        // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
-        PDFJS.disableFontFace = PDFJS.disableFontFace || Browser.isIOSWithFontIssue();
 
         // Use chunk size set in viewer options if available
         let rangeChunkSize = this.getViewerOption('rangeChunkSize');
@@ -581,8 +590,8 @@ class DocBaseViewer extends BaseViewer {
         // en-US users have higher bandwidth to Box.
         if (!rangeChunkSize) {
             rangeChunkSize = this.options.location.locale === 'en-US' ?
-                LARGE_RANGE_REQUEST_CHUNK_SIZE :
-                DEFAULT_RANGE_REQUEST_CHUNK_SIZE;
+                RANGE_REQUEST_CHUNK_SIZE_US :
+                RANGE_REQUEST_CHUNK_SIZE_NON_US;
         }
 
         this.bindDOMListeners();
@@ -638,12 +647,19 @@ class DocBaseViewer extends BaseViewer {
         // Open links in new tab
         PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK;
 
-        // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (4MB) except for
-        // Excel files since their representations can be many times larger than the original file. Remove
+        // Disable font faces on IOS 10.3.X
+        // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
+        PDFJS.disableFontFace = PDFJS.disableFontFace || Browser.isIOSWithFontIssue();
+
+        // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (5MB) for
+        // previews outside of the US since the additional latency overhead per range request can be
+        // more than the additional time for a continuous request. We don't do this for Excel files
+        // since their representations can be many times larger than the original file. Remove
         // the Excel check once WinExcel starts generating appropriately-sized representations. This
-        // also overrides any range request disabling that may be set by pdf.js's compatbility checking
-        // since the browsers we support should all be able to properly handle range requests
-        PDFJS.disableRange = size < MINIMUM_RANGE_REQUEST_FILE_SIZE &&
+        // also overrides any range request disabling that may be set by pdf.js's compatibility checking
+        // since the browsers we support should all be able to properly handle range requests.
+        PDFJS.disableRange = location.locale !== 'en-US' &&
+            size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US &&
             !DISABLE_RANGE_REQUEST_EXENSIONS.includes(extension);
 
         // Disable range requests for watermarked files since they are streamed
@@ -654,7 +670,7 @@ class DocBaseViewer extends BaseViewer {
             !!this.getViewerOption('disableTextLayer');
 
         // Decrease mobile canvas size to ~3MP (1920x1536)
-        PDFJS.maxCanvasPixels = Browser.isMobile() ? MOBILE_MAX_CANVAS_SIZE : PDFJS.maxCanvasPixels;
+        PDFJS.maxCanvasPixels = this.isMobile ? MOBILE_MAX_CANVAS_SIZE : PDFJS.maxCanvasPixels;
     }
 
     /**
@@ -891,7 +907,7 @@ class DocBaseViewer extends BaseViewer {
         fullscreen.addListener('enter', this.enterfullscreenHandler);
         fullscreen.addListener('exit', this.exitfullscreenHandler);
 
-        if (Browser.isMobile()) {
+        if (this.isMobile) {
             if (Browser.isIOS()) {
                 this.docEl.addEventListener('gesturestart', this.mobileZoomStartHandler);
                 this.docEl.addEventListener('gestureend', this.mobileZoomEndHandler);
@@ -917,7 +933,7 @@ class DocBaseViewer extends BaseViewer {
             this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
             this.docEl.removeEventListener('scroll', this.scrollHandler);
 
-            if (Browser.isMobile()) {
+            if (this.isMobile) {
                 if (Browser.isIOS()) {
                     this.docEl.removeEventListener('gesturestart', this.mobileZoomStartHandler);
                     this.docEl.removeEventListener('gestureend', this.mobileZoomEndHandler);
