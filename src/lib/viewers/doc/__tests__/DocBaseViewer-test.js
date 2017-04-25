@@ -12,7 +12,9 @@ import * as util from '../../../util';
 import {
     CLASS_BOX_PREVIEW_FIND_BAR,
     CLASS_HIDDEN,
-    PERMISSION_DOWNLOAD
+    PERMISSION_DOWNLOAD,
+    STATUS_ERROR,
+    STATUS_SUCCESS
 } from '../../../constants';
 
 import {
@@ -241,6 +243,20 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.showPreload();
         });
 
+        it('should not do anything if file is watermarked', () => {
+            docBase.options.file = {
+                watermark_info: {
+                    is_watermarked: true
+                }
+            };
+            sandbox.stub(docBase, 'getCachedPage').returns(1);
+            sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
+            sandbox.stub(file, 'getRepresentation').returns({});
+            sandbox.mock(docBase.preloader).expects('showPreload').never();
+
+            docBase.showPreload();
+        });
+
         it('should not do anything if no preload rep is found', () => {
             docBase.options.file = {};
             sandbox.stub(docBase, 'getCachedPage').returns(1);
@@ -261,15 +277,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.showPreload();
         });
 
-        it('should not do anything if file is watermarked', () => {
-            docBase.options.file = {
-                watermark_info: {
-                    is_watermarked: true
-                }
-            };
+        it('should not do anything if preload rep has an error', () => {
             sandbox.stub(docBase, 'getCachedPage').returns(1);
             sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
-            sandbox.stub(file, 'getRepresentation').returns({});
+            sandbox.stub(file, 'getRepresentation').returns({
+                status: {
+                    state: STATUS_ERROR
+                }
+            });
             sandbox.mock(docBase.preloader).expects('showPreload').never();
 
             docBase.showPreload();
@@ -282,6 +297,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             sandbox.stub(file, 'getRepresentation').returns({
                 content: {
                     url_template: ''
+                },
+                status: {
+                    state: STATUS_SUCCESS
                 }
             });
             sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);

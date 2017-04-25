@@ -59,6 +59,7 @@ export const APP_HOST = 'https://app.box.com';
 export const ORIGINAL_REP_NAME = 'ORIGINAL';
 export const PRELOAD_REP_NAME = 'jpg';
 
+export const STATUS_ERROR = 'error';
 export const STATUS_SUCCESS = 'success';
 export const STATUS_VIEWABLE = 'viewable';
 
