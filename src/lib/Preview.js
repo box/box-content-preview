@@ -771,6 +771,9 @@ class Preview extends EventEmitter {
     handleLoadResponse(file) {
         // If preview is closed or response comes back for an incorrect file, don't do anything
         if (!this.open || (this.file && this.file.id !== file.id)) {
+            /* eslint-disable no-console */
+            console.error(`handleLoadResponse returned early - this.open: ${this.open}, this.file: ${this.file}, this.file.id: ${this.file.id}, file.id: ${file.id}`);
+            /* eslint-enable no-console */
             return;
         }
 
@@ -804,6 +807,10 @@ class Preview extends EventEmitter {
             if (shouldLoadViewer) {
                 this.logger.setCacheStale();
                 this.loadViewer();
+            } else {
+                /* eslint-disable no-console */
+                console.error(`shouldLoadViewer was false - cachedFile: ${cachedFile}, checkFileValid: ${checkFileValid(cachedFile)}, cachedFile.file_version.sha1: ${cachedFile.file_version.sha1}, file.file_version.sha1: ${file.file_version.sha1}, isWatermarked: ${isWatermarked}`);
+                /* eslint-enable no-console */
             }
         } catch (err) {
             this.triggerError((err instanceof Error) ? err : new Error(__('error_refresh')));
@@ -820,6 +827,9 @@ class Preview extends EventEmitter {
     loadViewer() {
         // If preview is closed don't do anything
         if (!this.open) {
+            /* eslint-disable no-console */
+            console.error(`loadViewer returned early - this.open: ${this.open}`);
+            /* eslint-enable no-console */
             return;
         }
 
