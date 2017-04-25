@@ -1009,27 +1009,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.pdfViewer.linkService.setDocument).to.be.called;
             });
         });
-
-        // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
-        it('should test user agent if on Safari Mobile for IOS 10.3', () => {
-            const doc = {
-                url: 'url'
-            };
-            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
-            sandbox.stub(docBase, 'getViewerOption').returns(100);
-            docBase.options.location = {
-                locale: 'en-US'
-            };
-
-            const getStub = sandbox.stub(Browser, 'isIOSWithFontIssue').returns(true);
-
-            docBase.initViewer('url');
-
-            // Mobile stub cannot be called if get stub is never called.
-            // See note for this test, for more info.
-            expect(getStub).to.be.called;
-            expect(PDFJS.disableFontFace).to.be.true;
-        });
     });
 
     describe('setupPdfjs()', () => {
@@ -1040,7 +1019,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             stubs.getViewerOption = sandbox.stub(docBase, 'getViewerOption');
             docBase.options = {
                 location: {
-                    staticBaseURI: 'test/'
+                    staticBaseURI: 'test/',
+                    locale: 'en-US'
                 },
                 file: {
                     size: 10000000,
@@ -1068,27 +1048,47 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(PDFJS.externalLinkRel).to.equal('noopener noreferrer nofollow');
         });
 
-        it('should disable range requests if the file is smaller than 4MB and is not an Excel file', () => {
-            docBase.options.file.size = 100;
+        // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
+        it('should test user agent if on Safari Mobile for IOS 10.3', () => {
+            const getStub = sandbox.stub(Browser, 'isIOSWithFontIssue').returns(true);
+            docBase.setupPdfjs();
+
+            // Mobile stub cannot be called if get stub is never called.
+            // See note for this test, for more info.
+            expect(getStub).to.be.called;
+            expect(PDFJS.disableFontFace).to.be.true;
+        });
+
+        it('should not disable range requests if the locale is en-US', () => {
+            docBase.setupPdfjs();
+            expect(PDFJS.disableRange).to.be.false;
+        });
+
+        it('should disable range requests if the file is smaller than 5MB and is not an Excel file', () => {
+            docBase.options.file.size = 5242870;
             docBase.options.extension = 'pdf';
+            docBase.options.location.locale = 'ja-JP';
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.true;
         });
 
         it('should not disable range requests if the file is an Excel file', () => {
+            docBase.options.location.locale = 'ja-JP';
             docBase.options.extension = 'xlsx';
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.false;
         });
 
         it('should disable range requests if the file is watermarked', () => {
+            docBase.options.location.locale = 'ja-JP';
             docBase.options.file.watermark_info.is_watermarked = true;
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.true;
         });
 
-        it('should enable range requests if the file is greater than 4MB, is not Excel, and is not watermarked', () => {
-            docBase.options.size = 10000000;
+        it('should enable range requests if the file is greater than 5MB, is not Excel, and is not watermarked', () => {
+            docBase.options.location.locale = 'ja-JP';
+            docBase.options.size = 5242890;
             docBase.options.extension = 'pdf';
             docBase.options.file.watermark_info.is_watermarked = false;
             docBase.setupPdfjs();
@@ -1115,7 +1115,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should decrease max canvas size to 3MP if on mobile', () => {
-            sandbox.stub(Browser, 'isMobile').returns(true);
+            docBase.isMobile = true;
             docBase.setupPdfjs();
             expect(PDFJS.maxCanvasPixels).to.equal(MOBILE_MAX_CANVAS_SIZE);
         });
@@ -1286,13 +1286,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         beforeEach(() => {
             stubs.addEventListener = sandbox.stub(docBase.docEl, 'addEventListener');
             stubs.addListener = sandbox.stub(fullscreen, 'addListener');
-            stubs.isMobile = sandbox.stub(Browser, 'isMobile');
             stubs.isIOS = sandbox.stub(Browser, 'isIOS');
         });
 
         it('should add the correct listeners', () => {
-            stubs.isMobile.returns(false);
-
+            docBase.isMobile = false;
             docBase.bindDOMListeners();
             expect(stubs.addEventListener).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
             expect(stubs.addEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
@@ -1309,7 +1307,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should add gesture listeners if the browser is iOS', () => {
-            stubs.isMobile.returns(true);
+            docBase.isMobile = true;
             stubs.isIOS.returns(true);
 
             docBase.bindDOMListeners();
@@ -1318,7 +1316,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should add the touch event listeners if the browser is not iOS', () => {
-            stubs.isMobile.returns(true);
+            docBase.isMobile = true;
             stubs.isIOS.returns(false);
 
             docBase.bindDOMListeners();
@@ -1332,7 +1330,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         beforeEach(() => {
             stubs.removeEventListener = sandbox.stub(docBase.docEl, 'removeEventListener');
             stubs.removeFullscreenListener = sandbox.stub(fullscreen, 'removeListener');
-            stubs.isMobile = sandbox.stub(Browser, 'isMobile');
             stubs.isIOS = sandbox.stub(Browser, 'isIOS');
         });
 
@@ -1362,7 +1359,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should remove gesture listeners if the browser is iOS', () => {
-            stubs.isMobile.returns(true);
+            docBase.isMobile = true;
             stubs.isIOS.returns(true);
 
             docBase.unbindDOMListeners();
@@ -1371,7 +1368,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should remove the touch event listeners if the browser is not iOS', () => {
-            stubs.isMobile.returns(true);
+            docBase.isMobile = true;
             stubs.isIOS.returns(false);
 
             docBase.unbindDOMListeners();
