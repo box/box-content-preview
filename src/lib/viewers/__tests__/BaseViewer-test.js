@@ -680,37 +680,29 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('isAnnotatable()', () => {
         beforeEach(() => {
+            stubs.getViewerOption = sandbox.stub(base, 'getViewerOption');
+            stubs.getViewerOption.withArgs('annotations').returns(true);
             base.annotationTypes = ['point', 'highlight'];
-            sandbox.stub(base, 'isViewerAnnotatable').returns(true);
-        });
-
-        it('should return true if the type is supported by the viewer', () => {
-            expect(base.isAnnotatable('point')).to.equal(true);
         });
 
         it('should return false if the type is not supported by the viewer', () => {
             expect(base.isAnnotatable('drawing')).to.equal(false);
         });
-    });
-
-    describe('isViewerAnnotatable()', () => {
-        beforeEach(() => {
-            stubs.getViewerOption = sandbox.stub(base, 'getViewerOption').withArgs('annotations').returns(false);
-        });
 
         it('should return true if viewer option is set to true', () => {
-            expect(base.isViewerAnnotatable()).to.equal(false);
-            stubs.getViewerOption.returns(true);
-            expect(base.isViewerAnnotatable()).to.equal(true);
+            expect(base.isAnnotatable('point')).to.equal(true);
+            stubs.getViewerOption.withArgs('annotations').returns(false);
+            expect(base.isAnnotatable('point')).to.equal(false);
         });
 
         it('should use the global show annotationsBoolean if the viewer param is not specified', () => {
+            base.annotationTypes = null;
             stubs.getViewerOption.withArgs('annotations').returns(null);
             base.options.showAnnotations = true;
-            expect(base.isViewerAnnotatable()).to.equal(true);
+            expect(base.isAnnotatable()).to.equal(true);
 
             base.options.showAnnotations = false;
-            expect(base.isViewerAnnotatable()).to.equal(false);
+            expect(base.isAnnotatable()).to.equal(false);
         });
     });
 
