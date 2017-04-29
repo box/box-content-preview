@@ -16,14 +16,10 @@ describe('lib/annotations/image/ImageAnnotator', () => {
         fixture.load('annotations/image/__tests__/ImageAnnotator-test.html');
 
         annotator = new ImageAnnotator({
-            canAnnotate: true,
-            container: document,
+            annotatedElement: document.querySelector('.annotated-element'),
             annotationService: {},
-            fileVersionID: 1,
-            options: {}
+            fileVersionID: 1
         });
-        annotator.annotatedElement = annotator.getAnnotatedEl(document);
-        annotator.annotationService = {};
     });
 
     afterEach(() => {
@@ -32,16 +28,15 @@ describe('lib/annotations/image/ImageAnnotator', () => {
         annotator = null;
     });
 
-    describe('getAnnotatedEl()', () => {
-        it('should return the annotated element as the document', () => {
-            expect(annotator.annotatedElement).to.not.be.null;
-        });
-    });
-
     describe('getLocationFromEvent()', () => {
         it('should not return a location if image isn\'t inside viewer', () => {
-            annotator.annotatedElement = document.createElement('div');
-            const location = annotator.getLocationFromEvent({});
+            const tempAnnotator = new ImageAnnotator({
+                annotatedElement: document.createElement('div'),
+                annotationService: {},
+                fileVersionID: 1
+            });
+
+            const location = tempAnnotator.getLocationFromEvent({});
             expect(location).to.be.null;
         });
 

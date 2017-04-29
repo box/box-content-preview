@@ -9,6 +9,7 @@ import {
     CLASS_PREVIEW_LOADED,
     SELECTOR_BOX_PREVIEW_CONTAINER,
     SELECTOR_BOX_PREVIEW,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE,
     SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
     SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD,
@@ -205,6 +206,23 @@ export function showNavigation(id, collection) {
     if (index < collection.length - 1) {
         rightNavEl.classList.remove(CLASS_HIDDEN);
     }
+}
+
+/**
+ * Shows the point annotate button if the viewers implement annotations
+ *
+ * @param {Function} handler - Annotation button handler
+ * @return {void}
+ */
+export function showAnnotateButton(handler) {
+    const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+    if (!annotateButtonEl) {
+        return;
+    }
+
+    annotateButtonEl.title = __('annotation_point_toggle');
+    annotateButtonEl.classList.remove(CLASS_HIDDEN);
+    annotateButtonEl.addEventListener('click', handler);
 }
 
 /**
