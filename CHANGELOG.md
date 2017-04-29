@@ -1,5 +1,20 @@
 # Change Log
 
+## [v0.121.0](https://github.com/box/box-content-preview/tree/v0.121.0) (2017-04-25)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.120.1...v0.121.0)
+
+**Merged pull requests:**
+
+- Chore: Add console logging to better debug hanging preview [\#93](https://github.com/box/box-content-preview/pull/93) ([tonyjin](https://github.com/tonyjin))
+- Fix: Don't load preload if the rep has an error [\#92](https://github.com/box/box-content-preview/pull/92) ([tonyjin](https://github.com/tonyjin))
+- Fix: Ensuring annotations are loaded when viewer has permissions [\#90](https://github.com/box/box-content-preview/pull/90) ([pramodsum](https://github.com/pramodsum))
+- Update: Document viewer optimizations [\#89](https://github.com/box/box-content-preview/pull/89) ([tonyjin](https://github.com/tonyjin))
+- Chore: Do not load annotations on shared links [\#88](https://github.com/box/box-content-preview/pull/88) ([pramodsum](https://github.com/pramodsum))
+- Chore: User agent refactor and Browser tests [\#87](https://github.com/box/box-content-preview/pull/87) ([JustinHoldstock](https://github.com/JustinHoldstock))
+- Upgrade: Shaka Player 2.0.8 [\#85](https://github.com/box/box-content-preview/pull/85) ([tonyjin](https://github.com/tonyjin))
+- Chore: Removed underscored variables and getters from all annotation files [\#83](https://github.com/box/box-content-preview/pull/83) ([pramodsum](https://github.com/pramodsum))
+- Chore: Bundling Annotators separately in annotations.js [\#75](https://github.com/box/box-content-preview/pull/75) ([pramodsum](https://github.com/pramodsum))
+
 ## [v0.120.1](https://github.com/box/box-content-preview/tree/v0.120.1) (2017-04-19)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.120.0...v0.120.1)
 

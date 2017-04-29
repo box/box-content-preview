@@ -385,7 +385,7 @@ describe('lib/viewers/image/ImageViewer', () => {
 
     describe('loadUI()', () => {
         beforeEach(() => {
-            image.annotationsLoaded = false;
+            image.boxAnnotationsLoaded = false;
         });
 
         it('should load UI & controls for zoom', () => {
@@ -395,7 +395,7 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.controls).to.not.be.undefined;
             expect(image.controls.buttonRefs.length).to.equal(5);
-            expect(image.annotationsLoaded).to.be.false;
+            expect(image.boxAnnotationsLoaded).to.be.false;
         });
     });
 
