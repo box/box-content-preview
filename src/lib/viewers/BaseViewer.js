@@ -75,11 +75,7 @@ class BaseViewer extends EventEmitter {
         // expiring embed is not a shared link
         // TODO(@spramod): Determine the expected behavior on shared links
         if (this.isViewerAnnotatable() && !this.options.sharedLink) {
-            this.loadAssets(ANNOTATIONS_JS)
-                .then(() => {
-                    this.boxAnnotationsLoaded = true;
-                })
-                .catch(this.handleAssetError);
+            this.loadAssets(ANNOTATIONS_JS);
         }
     }
 
@@ -274,7 +270,7 @@ class BaseViewer extends EventEmitter {
         });
 
         this.addListener('load', () => {
-            if (this.boxAnnotationsLoaded && this.isViewerAnnotatable()) {
+            if (window.BoxAnnotations !== undefined && this.isViewerAnnotatable()) {
                 this.loadAnnotator();
             }
         });
