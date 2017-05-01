@@ -1294,7 +1294,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.bindDOMListeners();
             expect(stubs.addEventListener).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
             expect(stubs.addEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
-            expect(stubs.addEventListener).to.be.calledWith('textlayerrendered', docBase.textlayerrenderedHandler);
             expect(stubs.addEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
             expect(stubs.addEventListener).to.be.calledWith('scroll', docBase.scrollHandler);
 
@@ -1337,7 +1336,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.unbindDOMListeners();
             expect(stubs.removeEventListener).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
             expect(stubs.removeEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
-            expect(stubs.removeEventListener).to.be.calledWith('textlayerrendered', docBase.textlayerrenderedHandler);
             expect(stubs.removeEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
             expect(stubs.removeEventListener).to.be.calledWith('scroll', docBase.scrollHandler);
         });
@@ -1492,7 +1490,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     pageNumber: 1
                 }
             };
-            stubs.textlayerrenderedHandler = sandbox.stub(docBase, 'textlayerrenderedHandler');
             stubs.emit = sandbox.stub(docBase, 'emit');
         });
 
@@ -1504,14 +1501,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should emit postload event if not already emitted', () => {
             docBase.pagerenderedHandler(docBase.event);
             expect(stubs.emit).to.be.calledWith('progressend');
-        });
-    });
-
-    describe('textlayerrenderedHandler()', () => {
-        it('should do nothing if the annotator does not exist or if the annotations are loaded', () => {
-            stubs.emit = sandbox.stub(docBase, 'emit');
-            docBase.textlayerrenderedHandler();
-            expect(stubs.emit).to.be.calledWith('load');
         });
     });
 

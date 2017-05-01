@@ -900,9 +900,6 @@ class DocBaseViewer extends BaseViewer {
         // When a page is rendered, rerender annotations if needed
         this.docEl.addEventListener('pagerendered', this.pagerenderedHandler);
 
-        // When text layer is rendered, show annotations if enabled
-        this.docEl.addEventListener('textlayerrendered', this.textlayerrenderedHandler);
-
         // Update page number when page changes
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
@@ -936,7 +933,6 @@ class DocBaseViewer extends BaseViewer {
             this.docEl.removeEventListener('pagesinit', this.pagesinitHandler);
             this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
-            this.docEl.removeEventListener('textlayerrendered', this.textlayerrenderedHandler);
             this.docEl.removeEventListener('scroll', this.scrollHandler);
 
             if (this.isMobile) {
@@ -1057,11 +1053,6 @@ class DocBaseViewer extends BaseViewer {
     pagerenderedHandler(event) {
         const pageNumber = event.detail ? event.detail.pageNumber : undefined;
 
-        // If text layer is disabled due to permissions, we still want to show annotations
-        if (PDFJS.disableTextLayer) {
-            this.textlayerrenderedHandler();
-        }
-
         if (pageNumber) {
             // Page rendered event
             this.emit('pagerender', pageNumber);
@@ -1073,16 +1064,6 @@ class DocBaseViewer extends BaseViewer {
                 this.somePageRendered = true;
             }
         }
-    }
-
-    /**
-     * Handler for 'textlayerrendered' event.
-     *
-     * @return {void}
-     * @private
-     */
-    textlayerrenderedHandler() {
-        this.emit('load');
     }
 
     /**
