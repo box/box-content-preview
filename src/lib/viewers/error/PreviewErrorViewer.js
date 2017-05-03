@@ -27,6 +27,14 @@ class PreviewErrorViewer extends BaseViewer {
     }
 
     /**
+     * Removes the crawler and sets the file type specific loading icon
+     *
+     * @ override
+     * @return {void}
+     */
+    finishLoadingSetup() { /* no op, custom loading logic for errors */ }
+
+    /**
      * [destructor]
      *
      * @return {void}

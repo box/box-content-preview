@@ -21,9 +21,13 @@ import {
     CLASS_BOX_PREVIEW_MOBILE,
     SELECTOR_BOX_PREVIEW,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE,
+    SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
+    SELECTOR_BOX_PREVIEW_ICON,
     STATUS_SUCCESS,
     STATUS_VIEWABLE
 } from '../constants';
+import { ICON_FILE_DEFAULT } from '../icons/icons';
+
 
 const ANNOTATIONS_JS = ['annotations.js'];
 const LOAD_TIMEOUT_MS = 180000; // 3m
@@ -45,12 +49,14 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Sets up the vewier and its DOM
+     * Sets up the viewer and its DOM
      *
      * @return {void}
      */
     setup() {
-        // Get the container dom element if selector was passed, in tests
+        this.finishLoadingSetup();
+
+        // Get the container DOM element if selector was passed, in tests
         let { container } = this.options;
         if (typeof container === 'string') {
             container = document.querySelector(container);
@@ -76,6 +82,22 @@ class BaseViewer extends EventEmitter {
         if (this.areAnnotationsEnabled() && !this.options.sharedLink) {
             this.loadAssets(ANNOTATIONS_JS);
         }
+    }
+
+
+    /**
+     * Removes the crawler and sets the file type specific loading icon
+     *
+     * @return {void}
+     */
+    finishLoadingSetup() {
+        const crawler = this.options.container.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
+        if (crawler) {
+            crawler.style.display = 'none';
+        }
+
+        const iconWrapperEl = this.options.container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
+        iconWrapperEl.innerHTML = this.fileLoadingIcon || ICON_FILE_DEFAULT;
     }
 
     /**

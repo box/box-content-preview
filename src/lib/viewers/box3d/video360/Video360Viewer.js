@@ -6,6 +6,7 @@ import Video360Controls from './Video360Controls';
 import Video360Renderer from './Video360Renderer';
 import sceneEntities from './SceneEntities';
 import { EVENT_TOGGLE_VR, EVENT_SHOW_VR_BUTTON } from '../box3DConstants';
+import { ICON_FILE_MOVIE } from '../../../icons/icons';
 import JS from '../box3DAssets';
 import './Video360.scss';
 
@@ -24,7 +25,9 @@ class Video360Viewer extends DashViewer {
      * @inheritdoc
      */
     setup() {
-        // Call super() first to set up common layout
+        this.fileLoadingIcon = ICON_FILE_MOVIE;
+
+        // Call super() to set up common layout
         super.setup();
 
         this.renderer = null;

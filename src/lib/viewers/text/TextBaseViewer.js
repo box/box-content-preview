@@ -4,11 +4,21 @@ import BaseViewer from '../BaseViewer';
 import { checkPermission } from '../../file';
 import { CLASS_IS_SELECTABLE, PERMISSION_DOWNLOAD } from '../../constants';
 import {
+    ICON_FILE_DOCUMENT,
+    ICON_FILE_SPREADSHEET,
+    ICON_FILE_CODE,
     ICON_ZOOM_IN,
     ICON_ZOOM_OUT,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT
 } from '../../icons/icons';
+
+const LOADING_ICON_MAP = {
+    csv: ICON_FILE_SPREADSHEET,
+    log: ICON_FILE_DOCUMENT,
+    tsv: ICON_FILE_SPREADSHEET,
+    txt: ICON_FILE_DOCUMENT
+};
 
 @autobind
 class TextBaseViewer extends BaseViewer {
@@ -16,7 +26,10 @@ class TextBaseViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        // Call super() first to set up common layout
+        const fileExt = this.options.file.extension;
+        this.fileLoadingIcon = LOADING_ICON_MAP[fileExt] || ICON_FILE_CODE;
+
+        // Call super() to set up common layout
         super.setup();
     }
 

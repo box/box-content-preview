@@ -2,7 +2,7 @@ import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
 import MediaBaseViewer from './MediaBaseViewer';
 import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_DARK } from '../../constants';
-import { ICON_PLAY_LARGE } from '../../icons/icons';
+import { ICON_FILE_MOVIE, ICON_PLAY_LARGE } from '../../icons/icons';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
 const CLASS_PLAY_BUTTON = 'bp-media-play-button';
@@ -13,7 +13,9 @@ class VideoBaseViewer extends MediaBaseViewer {
      * @inheritdoc
      */
     setup() {
-        // Call super() first to set up common layout
+        this.fileLoadingIcon = ICON_FILE_MOVIE;
+
+        // Call super() to set up common layout
         super.setup();
 
         // Video element

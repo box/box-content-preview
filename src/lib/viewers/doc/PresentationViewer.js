@@ -8,6 +8,7 @@ import { CLASS_INVISIBLE } from '../../constants';
 import {
     ICON_DROP_DOWN,
     ICON_DROP_UP,
+    ICON_FILE_PRESENTATION,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,
     ICON_ZOOM_IN,
@@ -30,7 +31,9 @@ class PresentationViewer extends DocBaseViewer {
      * @inheritdoc
      */
     setup() {
-        // Call super() first to set up common layout
+        this.fileLoadingIcon = ICON_FILE_PRESENTATION;
+
+        // Call super() to set up common layout
         super.setup();
         this.docEl.classList.add('bp-doc-presentation');
 
