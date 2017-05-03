@@ -299,6 +299,8 @@ describe('lib/viewers/BaseViewer', () => {
             base.destroy();
 
             expect(base.removeAllListeners).to.be.called;
+            expect(base.removeAllListeners).to.be.calledWith('togglepointannotationmode');
+            expect(base.removeAllListeners).to.be.calledWith('load');
             expect(base.containerEl.innerHTML).to.equal('');
             expect(base.destroyed).to.be.true;
             expect(base.emit).to.be.calledWith('destroy');

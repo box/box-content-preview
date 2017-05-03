@@ -96,6 +96,8 @@ class BaseViewer extends EventEmitter {
         fullscreen.removeAllListeners();
         document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
         this.removeAllListeners();
+        this.removeAllListeners('togglepointannotationmode');
+        this.removeAllListeners('load');
 
         if (this.containerEl) {
             this.containerEl.innerHTML = '';
