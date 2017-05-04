@@ -40,12 +40,15 @@ describe('lib/viewers/media/MediaControls', () => {
     describe('constructor()', () => {
         beforeEach(() => {
             stubs.insertTemplate = sandbox.stub(util, 'insertTemplate');
-            stubs.setupSettings = sandbox.stub(mediaControls, 'setupSettings');
-            mediaControls = new MediaControls(document.getElementById('test-controls-container'));
+            mediaControls = new MediaControls(document.getElementById('test-controls-container'), { duration: 1210 });
         });
 
         it('should insert the DOM template', () => {
             expect(stubs.insertTemplate).to.be.called;
+        });
+
+        it('should set the duration', () => {
+            expect(mediaControls.durationEl.textContent).to.equal('20:10');
         });
 
         it('should set labels on the appropriate elements', () => {
@@ -60,17 +63,24 @@ describe('lib/viewers/media/MediaControls', () => {
 
             expect(mediaControls.settingsButtonEl.getAttribute('title')).to.equal(__('media_settings'));
             expect(mediaControls.settingsButtonEl.getAttribute('aria-label')).to.equal(__('media_settings'));
+
+            expect(mediaControls.timeScrubberEl.getAttribute('aria-valuenow')).to.equal('0');
+            expect(mediaControls.timeScrubberEl.getAttribute('aria-valuetext')).to.equal('0:00 of 20:10');
+            expect(mediaControls.volScrubberEl.getAttribute('aria-valuenow')).to.equal('100');
+            expect(mediaControls.volScrubberEl.getAttribute('aria-valuetext')).to.equal('100% Volume');
         });
     });
 
     beforeEach(() => {
-        mediaControls = new MediaControls(document.getElementById('test-controls-container'));
+        mediaControls = new MediaControls(document.getElementById('test-controls-container'), { duration: 10 });
     });
 
-    describe('destroy()', () => { // figure out how to get the event listeners removed
+    describe('destroy()', () => {
         beforeEach(() => {
             stubs.removeAllListeners = sandbox.stub(mediaControls, 'removeAllListeners');
+            stubs.removeVolumeScrubberWrapperExpansionHandlers = sandbox.stub(mediaControls, 'removeVolumeScrubberWrapperExpansionHandlers');
             stubs.removeEventListener = sandbox.stub(document, 'removeEventListener');
+            stubs.removeActivationListener = sandbox.stub(util, 'removeActivationListener');
             stubs.genericEl = {
                 getHandleEl: sandbox.stub().returns({
                     removeEventListener: sandbox.stub()
@@ -89,6 +99,7 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.destroy();
 
             expect(stubs.removeAllListeners).to.be.called;
+            expect(stubs.removeVolumeScrubberWrapperExpansionHandlers).to.be.called;
             expect(stubs.removeEventListener).to.be.calledWith('mouseup', mediaControls.timeScrubbingStopHandler);
             expect(stubs.removeEventListener).to.be.calledWith('mousemove', mediaControls.filmstripShowHandler);
         });
@@ -128,21 +139,19 @@ describe('lib/viewers/media/MediaControls', () => {
             expect(mediaControls.settings).to.equal(undefined);
         });
 
-
-        it('should remove event listeners from the fullscreen, play, volume, wrapper, and settings button elements', () => {
+        it('should remove event listeners from the fullscreen, play, volume, scrubber, and settings button elements', () => {
             mediaControls.fullscreenButtonEl = stubs.genericEl;
             mediaControls.settingsButtonEl = stubs.genericEl;
-            mediaControls.volLevelButtonEl = stubs.genericEl;
+            mediaControls.volButtonEl = stubs.genericEl;
             mediaControls.playButtonEl = stubs.genericEl;
             mediaControls.wrapperEl = stubs.genericEl;
 
-
             mediaControls.destroy();
-            expect(stubs.genericEl.removeEventListener).to.be.calledWith('click', mediaControls.toggleFullscreen);
-            expect(stubs.genericEl.removeEventListener).to.be.calledWith('click', mediaControls.toggleSettings);
-            expect(stubs.genericEl.removeEventListener).to.be.calledWith('click', mediaControls.toggleMute);
-            expect(stubs.genericEl.removeEventListener).to.be.calledWith('click', mediaControls.togglePlay);
-            expect(stubs.genericEl.removeEventListener).to.be.calledWith('mouseleave', mediaControls.mouseleaveHandler);
+
+            expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.togglePlayHandler);
+            expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.toggleMuteHandler);
+            expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.toggleFullscreenHandler);
+            expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.toggleSettingsHandler);
         });
     });
 
@@ -214,13 +223,28 @@ describe('lib/viewers/media/MediaControls', () => {
         });
 
         it('should correctly format the time', () => {
-            const result = mediaControls.formatTime(11811);
-            expect(result).to.equal('3:16:51');
+            const result = mediaControls.formatTime(11211);
+            expect(result).to.equal('3:06:51');
+        });
+
+        it('should correctly format when double-digit minutes', () => {
+            const result = mediaControls.formatTime(705);
+            expect(result).to.equal('11:45');
+        });
+
+        it('should correctly format when single-digit minutes', () => {
+            const result = mediaControls.formatTime(105);
+            expect(result).to.equal('1:45');
+        });
+
+        it('should correctly format when 0 minutes', () => {
+            const result = mediaControls.formatTime(9);
+            expect(result).to.equal('0:09');
         });
 
         it('should correctly format 0 seconds', () => {
             const result = mediaControls.formatTime(0);
-            expect(result).to.equal('00:00');
+            expect(result).to.equal('0:00');
         });
     });
 
@@ -249,15 +273,24 @@ describe('lib/viewers/media/MediaControls', () => {
                 textContent: '',
                 duration: 500
             };
+            mediaControls.durationEl = {
+                textContent: '8:20'
+            };
             mediaControls.setupScrubbers();
             stubs.setValue = sandbox.stub(mediaControls.timeScrubber, 'setValue');
-            stubs.formatTime = sandbox.stub(mediaControls, 'formatTime');
+            stubs.formatTime = sandbox.stub(mediaControls, 'formatTime').returns('4:10');
         });
 
         it('should set the value of the time scrubber and update the timecode El', () => {
             mediaControls.setTimeCode(250);
             expect(stubs.setValue).to.be.calledWith(0.5);
             expect(stubs.formatTime).to.be.calledWith(250);
+        });
+
+        it('should set correct aria values', () => {
+            mediaControls.setTimeCode(250);
+            expect(mediaControls.timeScrubberEl.getAttribute('aria-valuenow')).to.equal('250');
+            expect(mediaControls.timeScrubberEl.getAttribute('aria-valuetext')).to.equal('4:10 of 8:20');
         });
 
         it('should set the value with 0 if no time is passed in', () => {
@@ -373,7 +406,7 @@ describe('lib/viewers/media/MediaControls', () => {
     });
 
     describe('isSettingsVisible', () => {
-        it('should return true if the settings exista nd are visible', () => {
+        it('should return true if the settings exist and are visible', () => {
             stubs.isVisible = sandbox.stub(mediaControls.settings, 'isVisible').returns(true);
 
             const result = mediaControls.isSettingsVisible();
@@ -417,8 +450,8 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.className = 'bp-media-volume-icon-is-low';
 
             mediaControls.updateVolumeIcon(1);
-            expect(mediaControls.volLevelButtonEl.classList.contains('bp-media-volume-icon-is-low')).to.be.false;
-            expect(mediaControls.volLevelButtonEl.classList.contains('bp-media-volume-icon-is-high')).to.be.true;
+            expect(mediaControls.volButtonEl.classList.contains('bp-media-volume-icon-is-low')).to.be.false;
+            expect(mediaControls.volButtonEl.classList.contains('bp-media-volume-icon-is-high')).to.be.true;
         });
 
         it('set the new value of the volume scrubber', () => {
@@ -433,15 +466,18 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.updateVolumeIcon(0);
             expect(stubs.setLabel).to.be.calledWith(mediaControls.volButtonEl, __('media_unmute'));
         });
+
+        it('set the correct aria values', () => {
+            mediaControls.updateVolumeIcon(0.31);
+            expect(mediaControls.volScrubberEl.getAttribute('aria-valuenow')).to.equal('31');
+            expect(mediaControls.volScrubberEl.getAttribute('aria-valuetext')).to.equal('31% Volume');
+        });
     });
 
     describe('attachEventHandlers', () => {
         beforeEach(() => {
             stubs.wrapperAddEventListener = sandbox.stub(mediaControls.wrapperEl, 'addEventListener');
-            stubs.playAddEventListener = sandbox.stub(mediaControls.playButtonEl, 'addEventListener');
-            stubs.volAddEventListener = sandbox.stub(mediaControls.volLevelButtonEl, 'addEventListener');
-            stubs.fullscreenAddEventListener = sandbox.stub(mediaControls.fullscreenButtonEl, 'addEventListener');
-            stubs.settingsAddEventListener = sandbox.stub(mediaControls.settingsButtonEl, 'addEventListener');
+            stubs.addActivationListener = sandbox.stub(util, 'addActivationListener');
             stubs.addListener = sandbox.stub(fullscreen, 'addListener');
         });
 
@@ -449,10 +485,10 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.attachEventHandlers();
             expect(stubs.wrapperAddEventListener).to.be.calledWith('mouseenter', mediaControls.mouseenterHandler);
             expect(stubs.wrapperAddEventListener).to.be.calledWith('mouseleave', mediaControls.mouseleaveHandler);
-            expect(stubs.playAddEventListener).to.be.calledWith('click', mediaControls.togglePlay);
-            expect(stubs.volAddEventListener).to.be.calledWith('click', mediaControls.toggleMute);
-            expect(stubs.fullscreenAddEventListener).to.be.calledWith('click', mediaControls.toggleFullscreen);
-            expect(stubs.settingsAddEventListener).to.be.calledWith('click');
+            expect(stubs.addActivationListener).to.be.calledWith(mediaControls.playButtonEl, mediaControls.togglePlayHandler);
+            expect(stubs.addActivationListener).to.be.calledWith(mediaControls.volButtonEl, mediaControls.toggleMuteHandler);
+            expect(stubs.addActivationListener).to.be.calledWith(mediaControls.fullscreenButtonEl, mediaControls.toggleFullscreenHandler);
+            expect(stubs.addActivationListener).to.be.calledWith(mediaControls.settingsButtonEl, mediaControls.toggleSettingsHandler);
             expect(stubs.addListener).to.be.called;
         });
     });
@@ -789,18 +825,6 @@ describe('lib/viewers/media/MediaControls', () => {
 
             mediaControls.filmstripHideHandler();
             expect(mediaControls.filmstripContainerEl.style.display).to.equal('');
-        });
-    });
-
-    describe('filmstripHideHandler', () => {
-        it('should hide the filmstrip container if not scrubbing', () => {
-            mediaControls.playButtonEl.focus();
-            let result = mediaControls.isFocused();
-            expect(result).to.be.true;
-
-            mediaControls.playButtonEl.blur();
-            result = mediaControls.isFocused();
-            expect(result).to.be.false;
         });
     });
 });
