@@ -247,7 +247,7 @@ describe('lib/Preview', () => {
             expect(stubs.cacheFile).to.be.calledWith(files);
         });
 
-        it('should add the file to the cache if it is valid', () => {
+        it('should add and return the file to the cache if it is valid', () => {
             const files = [
                 {
                     id: 0,
@@ -266,24 +266,26 @@ describe('lib/Preview', () => {
             stubs.checkFileValid.onCall(0).returns(true)
             .onCall(1).returns(false);
 
-            preview.updateFileCache(files);
+            const cachedFiles = preview.updateFileCache(files);
             expect(stubs.cacheFile).calledOnce;
             expect(stubs.error).calledOnce;
+            expect(cachedFiles[0]).to.deep.equal(files[0]);
         });
 
-        it('should not cache a file if it is watermarked', () => {
-            const files = {
+        it('should not cache or return a file if it is watermarked', () => {
+            const files = [{
                 id: 0,
                 watermark_info: {
                     is_watermarked: true
                 }
-            };
+            }];
 
             stubs.checkFileValid.returns(true);
 
-            preview.updateFileCache(files);
+            const cachedFiles = preview.updateFileCache(files);
             expect(stubs.cacheFile).to.not.be.called;
             expect(stubs.error).to.not.be.called;
+            expect(cachedFiles.length).to.equal(0);
         });
     });
 
@@ -316,6 +318,30 @@ describe('lib/Preview', () => {
 
             const getViewers = preview.getViewers();
             expect(getViewers).to.deep.equal(viewers);
+        });
+    });
+
+    describe('prefetchFileInfo()', () => {
+        beforeEach(() => {
+            stubs.promise = Promise.resolve({
+                id: 1,
+                size: 1000000
+            });
+            stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
+            stubs.getURL = sandbox.stub(file, 'getURL').returns('/get_url');
+            preview.file = {
+                id: 123
+            };
+        });
+
+        it('should return the file info on a successful get', () => {
+            preview.prefetchFileInfo('123', 'token', 'sharedName', 'password', 'api.box.com');
+            expect(stubs.get).to.be.called;
+            expect(stubs.getURL).to.be.called;
+            return stubs.promise.then((fileInfo) => {
+                expect(fileInfo.id).to.equal(1);
+                expect(fileInfo.size).to.equal(1000000);
+            });
         });
     });
 
@@ -1657,6 +1683,13 @@ describe('lib/Preview', () => {
 
             preview.getRequestHeaders();
             expect(stubs.getHeaders).to.be.calledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+        });
+
+        it('should used passed in shared link and shared link password if available', () => {
+            stubs.headers['X-Rep-Hints'] += '[mp4]';
+
+            preview.getRequestHeaders('token', 'sharedLink', 'pass');
+            expect(stubs.getHeaders).to.be.calledWith(stubs.headers, 'token', 'sharedLink', 'pass');
         });
     });
 
