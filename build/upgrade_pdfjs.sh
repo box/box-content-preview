@@ -30,12 +30,6 @@ echo "Tweaking pdf.worker.js for Chrome..."
 echo "-----------------------------------------------------------------------------------"
 sed -e 's/function supportsMozChunkedClosure/!\(\/Chrome\/\.test\(navigator\.userAgent\)\) \&\& function supportsMozChunkedClosure/' -i '' src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf.worker.js
 
-# Disable font loading API to prevent glitches
-echo "-----------------------------------------------------------------------------------"
-echo "Disabling font loading API to prevent font glitches..."
-echo "-----------------------------------------------------------------------------------"
-sed -e 's/FontLoader\.isFontLoadingAPISupported = /FontLoader\.isFontLoadingAPISupported = false; \/\/ /' -i '' src/third-party/doc/$DOC_STATIC_ASSETS_VERSION/pdf.js
-
 # Decreased default cached pages size to 5 on mobile web to lower memory usage
 echo "-----------------------------------------------------------------------------------"
 echo "Decreasing # of cached pages on mobile web"
