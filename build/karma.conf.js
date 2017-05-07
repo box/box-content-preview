@@ -40,6 +40,12 @@ module.exports = (config) => config.set({
 
     basePath: '..',
 
+    browserConsoleLogOptions: {
+        level: 'log',
+        format: '%b %T: %m',
+        terminal: true
+    },
+
     browsers: ['PhantomJS'],
 
     browserNoActivityTimeout: 100000,
