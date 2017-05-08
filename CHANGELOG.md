@@ -1,5 +1,12 @@
 # Change Log
 
+## [v0.121.1](https://github.com/box/box-content-preview/tree/v0.121.1) (2017-04-28)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.121.0...v0.121.1)
+
+**Merged pull requests:**
+
+- Revert annotations bundling [\#94](https://github.com/box/box-content-preview/pull/94) ([tonyjin](https://github.com/tonyjin))
+
 ## [v0.121.0](https://github.com/box/box-content-preview/tree/v0.121.0) (2017-04-25)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.120.1...v0.121.0)
 
