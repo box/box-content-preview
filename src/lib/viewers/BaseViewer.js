@@ -73,8 +73,7 @@ class BaseViewer extends EventEmitter {
         // Attempts to load annotations assets and initializes annotations if
         // the assets are available, the showAnnotations flag is true, and the
         // expiring embed is not a shared link
-        // TODO(@spramod): Determine the expected behavior on shared links
-        if (this.isViewerAnnotatable() && !this.options.sharedLink) {
+        if (this.areAnnotationsEnabled() && !this.options.sharedLink) {
             this.loadAssets(ANNOTATIONS_JS);
         }
     }
@@ -93,11 +92,17 @@ class BaseViewer extends EventEmitter {
             });
         }
 
+        const { container } = this.options;
+        if (container) {
+            const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+            if (annotateButtonEl) {
+                annotateButtonEl.removeEventListener('click', this.getPointModeClickHandler);
+            }
+        }
+
         fullscreen.removeAllListeners();
         document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
         this.removeAllListeners();
-        this.removeAllListeners('togglepointannotationmode');
-        this.removeAllListeners('load');
 
         if (this.containerEl) {
             this.containerEl.innerHTML = '';
@@ -272,7 +277,7 @@ class BaseViewer extends EventEmitter {
         });
 
         this.addListener('load', () => {
-            if (window.BoxAnnotations !== undefined && this.isViewerAnnotatable()) {
+            if (window.BoxAnnotations && this.areAnnotationsEnabled()) {
                 this.loadAnnotator();
             }
         });
@@ -520,16 +525,20 @@ class BaseViewer extends EventEmitter {
         this.loader = new BoxAnnotations();
 
         this.annotatorLoader = this.loader.determineAnnotator(this.options.viewer.NAME);
-        if (this.annotatorLoader) {
-            this.annotationTypes = this.annotatorLoader.TYPE;
+        if (!this.annotatorLoader) {
+            return;
+        }
 
-            if (this.isAnnotatable()) {
-                const { file } = this.options;
-                if (checkPermission(file, PERMISSION_ANNOTATE) && !Browser.isMobile()) {
-                    this.showAnnotateButton(this.getPointModeClickHandler());
-                }
-                this.initAnnotations();
+        this.annotationTypes = this.annotatorLoader.TYPE;
+        if (this.isAnnotatable()) {
+            const { file } = this.options;
+
+            // Users can currently only view annotations on mobile
+            this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE) && !Browser.isMobile();
+            if (this.canAnnotate) {
+                this.showAnnotateButton(this.getPointModeClickHandler());
             }
+            this.initAnnotations();
         }
     }
 
@@ -540,22 +549,18 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     initAnnotations() {
-        const { apiHost, file, location, token } = this.options;
+        const { apiHost, container, file, location, token } = this.options;
         const fileVersionID = file.file_version.id;
-
-        // Users can currently only view annotations on mobile
-        const canAnnotate = checkPermission(file, PERMISSION_ANNOTATE) && !Browser.isMobile();
-        const annotationOptions = {
-            apiHost,
-            fileId: file.id,
-            token
-        };
 
         // Construct and init annotator
         this.annotator = new this.annotatorLoader.CONSTRUCTOR({
-            canAnnotate,
-            container: this.options.container,
-            options: annotationOptions,
+            canAnnotate: this.canAnnotate,
+            container,
+            options: {
+                apiHost,
+                fileId: file.id,
+                token
+            },
             fileVersionID,
             locale: location.locale
         });
@@ -563,8 +568,9 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Returns whether or not viewer is annotatable. If an optional type is
-     * passed in, we check if that type of annotation is allowed.
+     * Returns whether or not viewer both supports annotations and has
+     * annotations enabled. If an optional type is passed in, we check if that
+     * type of annotation is allowed.
      *
      * @param {string} [type] - Type of annotation
      * @return {boolean} Whether or not viewer is annotatable
@@ -581,15 +587,15 @@ class BaseViewer extends EventEmitter {
         }
 
         // Respect viewer-specific annotation option if it is set
-        return this.isViewerAnnotatable();
+        return this.areAnnotationsEnabled();
     }
 
     /**
-     * Returns whether or not viewer has the option to annotate
+     * Returns whether or not annotations are enabled for this viewer.
      *
      * @return {boolean} Whether or not viewer is annotatable
      */
-    isViewerAnnotatable() {
+    areAnnotationsEnabled() {
         // Respect viewer-specific annotation option if it is set
         const viewerAnnotations = this.getViewerOption('annotations');
         if (typeof viewerAnnotations === 'boolean') {
@@ -601,7 +607,7 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Shows the point annotate button if the viewers implement annotations
+     * Shows the point annotate button.
      *
      * @param {Function} handler - Annotation button handler
      * @return {void}
@@ -621,6 +627,7 @@ class BaseViewer extends EventEmitter {
     /**
      * Returns click handler for toggling point annotation mode.
      *
+     * @param {HTMLElement} containerEl - Preview container element
      * @return {Function|null} Click handler
      */
     /* eslint-disable no-unused-vars */

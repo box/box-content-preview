@@ -96,8 +96,7 @@ class DocBaseViewer extends BaseViewer {
 
         // Destroy the annotator
         if (this.annotator && typeof this.annotator.destroy === 'function') {
-            this.annotator.removeAllListeners('pointmodeenter');
-            this.annotator.removeAllListeners('pointmodeexit');
+            this.annotator.removeAllListeners();
             this.annotator.destroy();
         }
 
@@ -527,9 +526,7 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Returns click handler for toggling point annotation mode.
-     *
-     * @return {Function|null} Click handler
+     * @inheritdoc
      */
     getPointModeClickHandler() {
         if (!this.isAnnotatable('point')) {

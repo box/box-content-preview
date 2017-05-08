@@ -66,28 +66,20 @@ class Annotator extends EventEmitter {
      */
     init() {
         this.annotatedElement = this.getAnnotatedEl(this.container);
-        this.annotationService = this.initAnnotationService(this.options);
         this.notification = new Notification(this.annotatedElement);
 
-        this.setScale(1);
-        this.setupAnnotations();
-        this.showAnnotations();
-    }
+        const { apiHost, fileId, token } = this.options;
 
-    /**
-     * Initializes the Annotation Service with appropriate options
-     *
-     * @param {Object} options - Options passed from the viewer to the annotator
-     * @return {AnnotationService} AnnotationService instance
-     */
-    initAnnotationService(options) {
-        const { apiHost, fileId, token } = options;
-        return new AnnotationService({
+        this.annotationService = new AnnotationService({
             apiHost,
             fileId,
             token,
             canAnnotate: this.canAnnotate
         });
+
+        this.setScale(1);
+        this.setupAnnotations();
+        this.showAnnotations();
     }
 
     /**

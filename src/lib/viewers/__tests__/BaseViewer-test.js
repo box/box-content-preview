@@ -299,8 +299,6 @@ describe('lib/viewers/BaseViewer', () => {
             base.destroy();
 
             expect(base.removeAllListeners).to.be.called;
-            expect(base.removeAllListeners).to.be.calledWith('togglepointannotationmode');
-            expect(base.removeAllListeners).to.be.calledWith('load');
             expect(base.containerEl.innerHTML).to.equal('');
             expect(base.destroyed).to.be.true;
             expect(base.emit).to.be.calledWith('destroy');
@@ -683,7 +681,7 @@ describe('lib/viewers/BaseViewer', () => {
     describe('isAnnotatable()', () => {
         beforeEach(() => {
             base.annotationTypes = ['point', 'highlight'];
-            sandbox.stub(base, 'isViewerAnnotatable').returns(true);
+            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
         });
 
         it('should return true if the type is supported by the viewer', () => {
@@ -695,24 +693,24 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('isViewerAnnotatable()', () => {
+    describe('areAnnotationsEnabled()', () => {
         beforeEach(() => {
             stubs.getViewerOption = sandbox.stub(base, 'getViewerOption').withArgs('annotations').returns(false);
         });
 
         it('should return true if viewer option is set to true', () => {
-            expect(base.isViewerAnnotatable()).to.equal(false);
+            expect(base.areAnnotationsEnabled()).to.equal(false);
             stubs.getViewerOption.returns(true);
-            expect(base.isViewerAnnotatable()).to.equal(true);
+            expect(base.areAnnotationsEnabled()).to.equal(true);
         });
 
         it('should use the global show annotationsBoolean if the viewer param is not specified', () => {
             stubs.getViewerOption.withArgs('annotations').returns(null);
             base.options.showAnnotations = true;
-            expect(base.isViewerAnnotatable()).to.equal(true);
+            expect(base.areAnnotationsEnabled()).to.equal(true);
 
             base.options.showAnnotations = false;
-            expect(base.isViewerAnnotatable()).to.equal(false);
+            expect(base.areAnnotationsEnabled()).to.equal(false);
         });
     });
 

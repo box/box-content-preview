@@ -87,28 +87,16 @@ describe('lib/annotations/Annotator', () => {
         it('should set scale and setup annotations', () => {
             const annotatedEl = document.querySelector('.annotated-element');
             sandbox.stub(annotator, 'getAnnotatedEl').returns(annotatedEl);
-            sandbox.stub(annotator, 'initAnnotationService').returns({});
             const scaleStub = sandbox.stub(annotator, 'setScale');
             const setupAnnotations = sandbox.stub(annotator, 'setupAnnotations');
             const showAnnotations = sandbox.stub(annotator, 'showAnnotations');
+            annotator.canAnnotate = true;
 
             annotator.init();
 
             expect(scaleStub).to.be.called;
             expect(setupAnnotations).to.be.called;
             expect(showAnnotations).to.be.called;
-        });
-    });
-
-    describe('initAnnotationService()', () => {
-        it('should initialize the anontation service with the appropriate options', () => {
-            const options = {
-                apiHost: 'url',
-                fileId: 123,
-                token: 'token'
-            };
-            annotator.canAnnotate = true;
-            annotator.initAnnotationService(options);
             expect(annotator.annotationService).to.not.be.null;
         });
     });
@@ -146,7 +134,6 @@ describe('lib/annotations/Annotator', () => {
         beforeEach(() => {
             const annotatedEl = document.querySelector('.annotated-element');
             sandbox.stub(annotator, 'getAnnotatedEl').returns(annotatedEl);
-            sandbox.stub(annotator, 'initAnnotationService').returns({});
             sandbox.stub(annotator, 'setupAnnotations');
             sandbox.stub(annotator, 'showAnnotations');
 
