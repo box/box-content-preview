@@ -127,19 +127,6 @@ describe('lib/ui', () => {
             });
         });
 
-        describe('showAnnotateButton()', () => {
-            it('should set up and show annotate button', () => {
-                const buttonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-                buttonEl.classList.add(constants.CLASS_HIDDEN);
-                sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', handler);
-
-                ui.showAnnotateButton(handler);
-
-                expect(buttonEl.title).to.equal('Point annotation mode');
-                expect(buttonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
-            });
-        });
-
         describe('showPrintButton()', () => {
             it('should set up and show print button', () => {
                 const buttonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_PRINT);

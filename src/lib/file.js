@@ -6,7 +6,6 @@ import { ORIGINAL_REP_NAME } from './constants';
 // (e.g. Box.Preview.updateFileCache()) will need to be updated if this list is modified.
 const FILE_FIELDS = [
     'permissions',
-    'parent',
     'shared_link',
     'sha1',
     'file_version',

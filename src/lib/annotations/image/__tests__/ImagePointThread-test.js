@@ -20,7 +20,7 @@ describe('lib/annotations/image/ImagePointThread', () => {
             annotatedElement: document.querySelector('.annotated-element'),
             annotations: [],
             annotationService: {},
-            fileVersionID: 1,
+            fileVersionId: 1,
             location: {},
             threadID: 2,
             type: 'point'

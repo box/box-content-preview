@@ -13,6 +13,16 @@ class ImageAnnotator extends Annotator {
     //--------------------------------------------------------------------------
 
     /**
+     * Determines the annotated element in the viewer
+     *
+     * @param {HTMLElement} containerEl - Container element for the viewer
+     * @return {HTMLElement} Annotated element in the viewer
+     */
+    getAnnotatedEl(containerEl) {
+        return containerEl.querySelector('.bp-image');
+    }
+
+    /**
      * Returns an annotation location on an image from the DOM event or null
      * if no correct annotation location can be inferred from the event. For
      * point annotations, we return the (x, y) coordinates for the point
@@ -80,7 +90,7 @@ class ImageAnnotator extends Annotator {
             annotatedElement: this.annotatedElement,
             annotations,
             annotationService: this.annotationService,
-            fileVersionID: this.fileVersionID,
+            fileVersionId: this.fileVersionId,
             locale: this.locale,
             location,
             type

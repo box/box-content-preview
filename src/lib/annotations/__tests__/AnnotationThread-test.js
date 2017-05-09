@@ -21,7 +21,7 @@ describe('lib/annotations/AnnotationThread', () => {
             annotatedElement: document.querySelector('.annotated-element'),
             annotations: [],
             annotationService: {},
-            fileVersionID: '1',
+            fileVersionId: '1',
             location: {},
             threadID: '2',
             thread: '1',
@@ -117,7 +117,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 annotatedElement: document.querySelector('.annotated-element'),
                 annotations: [],
                 annotationService,
-                fileVersionID: '1',
+                fileVersionId: '1',
                 location: {},
                 threadID: '2',
                 thread: '1',
@@ -132,7 +132,7 @@ describe('lib/annotations/AnnotationThread', () => {
 
             thread.saveAnnotation('point', 'blah');
             expect(stubs.create).to.be.calledWith(sinon.match({
-                fileVersionID: '1',
+                fileVersionId: '1',
                 type: 'point',
                 text: 'blah',
                 threadID: '2',
@@ -181,7 +181,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 annotatedElement: document.querySelector('.annotated-element'),
                 annotations: [stubs.annotation],
                 annotationService,
-                fileVersionID: '1',
+                fileVersionId: '1',
                 location: {},
                 threadID: '2',
                 thread: '1',
@@ -319,7 +319,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 annotatedElement: document.querySelector('.annotated-element'),
                 annotations: [{}],
                 annotationService: {},
-                fileVersionID: '1',
+                fileVersionId: '1',
                 location: {},
                 threadID: '2',
                 thread: '1',
@@ -414,7 +414,7 @@ describe('lib/annotations/AnnotationThread', () => {
         it('should call hideDialog if there are annotations in the thread', () => {
             stubs.hide = sandbox.stub(thread, 'hideDialog');
             const annotation = new Annotation({
-                fileVersionID: '2',
+                fileVersionId: '2',
                 threadID: '1',
                 type: 'point',
                 text: 'blah',
@@ -434,7 +434,7 @@ describe('lib/annotations/AnnotationThread', () => {
             stubs.add = sandbox.stub(thread.dialog, 'addAnnotation');
             stubs.push = sandbox.stub(thread.annotations, 'push');
             const annotation = new Annotation({
-                fileVersionID: '2',
+                fileVersionId: '2',
                 threadID: '1',
                 type: 'point',
                 text: 'blah',
@@ -451,7 +451,7 @@ describe('lib/annotations/AnnotationThread', () => {
         it('should not try to push an annotation to the dialog if it doesn\'t exist', () => {
             stubs.add = sandbox.stub(thread.dialog, 'addAnnotation');
             const annotation = new Annotation({
-                fileVersionID: '2',
+                fileVersionId: '2',
                 threadID: '1',
                 type: 'point',
                 text: 'blah',
@@ -470,7 +470,7 @@ describe('lib/annotations/AnnotationThread', () => {
         it('should correctly create the annotation data object', () => {
             const annotationData = thread.createAnnotationData('highlight', 'test');
             expect(annotationData.location).to.equal(thread.location);
-            expect(annotationData.fileVersionID).to.equal(thread.fileVersionID);
+            expect(annotationData.fileVersionId).to.equal(thread.fileVersionId);
             expect(annotationData.thread).to.equal(thread.thread);
             expect(annotationData.user.id).to.equal('1');
         });

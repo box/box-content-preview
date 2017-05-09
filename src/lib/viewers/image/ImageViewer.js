@@ -1,11 +1,8 @@
 import autobind from 'autobind-decorator';
-import AnnotationService from '../../annotations/AnnotationService';
-import ImageAnnotator from '../../annotations/image/ImageAnnotator';
 import Browser from '../../Browser';
 import ImageBaseViewer from './ImageBaseViewer';
-import { checkPermission } from '../../file';
 import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
-import { CLASS_INVISIBLE, PERMISSION_ANNOTATE } from '../../constants';
+import { CLASS_INVISIBLE } from '../../constants';
 import { openContentInsideIframe } from '../../util';
 import './Image.scss';
 
@@ -31,7 +28,6 @@ class ImageViewer extends ImageBaseViewer {
         // hides image tag until content is loaded
         this.imageEl.classList.add(CLASS_INVISIBLE);
 
-        this.initAnnotations();
         this.currentRotationAngle = 0;
     }
 
@@ -42,7 +38,7 @@ class ImageViewer extends ImageBaseViewer {
     destroy() {
         // Destroy the annotator
         if (this.annotator && typeof this.annotator.destroy === 'function') {
-            this.annotator.removeAllListeners('pointmodeenter');
+            this.annotator.removeAllListeners();
             this.annotator.destroy();
         }
 
@@ -268,13 +264,6 @@ class ImageViewer extends ImageBaseViewer {
         this.controls.add(__('rotate_left'), this.rotateLeft, 'bp-image-rotate-left-icon', ICON_ROTATE_LEFT);
         this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
-
-        // Show existing annotations after image is rendered
-        if (!this.annotator || this.annotationsLoaded) {
-            return;
-        }
-        this.annotator.showAnnotations();
-        this.annotationsLoaded = true;
     }
 
     /**
@@ -303,43 +292,11 @@ class ImageViewer extends ImageBaseViewer {
     /**
      * Initializes annotations.
      *
-     * @private
+     * @protected
      * @return {void}
      */
     initAnnotations() {
-        // Ignore if viewer/file type is not annotatable
-        if (!this.isAnnotatable()) {
-            return;
-        }
-
-        // Users can currently only view annotations on mobile
-        const { apiHost, file, location, token, sharedLink } = this.options;
-
-        // Do not initialize annotations for shared links
-        // TODO(@spramod): Determine the expected behavior on shared links
-        if (sharedLink) {
-            return;
-        }
-
-        const canAnnotate = checkPermission(file, PERMISSION_ANNOTATE) && !Browser.isMobile();
-        this.canAnnotate = canAnnotate;
-
-        const fileVersionID = file.file_version.id;
-        const annotationService = new AnnotationService({
-            apiHost,
-            fileId: file.id,
-            token,
-            canAnnotate
-        });
-
-        // Construct and init annotator
-        this.annotator = new ImageAnnotator({
-            annotatedElement: this.wrapperEl,
-            annotationService,
-            fileVersionID,
-            locale: location.locale
-        });
-        this.annotator.init(this);
+        super.initAnnotations();
 
         // Disables controls during point annotation mode
         /* istanbul ignore next */
@@ -358,28 +315,6 @@ class ImageViewer extends ImageBaseViewer {
                 this.controls.enable();
             }
         });
-    }
-
-    /**
-     * Returns whether or not viewer is annotatable with the provided annotation
-     * type.
-     *
-     * @param {string} type - Type of annotation
-     * @return {boolean} Whether or not viewer is annotatable
-     */
-    isAnnotatable(type) {
-        if (typeof type === 'string' && type !== 'point') {
-            return false;
-        }
-
-        // Respect viewer-specific annotation option if it is set
-        const viewerAnnotations = this.getViewerOption('annotations');
-        if (typeof viewerAnnotations === 'boolean') {
-            return viewerAnnotations;
-        }
-
-        // Otherwise, use global preview annotation option
-        return this.options.showAnnotations;
     }
 
     /**
@@ -506,9 +441,7 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
-     * Returns click handler for toggling point annotation mode.
-     *
-     * @return {Function|null} Click handler
+     * @inheritdoc
      */
     getPointModeClickHandler() {
         if (!this.isAnnotatable('point')) {
