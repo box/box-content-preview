@@ -192,7 +192,7 @@ export function openContentInsideIframe(content) {
  *
  * @param {Element} node - DOM node
  * @param {string} template - HTML template
- * @return {HTMLElement}
+ * @return {DocumentFragment}
  */
 export function createFragment(node, template) {
     const range = document.createRange();
@@ -201,14 +201,15 @@ export function createFragment(node, template) {
 }
 
 /**
- * Inserts template string into DOM node
+ * Inserts template string into DOM node, before beforeNode. If beforeNode is null, inserts at end of child nodes
  *
  * @param {Element} node - DOM node
  * @param {string} template  html template
+ * @param {Element|void} beforeNode - DOM node
  * @return {void}
  */
-export function insertTemplate(node, template) {
-    node.appendChild(createFragment(node, template));
+export function insertTemplate(node, template, beforeNode = null) {
+    node.insertBefore(createFragment(node, template), beforeNode);
 }
 
 /**
@@ -485,6 +486,12 @@ export function decodeKeydown(event) {
         key = 'Space';
     }
 
+    // Edge bug which outputs "Esc" instead of "Escape"
+    // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/5290772/
+    if (key === 'Esc') {
+        key = 'Escape';
+    }
+
     // keyIdentifier spec does not prefix the word Arrow.
     // Newer key spec does it automatically.
     if (key === 'Right' || key === 'Left' || key === 'Down' || key === 'Up') {
@@ -592,4 +599,50 @@ export function setDimensions(element, width, height) {
     element.style.width = `${width}px`;
     element.style.height = `${height}px`;
     /* eslint-enable no-param-reassign */
+}
+
+/**
+ * Wrapper around an event-handler that returns another event-handler which first checks that
+ * the event is a click, space-key, or enter-key before invoking the handler
+ *
+ * @param {Function} handler - Key activation handler
+ * @return {void}
+ */
+export function activationHandler(handler) {
+    return (event) => {
+        if (event.type === 'click') {
+            handler(event);
+        } else if (event.type === 'keydown') {
+            const key = decodeKeydown(event);
+            if (key === 'Space' || key === 'Enter') {
+                handler(event);
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        }
+    };
+}
+
+/**
+ * Adds event listeners for click, space, and enter keys
+ *
+ * @param {HTMLElement} element - HTMLElement
+ * @param {Function} handler - Function to be invoked on click/space/enter
+ * @return {void}
+ */
+export function addActivationListener(element, handler) {
+    element.addEventListener('click', handler);
+    element.addEventListener('keydown', handler);
+}
+
+/**
+ * Removes event listeners added by addActivationListener
+ *
+ * @param {HTMLElement} element - HTMLElement
+ * @param {Function} handler - Function to be removed on click/space/enter
+ * @return {void}
+ */
+export function removeActivationListener(element, handler) {
+    element.removeEventListener('click', handler);
+    element.removeEventListener('keydown', handler);
 }
