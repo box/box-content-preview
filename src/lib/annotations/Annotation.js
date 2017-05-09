@@ -12,7 +12,7 @@ class Annotation {
      *
      * @typedef {Object} AnnotationData
      * @property {string} annotationID Annotation ID
-     * @property {string} fileVersionID File version ID for this annotation
+     * @property {string} fileVersionId File version ID for this annotation
      * @property {string} threadID Thread ID
      * @property {string} thread Thread number
      * @property {string} type Annotation type, e.g. 'point' or 'highlight'
@@ -36,7 +36,7 @@ class Annotation {
      */
     constructor(data) {
         this.annotationID = data.annotationID;
-        this.fileVersionID = data.fileVersionID;
+        this.fileVersionId = data.fileVersionId;
         this.threadID = data.threadID;
         this.thread = data.thread;
         this.type = data.type;

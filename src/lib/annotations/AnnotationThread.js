@@ -20,7 +20,7 @@ class AnnotationThread extends EventEmitter {
      * @property {Annotation[]} [annotations] Annotations in thread - none if
      * this is a new thread
      * @property {AnnotationService} annotationService Annotations CRUD service
-     * @property {string} fileVersionID File version ID
+     * @property {string} fileVersionId File version ID
      * @property {Object} location Location object
      * @property {string} threadID Thread ID
      * @property {string} thread Thread number
@@ -43,7 +43,7 @@ class AnnotationThread extends EventEmitter {
         this.annotatedElement = data.annotatedElement;
         this.annotations = data.annotations || [];
         this.annotationService = data.annotationService;
-        this.fileVersionID = data.fileVersionID;
+        this.fileVersionId = data.fileVersionId;
         this.location = data.location;
         this.threadID = data.threadID || AnnotationService.generateID();
         this.thread = data.thread || '';
@@ -410,7 +410,7 @@ class AnnotationThread extends EventEmitter {
      */
     createAnnotationData(type, text) {
         return {
-            fileVersionID: this.fileVersionID,
+            fileVersionId: this.fileVersionId,
             type,
             text,
             location: this.location,

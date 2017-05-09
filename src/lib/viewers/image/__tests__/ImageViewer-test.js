@@ -2,9 +2,7 @@
 import ImageViewer from '../ImageViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
-import * as file from '../../../file';
 import * as util from '../../../util';
-import { PERMISSION_ANNOTATE } from '../../../constants';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
@@ -70,21 +68,8 @@ describe('lib/viewers/image/ImageViewer', () => {
 
     describe('setup()', () => {
         it('should set up layout and init annotations', () => {
-            image = new ImageViewer({
-                container: containerEl,
-                file: {
-                    id: '1'
-                }
-            });
-            sandbox.stub(image, 'initAnnotations');
-
-            Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
-            image.containerEl = containerEl;
-            image.setup();
-
             expect(image.wrapperEl).to.have.class('bp-image');
             expect(image.imageEl).to.have.class('bp-is-invisible');
-            expect(image.initAnnotations).to.be.called;
         });
     });
 
@@ -400,7 +385,7 @@ describe('lib/viewers/image/ImageViewer', () => {
 
     describe('loadUI()', () => {
         beforeEach(() => {
-            image.annotationsLoaded = false;
+            image.boxAnnotationsLoaded = false;
         });
 
         it('should load UI & controls for zoom', () => {
@@ -410,17 +395,7 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             expect(image.controls).to.not.be.undefined;
             expect(image.controls.buttonRefs.length).to.equal(5);
-            expect(image.annotationsLoaded).to.be.false;
-        });
-
-        it('should show annotations after image is rendered', () => {
-            image.annotator = {
-                showAnnotations: sandbox.stub()
-            };
-
-            image.loadUI();
-            expect(image.annotator.showAnnotations).to.be.called;
-            expect(image.annotationsLoaded).to.be.true;
+            expect(image.boxAnnotationsLoaded).to.be.false;
         });
     });
 
@@ -466,70 +441,19 @@ describe('lib/viewers/image/ImageViewer', () => {
     });
 
     describe('initAnnotations()', () => {
-        beforeEach(() => {
-            stubs.annotatable = sandbox.stub(image, 'isAnnotatable');
-            stubs.isMobile = sandbox.stub(Browser, 'isMobile').returns(false);
-            stubs.checkPermission = sandbox.stub(file, 'checkPermission');
-            image.options.location = {
-                locale: 'en-US'
-            };
-        });
+        const initFunc = BaseViewer.prototype.initAnnotations;
 
-        it('should not init annotations if image is not annotatable', () => {
-            stubs.annotatable.returns(false);
-            image.annotator = undefined;
-
-            image.initAnnotations();
-            expect(image.annotator).to.be.undefined;
-        });
-
-        it('should do nothing if expiring embed is a shared link', () => {
-            stubs.annotatable.returns(true);
-            image.options.sharedLink = 'url';
-            image.initAnnotations();
-            expect(image.annotator).to.be.undefined;
+        afterEach(() => {
+            Object.defineProperty(BaseViewer.prototype, 'initAnnotations', { value: initFunc });
         });
 
         it('should init annotations if user can annotate', () => {
-            stubs.checkPermission.withArgs(image.options.file, PERMISSION_ANNOTATE).returns(true);
-            stubs.annotatable.returns(true);
-
+            Object.defineProperty(BaseViewer.prototype, 'initAnnotations', { value: sandbox.mock() });
+            image.annotator = {
+                addListener: sandbox.stub()
+            };
             image.initAnnotations();
-            expect(image.canAnnotate).to.be.true;
-            expect(image.annotator).to.not.be.undefined;
-        });
-
-        it('should init annotations if user cannot annotate', () => {
-            stubs.checkPermission.withArgs(image.options.file, PERMISSION_ANNOTATE).returns(false);
-            stubs.annotatable.returns(true);
-
-            image.initAnnotations();
-            expect(image.canAnnotate).to.be.false;
-            expect(image.annotator).to.not.be.undefined;
-        });
-    });
-
-    describe('isAnnotatable()', () => {
-        beforeEach(() => {
-            image.options.viewers = { Image: { annotations: true } };
-        });
-
-        it('should return false if not using point annotations', () => {
-            const result = image.isAnnotatable('highlight');
-            expect(result).to.be.false;
-        });
-
-        it('should return viewer permissions if set', () => {
-            expect(image.isAnnotatable('point')).to.be.true;
-            image.options.viewers.Image.annotations = false;
-            expect(image.isAnnotatable('point')).to.be.false;
-        });
-
-        it('should return global preview permissions if viewer permissions is not set', () => {
-            image.options.showAnnotations = true;
-            image.options.viewers.Image.annotations = 'notboolean';
-            const result = image.isAnnotatable('point');
-            expect(result).to.be.true;
+            expect(image.annotator.addListener).to.be.calledTwice;
         });
     });
 
