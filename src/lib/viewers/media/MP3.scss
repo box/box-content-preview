@@ -3,12 +3,18 @@
 .bp-media-mp3 {
     .bp-media-container {
         height: 60px; // same as controls
+        outline: 0 none;
         overflow: visible; // to show settings popup
         width: 360px;
     }
 
     .bp-media-fullscreen-icon {
         display: none;
+    }
+
+    .bp-media-gear-icon {
+        position: absolute;
+        right: 10px;
     }
 
     .bp-media-controls-wrapper {

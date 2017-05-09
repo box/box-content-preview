@@ -24,6 +24,7 @@
 }
 
 .bp-media-container {
+    outline: 0 none;
     position: relative;
 }
 
@@ -46,6 +47,16 @@
 
     &:hover {
         background: $black;
+    }
+}
+
+.bp-has-keyboard-focus {
+    .bp-media-time-scrubber-container,
+    .bp-media-volume-scrubber-container,
+    .bp-media-controls-btn {
+        &:focus {
+            box-shadow: inset 0 0 0 1px fade-out($white, .5), 0 1px 2px fade-out($black, .9);
+        }
     }
 }
 
