@@ -4,9 +4,8 @@ import BaseViewer from '../BaseViewer';
 import cache from '../../Cache';
 import Browser from '../../Browser';
 import MediaControls from './MediaControls';
-import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
+import { CLASS_ELEM_KEYBOARD_FOCUS, CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
 import { ICON_FILE_MEDIA } from '../../icons/icons';
-
 
 const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
@@ -33,9 +32,12 @@ class MediaBaseViewer extends BaseViewer {
 
         // Media Wrapper
         this.mediaContainerEl = this.wrapperEl.appendChild(document.createElement('div'));
+        this.mediaContainerEl.setAttribute('tabindex', '-1');
         this.mediaContainerEl.className = CSS_CLASS_MEDIA_CONTAINER;
+        this.mediaContainerEl.addEventListener('click', this.containerClickHandler);
 
         this.loadTimeout = 100000;
+        this.oldVolume = DEFAULT_VOLUME;
     }
 
     /**
@@ -69,6 +71,7 @@ class MediaBaseViewer extends BaseViewer {
 
             if (this.mediaContainerEl) {
                 this.mediaContainerEl.removeChild(this.mediaEl);
+                this.mediaContainerEl.removeEventListener(this.containerClickHandler);
             }
         } catch (e) {
             // do nothing
@@ -105,6 +108,16 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
+     * Click handler for media container
+     *
+     * @private
+     * @return {void}
+     */
+    containerClickHandler() {
+        this.mediaContainerEl.classList.remove(CLASS_ELEM_KEYBOARD_FOCUS);
+    }
+
+    /**
      * Handler for meta data load for the media element.
      *
      * @protected
@@ -124,6 +137,7 @@ class MediaBaseViewer extends BaseViewer {
 
         // Make media element visible after resize
         this.showMedia();
+        this.mediaContainerEl.focus();
     }
 
     /**
@@ -182,6 +196,9 @@ class MediaBaseViewer extends BaseViewer {
      */
     handleVolume() {
         const volume = cache.has(MEDIA_VOLUME_CACHE_KEY) ? cache.get(MEDIA_VOLUME_CACHE_KEY) : DEFAULT_VOLUME;
+        if (volume !== 0) {
+            this.oldVolume = volume;
+        }
 
         if (this.mediaEl.volume !== volume) {
             this.debouncedEmit('volume', volume);
@@ -207,7 +224,6 @@ class MediaBaseViewer extends BaseViewer {
      */
     loadUI() {
         this.mediaControls = new MediaControls(this.mediaContainerEl, this.mediaEl);
-        this.mediaControls.setDuration(this.mediaEl.duration);
 
         // Add event listeners for the media controls
         this.addEventListenersForMediaControls();
@@ -480,25 +496,38 @@ class MediaBaseViewer extends BaseViewer {
      * @return {boolean} consumed or not
      */
     onKeydown(key) {
-        // Return false when media controls are not ready or are focused
-        if (!this.mediaControls || this.mediaControls.isFocused()) {
+        // Return false when media controls are not ready
+        if (!this.mediaControls) {
             return false;
         }
 
         const k = key.toLowerCase();
         switch (k) {
+            case 'tab':
+            case 'shift+tab':
+                this.mediaContainerEl.classList.add(CLASS_ELEM_KEYBOARD_FOCUS);
+                this.mediaControls.show();
+                return false; // So that tab can proceed to do its default behavior of going to the next element
             case 'space':
             case 'k':
                 this.togglePlay();
                 break;
             case 'arrowleft':
-                this.quickSeek(-5);
+                if (this.mediaControls.isVolumeScrubberFocused()) {
+                    this.decreaseVolume();
+                } else {
+                    this.quickSeek(-5);
+                }
                 break;
             case 'j':
                 this.quickSeek(-10);
                 break;
             case 'arrowright':
-                this.quickSeek(5);
+                if (this.mediaControls.isVolumeScrubberFocused()) {
+                    this.increaseVolume();
+                } else {
+                    this.quickSeek(5);
+                }
                 break;
             case 'l':
                 this.quickSeek(10);
@@ -508,10 +537,18 @@ class MediaBaseViewer extends BaseViewer {
                 this.setMediaTime(0);
                 break;
             case 'arrowup':
-                this.increaseVolume();
+                if (this.mediaControls.isTimeScrubberFocused()) {
+                    this.quickSeek(5);
+                } else {
+                    this.increaseVolume();
+                }
                 break;
             case 'arrowdown':
-                this.decreaseVolume();
+                if (this.mediaControls.isTimeScrubberFocused()) {
+                    this.quickSeek(-5);
+                } else {
+                    this.decreaseVolume();
+                }
                 break;
             case 'shift+>':
                 this.mediaControls.increaseSpeed();

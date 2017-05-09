@@ -361,7 +361,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.showMedia).to.not.be.called;
         });
 
-        it('should load the meta data for the media element and show the media/play button', () => {
+        it('should load the meta data for the media element, show the media/play button, and focus on mediaContainerEl', () => {
             sandbox.stub(dash, 'isDestroyed').returns(false);
             sandbox.stub(dash, 'showMedia');
             sandbox.stub(dash, 'calculateVideoDimensions');
@@ -378,6 +378,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.showPlayButton).to.be.called;
             expect(dash.emit).to.be.calledWith('load');
             expect(dash.loaded).to.be.true;
+            expect(document.activeElement).to.equal(dash.mediaContainerEl);
         });
     });
 

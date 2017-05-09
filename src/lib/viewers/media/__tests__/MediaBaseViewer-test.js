@@ -2,8 +2,8 @@
 import Browser from '../../../Browser';
 import MediaBaseViewer from '../MediaBaseViewer';
 import BaseViewer from '../../BaseViewer';
-import MediaControls from '../MediaControls';
 import cache from '../../../Cache';
+import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../../constants';
 
 let media;
 let stubs;
@@ -39,7 +39,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         media.mediaControls = {
             addListener: sandbox.stub(),
             destroy: sandbox.stub(),
-            isFocused: sandbox.stub(),
             removeAllListeners: sandbox.stub(),
             setTimeCode: sandbox.stub(),
             show: sandbox.stub(),
@@ -49,7 +48,9 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             updateProgress: sandbox.stub(),
             updateVolumeIcon: sandbox.stub(),
             increaseSpeed: sandbox.stub(),
-            decreaseSpeed: sandbox.stub()
+            decreaseSpeed: sandbox.stub(),
+            isVolumeScrubberFocused: sandbox.stub(),
+            isTimeScrubberFocused: sandbox.stub()
         };
     });
 
@@ -66,6 +67,14 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.wrapperEl.className).to.equal('bp-media');
             expect(media.mediaContainerEl.className).to.equal('bp-media-container');
             expect(media.loadTimeout).to.equal(100000);
+        });
+
+        it('should setup click-handler to remove keyboard-focus class', () => {
+            media.mediaContainerEl.classList.add(CLASS_ELEM_KEYBOARD_FOCUS);
+
+            media.mediaContainerEl.click();
+
+            expect(media.mediaContainerEl).to.not.have.class(CLASS_ELEM_KEYBOARD_FOCUS);
         });
     });
 
@@ -119,7 +128,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     });
 
     describe('loadeddataHandler()', () => {
-        it('should finish loading and resize the media viewer', () => {
+        it('should finish loading, resize the media viewer, and focus on mediaContainerEl', () => {
             sandbox.stub(media, 'handleVolume');
             sandbox.stub(media, 'emit');
             sandbox.stub(media, 'loadUI');
@@ -134,6 +143,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.loadUI).to.be.called;
             expect(media.resize).to.be.called;
             expect(media.showMedia).to.be.called;
+            expect(document.activeElement).to.equal(media.mediaContainerEl);
         });
     });
 
@@ -199,11 +209,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
     describe('loadUI()', () => {
         it('should set up media controls and element', () => {
-            const setDuration = MediaControls.prototype.setDuration;
-            Object.defineProperty(MediaControls.prototype, 'setDuration', {
-                value: sandbox.stub()
-            });
-
             const duration = 10;
             media.mediaEl = { duration };
             sandbox.stub(media, 'addEventListenersForMediaControls');
@@ -211,13 +216,8 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             media.loadUI();
 
-            expect(MediaControls.prototype.setDuration).to.be.calledWith(duration);
             expect(media.addEventListenersForMediaControls).to.be.called;
             expect(media.addEventListenersForMediaElement).to.be.called;
-
-            Object.defineProperty(MediaControls.prototype, 'setDuration', {
-                value: setDuration
-            });
         });
     });
 
@@ -540,12 +540,21 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     });
 
     describe('onKeydown()', () => {
-        it('should return false if media controls are not initialized or if media controls are focused', () => {
-            media.mediaControls.isFocused.returns(true);
-            expect(media.onKeydown()).to.be.false;
-
+        it('should return false if media controls are not initialized', () => {
             media.mediaControls = null;
             expect(media.onKeydown()).to.be.false;
+        });
+
+        it('should add keyboard-focus class on tab and return false', () => {
+            expect(media.onKeydown('Tab')).to.be.false;
+            expect(media.mediaContainerEl).to.have.class(CLASS_ELEM_KEYBOARD_FOCUS);
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should add keyboard-focus class on shift+tab and return false', () => {
+            expect(media.onKeydown('Shift+Tab')).to.be.false;
+            expect(media.mediaContainerEl).to.have.class(CLASS_ELEM_KEYBOARD_FOCUS);
+            expect(media.mediaControls.show).to.be.called;
         });
 
         it('should toggle play and return true on Space', () => {
@@ -572,6 +581,15 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.mediaControls.show).to.be.called;
         });
 
+        it('should lower volume on ArrowLeft if volume scrubber is focused', () => {
+            media.mediaControls.isVolumeScrubberFocused = sandbox.stub().returns(true);
+            sandbox.stub(media, 'decreaseVolume');
+
+            expect(media.onKeydown('ArrowLeft')).to.be.true;
+            expect(media.decreaseVolume).to.be.called;
+            expect(media.mediaControls.show).to.be.called;
+        });
+
         it('should seek backwards 10 seconds and return true on j', () => {
             sandbox.stub(media, 'quickSeek');
 
@@ -585,6 +603,15 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             expect(media.onKeydown('ArrowRight')).to.be.true;
             expect(media.quickSeek).calledWith(5);
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should increase volume on ArrowRight if volume scrubber is focused', () => {
+            media.mediaControls.isVolumeScrubberFocused = sandbox.stub().returns(true);
+            sandbox.stub(media, 'increaseVolume');
+
+            expect(media.onKeydown('ArrowRight')).to.be.true;
+            expect(media.increaseVolume).to.be.called;
             expect(media.mediaControls.show).to.be.called;
         });
 
@@ -620,11 +647,29 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.mediaControls.show).to.be.called;
         });
 
+        it('should seek forwards 5 seconds on ArrowUp if time scrubber is focused', () => {
+            media.mediaControls.isTimeScrubberFocused = sandbox.stub().returns(true);
+            sandbox.stub(media, 'quickSeek');
+
+            expect(media.onKeydown('ArrowUp')).to.be.true;
+            expect(media.quickSeek).calledWith(5);
+            expect(media.mediaControls.show).to.be.called;
+        });
+
         it('should decrease volume and return true on ArrowDown', () => {
             sandbox.stub(media, 'decreaseVolume');
 
             expect(media.onKeydown('ArrowDown')).to.be.true;
             expect(media.decreaseVolume).to.be.called;
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should seek backwards 5 seconds on ArrowDown if time scrubber is focused', () => {
+            media.mediaControls.isTimeScrubberFocused = sandbox.stub().returns(true);
+            sandbox.stub(media, 'quickSeek');
+
+            expect(media.onKeydown('ArrowDown')).to.be.true;
+            expect(media.quickSeek).calledWith(-5);
             expect(media.mediaControls.show).to.be.called;
         });
 

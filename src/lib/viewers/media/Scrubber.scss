@@ -16,7 +16,7 @@
     height: 3px;
     left: -50%;
     position: absolute;
-    top: 9px; /* Wrapper is 20px high. Bar is 3px high leaving 17px. 9px for top buffer and 8px for bottom. */
+    top: 7px; /* Wrapper is 16px high. Bar is 3px high leaving 13px. 7px for top buffer and 6px for bottom. */
     width: 100%;
 }
 
@@ -55,6 +55,7 @@
     border-radius: 6px;
     cursor: pointer;
     height: 12px;
+    margin-left: -6px; // Half of the width, to account for the width of the handle
     position: absolute;
     top: -4.25px;
     transform: scale(0);
