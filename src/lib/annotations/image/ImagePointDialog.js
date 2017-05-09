@@ -29,8 +29,8 @@ class ImagePointDialog extends AnnotationDialog {
         const dialogDimensions = this.element.getBoundingClientRect();
         const dialogWidth = dialogDimensions.width;
 
-        // Get image tag inside viewer
-        const imageEl = this.annotatedElement.querySelector('img');
+        // Get image tag inside viewer, based on page number. All images are page 1 by default.
+        const imageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page || 1}"]`);
         if (!imageEl) {
             return;
         }
