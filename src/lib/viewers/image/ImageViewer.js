@@ -318,28 +318,6 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
-     * Returns whether or not viewer is annotatable with the provided annotation
-     * type.
-     *
-     * @param {string} type - Type of annotation
-     * @return {boolean} Whether or not viewer is annotatable
-     */
-    isAnnotatable(type) {
-        if (typeof type === 'string' && type !== 'point') {
-            return false;
-        }
-
-        // Respect viewer-specific annotation option if it is set
-        const viewerAnnotations = this.getViewerOption('annotations');
-        if (typeof viewerAnnotations === 'boolean') {
-            return viewerAnnotations;
-        }
-
-        // Otherwise, use global preview annotation option
-        return this.options.showAnnotations;
-    }
-
-    /**
      * Determines if Image file has been rotated 90 or 270 degrees to the left
      *
      * @return {boolean} Whether image has been rotated -90 or -270 degrees

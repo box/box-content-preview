@@ -26,7 +26,7 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                 token: 'someToken',
                 canAnnotate: true
             }),
-            fileVersionID: 1,
+            fileVersionId: 1,
             location: {},
             threadID: 2,
             type: 'highlight'
@@ -146,7 +146,7 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                     token: 'someToken',
                     canAnnotate: true
                 }),
-                fileVersionID: 1,
+                fileVersionId: 1,
                 location: {},
                 threadID: 2,
                 type: 'highlight'
@@ -175,7 +175,7 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                     token: 'someToken',
                     canAnnotate: true
                 }),
-                fileVersionID: 1,
+                fileVersionId: 1,
                 location: {},
                 threadID: 2,
                 type: 'highlight'

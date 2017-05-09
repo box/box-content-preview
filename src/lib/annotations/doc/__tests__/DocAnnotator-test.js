@@ -30,7 +30,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             canAnnotate: true,
             container: document,
             annotationService: {},
-            fileVersionID: 1,
+            fileVersionId: 1,
             options: {}
         });
         annotator.annotatedElement = annotator.getAnnotatedEl(document);
@@ -238,7 +238,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         it('should create, add highlight thread to internal map with appropriate parameters', () => {
             Object.defineProperty(AnnotationThread.prototype, 'setup', { value: sandbox.mock() });
             const annotation = new Annotation({
-                fileVersionID: 2,
+                fileVersionId: 2,
                 threadID: '1',
                 type: 'point',
                 thread: '1',

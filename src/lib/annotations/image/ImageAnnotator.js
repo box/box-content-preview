@@ -90,7 +90,7 @@ class ImageAnnotator extends Annotator {
             annotatedElement: this.annotatedElement,
             annotations,
             annotationService: this.annotationService,
-            fileVersionID: this.fileVersionID,
+            fileVersionId: this.fileVersionId,
             locale: this.locale,
             location,
             type

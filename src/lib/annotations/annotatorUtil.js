@@ -6,7 +6,7 @@ const THREAD_PARAMS = [
     'annotatedElement',
     'annotations',
     'annotationService',
-    'fileVersionID',
+    'fileVersionId',
     'locale',
     'location',
     'type'

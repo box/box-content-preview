@@ -19,7 +19,7 @@ describe('lib/annotations/Annotator', () => {
             canAnnotate: true,
             container: document,
             annotationService: {},
-            fileVersionID: 1,
+            fileVersionId: 1,
             options: {}
         });
 

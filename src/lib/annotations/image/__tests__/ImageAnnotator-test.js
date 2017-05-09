@@ -19,7 +19,7 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             canAnnotate: true,
             container: document,
             annotationService: {},
-            fileVersionID: 1,
+            fileVersionId: 1,
             options: {}
         });
         annotator.annotatedElement = annotator.getAnnotatedEl(document);

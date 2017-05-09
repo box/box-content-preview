@@ -96,7 +96,7 @@ class BaseViewer extends EventEmitter {
         if (container) {
             const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
             if (annotateButtonEl) {
-                annotateButtonEl.removeEventListener('click', this.getPointModeClickHandler);
+                annotateButtonEl.removeEventListener('click', this.annotateClickHandler);
             }
         }
 
@@ -522,14 +522,13 @@ class BaseViewer extends EventEmitter {
      */
     loadAnnotator() {
         /* global BoxAnnotations */
-        this.loader = new BoxAnnotations();
+        const boxAnnotations = new BoxAnnotations();
 
-        this.annotatorLoader = this.loader.determineAnnotator(this.options.viewer.NAME);
-        if (!this.annotatorLoader) {
+        this.annotatorConf = boxAnnotations.determineAnnotator(this.options.viewer.NAME);
+        if (!this.annotatorConf) {
             return;
         }
 
-        this.annotationTypes = this.annotatorLoader.TYPE;
         if (this.isAnnotatable()) {
             const { file } = this.options;
 
@@ -550,18 +549,18 @@ class BaseViewer extends EventEmitter {
      */
     initAnnotations() {
         const { apiHost, container, file, location, token } = this.options;
-        const fileVersionID = file.file_version.id;
+        const { id: fileId, file_version: { id: fileVersionId } } = file;
 
         // Construct and init annotator
-        this.annotator = new this.annotatorLoader.CONSTRUCTOR({
+        this.annotator = new this.annotatorConf.CONSTRUCTOR({
             canAnnotate: this.canAnnotate,
             container,
             options: {
                 apiHost,
-                fileId: file.id,
+                fileId,
                 token
             },
-            fileVersionID,
+            fileVersionId,
             locale: location.locale
         });
         this.annotator.init();
@@ -576,17 +575,14 @@ class BaseViewer extends EventEmitter {
      * @return {boolean} Whether or not viewer is annotatable
      */
     isAnnotatable(type) {
-        if (type && this.annotationTypes) {
-            const supportedType = this.annotationTypes.some((annotationType) => {
-                return type === annotationType;
-            });
-
-            if (!supportedType) {
+        const { TYPE: annotationTypes } = this.annotatorConf;
+        if (type && annotationTypes) {
+            if (!annotationTypes.some((annotationType) => type === annotationType)) {
                 return false;
             }
         }
 
-        // Respect viewer-specific annotation option if it is set
+        // Return whether or not annotations are enabled for this viewer
         return this.areAnnotationsEnabled();
     }
 
@@ -613,6 +609,7 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     showAnnotateButton(handler) {
+        this.annotateClickHandler = handler;
         const { container } = this.options;
         const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
         if (!annotateButtonEl) {
@@ -621,7 +618,7 @@ class BaseViewer extends EventEmitter {
 
         annotateButtonEl.title = __('annotation_point_toggle');
         annotateButtonEl.classList.remove(CLASS_HIDDEN);
-        annotateButtonEl.addEventListener('click', handler);
+        annotateButtonEl.addEventListener('click', this.annotateClickHandler);
     }
 
     /**

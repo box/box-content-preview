@@ -595,7 +595,7 @@ describe('lib/viewers/BaseViewer', () => {
                 NAME: Document
             };
 
-            stubs.annotatorLoader = {
+            stubs.annotatorConf = {
                 TYPE: ['point', 'highlight']
             };
             stubs.isAnnotatable = sandbox.stub(base, 'isAnnotatable').returns(true);
@@ -607,7 +607,7 @@ describe('lib/viewers/BaseViewer', () => {
         it('should load the appropriate annotator for the current viewer', () => {
             class BoxAnnotations {
                 determineAnnotator() {
-                    return stubs.annotatorLoader;
+                    return stubs.annotatorConf;
                 }
             }
             sandbox.stub(Browser, 'isMobile').returns(false);
@@ -643,7 +643,7 @@ describe('lib/viewers/BaseViewer', () => {
         it('should not load an annotator if the viewer is not annotatable', () => {
             class BoxAnnotations {
                 determineAnnotator() {
-                    return stubs.annotatorLoader;
+                    return stubs.annotatorConf;
                 }
             }
             window.BoxAnnotations = BoxAnnotations;
@@ -670,7 +670,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotator = {
                 init: sandbox.stub()
             };
-            base.annotatorLoader = {
+            base.annotatorConf = {
                 CONSTRUCTOR: sandbox.stub().returns(base.annotator)
             };
             base.initAnnotations();
@@ -680,7 +680,9 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('isAnnotatable()', () => {
         beforeEach(() => {
-            base.annotationTypes = ['point', 'highlight'];
+            base.annotatorConf = {
+                TYPE: ['point', 'highlight']
+            };
             sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
         });
 

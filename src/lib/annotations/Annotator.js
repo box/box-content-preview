@@ -17,7 +17,7 @@ class Annotator extends EventEmitter {
      * @typedef {Object} AnnotatorData
      * @property {HTMLElement} annotatedElement HTML element to annotate on
      * @property {AnnotationService} [annotationService] Annotations CRUD service
-     * @property {string} fileVersionID File version ID
+     * @property {string} fileVersionId File version ID
      */
 
     //--------------------------------------------------------------------------
@@ -36,7 +36,7 @@ class Annotator extends EventEmitter {
         this.canAnnotate = data.canAnnotate;
         this.container = data.container;
         this.options = data.options;
-        this.fileVersionID = data.fileVersionID;
+        this.fileVersionId = data.fileVersionId;
         this.locale = data.locale;
         this.validationErrorDisplayed = false;
     }
@@ -269,7 +269,7 @@ class Annotator extends EventEmitter {
     fetchAnnotations() {
         this.threads = {};
 
-        return this.annotationService.getThreadMap(this.fileVersionID)
+        return this.annotationService.getThreadMap(this.fileVersionId)
             .then((threadMap) => {
                 // Generate map of page to threads
                 Object.keys(threadMap).forEach((threadID) => {
