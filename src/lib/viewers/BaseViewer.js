@@ -26,6 +26,7 @@ import {
 } from '../constants';
 
 const ANNOTATIONS_JS = ['annotations.js'];
+const ANNOTATIONS_CSS = ['annotations.css'];
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
@@ -74,7 +75,7 @@ class BaseViewer extends EventEmitter {
         // the assets are available, the showAnnotations flag is true, and the
         // expiring embed is not a shared link
         if (this.areAnnotationsEnabled() && !this.options.sharedLink) {
-            this.loadAssets(ANNOTATIONS_JS);
+            this.loadAssets(ANNOTATIONS_JS, ANNOTATIONS_CSS);
         }
     }
 
