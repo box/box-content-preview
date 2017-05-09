@@ -2,7 +2,7 @@ import autobind from 'autobind-decorator';
 import Browser from '../../Browser';
 import ImageBaseViewer from './ImageBaseViewer';
 import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
-import { CLASS_INVISIBLE } from '../../constants';
+import { CLASS_INVISIBLE, CLASS_BOX_ANNOTATED_ELEMENT } from '../../constants';
 import { openContentInsideIframe } from '../../util';
 import './Image.scss';
 
@@ -22,8 +22,11 @@ class ImageViewer extends ImageBaseViewer {
         super.setup();
 
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
-        this.wrapperEl.className = CSS_CLASS_IMAGE;
+        this.wrapperEl.classList.add(CSS_CLASS_IMAGE);
+        this.wrapperEl.classList.add(CLASS_BOX_ANNOTATED_ELEMENT);
+
         this.imageEl = this.wrapperEl.appendChild(document.createElement('img'));
+        this.imageEl.setAttribute('data-page-number', 1);
 
         // hides image tag until content is loaded
         this.imageEl.classList.add(CLASS_INVISIBLE);
@@ -288,35 +291,6 @@ class ImageViewer extends ImageBaseViewer {
         this.emit('printsuccess');
     }
 
-
-    /**
-     * Initializes annotations.
-     *
-     * @protected
-     * @return {void}
-     */
-    initAnnotations() {
-        super.initAnnotations();
-
-        // Disables controls during point annotation mode
-        /* istanbul ignore next */
-        this.annotator.addListener('pointmodeenter', () => {
-            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
-            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-            if (this.controls) {
-                this.controls.disable();
-            }
-        });
-
-        /* istanbul ignore next */
-        this.annotator.addListener('pointmodeexit', () => {
-            this.updateCursor();
-            if (this.controls) {
-                this.controls.enable();
-            }
-        });
-    }
-
     /**
      * Determines if Image file has been rotated 90 or 270 degrees to the left
      *
@@ -407,21 +381,6 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
-     * Handles mouse down event.
-     *
-     * @param {Event} event - The mousemove event
-     * @return {void}
-     */
-    handleMouseUp(event) {
-        // Ignore zoom/pan mouse events if in annotation mode
-        if (this.annotator && this.annotator.isInPointMode()) {
-            return;
-        }
-
-        super.handleMouseUp(event);
-    }
-
-    /**
     * Adjust padding on image rotation/zoom of images when the view port
     * orientation changes from landscape to portrait and vice versa. Especially
     * important for mobile devices because rotating the device doesn't triggers
@@ -438,21 +397,6 @@ class ImageViewer extends ImageBaseViewer {
             this.annotator.setScale(scale);
             this.annotator.renderAnnotations(rotationAngle);
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getPointModeClickHandler() {
-        if (!this.isAnnotatable('point')) {
-            return null;
-        }
-
-        return () => {
-            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
-            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-            this.emit('togglepointannotationmode');
-        };
     }
 }
 

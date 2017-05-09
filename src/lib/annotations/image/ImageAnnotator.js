@@ -3,7 +3,7 @@ import Annotator from '../Annotator';
 import ImagePointThread from './ImagePointThread';
 import * as annotatorUtil from '../annotatorUtil';
 import * as imageAnnotatorUtil from './imageAnnotatorUtil';
-import { SELECTOR_BOX_PREVIEW_BTN_ANNOTATE } from '../../constants';
+import { SELECTOR_BOX_PREVIEW_BTN_ANNOTATE, SELECTOR_BOX_ANNOTATED_ELEMENT } from '../../constants';
 
 @autobind
 class ImageAnnotator extends Annotator {
@@ -19,7 +19,7 @@ class ImageAnnotator extends Annotator {
      * @return {HTMLElement} Annotated element in the viewer
      */
     getAnnotatedEl(containerEl) {
-        return containerEl.querySelector('.bp-image');
+        return containerEl.querySelector(SELECTOR_BOX_ANNOTATED_ELEMENT);
     }
 
     /**
@@ -36,31 +36,31 @@ class ImageAnnotator extends Annotator {
         let location = null;
 
         // Get image tag inside viewer
-        const imageEl = this.annotatedElement.querySelector('img');
-        if (!imageEl) {
+        const imageEl = event.target;
+        if (imageEl.nodeName !== 'IMG') {
+            return location;
+        }
+
+        // If no image page was selected, ignore, as all images have a page number.
+        const page = Number(imageEl.getAttribute('data-page-number'));
+        if (!page) {
             return location;
         }
 
         // If click is inside an annotation dialog, ignore
-        const dataType = annotatorUtil.findClosestDataType(this.annotatedElement);
+        const dataType = annotatorUtil.findClosestDataType(imageEl);
         if (dataType === 'annotation-dialog' || dataType === 'annotation-indicator') {
             return location;
         }
 
         // Location based only on image position
         const imageDimensions = imageEl.getBoundingClientRect();
-        let [x, y] = [(event.clientX - imageDimensions.left), (event.clientY - imageDimensions.top)];
-
-        // If click isn't in image area, ignore
-        if (event.clientX > imageDimensions.right || event.clientX < imageDimensions.left ||
-            event.clientY > imageDimensions.bottom || event.clientY < imageDimensions.top) {
-            return location;
-        }
+        const [x, y] = [(event.clientX - imageDimensions.left), (event.clientY - imageDimensions.top)];
 
         // Scale location coordinates according to natural image size
         const scale = annotatorUtil.getScale(this.annotatedElement);
         const rotation = Number(imageEl.getAttribute('data-rotation-angle'));
-        [x, y] = imageAnnotatorUtil.getLocationWithoutRotation(x / scale, y / scale, rotation, imageDimensions, scale);
+        const [scaledX, scaledY] = imageAnnotatorUtil.getLocationWithoutRotation(x / scale, y / scale, rotation, imageDimensions, scale);
 
         // We save the dimensions of the annotated element so we can
         // compare to the element being rendered on and scale as appropriate
@@ -69,7 +69,13 @@ class ImageAnnotator extends Annotator {
             y: imageDimensions.height / scale
         };
 
-        location = { x, y, imageEl, dimensions };
+        location = {
+            x: scaledX,
+            y: scaledY,
+            imageEl,
+            dimensions,
+            page
+        };
 
         return location;
     }
@@ -155,17 +161,19 @@ class ImageAnnotator extends Annotator {
         // Only show/hide point annotation button if user has the appropriate
         // permissions
         if (this.annotationService.canAnnotate) {
-            // Hide create annotations button if image is rotated
-            // TODO(@spramod) actually adjust getLocationFromEvent method in
-            // annotator to get correct location rather than disabling the creation
-            // of annotations on rotated images
-            const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+            return;
+        }
 
-            if (rotationAngle !== 0) {
-                annotatorUtil.hideElement(annotateButton);
-            } else {
-                annotatorUtil.showElement(annotateButton);
-            }
+        // Hide create annotations button if image is rotated
+        // TODO(@spramod) actually adjust getLocationFromEvent method in
+        // annotator to get correct location rather than disabling the creation
+        // of annotations on rotated images
+        const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+
+        if (rotationAngle !== 0) {
+            annotatorUtil.hideElement(annotateButton);
+        } else {
+            annotatorUtil.showElement(annotateButton);
         }
     }
 }

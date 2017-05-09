@@ -3,10 +3,13 @@ import ImageBaseViewer from './ImageBaseViewer';
 import './MultiImage.scss';
 
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
-import { CLASS_INVISIBLE } from '../../constants';
+import { CLASS_INVISIBLE, CLASS_BOX_ANNOTATED_ELEMENT } from '../../constants';
 
+const CSS_CLASS_ZOOMABLE = 'zoomable';
+const CSS_CLASS_PANNABLE = 'pannable';
 const CSS_CLASS_IMAGE = 'bp-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
+const ZOOM_UPDATE_PAN_DELAY = 50;
 
 @autobind
 class MultiImageViewer extends ImageBaseViewer {
@@ -18,11 +21,11 @@ class MultiImageViewer extends ImageBaseViewer {
         super.setup();
 
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
-        this.wrapperEl.className = CSS_CLASS_IMAGE_WRAPPER;
-
+        this.wrapperEl.classList.add(CSS_CLASS_IMAGE_WRAPPER);
+        this.wrapperEl.classList.add(CLASS_BOX_ANNOTATED_ELEMENT);
 
         this.imageEl = this.wrapperEl.appendChild(document.createElement('div'));
-        this.imageEl.className = CSS_CLASS_IMAGE;
+        this.imageEl.classList.add(CSS_CLASS_IMAGE);
 
         this.singleImageEls = [this.imageEl.appendChild(document.createElement('img'))];
         this.loadTimeout = 60000;
@@ -34,6 +37,12 @@ class MultiImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     destroy() {
+        // Destroy the annotator
+        if (this.annotator && typeof this.annotator.destroy === 'function') {
+            this.annotator.removeAllListeners();
+            this.annotator.destroy();
+        }
+
         // Remove listeners
         this.unbindDOMListeners();
 
@@ -104,6 +113,9 @@ class MultiImageViewer extends ImageBaseViewer {
             this.bindImageListeners(index);
         }
 
+        // Set page number. Page is index + 1.
+        this.singleImageEls[index].setAttribute('data-page-number', index + 1);
+
         this.singleImageEls[index].src = imageUrl;
     }
 
@@ -153,10 +165,25 @@ class MultiImageViewer extends ImageBaseViewer {
         // Fix the scroll position of the image to be centered
         this.imageEl.parentNode.scrollLeft = (this.imageEl.parentNode.scrollWidth - viewportWidth) / 2;
 
+        if (this.annotator) {
+            this.scaleAnnotations(this.imageEl.offsetWidth, this.imageEl.offsetHeight);
+        }
+
         this.emit('zoom');
 
         // Give the browser some time to render before updating pannability
-        setTimeout(this.updatePannability, 50);
+        setTimeout(this.updatePannability, ZOOM_UPDATE_PAN_DELAY);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    scaleAnnotations(width, height) {
+        // Grab the first page image dimensions
+        const imageEl = this.singleImageEls[0];
+        const scale = width ? (width / imageEl.naturalWidth) : (height / imageEl.naturalHeight);
+        this.annotator.setScale(scale);
+        this.annotator.renderAnnotations();
     }
 
     /**
