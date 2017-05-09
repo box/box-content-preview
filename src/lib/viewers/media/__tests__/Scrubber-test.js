@@ -14,7 +14,7 @@ describe('lib/viewers/media/Scrubber', () => {
     beforeEach(() => {
         fixture.load('viewers/media/__tests__/Scrubber-test.html');
         const containerEl = document.querySelector('.container');
-        scrubber = new Scrubber(containerEl, '');
+        scrubber = new Scrubber(containerEl, 'Scrubbah', '0', '10');
     });
 
     afterEach(() => {
@@ -31,6 +31,11 @@ describe('lib/viewers/media/Scrubber', () => {
     describe('Scrubber()', () => {
         it('should set up scrubber element', () => {
             expect(scrubber.containerEl).to.not.be.empty;
+            expect(scrubber.containerEl.getAttribute('role')).to.equal('slider');
+            expect(scrubber.containerEl.getAttribute('aria-label')).to.equal('Scrubbah');
+            expect(scrubber.containerEl.getAttribute('title')).to.equal('Scrubbah');
+            expect(scrubber.containerEl.getAttribute('aria-valuemin')).to.equal('0');
+            expect(scrubber.containerEl.getAttribute('aria-valuemax')).to.equal('10');
             expect(scrubber.value).to.equal(0);
             expect(scrubber.convertedValue).to.equal(1);
             expect(scrubber.bufferedValue).to.equal(1);
@@ -62,41 +67,27 @@ describe('lib/viewers/media/Scrubber', () => {
 
     describe('resize()', () => {
         it('should resize the scrubber accordingly to the provided offset', () => {
-            stubs.adjust = sandbox.stub(scrubber, 'adjustScrubberHandle');
-
             scrubber.containerEl.style.width = '25px';
             scrubber.resize(10);
 
-            expect(stubs.adjust).to.be.called;
             expect(scrubber.scrubberWrapperEl.style.width).to.equal('15px');
-        });
-    });
-
-    describe('adjustScrubberHandle()', () => {
-        it('should adjust the scrubber handle position to the current scrubber handle position value in the video', () => {
-            scrubber.scrubberEl.style.width = '25px';
-            scrubber.value = 0.5;
-            scrubber.adjustScrubberHandle();
-
-            expect(scrubber.handleEl.style.left).to.equal('18%');
         });
     });
 
     describe('setValue()', () => {
         it('should do nothing if the scrubber handle position value has not changed', () => {
-            stubs.adjust = sandbox.stub(scrubber, 'adjustScrubberHandle');
+            const oldPos = scrubber.handleEl.style.left;
             scrubber.setValue();
 
-            expect(stubs.adjust).to.not.be.called;
+            expect(scrubber.handleEl.style.left).to.equal(oldPos);
         });
 
         it('set the new scrubber value', () => {
-            stubs.adjust = sandbox.stub(scrubber, 'adjustScrubberHandle');
             scrubber.convertedValue = 0.5;
             scrubber.setValue(0.25);
 
             expect(scrubber.value).to.equal(0.25);
-            expect(stubs.adjust).to.be.called;
+            expect(scrubber.handleEl.style.left).to.equal('25%');
         });
     });
 
@@ -128,7 +119,7 @@ describe('lib/viewers/media/Scrubber', () => {
     });
 
     describe('scrubbingHandler()', () => {
-        it('should adjust the scrubber handle position to the current scrubber handle position value in the video', () => {
+        it('should adjust the scrubber value to the current scrubber handle position value in the video', () => {
             stubs.setValue = sandbox.stub(scrubber, 'setValue');
             stubs.emit = sandbox.stub(scrubber, 'emit');
             scrubber.scrubberEl.style.width = '25px';

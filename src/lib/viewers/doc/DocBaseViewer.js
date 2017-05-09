@@ -256,34 +256,6 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Sets up print notification & prepare PDF for printing.
-     *
-     * @return {void}
-     * @private
-     */
-    initPrint() {
-        this.printPopup = new Popup(this.containerEl);
-
-        const printCheckmark = document.createElement('div');
-        printCheckmark.className = `bp-print-check ${CLASS_HIDDEN}`;
-        printCheckmark.innerHTML = ICON_PRINT_CHECKMARK.trim();
-
-        const loadingIndicator = document.createElement('div');
-        loadingIndicator.classList.add('bp-crawler');
-        loadingIndicator.innerHTML = `
-            <div></div>
-            <div></div>
-            <div></div>`.trim();
-
-        this.printPopup.addContent(loadingIndicator, true);
-        this.printPopup.addContent(printCheckmark, true);
-
-        // Save a reference so they can be hidden or shown later.
-        this.printPopup.loadingIndicator = loadingIndicator;
-        this.printPopup.printCheckmark = printCheckmark;
-    }
-
-    /**
      * Ensures that the print blob is loaded & updates the print UI.
      *
      * @return {void}
@@ -318,34 +290,6 @@ class DocBaseViewer extends BaseViewer {
             this.printPopup.loadingIndicator.classList.add(CLASS_HIDDEN);
             this.printPopup.printCheckmark.classList.remove(CLASS_HIDDEN);
         }
-    }
-
-    /**
-     * Re-sizing logic.
-     *
-     * @override
-     * @return {void}
-     * @protected
-     */
-    resize() {
-        if (!this.pdfViewer || !this.pdfViewer.pageViewsReady) {
-            return;
-        }
-
-        // Save page and return after resize
-        const currentPageNumber = this.pdfViewer.currentPageNumber;
-
-        this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
-        this.pdfViewer.update();
-
-        this.setPage(currentPageNumber);
-
-        // Update annotations scale
-        if (this.annotator) {
-            this.annotator.setScale(this.pdfViewer.currentScale); // Set scale to current numerical scale
-        }
-
-        super.resize();
     }
 
     /**
@@ -628,6 +572,34 @@ class DocBaseViewer extends BaseViewer {
         });
     }
 
+    /**
+     * Re-sizing logic.
+     *
+     * @protected
+     * @override
+     * @return {void}
+     */
+    resize() {
+        if (!this.pdfViewer || !this.pdfViewer.pageViewsReady) {
+            return;
+        }
+
+        // Save page and return after resize
+        const currentPageNumber = this.pdfViewer.currentPageNumber;
+
+        this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
+        this.pdfViewer.update();
+
+        this.setPage(currentPageNumber);
+
+        // Update annotations scale
+        if (this.annotator) {
+            this.annotator.setScale(this.pdfViewer.currentScale); // Set scale to current numerical scale
+        }
+
+        super.resize();
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -677,6 +649,34 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
+     * Sets up print notification & prepare PDF for printing.
+     *
+     * @private
+     * @return {void}
+     */
+    initPrint() {
+        this.printPopup = new Popup(this.containerEl);
+
+        const printCheckmark = document.createElement('div');
+        printCheckmark.className = `bp-print-check ${CLASS_HIDDEN}`;
+        printCheckmark.innerHTML = ICON_PRINT_CHECKMARK.trim();
+
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.classList.add('bp-crawler');
+        loadingIndicator.innerHTML = `
+            <div></div>
+            <div></div>
+            <div></div>`.trim();
+
+        this.printPopup.addContent(loadingIndicator, true);
+        this.printPopup.addContent(printCheckmark, true);
+
+        // Save a reference so they can be hidden or shown later.
+        this.printPopup.loadingIndicator = loadingIndicator;
+        this.printPopup.printCheckmark = printCheckmark;
+    }
+
+    /**
      * Initializes annotations.
      *
      * @protected
@@ -723,8 +723,8 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Initializes page number selector.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     initPageNumEl() {
         const pageNumEl = this.controls.controlsEl.querySelector('.bp-doc-page-num');
@@ -741,9 +741,9 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Fetches PDF and converts to blob for printing.
      *
+     * @private
      * @param {string} pdfUrl - URL to PDF
      * @return {Promise} Promise setting print blob
-     * @private
      */
     fetchPrintBlob(pdfUrl) {
         return get(pdfUrl, 'blob').then((blob) => {
@@ -754,8 +754,8 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Handles logic for printing the PDF representation in browser.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     browserPrint() {
         // For IE & Edge, use the open or save dialog since we can't open
@@ -810,8 +810,8 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Creates UI for preview controls.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
@@ -822,8 +822,8 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Replaces the page number display with an input box that allows the user to type in a page number
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     showPageNumInput() {
         // show the input box with the current page number selected within it
@@ -841,8 +841,8 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Hide the page number input
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     hidePageNumInput() {
         this.controls.controlsEl.classList.remove(SHOW_PAGE_NUM_INPUT_CLASS);
@@ -853,9 +853,9 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Update page number in page control widget.
      *
+     * @private
      * @param {number} pageNum - Number of page to update to
      * @return {void}
-     * @private
      */
     updateCurrentPage(pageNum) {
         let truePageNum = pageNum;
@@ -886,8 +886,8 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Binds DOM listeners for document viewer.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     bindDOMListeners() {
         // When page structure is initialized, set default zoom, load controls,
@@ -922,8 +922,8 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Unbinds DOM listeners for document viewer.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     unbindDOMListeners() {
         if (this.docEl) {
@@ -951,8 +951,8 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Binds listeners for document controls. Overridden.
      *
-     * @return {void}
      * @protected
+     * @return {void}
      */
     bindControlListeners() {}
 
@@ -977,9 +977,9 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Keydown handler for page number input.
      *
+     * @private
      * @param {Event} event - Keydown event
      * @return {void}
-     * @private
      */
     pageNumInputKeydownHandler(event) {
         const key = decodeKeydown(event);
@@ -1000,7 +1000,7 @@ class DocBaseViewer extends BaseViewer {
                 event.preventDefault();
                 break;
 
-            case 'Esc':
+            case 'Escape':
                 this.hidePageNumInput();
                 this.docEl.focus();
 
@@ -1016,8 +1016,8 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Handler for 'pagesinit' event.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     pagesinitHandler() {
         this.pdfViewer.currentScaleValue = 'auto';
@@ -1044,8 +1044,8 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Handler for 'pagerendered' event.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     pagerenderedHandler(event) {
         const pageNumber = event.detail ? event.detail.pageNumber : undefined;
@@ -1066,9 +1066,9 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Handler for 'pagechange' event.
      *
+     * @private
      * @param {Event} event - Pagechange event
      * @return {void}
-     * @private
      */
     pagechangeHandler(event) {
         const pageNum = event.pageNumber;
@@ -1088,8 +1088,8 @@ class DocBaseViewer extends BaseViewer {
      * Fullscreen entered handler. Add presentation mode class, set
      * presentation mode state, and set zoom to fullscreen zoom.
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     enterfullscreenHandler() {
         this.pdfViewer.currentScaleValue = 'page-fit';
@@ -1115,8 +1115,8 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Scroll handler. Fires an event on start and stop
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     scrollHandler = throttle(() => {
         // Reset the scroll timer if we are continuing a scroll
