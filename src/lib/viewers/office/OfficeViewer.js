@@ -10,10 +10,9 @@ import { get } from '../../util';
 const LOAD_TIMEOUT_MS = 120000;
 const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
-const PREVIEW_TOKEN_LIFESPAN = 28800000;
 
 // @TODO(jpress): replace with discovery and XML parsing once Microsoft allows CORS
-const EXCEL_ONLINE_URL = 'https://excel.officeapps.live.com/x/_layouts/xlembed.aspx';
+const EXCEL_ONLINE_EMBED_URL = 'https://excel.officeapps.live.com/x/_layouts/xlembed.aspx';
 const OFFICE_ONLINE_IFRAME_NAME = 'office-online-iframe';
 const MESSAGE_HOST_READY = 'Host_PostmessageReady';
 
@@ -30,7 +29,7 @@ class OfficeViewer extends BaseViewer {
     setup() {
         // Call super() first to set up common layout
         super.setup();
-        // Set to false only in the WebApp, everywhere else we want to avoid hitting a runmodes.
+        // Set to false only in the WebApp, everywhere else we want to avoid hitting a runmode.
         // This flag will be removed once we run the entire integration through the client.
         this.platformSetup = this.options.viewers.Office ? !!this.options.viewers.Office.shouldUsePlatformSetup : true;
         this.setupIframe();
@@ -162,6 +161,8 @@ class OfficeViewer extends BaseViewer {
 
         if (this.platformSetup) {
             const formEl = this.createFormElement(apiHost, file.id, sharedLink, locale);
+            // Submitting the form securely passes a Preview access token to
+            // Microsoft so they can hit our WOPI endpoints.
             formEl.submit();
 
             // Tell Office Online that we are ready to receive messages
@@ -266,7 +267,10 @@ class OfficeViewer extends BaseViewer {
         const origin = { origin: window.location.origin };
         const formEl = this.containerEl.appendChild(document.createElement('form'));
         // @TODO(jpress): add suport for iframe performance logging via App_LoadingStatus message
-        formEl.setAttribute('action', `${EXCEL_ONLINE_URL}?ui=${locale}&rs=${locale}&WOPISrc=${WOPISrc}&sc=${JSON.stringify(origin)}`);
+        // We pass our origin in the sessionContext so that Microsoft will pass
+        // this to the checkFileInfo endpoint. From their we can set it as the
+        // origin for iframe postMessage communications.
+        formEl.setAttribute('action', `${EXCEL_ONLINE_EMBED_URL}?ui=${locale}&rs=${locale}&WOPISrc=${WOPISrc}&sc=${JSON.stringify(origin)}`);
         formEl.setAttribute('method', 'POST');
         formEl.setAttribute('target', OFFICE_ONLINE_IFRAME_NAME);
 
@@ -277,10 +281,10 @@ class OfficeViewer extends BaseViewer {
         tokenInput.setAttribute('type', 'hidden');
 
         // Calculating and setting the time to live
-        const ttl = Date.now() + PREVIEW_TOKEN_LIFESPAN;
         const ttlInput = document.createElement('input');
         ttlInput.setAttribute('name', 'access_token_TTL');
-        ttlInput.setAttribute('value', ttl);
+        // Setting to 0 disables refresh messages from Microsoft
+        ttlInput.setAttribute('value', 0);
         ttlInput.setAttribute('type', 'hidden');
 
         formEl.appendChild(tokenInput);

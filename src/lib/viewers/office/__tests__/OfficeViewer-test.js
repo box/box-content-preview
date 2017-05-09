@@ -211,6 +211,7 @@ describe('lib/viewers/office/OfficeViewer', () => {
             expect(iframeEl.width).to.equal('100%');
             expect(iframeEl.height).to.equal('100%');
             expect(iframeEl.frameBorder).to.equal('0');
+            expect(iframeEl.getAttribute('sandbox')).to.equal('allow-scripts allow-same-origin allow-forms allow-popups');
         });
 
         it('should allow fullscreen if using the platform setup', () => {
@@ -219,21 +220,17 @@ describe('lib/viewers/office/OfficeViewer', () => {
 
             expect(iframeEl.getAttribute('allowfullscreen')).to.equal('true');
         });
-
-        it('should set the frame as sandbox if not using the platform setup', () => {
-            const iframeEl = office.createIframeElement();
-            expect(iframeEl.getAttribute('sandbox')).to.equal('allow-scripts allow-same-origin allow-forms allow-popups');
-        });
     });
 
     describe('createFormElement()', () => {
         beforeEach(() => {
             stubs.setupWOPISrc = sandbox.stub(office, 'setupWOPISrc').returns('src');
+            stubs.sessionContext = JSON.stringify({ origin: window.location.origin });
             stubs.formEl = office.createFormElement(office.options.apiHost, office.options.file.id, office.options.sharedLink, office.options.location.locale);
         });
 
         it('should correctly set the action URL', () => {
-            expect(stubs.formEl.getAttribute('action')).to.equal(`${EXCEL_ONLINE_URL}?ui=${office.options.location.locale}&rs=${office.options.location.locale}&WOPISrc=src&sc=o_${location.origin}`);
+            expect(stubs.formEl.getAttribute('action')).to.equal(`${EXCEL_ONLINE_URL}?ui=${office.options.location.locale}&rs=${office.options.location.locale}&WOPISrc=src&sc=${stubs.sessionContext}`);
             expect(stubs.formEl.getAttribute('method')).to.equal('POST');
             expect(stubs.formEl.getAttribute('target')).to.equal(OFFICE_ONLINE_IFRAME_NAME);
         });
