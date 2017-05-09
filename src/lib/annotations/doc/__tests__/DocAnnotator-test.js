@@ -27,10 +27,14 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         sandbox.stub(Browser, 'isMobile').returns(false);
 
         annotator = new DocAnnotator({
-            annotatedElement: document.querySelector('.annotated-element'),
+            canAnnotate: true,
+            container: document,
             annotationService: {},
-            fileVersionID: 1
+            fileVersionId: 1,
+            options: {}
         });
+        annotator.annotatedElement = annotator.getAnnotatedEl(document);
+        annotator.annotationService = {};
 
         stubs.getPage = sandbox.stub(docAnnotatorUtil, 'getPageElAndPageNumber');
     });
@@ -42,6 +46,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator = null;
         }
         stubs = {};
+    });
+
+    describe('getAnnotatedEl()', () => {
+        it('should return the annotated element as the document', () => {
+            expect(annotator.annotatedElement).to.not.be.null;
+        });
     });
 
     describe('getLocationFromEvent()', () => {
@@ -228,7 +238,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         it('should create, add highlight thread to internal map with appropriate parameters', () => {
             Object.defineProperty(AnnotationThread.prototype, 'setup', { value: sandbox.mock() });
             const annotation = new Annotation({
-                fileVersionID: 2,
+                fileVersionId: 2,
                 threadID: '1',
                 type: 'point',
                 thread: '1',
