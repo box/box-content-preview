@@ -22,7 +22,7 @@ class MediaBaseViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        this.fileLoadingIcon = this.fileLoadingIcon ? this.fileLoadingIcon : ICON_FILE_MEDIA;
+        this.fileLoadingIcon = this.fileLoadingIcon || ICON_FILE_MEDIA;
 
         // Call super() to set up common layout
         super.setup();

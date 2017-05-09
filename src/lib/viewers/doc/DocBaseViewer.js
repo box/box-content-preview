@@ -51,7 +51,7 @@ class DocBaseViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        this.fileLoadingIcon = this.fileLoadingIcon ? this.fileLoadingIcon : ICON_FILE_DOCUMENT;
+        this.fileLoadingIcon = this.fileLoadingIcon || ICON_FILE_DOCUMENT;
 
         // Call super() to set up common layout
         super.setup();

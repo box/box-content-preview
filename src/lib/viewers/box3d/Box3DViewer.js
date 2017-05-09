@@ -35,7 +35,7 @@ class Box3DViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        this.fileLoadingIcon = this.fileLoadingIcon ? this.fileLoadingIcon : ICON_FILE_OBJ;
+        this.fileLoadingIcon = this.fileLoadingIcon || ICON_FILE_OBJ;
 
         // Call super() to set up common layout
         super.setup();

@@ -91,12 +91,13 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     finishLoadingSetup() {
-        const crawler = this.options.container.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
+        const { container } = this.options;
+        const crawler = container.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
         if (crawler) {
-            crawler.style.display = 'none';
+            crawler.classList.add(CLASS_HIDDEN);
         }
 
-        const iconWrapperEl = this.options.container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
+        const iconWrapperEl = container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
         iconWrapperEl.innerHTML = this.fileLoadingIcon || ICON_FILE_DEFAULT;
     }
 
