@@ -17,7 +17,7 @@ class Annotator extends EventEmitter {
      * @typedef {Object} AnnotatorData
      * @property {HTMLElement} annotatedElement HTML element to annotate on
      * @property {AnnotationService} [annotationService] Annotations CRUD service
-     * @property {string} fileVersionID File version ID
+     * @property {string} fileVersionId File version ID
      */
 
     //--------------------------------------------------------------------------
@@ -32,13 +32,13 @@ class Annotator extends EventEmitter {
      */
     constructor(data) {
         super();
-        this.annotatedElement = data.annotatedElement;
-        this.annotationService = data.annotationService;
-        this.fileVersionID = data.fileVersionID;
+
+        this.canAnnotate = data.canAnnotate;
+        this.container = data.container;
+        this.options = data.options;
+        this.fileVersionId = data.fileVersionId;
         this.locale = data.locale;
         this.validationErrorDisplayed = false;
-
-        this.notification = new Notification(this.annotatedElement);
     }
 
     /**
@@ -65,8 +65,21 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     init() {
+        this.annotatedElement = this.getAnnotatedEl(this.container);
+        this.notification = new Notification(this.annotatedElement);
+
+        const { apiHost, fileId, token } = this.options;
+
+        this.annotationService = new AnnotationService({
+            apiHost,
+            fileId,
+            token,
+            canAnnotate: this.canAnnotate
+        });
+
         this.setScale(1);
         this.setupAnnotations();
+        this.showAnnotations();
     }
 
     /**
@@ -219,6 +232,16 @@ class Annotator extends EventEmitter {
     createAnnotationThread(annotations, location, type) {}
     /* eslint-enable no-unused-vars */
 
+    /**
+    * Must be implemented to determine the annotated element in the viewer.
+    *
+    * @param {HTMLElement} containerEl - Container element for the viewer
+    * @return {HTMLElement} Annotated element in the viewer
+    */
+    /* eslint-disable no-unused-vars */
+    getAnnotatedEl(containerEl) {}
+    /* eslint-enable no-unused-vars */
+
     //--------------------------------------------------------------------------
     // Protected
     //--------------------------------------------------------------------------
@@ -246,7 +269,7 @@ class Annotator extends EventEmitter {
     fetchAnnotations() {
         this.threads = {};
 
-        return this.annotationService.getThreadMap(this.fileVersionID)
+        return this.annotationService.getThreadMap(this.fileVersionId)
             .then((threadMap) => {
                 // Generate map of page to threads
                 Object.keys(threadMap).forEach((threadID) => {

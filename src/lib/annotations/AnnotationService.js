@@ -77,7 +77,7 @@ class AnnotationService extends EventEmitter {
                 body: JSON.stringify({
                     item: {
                         type: 'file_version',
-                        id: annotation.fileVersionID
+                        id: annotation.fileVersionId
                     },
                     details: {
                         type: annotation.type,
@@ -125,10 +125,10 @@ class AnnotationService extends EventEmitter {
     /**
      * Reads annotations from file version ID.
      *
-     * @param {string} fileVersionID - File version ID to fetch annotations for
+     * @param {string} fileVersionId - File version ID to fetch annotations for
      * @return {Promise} Promise that resolves with fetched annotations
      */
-    read(fileVersionID) {
+    read(fileVersionId) {
         this.annotations = [];
         let resolve;
         let reject;
@@ -137,7 +137,7 @@ class AnnotationService extends EventEmitter {
             reject = failure;
         });
 
-        this.readFromMarker(resolve, reject, fileVersionID);
+        this.readFromMarker(resolve, reject, fileVersionId);
         return promise;
     }
 
@@ -176,11 +176,11 @@ class AnnotationService extends EventEmitter {
     /**
      * Gets a map of thread ID to annotations in that thread.
      *
-     * @param {string} fileVersionID - File version ID to fetch annotations for
+     * @param {string} fileVersionId - File version ID to fetch annotations for
      * @return {Promise} Promise that resolves with thread map
      */
-    getThreadMap(fileVersionID) {
-        return this.read(fileVersionID).then(this.createThreadMap);
+    getThreadMap(fileVersionId) {
+        return this.read(fileVersionId).then(this.createThreadMap);
     }
 
     //--------------------------------------------------------------------------
@@ -224,7 +224,7 @@ class AnnotationService extends EventEmitter {
     createAnnotation(data) {
         return new Annotation({
             annotationID: data.id,
-            fileVersionID: data.item.id,
+            fileVersionId: data.item.id,
             threadID: data.details.threadID,
             type: data.details.type,
             thread: data.thread,
@@ -245,13 +245,13 @@ class AnnotationService extends EventEmitter {
      * Construct the URL to read annotations with a marker or limit added
      *
      * @private
-     * @param {string} fileVersionID - File version ID to fetch annotations for
+     * @param {string} fileVersionId - File version ID to fetch annotations for
      * @param {string} marker - marker to use if there are more than limit annotations
      *  * @param {int} limit - the amout of annotations the API will return per call
      * @return {Promise} Promise that resolves with fetched annotations
      */
-    getReadUrl(fileVersionID, marker = null, limit = null) {
-        let apiUrl = `${this.api}/2.0/files/${this.fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
+    getReadUrl(fileVersionId, marker = null, limit = null) {
+        let apiUrl = `${this.api}/2.0/files/${this.fileId}/annotations?version=${fileVersionId}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
         if (marker) {
             apiUrl += `&marker=${marker}`;
         }
@@ -268,18 +268,18 @@ class AnnotationService extends EventEmitter {
      * limit is 100 annotations per API call.
      *
      * @private
-     * @param {string} fileVersionID - File version ID to fetch annotations for
+     * @param {string} fileVersionId - File version ID to fetch annotations for
      * @param {string} marker - marker to use if there are more than limit annotations
      * @param {int} limit - the amout of annotations the API will return per call
      * @return {void}
      */
-    readFromMarker(resolve, reject, fileVersionID, marker = null, limit = null) {
-        fetch(this.getReadUrl(fileVersionID, marker, limit), {
+    readFromMarker(resolve, reject, fileVersionId, marker = null, limit = null) {
+        fetch(this.getReadUrl(fileVersionId, marker, limit), {
             headers: this.headers })
         .then((response) => response.json())
         .then((data) => {
             if (data.type === 'error' || !Array.isArray(data.entries)) {
-                reject(new Error(`Could not read annotations from file version with ID ${fileVersionID}`));
+                reject(new Error(`Could not read annotations from file version with ID ${fileVersionId}`));
                 this.emit('annotationerror', {
                     reason: 'read'
                 });
@@ -289,7 +289,7 @@ class AnnotationService extends EventEmitter {
                 });
 
                 if (data.next_marker) {
-                    this.readFromMarker(resolve, reject, fileVersionID, data.next_marker, limit);
+                    this.readFromMarker(resolve, reject, fileVersionId, data.next_marker, limit);
                 } else {
                     resolve(this.annotations);
                 }
