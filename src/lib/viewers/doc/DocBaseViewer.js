@@ -1000,7 +1000,7 @@ class DocBaseViewer extends BaseViewer {
                 event.preventDefault();
                 break;
 
-            case 'Esc':
+            case 'Escape':
                 this.hidePageNumInput();
                 this.docEl.focus();
 

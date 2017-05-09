@@ -21,10 +21,29 @@
     width: 100%;
 }
 
+.bp-media-time-scrubber-container {
+    outline: 0 none; // will be overridden by our own
+}
+
+.bp-media-volume-scrubber-container-wrapper {
+    display: inline-block;
+    height: 40px;
+    overflow: hidden;
+    transition: width .2s ease-in-out;
+    width: 0;
+}
+
+.bp-media-controls-volume-scrubber-expand {
+    width: 96px;
+}
+
 .bp-media-volume-scrubber-container {
     display: inline-block;
-    margin-top: 8px;
-    width: 80px;
+    height: 40px;
+    outline: 0 none;
+    padding: 10px 8px 0; // Need to pad left and right so that scrubber handle doesn't spill out of parent container
+    position: relative;
+    width: 96px;
 
     .bp-media-scrubber-handle {
         transform: scale(1);
@@ -70,9 +89,16 @@
     }
 }
 
-.bp-media-controls-volume-control .bp-media-controls-btn {
+.bp-media-volume-icon {
+    display: inline-block;
+    height: 40px;
     position: relative;
+    vertical-align: top;
     width: 36px;
+
+    .bp-is-mobile & {
+        display: none;
+    }
 }
 
 .bp-media-controls-label {
@@ -84,24 +110,19 @@
     width: auto;
 }
 
-.bp-media-controls-volume-wrapper,
+.bp-media-controls-timecode {
+    margin-left: 13px;
+}
+
 .bp-media-controls-volume-control {
     display: inline-block;
     height: 40px;
-    overflow: hidden;
-    transition: width .2s ease-in-out;
     vertical-align: top;
     width: 45px;
 
     .bp-is-mobile & {
         display: none;
     }
-}
-
-.bp-media-controls-volume-wrapper:hover,
-.bp-media-controls-volume-wrapper:focus,
-.bp-media-controls-volume-wrapper:active {
-    width: 150px;
 }
 
 .bp-media-gear-icon {
@@ -117,10 +138,14 @@
     }
 }
 
-.bp-media-fullscreen-icon,
-.bp-media-gear-icon,
-.bp-controls-vr {
-    float: right;
+.bp-media-fullscreen-icon {
+    position: absolute;
+    right: 10px;
+}
+
+.bp-media-gear-icon {
+    position: absolute;
+    right: 55px;
 }
 
 .bp-media-controls-hd {

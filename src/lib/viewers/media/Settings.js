@@ -1,8 +1,9 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import cache from '../../Cache';
-import { insertTemplate } from '../../util';
+import { addActivationListener, removeActivationListener, decodeKeydown, insertTemplate } from '../../util';
 import { ICON_ARROW_LEFT, ICON_ARROW_RIGHT, ICON_CHECK_MARK } from '../../icons/icons';
+import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../constants';
 
 const CLASS_SETTINGS = 'bp-media-settings';
 const CLASS_SETTINGS_SELECTED = 'bp-media-settings-selected';
@@ -19,59 +20,65 @@ const MEDIA_SPEEDS = [
 ];
 
 const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
-    <div class="bp-media-settings-item bp-media-settings-item-speed" data-type="speed">
-        <div class="bp-media-settings-label">${__('media_speed')}</div>
-        <div class="bp-media-settings-value">${__('media_speed_normal')}</div>
-        <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
+    <div role="menu">
+        <div class="bp-media-settings-item bp-media-settings-item-speed" data-type="speed" tabindex="0" role="menuitem" aria-haspopup="true">
+            <div class="bp-media-settings-label" aria-label="${__('media_speed')}">${__('media_speed')}</div>
+            <div class="bp-media-settings-value">${__('media_speed_normal')}</div>
+            <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
+        </div>
+        <div class="bp-media-settings-item bp-media-settings-item-quality" data-type="quality" tabindex="0" role="menuitem" aria-haspopup="true">
+            <div class="bp-media-settings-label" aria-label="${__('media_quality')}">${__('media_quality')}</div>
+            <div class="bp-media-settings-value">${__('media_quality_auto')}</div>
+            <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
+        </div>
     </div>
-    <div class="bp-media-settings-item bp-media-settings-item-quality" data-type="quality">
-        <div class="bp-media-settings-label">${__('media_quality')}</div>
-        <div class="bp-media-settings-value">${__('media_quality_auto')}</div>
-        <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
+    <div class="bp-media-settings-options-speed" role="menu">
+        <div class="bp-media-settings-sub-item bp-media-settings-sub-item-speed" data-type="menu" tabindex="0" role="menuitem" aria-haspopup="true">
+            <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
+            <div class="bp-media-settings-label" aria-label="${__('media_speed')}">${__('media_speed')}</div>
+        </div>
+        <div class="bp-media-settings-sub-item" data-type="speed" data-value="0.25" tabindex="0" role="menuitemradio">
+            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+            <div class="bp-media-settings-value">0.25</div>
+        </div>
+        <div class="bp-media-settings-sub-item" data-type="speed" data-value="0.5" tabindex="0" role="menuitemradio">
+            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+            <div class="bp-media-settings-value">0.5</div>
+        </div>
+        <div class="bp-media-settings-sub-item bp-media-settings-selected" data-type="speed" data-value="1.0" tabindex="0" role="menuitemradio" aria-checked="true">
+            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+            <div class="bp-media-settings-value">${__('media_speed_normal')}</div>
+        </div>
+        <div class="bp-media-settings-sub-item" data-type="speed" data-value="1.25" tabindex="0" role="menuitemradio">
+            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+            <div class="bp-media-settings-value">1.25</div>
+        </div>
+        <div class="bp-media-settings-sub-item" data-type="speed" data-value="1.5" tabindex="0" role="menuitemradio">
+            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+            <div class="bp-media-settings-value">1.5</div>
+        </div>
+        <div class="bp-media-settings-sub-item" data-type="speed" data-value="2.0" tabindex="0" role="menuitemradio">
+            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+            <div class="bp-media-settings-value">2.0</div>
+        </div>
     </div>
-    <div class="bp-media-settings-sub-item bp-media-settings-options-speed bp-media-settings-sub-item-speed" data-type="menu">
-        <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
-        <div class="bp-media-settings-label">${__('media_speed')}</div>
-    </div>
-    <div class="bp-media-settings-sub-item bp-media-settings-options-speed" data-type="speed" data-value="0.25">
-        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="bp-media-settings-value">0.25</div>
-    </div>
-    <div class="bp-media-settings-sub-item bp-media-settings-options-speed" data-type="speed" data-value="0.5">
-        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="bp-media-settings-value">0.5</div>
-    </div>
-    <div class="bp-media-settings-sub-item bp-media-settings-options-speed bp-media-settings-selected" data-type="speed" data-value="1.0">
-        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="bp-media-settings-value">${__('media_speed_normal')}</div>
-    </div>
-    <div class="bp-media-settings-sub-item bp-media-settings-options-speed" data-type="speed" data-value="1.25">
-        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="bp-media-settings-value">1.25</div>
-    </div>
-    <div class="bp-media-settings-sub-item bp-media-settings-options-speed" data-type="speed" data-value="1.5">
-        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="bp-media-settings-value">1.5</div>
-    </div>
-    <div class="bp-media-settings-sub-item bp-media-settings-options-speed" data-type="speed" data-value="2.0">
-        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="bp-media-settings-value">2.0</div>
-    </div>
-    <div class="bp-media-settings-sub-item bp-media-settings-options-quality bp-media-settings-sub-item-quality" data-type="menu">
-        <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
-        <div class="bp-media-settings-label">${__('media_quality')}</div>
-    </div>
-    <div class="bp-media-settings-sub-item bp-media-settings-options-quality" data-type="quality" data-value="sd">
-        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="bp-media-settings-value">480p</div>
-    </div>
-    <div class="bp-media-settings-sub-item bp-media-settings-options-quality" data-type="quality" data-value="hd">
-        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="bp-media-settings-value">1080p</div>
-    </div>
-    <div class="bp-media-settings-sub-item bp-media-settings-options-quality bp-media-settings-selected" data-type="quality" data-value="auto">
-        <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
-        <div class="bp-media-settings-value">${__('media_quality_auto')}</div>
+    <div class="bp-media-settings-options-quality" role="menu">
+        <div class="bp-media-settings-sub-item bp-media-settings-sub-item-quality" data-type="menu" tabindex="0" role="menuitem" aria-haspopup="true">
+            <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
+            <div class="bp-media-settings-label" aria-label="${__('media_quality')}">${__('media_quality')}</div>
+        </div>
+        <div class="bp-media-settings-sub-item" data-type="quality" data-value="sd" tabindex="0" role="menuitemradio">
+            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+            <div class="bp-media-settings-value">480p</div>
+        </div>
+        <div class="bp-media-settings-sub-item" data-type="quality" data-value="hd" tabindex="0" role="menuitemradio">
+            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+            <div class="bp-media-settings-value">1080p</div>
+        </div>
+        <div class="bp-media-settings-sub-item bp-media-settings-selected" data-type="quality" data-value="auto" tabindex="0" role="menuitemradio" aria-checked="true">
+            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+            <div class="bp-media-settings-value">${__('media_quality_auto')}</div>
+        </div>
     </div>
 </div>`;
 
@@ -89,10 +96,13 @@ class Settings extends EventEmitter {
         super();
         this.containerEl = containerEl;
 
-        insertTemplate(this.containerEl, SETTINGS_TEMPLATE);
+        insertTemplate(this.containerEl, SETTINGS_TEMPLATE, containerEl.querySelector('.bp-media-controls-wrapper'));
+        this.settingsEl = this.containerEl.querySelector('.bp-media-settings');
+        this.firstMenuItem = this.settingsEl.querySelectorAll('.bp-media-settings-item')[0];
 
-        this.settingsEl = this.containerEl.lastElementChild;
-        this.settingsEl.addEventListener('click', this.menuClickHandler);
+        this.settingsButtonEl = this.containerEl.querySelector('.bp-media-gear-icon');
+
+        addActivationListener(this.settingsEl, this.menuEventHandler);
         this.visible = false;
         this.init();
     }
@@ -116,7 +126,7 @@ class Settings extends EventEmitter {
      */
     destroy() {
         if (this.settingsEl) {
-            this.settingsEl.removeEventListener('click', this.menuClickHandler);
+            removeActivationListener(this.settingsEl, this.menuEventHandler);
         }
         document.removeEventListener('click', this.blurHandler);
     }
@@ -186,30 +196,126 @@ class Settings extends EventEmitter {
     }
 
     /**
-     * Extracts info out of the click target
+     * Show sub-menu
      *
-     * @param {Event} event - click event
+     * @private
+     * @param {string} type - Either "speed" or "quality"
      * @return {void}
      */
-    menuClickHandler(event) {
-        // Extract the parent target dataset element
-        const target = this.findParentDataType(event.target);
-        if (!target) {
-            return;
-        }
+    showSubMenu(type) {
+        this.settingsEl.classList.add(`bp-media-settings-show-${type}`);
+        // Move focus to the currently selected value
+        const curSelectedOption = this.settingsEl.querySelector(`[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`);
+        curSelectedOption.focus();
+    }
 
-        const type = target.getAttribute('data-type');
-        const value = target.getAttribute('data-value');
+    /**
+     * Helper method for selecting items/sub-items in the menu
+     *
+     * @private
+     * @param {HTMLElement} menuItem
+     * @return {void}
+     */
+    menuItemSelect(menuItem) {
+        const type = menuItem.getAttribute('data-type');
+        const value = menuItem.getAttribute('data-value');
 
         if (type === 'menu') {
             // We are in the sub menu and going back to the main menu
             this.reset();
+            this.firstMenuItem.focus();
         } else if (type && value) {
             // We are in the sub-menu and clicked a valid option
             this.chooseOption(type, value);
         } else if (type) {
-            // We are in the main menu and clicked a valid option
-            this.settingsEl.classList.add(`bp-media-settings-show-${type}`);
+            this.showSubMenu(type);
+        }
+    }
+
+    /**
+     * Extracts info out of the click target
+     *
+     * @private
+     * @param {Event} event - click event
+     * @return {void}
+     */
+    menuEventHandler(event) {
+        // Extract the parent target dataset element (the menu item)
+        const menuItem = this.findParentDataType(event.target);
+        if (!menuItem) {
+            return;
+        }
+
+        if (event.type === 'click') {
+            this.menuItemSelect(menuItem);
+        } else if (event.type === 'keydown') {
+            const key = decodeKeydown(event).toLowerCase();
+            const menuEl = menuItem.parentElement;
+            const itemIdx = [].findIndex.call(menuEl.children, (e) => {
+                return e.contains(menuItem);
+            });
+
+            switch (key) {
+                case 'space':
+                case 'enter': {
+                    this.containerEl.classList.add(CLASS_ELEM_KEYBOARD_FOCUS);
+                    this.menuItemSelect(menuItem);
+                    break;
+                }
+                case 'arrowup': {
+                    this.containerEl.classList.add(CLASS_ELEM_KEYBOARD_FOCUS);
+                    if (itemIdx > 0) {
+                        const newNode = menuEl.children[itemIdx - 1];
+                        newNode.focus();
+                    }
+                    break;
+                }
+                case 'arrowdown': {
+                    this.containerEl.classList.add(CLASS_ELEM_KEYBOARD_FOCUS);
+                    if (itemIdx >= 0 && itemIdx < menuEl.children.length - 1) {
+                        const newNode = menuEl.children[itemIdx + 1];
+                        newNode.focus();
+                    }
+                    break;
+                }
+                case 'arrowleft': {
+                    if (itemIdx >= 0 && !menuEl.children[itemIdx].classList.contains('bp-media-settings-item')) {
+                        // Go back to the main menu
+                        this.reset();
+                        this.firstMenuItem.focus();
+                    }
+                    break;
+                }
+                case 'arrowright': {
+                    if (itemIdx >= 0) {
+                        const curNode = menuEl.children[itemIdx];
+                        if (curNode.classList.contains('bp-media-settings-item')) {
+                            if (curNode.getAttribute('data-type') === 'speed') {
+                                this.showSubMenu('speed');
+                            } else if (curNode.getAttribute('data-type') === 'quality') {
+                                this.showSubMenu('quality');
+                            }
+                        }
+                    }
+                    break;
+                }
+                case 'escape': {
+                    this.hide();
+                    this.settingsButtonEl.focus();
+                    break;
+                }
+                default: {
+                    return;
+                }
+            }
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        // For key-presses, consume the event and stop propragation
+        if (event.type === 'keydown') {
+            event.preventDefault();
+            event.stopPropagation();
         }
     }
 
@@ -221,9 +327,6 @@ class Settings extends EventEmitter {
      * @return {void}
      */
     chooseOption(type, value) {
-        // Hide the menu
-        this.hide();
-
         // Save the value
         cache.set(`media-${type}`, value);
 
@@ -240,10 +343,17 @@ class Settings extends EventEmitter {
         this.settingsEl.querySelector(`[data-type="${type}"] ${SELECTOR_SETTINGS_VALUE}`).textContent = label;
 
         // Remove the checkmark from the prior selected option in the sub menu
-        this.settingsEl.querySelector(`[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`).classList.remove(CLASS_SETTINGS_SELECTED);
+        const prevSelected = this.settingsEl.querySelector(`[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`);
+        prevSelected.classList.remove(CLASS_SETTINGS_SELECTED);
+        prevSelected.removeAttribute('aria-checked');
 
         // Add a checkmark to the new selected option in the sub menu
         option.classList.add(CLASS_SETTINGS_SELECTED);
+        option.setAttribute('aria-checked', 'true');
+
+        // Return to main menu
+        this.reset();
+        this.firstMenuItem.focus();
     }
 
     /**
@@ -254,8 +364,20 @@ class Settings extends EventEmitter {
      * @return {void}
      */
     blurHandler(event) {
+        // If event happened outside the settings menu, check for escape key
         if (!this.settingsEl.contains(event.target)) {
-            this.hide();
+            const key = decodeKeydown(event);
+            if (key === 'Escape') {
+                this.hide();
+                event.preventDefault();
+                event.stopPropagation();
+                return;
+            }
+            // Only if event happened outside the settings button as well, hide on click/space/enter; we ignore
+            // settings button here because it has its own handler for this event
+            if (!this.settingsButtonEl.contains(event.target) && (event.type === 'click' || key === 'Space' || key === 'Enter')) {
+                this.hide();
+            }
         }
     }
 
@@ -278,12 +400,10 @@ class Settings extends EventEmitter {
     show() {
         this.visible = true;
         this.containerEl.classList.add(CLASS_SETTINGS_OPEN);
+        this.firstMenuItem.focus();
 
-        // Asynchronously add a blur handler.
-        // Needs to be async so that event is not caught on bubble when bp-media-settings icon is clicked
-        setTimeout(() => {
-            document.addEventListener('click', this.blurHandler);
-        }, 0);
+        document.addEventListener('click', this.blurHandler, true);
+        document.addEventListener('keydown', this.blurHandler, true);
     }
 
     /**
@@ -296,7 +416,8 @@ class Settings extends EventEmitter {
         this.reset();
         this.containerEl.classList.remove(CLASS_SETTINGS_OPEN);
         this.visible = false;
-        document.removeEventListener('click', this.blurHandler);
+        document.removeEventListener('click', this.blurHandler, true);
+        document.removeEventListener('keydown', this.blurHandler, true);
     }
 }
 
