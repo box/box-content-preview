@@ -12,7 +12,6 @@ import * as util from '../../../util';
 import {
     CLASS_BOX_PREVIEW_FIND_BAR,
     CLASS_HIDDEN,
-    PERMISSION_ANNOTATE,
     PERMISSION_DOWNLOAD,
     STATUS_ERROR,
     STATUS_SUCCESS
@@ -58,7 +57,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 id: '0'
             }
         });
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
+        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
         docBase.containerEl = containerEl;
         docBase.setup();
         stubs = {};
@@ -334,10 +333,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
             sandbox.stub(docBase, 'createContentUrlWithAuthParams');
             sandbox.stub(docBase, 'postload');
-            sandbox.stub(docBase, 'loadAssets').returns(Promise.resolve());
             sandbox.stub(docBase, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+            sandbox.stub(docBase, 'loadAssets');
 
             return docBase.load().then(() => {
+                expect(docBase.loadAssets).to.be.called;
                 expect(docBase.setup).to.be.called;
                 expect(docBase.createContentUrlWithAuthParams).to.be.calledWith('foo');
                 expect(docBase.postload).to.be.called;
@@ -349,6 +349,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should setup pdfjs, init viewer, print, and find', () => {
             const url = 'foo';
             docBase.pdfUrl = url;
+            docBase.pdfViewer = {
+                currentScale: 1
+            };
 
             const setupPdfjsStub = sandbox.stub(docBase, 'setupPdfjs');
             const initViewerStub = sandbox.stub(docBase, 'initViewer');
@@ -719,32 +722,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.setScale(newScale);
             expect(docBase.annotator.setScale).to.be.calledWith(newScale);
             expect(docBase.pdfViewer.currentScaleValue).to.equal(newScale);
-        });
-    });
-
-    describe('isAnnotatable()', () => {
-        beforeEach(() => {
-            stubs.getViewerOption = sandbox.stub(docBase, 'getViewerOption');
-            stubs.getViewerOption.withArgs('annotations').returns(true);
-        });
-
-        it('should return false if the type is not a point or a highlight', () => {
-            expect(docBase.isAnnotatable('drawing')).to.equal(false);
-        });
-
-        it('should return true if viewer option is set to true', () => {
-            expect(docBase.isAnnotatable('point')).to.equal(true);
-            stubs.getViewerOption.withArgs('annotations').returns(false);
-            expect(docBase.isAnnotatable('point')).to.equal(false);
-        });
-
-        it('should use the global show annotationsBoolean if the viewer param is not specified', () => {
-            stubs.getViewerOption.withArgs('annotations').returns(null);
-            docBase.options.showAnnotations = true;
-            expect(docBase.isAnnotatable('point')).to.equal(true);
-
-            docBase.options.showAnnotations = false;
-            expect(docBase.isAnnotatable('highlight')).to.equal(false);
         });
     });
 
@@ -1145,54 +1122,24 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     });
 
     describe('initAnnotations()', () => {
-        beforeEach(() => {
-            docBase.options = {
-                file: {
-                    file_version: {
-                        id: 0
-                    },
-                    permissions: {
-                        can_annotate: true
-                    }
-                },
-                location: {
-                    locale: 'en-US'
-                }
-            };
+        const initFunc = BaseViewer.prototype.initAnnotations;
+
+        afterEach(() => {
+            Object.defineProperty(BaseViewer.prototype, 'initAnnotations', { value: initFunc });
+        });
+
+        it('should set up page IDs and initialize the annotator', () => {
             docBase.pdfViewer = {
                 currentScale: 1
             };
-            stubs.browser = sandbox.stub(Browser, 'isMobile').returns(false);
-            stubs.setupPageIds = sandbox.stub(docBase, 'setupPageIds');
-            stubs.checkPermission = sandbox.stub(file, 'checkPermission');
-        });
+            docBase.annotator = {
+                addListener: sandbox.stub()
+            };
+            sandbox.stub(docBase, 'setupPageIds');
+            Object.defineProperty(BaseViewer.prototype, 'initAnnotations', { value: sandbox.mock() });
 
-        it('should set up page IDs', () => {
             docBase.initAnnotations();
-            expect(stubs.setupPageIds).to.be.called;
-        });
-
-        it('should do nothing if expiring embed is a shared link', () => {
-            stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_ANNOTATE).returns(true);
-            docBase.options.sharedLink = 'url';
-            docBase.initAnnotations();
-            expect(docBase.annotator).to.be.undefined;
-        });
-
-        it('should allow annotations based on browser and permissions', () => {
-            stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_ANNOTATE).returns(true);
-            docBase.initAnnotations();
-            expect(docBase.annotator.annotationService.canAnnotate).to.be.true;
-
-            stubs.browser.returns(true);
-            stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_ANNOTATE).returns(true);
-            docBase.initAnnotations();
-            expect(docBase.annotator.annotationService.canAnnotate).to.be.false;
-
-            stubs.browser.returns(false);
-            stubs.checkPermission.withArgs(docBase.options.file, PERMISSION_ANNOTATE).returns(false);
-            docBase.initAnnotations();
-            expect(docBase.annotator.annotationService.canAnnotate).to.be.false;
+            expect(docBase.setupPageIds).to.be.called;
         });
     });
 
@@ -1347,7 +1294,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.bindDOMListeners();
             expect(stubs.addEventListener).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
             expect(stubs.addEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
-            expect(stubs.addEventListener).to.be.calledWith('textlayerrendered', docBase.textlayerrenderedHandler);
             expect(stubs.addEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
             expect(stubs.addEventListener).to.be.calledWith('scroll', docBase.scrollHandler);
 
@@ -1390,7 +1336,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.unbindDOMListeners();
             expect(stubs.removeEventListener).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
             expect(stubs.removeEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
-            expect(stubs.removeEventListener).to.be.calledWith('textlayerrendered', docBase.textlayerrenderedHandler);
             expect(stubs.removeEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
             expect(stubs.removeEventListener).to.be.calledWith('scroll', docBase.scrollHandler);
         });
@@ -1503,8 +1448,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
     describe('pagesinitHandler()', () => {
         beforeEach(() => {
-            stubs.isAnnotatable = sandbox.stub(docBase, 'isAnnotatable');
-            stubs.initAnnotations = sandbox.stub(docBase, 'initAnnotations');
             stubs.loadUI = sandbox.stub(docBase, 'loadUI');
             stubs.checkPaginationButtons = sandbox.stub(docBase, 'checkPaginationButtons');
             stubs.setPage = sandbox.stub(docBase, 'setPage');
@@ -1512,24 +1455,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             stubs.emit = sandbox.stub(docBase, 'emit');
         });
 
-        it('should init annotations if annotatable', () => {
-            stubs.isAnnotatable.returns(true);
-            docBase.pdfViewer = {
-                currentScale: 'unknown'
-            };
-
-            docBase.pagesinitHandler();
-            expect(stubs.initAnnotations).to.be.called;
-        });
-
         it('should load UI, check the pagination buttons, set the page, and make document scrollable', () => {
-            stubs.isAnnotatable.returns(false);
             docBase.pdfViewer = {
                 currentScale: 'unknown'
             };
 
             docBase.pagesinitHandler();
-            expect(stubs.initAnnotations).to.not.be.called;
             expect(stubs.loadUI).to.be.called;
             expect(stubs.checkPaginationButtons).to.be.called;
             expect(stubs.setPage).to.be.called;
@@ -1537,7 +1468,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should broadcast that the preview is loaded if it hasn\'t already', () => {
-            stubs.isAnnotatable.returns(false);
             docBase.pdfViewer = {
                 currentScale: 'unknown'
             };
@@ -1555,16 +1485,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
     describe('pagerenderedHandler()', () => {
         beforeEach(() => {
-            docBase.annotator = {
-                renderAnnotationsOnPage: sandbox.stub(),
-                renderAnnotations: sandbox.stub()
-            };
             docBase.event = {
                 detail: {
                     pageNumber: 1
                 }
             };
-            stubs.textlayerrenderedHandler = sandbox.stub(docBase, 'textlayerrenderedHandler');
             stubs.emit = sandbox.stub(docBase, 'emit');
         });
 
@@ -1576,53 +1501,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should emit postload event if not already emitted', () => {
             docBase.pagerenderedHandler(docBase.event);
             expect(stubs.emit).to.be.calledWith('progressend');
-        });
-
-        it('should render annotations on a page if the annotator and event page are specified', () => {
-            docBase.pagerenderedHandler(docBase.event);
-            expect(docBase.annotator.renderAnnotationsOnPage).to.be.calledWith(docBase.event.detail.pageNumber);
-        });
-
-        it('should render annotations all annotations if the annotator but not the page is specified', () => {
-            docBase.event.detail = undefined;
-
-            docBase.pagerenderedHandler(docBase.event);
-            expect(docBase.annotator.renderAnnotations).to.be.called;
-        });
-
-        it('should show annotations even if the text layer is disabled', () => {
-            PDFJS.disableTextLayer = true;
-
-            docBase.pagerenderedHandler(docBase.event);
-            expect(stubs.textlayerrenderedHandler).to.be.called;
-        });
-    });
-
-    describe('textlayerrenderedHandler()', () => {
-        beforeEach(() => {
-            docBase.annotator = {
-                showAnnotations: sandbox.stub()
-            };
-        });
-
-        it('should do nothing if the annotator does not exist or if the annotations are loaded', () => {
-            docBase.annotationsLoaded = true;
-
-            docBase.textlayerrenderedHandler();
-            expect(docBase.annotator.showAnnotations).to.not.be.called;
-
-            docBase.annotationsLoaded = false;
-            docBase.annotator = false;
-            docBase.textlayerrenderedHandler();
-            expect(docBase.annotationsLoaded).to.equal(false);
-        });
-
-        it('should show annotations and set them as loaded', () => {
-            docBase.annotationsLoaded = false;
-
-            docBase.textlayerrenderedHandler();
-            expect(docBase.annotator.showAnnotations).to.be.called;
-            expect(docBase.annotationsLoaded).to.be.true;
         });
     });
 

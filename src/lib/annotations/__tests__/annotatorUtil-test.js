@@ -328,7 +328,7 @@ describe('lib/annotations/annotatorUtil', () => {
     describe('validateThreadParams()', () => {
         it('should return false if the thread is null or missing any expected params', () => {
             expect(validateThreadParams(null)).to.be.false;
-            expect(validateThreadParams({ fileVersionID: 123 })).to.be.false;
+            expect(validateThreadParams({ fileVersionId: 123 })).to.be.false;
         });
 
         it('should return true if the thread is has all expected params', () => {
@@ -336,7 +336,7 @@ describe('lib/annotations/annotatorUtil', () => {
                 annotatedElement: {},
                 annotations: [],
                 annotationService: {},
-                fileVersionID: 123,
+                fileVersionId: 123,
                 location: {},
                 locale: 'en-US',
                 type: 'point'

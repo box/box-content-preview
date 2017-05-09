@@ -39,7 +39,7 @@ describe('lib/annotations/AnnotationService', () => {
 
     describe('create()', () => {
         const annotationToSave = new Annotation({
-            fileVersionID: 2,
+            fileVersionId: 2,
             threadID: AnnotationService.generateID(),
             type: 'point',
             thread: '1',
@@ -53,7 +53,7 @@ describe('lib/annotations/AnnotationService', () => {
                 body: {
                     id: AnnotationService.generateID(),
                     item: {
-                        id: annotationToSave.fileVersionID
+                        id: annotationToSave.fileVersionId
                     },
                     details: {
                         type: annotationToSave.type,
@@ -69,7 +69,7 @@ describe('lib/annotations/AnnotationService', () => {
 
 
             return annotationService.create(annotationToSave).then((createdAnnotation) => {
-                expect(createdAnnotation.fileVersionID).to.equal(annotationToSave.fileVersionID);
+                expect(createdAnnotation.fileVersionId).to.equal(annotationToSave.fileVersionId);
                 expect(createdAnnotation.threadID).to.equal(annotationToSave.threadID);
                 expect(createdAnnotation.thread).to.equal(annotationToSave.thread);
                 expect(createdAnnotation.type).to.equal(annotationToSave.type);
@@ -106,7 +106,7 @@ describe('lib/annotations/AnnotationService', () => {
 
         it('should return array of annotations for the specified file and file version', () => {
             const annotation1 = new Annotation({
-                fileVersionID: 2,
+                fileVersionId: 2,
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah',
@@ -115,7 +115,7 @@ describe('lib/annotations/AnnotationService', () => {
             });
 
             const annotation2 = new Annotation({
-                fileVersionID: 2,
+                fileVersionId: 2,
                 threadID: AnnotationService.generateID(),
                 type: 'highlight',
                 text: 'blah2',
@@ -128,7 +128,7 @@ describe('lib/annotations/AnnotationService', () => {
                     entries: [{
                         id: AnnotationService.generateID(),
                         item: {
-                            id: annotation1.fileVersionID
+                            id: annotation1.fileVersionId
                         },
                         details: {
                             type: annotation1.type,
@@ -141,7 +141,7 @@ describe('lib/annotations/AnnotationService', () => {
                     }, {
                         id: AnnotationService.generateID(),
                         item: {
-                            id: annotation2.fileVersionID
+                            id: annotation2.fileVersionId
                         },
                         details: {
                             type: annotation2.type,
@@ -224,7 +224,7 @@ describe('lib/annotations/AnnotationService', () => {
     describe('getThreadMap()', () => {
         it('should call read and then generate a map of thread ID to annotations in those threads', () => {
             const annotation1 = new Annotation({
-                fileVersionID: 2,
+                fileVersionId: 2,
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah',
@@ -233,7 +233,7 @@ describe('lib/annotations/AnnotationService', () => {
             });
 
             const annotation2 = new Annotation({
-                fileVersionID: 2,
+                fileVersionId: 2,
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah2',
@@ -242,7 +242,7 @@ describe('lib/annotations/AnnotationService', () => {
             });
 
             const annotation3 = new Annotation({
-                fileVersionID: 2,
+                fileVersionId: 2,
                 threadID: annotation1.threadID,
                 type: 'point',
                 text: 'blah3',
@@ -271,7 +271,7 @@ describe('lib/annotations/AnnotationService', () => {
             // ensures that the method converts to a Date() format for comparison/sorting
             // Hard coding dates to ensure formatting resembles API response
             const annotation1 = new Annotation({
-                fileVersionID: 2,
+                fileVersionId: 2,
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah',
@@ -282,7 +282,7 @@ describe('lib/annotations/AnnotationService', () => {
 
             // Ensures annotations are not provided in chronological order
             const annotation4 = new Annotation({
-                fileVersionID: 2,
+                fileVersionId: 2,
                 threadID: annotation1.threadID,
                 type: 'point',
                 text: 'blah4',
@@ -293,7 +293,7 @@ describe('lib/annotations/AnnotationService', () => {
             });
 
             const annotation2 = new Annotation({
-                fileVersionID: 2,
+                fileVersionId: 2,
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah2',
@@ -304,7 +304,7 @@ describe('lib/annotations/AnnotationService', () => {
             });
 
             const annotation3 = new Annotation({
-                fileVersionID: 2,
+                fileVersionId: 2,
                 threadID: annotation1.threadID,
                 type: 'point',
                 text: 'blah3',
@@ -327,7 +327,7 @@ describe('lib/annotations/AnnotationService', () => {
     describe('createAnnotation()', () => {
         it('should call the Annotation constructor', () => {
             const data = {
-                fileVersionID: 2,
+                fileVersionId: 2,
                 threadID: 1,
                 type: 'point',
                 text: 'blah3',
@@ -349,7 +349,7 @@ describe('lib/annotations/AnnotationService', () => {
             const markerUrl = annotationService.getReadUrl(2, 'a', 1);
 
             const annotation2 = new Annotation({
-                fileVersionID: 2,
+                fileVersionId: 2,
                 threadID: AnnotationService.generateID(),
                 type: 'highlight',
                 text: 'blah2',
@@ -362,7 +362,7 @@ describe('lib/annotations/AnnotationService', () => {
                     entries: [{
                         id: AnnotationService.generateID(),
                         item: {
-                            id: annotation2.fileVersionID
+                            id: annotation2.fileVersionId
                         },
                         details: {
                             type: annotation2.type,
@@ -452,22 +452,22 @@ describe('lib/annotations/AnnotationService', () => {
         it('should return the original url if no limit or marker exists', () => {
             annotationService.api = 'box';
             annotationService.fileId = 1;
-            const fileVersionID = 2;
-            const url = `${annotationService.api}/2.0/files/${annotationService.fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
+            const fileVersionId = 2;
+            const url = `${annotationService.api}/2.0/files/${annotationService.fileId}/annotations?version=${fileVersionId}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
 
-            const result = annotationService.getReadUrl(fileVersionID);
+            const result = annotationService.getReadUrl(fileVersionId);
             expect(result).to.equal(url);
         });
 
         it('should add a marker and limit if provided', () => {
             annotationService.api = 'box';
             annotationService.fileId = 1;
-            const fileVersionID = 2;
+            const fileVersionId = 2;
             const marker = 'next_annotation';
             const limit = 1;
-            const url = `${annotationService.api}/2.0/files/${annotationService.fileId}/annotations?version=${fileVersionID}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions&marker=${marker}&limit=${limit}`;
+            const url = `${annotationService.api}/2.0/files/${annotationService.fileId}/annotations?version=${fileVersionId}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions&marker=${marker}&limit=${limit}`;
 
-            const result = annotationService.getReadUrl(fileVersionID, marker, limit);
+            const result = annotationService.getReadUrl(fileVersionId, marker, limit);
             expect(result).to.equal(url);
         });
     });
