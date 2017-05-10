@@ -41,15 +41,15 @@ class ImageAnnotator extends Annotator {
             return location;
         }
 
-        // If no image page was selected, ignore, as all images have a page number.
-        const page = Number(imageEl.getAttribute('data-page-number'));
-        if (!page) {
-            return location;
-        }
-
         // If click is inside an annotation dialog, ignore
         const dataType = annotatorUtil.findClosestDataType(imageEl);
         if (dataType === 'annotation-dialog' || dataType === 'annotation-indicator') {
+            return location;
+        }
+
+        // If no image page was selected, ignore, as all images have a page number.
+        const page = Number(imageEl.getAttribute('data-page-number'));
+        if (!page) {
             return location;
         }
 
