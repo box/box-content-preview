@@ -314,11 +314,11 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         it('should prevent drag events on the image', () => {
             const event = {
                 preventDefault: sandbox.stub(),
-                stopPropogation: sandbox.stub()
+                stopPropagation: sandbox.stub()
             };
             imageBase.cancelDragEvent(event);
             expect(event.preventDefault).to.be.called;
-            expect(event.stopPropogation).to.be.called;
+            expect(event.stopPropagation).to.be.called;
         });
     });
 

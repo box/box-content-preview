@@ -37,12 +37,6 @@ class MultiImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     destroy() {
-        // Destroy the annotator
-        if (this.annotator && typeof this.annotator.destroy === 'function') {
-            this.annotator.removeAllListeners();
-            this.annotator.destroy();
-        }
-
         // Remove listeners
         this.unbindDOMListeners();
 

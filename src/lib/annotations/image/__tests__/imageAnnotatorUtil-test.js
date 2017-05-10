@@ -144,7 +144,8 @@ describe('lib/annotations/image/imageAnnotatorUtil', () => {
                 dimensions: {
                     x: 100,
                     y: 200
-                }
+                },
+                page: 1
             };
             const annotatedEl = document.querySelector('.annotated-element');
             const coordinates = getBrowserCoordinatesFromLocation(location, annotatedEl);
