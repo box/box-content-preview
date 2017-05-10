@@ -58,6 +58,26 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(imageBase.imageEl.removeEventListener).to.be.calledWith('mouseup', imageBase.handleMouseUp);
             expect(BaseViewer.prototype.destroy).to.be.called;
         });
+
+        it('should destroy the annotator', () => {
+            imageBase.annotator = {
+                removeAllListeners: sandbox.stub(),
+                destroy: sandbox.stub()
+            };
+
+            imageBase.destroy();
+
+            expect(imageBase.annotator.removeAllListeners).to.be.called;
+            expect(imageBase.annotator.destroy).to.be.called;
+        });
+
+        it('should remove all the listeners', () => {
+            sandbox.stub(imageBase, 'unbindDOMListeners');
+
+            imageBase.destroy();
+
+            expect(imageBase.unbindDOMListeners).to.be.called;
+        });
     });
 
     describe('zoomIn()', () => {

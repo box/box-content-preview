@@ -35,9 +35,6 @@ class MultiImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     destroy() {
-        // Remove listeners
-        this.unbindDOMListeners();
-
         if (this.singleImageEls && this.singleImageEls.length > 0) {
             this.singleImageEls.forEach((el, index) => {
                 this.unbindImageListeners(index);

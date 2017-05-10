@@ -21,7 +21,14 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     destroy() {
+        // Destroy the annotator
+        if (this.annotator && typeof this.annotator.destroy === 'function') {
+            this.annotator.removeAllListeners();
+            this.annotator.destroy();
+        }
+
         this.unbindDOMListeners();
+
         // Destroy the controls
         if (this.controls && typeof this.controls.destroy === 'function') {
             this.controls.destroy();
