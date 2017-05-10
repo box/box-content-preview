@@ -49,28 +49,6 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             expect(location).to.be.null;
         });
 
-        it('should not return a location if click is on dialog', () => {
-            sandbox.stub(annotatorUtil, 'findClosestDataType').returns('annotation-dialog');
-
-            const location = annotator.getLocationFromEvent({
-                target: {
-                    nodeName: 'IMG'
-                }
-            });
-            expect(location).to.be.null;
-        });
-
-        it('should not return a location if click is on annotation indicator', () => {
-            sandbox.stub(annotatorUtil, 'findClosestDataType').returns('annotation-indicator');
-
-            const location = annotator.getLocationFromEvent({
-                target: {
-                    nodeName: 'IMG'
-                }
-            });
-            expect(location).to.be.null;
-        });
-
         it('should return a valid point location if click is valid', () => {
             const x = 100;
             const y = 200;
@@ -79,7 +57,6 @@ describe('lib/annotations/image/ImageAnnotator', () => {
                 y: 200
             };
             const imageEl = annotator.annotatedElement.querySelector('img');
-            sandbox.stub(annotatorUtil, 'findClosestDataType').returns('not-a-dialog');
             sandbox.stub(annotatorUtil, 'getScale').returns(1);
             sandbox.stub(imageAnnotatorUtil, 'getLocationWithoutRotation').returns([x, y]);
 
