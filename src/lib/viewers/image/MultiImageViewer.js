@@ -5,8 +5,7 @@ import './MultiImage.scss';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE, CLASS_BOX_ANNOTATED_ELEMENT } from '../../constants';
 
-const CSS_CLASS_ZOOMABLE = 'zoomable';
-const CSS_CLASS_PANNABLE = 'pannable';
+const PADDING_BUFFER = 100;
 const CSS_CLASS_IMAGE = 'bp-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
 const ZOOM_UPDATE_PAN_DELAY = 50;
@@ -142,11 +141,11 @@ class MultiImageViewer extends ImageBaseViewer {
 
         switch (type) {
             case 'in':
-                newWidth = imageContainerWidth + 100;
+                newWidth = imageContainerWidth + PADDING_BUFFER;
                 break;
 
             case 'out':
-                newWidth = imageContainerWidth - 100;
+                newWidth = imageContainerWidth - PADDING_BUFFER;
                 break;
 
             default:
