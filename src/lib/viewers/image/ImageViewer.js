@@ -6,8 +6,6 @@ import { CLASS_INVISIBLE, CLASS_BOX_ANNOTATED_ELEMENT } from '../../constants';
 import { openContentInsideIframe } from '../../util';
 import './Image.scss';
 
-const CSS_CLASS_ZOOMABLE = 'zoomable';
-const CSS_CLASS_PANNABLE = 'pannable';
 const CSS_CLASS_IMAGE = 'bp-image';
 const IMAGE_PADDING = 15;
 const IMAGE_ZOOM_SCALE = 1.2;
