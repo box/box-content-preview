@@ -4,10 +4,11 @@ import controlsTemplate from './MediaControls.html';
 import Scrubber from './Scrubber';
 import Settings from './Settings';
 import fullscreen from '../../Fullscreen';
-import { insertTemplate } from '../../util';
+import { activationHandler, addActivationListener, removeActivationListener, insertTemplate } from '../../util';
 
 const SHOW_CONTROLS_CLASS = 'bp-media-controls-is-visible';
 const PLAYING_CLASS = 'bp-media-is-playing';
+const VOLUME_SCRUBBER_EXPAND_CLASS = 'bp-media-controls-volume-scrubber-expand';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
 const VOLUME_LEVEL_CLASS_NAMES = [
     'bp-media-volume-icon-is-mute',
@@ -41,13 +42,12 @@ class MediaControls extends EventEmitter {
 
         this.timeScrubberEl = this.wrapperEl.querySelector('.bp-media-time-scrubber-container');
         this.volScrubberEl = this.wrapperEl.querySelector('.bp-media-volume-scrubber-container');
+        this.volScrubberWrapperEl = this.wrapperEl.querySelector('.bp-media-volume-scrubber-container-wrapper');
 
         this.playButtonEl = this.wrapperEl.querySelector('.bp-media-playpause-icon');
         this.setLabel(this.playButtonEl, __('media_play'));
 
-
-        this.volButtonEl = this.wrapperEl.querySelector('.bp-media-controls-volume-control');
-        this.volLevelButtonEl = this.wrapperEl.querySelector('.bp-media-volume-icon');
+        this.volButtonEl = this.wrapperEl.querySelector('.bp-media-volume-icon');
         this.setLabel(this.volButtonEl, __('media_mute'));
 
         this.timecodeEl = this.wrapperEl.querySelector('.bp-media-controls-timecode');
@@ -56,10 +56,10 @@ class MediaControls extends EventEmitter {
         this.fullscreenButtonEl = this.wrapperEl.querySelector('.bp-media-fullscreen-icon');
         this.setLabel(this.fullscreenButtonEl, __('enter_fullscreen'));
 
-
         this.settingsButtonEl = this.wrapperEl.querySelector('.bp-media-gear-icon');
         this.setLabel(this.settingsButtonEl, __('media_settings'));
 
+        this.setDuration(this.mediaEl.duration);
         this.setupSettings();
         this.setupScrubbers();
         this.attachEventHandlers();
@@ -75,6 +75,10 @@ class MediaControls extends EventEmitter {
 
         document.removeEventListener('mouseup', this.timeScrubbingStopHandler);
         document.removeEventListener('mousemove', this.filmstripShowHandler);
+
+        if (this.volButtonEl && this.volScrubberWrapperEl) {
+            this.removeVolumeScrubberWrapperExpansionHandlers();
+        }
 
         if (this.timeScrubber) {
             this.timeScrubber.getHandleEl().removeEventListener('mousedown', this.timeScrubbingStartHandler);
@@ -97,19 +101,19 @@ class MediaControls extends EventEmitter {
         }
 
         if (this.playButtonEl) {
-            this.playButtonEl.removeEventListener('click', this.togglePlay);
+            removeActivationListener(this.playButtonEl, this.togglePlayHandler);
         }
 
-        if (this.volLevelButtonEl) {
-            this.volLevelButtonEl.removeEventListener('click', this.toggleMute);
+        if (this.volButtonEl) {
+            removeActivationListener(this.volButtonEl, this.toggleMuteHandler);
         }
 
         if (this.fullscreenButtonEl) {
-            this.fullscreenButtonEl.removeEventListener('click', this.toggleFullscreen);
+            removeActivationListener(this.fullscreenButtonEl, this.toggleFullscreenHandler);
         }
 
         if (this.settingsButtonEl) {
-            this.settingsButtonEl.removeEventListener('click', this.toggleSettings);
+            removeActivationListener(this.settingsButtonEl, this.toggleSettingsHandler);
         }
 
         if (this.wrapperEl) {
@@ -184,12 +188,14 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     setupScrubbers() {
-        this.timeScrubber = new Scrubber(this.timeScrubberEl, __('media_time_slider'), 0, 0, 1);
+        this.timeScrubber = new Scrubber(this.timeScrubberEl, __('media_time_slider'), 0, Math.floor(this.mediaEl.duration), 0, 0, 1);
+        this.setTimeCode(0); // This also sets the aria values
         this.timeScrubber.on('valuechange', () => {
             this.emit('timeupdate', this.getTimeFromScrubber());
         });
 
-        this.volScrubber = new Scrubber(this.volScrubberEl, __('media_volume_slider'), 1, 1, 1);
+        this.volScrubber = new Scrubber(this.volScrubberEl, __('media_volume_slider'), 0, 100, 1, 1, 1);
+        this.volScrubber.setAriaValues(100, '100% Volume');
         this.volScrubber.on('valuechange', () => {
             this.emit('volumeupdate', this.volScrubber.getValue());
         });
@@ -207,14 +213,18 @@ class MediaControls extends EventEmitter {
         const m = Math.floor((seconds % 3600) / 60);
         const s = Math.floor((seconds % 3600) % 60);
         const hour = h > 0 ? `${h.toString()}:` : '';
-        const min = m < 10 ? `0${m.toString()}` : m.toString();
         const sec = s < 10 ? `0${s.toString()}` : s.toString();
+        let min = m.toString();
+        if (h > 0 && m < 10) {
+            min = `0${min}`;
+        }
         return `${hour}${min}:${sec}`;
     }
 
     /**
      * Updates the time duration of the media file
      *
+     * @private
      * @param {number} time - the time length of the media file
      * @return {void}
      */
@@ -232,6 +242,7 @@ class MediaControls extends EventEmitter {
         const duration = this.mediaEl.duration;
         this.timeScrubber.setValue(duration ? (time || 0) / duration : 0);
         this.timecodeEl.textContent = this.formatTime(time || 0);
+        this.timeScrubber.setAriaValues(Math.floor(time), `${this.timecodeEl.textContent} ${__('of')} ${this.durationEl.textContent}`);
     }
 
     /**
@@ -254,6 +265,7 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     toggleMute() {
+        this.show();
         this.emit('togglemute');
     }
 
@@ -264,6 +276,7 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     togglePlay() {
+        this.show();
         this.emit('toggleplayback');
     }
 
@@ -274,6 +287,7 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     toggleFullscreen() {
+        this.show();
         this.emit('togglefullscreen');
         this.setFullscreenLabel();
     }
@@ -296,6 +310,7 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     toggleSettings() {
+        this.show();
         if (this.isSettingsVisible()) {
             this.settings.hide();
         } else {
@@ -350,10 +365,12 @@ class MediaControls extends EventEmitter {
      */
     updateVolumeIcon(volume) {
         VOLUME_LEVEL_CLASS_NAMES.forEach((className) => {
-            this.volLevelButtonEl.classList.remove(className);
+            this.volButtonEl.classList.remove(className);
         });
-        this.volLevelButtonEl.classList.add(VOLUME_LEVEL_CLASS_NAMES[Math.ceil(volume * 3)]);
+        this.volButtonEl.classList.add(VOLUME_LEVEL_CLASS_NAMES[Math.ceil(volume * 3)]);
         this.volScrubber.setValue(volume);
+        const percentage = Math.floor(volume * 100);
+        this.volScrubber.setAriaValues(percentage, `${percentage}% ${__('volume')}`);
 
         const muteTitle = Math.ceil(volume * 3) === 0 ? __('media_unmute') : __('media_mute');
         this.setLabel(this.volButtonEl, muteTitle);
@@ -378,6 +395,93 @@ class MediaControls extends EventEmitter {
     }
 
     /**
+     * Handler for when letting go of the scrubber handle
+     *
+     * @private
+     * @return {void}
+     */
+    scrubberMouseUpHandler() {
+        this.volScrubbing = false;
+        this.volScrubberWrapperEl.classList.remove(VOLUME_SCRUBBER_EXPAND_CLASS);
+        document.removeEventListener('mouseup', this.scrubberMouseUpHandler);
+        document.removeEventListener('mouseleave', this.scrubberMouseUpHandler);
+    }
+
+    /**
+     * Handler for when clicking and dragging scrubber handle
+     *
+     * @private
+     * @return {void}
+     */
+    scrubberMouseDownHandler() {
+        this.volScrubbing = true;
+        document.addEventListener('mouseup', this.scrubberMouseUpHandler);
+        document.addEventListener('mouseleave', this.scrubberMouseUpHandler);
+    }
+
+    /**
+     * Expands the scrubber
+     *
+     * @private
+     * @return {void}
+     */
+    scrubberExpand() {
+        this.volScrubberWrapperEl.classList.add(VOLUME_SCRUBBER_EXPAND_CLASS);
+    }
+
+    /**
+     * Hides the scrubber
+     *
+     * @private
+     * @return {void}
+     */
+    scrubberHide() {
+        if (!this.volScrubbing) {
+            this.volScrubberWrapperEl.classList.remove(VOLUME_SCRUBBER_EXPAND_CLASS);
+        }
+    }
+
+    /**
+     * Attaches event handlers associated with volume scrubber wrapper expansion
+     *
+     * @private
+     * @return {void}
+     */
+    attachVolumeScrubberWrapperExpansionHandlers() {
+        this.volScrubbing = false;
+
+        // Attach events to volume button
+        this.volButtonEl.addEventListener('mouseenter', this.scrubberExpand);
+        this.volButtonEl.addEventListener('mouseleave', this.scrubberHide);
+        // Attach events to volume scrubber
+        this.volScrubberEl.addEventListener('mouseenter', this.scrubberExpand);
+        this.volScrubberEl.addEventListener('mouseleave', this.scrubberHide);
+        this.volScrubberEl.addEventListener('mousedown', this.scrubberMouseDownHandler);
+        this.volScrubberEl.addEventListener('mouseup', this.scrubberMouseUpHandler);
+        this.volScrubberEl.addEventListener('focus', this.scrubberExpand);
+        this.volScrubberEl.addEventListener('blur', this.scrubberHide);
+    }
+
+    /**
+     * Removes event handlers associated with volume scrubber wrapper expansion
+     *
+     * @private
+     * @return {void}
+     */
+    removeVolumeScrubberWrapperExpansionHandlers() {
+        // Remove events from volume button
+        this.volButtonEl.removeEventListener('mouseenter', this.scrubberExpand);
+        this.volButtonEl.removeEventListener('mouseleave', this.scrubberHide);
+        // Remove events from volume scrubber
+        this.volScrubberEl.removeEventListener('mouseenter', this.scrubberExpand);
+        this.volScrubberEl.removeEventListener('mouseleave', this.scrubberHide);
+        this.volScrubberEl.removeEventListener('mousedown', this.scrubberMouseDownHandler);
+        this.volScrubberEl.removeEventListener('mouseup', this.scrubberMouseUpHandler);
+        this.volScrubberEl.removeEventListener('focus', this.scrubberExpand);
+        this.volScrubberEl.removeEventListener('blur', this.scrubberHide);
+    }
+
+    /**
      * Attaches event handlers to buttons
      *
      * @return {void}
@@ -385,11 +489,19 @@ class MediaControls extends EventEmitter {
     attachEventHandlers() {
         this.wrapperEl.addEventListener('mouseenter', this.mouseenterHandler);
         this.wrapperEl.addEventListener('mouseleave', this.mouseleaveHandler);
-        this.playButtonEl.addEventListener('click', this.togglePlay);
 
-        this.volLevelButtonEl.addEventListener('click', this.toggleMute);
-        this.fullscreenButtonEl.addEventListener('click', this.toggleFullscreen);
-        this.settingsButtonEl.addEventListener('click', this.toggleSettings);
+        this.attachVolumeScrubberWrapperExpansionHandlers();
+
+        this.togglePlayHandler = activationHandler(this.togglePlay);
+        this.toggleMuteHandler = activationHandler(this.toggleMute);
+        this.toggleFullscreenHandler = activationHandler(this.toggleFullscreen);
+        this.toggleSettingsHandler = activationHandler(this.toggleSettings);
+
+        addActivationListener(this.playButtonEl, this.togglePlayHandler);
+        addActivationListener(this.volButtonEl, this.toggleMuteHandler);
+        addActivationListener(this.fullscreenButtonEl, this.toggleFullscreenHandler);
+        addActivationListener(this.settingsButtonEl, this.toggleSettingsHandler);
+
         fullscreen.addListener('exit', this.setFullscreenLabel);
     }
 
@@ -629,25 +741,33 @@ class MediaControls extends EventEmitter {
     }
 
     /**
-     * Hides the filmstrip frame
+     * Hides the filmstrip frame, unless user is currently scrubbing
      *
      * @private
      * @return {void}
      */
     filmstripHideHandler() {
         if (!this.isScrubbing) {
-            // Don't hide the film strip when we are scrubbing
             this.filmstripContainerEl.style.display = 'none';
         }
     }
 
     /**
-     * Determines if controls are focused
+     * Checks if focus is on the time-scrubber
      *
-     * @return {boolean} true if controls are focused
+     * @return {boolean}
      */
-    isFocused() {
-        return this.wrapperEl.contains(document.activeElement);
+    isTimeScrubberFocused() {
+        return document.activeElement === this.timeScrubberEl;
+    }
+
+    /**
+     * Checks if focus is on the volume-scrubber
+     *
+     * @return {boolean}
+     */
+    isVolumeScrubberFocused() {
+        return document.activeElement === this.volScrubberEl;
     }
 }
 

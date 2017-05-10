@@ -13,19 +13,27 @@ class Scrubber extends EventEmitter {
      * Service to handle the position and movement of a slider element
      *
      * [constructor]
-     * @param {HTMLElement} containerEl - container node
-     * @param {string} accessibilityText - text
-     * @param {number} [value] - optional initial value
-     * @param {number} [bufferedValue] - optional initial buffered value
-     * @param {number} [convertedValue] - optional initial converted value
+     * @param {HTMLElement} containerEl - Container node
+     * @param {string} ariaLabel - Accessibility text
+     * @param {string} ariaValuemin - Minimum logical value of scrubber (for accessibility)
+     * @param {string} ariaValuemax - Maximum logical value of scrubber (for accessibility)
+     * @param {number} [value] - Optional initial value
+     * @param {number} [bufferedValue] - Optional initial buffered value
+     * @param {number} [convertedValue] - Optional initial converted value
      * @return {Scrubber} Scrubber instance
      */
-    constructor(containerEl, accessibilityText, value = MIN_VALUE, bufferedValue = MAX_VALUE, convertedValue = MAX_VALUE) {
+    constructor(containerEl, ariaLabel, ariaValuemin, ariaValuemax, value = MIN_VALUE, bufferedValue = MAX_VALUE, convertedValue = MAX_VALUE) {
         super();
 
         this.containerEl = containerEl;
+        this.containerEl.setAttribute('role', 'slider');
+        this.containerEl.setAttribute('aria-label', ariaLabel);
+        this.containerEl.setAttribute('title', ariaLabel);
+        this.containerEl.setAttribute('aria-valuemin', ariaValuemin);
+        this.containerEl.setAttribute('aria-valuemax', ariaValuemax);
+        this.containerEl.setAttribute('aria-valuenow', value);
 
-        this.containerEl.innerHTML = scrubberTemplate.replace('{{accessibilityText}}', accessibilityText).replace(/>\s*</g, '><'); // removing new lines
+        this.containerEl.innerHTML = scrubberTemplate.replace(/>\s*</g, '><'); // removing new lines
 
         // This container provides relative positioning. It also helps with adding hover states.
         this.scrubberContainerEl = this.containerEl.querySelector('.bp-media-scrubber-container');
@@ -36,8 +44,6 @@ class Scrubber extends EventEmitter {
         // The scrubber is relative positioned 50% to the left. Since its relative parent is
         // positioned 50% right, it makes this element center aligned.
         this.scrubberEl = this.containerEl.querySelector('.bp-media-scrubber');
-        this.scrubberEl.setAttribute('aria-label', accessibilityText);
-        this.scrubberEl.setAttribute('title', accessibilityText);
         // The actual bars
         this.bufferedEl = this.scrubberEl.querySelector('.bp-media-scrubber-buffered');
         this.convertedEl = this.scrubberEl.querySelector('.bp-media-scrubber-converted');
@@ -83,30 +89,18 @@ class Scrubber extends EventEmitter {
      */
     resize(offset) {
         this.scrubberWrapperEl.style.width = `${this.containerEl.clientWidth - offset}px`;
-        this.adjustScrubberHandle();
     }
 
     /**
-     * Sets the value of the scrubber handle position and moves the HTML it to this new position
+     * Set aria-valuenow and aria-valuetext attributes
      *
-     * @param {number} value - the the value to save
+     * @param {number} ariaValuenow
+     * @param {string} ariaValuetext
      * @return {void}
      */
-    adjustScrubberHandle() {
-        // When setting widths and lefts, take into account that the handle is round
-        // and has its own width that needs to be accounted for.
-        //
-        // So the scrubber handle's left can go from
-        // all the way to the left of scrubber and additionally width / 2 so
-        // that the scrubber center aligns at position 0 for the bar.
-        // to
-        // all the way on the right minus its own width / 2.
-
-        const handleWidth = 16; // 16px from the CSS
-        const scrubberWidth = this.scrubberEl.clientWidth;
-        const handlePosition = (((this.value * scrubberWidth) - (handleWidth / 2)) * 100) / scrubberWidth;
-
-        this.handleEl.style.left = `${handlePosition}%`;
+    setAriaValues(ariaValuenow, ariaValuetext) {
+        this.containerEl.setAttribute('aria-valuenow', ariaValuenow);
+        this.containerEl.setAttribute('aria-valuetext', ariaValuetext);
     }
 
     /**
@@ -127,7 +121,7 @@ class Scrubber extends EventEmitter {
 
         // The played values should ignore the handle width since we don't care about it.
         this.playedEl.style.width = `${this.value * 100}%`;
-        this.adjustScrubberHandle();
+        this.handleEl.style.left = `${this.value * 100}%`;
     }
 
     /**
@@ -189,7 +183,7 @@ class Scrubber extends EventEmitter {
     /**
      * Sets the mouse move state to true and calls the mouse action handler
      * The prevents the default mouse down behavior and the event propagation
-     * since the intension of the user is to drag the handle, and not to click on the page
+     * since the intention of the user is to drag the handle, and not to click on the page
      *
      * @private
      * @param {Event} event - the instance of the class

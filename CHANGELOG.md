@@ -1,6 +1,21 @@
 # Change Log
 
-## [v0.121.1](https://github.com/box/box-content-preview/tree/v0.121.1) (2017-04-28)
+## [v0.122.0](https://github.com/box/box-content-preview/tree/v0.122.0) (2017-05-09)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.121.1...v0.122.0)
+
+**Merged pull requests:**
+
+- Update Translations [\#107](https://github.com/box/box-content-preview/pull/107) ([boxmoji](https://github.com/boxmoji))
+- Chore: Remove font-smoothing and update progress bar color [\#104](https://github.com/box/box-content-preview/pull/104) ([tonyjin](https://github.com/tonyjin))
+- Cleaning up DocBaseViewer [\#103](https://github.com/box/box-content-preview/pull/103) ([jeremypress](https://github.com/jeremypress))
+- Chore: Allow console logging to show in tests [\#100](https://github.com/box/box-content-preview/pull/100) ([bhh1988](https://github.com/bhh1988))
+- Update: Re-enable font loading API support check [\#99](https://github.com/box/box-content-preview/pull/99) ([tonyjin](https://github.com/tonyjin))
+- Fix: Make all svgs not focusable [\#98](https://github.com/box/box-content-preview/pull/98) ([bhh1988](https://github.com/bhh1988))
+- Update: Make media player web-accessible according WCAG2.0 spec [\#97](https://github.com/box/box-content-preview/pull/97) ([bhh1988](https://github.com/bhh1988))
+- Fix: Add Annotations bundling changes back  [\#95](https://github.com/box/box-content-preview/pull/95) ([pramodsum](https://github.com/pramodsum))
+- Chore: Remove unused 'parent' field from Box File object [\#91](https://github.com/box/box-content-preview/pull/91) ([tonyjin](https://github.com/tonyjin))
+
+## [v0.121.1](https://github.com/box/box-content-preview/tree/v0.121.1) (2017-04-29)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.121.0...v0.121.1)
 
 **Merged pull requests:**
