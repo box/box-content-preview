@@ -2,7 +2,7 @@ import autobind from 'autobind-decorator';
 import Browser from '../../Browser';
 import ImageBaseViewer from './ImageBaseViewer';
 import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
-import { CLASS_INVISIBLE, CLASS_BOX_ANNOTATED_ELEMENT } from '../../constants';
+import { CLASS_INVISIBLE } from '../../constants';
 import { openContentInsideIframe } from '../../util';
 import './Image.scss';
 
@@ -21,7 +21,6 @@ class ImageViewer extends ImageBaseViewer {
 
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.classList.add(CSS_CLASS_IMAGE);
-        this.wrapperEl.classList.add(CLASS_BOX_ANNOTATED_ELEMENT);
 
         this.imageEl = this.wrapperEl.appendChild(document.createElement('img'));
         this.imageEl.setAttribute('data-page-number', 1);

@@ -3,7 +3,11 @@ import Annotator from '../Annotator';
 import ImagePointThread from './ImagePointThread';
 import * as annotatorUtil from '../annotatorUtil';
 import * as imageAnnotatorUtil from './imageAnnotatorUtil';
-import { SELECTOR_BOX_PREVIEW_BTN_ANNOTATE, SELECTOR_BOX_ANNOTATED_ELEMENT } from '../../constants';
+import { SELECTOR_BOX_PREVIEW_BTN_ANNOTATE } from '../../constants';
+
+const IMAGE_NODE_NAME = 'img';
+// Selector for image container OR multi-image container
+const ANNOTATED_ELEMENT_SELECTOR = '.bp-image, .bp-images-wrapper';
 
 @autobind
 class ImageAnnotator extends Annotator {
@@ -19,7 +23,7 @@ class ImageAnnotator extends Annotator {
      * @return {HTMLElement} Annotated element in the viewer
      */
     getAnnotatedEl(containerEl) {
-        return containerEl.querySelector(SELECTOR_BOX_ANNOTATED_ELEMENT);
+        return containerEl.querySelector(ANNOTATED_ELEMENT_SELECTOR);
     }
 
     /**
@@ -37,24 +41,24 @@ class ImageAnnotator extends Annotator {
 
         // Get image tag inside viewer
         const imageEl = event.target;
-        if (imageEl.nodeName !== 'IMG') {
+        if (imageEl.nodeName.toLowerCase() !== IMAGE_NODE_NAME) {
             return location;
         }
 
         // If no image page was selected, ignore, as all images have a page number.
-        const page = Number(imageEl.getAttribute('data-page-number'));
+        const { page } = annotatorUtil.getPageElAndPageNumber(imageEl);
         if (!page) {
             return location;
         }
 
         // Location based only on image position
         const imageDimensions = imageEl.getBoundingClientRect();
-        const [x, y] = [(event.clientX - imageDimensions.left), (event.clientY - imageDimensions.top)];
+        let [x, y] = [(event.clientX - imageDimensions.left), (event.clientY - imageDimensions.top)];
 
         // Scale location coordinates according to natural image size
         const scale = annotatorUtil.getScale(this.annotatedElement);
         const rotation = Number(imageEl.getAttribute('data-rotation-angle'));
-        const [scaledX, scaledY] = imageAnnotatorUtil.getLocationWithoutRotation(x / scale, y / scale, rotation, imageDimensions, scale);
+        [x, y] = imageAnnotatorUtil.getLocationWithoutRotation(x / scale, y / scale, rotation, imageDimensions, scale);
 
         // We save the dimensions of the annotated element so we can
         // compare to the element being rendered on and scale as appropriate
@@ -64,8 +68,8 @@ class ImageAnnotator extends Annotator {
         };
 
         location = {
-            x: scaledX,
-            y: scaledY,
+            x,
+            y,
             imageEl,
             dimensions,
             page

@@ -33,7 +33,6 @@ export const CLASS_IS_SCROLLABLE = 'bp-is-scrollable';
 export const CLASS_IS_SELECTABLE = 'bp-is-selectable';
 export const CLASS_IS_BUFFERING = 'bp-is-buffering';
 export const CLASS_DARK = 'bp-dark';
-export const CLASS_BOX_ANNOTATED_ELEMENT = 'bp-annotated';
 
 export const SELECTOR_BOX_PREVIEW_CONTAINER = `.${CLASS_BOX_PREVIEW_CONTAINER}`;
 export const SELECTOR_BOX_PREVIEW = `.${CLASS_BOX_PREVIEW}`;
@@ -50,7 +49,6 @@ export const SELECTOR_BOX_PREVIEW_LOADING_TEXT = `.${CLASS_BOX_PREVIEW_LOADING_T
 export const SELECTOR_BOX_PREVIEW_LOADING_WRAPPER = `.${CLASS_BOX_PREVIEW_LOADING_WRAPPER}`;
 export const SELECTOR_BOX_PREVIEW_LOGO_CUSTOM = `.${CLASS_BOX_PREVIEW_LOGO_CUSTOM}`;
 export const SELECTOR_BOX_PREVIEW_LOGO_DEFAULT = `.${CLASS_BOX_PREVIEW_LOGO_DEFAULT}`;
-export const SELECTOR_BOX_ANNOTATED_ELEMENT = `.${CLASS_BOX_ANNOTATED_ELEMENT}`;
 
 export const PERMISSION_DOWNLOAD = 'can_download';
 export const PERMISSION_ANNOTATE = 'can_annotate';

@@ -3,7 +3,7 @@ import ImageBaseViewer from './ImageBaseViewer';
 import './MultiImage.scss';
 
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
-import { CLASS_INVISIBLE, CLASS_BOX_ANNOTATED_ELEMENT } from '../../constants';
+import { CLASS_INVISIBLE } from '../../constants';
 
 const PADDING_BUFFER = 100;
 const CSS_CLASS_IMAGE = 'bp-images';
@@ -21,7 +21,6 @@ class MultiImageViewer extends ImageBaseViewer {
 
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.classList.add(CSS_CLASS_IMAGE_WRAPPER);
-        this.wrapperEl.classList.add(CLASS_BOX_ANNOTATED_ELEMENT);
 
         this.imageEl = this.wrapperEl.appendChild(document.createElement('div'));
         this.imageEl.classList.add(CSS_CLASS_IMAGE);
@@ -108,6 +107,7 @@ class MultiImageViewer extends ImageBaseViewer {
 
         // Set page number. Page is index + 1.
         this.singleImageEls[index].setAttribute('data-page-number', index + 1);
+        this.singleImageEls[index].classList.add('page');
 
         this.singleImageEls[index].src = imageUrl;
     }

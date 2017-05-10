@@ -130,7 +130,10 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             stubs.bindImageListeners = sandbox.stub(multiImage, 'bindImageListeners');
             stubs.singleImageEl = {
                 src: undefined,
-                setAttribute: sandbox.stub()
+                setAttribute: sandbox.stub(),
+                classList: {
+                    add: sandbox.stub()
+                }
             };
         });
 
@@ -160,6 +163,15 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
             multiImage.setupImageEls('file/100/content/{page}.png', 0);
             expect(stubs.singleImageEl.setAttribute).to.be.calledWith('data-page-number', 1);
+        });
+
+        it('should add the "page" class to all image pages', () => {
+            multiImage.singleImageEls = {
+                0: stubs.singleImageEl
+            };
+
+            multiImage.setupImageEls('file/100/content/{page}.png', 0);
+            expect(stubs.singleImageEl.classList.add).to.be.calledWith('page');
         });
     });
 
