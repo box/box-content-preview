@@ -908,11 +908,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should set the annotator scale if it exists', () => {
             docBase.annotator = {
-                setScale: sandbox.stub()
+                setScale: sandbox.stub(),
+                renderAnnotations: sandbox.stub()
             };
 
             docBase.resize();
             expect(docBase.annotator.setScale).to.be.called;
+            expect(docBase.annotator.renderAnnotations).to.be.called;
             expect(stubs.setPage).to.be.called;
         });
     });

@@ -75,7 +75,7 @@ class BaseViewer extends EventEmitter {
         // the assets are available, the showAnnotations flag is true, and the
         // expiring embed is not a shared link
         if (this.areAnnotationsEnabled() && !this.options.sharedLink) {
-            this.loadAssets(ANNOTATIONS_JS, ANNOTATIONS_CSS);
+            this.annotationsPromise = this.loadAssets(ANNOTATIONS_JS, ANNOTATIONS_CSS);
         }
     }
 
@@ -278,8 +278,8 @@ class BaseViewer extends EventEmitter {
         });
 
         this.addListener('load', () => {
-            if (window.BoxAnnotations && this.areAnnotationsEnabled()) {
-                this.loadAnnotator();
+            if (this.areAnnotationsEnabled()) {
+                this.annotationsPromise.then(this.loadAnnotator);
             }
         });
     }
