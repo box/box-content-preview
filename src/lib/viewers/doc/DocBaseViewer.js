@@ -592,9 +592,10 @@ class DocBaseViewer extends BaseViewer {
 
         this.setPage(currentPageNumber);
 
-        // Update annotations scale
+        // Update annotations scale to current numerical scale
         if (this.annotator) {
-            this.annotator.setScale(this.pdfViewer.currentScale); // Set scale to current numerical scale
+            this.annotator.setScale(this.pdfViewer.currentScale);
+            this.annotator.renderAnnotations();
         }
 
         super.resize();

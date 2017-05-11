@@ -18,26 +18,6 @@ export function isPresentation(annotatedElement) {
 //------------------------------------------------------------------------------
 
 /**
-* Returns the page element and page number that the element is on.
-* @param {HTMLElement} element - Element to find page and page number for
-* @return {Object} Page element/page number if found or null/-1 if not
-*/
-export function getPageElAndPageNumber(element) {
-    const pageEl = annotatorUtil.findClosestElWithClass(element, 'page');
-    if (pageEl) {
-        return {
-            pageEl,
-            page: parseInt(pageEl.getAttribute('data-page-number'), 10)
-        };
-    }
-
-    return {
-        pageEl: null,
-        page: -1
-    };
-}
-
-/**
  * Checks whether mouse is inside the dialog represented by this thread.
  *
  * @param {Event} event - Mouse event
