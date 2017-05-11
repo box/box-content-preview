@@ -4,6 +4,7 @@ import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
 import * as constants from './annotationConstants';
 import { CLASS_ACTIVE } from '../constants';
+import './Annotator.scss';
 
 @autobind
 class Annotator extends EventEmitter {
