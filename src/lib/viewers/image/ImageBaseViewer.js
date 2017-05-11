@@ -21,7 +21,14 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     destroy() {
+        // Destroy the annotator
+        if (this.annotator && typeof this.annotator.destroy === 'function') {
+            this.annotator.removeAllListeners();
+            this.annotator.destroy();
+        }
+
         this.unbindDOMListeners();
+
         // Destroy the controls
         if (this.controls && typeof this.controls.destroy === 'function') {
             this.controls.destroy();
@@ -287,6 +294,11 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleMouseUp(event) {
+        // Ignore zoom/pan mouse events if in annotation mode
+        if (this.annotator && this.annotator.isInPointMode()) {
+            return;
+        }
+
         const { button, ctrlKey, metaKey } = event;
 
         // If this is not a left click, then ignore
@@ -312,9 +324,55 @@ class ImageBaseViewer extends BaseViewer {
      */
     cancelDragEvent(event) {
         event.preventDefault();
-        event.stopPropogation();
+        event.stopPropagation();
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Annotations. TODO(jholdstock|spramod) Refactor out all annotations code from viewers
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * Initializes annotations.
+     *
+     * @protected
+     * @return {void}
+     */
+    initAnnotations() {
+        super.initAnnotations();
+
+        // Disables controls during point annotation mode
+        /* istanbul ignore next */
+        this.annotator.addListener('pointmodeenter', () => {
+            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+            if (this.controls) {
+                this.controls.disable();
+            }
+        });
+
+        /* istanbul ignore next */
+        this.annotator.addListener('pointmodeexit', () => {
+            this.updateCursor();
+            if (this.controls) {
+                this.controls.enable();
+            }
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getPointModeClickHandler() {
+        if (!this.isAnnotatable('point')) {
+            return null;
+        }
+
+        return () => {
+            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+            this.emit('togglepointannotationmode');
+        };
+    }
 
     //--------------------------------------------------------------------------
     // Abstract

@@ -41,30 +41,10 @@ describe('lib/annotations/image/ImageAnnotator', () => {
     describe('getLocationFromEvent()', () => {
         it('should not return a location if image isn\'t inside viewer', () => {
             annotator.annotatedElement = document.createElement('div');
-            const location = annotator.getLocationFromEvent({});
-            expect(location).to.be.null;
-        });
-
-        it('should not return a location if click is on dialog', () => {
-            sandbox.stub(annotatorUtil, 'findClosestDataType').returns('annotation-dialog');
-
-            const location = annotator.getLocationFromEvent({});
-            expect(location).to.be.null;
-        });
-
-        it('should not return a location if click is on annotation indicator', () => {
-            sandbox.stub(annotatorUtil, 'findClosestDataType').returns('annotation-indicator');
-
-            const location = annotator.getLocationFromEvent({});
-            expect(location).to.be.null;
-        });
-
-        it('should not return a location if click isn\'t in image area', () => {
-            sandbox.stub(annotatorUtil, 'findClosestDataType').returns('not-a-dialog');
-
             const location = annotator.getLocationFromEvent({
-                clientX: -1,
-                clientY: -1
+                target: {
+                    nodeName: 'not-annotated'
+                }
             });
             expect(location).to.be.null;
         });
@@ -77,16 +57,18 @@ describe('lib/annotations/image/ImageAnnotator', () => {
                 y: 200
             };
             const imageEl = annotator.annotatedElement.querySelector('img');
-            sandbox.stub(annotatorUtil, 'findClosestDataType').returns('not-a-dialog');
             sandbox.stub(annotatorUtil, 'getScale').returns(1);
             sandbox.stub(imageAnnotatorUtil, 'getLocationWithoutRotation').returns([x, y]);
 
-            const location = annotator.getLocationFromEvent({});
+            const location = annotator.getLocationFromEvent({
+                target: imageEl
+            });
             expect(location).to.deep.equal({
                 x,
                 y,
                 imageEl,
-                dimensions
+                dimensions,
+                page: 1
             });
         });
     });

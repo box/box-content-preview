@@ -73,28 +73,6 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
     });
 
-    describe('destroy()', () => {
-        it('should destroy the annotator', () => {
-            image.annotator = {
-                removeAllListeners: sandbox.stub(),
-                destroy: sandbox.stub()
-            };
-
-            image.destroy();
-
-            expect(image.annotator.removeAllListeners).to.be.called;
-            expect(image.annotator.destroy).to.be.called;
-        });
-
-        it('should remove all the listeners', () => {
-            sandbox.stub(image, 'unbindDOMListeners');
-
-            image.destroy();
-
-            expect(image.unbindDOMListeners).to.be.called;
-        });
-    });
-
     describe('load()', () => {
         it('should fetch the image URL and load an image', () => {
             sandbox.stub(image, 'createContentUrlWithAuthParams').returns(imageUrl);

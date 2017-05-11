@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import {
     isPresentation,
-    getPageElAndPageNumber,
     isInDialog,
     hasActiveDialog,
     fitDialogHeightInPage,
@@ -40,23 +39,6 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
             docEl.classList.add('bp-doc-presentation');
             const result = isPresentation(docEl);
             expect(result).to.be.true;
-        });
-    });
-
-    describe('getPageElAndPageNumber()', () => {
-        it('should return page element and page number that the specified element is on', () => {
-            const fooEl = document.querySelector('.foo');
-            const pageEl = document.querySelector('.page');
-            const result = getPageElAndPageNumber(fooEl);
-            assert.equal(result.pageEl, pageEl, 'Page element should be equal');
-            assert.equal(result.page, 2, 'Page number should be equal');
-        });
-
-        it('should return no page element and -1 page number if no page is found', () => {
-            const barEl = document.querySelector('.bar');
-            const result = getPageElAndPageNumber(barEl);
-            assert.equal(result.pageEl, null, 'Page element should be null');
-            assert.equal(result.page, -1, 'Page number should be -1');
         });
     });
 

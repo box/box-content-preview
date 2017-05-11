@@ -5,8 +5,10 @@ import './MultiImage.scss';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
 
+const PADDING_BUFFER = 100;
 const CSS_CLASS_IMAGE = 'bp-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
+const ZOOM_UPDATE_PAN_DELAY = 50;
 
 @autobind
 class MultiImageViewer extends ImageBaseViewer {
@@ -18,11 +20,10 @@ class MultiImageViewer extends ImageBaseViewer {
         super.setup();
 
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
-        this.wrapperEl.className = CSS_CLASS_IMAGE_WRAPPER;
-
+        this.wrapperEl.classList.add(CSS_CLASS_IMAGE_WRAPPER);
 
         this.imageEl = this.wrapperEl.appendChild(document.createElement('div'));
-        this.imageEl.className = CSS_CLASS_IMAGE;
+        this.imageEl.classList.add(CSS_CLASS_IMAGE);
 
         this.singleImageEls = [this.imageEl.appendChild(document.createElement('img'))];
         this.loadTimeout = 60000;
@@ -34,9 +35,6 @@ class MultiImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     destroy() {
-        // Remove listeners
-        this.unbindDOMListeners();
-
         if (this.singleImageEls && this.singleImageEls.length > 0) {
             this.singleImageEls.forEach((el, index) => {
                 this.unbindImageListeners(index);
@@ -104,6 +102,10 @@ class MultiImageViewer extends ImageBaseViewer {
             this.bindImageListeners(index);
         }
 
+        // Set page number. Page is index + 1.
+        this.singleImageEls[index].setAttribute('data-page-number', index + 1);
+        this.singleImageEls[index].classList.add('page');
+
         this.singleImageEls[index].src = imageUrl;
     }
 
@@ -136,11 +138,11 @@ class MultiImageViewer extends ImageBaseViewer {
 
         switch (type) {
             case 'in':
-                newWidth = imageContainerWidth + 100;
+                newWidth = imageContainerWidth + PADDING_BUFFER;
                 break;
 
             case 'out':
-                newWidth = imageContainerWidth - 100;
+                newWidth = imageContainerWidth - PADDING_BUFFER;
                 break;
 
             default:
@@ -153,10 +155,25 @@ class MultiImageViewer extends ImageBaseViewer {
         // Fix the scroll position of the image to be centered
         this.imageEl.parentNode.scrollLeft = (this.imageEl.parentNode.scrollWidth - viewportWidth) / 2;
 
+        if (this.annotator) {
+            this.scaleAnnotations(this.imageEl.offsetWidth, this.imageEl.offsetHeight);
+        }
+
         this.emit('zoom');
 
         // Give the browser some time to render before updating pannability
-        setTimeout(this.updatePannability, 50);
+        setTimeout(this.updatePannability, ZOOM_UPDATE_PAN_DELAY);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    scaleAnnotations(width, height) {
+        // Grab the first page image dimensions
+        const imageEl = this.singleImageEls[0];
+        const scale = width ? (width / imageEl.naturalWidth) : (height / imageEl.naturalHeight);
+        this.annotator.setScale(scale);
+        this.annotator.renderAnnotations();
     }
 
     /**

@@ -129,7 +129,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             multiImage.setup();
             stubs.bindImageListeners = sandbox.stub(multiImage, 'bindImageListeners');
             stubs.singleImageEl = {
-                src: undefined
+                src: undefined,
+                setAttribute: sandbox.stub(),
+                classList: {
+                    add: sandbox.stub()
+                }
             };
         });
 
@@ -150,6 +154,24 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
             multiImage.setupImageEls('file/100/content/{page}.png', 0);
             expect(multiImage.singleImageEls[0].src).to.be.equal('file/100/content/{page}.png');
+        });
+
+        it('should set the page number for each image el', () => {
+            multiImage.singleImageEls = {
+                0: stubs.singleImageEl
+            };
+
+            multiImage.setupImageEls('file/100/content/{page}.png', 0);
+            expect(stubs.singleImageEl.setAttribute).to.be.calledWith('data-page-number', 1);
+        });
+
+        it('should add the "page" class to all image pages', () => {
+            multiImage.singleImageEls = {
+                0: stubs.singleImageEl
+            };
+
+            multiImage.setupImageEls('file/100/content/{page}.png', 0);
+            expect(stubs.singleImageEl.classList.add).to.be.calledWith('page');
         });
     });
 
@@ -302,6 +324,67 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         it('should remove the error event listener', () => {
             multiImage.unbindImageListeners(1);
             expect(multiImage.singleImageEls[1].removeEventListener).to.be.calledWith('error', sinon.match.func);
+        });
+    });
+
+    // TODO(jholdstock): Kill these tests after removing annotation specific code from viewer.
+    describe('annotations', () => {
+        beforeEach(() => {
+            multiImage.annotator = {
+                setScale: sandbox.stub(),
+                renderAnnotations: sandbox.stub()
+            };
+        });
+
+        afterEach(() => {
+            multiImage.annotator = undefined;
+        });
+
+        describe('scaleAnnotations()', () => {
+            it('should scale the annotations relative to the size of the first image dimensions', () => {
+                multiImage.singleImageEls = [
+                    {
+                        naturalWidth: 1024,
+                        naturalHeight: 1024
+                    },
+                    {
+                        src: 'www.NotTheRightImage.net'
+                    }
+                ];
+
+                multiImage.scaleAnnotations(512, 512);
+                expect(multiImage.annotator.setScale).to.be.calledWith(0.5);
+            });
+
+            it('should invoke annotator.renderAnnotations()', () => {
+                multiImage.singleImageEls = [
+                    {
+                        naturalWidth: 1024,
+                        naturalHeight: 1024
+                    }
+                ];
+
+                multiImage.scaleAnnotations(1, 1);
+                expect(multiImage.annotator.renderAnnotations).to.be.called;
+            });
+        });
+
+        it('should invoke scaleAnnotations() in zoom() when an annotator is available', () => {
+            const offWidth = 222;
+            const offHeight = 111;
+            multiImage.imageEl = {
+                offsetWidth: offWidth,
+                offsetHeight: offHeight,
+                style: {},
+                parentNode: {
+                    clientWidth: 10,
+                    clientHeight: 10
+                }
+            };
+
+            const scaleStub = sandbox.stub(multiImage, 'scaleAnnotations');
+            multiImage.zoom();
+            expect(scaleStub).to.be.calledWith(offWidth, offHeight);
         });
     });
 });
