@@ -33,6 +33,26 @@ export function findClosestElWithClass(element, className) {
 }
 
 /**
+* Returns the page element and page number that the element is on.
+* @param {HTMLElement} element - Element to find page and page number for
+* @return {Object} Page element/page number if found or null/-1 if not
+*/
+export function getPageElAndPageNumber(element) {
+    const pageEl = findClosestElWithClass(element, 'page');
+    if (pageEl) {
+        return {
+            pageEl,
+            page: parseInt(pageEl.getAttribute('data-page-number'), 10)
+        };
+    }
+
+    return {
+        pageEl: null,
+        page: -1
+    };
+}
+
+/**
  * Finds the closest element with a data type and returns that data type. If
  * an attributeName is provided, search for that data atttribute instead of
  * data type.
