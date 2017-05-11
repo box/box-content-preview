@@ -64,6 +64,9 @@ describe('lib/viewers/media/MediaControls', () => {
             expect(mediaControls.settingsButtonEl.getAttribute('title')).to.equal(__('media_settings'));
             expect(mediaControls.settingsButtonEl.getAttribute('aria-label')).to.equal(__('media_settings'));
 
+            expect(mediaControls.subtitlesButtonEl.getAttribute('title')).to.equal(__('media_subtitles_cc'));
+            expect(mediaControls.subtitlesButtonEl.getAttribute('aria-label')).to.equal(__('media_subtitles_cc'));
+
             expect(mediaControls.timeScrubberEl.getAttribute('aria-valuenow')).to.equal('0');
             expect(mediaControls.timeScrubberEl.getAttribute('aria-valuetext')).to.equal('0:00 of 20:10');
             expect(mediaControls.volScrubberEl.getAttribute('aria-valuenow')).to.equal('100');
@@ -144,6 +147,7 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.settingsButtonEl = stubs.genericEl;
             mediaControls.volButtonEl = stubs.genericEl;
             mediaControls.playButtonEl = stubs.genericEl;
+            mediaControls.subtitlesButtonEl = stubs.genericEl;
             mediaControls.wrapperEl = stubs.genericEl;
 
             mediaControls.destroy();
@@ -152,6 +156,7 @@ describe('lib/viewers/media/MediaControls', () => {
             expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.toggleMuteHandler);
             expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.toggleFullscreenHandler);
             expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.toggleSettingsHandler);
+            expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.toggleSubtitlesHandler);
         });
     });
 
@@ -170,6 +175,15 @@ describe('lib/viewers/media/MediaControls', () => {
 
             mediaControls.handleQuality();
             expect(stubs.emit).to.be.calledWith('qualitychange');
+        });
+    });
+
+    describe('handleSubtitle', () => {
+        it('should emit the subtitlechange event', () => {
+            stubs.emit = sandbox.stub(mediaControls, 'emit');
+
+            mediaControls.handleSubtitle();
+            expect(stubs.emit).to.be.calledWith('subtitlechange');
         });
     });
 
@@ -335,6 +349,18 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
+    describe('toggleSubtitles', () => {
+        it('should emit a togglesubtitles message', () => {
+            sandbox.stub(mediaControls.settings, 'toggleSubtitles');
+            stubs.emit = sandbox.stub(mediaControls, 'emit');
+
+            mediaControls.toggleSubtitles();
+
+            expect(stubs.emit).to.be.calledWith('togglesubtitles');
+            expect(mediaControls.settings.toggleSubtitles).to.be.called;
+        });
+    });
+
     describe('toggleFullscreen', () => {
         beforeEach(() => {
             stubs.emit = sandbox.stub(mediaControls, 'emit');
@@ -489,6 +515,7 @@ describe('lib/viewers/media/MediaControls', () => {
             expect(stubs.addActivationListener).to.be.calledWith(mediaControls.volButtonEl, mediaControls.toggleMuteHandler);
             expect(stubs.addActivationListener).to.be.calledWith(mediaControls.fullscreenButtonEl, mediaControls.toggleFullscreenHandler);
             expect(stubs.addActivationListener).to.be.calledWith(mediaControls.settingsButtonEl, mediaControls.toggleSettingsHandler);
+            expect(stubs.addActivationListener).to.be.calledWith(mediaControls.subtitlesButtonEl, mediaControls.toggleSubtitlesHandler);
             expect(stubs.addListener).to.be.called;
         });
     });
@@ -825,6 +852,15 @@ describe('lib/viewers/media/MediaControls', () => {
 
             mediaControls.filmstripHideHandler();
             expect(mediaControls.filmstripContainerEl.style.display).to.equal('');
+        });
+    });
+
+    describe('initSubtitles()', () => {
+        it('should load subtitles', () => {
+            sandbox.stub(mediaControls.settings, 'loadSubtitles');
+            const subs = ['English', 'Russian'];
+            mediaControls.initSubtitles(subs);
+            expect(mediaControls.settings.loadSubtitles).to.be.calledWith(subs);
         });
     });
 });

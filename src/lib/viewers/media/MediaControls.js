@@ -59,6 +59,9 @@ class MediaControls extends EventEmitter {
         this.settingsButtonEl = this.wrapperEl.querySelector('.bp-media-gear-icon');
         this.setLabel(this.settingsButtonEl, __('media_settings'));
 
+        this.subtitlesButtonEl = this.wrapperEl.querySelector('.bp-media-cc-icon');
+        this.setLabel(this.subtitlesButtonEl, __('media_subtitles_cc'));
+
         this.setDuration(this.mediaEl.duration);
         this.setupSettings();
         this.setupScrubbers();
@@ -96,6 +99,7 @@ class MediaControls extends EventEmitter {
         if (this.settings) {
             this.settings.removeListener('quality', this.handleQuality);
             this.settings.removeListener('speed', this.handleRate);
+            this.settings.removeListener('subtitles', this.handleSubtitle);
             this.settings.destroy();
             this.settings = undefined;
         }
@@ -114,6 +118,10 @@ class MediaControls extends EventEmitter {
 
         if (this.settingsButtonEl) {
             removeActivationListener(this.settingsButtonEl, this.toggleSettingsHandler);
+        }
+
+        if (this.subtitlesButtonEl) {
+            removeActivationListener(this.subtitlesButtonEl, this.toggleSubtitlesHandler);
         }
 
         if (this.wrapperEl) {
@@ -157,6 +165,16 @@ class MediaControls extends EventEmitter {
      */
     handleQuality() {
         this.emit('qualitychange');
+    }
+
+    /**
+     * Subtitle handler
+     *
+     * @private
+     * @return {void}
+     */
+    handleSubtitle() {
+        this.emit('subtitlechange');
     }
 
     /**
@@ -316,6 +334,17 @@ class MediaControls extends EventEmitter {
         } else {
             this.settings.show();
         }
+    }
+
+    /**
+     * Toggles subtitles
+     *
+     * @return {void}
+     */
+    toggleSubtitles() {
+        this.show();
+        this.settings.toggleSubtitles();
+        this.emit('togglesubtitles');
     }
 
     /**
@@ -496,11 +525,13 @@ class MediaControls extends EventEmitter {
         this.toggleMuteHandler = activationHandler(this.toggleMute);
         this.toggleFullscreenHandler = activationHandler(this.toggleFullscreen);
         this.toggleSettingsHandler = activationHandler(this.toggleSettings);
+        this.toggleSubtitlesHandler = activationHandler(this.toggleSubtitles);
 
         addActivationListener(this.playButtonEl, this.togglePlayHandler);
         addActivationListener(this.volButtonEl, this.toggleMuteHandler);
         addActivationListener(this.fullscreenButtonEl, this.toggleFullscreenHandler);
         addActivationListener(this.settingsButtonEl, this.toggleSettingsHandler);
+        addActivationListener(this.subtitlesButtonEl, this.toggleSubtitlesHandler);
 
         fullscreen.addListener('exit', this.setFullscreenLabel);
     }
@@ -768,6 +799,17 @@ class MediaControls extends EventEmitter {
      */
     isVolumeScrubberFocused() {
         return document.activeElement === this.volScrubberEl;
+    }
+
+    /**
+     * Takes a list of subtitle names and populates the settings menu
+     *
+     * @param {Array} subtitles - A list of subtitle names as strings
+     * @return {void}
+     */
+    initSubtitles(subtitles) {
+        this.settings.addListener('subtitles', this.handleSubtitle);
+        this.settings.loadSubtitles(subtitles);
     }
 }
 

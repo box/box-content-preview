@@ -561,6 +561,10 @@ class MediaBaseViewer extends BaseViewer {
             case 'shift+m':
                 this.toggleMute();
                 break;
+            case 'c':
+            case 'shift+c':
+                this.mediaControls.toggleSubtitles();
+                break;
             default:
                 return false;
         }

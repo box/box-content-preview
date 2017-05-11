@@ -29,7 +29,13 @@ describe('lib/viewers/media/Settings', () => {
         it('should have its template set up', () => {
             expect(settings.settingsEl).to.have.class('bp-media-settings');
             expect(settings.settingsEl).to.contain('.bp-media-settings-item');
+        });
+
+        it('should initialize as invisible and without subtitles', () => {
             expect(settings.visible).to.be.false;
+            expect(settings.hasSubtitles).to.be.false;
+            expect(settings.areSubtitlesOn()).to.be.false;
+            expect(settings.containerEl).to.have.class('bp-media-settings-subtitles-unavailable');
         });
     });
 
@@ -548,6 +554,121 @@ describe('lib/viewers/media/Settings', () => {
             expect(document.querySelector('[data-type="speed"] .bp-media-settings-value').textContent).to.equal('0.5');
             expect(document.querySelector('[data-type="speed"][data-value="1.0"]')).to.not.have.class('bp-media-settings-selected');
             expect(document.querySelector('[data-type="speed"][data-value="0.5"]')).to.have.class('bp-media-settings-selected');
+        });
+
+        it('should do special handling for subtitles', () => {
+            sandbox.stub(settings, 'handleSubtitleSelection');
+
+            settings.chooseOption('subtitles', '-1');
+
+            expect(settings.handleSubtitleSelection).to.be.called;
+        });
+
+        it('should not do special subtitle handling for non-subtitles', () => {
+            sandbox.stub(settings, 'handleSubtitleSelection');
+
+            settings.chooseOption('speed', 0.5);
+
+            expect(settings.handleSubtitleSelection).to.not.be.called;
+        });
+    });
+
+    describe('handleSubtitleSelection()', () => {
+        it('should save previous value when turning off subtitles', () => {
+            settings.toggleToSubtitle = '2';
+            settings.handleSubtitleSelection('3', '-1');
+
+            expect(settings.toggleToSubtitle).to.equal('3');
+            expect(settings.areSubtitlesOn()).to.equal(false);
+            expect(settings.containerEl).to.not.have.class('bp-media-settings-subtitles-on');
+        });
+
+        it('should NOT save old value when turning off subtitles if subtitles were already off', () => {
+            settings.toggleToSubtitle = '2';
+            settings.handleSubtitleSelection('-1', '-1');
+
+            expect(settings.toggleToSubtitle).to.equal('2');
+            expect(settings.areSubtitlesOn()).to.equal(false);
+            expect(settings.containerEl).to.not.have.class('bp-media-settings-subtitles-on');
+        });
+
+        it('should set subtitles-on on container when subtitles are selected', () => {
+            settings.handleSubtitleSelection('-1', '2');
+
+            expect(settings.containerEl).to.have.class('bp-media-settings-subtitles-on');
+        });
+    });
+
+    describe('toggleSubtitles()', () => {
+        it('Should turn off subtitles if they were previously on', () => {
+            sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings, 'areSubtitlesOn').returns(true);
+
+            settings.toggleSubtitles();
+
+            expect(settings.chooseOption).to.be.calledWith('subtitles', '-1');
+        });
+
+        it('Should turn on subtitles if they were previously off', () => {
+            settings.hasSubtitles = true;
+            sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings, 'areSubtitlesOn').returns(false);
+            settings.toggleToSubtitle = '2';
+
+            settings.toggleSubtitles();
+
+            expect(settings.chooseOption).to.be.calledWith('subtitles', '2');
+        });
+    });
+
+    describe('loadSubtitles()', () => {
+        it('Should load all subtitles and make them available', () => {
+            const subsMenu = settings.settingsEl.querySelector('.bp-media-settings-menu-subtitles');
+
+            settings.loadSubtitles(['English', 'Russian', 'Spanish']);
+
+            expect(subsMenu.children.length).to.equal(5); // Three languages, 'Off', and back to main menu
+            expect(settings.hasSubtitles).to.be.true;
+            expect(settings.containerEl).to.not.have.class('bp-media-settings-subtitles-unavailable');
+        });
+
+        it('Should reset menu dimensions after loading', () => {
+            sandbox.stub(settings, 'setMenuContainerDimensions');
+
+            settings.loadSubtitles(['English', 'Russian', 'Spanish']);
+
+            expect(settings.setMenuContainerDimensions).to.be.calledWith(settings.settingsEl.firstChild);
+        });
+
+        it('Should toggle on subtitles if they were on in the most recently viewed subtitled video', () => {
+            sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings, 'areSubtitlesOn').returns(false);
+            sandbox.stub(cache, 'get').withArgs('media-subtitles').returns('2');
+
+            settings.loadSubtitles(['English', 'Russian', 'Spanish']);
+
+            expect(settings.chooseOption).to.be.calledWith('subtitles', '0');
+        });
+
+        it('Should not toggle on subtitles if they were off in the most recently viewed subtitled video', () => {
+            sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings, 'areSubtitlesOn').returns(false);
+            sandbox.stub(cache, 'get').withArgs('media-subtitles').returns('-1');
+
+            settings.loadSubtitles(['English', 'Russian', 'Spanish']);
+
+            expect(settings.chooseOption).to.not.be.called;
+        });
+
+        it('Should escape subtitle names', () => {
+            const subsMenu = settings.settingsEl.querySelector('.bp-media-settings-menu-subtitles');
+
+            settings.loadSubtitles(['English', '<badboy>']);
+
+            const sub0 = subsMenu.querySelector('[data-value="0"]').querySelector('.bp-media-settings-value');
+            const sub1 = subsMenu.querySelector('[data-value="1"]').querySelector('.bp-media-settings-value');
+            expect(sub0.innerHTML).to.equal('English');
+            expect(sub1.innerHTML).to.equal('&lt;badboy&gt;');
         });
     });
 

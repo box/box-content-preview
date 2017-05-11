@@ -57,9 +57,12 @@ describe('lib/viewers/media/DashViewer', () => {
             destroy: () => {},
             getNetworkingEngine: sandbox.stub().returns(stubs.networkEngine),
             getStats: () => {},
+            getTextTracks: () => {},
             getVariantTracks: () => {},
             load: () => {},
-            selectVariantTrack: () => {}
+            selectTextTrack: () => {},
+            selectVariantTrack: () => {},
+            setTextTrackVisibility: () => {}
         };
         stubs.mockPlayer = sandbox.mock(dash.player);
 
@@ -67,6 +70,7 @@ describe('lib/viewers/media/DashViewer', () => {
             addListener: () => {},
             destroy: () => {},
             initFilmstrip: () => {},
+            initSubtitles: () => {},
             removeAllListeners: () => {},
             removeListener: () => {}
         };
@@ -349,6 +353,7 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should add event listeners to the media controls', () => {
             Object.defineProperty(VideoBaseViewer.prototype, 'addEventListenersForMediaControls', { value: sandbox.mock() });
             stubs.mockControls.expects('addListener').withArgs('qualitychange', sinon.match.func);
+            stubs.mockControls.expects('addListener').withArgs('subtitlechange', sinon.match.func);
             dash.addEventListenersForMediaControls();
         });
     });
@@ -361,7 +366,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.showMedia).to.not.be.called;
         });
 
-        it('should load the meta data for the media element, show the media/play button, and focus on mediaContainerEl', () => {
+        it('should load the meta data for the media element, show the media/play button, load subs and set focus', () => {
             sandbox.stub(dash, 'isDestroyed').returns(false);
             sandbox.stub(dash, 'showMedia');
             sandbox.stub(dash, 'calculateVideoDimensions');
@@ -371,11 +376,13 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash, 'handleVolume');
             sandbox.stub(dash, 'startBandwidthTracking');
             sandbox.stub(dash, 'handleQuality');
+            sandbox.stub(dash, 'loadSubtitles');
             sandbox.stub(dash, 'showPlayButton');
 
             dash.loadeddataHandler();
             expect(dash.showMedia).to.be.called;
             expect(dash.showPlayButton).to.be.called;
+            expect(dash.loadSubtitles).to.be.called;
             expect(dash.emit).to.be.calledWith('load');
             expect(dash.loaded).to.be.true;
             expect(document.activeElement).to.equal(dash.mediaContainerEl);
@@ -439,6 +446,119 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should load the film strip', () => {
             dash.loadFilmStrip();
             expect(stubs.createUrl).to.be.called;
+        });
+    });
+
+    describe('loadSubtitles()', () => {
+        it('should initialize subtitles in sorted order if there are available subtitles', () => {
+            const english = { language: 'English', id: 5 };
+            const russian = { language: 'Russian', id: 4 };
+            const spanish = { language: 'Spanish', id: 6 };
+            const korean = { language: 'Korean', id: 3 };
+            const arabic = { language: 'Arabic', id: 7 };
+            const subs = [
+                english,
+                russian,
+                spanish,
+                korean,
+                arabic
+            ];
+            stubs.mockPlayer.expects('getTextTracks').returns(subs);
+            stubs.mockControls.expects('initSubtitles').withArgs(['Korean', 'Russian', 'English', 'Spanish', 'Arabic']);
+
+            dash.loadSubtitles();
+
+            expect(dash.textTracks).to.deep.equal([korean, russian, english, spanish, arabic]);
+        });
+
+        it('should do nothing if there are no available subtitles', () => {
+            const subs = [];
+            stubs.mockPlayer.expects('getTextTracks').returns(subs);
+            stubs.mockControls.expects('initSubtitles').never();
+
+            dash.loadSubtitles();
+        });
+    });
+
+    describe('handleSubtitle()', () => {
+        it('should select track from front of text track list', () => {
+            const english = { language: 'English', id: 3 };
+            const russian = { language: 'Russian', id: 4 };
+            const french = { language: 'French', id: 5 };
+            const spanish = { language: 'Spanish', id: 6 };
+            dash.textTracks = [
+                english,
+                russian,
+                french,
+                spanish
+            ];
+            sandbox.stub(cache, 'get').returns('0');
+            stubs.mockPlayer.expects('selectTextTrack').withArgs(english);
+            stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(true);
+
+            dash.handleSubtitle();
+
+            expect(stubs.emit).to.be.calledWith('subtitlechange', 'English');
+        });
+
+        it('should select track from end of text track list', () => {
+            const english = { language: 'English', id: 3 };
+            const russian = { language: 'Russian', id: 4 };
+            const french = { language: 'French', id: 5 };
+            const spanish = { language: 'Spanish', id: 6 };
+            dash.textTracks = [
+                english,
+                russian,
+                french,
+                spanish
+            ];
+            sandbox.stub(cache, 'get').returns('3');
+            stubs.mockPlayer.expects('selectTextTrack').withArgs(spanish);
+            stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(true);
+
+            dash.handleSubtitle();
+
+            expect(stubs.emit).to.be.calledWith('subtitlechange', 'Spanish');
+        });
+
+        it('should select track from middle of text track list', () => {
+            const english = { language: 'English', id: 3 };
+            const russian = { language: 'Russian', id: 4 };
+            const french = { language: 'French', id: 5 };
+            const spanish = { language: 'Spanish', id: 6 };
+            dash.textTracks = [
+                english,
+                russian,
+                french,
+                spanish
+            ];
+            sandbox.stub(cache, 'get').returns('1');
+            stubs.mockPlayer.expects('selectTextTrack').withArgs(russian);
+            stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(true);
+
+            dash.handleSubtitle();
+
+            expect(stubs.emit).to.be.calledWith('subtitlechange', 'Russian');
+        });
+
+        it('should turn off subtitles when idx out of bounds', () => {
+            const english = { language: 'English', id: 3 };
+            const russian = { language: 'Russian', id: 4 };
+            const french = { language: 'French', id: 5 };
+            const spanish = { language: 'Spanish', id: 6 };
+            dash.textTracks = [
+                english,
+                russian,
+                french,
+                spanish
+            ];
+            sandbox.stub(cache, 'get').returns('-1');
+            stubs.mockPlayer.expects('selectTextTrack').never();
+            stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(false);
+
+            dash.handleSubtitle();
+
+            expect(stubs.emit).to.be.calledWith('subtitlechange', null);
         });
     });
 

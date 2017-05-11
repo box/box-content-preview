@@ -29,6 +29,7 @@ class DashViewer extends VideoBaseViewer {
         // tracks
         this.hdRepresentation = {};
         this.sdRepresentation = {};
+        this.textTracks = []; // Must be sorted by representation id
 
         // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
@@ -59,6 +60,7 @@ class DashViewer extends VideoBaseViewer {
         }
         if (this.mediaControls) {
             this.mediaControls.removeListener('qualitychange', this.handleQuality);
+            this.mediaControls.removeListener('subtitlechange', this.handleSubtitle);
         }
         this.removeStats();
         super.destroy();
@@ -218,6 +220,26 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Handler for subtitle
+     *
+     * @private
+     * @emits subtitlechange
+     * @return {void}
+     */
+    handleSubtitle() {
+        const subtitleIdx = parseInt(cache.get('media-subtitles'), 10);
+        if (this.textTracks[subtitleIdx] !== undefined) {
+            const track = this.textTracks[subtitleIdx];
+            this.player.selectTextTrack(track);
+            this.player.setTextTrackVisibility(true);
+            this.emit('subtitlechange', track.language);
+        } else {
+            this.player.setTextTrackVisibility(false);
+            this.emit('subtitlechange', null);
+        }
+    }
+
+    /**
      * Handler for hd/sd/auto video
      *
      * @private
@@ -279,8 +301,20 @@ class DashViewer extends VideoBaseViewer {
     addEventListenersForMediaControls() {
         super.addEventListenersForMediaControls();
         this.mediaControls.addListener('qualitychange', this.handleQuality);
+        this.mediaControls.addListener('subtitlechange', this.handleSubtitle);
     }
 
+    /**
+     * Loads captions/subtitles into the settings menu
+     *
+     * @return {void}
+     */
+    loadSubtitles() {
+        this.textTracks = this.player.getTextTracks().sort((track1, track2) => track1.id - track2.id);
+        if (this.textTracks.length > 0) {
+            this.mediaControls.initSubtitles(this.textTracks.map((track) => track.language));
+        }
+    }
     /**
      * Handler for meta data load for the media element.
      *
@@ -300,6 +334,7 @@ class DashViewer extends VideoBaseViewer {
         this.handleVolume();
         this.startBandwidthTracking();
         this.handleQuality(); // should come after gettings rep ids
+        this.loadSubtitles();
         this.showPlayButton();
 
         this.loaded = true;
