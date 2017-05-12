@@ -275,6 +275,14 @@ class BaseViewer extends EventEmitter {
             this.resize();
         });
 
+        // Add a custom listener for events related to scaling/orientation changes
+        this.addListener('scale', (scale, rotationAngle) => {
+            if (this.annotator) {
+                this.annotator.setScale(scale);
+                this.annotator.rotateAnnotations(rotationAngle);
+            }
+        });
+
         // Add a resize handler for the window
         document.defaultView.addEventListener('resize', this.debouncedResizeHandler);
 

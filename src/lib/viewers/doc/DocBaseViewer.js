@@ -455,12 +455,8 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     setScale(scale) {
-        // Redraw annotations if needed
-        if (this.annotator) {
-            this.annotator.setScale(scale);
-        }
-
         this.pdfViewer.currentScaleValue = scale;
+        this.emit('scale', scale);
     }
 
     /**
@@ -585,12 +581,7 @@ class DocBaseViewer extends BaseViewer {
         this.pdfViewer.update();
 
         this.setPage(currentPageNumber);
-
-        // Update annotations scale to current numerical scale
-        if (this.annotator) {
-            this.annotator.setScale(this.pdfViewer.currentScale);
-            this.annotator.renderAnnotations();
-        }
+        this.setScale(this.pdfViewer.currentScale); // Set scale to current numerical scale
 
         super.resize();
     }

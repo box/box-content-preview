@@ -156,7 +156,7 @@ class MultiImageViewer extends ImageBaseViewer {
         this.imageEl.parentNode.scrollLeft = (this.imageEl.parentNode.scrollWidth - viewportWidth) / 2;
 
         if (this.annotator) {
-            this.scaleAnnotations(this.imageEl.offsetWidth, this.imageEl.offsetHeight);
+            this.setScale(this.imageEl.offsetWidth, this.imageEl.offsetHeight);
         }
 
         this.emit('zoom');
@@ -168,12 +168,11 @@ class MultiImageViewer extends ImageBaseViewer {
     /**
      * @inheritdoc
      */
-    scaleAnnotations(width, height) {
+    setScale(width, height) {
         // Grab the first page image dimensions
         const imageEl = this.singleImageEls[0];
         const scale = width ? (width / imageEl.naturalWidth) : (height / imageEl.naturalHeight);
-        this.annotator.setScale(scale);
-        this.annotator.renderAnnotations();
+        this.emit('scale', scale);
     }
 
     /**

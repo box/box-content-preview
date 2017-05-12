@@ -101,7 +101,7 @@ class ImageViewer extends ImageBaseViewer {
         this.handleOrientationChange();
 
         if (this.annotator) {
-            this.scaleAnnotations(this.imageEl.offsetwidth, this.imageEl.offsetHeight);
+            this.setScale(this.imageEl.offsetwidth, this.imageEl.offsetHeight);
         }
     }
 
@@ -209,9 +209,7 @@ class ImageViewer extends ImageBaseViewer {
         // Give the browser some time to render before updating pannability
         setTimeout(this.updatePannability, 50);
 
-        if (this.annotator) {
-            this.scaleAnnotations(newWidth, newHeight);
-        }
+        this.setScale(newWidth, newHeight);
 
         this.emit('zoom', {
             newScale: [newWidth || width, newHeight || height],
@@ -221,7 +219,7 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
-     * Scales annotations and repositions with rotation. Only one argument
+     * Scales and repositions image with rotation. Only one argument
      * (either height or width) is required for the scale calculations.
      *
      * @private
@@ -229,11 +227,10 @@ class ImageViewer extends ImageBaseViewer {
      * @param {number} height - The scale height
      * @return {void}
      */
-    scaleAnnotations(width, height) {
-        const scale = width ? (width / this.imageEl.naturalWidth) : (height / this.imageEl.naturalHeight);
-        const rotationAngle = this.currentRotationAngle % 3600 % 360;
-        this.annotator.setScale(scale);
-        this.annotator.renderAnnotations(rotationAngle);
+    setScale(width, height) {
+        this.scale = width ? (width / this.imageEl.naturalWidth) : (height / this.imageEl.naturalHeight);
+        this.rotationAngle = this.currentRotationAngle % 3600 % 360;
+        this.emit('scale', this.scale, this.rotationAngle);
     }
 
     /**
@@ -371,12 +368,9 @@ class ImageViewer extends ImageBaseViewer {
     handleOrientationChange() {
         this.adjustImageZoomPadding();
 
-        if (this.annotator) {
-            const scale = (this.imageEl.clientWidth / this.imageEl.naturalWidth);
-            const rotationAngle = this.currentRotationAngle % 3600 % 360;
-            this.annotator.setScale(scale);
-            this.annotator.renderAnnotations(rotationAngle);
-        }
+        this.scale = (this.imageEl.clientWidth / this.imageEl.naturalWidth);
+        this.rotationAngle = this.currentRotationAngle % 3600 % 360;
+        this.emit('scale', this.scale, this.rotationAngle);
     }
 }
 
