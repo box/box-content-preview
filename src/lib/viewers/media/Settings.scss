@@ -8,45 +8,32 @@ $item-hover-color: #f6fafd;
     border-radius: 2px;
     bottom: 60px;
     color: $fours;
-    display: none;
+    display: block;
     font-size: 10px;
-    height: 2 * ($item-height + $padding + 1px);
     line-height: $item-height - $padding;
     margin: 0;
     overflow: hidden;
     padding: $padding;
     position: absolute;
     right: 16px;
-    transition: width .2s, height .2s;
-    width: 148px;
+    transition: width .25s, height .25s;
+    visibility: hidden;
 
     .bp-media-settings-is-open & {
-        display: block;
-    }
-
-    // For MP3 and MP4 we only have speed option
-    .bp-media-mp4 &,
-    .bp-media-mp3 & {
-        height: $item-height + (2 * ($padding + 1px));
+        visibility: visible;
     }
 
     .bp-media-mp3 & {
         bottom: 65px;
         right: 0;
     }
+}
 
-    &.bp-media-settings-show-speed,
-    &.bp-media-settings-show-quality {
-        /* stylelint-disable declaration-no-important */
-        height: ((4 * $item-height) + (2 * $padding)) !important;
-        width: (88px + (2 * $padding)) !important;
-        /* stylelint-enable declaration-no-important */
-    }
-
-    &.bp-media-settings-show-speed {
-        /* stylelint-disable declaration-no-important */
-        height: ((7 * $item-height) + (2 * $padding)) !important;
-        /* stylelint-enable declaration-no-important */
+// For MP3 and MP4 we only have speed option
+.bp-media-mp4,
+.bp-media-mp3 {
+    .bp-media-settings-item-quality {
+        display: none;
     }
 }
 
@@ -88,7 +75,6 @@ $item-hover-color: #f6fafd;
     padding-left: $padding / 2;
     text-align: left;
     text-transform: uppercase;
-    width: 55px;
 }
 
 .bp-media-settings-value {
@@ -99,11 +85,6 @@ $item-hover-color: #f6fafd;
     .bp-media-settings-item & {
         color: $sunset-grey;
         font-weight: 400;
-        width: 48px;
-    }
-
-    .bp-media-settings-sub-item & {
-        width: 30px;
     }
 
     .bp-media-settings-selected & {
@@ -116,7 +97,6 @@ $item-hover-color: #f6fafd;
     font-weight: 400;
     text-align: center;
     text-transform: uppercase;
-    width: 48px;
 }
 
 .bp-media-settings-options-quality,

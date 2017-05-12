@@ -98,6 +98,7 @@ class Settings extends EventEmitter {
 
         insertTemplate(this.containerEl, SETTINGS_TEMPLATE, containerEl.querySelector('.bp-media-controls-wrapper'));
         this.settingsEl = this.containerEl.querySelector('.bp-media-settings');
+        this.mainMenu = this.settingsEl.firstChild;
         this.firstMenuItem = this.settingsEl.querySelectorAll('.bp-media-settings-item')[0];
 
         this.settingsButtonEl = this.containerEl.querySelector('.bp-media-gear-icon');
@@ -118,6 +119,7 @@ class Settings extends EventEmitter {
 
         this.chooseOption('quality', quality);
         this.chooseOption('speed', speed);
+        this.setSettingsMenuWidths();
     }
 
     /**
@@ -137,6 +139,7 @@ class Settings extends EventEmitter {
      */
     reset() {
         this.settingsEl.className = CLASS_SETTINGS;
+        this.setMenuHeight(this.mainMenu);
     }
 
     /**
@@ -176,6 +179,80 @@ class Settings extends EventEmitter {
     }
 
     /**
+     * Set the menu height depending on which menu is being shown
+     *
+     * @private
+     * @param {Element} menu - The menu/submenu whose height is to be determined
+     * @return {void}
+     */
+    setMenuHeight(menu) {
+        // height = n * $item-height + 2 * $padding (see Settings.scss)
+        // where n is the number of displayed items in the menu
+        const sumHeight = [].reduce.call(menu.children, (sum, child) => { return sum + child.offsetHeight; }, 0);
+        const capped = Math.min(sumHeight, 300);
+        this.settingsEl.style.height = `${capped + 16}px`;
+    }
+
+    /**
+     * Set the menu width for a single menu
+     *
+     * @private
+     * @param {Element} menu - A menu/submenu element from the settings element with items underneath it
+     * @return {void}
+     */
+    setMenuWidth(menu) {
+        const labels = menu.querySelectorAll('.bp-media-settings-label');
+        // get the max width of all the labels
+        const maxLabelWidth = [].reduce.call(labels, (maxSoFar, node) => {
+            if (maxSoFar < node.offsetWidth) {
+                return node.offsetWidth;
+            }
+            return maxSoFar;
+        }, 0);
+        // force the max width on all the labels
+        [].forEach.call(labels, (label) => {
+            /* eslint-disable no-param-reassign */
+            label.style.width = `${maxLabelWidth + 6}px`; // add 6px for some breathing room
+            /* eslint-enable no-param-reassign */
+        });
+        // get the max width of all the values
+        const values = menu.querySelectorAll('.bp-media-settings-value');
+        const maxValueWidth = [].reduce.call(values, (maxSoFar, node) => {
+            if (maxSoFar < node.offsetWidth) {
+                return node.offsetWidth;
+            }
+            return maxSoFar;
+        }, 0);
+        const capped = Math.min(maxValueWidth, 250); // cap the width at ~250px
+        // force the max width on all the value divs
+        [].forEach.call(values, (value) => {
+            /* eslint-disable no-param-reassign */
+            value.style.width = `${capped + 6}px`; // add 6px for some breathing room
+            /* eslint-enable no-param-reassign */
+        });
+    }
+
+    /**
+     * Set the menu widths for the various settings menus/submenus. This has to be done at runtime because the width
+     * of menu items depends on the language, and some menus could have a variable number of items (e.g. subtitles)
+     *
+     * @private
+     * @return {void}
+     */
+    setSettingsMenuWidths() {
+        this.reset();
+        this.setMenuWidth(this.mainMenu);
+        const speedMenu = this.settingsEl.querySelector('[role="menu"].bp-media-settings-options-speed');
+        this.settingsEl.classList.add('bp-media-settings-show-speed');
+        this.setMenuWidth(speedMenu);
+        this.settingsEl.classList.remove('bp-media-settings-show-speed');
+        const qualityMenu = this.settingsEl.querySelector('[role="menu"].bp-media-settings-options-quality');
+        this.settingsEl.classList.add('bp-media-settings-show-quality');
+        this.setMenuWidth(qualityMenu);
+        this.settingsEl.classList.remove('bp-media-settings-show-quality');
+    }
+
+    /**
      * Finds the parent node that has dataset type
      *
      * @param {HTMLElement} target - start dom location
@@ -204,6 +281,8 @@ class Settings extends EventEmitter {
      */
     showSubMenu(type) {
         this.settingsEl.classList.add(`bp-media-settings-show-${type}`);
+        const subMenu = this.settingsEl.querySelector(`.bp-media-settings-options-${type}`);
+        this.setMenuHeight(subMenu);
         // Move focus to the currently selected value
         const curSelectedOption = this.settingsEl.querySelector(`[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`);
         curSelectedOption.focus();
@@ -382,10 +461,10 @@ class Settings extends EventEmitter {
     }
 
     /**
-     * Getter for the value of quality
+     * Getter for the value of visible
      *
      * @public
-     * @return {string} The quality
+     * @return {boolean} Whether the settings menu is open (visible) or not
      */
     isVisible() {
         return this.visible;
