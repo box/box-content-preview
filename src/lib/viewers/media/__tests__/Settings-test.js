@@ -112,6 +112,15 @@ describe('lib/viewers/media/Settings', () => {
 
             expect(settings.settingsEl).to.have.class('bp-media-settings');
         });
+
+        it('should reset the menu container dimensions', () => {
+            const mainMenu = settings.settingsEl.querySelector('.bp-media-settings-menu-main');
+            sandbox.stub(settings, 'setMenuContainerDimensions');
+
+            settings.reset();
+
+            expect(settings.setMenuContainerDimensions).to.be.calledWith(mainMenu);
+        });
     });
 
     describe('findParentDataType()', () => {
@@ -506,6 +515,14 @@ describe('lib/viewers/media/Settings', () => {
             settings.showSubMenu('speed');
 
             expect(document.activeElement).to.equal(selected);
+        });
+
+        it('should recompute the menu container dimensions', () => {
+            sandbox.stub(settings, 'setMenuContainerDimensions');
+
+            settings.showSubMenu('speed');
+
+            expect(settings.setMenuContainerDimensions).to.be.called;
         });
     });
 
