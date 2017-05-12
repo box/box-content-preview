@@ -20,7 +20,7 @@ const MEDIA_SPEEDS = [
 ];
 
 const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
-    <div role="menu">
+    <div class="bp-media-settings-menu-main bp-media-settings-menu" role="menu">
         <div class="bp-media-settings-item bp-media-settings-item-speed" data-type="speed" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-label" aria-label="${__('media_speed')}">${__('media_speed')}</div>
             <div class="bp-media-settings-value">${__('media_speed_normal')}</div>
@@ -32,7 +32,7 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
             <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
         </div>
     </div>
-    <div class="bp-media-settings-options-speed" role="menu">
+    <div class="bp-media-settings-menu-speed bp-media-settings-menu" role="menu">
         <div class="bp-media-settings-sub-item bp-media-settings-sub-item-speed" data-type="menu" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
             <div class="bp-media-settings-label" aria-label="${__('media_speed')}">${__('media_speed')}</div>
@@ -62,7 +62,7 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
             <div class="bp-media-settings-value">2.0</div>
         </div>
     </div>
-    <div class="bp-media-settings-options-quality" role="menu">
+    <div class="bp-media-settings-menu-quality bp-media-settings-menu" role="menu">
         <div class="bp-media-settings-sub-item bp-media-settings-sub-item-quality" data-type="menu" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
             <div class="bp-media-settings-label" aria-label="${__('media_quality')}">${__('media_quality')}</div>
@@ -137,6 +137,8 @@ class Settings extends EventEmitter {
      */
     reset() {
         this.settingsEl.className = CLASS_SETTINGS;
+        const mainMenu = this.settingsEl.querySelector('.bp-media-settings-menu-main');
+        this.setMenuContainerDimensions(mainMenu);
     }
 
     /**
@@ -176,6 +178,22 @@ class Settings extends EventEmitter {
     }
 
     /**
+     * Set the menu dimensions depending on which menu is being shown
+     *
+     * @private
+     * @param {HTMLElement} menu - The menu/submenu to use for sizing the container
+     * @return {void}
+     */
+    setMenuContainerDimensions(menu) {
+        // NOTE: need to explicitly set the dimensions in order to get css transitions. width=auto doesn't work with css transitions
+        this.settingsEl.style.width = `${menu.offsetWidth + 18}px`;
+        // height = n * $item-height + 2 * $padding (see Settings.scss)
+        // where n is the number of displayed items in the menu
+        const sumHeight = [].reduce.call(menu.children, (sum, child) => sum + child.offsetHeight, 0);
+        this.settingsEl.style.height = `${sumHeight + 16}px`;
+    }
+
+    /**
      * Finds the parent node that has dataset type
      *
      * @param {HTMLElement} target - start dom location
@@ -203,7 +221,9 @@ class Settings extends EventEmitter {
      * @return {void}
      */
     showSubMenu(type) {
+        const subMenu = this.settingsEl.querySelector(`.bp-media-settings-menu-${type}`);
         this.settingsEl.classList.add(`bp-media-settings-show-${type}`);
+        this.setMenuContainerDimensions(subMenu);
         // Move focus to the currently selected value
         const curSelectedOption = this.settingsEl.querySelector(`[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`);
         curSelectedOption.focus();
@@ -382,10 +402,10 @@ class Settings extends EventEmitter {
     }
 
     /**
-     * Getter for the value of quality
+     * Getter for the value of visible
      *
      * @public
-     * @return {string} The quality
+     * @return {boolean} Whether the settings menu is open (visible) or not
      */
     isVisible() {
         return this.visible;
