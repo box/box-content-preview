@@ -22,6 +22,7 @@ class ImageBaseViewer extends BaseViewer {
      */
     destroy() {
         this.unbindDOMListeners();
+
         // Destroy the controls
         if (this.controls && typeof this.controls.destroy === 'function') {
             this.controls.destroy();
@@ -287,6 +288,11 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleMouseUp(event) {
+        // Ignore zoom/pan mouse events if in annotation mode
+        if (this.annotator && this.annotator.isInPointMode()) {
+            return;
+        }
+
         const { button, ctrlKey, metaKey } = event;
 
         // If this is not a left click, then ignore
@@ -312,9 +318,50 @@ class ImageBaseViewer extends BaseViewer {
      */
     cancelDragEvent(event) {
         event.preventDefault();
-        event.stopPropogation();
+        event.stopPropagation();
     }
 
+    //----------------------------------------------------------------------------------------------
+    // Annotations. TODO(jholdstock|spramod) Refactor out all annotations code from viewers
+    //----------------------------------------------------------------------------------------------
+
+    /**
+     * Disables viewer controls
+     *
+     * @override
+     * @return {void}
+     */
+    disableViewerControls() {
+        super.disableViewerControls();
+        this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+        this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+    }
+
+    /**
+     * Enables viewer controls
+     *
+     * @override
+     * @return {void}
+     */
+    enableViewerControls() {
+        super.enableViewerControls();
+        this.updateCursor();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getPointModeClickHandler() {
+        if (!this.isAnnotatable('point')) {
+            return null;
+        }
+
+        return () => {
+            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+            this.emit('togglepointannotationmode');
+        };
+    }
 
     //--------------------------------------------------------------------------
     // Abstract

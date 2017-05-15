@@ -58,6 +58,14 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(imageBase.imageEl.removeEventListener).to.be.calledWith('mouseup', imageBase.handleMouseUp);
             expect(BaseViewer.prototype.destroy).to.be.called;
         });
+
+        it('should remove all the listeners', () => {
+            sandbox.stub(imageBase, 'unbindDOMListeners');
+
+            imageBase.destroy();
+
+            expect(imageBase.unbindDOMListeners).to.be.called;
+        });
     });
 
     describe('zoomIn()', () => {
@@ -314,11 +322,11 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         it('should prevent drag events on the image', () => {
             const event = {
                 preventDefault: sandbox.stub(),
-                stopPropogation: sandbox.stub()
+                stopPropagation: sandbox.stub()
             };
             imageBase.cancelDragEvent(event);
             expect(event.preventDefault).to.be.called;
-            expect(event.stopPropogation).to.be.called;
+            expect(event.stopPropagation).to.be.called;
         });
     });
 

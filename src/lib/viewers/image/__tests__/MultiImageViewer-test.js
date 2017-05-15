@@ -129,7 +129,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             multiImage.setup();
             stubs.bindImageListeners = sandbox.stub(multiImage, 'bindImageListeners');
             stubs.singleImageEl = {
-                src: undefined
+                src: undefined,
+                setAttribute: sandbox.stub(),
+                classList: {
+                    add: sandbox.stub()
+                }
             };
         });
 
@@ -150,6 +154,24 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
             multiImage.setupImageEls('file/100/content/{page}.png', 0);
             expect(multiImage.singleImageEls[0].src).to.be.equal('file/100/content/{page}.png');
+        });
+
+        it('should set the page number for each image el', () => {
+            multiImage.singleImageEls = {
+                0: stubs.singleImageEl
+            };
+
+            multiImage.setupImageEls('file/100/content/{page}.png', 0);
+            expect(stubs.singleImageEl.setAttribute).to.be.calledWith('data-page-number', 1);
+        });
+
+        it('should add the "page" class to all image pages', () => {
+            multiImage.singleImageEls = {
+                0: stubs.singleImageEl
+            };
+
+            multiImage.setupImageEls('file/100/content/{page}.png', 0);
+            expect(stubs.singleImageEl.classList.add).to.be.calledWith('page');
         });
     });
 
@@ -219,6 +241,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
     describe('zoom()', () => {
         beforeEach(() => {
             stubs.zoomEmit = sandbox.stub(multiImage, 'emit');
+            stubs.setScale = sandbox.stub(multiImage, 'setScale');
             stubs.updatePannability = sandbox.stub(multiImage, 'updatePannability');
             multiImage.setup();
         });
@@ -241,11 +264,12 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(multiImage.imageEl.parentNode.style.width).to.equal('200px');
         });
 
-        it('should emit the zoom event, and set a timeout to update pannability ', () => {
+        it('should emit the zoom event, set a timeout to update pannability, and set the current scale', () => {
             multiImage.zoom();
             clock.tick(51);
-            expect(stubs.zoomEmit).to.be.called;
+            expect(stubs.zoomEmit).to.be.calledWith('zoom');
             expect(stubs.updatePannability).to.be.called;
+            expect(stubs.setScale).to.be.calledWith(sinon.match.number, sinon.match.number);
         });
     });
 
@@ -302,6 +326,24 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         it('should remove the error event listener', () => {
             multiImage.unbindImageListeners(1);
             expect(multiImage.singleImageEls[1].removeEventListener).to.be.calledWith('error', sinon.match.func);
+        });
+    });
+
+    describe('setScale()', () => {
+        it('should set the scale relative to the size of the first image dimensions', () => {
+            multiImage.singleImageEls = [
+                {
+                    naturalWidth: 1024,
+                    naturalHeight: 1024
+                },
+                {
+                    src: 'www.NotTheRightImage.net'
+                }
+            ];
+            sandbox.stub(multiImage, 'emit');
+
+            multiImage.setScale(512, 512);
+            expect(multiImage.emit).to.be.calledWith('scale', 0.5);
         });
     });
 });

@@ -247,6 +247,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(document.defaultView.addEventListener).to.be.calledWith('resize', base.debouncedResizeHandler);
             expect(base.addListener).to.be.calledWith('togglepointannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('load', sinon.match.func);
+            expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
         });
     });
 
@@ -302,6 +303,16 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.containerEl.innerHTML).to.equal('');
             expect(base.destroyed).to.be.true;
             expect(base.emit).to.be.calledWith('destroy');
+        });
+
+        it('should clean up annotator', () => {
+            base.annotator = {
+                removeAllListeners: sandbox.mock(),
+                destroy: sandbox.mock()
+            };
+            base.destroy();
+            expect(base.annotator.removeAllListeners).to.be.called;
+            expect(base.annotator.destroy).to.be.called;
         });
     });
 
@@ -668,13 +679,16 @@ describe('lib/viewers/BaseViewer', () => {
                 }
             };
             base.annotator = {
-                init: sandbox.stub()
+                init: sandbox.stub(),
+                addListener: sandbox.stub()
             };
             base.annotatorConf = {
                 CONSTRUCTOR: sandbox.stub().returns(base.annotator)
             };
             base.initAnnotations();
             expect(base.annotator.init).to.be.called;
+            expect(base.annotator.addListener).to.be.calledWith('annotationmodeenter', sinon.match.func);
+            expect(base.annotator.addListener).to.be.calledWith('annotationmodeexit', sinon.match.func);
         });
     });
 

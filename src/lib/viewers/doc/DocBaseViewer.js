@@ -94,12 +94,6 @@ class DocBaseViewer extends BaseViewer {
             this.controls.destroy();
         }
 
-        // Destroy the annotator
-        if (this.annotator && typeof this.annotator.destroy === 'function') {
-            this.annotator.removeAllListeners();
-            this.annotator.destroy();
-        }
-
         // Clean up the find bar
         if (this.findBar) {
             this.findBar.destroy();
@@ -461,12 +455,8 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     setScale(scale) {
-        // Redraw annotations if needed
-        if (this.annotator) {
-            this.annotator.setScale(scale);
-        }
-
         this.pdfViewer.currentScaleValue = scale;
+        this.emit('scale', scale);
     }
 
     /**
@@ -591,11 +581,7 @@ class DocBaseViewer extends BaseViewer {
         this.pdfViewer.update();
 
         this.setPage(currentPageNumber);
-
-        // Update annotations scale
-        if (this.annotator) {
-            this.annotator.setScale(this.pdfViewer.currentScale); // Set scale to current numerical scale
-        }
+        this.setScale(this.pdfViewer.currentScale); // Set scale to current numerical scale
 
         super.resize();
     }
@@ -646,6 +632,10 @@ class DocBaseViewer extends BaseViewer {
 
         // Decrease mobile canvas size to ~3MP (1920x1536)
         PDFJS.maxCanvasPixels = this.isMobile ? MOBILE_MAX_CANVAS_SIZE : PDFJS.maxCanvasPixels;
+
+        // Do not disable create object URL in IE11 or iOS Chrome - pdf.js issues #3977 and #8081 are
+        // not applicable to Box's use case and disabling causes performance issues
+        PDFJS.disableCreateObjectURL = false;
     }
 
     /**
@@ -683,23 +673,8 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     initAnnotations() {
-        this.setupPageIds();
         super.initAnnotations();
-
-        // Disable controls during point annotation mode
-        /* istanbul ignore next */
-        this.annotator.addListener('pointmodeenter', () => {
-            if (this.controls) {
-                this.controls.disable();
-            }
-        });
-
-        /* istanbul ignore next */
-        this.annotator.addListener('pointmodeexit', () => {
-            if (this.controls) {
-                this.controls.enable();
-            }
-        });
+        this.setupPageIds();
     }
 
     /**

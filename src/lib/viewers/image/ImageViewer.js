@@ -6,8 +6,6 @@ import { CLASS_INVISIBLE } from '../../constants';
 import { openContentInsideIframe } from '../../util';
 import './Image.scss';
 
-const CSS_CLASS_ZOOMABLE = 'zoomable';
-const CSS_CLASS_PANNABLE = 'pannable';
 const CSS_CLASS_IMAGE = 'bp-image';
 const IMAGE_PADDING = 15;
 const IMAGE_ZOOM_SCALE = 1.2;
@@ -22,30 +20,15 @@ class ImageViewer extends ImageBaseViewer {
         super.setup();
 
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
-        this.wrapperEl.className = CSS_CLASS_IMAGE;
+        this.wrapperEl.classList.add(CSS_CLASS_IMAGE);
+
         this.imageEl = this.wrapperEl.appendChild(document.createElement('img'));
+        this.imageEl.setAttribute('data-page-number', 1);
 
         // hides image tag until content is loaded
         this.imageEl.classList.add(CLASS_INVISIBLE);
 
         this.currentRotationAngle = 0;
-    }
-
-    /**
-     * [destructor]
-     * @return {void}
-     */
-    destroy() {
-        // Destroy the annotator
-        if (this.annotator && typeof this.annotator.destroy === 'function') {
-            this.annotator.removeAllListeners();
-            this.annotator.destroy();
-        }
-
-        // Remove listeners
-        this.unbindDOMListeners();
-
-        super.destroy();
     }
 
     /**
@@ -116,10 +99,7 @@ class ImageViewer extends ImageBaseViewer {
 
         // Re-adjust image position after rotation
         this.handleOrientationChange();
-
-        if (this.annotator) {
-            this.scaleAnnotations(this.imageEl.offsetwidth, this.imageEl.offsetHeight);
-        }
+        this.setScale(this.imageEl.offsetwidth, this.imageEl.offsetHeight);
     }
 
     /**
@@ -226,9 +206,7 @@ class ImageViewer extends ImageBaseViewer {
         // Give the browser some time to render before updating pannability
         setTimeout(this.updatePannability, 50);
 
-        if (this.annotator) {
-            this.scaleAnnotations(newWidth, newHeight);
-        }
+        this.setScale(newWidth, newHeight);
 
         this.emit('zoom', {
             newScale: [newWidth || width, newHeight || height],
@@ -238,7 +216,7 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
-     * Scales annotations and repositions with rotation. Only one argument
+     * Scales and repositions image with rotation. Only one argument
      * (either height or width) is required for the scale calculations.
      *
      * @private
@@ -246,11 +224,10 @@ class ImageViewer extends ImageBaseViewer {
      * @param {number} height - The scale height
      * @return {void}
      */
-    scaleAnnotations(width, height) {
-        const scale = width ? (width / this.imageEl.naturalWidth) : (height / this.imageEl.naturalHeight);
-        const rotationAngle = this.currentRotationAngle % 3600 % 360;
-        this.annotator.setScale(scale);
-        this.annotator.renderAnnotations(rotationAngle);
+    setScale(width, height) {
+        this.scale = width ? (width / this.imageEl.naturalWidth) : (height / this.imageEl.naturalHeight);
+        this.rotationAngle = this.currentRotationAngle % 3600 % 360;
+        this.emit('scale', this.scale, this.rotationAngle);
     }
 
     /**
@@ -286,35 +263,6 @@ class ImageViewer extends ImageBaseViewer {
         }
 
         this.emit('printsuccess');
-    }
-
-
-    /**
-     * Initializes annotations.
-     *
-     * @protected
-     * @return {void}
-     */
-    initAnnotations() {
-        super.initAnnotations();
-
-        // Disables controls during point annotation mode
-        /* istanbul ignore next */
-        this.annotator.addListener('pointmodeenter', () => {
-            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
-            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-            if (this.controls) {
-                this.controls.disable();
-            }
-        });
-
-        /* istanbul ignore next */
-        this.annotator.addListener('pointmodeexit', () => {
-            this.updateCursor();
-            if (this.controls) {
-                this.controls.enable();
-            }
-        });
     }
 
     /**
@@ -407,21 +355,6 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
-     * Handles mouse down event.
-     *
-     * @param {Event} event - The mousemove event
-     * @return {void}
-     */
-    handleMouseUp(event) {
-        // Ignore zoom/pan mouse events if in annotation mode
-        if (this.annotator && this.annotator.isInPointMode()) {
-            return;
-        }
-
-        super.handleMouseUp(event);
-    }
-
-    /**
     * Adjust padding on image rotation/zoom of images when the view port
     * orientation changes from landscape to portrait and vice versa. Especially
     * important for mobile devices because rotating the device doesn't triggers
@@ -432,27 +365,9 @@ class ImageViewer extends ImageBaseViewer {
     handleOrientationChange() {
         this.adjustImageZoomPadding();
 
-        if (this.annotator) {
-            const scale = (this.imageEl.clientWidth / this.imageEl.naturalWidth);
-            const rotationAngle = this.currentRotationAngle % 3600 % 360;
-            this.annotator.setScale(scale);
-            this.annotator.renderAnnotations(rotationAngle);
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getPointModeClickHandler() {
-        if (!this.isAnnotatable('point')) {
-            return null;
-        }
-
-        return () => {
-            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
-            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-            this.emit('togglepointannotationmode');
-        };
+        this.scale = (this.imageEl.clientWidth / this.imageEl.naturalWidth);
+        this.rotationAngle = this.currentRotationAngle % 3600 % 360;
+        this.emit('scale', this.scale, this.rotationAngle);
     }
 }
 

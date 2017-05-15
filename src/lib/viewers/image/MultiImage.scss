@@ -3,10 +3,12 @@
 }
 
 .bp-images-wrapper {
+    border: 0 none;
     bottom: 0;
+    cursor: default; // regular cursor when not hovering over images
     height: 100%;
     left: 0;
-    margin: 0;
+    margin: 0 auto;
     overflow: auto;
     padding: 0;
     position: absolute;
@@ -15,14 +17,10 @@
     top: 0;
     white-space: nowrap;
     width: 100%;
-}
 
-.bp-images-wrapper {
-    border: 0 none;
-    cursor: pointer; /* cursor for IE 11 */
-    cursor: zoom-in;
-    margin: 0 auto;
-    padding: 0;
+    &.bp-point-annotation-mode img {
+        cursor: crosshair;
+    }
 }
 
 .bp-images img {

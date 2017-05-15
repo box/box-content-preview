@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import Annotator from '../Annotator';
 import * as constants from '../annotationConstants';
+import * as annotatorUtil from '../annotatorUtil';
 import AnnotationService from '../AnnotationService';
 
 let annotator;
@@ -181,6 +182,39 @@ describe('lib/annotations/Annotator', () => {
                 stubs.threadMock2.expects('show').never();
                 stubs.threadMock3.expects('show').never();
                 annotator.renderAnnotationsOnPage('1');
+            });
+        });
+
+        describe('rotateAnnotations()', () => {
+            beforeEach(() => {
+                annotator.annotationService = {
+                    canAnnotate: true
+                };
+                stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
+                stubs.show = sandbox.stub(annotatorUtil, 'showElement');
+                stubs.render = sandbox.stub(annotator, 'renderAnnotations');
+            });
+
+            it('should only render annotations if user cannot annotate', () => {
+                annotator.annotationService.canAnnotate = false;
+                annotator.rotateAnnotations();
+                expect(stubs.hide).to.not.be.called;
+                expect(stubs.show).to.not.be.called;
+                expect(stubs.render).to.be.called;
+            });
+
+            it('should hide point annotation button if image is rotated', () => {
+                annotator.rotateAnnotations(90);
+                expect(stubs.hide).to.be.called;
+                expect(stubs.show).to.not.be.called;
+                expect(stubs.render).to.be.called;
+            });
+
+            it('should show point annotation button if image is rotated', () => {
+                annotator.rotateAnnotations();
+                expect(stubs.hide).to.not.be.called;
+                expect(stubs.show).to.be.called;
+                expect(stubs.render).to.be.called;
             });
         });
 
