@@ -109,6 +109,12 @@ class BaseViewer extends EventEmitter {
             this.containerEl.innerHTML = '';
         }
 
+        // Destroy the annotator
+        if (this.annotator && typeof this.annotator.destroy === 'function') {
+            this.annotator.removeAllListeners();
+            this.annotator.destroy();
+        }
+
         this.destroyed = true;
         this.emit('destroy');
     }
@@ -267,6 +273,14 @@ class BaseViewer extends EventEmitter {
         fullscreen.addListener('exit', () => {
             this.containerEl.classList.remove(CLASS_FULLSCREEN);
             this.resize();
+        });
+
+        // Add a custom listener for events related to scaling/orientation changes
+        this.addListener('scale', (scale, rotationAngle) => {
+            if (this.annotator) {
+                this.annotator.setScale(scale);
+                this.annotator.rotateAnnotations(rotationAngle);
+            }
         });
 
         // Add a resize handler for the window
@@ -565,6 +579,13 @@ class BaseViewer extends EventEmitter {
             locale: location.locale
         });
         this.annotator.init();
+
+        // Disables controls during point annotation mode
+        /* istanbul ignore next */
+        this.annotator.addListener('annotationmodeenter', this.disableViewerControls);
+
+        /* istanbul ignore next */
+        this.annotator.addListener('annotationmodeexit', this.enableViewerControls);
     }
 
     /**
@@ -630,6 +651,32 @@ class BaseViewer extends EventEmitter {
      */
     /* eslint-disable no-unused-vars */
     getPointModeClickHandler(containerEl) {}
+    /* eslint-enable no-unused-vars */
+
+    /**
+     * Disables viewer controls
+     *
+     * @return {void}
+     */
+    /* eslint-disable no-unused-vars */
+    disableViewerControls() {
+        if (this.controls) {
+            this.controls.disable();
+        }
+    }
+    /* eslint-enable no-unused-vars */
+
+    /**
+     * Enables viewer controls
+     *
+     * @return {void}
+     */
+    /* eslint-disable no-unused-vars */
+    enableViewerControls() {
+        if (this.controls) {
+            this.controls.enable();
+        }
+    }
     /* eslint-enable no-unused-vars */
 }
 
