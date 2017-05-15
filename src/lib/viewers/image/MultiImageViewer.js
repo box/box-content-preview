@@ -155,10 +155,7 @@ class MultiImageViewer extends ImageBaseViewer {
         // Fix the scroll position of the image to be centered
         this.imageEl.parentNode.scrollLeft = (this.imageEl.parentNode.scrollWidth - viewportWidth) / 2;
 
-        if (this.annotator) {
-            this.setScale(this.imageEl.offsetWidth, this.imageEl.offsetHeight);
-        }
-
+        this.setScale(this.imageEl.offsetWidth, this.imageEl.offsetHeight);
         this.emit('zoom');
 
         // Give the browser some time to render before updating pannability

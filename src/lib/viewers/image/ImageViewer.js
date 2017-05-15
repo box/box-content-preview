@@ -99,10 +99,7 @@ class ImageViewer extends ImageBaseViewer {
 
         // Re-adjust image position after rotation
         this.handleOrientationChange();
-
-        if (this.annotator) {
-            this.setScale(this.imageEl.offsetwidth, this.imageEl.offsetHeight);
-        }
+        this.setScale(this.imageEl.offsetwidth, this.imageEl.offsetHeight);
     }
 
     /**

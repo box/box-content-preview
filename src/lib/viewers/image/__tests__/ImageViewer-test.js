@@ -225,7 +225,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             stubs.emit = sandbox.stub(image, 'emit');
             stubs.orientChange = sandbox.stub(image, 'handleOrientationChange');
             image.annotator = {};
-            stubs.scale = sandbox.stub(image, 'scaleAnnotations');
+            stubs.scale = sandbox.stub(image, 'setScale');
             image.currentRotationAngle = 0;
         });
 
@@ -323,12 +323,12 @@ describe('lib/viewers/image/ImageViewer', () => {
 
         it('should scale annotations if annotator exists', () => {
             image.annotator = {};
-            sandbox.stub(image, 'scaleAnnotations');
+            sandbox.stub(image, 'setScale');
 
             image.load(imageUrl).catch(() => {});
 
             image.zoomIn();
-            expect(image.scaleAnnotations).to.be.called;
+            expect(image.setScale).to.be.called;
         });
 
         it('should reset dimensions and adjust padding when called with reset', () => {
@@ -345,19 +345,14 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
     });
 
-    describe('scaleAnnotations()', () => {
+    describe('setScale()', () => {
         it('should scale and rotate annotations accordingly', () => {
-            image.annotator = {
-                setScale: sandbox.stub(),
-                renderAnnotations: sandbox.stub()
-            };
-
+            sandbox.stub(image, 'emit');
             image.currentRotationAngle = -90;
             const [width, height] = [100, 100];
 
-            image.scaleAnnotations(width, height);
-            expect(image.annotator.setScale).to.be.called;
-            expect(image.annotator.renderAnnotations).to.be.calledWith(-90);
+            image.setScale(width, height);
+            expect(image.emit).to.be.calledWith('scale', sinon.match.any, sinon.match.number);
         });
     });
 
@@ -415,23 +410,6 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             image.print();
             expect(stubs.print).to.be.called;
-        });
-    });
-
-    describe('initAnnotations()', () => {
-        const initFunc = BaseViewer.prototype.initAnnotations;
-
-        afterEach(() => {
-            Object.defineProperty(BaseViewer.prototype, 'initAnnotations', { value: initFunc });
-        });
-
-        it('should init annotations if user can annotate', () => {
-            Object.defineProperty(BaseViewer.prototype, 'initAnnotations', { value: sandbox.mock() });
-            image.annotator = {
-                addListener: sandbox.stub()
-            };
-            image.initAnnotations();
-            expect(image.annotator.addListener).to.be.calledTwice;
         });
     });
 
@@ -592,29 +570,12 @@ describe('lib/viewers/image/ImageViewer', () => {
     });
 
     describe('handleOrientationChange()', () => {
-        beforeEach(() => {
+        it('should adjust zoom padding and set scale', () => {
             stubs.padding = sandbox.stub(image, 'adjustImageZoomPadding');
-            image.annotator = {
-                setScale: sandbox.stub(),
-                renderAnnotations: sandbox.stub()
-            };
-            stubs.scale = image.annotator.setScale;
-            stubs.render = image.annotator.renderAnnotations;
-        });
-
-        it('should adjust zoom padding if annotator does not exist', () => {
-            image.annotator = null;
+            sandbox.stub(image, 'emit');
             image.handleOrientationChange();
             expect(stubs.padding).to.be.called;
-            expect(stubs.scale).to.not.be.called;
-            expect(stubs.render).to.not.be.called;
-        });
-
-        it('should also re-render annotations if annotator exists', () => {
-            image.handleOrientationChange();
-            expect(stubs.padding).to.be.called;
-            expect(stubs.scale).to.be.called;
-            expect(stubs.render).to.be.called;
+            expect(image.emit).to.be.calledWith('scale', sinon.match.any, sinon.match.number);
         });
     });
 

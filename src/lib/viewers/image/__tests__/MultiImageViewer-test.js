@@ -241,6 +241,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
     describe('zoom()', () => {
         beforeEach(() => {
             stubs.zoomEmit = sandbox.stub(multiImage, 'emit');
+            stubs.setScale = sandbox.stub(multiImage, 'setScale');
             stubs.updatePannability = sandbox.stub(multiImage, 'updatePannability');
             multiImage.setup();
         });
@@ -263,11 +264,12 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(multiImage.imageEl.parentNode.style.width).to.equal('200px');
         });
 
-        it('should emit the zoom event, and set a timeout to update pannability ', () => {
+        it('should emit the zoom event, set a timeout to update pannability, and set the current scale', () => {
             multiImage.zoom();
             clock.tick(51);
-            expect(stubs.zoomEmit).to.be.called;
+            expect(stubs.zoomEmit).to.be.calledWith('zoom');
             expect(stubs.updatePannability).to.be.called;
+            expect(stubs.setScale).to.be.calledWith(sinon.match.number, sinon.match.number);
         });
     });
 
@@ -327,64 +329,21 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
     });
 
-    // TODO(jholdstock): Kill these tests after removing annotation specific code from viewer.
-    describe('annotations', () => {
-        beforeEach(() => {
-            multiImage.annotator = {
-                setScale: sandbox.stub(),
-                renderAnnotations: sandbox.stub()
-            };
-        });
-
-        afterEach(() => {
-            multiImage.annotator = undefined;
-        });
-
-        describe('scaleAnnotations()', () => {
-            it('should scale the annotations relative to the size of the first image dimensions', () => {
-                multiImage.singleImageEls = [
-                    {
-                        naturalWidth: 1024,
-                        naturalHeight: 1024
-                    },
-                    {
-                        src: 'www.NotTheRightImage.net'
-                    }
-                ];
-
-                multiImage.scaleAnnotations(512, 512);
-                expect(multiImage.annotator.setScale).to.be.calledWith(0.5);
-            });
-
-            it('should invoke annotator.renderAnnotations()', () => {
-                multiImage.singleImageEls = [
-                    {
-                        naturalWidth: 1024,
-                        naturalHeight: 1024
-                    }
-                ];
-
-                multiImage.scaleAnnotations(1, 1);
-                expect(multiImage.annotator.renderAnnotations).to.be.called;
-            });
-        });
-
-        it('should invoke scaleAnnotations() in zoom() when an annotator is available', () => {
-            const offWidth = 222;
-            const offHeight = 111;
-            multiImage.imageEl = {
-                offsetWidth: offWidth,
-                offsetHeight: offHeight,
-                style: {},
-                parentNode: {
-                    clientWidth: 10,
-                    clientHeight: 10
+    describe('setScale()', () => {
+        it('should set the scale relative to the size of the first image dimensions', () => {
+            multiImage.singleImageEls = [
+                {
+                    naturalWidth: 1024,
+                    naturalHeight: 1024
+                },
+                {
+                    src: 'www.NotTheRightImage.net'
                 }
-            };
+            ];
+            sandbox.stub(multiImage, 'emit');
 
-            const scaleStub = sandbox.stub(multiImage, 'scaleAnnotations');
-            multiImage.zoom();
-            expect(scaleStub).to.be.calledWith(offWidth, offHeight);
+            multiImage.setScale(512, 512);
+            expect(multiImage.emit).to.be.calledWith('scale', 0.5);
         });
     });
 });
