@@ -144,36 +144,6 @@ class ImageAnnotator extends Annotator {
         }
         annotatorUtil.showElement(annotateButton);
     }
-
-    /**
-     * Renders annotations from memory. Hides annotations if image is rotated
-     *
-     * @override
-     * @param {number} [rotationAngle] - current angle image is rotated
-     * @return {void}
-     * @private
-     */
-    renderAnnotations(rotationAngle = 0) {
-        super.renderAnnotations();
-
-        // Only show/hide point annotation button if user has the appropriate
-        // permissions
-        if (this.annotationService.canAnnotate) {
-            return;
-        }
-
-        // Hide create annotations button if image is rotated
-        // TODO(@spramod) actually adjust getLocationFromEvent method in
-        // annotator to get correct location rather than disabling the creation
-        // of annotations on rotated images
-        const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-
-        if (rotationAngle !== 0) {
-            annotatorUtil.hideElement(annotateButton);
-        } else {
-            annotatorUtil.showElement(annotateButton);
-        }
-    }
 }
 
 export default ImageAnnotator;

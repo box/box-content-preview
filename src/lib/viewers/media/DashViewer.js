@@ -165,7 +165,7 @@ class DashViewer extends VideoBaseViewer {
      * @return {Object|undefined}
      */
     getActiveTrack() {
-        const tracks = this.player.getTracks();
+        const tracks = this.player.getVariantTracks();
         return tracks.find((track) => track.active);
     }
 
@@ -191,7 +191,7 @@ class DashViewer extends VideoBaseViewer {
      */
     enableHD() {
         this.showLoadingIcon(this.hdRepresentation.id);
-        this.player.selectTrack(this.hdRepresentation, true);
+        this.player.selectVariantTrack(this.hdRepresentation, true);
     }
 
     /**
@@ -202,7 +202,7 @@ class DashViewer extends VideoBaseViewer {
      */
     enableSD() {
         this.showLoadingIcon(this.sdRepresentation.id);
-        this.player.selectTrack(this.sdRepresentation, true);
+        this.player.selectVariantTrack(this.sdRepresentation, true);
     }
 
     /**
@@ -332,7 +332,7 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     calculateVideoDimensions() {
-        const tracks = this.player.getTracks();
+        const tracks = this.player.getVariantTracks();
 
         // Iterate over all available video representations and find the one that
         // seems the biggest so that the video player is set to the max size

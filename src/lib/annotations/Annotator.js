@@ -3,7 +3,11 @@ import autobind from 'autobind-decorator';
 import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
 import * as constants from './annotationConstants';
-import { CLASS_ACTIVE } from '../constants';
+import * as annotatorUtil from './annotatorUtil';
+import {
+    CLASS_ACTIVE,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE
+} from '../constants';
 import './Annotator.scss';
 
 @autobind
@@ -146,6 +150,34 @@ class Annotator extends EventEmitter {
                 thread.show();
             });
         }
+    }
+
+    /**
+     * Rotates annotations. Hides point annotation mode button if rotated
+     *
+     * @override
+     * @param {number} [rotationAngle] - current angle image is rotated
+     * @return {void}
+     * @private
+     */
+    rotateAnnotations(rotationAngle = 0) {
+        // Only show/hide point annotation button if user has the
+        // appropriate permissions
+        if (this.annotationService.canAnnotate) {
+            // Hide create annotations button if image is rotated
+            // TODO(@spramod) actually adjust getLocationFromEvent method
+            // in annotator to get correct location rather than disabling
+            // the creation of annotations on rotated images
+            const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+
+            if (rotationAngle !== 0) {
+                annotatorUtil.hideElement(annotateButton);
+            } else {
+                annotatorUtil.showElement(annotateButton);
+            }
+        }
+
+        this.renderAnnotations();
     }
 
     /**

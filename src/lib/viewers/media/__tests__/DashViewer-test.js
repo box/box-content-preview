@@ -57,9 +57,9 @@ describe('lib/viewers/media/DashViewer', () => {
             destroy: () => {},
             getNetworkingEngine: sandbox.stub().returns(stubs.networkEngine),
             getStats: () => {},
-            getTracks: () => {},
+            getVariantTracks: () => {},
             load: () => {},
-            selectTrack: () => {}
+            selectVariantTrack: () => {}
         };
         stubs.mockPlayer = sandbox.mock(dash.player);
 
@@ -207,7 +207,7 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should get active track', () => {
             stubs.inactive = { active: false };
             stubs.active = { active: true };
-            stubs.mockPlayer.expects('getTracks').returns([stubs.inactive, stubs.active]);
+            stubs.mockPlayer.expects('getVariantTracks').returns([stubs.inactive, stubs.active]);
             expect(dash.getActiveTrack()).to.equal(stubs.active);
         });
     });
@@ -230,7 +230,7 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should enable HD video for the file', () => {
             dash.hdRepresentation = { id: '1' };
             sandbox.stub(dash, 'showLoadingIcon');
-            stubs.mockPlayer.expects('selectTrack').withArgs(dash.hdRepresentation, true);
+            stubs.mockPlayer.expects('selectVariantTrack').withArgs(dash.hdRepresentation, true);
             dash.enableHD();
             expect(dash.showLoadingIcon).to.be.calledWith('1');
         });
@@ -240,7 +240,7 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should enable SD video for the file', () => {
             dash.sdRepresentation = { id: '1' };
             sandbox.stub(dash, 'showLoadingIcon');
-            stubs.mockPlayer.expects('selectTrack').withArgs(dash.sdRepresentation, true);
+            stubs.mockPlayer.expects('selectVariantTrack').withArgs(dash.sdRepresentation, true);
             dash.enableSD();
             expect(dash.showLoadingIcon).to.be.calledWith('1');
         });
@@ -444,7 +444,7 @@ describe('lib/viewers/media/DashViewer', () => {
 
     describe('calculateVideoDimensions()', () => {
         it('should calculate the video dimensions based on the reps', () => {
-            stubs.mockPlayer.expects('getTracks').returns([{ width: 200 }, { width: 100 }]);
+            stubs.mockPlayer.expects('getVariantTracks').returns([{ width: 200 }, { width: 100 }]);
             dash.calculateVideoDimensions();
             expect(dash.hdRepresentation.width).to.equal(200);
             expect(dash.sdRepresentation.width).to.equal(100);
