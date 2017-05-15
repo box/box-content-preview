@@ -102,6 +102,15 @@ describe('lib/viewers/media/Settings', () => {
             expect(settings.chooseOption).to.be.calledWith('quality', quality);
             expect(settings.chooseOption).to.be.calledWith('speed', speed);
         });
+
+        it('should initialize the menu dimensions', () => {
+            sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings, 'setSettingsMenuWidths');
+
+            settings.init();
+
+            expect(settings.setSettingsMenuWidths).to.be.called;
+        });
     });
 
     describe('reset()', () => {
@@ -111,6 +120,52 @@ describe('lib/viewers/media/Settings', () => {
             settings.reset();
 
             expect(settings.settingsEl).to.have.class('bp-media-settings');
+        });
+
+        it('should reset the menu height', () => {
+            sandbox.stub(settings, 'setMenuHeight');
+
+            settings.reset();
+
+            expect(settings.setMenuHeight).to.be.calledWith(settings.mainMenu);
+        });
+    });
+
+    describe('setMenuWidth()', () => {
+        // NOTE: labels and values do not need matching widths - only internal consistency
+        // is needed amongst labels and amongst values. They happen to end up being the same
+        // in this test. This test cannot test that the widths get set to the max width
+        // because offsetWidth cannot be mocked out, since it's a readonly property
+        it('should set consistent width across all labels', () => {
+            const fakeMenuHTML = `<div role="menu">
+                <div class="menu-item">
+                    <div class="bp-media-settings-label" style="width:10px"/>
+                    <div class="bp-media-settings-value" style="width:100px"/>
+                </div>
+                <div class="menu-item">
+                    <div class="bp-media-settings-label" style="width:15px"/>
+                    <div class="bp-media-settings-value" style="width:95px"/>
+                </div>
+                <div class="menu-item">
+                    <div class="bp-media-settings-label" style="width:12px"/>
+                    <div class="bp-media-settings-value" style="width:105px"/>
+                </div>
+            </div>`;
+            const parent = document.createElement('div');
+            parent.innerHTML = fakeMenuHTML;
+            const fakeMenu = parent.firstChild;
+            const labels = fakeMenu.querySelectorAll('.bp-media-settings-label');
+            const values = fakeMenu.querySelectorAll('.bp-media-settings-value');
+
+            settings.setMenuWidth(fakeMenu);
+
+            // Assert that all the widths are consistent across labels, and across widths
+            [].forEach.call(labels, (label) => {
+                expect(label.style.width).to.equal(labels[0].style.width);
+            });
+            [].forEach.call(values, (value) => {
+                expect(value.style.width).to.equal(values[0].style.width);
+            });
         });
     });
 
@@ -506,6 +561,14 @@ describe('lib/viewers/media/Settings', () => {
             settings.showSubMenu('speed');
 
             expect(document.activeElement).to.equal(selected);
+        });
+
+        it('should recompute the menu height', () => {
+            sandbox.stub(settings, 'setMenuHeight');
+
+            settings.showSubMenu('speed');
+
+            expect(settings.setMenuHeight).to.be.called;
         });
     });
 
