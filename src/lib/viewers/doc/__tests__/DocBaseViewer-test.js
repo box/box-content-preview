@@ -838,7 +838,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.options.location = {
                 locale: 'en-US'
             };
-            docBase.isMobile = true;
             sandbox.stub(Browser, 'isIOS').returns(true);
             sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 

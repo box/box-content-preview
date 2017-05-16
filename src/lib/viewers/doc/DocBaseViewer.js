@@ -540,7 +540,7 @@ class DocBaseViewer extends BaseViewer {
 
         // Fix incorrectly cached range requests on older versions of iOS webkit browsers,
         // see: https://bugs.webkit.org/show_bug.cgi?id=82672
-        if (this.isMobile && Browser.isIOS()) {
+        if (Browser.isIOS()) {
             docInitParams.httpHeaders = {
                 'If-None-Match': 'webkit-no-cache'
             };
