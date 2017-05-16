@@ -94,12 +94,6 @@ class DocBaseViewer extends BaseViewer {
             this.controls.destroy();
         }
 
-        // Destroy the annotator
-        if (this.annotator && typeof this.annotator.destroy === 'function') {
-            this.annotator.removeAllListeners();
-            this.annotator.destroy();
-        }
-
         // Clean up the find bar
         if (this.findBar) {
             this.findBar.destroy();
@@ -461,12 +455,8 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     setScale(scale) {
-        // Redraw annotations if needed
-        if (this.annotator) {
-            this.annotator.setScale(scale);
-        }
-
         this.pdfViewer.currentScaleValue = scale;
+        this.emit('scale', scale);
     }
 
     /**
@@ -521,6 +511,8 @@ class DocBaseViewer extends BaseViewer {
      * @return {Promise} Promise to initialize Viewer
      */
     initViewer(pdfUrl) {
+        this.bindDOMListeners();
+
         // Initialize PDF.js in container
         this.pdfViewer = new PDFJS.PDFViewer({
             container: this.docEl,
@@ -541,15 +533,22 @@ class DocBaseViewer extends BaseViewer {
                 RANGE_REQUEST_CHUNK_SIZE_NON_US;
         }
 
-        this.bindDOMListeners();
-
-        // Load PDF from representation URL
-        this.pdfLoadingTask = PDFJS.getDocument({
+        const docInitParams = {
             url: pdfUrl,
             rangeChunkSize
-        });
+        };
 
-        // Set document for PDF.js
+        // Fix incorrectly cached range requests on older versions of iOS webkit browsers,
+        // see: https://bugs.webkit.org/show_bug.cgi?id=82672
+        if (this.isMobile && Browser.isIOS()) {
+            docInitParams.httpHeaders = {
+                'If-None-Match': 'webkit-no-cache'
+            };
+        }
+
+        // Load PDF from representation URL and set as document for pdf.js. Cache
+        // the loading task so we can cancel if needed
+        this.pdfLoadingTask = PDFJS.getDocument(docInitParams);
         return this.pdfLoadingTask.then((doc) => {
             this.pdfViewer.setDocument(doc);
 
@@ -591,12 +590,7 @@ class DocBaseViewer extends BaseViewer {
         this.pdfViewer.update();
 
         this.setPage(currentPageNumber);
-
-        // Update annotations scale to current numerical scale
-        if (this.annotator) {
-            this.annotator.setScale(this.pdfViewer.currentScale);
-            this.annotator.renderAnnotations();
-        }
+        this.setScale(this.pdfViewer.currentScale); // Set scale to current numerical scale
 
         super.resize();
     }
@@ -647,6 +641,10 @@ class DocBaseViewer extends BaseViewer {
 
         // Decrease mobile canvas size to ~3MP (1920x1536)
         PDFJS.maxCanvasPixels = this.isMobile ? MOBILE_MAX_CANVAS_SIZE : PDFJS.maxCanvasPixels;
+
+        // Do not disable create object URL in IE11 or iOS Chrome - pdf.js issues #3977 and #8081 are
+        // not applicable to Box's use case and disabling causes performance issues
+        PDFJS.disableCreateObjectURL = false;
     }
 
     /**
@@ -684,23 +682,8 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     initAnnotations() {
-        this.setupPageIds();
         super.initAnnotations();
-
-        // Disable controls during point annotation mode
-        /* istanbul ignore next */
-        this.annotator.addListener('pointmodeenter', () => {
-            if (this.controls) {
-                this.controls.disable();
-            }
-        });
-
-        /* istanbul ignore next */
-        this.annotator.addListener('pointmodeexit', () => {
-            if (this.controls) {
-                this.controls.enable();
-            }
-        });
+        this.setupPageIds();
     }
 
     /**

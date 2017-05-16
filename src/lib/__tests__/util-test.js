@@ -350,6 +350,28 @@ describe('lib/util', () => {
                 assert.equal(loc.baseURI, 'https://hostname:100/path/version/locale/');
                 assert.equal(loc.staticBaseURI, 'https://hostname:100/path/');
             });
+            it('should return location info for the script given a script tag', () => {
+                const script = document.querySelector('script[src*="/file.js"]');
+                const loc = util.findScriptLocation('', script);
+                assert.equal(loc.origin, 'https://hostname:100');
+                assert.equal(loc.host, 'hostname:100');
+                assert.equal(loc.hostname, 'hostname');
+                assert.equal(loc.search, '?search');
+                assert.equal(loc.protocol, 'https:');
+                assert.equal(loc.port, '100');
+                assert.equal(loc.href, 'https://hostname:100/path/version/locale/file.js?search');
+                assert.equal(loc.pathname, '/path/version/locale/file.js');
+                assert.equal(loc.version, 'version');
+                assert.equal(loc.baseURI, 'https://hostname:100/path/version/locale/');
+                assert.equal(loc.staticBaseURI, 'https://hostname:100/path/');
+            });
+            it('should throw an error when foobar.js is not found', () => {
+                expect(() => util.findScriptLocation('fobar.js')).to.throw(Error, /Missing or malformed fobar.js library/);
+            });
+            it('should throw an error when foobar.js is not found via script tag', () => {
+                const script = document.querySelector('script[src*="/file.js"]');
+                expect(() => util.findScriptLocation('fobar.js', script)).to.throw(Error, /Missing or malformed fobar.js library/);
+            });
         });
     });
 

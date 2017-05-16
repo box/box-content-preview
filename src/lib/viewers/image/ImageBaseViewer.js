@@ -21,12 +21,6 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     destroy() {
-        // Destroy the annotator
-        if (this.annotator && typeof this.annotator.destroy === 'function') {
-            this.annotator.removeAllListeners();
-            this.annotator.destroy();
-        }
-
         this.unbindDOMListeners();
 
         // Destroy the controls
@@ -332,31 +326,26 @@ class ImageBaseViewer extends BaseViewer {
     //----------------------------------------------------------------------------------------------
 
     /**
-     * Initializes annotations.
+     * Disables viewer controls
      *
-     * @protected
+     * @override
      * @return {void}
      */
-    initAnnotations() {
-        super.initAnnotations();
+    disableViewerControls() {
+        super.disableViewerControls();
+        this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+        this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+    }
 
-        // Disables controls during point annotation mode
-        /* istanbul ignore next */
-        this.annotator.addListener('pointmodeenter', () => {
-            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
-            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-            if (this.controls) {
-                this.controls.disable();
-            }
-        });
-
-        /* istanbul ignore next */
-        this.annotator.addListener('pointmodeexit', () => {
-            this.updateCursor();
-            if (this.controls) {
-                this.controls.enable();
-            }
-        });
+    /**
+     * Enables viewer controls
+     *
+     * @override
+     * @return {void}
+     */
+    enableViewerControls() {
+        super.enableViewerControls();
+        this.updateCursor();
     }
 
     /**

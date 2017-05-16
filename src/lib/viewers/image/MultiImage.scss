@@ -5,6 +5,7 @@
 .bp-images-wrapper {
     border: 0 none;
     bottom: 0;
+    cursor: default; // regular cursor when not hovering over images
     height: 100%;
     left: 0;
     margin: 0 auto;
@@ -16,7 +17,6 @@
     top: 0;
     white-space: nowrap;
     width: 100%;
-    cursor: default; // regular cursor when not hovering over images
 
     &.bp-point-annotation-mode img {
         cursor: crosshair;

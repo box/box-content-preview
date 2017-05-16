@@ -107,17 +107,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.controls.destroy).to.be.called;
         });
 
-        it('should remove listeners and destroy the annotator', () => {
-            docBase.annotator = {
-                removeAllListeners: sandbox.stub(),
-                destroy: sandbox.stub()
-            };
-
-            docBase.destroy();
-            expect(docBase.annotator.destroy).to.be.called;
-            expect(docBase.annotator.removeAllListeners).to.be.called.twice;
-        });
-
         it('should destroy the find bar', () => {
             docBase.findBar = {
                 destroy: sandbox.stub()
@@ -711,16 +700,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
     describe('setScale()', () => {
         it('should set the pdf viewer and the annotator\'s scale if it exists', () => {
-            docBase.annotator = {
-                setScale: sandbox.stub()
-            };
+            sandbox.stub(docBase, 'emit');
             docBase.pdfViewer = {
                 currentScaleValue: 0
             };
             const newScale = 5;
 
             docBase.setScale(newScale);
-            expect(docBase.annotator.setScale).to.be.calledWith(newScale);
+            expect(docBase.emit).to.be.calledWith('scale', newScale);
             expect(docBase.pdfViewer.currentScaleValue).to.equal(newScale);
         });
     });
@@ -847,6 +834,25 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        it('should set a cache-busting header if on mobile', () => {
+            docBase.options.location = {
+                locale: 'en-US'
+            };
+            docBase.isMobile = true;
+            sandbox.stub(Browser, 'isIOS').returns(true);
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+
+            return docBase.initViewer('').then(() => {
+                expect(PDFJS.getDocument).to.be.calledWith({
+                    url: '',
+                    rangeChunkSize: 1048576,
+                    httpHeaders: {
+                        'If-None-Match': 'webkit-no-cache'
+                    }
+                });
+            });
+        });
+
         it('should resolve the loading task and set the document/viewer', () => {
             const doc = {
                 url: 'url'
@@ -875,6 +881,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 pageViewsReady: true
             };
 
+            sandbox.stub(docBase, 'setScale');
             stubs.setPage = sandbox.stub(docBase, 'setPage');
             Object.defineProperty(Object.getPrototypeOf(DocBaseViewer.prototype), 'resize', {
                 value: sandbox.stub()
@@ -904,18 +911,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.pdfViewer.update).to.be.called;
             expect(stubs.setPage).to.be.called;
             expect(BaseViewer.prototype.resize).to.be.called;
-        });
-
-        it('should set the annotator scale if it exists', () => {
-            docBase.annotator = {
-                setScale: sandbox.stub(),
-                renderAnnotations: sandbox.stub()
-            };
-
-            docBase.resize();
-            expect(docBase.annotator.setScale).to.be.called;
-            expect(docBase.annotator.renderAnnotations).to.be.called;
-            expect(stubs.setPage).to.be.called;
+            expect(docBase.setScale).to.be.called;
         });
     });
 
@@ -1027,6 +1023,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.setupPdfjs();
             expect(PDFJS.maxCanvasPixels).to.equal(MOBILE_MAX_CANVAS_SIZE);
         });
+
+        it('should set disableCreateObjectURL to false', () => {
+            docBase.setupPdfjs();
+            expect(PDFJS.disableCreateObjectURL).to.equal(false);
+        });
     });
 
     describe('initPrint()', () => {
@@ -1133,9 +1134,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should set up page IDs and initialize the annotator', () => {
             docBase.pdfViewer = {
                 currentScale: 1
-            };
-            docBase.annotator = {
-                addListener: sandbox.stub()
             };
             sandbox.stub(docBase, 'setupPageIds');
             Object.defineProperty(BaseViewer.prototype, 'initAnnotations', { value: sandbox.mock() });

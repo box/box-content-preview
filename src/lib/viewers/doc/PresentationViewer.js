@@ -72,6 +72,8 @@ class PresentationViewer extends DocBaseViewer {
         const pageEl = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
         pageEl.classList.remove(CLASS_INVISIBLE);
 
+        // Force page to be rendered - this is needed because the presentation
+        // DOM layout can trick pdf.js into thinking that this page is not visible
         this.pdfViewer.update();
     }
 
