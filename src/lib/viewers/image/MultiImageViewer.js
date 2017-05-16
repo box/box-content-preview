@@ -2,7 +2,7 @@ import autobind from 'autobind-decorator';
 import ImageBaseViewer from './ImageBaseViewer';
 import './MultiImage.scss';
 
-import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
+import { ICON_FILE_IMAGE, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
 
 const PADDING_BUFFER = 100;
@@ -17,6 +17,9 @@ class MultiImageViewer extends ImageBaseViewer {
      * @inheritdoc
      */
     setup() {
+        this.fileLoadingIcon = ICON_FILE_IMAGE;
+
+        // Call super() to set up common layout
         super.setup();
 
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));

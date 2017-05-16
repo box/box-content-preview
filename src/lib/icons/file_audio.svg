@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="120" height="120" viewBox="0 0 19 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>AUDIO</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M0,1.49839123 C0,1.22313735 0.229532474,1 0.501509486,1 L12.0278727,1 L17,6 L17,21.5036068 C17,21.7777572 16.7850572,22 16.5095568,22 L0.49044323,22 C0.219578913,22 0,21.7783691 0,21.5016088 L0,1.49839123 Z" id="path-1"></path>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-1" y="-1" width="19" height="23">
+            <rect x="-1" y="0" width="19" height="23" fill="white"></rect>
+            <use xlink:href="#path-1" fill="black"></use>
+        </mask>
+        <mask id="mask-3" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-1" y="-1" width="19" height="23">
+            <rect x="-1" y="0" width="19" height="23" fill="white"></rect>
+            <use xlink:href="#path-1" fill="black"></use>
+        </mask>
+        <polygon id="path-4" points="2 0 10 0 10 4 2 4"></polygon>
+        <mask id="mask-5" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="8" height="4" fill="white">
+            <use xlink:href="#path-4"></use>
+        </mask>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="BDL-UI-Kit-2.0" transform="translate(-264.000000, -1865.000000)">
+            <g id="File-&amp;-Folder-Icons" transform="translate(150.000000, 1648.000000)">
+                <g id="AUDIO" transform="translate(115.000000, 217.000000)">
+                    <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-+-Path-189-Copy-Copy-Copy-+-Excel-file-4-+-Rectangle-535-Copy-Copy">
+                        <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-+-Path-189-Copy-Copy-Copy">
+                            <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8">
+                                <g id="Rectangle-494-Copy-8">
+                                    <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                                    <use stroke="#FFFFFF" mask="url(#mask-2)" stroke-width="2" xlink:href="#path-1"></use>
+                                    <use stroke="#9B59B6" mask="url(#mask-3)" stroke-width="2" xlink:href="#path-1"></use>
+                                </g>
+                                <path d="M13.0119183,6 C12.4581277,6 12.0085009,5.54902482 12.0076739,5.00922203 L12,0 L18,6 L13.0119183,6 Z" id="Path-121-Copy-8" fill="#955CA5"></path>
+                            </g>
+                        </g>
+                    </g>
+                    <g id="Group-17-+-Group-2-Copy" transform="translate(3.000000, 8.000000)">
+                        <g id="Group">
+                            <use id="Rectangle-495" stroke="#955CA5" mask="url(#mask-5)" stroke-width="2" xlink:href="#path-4"></use>
+                            <rect id="Rectangle-498" fill="#955CA5" x="2" y="1" width="1" height="8"></rect>
+                            <rect id="Rectangle-498" fill="#955CA5" x="9" y="1" width="1" height="8"></rect>
+                            <ellipse id="Oval-89" fill="#955CA5" cx="1.5" cy="8.5" rx="1.5" ry="1.5"></ellipse>
+                            <ellipse id="Oval-89" fill="#955CA5" cx="8.5" cy="8.5" rx="1.5" ry="1.5"></ellipse>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

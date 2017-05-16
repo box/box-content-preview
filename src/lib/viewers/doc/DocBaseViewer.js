@@ -19,7 +19,7 @@ import {
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { get, createAssetUrlCreator, decodeKeydown } from '../../util';
-import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
+import { ICON_PRINT_CHECKMARK, ICON_FILE_DOCUMENT } from '../../icons/icons';
 import { JS, CSS } from './docAssets';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
@@ -51,8 +51,11 @@ class DocBaseViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        // Call super() first to set up common layout
+        this.fileLoadingIcon = this.fileLoadingIcon || ICON_FILE_DOCUMENT;
+
+        // Call super() to set up common layout
         super.setup();
+
 
         this.docEl = this.containerEl.appendChild(document.createElement('div'));
         this.docEl.classList.add('bp-doc');

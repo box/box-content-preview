@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="120" height="120" viewBox="0 0 19 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>MOVIE</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M0,1.49839123 C0,1.22313735 0.229532474,1 0.501509486,1 L12.0278727,1 L17,6 L17,21.5036068 C17,21.7777572 16.7850572,22 16.5095568,22 L0.49044323,22 C0.219578913,22 0,21.7783691 0,21.5016088 L0,1.49839123 Z" id="path-1"></path>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-1" y="-1" width="19" height="23">
+            <rect x="-1" y="0" width="19" height="23" fill="white"></rect>
+            <use xlink:href="#path-1" fill="black"></use>
+        </mask>
+        <mask id="mask-3" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-1" y="-1" width="19" height="23">
+            <rect x="-1" y="0" width="19" height="23" fill="white"></rect>
+            <use xlink:href="#path-1" fill="black"></use>
+        </mask>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="BDL-UI-Kit-2.0" transform="translate(-355.000000, -1865.000000)">
+            <g id="File-&amp;-Folder-Icons" transform="translate(150.000000, 1648.000000)">
+                <g id="MOVIE" transform="translate(206.000000, 217.000000)">
+                    <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-Copy-Copy-Copy-+-Rectangle-928-Copy-Copy-Copy-Copy-Copy-+-Rectangle-532-Copy-+-Rectangle-533-Copy-Copy-Copy-Copy-+-Rectangle-511-Copy-+-Rectangle-1350-Copy-Copy-+-Page-1-Copy-Copy">
+                        <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-Copy-Copy-Copy-+-Rectangle-928-Copy-Copy-Copy-Copy-Copy-+-Rectangle-532-Copy-+-Rectangle-533-Copy-Copy-Copy-Copy-+-Rectangle-511-Copy-+-Rectangle-1350-Copy-Copy">
+                            <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-Copy-Copy-Copy-+-Rectangle-928-Copy-Copy-Copy-Copy-Copy-+-Rectangle-532-Copy-+-Rectangle-533-Copy-Copy-Copy-Copy">
+                                <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-Copy-Copy-Copy-+-Rectangle-928-Copy-Copy-Copy-Copy-Copy">
+                                    <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-Copy-Copy-Copy">
+                                        <g id="Rectangle-494-Copy-8">
+                                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                                            <use stroke="#FFFFFF" mask="url(#mask-2)" stroke-width="2" xlink:href="#path-1"></use>
+                                            <use stroke="#22A7F0" mask="url(#mask-3)" stroke-width="2" xlink:href="#path-1"></use>
+                                        </g>
+                                        <path d="M13.0119183,6 C12.4581277,6 12.0085009,5.54902482 12.0076739,5.00922203 L12,0 L18,6 L13.0119183,6 Z" id="Path-121-Copy-8" fill="#22A7F0"></path>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                    <path d="M5.43011475,16.7580605 C5.19256893,16.89168 5,16.7775269 5,16.4903342 L5,8.50966585 C5,8.22818517 5.19775391,8.11123657 5.43011475,8.24193954 L12.5698853,12.2580605 C12.8074311,12.39168 12.8022461,12.6112366 12.5698853,12.7419395 L5.43011475,16.7580605 Z" id="Triangle-1" fill="#22A7F0"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

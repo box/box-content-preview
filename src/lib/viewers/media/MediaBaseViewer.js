@@ -5,6 +5,7 @@ import cache from '../../Cache';
 import Browser from '../../Browser';
 import MediaControls from './MediaControls';
 import { CLASS_ELEM_KEYBOARD_FOCUS, CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
+import { ICON_FILE_MEDIA } from '../../icons/icons';
 
 const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
@@ -20,7 +21,9 @@ class MediaBaseViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        // Call super() first to set up common layout
+        this.fileLoadingIcon = this.fileLoadingIcon || ICON_FILE_MEDIA;
+
+        // Call super() to set up common layout
         super.setup();
 
         // Media Wrapper

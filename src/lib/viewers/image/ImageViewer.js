@@ -1,8 +1,13 @@
 import autobind from 'autobind-decorator';
 import Browser from '../../Browser';
 import ImageBaseViewer from './ImageBaseViewer';
-import { ICON_ROTATE_LEFT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
+import {
+    ICON_FILE_IMAGE,
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT,
+    ICON_ROTATE_LEFT
+} from '../../icons/icons';
 import { openContentInsideIframe } from '../../util';
 import './Image.scss';
 
@@ -16,7 +21,9 @@ class ImageViewer extends ImageBaseViewer {
      * @inheritdoc
      */
     setup() {
-        // Call super() first to set up common layout
+        this.fileLoadingIcon = ICON_FILE_IMAGE;
+
+        // Call super() to set up common layout
         super.setup();
 
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));

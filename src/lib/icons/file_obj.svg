@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="120" height="120" viewBox="0 0 19 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>OBJ</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M0,1.49839123 C0,1.22313735 0.229532474,1 0.501509486,1 L12.0278727,1 L17,6 L17,21.5036068 C17,21.7777572 16.7850572,22 16.5095568,22 L0.49044323,22 C0.219578913,22 0,21.7783691 0,21.5016088 L0,1.49839123 Z" id="path-1"></path>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-1" y="-1" width="19" height="23">
+            <rect x="-1" y="0" width="19" height="23" fill="white"></rect>
+            <use xlink:href="#path-1" fill="black"></use>
+        </mask>
+        <mask id="mask-3" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-1" y="-1" width="19" height="23">
+            <rect x="-1" y="0" width="19" height="23" fill="white"></rect>
+            <use xlink:href="#path-1" fill="black"></use>
+        </mask>
+        <path d="M0,2.86744213 C0,2.58919789 0.193359375,2.26207386 0.447928905,2.12836057 L4.05207109,0.235275789 C4.2994554,0.105336559 4.69335938,0.1015625 4.94792891,0.235275789 L8.55207109,2.12836057 C8.7994554,2.25829981 9,2.58806411 9,2.86744213 L9,7.76892151 C9,8.04716575 8.80664062,8.37428977 8.55207109,8.50800306 L4.94792891,10.4010878 C4.7005446,10.5310271 4.30664062,10.5348011 4.05207109,10.4010878 L0.447928905,8.50800306 C0.200544602,8.37806383 0,8.04829953 0,7.76892151 L0,2.86744213 Z" id="path-4"></path>
+        <mask id="mask-5" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="9" height="10.3635616" fill="white">
+            <use xlink:href="#path-4"></use>
+        </mask>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="BDL-UI-Kit-2.0" transform="translate(-355.000000, -1725.000000)">
+            <g id="File-&amp;-Folder-Icons" transform="translate(150.000000, 1648.000000)">
+                <g id="OBJ" transform="translate(206.000000, 77.000000)">
+                    <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-Copy-Copy-Copy-+-Rectangle-928-Copy-Copy-Copy-Copy-Copy">
+                        <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-Copy-Copy-Copy">
+                            <g id="Rectangle-494-Copy-8">
+                                <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                                <use stroke="#FFFFFF" mask="url(#mask-2)" stroke-width="2" xlink:href="#path-1"></use>
+                                <use stroke="#F7931D" mask="url(#mask-3)" stroke-width="2" xlink:href="#path-1"></use>
+                            </g>
+                            <path d="M13.0119183,6 C12.4581277,6 12.0085009,5.54902482 12.0076739,5.00922203 L12,0 L18,6 L13.0119183,6 Z" id="Path-121-Copy-8" fill="#F7931D"></path>
+                        </g>
+                    </g>
+                    <g id="Rectangle-532-Copy-+-Rectangle-533-Copy" transform="translate(4.000000, 8.000000)">
+                        <polygon id="Rectangle-533-Copy" fill="#F7931D" points="4.5 5.31818182 8.25 3.03896104 8.25 8.35714286 4.5 9.87662338"></polygon>
+                        <use id="Rectangle-532-Copy" stroke="#F7931D" mask="url(#mask-5)" stroke-width="2" xlink:href="#path-4"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

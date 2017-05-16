@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="120" height="120" viewBox="0 0 19 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
+    <title>WORD</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M0,1.49839123 C0,1.22313735 0.229532474,1 0.501509486,1 L12.0278727,1 L17,6 L17,21.5036068 C17,21.7777572 16.7850572,22 16.5095568,22 L0.49044323,22 C0.219578913,22 0,21.7783691 0,21.5016088 L0,1.49839123 Z" id="path-1"></path>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-1" y="-1" width="19" height="23">
+            <rect x="-1" y="0" width="19" height="23" fill="white"></rect>
+            <use xlink:href="#path-1" fill="black"></use>
+        </mask>
+        <mask id="mask-3" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="-1" y="-1" width="19" height="23">
+            <rect x="-1" y="0" width="19" height="23" fill="white"></rect>
+            <use xlink:href="#path-1" fill="black"></use>
+        </mask>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="BDL-UI-Kit-2.0" transform="translate(-628.000000, -1865.000000)">
+            <g id="File-&amp;-Folder-Icons" transform="translate(150.000000, 1648.000000)">
+                <g id="WORD" transform="translate(479.000000, 217.000000)">
+                    <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-Copy-Copy-Copy-+-Rectangle-928-Copy-Copy-Copy-Copy-Copy-+-Rectangle-532-Copy-+-Rectangle-533-Copy-Copy-Copy-Copy-+-Rectangle-511-Copy-+-Rectangle-1350-Copy-Copy-+-Page-1-Copy-Copy-+-Triangle-1-Copy">
+                        <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-Copy-Copy-Copy-+-Rectangle-928-Copy-Copy-Copy-Copy-Copy-+-Rectangle-532-Copy-+-Rectangle-533-Copy-Copy-Copy-Copy-+-Rectangle-511-Copy-+-Rectangle-1350-Copy-Copy-+-Page-1-Copy-Copy">
+                            <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-Copy-Copy-Copy-+-Rectangle-928-Copy-Copy-Copy-Copy-Copy-+-Rectangle-532-Copy-+-Rectangle-533-Copy-Copy-Copy-Copy-+-Rectangle-511-Copy-+-Rectangle-1350-Copy-Copy">
+                                <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-Copy-Copy-Copy-+-Rectangle-928-Copy-Copy-Copy-Copy-Copy-+-Rectangle-532-Copy-+-Rectangle-533-Copy-Copy-Copy-Copy">
+                                    <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-Copy-Copy-Copy-+-Rectangle-928-Copy-Copy-Copy-Copy-Copy">
+                                        <g id="Rectangle-494-Copy-8-+-Path-121-Copy-8-Copy-Copy-Copy">
+                                            <g id="Rectangle-494-Copy-8">
+                                                <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                                                <use stroke="#FFFFFF" mask="url(#mask-2)" stroke-width="2" xlink:href="#path-1"></use>
+                                                <use stroke="#22A7F0" mask="url(#mask-3)" stroke-width="2" xlink:href="#path-1"></use>
+                                            </g>
+                                            <path d="M13.0119183,6 C12.4581277,6 12.0085009,5.54902482 12.0076739,5.00922203 L12,0 L18,6 L13.0119183,6 Z" id="Path-121-Copy-8" fill="#22A7F0"></path>
+                                        </g>
+                                    </g>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                    <g id="Path-453-+-Path-454-+-Rectangle-928" transform="translate(2.000000, 10.000000)">
+                        <g id="Path-453-+-Path-454">
+                            <path d="M1,4.96147885 L3.31387771,0.44029815 C3.43832873,0.197128196 3.63872963,0.202198625 3.75759436,0.443716645 L6,5" id="Path-453" stroke="#22A7F0"></path>
+                            <rect id="Rectangle-1411" fill="#F4FAFE" x="0" y="4" width="8" height="2"></rect>
+                            <path d="M2,3 L5,3" id="Path-454" stroke="#22A7F0"></path>
+                        </g>
+                        <path d="M6,0 L12,0 L12,1 L6,1 L6,0 Z M7,3 L12,3 L12,4 L7,4 L7,3 Z M1,6 L12,6 L12,7 L1,7 L1,6 Z" id="Rectangle-928" fill="#22A7F0"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
