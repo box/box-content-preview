@@ -509,12 +509,16 @@ export function decodeKeydown(event) {
  * Find location information about a script include
  *
  * @param {string} name - Script name
+ * @param {HTMLScriptElement} [script] - optional script element
  * @return {Object} Script location object
  */
-export function findScriptLocation(name) {
-    const scriptSrc = document.querySelector(`script[src*="/${name}"]`).src;
-    if (!scriptSrc) {
-        throw new Error('Missing or malformed preview library');
+export function findScriptLocation(name, script) {
+    const scriptEl = document.querySelector(`script[src*="/${name}"]`) || {};
+    const scriptSrc = script ? script.src : scriptEl.src;
+
+    // Double check if we found the correct script. Ignore tests.
+    if (!scriptSrc || (scriptSrc.indexOf(name) === -1 && scriptSrc.indexOf('__tests__') === -1)) {
+        throw new Error(`Missing or malformed ${name} library`);
     }
 
     const anchor = document.createElement('a');

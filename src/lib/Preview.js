@@ -64,6 +64,13 @@ const KEYDOWN_EXCEPTIONS = ['INPUT', 'SELECT', 'TEXTAREA']; // Ignore keydown ev
 const LOG_RETRY_TIMEOUT = 500; // retry interval for logging preview event
 const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 
+// All preview assets are relative to preview.js. Here we create a location
+// object that mimics the window location object and points to where
+// preview.js is loaded from by the browser. This needs to be done statically
+// outside the class so that location is found while this script is executing
+// and not when preview is instantiated, which is too late.
+const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
+
 @autobind
 class Preview extends EventEmitter {
     /**
@@ -208,7 +215,7 @@ class Preview extends EventEmitter {
         // All preview assets are relative to preview.js. Here we create a location
         // object that mimics the window location object and points to where
         // preview.js is loaded from by the browser.
-        this.location = findScriptLocation(PREVIEW_SCRIPT_NAME);
+        this.location = PREVIEW_LOCATION;
     }
 
     /**

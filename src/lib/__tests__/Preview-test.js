@@ -33,7 +33,6 @@ describe('lib/Preview', () => {
     beforeEach(() => {
         fixture.load('__tests__/Preview-test.html');
         containerEl = document.querySelector('.container');
-        sandbox.stub(util, 'findScriptLocation').returns('en-US');
         preview = new Preview();
         preview.container = containerEl;
         stubs = {};
@@ -51,11 +50,6 @@ describe('lib/Preview', () => {
     describe('constructor()', () => {
         beforeEach(() => {
             stubs.preview = preview;
-            stubs.location = preview.location;
-        });
-
-        afterEach(() => {
-            preview.location = stubs.location;
         });
 
         it('should set the preview to be closed', () => {
@@ -71,7 +65,7 @@ describe('lib/Preview', () => {
             expect(preview.disabledViewers).to.deep.equal({ Office: 1 });
             expect(preview.token).to.equal('');
             expect(preview.loaders).to.equal(loaders);
-            expect(preview.location).to.equal('en-US');
+            expect(preview.location.hostname).to.equal('localhost');
         });
     });
 
