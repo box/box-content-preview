@@ -511,6 +511,8 @@ class DocBaseViewer extends BaseViewer {
      * @return {Promise} Promise to initialize Viewer
      */
     initViewer(pdfUrl) {
+        this.bindDOMListeners();
+
         // Initialize PDF.js in container
         this.pdfViewer = new PDFJS.PDFViewer({
             container: this.docEl,
@@ -531,15 +533,22 @@ class DocBaseViewer extends BaseViewer {
                 RANGE_REQUEST_CHUNK_SIZE_NON_US;
         }
 
-        this.bindDOMListeners();
-
-        // Load PDF from representation URL
-        this.pdfLoadingTask = PDFJS.getDocument({
+        const docInitParams = {
             url: pdfUrl,
             rangeChunkSize
-        });
+        };
 
-        // Set document for PDF.js
+        // Fix incorrectly cached range requests on older versions of iOS webkit browsers,
+        // see: https://bugs.webkit.org/show_bug.cgi?id=82672
+        if (this.isMobile && Browser.isIOS()) {
+            docInitParams.httpHeaders = {
+                'If-None-Match': 'webkit-no-cache'
+            };
+        }
+
+        // Load PDF from representation URL and set as document for pdf.js. Cache
+        // the loading task so we can cancel if needed
+        this.pdfLoadingTask = PDFJS.getDocument(docInitParams);
         return this.pdfLoadingTask.then((doc) => {
             this.pdfViewer.setDocument(doc);
 
