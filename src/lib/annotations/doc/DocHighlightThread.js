@@ -12,6 +12,12 @@ const HOVER_TIMEOUT_MS = 75;
 @autobind
 class DocHighlightThread extends AnnotationThread {
 
+    constructor(data) {
+        super(data);
+        // caching page element
+        this.pageEl = undefined;
+    }
+
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
@@ -436,29 +442,67 @@ class DocHighlightThread extends AnnotationThread {
         const zoomScale = annotatorUtil.getScale(this.annotatedElement);
         const dimensionScale = annotatorUtil.getDimensionScale(this.location.dimensions, pageDimensions, zoomScale, PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM);
 
+        const scaleVertices = (val, index) => {
+            return index % 2 ? val * dimensionScale.y : val * dimensionScale.x;
+        };
+
         // DOM coordinates with respect to the page
         const x = event.clientX - pageDimensions.left;
         const y = event.clientY - pageTop;
 
-        return this.location.quadPoints.some((quadPoint) => {
+        let eventOccurredInHighlight = false;
+
+        let index = 0;
+        const points = this.location.quadPoints;
+        const length = points.length;
+
+        while (index < length) {
+            const quadPoint = points[index];
             // If needed, scale quad points comparing current dimensions with saved dimensions
-            let scaledQuadPoint = quadPoint;
+            const scaledQuadPoint = [...quadPoint];
             if (dimensionScale) {
-                scaledQuadPoint = quadPoint.map((val, index) => {
-                    return index % 2 ? val * dimensionScale.y : val * dimensionScale.x;
-                });
+                // scaledQuadPoint = quadPoint.map(scaleVertices);
+                for (let i = 0; i < quadPoint.length; ++i) {
+                    scaledQuadPoint[i] = scaleVertices(quadPoint[i], i);
+                }
             }
 
             const browserQuadPoint = docAnnotatorUtil.convertPDFSpaceToDOMSpace(scaledQuadPoint, pageHeight, zoomScale);
+
             const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
 
-            return docAnnotatorUtil.isPointInPolyOpt([
+            eventOccurredInHighlight = docAnnotatorUtil.isPointInPolyOpt([
                 [x1, y1],
                 [x2, y2],
                 [x3, y3],
                 [x4, y4]
             ], x, y);
-        });
+
+            /* eslint-disable */
+            index++;
+            /* eslint-enable */
+        }
+
+        return eventOccurredInHighlight;
+
+        // return this.location.quadPoints.some((quadPoint) => {
+        //     // If needed, scale quad points comparing current dimensions with saved dimensions
+        //     let scaledQuadPoint = quadPoint;
+        //     if (dimensionScale) {
+        //         scaledQuadPoint = quadPoint.map(scaleVertices);
+        //     }
+
+        //     const browserQuadPoint = docAnnotatorUtil.convertPDFSpaceToDOMSpace(scaledQuadPoint, pageHeight, zoomScale);
+
+        //     const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
+
+        //     return docAnnotatorUtil.isPointInPolyOpt([
+        //         [x1, y1],
+        //         [x2, y2],
+        //         [x3, y3],
+        //         [x4, y4]
+        //     ], x, y);
+        // });
     }
 
     /**
@@ -468,7 +512,11 @@ class DocHighlightThread extends AnnotationThread {
      * @return {HTMLElement} Page element
      */
     getPageEl() {
-        return this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
+        if (!this.pageEl) {
+            this.pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
+        }
+
+        return this.pageEl;
     }
 
     /**
