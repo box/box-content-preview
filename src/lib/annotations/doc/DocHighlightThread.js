@@ -11,7 +11,11 @@ const HOVER_TIMEOUT_MS = 75;
 
 @autobind
 class DocHighlightThread extends AnnotationThread {
-
+    /**
+     * An annotation thread for highlights.
+     *
+     * @constructor
+     */
     constructor(data) {
         super(data);
         // caching page element
@@ -461,8 +465,8 @@ class DocHighlightThread extends AnnotationThread {
             // If needed, scale quad points comparing current dimensions with saved dimensions
             const scaledQuadPoint = [...quadPoint];
             if (dimensionScale) {
-                // scaledQuadPoint = quadPoint.map(scaleVertices);
-                for (let i = 0; i < quadPoint.length; ++i) {
+                const qLength = quadPoint.length;
+                for (let i = 0; i < qLength; i++) {
                     scaledQuadPoint[i] = scaleVertices(quadPoint[i], i);
                 }
             }
@@ -484,25 +488,6 @@ class DocHighlightThread extends AnnotationThread {
         }
 
         return eventOccurredInHighlight;
-
-        // return this.location.quadPoints.some((quadPoint) => {
-        //     // If needed, scale quad points comparing current dimensions with saved dimensions
-        //     let scaledQuadPoint = quadPoint;
-        //     if (dimensionScale) {
-        //         scaledQuadPoint = quadPoint.map(scaleVertices);
-        //     }
-
-        //     const browserQuadPoint = docAnnotatorUtil.convertPDFSpaceToDOMSpace(scaledQuadPoint, pageHeight, zoomScale);
-
-        //     const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
-
-        //     return docAnnotatorUtil.isPointInPolyOpt([
-        //         [x1, y1],
-        //         [x2, y2],
-        //         [x3, y3],
-        //         [x4, y4]
-        //     ], x, y);
-        // });
     }
 
     /**

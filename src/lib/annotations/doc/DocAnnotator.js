@@ -47,6 +47,11 @@ const isThreadInHoverState = (thread) => {
 @autobind
 class DocAnnotator extends Annotator {
 
+    /**
+     * An annotator in charge of creating an managing annotations on Documents, such as PDFs.
+     *
+     * @constructor
+     */
     constructor(data) {
         super(data);
 

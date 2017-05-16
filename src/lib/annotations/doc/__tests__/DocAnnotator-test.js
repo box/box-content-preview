@@ -359,6 +359,19 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.elMock.expects('removeEventListener').withArgs('dblclick', sinon.match.func);
             annotator.unbindDOMListeners();
         });
+
+        it('should stop and destroy the requestAnimationFrame handle created by getHighlightMousemoveHandler()', () => {
+            const rafHandle = 12;// RAF handles are integers
+            annotator.annotationService.canAnnotate = true;
+            annotator.highlightThrottleHandle = rafHandle;
+            sandbox.stub(annotator, 'getHighlightMouseMoveHandler').returns(sandbox.stub());
+
+            const cancelRAFStub = sandbox.stub(window, 'cancelAnimationFrame');
+            annotator.unbindDOMListeners();
+
+            expect(cancelRAFStub).to.be.calledWith(rafHandle);
+            expect(annotator.highlightThrottleHandle).to.not.exist;
+        });
     });
 
     describe('bindCustomListenersOnThread()', () => {
