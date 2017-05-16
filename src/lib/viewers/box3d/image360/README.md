@@ -20,7 +20,7 @@ Currently, this previewer requires that the file be named with a '.360' precedin
 
 ## Supported File Extensions
 
-`'360.jpg', '360.jpeg', '360.png', '360.ai', '360.bmp', '360.dcm', '360.eps', '360.gif', '360.ps', '360.psd', '360.svg', '360.svs', '360.tga', '360.tif', '360.tiff'`
+`'360.jpg', '360.jpeg', '360.png'`
 
 ## Events
 The 360 image viewer fires the following events
