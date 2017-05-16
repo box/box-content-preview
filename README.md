@@ -12,7 +12,7 @@ Browser Support
 * Desktop Chrome, Firefox, Safari, Edge, and Internet Explorer 11
 * Limited support for mobile web - previews will render but some controls may not work
 
-If your browser doesn't natively support Promises, include a Promise library (e.g. Bluebird) before the main Preview script.
+If you are using Internet Explorer 11, which doesn't natively support promises, include a polyfill.io script (see sample code below) or a Promise library like Bluebird.
 
 Current Version
 ---------------
@@ -43,8 +43,8 @@ You can self-host the Box Content Preview UI Kit and Promise library or referenc
     <meta charset="utf-8" />
     <title>Box Content Preview Demo</title>
 
-    <!-- Include Promise library if using Internet Explorer 11 -->
-    <script src="https://cdn01.boxcdn.net/js/vendor/bluebird/bluebird-core-some-any-cancel-settle-2.9.34.js"></script>
+    <!-- polyfill.io only loads a Promise polyfill if your browser needs one -->
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise"></script>
 
     <!-- Latest version of Preview SDK for your locale -->
     <script src="https://cdn01.boxcdn.net/platform/preview/0.122.0/en-US/preview.js"></script>
