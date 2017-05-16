@@ -1004,6 +1004,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.setupPdfjs();
             expect(PDFJS.maxCanvasPixels).to.equal(MOBILE_MAX_CANVAS_SIZE);
         });
+
+        it('should set disableCreateObjectURL to false', () => {
+            docBase.setupPdfjs();
+            expect(PDFJS.disableCreateObjectURL).to.equal(false);
+        });
     });
 
     describe('initPrint()', () => {

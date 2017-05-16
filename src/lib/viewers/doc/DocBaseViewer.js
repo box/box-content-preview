@@ -632,6 +632,10 @@ class DocBaseViewer extends BaseViewer {
 
         // Decrease mobile canvas size to ~3MP (1920x1536)
         PDFJS.maxCanvasPixels = this.isMobile ? MOBILE_MAX_CANVAS_SIZE : PDFJS.maxCanvasPixels;
+
+        // Do not disable create object URL in IE11 or iOS Chrome - pdf.js issues #3977 and #8081 are
+        // not applicable to Box's use case and disabling causes performance issues
+        PDFJS.disableCreateObjectURL = false;
     }
 
     /**
