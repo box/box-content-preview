@@ -34,7 +34,7 @@ Box Content Preview supports 100+ file types, including most document and image 
 
 Usage
 -----
-You can self-host the Box Content Preview UI Kit and Promise library or reference the versions hosted on the Box CDN.
+You can self-host the Box Content Preview UI Kit or reference the versions available on Box's CDN.
 
 ```html
 <!DOCTYPE html>
