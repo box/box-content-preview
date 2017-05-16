@@ -574,6 +574,7 @@ export function replacePlaceholders(string, placeholderValues) {
         /* eslint-enable no-plusplus */
     });
 }
+
 /**
  * Check to see if a file requires a Box3D viewer to be viewed
  *
