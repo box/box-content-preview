@@ -834,6 +834,25 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             });
         });
 
+        it('should set a cache-busting header if on mobile', () => {
+            docBase.options.location = {
+                locale: 'en-US'
+            };
+            docBase.isMobile = true;
+            sandbox.stub(Browser, 'isIOS').returns(true);
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+
+            return docBase.initViewer('').then(() => {
+                expect(PDFJS.getDocument).to.be.calledWith({
+                    url: '',
+                    rangeChunkSize: 1048576,
+                    httpHeaders: {
+                        'If-None-Match': 'webkit-no-cache'
+                    }
+                });
+            });
+        });
+
         it('should resolve the loading task and set the document/viewer', () => {
             const doc = {
                 url: 'url'
