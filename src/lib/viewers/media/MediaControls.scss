@@ -148,6 +148,47 @@
     right: 55px;
 }
 
+.bp-media-cc-icon {
+    position: absolute;
+    right: 100px;
+    visibility: visible;
+
+    .bp-media-settings-subtitles-unavailable & {
+        visibility: hidden;
+    }
+}
+
+.bp-media-cc-icon-on {
+    background-color: $white;
+    bottom: 6px;
+    display: inline-block;
+    height: 3px;
+    left: 12px;
+    opacity: 0;
+    position: absolute;
+    transition: opacity .3s;
+    width: 21px;
+}
+
+.bp-media-controls-cc-icon-text {
+    background: $white;
+    border-radius: 3px;
+    bottom: 2px;
+    color: $black;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    line-height: 8px;
+    padding: 2px 2px 2px 3px;
+    position: relative;
+}
+
+.bp-media-settings-subtitles-on {
+    .bp-media-cc-icon-on {
+        opacity: 1;
+    }
+}
+
 .bp-media-controls-hd {
     background: $box-blue;
     border-radius: 3px;
