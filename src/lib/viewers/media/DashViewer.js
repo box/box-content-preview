@@ -6,6 +6,7 @@ import { get } from '../../util';
 import { getRepresentation } from '../../file';
 import { MEDIA_STATIC_ASSETS_VERSION } from '../../constants';
 import './Dash.scss';
+import getLanguageName from '../../lang';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
@@ -312,7 +313,7 @@ class DashViewer extends VideoBaseViewer {
     loadSubtitles() {
         this.textTracks = this.player.getTextTracks().sort((track1, track2) => track1.id - track2.id);
         if (this.textTracks.length > 0) {
-            this.mediaControls.initSubtitles(this.textTracks.map((track) => track.language));
+            this.mediaControls.initSubtitles(this.textTracks.map((track) => getLanguageName(track.language) || track.language));
         }
     }
     /**

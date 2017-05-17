@@ -450,25 +450,67 @@ describe('lib/viewers/media/DashViewer', () => {
     });
 
     describe('loadSubtitles()', () => {
-        it('should initialize subtitles in sorted order if there are available subtitles', () => {
-            const english = { language: 'English', id: 5 };
-            const russian = { language: 'Russian', id: 4 };
-            const spanish = { language: 'Spanish', id: 6 };
-            const korean = { language: 'Korean', id: 3 };
-            const arabic = { language: 'Arabic', id: 7 };
+        it('should translate and initialize subtitles in sorted order if there are available subtitles', () => {
+            const english = { language: 'eng', id: 5 };
+            const russian = { language: 'rus', id: 4 };
+            const spanish = { language: 'spa', id: 6 };
+            const korean = { language: 'kor', id: 3 };
+            const chinese = { language: 'zho', id: 7 };
             const subs = [
                 english,
                 russian,
                 spanish,
                 korean,
-                arabic
+                chinese
             ];
             stubs.mockPlayer.expects('getTextTracks').returns(subs);
-            stubs.mockControls.expects('initSubtitles').withArgs(['Korean', 'Russian', 'English', 'Spanish', 'Arabic']);
+            stubs.mockControls.expects('initSubtitles').withArgs(['Korean', 'Russian', 'English', 'Spanish', 'Chinese']);
 
             dash.loadSubtitles();
 
-            expect(dash.textTracks).to.deep.equal([korean, russian, english, spanish, arabic]);
+            expect(dash.textTracks).to.deep.equal([korean, russian, english, spanish, chinese]);
+        });
+
+        it('should be robust to capital iso639 codes', () => {
+            const russian = { language: 'RUS', id: 3 };
+            const spanish = { language: 'spa', id: 4 };
+            const korean = { language: 'KoR', id: 5 };
+            const chinese = { language: 'zHO', id: 6 };
+            const subs = [
+                russian,
+                spanish,
+                korean,
+                chinese
+            ];
+            stubs.mockPlayer.expects('getTextTracks').returns(subs);
+            stubs.mockControls.expects('initSubtitles').withArgs(['Russian', 'Spanish', 'Korean', 'Chinese']);
+
+            dash.loadSubtitles();
+
+            expect(dash.textTracks).to.deep.equal([russian, spanish, korean, chinese]);
+        });
+
+        it('should pass through unrecognized codes', () => {
+            const russian = { language: 'rus', id: 3 };
+            const foo = { language: 'foo', id: 4 };
+            const und = { language: 'und', id: 5 };
+            const empty = { language: '', id: 6 };
+            const doesntmatter = { language: 'doesntmatter', id: 6 };
+            const zero = { language: '0', id: 7 };
+            const subs = [
+                russian,
+                foo,
+                und,
+                empty,
+                doesntmatter,
+                zero
+            ];
+            stubs.mockPlayer.expects('getTextTracks').returns(subs);
+            stubs.mockControls.expects('initSubtitles').withArgs(['Russian', 'foo', 'und', '', 'doesntmatter', '0']);
+
+            dash.loadSubtitles();
+
+            expect(dash.textTracks).to.deep.equal([russian, foo, und, empty, doesntmatter, zero]);
         });
 
         it('should do nothing if there are no available subtitles', () => {
@@ -482,10 +524,10 @@ describe('lib/viewers/media/DashViewer', () => {
 
     describe('handleSubtitle()', () => {
         it('should select track from front of text track list', () => {
-            const english = { language: 'English', id: 3 };
-            const russian = { language: 'Russian', id: 4 };
-            const french = { language: 'French', id: 5 };
-            const spanish = { language: 'Spanish', id: 6 };
+            const english = { language: 'eng', id: 3 };
+            const russian = { language: 'rus', id: 4 };
+            const french = { language: 'fra', id: 5 };
+            const spanish = { language: 'spa', id: 6 };
             dash.textTracks = [
                 english,
                 russian,
@@ -498,14 +540,14 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.handleSubtitle();
 
-            expect(stubs.emit).to.be.calledWith('subtitlechange', 'English');
+            expect(stubs.emit).to.be.calledWith('subtitlechange', 'eng');
         });
 
         it('should select track from end of text track list', () => {
-            const english = { language: 'English', id: 3 };
-            const russian = { language: 'Russian', id: 4 };
-            const french = { language: 'French', id: 5 };
-            const spanish = { language: 'Spanish', id: 6 };
+            const english = { language: 'eng', id: 3 };
+            const russian = { language: 'rus', id: 4 };
+            const french = { language: 'fre', id: 5 };
+            const spanish = { language: 'spa', id: 6 };
             dash.textTracks = [
                 english,
                 russian,
@@ -518,14 +560,14 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.handleSubtitle();
 
-            expect(stubs.emit).to.be.calledWith('subtitlechange', 'Spanish');
+            expect(stubs.emit).to.be.calledWith('subtitlechange', 'spa');
         });
 
         it('should select track from middle of text track list', () => {
-            const english = { language: 'English', id: 3 };
-            const russian = { language: 'Russian', id: 4 };
-            const french = { language: 'French', id: 5 };
-            const spanish = { language: 'Spanish', id: 6 };
+            const english = { language: 'eng', id: 3 };
+            const russian = { language: 'rus', id: 4 };
+            const french = { language: 'fre', id: 5 };
+            const spanish = { language: 'spa', id: 6 };
             dash.textTracks = [
                 english,
                 russian,
@@ -538,14 +580,14 @@ describe('lib/viewers/media/DashViewer', () => {
 
             dash.handleSubtitle();
 
-            expect(stubs.emit).to.be.calledWith('subtitlechange', 'Russian');
+            expect(stubs.emit).to.be.calledWith('subtitlechange', 'rus');
         });
 
         it('should turn off subtitles when idx out of bounds', () => {
-            const english = { language: 'English', id: 3 };
-            const russian = { language: 'Russian', id: 4 };
-            const french = { language: 'French', id: 5 };
-            const spanish = { language: 'Spanish', id: 6 };
+            const english = { language: 'eng', id: 3 };
+            const russian = { language: 'rus', id: 4 };
+            const french = { language: 'fre', id: 5 };
+            const spanish = { language: 'spa', id: 6 };
             dash.textTracks = [
                 english,
                 russian,
