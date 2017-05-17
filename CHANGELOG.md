@@ -1,5 +1,26 @@
 # Change Log
 
+## [v0.123.0](https://github.com/box/box-content-preview/tree/v0.123.0) (2017-05-17)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.122.0...v0.123.0)
+
+**Merged pull requests:**
+
+- Language codes [\#122](https://github.com/box/box-content-preview/pull/122) ([bhh1988](https://github.com/bhh1988))
+- Chore: Remove unnecessary mobile check [\#120](https://github.com/box/box-content-preview/pull/120) ([tonyjin](https://github.com/tonyjin))
+- Docs: Remove unneeded file types from image360 docs [\#119](https://github.com/box/box-content-preview/pull/119) ([MiiBond](https://github.com/MiiBond))
+- Fix: Older versions of webkit iOS incorrectly cache range requests [\#118](https://github.com/box/box-content-preview/pull/118) ([tonyjin](https://github.com/tonyjin))
+- Subtitles [\#117](https://github.com/box/box-content-preview/pull/117) ([bhh1988](https://github.com/bhh1988))
+- Fix: Set media viewers' settings menu dimensions with javascript [\#116](https://github.com/box/box-content-preview/pull/116) ([bhh1988](https://github.com/bhh1988))
+- Chore: Document viewer tweaks [\#114](https://github.com/box/box-content-preview/pull/114) ([tonyjin](https://github.com/tonyjin))
+- Update Translations [\#113](https://github.com/box/box-content-preview/pull/113) ([boxmoji](https://github.com/boxmoji))
+- Chore: Moving common annotation methods into Base classes [\#111](https://github.com/box/box-content-preview/pull/111) ([pramodsum](https://github.com/pramodsum))
+- Upgrade: Upgrade Shaka-player to 2.1.1 [\#110](https://github.com/box/box-content-preview/pull/110) ([bhh1988](https://github.com/bhh1988))
+- Multi image annotator [\#109](https://github.com/box/box-content-preview/pull/109) ([JustinHoldstock](https://github.com/JustinHoldstock))
+- Fix: Issue when 'load' event is fired before BoxAnnotations is loaded [\#108](https://github.com/box/box-content-preview/pull/108) ([pramodsum](https://github.com/pramodsum))
+- Chore: Bundling annotations.css separately from preview.css [\#106](https://github.com/box/box-content-preview/pull/106) ([pramodsum](https://github.com/pramodsum))
+- Fix: Don't rely on preview's script tag being present after execution [\#105](https://github.com/box/box-content-preview/pull/105) ([priyajeet](https://github.com/priyajeet))
+- New: platform excel online fork [\#101](https://github.com/box/box-content-preview/pull/101) ([jeremypress](https://github.com/jeremypress))
+
 ## [v0.122.0](https://github.com/box/box-content-preview/tree/v0.122.0) (2017-05-09)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.121.1...v0.122.0)
 
