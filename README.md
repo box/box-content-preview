@@ -298,7 +298,7 @@ Copyright and License
 ---------------------
 Copyright 2016-2017 Box, Inc. All Rights Reserved.
 
-Licensed under the Box SDK License Agreement v.09__17.
+Licensed under the Box Software License Agreement v.05162017.
 You may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
