@@ -1,7 +1,7 @@
 # Change Log
 
-## [v0.123.0](https://github.com/box/box-content-preview/tree/v0.123.0) (2017-05-17)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.122.0...v0.123.0)
+## [v0.124.0](https://github.com/box/box-content-preview/tree/v0.124.0) (2017-05-17)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.122.0...v0.124.0)
 
 **Merged pull requests:**
 
