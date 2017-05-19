@@ -301,7 +301,7 @@ class Preview extends EventEmitter {
      * expected properties exist before caching.
      *
      * @param {Object[]|Object} [fileMetadata] - Array or single file metadata to cache
-     * @return {void}
+     * @return {Object[]|Object} Array of or signle file metadata object
      */
     updateFileCache(fileMetadata = []) {
         let files = fileMetadata;
@@ -309,6 +309,7 @@ class Preview extends EventEmitter {
             files = [fileMetadata];
         }
 
+        const cachedFiles = [];
         files.forEach((file) => {
             if (file.watermark_info && file.watermark_info.is_watermarked) {
                 return;
@@ -316,12 +317,15 @@ class Preview extends EventEmitter {
 
             if (checkFileValid(file)) {
                 cacheFile(file);
+                cachedFiles.push(file);
             } else {
                 /* eslint-disable no-console */
                 console.error('[Preview SDK] Tried to cache invalid file: ', file);
                 /* eslint-enable no-console */
             }
         });
+
+        return cachedFiles;
     }
 
     /**
@@ -469,6 +473,20 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Prefetches file info for a given file. Must be called before prefetch if the file
+     * info is not already known
+     *
+     * @param {string} fileId - Box File ID
+     * @param {string} token - Access Token
+     * @param {string} [apiHost] - Optional API Host
+     * @return {Object} File information
+     */
+    prefetchFileInfo(fileId, token, sharedLink = '', sharedLinkPassword = '', apiHost = API_HOST) {
+        return get(getURL(fileId, apiHost), this.getRequestHeaders(token, sharedLink, sharedLinkPassword))
+        .then(this.updateFileCache);
+    }
+
+    /**
      * Prefetches a file's viewer assets and content if possible so the browser
      * can cache the content and significantly improve preview load time. If
      * preload is true, we don't prefetch the file's actual content and instead
@@ -486,7 +504,6 @@ class Preview extends EventEmitter {
      * @param {string} options.sharedLink - Shared link
      * @param {string} options.sharedLinkPassword - Shared link password
      * @param {boolean} options.preload - Is this prefetch for a preload
-     * @param {string} token - Access token
      * @return {void}
      */
     prefetch({
@@ -1117,15 +1134,17 @@ class Preview extends EventEmitter {
      *
      * @private
      * @param {string} [token] - Access token
+     * @param {string} [sharedLink] - Shared link
+     * @param {string} [sharedLinkPassword] - Shared link password
      * @return {Object} Headers
      */
-    getRequestHeaders(token) {
+    getRequestHeaders(token, sharedLink, sharedLinkPassword) {
         const videoHint = Browser.canPlayDash() ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
         const headers = {
             'X-Rep-Hints': `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`
         };
 
-        return getHeaders(headers, token || this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
+        return getHeaders(headers, token || this.options.token, sharedLink || this.options.sharedLink, sharedLinkPassword || this.options.sharedLinkPassword);
     }
 
     /**
