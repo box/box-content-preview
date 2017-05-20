@@ -805,11 +805,12 @@ class MediaControls extends EventEmitter {
      * Takes a list of subtitle names and populates the settings menu
      *
      * @param {Array} subtitles - A list of subtitle names as strings
+     * @param {string} language - Language of the user, as derived from their locale (e.g. en-US -> "English")
      * @return {void}
      */
-    initSubtitles(subtitles) {
+    initSubtitles(subtitles, language) {
         this.settings.addListener('subtitles', this.handleSubtitle);
-        this.settings.loadSubtitles(subtitles);
+        this.settings.loadSubtitles(subtitles, language);
     }
 }
 
