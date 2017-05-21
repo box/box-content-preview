@@ -6,6 +6,10 @@ import fullscreen from '../../Fullscreen';
 import {
     ICON_DROP_DOWN,
     ICON_DROP_UP,
+    ICON_FILE_DOCUMENT,
+    ICON_FILE_PDF,
+    ICON_FILE_SPREADSHEET,
+    ICON_FILE_WORD,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,
     ICON_ZOOM_IN,
@@ -13,7 +17,19 @@ import {
 } from '../../icons/icons';
 import './Document.scss';
 
-@autobind class DocumentViewer extends DocBaseViewer {
+const LOADING_ICON_MAP = {
+    csv: ICON_FILE_SPREADSHEET,
+    doc: ICON_FILE_WORD,
+    docx: ICON_FILE_WORD,
+    gsheet: ICON_FILE_SPREADSHEET,
+    pdf: ICON_FILE_PDF,
+    xls: ICON_FILE_SPREADSHEET,
+    xlsm: ICON_FILE_SPREADSHEET,
+    xlsx: ICON_FILE_SPREADSHEET
+};
+
+@autobind
+class DocumentViewer extends DocBaseViewer {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
@@ -22,7 +38,10 @@ import './Document.scss';
      * @inheritdoc
      */
     setup() {
-        // Call super() first to set up common layout
+        const fileExt = this.options.file.extension;
+        this.fileLoadingIcon = LOADING_ICON_MAP[fileExt] || ICON_FILE_DOCUMENT;
+
+        // Call super() to set up common layout
         super.setup();
         this.docEl.classList.add('bp-doc-document');
 

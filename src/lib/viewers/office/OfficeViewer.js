@@ -4,7 +4,7 @@ import Browser from '../../Browser';
 import Popup from '../../Popup';
 import { CLASS_HIDDEN } from '../../constants';
 import { getRepresentation } from '../../file';
-import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
+import { ICON_FILE_SPREADSHEET, ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { get } from '../../util';
 
 const LOAD_TIMEOUT_MS = 120000;
@@ -25,7 +25,9 @@ const MESSAGE_HOST_READY = 'Host_PostmessageReady';
      * @inheritdoc
      */
     setup() {
-        // Call super() first to set up common layout
+        this.fileLoadingIcon = ICON_FILE_SPREADSHEET;
+
+        // Call super() to set up common layout
         super.setup();
         // Set to false only in the WebApp, everywhere else we want to avoid hitting a runmode.
         // This flag will be removed once we run the entire integration through the client.

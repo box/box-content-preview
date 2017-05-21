@@ -71,6 +71,11 @@ $header-height: 48px;
     }
 }
 
+.bp-icon > svg {
+    height: 120px;
+    margin-bottom: 20px;
+}
+
 // Dark theme for header
 .bp-theme-dark {
     .bp-header {

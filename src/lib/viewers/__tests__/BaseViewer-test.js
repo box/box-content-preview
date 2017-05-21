@@ -43,6 +43,7 @@ describe('lib/viewers/BaseViewer', () => {
         it('should set options, a container, bind event listeners, and set timeout', () => {
             sandbox.stub(base, 'addCommonListeners');
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
+            sandbox.stub(base, 'finishLoadingSetup');
             base.options.showAnnotations = true;
 
             base.setup();
@@ -63,6 +64,8 @@ describe('lib/viewers/BaseViewer', () => {
         it('should add a mobile class to the container if on mobile', () => {
             base.isMobile = true;
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
+            sandbox.stub(base, 'finishLoadingSetup');
+
             base.setup();
 
             const container = document.querySelector('.bp');
@@ -72,15 +75,42 @@ describe('lib/viewers/BaseViewer', () => {
         it('should not load annotations assets if global preview showAnnotations option is false', () => {
             sandbox.stub(base, 'addCommonListeners');
             sandbox.stub(base, 'loadAssets');
+            sandbox.stub(base, 'finishLoadingSetup');
             base.options.showAnnotations = false;
+
+            base.setup();
+
             expect(base.loadAssets).to.not.be.called;
         });
 
         it('should not load annotations assets if expiring embed is a shared link', () => {
             sandbox.stub(base, 'addCommonListeners');
             sandbox.stub(base, 'loadAssets');
+            sandbox.stub(base, 'finishLoadingSetup');
             base.options.sharedLink = 'url';
+
+            base.setup();
+
             expect(base.loadAssets).to.not.be.called;
+        });
+    });
+
+    describe('finishLoadingSetup()', () => {
+        it('should hide the crawler and set the file icon into the icon element', () => {
+            const container = {
+                classList: {
+                    add: sandbox.stub()
+                },
+                innerHTML: '',
+                removeEventListener: sandbox.stub()
+            };
+            base.fileLoadingIcon = 'icon';
+
+            sandbox.stub(containerEl, 'querySelector').returns(container);
+
+            base.finishLoadingSetup();
+            expect(container.innerHTML).to.equal('icon');
+            expect(container.classList.add).to.be.called;
         });
     });
 
@@ -293,6 +323,7 @@ describe('lib/viewers/BaseViewer', () => {
         it('should cleanup the base viewer', () => {
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
             sandbox.stub(base, 'loadAnnotator');
+            sandbox.stub(base, 'finishLoadingSetup');
             base.setup();
 
             sandbox.mock(fullscreen).expects('removeAllListeners');
@@ -366,6 +397,7 @@ describe('lib/viewers/BaseViewer', () => {
             });
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
             sandbox.stub(base, 'loadAnnotator');
+            sandbox.stub(base, 'finishLoadingSetup');
             base.setup();
             event = {
                 preventDefault: sandbox.stub(),

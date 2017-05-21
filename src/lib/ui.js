@@ -12,7 +12,6 @@ import {
     SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
     SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD,
-    SELECTOR_BOX_PREVIEW_ICON,
     SELECTOR_BOX_PREVIEW_LOADING_TEXT,
     SELECTOR_BOX_PREVIEW_LOADING_WRAPPER,
     SELECTOR_BOX_PREVIEW_LOGO_CUSTOM,
@@ -20,7 +19,6 @@ import {
     SELECTOR_NAVIGATION_LEFT,
     SELECTOR_NAVIGATION_RIGHT
 } from './constants';
-import { ICON_FILE_DEFAULT } from './icons/icons';
 
 let container;
 let contentContainer;
@@ -69,9 +67,6 @@ function setupLoading() {
     if (!loadingWrapperEl) {
         return;
     }
-
-    const iconWrapperEl = loadingWrapperEl.querySelector(SELECTOR_BOX_PREVIEW_ICON);
-    iconWrapperEl.innerHTML = ICON_FILE_DEFAULT;
 
     const loadingTextEl = loadingWrapperEl.querySelector(SELECTOR_BOX_PREVIEW_LOADING_TEXT);
     loadingTextEl.textContent = __('loading_preview');
