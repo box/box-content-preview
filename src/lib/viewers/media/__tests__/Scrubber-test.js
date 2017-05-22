@@ -122,11 +122,48 @@ describe('lib/viewers/media/Scrubber', () => {
         it('should adjust the scrubber value to the current scrubber handle position value in the video', () => {
             stubs.setValue = sandbox.stub(scrubber, 'setValue');
             stubs.emit = sandbox.stub(scrubber, 'emit');
-            scrubber.scrubberEl.style.width = '25px';
-            scrubber.scrubbingHandler({ pageX: 100 });
+            stubs.scrubberPosition = sandbox.stub(scrubber, 'computeScrubberPosition').returns(0.5);
 
-            expect(stubs.setValue).to.be.calledWith(1);
+            scrubber.scrubbingHandler({ pageX: 50 });
+
+            expect(stubs.scrubberPosition).to.be.calledWith(50);
+            expect(stubs.setValue).to.be.calledWith(0.5);
             expect(stubs.emit).to.be.calledWith('valuechange');
+        });
+    });
+
+    describe('computeScrubberPosition()', () => {
+        it('should compute correct scrubber position', () => {
+            sandbox.stub(scrubber.scrubberEl, 'getBoundingClientRect').returns({
+                left: 20,
+                width: 100
+            });
+
+            const position = scrubber.computeScrubberPosition(30);
+
+            expect(position).to.equal(0.1);
+        });
+
+        it('should cap the scrubber position to 1', () => {
+            sandbox.stub(scrubber.scrubberEl, 'getBoundingClientRect').returns({
+                left: 20,
+                width: 100
+            });
+
+            const position = scrubber.computeScrubberPosition(130);
+
+            expect(position).to.equal(1);
+        });
+
+        it('should floor the scrubber position to 0', () => {
+            sandbox.stub(scrubber.scrubberEl, 'getBoundingClientRect').returns({
+                left: 20,
+                width: 100
+            });
+
+            const position = scrubber.computeScrubberPosition(10);
+
+            expect(position).to.equal(0);
         });
     });
 

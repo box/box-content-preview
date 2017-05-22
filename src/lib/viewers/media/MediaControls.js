@@ -721,7 +721,7 @@ class MediaControls extends EventEmitter {
      * @return {Object}
      */
     computeFilmstripPositions(pageX, rectLeft, rectWidth, filmstripWidth) {
-        const time = ((pageX - rectLeft) * this.mediaEl.duration) / rectWidth; // given the mouse X position, get the relative time
+        const time = this.timeScrubber.computeScrubberPosition(pageX) * this.mediaEl.duration; // given the mouse X position, get the relative time
         const frame = Math.floor(time / this.filmstripInterval); // get the frame number to show
         let frameWidth = filmstripWidth / FILMSTRIP_FRAMES_PER_ROW; // calculate the frame width based on the filmstrip width
         let left = -1 * (frame % FILMSTRIP_FRAMES_PER_ROW) * frameWidth; // get the frame position in a given row
