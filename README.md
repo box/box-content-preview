@@ -70,7 +70,7 @@ For security purposes, you must whitelist your application's HTTP origin, omitti
 
 Demo
 ----
-View a demo and sample code on CodePen - http://codepen.io/box-platform/pen/KaQbma.
+View a demo and sample code on CodePen - http://codepen.io/box-platform/pen/rmZdjm.
 
 Initialization
 --------------

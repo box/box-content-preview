@@ -158,39 +158,34 @@
     }
 }
 
-.bp-media-cc-icon-on {
-    background-color: $white;
-    bottom: 6px;
-    display: inline-block;
-    height: 3px;
-    left: 12px;
-    opacity: 0;
-    position: absolute;
-    transition: opacity .3s;
-    width: 21px;
-}
-
 .bp-media-controls-cc-icon-text {
-    background: $white;
-    border-radius: 3px;
+    background-color: rgba($black, .3); // Anything less than .3 looks too transparent on IE/Edge
+    border-radius: 4px;
     bottom: 2px;
-    color: $black;
-    font-size: 11px;
+    color: $white;
+    display: inline-block;
+    font-size: 12px;
     font-weight: 600;
+    height: 22px;
     letter-spacing: .1em;
-    line-height: 8px;
-    padding: 2px 2px 2px 3px;
-    position: relative;
-}
+    line-height: 22px;
+    padding: 0 0 0 1px; // Padding left 1px because text isn't perfectly centered on Safari/Firefox even with text-align:center. Looks fine with extra-padding on Chrome/IE/Edge
+    position: relative; // For lining up the bottom with other buttons in the controls bar
+    width: 24px;
 
-.bp-media-settings-subtitles-on {
-    .bp-media-cc-icon-on {
-        opacity: 1;
+    &:hover {
+        background-color: $box-blue;
+        color: $white;
+    }
+
+    .bp-media-settings-subtitles-on & {
+        background-color: $box-blue;
+        color: $white;
     }
 }
 
 .bp-media-controls-hd {
-    background: $box-blue;
+    background-color: $box-blue;
     border-radius: 3px;
     display: none;
     font-size: 8px;
