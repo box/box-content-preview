@@ -210,7 +210,13 @@ class Model3DViewer extends Box3DViewer {
                 this.axes.forward = defaults.forwardAxis || DEFAULT_AXIS_FORWARD;
                 this.renderMode = defaults.defaultRenderMode || RENDER_MODE_LIT;
                 this.projection = defaults.cameraProjection || CAMERA_PROJECTION_PERSPECTIVE;
-                this.renderGrid = defaults.renderGrid || DEFAULT_RENDER_GRID;
+                if (defaults.renderGrid === 'true') {
+                    this.renderGrid = true;
+                } else if (defaults.renderGrid === 'false') {
+                    this.renderGrid = false;
+                } else {
+                    this.renderGrid = DEFAULT_RENDER_GRID;
+                }
 
                 if (this.axes.up !== DEFAULT_AXIS_UP || this.axes.forward !== DEFAULT_AXIS_FORWARD) {
                     this.handleRotationAxisSet(this.axes.up, this.axes.forward, false);

@@ -11,6 +11,7 @@ import {
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
+    EVENT_SET_GRID_VISIBLE,
     EVENT_TOGGLE_ANIMATION,
     EVENT_TOGGLE_HELPERS
 } from '../model3DConstants';
@@ -121,6 +122,10 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
                         {
                             event: EVENT_SET_WIREFRAMES_VISIBLE,
                             callback: 'handleSetWireframesVisible'
+                        },
+                        {
+                            event: EVENT_SET_GRID_VISIBLE,
+                            callback: 'handleSetGridVisible'
                         },
                         {
                             event: EVENT_SET_CAMERA_PROJECTION,
@@ -261,6 +266,18 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
         it('should fire a "set wireframe visiblity" event with a flag to turn them on and off explicitly', () => {
             sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_WIREFRAMES_VISIBLE, true);
             controls.handleSetWireframesVisible(true);
+        });
+    });
+
+    describe('handleSetGridVisible()', () => {
+        it('should fire a "set grid visiblity" event', () => {
+            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_GRID_VISIBLE);
+            controls.handleSetGridVisible();
+        });
+
+        it('should fire a "set grid visiblity" event with a flag to turn them on and off explicitly', () => {
+            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_GRID_VISIBLE, true);
+            controls.handleSetGridVisible(true);
         });
     });
 

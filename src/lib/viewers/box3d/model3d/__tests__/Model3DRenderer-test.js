@@ -11,6 +11,7 @@ import {
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
+    EVENT_SET_GRID_VISIBLE,
     QUALITY_LEVEL_FULL
 } from '../model3DConstants';
 import Browser from '../../../../Browser';
@@ -983,7 +984,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
         it('should set the axis display to flag passed in', () => {
             renderer.axisDisplay = {
-                visibile: undefined
+                visible: undefined
             };
             renderer.toggleHelpers(true);
             expect(renderer.axisDisplay.visible).to.be.true;
@@ -992,7 +993,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
         it('should tell the runtime to re-render', () => {
             renderer.axisDisplay = {
-                visibile: true
+                visible: true
             };
             renderer.toggleHelpers();
             expect(renderer.box3d.needsRender).to.be.true;
@@ -1292,6 +1293,24 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         it('should trigger a global Box3D event for wireframe visibility change', () => {
             sandbox.mock(Box3D.globalEvents).expects('trigger').withArgs(EVENT_SET_WIREFRAMES_VISIBLE, true);
             renderer.setWireframesVisible(true);
+        });
+    });
+
+    describe('setGridVisible()', () => {
+        it('should do nothing if no box3d reference', () => {
+            sandbox.mock(Box3D.globalEvents).expects('trigger').never();
+            renderer.box3d = undefined;
+            renderer.setGridVisible(false);
+        });
+
+        it('should cause a change in grid visibility', () => {
+            renderer.grid = {
+                visible: false
+            };
+            renderer.setGridVisible(true);
+            expect(renderer.grid.visible).to.equal(true);
+            // Get rid of grid to prevent dispose calls during shutdown.
+            renderer.grid = undefined;
         });
     });
 
