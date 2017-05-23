@@ -161,7 +161,7 @@ class Model3DRenderer extends Box3DRenderer {
             return;
         }
 
-        this.optimizeMaterials();
+        // this.optimizeMaterials();
         this.createPrefabInstances();
         this.addHelpersToScene();
         scene.when('load', () => this.onSceneLoad());
@@ -325,6 +325,9 @@ class Model3DRenderer extends Box3DRenderer {
         }));
 
         Promise.all(assetPromises).then(() => {
+            if (!this.box3d) {
+                return;
+            }
             this.startOptimizer();
 
             if (animations.length > 0) {
