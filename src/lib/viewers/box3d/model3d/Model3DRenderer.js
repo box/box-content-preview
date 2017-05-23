@@ -161,34 +161,9 @@ class Model3DRenderer extends Box3DRenderer {
             return;
         }
 
-        // this.optimizeMaterials();
         this.createPrefabInstances();
         this.addHelpersToScene();
         scene.when('load', () => this.onSceneLoad());
-    }
-
-    /**
-     * Go through all materials and look for ways to turn off features to optimize perfomance.
-     *
-     * @private
-     * @return {void}
-     */
-    optimizeMaterials() {
-        this.box3d.getAssetsByType(Box3D.MaterialAsset).forEach((mat) => {
-            if (mat.getProperty('roughness') <= 0.01 && !mat.getProperty('glossMap')) {
-                mat.setProperty('envMapGlossVariance', false);
-            }
-
-            if (mat.getProperty('roughness') >= 0.99) {
-                mat.setProperty('envMapGlossVariance', false);
-                mat.enableFeature('specular', false);
-            }
-
-            // Normal maps don't work nicely on mobile right now.
-            if (Browser.isMobile()) {
-                mat.enableFeature('normals', false);
-            }
-        });
     }
 
     /**
