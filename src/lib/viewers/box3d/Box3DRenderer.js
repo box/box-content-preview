@@ -1,4 +1,4 @@
-/* global Box3D, THREE */
+/* global Box3D */
 /* eslint no-param-reassign:0 */
 import EventEmitter from 'events';
 import {
