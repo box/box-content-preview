@@ -34,6 +34,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 }
             },
             container: containerEl,
+            location: { locale: 'en-US' },
             representation: {
                 content: {
                     url_template: 'url'
@@ -464,7 +465,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 chinese
             ];
             stubs.mockPlayer.expects('getTextTracks').returns(subs);
-            stubs.mockControls.expects('initSubtitles').withArgs(['Korean', 'Russian', 'English', 'Spanish', 'Chinese']);
+            stubs.mockControls.expects('initSubtitles').withArgs(['Korean', 'Russian', 'English', 'Spanish', 'Chinese'], 'English');
 
             dash.loadSubtitles();
 
@@ -483,7 +484,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 chinese
             ];
             stubs.mockPlayer.expects('getTextTracks').returns(subs);
-            stubs.mockControls.expects('initSubtitles').withArgs(['Russian', 'Spanish', 'Korean', 'Chinese']);
+            stubs.mockControls.expects('initSubtitles').withArgs(['Russian', 'Spanish', 'Korean', 'Chinese'], 'English');
 
             dash.loadSubtitles();
 
@@ -506,7 +507,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 zero
             ];
             stubs.mockPlayer.expects('getTextTracks').returns(subs);
-            stubs.mockControls.expects('initSubtitles').withArgs(['Russian', 'foo', 'und', '', 'doesntmatter', '0']);
+            stubs.mockControls.expects('initSubtitles').withArgs(['Russian', 'foo', 'und', '', 'doesntmatter', '0'], 'English');
 
             dash.loadSubtitles();
 

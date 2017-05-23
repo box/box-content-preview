@@ -106,6 +106,61 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
 
 @autobind
 class Settings extends EventEmitter {
+    /**
+     * The container of the settings element
+     *
+     * @property {HTMLElement}
+     */
+    containerEl;
+
+    /**
+     * The settings element
+     *
+     * @property {HTMLElement}
+     */
+    settingsEl;
+
+    /**
+     * The first item in the main menu
+     *
+     * @property {HTMLElement}
+     */
+    firstMenuItem;
+
+    /**
+     * The settings button element (gear icon that opens up the menu)
+     *
+     * @property {HTMLElement}
+     */
+    settingsButtonEl;
+
+    /**
+     * Whether the settings menu is visible or hiding
+     *
+     * @property {boolean}
+     */
+    visible = false;
+
+    /**
+     * List of subtitles in the menu. The subtitles menu will be populated in this order
+     *
+     * @property {array}
+     */
+    subtitles = [];
+
+    /**
+     * Default language to use for choosing subtitle to toggle on
+     *
+     * @property {string}
+     */
+    language = undefined;
+
+    /**
+     * An index (an integer >= 0) into the subtitles list, that should be toggled to when CC toggled on
+     *
+     * @property {string}
+     */
+    toggleToSubtitle = undefined;
 
     /**
      * Service to handle the position and movement of a slider element
@@ -125,10 +180,7 @@ class Settings extends EventEmitter {
         this.settingsButtonEl = this.containerEl.querySelector('.bp-media-gear-icon');
 
         addActivationListener(this.settingsEl, this.menuEventHandler);
-        this.visible = false;
-        this.hasSubtitles = false;
         this.containerEl.classList.add(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
-        this.toggleToSubtitle = 0; // An index into the subtitles track list. Initialize with the first subtitle in list
         this.init();
     }
 
@@ -511,6 +563,18 @@ class Settings extends EventEmitter {
     }
 
     /**
+     * Returns whether subtitles are available or not
+     *
+     * @return {boolean}
+     */
+    hasSubtitles() {
+        if (this.settingsEl.querySelector(`[data-type="subtitles"][data-value="0"]${SELECTOR_SETTINGS_SUB_ITEM}`)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Toggles subtitles on/off
      *
      * @return {void}
@@ -518,8 +582,19 @@ class Settings extends EventEmitter {
     toggleSubtitles() {
         if (this.areSubtitlesOn()) {
             this.chooseOption('subtitles', '-1');
-        } else if (this.hasSubtitles) {
+        } else if (this.toggleToSubtitle !== undefined) {
             this.chooseOption('subtitles', this.toggleToSubtitle.toString());
+        } else { // Do intelligent selection: Prefer user's language, fallback to English, then first subtitle in list
+            // Use the previewer's locale to determine preferred language
+            let idx = this.subtitles.findIndex((subtitle) => subtitle === this.language);
+            if (idx === -1) {
+                // Fall back to English if user's language doesn't exist
+                idx = this.subtitles.findIndex((subtitle) => subtitle === 'English');
+                if (idx === -1) {
+                    idx = 0; // Fall back to first subtitle in list
+                }
+            }
+            this.chooseOption('subtitles', idx.toString());
         }
     }
 
@@ -527,18 +602,20 @@ class Settings extends EventEmitter {
      * Takes a list of subtitle names and populates the settings menu
      *
      * @param {Array} subtitles - A list of subtitle names as strings
+     * @param {string} language - The language of the user. Used in determining preferred subtitle when toggling
      * @return {void}
      */
-    loadSubtitles(subtitles) {
+    loadSubtitles(subtitles, language) {
         const subtitlesSubMenu = this.settingsEl.querySelector('.bp-media-settings-menu-subtitles');
-        subtitles.forEach((subtitle, idx) => {
+        this.subtitles = subtitles;
+        this.language = language;
+        this.subtitles.forEach((subtitle, idx) => {
             insertTemplate(subtitlesSubMenu, SUBTITLES_SUBITEM_TEMPLATE.replace(/{{dataValue}}/g, idx));
             const languageNode = subtitlesSubMenu.lastChild.querySelector('.bp-media-settings-value');
             languageNode.textContent = subtitle;
         });
 
         this.containerEl.classList.remove(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
-        this.hasSubtitles = true;
         const subsCache = cache.get('media-subtitles');
         if (subsCache !== null && subsCache !== '-1') { // Last video watched with subtitles, so turn them on here too
             this.toggleSubtitles();

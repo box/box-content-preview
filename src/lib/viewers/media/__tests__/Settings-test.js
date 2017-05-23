@@ -33,7 +33,7 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should initialize as invisible and without subtitles', () => {
             expect(settings.visible).to.be.false;
-            expect(settings.hasSubtitles).to.be.false;
+            expect(settings.hasSubtitles()).to.be.false;
             expect(settings.areSubtitlesOn()).to.be.false;
             expect(settings.containerEl).to.have.class('bp-media-settings-subtitles-unavailable');
         });
@@ -602,6 +602,7 @@ describe('lib/viewers/media/Settings', () => {
     describe('toggleSubtitles()', () => {
         it('Should turn off subtitles if they were previously on', () => {
             sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings, 'hasSubtitles').returns(true);
             sandbox.stub(settings, 'areSubtitlesOn').returns(true);
 
             settings.toggleSubtitles();
@@ -610,14 +611,50 @@ describe('lib/viewers/media/Settings', () => {
         });
 
         it('Should turn on subtitles if they were previously off', () => {
-            settings.hasSubtitles = true;
             sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings, 'hasSubtitles').returns(true);
             sandbox.stub(settings, 'areSubtitlesOn').returns(false);
             settings.toggleToSubtitle = '2';
 
             settings.toggleSubtitles();
 
             expect(settings.chooseOption).to.be.calledWith('subtitles', '2');
+        });
+
+        it('Should prefer subtitle matching previewer language/locale', () => {
+            sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings, 'hasSubtitles').returns(true);
+            sandbox.stub(settings, 'areSubtitlesOn').returns(false);
+            settings.subtitles = ['English', 'Spanish', 'Russian', 'French'];
+            settings.language = 'Spanish';
+
+            settings.toggleSubtitles();
+
+            expect(settings.chooseOption).to.be.calledWith('subtitles', '1');
+        });
+
+        it('Should prefer English subtitle if previewer language not in list', () => {
+            sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings, 'hasSubtitles').returns(true);
+            sandbox.stub(settings, 'areSubtitlesOn').returns(false);
+            settings.subtitles = ['Spanish', 'Russian', 'English', 'French'];
+            settings.language = 'Mongolian';
+
+            settings.toggleSubtitles();
+
+            expect(settings.chooseOption).to.be.calledWith('subtitles', '2');
+        });
+
+        it('Should prefer first subtitle in list if previewer language not in list and English absent', () => {
+            sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings, 'hasSubtitles').returns(true);
+            sandbox.stub(settings, 'areSubtitlesOn').returns(false);
+            settings.subtitles = ['Spanish', 'Russian', 'French'];
+            settings.language = 'Mongolian';
+
+            settings.toggleSubtitles();
+
+            expect(settings.chooseOption).to.be.calledWith('subtitles', '0');
         });
     });
 
@@ -628,7 +665,7 @@ describe('lib/viewers/media/Settings', () => {
             settings.loadSubtitles(['English', 'Russian', 'Spanish']);
 
             expect(subsMenu.children.length).to.equal(5); // Three languages, 'Off', and back to main menu
-            expect(settings.hasSubtitles).to.be.true;
+            expect(settings.hasSubtitles()).to.be.true;
             expect(settings.containerEl).to.not.have.class('bp-media-settings-subtitles-unavailable');
         });
 
@@ -669,6 +706,18 @@ describe('lib/viewers/media/Settings', () => {
             const sub1 = subsMenu.querySelector('[data-value="1"]').querySelector('.bp-media-settings-value');
             expect(sub0.innerHTML).to.equal('English');
             expect(sub1.innerHTML).to.equal('&lt;badboy&gt;');
+        });
+    });
+
+    describe('hasSubtitles()', () => {
+        it('Should be false before loading subtitles', () => {
+            expect(settings.hasSubtitles()).to.be.false;
+        });
+
+        it('Should be true after loading subtitles', () => {
+            settings.loadSubtitles(['English']);
+
+            expect(settings.hasSubtitles()).to.be.true;
         });
     });
 
