@@ -55,7 +55,9 @@ class DocAnnotator extends Annotator {
      */
     constructor(data) {
         super(data);
-
+        // Event callback for mouse move events with for highlight annotations
+        this.highlightMousemoveHandler = null;
+        // Handle to RAF used to throttle highlight collision checks
         this.highlightThrottleHandle = null;
     }
 
@@ -387,15 +389,15 @@ class DocAnnotator extends Annotator {
      * @return {Function} mousemove handler
      */
     getHighlightMouseMoveHandler() {
-        if (this.throttledHighlightMousemoveHandler) {
-            return this.throttledHighlightMousemoveHandler;
+        if (this.highlightMousemoveHandler) {
+            return this.highlightMousemoveHandler;
         }
         // Track the most recent move event
         let mouseMoveEvent = null;
         // For throttling
         let throttleTimer = performance.now();
 
-        this.throttledHighlightMousemoveHandler = (event) => {
+        this.highlightMousemoveHandler = (event) => {
             if (!this.didMouseMove && (Math.abs(event.clientX - this.mouseX) > MOUSE_MOVE_MIN_DISTANCE
                 || Math.abs(event.clientY - this.mouseY) > MOUSE_MOVE_MIN_DISTANCE)) {
                 this.didMouseMove = true;
@@ -410,8 +412,8 @@ class DocAnnotator extends Annotator {
             mouseMoveEvent = event;
         };
 
-        const checkHighlight = () => {
-            this.highlightThrottleHandle = requestAnimationFrame(checkHighlight);
+        const throttledCheckHighlight = () => {
+            this.highlightThrottleHandle = requestAnimationFrame(throttledCheckHighlight);
             const dt = performance.now() - throttleTimer;
             // Bail if no mouse events have occurred OR the throttle delay has not been met.
             if (!mouseMoveEvent || dt < MOUSEMOVE_THROTTLE_MS) {
@@ -468,9 +470,9 @@ class DocAnnotator extends Annotator {
         };
 
         // Trigger the first run to begin the RAF update loop.
-        checkHighlight();
+        throttledCheckHighlight();
 
-        return this.throttledHighlightMousemoveHandler;
+        return this.highlightMousemoveHandler;
     }
 
     /**
