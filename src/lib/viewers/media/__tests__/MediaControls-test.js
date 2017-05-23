@@ -752,10 +752,11 @@ describe('lib/viewers/media/MediaControls', () => {
                 duration: 100
             };
             mediaControls.filmstripInterval = 1;
+            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.25);
 
             const positions = mediaControls.computeFilmstripPositions(400, 200, 1000, null);
 
-            expect(positions.time).to.equal(20);
+            expect(positions.time).to.equal(25);
             expect(positions.left).to.equal(0);
             expect(positions.top).to.equal(0);
             expect(positions.containerLeft).to.equal(120);
@@ -766,6 +767,7 @@ describe('lib/viewers/media/MediaControls', () => {
                 duration: 100
             };
             mediaControls.filmstripInterval = 1;
+            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.2);
 
             const positions = mediaControls.computeFilmstripPositions(400, 200, 1000, 16000);
 
@@ -780,6 +782,7 @@ describe('lib/viewers/media/MediaControls', () => {
                 duration: 1100
             };
             mediaControls.filmstripInterval = 1;
+            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.2);
 
             const positions = mediaControls.computeFilmstripPositions(400, 200, 1000, 16000);
 
@@ -794,6 +797,7 @@ describe('lib/viewers/media/MediaControls', () => {
                 duration: 2000
             };
             mediaControls.filmstripInterval = 5;
+            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.6);
 
             const positions = mediaControls.computeFilmstripPositions(800, 200, 1000, 16000);
 
@@ -808,6 +812,7 @@ describe('lib/viewers/media/MediaControls', () => {
                 duration: 100
             };
             mediaControls.filmstripInterval = 1;
+            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.01);
 
             const positions = mediaControls.computeFilmstripPositions(210, 200, 1000, 16000);
 
@@ -822,6 +827,7 @@ describe('lib/viewers/media/MediaControls', () => {
                 duration: 100
             };
             mediaControls.filmstripInterval = 1;
+            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.99);
 
             const positions = mediaControls.computeFilmstripPositions(1190, 200, 1000, 16000);
 
