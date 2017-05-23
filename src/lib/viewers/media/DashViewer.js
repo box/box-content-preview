@@ -313,7 +313,7 @@ class DashViewer extends VideoBaseViewer {
     loadSubtitles() {
         this.textTracks = this.player.getTextTracks().sort((track1, track2) => track1.id - track2.id);
         if (this.textTracks.length > 0) {
-            this.mediaControls.initSubtitles(this.textTracks.map((track) => getLanguageName(track.language) || track.language));
+            this.mediaControls.initSubtitles(this.textTracks.map((track) => getLanguageName(track.language) || track.language), getLanguageName(this.options.location.locale.substring(0, 2)));
         }
     }
     /**
