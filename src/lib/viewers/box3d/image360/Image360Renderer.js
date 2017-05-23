@@ -1,4 +1,4 @@
-/* global Box3D, THREE */
+/* global Box3D */
 import Box3DRenderer from '../Box3DRenderer';
 import sceneEntities from './SceneEntities';
 

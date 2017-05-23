@@ -69,10 +69,12 @@ const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 // preview.js is loaded from by the browser. This needs to be done statically
 // outside the class so that location is found while this script is executing
 // and not when preview is instantiated, which is too late.
-const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
+const PREVIEW_LOCATION = findScriptLocation(
+    PREVIEW_SCRIPT_NAME,
+    document.currentScript
+);
 
-@autobind
-class Preview extends EventEmitter {
+@autobind class Preview extends EventEmitter {
     /**
      * Indicates id preview is open or not
      *
@@ -86,9 +88,9 @@ class Preview extends EventEmitter {
      * @property {Object}
      */
     count = {
-        success: 0,     // Counts how many previews have happened overall
-        error: 0,       // Counts how many errors have happened overall
-        navigation: 0   // Counts how many previews have happened by prev next navigation
+        success: 0, // Counts how many previews have happened overall
+        error: 0, // Counts how many errors have happened overall
+        navigation: 0 // Counts how many previews have happened by prev next navigation
     };
 
     /**
@@ -318,7 +320,10 @@ class Preview extends EventEmitter {
                 cacheFile(file);
             } else {
                 /* eslint-disable no-console */
-                console.error('[Preview SDK] Tried to cache invalid file: ', file);
+                console.error(
+                    '[Preview SDK] Tried to cache invalid file: ',
+                    file
+                );
                 /* eslint-enable no-console */
             }
         });
@@ -431,7 +436,10 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     print() {
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && checkFeature(this.viewer, 'print')) {
+        if (
+            checkPermission(this.file, PERMISSION_DOWNLOAD) &&
+            checkFeature(this.viewer, 'print')
+        ) {
             this.viewer.print();
         }
     }
@@ -443,8 +451,10 @@ class Preview extends EventEmitter {
      */
     download() {
         if (checkPermission(this.file, PERMISSION_DOWNLOAD)) {
-            get(getDownloadURL(this.file.id, this.options.apiHost), this.getRequestHeaders())
-            .then((data) => {
+            get(
+                getDownloadURL(this.file.id, this.options.apiHost),
+                this.getRequestHeaders()
+            ).then((data) => {
                 openUrlInsideIframe(data.download_url);
             });
         }
@@ -531,7 +541,9 @@ class Preview extends EventEmitter {
             options.sharedLinkPassword = sharedLinkPassword;
         }
 
-        const viewerInstance = new viewer.CONSTRUCTOR(this.createViewerOptions(options));
+        const viewerInstance = new viewer.CONSTRUCTOR(
+            this.createViewerOptions(options)
+        );
         if (typeof viewerInstance.prefetch === 'function') {
             viewerInstance.prefetch({
                 assets: true,
@@ -553,9 +565,11 @@ class Preview extends EventEmitter {
         this.getViewers()
             .filter((viewer) => viewerNames.indexOf(viewer.NAME) !== -1)
             .forEach((viewer) => {
-                const viewerInstance = new viewer.CONSTRUCTOR(this.createViewerOptions({
-                    viewer
-                }));
+                const viewerInstance = new viewer.CONSTRUCTOR(
+                    this.createViewerOptions({
+                        viewer
+                    })
+                );
 
                 if (typeof viewerInstance.prefetch === 'function') {
                     viewerInstance.prefetch({
@@ -606,8 +620,8 @@ class Preview extends EventEmitter {
 
         // Fetch access tokens before proceeding
         getTokens(this.file.id, this.previewOptions.token)
-        .then(this.loadPreviewWithTokens)
-        .catch(this.triggerFetchError);
+            .then(this.loadPreviewWithTokens)
+            .catch(this.triggerFetchError);
     }
 
     /**
@@ -686,10 +700,14 @@ class Preview extends EventEmitter {
         this.options.sharedLinkPassword = options.sharedLinkPassword;
 
         // Save reference to API host
-        this.options.apiHost = options.apiHost ? options.apiHost.replace(/\/$/, '') : API_HOST;
+        this.options.apiHost = options.apiHost
+            ? options.apiHost.replace(/\/$/, '')
+            : API_HOST;
 
         // Save reference to the app host
-        this.options.appHost = options.appHost ? options.appHost.replace(/\/$/, '') : APP_HOST;
+        this.options.appHost = options.appHost
+            ? options.appHost.replace(/\/$/, '')
+            : APP_HOST;
 
         // Show or hide the header
         this.options.header = options.header || 'light';
@@ -736,7 +754,13 @@ class Preview extends EventEmitter {
      * @return {Object} combined options
      */
     createViewerOptions(moreOptions) {
-        return cloneDeep(Object.assign({ location: this.location }, this.options, moreOptions));
+        return cloneDeep(
+            Object.assign(
+                { location: this.location },
+                this.options,
+                moreOptions
+            )
+        );
     }
 
     /**
@@ -763,9 +787,12 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     loadFromServer() {
-        get(getURL(this.file.id, this.options.apiHost), this.getRequestHeaders())
-        .then(this.handleLoadResponse)
-        .catch(this.triggerFetchError);
+        get(
+            getURL(this.file.id, this.options.apiHost),
+            this.getRequestHeaders()
+        )
+            .then(this.handleLoadResponse)
+            .catch(this.triggerFetchError);
     }
 
     /**
@@ -779,7 +806,9 @@ class Preview extends EventEmitter {
         // If preview is closed or response comes back for an incorrect file, don't do anything
         if (!this.open || (this.file && this.file.id !== file.id)) {
             /* eslint-disable no-console */
-            console.error(`handleLoadResponse returned early - this.open: ${this.open}, this.file: ${this.file}, this.file.id: ${this.file.id}, file.id: ${file.id}`);
+            console.error(
+                `handleLoadResponse returned early - this.open: ${this.open}, this.file: ${this.file}, this.file.id: ${this.file.id}, file.id: ${file.id}`
+            );
             /* eslint-enable no-console */
             return;
         }
@@ -793,7 +822,8 @@ class Preview extends EventEmitter {
             const cachedFile = cache.get(file.id);
 
             // Explicitly uncache watermarked files, otherwise update cache
-            const isWatermarked = file.watermark_info && file.watermark_info.is_watermarked;
+            const isWatermarked =
+                file.watermark_info && file.watermark_info.is_watermarked;
             if (isWatermarked) {
                 uncacheFile(file);
             } else {
@@ -816,11 +846,15 @@ class Preview extends EventEmitter {
                 this.loadViewer();
             } else {
                 /* eslint-disable no-console */
-                console.error(`shouldLoadViewer was false - cachedFile: ${cachedFile}, checkFileValid: ${checkFileValid(cachedFile)}, cachedFile.file_version.sha1: ${cachedFile.file_version.sha1}, file.file_version.sha1: ${file.file_version.sha1}, isWatermarked: ${isWatermarked}`);
+                console.error(
+                    `shouldLoadViewer was false - cachedFile: ${cachedFile}, checkFileValid: ${checkFileValid(cachedFile)}, cachedFile.file_version.sha1: ${cachedFile.file_version.sha1}, file.file_version.sha1: ${file.file_version.sha1}, isWatermarked: ${isWatermarked}`
+                );
                 /* eslint-enable no-console */
             }
         } catch (err) {
-            this.triggerError((err instanceof Error) ? err : new Error(__('error_refresh')));
+            this.triggerError(
+                err instanceof Error ? err : new Error(__('error_refresh'))
+            );
         }
     }
 
@@ -835,7 +869,9 @@ class Preview extends EventEmitter {
         // If preview is closed don't do anything
         if (!this.open) {
             /* eslint-disable no-console */
-            console.error(`loadViewer returned early - this.open: ${this.open}`);
+            console.error(
+                `loadViewer returned early - this.open: ${this.open}`
+            );
             /* eslint-enable no-console */
             return;
         }
@@ -846,7 +882,11 @@ class Preview extends EventEmitter {
         }
 
         // Show download button if download permissions exist, options allow, and browser has ability
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
+        if (
+            checkPermission(this.file, PERMISSION_DOWNLOAD) &&
+            this.options.showDownload &&
+            Browser.canDownload()
+        ) {
             showLoadingDownloadButton(this.download);
         }
 
@@ -859,13 +899,19 @@ class Preview extends EventEmitter {
         }
 
         // Determine the viewer to use
-        const viewer = loader.determineViewer(this.file, Object.keys(this.disabledViewers));
+        const viewer = loader.determineViewer(
+            this.file,
+            Object.keys(this.disabledViewers)
+        );
 
         // Log the type of file
         this.logger.setType(viewer.NAME);
 
         // Determine the representation to use
-        const representation = loader.determineRepresentation(this.file, viewer);
+        const representation = loader.determineRepresentation(
+            this.file,
+            viewer
+        );
 
         // Instantiate the viewer
         const viewerOptions = this.createViewerOptions({
@@ -931,7 +977,11 @@ class Preview extends EventEmitter {
     finishLoading(data = {}) {
         // Show or hide annotate/print/download buttons
         // canDownload is not supported by all of our browsers, so for now we need to check isMobile
-        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
+        if (
+            checkPermission(this.file, PERMISSION_DOWNLOAD) &&
+            this.options.showDownload &&
+            Browser.canDownload()
+        ) {
             showDownloadButton(this.download);
 
             if (checkFeature(this.viewer, 'print') && !Browser.isMobile()) {
@@ -1015,23 +1065,23 @@ class Preview extends EventEmitter {
                 id: fileId
             }
         })
-        .then(() => {
-            // Reset retry count after successfully logging
-            this.logRetryCount = 0;
-        })
-        .catch(() => {
-            // Don't retry more than the retry limit
-            this.logRetryCount += 1;
-            if (this.logRetryCount > LOG_RETRY_COUNT) {
+            .then(() => {
+                // Reset retry count after successfully logging
                 this.logRetryCount = 0;
-                return;
-            }
+            })
+            .catch(() => {
+                // Don't retry more than the retry limit
+                this.logRetryCount += 1;
+                if (this.logRetryCount > LOG_RETRY_COUNT) {
+                    this.logRetryCount = 0;
+                    return;
+                }
 
-            clearTimeout(this.logRetryTimeout);
-            this.logRetryTimeout = setTimeout(() => {
-                this.logPreviewEvent(fileId, options);
-            }, LOG_RETRY_TIMEOUT * this.logRetryCount);
-        });
+                clearTimeout(this.logRetryTimeout);
+                this.logRetryTimeout = setTimeout(() => {
+                    this.logPreviewEvent(fileId, options);
+                }, LOG_RETRY_TIMEOUT * this.logRetryCount);
+            });
     }
 
     /**
@@ -1068,11 +1118,13 @@ class Preview extends EventEmitter {
      * @return {PreviewError} PreviewError instance
      */
     getErrorViewer() {
-        return new PreviewErrorViewer(this.createViewerOptions({
-            viewer: { NAME: 'Error' },
-            container: this.container,
-            file: this.file
-        }));
+        return new PreviewErrorViewer(
+            this.createViewerOptions({
+                viewer: { NAME: 'Error' },
+                container: this.container,
+                file: this.file
+            })
+        );
     }
 
     /**
@@ -1099,8 +1151,12 @@ class Preview extends EventEmitter {
         this.destroy();
 
         // Figure out what error message to log and what error message to display
-        const logMessage = err instanceof Error ? err.message : __('error_default');
-        const displayMessage = err && err.displayMessage ? err.displayMessage : logMessage;
+        const logMessage = err instanceof Error
+            ? err.message
+            : __('error_default');
+        const displayMessage = err && err.displayMessage
+            ? err.displayMessage
+            : logMessage;
 
         // Instantiate the error viewer
         this.viewer = this.getErrorViewer();
@@ -1120,12 +1176,19 @@ class Preview extends EventEmitter {
      * @return {Object} Headers
      */
     getRequestHeaders(token) {
-        const videoHint = Browser.canPlayDash() ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
+        const videoHint = Browser.canPlayDash()
+            ? X_REP_HINT_VIDEO_DASH
+            : X_REP_HINT_VIDEO_MP4;
         const headers = {
             'X-Rep-Hints': `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`
         };
 
-        return getHeaders(headers, token || this.options.token, this.options.sharedLink, this.options.sharedLinkPassword);
+        return getHeaders(
+            headers,
+            token || this.options.token,
+            this.options.sharedLink,
+            this.options.sharedLinkPassword
+        );
     }
 
     /**
@@ -1146,7 +1209,8 @@ class Preview extends EventEmitter {
 
         // Prefetch the next PREFETCH_COUNT files excluding ones we've already prefetched
         const currentIndex = this.collection.indexOf(this.file.id);
-        const filesToPrefetch = this.collection.slice(currentIndex + 1, currentIndex + PREFETCH_COUNT + 1)
+        const filesToPrefetch = this.collection
+            .slice(currentIndex + 1, currentIndex + PREFETCH_COUNT + 1)
             .filter((fileId) => this.prefetchedCollection.indexOf(fileId) === -1);
 
         // Check if we need to prefetch anything
@@ -1156,35 +1220,40 @@ class Preview extends EventEmitter {
 
         // Get access tokens for all files we should be prefetching
         getTokens(filesToPrefetch, this.previewOptions.token)
-        .then((tokenMap) => {
-            filesToPrefetch.forEach((id) => {
-                const token = tokenMap[id];
+            .then((tokenMap) => {
+                filesToPrefetch.forEach((id) => {
+                    const token = tokenMap[id];
 
-                // Prefetch and cache file information and content
-                get(getURL(id, this.options.apiHost), this.getRequestHeaders(token))
-                .then((file) => {
-                    // Cache file info
-                    cacheFile(file);
-                    this.prefetchedCollection.push(file.id);
+                    // Prefetch and cache file information and content
+                    get(
+                        getURL(id, this.options.apiHost),
+                        this.getRequestHeaders(token)
+                    )
+                        .then((file) => {
+                            // Cache file info
+                            cacheFile(file);
+                            this.prefetchedCollection.push(file.id);
 
-                    // Prefetch assets and content for file
-                    this.prefetch({
-                        fileId: file.id,
-                        token
-                    });
-                })
-                .catch((err) => {
-                    /* eslint-disable no-console */
-                    console.error(`Error prefetching file ID ${id} - ${err}`);
-                    /* eslint-enable no-console */
+                            // Prefetch assets and content for file
+                            this.prefetch({
+                                fileId: file.id,
+                                token
+                            });
+                        })
+                        .catch((err) => {
+                            /* eslint-disable no-console */
+                            console.error(
+                                `Error prefetching file ID ${id} - ${err}`
+                            );
+                            /* eslint-enable no-console */
+                        });
                 });
+            })
+            .catch(() => {
+                /* eslint-disable no-console */
+                console.error('Error prefetching files');
+                /* eslint-enable no-console */
             });
-        })
-        .catch(() => {
-            /* eslint-disable no-console */
-            console.error('Error prefetching files');
-            /* eslint-enable no-console */
-        });
     }
 
     /**
@@ -1221,33 +1290,39 @@ class Preview extends EventEmitter {
             return this.throttledMousemoveHandler;
         }
 
-        this.throttledMousemoveHandler = throttle(() => {
-            clearTimeout(this.timeoutHandler);
+        this.throttledMousemoveHandler = throttle(
+            () => {
+                clearTimeout(this.timeoutHandler);
 
-            if (!this.container) {
-                return;
-            }
-
-            // If a viewer is showing then we are previewing
-            const isPreviewing = !!this.viewer;
-
-            // Always assume that navigation arrows will be hidden
-            this.container.classList.remove(CLASS_NAVIGATION_VISIBILITY);
-
-            // Only show it if either we aren't previewing or if we are then the viewer
-            // is not blocking the show. If we are previewing then the viewer may choose
-            // to not allow navigation arrows. This is mostly useful for videos since the
-            // navigation arrows may interfere with the settings menu inside video player.
-            if (!isPreviewing || this.viewer.allowNavigationArrows()) {
-                this.container.classList.add(CLASS_NAVIGATION_VISIBILITY);
-            }
-
-            this.timeoutHandler = setTimeout(() => {
-                if (this.container) {
-                    this.container.classList.remove(CLASS_NAVIGATION_VISIBILITY);
+                if (!this.container) {
+                    return;
                 }
-            }, MOUSEMOVE_THROTTLE);
-        }, MOUSEMOVE_THROTTLE - 500, true);
+
+                // If a viewer is showing then we are previewing
+                const isPreviewing = !!this.viewer;
+
+                // Always assume that navigation arrows will be hidden
+                this.container.classList.remove(CLASS_NAVIGATION_VISIBILITY);
+
+                // Only show it if either we aren't previewing or if we are then the viewer
+                // is not blocking the show. If we are previewing then the viewer may choose
+                // to not allow navigation arrows. This is mostly useful for videos since the
+                // navigation arrows may interfere with the settings menu inside video player.
+                if (!isPreviewing || this.viewer.allowNavigationArrows()) {
+                    this.container.classList.add(CLASS_NAVIGATION_VISIBILITY);
+                }
+
+                this.timeoutHandler = setTimeout(() => {
+                    if (this.container) {
+                        this.container.classList.remove(
+                            CLASS_NAVIGATION_VISIBILITY
+                        );
+                    }
+                }, MOUSEMOVE_THROTTLE);
+            },
+            MOUSEMOVE_THROTTLE - 500,
+            true
+        );
 
         return this.throttledMousemoveHandler;
     }
@@ -1288,7 +1363,9 @@ class Preview extends EventEmitter {
      */
     navigateRight() {
         const currentIndex = this.collection.indexOf(this.file.id);
-        const newIndex = currentIndex === this.collection.length - 1 ? this.collection.length - 1 : currentIndex + 1;
+        const newIndex = currentIndex === this.collection.length - 1
+            ? this.collection.length - 1
+            : currentIndex + 1;
         if (newIndex !== currentIndex) {
             this.navigateToIndex(newIndex);
         }
@@ -1302,7 +1379,9 @@ class Preview extends EventEmitter {
      * @return {Object|null} Matching loader
      */
     getLoader(file) {
-        return this.loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
+        return this.loaders.find((loader) =>
+            loader.canLoad(file, Object.keys(this.disabledViewers))
+        );
     }
 
     /**
@@ -1324,9 +1403,12 @@ class Preview extends EventEmitter {
         }
 
         // Ignore key events when we are inside certain fields
-        if (!target
-            || KEYDOWN_EXCEPTIONS.indexOf(target.nodeName) > -1
-            || (target.nodeName === 'DIV' && !!target.getAttribute('contenteditable'))) {
+        if (
+            !target ||
+            KEYDOWN_EXCEPTIONS.indexOf(target.nodeName) > -1 ||
+            (target.nodeName === 'DIV' &&
+                !!target.getAttribute('contenteditable'))
+        ) {
             return;
         }
 
@@ -1352,7 +1434,7 @@ class Preview extends EventEmitter {
                     consumed = true;
                     break;
                 default:
-                    // no-op
+                // no-op
             }
         }
 
