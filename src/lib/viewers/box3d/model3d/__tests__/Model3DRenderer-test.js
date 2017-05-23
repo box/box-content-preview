@@ -205,15 +205,8 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         });
 
         it('should do nothing if no scene instance is present', () => {
-            renderMock.expects('optimizeMaterials').never();
             renderMock.expects('getScene').returns(undefined);
             renderer.setupScene();
-        });
-
-        it('should invoke optimizeMaterials()', () => {
-            sandbox.stub(renderer, 'getScene').returns(scene);
-            renderMock.expects('optimizeMaterials').once();
-            renderer.setupScene([]);
         });
 
         it('should invoke createPrefabInstances() to add the model to the scene', () => {
@@ -240,55 +233,6 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             sandbox.stub(renderer, 'getScene').returns(scene);
             sandbox.mock(scene).expects('when').withArgs('load');
             renderer.setupScene([]);
-        });
-    });
-
-    describe('optimizeMaterials()', () => {
-        it('should invoke box3d.getAssetsByType() to gather all materials registered with the runtime', () => {
-            sandbox.mock(renderer.box3d).expects('getAssetsByType').returns([]);
-            renderer.optimizeMaterials();
-        });
-
-        it('should turn off environment map gloss variance feature if the material roughness is too low AND there is no glossMap', () => {
-            const mat = {
-                enableFeature: sandbox.stub(),
-                getProperty: sandbox.stub(),
-                setProperty: sandbox.stub()
-            };
-            sandbox.mock(renderer.box3d).expects('getAssetsByType').returns([mat]);
-            mat.getProperty.withArgs('roughness').returns(0);
-            mat.getProperty.withArgs('glossMap').returns(undefined);
-
-            renderer.optimizeMaterials();
-
-            expect(mat.setProperty).to.be.calledWith('envMapGlossVariance', false);
-        });
-
-        it('should turn off environment map gloss variance feature and specular lighting feature if roughness is too high', () => {
-            const mat = {
-                enableFeature: sandbox.stub(),
-                getProperty: sandbox.stub(),
-                setProperty: sandbox.stub()
-            };
-            sandbox.mock(renderer.box3d).expects('getAssetsByType').returns([mat]);
-            mat.getProperty.withArgs('roughness').returns(1);
-
-            renderer.optimizeMaterials();
-
-            expect(mat.setProperty).to.be.calledWith('envMapGlossVariance', false);
-            expect(mat.enableFeature).to.be.calledWith('specular', false);
-        });
-
-        it('should disable normal maps if on a mobile device', () => {
-            sandbox.stub(Browser, 'isMobile').returns(true);
-            const mat = {
-                enableFeature: sandbox.stub(),
-                getProperty: sandbox.stub()
-            };
-            sandbox.mock(renderer.box3d).expects('getAssetsByType').returns([mat]);
-            renderer.optimizeMaterials();
-
-            expect(mat.enableFeature).to.be.calledWith('normals', false);
         });
     });
 
