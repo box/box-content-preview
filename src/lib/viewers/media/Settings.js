@@ -106,6 +106,61 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
 
 @autobind
 class Settings extends EventEmitter {
+    /**
+     * The container of the settings element
+     *
+     * @property {HTMLElement}
+     */
+    containerEl;
+
+    /**
+     * The settings element
+     *
+     * @property {HTMLElement}
+     */
+    settingsEl;
+
+    /**
+     * The first item in the main menu
+     *
+     * @property {HTMLElement}
+     */
+    firstMenuItem;
+
+    /**
+     * The settings button element (gear icon that opens up the menu)
+     *
+     * @property {HTMLElement}
+     */
+    settingsButtonEl;
+
+    /**
+     * Whether the settings menu is visible or hiding
+     *
+     * @property {boolean}
+     */
+    visible = false;
+
+    /**
+     * List of subtitles in the menu. The subtitles menu will be populated in this order
+     *
+     * @property {array}
+     */
+    subtitles = [];
+
+    /**
+     * Default language to use for choosing subtitle to toggle on
+     *
+     * @property {string}
+     */
+    language = undefined;
+
+    /**
+     * An index (an integer >= 0) into the subtitles list, that should be toggled to when CC toggled on
+     *
+     * @property {string}
+     */
+    toggleToSubtitle = undefined;
 
     /**
      * Service to handle the position and movement of a slider element
@@ -125,11 +180,7 @@ class Settings extends EventEmitter {
         this.settingsButtonEl = this.containerEl.querySelector('.bp-media-gear-icon');
 
         addActivationListener(this.settingsEl, this.menuEventHandler);
-        this.visible = false;
         this.containerEl.classList.add(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
-        this.subtitles = [];
-        this.language = undefined;
-        this.toggleToSubtitle = undefined; // An index into the subtitles list. Initialize with sentinel value
         this.init();
     }
 
