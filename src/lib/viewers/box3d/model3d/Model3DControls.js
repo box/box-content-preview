@@ -11,6 +11,7 @@ import {
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
+    EVENT_SET_GRID_VISIBLE,
     EVENT_TOGGLE_ANIMATION,
     EVENT_TOGGLE_HELPERS,
     RENDER_MODE_LIT
@@ -67,6 +68,7 @@ class Model3DControls extends Box3DControls {
         this.settingsPullup.addListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
         this.settingsPullup.addListener(EVENT_SET_SKELETONS_VISIBLE, this.handleSetSkeletonsVisible);
         this.settingsPullup.addListener(EVENT_SET_WIREFRAMES_VISIBLE, this.handleSetWireframesVisible);
+        this.settingsPullup.addListener(EVENT_SET_GRID_VISIBLE, this.handleSetGridVisible);
         this.settingsPullup.addListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
         this.settingsPullup.addListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.addListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
@@ -127,6 +129,15 @@ class Model3DControls extends Box3DControls {
      */
     handleSetWireframesVisible(visible) {
         this.emit(EVENT_SET_WIREFRAMES_VISIBLE, visible);
+    }
+
+    /**
+     * Handle a change in grid visibility
+     * @param {boolean} visible - Indicates whether or not the grid is visible
+     * @return {void}
+     */
+    handleSetGridVisible(visible) {
+        this.emit(EVENT_SET_GRID_VISIBLE, visible);
     }
 
     /**
@@ -300,6 +311,7 @@ class Model3DControls extends Box3DControls {
         this.settingsPullup.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
         this.settingsPullup.removeListener(EVENT_SET_SKELETONS_VISIBLE, this.handleSetSkeletonsVisible);
         this.settingsPullup.removeListener(EVENT_SET_WIREFRAMES_VISIBLE, this.handleSetWireframesVisible);
+        this.settingsPullup.removeListener(EVENT_SET_GRID_VISIBLE, this.handleSetGridVisible);
         this.settingsPullup.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
         this.settingsPullup.removeListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.removeListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);

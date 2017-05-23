@@ -10,6 +10,7 @@ export const EVENT_SET_CAMERA_PROJECTION = 'setCameraProjection';
 export const EVENT_SET_QUALITY_LEVEL = 'setQualityLevel';
 export const EVENT_SET_SKELETONS_VISIBLE = 'setSkeletonsVisible';
 export const EVENT_SET_WIREFRAMES_VISIBLE = 'setWireframesVisible';
+export const EVENT_SET_GRID_VISIBLE = 'setGridVisible';
 export const EVENT_TOGGLE_ANIMATION = 'toggleAnimation';
 export const EVENT_TOGGLE_HELPERS = 'toggleHelpers';
 
