@@ -26,7 +26,7 @@ const parseThrough = (response) => response;
  * @private
  * @param {Response} response - Fetch's Response object
  * @throws {Error} - Throws when the HTTP status is not 2XX
- * @return {Response} - Pass-thru the response if ther are no errors
+ * @return {Response} - Pass-thru the response if there are no errors
  */
 function checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {
