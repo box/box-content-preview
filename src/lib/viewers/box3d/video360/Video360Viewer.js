@@ -15,8 +15,8 @@ const VIDEO_TEXTURE_PROPS = {
     imageId: VIDEO_ID,
     minFilter: 'linear',
     magFilter: 'linear',
-    uMapping: 'clamp',
-    vMapping: 'clamp'
+    wrapModeV: 'clampToEdge',
+    wrapModeU: 'clampToEdge'
 };
 
 class Video360Viewer extends DashViewer {

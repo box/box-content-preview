@@ -30,8 +30,8 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
         imageId: 'VIDEO_ID',
         minFilter: 'linear',
         magFilter: 'linear',
-        uMapping: 'clamp',
-        vMapping: 'clamp'
+        wrapModeV: 'clampToEdge',
+        wrapModeU: 'clampToEdge'
     };
 
     let viewer;
