@@ -1,4 +1,4 @@
-/* global Box3D, THREE */
+/* global Box3D */
 import Box3DRenderer from '../Box3DRenderer';
 import sceneEntities from './SceneEntities';
 
@@ -102,8 +102,8 @@ class Image360Renderer extends Box3DRenderer {
                 this.textureAsset = this.box3d.createTexture2d();
                 this.textureAsset.setProperties({
                     imageId: this.imageAsset.id,
-                    uMapping: 'clamp',
-                    vMapping: 'clamp'
+                    wrapModeV: 'clampToEdge',
+                    wrapModeU: 'clampToEdge'
                 });
                 return new Promise((resolve) => {
                     this.textureAsset.load(() => {

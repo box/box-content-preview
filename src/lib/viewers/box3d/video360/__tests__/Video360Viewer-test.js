@@ -1,4 +1,3 @@
-/* global BoxSDK */
 /* eslint-disable no-unused-expressions */
 import Video360Viewer from '../Video360Viewer';
 import Video360Controls from '../Video360Controls';
@@ -31,8 +30,8 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
         imageId: 'VIDEO_ID',
         minFilter: 'linear',
         magFilter: 'linear',
-        uMapping: 'clamp',
-        vMapping: 'clamp'
+        wrapModeV: 'clampToEdge',
+        wrapModeU: 'clampToEdge'
     };
 
     let viewer;

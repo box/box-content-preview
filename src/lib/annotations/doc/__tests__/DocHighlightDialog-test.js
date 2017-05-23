@@ -59,18 +59,22 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         });
 
         it('should add a highlight comment annotation', () => {
-            dialog.addAnnotation(new Annotation({
-                text: 'blargh',
-                user: { id: 1, name: 'Bob' }
-            }));
+            dialog.addAnnotation(
+                new Annotation({
+                    text: 'blargh',
+                    user: { id: 1, name: 'Bob' }
+                })
+            );
             expect(dialog.position).to.not.be.called;
         });
 
         it('should add a plain highlight annotation', () => {
-            dialog.addAnnotation(new Annotation({
-                text: '',
-                user: { id: 1, name: 'Bob' }
-            }));
+            dialog.addAnnotation(
+                new Annotation({
+                    text: '',
+                    user: { id: 1, name: 'Bob' }
+                })
+            );
 
             const highlightLabelEl = dialog.element.querySelector('.bp-annotation-highlight-label');
             expect(highlightLabelEl).to.contain.html('Bob highlighted');
@@ -164,8 +168,8 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
     describe('toggleHighlightCommentsReply()', () => {
         it('should display "Reply" text area in dialog when multiple comments exist', () => {
-            const replyTextEl = dialog.element.querySelector("[data-section='create']");
-            const commentTextEl = dialog.element.querySelector("[data-section='show']");
+            const replyTextEl = dialog.element.querySelector('[data-section="create"]');
+            const commentTextEl = dialog.element.querySelector('[data-section="show"]');
 
             sandbox.stub(dialog, 'position');
 
@@ -176,8 +180,8 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         });
 
         it('should display "Add a comment here" text area in dialog when no comments exist', () => {
-            const replyTextEl = dialog.element.querySelector("[data-section='create']");
-            const commentTextEl = dialog.element.querySelector("[data-section='show']");
+            const replyTextEl = dialog.element.querySelector('[data-section="create"]');
+            const commentTextEl = dialog.element.querySelector('[data-section="show"]');
 
             sandbox.stub(dialog, 'position');
 
@@ -275,12 +279,14 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
     describe('addAnnotationElement()', () => {
         it('should not add a comment if the text is blank', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: '',
-                user: {},
-                permissions: {}
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: '',
+                    user: {},
+                    permissions: {}
+                })
+            );
             const highlight = dialog.element.querySelector('.bp-annotation-highlight-dialog');
             const comment = document.querySelector('.annotation-comment');
 

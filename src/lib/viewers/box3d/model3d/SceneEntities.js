@@ -51,18 +51,9 @@ function sceneEntities(prefix) {
         // The scene contains the lights and camera
         children: [
             'CAMERA_ID',
-            'AMBIENT_LIGHT_ID'
-        ],
-        components: [
-            {
-                name: 'Light Environment',
-                attributes: {
-                    irradianceMap: 'HDR_ENV_MAP_CUBE_2',
-                    radianceMapHalfGloss: 'HDR_ENV_MAP_CUBE_1',
-                    radianceMap: 'HDR_ENV_MAP_CUBE_0'
-                },
-                scriptId: 'light_environment'
-            }
+            'AMBIENT_LIGHT_ID',
+            'DIRECTIONAL_LIGHT_1_ID',
+            'DIRECTIONAL_LIGHT_2_ID'
         ]
     }, {
         id: 'AMBIENT_LIGHT_ID',
@@ -70,7 +61,29 @@ function sceneEntities(prefix) {
         parentId: 'SCENE_ID',
         properties: {
             lightType: 'ambient',
-            color: { r: 0.0, g: 0.0, b: 0.0 }
+            color: { r: 1, g: 1, b: 1 }
+        }
+    }, {
+        id: 'DIRECTIONAL_LIGHT_1_ID',
+        type: 'light',
+        parentId: 'SCENE_ID',
+        properties: {
+            lightType: 'directional',
+            name: 'Key Light',
+            position: { x: -3, y: 3, z: 2 },
+            color: { r: 1, g: 1, b: 0.85 },
+            intensity: 2
+        }
+    }, {
+        id: 'DIRECTIONAL_LIGHT_2_ID',
+        type: 'light',
+        parentId: 'SCENE_ID',
+        properties: {
+            lightType: 'directional',
+            name: 'Back Light',
+            position: { x: 3, y: 2, z: -2 },
+            color: { r: 0.75, g: 0.75, b: 1 },
+            intensity: 1.5
         }
     }, {
         id: 'APP_ASSET_ID',
@@ -164,8 +177,8 @@ function sceneEntities(prefix) {
         properties: {
             name: 'Mat Cap Texture',
             imageId: 'MAT_CAP_IMG',
-            uMapping: 'clamp',
-            vMapping: 'clamp'
+            wrapModeU: 'clampToEdge',
+            wrapModeV: 'clampToEdge'
         }
     }, {
         id: 'MAT_CAP_IMG',
@@ -185,171 +198,6 @@ function sceneEntities(prefix) {
             height: 256,
             compression: 'zip'
         }]
-    }, {
-        id: 'HDR_ENV_IMG_0',
-        type: 'image',
-        properties: {
-            name: 'HDR Env Image 0',
-            width: 1024,
-            height: 512,
-            stream: false,
-            encoding: 'linear'
-        },
-        representations: [{
-            src: `${prefix}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/HDR_Env0.png`,
-            isExternal: true,
-            contentType: 'image/png',
-            contentEncoding: 'identity',
-            width: 1024,
-            height: 512,
-            compression: 'zip',
-            channels: ['red', 'green', 'blue', 'exponent']
-        }]
-    }, {
-        id: 'HDR_ENV_IMG_1',
-        type: 'image',
-        properties: {
-            name: 'HDR Env Image 1',
-            width: 256,
-            height: 128,
-            stream: false,
-            encoding: 'linear'
-        },
-        representations: [{
-            src: `${prefix}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/HDR_Env1.png`,
-            isExternal: true,
-            contentType: 'image/png',
-            contentEncoding: 'identity',
-            width: 256,
-            height: 128,
-            compression: 'zip',
-            channels: ['red', 'green', 'blue', 'exponent']
-        }]
-    }, {
-        id: 'HDR_ENV_IMG_2',
-        type: 'image',
-        properties: {
-            name: 'HDR Env Image 2',
-            width: 64,
-            height: 32,
-            stream: false,
-            encoding: 'linear'
-        },
-        representations: [{
-            src: `${prefix}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/HDR_Env2.png`,
-            isExternal: true,
-            contentType: 'image/png',
-            contentEncoding: 'identity',
-            width: 64,
-            height: 32,
-            compression: 'zip',
-            channels: ['red', 'green', 'blue', 'exponent']
-        }]
-    }, {
-        id: 'HDR_ENV_MAP_0',
-        type: 'texture2D',
-        properties: {
-            imageId: 'HDR_ENV_IMG_0',
-            name: 'HDR Env Map 0',
-            type: Browser.isAndroid() ? 'uByte' : 'halfFloat',
-            minFilter: 'linear',
-            magFilter: 'linear',
-            vMapping: 'clamp',
-            generateMipmaps: false
-        }
-    }, {
-        id: 'HDR_ENV_MAP_1',
-        type: 'texture2D',
-        properties: {
-            imageId: 'HDR_ENV_IMG_1',
-            name: 'HDR Env Map 1',
-            type: Browser.isAndroid() ? 'uByte' : 'halfFloat',
-            minFilter: 'linear',
-            magFilter: 'linear',
-            vMapping: 'clamp',
-            generateMipmaps: false
-        }
-    }, {
-        id: 'HDR_ENV_MAP_2',
-        type: 'texture2D',
-        properties: {
-            imageId: 'HDR_ENV_IMG_2',
-            name: 'HDR Env Map 2',
-            type: Browser.isAndroid() ? 'uByte' : 'halfFloat',
-            minFilter: 'linear',
-            magFilter: 'linear',
-            vMapping: 'clamp',
-            generateMipmaps: false
-        }
-    }, {
-        id: 'HDR_ENV_MAP_CUBE_0',
-        type: 'renderTextureCube',
-        properties: {
-            name: 'HDR Cube Env Map 0',
-            type: Browser.isAndroid() ? 'uByte' : 'halfFloat',
-            width: 512,
-            height: 512,
-            generateMipmaps: true,
-            vMapping: 'clamp',
-            uMapping: 'clamp',
-            encoding: 'linear'
-        },
-        components: [
-            {
-                name: 'Convert Panorama To CubeMap',
-                scriptId: 'panorama_to_cube_map',
-                enabled: true,
-                attributes: {
-                    inputTexture: 'HDR_ENV_MAP_0'
-                }
-            }
-        ]
-    }, {
-        id: 'HDR_ENV_MAP_CUBE_1',
-        type: 'renderTextureCube',
-        properties: {
-            name: 'HDR Cube Env Map 1',
-            type: Browser.isAndroid() ? 'uByte' : 'halfFloat',
-            width: 256,
-            height: 256,
-            generateMipmaps: true,
-            vMapping: 'clamp',
-            uMapping: 'clamp',
-            encoding: 'linear'
-        },
-        components: [
-            {
-                name: 'Convert Panorama To CubeMap',
-                scriptId: 'panorama_to_cube_map',
-                enabled: true,
-                attributes: {
-                    inputTexture: 'HDR_ENV_MAP_1'
-                }
-            }
-        ]
-    }, {
-        id: 'HDR_ENV_MAP_CUBE_2',
-        type: 'renderTextureCube',
-        properties: {
-            name: 'HDR Cube Env Map 2',
-            type: Browser.isAndroid() ? 'uByte' : 'halfFloat',
-            width: 128,
-            height: 128,
-            generateMipmaps: true,
-            vMapping: 'clamp',
-            uMapping: 'clamp',
-            encoding: 'linear'
-        },
-        components: [
-            {
-                name: 'Convert Panorama To CubeMap',
-                scriptId: 'panorama_to_cube_map',
-                enabled: true,
-                attributes: {
-                    inputTexture: 'HDR_ENV_MAP_2'
-                }
-            }
-        ]
     }];
 }
 

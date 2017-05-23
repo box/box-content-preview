@@ -1,4 +1,4 @@
-/* global Box3D, THREE */
+/* global THREE */
 import autobind from 'autobind-decorator';
 
 /** The various object manipulation modes supported. */
