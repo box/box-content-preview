@@ -18,31 +18,32 @@ const MOUSEMOVE_THROTTLE_MS = 50;
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 const HOVER_TIMEOUT_MS = 75;
+const MOUSE_MOVE_MIN_DISTANCE = 5;
 
 /**
  * For filtering out and only showing the first thread in a list of threads.
  *
- * @param {Object} thread - The annotation thread to either hide or show.
- * @param {number} index - The index of the annotation thread.
+ * @param {Object} thread - The annotation thread to either hide or show
+ * @param {number} index - The index of the annotation thread
  * @return {void}
  */
-const showFirstDialogFilter = (thread, index) => {
+function showFirstDialogFilter(thread, index) {
     if (index === 0) {
         thread.show();
     } else {
         thread.hideDialog();
     }
-};
+}
 
 /**
  * Check if a thread is in a hover state.
  *
- * @param {Object} thread - The thread to check the state of.
- * @return {boolean} True if the thread is in a state of hover.
+ * @param {Object} thread - The thread to check the state of
+ * @return {boolean} True if the thread is in a state of hover
  */
-const isThreadInHoverState = (thread) => {
+function isThreadInHoverState(thread) {
     return constants.HOVER_STATES.indexOf(thread.state) > -1;
-};
+}
 
 @autobind
 class DocAnnotator extends Annotator {
@@ -50,7 +51,7 @@ class DocAnnotator extends Annotator {
     /**
      * An annotator in charge of creating an managing annotations on Documents, such as PDFs.
      *
-     * @constructor
+     * [constructor]
      */
     constructor(data) {
         super(data);
@@ -395,7 +396,8 @@ class DocAnnotator extends Annotator {
         let throttleTimer = performance.now();
 
         this.throttledHighlightMousemoveHandler = (event) => {
-            if (!this.didMouseMove && (Math.abs(event.clientX - this.mouseX) > 5 || Math.abs(event.clientY - this.mouseY) > 5)) {
+            if (!this.didMouseMove && (Math.abs(event.clientX - this.mouseX) > MOUSE_MOVE_MIN_DISTANCE
+                || Math.abs(event.clientY - this.mouseY) > MOUSE_MOVE_MIN_DISTANCE)) {
                 this.didMouseMove = true;
             }
 
@@ -425,10 +427,8 @@ class DocAnnotator extends Annotator {
             const delayThreads = [];
             let hoverActive = false;
 
-            let i = 0;
             const threadLength = pageThreads.length;
-
-            for (i; i < threadLength; ++i) {
+            for (let i = 0; i < threadLength; ++i) {
                 const thread = pageThreads[i];
                 // Determine if any highlight threads on page are pending or active
                 // and ignore hover events of any highlights below

@@ -11,10 +11,11 @@ const HOVER_TIMEOUT_MS = 75;
 
 @autobind
 class DocHighlightThread extends AnnotationThread {
+
     /**
      * An annotation thread for highlights.
      *
-     * @constructor
+     * [constructor]
      */
     constructor(data) {
         super(data);
@@ -456,10 +457,10 @@ class DocHighlightThread extends AnnotationThread {
 
         let eventOccurredInHighlight = false;
 
-        let index = 0;
         const points = this.location.quadPoints;
         const length = points.length;
 
+        let index = 0;
         while (index < length) {
             const quadPoint = points[index];
             // If needed, scale quad points comparing current dimensions with saved dimensions
@@ -482,9 +483,7 @@ class DocHighlightThread extends AnnotationThread {
                 [x4, y4]
             ], x, y);
 
-            /* eslint-disable */
-            index++;
-            /* eslint-enable */
+            index += 1;
         }
 
         return eventOccurredInHighlight;
