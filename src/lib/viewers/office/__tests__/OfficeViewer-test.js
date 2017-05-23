@@ -80,13 +80,27 @@ describe('lib/viewers/office/OfficeViewer', () => {
             expect(stubs.setupPDFUrl).to.be.called;
         });
 
-        it('should not use the platform setup if the option is passed in', () => {
+        it('should not determine setup based on the option if it is passed in', () => {
             office.setup();
             expect(office.platformSetup).to.be.false;
+
+            office.options.viewers.Office.shouldUsePlatformSetup = true;
+            office.setup();
+            expect(office.platformSetup).to.be.true;
         });
 
         it('should use the platform setup if no option is passed in', () => {
             office.options.viewers = {};
+            office.setup();
+            expect(office.platformSetup).to.be.true;
+        });
+
+        it('should still use the platform setup if the viewer option, but no setup option exists', () => {
+            office.options.viewers = {
+                Office: {
+                    disabled: false
+                }
+            };
             office.setup();
             expect(office.platformSetup).to.be.true;
         });

@@ -163,18 +163,27 @@ class Scrubber extends EventEmitter {
     }
 
     /**
+     * Returns the relative X position of mouse on scrubber
+     *
+     * @param {number} pageX - Mouse X position
+     * @return {number} A float between 0 and 1, for the relative position of pageX
+     */
+    computeScrubberPosition(pageX) {
+        const rect = this.scrubberEl.getBoundingClientRect();
+        const relPos = (pageX - rect.left) / rect.width;
+        return Math.max(Math.min(relPos, MAX_VALUE), MIN_VALUE);
+    }
+
+    /**
      * Calculates the position of the scrubber handle based on mouse action
      *
      * @private
-     * @param {Event} event - the instance of the class
+     * @param {Event} event - The mouse event that this handler is subscribed to
      * @return {void}
      */
     scrubbingHandler(event) {
-        const rect = this.scrubberEl.getBoundingClientRect();
         const pageX = event.pageX;
-        let newValue = (pageX - rect.left) / rect.width;
-
-        newValue = Math.max(Math.min(newValue, MAX_VALUE), MIN_VALUE);
+        const newValue = this.computeScrubberPosition(pageX);
 
         this.setValue(newValue);
         this.emit('valuechange');
