@@ -56,7 +56,8 @@
                 "Build",
                 "Upgrade",
                 "Chore",
-                "Update"
+                "Update",
+                "Release"
             ]
         ],
         "type-max-length": [
