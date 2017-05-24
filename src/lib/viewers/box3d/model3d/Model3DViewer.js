@@ -12,6 +12,7 @@ import {
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
+    EVENT_SET_GRID_VISIBLE,
     EVENT_TOGGLE_ANIMATION,
     EVENT_TOGGLE_HELPERS,
     RENDER_MODE_LIT
@@ -21,6 +22,7 @@ import './Model3D.scss';
 
 const DEFAULT_AXIS_UP = '+Y';
 const DEFAULT_AXIS_FORWARD = '+Z';
+const DEFAULT_RENDER_GRID = true;
 
 /**
  * Model3d
@@ -69,6 +71,7 @@ class Model3DViewer extends Box3DViewer {
             this.controls.on(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
             this.controls.on(EVENT_SET_SKELETONS_VISIBLE, this.handleShowSkeletons);
             this.controls.on(EVENT_SET_WIREFRAMES_VISIBLE, this.handleShowWireframes);
+            this.controls.on(EVENT_SET_GRID_VISIBLE, this.handleShowGrid);
             this.controls.on(EVENT_TOGGLE_ANIMATION, this.handleToggleAnimation);
             this.controls.on(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
         }
@@ -92,6 +95,7 @@ class Model3DViewer extends Box3DViewer {
             this.controls.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
             this.controls.removeListener(EVENT_SET_SKELETONS_VISIBLE, this.handleShowSkeletons);
             this.controls.removeListener(EVENT_SET_WIREFRAMES_VISIBLE, this.handleShowWireframes);
+            this.controls.removeListener(EVENT_SET_GRID_VISIBLE, this.handleShowGrid);
             this.controls.removeListener(EVENT_TOGGLE_ANIMATION, this.handleToggleAnimation);
             this.controls.removeListener(EVENT_TOGGLE_HELPERS, this.handleToggleHelpers);
         }
@@ -206,6 +210,13 @@ class Model3DViewer extends Box3DViewer {
                 this.axes.forward = defaults.forwardAxis || DEFAULT_AXIS_FORWARD;
                 this.renderMode = defaults.defaultRenderMode || RENDER_MODE_LIT;
                 this.projection = defaults.cameraProjection || CAMERA_PROJECTION_PERSPECTIVE;
+                if (defaults.renderGrid === 'true') {
+                    this.renderGrid = true;
+                } else if (defaults.renderGrid === 'false') {
+                    this.renderGrid = false;
+                } else {
+                    this.renderGrid = DEFAULT_RENDER_GRID;
+                }
 
                 if (this.axes.up !== DEFAULT_AXIS_UP || this.axes.forward !== DEFAULT_AXIS_FORWARD) {
                     this.handleRotationAxisSet(this.axes.up, this.axes.forward, false);
@@ -308,6 +319,7 @@ class Model3DViewer extends Box3DViewer {
             this.controls.setCurrentProjectionMode(this.projection);
             this.controls.handleSetSkeletonsVisible(false);
             this.controls.handleSetWireframesVisible(false);
+            this.controls.handleSetGridVisible(this.renderGrid);
         }
 
         if (this.renderer) {
@@ -373,6 +385,16 @@ class Model3DViewer extends Box3DViewer {
      */
     handleShowWireframes(visible) {
         this.renderer.setWireframesVisible(visible);
+    }
+
+    /**
+     * Handle setting grid visibility.
+     * @private
+     * @param {boolean} visible - Indicates whether or not the grid is visible.
+     * @return {void}
+     */
+    handleShowGrid(visible) {
+        this.renderer.setGridVisible(visible);
     }
 }
 
