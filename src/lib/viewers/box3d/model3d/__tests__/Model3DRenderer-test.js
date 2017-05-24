@@ -11,6 +11,7 @@ import {
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
+    EVENT_SET_GRID_VISIBLE,
     QUALITY_LEVEL_FULL
 } from '../model3DConstants';
 import Browser from '../../../../Browser';

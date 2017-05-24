@@ -392,6 +392,17 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
+     * Show grid and check check box
+     * @method showGrid
+     * @public
+     * @return {void}
+     */
+    showGrid() {
+        this.showGridEl.checked = true;
+        this.onShowGridToggled();
+    }
+
+    /**
      * Reset the pullup to its default state.
      * @method reset
      * @public
@@ -400,6 +411,7 @@ class Model3DSettingsPullup extends EventEmitter {
     reset() {
         this.hideWireframes();
         this.hideSkeletons();
+        this.showGrid();
     }
 
     /**
