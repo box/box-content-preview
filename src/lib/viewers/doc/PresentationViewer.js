@@ -19,9 +19,7 @@ const WHEEL_THROTTLE = 200;
 const PADDING_OFFSET = 30;
 const SCROLL_EVENT_OFFSET = 5;
 
-@autobind
-class PresentationViewer extends DocBaseViewer {
-
+@autobind class PresentationViewer extends DocBaseViewer {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
@@ -35,7 +33,7 @@ class PresentationViewer extends DocBaseViewer {
         this.docEl.classList.add('bp-doc-presentation');
 
         // Set up preloader
-        this.preloader = new PresentationPreloader();
+        this.preloader = new PresentationPreloader(this.options.ui);
         this.preloader.addListener('preload', () => {
             this.options.logger.setPreloaded();
             this.resetLoadTimeout(); // Some content is visible - reset load timeout
@@ -69,7 +67,9 @@ class PresentationViewer extends DocBaseViewer {
         super.setPage(pageNum);
 
         // Show page we are navigating to
-        const pageEl = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
+        const pageEl = this.docEl.querySelector(
+            `[data-page-number="${this.pdfViewer.currentPageNumber}"]`
+        );
         pageEl.classList.remove(CLASS_INVISIBLE);
 
         // Force page to be rendered - this is needed because the presentation
@@ -104,9 +104,12 @@ class PresentationViewer extends DocBaseViewer {
     checkOverflow() {
         const doc = this.docEl;
         // Getting the page element to compare to the doc height/width
-        const page = this.docEl.querySelector(`[data-page-number="${this.pdfViewer.currentPageNumber}"]`);
+        const page = this.docEl.querySelector(
+            `[data-page-number="${this.pdfViewer.currentPageNumber}"]`
+        );
         const hasXOverflow = page.clientWidth > doc.clientWidth;
-        const hasYOverflow = page.clientHeight - PADDING_OFFSET > doc.clientHeight;
+        const hasYOverflow =
+            page.clientHeight - PADDING_OFFSET > doc.clientHeight;
 
         doc.classList.remove('overflow-x');
         doc.classList.remove('overflow-y');
@@ -173,9 +176,18 @@ class PresentationViewer extends DocBaseViewer {
 
         this.docEl.removeEventListener('wheel', this.wheelHandler());
         if (Browser.isMobile()) {
-            this.docEl.removeEventListener('touchstart', this.mobileScrollHandler);
-            this.docEl.removeEventListener('touchmove', this.mobileScrollHandler);
-            this.docEl.removeEventListener('touchend', this.mobileScrollHandler);
+            this.docEl.removeEventListener(
+                'touchstart',
+                this.mobileScrollHandler
+            );
+            this.docEl.removeEventListener(
+                'touchmove',
+                this.mobileScrollHandler
+            );
+            this.docEl.removeEventListener(
+                'touchend',
+                this.mobileScrollHandler
+            );
         }
     }
 
@@ -189,18 +201,53 @@ class PresentationViewer extends DocBaseViewer {
     bindControlListeners() {
         super.bindControlListeners();
 
-        this.controls.add(__('zoom_out'), this.zoomOut, 'bp-exit-zoom-out-icon', ICON_ZOOM_OUT);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'bp-enter-zoom-in-icon', ICON_ZOOM_IN);
+        this.controls.add(
+            __('zoom_out'),
+            this.zoomOut,
+            'bp-exit-zoom-out-icon',
+            ICON_ZOOM_OUT
+        );
+        this.controls.add(
+            __('zoom_in'),
+            this.zoomIn,
+            'bp-enter-zoom-in-icon',
+            ICON_ZOOM_IN
+        );
 
-        this.controls.add(__('previous_page'), this.previousPage, 'bp-presentation-previous-page-icon bp-previous-page', ICON_DROP_UP);
+        this.controls.add(
+            __('previous_page'),
+            this.previousPage,
+            'bp-presentation-previous-page-icon bp-previous-page',
+            ICON_DROP_UP
+        );
 
         const buttonContent = pageNumTemplate.replace(/>\s*</g, '><'); // removing new lines
-        this.controls.add(__('enter_page_num'), this.showPageNumInput, 'bp-doc-page-num', buttonContent);
+        this.controls.add(
+            __('enter_page_num'),
+            this.showPageNumInput,
+            'bp-doc-page-num',
+            buttonContent
+        );
 
-        this.controls.add(__('next_page'), this.nextPage, 'bp-presentation-next-page-icon bp-next-page', ICON_DROP_DOWN);
+        this.controls.add(
+            __('next_page'),
+            this.nextPage,
+            'bp-presentation-next-page-icon bp-next-page',
+            ICON_DROP_DOWN
+        );
 
-        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+        this.controls.add(
+            __('enter_fullscreen'),
+            this.toggleFullscreen,
+            'bp-enter-fullscreen-icon',
+            ICON_FULLSCREEN_IN
+        );
+        this.controls.add(
+            __('exit_fullscreen'),
+            this.toggleFullscreen,
+            'bp-exit-fullscreen-icon',
+            ICON_FULLSCREEN_OUT
+        );
     }
 
     /**
@@ -211,7 +258,12 @@ class PresentationViewer extends DocBaseViewer {
      */
     mobileScrollHandler(event) {
         // don't want to handle scroll if zoomed, if nothing has changed, or a touch move event which fixes intertia scroll bounce on iOS
-        if (this.checkOverflow() || !event.changedTouches || event.changedTouches.length === 0 || event.type === 'touchmove') {
+        if (
+            this.checkOverflow() ||
+            !event.changedTouches ||
+            event.changedTouches.length === 0 ||
+            event.type === 'touchmove'
+        ) {
             event.preventDefault();
             return;
         }
@@ -222,9 +274,15 @@ class PresentationViewer extends DocBaseViewer {
             const scrollEnd = event.changedTouches[0].clientY;
 
             // scroll event offset prevents tapping from triggering a scroll
-            if (this.scrollStart && this.scrollStart > scrollEnd + SCROLL_EVENT_OFFSET) {
+            if (
+                this.scrollStart &&
+                this.scrollStart > scrollEnd + SCROLL_EVENT_OFFSET
+            ) {
                 this.nextPage();
-            } else if (this.scrollStart && this.scrollStart < scrollEnd - SCROLL_EVENT_OFFSET) {
+            } else if (
+                this.scrollStart &&
+                this.scrollStart < scrollEnd - SCROLL_EVENT_OFFSET
+            ) {
                 this.previousPage();
             }
         }
@@ -238,7 +296,10 @@ class PresentationViewer extends DocBaseViewer {
      */
     pagesinitHandler() {
         // We implement presentation mode by hiding other pages except for the first page
-        const pageEls = [].slice.call(this.docEl.querySelectorAll('.pdfViewer .page'), 0);
+        const pageEls = [].slice.call(
+            this.docEl.querySelectorAll('.pdfViewer .page'),
+            0
+        );
         pageEls.forEach((pageEl) => {
             if (pageEl.getAttribute('data-page-number') === '1') {
                 return;
@@ -261,7 +322,6 @@ class PresentationViewer extends DocBaseViewer {
         super.pagechangeHandler(e);
     }
 
-
     /**
      * Handles zoom logic around opening the find bar.
      *
@@ -271,7 +331,11 @@ class PresentationViewer extends DocBaseViewer {
         if (!this.throttledWheelHandler) {
             this.throttledWheelHandler = throttle((event) => {
                 // Should not change pages if there is overflow, horizontal movement or a lack of vertical movement
-                if (event.deltaY === -0 || event.deltaX !== -0 || this.checkOverflow()) {
+                if (
+                    event.deltaY === -0 ||
+                    event.deltaX !== -0 ||
+                    this.checkOverflow()
+                ) {
                     return;
                 }
 
@@ -310,11 +374,15 @@ class PresentationViewer extends DocBaseViewer {
         // Overwrite _getVisiblePages for presentations to always calculate instead of fetching visible
         // elements since we lay out presentations differently
         this.pdfViewer._getVisiblePages = () => {
-            const currentPageObj = this.pdfViewer._pages[this.pdfViewer._currentPageNumber - 1];
-            const visible = [{
-                id: currentPageObj.id,
-                view: currentPageObj
-            }];
+            const currentPageObj = this.pdfViewer._pages[
+                this.pdfViewer._currentPageNumber - 1
+            ];
+            const visible = [
+                {
+                    id: currentPageObj.id,
+                    view: currentPageObj
+                }
+            ];
 
             return {
                 first: currentPageObj,

@@ -12,6 +12,7 @@ import cache from './Cache';
 import ProgressBar from './ProgressBar';
 import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
 import getTokens from './tokens';
+import PreviewUI from './PreviewUI';
 import {
     get,
     post,
@@ -29,16 +30,6 @@ import {
     cacheFile,
     uncacheFile
 } from './file';
-import {
-    setup,
-    cleanup,
-    showLoadingIndicator,
-    hideLoadingIndicator,
-    showDownloadButton,
-    showLoadingDownloadButton,
-    showPrintButton,
-    showNavigation
-} from './ui';
 import {
     API_HOST,
     APP_HOST,
@@ -92,6 +83,13 @@ const PREVIEW_LOCATION = findScriptLocation(
         error: 0, // Counts how many errors have happened overall
         navigation: 0 // Counts how many previews have happened by prev next navigation
     };
+
+    /**
+     * The current preview instance's UI
+     *
+     * @property {PreviewUI}
+     */
+    ui;
 
     /**
      * Current file being previewed
@@ -218,6 +216,8 @@ const PREVIEW_LOCATION = findScriptLocation(
         // object that mimics the window location object and points to where
         // preview.js is loaded from by the browser.
         this.location = PREVIEW_LOCATION;
+
+        this.ui = new PreviewUI();
     }
 
     /**
@@ -275,7 +275,7 @@ const PREVIEW_LOCATION = findScriptLocation(
         this.destroy();
 
         // Clean the UI
-        cleanup();
+        this.ui.cleanup();
 
         // Nuke the file
         this.file = undefined;
@@ -292,7 +292,7 @@ const PREVIEW_LOCATION = findScriptLocation(
         // Also update the original collection that was saved from the initial show
         this.previewOptions.collection = this.collection;
         if (this.file) {
-            showNavigation(this.file.id, this.collection);
+            this.ui.showNavigation(this.file.id, this.collection);
         }
     }
 
@@ -642,7 +642,7 @@ const PREVIEW_LOCATION = findScriptLocation(
         this.parseOptions(this.previewOptions, tokenMap);
 
         // Setup the shell
-        this.container = setup(
+        this.container = this.ui.setup(
             this.options,
             this.keydownHandler,
             this.navigateLeft,
@@ -651,11 +651,11 @@ const PREVIEW_LOCATION = findScriptLocation(
         );
 
         // Setup loading UI and progress bar
-        showLoadingIndicator();
+        this.ui.showLoadingIndicator();
         this.startProgressBar();
 
         // Update navigation
-        showNavigation(this.file.id, this.collection);
+        this.ui.showNavigation(this.file.id, this.collection);
 
         // If preview collection is empty, create a collection of one with the
         // current file ID. Otherwise, assume the current file ID is already in
@@ -756,7 +756,10 @@ const PREVIEW_LOCATION = findScriptLocation(
     createViewerOptions(moreOptions) {
         return cloneDeep(
             Object.assign(
-                { location: this.location },
+                {
+                    location: this.location,
+                    ui: this.ui
+                },
                 this.options,
                 moreOptions
             )
@@ -887,7 +890,7 @@ const PREVIEW_LOCATION = findScriptLocation(
             this.options.showDownload &&
             Browser.canDownload()
         ) {
-            showLoadingDownloadButton(this.download);
+            this.ui.showLoadingDownloadButton(this.download);
         }
 
         // Determine the asset loader to use
@@ -982,10 +985,10 @@ const PREVIEW_LOCATION = findScriptLocation(
             this.options.showDownload &&
             Browser.canDownload()
         ) {
-            showDownloadButton(this.download);
+            this.ui.showDownloadButton(this.download);
 
             if (checkFeature(this.viewer, 'print') && !Browser.isMobile()) {
-                showPrintButton(this.print);
+                this.ui.showPrintButton(this.print);
             }
         }
 
@@ -1036,7 +1039,7 @@ const PREVIEW_LOCATION = findScriptLocation(
         }
 
         // Hide the loading indicator
-        hideLoadingIndicator();
+        this.ui.hideLoadingIndicator();
 
         // Prefetch next few files
         this.prefetchNextFiles();

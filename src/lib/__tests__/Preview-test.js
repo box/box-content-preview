@@ -6,7 +6,6 @@ import loaders from '../loaders';
 import Logger from '../Logger';
 import Browser from '../Browser';
 import cache from '../Cache';
-import * as ui from '../ui';
 import * as file from '../file';
 import * as util from '../util';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
@@ -17,7 +16,6 @@ const RETRY_TIMEOUT = 500; // retry network request interval for a file
 const PREFETCH_COUNT = 4; // number of files to prefetch
 const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
 const KEYDOWN_EXCEPTIONS = ['INPUT', 'SELECT', 'TEXTAREA']; // Ignore keydown events on these elements
-
 
 const sandbox = sinon.sandbox.create();
 
@@ -158,7 +156,7 @@ describe('lib/Preview', () => {
     describe('hide()', () => {
         beforeEach(() => {
             stubs.destroy = sandbox.stub(preview, 'destroy');
-            stubs.cleanup = sandbox.stub(ui, 'cleanup');
+            stubs.cleanup = sandbox.stub(preview.ui, 'cleanup');
         });
 
         it('should indicate that the preview is closed', () => {
@@ -188,7 +186,7 @@ describe('lib/Preview', () => {
 
     describe('updateCollection()', () => {
         beforeEach(() => {
-            stubs.showNavigation = sandbox.stub(ui, 'showNavigation');
+            stubs.showNavigation = sandbox.stub(preview.ui, 'showNavigation');
         });
 
         it('should set the preview and preview options collection to an array', () => {
@@ -257,8 +255,11 @@ describe('lib/Preview', () => {
                 }
             ];
 
-            stubs.checkFileValid.onCall(0).returns(true)
-            .onCall(1).returns(false);
+            stubs.checkFileValid
+                .onCall(0)
+                .returns(true)
+                .onCall(1)
+                .returns(false);
 
             preview.updateFileCache(files);
             expect(stubs.cacheFile).calledOnce;
@@ -337,7 +338,10 @@ describe('lib/Preview', () => {
             };
 
             sandbox.stub(cache, 'get').withArgs(fileId).returns(someFile);
-            sandbox.stub(preview, 'getLoader').withArgs(someFile).returns(loader);
+            sandbox
+                .stub(preview, 'getLoader')
+                .withArgs(someFile)
+                .returns(loader);
         });
 
         it('should short circuit if no appropriate viewer is found', () => {
@@ -348,13 +352,20 @@ describe('lib/Preview', () => {
         });
 
         it('should get the appropriate viewer', () => {
-            sandbox.mock(loader).expects('determineViewer').withArgs(someFile).returns(viewer);
+            sandbox
+                .mock(loader)
+                .expects('determineViewer')
+                .withArgs(someFile)
+                .returns(viewer);
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
         it('should determine representation', () => {
             sandbox.stub(loader, 'determineViewer').returns(viewer);
-            sandbox.mock(loader).expects('determineRepresentation').withArgs(someFile, viewer);
+            sandbox
+                .mock(loader)
+                .expects('determineRepresentation')
+                .withArgs(someFile, viewer);
             preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword });
         });
 
@@ -362,7 +373,13 @@ describe('lib/Preview', () => {
             sandbox.stub(loader, 'determineViewer').returns(viewer);
             sandbox.stub(preview, 'createViewerOptions');
 
-            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: true });
+            preview.prefetch({
+                fileId,
+                token,
+                sharedLink,
+                sharedLinkPassword,
+                preload: true
+            });
 
             expect(preview.createViewerOptions).to.be.calledWith({
                 viewer,
@@ -383,13 +400,22 @@ describe('lib/Preview', () => {
                             preload: true,
                             content: true
                         }),
-                        getViewerOption: sandbox.stub().withArgs('preload').returns(true)
+                        getViewerOption: sandbox
+                            .stub()
+                            .withArgs('preload')
+                            .returns(true)
                     };
                 }
             };
             sandbox.stub(loader, 'determineViewer').returns(viewer);
 
-            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: false });
+            preview.prefetch({
+                fileId,
+                token,
+                sharedLink,
+                sharedLinkPassword,
+                preload: false
+            });
         });
 
         it('should prefetch assets and content but not preload if viewer defines a prefetch function and preload is false, and viewer preload option is false', () => {
@@ -401,13 +427,22 @@ describe('lib/Preview', () => {
                             preload: false,
                             content: true
                         }),
-                        getViewerOption: sandbox.stub().withArgs('preload').returns(false)
+                        getViewerOption: sandbox
+                            .stub()
+                            .withArgs('preload')
+                            .returns(false)
                     };
                 }
             };
             sandbox.stub(loader, 'determineViewer').returns(viewer);
 
-            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: false });
+            preview.prefetch({
+                fileId,
+                token,
+                sharedLink,
+                sharedLinkPassword,
+                preload: false
+            });
         });
 
         it('should prefetch assets and preload, but not content if viewer defines a prefetch function and preload is true', () => {
@@ -424,7 +459,13 @@ describe('lib/Preview', () => {
             };
             sandbox.stub(loader, 'determineViewer').returns(viewer);
 
-            preview.prefetch({ fileId, token, sharedLink, sharedLinkPassword, preload: true });
+            preview.prefetch({
+                fileId,
+                token,
+                sharedLink,
+                sharedLinkPassword,
+                preload: true
+            });
         });
     });
 
@@ -452,7 +493,9 @@ describe('lib/Preview', () => {
                 }
             ];
 
-            stubs.getViewers = sandbox.stub(preview, 'getViewers').returns(mockViewers);
+            stubs.getViewers = sandbox
+                .stub(preview, 'getViewers')
+                .returns(mockViewers);
         });
 
         it('should prefetch no viewers if no viewer names are specified', () => {
@@ -480,7 +523,11 @@ describe('lib/Preview', () => {
         });
 
         it('should disable each viewer passed in', () => {
-            const viewersToDisable = { text: 'viewer', csv: 'viewer', excel: 'viewer' };
+            const viewersToDisable = {
+                text: 'viewer',
+                csv: 'viewer',
+                excel: 'viewer'
+            };
 
             preview.disableViewers(Object.keys(viewersToDisable));
             Object.keys(viewersToDisable).forEach((viewer) => {
@@ -498,7 +545,11 @@ describe('lib/Preview', () => {
 
     describe('enableViewers()', () => {
         it('should enable an array of passed in viewers', () => {
-            const viewersToEnable = { text: 'viewer', csv: 'viewer', excel: 'viewer' };
+            const viewersToEnable = {
+                text: 'viewer',
+                csv: 'viewer',
+                excel: 'viewer'
+            };
 
             preview.disableViewers(Object.keys(viewersToEnable));
             preview.enableViewers(Object.keys(viewersToEnable));
@@ -506,7 +557,11 @@ describe('lib/Preview', () => {
         });
 
         it('should enable a single viewer that is passed in', () => {
-            const viewersToEnable = { text: 'viewer', csv: 'viewer', excel: 'viewer' };
+            const viewersToEnable = {
+                text: 'viewer',
+                csv: 'viewer',
+                excel: 'viewer'
+            };
 
             preview.disableViewers(Object.keys(viewersToEnable));
             preview.enableViewers('text');
@@ -542,8 +597,12 @@ describe('lib/Preview', () => {
 
     describe('print()', () => {
         beforeEach(() => {
-            stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(false);
-            stubs.checkFeature = sandbox.stub(file, 'checkFeature').returns(false);
+            stubs.checkPermission = sandbox
+                .stub(file, 'checkPermission')
+                .returns(false);
+            stubs.checkFeature = sandbox
+                .stub(file, 'checkFeature')
+                .returns(false);
             preview.viewer = {
                 print: sandbox.stub()
             };
@@ -587,8 +646,14 @@ describe('lib/Preview', () => {
 
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
-            stubs.openUrlInsideIframe = sandbox.stub(util, 'openUrlInsideIframe');
-            stubs.getRequestHeaders = sandbox.stub(preview, 'getRequestHeaders');
+            stubs.openUrlInsideIframe = sandbox.stub(
+                util,
+                'openUrlInsideIframe'
+            );
+            stubs.getRequestHeaders = sandbox.stub(
+                preview,
+                'getRequestHeaders'
+            );
             stubs.getDownloadURL = sandbox.stub(file, 'getDownloadURL');
         });
 
@@ -604,7 +669,9 @@ describe('lib/Preview', () => {
 
             preview.download();
             return stubs.promise.then((data) => {
-                expect(stubs.openUrlInsideIframe).to.be.calledWith(data.download_url);
+                expect(stubs.openUrlInsideIframe).to.be.calledWith(
+                    data.download_url
+                );
             });
         });
     });
@@ -641,8 +708,13 @@ describe('lib/Preview', () => {
                 token: 'token'
             });
 
-            stubs.getTokens = sandbox.stub(tokens, 'default').returns(stubs.promise);
-            stubs.loadPreviewWithTokens = sandbox.stub(preview, 'loadPreviewWithTokens');
+            stubs.getTokens = sandbox
+                .stub(tokens, 'default')
+                .returns(stubs.promise);
+            stubs.loadPreviewWithTokens = sandbox.stub(
+                preview,
+                'loadPreviewWithTokens'
+            );
             stubs.get = sandbox.stub(cache, 'get');
             stubs.destroy = sandbox.stub(preview, 'destroy');
         });
@@ -691,11 +763,14 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             stubs.loadFromServer = sandbox.stub(preview, 'loadFromServer');
             stubs.parseOptions = sandbox.stub(preview, 'parseOptions');
-            stubs.setup = sandbox.stub(ui, 'setup');
-            stubs.showLoadingIndicator = sandbox.stub(ui, 'showLoadingIndicator');
+            stubs.setup = sandbox.stub(preview.ui, 'setup');
+            stubs.showLoadingIndicator = sandbox.stub(
+                preview.ui,
+                'showLoadingIndicator'
+            );
             stubs.startProgressBar = sandbox.stub(preview, 'startProgressBar');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
-            stubs.showNavigation = sandbox.stub(ui, 'showNavigation');
+            stubs.showNavigation = sandbox.stub(preview.ui, 'showNavigation');
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
             stubs.loadFromCache = sandbox.stub(preview, 'loadFromCache');
         });
@@ -798,7 +873,9 @@ describe('lib/Preview', () => {
         it('should set shared link and shared link password', () => {
             preview.parseOptions(preview.previewOptions, stubs.tokens);
             expect(preview.options.sharedLink).to.equal(stubs.sharedLink);
-            expect(preview.options.sharedLinkPassword).to.equal(stubs.sharedLinkPassword);
+            expect(preview.options.sharedLinkPassword).to.equal(
+                stubs.sharedLinkPassword
+            );
         });
 
         it('should save a reference to the api host', () => {
@@ -873,12 +950,16 @@ describe('lib/Preview', () => {
     describe('createViewerOptions()', () => {
         it('should create viewer options with location', () => {
             preview.location = 'someLocation';
-            expect(preview.createViewerOptions().location).to.deep.equal(preview.location);
+            expect(preview.createViewerOptions().location).to.deep.equal(
+                preview.location
+            );
         });
 
         it('should deep clone options', () => {
             const someOption = {};
-            expect(preview.createViewerOptions({ someOption }).someOption).to.not.equal(someOption);
+            expect(
+                preview.createViewerOptions({ someOption }).someOption
+            ).to.not.equal(someOption);
         });
     });
 
@@ -912,8 +993,14 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             stubs.promise = Promise.resolve('file');
             stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
-            stubs.handleLoadResponse = sandbox.stub(preview, 'handleLoadResponse');
-            stubs.triggerFetchError = sandbox.stub(preview, 'triggerFetchError');
+            stubs.handleLoadResponse = sandbox.stub(
+                preview,
+                'handleLoadResponse'
+            );
+            stubs.triggerFetchError = sandbox.stub(
+                preview,
+                'triggerFetchError'
+            );
             stubs.getURL = sandbox.stub(file, 'getURL').returns('/get_url');
             preview.file = {
                 id: 0
@@ -942,7 +1029,9 @@ describe('lib/Preview', () => {
             stubs.set = sandbox.stub(cache, 'set');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.loadViewer = sandbox.stub(preview, 'loadViewer');
-            stubs.checkFileValid = sandbox.stub(file, 'checkFileValid').returns(true);
+            stubs.checkFileValid = sandbox
+                .stub(file, 'checkFileValid')
+                .returns(true);
             stubs.file = {
                 id: 0,
                 name: 'file',
@@ -1115,13 +1204,22 @@ describe('lib/Preview', () => {
             }
 
             stubs.destroy = sandbox.stub(preview, 'destroy');
-            stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(true);
-            stubs.canDownload = sandbox.stub(Browser, 'canDownload').returns(false);
-            stubs.showLoadingDownloadButton = sandbox.stub(ui, 'showLoadingDownloadButton');
+            stubs.checkPermission = sandbox
+                .stub(file, 'checkPermission')
+                .returns(true);
+            stubs.canDownload = sandbox
+                .stub(Browser, 'canDownload')
+                .returns(false);
+            stubs.showLoadingDownloadButton = sandbox.stub(
+                preview.ui,
+                'showLoadingDownloadButton'
+            );
             stubs.loadPromiseResolve = Promise.resolve();
             stubs.determineRepresentationStatusPromise = Promise.resolve();
             stubs.loader = {
-                determineViewer: sandbox.stub().returns({ CONSTRUCTOR: Viewer }),
+                determineViewer: sandbox
+                    .stub()
+                    .returns({ CONSTRUCTOR: Viewer }),
                 determineRepresentation: sandbox.stub().returns({
                     links: {
                         content: {
@@ -1129,18 +1227,25 @@ describe('lib/Preview', () => {
                         }
                     }
                 }),
-                determineRepresentationStatus: sandbox.stub().returns(stubs.determineRepresentationStatusPromise),
+                determineRepresentationStatus: sandbox
+                    .stub()
+                    .returns(stubs.determineRepresentationStatusPromise),
                 load: sandbox.stub().returns(stubs.loadPromiseResolve)
             };
 
-            stubs.getLoader = sandbox.stub(preview, 'getLoader').returns(stubs.loader);
+            stubs.getLoader = sandbox
+                .stub(preview, 'getLoader')
+                .returns(stubs.loader);
 
             preview.logger = {
                 setType: sandbox.stub()
             };
 
             stubs.emit = sandbox.stub(preview, 'emit');
-            stubs.attachViewerListeners = sandbox.stub(preview, 'attachViewerListeners');
+            stubs.attachViewerListeners = sandbox.stub(
+                preview,
+                'attachViewerListeners'
+            );
             preview.open = true;
         });
 
@@ -1163,27 +1268,35 @@ describe('lib/Preview', () => {
         });
 
         it('should show the loading download button if there are sufficient permissions and support', () => {
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(false);
+            stubs.checkPermission
+                .withArgs(sinon.match.any, 'can_download')
+                .returns(false);
             preview.options.showDownload = false;
 
             preview.loadViewer({});
             expect(stubs.showLoadingDownloadButton).to.not.be.called;
             preview.destroy();
 
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(true);
+            stubs.checkPermission
+                .withArgs(sinon.match.any, 'can_download')
+                .returns(true);
 
             preview.loadViewer({});
             expect(stubs.showLoadingDownloadButton).to.not.be.called;
             preview.destroy();
 
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(false);
+            stubs.checkPermission
+                .withArgs(sinon.match.any, 'can_download')
+                .returns(false);
             preview.options.showDownload = true;
 
             preview.loadViewer({});
             expect(stubs.showLoadingDownloadButton).to.not.be.called;
             preview.destroy();
 
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(true);
+            stubs.checkPermission
+                .withArgs(sinon.match.any, 'can_download')
+                .returns(true);
             preview.options.showDownload = true;
             stubs.canDownload.returns(false);
             preview.destroy();
@@ -1191,10 +1304,11 @@ describe('lib/Preview', () => {
             preview.loadViewer({});
             expect(stubs.showLoadingDownloadButton).to.not.be.called;
 
-            stubs.checkPermission.withArgs(sinon.match.any, 'can_download').returns(true);
+            stubs.checkPermission
+                .withArgs(sinon.match.any, 'can_download')
+                .returns(true);
             preview.options.showDownload = true;
             stubs.canDownload.returns(true);
-
 
             preview.loadViewer({});
             expect(stubs.showLoadingDownloadButton).to.be.called;
@@ -1277,13 +1391,25 @@ describe('lib/Preview', () => {
             stubs.checkFeature = sandbox.stub(file, 'checkFeature');
             stubs.isMobile = sandbox.stub(Browser, 'isMobile');
             stubs.canDownload = sandbox.stub(Browser, 'canDownload');
-            stubs.showDownloadButton = sandbox.stub(ui, 'showDownloadButton');
-            stubs.showPrintButton = sandbox.stub(ui, 'showPrintButton');
-            stubs.hideLoadingIndicator = sandbox.stub(ui, 'hideLoadingIndicator');
+            stubs.showDownloadButton = sandbox.stub(
+                preview.ui,
+                'showDownloadButton'
+            );
+            stubs.showPrintButton = sandbox.stub(preview.ui, 'showPrintButton');
+            stubs.hideLoadingIndicator = sandbox.stub(
+                preview.ui,
+                'hideLoadingIndicator'
+            );
             stubs.emit = sandbox.stub(preview, 'emit');
             stubs.logPreviewEvent = sandbox.stub(preview, 'logPreviewEvent');
-            stubs.prefetchNextFiles = sandbox.stub(preview, 'prefetchNextFiles');
-            stubs.finishProgressBar = sandbox.stub(preview, 'finishProgressBar');
+            stubs.prefetchNextFiles = sandbox.stub(
+                preview,
+                'prefetchNextFiles'
+            );
+            stubs.finishProgressBar = sandbox.stub(
+                preview,
+                'finishProgressBar'
+            );
 
             stubs.logger = {
                 done: sandbox.stub()
@@ -1310,7 +1436,6 @@ describe('lib/Preview', () => {
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.not.be.called;
 
-
             stubs.checkPermission.returns(true);
 
             preview.finishLoading();
@@ -1322,7 +1447,6 @@ describe('lib/Preview', () => {
 
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.not.be.called;
-
 
             preview.options.showDownload = true;
 
@@ -1341,10 +1465,8 @@ describe('lib/Preview', () => {
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.be.called;
 
-
             stubs.canDownload.returns(true);
             stubs.isMobile.returns(false);
-
 
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
@@ -1533,8 +1655,12 @@ describe('lib/Preview', () => {
 
             preview.triggerFetchError(stubs.error);
             try {
-                expect(stubs.triggerError).to.be.calledWith(new Error(__('error_rate_limit')));
-            } catch (e) { /* no op */ }
+                expect(stubs.triggerError).to.be.calledWith(
+                    new Error(__('error_rate_limit'))
+                );
+            } catch (e) {
+                /* no op */
+            }
         });
 
         it('should reset a timeout that tries to load the file again', () => {
@@ -1564,13 +1690,24 @@ describe('lib/Preview', () => {
             stubs.unset = sandbox.stub(cache, 'unset');
             stubs.destroy = sandbox.stub(preview, 'destroy');
             stubs.finishLoading = sandbox.stub(preview, 'finishLoading');
-            stubs.getErrorViewer = sandbox.stub(preview, 'getErrorViewer').returns(ErrorViewer);
+            stubs.getErrorViewer = sandbox
+                .stub(preview, 'getErrorViewer')
+                .returns(ErrorViewer);
             stubs.promiseResolve = Promise.resolve();
-            stubs.hideLoadingIndicator = sandbox.stub(ui, 'hideLoadingIndicator');
+            stubs.hideLoadingIndicator = sandbox.stub(
+                preview.ui,
+                'hideLoadingIndicator'
+            );
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
-            stubs.showDownloadButton = sandbox.stub(ui, 'showDownloadButton');
+            stubs.showDownloadButton = sandbox.stub(
+                preview.ui,
+                'showDownloadButton'
+            );
             stubs.emit = sandbox.stub(preview, 'emit');
-            stubs.attachViewerListeners = sandbox.stub(preview, 'attachViewerListeners');
+            stubs.attachViewerListeners = sandbox.stub(
+                preview,
+                'attachViewerListeners'
+            );
 
             preview.open = true;
         });
@@ -1601,7 +1738,9 @@ describe('lib/Preview', () => {
 
     describe('getRequestHeaders()', () => {
         beforeEach(() => {
-            stubs.canPlayDash = sandbox.stub(Browser, 'canPlayDash').returns(false);
+            stubs.canPlayDash = sandbox
+                .stub(Browser, 'canPlayDash')
+                .returns(false);
             stubs.getHeaders = sandbox.stub(util, 'getHeaders');
             stubs.headers = {
                 'X-Rep-Hints': '[3d][pdf][text][mp3][jpg?dimensions=1024x1024&paged=false][jpg?dimensions=2048x2048,png?dimensions=2048x2048]'
@@ -1616,14 +1755,24 @@ describe('lib/Preview', () => {
             stubs.headers['X-Rep-Hints'] += '[mp4]';
 
             preview.getRequestHeaders('token');
-            expect(stubs.getHeaders).to.be.calledWith(stubs.headers, 'token', 'link', 'Passw0rd!');
+            expect(stubs.getHeaders).to.be.calledWith(
+                stubs.headers,
+                'token',
+                'link',
+                'Passw0rd!'
+            );
         });
 
         it('should get headers with the options token if none are provided', () => {
             stubs.headers['X-Rep-Hints'] += '[mp4]';
 
             preview.getRequestHeaders();
-            expect(stubs.getHeaders).to.be.calledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+            expect(stubs.getHeaders).to.be.calledWith(
+                stubs.headers,
+                'previewtoken',
+                'link',
+                'Passw0rd!'
+            );
         });
 
         it('should add dash hints if the browser supports dash', () => {
@@ -1631,7 +1780,12 @@ describe('lib/Preview', () => {
             stubs.headers['X-Rep-Hints'] += '[dash,mp4][filmstrip]';
 
             preview.getRequestHeaders();
-            expect(stubs.getHeaders).to.be.calledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+            expect(stubs.getHeaders).to.be.calledWith(
+                stubs.headers,
+                'previewtoken',
+                'link',
+                'Passw0rd!'
+            );
         });
     });
 
@@ -1652,9 +1806,14 @@ describe('lib/Preview', () => {
                 id: 0
             });
 
-            stubs.get = sandbox.stub(util, 'get').returns(stubs.getPromiseResolve);
+            stubs.get = sandbox
+                .stub(util, 'get')
+                .returns(stubs.getPromiseResolve);
             stubs.getURL = sandbox.stub(file, 'getURL');
-            stubs.getRequestHeaders = sandbox.stub(preview, 'getRequestHeaders');
+            stubs.getRequestHeaders = sandbox.stub(
+                preview,
+                'getRequestHeaders'
+            );
             stubs.set = sandbox.stub(cache, 'set');
             stubs.prefetch = sandbox.stub(preview, 'prefetch');
             preview.prefetchedCollection = [];
@@ -1702,7 +1861,9 @@ describe('lib/Preview', () => {
 
             preview.prefetchNextFiles();
             return stubs.getTokensPromiseResolve.then(() => {
-                expect(stubs.getRequestHeaders.callCount).to.equal(PREFETCH_COUNT);
+                expect(stubs.getRequestHeaders.callCount).to.equal(
+                    PREFETCH_COUNT
+                );
                 expect(stubs.get.callCount).to.equal(PREFETCH_COUNT);
             });
         });
@@ -1720,7 +1881,9 @@ describe('lib/Preview', () => {
                 return stubs.getPromiseResolve.then(() => {
                     expect(stubs.set.callCount).to.equal(PREFETCH_COUNT);
                     expect(stubs.prefetch.callCount).to.equal(PREFETCH_COUNT);
-                    expect(preview.prefetchedCollection.length).to.equal(PREFETCH_COUNT);
+                    expect(preview.prefetchedCollection.length).to.equal(
+                        PREFETCH_COUNT
+                    );
                 });
             });
         });
@@ -1778,7 +1941,11 @@ describe('lib/Preview', () => {
 
             const handler = preview.getGlobalMousemoveHandler();
             handler();
-            expect(preview.container.classList.contains(CLASS_NAVIGATION_VISIBILITY)).to.be.false;
+            expect(
+                preview.container.classList.contains(
+                    CLASS_NAVIGATION_VISIBILITY
+                )
+            ).to.be.false;
         });
 
         it('should add the navigation arrows back if the viewer allows them or we aren\'t previewing', () => {
@@ -1786,7 +1953,11 @@ describe('lib/Preview', () => {
 
             let handler = preview.getGlobalMousemoveHandler();
             handler();
-            expect(preview.container.classList.contains(CLASS_NAVIGATION_VISIBILITY)).to.be.true;
+            expect(
+                preview.container.classList.contains(
+                    CLASS_NAVIGATION_VISIBILITY
+                )
+            ).to.be.true;
 
             preview.viewer = {
                 allowNavigationArrows: sandbox.stub().returns(true)
@@ -1794,7 +1965,11 @@ describe('lib/Preview', () => {
 
             handler = preview.getGlobalMousemoveHandler();
             handler();
-            expect(preview.container.classList.contains(CLASS_NAVIGATION_VISIBILITY)).to.be.true;
+            expect(
+                preview.container.classList.contains(
+                    CLASS_NAVIGATION_VISIBILITY
+                )
+            ).to.be.true;
         });
 
         it('should set a timeout to remove the arrows if the container exists', () => {
@@ -1807,7 +1982,11 @@ describe('lib/Preview', () => {
             handler();
             clock.tick(MOUSEMOVE_THROTTLE + 1);
 
-            expect(preview.container.classList.contains(CLASS_NAVIGATION_VISIBILITY)).to.be.false;
+            expect(
+                preview.container.classList.contains(
+                    CLASS_NAVIGATION_VISIBILITY
+                )
+            ).to.be.false;
         });
     });
 
@@ -1937,9 +2116,7 @@ describe('lib/Preview', () => {
                 }
             };
 
-            preview.viewer = {
-
-            };
+            preview.viewer = {};
         });
 
         it('should do nothing if keyboard shortcuts are disabled', () => {
