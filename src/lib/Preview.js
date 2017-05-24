@@ -1088,9 +1088,10 @@ const PREVIEW_LOCATION = findScriptLocation(
      * Triggers an error due to fetch.
      *
      * @private
+     * @param {Object} err Error object
      * @return {void}
      */
-    triggerFetchError() {
+    triggerFetchError(err) {
         // If preview is closed don't do anything
         if (!this.open) {
             return;
@@ -1101,7 +1102,12 @@ const PREVIEW_LOCATION = findScriptLocation(
 
         // Check if hit the retry limit
         if (this.retryCount > RETRY_COUNT) {
-            this.triggerError(new Error(__('error_refresh')));
+            let errorMessage = __('error_refresh');
+            if (err.response && err.response.status === 429) {
+                errorMessage = __('error_rate_limit');
+            }
+
+            this.triggerError(new Error(errorMessage));
             return;
         }
 

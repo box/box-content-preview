@@ -1485,6 +1485,11 @@ describe('lib/Preview', () => {
             stubs.unset = sandbox.stub(cache, 'unset');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.load = sandbox.stub(preview, 'load');
+            stubs.error = {
+                response: {
+                    status: 400
+                }
+            };
         });
 
         it('should do nothing if the preview is closed', () => {
@@ -1493,7 +1498,7 @@ describe('lib/Preview', () => {
             };
             preview.open = false;
 
-            preview.triggerFetchError();
+            preview.triggerFetchError(stubs.error);
             expect(stubs.unset).to.not.be.called;
         });
 
@@ -1503,7 +1508,7 @@ describe('lib/Preview', () => {
             };
             preview.open = true;
 
-            preview.triggerFetchError();
+            preview.triggerFetchError(stubs.error);
             expect(stubs.unset).to.be.called;
         });
 
@@ -1514,8 +1519,22 @@ describe('lib/Preview', () => {
             preview.open = true;
             preview.retryCount = 6;
 
-            preview.triggerFetchError();
+            preview.triggerFetchError(stubs.error);
             expect(stubs.triggerError).to.be.called;
+        });
+
+        it('should trigger a rate limit error if the status code is 429', () => {
+            preview.file = {
+                id: '0'
+            };
+            preview.open = true;
+            preview.retryCount = 6;
+            stubs.error.response.status = 429;
+
+            preview.triggerFetchError(stubs.error);
+            try {
+                expect(stubs.triggerError).to.be.calledWith(new Error(__('error_rate_limit')));
+            } catch (e) { /* no op */ }
         });
 
         it('should reset a timeout that tries to load the file again', () => {
@@ -1527,7 +1546,7 @@ describe('lib/Preview', () => {
             preview.retryCount = 1;
             preview.file.id = 1;
 
-            preview.triggerFetchError();
+            preview.triggerFetchError(stubs.error);
             expect(stubs.triggerError).to.not.be.called;
 
             clock.tick(RETRY_TIMEOUT + 1);
