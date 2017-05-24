@@ -1,10 +1,11 @@
 # Change Log
 
-## [v0.125.0](https://github.com/box/box-content-preview/tree/v0.125.0) (2017-05-23)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.125.0...v0.125.0)
+## [v0.126.0](https://github.com/box/box-content-preview/tree/v0.126.0) (2017-05-23)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.125.0...v0.126.0)
 
 **Merged pull requests:**
 
+- Update Translations [\#142](https://github.com/box/box-content-preview/pull/142) ([boxmoji](https://github.com/boxmoji))
 - Build: Update build script to tag release commits [\#141](https://github.com/box/box-content-preview/pull/141) ([tonyjin](https://github.com/tonyjin))
 
 ## [v0.125.0](https://github.com/box/box-content-preview/tree/v0.125.0) (2017-05-24)
