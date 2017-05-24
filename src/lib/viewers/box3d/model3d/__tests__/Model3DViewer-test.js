@@ -12,6 +12,7 @@ import {
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
+    EVENT_SET_GRID_VISIBLE,
     EVENT_TOGGLE_ANIMATION,
     EVENT_TOGGLE_HELPERS
 } from '../model3DConstants';
@@ -59,6 +60,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             handleSetRenderMode: () => {},
             handleSetSkeletonsVisible: () => {},
             handleSetWireframesVisible: () => {},
+            handleSetGridVisible: () => {},
             on: () => {},
             selectAnimationClip: () => {},
             showAnimationControls: () => {},
@@ -87,7 +89,8 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             setQualityLevel: () => {},
             setCameraProjection: () => {},
             toggleHelpers: () => {},
-            setWireframesVisible: () => {}
+            setWireframesVisible: () => {},
+            setGridVisible: () => {}
         };
 
         model3d.postLoad();
@@ -199,6 +202,10 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             {
                 event: EVENT_SET_WIREFRAMES_VISIBLE,
                 callback: 'handleShowWireframes'
+            },
+            {
+                event: EVENT_SET_GRID_VISIBLE,
+                callback: 'handleShowGrid'
             },
             {
                 event: EVENT_TOGGLE_ANIMATION,
@@ -517,6 +524,16 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             sandbox.mock(model3d.renderer).expects('setWireframesVisible').withArgs(true);
             model3d.handleShowWireframes(true);
         });
+
+        it('should invoke renderer.setGridVisible() when calling handleShowGrid()', () => {
+            sandbox.mock(model3d.renderer).expects('setGridVisible');
+            model3d.handleShowGrid();
+        });
+
+        it('should invoke renderer.setGridVisible() when calling handleShowGrid(), with parameter provided', () => {
+            sandbox.mock(model3d.renderer).expects('setGridVisible').withArgs(true);
+            model3d.handleShowGrid(true);
+        });
     });
 
     describe('scene load errors', () => {
@@ -581,6 +598,7 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             sandbox.mock(model3d.controls).expects('setCurrentProjectionMode');
             sandbox.mock(model3d.controls).expects('handleSetSkeletonsVisible');
             sandbox.mock(model3d.controls).expects('handleSetWireframesVisible');
+            sandbox.mock(model3d.controls).expects('handleSetGridVisible');
             const renderMock = sandbox.mock(model3d.renderer);
             renderMock.expects('stopAnimation').once();
             model3d.handleReset();
