@@ -212,7 +212,7 @@ class Annotator extends EventEmitter {
         if (this.isInPointMode()) {
             this.notification.hide();
 
-            this.emit('pointmodeexit');
+            this.emit('annotationmodeexit');
             this.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
                 buttonEl.classList.remove(CLASS_ACTIVE);
@@ -225,7 +225,7 @@ class Annotator extends EventEmitter {
         } else {
             this.notification.show(__('notification_annotation_mode'));
 
-            this.emit('pointmodeenter');
+            this.emit('annotationmodeenter');
             this.annotatedElement.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
                 buttonEl.classList.add(CLASS_ACTIVE);
