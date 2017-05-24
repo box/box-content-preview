@@ -1,7 +1,39 @@
 # Change Log
 
+## [v0.125.0](https://github.com/box/box-content-preview/tree/v0.125.0) (2017-05-23)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.125.0...v0.125.0)
+
+**Merged pull requests:**
+
+- Build: Update build script to tag release commits [\#141](https://github.com/box/box-content-preview/pull/141) ([tonyjin](https://github.com/tonyjin))
+
+## [v0.125.0](https://github.com/box/box-content-preview/tree/v0.125.0) (2017-05-24)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.124.0...v0.125.0)
+
+**Merged pull requests:**
+
+- Chore: Update prettier line width to 80 [\#139](https://github.com/box/box-content-preview/pull/139) ([tonyjin](https://github.com/tonyjin))
+- Update: Show rate limit specific error message when a 429 occurs [\#137](https://github.com/box/box-content-preview/pull/137) ([jeremypress](https://github.com/jeremypress))
+- Update: Update Box3D with new material default [\#136](https://github.com/box/box-content-preview/pull/136) ([MiiBond](https://github.com/MiiBond))
+- Chore: Update license formatting [\#135](https://github.com/box/box-content-preview/pull/135) ([tonyjin](https://github.com/tonyjin))
+- Settings properties [\#134](https://github.com/box/box-content-preview/pull/134) ([bhh1988](https://github.com/bhh1988))
+- Chore: Add prettier code formatter [\#133](https://github.com/box/box-content-preview/pull/133) ([tonyjin](https://github.com/tonyjin))
+- Update Translations [\#132](https://github.com/box/box-content-preview/pull/132) ([boxmoji](https://github.com/boxmoji))
+- Fix: Seek time doesn't match filmstrip timecode [\#131](https://github.com/box/box-content-preview/pull/131) ([bhh1988](https://github.com/bhh1988))
+- Update: Adding more languages for subtitles [\#130](https://github.com/box/box-content-preview/pull/130) ([bhh1988](https://github.com/bhh1988))
+- Update: Improve subtitle selection algorithm [\#129](https://github.com/box/box-content-preview/pull/129) ([bhh1988](https://github.com/bhh1988))
+- Update: Some UI changes for video player [\#128](https://github.com/box/box-content-preview/pull/128) ([bhh1988](https://github.com/bhh1988))
+- Chore: Deleting old third-party packages [\#127](https://github.com/box/box-content-preview/pull/127) ([tonyjin](https://github.com/tonyjin))
+- Fix: fix excel setup when enabling the Office viewer via options [\#126](https://github.com/box/box-content-preview/pull/126) ([jeremypress](https://github.com/jeremypress))
+- Update Contributing.md [\#125](https://github.com/box/box-content-preview/pull/125) ([varunmaker](https://github.com/varunmaker))
+- Docs: Update license to Box Software License Agreement [\#124](https://github.com/box/box-content-preview/pull/124) ([tonyjin](https://github.com/tonyjin))
+- Update Translations [\#123](https://github.com/box/box-content-preview/pull/123) ([boxmoji](https://github.com/boxmoji))
+
 ## [v0.124.0](https://github.com/box/box-content-preview/tree/v0.124.0) (2017-05-17)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.122.0...v0.124.0)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.123.0...v0.124.0)
+
+## [v0.123.0](https://github.com/box/box-content-preview/tree/v0.123.0) (2017-05-17)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.122.0...v0.123.0)
 
 **Merged pull requests:**
 
