@@ -138,6 +138,7 @@ class Model3DControls extends Box3DControls {
      */
     handleSetGridVisible(visible) {
         this.emit(EVENT_SET_GRID_VISIBLE, visible);
+        this.settingsPullup.setGridVisible(visible);
     }
 
     /**

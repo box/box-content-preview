@@ -159,7 +159,6 @@ class Model3DSettingsPullup extends EventEmitter {
         this.showGridEl.addEventListener('click', () => {
             this.onShowGridToggled();
         });
-        this.showGrid();
 
         // Wireframe option
         const wireframeRowEl = createRow();
@@ -393,17 +392,6 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
-     * Show grid and check check box
-     * @method showGrid
-     * @public
-     * @return {void}
-     */
-    showGrid() {
-        this.showGridEl.checked = true;
-        this.onShowGridToggled();
-    }
-
-    /**
      * Reset the pullup to its default state.
      * @method reset
      * @public
@@ -412,7 +400,6 @@ class Model3DSettingsPullup extends EventEmitter {
     reset() {
         this.hideWireframes();
         this.hideSkeletons();
-        this.showGrid();
     }
 
     /**
@@ -435,6 +422,17 @@ class Model3DSettingsPullup extends EventEmitter {
      */
     setCurrentProjectionMode(mode) {
         this.projectionEl.textContent = mode;
+    }
+
+    /**
+     * Set the current state of the grid to the checkbox in the UI.
+     * @method setGridVisible
+     * @public
+     * @param {string} visible - Whether to check the box or not.
+     * @return {void}
+     */
+    setGridVisible(visible) {
+        this.showGridEl.checked = visible;
     }
 
     /**
