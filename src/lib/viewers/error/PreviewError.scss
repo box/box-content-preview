@@ -3,6 +3,7 @@
 .bp-error {
     color: $twos;
     font-size: 14px;
+    height: 247px; // Error icon + text + optional download button
     text-align: center;
 
     .bp-error-download {
