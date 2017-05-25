@@ -450,6 +450,7 @@ class Model3DRenderer extends Box3DRenderer {
         this.grid.material.transparent = true;
         this.grid.material.blending = THREE.MultiplyBlending;
         scene.add(this.grid);
+        this.grid.visible = true;
 
         this.axisDisplay = new THREE.AxisHelper(0.5);
         scene.add(this.axisDisplay);
@@ -691,6 +692,19 @@ class Model3DRenderer extends Box3DRenderer {
     setWireframesVisible(visible) {
         if (this.box3d) {
             Box3D.globalEvents.trigger(EVENT_SET_WIREFRAMES_VISIBLE, visible);
+        }
+    }
+
+    /**
+     * Set the visibility of the grid.
+     *
+     * @private
+     * @param {boolean} visible - Indicates whether or not the grid is visible.
+     * @return {void}
+     */
+    setGridVisible(visible) {
+        if (this.box3d) {
+            this.grid.visible = visible;
         }
     }
 
