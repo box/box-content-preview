@@ -450,7 +450,7 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
      */
     setScale(scale) {
         this.pdfViewer.currentScaleValue = scale;
-        this.emit('scale', scale);
+        this.emit('scale', { scale });
     }
 
     /**
