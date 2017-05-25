@@ -6,9 +6,7 @@ import * as docAnnotatorUtil from './docAnnotatorUtil';
 const PAGE_PADDING_TOP = 15;
 const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
 
-@autobind
-class DocPointDialog extends AnnotationDialog {
-
+@autobind class DocPointDialog extends AnnotationDialog {
     //--------------------------------------------------------------------------
     // Abstract Implementations
     //--------------------------------------------------------------------------
@@ -20,8 +18,12 @@ class DocPointDialog extends AnnotationDialog {
      * @return {void}
      */
     position() {
-        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`) || this.annotatedElement;
-        const [browserX, browserY] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(this.location, this.annotatedElement);
+        const pageEl =
+            this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`) || this.annotatedElement;
+        const [browserX, browserY] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(
+            this.location,
+            this.annotatedElement
+        );
 
         // Show dialog so we can get width
         pageEl.appendChild(this.element);
@@ -31,13 +33,19 @@ class DocPointDialog extends AnnotationDialog {
         const pageDimensions = pageEl.getBoundingClientRect();
 
         // Center middle of dialog with point - this coordinate is with respect to the page
-        let dialogLeftX = browserX - (dialogWidth / 2);
-        const dialogTopY = browserY - (POINT_ANNOTATION_ICON_DOT_HEIGHT / 2);
+        let dialogLeftX = browserX - dialogWidth / 2;
+        const dialogTopY = browserY - POINT_ANNOTATION_ICON_DOT_HEIGHT / 2;
 
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing
         // else we can do
-        dialogLeftX = annotatorUtil.repositionCaret(this.element, dialogLeftX, dialogWidth, browserX, pageDimensions.width);
+        dialogLeftX = annotatorUtil.repositionCaret(
+            this.element,
+            dialogLeftX,
+            dialogWidth,
+            browserX,
+            pageDimensions.width
+        );
 
         // Position the dialog
         this.element.style.left = `${dialogLeftX}px`;

@@ -50,8 +50,8 @@ function xhr(method, url, headers = {}, data = {}) {
         method,
         body: JSON.stringify(data)
     })
-    .then(checkStatus)
-    .then(parseJSON);
+        .then(checkStatus)
+        .then(parseJSON);
 }
 
 /**
@@ -119,9 +119,7 @@ export function get(url, ...rest) {
             break;
     }
 
-    return fetch(url, { headers })
-        .then(checkStatus)
-        .then(parser);
+    return fetch(url, { headers }).then(checkStatus).then(parser);
 }
 
 /**
@@ -425,10 +423,12 @@ export function loadScripts(urls) {
     urls.forEach((url) => {
         if (!head.querySelector(`script[src="${url}"]`)) {
             const script = createScript(url);
-            promises.push(new Promise((resolve, reject) => {
-                script.addEventListener('load', resolve);
-                script.addEventListener('error', reject);
-            }));
+            promises.push(
+                new Promise((resolve, reject) => {
+                    script.addEventListener('load', resolve);
+                    script.addEventListener('error', reject);
+                })
+            );
             head.appendChild(script);
         }
     });

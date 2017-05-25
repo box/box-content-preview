@@ -324,7 +324,6 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-
         describe('unbindCustomListenersOnService', () => {
             it('should do nothing if the service does not exist', () => {
                 annotator.annotationService = {
@@ -370,7 +369,10 @@ describe('lib/annotations/Annotator', () => {
             it('should bind point mode click handler', () => {
                 sandbox.stub(annotator.annotatedElement, 'addEventListener');
                 annotator.bindPointModeListeners();
-                expect(annotator.annotatedElement.addEventListener).to.be.calledWith('click', annotator.pointClickHandler);
+                expect(annotator.annotatedElement.addEventListener).to.be.calledWith(
+                    'click',
+                    annotator.pointClickHandler
+                );
             });
         });
 
@@ -378,7 +380,10 @@ describe('lib/annotations/Annotator', () => {
             it('should unbind point mode click handler', () => {
                 sandbox.stub(annotator.annotatedElement, 'removeEventListener');
                 annotator.unbindPointModeListeners();
-                expect(annotator.annotatedElement.removeEventListener).to.be.calledWith('click', annotator.pointClickHandler);
+                expect(annotator.annotatedElement.removeEventListener).to.be.calledWith(
+                    'click',
+                    annotator.pointClickHandler
+                );
             });
         });
 

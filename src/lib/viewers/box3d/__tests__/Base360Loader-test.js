@@ -9,17 +9,21 @@ const sandbox = sinon.sandbox.create();
 describe('lib/viewers/box3d/Base360Loader', () => {
     beforeEach(() => {
         base360Loader = new Base360Loader();
-        base360Loader.viewers = [{
-            REP: 'dash',
-            EXT: 'mp4'
-        }];
+        base360Loader.viewers = [
+            {
+                REP: 'dash',
+                EXT: 'mp4'
+            }
+        ];
 
         file = {
             extension: 'mp4',
             representations: {
-                entries: [{
-                    representation: 'dash'
-                }]
+                entries: [
+                    {
+                        representation: 'dash'
+                    }
+                ]
             }
         };
     });

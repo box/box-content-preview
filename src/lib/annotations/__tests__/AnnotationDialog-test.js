@@ -172,12 +172,14 @@ describe('lib/annotations/AnnotationDialog', () => {
         it('should remove annotation element and deactivate reply', () => {
             stubs.deactivate = sandbox.stub(dialog, 'deactivateReply');
 
-            dialog.addAnnotation(new Annotation({
-                annotationID: 'someID',
-                text: 'blah',
-                user: {},
-                permissions: {}
-            }));
+            dialog.addAnnotation(
+                new Annotation({
+                    annotationID: 'someID',
+                    text: 'blah',
+                    user: {},
+                    permissions: {}
+                })
+            );
 
             dialog.removeAnnotation('someID');
             const annotationEl = dialog.element.querySelector('[data-annotation-id="someID"]');
@@ -326,12 +328,14 @@ describe('lib/annotations/AnnotationDialog', () => {
         it('should hide dialog if there are annotations in the dialog', () => {
             stubs.hide = sandbox.stub(dialog, 'hide');
 
-            dialog.addAnnotation(new Annotation({
-                annotationID: 'someID',
-                text: 'blah',
-                user: {},
-                permissions: {}
-            }));
+            dialog.addAnnotation(
+                new Annotation({
+                    annotationID: 'someID',
+                    text: 'blah',
+                    user: {},
+                    permissions: {}
+                })
+            );
 
             dialog.mouseleaveHandler();
             expect(stubs.hide).to.be.called;
@@ -433,78 +437,92 @@ describe('lib/annotations/AnnotationDialog', () => {
 
     describe('addAnnotationElement()', () => {
         it('should add an annotation comment if text is present', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is awesome!',
-                user: {},
-                permissions: {}
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is awesome!',
+                    user: {},
+                    permissions: {}
+                })
+            );
             const annotationComment = document.querySelector('.comment-text');
             expect(annotationComment).to.contain.html('the preview sdk is awesome!');
         });
 
         it('should display the posting message if the user id is 0', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is awesome!',
-                user: { id: 0 },
-                permissions: {}
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is awesome!',
+                    user: { id: 0 },
+                    permissions: {}
+                })
+            );
             const username = document.querySelector('.user-name');
             expect(username).to.contain.html(__('annotation_posting_message'));
         });
 
         it('should display user name if the user id is not 0', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is awesome!',
-                user: { id: 1, name: 'user' },
-                permissions: {}
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is awesome!',
+                    user: { id: 1, name: 'user' },
+                    permissions: {}
+                })
+            );
             const username = document.querySelector('.user-name');
             expect(username).to.contain.html('user');
         });
 
         it('should hide the delete icon if the user does\'nt have delete permissions', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is amazing!',
-                user: { id: 1, name: 'user' },
-                permissions: { can_delete: false }
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is amazing!',
+                    user: { id: 1, name: 'user' },
+                    permissions: { can_delete: false }
+                })
+            );
             const deleteButton = document.querySelector('.delete-comment-btn');
             expect(deleteButton).to.have.class(CLASS_HIDDEN);
         });
 
         it('should make the delete icon hidden if the delete permission is not specified', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is amazing!',
-                user: { id: 1, name: 'user' },
-                permissions: {}
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is amazing!',
+                    user: { id: 1, name: 'user' },
+                    permissions: {}
+                })
+            );
             const deleteButton = document.querySelector('.delete-comment-btn');
             expect(deleteButton).to.have.class(CLASS_HIDDEN);
         });
 
         it('should make delete icon visible if the user has delete permission', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is amazing!',
-                user: { id: 1, name: 'user' },
-                permissions: { can_delete: true }
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is amazing!',
+                    user: { id: 1, name: 'user' },
+                    permissions: { can_delete: true }
+                })
+            );
             const deleteButton = document.querySelector('.delete-comment-btn');
             expect(deleteButton).to.not.have.class(CLASS_HIDDEN);
         });
 
         it('should hide the delete confirmation UI by default', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is amazing!',
-                user: { id: 1, name: 'user' },
-                permissions: { can_delete: true }
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is amazing!',
+                    user: { id: 1, name: 'user' },
+                    permissions: { can_delete: true }
+                })
+            );
             const deleteConfirmation = document.querySelector('.delete-confirmation');
             expect(deleteConfirmation).to.have.class(CLASS_HIDDEN);
         });
@@ -514,13 +532,15 @@ describe('lib/annotations/AnnotationDialog', () => {
             stubs.locale = sandbox.stub(Date.prototype, 'toLocaleString');
             dialog.locale = 'en-GB';
 
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is amazing!',
-                user: { id: 1, name: 'user' },
-                permissions: { can_delete: true },
-                created: date
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is amazing!',
+                    user: { id: 1, name: 'user' },
+                    permissions: { can_delete: true },
+                    created: date
+                })
+            );
             expect(stubs.locale).to.be.calledWith('en-GB');
         });
     });
@@ -591,12 +611,14 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should show the correct UI when the reply textarea is deactivated', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is amazing!',
-                user: { id: 1, name: 'user' },
-                permissions: { can_delete: true }
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is amazing!',
+                    user: { id: 1, name: 'user' },
+                    permissions: { can_delete: true }
+                })
+            );
             const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
             const buttonContainer = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
 
@@ -608,12 +630,14 @@ describe('lib/annotations/AnnotationDialog', () => {
 
     describe('postReply()', () => {
         it('should not post reply to the dialog if it has no text', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is amazing!',
-                user: { id: 1, name: 'user' },
-                permissions: { can_delete: true }
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is amazing!',
+                    user: { id: 1, name: 'user' },
+                    permissions: { can_delete: true }
+                })
+            );
             dialog.activateReply();
 
             dialog.postReply();
@@ -621,12 +645,14 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should post a reply to the dialog if it has text', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is amazing!',
-                user: { id: 1, name: 'user' },
-                permissions: { can_delete: true }
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is amazing!',
+                    user: { id: 1, name: 'user' },
+                    permissions: { can_delete: true }
+                })
+            );
             const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
             dialog.activateReply();
             replyTextEl.innerHTML += 'the preview SDK is great!';
@@ -636,12 +662,14 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should clear the reply text element after posting', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is amazing!',
-                user: { id: 1, name: 'user' },
-                permissions: { can_delete: true }
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is amazing!',
+                    user: { id: 1, name: 'user' },
+                    permissions: { can_delete: true }
+                })
+            );
             const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
             dialog.activateReply();
             replyTextEl.innerHTML += 'the preview SDK is great!';
@@ -653,12 +681,14 @@ describe('lib/annotations/AnnotationDialog', () => {
 
     describe('showDeleteConfirmation()', () => {
         it('should show the correct UI when a user clicks on delete', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is amazing!',
-                user: { id: 1, name: 'user' },
-                permissions: { can_delete: true }
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is amazing!',
+                    user: { id: 1, name: 'user' },
+                    permissions: { can_delete: true }
+                })
+            );
             const showElementStub = sandbox.stub(annotatorUtil, 'showElement');
 
             dialog.showDeleteConfirmation(1);
@@ -668,12 +698,14 @@ describe('lib/annotations/AnnotationDialog', () => {
 
     describe('hideDeleteConfirmation()', () => {
         it('should show the correct UI when a user clicks cancel in the delete confirmation', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is amazing!',
-                user: { id: 1, name: 'user' },
-                permissions: { can_delete: true }
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is amazing!',
+                    user: { id: 1, name: 'user' },
+                    permissions: { can_delete: true }
+                })
+            );
             const hideElementStub = sandbox.stub(annotatorUtil, 'hideElement');
             dialog.showDeleteConfirmation(1);
 
@@ -684,12 +716,14 @@ describe('lib/annotations/AnnotationDialog', () => {
 
     describe('deleteAnnotation()', () => {
         it('should emit the annotationdelete message', () => {
-            dialog.addAnnotationElement(new Annotation({
-                annotationID: 1,
-                text: 'the preview sdk is amazing!',
-                user: { id: 1, name: 'user' },
-                permissions: { can_delete: true }
-            }));
+            dialog.addAnnotationElement(
+                new Annotation({
+                    annotationID: 1,
+                    text: 'the preview sdk is amazing!',
+                    user: { id: 1, name: 'user' },
+                    permissions: { can_delete: true }
+                })
+            );
 
             dialog.deleteAnnotation(1);
             expect(stubs.emit).to.be.calledWith('annotationdelete', { annotationID: 1 });

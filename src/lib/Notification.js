@@ -3,7 +3,6 @@ import { CLASS_HIDDEN } from './constants';
 const HIDE_TIMEOUT_MS = 5000; // 5s
 
 class Notification {
-
     /**
      * [constructor]
      *
@@ -11,7 +10,7 @@ class Notification {
      * @return {Notification} Notification
      */
     constructor(containerEl) {
-        const uniqueLabel = `notification_${(new Date()).getTime()}_label`;
+        const uniqueLabel = `notification_${new Date().getTime()}_label`;
 
         this.notificationEl = document.createElement('div');
         this.notificationEl.className = 'bp-notification bp-is-hidden';
@@ -83,7 +82,7 @@ class Notification {
         if (event.target === this.buttonEl) {
             this.hide();
         }
-    }
+    };
 }
 
 export default Notification;

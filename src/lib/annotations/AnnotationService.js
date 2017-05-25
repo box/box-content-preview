@@ -9,9 +9,7 @@ const ANONYMOUS_USER = {
     name: __('annotation_anonymous_user_name')
 };
 
-@autobind
-class AnnotationService extends EventEmitter {
-
+@autobind class AnnotationService extends EventEmitter {
     //--------------------------------------------------------------------------
     // Static
     //--------------------------------------------------------------------------
@@ -24,8 +22,8 @@ class AnnotationService extends EventEmitter {
      */
     static generateID() {
         /* eslint-disable */
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-            var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+            var r = (Math.random() * 16) | 0, v = c == 'x' ? r : (r & 0x3) | 0x8;
             return v.toString(16);
         });
         /* eslint-enable */
@@ -88,37 +86,37 @@ class AnnotationService extends EventEmitter {
                     thread: annotation.thread
                 })
             })
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.type !== 'error' && data.id) {
-                    // @TODO(tjin): Remove this when response has permissions
-                    const tempData = data;
-                    tempData.permissions = {
-                        can_edit: true,
-                        can_delete: true
-                    };
-                    const createdAnnotation = this.createAnnotation(tempData);
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.type !== 'error' && data.id) {
+                        // @TODO(tjin): Remove this when response has permissions
+                        const tempData = data;
+                        tempData.permissions = {
+                            can_edit: true,
+                            can_delete: true
+                        };
+                        const createdAnnotation = this.createAnnotation(tempData);
 
-                    // Set user if not set already
-                    if (this.user.id === '0') {
-                        this.user = createdAnnotation.user;
+                        // Set user if not set already
+                        if (this.user.id === '0') {
+                            this.user = createdAnnotation.user;
+                        }
+
+                        resolve(createdAnnotation);
+                    } else {
+                        reject(new Error('Could not create annotation'));
+                        this.emit('annotationerror', {
+                            reason: 'create'
+                        });
                     }
-
-                    resolve(createdAnnotation);
-                } else {
-                    reject(new Error('Could not create annotation'));
+                })
+                /* istanbul ignore next */
+                .catch(() => {
+                    reject(new Error('Could not create annotation due to invalid or expired token'));
                     this.emit('annotationerror', {
-                        reason: 'create'
+                        reason: 'authorization'
                     });
-                }
-            })
-            /* istanbul ignore next */
-            .catch(() => {
-                reject(new Error('Could not create annotation due to invalid or expired token'));
-                this.emit('annotationerror', {
-                    reason: 'authorization'
                 });
-            });
         });
     }
 
@@ -153,23 +151,23 @@ class AnnotationService extends EventEmitter {
                 method: 'DELETE',
                 headers: this.headers
             })
-            .then((response) => {
-                if (response.status === 204) {
-                    resolve();
-                } else {
-                    reject(new Error(`Could not delete annotation with ID ${annotationID}`));
+                .then((response) => {
+                    if (response.status === 204) {
+                        resolve();
+                    } else {
+                        reject(new Error(`Could not delete annotation with ID ${annotationID}`));
+                        this.emit('annotationerror', {
+                            reason: 'delete'
+                        });
+                    }
+                })
+                /* istanbul ignore next */
+                .catch(() => {
+                    reject(new Error('Could not delete annotation due to invalid or expired token'));
                     this.emit('annotationerror', {
-                        reason: 'delete'
+                        reason: 'authorization'
                     });
-                }
-            })
-            /* istanbul ignore next */
-            .catch(() => {
-                reject(new Error('Could not delete annotation due to invalid or expired token'));
-                this.emit('annotationerror', {
-                    reason: 'authorization'
                 });
-            });
         });
     }
 
@@ -275,32 +273,33 @@ class AnnotationService extends EventEmitter {
      */
     readFromMarker(resolve, reject, fileVersionId, marker = null, limit = null) {
         fetch(this.getReadUrl(fileVersionId, marker, limit), {
-            headers: this.headers })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.type === 'error' || !Array.isArray(data.entries)) {
-                reject(new Error(`Could not read annotations from file version with ID ${fileVersionId}`));
-                this.emit('annotationerror', {
-                    reason: 'read'
-                });
-            } else {
-                data.entries.forEach((annotationData) => {
-                    this.annotations.push(this.createAnnotation(annotationData));
-                });
-
-                if (data.next_marker) {
-                    this.readFromMarker(resolve, reject, fileVersionId, data.next_marker, limit);
-                } else {
-                    resolve(this.annotations);
-                }
-            }
+            headers: this.headers
         })
-        .catch(() => {
-            reject(new Error('Could not read annotations from file due to invalid or expired token'));
-            this.emit('annotationerror', {
-                reason: 'authorization'
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.type === 'error' || !Array.isArray(data.entries)) {
+                    reject(new Error(`Could not read annotations from file version with ID ${fileVersionId}`));
+                    this.emit('annotationerror', {
+                        reason: 'read'
+                    });
+                } else {
+                    data.entries.forEach((annotationData) => {
+                        this.annotations.push(this.createAnnotation(annotationData));
+                    });
+
+                    if (data.next_marker) {
+                        this.readFromMarker(resolve, reject, fileVersionId, data.next_marker, limit);
+                    } else {
+                        resolve(this.annotations);
+                    }
+                }
+            })
+            .catch(() => {
+                reject(new Error('Could not read annotations from file due to invalid or expired token'));
+                this.emit('annotationerror', {
+                    reason: 'authorization'
+                });
             });
-        });
     }
 }
 export default AnnotationService;

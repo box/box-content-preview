@@ -1,8 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import fullscreen from '../Fullscreen';
-import {
-    CLASS_FULLSCREEN
-} from '../constants';
+import { CLASS_FULLSCREEN } from '../constants';
 
 const sandbox = sinon.sandbox.create();
 

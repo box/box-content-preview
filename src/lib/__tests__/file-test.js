@@ -21,7 +21,10 @@ describe('lib/file', () => {
 
     describe('getURL()', () => {
         it('should return the correct api url', () => {
-            assert.equal(getURL('id', 'api'), 'api/2.0/files/id?fields=permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url');
+            assert.equal(
+                getURL('id', 'api'),
+                'api/2.0/files/id?fields=permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url'
+            );
         });
     });
 
@@ -198,4 +201,3 @@ describe('lib/file', () => {
         });
     });
 });
-

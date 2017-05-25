@@ -422,7 +422,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             stubs.isMobile = sandbox.stub(Browser, 'isMobile').returns(true);
         });
 
-
         it('should unbind all default image listeners if imageEl does not exist', () => {
             imageBase.imageEl = null;
             stubs.isMobile.returns(false);
@@ -466,7 +465,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             sandbox.mock(window.console).expects('error').withArgs(err);
 
             imageBase.errorHandler(err);
-
 
             err.displayMessage = 'We\'re sorry, the preview didn\'t load. Please refresh the page.';
             expect(stubs.emit).to.have.been.calledWith('error', err);

@@ -83,7 +83,8 @@ describe('lib/annotations/doc/DocPointThread', () => {
 
             expect(docAnnotatorUtil.getBrowserCoordinatesFromLocation).to.have.been.calledWith(
                 pointThread.location,
-                pointThread.annotatedElement);
+                pointThread.annotatedElement
+            );
             expect(annotatorUtil.showElement).to.have.been.calledWith(pointThread.element);
         });
 

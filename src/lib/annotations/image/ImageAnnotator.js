@@ -9,9 +9,7 @@ const IMAGE_NODE_NAME = 'img';
 // Selector for image container OR multi-image container
 const ANNOTATED_ELEMENT_SELECTOR = '.bp-image, .bp-images-wrapper';
 
-@autobind
-class ImageAnnotator extends Annotator {
-
+@autobind class ImageAnnotator extends Annotator {
     //--------------------------------------------------------------------------
     // Abstract Implementations
     //--------------------------------------------------------------------------
@@ -53,7 +51,7 @@ class ImageAnnotator extends Annotator {
 
         // Location based only on image position
         const imageDimensions = imageEl.getBoundingClientRect();
-        let [x, y] = [(event.clientX - imageDimensions.left), (event.clientY - imageDimensions.top)];
+        let [x, y] = [event.clientX - imageDimensions.left, event.clientY - imageDimensions.top];
 
         // Scale location coordinates according to natural image size
         const scale = annotatorUtil.getScale(this.annotatedElement);

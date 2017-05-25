@@ -1,13 +1,8 @@
 import { CLASS_HIDDEN } from './constants';
-import {
-    ICON_CLOSE
-} from './icons/icons';
-import {
-    decodeKeydown
-} from './util';
+import { ICON_CLOSE } from './icons/icons';
+import { decodeKeydown } from './util';
 
 class Popup {
-
     /**
      * [constructor]
      *
@@ -16,7 +11,7 @@ class Popup {
      */
     constructor(containerEl) {
         this.containerEl = containerEl;
-        const uniqueLabel = `popup_${(new Date()).getTime()}_label`;
+        const uniqueLabel = `popup_${new Date().getTime()}_label`;
 
         this.popupEl = document.createElement('div');
         this.popupEl.className = 'bp-modal-dialog bp-is-hidden';
@@ -185,7 +180,7 @@ class Popup {
                 this.hide();
             }
         }
-    }
+    };
 
     /**
      * Keydown handler for popup
@@ -204,7 +199,7 @@ class Popup {
                 return false;
         }
         return true;
-    }
+    };
 }
 
 export default Popup;

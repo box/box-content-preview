@@ -16,13 +16,12 @@ const VOLUME_LEVEL_CLASS_NAMES = [
     'bp-media-volume-icon-is-medium',
     'bp-media-volume-icon-is-high'
 ];
-const CRAWLER = '<div class="bp-media-crawler-wrapper"><div class="bp-crawler"><div></div><div></div><div></div></div></div>';
+const CRAWLER =
+    '<div class="bp-media-crawler-wrapper"><div class="bp-crawler"><div></div><div></div><div></div></div></div>';
 const FILMSTRIP_FRAMES_PER_ROW = 100;
 const FILMSTRIP_FRAME_HEIGHT = 90;
 
-@autobind
-class MediaControls extends EventEmitter {
-
+@autobind class MediaControls extends EventEmitter {
     /**
      * [constructor]
      *
@@ -206,7 +205,15 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     setupScrubbers() {
-        this.timeScrubber = new Scrubber(this.timeScrubberEl, __('media_time_slider'), 0, Math.floor(this.mediaEl.duration), 0, 0, 1);
+        this.timeScrubber = new Scrubber(
+            this.timeScrubberEl,
+            __('media_time_slider'),
+            0,
+            Math.floor(this.mediaEl.duration),
+            0,
+            0,
+            1
+        );
         this.setTimeCode(0); // This also sets the aria values
         this.timeScrubber.on('valuechange', () => {
             this.emit('timeupdate', this.getTimeFromScrubber());
@@ -228,8 +235,8 @@ class MediaControls extends EventEmitter {
      */
     formatTime(seconds) {
         const h = Math.floor(seconds / 3600);
-        const m = Math.floor((seconds % 3600) / 60);
-        const s = Math.floor((seconds % 3600) % 60);
+        const m = Math.floor(seconds % 3600 / 60);
+        const s = Math.floor(seconds % 3600 % 60);
         const hour = h > 0 ? `${h.toString()}:` : '';
         const sec = s < 10 ? `0${s.toString()}` : s.toString();
         let min = m.toString();
@@ -260,7 +267,10 @@ class MediaControls extends EventEmitter {
         const duration = this.mediaEl.duration;
         this.timeScrubber.setValue(duration ? (time || 0) / duration : 0);
         this.timecodeEl.textContent = this.formatTime(time || 0);
-        this.timeScrubber.setAriaValues(Math.floor(time), `${this.timecodeEl.textContent} ${__('of')} ${this.durationEl.textContent}`);
+        this.timeScrubber.setAriaValues(
+            Math.floor(time),
+            `${this.timecodeEl.textContent} ${__('of')} ${this.durationEl.textContent}`
+        );
     }
 
     /**
@@ -317,10 +327,11 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     setFullscreenLabel() {
-        const fullscreenTitle = fullscreen.isFullscreen(this.containerEl) ? __('exit_fullscreen') : __('enter_fullscreen');
+        const fullscreenTitle = fullscreen.isFullscreen(this.containerEl)
+            ? __('exit_fullscreen')
+            : __('enter_fullscreen');
         this.setLabel(this.fullscreenButtonEl, fullscreenTitle);
     }
-
 
     /**
      * Toggles settings menu
@@ -725,7 +736,7 @@ class MediaControls extends EventEmitter {
         const frame = Math.floor(time / this.filmstripInterval); // get the frame number to show
         let frameWidth = filmstripWidth / FILMSTRIP_FRAMES_PER_ROW; // calculate the frame width based on the filmstrip width
         let left = -1 * (frame % FILMSTRIP_FRAMES_PER_ROW) * frameWidth; // get the frame position in a given row
-        let top = -FILMSTRIP_FRAME_HEIGHT * Math.floor((frame / FILMSTRIP_FRAMES_PER_ROW)); // get the row number if there is more than 1 row.
+        let top = -FILMSTRIP_FRAME_HEIGHT * Math.floor(frame / FILMSTRIP_FRAMES_PER_ROW); // get the row number if there is more than 1 row.
 
         // If the filmstrip is not ready yet, we are using a placeholder
         // which has a fixed dimension of 160 x 90
@@ -737,7 +748,7 @@ class MediaControls extends EventEmitter {
 
         // The filmstrip container positioning should fall within the viewport of the video itself. Relative to the video it
         // should be left positioned 0 <= filmstrip frame <= (video.width - filmstrip frame.width)
-        const minLeft = Math.max(0, pageX - rectLeft - (frameWidth / 2)); // don't allow the image to bleed out of the video viewport left edge
+        const minLeft = Math.max(0, pageX - rectLeft - frameWidth / 2); // don't allow the image to bleed out of the video viewport left edge
         const containerLeft = Math.min(minLeft, rectWidth - frameWidth); // don't allow the image to bleed out of the video viewport right edge
         return {
             time,
@@ -762,7 +773,12 @@ class MediaControls extends EventEmitter {
 
         const rect = this.containerEl.getBoundingClientRect();
         const pageX = event.pageX; // get the mouse X position
-        const filmstripPositions = this.computeFilmstripPositions(pageX, rect.left, rect.width, this.filmstripEl.naturalWidth);
+        const filmstripPositions = this.computeFilmstripPositions(
+            pageX,
+            rect.left,
+            rect.width,
+            this.filmstripEl.naturalWidth
+        );
 
         this.filmstripEl.style.left = `${filmstripPositions.left}px`;
         this.filmstripEl.style.top = `${filmstripPositions.top}px`;

@@ -10,8 +10,7 @@ const CSS_CLASS_IMAGE = 'bp-image';
 const IMAGE_PADDING = 15;
 const IMAGE_ZOOM_SCALE = 1.2;
 
-@autobind
-class ImageViewer extends ImageBaseViewer {
+@autobind class ImageViewer extends ImageBaseViewer {
     /**
      * @inheritdoc
      */
@@ -44,9 +43,12 @@ class ImageViewer extends ImageBaseViewer {
         const template = representation.content.url_template;
 
         this.bindDOMListeners();
-        return this.getRepStatus().getPromise().then(() => {
-            this.imageEl.src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
-        }).catch(this.handleAssetError);
+        return this.getRepStatus()
+            .getPromise()
+            .then(() => {
+                this.imageEl.src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
+            })
+            .catch(this.handleAssetError);
     }
 
     /**
@@ -77,9 +79,11 @@ class ImageViewer extends ImageBaseViewer {
         }
 
         if (this.isRotated()) {
-            this.isPannable = this.imageEl.height > this.wrapperEl.clientWidth || this.imageEl.width > this.wrapperEl.clientHeight;
+            this.isPannable =
+                this.imageEl.height > this.wrapperEl.clientWidth || this.imageEl.width > this.wrapperEl.clientHeight;
         } else {
-            this.isPannable = this.imageEl.width > this.wrapperEl.clientWidth || this.imageEl.height > this.wrapperEl.clientHeight;
+            this.isPannable =
+                this.imageEl.width > this.wrapperEl.clientWidth || this.imageEl.height > this.wrapperEl.clientHeight;
         }
 
         this.didPan = false;
@@ -160,7 +164,6 @@ class ImageViewer extends ImageBaseViewer {
 
                 // Kill further execution
                 return;
-
             /* istanbul ignore next */
             default:
                 // If the image is overflowing the viewport, figure out by how much
@@ -174,8 +177,8 @@ class ImageViewer extends ImageBaseViewer {
                         newHeight = height * ratio;
                     }
 
-                // If the image is smaller than the new viewport, zoom up to a
-                // max of the original file size
+                    // If the image is smaller than the new viewport, zoom up to a
+                    // max of the original file size
                 } else if (modifyWidthInsteadOfHeight) {
                     const originalWidth = this.isRotated() ? this.imageEl.naturalHeight : this.imageEl.naturalWidth;
                     newWidth = Math.min(viewport.width, originalWidth);
@@ -225,7 +228,7 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     setScale(width, height) {
-        this.scale = width ? (width / this.imageEl.naturalWidth) : (height / this.imageEl.naturalHeight);
+        this.scale = width ? width / this.imageEl.naturalWidth : height / this.imageEl.naturalHeight;
         this.rotationAngle = this.currentRotationAngle % 3600 % 360;
         this.emit('scale', this.scale, this.rotationAngle);
     }
@@ -239,7 +242,12 @@ class ImageViewer extends ImageBaseViewer {
     loadUI() {
         super.loadUI();
         this.controls.add(__('rotate_left'), this.rotateLeft, 'bp-image-rotate-left-icon', ICON_ROTATE_LEFT);
-        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(
+            __('enter_fullscreen'),
+            this.toggleFullscreen,
+            'bp-enter-fullscreen-icon',
+            ICON_FULLSCREEN_IN
+        );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 
@@ -293,11 +301,19 @@ class ImageViewer extends ImageBaseViewer {
         };
 
         if (this.isRotated()) {
-            largerWidth = (wrapperDimensions.width > this.imageEl.clientHeight) ? wrapperDimensions.width : this.imageEl.clientHeight;
-            largerHeight = (wrapperDimensions.height > this.imageEl.clientWidth) ? wrapperDimensions.height : this.imageEl.clientWidth;
+            largerWidth = wrapperDimensions.width > this.imageEl.clientHeight
+                ? wrapperDimensions.width
+                : this.imageEl.clientHeight;
+            largerHeight = wrapperDimensions.height > this.imageEl.clientWidth
+                ? wrapperDimensions.height
+                : this.imageEl.clientWidth;
         } else {
-            largerWidth = (wrapperDimensions.width > this.imageEl.clientWidth) ? wrapperDimensions.width : this.imageEl.clientWidth;
-            largerHeight = (wrapperDimensions.height > this.imageEl.clientHeight) ? wrapperDimensions.height : this.imageEl.clientHeight;
+            largerWidth = wrapperDimensions.width > this.imageEl.clientWidth
+                ? wrapperDimensions.width
+                : this.imageEl.clientWidth;
+            largerHeight = wrapperDimensions.height > this.imageEl.clientHeight
+                ? wrapperDimensions.height
+                : this.imageEl.clientHeight;
         }
 
         leftPadding = (largerWidth - this.imageEl.clientWidth) / 2;
@@ -365,7 +381,7 @@ class ImageViewer extends ImageBaseViewer {
     handleOrientationChange() {
         this.adjustImageZoomPadding();
 
-        this.scale = (this.imageEl.clientWidth / this.imageEl.naturalWidth);
+        this.scale = this.imageEl.clientWidth / this.imageEl.naturalWidth;
         this.rotationAngle = this.currentRotationAngle % 3600 % 360;
         this.emit('scale', this.scale, this.rotationAngle);
     }

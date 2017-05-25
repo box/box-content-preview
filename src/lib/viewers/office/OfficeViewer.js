@@ -16,9 +16,7 @@ const EXCEL_ONLINE_EMBED_URL = 'https://excel.officeapps.live.com/x/_layouts/xle
 const OFFICE_ONLINE_IFRAME_NAME = 'office-online-iframe';
 const MESSAGE_HOST_READY = 'Host_PostmessageReady';
 
-@autobind
-class OfficeViewer extends BaseViewer {
-
+@autobind class OfficeViewer extends BaseViewer {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
@@ -271,7 +269,10 @@ class OfficeViewer extends BaseViewer {
         // We pass our origin in the sessionContext so that Microsoft will pass
         // this to the checkFileInfo endpoint. From their we can set it as the
         // origin for iframe postMessage communications.
-        formEl.setAttribute('action', `${EXCEL_ONLINE_EMBED_URL}?ui=${locale}&rs=${locale}&WOPISrc=${WOPISrc}&sc=${JSON.stringify(origin)}`);
+        formEl.setAttribute(
+            'action',
+            `${EXCEL_ONLINE_EMBED_URL}?ui=${locale}&rs=${locale}&WOPISrc=${WOPISrc}&sc=${JSON.stringify(origin)}`
+        );
         formEl.setAttribute('method', 'POST');
         formEl.setAttribute('target', OFFICE_ONLINE_IFRAME_NAME);
 
@@ -326,7 +327,7 @@ class OfficeViewer extends BaseViewer {
                 this.emit('printsuccess');
             }
 
-        // For other browsers, open and print in a new tab
+            // For other browsers, open and print in a new tab
         } else {
             const printURL = URL.createObjectURL(this.printBlob);
             const printResult = window.open(printURL);
@@ -341,7 +342,7 @@ class OfficeViewer extends BaseViewer {
                         printResult.print();
                     });
 
-                // Safari print on load produces blank page, so we use a timeout
+                    // Safari print on load produces blank page, so we use a timeout
                 } else if (browser === 'Safari') {
                     setTimeout(() => {
                         printResult.print();

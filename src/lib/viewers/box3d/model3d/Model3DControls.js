@@ -19,13 +19,7 @@ import {
 
 import { CSS_CLASS_HIDDEN } from '../box3DConstants';
 
-import {
-    ICON_3D_RESET,
-    ICON_ANIMATION,
-    ICON_GEAR,
-    ICON_PAUSE,
-    ICON_PLAY
-} from '../../../icons/icons';
+import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from '../../../icons/icons';
 
 /**
  * Model3dControls
@@ -33,8 +27,7 @@ import {
  * Render Mode selection, VR and fullscreen buttons.
  * @class
  */
-@autobind
-class Model3DControls extends Box3DControls {
+@autobind class Model3DControls extends Box3DControls {
     /**
      * Creates UI and handles events for 3D Model Preview
      * @constructor
@@ -55,8 +48,18 @@ class Model3DControls extends Box3DControls {
 
         // Animation controls
         this.animationClipsPullup.addListener(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
-        this.animationToggleEl = this.controls.add(__('box3d_toggle_animation'), this.handleToggleAnimation, '', ICON_PLAY);
-        this.animationClipButtonEl = this.controls.add(__('box3d_animation_clips'), this.handleToggleAnimationClips, '', ICON_ANIMATION);
+        this.animationToggleEl = this.controls.add(
+            __('box3d_toggle_animation'),
+            this.handleToggleAnimation,
+            '',
+            ICON_PLAY
+        );
+        this.animationClipButtonEl = this.controls.add(
+            __('box3d_animation_clips'),
+            this.handleToggleAnimationClips,
+            '',
+            ICON_ANIMATION
+        );
         this.animationClipButtonEl.parentNode.appendChild(this.animationClipsPullup.pullupEl);
         this.hideAnimationControls();
 

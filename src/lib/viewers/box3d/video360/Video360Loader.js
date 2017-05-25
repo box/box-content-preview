@@ -3,7 +3,22 @@ import Browser from '../../../Browser';
 import { replacePlaceholders } from '../../../util';
 import Video360Viewer from './Video360Viewer';
 
-const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'mts', 'qt', 'wmv'];
+const VIDEO_FORMATS = [
+    '3g2',
+    '3gp',
+    'avi',
+    'm2v',
+    'm2ts',
+    'm4v',
+    'mkv',
+    'mov',
+    'mp4',
+    'mpeg',
+    'mpg',
+    'mts',
+    'qt',
+    'wmv'
+];
 const BROWSERS_SUPPORTED = ['Chrome', 'Edge', 'Firefox', 'Opera'];
 
 const VIEWERS = [
@@ -16,7 +31,6 @@ const VIEWERS = [
 ];
 
 class Video360Loader extends Base360Loader {
-
     /**
      * Instantiates a loader for 360 degree video preview.
      * @return {Video360Loader} Video360Loader instance

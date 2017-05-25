@@ -62,15 +62,14 @@ class RepStatus extends EventEmitter {
             return Promise.resolve();
         }
 
-        return get(this.infoUrl)
-        .then((info) => {
+        return get(this.infoUrl).then((info) => {
             clearTimeout(this.statusTimeout);
 
             if (info.metadata) {
                 this.representation.metadata = info.metadata;
             }
 
-            const status = (typeof info.status === 'object') ? info.status.state : info.temp_status.state;
+            const status = typeof info.status === 'object' ? info.status.state : info.temp_status.state;
             if (typeof this.representation.status === 'object') {
                 this.representation.status.state = status;
             } else {
@@ -115,7 +114,7 @@ class RepStatus extends EventEmitter {
                 break;
 
             default:
-                // no-op
+            // no-op
         }
     }
 

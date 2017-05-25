@@ -67,7 +67,11 @@ describe('lib/viewers/text/MarkdownViewer', () => {
 
             markdown.print();
 
-            expect(markdown.preparePrint).to.be.calledWith([`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`, `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github-markdown.min.css`, 'preview.css']);
+            expect(markdown.preparePrint).to.be.calledWith([
+                `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github.min.css`,
+                `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/github-markdown.min.css`,
+                'preview.css'
+            ]);
             expect(markdown.printPopup.show).to.be.calledWith('Preparing to print...', 'Print', sinon.match.func);
             expect(markdown.printPopup.disableButton).to.be.called;
         });
@@ -103,7 +107,8 @@ describe('lib/viewers/text/MarkdownViewer', () => {
 
         it('should use custom renderer for links to add rel', () => {
             const content = 'https://sometestlink.com';
-            const expectedMarkdown = '<a href="https://sometestlink.com" target="_blank" rel="noopener noreferrer">https://sometestlink.com</a>';
+            const expectedMarkdown =
+                '<a href="https://sometestlink.com" target="_blank" rel="noopener noreferrer">https://sometestlink.com</a>';
 
             markdown.finishLoading(content);
             expect(markdown.markdownEl.innerHTML).to.contain(expectedMarkdown);
