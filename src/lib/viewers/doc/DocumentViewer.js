@@ -27,7 +27,7 @@ import './Document.scss';
         this.docEl.classList.add('bp-doc-document');
 
         // Set up preloader
-        this.preloader = new DocPreloader();
+        this.preloader = new DocPreloader(this.options.ui);
         this.preloader.addListener('preload', () => {
             this.options.logger.setPreloaded();
             this.resetLoadTimeout(); // Some content is visible - reset load timeout
@@ -56,10 +56,16 @@ import './Document.scss';
         } else if (key === 'Shift+_') {
             this.zoomOut();
             return true;
-        } else if (key === 'ArrowUp' && fullscreen.isFullscreen(this.containerEl)) {
+        } else if (
+            key === 'ArrowUp' &&
+            fullscreen.isFullscreen(this.containerEl)
+        ) {
             this.previousPage();
             return true;
-        } else if (key === 'ArrowDown' && fullscreen.isFullscreen(this.containerEl)) {
+        } else if (
+            key === 'ArrowDown' &&
+            fullscreen.isFullscreen(this.containerEl)
+        ) {
             this.nextPage();
             return true;
         }
@@ -80,8 +86,18 @@ import './Document.scss';
     bindControlListeners() {
         super.bindControlListeners();
 
-        this.controls.add(__('zoom_out'), this.zoomOut, 'bp-doc-zoom-out-icon', ICON_ZOOM_OUT);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'bp-doc-zoom-in-icon', ICON_ZOOM_IN);
+        this.controls.add(
+            __('zoom_out'),
+            this.zoomOut,
+            'bp-doc-zoom-out-icon',
+            ICON_ZOOM_OUT
+        );
+        this.controls.add(
+            __('zoom_in'),
+            this.zoomIn,
+            'bp-doc-zoom-in-icon',
+            ICON_ZOOM_IN
+        );
 
         this.controls.add(
             __('previous_page'),
@@ -91,8 +107,18 @@ import './Document.scss';
         );
 
         const buttonContent = pageNumTemplate.replace(/>\s*</g, '><'); // removing new lines
-        this.controls.add(__('enter_page_num'), this.showPageNumInput, 'bp-doc-page-num', buttonContent);
-        this.controls.add(__('next_page'), this.nextPage, 'bp-doc-next-page-icon bp-next-page', ICON_DROP_DOWN);
+        this.controls.add(
+            __('enter_page_num'),
+            this.showPageNumInput,
+            'bp-doc-page-num',
+            buttonContent
+        );
+        this.controls.add(
+            __('next_page'),
+            this.nextPage,
+            'bp-doc-next-page-icon bp-next-page',
+            ICON_DROP_DOWN
+        );
 
         this.controls.add(
             __('enter_fullscreen'),
@@ -100,7 +126,12 @@ import './Document.scss';
             'bp-enter-fullscreen-icon',
             ICON_FULLSCREEN_IN
         );
-        this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+        this.controls.add(
+            __('exit_fullscreen'),
+            this.toggleFullscreen,
+            'bp-exit-fullscreen-icon',
+            ICON_FULLSCREEN_OUT
+        );
     }
 }
 

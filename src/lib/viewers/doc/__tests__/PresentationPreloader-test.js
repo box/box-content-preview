@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import PresentationPreloader from '../PresentationPreloader';
 import * as util from '../../../util';
-import * as ui from '../../../ui';
 import { CLASS_INVISIBLE } from '../../../constants';
 
 let preloader;
@@ -15,7 +14,9 @@ describe('lib/viewers/doc/PresentationPreloader', () => {
 
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/PresentationPreloader-test.html');
-        preloader = new PresentationPreloader();
+        preloader = new PresentationPreloader({
+            hideLoadingIndicator: () => {}
+        });
         stubs = {};
     });
 
@@ -26,10 +27,16 @@ describe('lib/viewers/doc/PresentationPreloader', () => {
 
     describe('scaleAndShowPreload()', () => {
         beforeEach(() => {
-            stubs.checkDocumentLoaded = sandbox.stub(preloader, 'checkDocumentLoaded');
+            stubs.checkDocumentLoaded = sandbox.stub(
+                preloader,
+                'checkDocumentLoaded'
+            );
             stubs.emit = sandbox.stub(preloader, 'emit');
             stubs.setDimensions = sandbox.stub(util, 'setDimensions');
-            stubs.hideLoadingIndicator = sandbox.stub(ui, 'hideLoadingIndicator');
+            stubs.hideLoadingIndicator = sandbox.stub(
+                preloader.ui,
+                'hideLoadingIndicator'
+            );
             preloader.imageEl = {};
             preloader.preloadEl = document.createElement('div');
         });
@@ -51,7 +58,11 @@ describe('lib/viewers/doc/PresentationPreloader', () => {
 
             preloader.scaleAndShowPreload(width, height, 1);
 
-            expect(stubs.setDimensions).to.be.calledWith(preloader.imageEl, width, height);
+            expect(stubs.setDimensions).to.be.calledWith(
+                preloader.imageEl,
+                width,
+                height
+            );
             expect(stubs.hideLoadingIndicator).to.be.called;
             expect(stubs.emit).to.be.calledWith('preload');
             expect(preloader.preloadEl).to.not.have.class(CLASS_INVISIBLE);

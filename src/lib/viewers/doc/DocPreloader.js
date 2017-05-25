@@ -7,7 +7,6 @@ import {
     CLASS_PREVIEW_LOADED
 } from '../../constants';
 import { get, setDimensions } from '../../util';
-import { hideLoadingIndicator } from '../../ui';
 
 const EXIF_COMMENT_TAG_NAME = 'UserComment'; // Read EXIF data from 'UserComment' tag
 const EXIF_COMMENT_REGEX = /pdfWidth:([0-9.]+)pts,pdfHeight:([0-9.]+)pts,numPages:([0-9]+)/;
@@ -28,8 +27,9 @@ class DocPreloader extends EventEmitter {
      *
      * @return {DocPreloader} DocPreloader instance
      */
-    constructor() {
+    constructor(ui) {
         super();
+        this.ui = ui;
         this.wrapperClassName = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT;
     }
 
@@ -61,8 +61,12 @@ class DocPreloader extends EventEmitter {
             `.trim();
 
             this.containerEl.appendChild(this.wrapperEl);
-            this.preloadEl = this.wrapperEl.querySelector(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
-            this.imageEl = this.preloadEl.querySelector(`img.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
+            this.preloadEl = this.wrapperEl.querySelector(
+                `.${CLASS_BOX_PREVIEW_PRELOAD}`
+            );
+            this.imageEl = this.preloadEl.querySelector(
+                `img.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`
+            );
             this.bindDOMListeners();
         });
     }
@@ -92,7 +96,7 @@ class DocPreloader extends EventEmitter {
         }
 
         // Hide the preview-level loading indicator
-        hideLoadingIndicator();
+        this.ui.hideLoadingIndicator();
 
         // Show preload element after content is properly sized
         this.preloadEl.classList.remove(CLASS_INVISIBLE);
@@ -174,15 +178,32 @@ class DocPreloader extends EventEmitter {
         return this.readEXIF(this.imageEl)
             .then((pdfData) => {
                 const { pdfWidth, pdfHeight, numPages } = pdfData;
-                const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
-                this.scaleAndShowPreload(scaledWidth, scaledHeight, Math.min(numPages, NUM_PAGES_MAX));
+                const { scaledWidth, scaledHeight } = this.getScaledDimensions(
+                    pdfWidth,
+                    pdfHeight
+                );
+                this.scaleAndShowPreload(
+                    scaledWidth,
+                    scaledHeight,
+                    Math.min(numPages, NUM_PAGES_MAX)
+                );
 
                 // Otherwise, use the preload image's natural dimensions as a base to scale from
             })
             .catch(() => {
-                const { naturalWidth: pdfWidth, naturalHeight: pdfHeight } = this.imageEl;
-                const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
-                this.scaleAndShowPreload(scaledWidth, scaledHeight, NUM_PAGES_DEFAULT);
+                const {
+                    naturalWidth: pdfWidth,
+                    naturalHeight: pdfHeight
+                } = this.imageEl;
+                const { scaledWidth, scaledHeight } = this.getScaledDimensions(
+                    pdfWidth,
+                    pdfHeight
+                );
+                this.scaleAndShowPreload(
+                    scaledWidth,
+                    scaledHeight,
+                    NUM_PAGES_DEFAULT
+                );
             });
     };
 
@@ -200,8 +221,13 @@ class DocPreloader extends EventEmitter {
             try {
                 /* global EXIF */
                 EXIF.getData(imageEl, () => {
-                    const userCommentRaw = EXIF.getTag(imageEl, EXIF_COMMENT_TAG_NAME);
-                    const userComment = userCommentRaw.map((c) => String.fromCharCode(c)).join('');
+                    const userCommentRaw = EXIF.getTag(
+                        imageEl,
+                        EXIF_COMMENT_TAG_NAME
+                    );
+                    const userComment = userCommentRaw
+                        .map((c) => String.fromCharCode(c))
+                        .join('');
                     const match = EXIF_COMMENT_REGEX.exec(userComment);
 
                     // There should be 3 pieces of metadata: PDF width, PDF height, and num pages
@@ -223,13 +249,20 @@ class DocPreloader extends EventEmitter {
 
                     // Validate PDF width and height by comparing ratio to preload image dimension ratio
                     const pdfRatio = pdfWidth / pdfHeight;
-                    const imageRatio = imageEl.naturalWidth / imageEl.naturalHeight;
+                    const imageRatio =
+                        imageEl.naturalWidth / imageEl.naturalHeight;
 
-                    if (Math.abs(pdfRatio - imageRatio) > ACCEPTABLE_RATIO_DIFFERENCE) {
+                    if (
+                        Math.abs(pdfRatio - imageRatio) >
+                        ACCEPTABLE_RATIO_DIFFERENCE
+                    ) {
                         const rotatedPdfRatio = pdfHeight / pdfWidth;
 
                         // Check if ratio is valid after height and width are swapped since PDF may be rotated
-                        if (Math.abs(rotatedPdfRatio - imageRatio) > ACCEPTABLE_RATIO_DIFFERENCE) {
+                        if (
+                            Math.abs(rotatedPdfRatio - imageRatio) >
+                            ACCEPTABLE_RATIO_DIFFERENCE
+                        ) {
                             reject('EXIF PDF width and height are invalid');
                             return;
                         }
@@ -264,10 +297,13 @@ class DocPreloader extends EventEmitter {
     getScaledDimensions(pdfWidth, pdfHeight) {
         const { clientWidth, clientHeight } = this.wrapperEl;
         const widthScale = (clientWidth - PDFJS_WIDTH_PADDING_PX) / pdfWidth;
-        const heightScale = (clientHeight - PDFJS_HEIGHT_PADDING_PX) / pdfHeight;
+        const heightScale =
+            (clientHeight - PDFJS_HEIGHT_PADDING_PX) / pdfHeight;
         const isLandscape = pdfWidth > pdfHeight;
 
-        let scale = isLandscape ? Math.min(heightScale, widthScale) : widthScale;
+        let scale = isLandscape
+            ? Math.min(heightScale, widthScale)
+            : widthScale;
         scale = Math.min(PDFJS_MAX_AUTO_SCALE, scale);
 
         return {
