@@ -704,7 +704,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const newScale = 5;
 
             docBase.setScale(newScale);
-            expect(docBase.emit).to.be.calledWith('scale', newScale);
+            expect(docBase.emit).to.be.calledWith('scale', { scale: newScale });
             expect(docBase.pdfViewer.currentScaleValue).to.equal(newScale);
         });
     });
