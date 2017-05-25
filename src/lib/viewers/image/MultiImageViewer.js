@@ -10,9 +10,7 @@ const CSS_CLASS_IMAGE = 'bp-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
 const ZOOM_UPDATE_PAN_DELAY = 50;
 
-@autobind
-class MultiImageViewer extends ImageBaseViewer {
-
+@autobind class MultiImageViewer extends ImageBaseViewer {
     /**
      * @inheritdoc
      */
@@ -59,12 +57,15 @@ class MultiImageViewer extends ImageBaseViewer {
         this.bindImageListeners(0);
         this.bindDOMListeners();
 
-        return this.getRepStatus().getPromise().then(() => {
-            const template = this.options.representation.content.url_template;
-            this.imageUrls = this.constructImageUrls(template);
+        return this.getRepStatus()
+            .getPromise()
+            .then(() => {
+                const template = this.options.representation.content.url_template;
+                this.imageUrls = this.constructImageUrls(template);
 
-            this.imageUrls.forEach((imageUrl, index) => this.setupImageEls(imageUrl, index));
-        }).catch(this.handleAssetError);
+                this.imageUrls.forEach((imageUrl, index) => this.setupImageEls(imageUrl, index));
+            })
+            .catch(this.handleAssetError);
     }
 
     /**
@@ -168,7 +169,7 @@ class MultiImageViewer extends ImageBaseViewer {
     setScale(width, height) {
         // Grab the first page image dimensions
         const imageEl = this.singleImageEls[0];
-        const scale = width ? (width / imageEl.naturalWidth) : (height / imageEl.naturalHeight);
+        const scale = width ? width / imageEl.naturalWidth : height / imageEl.naturalHeight;
         this.emit('scale', scale);
     }
 
@@ -180,7 +181,12 @@ class MultiImageViewer extends ImageBaseViewer {
      */
     loadUI() {
         super.loadUI();
-        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(
+            __('enter_fullscreen'),
+            this.toggleFullscreen,
+            'bp-enter-fullscreen-icon',
+            ICON_FULLSCREEN_IN
+        );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 

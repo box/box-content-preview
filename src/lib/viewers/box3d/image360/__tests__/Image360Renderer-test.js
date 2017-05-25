@@ -244,7 +244,9 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
         it('should call onSceneLoad() when done loading file', (done) => {
             sandbox.stub(renderer, 'initBox3d').returns(Promise.resolve());
             sandbox.stub(renderer, 'loadPanoramaFile').returns(Promise.resolve());
-            sandbox.stub(renderer, 'onSceneLoad', () => { done(); });
+            sandbox.stub(renderer, 'onSceneLoad', () => {
+                done();
+            });
 
             renderer.load();
         });

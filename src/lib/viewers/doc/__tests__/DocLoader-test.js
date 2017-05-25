@@ -17,17 +17,20 @@ describe('lib/viewers/doc/DocLoader', () => {
             file = {
                 extension: 'docx',
                 representations: {
-                    entries: [{
-                        representation: 'pdf',
-                        status: {
-                            state: 'success'
+                    entries: [
+                        {
+                            representation: 'pdf',
+                            status: {
+                                state: 'success'
+                            }
+                        },
+                        {
+                            representation: 'ORIGINAL',
+                            status: {
+                                state: 'success'
+                            }
                         }
-                    }, {
-                        representation: 'ORIGINAL',
-                        status: {
-                            state: 'success'
-                        }
-                    }]
+                    ]
                 }
             };
 

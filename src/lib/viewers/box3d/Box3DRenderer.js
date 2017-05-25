@@ -1,11 +1,7 @@
 /* global Box3D */
 /* eslint no-param-reassign:0 */
 import EventEmitter from 'events';
-import {
-    EVENT_SHOW_VR_BUTTON,
-    EVENT_SCENE_LOADED,
-    EVENT_TRIGGER_RENDER
-} from './box3DConstants';
+import { EVENT_SHOW_VR_BUTTON, EVENT_SCENE_LOADED, EVENT_TRIGGER_RENDER } from './box3DConstants';
 import { MODEL3D_STATIC_ASSETS_VERSION } from '../../constants';
 
 const PREVIEW_CAMERA_CONTROLLER_ID = 'orbit_camera';
@@ -32,7 +28,6 @@ function appendSharedLinkHeaders(xhr, sharedLink, sharedLinkPassword) {
 }
 
 class Box3DRenderer extends EventEmitter {
-
     /**
      * Base class that handles creation of and communication with Box3DRuntime
      *
@@ -110,8 +105,17 @@ class Box3DRenderer extends EventEmitter {
 
         // Reset camera settings to default.
         if (camera) {
-            camera.setPosition(this.defaultCameraPosition.x, this.defaultCameraPosition.y, this.defaultCameraPosition.z);
-            camera.setQuaternion(this.defaultCameraQuaternion.x, this.defaultCameraQuaternion.y, this.defaultCameraQuaternion.z, this.defaultCameraQuaternion.w);
+            camera.setPosition(
+                this.defaultCameraPosition.x,
+                this.defaultCameraPosition.y,
+                this.defaultCameraPosition.z
+            );
+            camera.setQuaternion(
+                this.defaultCameraQuaternion.x,
+                this.defaultCameraQuaternion.y,
+                this.defaultCameraQuaternion.z,
+                this.defaultCameraQuaternion.w
+            );
         }
     }
 
@@ -297,7 +301,6 @@ class Box3DRenderer extends EventEmitter {
         this.box3d.trigger('disableVrRendering');
     }
 
-
     /**
      * Trigger an update and render event on the runtime.
      *
@@ -381,7 +384,9 @@ class Box3DRenderer extends EventEmitter {
             return;
         }
 
-        this.vrGamepads = [Box3D.Handedness.Left, Box3D.Handedness.Right].map((handedness) => this.createVrGamepad(handedness));
+        this.vrGamepads = [Box3D.Handedness.Left, Box3D.Handedness.Right].map((handedness) =>
+            this.createVrGamepad(handedness)
+        );
     }
 
     /**
@@ -425,15 +430,21 @@ class Box3DRenderer extends EventEmitter {
             if (!this.vrCommonLoadPromise) {
                 if (commonEntities) {
                     this.vrCommonLoadPromise = this.box3d.addRemoteEntities(
-                        `${this.staticBaseURI}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${commonEntities}/entities.json`, { isExternal: true });
+                        `${this.staticBaseURI}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${commonEntities}/entities.json`,
+                        { isExternal: true }
+                    );
                 } else {
                     this.vrCommonLoadPromise = Promise.resolve();
                 }
             }
             if (!this.vrGamepadLoadPromises[controllerName]) {
                 this.vrCommonLoadPromise.then(() => {
-                    this.vrGamepadLoadPromises[controllerName] = this.box3d.addRemoteEntities(
-                        `${this.staticBaseURI}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${controllerName}/entities.json`, { isExternal: true });
+                    this.vrGamepadLoadPromises[
+                        controllerName
+                    ] = this.box3d.addRemoteEntities(
+                        `${this.staticBaseURI}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${controllerName}/entities.json`,
+                        { isExternal: true }
+                    );
                     this.vrGamepadLoadPromises[controllerName].then(onGamepadModelLoad);
                 });
             } else {

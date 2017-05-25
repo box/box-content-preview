@@ -2,7 +2,6 @@ import AssetLoader from '../AssetLoader';
 import { requires360Viewer } from '../../util';
 
 class Base360Loader extends AssetLoader {
-
     /**
      * @inheritdoc
      */

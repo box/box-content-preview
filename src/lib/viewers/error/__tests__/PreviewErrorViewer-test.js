@@ -4,11 +4,7 @@ import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import * as file from '../../../file';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
-import {
-    ICON_FILE_DEFAULT,
-    ICON_FILE_ZIP,
-    ICON_FILE_MEDIA
-} from '../../../icons/icons';
+import { ICON_FILE_DEFAULT, ICON_FILE_ZIP, ICON_FILE_MEDIA } from '../../../icons/icons';
 
 const sandbox = sinon.sandbox.create();
 let error;
@@ -122,9 +118,12 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             const message = 'reason';
             error.load(message);
 
-            expect(error.emit).to.be.calledWith('load', sinon.match({
-                error: message
-            }));
+            expect(error.emit).to.be.calledWith(
+                'load',
+                sinon.match({
+                    error: message
+                })
+            );
         });
     });
 

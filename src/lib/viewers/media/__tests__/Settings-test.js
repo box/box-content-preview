@@ -208,7 +208,9 @@ describe('lib/viewers/media/Settings', () => {
         });
 
         it('should choose option, focus first element, and reset menu on click on sub menu option', () => {
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('[data-type="speed"][data-value="2.0"]'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('[data-type="speed"][data-value="2.0"]'));
             settings.menuEventHandler({ type: 'click' });
 
             expect(settings.reset).to.not.be.called;
@@ -218,7 +220,9 @@ describe('lib/viewers/media/Settings', () => {
         });
 
         it('should choose option, focus first element, and reset menu on Space on sub menu option', () => {
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('[data-type="speed"][data-value="2.0"]'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('[data-type="speed"][data-value="2.0"]'));
             const event = {
                 type: 'keydown',
                 key: 'Space',
@@ -237,7 +241,9 @@ describe('lib/viewers/media/Settings', () => {
         });
 
         it('should choose option, focus first element, and reset menu on Enter on sub menu option', () => {
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('[data-type="speed"][data-value="2.0"]'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('[data-type="speed"][data-value="2.0"]'));
             const event = {
                 type: 'keydown',
                 key: 'Enter',
@@ -257,7 +263,9 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should go to sub menu on click on an option on main menu', () => {
             // Starting from the main menu
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('.bp-media-settings-item-speed'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('.bp-media-settings-item-speed'));
 
             settings.menuEventHandler({ type: 'click' });
 
@@ -267,7 +275,9 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should go to sub menu on Space on an option on main menu', () => {
             // Starting from the main menu
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('.bp-media-settings-item-speed'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('.bp-media-settings-item-speed'));
             const event = {
                 type: 'keydown',
                 key: 'Space',
@@ -286,7 +296,9 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should go to sub menu on Enter on an option on main menu', () => {
             // Starting from the main menu
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('.bp-media-settings-item-speed'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('.bp-media-settings-item-speed'));
             const event = {
                 type: 'keydown',
                 key: 'Enter',
@@ -312,7 +324,9 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should go up on arrowup', () => {
             // Starting from the quality item in the main menu
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('.bp-media-settings-item-quality'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('.bp-media-settings-item-quality'));
             const event = {
                 type: 'keydown',
                 key: 'ArrowUp',
@@ -332,7 +346,9 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should do nothing on arrowup except add keyboard-focus class if already at top item', () => {
             // Starting from the speed item in the main menu
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('.bp-media-settings-item-speed'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('.bp-media-settings-item-speed'));
             const event = {
                 type: 'keydown',
                 key: 'ArrowUp',
@@ -351,7 +367,9 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should go down on arrowdown', () => {
             // Starting from the speed item in the main menu
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('.bp-media-settings-item-speed'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('.bp-media-settings-item-speed'));
             const event = {
                 type: 'keydown',
                 key: 'ArrowDown',
@@ -371,7 +389,9 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should do nothing on arrowdown except add keyboard-focus class if already at bottom item', () => {
             // Starting from the quality item in the main menu
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('.bp-media-settings-item-quality'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('.bp-media-settings-item-quality'));
             const event = {
                 type: 'keydown',
                 key: 'ArrowDown',
@@ -390,7 +410,9 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should go to main menu on arrowleft if on sub menu', () => {
             // Starting from sub menu
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('.bp-media-settings-selected[data-type="speed"]'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('.bp-media-settings-selected[data-type="speed"]'));
             const event = {
                 type: 'keydown',
                 key: 'ArrowLeft',
@@ -409,7 +431,9 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should do nothing on arrowleft if on main menu', () => {
             // Starting from the main menu
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('.bp-media-settings-item-speed'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('.bp-media-settings-item-speed'));
             const event = {
                 type: 'keydown',
                 key: 'ArrowLeft',
@@ -428,7 +452,9 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should go to speed sub menu on arrowright if on speed main menu item', () => {
             // Starting from the speed menu item
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('.bp-media-settings-item-speed'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('.bp-media-settings-item-speed'));
             const event = {
                 type: 'keydown',
                 key: 'ArrowRight',
@@ -446,7 +472,9 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should do nothing on arrowright if on sub menu', () => {
             // Starting from the sub menu
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('.bp-media-settings-selected[data-type="speed"]'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('.bp-media-settings-selected[data-type="speed"]'));
             const event = {
                 type: 'keydown',
                 key: 'ArrowRight',
@@ -464,7 +492,9 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should go to quality sub menu on arrowright if on quality main menu item', () => {
             // Starting from the quality menu item
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('.bp-media-settings-item-quality'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('.bp-media-settings-item-quality'));
             const event = {
                 type: 'keydown',
                 key: 'ArrowRight',
@@ -483,7 +513,9 @@ describe('lib/viewers/media/Settings', () => {
         it('should hide menu and restore focus to settings button on escape', () => {
             sandbox.stub(settings, 'hide');
             // Starting from the main menu
-            sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('.bp-media-settings-item-speed'));
+            sandbox
+                .stub(settings, 'findParentDataType')
+                .returns(document.querySelector('.bp-media-settings-item-speed'));
             const event = {
                 type: 'keydown',
                 key: 'Escape',
@@ -513,7 +545,9 @@ describe('lib/viewers/media/Settings', () => {
 
         it('should focus on the currently selected value', () => {
             // Select a different speed for testing purposes
-            const prevSelected = settings.settingsEl.querySelector('[data-type="speed"].bp-media-settings-sub-item.bp-media-settings-selected');
+            const prevSelected = settings.settingsEl.querySelector(
+                '[data-type="speed"].bp-media-settings-sub-item.bp-media-settings-selected'
+            );
             prevSelected.classList.remove('bp-media-settings-selected');
             const selected = settings.settingsEl.querySelector('[data-value="1.25"]');
             selected.classList.add('bp-media-settings-selected');
@@ -552,8 +586,12 @@ describe('lib/viewers/media/Settings', () => {
             settings.chooseOption('speed', 0.5);
 
             expect(document.querySelector('[data-type="speed"] .bp-media-settings-value').textContent).to.equal('0.5');
-            expect(document.querySelector('[data-type="speed"][data-value="1.0"]')).to.not.have.class('bp-media-settings-selected');
-            expect(document.querySelector('[data-type="speed"][data-value="0.5"]')).to.have.class('bp-media-settings-selected');
+            expect(document.querySelector('[data-type="speed"][data-value="1.0"]')).to.not.have.class(
+                'bp-media-settings-selected'
+            );
+            expect(document.querySelector('[data-type="speed"][data-value="0.5"]')).to.have.class(
+                'bp-media-settings-selected'
+            );
         });
 
         it('should do special handling for subtitles', () => {
@@ -757,7 +795,11 @@ describe('lib/viewers/media/Settings', () => {
         it('should not hide if space is pressed on settings button', () => {
             sandbox.stub(settings, 'hide');
 
-            settings.blurHandler({ type: 'keydown', key: 'Space', target: document.querySelector('.bp-media-gear-icon') });
+            settings.blurHandler({
+                type: 'keydown',
+                key: 'Space',
+                target: document.querySelector('.bp-media-gear-icon')
+            });
 
             expect(settings.hide).to.not.be.called;
         });
@@ -765,7 +807,11 @@ describe('lib/viewers/media/Settings', () => {
         it('should not hide if enter is pressed on settings button', () => {
             sandbox.stub(settings, 'hide');
 
-            settings.blurHandler({ type: 'keydown', key: 'Enter', target: document.querySelector('.bp-media-gear-icon') });
+            settings.blurHandler({
+                type: 'keydown',
+                key: 'Enter',
+                target: document.querySelector('.bp-media-gear-icon')
+            });
 
             expect(settings.hide).to.not.be.called;
         });
@@ -781,7 +827,11 @@ describe('lib/viewers/media/Settings', () => {
         it('should not hide if space is pressed on settings button', () => {
             sandbox.stub(settings, 'hide');
 
-            settings.blurHandler({ type: 'keydown', key: 'Space', target: document.querySelector('.bp-media-settings-item') });
+            settings.blurHandler({
+                type: 'keydown',
+                key: 'Space',
+                target: document.querySelector('.bp-media-settings-item')
+            });
 
             expect(settings.hide).to.not.be.called;
         });
@@ -789,7 +839,11 @@ describe('lib/viewers/media/Settings', () => {
         it('should not hide if enter is pressed on settings button', () => {
             sandbox.stub(settings, 'hide');
 
-            settings.blurHandler({ type: 'keydown', key: 'Enter', target: document.querySelector('.bp-media-settings-item') });
+            settings.blurHandler({
+                type: 'keydown',
+                key: 'Enter',
+                target: document.querySelector('.bp-media-settings-item')
+            });
 
             expect(settings.hide).to.not.be.called;
         });

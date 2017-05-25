@@ -162,10 +162,14 @@ describe('lib/viewers/office/OfficeViewer', () => {
             office.platformSetup = true;
             office.setupIframe();
 
-            expect(stubs.createFormElement).to.be.calledWith(office.options.appHost, office.options.file.id, office.options.sharedLink, office.options.location.locale);
+            expect(stubs.createFormElement).to.be.calledWith(
+                office.options.appHost,
+                office.options.file.id,
+                office.options.sharedLink,
+                office.options.location.locale
+            );
             expect(stubs.form.submit).to.be.called;
         });
-
 
         it('should set the iframe source and sandbox attribute if not using the platform setup', () => {
             office.setupIframe();
@@ -176,26 +180,46 @@ describe('lib/viewers/office/OfficeViewer', () => {
     });
     describe('setupRunmodeURL()', () => {
         it('should load a xlsx file and set the file ID in src url on load event when the file is not a shared link', () => {
-            const src = office.setupRunmodeURL(office.options.appHost, office.options.file.id, office.options.sharedLink);
+            const src = office.setupRunmodeURL(
+                office.options.appHost,
+                office.options.file.id,
+                office.options.sharedLink
+            );
             expect(src).to.equal('app.box.com/integrations/officeonline/openExcelOnlinePreviewer?fileId=123');
         });
 
         it('should load a xlsx file and set the shared name in src url on load event when the file is a shared link', () => {
             office.options.sharedLink = 'https://app.box.com/s/abcd';
-            const src = office.setupRunmodeURL(office.options.appHost, office.options.file.id, office.options.sharedLink);
+            const src = office.setupRunmodeURL(
+                office.options.appHost,
+                office.options.file.id,
+                office.options.sharedLink
+            );
             expect(src).to.equal('app.box.com/integrations/officeonline/openExcelOnlinePreviewer?s=abcd&fileId=123');
         });
 
         it('should load a xlsx file and set the vanity name in src url on load event when the file is a vanity url without a subdomain', () => {
             office.options.sharedLink = 'https://app.box.com/v/test';
-            const src = office.setupRunmodeURL(office.options.appHost, office.options.file.id, office.options.sharedLink);
-            expect(src).to.equal('app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=app&fileId=123');
+            const src = office.setupRunmodeURL(
+                office.options.appHost,
+                office.options.file.id,
+                office.options.sharedLink
+            );
+            expect(src).to.equal(
+                'app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=app&fileId=123'
+            );
         });
 
         it('should load a xlsx file and set the vanity name in src url on load event when the file is a vanity url with a subdomain', () => {
             office.options.sharedLink = 'https://cloud.app.box.com/v/test';
-            const src = office.setupRunmodeURL(office.options.appHost, office.options.file.id, office.options.sharedLink);
-            expect(src).to.equal('app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=cloud&fileId=123');
+            const src = office.setupRunmodeURL(
+                office.options.appHost,
+                office.options.file.id,
+                office.options.sharedLink
+            );
+            expect(src).to.equal(
+                'app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=cloud&fileId=123'
+            );
         });
     });
 
@@ -225,7 +249,9 @@ describe('lib/viewers/office/OfficeViewer', () => {
             expect(iframeEl.width).to.equal('100%');
             expect(iframeEl.height).to.equal('100%');
             expect(iframeEl.frameBorder).to.equal('0');
-            expect(iframeEl.getAttribute('sandbox')).to.equal('allow-scripts allow-same-origin allow-forms allow-popups');
+            expect(iframeEl.getAttribute('sandbox')).to.equal(
+                'allow-scripts allow-same-origin allow-forms allow-popups'
+            );
         });
 
         it('should allow fullscreen if using the platform setup', () => {
@@ -240,11 +266,18 @@ describe('lib/viewers/office/OfficeViewer', () => {
         beforeEach(() => {
             stubs.setupWOPISrc = sandbox.stub(office, 'setupWOPISrc').returns('src');
             stubs.sessionContext = JSON.stringify({ origin: window.location.origin });
-            stubs.formEl = office.createFormElement(office.options.apiHost, office.options.file.id, office.options.sharedLink, office.options.location.locale);
+            stubs.formEl = office.createFormElement(
+                office.options.apiHost,
+                office.options.file.id,
+                office.options.sharedLink,
+                office.options.location.locale
+            );
         });
 
         it('should correctly set the action URL', () => {
-            expect(stubs.formEl.getAttribute('action')).to.equal(`${EXCEL_ONLINE_URL}?ui=${office.options.location.locale}&rs=${office.options.location.locale}&WOPISrc=src&sc=${stubs.sessionContext}`);
+            expect(stubs.formEl.getAttribute('action')).to.equal(
+                `${EXCEL_ONLINE_URL}?ui=${office.options.location.locale}&rs=${office.options.location.locale}&WOPISrc=src&sc=${stubs.sessionContext}`
+            );
             expect(stubs.formEl.getAttribute('method')).to.equal('POST');
             expect(stubs.formEl.getAttribute('target')).to.equal(OFFICE_ONLINE_IFRAME_NAME);
         });
@@ -385,7 +418,6 @@ describe('lib/viewers/office/OfficeViewer', () => {
         it('should print on load in the chrome browser', () => {
             window.navigator.msSaveOrOpenBlob = undefined;
             stubs.open.returns(stubs.printResult);
-
 
             office.browserPrint();
             expect(stubs.createObject).to.be.calledWith(office.printBlob);

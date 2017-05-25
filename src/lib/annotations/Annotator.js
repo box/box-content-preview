@@ -4,15 +4,10 @@ import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
 import * as constants from './annotationConstants';
 import * as annotatorUtil from './annotatorUtil';
-import {
-    CLASS_ACTIVE,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE
-} from '../constants';
+import { CLASS_ACTIVE, SELECTOR_BOX_PREVIEW_BTN_ANNOTATE } from '../constants';
 import './Annotator.scss';
 
-@autobind
-class Annotator extends EventEmitter {
-
+@autobind class Annotator extends EventEmitter {
     //--------------------------------------------------------------------------
     // Typedef
     //--------------------------------------------------------------------------
@@ -221,7 +216,7 @@ class Annotator extends EventEmitter {
             this.unbindPointModeListeners(); // Disable point mode
             this.bindDOMListeners(); // Re-enable other annotations
 
-        // Otherwise, enable annotation mode
+            // Otherwise, enable annotation mode
         } else {
             this.notification.show(__('notification_annotation_mode'));
 
@@ -232,7 +227,7 @@ class Annotator extends EventEmitter {
             }
 
             this.unbindDOMListeners(); // Disable other annotations
-            this.bindPointModeListeners();  // Enable point mode
+            this.bindPointModeListeners(); // Enable point mode
         }
     }
 
@@ -302,20 +297,19 @@ class Annotator extends EventEmitter {
     fetchAnnotations() {
         this.threads = {};
 
-        return this.annotationService.getThreadMap(this.fileVersionId)
-            .then((threadMap) => {
-                // Generate map of page to threads
-                Object.keys(threadMap).forEach((threadID) => {
-                    const annotations = threadMap[threadID];
-                    const firstAnnotation = annotations[0];
+        return this.annotationService.getThreadMap(this.fileVersionId).then((threadMap) => {
+            // Generate map of page to threads
+            Object.keys(threadMap).forEach((threadID) => {
+                const annotations = threadMap[threadID];
+                const firstAnnotation = annotations[0];
 
-                    // Bind events on valid annotation thread
-                    const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
-                    if (thread) {
-                        this.bindCustomListenersOnThread(thread);
-                    }
-                });
+                // Bind events on valid annotation thread
+                const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
+                if (thread) {
+                    this.bindCustomListenersOnThread(thread);
+                }
             });
+        });
     }
 
     /**
@@ -405,7 +399,9 @@ class Annotator extends EventEmitter {
 
             // Remove from map
             if (this.threads[page] instanceof Array) {
-                this.threads[page] = this.threads[page].filter((searchThread) => searchThread.threadID !== thread.threadID);
+                this.threads[page] = this.threads[page].filter(
+                    (searchThread) => searchThread.threadID !== thread.threadID
+                );
             }
         });
 
@@ -526,13 +522,12 @@ class Annotator extends EventEmitter {
     destroyPendingThreads() {
         let hasPendingThreads = false;
         Object.keys(this.threads).forEach((page) => {
-            this.threads[page]
-                .forEach((pendingThread) => {
-                    if (pendingThread.state === constants.ANNOTATION_STATE_PENDING) {
-                        hasPendingThreads = true;
-                        pendingThread.destroy();
-                    }
-                });
+            this.threads[page].forEach((pendingThread) => {
+                if (pendingThread.state === constants.ANNOTATION_STATE_PENDING) {
+                    hasPendingThreads = true;
+                    pendingThread.destroy();
+                }
+            });
         });
         return hasPendingThreads;
     }

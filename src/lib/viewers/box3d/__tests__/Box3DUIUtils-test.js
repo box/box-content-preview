@@ -17,7 +17,6 @@ import {
     CSS_CLASS_HIDDEN
 } from '../model3d/model3DConstants';
 
-
 import {
     CLASS_BOX_PREVIEW_BUTTON,
     CLASS_BOX_PREVIEW_LINK,
@@ -194,7 +193,6 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
             });
         });
 
-
         it('should nest a button element for opening a dropdown', () => {
             const dropdown = createDropdown();
             expect(dropdown).to.contain(`button.${CLASS_BOX_PREVIEW_BUTTON}`);
@@ -213,7 +211,7 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
                     text
                 }
             ];
-            let ddList;// The ul is from the link-group that comes from the overlay wrapper
+            let ddList; // The ul is from the link-group that comes from the overlay wrapper
             beforeEach(() => {
                 const dd = createDropdown('', '', listEntries);
                 ddList = dd.querySelector(`div.${CLASS_BOX_PREVIEW_OVERLAY} ul`);
@@ -302,7 +300,6 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
                 });
             });
 
-
             it('should not register any events if no event name provided', () => {
                 const id = '321';
                 const el = document.createElement('div');
@@ -332,7 +329,7 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
                 const el = document.createElement('div');
                 const eventName = 'an_event';
                 registry.registerItem(id, el, eventName, () => {});
-                registry.registerItem(id, el, eventName, () => {});// second event added with same name
+                registry.registerItem(id, el, eventName, () => {}); // second event added with same name
 
                 expect(registry.registry[id].events[eventName]).to.have.lengthOf(2);
             });
@@ -343,7 +340,7 @@ describe('lib/viewers/box3d/Box3DUIUtils', () => {
                 const eventName1 = 'an_event';
                 const eventName2 = 'another_event';
                 registry.registerItem(id, el, eventName1, () => {});
-                registry.registerItem(id, el, eventName2, () => {});// second event added with same name
+                registry.registerItem(id, el, eventName2, () => {}); // second event added with same name
 
                 expect(registry.registry[id].events).to.have.keys([eventName1, eventName2]);
             });

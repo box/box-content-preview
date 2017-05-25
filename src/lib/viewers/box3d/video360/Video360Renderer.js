@@ -1,7 +1,6 @@
 import Box3DRenderer from '../Box3DRenderer';
 
 class Video360Renderer extends Box3DRenderer {
-
     /**
      * @inheritdoc
      */

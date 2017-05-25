@@ -6,9 +6,7 @@ import * as annotatorUtil from './annotatorUtil';
 import * as constants from './annotationConstants';
 import { ICON_PLACED_ANNOTATION } from '../icons/icons';
 
-@autobind
-class AnnotationThread extends EventEmitter {
-
+@autobind class AnnotationThread extends EventEmitter {
     //--------------------------------------------------------------------------
     // Typedef
     //--------------------------------------------------------------------------
@@ -138,7 +136,7 @@ class AnnotationThread extends EventEmitter {
             can_edit: true,
             can_delete: true
         };
-        tempAnnotationData.created = (new Date()).getTime();
+        tempAnnotationData.created = new Date().getTime();
         tempAnnotationData.modified = tempAnnotationData.created;
         const tempAnnotation = new Annotation(tempAnnotationData);
         this.saveAnnotationToThread(tempAnnotation);
@@ -147,31 +145,34 @@ class AnnotationThread extends EventEmitter {
         this.state = constants.ANNOTATION_STATE_HOVER;
 
         // Save annotation on server
-        this.annotationService.create(annotationData).then((savedAnnotation) => {
-            // If no temporary annotation is found, save to thread normally
-            const tempIdx = this.annotations.indexOf(tempAnnotation);
-            if (tempIdx === -1) {
-                this.saveAnnotationToThread(savedAnnotation);
-            }
+        this.annotationService
+            .create(annotationData)
+            .then((savedAnnotation) => {
+                // If no temporary annotation is found, save to thread normally
+                const tempIdx = this.annotations.indexOf(tempAnnotation);
+                if (tempIdx === -1) {
+                    this.saveAnnotationToThread(savedAnnotation);
+                }
 
-            // Add thread number to associated dialog and thread
-            this.thread = this.thread || savedAnnotation.thread;
-            this.dialog.element.dataset.threadNumber = this.thread;
+                // Add thread number to associated dialog and thread
+                this.thread = this.thread || savedAnnotation.thread;
+                this.dialog.element.dataset.threadNumber = this.thread;
 
-            // Otherwise, replace temporary annotation with annotation saved to server
-            this.annotations[tempIdx] = savedAnnotation;
+                // Otherwise, replace temporary annotation with annotation saved to server
+                this.annotations[tempIdx] = savedAnnotation;
 
-            if (this.dialog) {
-                this.dialog.addAnnotation(savedAnnotation);
-                this.dialog.removeAnnotation(tempAnnotationID);
-            }
-        }).catch(() => {
-            // Remove temporary annotation
-            this.deleteAnnotation(tempAnnotationID, /* useServer */ false);
+                if (this.dialog) {
+                    this.dialog.addAnnotation(savedAnnotation);
+                    this.dialog.removeAnnotation(tempAnnotationID);
+                }
+            })
+            .catch(() => {
+                // Remove temporary annotation
+                this.deleteAnnotation(tempAnnotationID, /* useServer */ false);
 
-            // Broadcast error
-            this.emit('annotationcreateerror');
-        });
+                // Broadcast error
+                this.emit('annotationcreateerror');
+            });
     }
 
     /**
@@ -193,39 +194,46 @@ class AnnotationThread extends EventEmitter {
 
         // If the user doesn't have permission to delete the entire highlight
         // annotation, display the annotation as a plain highlight
-        let canDeleteAnnotation = this.annotations.length > 0 && this.annotations[0].permissions && this.annotations[0].permissions.can_delete;
+        let canDeleteAnnotation =
+            this.annotations.length > 0 &&
+            this.annotations[0].permissions &&
+            this.annotations[0].permissions.can_delete;
         if (annotatorUtil.isPlainHighlight(this.annotations) && !canDeleteAnnotation) {
             this.cancelFirstComment();
 
-        // If this annotation was the last one in the thread, destroy the thread
+            // If this annotation was the last one in the thread, destroy the thread
         } else if (this.annotations.length === 0 || annotatorUtil.isPlainHighlight(this.annotations)) {
             this.destroy();
 
-        // Otherwise, remove deleted annotation from dialog
+            // Otherwise, remove deleted annotation from dialog
         } else if (this.dialog) {
             this.dialog.removeAnnotation(annotationID);
         }
 
         // Delete annotation on server
         if (useServer) {
-            this.annotationService.delete(annotationID)
-            .then(() => {
-                // Ensures that blank highlight comment is also deleted when removing
-                // the last comment on a highlight
-                canDeleteAnnotation = this.annotations.length > 0 && this.annotations[0].permissions && this.annotations[0].permissions.can_delete;
-                if (annotatorUtil.isPlainHighlight(this.annotations) && canDeleteAnnotation) {
-                    this.annotationService.delete(this.annotations[0].annotationID);
-                }
+            this.annotationService
+                .delete(annotationID)
+                .then(() => {
+                    // Ensures that blank highlight comment is also deleted when removing
+                    // the last comment on a highlight
+                    canDeleteAnnotation =
+                        this.annotations.length > 0 &&
+                        this.annotations[0].permissions &&
+                        this.annotations[0].permissions.can_delete;
+                    if (annotatorUtil.isPlainHighlight(this.annotations) && canDeleteAnnotation) {
+                        this.annotationService.delete(this.annotations[0].annotationID);
+                    }
 
-                // Broadcast thread cleanup if needed
-                if (this.annotations.length === 0) {
-                    this.emit('threadcleanup');
-                }
-            })
-            .catch(() => {
-                // Broadcast error
-                this.emit('annotationdeleteerror');
-            });
+                    // Broadcast thread cleanup if needed
+                    if (this.annotations.length === 0) {
+                        this.emit('threadcleanup');
+                    }
+                })
+                .catch(() => {
+                    // Broadcast error
+                    this.emit('annotationdeleteerror');
+                });
         }
     }
 

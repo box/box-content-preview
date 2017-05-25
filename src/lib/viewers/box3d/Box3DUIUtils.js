@@ -148,7 +148,6 @@ function createDropdown(labelText = '', listText = '', listContent = []) {
  * @class
  */
 class UIRegistry {
-
     /**
      * @constructor
      */
@@ -237,12 +236,4 @@ class UIRegistry {
     }
 }
 
-export {
-    createButton,
-    createCheckbox,
-    createDropdown,
-    createLabel,
-    createPullup,
-    createRow,
-    UIRegistry
-};
+export { createButton, createCheckbox, createDropdown, createLabel, createPullup, createRow, UIRegistry };

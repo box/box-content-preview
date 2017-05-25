@@ -60,7 +60,6 @@ export function isWatermarked(file) {
     return !!file && !!file.watermark_info && file.watermark_info.is_watermarked;
 }
 
-
 /**
  * Checks permission
  *

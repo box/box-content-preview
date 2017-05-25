@@ -183,7 +183,9 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
         });
 
         it('should append "boxapi" request header to the XHR with the provided shared link', () => {
-            sandbox.stub(window, 'encodeURI', (uri) => { return uri; });
+            sandbox.stub(window, 'encodeURI', (uri) => {
+                return uri;
+            });
             const setReqHeaderSpy = sandbox.spy(XMLHttpRequest.prototype, 'setRequestHeader');
             const sharedLink = 'abcde';
             const expectedAuthHeaderValue = `shared_link=${sharedLink}`;
@@ -194,7 +196,9 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
         });
 
         it('should append "boxapi" request header to the XHR with the shared link AND shared link password', () => {
-            sandbox.stub(window, 'encodeURI', (uri) => { return uri; });
+            sandbox.stub(window, 'encodeURI', (uri) => {
+                return uri;
+            });
             const setReqHeaderSpy = sandbox.spy(XMLHttpRequest.prototype, 'setRequestHeader');
             const sharedLink = 'abcde';
             const sharedLinkPassword = '!!myP455w0rD';
@@ -408,14 +412,18 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
     describe('toggleVr()', () => {
         it('should enable vr if it\'s currently disabled', () => {
             let called = false;
-            sandbox.stub(renderer, 'enableVr', () => { called = true; });
+            sandbox.stub(renderer, 'enableVr', () => {
+                called = true;
+            });
             renderer.toggleVr();
             expect(called).to.be.true;
         });
 
         it('should disable vr if it\'s currently enabled', () => {
             let called = false;
-            sandbox.stub(renderer, 'disableVr', () => { called = true; });
+            sandbox.stub(renderer, 'disableVr', () => {
+                called = true;
+            });
             renderer.vrEnabled = true;
             renderer.toggleVr();
             expect(called).to.be.true;
@@ -590,8 +598,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         it('should enable the component if it available on the camera', () => {
             const component = { enable: sandbox.stub() };
-            cameraMock.expects('getComponentByScriptId')
-                .withArgs(PREVIEW_CAMERA_CONTROLLER_ID).returns(component);
+            cameraMock.expects('getComponentByScriptId').withArgs(PREVIEW_CAMERA_CONTROLLER_ID).returns(component);
             renderer.enableCameraControls();
             expect(component.enable).to.be.called;
         });
@@ -610,8 +617,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         it('should disable the component if it available on the camera', () => {
             const component = { disable: sandbox.stub() };
-            cameraMock.expects('getComponentByScriptId')
-                .withArgs(PREVIEW_CAMERA_CONTROLLER_ID).returns(component);
+            cameraMock.expects('getComponentByScriptId').withArgs(PREVIEW_CAMERA_CONTROLLER_ID).returns(component);
             renderer.disableCameraControls();
             expect(component.disable).to.be.called;
         });

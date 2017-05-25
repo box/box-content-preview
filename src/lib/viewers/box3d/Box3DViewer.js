@@ -28,8 +28,7 @@ const CLASS_VR_ENABLED = 'vr-enabled';
  * This is the entry point for Box3D Preview Base
  * @class
  */
-@autobind
-class Box3DViewer extends BaseViewer {
+@autobind class Box3DViewer extends BaseViewer {
     /**
      * @inheritdoc
      */
@@ -163,9 +162,7 @@ class Box3DViewer extends BaseViewer {
         });
         this.createSubModules();
         this.attachEventHandlers();
-        this.renderer
-            .load(this.createContentUrl(template, 'entities.json'), this.options)
-            .catch(this.handleError);
+        this.renderer.load(this.createContentUrl(template, 'entities.json'), this.options).catch(this.handleError);
     }
 
     /**

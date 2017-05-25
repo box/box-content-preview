@@ -5,7 +5,23 @@ import MP4Viewer from './MP4Viewer';
 import DashViewer from './DashViewer';
 import { ORIGINAL_REP_NAME } from '../../constants';
 
-const VIDEO_FORMATS = ['3g2', '3gp', 'avi', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'mts', 'qt', 'wmv'];
+const VIDEO_FORMATS = [
+    '3g2',
+    '3gp',
+    'avi',
+    'm2v',
+    'm2ts',
+    'm4v',
+    'mkv',
+    'mov',
+    'mp4',
+    'mpeg',
+    'mpg',
+    'ogg',
+    'mts',
+    'qt',
+    'wmv'
+];
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 // For example, a mp3 file can be previewed both natively (majority use case) using the original
@@ -38,7 +54,6 @@ const VIEWERS = [
 ];
 
 class MediaLoader extends AssetLoader {
-
     /**
      * [constructor]
      * @return {MediaLoader} MediaLoader instance

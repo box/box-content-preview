@@ -29,8 +29,7 @@ const DEFAULT_RENDER_GRID = true;
  * This is the entry point for the model3d preview.
  * @class
  */
-@autobind
-class Model3DViewer extends Box3DViewer {
+@autobind class Model3DViewer extends Box3DViewer {
     /**
      * @inheritdoc
      */
@@ -191,7 +190,9 @@ class Model3DViewer extends Box3DViewer {
     handleSceneLoaded() {
         this.loaded = true;
         // Get scene defaults for up/forward axes, and render mode
-        return this.boxSdk.getMetadataClient().get(this.options.file.id, 'global', 'box3d')
+        return this.boxSdk
+            .getMetadataClient()
+            .get(this.options.file.id, 'global', 'box3d')
             .then((response) => {
                 // Treat non-200 responses as errors.
                 if (response.status !== 200) {

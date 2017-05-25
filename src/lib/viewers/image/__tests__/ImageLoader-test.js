@@ -17,18 +17,21 @@ describe('lib/viewers/image/ImageLoader', () => {
             file = {
                 extension: 'jpg',
                 representations: {
-                    entries: [{
-                        representation: 'jpg',
-                        properties: {
-                            dimensions: '1024x1024',
-                            paged: 'false'
+                    entries: [
+                        {
+                            representation: 'jpg',
+                            properties: {
+                                dimensions: '1024x1024',
+                                paged: 'false'
+                            }
+                        },
+                        {
+                            representation: 'jpg',
+                            properties: {
+                                dimensions: '2048x2048'
+                            }
                         }
-                    }, {
-                        representation: 'jpg',
-                        properties: {
-                            dimensions: '2048x2048'
-                        }
-                    }]
+                    ]
                 }
             };
 

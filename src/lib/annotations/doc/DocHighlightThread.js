@@ -9,9 +9,7 @@ const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 const HOVER_TIMEOUT_MS = 75;
 
-@autobind
-class DocHighlightThread extends AnnotationThread {
-
+@autobind class DocHighlightThread extends AnnotationThread {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
@@ -131,9 +129,12 @@ class DocHighlightThread extends AnnotationThread {
     onClick(event, consumed) {
         // If state is in hover, it means mouse is already over this highlight
         // so we can skip the is in highlight calculation
-        if (!consumed && (this.state === constants.ANNOTATION_STATE_HOVER ||
-            this.state === constants.ANNOTATION_STATE_ACTIVE_HOVER ||
-            this.isOnHighlight(event))) {
+        if (
+            !consumed &&
+            (this.state === constants.ANNOTATION_STATE_HOVER ||
+                this.state === constants.ANNOTATION_STATE_ACTIVE_HOVER ||
+                this.isOnHighlight(event))
+        ) {
             this.state = constants.ANNOTATION_STATE_ACTIVE;
             return true;
         }
@@ -163,8 +164,10 @@ class DocHighlightThread extends AnnotationThread {
      * @return {void}
      */
     activateDialog() {
-        if (this.state === constants.ANNOTATION_STATE_ACTIVE ||
-            this.state === constants.ANNOTATION_STATE_ACTIVE_HOVER) {
+        if (
+            this.state === constants.ANNOTATION_STATE_ACTIVE ||
+            this.state === constants.ANNOTATION_STATE_ACTIVE_HOVER
+        ) {
             this.state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
         } else {
             this.state = constants.ANNOTATION_STATE_HOVER;
@@ -196,15 +199,14 @@ class DocHighlightThread extends AnnotationThread {
             }
             this.state = constants.ANNOTATION_STATE_HOVER;
 
-        // If mouse is in highlight, change state to hover or active-hover
+            // If mouse is in highlight, change state to hover or active-hover
         } else if (this.isInHighlight(event)) {
             this.activateDialog();
 
-        // If mouse is not in highlight, and state is active, do not override
+            // If mouse is not in highlight, and state is active, do not override
         } else if (this.state === constants.ANNOTATION_STATE_ACTIVE) {
             // No-op
-
-        // If mouse is not in highlight and state is not already inactive, reset
+            // If mouse is not in highlight and state is not already inactive, reset
         } else if (this.state !== constants.ANNOTATION_STATE_INACTIVE) {
             // Add timeout before resettting highlight to inactive so
             // hovering over line breaks doesn't cause flickering
@@ -214,7 +216,7 @@ class DocHighlightThread extends AnnotationThread {
 
             return false;
 
-        // If state is already inactive, don't delay or reset
+            // If state is already inactive, don't delay or reset
         } else {
             return false;
         }
@@ -272,8 +274,10 @@ class DocHighlightThread extends AnnotationThread {
 
         // Ensures that previously created annotations have the right type
         if (this.annotations.length) {
-            if ((this.annotations[0].text !== '' || this.annotations.length > 1) &&
-                this.type === constants.ANNOTATION_TYPE_HIGHLIGHT) {
+            if (
+                (this.annotations[0].text !== '' || this.annotations.length > 1) &&
+                this.type === constants.ANNOTATION_TYPE_HIGHLIGHT
+            ) {
                 this.type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
             }
         }
@@ -377,7 +381,12 @@ class DocHighlightThread extends AnnotationThread {
         const pageDimensions = this.getPageEl().getBoundingClientRect();
         const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
         const zoomScale = annotatorUtil.getScale(this.annotatedElement);
-        const dimensionScale = annotatorUtil.getDimensionScale(this.location.dimensions, pageDimensions, zoomScale, PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM);
+        const dimensionScale = annotatorUtil.getDimensionScale(
+            this.location.dimensions,
+            pageDimensions,
+            zoomScale,
+            PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM
+        );
 
         this.location.quadPoints.forEach((quadPoint) => {
             // If needed, scale quad points comparing current dimensions with saved dimensions
@@ -434,7 +443,12 @@ class DocHighlightThread extends AnnotationThread {
         const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
         const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
         const zoomScale = annotatorUtil.getScale(this.annotatedElement);
-        const dimensionScale = annotatorUtil.getDimensionScale(this.location.dimensions, pageDimensions, zoomScale, PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM);
+        const dimensionScale = annotatorUtil.getDimensionScale(
+            this.location.dimensions,
+            pageDimensions,
+            zoomScale,
+            PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM
+        );
 
         // DOM coordinates with respect to the page
         const x = event.clientX - pageDimensions.left;
@@ -452,12 +466,7 @@ class DocHighlightThread extends AnnotationThread {
             const browserQuadPoint = docAnnotatorUtil.convertPDFSpaceToDOMSpace(scaledQuadPoint, pageHeight, zoomScale);
             const [x1, y1, x2, y2, x3, y3, x4, y4] = browserQuadPoint;
 
-            return docAnnotatorUtil.isPointInPolyOpt([
-                [x1, y1],
-                [x2, y2],
-                [x3, y3],
-                [x4, y4]
-            ], x, y);
+            return docAnnotatorUtil.isPointInPolyOpt([[x1, y1], [x2, y2], [x3, y3], [x4, y4]], x, y);
         });
     }
 
