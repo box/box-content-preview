@@ -1,18 +1,18 @@
 # Change Log
 
-## [v0.126.0](https://github.com/box/box-content-preview/tree/v0.126.0) (2017-05-23)
+## [v0.126.0](https://github.com/box/box-content-preview/tree/v0.126.0) (2017-05-24)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.125.0...v0.126.0)
 
 **Merged pull requests:**
 
 - Update Translations [\#142](https://github.com/box/box-content-preview/pull/142) ([boxmoji](https://github.com/boxmoji))
-- Build: Update build script to tag release commits [\#141](https://github.com/box/box-content-preview/pull/141) ([tonyjin](https://github.com/tonyjin))
 
 ## [v0.125.0](https://github.com/box/box-content-preview/tree/v0.125.0) (2017-05-24)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.124.0...v0.125.0)
 
 **Merged pull requests:**
 
+- Build: Update build script to tag release commits [\#141](https://github.com/box/box-content-preview/pull/141) ([tonyjin](https://github.com/tonyjin))
 - Chore: Update prettier line width to 80 [\#139](https://github.com/box/box-content-preview/pull/139) ([tonyjin](https://github.com/tonyjin))
 - Update: Show rate limit specific error message when a 429 occurs [\#137](https://github.com/box/box-content-preview/pull/137) ([jeremypress](https://github.com/jeremypress))
 - Update: Update Box3D with new material default [\#136](https://github.com/box/box-content-preview/pull/136) ([MiiBond](https://github.com/MiiBond))
