@@ -355,7 +355,10 @@ describe('lib/viewers/image/ImageViewer', () => {
             const [width, height] = [100, 100];
 
             image.setScale(width, height);
-            expect(image.emit).to.be.calledWith('scale', sinon.match.any, sinon.match.number);
+            expect(image.emit).to.be.calledWith('scale', {
+                scale: sinon.match.any,
+                rotationAngle: sinon.match.number
+            });
         });
     });
 
@@ -583,7 +586,10 @@ describe('lib/viewers/image/ImageViewer', () => {
             sandbox.stub(image, 'emit');
             image.handleOrientationChange();
             expect(stubs.padding).to.be.called;
-            expect(image.emit).to.be.calledWith('scale', sinon.match.any, sinon.match.number);
+            expect(image.emit).to.be.calledWith('scale', {
+                scale: sinon.match.any,
+                rotationAngle: sinon.match.number
+            });
         });
     });
 

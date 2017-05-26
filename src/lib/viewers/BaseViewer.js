@@ -276,10 +276,10 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
         });
 
         // Add a custom listener for events related to scaling/orientation changes
-        this.addListener('scale', (scale, rotationAngle) => {
+        this.addListener('scale', (data) => {
             if (this.annotator) {
-                this.annotator.setScale(scale);
-                this.annotator.rotateAnnotations(rotationAngle);
+                this.annotator.setScale(data.scale);
+                this.annotator.rotateAnnotations(data.rotationAngle);
             }
         });
 

@@ -230,7 +230,10 @@ const IMAGE_ZOOM_SCALE = 1.2;
     setScale(width, height) {
         this.scale = width ? width / this.imageEl.naturalWidth : height / this.imageEl.naturalHeight;
         this.rotationAngle = this.currentRotationAngle % 3600 % 360;
-        this.emit('scale', this.scale, this.rotationAngle);
+        this.emit('scale', {
+            scale: this.scale,
+            rotationAngle: this.rotationAngle
+        });
     }
 
     /**
@@ -389,7 +392,10 @@ const IMAGE_ZOOM_SCALE = 1.2;
 
         this.scale = this.imageEl.clientWidth / this.imageEl.naturalWidth;
         this.rotationAngle = this.currentRotationAngle % 3600 % 360;
-        this.emit('scale', this.scale, this.rotationAngle);
+        this.emit('scale', {
+            scale: this.scale,
+            rotationAngle: this.rotationAngle
+        });
     }
 }
 
