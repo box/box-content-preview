@@ -97,8 +97,8 @@
 
 /* Highlight dialog */
 .bp-mobile-annotation-dialog.bp-plain-highlight {
-    bottom: 0;
-    height: 94px; // includes mobile header & highlight dialog
+    border-bottom: 1px solid #ccc;
+    height: 47px; // includes mobile header & highlight dialog
     top: auto;
 }
 

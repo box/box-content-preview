@@ -69,8 +69,12 @@ import { ICON_CLOSE, ICON_DELETE } from '../icons/icons';
             this.element = document.querySelector(`.${constants.CLASS_MOBILE_ANNOTATION_DIALOG}`);
             annotatorUtil.showElement(this.element);
             this.element.appendChild(this.dialogEl);
+
             if (this.highlightDialogEl && !this.hasComments) {
                 this.element.classList.add('bp-plain-highlight');
+
+                const headerEl = this.element.querySelector('.bp-annotation-mobile-header');
+                headerEl.classList.add(CLASS_HIDDEN);
             }
 
             const dialogCloseButtonEl = this.element.querySelector('.bp-annotation-dialog-close');
@@ -249,6 +253,7 @@ import { ICON_CLOSE, ICON_DELETE } from '../icons/icons';
         this.element.addEventListener('click', this.clickHandler);
         this.element.addEventListener('mouseup', this.stopPropagation);
         this.element.addEventListener('wheel', this.stopPropagation);
+
         if (!this.isMobile) {
             this.element.addEventListener('mouseenter', this.mouseenterHandler);
             this.element.addEventListener('mouseleave', this.mouseleaveHandler);
@@ -266,6 +271,7 @@ import { ICON_CLOSE, ICON_DELETE } from '../icons/icons';
         this.element.removeEventListener('click', this.clickHandler);
         this.element.removeEventListener('mouseup', this.stopPropagation);
         this.element.removeEventListener('wheel', this.stopPropagation);
+
         if (!this.isMobile) {
             this.element.removeEventListener('mouseenter', this.mouseenterHandler);
             this.element.removeEventListener('mouseleave', this.mouseleaveHandler);

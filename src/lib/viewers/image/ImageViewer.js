@@ -246,6 +246,7 @@ const IMAGE_ZOOM_SCALE = 1.2;
         if (this.isMobile) {
             return;
         }
+
         this.controls.add(__('rotate_left'), this.rotateLeft, 'bp-image-rotate-left-icon', ICON_ROTATE_LEFT);
         this.controls.add(
             __('enter_fullscreen'),

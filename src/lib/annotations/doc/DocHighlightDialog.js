@@ -119,10 +119,9 @@ const PAGE_PADDING_TOP = 15;
             // Activate comments textarea
             const textAreaEl = this.dialogEl.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
             textAreaEl.classList.add(CLASS_ACTIVE);
-
-            // Displays the highlight and comment buttons dialog and hides the
-            // comments dialog
         } else {
+            // Displays the highlight and comment buttons dialog and
+            // hides the comments dialog
             this.element.classList.remove(constants.CLASS_ANNOTATION_DIALOG);
             annotatorUtil.hideElement(this.commentsDialogEl);
 
@@ -152,9 +151,8 @@ const PAGE_PADDING_TOP = 15;
             annotatorUtil.hideElement(replyTextEl);
             annotatorUtil.showElement(commentTextEl);
             this.deactivateReply();
-
-            // Ensures that "Reply" text area is shown
         } else {
+            // Ensures that "Reply" text area is shown
             annotatorUtil.hideElement(commentTextEl);
             annotatorUtil.showElement(replyTextEl);
             this.activateReply();
@@ -220,8 +218,9 @@ const PAGE_PADDING_TOP = 15;
             this.dialogEl.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
         }
 
-        // Checks if highlight is a plain highlight annotation and if user name
-        // has been populated. If userID is 0, user name will be 'Some User'
+        // Checks if highlight is a plain highlight annotation and if
+        // user name has been populated. If userID is 0, user name will
+        // be 'Some User'
         if (annotatorUtil.isPlainHighlight(annotations) && annotations[0].user.id !== '0') {
             const highlightLabelEl = this.highlightDialogEl.querySelector('.bp-annotation-highlight-label');
             highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [
