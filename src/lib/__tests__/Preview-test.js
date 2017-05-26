@@ -18,7 +18,6 @@ const PREFETCH_COUNT = 4; // number of files to prefetch
 const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
 const KEYDOWN_EXCEPTIONS = ['INPUT', 'SELECT', 'TEXTAREA']; // Ignore keydown events on these elements
 
-
 const sandbox = sinon.sandbox.create();
 
 let stubs = {};
@@ -257,8 +256,7 @@ describe('lib/Preview', () => {
                 }
             ];
 
-            stubs.checkFileValid.onCall(0).returns(true)
-            .onCall(1).returns(false);
+            stubs.checkFileValid.onCall(0).returns(true).onCall(1).returns(false);
 
             preview.updateFileCache(files);
             expect(stubs.cacheFile).calledOnce;
@@ -1195,7 +1193,6 @@ describe('lib/Preview', () => {
             preview.options.showDownload = true;
             stubs.canDownload.returns(true);
 
-
             preview.loadViewer({});
             expect(stubs.showLoadingDownloadButton).to.be.called;
         });
@@ -1310,7 +1307,6 @@ describe('lib/Preview', () => {
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.not.be.called;
 
-
             stubs.checkPermission.returns(true);
 
             preview.finishLoading();
@@ -1322,7 +1318,6 @@ describe('lib/Preview', () => {
 
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.not.be.called;
-
 
             preview.options.showDownload = true;
 
@@ -1341,10 +1336,8 @@ describe('lib/Preview', () => {
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.be.called;
 
-
             stubs.canDownload.returns(true);
             stubs.isMobile.returns(false);
-
 
             preview.finishLoading();
             expect(stubs.showDownloadButton).to.be.calledWith(preview.download);
@@ -1534,7 +1527,9 @@ describe('lib/Preview', () => {
             preview.triggerFetchError(stubs.error);
             try {
                 expect(stubs.triggerError).to.be.calledWith(new Error(__('error_rate_limit')));
-            } catch (e) { /* no op */ }
+            } catch (e) {
+                /* no op */
+            }
         });
 
         it('should reset a timeout that tries to load the file again', () => {
@@ -1629,6 +1624,15 @@ describe('lib/Preview', () => {
         it('should add dash hints if the browser supports dash', () => {
             stubs.canPlayDash.returns(true);
             stubs.headers['X-Rep-Hints'] += '[dash,mp4][filmstrip]';
+
+            preview.getRequestHeaders();
+            expect(stubs.getHeaders).to.be.calledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+        });
+
+        it('should not add dash hints if the browser supports dash but dash is disabled', () => {
+            stubs.canPlayDash.returns(true);
+            preview.disabledViewers.Dash = 1;
+            stubs.headers['X-Rep-Hints'] += '[mp4]';
 
             preview.getRequestHeaders();
             expect(stubs.getHeaders).to.be.calledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
@@ -1937,9 +1941,7 @@ describe('lib/Preview', () => {
                 }
             };
 
-            preview.viewer = {
-
-            };
+            preview.viewer = {};
         });
 
         it('should do nothing if keyboard shortcuts are disabled', () => {

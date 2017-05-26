@@ -1,23 +1,23 @@
 /* eslint-disable */
-(function () {
+(function() {
     var testObject = {};
 
     if (!(Object.setPrototypeOf || testObject.__proto__)) {
         var nativeGetPrototypeOf = Object.getPrototypeOf;
 
-        Object.getPrototypeOf = function (object) {
+        Object.getPrototypeOf = function(object) {
             if (object.__proto__) {
                 return object.__proto__;
             } else {
                 return nativeGetPrototypeOf.call(Object, object);
             }
-        }
+        };
     }
 })();
 
 if (typeof Object.assign != 'function') {
-    (function () {
-        Object.assign = function (target) {
+    (function() {
+        Object.assign = function(target) {
             'use strict';
             if (target === undefined || target === null) {
                 throw new TypeError('Cannot convert undefined or null to object');
@@ -45,7 +45,7 @@ if (!Array.prototype.find) {
         configurable: true,
         enumerable: false,
         writable: true,
-        value: function (predicate) {
+        value: function(predicate) {
             // 1. Let O be ? ToObject(this value).
             if (this == null) {
                 throw new TypeError('"this" is null or not defined');
@@ -93,7 +93,7 @@ if (!Array.prototype.findIndex) {
         configurable: true,
         enumerable: false,
         writable: true,
-        value: function (predicate) {
+        value: function(predicate) {
             // 1. Let O be ? ToObject(this value).
             if (this == null) {
                 throw new TypeError('"this" is null or not defined');
@@ -141,8 +141,7 @@ if (!Array.prototype.includes) {
         configurable: true,
         enumerable: false,
         writable: true,
-        value: function (searchElement, fromIndex) {
-
+        value: function(searchElement, fromIndex) {
             // 1. Let O be ? ToObject(this value).
             if (this == null) {
                 throw new TypeError('"this" is null or not defined');
@@ -195,9 +194,14 @@ if (!String.prototype.endsWith) {
         configurable: true,
         enumerable: false,
         writable: true,
-        value: function (searchString, position) {
+        value: function(searchString, position) {
             var subjectString = this.toString();
-            if (typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > subjectString.length) {
+            if (
+                typeof position !== 'number' ||
+                !isFinite(position) ||
+                Math.floor(position) !== position ||
+                position > subjectString.length
+            ) {
                 position = subjectString.length;
             }
             position -= searchString.length;

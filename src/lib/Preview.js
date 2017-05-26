@@ -12,23 +12,8 @@ import cache from './Cache';
 import ProgressBar from './ProgressBar';
 import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
 import getTokens from './tokens';
-import {
-    get,
-    post,
-    decodeKeydown,
-    openUrlInsideIframe,
-    getHeaders,
-    findScriptLocation
-} from './util';
-import {
-    getURL,
-    getDownloadURL,
-    checkPermission,
-    checkFeature,
-    checkFileValid,
-    cacheFile,
-    uncacheFile
-} from './file';
+import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
+import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid, cacheFile, uncacheFile } from './file';
 import {
     setup,
     cleanup,
@@ -69,10 +54,7 @@ const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 // preview.js is loaded from by the browser. This needs to be done statically
 // outside the class so that location is found while this script is executing
 // and not when preview is instantiated, which is too late.
-const PREVIEW_LOCATION = findScriptLocation(
-    PREVIEW_SCRIPT_NAME,
-    document.currentScript
-);
+const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
 
 @autobind class Preview extends EventEmitter {
     /**
@@ -320,10 +302,7 @@ const PREVIEW_LOCATION = findScriptLocation(
                 cacheFile(file);
             } else {
                 /* eslint-disable no-console */
-                console.error(
-                    '[Preview SDK] Tried to cache invalid file: ',
-                    file
-                );
+                console.error('[Preview SDK] Tried to cache invalid file: ', file);
                 /* eslint-enable no-console */
             }
         });
@@ -436,10 +415,7 @@ const PREVIEW_LOCATION = findScriptLocation(
      * @return {void}
      */
     print() {
-        if (
-            checkPermission(this.file, PERMISSION_DOWNLOAD) &&
-            checkFeature(this.viewer, 'print')
-        ) {
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && checkFeature(this.viewer, 'print')) {
             this.viewer.print();
         }
     }
@@ -451,10 +427,7 @@ const PREVIEW_LOCATION = findScriptLocation(
      */
     download() {
         if (checkPermission(this.file, PERMISSION_DOWNLOAD)) {
-            get(
-                getDownloadURL(this.file.id, this.options.apiHost),
-                this.getRequestHeaders()
-            ).then((data) => {
+            get(getDownloadURL(this.file.id, this.options.apiHost), this.getRequestHeaders()).then((data) => {
                 openUrlInsideIframe(data.download_url);
             });
         }
@@ -499,13 +472,7 @@ const PREVIEW_LOCATION = findScriptLocation(
      * @param {string} token - Access token
      * @return {void}
      */
-    prefetch({
-        fileId,
-        token,
-        sharedLink = '',
-        sharedLinkPassword = '',
-        preload = false
-    }) {
+    prefetch({ fileId, token, sharedLink = '', sharedLinkPassword = '', preload = false }) {
         let file;
         let loader;
         let viewer;
@@ -541,9 +508,7 @@ const PREVIEW_LOCATION = findScriptLocation(
             options.sharedLinkPassword = sharedLinkPassword;
         }
 
-        const viewerInstance = new viewer.CONSTRUCTOR(
-            this.createViewerOptions(options)
-        );
+        const viewerInstance = new viewer.CONSTRUCTOR(this.createViewerOptions(options));
         if (typeof viewerInstance.prefetch === 'function') {
             viewerInstance.prefetch({
                 assets: true,
@@ -562,23 +527,21 @@ const PREVIEW_LOCATION = findScriptLocation(
      * @return {void}
      */
     prefetchViewers(viewerNames = []) {
-        this.getViewers()
-            .filter((viewer) => viewerNames.indexOf(viewer.NAME) !== -1)
-            .forEach((viewer) => {
-                const viewerInstance = new viewer.CONSTRUCTOR(
-                    this.createViewerOptions({
-                        viewer
-                    })
-                );
+        this.getViewers().filter((viewer) => viewerNames.indexOf(viewer.NAME) !== -1).forEach((viewer) => {
+            const viewerInstance = new viewer.CONSTRUCTOR(
+                this.createViewerOptions({
+                    viewer
+                })
+            );
 
-                if (typeof viewerInstance.prefetch === 'function') {
-                    viewerInstance.prefetch({
-                        assets: true,
-                        preload: false,
-                        content: false
-                    });
-                }
-            });
+            if (typeof viewerInstance.prefetch === 'function') {
+                viewerInstance.prefetch({
+                    assets: true,
+                    preload: false,
+                    content: false
+                });
+            }
+        });
     }
 
     //--------------------------------------------------------------------------
@@ -700,14 +663,10 @@ const PREVIEW_LOCATION = findScriptLocation(
         this.options.sharedLinkPassword = options.sharedLinkPassword;
 
         // Save reference to API host
-        this.options.apiHost = options.apiHost
-            ? options.apiHost.replace(/\/$/, '')
-            : API_HOST;
+        this.options.apiHost = options.apiHost ? options.apiHost.replace(/\/$/, '') : API_HOST;
 
         // Save reference to the app host
-        this.options.appHost = options.appHost
-            ? options.appHost.replace(/\/$/, '')
-            : APP_HOST;
+        this.options.appHost = options.appHost ? options.appHost.replace(/\/$/, '') : APP_HOST;
 
         // Show or hide the header
         this.options.header = options.header || 'light';
@@ -754,13 +713,7 @@ const PREVIEW_LOCATION = findScriptLocation(
      * @return {Object} combined options
      */
     createViewerOptions(moreOptions) {
-        return cloneDeep(
-            Object.assign(
-                { location: this.location },
-                this.options,
-                moreOptions
-            )
-        );
+        return cloneDeep(Object.assign({ location: this.location }, this.options, moreOptions));
     }
 
     /**
@@ -787,10 +740,7 @@ const PREVIEW_LOCATION = findScriptLocation(
      * @return {void}
      */
     loadFromServer() {
-        get(
-            getURL(this.file.id, this.options.apiHost),
-            this.getRequestHeaders()
-        )
+        get(getURL(this.file.id, this.options.apiHost), this.getRequestHeaders())
             .then(this.handleLoadResponse)
             .catch(this.triggerFetchError);
     }
@@ -822,8 +772,7 @@ const PREVIEW_LOCATION = findScriptLocation(
             const cachedFile = cache.get(file.id);
 
             // Explicitly uncache watermarked files, otherwise update cache
-            const isWatermarked =
-                file.watermark_info && file.watermark_info.is_watermarked;
+            const isWatermarked = file.watermark_info && file.watermark_info.is_watermarked;
             if (isWatermarked) {
                 uncacheFile(file);
             } else {
@@ -852,9 +801,7 @@ const PREVIEW_LOCATION = findScriptLocation(
                 /* eslint-enable no-console */
             }
         } catch (err) {
-            this.triggerError(
-                err instanceof Error ? err : new Error(__('error_refresh'))
-            );
+            this.triggerError(err instanceof Error ? err : new Error(__('error_refresh')));
         }
     }
 
@@ -869,9 +816,7 @@ const PREVIEW_LOCATION = findScriptLocation(
         // If preview is closed don't do anything
         if (!this.open) {
             /* eslint-disable no-console */
-            console.error(
-                `loadViewer returned early - this.open: ${this.open}`
-            );
+            console.error(`loadViewer returned early - this.open: ${this.open}`);
             /* eslint-enable no-console */
             return;
         }
@@ -882,11 +827,7 @@ const PREVIEW_LOCATION = findScriptLocation(
         }
 
         // Show download button if download permissions exist, options allow, and browser has ability
-        if (
-            checkPermission(this.file, PERMISSION_DOWNLOAD) &&
-            this.options.showDownload &&
-            Browser.canDownload()
-        ) {
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
             showLoadingDownloadButton(this.download);
         }
 
@@ -899,19 +840,13 @@ const PREVIEW_LOCATION = findScriptLocation(
         }
 
         // Determine the viewer to use
-        const viewer = loader.determineViewer(
-            this.file,
-            Object.keys(this.disabledViewers)
-        );
+        const viewer = loader.determineViewer(this.file, Object.keys(this.disabledViewers));
 
         // Log the type of file
         this.logger.setType(viewer.NAME);
 
         // Determine the representation to use
-        const representation = loader.determineRepresentation(
-            this.file,
-            viewer
-        );
+        const representation = loader.determineRepresentation(this.file, viewer);
 
         // Instantiate the viewer
         const viewerOptions = this.createViewerOptions({
@@ -977,11 +912,7 @@ const PREVIEW_LOCATION = findScriptLocation(
     finishLoading(data = {}) {
         // Show or hide annotate/print/download buttons
         // canDownload is not supported by all of our browsers, so for now we need to check isMobile
-        if (
-            checkPermission(this.file, PERMISSION_DOWNLOAD) &&
-            this.options.showDownload &&
-            Browser.canDownload()
-        ) {
+        if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
             showDownloadButton(this.download);
 
             if (checkFeature(this.viewer, 'print') && !Browser.isMobile()) {
@@ -1157,12 +1088,8 @@ const PREVIEW_LOCATION = findScriptLocation(
         this.destroy();
 
         // Figure out what error message to log and what error message to display
-        const logMessage = err instanceof Error
-            ? err.message
-            : __('error_default');
-        const displayMessage = err && err.displayMessage
-            ? err.displayMessage
-            : logMessage;
+        const logMessage = err instanceof Error ? err.message : __('error_default');
+        const displayMessage = err && err.displayMessage ? err.displayMessage : logMessage;
 
         // Instantiate the error viewer
         this.viewer = this.getErrorViewer();
@@ -1182,7 +1109,7 @@ const PREVIEW_LOCATION = findScriptLocation(
      * @return {Object} Headers
      */
     getRequestHeaders(token) {
-        const videoHint = Browser.canPlayDash()
+        const videoHint = Browser.canPlayDash() && !this.disabledViewers.Dash
             ? X_REP_HINT_VIDEO_DASH
             : X_REP_HINT_VIDEO_MP4;
         const headers = {
@@ -1231,10 +1158,7 @@ const PREVIEW_LOCATION = findScriptLocation(
                     const token = tokenMap[id];
 
                     // Prefetch and cache file information and content
-                    get(
-                        getURL(id, this.options.apiHost),
-                        this.getRequestHeaders(token)
-                    )
+                    get(getURL(id, this.options.apiHost), this.getRequestHeaders(token))
                         .then((file) => {
                             // Cache file info
                             cacheFile(file);
@@ -1248,9 +1172,7 @@ const PREVIEW_LOCATION = findScriptLocation(
                         })
                         .catch((err) => {
                             /* eslint-disable no-console */
-                            console.error(
-                                `Error prefetching file ID ${id} - ${err}`
-                            );
+                            console.error(`Error prefetching file ID ${id} - ${err}`);
                             /* eslint-enable no-console */
                         });
                 });
@@ -1320,9 +1242,7 @@ const PREVIEW_LOCATION = findScriptLocation(
 
                 this.timeoutHandler = setTimeout(() => {
                     if (this.container) {
-                        this.container.classList.remove(
-                            CLASS_NAVIGATION_VISIBILITY
-                        );
+                        this.container.classList.remove(CLASS_NAVIGATION_VISIBILITY);
                     }
                 }, MOUSEMOVE_THROTTLE);
             },
@@ -1369,9 +1289,7 @@ const PREVIEW_LOCATION = findScriptLocation(
      */
     navigateRight() {
         const currentIndex = this.collection.indexOf(this.file.id);
-        const newIndex = currentIndex === this.collection.length - 1
-            ? this.collection.length - 1
-            : currentIndex + 1;
+        const newIndex = currentIndex === this.collection.length - 1 ? this.collection.length - 1 : currentIndex + 1;
         if (newIndex !== currentIndex) {
             this.navigateToIndex(newIndex);
         }
@@ -1385,9 +1303,7 @@ const PREVIEW_LOCATION = findScriptLocation(
      * @return {Object|null} Matching loader
      */
     getLoader(file) {
-        return this.loaders.find((loader) =>
-            loader.canLoad(file, Object.keys(this.disabledViewers))
-        );
+        return this.loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
     }
 
     /**
@@ -1412,8 +1328,7 @@ const PREVIEW_LOCATION = findScriptLocation(
         if (
             !target ||
             KEYDOWN_EXCEPTIONS.indexOf(target.nodeName) > -1 ||
-            (target.nodeName === 'DIV' &&
-                !!target.getAttribute('contenteditable'))
+            (target.nodeName === 'DIV' && !!target.getAttribute('contenteditable'))
         ) {
             return;
         }

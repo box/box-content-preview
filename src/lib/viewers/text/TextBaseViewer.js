@@ -3,15 +3,9 @@ import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
 import { checkPermission } from '../../file';
 import { CLASS_IS_SELECTABLE, PERMISSION_DOWNLOAD } from '../../constants';
-import {
-    ICON_ZOOM_IN,
-    ICON_ZOOM_OUT,
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT
-} from '../../icons/icons';
+import { ICON_ZOOM_IN, ICON_ZOOM_OUT, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 
-@autobind
-class TextBaseViewer extends BaseViewer {
+@autobind class TextBaseViewer extends BaseViewer {
     /**
      * @inheritdoc
      */
@@ -86,8 +80,7 @@ class TextBaseViewer extends BaseViewer {
      */
     load() {
         // Enable text selection if user has download permissions and 'disableTextLayer' option is not true
-        if (checkPermission(this.options.file, PERMISSION_DOWNLOAD) &&
-            !this.getViewerOption('disableTextLayer')) {
+        if (checkPermission(this.options.file, PERMISSION_DOWNLOAD) && !this.getViewerOption('disableTextLayer')) {
             this.containerEl.classList.add(CLASS_IS_SELECTABLE);
         }
 
@@ -104,7 +97,12 @@ class TextBaseViewer extends BaseViewer {
         this.controls = new Controls(this.containerEl);
         this.controls.add(__('zoom_out'), this.zoomOut, 'bp-text-zoom-out-icon', ICON_ZOOM_OUT);
         this.controls.add(__('zoom_in'), this.zoomIn, 'bp-text-zoom-in-icon', ICON_ZOOM_IN);
-        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(
+            __('enter_fullscreen'),
+            this.toggleFullscreen,
+            'bp-enter-fullscreen-icon',
+            ICON_FULLSCREEN_IN
+        );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 

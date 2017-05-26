@@ -2,10 +2,7 @@ import autobind from 'autobind-decorator';
 import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
-import {
-    ICON_ZOOM_IN,
-    ICON_ZOOM_OUT
-} from '../../icons/icons';
+import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
 
 import { CLASS_INVISIBLE } from '../../constants';
 
@@ -13,9 +10,7 @@ const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
 
-@autobind
-class ImageBaseViewer extends BaseViewer {
-
+@autobind class ImageBaseViewer extends BaseViewer {
     /**
      * [destructor]
      * @return {void}
@@ -150,12 +145,18 @@ class ImageBaseViewer extends BaseViewer {
     updateCursor() {
         if (this.isPannable) {
             this.isZoomable = false;
-            this.imageEl.classList.add(CSS_CLASS_PANNABLE);
-            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+
+            if (!this.isMobile) {
+                this.imageEl.classList.add(CSS_CLASS_PANNABLE);
+                this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+            }
         } else {
             this.isZoomable = true;
-            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-            this.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
+
+            if (!this.isMobile) {
+                this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+                this.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
+            }
         }
     }
 
@@ -166,11 +167,15 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     loadUI() {
+        // Temporarily disabling controls on mobile
+        if (this.isMobile) {
+            return;
+        }
+
         this.controls = new Controls(this.containerEl);
         this.controls.add(__('zoom_out'), this.zoomOut, 'bp-image-zoom-out-icon', ICON_ZOOM_OUT);
         this.controls.add(__('zoom_in'), this.zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
     }
-
 
     /**
      * Binds DOM listeners for image viewers.
@@ -183,7 +188,7 @@ class ImageBaseViewer extends BaseViewer {
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
         this.imageEl.addEventListener('dragstart', this.cancelDragEvent);
 
-        if (Browser.isMobile()) {
+        if (this.isMobile) {
             if (Browser.isIOS()) {
                 this.imageEl.addEventListener('gesturestart', this.mobileZoomStartHandler);
                 this.imageEl.addEventListener('gestureend', this.mobileZoomEndHandler);
@@ -237,7 +242,7 @@ class ImageBaseViewer extends BaseViewer {
             error.displayMessage = __('error_refresh');
         }
         this.emit('error', error);
-    }
+    };
 
     /**
      * Handles keyboard events for media
@@ -345,7 +350,10 @@ class ImageBaseViewer extends BaseViewer {
      */
     enableViewerControls() {
         super.enableViewerControls();
-        this.updateCursor();
+
+        if (!this.isMobile) {
+            this.updateCursor();
+        }
     }
 
     /**

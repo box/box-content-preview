@@ -13,7 +13,6 @@ const VIEWERS = [
 ];
 
 class Model3DLoader extends AssetLoader {
-
     /**
      * Instantiates a loader for 3D model preview.
      * @constructor

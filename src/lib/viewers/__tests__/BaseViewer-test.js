@@ -22,6 +22,7 @@ describe('lib/viewers/BaseViewer', () => {
         fixture.load('viewers/__tests__/BaseViewer-test.html');
 
         containerEl = document.querySelector('.bp-container');
+        stubs.browser = sandbox.stub(Browser, 'isMobile').returns(false);
         base = new BaseViewer({
             container: containerEl,
             file: {
@@ -60,7 +61,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should add a mobile class to the container if on mobile', () => {
-            sandbox.stub(Browser, 'isMobile').returns(true);
+            base.isMobile = true;
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
             base.setup();
 
@@ -277,13 +278,16 @@ describe('lib/viewers/BaseViewer', () => {
         it('should clean up rep statuses', () => {
             const destroyMock = sandbox.mock().twice();
             const removeListenerMock = sandbox.mock().twice();
-            base.repStatuses = [{
-                removeListener: removeListenerMock,
-                destroy: destroyMock
-            }, {
-                removeListener: removeListenerMock,
-                destroy: destroyMock
-            }];
+            base.repStatuses = [
+                {
+                    removeListener: removeListenerMock,
+                    destroy: destroyMock
+                },
+                {
+                    removeListener: removeListenerMock,
+                    destroy: destroyMock
+                }
+            ];
 
             base.destroy();
         });
@@ -463,8 +467,7 @@ describe('lib/viewers/BaseViewer', () => {
             });
 
             it('should zoom in if not on iOS and the scale is > 0', () => {
-                stubs.sqrt.onCall(0).returns(0)
-                .onCall(1).returns(0.5);
+                stubs.sqrt.onCall(0).returns(0).onCall(1).returns(0.5);
                 stubs.isIOS.returns(false);
                 base.mobileZoomStartHandler(event);
 
@@ -487,8 +490,7 @@ describe('lib/viewers/BaseViewer', () => {
             });
 
             it('should zoom out if not on iOS and the scale is < 0', () => {
-                stubs.sqrt.onCall(0).returns(0.5)
-                .onCall(1).returns(0);
+                stubs.sqrt.onCall(0).returns(0.5).onCall(1).returns(0);
                 stubs.isIOS.returns(false);
                 base.mobileZoomStartHandler(event);
 
@@ -621,7 +623,6 @@ describe('lib/viewers/BaseViewer', () => {
                     return stubs.annotatorConf;
                 }
             }
-            sandbox.stub(Browser, 'isMobile').returns(false);
             stubs.checkPermission.returns(true);
 
             window.BoxAnnotations = BoxAnnotations;

@@ -155,14 +155,39 @@ describe('lib/viewers/doc/DocumentViewer', () => {
     describe('bindControlListeners()', () => {
         it('should add the correct controls', () => {
             doc.bindControlListeners();
-            expect(doc.controls.add).to.be.calledWith(__('zoom_out'), doc.zoomOut, 'bp-doc-zoom-out-icon', ICON_ZOOM_OUT);
+            expect(doc.controls.add).to.be.calledWith(
+                __('zoom_out'),
+                doc.zoomOut,
+                'bp-doc-zoom-out-icon',
+                ICON_ZOOM_OUT
+            );
             expect(doc.controls.add).to.be.calledWith(__('zoom_in'), doc.zoomIn, 'bp-doc-zoom-in-icon', ICON_ZOOM_IN);
-            expect(doc.controls.add).to.be.calledWith(__('previous_page'), doc.previousPage, 'bp-doc-previous-page-icon bp-previous-page', ICON_DROP_UP);
+            expect(doc.controls.add).to.be.calledWith(
+                __('previous_page'),
+                doc.previousPage,
+                'bp-doc-previous-page-icon bp-previous-page',
+                ICON_DROP_UP
+            );
 
             expect(doc.controls.add).to.be.calledWith(__('enter_page_num'), doc.showPageNumInput, 'bp-doc-page-num');
-            expect(doc.controls.add).to.be.calledWith(__('next_page'), doc.nextPage, 'bp-doc-next-page-icon bp-next-page', ICON_DROP_DOWN);
-            expect(doc.controls.add).to.be.calledWith(__('enter_fullscreen'), doc.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-            expect(doc.controls.add).to.be.calledWith(__('exit_fullscreen'), doc.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+            expect(doc.controls.add).to.be.calledWith(
+                __('next_page'),
+                doc.nextPage,
+                'bp-doc-next-page-icon bp-next-page',
+                ICON_DROP_DOWN
+            );
+            expect(doc.controls.add).to.be.calledWith(
+                __('enter_fullscreen'),
+                doc.toggleFullscreen,
+                'bp-enter-fullscreen-icon',
+                ICON_FULLSCREEN_IN
+            );
+            expect(doc.controls.add).to.be.calledWith(
+                __('exit_fullscreen'),
+                doc.toggleFullscreen,
+                'bp-exit-fullscreen-icon',
+                ICON_FULLSCREEN_OUT
+            );
         });
     });
 });

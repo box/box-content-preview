@@ -227,8 +227,7 @@ export function isPlainHighlight(annotations) {
  * @return {boolean} Whether or not annotation is a highlight
  */
 export function isHighlightAnnotation(type) {
-    return (type === constants.ANNOTATION_TYPE_HIGHLIGHT ||
-        type === constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT);
+    return type === constants.ANNOTATION_TYPE_HIGHLIGHT || type === constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
 }
 
 //------------------------------------------------------------------------------
@@ -272,12 +271,13 @@ export function getDimensionScale(dimensions, fileDimensions, zoomScale, heightP
  * @return {string} HTML escaped string
  */
 export function htmlEscape(str) {
-    return `${str}`.replace(/&/g, '&amp;') // first!
-              .replace(/>/g, '&gt;')
-              .replace(/</g, '&lt;')
-              .replace(/"/g, '&quot;')
-              .replace(/'/g, '&#39;')
-              .replace(/`/g, '&#96;');
+    return `${str}`
+        .replace(/&/g, '&amp;') // first!
+        .replace(/>/g, '&gt;')
+        .replace(/</g, '&lt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/`/g, '&#96;');
 }
 
 /**
@@ -320,13 +320,12 @@ export function repositionCaret(dialogEl, dialogX, highlightDialogWidth, browser
     return dialogX;
 }
 
-
 /**
  * Checks thread is in a pending or pending-active state
  * @return {boolean} Whether annotation thread is in a pending state
  */
 export function isPending(threadState) {
-    return (constants.PENDING_STATES.indexOf(threadState) > -1);
+    return constants.PENDING_STATES.indexOf(threadState) > -1;
 }
 
 /**

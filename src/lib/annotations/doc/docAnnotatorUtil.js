@@ -36,8 +36,12 @@ export function isInDialog(event, dialogEl) {
     // Get dialog dimensions
     const dialogDimensions = dialogEl.getBoundingClientRect();
 
-    if (y >= dialogDimensions.top && y <= dialogDimensions.bottom &&
-        x >= dialogDimensions.left && x <= dialogDimensions.right) {
+    if (
+        y >= dialogDimensions.top &&
+        y <= dialogDimensions.bottom &&
+        x >= dialogDimensions.left &&
+        x <= dialogDimensions.right
+    ) {
         return true;
     }
     return false;
@@ -94,7 +98,9 @@ export function fitDialogHeightInPage(annotatedElement, dialogEl, pageHeight, di
 export function isPointInPolyOpt(poly, x, y) {
     /* eslint-disable */
     for (var c = false, i = -1, l = poly.length, j = l - 1; ++i < l; j = i)
-        ((poly[i][1] <= y && y < poly[j][1]) || (poly[j][1] <= y && y < poly[i][1])) && (x < (poly[j][0] - poly[i][0]) * (y - poly[i][1]) / (poly[j][1] - poly[i][1]) + poly[i][0]) && (c = !c);
+        ((poly[i][1] <= y && y < poly[j][1]) || (poly[j][1] <= y && y < poly[i][1])) &&
+            x < (poly[j][0] - poly[i][0]) * (y - poly[i][1]) / (poly[j][1] - poly[i][1]) + poly[i][0] &&
+            (c = !c);
     return c;
     /* eslint-enable */
 }
@@ -162,16 +168,7 @@ export function convertPDFSpaceToDOMSpace(coordinates, pageHeight, scale) {
     }
 
     const [x1, y1, x2, y2, x3, y3, x4, y4] = scaledCoordinates;
-    return [
-        x1,
-        pageHeight - y1,
-        x2,
-        pageHeight - y2,
-        x3,
-        pageHeight - y3,
-        x4,
-        pageHeight - y4
-    ];
+    return [x1, pageHeight - y1, x2, pageHeight - y2, x3, pageHeight - y3, x4, pageHeight - y4];
 }
 
 /**
@@ -191,16 +188,7 @@ export function convertDOMSpaceToPDFSpace(coordinates, pageHeight, scale) {
         pdfCoordinates = [x, pageHeight - y];
     } else {
         const [x1, y1, x2, y2, x3, y3, x4, y4] = coordinates;
-        pdfCoordinates = [
-            x1,
-            pageHeight - y1,
-            x2,
-            pageHeight - y2,
-            x3,
-            pageHeight - y3,
-            x4,
-            pageHeight - y4
-        ];
+        pdfCoordinates = [x1, pageHeight - y1, x2, pageHeight - y2, x3, pageHeight - y3, x4, pageHeight - y4];
     }
 
     return pdfCoordinates.map((val) => (val * CSS_PIXEL_TO_PDF_UNIT / scale).toFixed(4));
@@ -222,7 +210,12 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     let y = location.y;
 
     // If needed, scale coords comparing current dimensions with saved dimensions
-    const dimensionScale = annotatorUtil.getDimensionScale(location.dimensions, pageDimensions, zoomScale, HEIGHT_PADDING);
+    const dimensionScale = annotatorUtil.getDimensionScale(
+        location.dimensions,
+        pageDimensions,
+        zoomScale,
+        HEIGHT_PADDING
+    );
     if (dimensionScale) {
         x *= dimensionScale.x;
         y *= dimensionScale.y;
@@ -305,8 +298,5 @@ export function getQuadPoints(element, pageEl, scale) {
  */
 export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
     const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints[quadPoints.length - 1];
-    return [
-        Math.max(x1, x2, x3, x4),
-        Math.min(y1, y2, y3, y4)
-    ];
+    return [Math.max(x1, x2, x3, x4), Math.min(y1, y2, y3, y4)];
 }

@@ -6,9 +6,7 @@ import { PERMISSION_DOWNLOAD } from '../../constants';
 import { ICON_FILE_DEFAULT, ICON_FILE_MEDIA, ICON_FILE_ZIP } from '../../icons/icons';
 import './PreviewError.scss';
 
-@autobind
-class PreviewErrorViewer extends BaseViewer {
-
+@autobind class PreviewErrorViewer extends BaseViewer {
     /**
      * [constructor]
      *
@@ -63,7 +61,7 @@ class PreviewErrorViewer extends BaseViewer {
                     icon = ICON_FILE_MEDIA;
                     break;
                 default:
-                    // no-op
+                // no-op
             }
         }
 

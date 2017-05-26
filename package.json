@@ -1,6 +1,6 @@
 {
   "name": "box-content-preview",
-  "version": "0.126.0",
+  "version": "0.126.1",
   "description": "Box Content Preview UI Kit",
   "author": "Box (https://www.box.com/)",
   "license": "SEE LICENSE IN LICENSE",
@@ -106,7 +106,7 @@
     "lint": "NODE_ENV=dev ./node_modules/.bin/eslint src/lib && ./node_modules/.bin/stylelint 'src/lib/**/*.scss'",
     "precommit": "lint-staged",
     "prepush": "yarn run lint",
-    "prettier": "prettier-eslint \"src/lib/**/*.js\" --single-quote --tab-width 4 --write",
+    "prettier": "prettier-eslint \"src/lib/**/*.js\" --print-width 120 --single-quote --tab-width 4 --write",
     "prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --progress --colors --config build/webpack.config.js",
     "release": "yarn run clean && yarn run build-rb && yarn run lint && yarn run test && yarn run prod",
     "test": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js",
@@ -118,7 +118,7 @@
   },
   "lint-staged": {
     "src/lib/**/*.js": [
-      "prettier-eslint --single-quote --tab-width 4 --write",
+      "prettier-eslint --print-width 120 --single-quote --tab-width 4 --write",
       "git add"
     ]
   }

@@ -42,6 +42,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
         super();
         this.options = options;
         this.repStatuses = [];
+        this.isMobile = Browser.isMobile();
     }
 
     /**
@@ -66,7 +67,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
         this.loadTimeout = LOAD_TIMEOUT_MS;
 
         // For mobile browsers add mobile class just in case viewers need it
-        if (Browser.isMobile()) {
+        if (this.isMobile) {
             this.containerEl.classList.add(CLASS_BOX_PREVIEW_MOBILE);
         }
 
@@ -74,10 +75,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
         // the assets are available, the showAnnotations flag is true, and the
         // expiring embed is not a shared link
         if (this.areAnnotationsEnabled() && !this.options.sharedLink) {
-            this.annotationsPromise = this.loadAssets(
-                ANNOTATIONS_JS,
-                ANNOTATIONS_CSS
-            );
+            this.annotationsPromise = this.loadAssets(ANNOTATIONS_JS, ANNOTATIONS_CSS);
         }
     }
 
@@ -90,32 +88,21 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     destroy() {
         if (this.repStatuses) {
             this.repStatuses.forEach((repStatus) => {
-                repStatus.removeListener(
-                    'conversionpending',
-                    this.resetLoadTimeout
-                );
+                repStatus.removeListener('conversionpending', this.resetLoadTimeout);
                 repStatus.destroy();
             });
         }
 
         const { container } = this.options;
         if (container) {
-            const annotateButtonEl = container.querySelector(
-                SELECTOR_BOX_PREVIEW_BTN_ANNOTATE
-            );
+            const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
             if (annotateButtonEl) {
-                annotateButtonEl.removeEventListener(
-                    'click',
-                    this.annotateClickHandler
-                );
+                annotateButtonEl.removeEventListener('click', this.annotateClickHandler);
             }
         }
 
         fullscreen.removeAllListeners();
-        document.defaultView.removeEventListener(
-            'resize',
-            this.debouncedResizeHandler
-        );
+        document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
         this.removeAllListeners();
 
         if (this.containerEl) {
@@ -193,10 +180,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
      * @return {void}
      */
     triggerError(err) {
-        this.emit(
-            'error',
-            err instanceof Error ? err : new Error(__('error_refresh'))
-        );
+        this.emit('error', err instanceof Error ? err : new Error(__('error_refresh')));
     }
 
     /**
@@ -292,18 +276,15 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
         });
 
         // Add a custom listener for events related to scaling/orientation changes
-        this.addListener('scale', (scale, rotationAngle) => {
+        this.addListener('scale', (data) => {
             if (this.annotator) {
-                this.annotator.setScale(scale);
-                this.annotator.rotateAnnotations(rotationAngle);
+                this.annotator.setScale(data.scale);
+                this.annotator.rotateAnnotations(data.rotationAngle);
             }
         });
 
         // Add a resize handler for the window
-        document.defaultView.addEventListener(
-            'resize',
-            this.debouncedResizeHandler
-        );
+        document.defaultView.addEventListener('resize', this.debouncedResizeHandler);
 
         /* istanbul ignore next */
         this.addListener('togglepointannotationmode', () => {
@@ -311,7 +292,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
         });
 
         this.addListener('load', () => {
-            if (this.areAnnotationsEnabled()) {
+            if (this.annotationsPromise) {
                 this.annotationsPromise.then(this.loadAnnotator);
             }
         });
@@ -436,23 +417,16 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
             } else {
                 // calculating the distances between the initial and ending pinch positions
                 const initialDistance = Math.sqrt(
-                    (this._pinchScale.initial[0][0] -
-                        this._pinchScale.initial[1][0]) *
-                        (this._pinchScale.initial[0][0] -
-                            this._pinchScale.initial[1][0]) +
-                        (this._pinchScale.initial[0][1] -
-                            this._pinchScale.initial[1][1]) *
-                            (this._pinchScale.initial[0][1] -
-                                this._pinchScale.initial[1][1])
+                    (this._pinchScale.initial[0][0] - this._pinchScale.initial[1][0]) *
+                        (this._pinchScale.initial[0][0] - this._pinchScale.initial[1][0]) +
+                        (this._pinchScale.initial[0][1] - this._pinchScale.initial[1][1]) *
+                            (this._pinchScale.initial[0][1] - this._pinchScale.initial[1][1])
                 );
                 const finalDistance = Math.sqrt(
                     (this._pinchScale.end[0][0] - this._pinchScale.end[1][0]) *
-                        (this._pinchScale.end[0][0] -
-                            this._pinchScale.end[1][0]) +
-                        (this._pinchScale.end[0][1] -
-                            this._pinchScale.end[1][1]) *
-                            (this._pinchScale.end[0][1] -
-                                this._pinchScale.end[1][1])
+                        (this._pinchScale.end[0][0] - this._pinchScale.end[1][0]) +
+                        (this._pinchScale.end[0][1] - this._pinchScale.end[1][1]) *
+                            (this._pinchScale.end[0][1] - this._pinchScale.end[1][1])
                 );
                 zoomScale = finalDistance - initialDistance;
             }
@@ -571,9 +545,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
         /* global BoxAnnotations */
         const boxAnnotations = new BoxAnnotations();
 
-        this.annotatorConf = boxAnnotations.determineAnnotator(
-            this.options.viewer.NAME
-        );
+        this.annotatorConf = boxAnnotations.determineAnnotator(this.options.viewer.NAME);
         if (!this.annotatorConf) {
             return;
         }
@@ -582,9 +554,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
             const { file } = this.options;
 
             // Users can currently only view annotations on mobile
-            this.canAnnotate =
-                checkPermission(file, PERMISSION_ANNOTATE) &&
-                !Browser.isMobile();
+            this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE) && !this.isMobile;
             if (this.canAnnotate) {
                 this.showAnnotateButton(this.getPointModeClickHandler());
             }
@@ -612,22 +582,17 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
                 token
             },
             fileVersionId,
+            isMobile: this.isMobile,
             locale: location.locale
         });
         this.annotator.init();
 
         // Disables controls during point annotation mode
         /* istanbul ignore next */
-        this.annotator.addListener(
-            'annotationmodeenter',
-            this.disableViewerControls
-        );
+        this.annotator.addListener('annotationmodeenter', this.disableViewerControls);
 
         /* istanbul ignore next */
-        this.annotator.addListener(
-            'annotationmodeexit',
-            this.enableViewerControls
-        );
+        this.annotator.addListener('annotationmodeexit', this.enableViewerControls);
     }
 
     /**
@@ -641,9 +606,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     isAnnotatable(type) {
         const { TYPE: annotationTypes } = this.annotatorConf;
         if (type && annotationTypes) {
-            if (
-                !annotationTypes.some((annotationType) => type === annotationType)
-            ) {
+            if (!annotationTypes.some((annotationType) => type === annotationType)) {
                 return false;
             }
         }
@@ -677,9 +640,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     showAnnotateButton(handler) {
         this.annotateClickHandler = handler;
         const { container } = this.options;
-        const annotateButtonEl = container.querySelector(
-            SELECTOR_BOX_PREVIEW_BTN_ANNOTATE
-        );
+        const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
         if (!annotateButtonEl) {
             return;
         }

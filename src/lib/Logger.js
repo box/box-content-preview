@@ -6,7 +6,6 @@ const CLIENT_VERSION = __VERSION__;
 /* eslint-enable no-undef */
 
 class Logger {
-
     /**
      * [constructor]
      *
@@ -128,7 +127,6 @@ class Logger {
         this.log.time.rendering = this.log.time.total - this.log.time.conversion;
         return this.log;
     }
-
 }
 
 export default Logger;

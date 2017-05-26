@@ -5,7 +5,6 @@ const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
 
 class Controls {
-
     /**
      * [constructor]
      *
@@ -99,7 +98,7 @@ class Controls {
      */
     mouseenterHandler = () => {
         this.blockHiding = true;
-    }
+    };
 
     /**
      * Mouse leave handler
@@ -109,7 +108,7 @@ class Controls {
      */
     mouseleaveHandler = () => {
         this.blockHiding = false;
-    }
+    };
 
     /**
      * Handles all focusin events for the module.
@@ -122,7 +121,7 @@ class Controls {
         if (this.isPreviewControlButton(event.target)) {
             this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
         }
-    }
+    };
 
     /**
      * Handles all focusout events for the module.
@@ -135,7 +134,7 @@ class Controls {
         if (this.isPreviewControlButton(event.target) && !this.isPreviewControlButton(event.relatedTarget)) {
             this.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
         }
-    }
+    };
 
     /**
      * Adds buttons to controls
@@ -190,7 +189,6 @@ class Controls {
     disable() {
         this.controlsEl.classList.add(CLASS_HIDDEN);
     }
-
 }
 
 export default Controls;

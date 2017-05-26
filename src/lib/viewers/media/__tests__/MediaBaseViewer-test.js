@@ -201,7 +201,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.mediaEl = document.createElement('video');
             media.mediaEl.volume = 0;
 
-
             media.handleVolume();
 
             expect(stubs.debouncedEmit).to.be.calledWith('volume', 50);
@@ -317,7 +316,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             const currentTime = 20;
             media.mediaEl = { currentTime };
             stubs.debouncedEmit = sandbox.stub(media, 'debouncedEmit');
-
 
             media.seekHandler();
 

@@ -2,10 +2,7 @@
 import Video360Viewer from '../Video360Viewer';
 import Video360Controls from '../Video360Controls';
 import Video360Renderer from '../Video360Renderer';
-import {
-    EVENT_TOGGLE_VR,
-    EVENT_SHOW_VR_BUTTON
-} from '../../box3DConstants';
+import { EVENT_TOGGLE_VR, EVENT_SHOW_VR_BUTTON } from '../../box3DConstants';
 import JS from '../../box3DAssets';
 import sceneEntities from '../SceneEntities';
 import fullscreen from '../../../../Fullscreen';

@@ -15,7 +15,6 @@ import {
     ICON_FULLSCREEN_OUT
 } from '../../../icons/icons';
 
-
 const sandbox = sinon.sandbox.create();
 
 let containerEl;
@@ -205,7 +204,6 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             presentation.docEl.removeChild(stubs.page1);
         });
 
-
         it('should remove the both overflow classes and return false if there is no overflow', () => {
             presentation.docEl.style.width = '100px';
             presentation.docEl.style.height = '100px';
@@ -300,13 +298,47 @@ describe('lib/viewers/doc/PresentationViewer', () => {
     describe('bindControlListeners()', () => {
         it('should ', () => {
             presentation.bindControlListeners();
-            expect(presentation.controls.add).to.be.calledWith(__('zoom_out'), presentation.zoomOut, 'bp-exit-zoom-out-icon', ICON_ZOOM_OUT);
-            expect(presentation.controls.add).to.be.calledWith(__('zoom_in'), presentation.zoomIn, 'bp-enter-zoom-in-icon', ICON_ZOOM_IN);
-            expect(presentation.controls.add).to.be.calledWith(__('previous_page'), presentation.previousPage, 'bp-presentation-previous-page-icon bp-previous-page', ICON_DROP_UP);
-            expect(presentation.controls.add).to.be.calledWith(__('enter_page_num'), presentation.showPageNumInput, 'bp-doc-page-num');
-            expect(presentation.controls.add).to.be.calledWith(__('next_page'), presentation.nextPage, 'bp-presentation-next-page-icon bp-next-page', ICON_DROP_DOWN);
-            expect(presentation.controls.add).to.be.calledWith(__('enter_fullscreen'), presentation.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-            expect(presentation.controls.add).to.be.calledWith(__('exit_fullscreen'), presentation.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+            expect(presentation.controls.add).to.be.calledWith(
+                __('zoom_out'),
+                presentation.zoomOut,
+                'bp-exit-zoom-out-icon',
+                ICON_ZOOM_OUT
+            );
+            expect(presentation.controls.add).to.be.calledWith(
+                __('zoom_in'),
+                presentation.zoomIn,
+                'bp-enter-zoom-in-icon',
+                ICON_ZOOM_IN
+            );
+            expect(presentation.controls.add).to.be.calledWith(
+                __('previous_page'),
+                presentation.previousPage,
+                'bp-presentation-previous-page-icon bp-previous-page',
+                ICON_DROP_UP
+            );
+            expect(presentation.controls.add).to.be.calledWith(
+                __('enter_page_num'),
+                presentation.showPageNumInput,
+                'bp-doc-page-num'
+            );
+            expect(presentation.controls.add).to.be.calledWith(
+                __('next_page'),
+                presentation.nextPage,
+                'bp-presentation-next-page-icon bp-next-page',
+                ICON_DROP_DOWN
+            );
+            expect(presentation.controls.add).to.be.calledWith(
+                __('enter_fullscreen'),
+                presentation.toggleFullscreen,
+                'bp-enter-fullscreen-icon',
+                ICON_FULLSCREEN_IN
+            );
+            expect(presentation.controls.add).to.be.calledWith(
+                __('exit_fullscreen'),
+                presentation.toggleFullscreen,
+                'bp-exit-fullscreen-icon',
+                ICON_FULLSCREEN_OUT
+            );
         });
     });
 
@@ -465,7 +497,6 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             expect(result).to.be.truthy;
         });
     });
-
 
     describe('overwritePdfViewerBehavior()', () => {
         it('should overwrite the scrollPageIntoView method', () => {

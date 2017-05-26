@@ -14,8 +14,7 @@ const SEGMENT_SIZE = 5;
 const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 const MANIFEST = 'manifest.mpd';
 
-@autobind
-class DashViewer extends VideoBaseViewer {
+@autobind class DashViewer extends VideoBaseViewer {
     /**
      * @inheritdoc
      */
@@ -78,10 +77,12 @@ class DashViewer extends VideoBaseViewer {
         this.mediaUrl = this.options.representation.content.url_template;
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
 
-        return Promise.all([this.loadAssets(this.getJSAssets()), this.getRepStatus().getPromise()]).then(() => {
-            this.loadDashPlayer();
-            this.resetLoadTimeout();
-        }).catch(this.handleAssetError);
+        return Promise.all([this.loadAssets(this.getJSAssets()), this.getRepStatus().getPromise()])
+            .then(() => {
+                this.loadDashPlayer();
+                this.resetLoadTimeout();
+            })
+            .catch(this.handleAssetError);
     }
 
     /**
@@ -135,11 +136,11 @@ class DashViewer extends VideoBaseViewer {
             streaming: {
                 bufferingGoal: MAX_BUFFER,
                 retryParameters: {
-                    timeout: 0,       // timeout in ms, after which we abort a request; 0 means never
+                    timeout: 0, // timeout in ms, after which we abort a request; 0 means never
                     maxAttempts: 100, // the maximum number of requests before we fail
-                    baseDelay: 500,   // the base delay in ms between retries
+                    baseDelay: 500, // the base delay in ms between retries
                     backoffFactor: 2, // the multiplicative backoff factor between retries
-                    fuzzFactor: 0.5   // the fuzz factor to apply to each retry delay
+                    fuzzFactor: 0.5 // the fuzz factor to apply to each retry delay
                 }
             }
         });
@@ -313,7 +314,10 @@ class DashViewer extends VideoBaseViewer {
     loadSubtitles() {
         this.textTracks = this.player.getTextTracks().sort((track1, track2) => track1.id - track2.id);
         if (this.textTracks.length > 0) {
-            this.mediaControls.initSubtitles(this.textTracks.map((track) => getLanguageName(track.language) || track.language), getLanguageName(this.options.location.locale.substring(0, 2)));
+            this.mediaControls.initSubtitles(
+                this.textTracks.map((track) => getLanguageName(track.language) || track.language),
+                getLanguageName(this.options.location.locale.substring(0, 2))
+            );
         }
     }
     /**
@@ -435,11 +439,11 @@ class DashViewer extends VideoBaseViewer {
 
             // If video were to be stretched vertically, then figure out by how much and if that causes the width to overflow
             const percentIncreaseInHeightToFitViewport = (viewport.height - height) / height;
-            const newWidthIfHeightUsed = width + (width * percentIncreaseInHeightToFitViewport);
+            const newWidthIfHeightUsed = width + width * percentIncreaseInHeightToFitViewport;
 
             // If video were to be stretched horizontally, then figure out how much and if that causes the height to overflow
             const percentIncreaseInWidthToFitViewport = (viewport.width - width) / width;
-            const newHeightIfWidthUsed = height + (height * percentIncreaseInWidthToFitViewport);
+            const newHeightIfWidthUsed = height + height * percentIncreaseInWidthToFitViewport;
 
             // One of the two cases will end up fitting
             if (newHeightIfWidthUsed <= viewport.height) {

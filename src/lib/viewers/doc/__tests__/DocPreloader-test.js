@@ -2,11 +2,7 @@
 import DocPreloader from '../DocPreloader';
 import * as util from '../../../util';
 import * as ui from '../../../ui';
-import {
-    CLASS_BOX_PREVIEW_PRELOAD,
-    CLASS_INVISIBLE,
-    CLASS_PREVIEW_LOADED
-} from '../../../constants';
+import { CLASS_BOX_PREVIEW_PRELOAD, CLASS_INVISIBLE, CLASS_PREVIEW_LOADED } from '../../../constants';
 
 const PDFJS_CSS_UNITS = 96.0 / 72.0;
 
@@ -217,11 +213,13 @@ describe('lib/viewers/doc/DocPreloader', () => {
             const pdfWidth = 100;
             const pdfHeight = 100;
             const numPages = 10;
-            stubs.readEXIF.returns(Promise.resolve({
-                pdfWidth,
-                pdfHeight,
-                numPages
-            }));
+            stubs.readEXIF.returns(
+                Promise.resolve({
+                    pdfWidth,
+                    pdfHeight,
+                    numPages
+                })
+            );
 
             const scaledWidth = 200;
             const scaledHeight = 200;
@@ -240,11 +238,13 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
         it('should only show up to NUM_PAGES_MAX pages', () => {
             const NUM_PAGES_MAX = 500;
-            stubs.readEXIF.returns(Promise.resolve({
-                pdfWidth: 100,
-                pdfHeight: 100,
-                numPages: NUM_PAGES_MAX + 1 // NUM_PAGES_MAX + 1
-            }));
+            stubs.readEXIF.returns(
+                Promise.resolve({
+                    pdfWidth: 100,
+                    pdfHeight: 100,
+                    numPages: NUM_PAGES_MAX + 1 // NUM_PAGES_MAX + 1
+                })
+            );
 
             stubs.getScaledDimensions.returns({
                 scaledWidth: 200,
@@ -311,7 +311,9 @@ describe('lib/viewers/doc/DocPreloader', () => {
             const pdfHeight = 200;
             const numPages = 0;
 
-            const exifRawArray = `pdfWidth:${pdfWidth}pts,pdfHeight:${pdfHeight}pts,numPages:${numPages}`.split('').map((c) => c.charCodeAt(0));
+            const exifRawArray = `pdfWidth:${pdfWidth}pts,pdfHeight:${pdfHeight}pts,numPages:${numPages}`
+                .split('')
+                .map((c) => c.charCodeAt(0));
             window.EXIF = {
                 getData: (imageEl, func) => {
                     func();
@@ -327,7 +329,9 @@ describe('lib/viewers/doc/DocPreloader', () => {
             const pdfHeight = 1000;
             const numPages = 30;
 
-            const exifRawArray = `pdfWidth:${pdfWidth}pts,pdfHeight:${pdfHeight}pts,numPages:${numPages}`.split('').map((c) => c.charCodeAt(0));
+            const exifRawArray = `pdfWidth:${pdfWidth}pts,pdfHeight:${pdfHeight}pts,numPages:${numPages}`
+                .split('')
+                .map((c) => c.charCodeAt(0));
             window.EXIF = {
                 getData: (imageEl, func) => {
                     func();
@@ -343,7 +347,9 @@ describe('lib/viewers/doc/DocPreloader', () => {
             const pdfHeight = 200;
             const numPages = 30;
 
-            const exifRawArray = `pdfWidth:${pdfWidth}pts,pdfHeight:${pdfHeight}pts,numPages:${numPages}`.split('').map((c) => c.charCodeAt(0));
+            const exifRawArray = `pdfWidth:${pdfWidth}pts,pdfHeight:${pdfHeight}pts,numPages:${numPages}`
+                .split('')
+                .map((c) => c.charCodeAt(0));
             window.EXIF = {
                 getData: (imageEl, func) => {
                     func();
@@ -363,7 +369,9 @@ describe('lib/viewers/doc/DocPreloader', () => {
             const pdfHeight = 100;
             const numPages = 30;
 
-            const exifRawArray = `pdfWidth:${pdfWidth}pts,pdfHeight:${pdfHeight}pts,numPages:${numPages}`.split('').map((c) => c.charCodeAt(0));
+            const exifRawArray = `pdfWidth:${pdfWidth}pts,pdfHeight:${pdfHeight}pts,numPages:${numPages}`
+                .split('')
+                .map((c) => c.charCodeAt(0));
             window.EXIF = {
                 getData: (imageEl, func) => {
                     func();
