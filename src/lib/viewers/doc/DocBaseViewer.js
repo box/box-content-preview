@@ -32,7 +32,7 @@ const MIN_SCALE = 0.1;
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const IS_SAFARI_CLASS = 'is-safari';
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
-const SCROLL_END_TIMEOUT = Browser.isMobile() ? 500 : 250;
+const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
 
 const RANGE_REQUEST_CHUNK_SIZE_US = 1048576; // 1MB
 const RANGE_REQUEST_CHUNK_SIZE_NON_US = 524288; // 512KB
@@ -58,8 +58,6 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
         if (Browser.getName() === 'Safari') {
             this.docEl.classList.add(IS_SAFARI_CLASS);
         }
-
-        this.isMobile = Browser.isMobile();
 
         // We disable native pinch-to-zoom and double tap zoom on mobile to force users to use
         // our viewer's zoom controls
@@ -452,7 +450,7 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
      */
     setScale(scale) {
         this.pdfViewer.currentScaleValue = scale;
-        this.emit('scale', scale);
+        this.emit('scale', { scale });
     }
 
     /**
@@ -799,6 +797,10 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
      * @return {void}
      */
     loadUI() {
+        if (this.isMobile) {
+            return;
+        }
+
         this.controls = new Controls(this.containerEl);
         this.bindControlListeners();
         this.initPageNumEl();

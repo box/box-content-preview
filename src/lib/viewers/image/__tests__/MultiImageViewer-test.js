@@ -353,7 +353,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             sandbox.stub(multiImage, 'emit');
 
             multiImage.setScale(512, 512);
-            expect(multiImage.emit).to.be.calledWith('scale', 0.5);
+            expect(multiImage.emit).to.be.calledWith('scale', { scale: 0.5 });
         });
     });
 });

@@ -355,7 +355,10 @@ describe('lib/viewers/image/ImageViewer', () => {
             const [width, height] = [100, 100];
 
             image.setScale(width, height);
-            expect(image.emit).to.be.calledWith('scale', sinon.match.any, sinon.match.number);
+            expect(image.emit).to.be.calledWith('scale', {
+                scale: sinon.match.any,
+                rotationAngle: sinon.match.number
+            });
         });
     });
 
@@ -372,6 +375,12 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.controls).to.not.be.undefined;
             expect(image.controls.buttonRefs.length).to.equal(5);
             expect(image.boxAnnotationsLoaded).to.be.false;
+        });
+
+        it('should disable controls if on a mobile browser', () => {
+            image.isMobile = true;
+            image.loadUI();
+            expect(image.controls).to.be.undefined;
         });
     });
 
@@ -457,9 +466,9 @@ describe('lib/viewers/image/ImageViewer', () => {
 
     describe('bindDOMListeners()', () => {
         beforeEach(() => {
+            image.isMobile = true;
             image.imageEl.addEventListener = sandbox.stub();
             stubs.listeners = image.imageEl.addEventListener;
-            stubs.isMobile = sandbox.stub(Browser, 'isMobile').returns(true);
         });
 
         it('should bind all mobile listeners', () => {
@@ -473,12 +482,11 @@ describe('lib/viewers/image/ImageViewer', () => {
         beforeEach(() => {
             stubs.removeEventListener = sandbox.stub(document, 'removeEventListener');
             image.imageEl.removeEventListener = sandbox.stub();
+            image.isMobile = true;
             stubs.listeners = image.imageEl.removeEventListener;
-            stubs.isMobile = sandbox.stub(Browser, 'isMobile').returns(true);
         });
 
         it('should unbind all default image listeners', () => {
-            stubs.isMobile.returns(false);
             image.unbindDOMListeners();
             expect(stubs.listeners).to.have.been.calledWith('load', image.finishLoading);
             expect(stubs.listeners).to.have.been.calledWith('error', image.errorHandler);
@@ -578,7 +586,10 @@ describe('lib/viewers/image/ImageViewer', () => {
             sandbox.stub(image, 'emit');
             image.handleOrientationChange();
             expect(stubs.padding).to.be.called;
-            expect(image.emit).to.be.calledWith('scale', sinon.match.any, sinon.match.number);
+            expect(image.emit).to.be.calledWith('scale', {
+                scale: sinon.match.any,
+                rotationAngle: sinon.match.number
+            });
         });
     });
 

@@ -8,7 +8,6 @@ import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 import throttle from 'lodash.throttle';
 import autobind from 'autobind-decorator';
 import Annotator from '../Annotator';
-import Browser from '../../Browser';
 import DocHighlightThread from './DocHighlightThread';
 import DocPointThread from './DocPointThread';
 import * as annotatorUtil from '../annotatorUtil';
@@ -163,6 +162,7 @@ const HOVER_TIMEOUT_MS = 75;
             annotations,
             annotationService: this.annotationService,
             fileVersionId: this.fileVersionId,
+            isMobile: this.isMobile,
             locale: this.locale,
             location,
             type
@@ -437,7 +437,7 @@ const HOVER_TIMEOUT_MS = 75;
         // event we would listen to, selectionchange, fires continuously and
         // is unreliable. If the mouse moved or we double clicked text,
         // we trigger the create handler instead of the click handler
-        if (!Browser.isMobile() && (this.didMouseMove || event.type === 'dblclick')) {
+        if (!this.isMobile && (this.didMouseMove || event.type === 'dblclick')) {
             this.highlightCreateHandler(event);
         } else {
             this.highlightClickHandler(event);

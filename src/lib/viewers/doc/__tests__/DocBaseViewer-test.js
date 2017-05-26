@@ -704,7 +704,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const newScale = 5;
 
             docBase.setScale(newScale);
-            expect(docBase.emit).to.be.calledWith('scale', newScale);
+            expect(docBase.emit).to.be.calledWith('scale', { scale: newScale });
             expect(docBase.pdfViewer.currentScaleValue).to.equal(newScale);
         });
     });
@@ -1209,6 +1209,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(bindControlListenersStub).to.be.called;
             expect(initPageNumElStub).to.be.called;
             expect(docBase.controls instanceof Controls).to.be.true;
+        });
+
+        it('should disable controls if on a mobile browser', () => {
+            docBase.isMobile = true;
+            docBase.loadUI();
+            expect(docBase.controls).to.be.undefined;
         });
     });
 

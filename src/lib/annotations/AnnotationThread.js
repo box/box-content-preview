@@ -47,6 +47,7 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
         this.thread = data.thread || '';
         this.type = data.type;
         this.locale = data.locale;
+        this.isMobile = data.isMobile;
 
         this.setup();
     }
@@ -284,6 +285,10 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
         this.createDialog();
         this.bindCustomListenersOnDialog();
 
+        if (this.dialog) {
+            this.dialog.isMobile = this.isMobile;
+        }
+
         this.setupElement();
     }
 
@@ -311,7 +316,10 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
 
         this.element.addEventListener('click', this.showDialog);
         this.element.addEventListener('mouseenter', this.showDialog);
-        this.element.addEventListener('mouseleave', this.mouseoutHandler);
+
+        if (!this.isMobile) {
+            this.element.addEventListener('mouseleave', this.mouseoutHandler);
+        }
     }
 
     /**
@@ -327,7 +335,10 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
 
         this.element.removeEventListener('click', this.showDialog);
         this.element.removeEventListener('mouseenter', this.showDialog);
-        this.element.removeEventListener('mouseleave', this.mouseoutHandler);
+
+        if (!this.isMobile) {
+            this.element.removeEventListener('mouseleave', this.mouseoutHandler);
+        }
     }
 
     /**

@@ -127,6 +127,21 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(imageBase.imageEl).to.have.class(CSS_CLASS_ZOOMABLE);
             expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_PANNABLE);
         });
+
+        it('should update classes if using a mobile browser', () => {
+            imageBase.isMobile = true;
+            imageBase.isZoomable = true;
+            imageBase.isPannable = true;
+
+            imageBase.updateCursor();
+            expect(imageBase.isZoomable).to.have.been.false;
+
+            imageBase.isZoomable = false;
+            imageBase.isPannable = false;
+
+            imageBase.updateCursor();
+            expect(imageBase.isZoomable).to.have.been.true;
+        });
     });
 
     describe('startPanning()', () => {
@@ -206,6 +221,12 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             expect(imageBase.controls).to.not.be.undefined;
             expect(imageBase.controls.buttonRefs.length).to.equal(2);
+        });
+
+        it('should disable controls if on a mobile browser', () => {
+            imageBase.isMobile = true;
+            imageBase.loadUI();
+            expect(imageBase.controls).to.be.undefined;
         });
     });
 
@@ -382,11 +403,10 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             sandbox.stub(document, 'addEventListener');
             stubs.listeners = imageBase.imageEl.addEventListener;
-            stubs.isMobile = sandbox.stub(Browser, 'isMobile').returns(true);
+            imageBase.isMobile = true;
         });
 
         it('should bind all default image listeners', () => {
-            stubs.isMobile.returns(false);
             imageBase.bindDOMListeners();
             expect(stubs.listeners).to.have.been.calledWith('mousedown', imageBase.handleMouseDown);
             expect(stubs.listeners).to.have.been.calledWith('mouseup', imageBase.handleMouseUp);
@@ -419,12 +439,11 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.imageEl.removeEventListener = sandbox.stub();
             stubs.listeners = imageBase.imageEl.removeEventListener;
             stubs.documentListener = sandbox.stub(document, 'removeEventListener');
-            stubs.isMobile = sandbox.stub(Browser, 'isMobile').returns(true);
+            imageBase.isMobile = true;
         });
 
         it('should unbind all default image listeners if imageEl does not exist', () => {
             imageBase.imageEl = null;
-            stubs.isMobile.returns(false);
 
             imageBase.unbindDOMListeners();
             expect(stubs.listeners).to.not.be.calledWith('mousedown', imageBase.handleMouseDown);
@@ -440,7 +459,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         });
 
         it('should unbind all document listeners', () => {
-            stubs.isMobile.returns(false);
             imageBase.unbindDOMListeners();
             expect(stubs.documentListener).to.be.calledWith('mousemove', imageBase.pan);
             expect(stubs.documentListener).to.be.calledWith('mouseup', imageBase.stopPanning);

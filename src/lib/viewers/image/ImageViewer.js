@@ -230,7 +230,10 @@ const IMAGE_ZOOM_SCALE = 1.2;
     setScale(width, height) {
         this.scale = width ? width / this.imageEl.naturalWidth : height / this.imageEl.naturalHeight;
         this.rotationAngle = this.currentRotationAngle % 3600 % 360;
-        this.emit('scale', this.scale, this.rotationAngle);
+        this.emit('scale', {
+            scale: this.scale,
+            rotationAngle: this.rotationAngle
+        });
     }
 
     /**
@@ -241,6 +244,12 @@ const IMAGE_ZOOM_SCALE = 1.2;
      */
     loadUI() {
         super.loadUI();
+
+        // Temporarily disabling controls on mobile
+        if (this.isMobile) {
+            return;
+        }
+
         this.controls.add(__('rotate_left'), this.rotateLeft, 'bp-image-rotate-left-icon', ICON_ROTATE_LEFT);
         this.controls.add(
             __('enter_fullscreen'),
@@ -343,7 +352,7 @@ const IMAGE_ZOOM_SCALE = 1.2;
         this.imageEl.addEventListener('load', this.finishLoading);
         this.imageEl.addEventListener('error', this.errorHandler);
 
-        if (Browser.isMobile()) {
+        if (this.isMobile) {
             this.imageEl.addEventListener('orientationchange', this.handleOrientationChange);
         }
     }
@@ -362,7 +371,7 @@ const IMAGE_ZOOM_SCALE = 1.2;
             this.imageEl.removeEventListener('error', this.errorHandler);
         }
 
-        if (Browser.isMobile()) {
+        if (this.isMobile) {
             this.imageEl.removeEventListener('orientationchange', this.handleOrientationChange);
         }
 
@@ -383,7 +392,10 @@ const IMAGE_ZOOM_SCALE = 1.2;
 
         this.scale = this.imageEl.clientWidth / this.imageEl.naturalWidth;
         this.rotationAngle = this.currentRotationAngle % 3600 % 360;
-        this.emit('scale', this.scale, this.rotationAngle);
+        this.emit('scale', {
+            scale: this.scale,
+            rotationAngle: this.rotationAngle
+        });
     }
 }
 
