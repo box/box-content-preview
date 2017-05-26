@@ -292,7 +292,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
         });
 
         this.addListener('load', () => {
-            if (this.areAnnotationsEnabled()) {
+            if (this.annotationsPromise) {
                 this.annotationsPromise.then(this.loadAnnotator);
             }
         });
