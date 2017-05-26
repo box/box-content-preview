@@ -21,6 +21,7 @@ describe('lib/annotations/Annotator', () => {
             container: document,
             annotationService: {},
             fileVersionId: 1,
+            isMobile: false,
             options: {}
         });
 
@@ -85,20 +86,39 @@ describe('lib/annotations/Annotator', () => {
     });
 
     describe('init()', () => {
-        it('should set scale and setup annotations', () => {
+        beforeEach(() => {
             const annotatedEl = document.querySelector('.annotated-element');
             sandbox.stub(annotator, 'getAnnotatedEl').returns(annotatedEl);
-            const scaleStub = sandbox.stub(annotator, 'setScale');
-            const setupAnnotations = sandbox.stub(annotator, 'setupAnnotations');
-            const showAnnotations = sandbox.stub(annotator, 'showAnnotations');
+
+            stubs.scale = sandbox.stub(annotator, 'setScale');
+            stubs.setup = sandbox.stub(annotator, 'setupAnnotations');
+            stubs.show = sandbox.stub(annotator, 'showAnnotations');
+            stubs.setupMobileDialog = sandbox.stub(annotator, 'setupMobileDialog');
             annotator.canAnnotate = true;
+        });
 
+        it('should set scale and setup annotations', () => {
             annotator.init();
-
-            expect(scaleStub).to.be.called;
-            expect(setupAnnotations).to.be.called;
-            expect(showAnnotations).to.be.called;
+            expect(stubs.scale).to.be.called;
+            expect(stubs.setup).to.be.called;
+            expect(stubs.show).to.be.called;
             expect(annotator.annotationService).to.not.be.null;
+        });
+
+        it('should setup mobile dialog for mobile browsers', () => {
+            annotator.isMobile = true;
+            annotator.init();
+            expect(stubs.setupMobileDialog).to.be.called;
+        });
+    });
+
+    describe('setupMobileDialog()', () => {
+        it('should generate mobile annotations dialog and append to container', () => {
+            annotator.container = {
+                appendChild: sandbox.mock()
+            };
+            annotator.setupMobileDialog();
+            expect(annotator.container.appendChild).to.be.called;
         });
     });
 

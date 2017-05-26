@@ -373,6 +373,12 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.controls.buttonRefs.length).to.equal(5);
             expect(image.boxAnnotationsLoaded).to.be.false;
         });
+
+        it('should disable controls if on a mobile browser', () => {
+            image.isMobile = true;
+            image.loadUI();
+            expect(image.controls).to.be.undefined;
+        });
     });
 
     describe('print()', () => {
@@ -457,9 +463,9 @@ describe('lib/viewers/image/ImageViewer', () => {
 
     describe('bindDOMListeners()', () => {
         beforeEach(() => {
+            image.isMobile = true;
             image.imageEl.addEventListener = sandbox.stub();
             stubs.listeners = image.imageEl.addEventListener;
-            stubs.isMobile = sandbox.stub(Browser, 'isMobile').returns(true);
         });
 
         it('should bind all mobile listeners', () => {
@@ -473,12 +479,11 @@ describe('lib/viewers/image/ImageViewer', () => {
         beforeEach(() => {
             stubs.removeEventListener = sandbox.stub(document, 'removeEventListener');
             image.imageEl.removeEventListener = sandbox.stub();
+            image.isMobile = true;
             stubs.listeners = image.imageEl.removeEventListener;
-            stubs.isMobile = sandbox.stub(Browser, 'isMobile').returns(true);
         });
 
         it('should unbind all default image listeners', () => {
-            stubs.isMobile.returns(false);
             image.unbindDOMListeners();
             expect(stubs.listeners).to.have.been.calledWith('load', image.finishLoading);
             expect(stubs.listeners).to.have.been.calledWith('error', image.errorHandler);

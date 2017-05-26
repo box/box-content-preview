@@ -27,6 +27,7 @@ describe('lib/annotations/AnnotationDialog', () => {
         document.querySelector('.annotated-element').appendChild(dialog.element);
 
         stubs.emit = sandbox.stub(dialog, 'emit');
+        dialog.isMobile = false;
     });
 
     afterEach(() => {
@@ -135,12 +136,58 @@ describe('lib/annotations/AnnotationDialog', () => {
             expect(textArea).to.have.class(CLASS_ACTIVE);
             expect(dialog.activateReply).to.not.be.called;
         });
+
+        it('should populate the mobile dialog if using a mobile browser', () => {
+            dialog.isMobile = true;
+            dialog.highlightDialogEl = null;
+            stubs.show = sandbox.stub(annotatorUtil, 'showElement');
+            stubs.bind = sandbox.stub(dialog, 'bindDOMListeners');
+
+            dialog.show();
+            expect(stubs.show).to.be.calledWith(dialog.element);
+            expect(stubs.bind).to.be.called;
+            expect(dialog.position).to.not.be.called;
+        });
+
+        it('should hide the mobile header if a plain highlight', () => {
+            dialog.isMobile = true;
+            dialog.highlightDialogEl = {};
+            dialog.hasComments = false;
+            stubs.show = sandbox.stub(annotatorUtil, 'showElement');
+            stubs.bind = sandbox.stub(dialog, 'bindDOMListeners');
+
+            dialog.show();
+            expect(dialog.element).to.have.class('bp-plain-highlight');
+        });
+    });
+
+    describe('hideMobileDialog()', () => {
+        it('should do nothing if the dialog element does not exist', () => {
+            dialog.element = null;
+            stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
+            dialog.hideMobileDialog();
+            expect(stubs.hide).to.not.be.called;
+        });
+
+        it('should hide and reset the mobile annotations dialog', () => {
+            dialog.element = document.querySelector('.bp-mobile-annotation-dialog');
+            stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
+            dialog.hideMobileDialog();
+            expect(stubs.hide).to.be.called;
+        });
     });
 
     describe('hide()', () => {
         it('should hide dialog immediately', () => {
             dialog.hide();
             expect(dialog.element).to.have.class(CLASS_HIDDEN);
+        });
+
+        it('should hide the mobile dialog if using a mobile browser', () => {
+            dialog.isMobile = true;
+            sandbox.stub(dialog, 'hideMobileDialog');
+            dialog.hide();
+            expect(dialog.hideMobileDialog).to.be.called;
         });
     });
 
@@ -202,10 +249,13 @@ describe('lib/annotations/AnnotationDialog', () => {
     });
 
     describe('setup()', () => {
-        it('should set up HTML element, add annotations to the dialog, and bind DOM listeners', () => {
+        beforeEach(() => {
+            const dialogEl = document.createElement('div');
+            sandbox.stub(dialog, 'generateDialogEl').returns(dialogEl);
             stubs.bind = sandbox.stub(dialog, 'bindDOMListeners');
+            stubs.add = sandbox.stub(dialog, 'addAnnotationElement');
 
-            const annotationData = new Annotation({
+            stubs.annotation = new Annotation({
                 annotationID: 'someID',
                 text: 'blah',
                 user: {},
@@ -213,9 +263,12 @@ describe('lib/annotations/AnnotationDialog', () => {
                 thread: 1
             });
 
-            dialog.setup([annotationData]);
+            dialog.isMobile = false;
+        });
+
+        it('should set up HTML element, add annotations to the dialog, and bind DOM listeners', () => {
+            dialog.setup([stubs.annotation]);
             expect(dialog.element).to.not.be.null;
-            expect(dialog.element.querySelector(['[data-annotation-id="someID"]'])).to.not.be.null;
             expect(dialog.element.dataset.threadNumber).to.equal('1');
             expect(stubs.bind).to.be.called;
         });
@@ -223,6 +276,13 @@ describe('lib/annotations/AnnotationDialog', () => {
         it('should not set thread number if there are no annotations in the thread', () => {
             dialog.setup([]);
             expect(dialog.element.dataset.threadNumber).to.be.undefined;
+        });
+
+        it('should not create dialog element if using a mobile browser', () => {
+            dialog.isMobile = true;
+            dialog.setup([stubs.annotation, stubs.annotation]);
+            expect(stubs.bind).to.not.be.called;
+            expect(stubs.add).to.be.calledTwice;
         });
     });
 
@@ -238,6 +298,19 @@ describe('lib/annotations/AnnotationDialog', () => {
             expect(stubs.add).to.be.calledWith('mouseleave', sinon.match.func);
             expect(stubs.add).to.be.calledWith('wheel', sinon.match.func);
         });
+
+        it('should not bind mouseenter/leave events for mobile browsers', () => {
+            stubs.add = sandbox.stub(dialog.element, 'addEventListener');
+            dialog.isMobile = true;
+
+            dialog.bindDOMListeners();
+            expect(stubs.add).to.be.calledWith('keydown', sinon.match.func);
+            expect(stubs.add).to.be.calledWith('click', sinon.match.func);
+            expect(stubs.add).to.be.calledWith('mouseup', sinon.match.func);
+            expect(stubs.add).to.not.be.calledWith('mouseenter', sinon.match.func);
+            expect(stubs.add).to.not.be.calledWith('mouseleave', sinon.match.func);
+            expect(stubs.add).to.be.calledWith('wheel', sinon.match.func);
+        });
     });
 
     describe('unbindDOMListeners()', () => {
@@ -250,6 +323,19 @@ describe('lib/annotations/AnnotationDialog', () => {
             expect(stubs.remove).to.be.calledWith('mouseup', sinon.match.func);
             expect(stubs.remove).to.be.calledWith('mouseenter', sinon.match.func);
             expect(stubs.remove).to.be.calledWith('mouseleave', sinon.match.func);
+            expect(stubs.remove).to.be.calledWith('wheel', sinon.match.func);
+        });
+
+        it('should not bind mouseenter/leave events for mobile browsers', () => {
+            stubs.remove = sandbox.stub(dialog.element, 'removeEventListener');
+            dialog.isMobile = true;
+
+            dialog.unbindDOMListeners();
+            expect(stubs.remove).to.be.calledWith('keydown', sinon.match.func);
+            expect(stubs.remove).to.be.calledWith('click', sinon.match.func);
+            expect(stubs.remove).to.be.calledWith('mouseup', sinon.match.func);
+            expect(stubs.remove).to.not.be.calledWith('mouseenter', sinon.match.func);
+            expect(stubs.remove).to.not.be.calledWith('mouseleave', sinon.match.func);
             expect(stubs.remove).to.be.calledWith('wheel', sinon.match.func);
         });
     });
@@ -575,6 +661,13 @@ describe('lib/annotations/AnnotationDialog', () => {
     });
 
     describe('activateReply()', () => {
+        it('should do nothing if the dialogEl does not exist', () => {
+            dialog.dialogEl = null;
+            sandbox.stub(annotatorUtil, 'showElement');
+            dialog.activateReply();
+            expect(annotatorUtil.showElement).to.not.be.called;
+        });
+
         it('should do nothing if reply textarea is already active', () => {
             const replyTextEl = dialog.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
             replyTextEl.classList.add('bp-is-active');
@@ -603,7 +696,7 @@ describe('lib/annotations/AnnotationDialog', () => {
 
     describe('deactivateReply()', () => {
         it('should do nothing if element does not exist', () => {
-            dialog.element = null;
+            dialog.dialogEl = null;
             sandbox.stub(annotatorUtil, 'resetTextarea');
 
             dialog.deactivateReply();
@@ -727,6 +820,24 @@ describe('lib/annotations/AnnotationDialog', () => {
 
             dialog.deleteAnnotation(1);
             expect(stubs.emit).to.be.calledWith('annotationdelete', { annotationID: 1 });
+        });
+    });
+
+    describe('generateDialogEl', () => {
+        it('should generate a blank annotations dialog element', () => {
+            const dialogEl = dialog.generateDialogEl(0);
+            const createSectionEl = dialogEl.querySelector('[data-section="create"]');
+            const showSectionEl = dialogEl.querySelector('[data-section="show"]');
+            expect(createSectionEl).to.not.have.class(CLASS_HIDDEN);
+            expect(showSectionEl).to.have.class(CLASS_HIDDEN);
+        });
+
+        it('should generate an annotations dialog element with annotations', () => {
+            const dialogEl = dialog.generateDialogEl(1);
+            const createSectionEl = dialogEl.querySelector('[data-section="create"]');
+            const showSectionEl = dialogEl.querySelector('[data-section="show"]');
+            expect(createSectionEl).to.have.class(CLASS_HIDDEN);
+            expect(showSectionEl).to.not.have.class(CLASS_HIDDEN);
         });
     });
 });
