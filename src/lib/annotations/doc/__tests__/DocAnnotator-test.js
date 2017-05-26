@@ -30,6 +30,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             container: document,
             annotationService: {},
             fileVersionId: 1,
+            isMobile: false,
             options: {}
         });
         annotator.annotatedElement = annotator.getAnnotatedEl(document);

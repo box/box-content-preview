@@ -1,5 +1,6 @@
 export const CLASS_ANNOTATION_BUTTON_CANCEL = 'cancel-annotation-btn';
 export const CLASS_ANNOTATION_BUTTON_POST = 'post-annotation-btn';
+export const CLASS_MOBILE_ANNOTATION_DIALOG = 'bp-mobile-annotation-dialog';
 export const CLASS_ANNOTATION_DIALOG = 'bp-annotation-dialog';
 export const CLASS_ANNOTATION_DIALOG_HIGHLIGHT = 'bp-highlight-dialog';
 export const CLASS_ANNOTATION_TEXT_HIGHLIGHTED = 'bp-is-text-highlighted';
@@ -11,6 +12,7 @@ export const CLASS_BUTTON_CONTAINER = 'button-container';
 export const CLASS_BUTTON_DELETE_COMMENT = 'delete-comment-btn';
 export const CLASS_CANNOT_ANNOTATE = 'cannot-annotate';
 export const CLASS_COMMENTS_CONTAINER = 'annotation-comments';
+export const CLASS_ANNOTATION_CONTAINER = 'annotation-container';
 export const CLASS_REPLY_CONTAINER = 'reply-container';
 export const CLASS_REPLY_TEXTAREA = 'reply-textarea';
 

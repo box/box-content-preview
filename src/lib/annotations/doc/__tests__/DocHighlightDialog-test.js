@@ -168,8 +168,8 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
     describe('toggleHighlightCommentsReply()', () => {
         it('should display "Reply" text area in dialog when multiple comments exist', () => {
-            const replyTextEl = dialog.element.querySelector('[data-section="create"]');
-            const commentTextEl = dialog.element.querySelector('[data-section="show"]');
+            const replyTextEl = dialog.commentsDialogEl.querySelector('[data-section="create"]');
+            const commentTextEl = dialog.commentsDialogEl.querySelector('[data-section="show"]');
 
             sandbox.stub(dialog, 'position');
 
@@ -180,8 +180,8 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         });
 
         it('should display "Add a comment here" text area in dialog when no comments exist', () => {
-            const replyTextEl = dialog.element.querySelector('[data-section="create"]');
-            const commentTextEl = dialog.element.querySelector('[data-section="show"]');
+            const replyTextEl = dialog.commentsDialogEl.querySelector('[data-section="create"]');
+            const commentTextEl = dialog.commentsDialogEl.querySelector('[data-section="show"]');
 
             sandbox.stub(dialog, 'position');
 
@@ -189,6 +189,100 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
             expect(commentTextEl.classList.contains(CLASS_HIDDEN)).to.be.true;
             expect(replyTextEl.classList.contains(CLASS_HIDDEN)).to.be.false;
+        });
+    });
+
+    describe('setup()', () => {
+        beforeEach(() => {
+            stubs.annotation = new Annotation({
+                text: 'blargh',
+                user: { id: 1, name: 'Bob' },
+                permissions: {
+                    can_delete: true
+                },
+                thread: 1
+            });
+            stubs.show = sandbox.stub(annotatorUtil, 'showElement');
+            stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
+        });
+
+        it('should create a dialog element if it does not already exist', () => {
+            dialog.element = null;
+            dialog.setup([]);
+            expect(dialog.element).is.not.null;
+        });
+
+        it('should set hasComments according to the number of annotations in the thread', () => {
+            dialog.hasComments = null;
+            dialog.setup([stubs.annotation]);
+            expect(dialog.hasComments).to.be.true;
+
+            dialog.hasComments = null;
+            stubs.annotation.text = '';
+            dialog.setup([stubs.annotation]);
+            expect(dialog.hasComments).to.be.false;
+        });
+
+        it('should hide the highlight dialog if thread has more than 1 annotation', () => {
+            dialog.setup([stubs.annotation, stubs.annotation]);
+            expect(dialog.highlightDialogEl).to.have.class(CLASS_HIDDEN);
+        });
+
+        it('should hide the comments dialog if thread only 1 annotation', () => {
+            dialog.setup([stubs.annotation]);
+            expect(dialog.commentsDialogEl).to.have.class(CLASS_HIDDEN);
+        });
+
+        it('should setup the dialog element and add thread number to the dialog', () => {
+            dialog.setup([stubs.annotation]);
+            expect(dialog.element.dataset.threadNumber).to.equal('1');
+        });
+
+        it('should not set the thread number when using a mobile browser', () => {
+            dialog.isMobile = true;
+            dialog.setup([stubs.annotation]);
+            expect(dialog.element.dataset.threadNumber).to.be.undefined;
+        });
+
+        it('should add the text highlighted class if thread has multiple annotations', () => {
+            dialog.setup([stubs.annotation]);
+            expect(dialog.dialogEl).to.have.class(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+        });
+
+        it('should setup and show plain highlight dialog', () => {
+            sandbox.stub(annotatorUtil, 'isPlainHighlight').returns(true);
+            dialog.setup([stubs.annotation]);
+            expect(stubs.show).to.be.called;
+        });
+
+        it('should hide delete button on plain highlights if user does not have permissions', () => {
+            sandbox.stub(annotatorUtil, 'isPlainHighlight').returns(true);
+            stubs.annotation.permissions.can_delete = false;
+
+            dialog.setup([stubs.annotation]);
+            const highlightLabelEl = dialog.highlightDialogEl.querySelector('.bp-annotation-highlight-label');
+            const addHighlightBtn = dialog.highlightDialogEl.querySelector('.bp-add-highlight-btn');
+            expect(stubs.show).to.be.calledWith(highlightLabelEl);
+            expect(stubs.hide).to.be.calledWith(addHighlightBtn);
+        });
+
+        it('should add annotation elements', () => {
+            stubs.add = sandbox.stub(dialog, 'addAnnotationElement');
+            dialog.setup([stubs.annotation, stubs.annotation]);
+            expect(stubs.add).to.be.calledTwice;
+        });
+
+        it('should bind DOM listeners', () => {
+            stubs.bind = sandbox.stub(dialog, 'bindDOMListeners');
+            dialog.setup([stubs.annotation]);
+            expect(stubs.bind).to.be.called;
+        });
+
+        it('should not bind DOM listeners if using a mobile browser', () => {
+            stubs.bind = sandbox.stub(dialog, 'bindDOMListeners');
+            dialog.isMobile = true;
+            dialog.setup([stubs.annotation]);
+            expect(stubs.bind).to.not.be.called;
         });
     });
 
@@ -208,17 +302,17 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
     describe('toggleHighlight()', () => {
         it('should delete a blank annotation if text is highlighted', () => {
-            dialog.element.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            dialog.dialogEl.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
             dialog.toggleHighlight();
             expect(dialog.hasComments).to.be.true;
             expect(stubs.emit).to.be.calledWith('annotationdelete');
         });
 
         it('should create a blank annotation if text is not highlighted', () => {
-            dialog.element.classList.remove(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            dialog.dialogEl.classList.remove(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
 
             dialog.toggleHighlight();
-            expect(dialog.element).to.have.class(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            expect(dialog.dialogEl).to.have.class(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
             expect(dialog.hasComments).to.be.false;
             expect(stubs.emit).to.be.calledWith('annotationcreate');
         });
@@ -230,7 +324,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
                 focus: () => {}
             };
             stubs.textMock = sandbox.mock(stubs.textarea);
-            sandbox.stub(dialog.element, 'querySelector').returns(stubs.textarea);
+            sandbox.stub(dialog.dialogEl, 'querySelector').returns(stubs.textarea);
         });
 
         it('should focus the add comment area if it exists', () => {

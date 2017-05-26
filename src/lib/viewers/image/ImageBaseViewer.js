@@ -145,12 +145,18 @@ const CSS_CLASS_PANNABLE = 'pannable';
     updateCursor() {
         if (this.isPannable) {
             this.isZoomable = false;
-            this.imageEl.classList.add(CSS_CLASS_PANNABLE);
-            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+
+            if (!this.isMobile) {
+                this.imageEl.classList.add(CSS_CLASS_PANNABLE);
+                this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+            }
         } else {
             this.isZoomable = true;
-            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-            this.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
+
+            if (!this.isMobile) {
+                this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+                this.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
+            }
         }
     }
 
@@ -161,6 +167,11 @@ const CSS_CLASS_PANNABLE = 'pannable';
      * @return {void}
      */
     loadUI() {
+        // Temporarily disabling controls on mobile
+        if (this.isMobile) {
+            return;
+        }
+
         this.controls = new Controls(this.containerEl);
         this.controls.add(__('zoom_out'), this.zoomOut, 'bp-image-zoom-out-icon', ICON_ZOOM_OUT);
         this.controls.add(__('zoom_in'), this.zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
@@ -177,7 +188,7 @@ const CSS_CLASS_PANNABLE = 'pannable';
         this.imageEl.addEventListener('mouseup', this.handleMouseUp);
         this.imageEl.addEventListener('dragstart', this.cancelDragEvent);
 
-        if (Browser.isMobile()) {
+        if (this.isMobile) {
             if (Browser.isIOS()) {
                 this.imageEl.addEventListener('gesturestart', this.mobileZoomStartHandler);
                 this.imageEl.addEventListener('gestureend', this.mobileZoomEndHandler);
@@ -339,7 +350,10 @@ const CSS_CLASS_PANNABLE = 'pannable';
      */
     enableViewerControls() {
         super.enableViewerControls();
-        this.updateCursor();
+
+        if (!this.isMobile) {
+            this.updateCursor();
+        }
     }
 
     /**

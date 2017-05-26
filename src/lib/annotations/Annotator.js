@@ -4,7 +4,8 @@ import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
 import * as constants from './annotationConstants';
 import * as annotatorUtil from './annotatorUtil';
-import { CLASS_ACTIVE, SELECTOR_BOX_PREVIEW_BTN_ANNOTATE } from '../constants';
+import { CLASS_ACTIVE, SELECTOR_BOX_PREVIEW_BTN_ANNOTATE, CLASS_HIDDEN } from '../constants';
+import { ICON_CLOSE } from '../icons/icons';
 import './Annotator.scss';
 
 @autobind class Annotator extends EventEmitter {
@@ -39,6 +40,7 @@ import './Annotator.scss';
         this.fileVersionId = data.fileVersionId;
         this.locale = data.locale;
         this.validationErrorDisplayed = false;
+        this.isMobile = data.isMobile;
     }
 
     /**
@@ -77,9 +79,35 @@ import './Annotator.scss';
             canAnnotate: this.canAnnotate
         });
 
+        // Set up mobile annotations dialog
+        if (this.isMobile) {
+            this.setupMobileDialog();
+        }
+
         this.setScale(1);
         this.setupAnnotations();
         this.showAnnotations();
+    }
+
+    /**
+     * Sets up the shared mobile dialog element.
+     *
+     * @return {void}
+     */
+    setupMobileDialog() {
+        // Generate HTML of dialog
+        const mobileDialogEl = document.createElement('div');
+        mobileDialogEl.setAttribute('data-type', 'annotation-dialog');
+        mobileDialogEl.classList.add(constants.CLASS_MOBILE_ANNOTATION_DIALOG);
+        mobileDialogEl.classList.add(constants.CLASS_ANNOTATION_DIALOG);
+        mobileDialogEl.classList.add(CLASS_HIDDEN);
+
+        mobileDialogEl.innerHTML = `
+            <div class="bp-annotation-mobile-header">
+                <button class="bp-annotation-dialog-close">${ICON_CLOSE}</button>
+            </div>`.trim();
+
+        this.container.appendChild(mobileDialogEl);
     }
 
     /**
@@ -207,7 +235,7 @@ import './Annotator.scss';
         if (this.isInPointMode()) {
             this.notification.hide();
 
-            this.emit('pointmodeexit');
+            this.emit('annotationmodeexit');
             this.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
                 buttonEl.classList.remove(CLASS_ACTIVE);
@@ -220,7 +248,7 @@ import './Annotator.scss';
         } else {
             this.notification.show(__('notification_annotation_mode'));
 
-            this.emit('pointmodeenter');
+            this.emit('annotationmodeenter');
             this.annotatedElement.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
                 buttonEl.classList.add(CLASS_ACTIVE);

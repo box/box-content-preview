@@ -1210,6 +1210,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(initPageNumElStub).to.be.called;
             expect(docBase.controls instanceof Controls).to.be.true;
         });
+
+        it('should disable controls if on a mobile browser', () => {
+            docBase.isMobile = true;
+            docBase.loadUI();
+            expect(docBase.controls).to.be.undefined;
+        });
     });
 
     describe('showPageNumInput()', () => {
