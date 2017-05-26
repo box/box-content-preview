@@ -131,13 +131,15 @@ describe('lib/annotations/AnnotationThread', () => {
             stubs.create.returns(Promise.resolve({}));
 
             thread.saveAnnotation('point', 'blah');
-            expect(stubs.create).to.be.calledWith(sinon.match({
-                fileVersionId: '1',
-                type: 'point',
-                text: 'blah',
-                threadID: '2',
-                thread: '1'
-            }));
+            expect(stubs.create).to.be.calledWith(
+                sinon.match({
+                    fileVersionId: '1',
+                    type: 'point',
+                    text: 'blah',
+                    threadID: '2',
+                    thread: '1'
+                })
+            );
             expect(thread.state).to.equal(constants.ANNOTATION_STATE_HOVER);
         });
 

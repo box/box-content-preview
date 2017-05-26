@@ -10,9 +10,11 @@ describe('lib/viewers/box3d/model3d/Model3DLoader', () => {
             extension: 'box3d',
             name: 'blah.box3d',
             representations: {
-                entries: [{
-                    representation: '3d'
-                }]
+                entries: [
+                    {
+                        representation: '3d'
+                    }
+                ]
             }
         };
     });
@@ -25,7 +27,10 @@ describe('lib/viewers/box3d/model3d/Model3DLoader', () => {
     describe('determineViewer()', () => {
         it('should throw an error if browser doesn\'t support 3D and it is a 3d file', () => {
             sandbox.stub(Browser, 'supportsModel3D').returns(false);
-            expect(() => Model3DLoader.determineViewer(file)).to.throw(Error, /browser doesn't support preview for 3D models/);
+            expect(() => Model3DLoader.determineViewer(file)).to.throw(
+                Error,
+                /browser doesn't support preview for 3D models/
+            );
         });
 
         it('should not throw an error if browser doesn\'t support 3D and it is a non 3d file', () => {
@@ -33,14 +38,19 @@ describe('lib/viewers/box3d/model3d/Model3DLoader', () => {
                 extension: 'pdf',
                 name: 'blah.pdf',
                 representations: {
-                    entries: [{
-                        representation: 'pdf'
-                    }]
+                    entries: [
+                        {
+                            representation: 'pdf'
+                        }
+                    ]
                 }
             };
 
             sandbox.stub(Browser, 'supportsModel3D').returns(false);
-            expect(() => Model3DLoader.determineViewer(file)).to.not.throw(Error, /browser doesn't support preview for 3D models/);
+            expect(() => Model3DLoader.determineViewer(file)).to.not.throw(
+                Error,
+                /browser doesn't support preview for 3D models/
+            );
         });
 
         it('should return viewer if browser supports 3D', () => {

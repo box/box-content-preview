@@ -56,12 +56,14 @@ describe('lib/Controls', () => {
         });
 
         it('should remove click listeners for any button references', () => {
-            const button1 = { button:
-                { removeEventListener: sandbox.stub() },
-                handler: 'handler' };
-            const button2 = { button:
-                { removeEventListener: sandbox.stub() },
-                handler: 'handler' };
+            const button1 = {
+                button: { removeEventListener: sandbox.stub() },
+                handler: 'handler'
+            };
+            const button2 = {
+                button: { removeEventListener: sandbox.stub() },
+                handler: 'handler'
+            };
             controls.buttonRefs = [button1, button2];
 
             controls.destroy();
@@ -136,7 +138,6 @@ describe('lib/Controls', () => {
             controls.blockHiding = false;
             const containsStub = sandbox.stub(controls.controlsEl, 'contains').returns(true);
             const blurStub = sandbox.stub(document.activeElement, 'blur');
-
 
             controls.resetTimeout();
             clock.tick(1501);

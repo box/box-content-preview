@@ -277,13 +277,16 @@ describe('lib/viewers/BaseViewer', () => {
         it('should clean up rep statuses', () => {
             const destroyMock = sandbox.mock().twice();
             const removeListenerMock = sandbox.mock().twice();
-            base.repStatuses = [{
-                removeListener: removeListenerMock,
-                destroy: destroyMock
-            }, {
-                removeListener: removeListenerMock,
-                destroy: destroyMock
-            }];
+            base.repStatuses = [
+                {
+                    removeListener: removeListenerMock,
+                    destroy: destroyMock
+                },
+                {
+                    removeListener: removeListenerMock,
+                    destroy: destroyMock
+                }
+            ];
 
             base.destroy();
         });
@@ -463,8 +466,7 @@ describe('lib/viewers/BaseViewer', () => {
             });
 
             it('should zoom in if not on iOS and the scale is > 0', () => {
-                stubs.sqrt.onCall(0).returns(0)
-                .onCall(1).returns(0.5);
+                stubs.sqrt.onCall(0).returns(0).onCall(1).returns(0.5);
                 stubs.isIOS.returns(false);
                 base.mobileZoomStartHandler(event);
 
@@ -487,8 +489,7 @@ describe('lib/viewers/BaseViewer', () => {
             });
 
             it('should zoom out if not on iOS and the scale is < 0', () => {
-                stubs.sqrt.onCall(0).returns(0.5)
-                .onCall(1).returns(0);
+                stubs.sqrt.onCall(0).returns(0.5).onCall(1).returns(0);
                 stubs.isIOS.returns(false);
                 base.mobileZoomStartHandler(event);
 

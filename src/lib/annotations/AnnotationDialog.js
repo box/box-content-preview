@@ -6,10 +6,7 @@ import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 import { decodeKeydown } from '../util';
 import { ICON_DELETE } from '../icons/icons';
 
-
-@autobind
-class AnnotationDialog extends EventEmitter {
-
+@autobind class AnnotationDialog extends EventEmitter {
     //--------------------------------------------------------------------------
     // Typedef
     //--------------------------------------------------------------------------
@@ -67,9 +64,9 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     show() {
-        const textAreaEl = this.hasAnnotations ?
-            this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA) :
-            this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+        const textAreaEl = this.hasAnnotations
+            ? this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA)
+            : this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
 
         // Don't re-position if reply textarea is already active
         const textareaIsActive = textAreaEl.classList.contains(CLASS_ACTIVE);
@@ -336,38 +333,31 @@ class AnnotationDialog extends EventEmitter {
             case 'post-annotation-btn':
                 this.postAnnotation();
                 break;
-
             // Clicking 'Cancel' button to cancel the annotation
             case 'cancel-annotation-btn':
                 this.cancelAnnotation();
                 this.deactivateReply(true);
                 break;
-
             // Clicking inside reply text area
             case 'reply-textarea':
                 this.activateReply();
                 break;
-
             // Canceling a reply
             case 'cancel-reply-btn':
                 this.deactivateReply(true);
                 break;
-
             // Clicking 'Post' button to create a reply annotation
             case 'post-reply-btn':
                 this.postReply();
                 break;
-
             // Clicking trash icon to initiate deletion
             case 'delete-btn':
                 this.showDeleteConfirmation(annotationID);
                 break;
-
             // Clicking 'Cancel' button to cancel deletion
             case 'cancel-delete-btn':
                 this.hideDeleteConfirmation(annotationID);
                 break;
-
             // Clicking 'Delete' button to confirm deletion
             case 'confirm-delete-btn': {
                 this.deleteAnnotation(annotationID);
@@ -403,9 +393,13 @@ class AnnotationDialog extends EventEmitter {
 
         const avatarUrl = annotatorUtil.htmlEscape(annotation.user.avatarUrl || '');
         const avatarHtml = annotatorUtil.getAvatarHtml(avatarUrl, userId, userName);
-        const created = new Date(annotation.created).toLocaleString(
-            this.locale, { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }
-        );
+        const created = new Date(annotation.created).toLocaleString(this.locale, {
+            month: '2-digit',
+            day: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
         const text = annotatorUtil.htmlEscape(annotation.text);
 
         const annotationEl = document.createElement('div');

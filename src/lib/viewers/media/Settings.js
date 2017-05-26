@@ -12,14 +12,7 @@ const CLASS_SETTINGS_SUBTITLES_UNAVAILABLE = 'bp-media-settings-subtitles-unavai
 const CLASS_SETTINGS_SUBTITLES_ON = 'bp-media-settings-subtitles-on';
 const SELECTOR_SETTINGS_SUB_ITEM = '.bp-media-settings-sub-item';
 const SELECTOR_SETTINGS_VALUE = '.bp-media-settings-value';
-const MEDIA_SPEEDS = [
-    '0.25',
-    '0.5',
-    '1.0',
-    '1.25',
-    '1.5',
-    '2.0'
-];
+const MEDIA_SPEEDS = ['0.25', '0.5', '1.0', '1.25', '1.5', '2.0'];
 
 const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
     <div class="bp-media-settings-menu-main bp-media-settings-menu" role="menu">
@@ -104,8 +97,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
     <div class="bp-media-settings-value"></div>
 </div>`;
 
-@autobind
-class Settings extends EventEmitter {
+@autobind class Settings extends EventEmitter {
     /**
      * The container of the settings element
      *
@@ -265,10 +257,10 @@ class Settings extends EventEmitter {
     setMenuContainerDimensions(menu) {
         // NOTE: need to explicitly set the dimensions in order to get css transitions. width=auto doesn't work with css transitions
         this.settingsEl.style.width = `${menu.offsetWidth + 18}px`;
-        // height = n * $item-height + 2 * $padding (see Settings.scss)
+        // height = n * $item-height + 2 * $padding (see Settings.scss) + 2 * border (see Settings.scss)
         // where n is the number of displayed items in the menu
         const sumHeight = [].reduce.call(menu.children, (sum, child) => sum + child.offsetHeight, 0);
-        this.settingsEl.style.height = `${sumHeight + 16}px`;
+        this.settingsEl.style.height = `${sumHeight + 18}px`;
     }
 
     /**
@@ -303,7 +295,9 @@ class Settings extends EventEmitter {
         this.settingsEl.classList.add(`bp-media-settings-show-${type}`);
         this.setMenuContainerDimensions(subMenu);
         // Move focus to the currently selected value
-        const curSelectedOption = this.settingsEl.querySelector(`[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`);
+        const curSelectedOption = this.settingsEl.querySelector(
+            `[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`
+        );
         curSelectedOption.focus();
     }
 
@@ -422,7 +416,9 @@ class Settings extends EventEmitter {
      * @return {HTMLElement} The sub-item html element from the Settings menu that's selected
      */
     getSelectedOption(type) {
-        return this.settingsEl.querySelector(`[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`);
+        return this.settingsEl.querySelector(
+            `[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`
+        );
     }
 
     /**
@@ -506,7 +502,10 @@ class Settings extends EventEmitter {
             }
             // Only if event happened outside the settings button as well, hide on click/space/enter; we ignore
             // settings button here because it has its own handler for this event
-            if (!this.settingsButtonEl.contains(event.target) && (event.type === 'click' || key === 'Space' || key === 'Enter')) {
+            if (
+                !this.settingsButtonEl.contains(event.target) &&
+                (event.type === 'click' || key === 'Space' || key === 'Enter')
+            ) {
                 this.hide();
             }
         }
@@ -584,7 +583,8 @@ class Settings extends EventEmitter {
             this.chooseOption('subtitles', '-1');
         } else if (this.toggleToSubtitle !== undefined) {
             this.chooseOption('subtitles', this.toggleToSubtitle.toString());
-        } else { // Do intelligent selection: Prefer user's language, fallback to English, then first subtitle in list
+        } else {
+            // Do intelligent selection: Prefer user's language, fallback to English, then first subtitle in list
             // Use the previewer's locale to determine preferred language
             let idx = this.subtitles.findIndex((subtitle) => subtitle === this.language);
             if (idx === -1) {
@@ -617,7 +617,8 @@ class Settings extends EventEmitter {
 
         this.containerEl.classList.remove(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
         const subsCache = cache.get('media-subtitles');
-        if (subsCache !== null && subsCache !== '-1') { // Last video watched with subtitles, so turn them on here too
+        if (subsCache !== null && subsCache !== '-1') {
+            // Last video watched with subtitles, so turn them on here too
             this.toggleSubtitles();
         }
 

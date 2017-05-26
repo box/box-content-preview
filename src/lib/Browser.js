@@ -191,13 +191,12 @@ class Browser {
                 e.stopPropagation();
             });
 
-
             try {
                 gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
             } catch (e) {
                 // no-op
             }
-            supportsWebGL = (gl !== null && gl !== undefined);
+            supportsWebGL = gl !== null && gl !== undefined;
         }
 
         return supportsWebGL;
@@ -250,7 +249,7 @@ class Browser {
         try {
             hasFlash = Boolean(new ActiveXObject('ShockwaveFlash.ShockwaveFlash'));
         } catch (exception) {
-            hasFlash = (typeof global.navigator.mimeTypes['application/x-shockwave-flash'] !== 'undefined');
+            hasFlash = typeof global.navigator.mimeTypes['application/x-shockwave-flash'] !== 'undefined';
         }
         return hasFlash;
     }

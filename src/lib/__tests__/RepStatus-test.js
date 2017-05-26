@@ -38,11 +38,13 @@ describe('lib/RepStatus', () => {
     describe('getStatus()', () => {
         it('should return the status from the representation state object', () => {
             const status = 'someStatus';
-            expect(RepStatus.getStatus({
-                status: {
-                    state: status
-                }
-            })).to.equal(status);
+            expect(
+                RepStatus.getStatus({
+                    status: {
+                        state: status
+                    }
+                })
+            ).to.equal(status);
         });
     });
 
@@ -80,11 +82,13 @@ describe('lib/RepStatus', () => {
         });
 
         it('should fetch latest status', () => {
-            sandbox.mock(util).expects('get').returns(Promise.resolve({
-                status: {
-                    state
-                }
-            }));
+            sandbox.mock(util).expects('get').returns(
+                Promise.resolve({
+                    status: {
+                        state
+                    }
+                })
+            );
 
             sandbox.mock(window).expects('clearTimeout').withArgs(repStatus.statusTimeout);
 
@@ -95,14 +99,16 @@ describe('lib/RepStatus', () => {
         });
 
         it('should update provided metadata', () => {
-            sandbox.mock(util).expects('get').returns(Promise.resolve({
-                status: {
-                    state
-                },
-                metadata: {
-                    pages: 10
-                }
-            }));
+            sandbox.mock(util).expects('get').returns(
+                Promise.resolve({
+                    status: {
+                        state
+                    },
+                    metadata: {
+                        pages: 10
+                    }
+                })
+            );
 
             return repStatus.updateStatus().then(() => {
                 expect(repStatus.representation.status.state).to.equal(state);

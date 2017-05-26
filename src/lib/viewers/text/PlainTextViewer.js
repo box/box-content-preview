@@ -8,7 +8,8 @@ import { HIGHLIGHTTABLE_EXTENSIONS } from './extensions';
 import { get, openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
 
 // Inline web worker JS
-const HIGHLIGHT_WORKER_JS = 'onmessage=function(e){importScripts(e.data.highlightSrc);postMessage(self.hljs.highlightAuto(e.data.text).value)};';
+const HIGHLIGHT_WORKER_JS =
+    'onmessage=function(e){importScripts(e.data.highlightSrc);postMessage(self.hljs.highlightAuto(e.data.text).value)};';
 
 // Only load up to 192Kb of text
 const SIZE_LIMIT_BYTES = 196608;
@@ -191,25 +192,25 @@ class PlainTextViewer extends TextBaseViewer {
         const headers = this.truncated ? { Range: `bytes=0-${SIZE_LIMIT_BYTES}` } : {};
 
         get(this.createContentUrlWithAuthParams(template), headers, 'text')
-        .then((text) => {
-            if (this.isDestroyed()) {
-                return;
-            }
+            .then((text) => {
+                if (this.isDestroyed()) {
+                    return;
+                }
 
-            let fetchedText = text;
-            if (this.truncated) {
-                fetchedText += '...';
-            }
+                let fetchedText = text;
+                if (this.truncated) {
+                    fetchedText += '...';
+                }
 
-            // Only highlight code files
-            if (HIGHLIGHTTABLE_EXTENSIONS.indexOf(extension) === -1) {
-                this.finishLoading(fetchedText, false);
-            } else {
-                this.initHighlightJs(fetchedText);
-            }
-        })
-        .catch(this.handleAssetError);
-    }
+                // Only highlight code files
+                if (HIGHLIGHTTABLE_EXTENSIONS.indexOf(extension) === -1) {
+                    this.finishLoading(fetchedText, false);
+                } else {
+                    this.initHighlightJs(fetchedText);
+                }
+            })
+            .catch(this.handleAssetError);
+    };
 
     /**
      * Loads highlight.js to highlight the file

@@ -1,8 +1,6 @@
 import autobind from 'autobind-decorator';
 
-@autobind
-class Annotation {
-
+@autobind class Annotation {
     //--------------------------------------------------------------------------
     // Typedef
     //--------------------------------------------------------------------------

@@ -131,11 +131,14 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
             sandbox.stub(Promise, 'all').returns(stubs.promise);
 
-            return dash.load().then(() => {
-                expect(dash.setup).to.be.called;
-                expect(dash.loadDashPlayer).to.be.called;
-                expect(dash.resetLoadTimeout).to.be.called;
-            }).catch(() => {});
+            return dash
+                .load()
+                .then(() => {
+                    expect(dash.setup).to.be.called;
+                    expect(dash.loadDashPlayer).to.be.called;
+                    expect(dash.resetLoadTimeout).to.be.called;
+                })
+                .catch(() => {});
         });
     });
 
@@ -348,11 +351,15 @@ describe('lib/viewers/media/DashViewer', () => {
         const listenerFunc = DashViewer.prototype.addEventListenersForMediaControls;
 
         afterEach(() => {
-            Object.defineProperty(VideoBaseViewer.prototype, 'addEventListenersForMediaControls', { value: listenerFunc });
+            Object.defineProperty(VideoBaseViewer.prototype, 'addEventListenersForMediaControls', {
+                value: listenerFunc
+            });
         });
 
         it('should add event listeners to the media controls', () => {
-            Object.defineProperty(VideoBaseViewer.prototype, 'addEventListenersForMediaControls', { value: sandbox.mock() });
+            Object.defineProperty(VideoBaseViewer.prototype, 'addEventListenersForMediaControls', {
+                value: sandbox.mock()
+            });
             stubs.mockControls.expects('addListener').withArgs('qualitychange', sinon.match.func);
             stubs.mockControls.expects('addListener').withArgs('subtitlechange', sinon.match.func);
             dash.addEventListenersForMediaControls();
@@ -457,15 +464,11 @@ describe('lib/viewers/media/DashViewer', () => {
             const spanish = { language: 'spa', id: 6 };
             const korean = { language: 'kor', id: 3 };
             const chinese = { language: 'zho', id: 7 };
-            const subs = [
-                english,
-                russian,
-                spanish,
-                korean,
-                chinese
-            ];
+            const subs = [english, russian, spanish, korean, chinese];
             stubs.mockPlayer.expects('getTextTracks').returns(subs);
-            stubs.mockControls.expects('initSubtitles').withArgs(['Korean', 'Russian', 'English', 'Spanish', 'Chinese'], 'English');
+            stubs.mockControls
+                .expects('initSubtitles')
+                .withArgs(['Korean', 'Russian', 'English', 'Spanish', 'Chinese'], 'English');
 
             dash.loadSubtitles();
 
@@ -477,14 +480,11 @@ describe('lib/viewers/media/DashViewer', () => {
             const spanish = { language: 'spa', id: 4 };
             const korean = { language: 'KoR', id: 5 };
             const chinese = { language: 'zHO', id: 6 };
-            const subs = [
-                russian,
-                spanish,
-                korean,
-                chinese
-            ];
+            const subs = [russian, spanish, korean, chinese];
             stubs.mockPlayer.expects('getTextTracks').returns(subs);
-            stubs.mockControls.expects('initSubtitles').withArgs(['Russian', 'Spanish', 'Korean', 'Chinese'], 'English');
+            stubs.mockControls
+                .expects('initSubtitles')
+                .withArgs(['Russian', 'Spanish', 'Korean', 'Chinese'], 'English');
 
             dash.loadSubtitles();
 
@@ -498,16 +498,11 @@ describe('lib/viewers/media/DashViewer', () => {
             const empty = { language: '', id: 6 };
             const doesntmatter = { language: 'doesntmatter', id: 6 };
             const zero = { language: '0', id: 7 };
-            const subs = [
-                russian,
-                foo,
-                und,
-                empty,
-                doesntmatter,
-                zero
-            ];
+            const subs = [russian, foo, und, empty, doesntmatter, zero];
             stubs.mockPlayer.expects('getTextTracks').returns(subs);
-            stubs.mockControls.expects('initSubtitles').withArgs(['Russian', 'foo', 'und', '', 'doesntmatter', '0'], 'English');
+            stubs.mockControls
+                .expects('initSubtitles')
+                .withArgs(['Russian', 'foo', 'und', '', 'doesntmatter', '0'], 'English');
 
             dash.loadSubtitles();
 
@@ -529,12 +524,7 @@ describe('lib/viewers/media/DashViewer', () => {
             const russian = { language: 'rus', id: 4 };
             const french = { language: 'fra', id: 5 };
             const spanish = { language: 'spa', id: 6 };
-            dash.textTracks = [
-                english,
-                russian,
-                french,
-                spanish
-            ];
+            dash.textTracks = [english, russian, french, spanish];
             sandbox.stub(cache, 'get').returns('0');
             stubs.mockPlayer.expects('selectTextTrack').withArgs(english);
             stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(true);
@@ -549,12 +539,7 @@ describe('lib/viewers/media/DashViewer', () => {
             const russian = { language: 'rus', id: 4 };
             const french = { language: 'fre', id: 5 };
             const spanish = { language: 'spa', id: 6 };
-            dash.textTracks = [
-                english,
-                russian,
-                french,
-                spanish
-            ];
+            dash.textTracks = [english, russian, french, spanish];
             sandbox.stub(cache, 'get').returns('3');
             stubs.mockPlayer.expects('selectTextTrack').withArgs(spanish);
             stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(true);
@@ -569,12 +554,7 @@ describe('lib/viewers/media/DashViewer', () => {
             const russian = { language: 'rus', id: 4 };
             const french = { language: 'fre', id: 5 };
             const spanish = { language: 'spa', id: 6 };
-            dash.textTracks = [
-                english,
-                russian,
-                french,
-                spanish
-            ];
+            dash.textTracks = [english, russian, french, spanish];
             sandbox.stub(cache, 'get').returns('1');
             stubs.mockPlayer.expects('selectTextTrack').withArgs(russian);
             stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(true);
@@ -589,12 +569,7 @@ describe('lib/viewers/media/DashViewer', () => {
             const russian = { language: 'rus', id: 4 };
             const french = { language: 'fre', id: 5 };
             const spanish = { language: 'spa', id: 6 };
-            dash.textTracks = [
-                english,
-                russian,
-                french,
-                spanish
-            ];
+            dash.textTracks = [english, russian, french, spanish];
             sandbox.stub(cache, 'get').returns('-1');
             stubs.mockPlayer.expects('selectTextTrack').never();
             stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(false);

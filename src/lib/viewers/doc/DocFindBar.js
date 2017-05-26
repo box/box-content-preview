@@ -2,12 +2,7 @@ import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import { decodeKeydown } from '../../util';
 import { CLASS_HIDDEN } from '../../constants';
-import {
-    ICON_FIND_DROP_DOWN,
-    ICON_FIND_DROP_UP,
-    ICON_CLOSE,
-    ICON_SEARCH
-} from '../../icons/icons';
+import { ICON_FIND_DROP_DOWN, ICON_FIND_DROP_UP, ICON_CLOSE, ICON_SEARCH } from '../../icons/icons';
 
 const MATCH_SEPARATOR = ' of ';
 const MATCH_OFFSET = 13;
@@ -18,9 +13,7 @@ const FIND_MATCH_FOUND = 0;
 const FIND_MATCH_NOT_FOUND = 1;
 const FIND_MATCH_PENDING = 3;
 
-@autobind
-class DocFindBar extends EventEmitter {
-
+@autobind class DocFindBar extends EventEmitter {
     /**
      * @constructor
      * @param  {string|HTML Element} findBar Find Bar node

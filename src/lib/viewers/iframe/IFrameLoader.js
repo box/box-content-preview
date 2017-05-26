@@ -13,7 +13,6 @@ const VIEWERS = [
 ];
 
 class IFrameLoader extends AssetLoader {
-
     /**
      * [constructor]
      *

@@ -88,7 +88,6 @@ describe('lib/viewers/doc/DocFindBar', () => {
                 createFindField: sandbox.stub(),
                 createFindButtons: sandbox.stub(),
                 bindDOMListeners: sandbox.stub()
-
             };
 
             let docFindBar2 = new DocFindBar(findBarEl, findController);
@@ -107,7 +106,6 @@ describe('lib/viewers/doc/DocFindBar', () => {
             docFindBar.createFindField();
 
             const searchIconEl = document.querySelector('.bp-doc-find-search');
-
 
             expect(searchIconEl.parentNode).to.equal(docFindBar.bar);
             expect(searchIconEl.className).to.equal('bp-doc-find-search');

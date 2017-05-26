@@ -17,9 +17,7 @@ import {
     STATUS_SUCCESS
 } from '../../../constants';
 
-import {
-    ICON_PRINT_CHECKMARK
-} from '../../../icons/icons';
+import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -419,7 +417,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should print on load in the chrome browser', () => {
             window.navigator.msSaveOrOpenBlob = undefined;
             stubs.open.returns(stubs.printResult);
-
 
             docBase.browserPrint();
             expect(stubs.createObject).to.be.calledWith(docBase.printBlob);
@@ -916,7 +913,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
     describe('setupPdfjs()', () => {
         beforeEach(() => {
-            stubs.urlCreator = sandbox.stub(util, 'createAssetUrlCreator').returns(() => { return 'asset'; });
+            stubs.urlCreator = sandbox.stub(util, 'createAssetUrlCreator').returns(() => {
+                return 'asset';
+            });
             stubs.browser = sandbox.stub(Browser, 'getName').returns('Safari');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
             stubs.getViewerOption = sandbox.stub(docBase, 'getViewerOption');
@@ -1295,7 +1294,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(stubs.addEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
             expect(stubs.addEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
             expect(stubs.addEventListener).to.be.calledWith('scroll', docBase.scrollHandler);
-
 
             expect(stubs.addEventListener).to.not.be.calledWith('gesturestart', docBase.mobileZoomStartHandler);
             expect(stubs.addEventListener).to.not.be.calledWith('gestureend', docBase.mobileZoomEndHandler);

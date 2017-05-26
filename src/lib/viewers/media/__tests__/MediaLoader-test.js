@@ -15,14 +15,19 @@ describe('lib/viewers/media/MediaLoader', () => {
                 extension: 'mp4',
                 name: 'blah.mp4',
                 representations: {
-                    entries: [{
-                        representation: 'dash'
-                    }]
+                    entries: [
+                        {
+                            representation: 'dash'
+                        }
+                    ]
                 }
             };
 
             sandbox.stub(util, 'requires360Viewer').returns(true);
-            expect(() => MediaLoader.determineViewer(file)).to.throw(Error, /browser doesn't support preview for 360-degree videos/);
+            expect(() => MediaLoader.determineViewer(file)).to.throw(
+                Error,
+                /browser doesn't support preview for 360-degree videos/
+            );
         });
 
         it('should return viewer if 360 viewer is not required', () => {
@@ -30,9 +35,11 @@ describe('lib/viewers/media/MediaLoader', () => {
                 extension: 'mp4',
                 name: 'blah.mp4',
                 representations: {
-                    entries: [{
-                        representation: 'dash'
-                    }]
+                    entries: [
+                        {
+                            representation: 'dash'
+                        }
+                    ]
                 }
             };
 

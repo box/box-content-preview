@@ -6,7 +6,6 @@ const CLASS_PROGRESS_BAR = 'bp-progress-bar';
 const PROGRESS_INTERVAL_MS = 150;
 
 class ProgressBar {
-
     /**
      * [constructor]
      *

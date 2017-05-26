@@ -81,7 +81,8 @@ class Image360Renderer extends Box3DRenderer {
         const opts = options;
         opts.sceneEntities = opts.sceneEntities || sceneEntities;
 
-        return super.load(assetUrl, opts)
+        return super
+            .load(assetUrl, opts)
             .then(this.loadPanoramaFile.bind(this, assetUrl))
             .then(this.onSceneLoad.bind(this));
     }
@@ -96,8 +97,8 @@ class Image360Renderer extends Box3DRenderer {
      */
     loadPanoramaFile(assetUrl) {
         /* istanbul ignore next */
-        return this.box3d.addRemoteEntities(assetUrl)
-            .then(() => {
+        return this.box3d.addRemoteEntities(assetUrl).then(
+            () => {
                 this.imageAsset = this.box3d.getAssetByClass(Box3D.ImageAsset);
                 this.textureAsset = this.box3d.createTexture2d();
                 this.textureAsset.setProperties({
@@ -113,7 +114,9 @@ class Image360Renderer extends Box3DRenderer {
                         resolve();
                     });
                 });
-            }, () => this.onUnsupportedRepresentation());
+            },
+            () => this.onUnsupportedRepresentation()
+        );
     }
 
     /**
