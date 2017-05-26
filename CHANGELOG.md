@@ -1,5 +1,17 @@
 # Change Log
 
+## [v0.126.1](https://github.com/box/box-content-preview/tree/v0.126.1) (2017-05-25)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.126.0...v0.126.1)
+
+**Merged pull requests:**
+
+- Fix: Fixing vanity urls for excel online on IE11 [\#153](https://github.com/box/box-content-preview/pull/153) ([jeremypress](https://github.com/jeremypress))
+- Update: Make media viewer settings menu larger so scrollbars don't show [\#149](https://github.com/box/box-content-preview/pull/149) ([bhh1988](https://github.com/bhh1988))
+- Fix: Reinforcing release script [\#148](https://github.com/box/box-content-preview/pull/148) ([jeremypress](https://github.com/jeremypress))
+- Chore: Fix changelog [\#144](https://github.com/box/box-content-preview/pull/144) ([tonyjin](https://github.com/tonyjin))
+- Chore: Format everything with prettier [\#143](https://github.com/box/box-content-preview/pull/143) ([tonyjin](https://github.com/tonyjin))
+- 692 add toggle for box3d grid [\#138](https://github.com/box/box-content-preview/pull/138) ([MiiBond](https://github.com/MiiBond))
+
 ## [v0.126.0](https://github.com/box/box-content-preview/tree/v0.126.0) (2017-05-24)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.125.0...v0.126.0)
 
