@@ -7,8 +7,7 @@ import { ICON_PLAY_LARGE } from '../../icons/icons';
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
 const CLASS_PLAY_BUTTON = 'bp-media-play-button';
 
-@autobind
-class VideoBaseViewer extends MediaBaseViewer {
+@autobind class VideoBaseViewer extends MediaBaseViewer {
     /**
      * @inheritdoc
      */

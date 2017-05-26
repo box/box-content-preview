@@ -14,9 +14,11 @@ describe('lib/viewers/box3d/image360/Image360Loader', () => {
             extension: 'jpg',
             name: 'blah.360.jpg',
             representations: {
-                entries: [{
-                    representation: '3d'
-                }]
+                entries: [
+                    {
+                        representation: '3d'
+                    }
+                ]
             }
         };
 

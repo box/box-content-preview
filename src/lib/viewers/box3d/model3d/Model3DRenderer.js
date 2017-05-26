@@ -22,9 +22,7 @@ import {
     RENDER_MODE_NORMALS,
     RENDER_MODE_UV
 } from './model3DConstants';
-import {
-    EVENT_SCENE_LOADED
-} from '../box3DConstants';
+import { EVENT_SCENE_LOADED } from '../box3DConstants';
 import Browser from '../../../Browser';
 
 const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
@@ -113,8 +111,7 @@ class Model3DRenderer extends Box3DRenderer {
             opts.sceneEntities = sceneEntities(location.staticBaseURI);
         }
 
-        return super.load(assetUrl, opts)
-            .then(this.loadBox3dFile.bind(this, assetUrl));
+        return super.load(assetUrl, opts).then(this.loadBox3dFile.bind(this, assetUrl));
     }
 
     /**
@@ -124,8 +121,7 @@ class Model3DRenderer extends Box3DRenderer {
      * @param {Event} event - The click event.
      * @return {void}
      */
-    @autobind
-    handleCanvasClick(event) {
+    @autobind handleCanvasClick(event) {
         this.emit(EVENT_CANVAS_CLICK, event);
     }
 
@@ -144,7 +140,8 @@ class Model3DRenderer extends Box3DRenderer {
         const renderModes = this.box3d.getApplication().getComponentByScriptId('render_modes');
         renderModes.setAttribute('shapeTexture', 'MAT_CAP_TEX');
 
-        return this.box3d.addRemoteEntities(assetUrl)
+        return this.box3d
+            .addRemoteEntities(assetUrl)
             .then(() => this.setupScene(), () => this.onUnsupportedRepresentation());
     }
 
@@ -237,7 +234,12 @@ class Model3DRenderer extends Box3DRenderer {
         // Reset the transforms of the instances under the root.
         this.instance.getChildren().forEach((instance) => {
             instance.setPosition(ORIGIN_VECTOR.x, ORIGIN_VECTOR.y, ORIGIN_VECTOR.z);
-            instance.setQuaternion(IDENTITY_QUATERNION.x, IDENTITY_QUATERNION.y, IDENTITY_QUATERNION.z, IDENTITY_QUATERNION.w);
+            instance.setQuaternion(
+                IDENTITY_QUATERNION.x,
+                IDENTITY_QUATERNION.y,
+                IDENTITY_QUATERNION.z,
+                IDENTITY_QUATERNION.w
+            );
         });
 
         this.instance.computeBounds();
@@ -278,7 +280,8 @@ class Model3DRenderer extends Box3DRenderer {
         // Set the origin point (so that we always point at the center of the model when the camera reloads)
         orbitController.originPoint.copy(center);
         orbitController.reset();
-        const distance = PREVIEW_CAMERA_ORBIT_DISTANCE_FACTOR * Math.max(Math.max(maxDimension.x, maxDimension.y), maxDimension.z);
+        const distance =
+            PREVIEW_CAMERA_ORBIT_DISTANCE_FACTOR * Math.max(Math.max(maxDimension.x, maxDimension.y), maxDimension.z);
         orbitController.setOrbitDistance(distance);
     }
 
@@ -295,9 +298,12 @@ class Model3DRenderer extends Box3DRenderer {
         const images = this.box3d.getEntitiesByType('image');
         const videos = this.box3d.getEntitiesByType('video');
         const assets = animations.concat(images, videos).filter((asset) => asset.isLoading());
-        const assetPromises = assets.map((asset) => new Promise((resolve) => {
-            asset.when('load', resolve);
-        }));
+        const assetPromises = assets.map(
+            (asset) =>
+                new Promise((resolve) => {
+                    asset.when('load', resolve);
+                })
+        );
 
         Promise.all(assetPromises).then(() => {
             if (!this.box3d) {
@@ -419,7 +425,9 @@ class Model3DRenderer extends Box3DRenderer {
         /* eslint-enable no-unused-expressions */
 
         this.dynamicOptimizer.setQualityChangeLevels(this.regularQualityChangeLevels);
-        const threshold = Browser.isMobile() ? OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE : OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR;
+        const threshold = Browser.isMobile()
+            ? OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE
+            : OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR;
 
         this.dynamicOptimizer.setFrameTimeThreshold(threshold);
     }
@@ -450,6 +458,7 @@ class Model3DRenderer extends Box3DRenderer {
         this.grid.material.transparent = true;
         this.grid.material.blending = THREE.MultiplyBlending;
         scene.add(this.grid);
+        this.grid.visible = true;
 
         this.axisDisplay = new THREE.AxisHelper(0.5);
         scene.add(this.axisDisplay);
@@ -694,6 +703,19 @@ class Model3DRenderer extends Box3DRenderer {
         }
     }
 
+    /**
+     * Set the visibility of the grid.
+     *
+     * @private
+     * @param {boolean} visible - Indicates whether or not the grid is visible.
+     * @return {void}
+     */
+    setGridVisible(visible) {
+        if (this.box3d) {
+            this.grid.visible = visible;
+        }
+    }
+
     /** @inheritdoc */
     enableVr() {
         if (this.vrEnabled) {
@@ -705,7 +727,9 @@ class Model3DRenderer extends Box3DRenderer {
         if (this.dynamicOptimizer) {
             this.dynamicOptimizer.setQualityChangeLevels(this.vrQualityChangeLevels);
 
-            const threshold = Browser.isMobile() ? OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE_VR : OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR_VR;
+            const threshold = Browser.isMobile()
+                ? OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE_VR
+                : OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR_VR;
             this.dynamicOptimizer.setFrameTimeThreshold(threshold);
         }
 
@@ -725,7 +749,9 @@ class Model3DRenderer extends Box3DRenderer {
         if (this.dynamicOptimizer) {
             this.dynamicOptimizer.setQualityChangeLevels(this.regularQualityChangeLevels);
 
-            const threshold = Browser.isMobile() ? OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE : OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR;
+            const threshold = Browser.isMobile()
+                ? OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE
+                : OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR;
             this.dynamicOptimizer.setFrameTimeThreshold(threshold);
         }
 

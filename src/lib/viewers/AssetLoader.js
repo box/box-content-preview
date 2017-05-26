@@ -31,7 +31,10 @@ class AssetLoader {
             if (disabledViewers.indexOf(viewer.NAME) > -1) {
                 return false;
             }
-            return viewer.EXT.indexOf(file.extension) > -1 && file.representations.entries.some((entry) => viewer.REP === entry.representation);
+            return (
+                viewer.EXT.indexOf(file.extension) > -1 &&
+                file.representations.entries.some((entry) => viewer.REP === entry.representation)
+            );
         });
     }
 

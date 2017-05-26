@@ -1,12 +1,5 @@
 import EventEmitter from 'events';
-import {
-    UIRegistry,
-    createCheckbox,
-    createDropdown,
-    createLabel,
-    createPullup,
-    createRow
-} from '../Box3DUIUtils';
+import { UIRegistry, createCheckbox, createDropdown, createLabel, createPullup, createRow } from '../Box3DUIUtils';
 import {
     AXIS_X,
     AXIS_Y,
@@ -22,6 +15,7 @@ import {
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
+    EVENT_SET_GRID_VISIBLE,
     RENDER_MODE_LIT,
     RENDER_MODE_UNLIT,
     RENDER_MODE_NORMALS,
@@ -30,10 +24,7 @@ import {
     ROTATION_STEP
 } from './model3DConstants';
 
-import {
-    CLASS_BOX_PREVIEW_OVERLAY_WRAPPER,
-    CLASS_IS_VISIBLE
-} from '../../../constants';
+import { CLASS_BOX_PREVIEW_OVERLAY_WRAPPER, CLASS_IS_VISIBLE } from '../../../constants';
 
 // For registering events on elements
 const RENDER_MODES = [
@@ -41,19 +32,23 @@ const RENDER_MODES = [
         text: RENDER_MODE_LIT,
         callback: 'onRenderModeSelected',
         args: [RENDER_MODE_LIT]
-    }, {
+    },
+    {
         text: RENDER_MODE_UNLIT,
         callback: 'onRenderModeSelected',
         args: [RENDER_MODE_UNLIT]
-    }, {
+    },
+    {
         text: RENDER_MODE_NORMALS,
         callback: 'onRenderModeSelected',
         args: [RENDER_MODE_NORMALS]
-    }, {
+    },
+    {
         text: RENDER_MODE_SHAPE,
         callback: 'onRenderModeSelected',
         args: [RENDER_MODE_SHAPE]
-    }, {
+    },
+    {
         text: RENDER_MODE_UV,
         callback: 'onRenderModeSelected',
         args: [RENDER_MODE_UV]
@@ -65,7 +60,8 @@ const PROJECTION_MODES = [
         text: 'Perspective',
         callback: 'onProjectionSelected',
         args: [CAMERA_PROJECTION_PERSPECTIVE]
-    }, {
+    },
+    {
         text: 'Orthographic',
         callback: 'onProjectionSelected',
         args: [CAMERA_PROJECTION_ORTHOGRAPHIC]
@@ -77,7 +73,8 @@ const QUALITY_LEVELS = [
         text: 'Auto',
         callback: 'onQualityLevelSelected',
         args: [QUALITY_LEVEL_AUTO]
-    }, {
+    },
+    {
         text: 'Full',
         callback: 'onQualityLevelSelected',
         args: [QUALITY_LEVEL_FULL]
@@ -96,6 +93,7 @@ class Model3DSettingsPullup extends EventEmitter {
         this.renderModeEl = null;
         this.renderModeListEl = null;
         this.showWireframesEl = null;
+        this.showGridEl = null;
         this.showSkeletonsEl = null;
         this.projectionEl = null;
         this.projectionListEl = null;
@@ -146,6 +144,18 @@ class Model3DSettingsPullup extends EventEmitter {
         this.renderModeEl = renderModeDropdownEl.querySelector('button');
         this.pullupEl.appendChild(renderModeDropdownEl);
 
+        // Grid option
+        const gridRowEl = createRow();
+        this.showGridEl = createCheckbox();
+        const gridLabelEl = createLabel('Show grid');
+        gridRowEl.appendChild(this.showGridEl);
+        gridRowEl.appendChild(gridLabelEl);
+        this.pullupEl.appendChild(gridRowEl);
+
+        this.showGridEl.addEventListener('click', () => {
+            this.onShowGridToggled();
+        });
+
         // Wireframe option
         const wireframeRowEl = createRow();
         this.showWireframesEl = createCheckbox();
@@ -177,8 +187,7 @@ class Model3DSettingsPullup extends EventEmitter {
             return entryCopy;
         });
 
-        const projectionPanelRowEl = createDropdown('Camera Projection', 'Perspective',
-            projectionPanelData);
+        const projectionPanelRowEl = createDropdown('Camera Projection', 'Perspective', projectionPanelData);
         this.projectionEl = projectionPanelRowEl.querySelector('button');
         this.pullupEl.appendChild(projectionPanelRowEl);
 
@@ -229,17 +238,29 @@ class Model3DSettingsPullup extends EventEmitter {
     createAxisWidget() {
         const rowEl = createRow();
 
-        rowEl.appendChild(this.createRotationAxis(AXIS_X,
-            () => this.onAxisRotationSelected(AXIS_X, -1),
-            () => this.onAxisRotationSelected(AXIS_X, 1)));
+        rowEl.appendChild(
+            this.createRotationAxis(
+                AXIS_X,
+                () => this.onAxisRotationSelected(AXIS_X, -1),
+                () => this.onAxisRotationSelected(AXIS_X, 1)
+            )
+        );
 
-        rowEl.appendChild(this.createRotationAxis(AXIS_Y,
-            () => this.onAxisRotationSelected(AXIS_Y, -1),
-            () => this.onAxisRotationSelected(AXIS_Y, 1)));
+        rowEl.appendChild(
+            this.createRotationAxis(
+                AXIS_Y,
+                () => this.onAxisRotationSelected(AXIS_Y, -1),
+                () => this.onAxisRotationSelected(AXIS_Y, 1)
+            )
+        );
 
-        rowEl.appendChild(this.createRotationAxis(AXIS_Z,
-            () => this.onAxisRotationSelected(AXIS_Z, 1),
-            () => this.onAxisRotationSelected(AXIS_Z, -1)));
+        rowEl.appendChild(
+            this.createRotationAxis(
+                AXIS_Z,
+                () => this.onAxisRotationSelected(AXIS_Z, 1),
+                () => this.onAxisRotationSelected(AXIS_Z, -1)
+            )
+        );
 
         return rowEl;
     }
@@ -357,6 +378,16 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
+     * Notify listeners that the show grid checkbox was toggled.
+     * @method onShowGridToggled
+     * @private
+     * @return {void}
+     */
+    onShowGridToggled() {
+        this.emit(EVENT_SET_GRID_VISIBLE, this.showGridEl.checked);
+    }
+
+    /**
      * Hide wireframes and uncheck check box
      * @method hideWireframes
      * @public
@@ -368,6 +399,17 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
+     * Show grid and check check box
+     * @method showGrid
+     * @public
+     * @return {void}
+     */
+    showGrid() {
+        this.showGridEl.checked = true;
+        this.onShowGridToggled();
+    }
+
+    /**
      * Reset the pullup to its default state.
      * @method reset
      * @public
@@ -376,6 +418,7 @@ class Model3DSettingsPullup extends EventEmitter {
     reset() {
         this.hideWireframes();
         this.hideSkeletons();
+        this.showGrid();
     }
 
     /**
@@ -398,6 +441,17 @@ class Model3DSettingsPullup extends EventEmitter {
      */
     setCurrentProjectionMode(mode) {
         this.projectionEl.textContent = mode;
+    }
+
+    /**
+     * Set the current state of the grid to the checkbox in the UI.
+     * @method setGridVisible
+     * @public
+     * @param {string} visible - Whether to check the box or not.
+     * @return {void}
+     */
+    setGridVisible(visible) {
+        this.showGridEl.checked = visible;
     }
 
     /**
@@ -447,6 +501,7 @@ class Model3DSettingsPullup extends EventEmitter {
         this.uiRegistry = null;
         this.renderModeEl = null;
         this.showWireframesEl = null;
+        this.showGridEl = null;
         this.showSkeletonsEl = null;
         this.projectionEl = null;
         this.qualityLevelEl = null;

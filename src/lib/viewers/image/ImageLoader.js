@@ -37,7 +37,6 @@ const VIEWERS = [
 ];
 
 class ImageLoader extends AssetLoader {
-
     /**
      * [constructor]
      * @return {ImageLoader} ImageLoader instance

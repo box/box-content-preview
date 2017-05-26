@@ -13,7 +13,6 @@ let options;
 let clock;
 let containerEl;
 
-
 describe('lib/viewers/image/MultiImageViewer', () => {
     stubs.errorHandler = MultiImageViewer.prototype.errorHandler;
     const setupFunc = BaseViewer.prototype.setup;
@@ -76,9 +75,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             stubs.bindImageListeners = sandbox.stub(multiImage, 'bindImageListeners');
             stubs.setupImageEls = sandbox.stub(multiImage, 'setupImageEls');
             stubs.unbindDOMListeners = sandbox.stub(multiImage, 'unbindDOMListeners');
-            multiImage.singleImageEls = [{
-                removeEventListener: sandbox.stub()
-            }];
+            multiImage.singleImageEls = [
+                {
+                    removeEventListener: sandbox.stub()
+                }
+            ];
         });
 
         it('should unbind the dom listeners', () => {
@@ -104,23 +105,32 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
 
         it('should create the image urls', () => {
-            return multiImage.load('file/100/content/{page}.png').then(() => {
-                expect(stubs.constructImageUrls).to.be.called;
-            }).catch(() => {});
+            return multiImage
+                .load('file/100/content/{page}.png')
+                .then(() => {
+                    expect(stubs.constructImageUrls).to.be.called;
+                })
+                .catch(() => {});
         });
 
         it('should add various listeners', () => {
-            return multiImage.load('file/100/content/{page}.png').then(() => {
-                expect(stubs.bindImageListeners).to.be.called;
-                expect(stubs.bindDOMListeners).to.be.called;
-                expect(stubs.constructImageUrls).to.be.called;
-            }).catch(() => {});
+            return multiImage
+                .load('file/100/content/{page}.png')
+                .then(() => {
+                    expect(stubs.bindImageListeners).to.be.called;
+                    expect(stubs.bindDOMListeners).to.be.called;
+                    expect(stubs.constructImageUrls).to.be.called;
+                })
+                .catch(() => {});
         });
 
         it('should make the images invisible', () => {
-            return multiImage.load('file/100/content/{page}.png').then(() => {
-                expect(multiImage.imageEl).to.have.class(CLASS_INVISIBLE);
-            }).catch(() => {});
+            return multiImage
+                .load('file/100/content/{page}.png')
+                .then(() => {
+                    expect(multiImage.imageEl).to.have.class(CLASS_INVISIBLE);
+                })
+                .catch(() => {});
         });
     });
 

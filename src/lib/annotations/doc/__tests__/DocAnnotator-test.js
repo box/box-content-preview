@@ -11,7 +11,6 @@ import * as annotatorUtil from '../../annotatorUtil';
 import * as docAnnotatorUtil from '../docAnnotatorUtil';
 import * as constants from '../../annotationConstants';
 
-
 let annotator;
 let stubs = {};
 const sandbox = sinon.sandbox.create();
@@ -58,10 +57,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         const x = 100;
         const y = 200;
         const dimensions = { x, y };
-        const quadPoints = [
-            [1, 2, 3, 4, 5, 6, 7, 8],
-            [2, 3, 4, 5, 6, 7, 8, 9]
-        ];
+        const quadPoints = [[1, 2, 3, 4, 5, 6, 7, 8], [2, 3, 4, 5, 6, 7, 8, 9]];
         let page = 3;
 
         beforeEach(() => {
@@ -798,7 +794,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
             const thread = { show: () => {} };
             stubs.threadMock = sandbox.mock(thread);
-            const threadsOnPageStub = sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns([thread, thread, thread]);
+            const threadsOnPageStub = sandbox
+                .stub(annotator, 'getHighlightThreadsOnPage')
+                .returns([thread, thread, thread]);
             stubs.threadMock.expects('show').thrice();
 
             annotator.showHighlightsOnPage(0);

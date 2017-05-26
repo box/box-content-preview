@@ -13,7 +13,6 @@ const VIEWERS = [
 ];
 
 class SWFLoader extends AssetLoader {
-
     /**
      * [constructor]
      * @return {SwfLoader} SwfLoader instance

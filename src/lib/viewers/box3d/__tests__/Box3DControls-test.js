@@ -3,17 +3,8 @@ import Box3DControls from '../Box3DControls';
 import Controls from '../../../Controls';
 import { UIRegistry } from '../Box3DUIUtils';
 import { CLASS_HIDDEN } from '../../../constants';
-import {
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT,
-    ICON_3D_VR
-} from '../../../icons/icons';
-import {
-    EVENT_RESET,
-    EVENT_SCENE_LOADED,
-    EVENT_TOGGLE_FULLSCREEN,
-    EVENT_TOGGLE_VR
-} from '../box3DConstants';
+import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_3D_VR } from '../../../icons/icons';
+import { EVENT_RESET, EVENT_SCENE_LOADED, EVENT_TOGGLE_FULLSCREEN, EVENT_TOGGLE_VR } from '../box3DConstants';
 
 const sandbox = sinon.sandbox.create();
 
@@ -86,11 +77,21 @@ describe('lib/viewers/box3d/Box3DControls', () => {
         });
 
         it('should invoke controls.add() with enter fullscreen button params', () => {
-            expect(controls.controls.add).to.be.calledWith('Enter fullscreen', controls.handleToggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+            expect(controls.controls.add).to.be.calledWith(
+                'Enter fullscreen',
+                controls.handleToggleFullscreen,
+                'bp-enter-fullscreen-icon',
+                ICON_FULLSCREEN_IN
+            );
         });
 
         it('should invoke controls.add() with exit fullscreen button params', () => {
-            expect(controls.controls.add).to.be.calledWith('Exit fullscreen', controls.handleToggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+            expect(controls.controls.add).to.be.calledWith(
+                'Exit fullscreen',
+                controls.handleToggleFullscreen,
+                'bp-exit-fullscreen-icon',
+                ICON_FULLSCREEN_OUT
+            );
         });
     });
 

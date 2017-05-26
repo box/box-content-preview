@@ -156,7 +156,9 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             const options = {};
             renderMock.expects('initBox3d').returns(Promise.resolve());
             renderMock.expects('loadBox3dFile').returns(Promise.resolve());
-            renderer.load('http://derpy.net', options).then(() => { done(); });
+            renderer.load('http://derpy.net', options).then(() => {
+                done();
+            });
         });
     });
 
@@ -170,7 +172,10 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         });
 
         it('should add event listener to the canvas for click events', () => {
-            sandbox.mock(renderer.box3d.canvas).expects('addEventListener').withArgs('click', renderer.handleCanvasClick);
+            sandbox
+                .mock(renderer.box3d.canvas)
+                .expects('addEventListener')
+                .withArgs('click', renderer.handleCanvasClick);
             renderer.loadBox3dFile('');
         });
 
@@ -427,7 +432,9 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         });
 
         it('should invoke alignToPosition() on the instance', () => {
-            sandbox.mock(renderer.instance).expects('alignToPosition')
+            sandbox
+                .mock(renderer.instance)
+                .expects('alignToPosition')
                 .withArgs(renderer.modelAlignmentPosition, renderer.modelAlignmentVector);
             renderer.resetModel();
         });
@@ -556,7 +563,10 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 when: sandbox.stub()
             };
             videos.push(video);
-            sandbox.mock(animations).expects('concat').withArgs(images, videos)
+            sandbox
+                .mock(animations)
+                .expects('concat')
+                .withArgs(images, videos)
                 .returns([...animations, ...images, ...videos]);
             renderer.onSceneLoad();
 
@@ -572,8 +582,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 when: sandbox.stub()
             };
             animations.push(anim);
-            sandbox.mock(animations).expects('concat').withArgs(images, videos)
-                .returns([...animations]);
+            sandbox.mock(animations).expects('concat').withArgs(images, videos).returns([...animations]);
             renderer.onSceneLoad();
 
             expect(anim.when).to.be.calledWith('load');
@@ -918,7 +927,6 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.axisDisplay = axis;
         });
 
-
         it('should do nothing if there is no scene present', () => {
             sandbox.mock(renderer).expects('getScene').returns(undefined);
             renderer.cleanupHelpers();
@@ -945,7 +953,6 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             expect(grid.geometry.dispose).to.be.called;
             expect(grid.material.dispose).to.be.called;
         });
-
 
         it('should not remove the axis helper if there is none', () => {
             renderer.grid = undefined;
@@ -983,16 +990,15 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
         it('should set the axis display to flag passed in', () => {
             renderer.axisDisplay = {
-                visibile: undefined
+                visible: undefined
             };
             renderer.toggleHelpers(true);
             expect(renderer.axisDisplay.visible).to.be.true;
         });
 
-
         it('should tell the runtime to re-render', () => {
             renderer.axisDisplay = {
-                visibile: true
+                visible: true
             };
             renderer.toggleHelpers();
             expect(renderer.box3d.needsRender).to.be.true;
@@ -1042,7 +1048,9 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         beforeEach(() => {
             camera = {
                 setProperty: () => {},
-                getProperty: () => { return 'perspective'; }
+                getProperty: () => {
+                    return 'perspective';
+                }
             };
         });
 
@@ -1295,6 +1303,24 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         });
     });
 
+    describe('setGridVisible()', () => {
+        it('should do nothing if no box3d reference', () => {
+            sandbox.mock(Box3D.globalEvents).expects('trigger').never();
+            renderer.box3d = undefined;
+            renderer.setGridVisible(false);
+        });
+
+        it('should cause a change in grid visibility', () => {
+            renderer.grid = {
+                visible: false
+            };
+            renderer.setGridVisible(true);
+            expect(renderer.grid.visible).to.equal(true);
+            // Get rid of grid to prevent dispose calls during shutdown.
+            renderer.grid = undefined;
+        });
+    });
+
     describe('enableVr()', () => {
         it('should do nothing if vr is already enabled', () => {
             sandbox.mock(renderer.box3d).expects('getVrDisplay').never();
@@ -1319,7 +1345,10 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 setFrameTimeThreshold: () => {}
             };
             sandbox.stub(Browser, 'isMobile').returns(true);
-            sandbox.mock(renderer.dynamicOptimizer).expects('setFrameTimeThreshold').withArgs(OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE_VR);
+            sandbox
+                .mock(renderer.dynamicOptimizer)
+                .expects('setFrameTimeThreshold')
+                .withArgs(OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE_VR);
             renderer.enableVr();
         });
 
@@ -1329,7 +1358,10 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 setFrameTimeThreshold: () => {}
             };
             sandbox.stub(Browser, 'isMobile').returns(false);
-            sandbox.mock(renderer.dynamicOptimizer).expects('setFrameTimeThreshold').withArgs(OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR_VR);
+            sandbox
+                .mock(renderer.dynamicOptimizer)
+                .expects('setFrameTimeThreshold')
+                .withArgs(OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR_VR);
             renderer.enableVr();
         });
 
@@ -1378,7 +1410,10 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 setFrameTimeThreshold: () => {}
             };
             sandbox.stub(Browser, 'isMobile').returns(true);
-            sandbox.mock(renderer.dynamicOptimizer).expects('setFrameTimeThreshold').withArgs(OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE);
+            sandbox
+                .mock(renderer.dynamicOptimizer)
+                .expects('setFrameTimeThreshold')
+                .withArgs(OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE);
             renderer.onDisableVr();
         });
 
@@ -1388,7 +1423,10 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 setFrameTimeThreshold: () => {}
             };
             sandbox.stub(Browser, 'isMobile').returns(false);
-            sandbox.mock(renderer.dynamicOptimizer).expects('setFrameTimeThreshold').withArgs(OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR);
+            sandbox
+                .mock(renderer.dynamicOptimizer)
+                .expects('setFrameTimeThreshold')
+                .withArgs(OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR);
             renderer.onDisableVr();
         });
 

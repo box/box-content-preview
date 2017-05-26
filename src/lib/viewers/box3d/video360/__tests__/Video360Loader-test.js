@@ -14,9 +14,11 @@ describe('lib/viewers/box3d/video360/Video360Loader', () => {
             extension: 'mp4',
             name: 'blah.360.mp4',
             representations: {
-                entries: [{
-                    representation: 'dash'
-                }]
+                entries: [
+                    {
+                        representation: 'dash'
+                    }
+                ]
             }
         };
 

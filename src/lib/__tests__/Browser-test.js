@@ -43,13 +43,13 @@ describe('lib/Browser', () => {
 
         describe('different user agents', () => {
             const dp = [
-              { Edge: '... Edge/2.2.2' },
-              { Opera: '... OPR/09.98.0' },
-              { Opera: '... Opera/08923489.1234' },
-              { Chrome: '... Chrome/57.133 ' },
-              { Safari: '... Safari/57.36' },
-              { Explorer: '... Trident/09.90.90' },
-              { Firefox: '... Firefox/1.1.1' }
+                { Edge: '... Edge/2.2.2' },
+                { Opera: '... OPR/09.98.0' },
+                { Opera: '... Opera/08923489.1234' },
+                { Chrome: '... Chrome/57.133 ' },
+                { Safari: '... Safari/57.36' },
+                { Explorer: '... Trident/09.90.90' },
+                { Firefox: '... Firefox/1.1.1' }
             ];
 
             dp.forEach((browser) => {
