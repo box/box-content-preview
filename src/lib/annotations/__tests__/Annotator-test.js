@@ -246,7 +246,7 @@ describe('lib/annotations/Annotator', () => {
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
                 expect(annotator.notification.show).to.be.called;
-                expect(annotator.emit).to.be.calledWith('pointmodeenter');
+                expect(annotator.emit).to.be.calledWith('annotationmodeenter');
                 expect(annotatedEl).to.have.class(constants.CLASS_ANNOTATION_POINT_MODE);
                 expect(annotator.unbindDOMListeners).to.be.called;
                 expect(annotator.bindPointModeListeners).to.be.called;
@@ -261,7 +261,7 @@ describe('lib/annotations/Annotator', () => {
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
                 expect(annotator.notification.hide).to.be.called;
-                expect(annotator.emit).to.be.calledWith('pointmodeexit');
+                expect(annotator.emit).to.be.calledWith('annotationmodeexit');
                 expect(annotatedEl).to.not.have.class(constants.CLASS_ANNOTATION_POINT_MODE);
                 expect(annotator.unbindPointModeListeners).to.be.called;
                 expect(annotator.bindDOMListeners).to.be.called;

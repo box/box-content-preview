@@ -42,6 +42,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
         super();
         this.options = options;
         this.repStatuses = [];
+        this.isMobile = Browser.isMobile();
     }
 
     /**
@@ -66,7 +67,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
         this.loadTimeout = LOAD_TIMEOUT_MS;
 
         // For mobile browsers add mobile class just in case viewers need it
-        if (Browser.isMobile()) {
+        if (this.isMobile) {
             this.containerEl.classList.add(CLASS_BOX_PREVIEW_MOBILE);
         }
 
@@ -553,7 +554,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
             const { file } = this.options;
 
             // Users can currently only view annotations on mobile
-            this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE) && !Browser.isMobile();
+            this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE) && !this.isMobile;
             if (this.canAnnotate) {
                 this.showAnnotateButton(this.getPointModeClickHandler());
             }
@@ -581,6 +582,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
                 token
             },
             fileVersionId,
+            isMobile: this.isMobile,
             locale: location.locale
         });
         this.annotator.init();
