@@ -22,6 +22,7 @@ describe('lib/viewers/BaseViewer', () => {
         fixture.load('viewers/__tests__/BaseViewer-test.html');
 
         containerEl = document.querySelector('.bp-container');
+        stubs.browser = sandbox.stub(Browser, 'isMobile').returns(false);
         base = new BaseViewer({
             container: containerEl,
             file: {
@@ -60,7 +61,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should add a mobile class to the container if on mobile', () => {
-            sandbox.stub(Browser, 'isMobile').returns(true);
+            base.isMobile = true;
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
             base.setup();
 
@@ -622,7 +623,6 @@ describe('lib/viewers/BaseViewer', () => {
                     return stubs.annotatorConf;
                 }
             }
-            sandbox.stub(Browser, 'isMobile').returns(false);
             stubs.checkPermission.returns(true);
 
             window.BoxAnnotations = BoxAnnotations;

@@ -22,6 +22,7 @@ describe('lib/annotations/AnnotationThread', () => {
             annotations: [],
             annotationService: {},
             fileVersionId: '1',
+            isMobile: false,
             location: {},
             threadID: '2',
             thread: '1',
@@ -184,6 +185,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 annotations: [stubs.annotation],
                 annotationService,
                 fileVersionId: '1',
+                isMobile: false,
                 location: {},
                 threadID: '2',
                 thread: '1',
@@ -305,10 +307,12 @@ describe('lib/annotations/AnnotationThread', () => {
         });
 
         it('should setup dialog', () => {
+            thread.dialog = {};
             thread.setup();
             expect(stubs.create).to.be.called;
             expect(stubs.bind).to.be.called;
             expect(stubs.setup).to.be.called;
+            expect(thread.dialog.isMobile).to.equal(thread.isMobile);
         });
 
         it('should set state to pending if thread is initialized with no annotations', () => {
@@ -322,6 +326,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 annotations: [{}],
                 annotationService: {},
                 fileVersionId: '1',
+                isMobile: false,
                 location: {},
                 threadID: '2',
                 thread: '1',
@@ -345,26 +350,60 @@ describe('lib/annotations/AnnotationThread', () => {
     });
 
     describe('bindDOMListeners()', () => {
-        it('should bind DOM listeners', () => {
+        beforeEach(() => {
             thread.element = document.createElement('div');
             stubs.add = sandbox.stub(thread.element, 'addEventListener');
+            thread.isMobile = false;
+        });
 
+        it('should do nothing if element does not exist', () => {
+            thread.element = null;
+            thread.bindDOMListeners();
+            expect(stubs.add).to.not.be.called;
+        });
+
+        it('should bind DOM listeners', () => {
             thread.bindDOMListeners();
             expect(stubs.add).to.be.calledWith('click', sinon.match.func);
             expect(stubs.add).to.be.calledWith('mouseenter', sinon.match.func);
             expect(stubs.add).to.be.calledWith('mouseleave', sinon.match.func);
         });
+
+        it('should not add mouseleave listener for mobile browsers', () => {
+            thread.isMobile = true;
+            thread.bindDOMListeners();
+            expect(stubs.add).to.be.calledWith('click', sinon.match.func);
+            expect(stubs.add).to.be.calledWith('mouseenter', sinon.match.func);
+            expect(stubs.add).to.not.be.calledWith('mouseleave', sinon.match.func);
+        });
     });
 
     describe('unbindDOMListeners()', () => {
-        it('should unbind DOM listeners', () => {
+        beforeEach(() => {
             thread.element = document.createElement('div');
             stubs.remove = sandbox.stub(thread.element, 'removeEventListener');
+            thread.isMobile = false;
+        });
 
+        it('should do nothing if element does not exist', () => {
+            thread.element = null;
+            thread.unbindDOMListeners();
+            expect(stubs.remove).to.not.be.called;
+        });
+
+        it('should unbind DOM listeners', () => {
             thread.unbindDOMListeners();
             expect(stubs.remove).to.be.calledWith('click', sinon.match.func);
             expect(stubs.remove).to.be.calledWith('mouseenter', sinon.match.func);
             expect(stubs.remove).to.be.calledWith('mouseleave', sinon.match.func);
+        });
+
+        it('should not add mouseleave listener for mobile browsers', () => {
+            thread.isMobile = true;
+            thread.unbindDOMListeners();
+            expect(stubs.remove).to.be.calledWith('click', sinon.match.func);
+            expect(stubs.remove).to.be.calledWith('mouseenter', sinon.match.func);
+            expect(stubs.remove).to.not.be.calledWith('mouseleave', sinon.match.func);
         });
     });
 
