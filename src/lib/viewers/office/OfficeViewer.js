@@ -193,7 +193,7 @@ const MESSAGE_HOST_READY = 'Host_PostmessageReady';
                 const tempAnchor = document.createElement('a');
                 tempAnchor.href = sharedLink;
                 const vanitySubdomain = tempAnchor.hostname.split('.')[0];
-                const vanityName = tempAnchor.pathname.split('/v/')[1];
+                const vanityName = tempAnchor.href.split('/v/')[1];
                 src = `${src}?v=${vanityName}&vanity_subdomain=${vanitySubdomain}&fileId=${fileId}`;
             }
         } else {
