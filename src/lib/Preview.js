@@ -1109,7 +1109,9 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
      * @return {Object} Headers
      */
     getRequestHeaders(token) {
-        const videoHint = Browser.canPlayDash() ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
+        const videoHint = Browser.canPlayDash() && !this.disabledViewers.Dash
+            ? X_REP_HINT_VIDEO_DASH
+            : X_REP_HINT_VIDEO_MP4;
         const headers = {
             'X-Rep-Hints': `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`
         };

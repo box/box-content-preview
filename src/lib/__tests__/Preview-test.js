@@ -1628,6 +1628,15 @@ describe('lib/Preview', () => {
             preview.getRequestHeaders();
             expect(stubs.getHeaders).to.be.calledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
         });
+
+        it('should not add dash hints if the browser supports dash but dash is disabled', () => {
+            stubs.canPlayDash.returns(true);
+            preview.disabledViewers.Dash = 1;
+            stubs.headers['X-Rep-Hints'] += '[mp4]';
+
+            preview.getRequestHeaders();
+            expect(stubs.getHeaders).to.be.calledWith(stubs.headers, 'previewtoken', 'link', 'Passw0rd!');
+        });
     });
 
     describe('prefetchNextFiles()', () => {
