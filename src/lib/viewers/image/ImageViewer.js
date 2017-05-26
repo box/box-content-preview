@@ -245,11 +245,6 @@ const IMAGE_ZOOM_SCALE = 1.2;
     loadUI() {
         super.loadUI();
 
-        // Temporarily disabling controls on mobile
-        if (this.isMobile) {
-            return;
-        }
-
         this.controls.add(__('rotate_left'), this.rotateLeft, 'bp-image-rotate-left-icon', ICON_ROTATE_LEFT);
         this.controls.add(
             __('enter_fullscreen'),
