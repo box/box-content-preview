@@ -10,8 +10,7 @@ const config = merge(baseConfig, {
     devtool: 'inline-source-map',
     resolve: {
         alias: {
-            sinon: 'sinon/pkg/sinon',
-            'isomorphic-fetch': 'fetch-mock-forwarder'
+            sinon: 'sinon/pkg/sinon'
         }
     }
 });

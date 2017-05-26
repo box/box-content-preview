@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import 'isomorphic-fetch';
+import 'whatwg-fetch';
 import fetchMock from 'fetch-mock';
 import * as util from '../util';
 
