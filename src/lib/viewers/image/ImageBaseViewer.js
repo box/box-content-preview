@@ -145,18 +145,12 @@ const CSS_CLASS_PANNABLE = 'pannable';
     updateCursor() {
         if (this.isPannable) {
             this.isZoomable = false;
-
-            if (!this.isMobile) {
-                this.imageEl.classList.add(CSS_CLASS_PANNABLE);
-                this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
-            }
+            this.imageEl.classList.add(CSS_CLASS_PANNABLE);
+            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
         } else {
             this.isZoomable = true;
-
-            if (!this.isMobile) {
-                this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-                this.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
-            }
+            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+            this.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
         }
     }
 
@@ -167,11 +161,6 @@ const CSS_CLASS_PANNABLE = 'pannable';
      * @return {void}
      */
     loadUI() {
-        // Temporarily disabling controls on mobile
-        if (this.isMobile) {
-            return;
-        }
-
         this.controls = new Controls(this.containerEl);
         this.controls.add(__('zoom_out'), this.zoomOut, 'bp-image-zoom-out-icon', ICON_ZOOM_OUT);
         this.controls.add(__('zoom_in'), this.zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);

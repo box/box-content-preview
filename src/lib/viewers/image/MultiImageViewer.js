@@ -169,8 +169,8 @@ const ZOOM_UPDATE_PAN_DELAY = 50;
     setScale(width, height) {
         // Grab the first page image dimensions
         const imageEl = this.singleImageEls[0];
-        const scale = width ? width / imageEl.naturalWidth : height / imageEl.naturalHeight;
-        this.emit('scale', { scale });
+        this.scale = width ? width / imageEl.naturalWidth : height / imageEl.naturalHeight;
+        this.emit('scale', { scale: this.scale });
     }
 
     /**

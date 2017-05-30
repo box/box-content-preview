@@ -44,7 +44,6 @@
     "fetch-mock-forwarder": "^1.0.0",
     "file-loader": "^0.10.1",
     "i18n-webpack-plugin": "^0.3.0",
-    "isomorphic-fetch": "^2.2.1",
     "karma": "^1.5.0",
     "karma-chai": "^0.1.0",
     "karma-chai-as-promised": "^0.1.2",
@@ -92,7 +91,8 @@
     "stylelint-config-standard": "^16.0.0",
     "stylelint-order": "^0.4.1",
     "url-loader": "^0.5.8",
-    "webpack": "^2.2.1"
+    "webpack": "^2.2.1",
+    "whatwg-fetch": "^2.0.3"
   },
   "scripts": {
     "build": "yarn run clean && yarn run build-rb && yarn run lint && yarn run dev",

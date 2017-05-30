@@ -127,21 +127,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(imageBase.imageEl).to.have.class(CSS_CLASS_ZOOMABLE);
             expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_PANNABLE);
         });
-
-        it('should update classes if using a mobile browser', () => {
-            imageBase.isMobile = true;
-            imageBase.isZoomable = true;
-            imageBase.isPannable = true;
-
-            imageBase.updateCursor();
-            expect(imageBase.isZoomable).to.have.been.false;
-
-            imageBase.isZoomable = false;
-            imageBase.isPannable = false;
-
-            imageBase.updateCursor();
-            expect(imageBase.isZoomable).to.have.been.true;
-        });
     });
 
     describe('startPanning()', () => {
@@ -221,12 +206,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             expect(imageBase.controls).to.not.be.undefined;
             expect(imageBase.controls.buttonRefs.length).to.equal(2);
-        });
-
-        it('should disable controls if on a mobile browser', () => {
-            imageBase.isMobile = true;
-            imageBase.loadUI();
-            expect(imageBase.controls).to.be.undefined;
         });
     });
 
