@@ -32,6 +32,20 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
 @autobind class BaseViewer extends EventEmitter {
     /**
+     * Rotation value in degrees of the document, if rotated.
+     * 
+     * @property {number}
+     */
+    rotationAngle = 0;
+
+    /**
+     * Scale amount of the document, if zoomed.
+     * 
+     * @property {number}
+     */
+    scale = 1;
+
+    /**
      * [constructor]
      *
      * @param {HTMLElement} containerEl - The container
@@ -275,21 +289,8 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
             this.resize();
         });
 
-        // Add a custom listener for events related to scaling/orientation changes
-        this.addListener('scale', (data) => {
-            if (this.annotator) {
-                this.annotator.setScale(data.scale);
-                this.annotator.rotateAnnotations(data.rotationAngle);
-            }
-        });
-
         // Add a resize handler for the window
         document.defaultView.addEventListener('resize', this.debouncedResizeHandler);
-
-        /* istanbul ignore next */
-        this.addListener('togglepointannotationmode', () => {
-            this.annotator.togglePointModeHandler();
-        });
 
         this.addListener('load', () => {
             if (this.annotationsPromise) {
@@ -563,6 +564,19 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     }
 
     /**
+     * Orient anntations to the correct scale and orientatio of the annotated document.
+     * @TODO(jholdstock|spramod): Remove this once we are emitting the correct messaging.
+     * 
+     * @protected
+     * @param {Object} data - Scale and orientation values needed to orient annotations.
+     * @return {void}
+     */
+    scaleAnnotations(data) {
+        this.annotator.setScale(data.scale);
+        this.annotator.rotateAnnotations(data.rotationAngle);
+    }
+
+    /**
      * Initializes annotations.
      *
      * @protected
@@ -588,11 +602,23 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
         this.annotator.init();
 
         // Disables controls during point annotation mode
-        /* istanbul ignore next */
         this.annotator.addListener('annotationmodeenter', this.disableViewerControls);
 
-        /* istanbul ignore next */
         this.annotator.addListener('annotationmodeexit', this.enableViewerControls);
+
+        this.addListener('togglepointannotationmode', () => {
+            this.annotator.togglePointModeHandler();
+        });
+
+        // Add a custom listener for events related to scaling/orientation changes
+        this.addListener('scale', this.scaleAnnotations.bind(this));
+
+        this.annotator.addListener('annotationsfetched', () => {
+            this.scaleAnnotations({
+                scale: this.scale,
+                rotationAngle: this.rotationAngle
+            });
+        });
     }
 
     /**

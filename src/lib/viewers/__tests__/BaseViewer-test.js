@@ -246,9 +246,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(fullscreen.addListener).to.be.calledWith('enter', sinon.match.func);
             expect(fullscreen.addListener).to.be.calledWith('exit', sinon.match.func);
             expect(document.defaultView.addEventListener).to.be.calledWith('resize', base.debouncedResizeHandler);
-            expect(base.addListener).to.be.calledWith('togglepointannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('load', sinon.match.func);
-            expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
         });
     });
 
@@ -666,8 +664,31 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('scaleAnnotations()', () => {
+        const scaleData = {
+            scale: 0.4321,
+            rotationAngle: 90
+        };
+        beforeEach(() => {
+            base.annotator = {
+                setScale: sandbox.stub(),
+                rotateAnnotations: sandbox.stub()
+            };
+
+            base.scaleAnnotations(scaleData);
+        });
+
+        it('should invoke setScale() on annotator to scale annotations', () => {
+            expect(base.annotator.setScale).to.be.calledWith(scaleData.scale);
+        });
+
+        it('should invoke rotateAnnotations() on annotator to orient annotations', () => {
+            expect(base.annotator.rotateAnnotations).to.be.calledWith(scaleData.rotationAngle);
+        });
+    });
+
     describe('initAnnotations()', () => {
-        it('should initialize the annotator', () => {
+        beforeEach(() => {
             base.options = {
                 container: document,
                 file: {
@@ -679,6 +700,7 @@ describe('lib/viewers/BaseViewer', () => {
                     locale: 'en-US'
                 }
             };
+            base.addListener = sandbox.stub();
             base.annotator = {
                 init: sandbox.stub(),
                 addListener: sandbox.stub()
@@ -687,9 +709,14 @@ describe('lib/viewers/BaseViewer', () => {
                 CONSTRUCTOR: sandbox.stub().returns(base.annotator)
             };
             base.initAnnotations();
+        });
+        it('should initialize the annotator', () => {
             expect(base.annotator.init).to.be.called;
             expect(base.annotator.addListener).to.be.calledWith('annotationmodeenter', sinon.match.func);
             expect(base.annotator.addListener).to.be.calledWith('annotationmodeexit', sinon.match.func);
+            expect(base.annotator.addListener).to.be.calledWith('annotationsfetched', sinon.match.func);
+            expect(base.addListener).to.be.calledWith('togglepointannotationmode', sinon.match.func);
+            expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
         });
     });
 

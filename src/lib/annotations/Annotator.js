@@ -339,6 +339,8 @@ import './Annotator.scss';
                     this.bindCustomListenersOnThread(thread);
                 }
             });
+
+            this.emit('annotationsfetched');
         });
     }
 

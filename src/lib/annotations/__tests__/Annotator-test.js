@@ -317,6 +317,13 @@ describe('lib/annotations/Annotator', () => {
                     expect(result).to.be.an.object;
                 });
             });
+
+            it('should emit a message to indicate that all annotations have been fetched', () => {
+                annotator.fetchAnnotations();
+                return stubs.threadPromise.then(() => {
+                    expect(annotator.emit).to.be.calledWith('annotationsfetched');
+                });
+            });
         });
 
         describe('bindCustomListenersOnService', () => {
