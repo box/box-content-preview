@@ -500,8 +500,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
     describe('onHighlightCheck()', () => {
         beforeEach(() => {
-            annotator.highlightMousemoveHandler = false;
-
             stubs.thread = {
                 onMousemove: () => {},
                 show: () => {}
