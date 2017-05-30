@@ -49,17 +49,32 @@ function isThreadInHoverState(thread) {
 class DocAnnotator extends Annotator {
 
     /**
-     * An annotator in charge of creating an managing annotations on Documents, such as PDFs.
+     * For tracking the most recent event fired by mouse move event.
      *
-     * [constructor]
+     * @property {Event}
      */
-    constructor(data) {
-        super(data);
-        // Event callback for mouse move events with for highlight annotations
-        this.highlightMousemoveHandler = null;
-        // Handle to RAF used to throttle highlight collision checks
-        this.highlightThrottleHandle = null;
-    }
+    mouseMoveEvent;
+
+    /**
+     * Event callback for mouse move events with for highlight annotations.
+     *
+     * @property {Function}
+     */
+    highlightMousemoveHandler;
+
+    /**
+     * Handle to RAF used to throttle highlight collision checks.
+     *
+     * @property {Function}
+     */
+    highlightThrottleHandle;
+
+    /**
+     * Timer used to throttle highlight event process.
+     *
+     * @property {number}
+     */
+    throttleTimer = 0;
 
     //--------------------------------------------------------------------------
     // Abstract Implementations
@@ -392,87 +407,101 @@ class DocAnnotator extends Annotator {
         if (this.highlightMousemoveHandler) {
             return this.highlightMousemoveHandler;
         }
-        // Track the most recent move event
-        let mouseMoveEvent = null;
-        // For throttling
-        let throttleTimer = performance.now();
 
-        this.highlightMousemoveHandler = (event) => {
-            if (!this.didMouseMove && (Math.abs(event.clientX - this.mouseX) > MOUSE_MOVE_MIN_DISTANCE
-                || Math.abs(event.clientY - this.mouseY) > MOUSE_MOVE_MIN_DISTANCE)) {
-                this.didMouseMove = true;
-            }
+        this.highlightMousemoveHandler = this.onHighlightMouseMove.bind(this);
 
-            // Determine if the user is creating a new overlapping highlight
-            // and ignore hover events of any highlights below
-            if (this.isCreatingHighlight) {
-                return;
-            }
-
-            mouseMoveEvent = event;
+        const highlightLoop = () => {
+            this.highlightThrottleHandle = requestAnimationFrame(highlightLoop);
+            this.onHighlightCheck();
         };
 
-        const throttledCheckHighlight = () => {
-            this.highlightThrottleHandle = requestAnimationFrame(throttledCheckHighlight);
-            const dt = performance.now() - throttleTimer;
-            // Bail if no mouse events have occurred OR the throttle delay has not been met.
-            if (!mouseMoveEvent || dt < MOUSEMOVE_THROTTLE_MS) {
-                return;
-            }
+        // Kickstart event process loop.
+        highlightLoop();
 
-            const event = mouseMoveEvent;
-            mouseMoveEvent = null;
-            throttleTimer = performance.now();
-            // Only filter through highlight threads on the current page
-            const { page } = annotatorUtil.getPageElAndPageNumber(event.target);
-            const pageThreads = this.getHighlightThreadsOnPage(page);
-            const delayThreads = [];
-            let hoverActive = false;
-
-            const threadLength = pageThreads.length;
-            for (let i = 0; i < threadLength; ++i) {
-                const thread = pageThreads[i];
-                // Determine if any highlight threads on page are pending or active
-                // and ignore hover events of any highlights below
-                if (thread.state === constants.ANNOTATION_STATE_PENDING || thread.state === constants.ANNOTATION_STATE_ACTIVE) {
-                    return;
-                }
-
-                // Determine if the mouse is hovering over any highlight threads
-                const shouldDelay = thread.onMousemove(event);
-                if (shouldDelay) {
-                    delayThreads.push(thread);
-
-                    if (!hoverActive) {
-                        hoverActive = isThreadInHoverState(thread);
-                    }
-                }
-            }
-
-            // If we are hovering over a highlight, we should use a hand cursor
-            if (hoverActive) {
-                this.useDefaultCursor();
-                clearTimeout(this.cursorTimeout);
-            } else {
-                // Setting timeout on cursor change so cursor doesn't
-                // flicker when hovering on line spacing
-                this.cursorTimeout = setTimeout(() => {
-                    this.removeDefaultCursor();
-                }, HOVER_TIMEOUT_MS);
-            }
-
-            // Delayed threads (threads that should be in active or hover
-            // state) should be drawn last. If multiple highlights are
-            // hovered over at the same time, only the top-most highlight
-            // dialog will be displayed and the others will be hidden
-            // without delay
-            delayThreads.forEach(showFirstDialogFilter);
-        };
-
-        // Trigger the first run to begin the RAF update loop.
-        throttledCheckHighlight();
 
         return this.highlightMousemoveHandler;
+    }
+
+    /**
+     * Throttled processing of the most recent mouse move event.
+     *
+     * @return {void}
+     */
+    onHighlightCheck() {
+        const dt = performance.now() - this.throttleTimer;
+        // Bail if no mouse events have occurred OR the throttle delay has not been met.
+        if (!this.mouseMoveEvent || dt < MOUSEMOVE_THROTTLE_MS) {
+            return;
+        }
+
+        const event = this.mouseMoveEvent;
+        this.mouseMoveEvent = null;
+        this.throttleTimer = performance.now();
+        // Only filter through highlight threads on the current page
+        const { page } = annotatorUtil.getPageElAndPageNumber(event.target);
+        const pageThreads = this.getHighlightThreadsOnPage(page);
+        const delayThreads = [];
+        let hoverActive = false;
+
+        const threadLength = pageThreads.length;
+        for (let i = 0; i < threadLength; ++i) {
+            const thread = pageThreads[i];
+            // Determine if any highlight threads on page are pending or active
+            // and ignore hover events of any highlights below
+            if (thread.state === constants.ANNOTATION_STATE_PENDING || thread.state === constants.ANNOTATION_STATE_ACTIVE) {
+                return;
+            }
+
+            // Determine if the mouse is hovering over any highlight threads
+            const shouldDelay = thread.onMousemove(event);
+            if (shouldDelay) {
+                delayThreads.push(thread);
+
+                if (!hoverActive) {
+                    hoverActive = isThreadInHoverState(thread);
+                }
+            }
+        }
+
+        // If we are hovering over a highlight, we should use a hand cursor
+        if (hoverActive) {
+            this.useDefaultCursor();
+            clearTimeout(this.cursorTimeout);
+        } else {
+            // Setting timeout on cursor change so cursor doesn't
+            // flicker when hovering on line spacing
+            this.cursorTimeout = setTimeout(() => {
+                this.removeDefaultCursor();
+            }, HOVER_TIMEOUT_MS);
+        }
+
+        // Delayed threads (threads that should be in active or hover
+        // state) should be drawn last. If multiple highlights are
+        // hovered over at the same time, only the top-most highlight
+        // dialog will be displayed and the others will be hidden
+        // without delay
+        delayThreads.forEach(showFirstDialogFilter);
+    }
+
+    /**
+     * Mouse move handler. Paired with throttle mouse move handler to check for annotation highlights.
+     *
+     * @param {Event} event - DDOM event fired by mouse move event
+     * @return {void}
+     */
+    onHighlightMouseMove(event) {
+        if (!this.didMouseMove && (Math.abs(event.clientX - this.mouseX) > MOUSE_MOVE_MIN_DISTANCE
+            || Math.abs(event.clientY - this.mouseY) > MOUSE_MOVE_MIN_DISTANCE)) {
+            this.didMouseMove = true;
+        }
+
+        // Determine if the user is creating a new overlapping highlight
+        // and ignore hover events of any highlights below
+        if (this.isCreatingHighlight) {
+            return;
+        }
+
+        this.mouseMoveEvent = event;
     }
 
     /**

@@ -441,9 +441,66 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     });
 
     describe('getHighlightMouseMoveHandler()', () => {
-        let rafCallback;
         beforeEach(() => {
-            annotator.throttledHighlightMousemoveHandler = false;
+            annotator.highlightMousemoveHandler = false;
+
+            // Request animation frame stub
+            stubs.RAF = sandbox.stub(window, 'requestAnimationFrame');
+        });
+
+        it('should do nothing if the highlightMousemoveHandler already exists', () => {
+            annotator.highlightMousemoveHandler = true;
+            const result = annotator.getHighlightMouseMoveHandler();
+
+            expect(stubs.RAF).to.not.be.called;
+            expect(result).to.be.true;
+        });
+    });
+
+    describe('onHighlightMouseMove()', () => {
+        it('should set didMouseMove to true if the mouse was moved enough', () => {
+            annotator.mouseX = 0;
+            annotator.mouseY = 0;
+
+            annotator.onHighlightMouseMove({ clientX: 10, clientY: 10 });
+
+            expect(annotator.didMouseMove).to.equal(true);
+        });
+
+        it('should not set didMouseMove to true if the mouse was not moved enough', () => {
+            annotator.mouseX = 0;
+            annotator.mouseY = 0;
+
+            annotator.onHighlightMouseMove({ clientX: 3, clientY: 3 });
+
+            expect(annotator.didMouseMove).to.equal(undefined);
+        });
+
+        it('should assign the mouseMoveEvent if the annotator is highlighting', () => {
+            const moveEvent = { clientX: 10, clientY: 10 };
+            annotator.mouseX = 0;
+            annotator.mouseY = 0;
+
+            annotator.onHighlightMouseMove(moveEvent);
+
+            expect(annotator.mouseMoveEvent).to.deep.equal(moveEvent);
+        });
+
+        it('should not assign the mouseMoveEvent if the annotator is highlighting', () => {
+            const moveEvent = { clientX: 10, clientY: 10 };
+            annotator.mouseX = 0;
+            annotator.mouseY = 0;
+            annotator.isCreatingHighlight = true;
+
+            annotator.onHighlightMouseMove(moveEvent);
+
+            expect(annotator.mouseMoveEvent).to.not.deep.equal(moveEvent);
+        });
+    });
+
+    describe('onHighlightCheck()', () => {
+        beforeEach(() => {
+            annotator.highlightMousemoveHandler = false;
 
             stubs.thread = {
                 onMousemove: () => {},
@@ -464,47 +521,23 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.clock = sinon.useFakeTimers();
 
             let timer = 0;
-            sandbox.stub(window.performance, 'now').callsFake(() => {
+            window.performance = window.performance || { now: () => {} };
+            sandbox.stub(window.performance, 'now', () => {
                 return (timer += 500);
-            });
-            // Request animation frame stub
-            stubs.RAF = sandbox.stub(window, 'requestAnimationFrame').callsFake((cb) => {
-                rafCallback = cb;
             });
         });
 
         afterEach(() => {
             stubs.clock.restore();
-            rafCallback = null;
-        });
-
-        it('should do nothing if the throttledHighlightMousemoveHandler already exists', () => {
-            annotator.throttledHighlightMousemoveHandler = true;
-            const result = annotator.getHighlightMouseMoveHandler();
-
-            expect(stubs.RAF).to.not.be.called;
-            expect(result).to.be.true;
-        });
-
-        it('should do nothing if there are pending, pending-active, active, or active hover highlight threads', () => {
-            stubs.thread.state = constants.ANNOTATION_STATE_PENDING;
-            stubs.threadMock.expects('onMousemove').returns(false).never();
-            stubs.getThreads.returns([stubs.thread]);
-
-            // Prime the mouse move handler
-            annotator.getHighlightMouseMoveHandler()({ x: 1, y: 2 });
-            rafCallback();
-
-            expect(stubs.getThreads).to.be.called;
         });
 
         it('should not add any delayThreads if there are no threads on the current page', () => {
             stubs.threadMock.expects('onMousemove').returns(false).never();
             stubs.delayMock.expects('onMousemove').returns(true).never();
             stubs.getThreads.returns([]);
-            // Prime the mouse move handler
-            annotator.getHighlightMouseMoveHandler()({ clientX: 3, clientY: 3 });
-            rafCallback();
+
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
         });
 
         it('should add delayThreads and hide innactive threads if the page is found', () => {
@@ -513,9 +546,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.delayMock.expects('onMousemove').returns(true);
             stubs.threadMock.expects('show').never();
             stubs.delayMock.expects('show');
-            // Prime the mouse move handler
-            annotator.getHighlightMouseMoveHandler()({ clientX: 3, clientY: 3 });
-            rafCallback();
+
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
         });
 
         it('should not trigger other highlights if user is creating a new highlight', () => {
@@ -523,29 +556,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.isCreatingHighlight = true;
             stubs.delayMock.expects('show').never();
             stubs.delayMock.expects('hideDialog').never();
-            // Prime the mouse move handler
-            annotator.getHighlightMouseMoveHandler()({ clientX: 3, clientY: 3 });
-            rafCallback();
-        });
 
-        it('should set _didMouseMove to true if the mouse was moved enough', () => {
-            stubs.getThreads.returns([]);
-            annotator.mouseX = 0;
-            annotator.mouseY = 0;
-
-            annotator.getHighlightMouseMoveHandler()({ clientX: 10, clientY: 10 });
-
-            expect(annotator.didMouseMove).to.equal(true);
-        });
-
-        it('should not set _didMouseMove to true if the mouse was not moved enough', () => {
-            stubs.getThreads.returns([]);
-            annotator.mouseX = 0;
-            annotator.mouseY = 0;
-
-            annotator.getHighlightMouseMoveHandler()({ clientX: 3, clientY: 3 });
-
-            expect(annotator.didMouseMove).to.equal(undefined);
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
         });
 
         it('should switch to the text cursor if mouse is no longer hovering over a highlight', () => {
@@ -553,8 +566,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.getThreads.returns([stubs.delayThread]);
             sandbox.stub(annotator, 'removeDefaultCursor');
 
-            annotator.getHighlightMouseMoveHandler()({ clientX: 3, clientY: 3 });
-            rafCallback();
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
+
             expect(annotator.removeDefaultCursor).to.not.be.called;
 
             stubs.clock.tick(75);
@@ -567,8 +581,10 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             sandbox.stub(annotator, 'useDefaultCursor');
 
             stubs.delayThread.state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
-            annotator.getHighlightMouseMoveHandler()({ clientX: 3, clientY: 3 });
-            rafCallback();
+
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
+
             expect(annotator.useDefaultCursor).to.be.called;
         });
 
@@ -578,8 +594,19 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.delayMock.expects('show');
             stubs.delayMock.expects('hideDialog');
 
-            annotator.getHighlightMouseMoveHandler()({ clientX: 3, clientY: 3 });
-            rafCallback();
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
+        });
+
+        it('should do nothing if there are pending, pending-active, active, or active hover highlight threads', () => {
+            stubs.thread.state = constants.ANNOTATION_STATE_PENDING;
+            stubs.threadMock.expects('onMousemove').returns(false).never();
+            stubs.getThreads.returns([stubs.thread]);
+
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
+
+            expect(stubs.getThreads).to.be.called;
         });
     });
 
