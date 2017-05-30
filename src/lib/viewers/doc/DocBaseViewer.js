@@ -797,10 +797,6 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
      * @return {void}
      */
     loadUI() {
-        if (this.isMobile) {
-            return;
-        }
-
         this.controls = new Controls(this.containerEl);
         this.bindControlListeners();
         this.initPageNumEl();

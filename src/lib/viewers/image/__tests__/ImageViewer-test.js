@@ -363,11 +363,8 @@ describe('lib/viewers/image/ImageViewer', () => {
     });
 
     describe('loadUI()', () => {
-        beforeEach(() => {
-            image.boxAnnotationsLoaded = false;
-        });
-
         it('should load UI & controls for zoom', () => {
+            image.boxAnnotationsLoaded = false;
             image.annotator = null;
 
             image.loadUI();
@@ -375,12 +372,6 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.controls).to.not.be.undefined;
             expect(image.controls.buttonRefs.length).to.equal(5);
             expect(image.boxAnnotationsLoaded).to.be.false;
-        });
-
-        it('should disable controls if on a mobile browser', () => {
-            image.isMobile = true;
-            image.loadUI();
-            expect(image.controls).to.be.undefined;
         });
     });
 
