@@ -67,7 +67,6 @@ describe('lib/annotations/AnnotationService', () => {
             });
             const emitStub = sandbox.stub(annotationService, 'emit');
 
-
             return annotationService.create(annotationToSave).then((createdAnnotation) => {
                 expect(createdAnnotation.fileVersionId).to.equal(annotationToSave.fileVersionId);
                 expect(createdAnnotation.threadID).to.equal(annotationToSave.threadID);
@@ -97,7 +96,8 @@ describe('lib/annotations/AnnotationService', () => {
                     expect(emitStub).to.be.calledWith('annotationerror', {
                         reason: 'create'
                     });
-                });
+                }
+            );
         });
     });
 
@@ -125,33 +125,36 @@ describe('lib/annotations/AnnotationService', () => {
 
             fetchMock.mock(url, {
                 body: {
-                    entries: [{
-                        id: AnnotationService.generateID(),
-                        item: {
-                            id: annotation1.fileVersionId
+                    entries: [
+                        {
+                            id: AnnotationService.generateID(),
+                            item: {
+                                id: annotation1.fileVersionId
+                            },
+                            details: {
+                                type: annotation1.type,
+                                threadID: annotation1.threadID,
+                                location: annotation1.location
+                            },
+                            message: annotation1.text,
+                            thread: annotation1.thread,
+                            created_by: {}
                         },
-                        details: {
-                            type: annotation1.type,
-                            threadID: annotation1.threadID,
-                            location: annotation1.location
-                        },
-                        message: annotation1.text,
-                        thread: annotation1.thread,
-                        created_by: {}
-                    }, {
-                        id: AnnotationService.generateID(),
-                        item: {
-                            id: annotation2.fileVersionId
-                        },
-                        details: {
-                            type: annotation2.type,
-                            threadID: annotation2.threadID,
-                            location: annotation2.location
-                        },
-                        message: annotation2.text,
-                        thread: annotation2.thread,
-                        created_by: {}
-                    }]
+                        {
+                            id: AnnotationService.generateID(),
+                            item: {
+                                id: annotation2.fileVersionId
+                            },
+                            details: {
+                                type: annotation2.type,
+                                threadID: annotation2.threadID,
+                                location: annotation2.location
+                            },
+                            message: annotation2.text,
+                            thread: annotation2.thread,
+                            created_by: {}
+                        }
+                    ]
                 }
             });
 
@@ -178,7 +181,8 @@ describe('lib/annotations/AnnotationService', () => {
                 },
                 (error) => {
                     expect(error.message).to.equal('Could not read annotations from file version with ID 2');
-                });
+                }
+            );
         });
     });
 
@@ -188,7 +192,6 @@ describe('lib/annotations/AnnotationService', () => {
 
     describe('delete()', () => {
         const url = `${API_HOST}/2.0/annotations/3`;
-
 
         it('should successfully delete the annotation', () => {
             fetchMock.mock(url, 204);
@@ -217,7 +220,8 @@ describe('lib/annotations/AnnotationService', () => {
                     expect(emitStub).to.be.calledWith('annotationerror', {
                         reason: 'delete'
                     });
-                });
+                }
+            );
         });
     });
 
@@ -256,7 +260,9 @@ describe('lib/annotations/AnnotationService', () => {
                 expect(threadMap[annotation1.threadID].length).to.equal(2);
                 expect(threadMap[annotation2.threadID][0]).to.contain(annotation2);
                 expect(threadMap[annotation1.threadID][0].thread).to.equal(threadMap[annotation1.threadID][1].thread);
-                expect(threadMap[annotation1.threadID][0].thread).to.not.equal(threadMap[annotation2.threadID][0].thread);
+                expect(threadMap[annotation1.threadID][0].thread).to.not.equal(
+                    threadMap[annotation2.threadID][0].thread
+                );
             });
         });
     });
@@ -289,7 +295,6 @@ describe('lib/annotations/AnnotationService', () => {
                 thread: '1',
                 location: { x: 0, y: 0 },
                 created: '2016-10-30T14:19:56'
-
             });
 
             const annotation2 = new Annotation({
@@ -300,7 +305,6 @@ describe('lib/annotations/AnnotationService', () => {
                 thread: '2',
                 location: { x: 0, y: 0 },
                 created: '2016-10-30T14:19:56'
-
             });
 
             const annotation3 = new Annotation({
@@ -311,7 +315,6 @@ describe('lib/annotations/AnnotationService', () => {
                 thread: '1',
                 location: { x: 0, y: 0 },
                 created: '2016-10-31T14:19:56'
-
             });
 
             const threadMap = annotationService.createThreadMap([annotation1, annotation2, annotation3, annotation4]);
@@ -359,20 +362,22 @@ describe('lib/annotations/AnnotationService', () => {
 
             fetchMock.mock(markerUrl, {
                 body: {
-                    entries: [{
-                        id: AnnotationService.generateID(),
-                        item: {
-                            id: annotation2.fileVersionId
-                        },
-                        details: {
-                            type: annotation2.type,
-                            threadID: annotation2.threadID,
-                            location: annotation2.location
-                        },
-                        thread: annotation2.thread,
-                        message: annotation2.text,
-                        created_by: {}
-                    }]
+                    entries: [
+                        {
+                            id: AnnotationService.generateID(),
+                            item: {
+                                id: annotation2.fileVersionId
+                            },
+                            details: {
+                                type: annotation2.type,
+                                threadID: annotation2.threadID,
+                                location: annotation2.location
+                            },
+                            thread: annotation2.thread,
+                            message: annotation2.text,
+                            created_by: {}
+                        }
+                    ]
                 }
             });
 
@@ -420,7 +425,8 @@ describe('lib/annotations/AnnotationService', () => {
                     expect(emitStub).to.be.calledWith('annotationerror', {
                         reason: 'read'
                     });
-                });
+                }
+            );
         });
 
         it('should reject with an error and show a notification if the token is invalid', () => {
@@ -438,13 +444,12 @@ describe('lib/annotations/AnnotationService', () => {
 
             annotationService.annotations = [];
             annotationService.readFromMarker(resolve, reject, 2, 'a', 1);
-            return promise.catch(
-                (error) => {
-                    expect(error.message).to.equal('Could not read annotations from file due to invalid or expired token');
-                    expect(emitStub).to.be.calledWith('annotationerror', {
-                        reason: 'authorization'
-                    });
+            return promise.catch((error) => {
+                expect(error.message).to.equal('Could not read annotations from file due to invalid or expired token');
+                expect(emitStub).to.be.calledWith('annotationerror', {
+                    reason: 'authorization'
                 });
+            });
         });
     });
 

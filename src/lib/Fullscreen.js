@@ -1,10 +1,7 @@
 import EventEmitter from 'events';
-import {
-    CLASS_FULLSCREEN
-} from './constants';
+import { CLASS_FULLSCREEN } from './constants';
 
 class Fullscreen extends EventEmitter {
-
     /**
      * [constructor]
      *
@@ -26,7 +23,12 @@ class Fullscreen extends EventEmitter {
      * @return {boolean} Fullscreen supported or not
      */
     isSupported() {
-        return document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled || document.msFullscreenEnabled;
+        return (
+            document.fullscreenEnabled ||
+            document.webkitFullscreenEnabled ||
+            document.mozFullScreenEnabled ||
+            document.msFullscreenEnabled
+        );
     }
 
     /**
@@ -39,7 +41,10 @@ class Fullscreen extends EventEmitter {
     isFullscreen(element) {
         let fullscreen;
         if (this.isSupported()) {
-            fullscreen = !!(document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+            fullscreen = !!(document.fullscreenElement ||
+                document.mozFullScreenElement ||
+                document.webkitFullscreenElement ||
+                document.msFullscreenElement);
         } else {
             fullscreen = element instanceof HTMLElement && element.classList.contains(CLASS_FULLSCREEN);
         }
@@ -69,7 +74,7 @@ class Fullscreen extends EventEmitter {
         } else {
             this.emit('exit');
         }
-    }
+    };
 
     /**
      * Toggles fullscreen mode

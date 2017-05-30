@@ -15,9 +15,11 @@ describe('lib/viewers/office/OfficeLoader', () => {
                 can_download: true
             },
             representations: {
-                entries: [{
-                    representation: 'ORIGINAL'
-                }]
+                entries: [
+                    {
+                        representation: 'ORIGINAL'
+                    }
+                ]
             }
         };
     });

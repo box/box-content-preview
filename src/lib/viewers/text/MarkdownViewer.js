@@ -7,8 +7,7 @@ import './Markdown.scss';
 
 const STATIC_URI = `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/`;
 
-@autobind
-class MarkdownViewer extends PlainTextViewer {
+@autobind class MarkdownViewer extends PlainTextViewer {
     /**
      * @inheritdoc
      */
@@ -96,7 +95,12 @@ class MarkdownViewer extends PlainTextViewer {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
-        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(
+            __('enter_fullscreen'),
+            this.toggleFullscreen,
+            'bp-enter-fullscreen-icon',
+            ICON_FULLSCREEN_IN
+        );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 
@@ -110,9 +114,9 @@ class MarkdownViewer extends PlainTextViewer {
         /* global Remarkable */
         /* istanbul ignore next */
         const md = new Remarkable({
-            breaks: true,           // convert '\n' in paragraphs into <br>
-            linkify: true,          // automatically URL-like text into links
-            linkTarget: '_blank',   // open links in new page
+            breaks: true, // convert '\n' in paragraphs into <br>
+            linkify: true, // automatically URL-like text into links
+            linkTarget: '_blank', // open links in new page
             typographer: true,
             /* global hljs */
             highlight: (str, lang) => {

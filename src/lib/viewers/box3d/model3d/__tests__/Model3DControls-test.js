@@ -11,17 +11,12 @@ import {
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
+    EVENT_SET_GRID_VISIBLE,
     EVENT_TOGGLE_ANIMATION,
     EVENT_TOGGLE_HELPERS
 } from '../model3DConstants';
 
-import {
-    ICON_3D_RESET,
-    ICON_ANIMATION,
-    ICON_GEAR,
-    ICON_PAUSE,
-    ICON_PLAY
-} from '../../../../icons/icons';
+import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from '../../../../icons/icons';
 
 import { CSS_CLASS_HIDDEN } from '../../box3DConstants';
 
@@ -91,19 +86,34 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
                 });
 
                 it('should add an event listener to the animationClipsPullup reference for animation clip selection', () => {
-                    expect(animationListenStub).to.be.calledWith(EVENT_SELECT_ANIMATION_CLIP, controls.handleSelectAnimationClip);
+                    expect(animationListenStub).to.be.calledWith(
+                        EVENT_SELECT_ANIMATION_CLIP,
+                        controls.handleSelectAnimationClip
+                    );
                 });
 
                 it('should add an animation playback toggle to the control bar', () => {
-                    expect(addStub).to.be.calledWith(__('box3d_toggle_animation'), controls.handleToggleAnimation, '', ICON_PLAY);
+                    expect(addStub).to.be.calledWith(
+                        __('box3d_toggle_animation'),
+                        controls.handleToggleAnimation,
+                        '',
+                        ICON_PLAY
+                    );
                 });
 
                 it('should add a toggle to hide/show the animation clip pullup to the control bar', () => {
-                    expect(addStub).to.be.calledWith(__('box3d_animation_clips'), controls.handleToggleAnimationClips, '', ICON_ANIMATION);
+                    expect(addStub).to.be.calledWith(
+                        __('box3d_animation_clips'),
+                        controls.handleToggleAnimationClips,
+                        '',
+                        ICON_ANIMATION
+                    );
                 });
 
                 it('should append the pullup of the animationClipsPullup to the parent element of the hide/show toggle', () => {
-                    expect(controls.animationClipButtonEl.parentNode).to.contain(controls.animationClipsPullup.pullupEl);
+                    expect(controls.animationClipButtonEl.parentNode).to.contain(
+                        controls.animationClipsPullup.pullupEl
+                    );
                 });
             });
 
@@ -121,6 +131,10 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
                         {
                             event: EVENT_SET_WIREFRAMES_VISIBLE,
                             callback: 'handleSetWireframesVisible'
+                        },
+                        {
+                            event: EVENT_SET_GRID_VISIBLE,
+                            callback: 'handleSetGridVisible'
                         },
                         {
                             event: EVENT_SET_CAMERA_PROJECTION,
@@ -147,7 +161,12 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
 
                 it('should add a toggle for the settings panel, in the control bar', () => {
                     controls.addUi();
-                    expect(addStub).to.be.calledWith(__('box3d_settings'), controls.handleToggleSettings, '', ICON_GEAR);
+                    expect(addStub).to.be.calledWith(
+                        __('box3d_settings'),
+                        controls.handleToggleSettings,
+                        '',
+                        ICON_GEAR
+                    );
                 });
 
                 it('should and the settings panel element to the parent element of the settings panel toggle', () => {
@@ -261,6 +280,18 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
         it('should fire a "set wireframe visiblity" event with a flag to turn them on and off explicitly', () => {
             sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_WIREFRAMES_VISIBLE, true);
             controls.handleSetWireframesVisible(true);
+        });
+    });
+
+    describe('handleSetGridVisible()', () => {
+        it('should fire a "set grid visiblity" event', () => {
+            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_GRID_VISIBLE);
+            controls.handleSetGridVisible();
+        });
+
+        it('should fire a "set grid visiblity" event with a flag to turn them on and off explicitly', () => {
+            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_GRID_VISIBLE, true);
+            controls.handleSetGridVisible(true);
         });
     });
 

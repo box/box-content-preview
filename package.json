@@ -1,9 +1,9 @@
 {
   "name": "box-content-preview",
-  "version": "0.122.0",
+  "version": "0.126.1",
   "description": "Box Content Preview UI Kit",
   "author": "Box (https://www.box.com/)",
-  "license": "Box Software Development Kit License Agreement",
+  "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "type": "git",
     "url": "git@github.com:box/box-preview.git"
@@ -24,7 +24,7 @@
     "babel-preset-es2016": "^6.22.0",
     "babel-preset-react": "^6.23.0",
     "chai": "^3.5.0",
-    "chai-as-promised": "^5.3.0",
+    "chai-as-promised": "5.3.0",
     "chai-dom": "^1.4.3",
     "conventional-changelog-lint": "^1.1.7",
     "css-loader": "^0.27.3",
@@ -33,6 +33,7 @@
     "es6-promise": "^4.1.0",
     "eslint": "^3.17.1",
     "eslint-config-airbnb": "^14.1.0",
+    "eslint-config-prettier": "^2.1.1",
     "eslint-import-resolver-webpack": "^0.8.1",
     "eslint-plugin-babel": "^4.1.1",
     "eslint-plugin-import": "^2.2.0",
@@ -42,9 +43,7 @@
     "fetch-mock": "^5.9.4",
     "fetch-mock-forwarder": "^1.0.0",
     "file-loader": "^0.10.1",
-    "husky": "^0.13.2",
     "i18n-webpack-plugin": "^0.3.0",
-    "isomorphic-fetch": "^2.2.1",
     "karma": "^1.5.0",
     "karma-chai": "^0.1.0",
     "karma-chai-as-promised": "^0.1.2",
@@ -62,6 +61,7 @@
     "karma-sinon-stub-promise": "^1.0.0",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^2.0.3",
+    "lint-staged": "^3.4.2",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
@@ -72,6 +72,8 @@
     "optimize-css-assets-webpack-plugin": "^1.3.0",
     "phantomjs-prebuilt": "^2.1.14",
     "postcss-loader": "^1.3.3",
+    "prettier": "^1.3.1",
+    "prettier-eslint-cli": "^4.0.1",
     "query-string": "^4.3.2",
     "rangy": "^1.3.0",
     "raw-loader": "^0.5.1",
@@ -80,8 +82,8 @@
     "react-dom": "^15.4.2",
     "react-virtualized": "^9.3.0",
     "sass-loader": "^6.0.3",
-    "sinon": "^2.0.0",
-    "sinon-chai": "^2.8.0",
+    "sinon": "1.17.7",
+    "sinon-chai": "2.8.0",
     "sinon-stub-promise": "^4.0.0",
     "string-replace-loader": "^1.0.5",
     "style-loader": "^0.14.1",
@@ -89,7 +91,8 @@
     "stylelint-config-standard": "^16.0.0",
     "stylelint-order": "^0.4.1",
     "url-loader": "^0.5.8",
-    "webpack": "^2.2.1"
+    "webpack": "^2.2.1",
+    "whatwg-fetch": "^2.0.3"
   },
   "scripts": {
     "build": "yarn run clean && yarn run build-rb && yarn run lint && yarn run dev",
@@ -101,7 +104,9 @@
     "debug": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js --no-single-run --auto-watch",
     "dev": "BABEL_ENV=dev NODE_ENV=dev ./node_modules/.bin/webpack --progress --colors --config build/webpack.config.js",
     "lint": "NODE_ENV=dev ./node_modules/.bin/eslint src/lib && ./node_modules/.bin/stylelint 'src/lib/**/*.scss'",
+    "precommit": "lint-staged",
     "prepush": "yarn run lint",
+    "prettier": "prettier-eslint \"src/lib/**/*.js\" --print-width 120 --single-quote --tab-width 4 --write",
     "prod": "BABEL_ENV=production NODE_ENV=production node --max_old_space_size=4096 ./node_modules/webpack/bin/webpack.js --progress --colors --config build/webpack.config.js",
     "release": "yarn run clean && yarn run build-rb && yarn run lint && yarn run test && yarn run prod",
     "test": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js",
@@ -110,5 +115,11 @@
     "major": "./build/release.sh -m",
     "minor": "./build/release.sh -n",
     "patch": "./build/release.sh -p"
+  },
+  "lint-staged": {
+    "src/lib/**/*.js": [
+      "prettier-eslint --print-width 120 --single-quote --tab-width 4 --write",
+      "git add"
+    ]
   }
 }

@@ -8,19 +8,14 @@ import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../constants';
 const CLASS_SETTINGS = 'bp-media-settings';
 const CLASS_SETTINGS_SELECTED = 'bp-media-settings-selected';
 const CLASS_SETTINGS_OPEN = 'bp-media-settings-is-open';
+const CLASS_SETTINGS_SUBTITLES_UNAVAILABLE = 'bp-media-settings-subtitles-unavailable';
+const CLASS_SETTINGS_SUBTITLES_ON = 'bp-media-settings-subtitles-on';
 const SELECTOR_SETTINGS_SUB_ITEM = '.bp-media-settings-sub-item';
 const SELECTOR_SETTINGS_VALUE = '.bp-media-settings-value';
-const MEDIA_SPEEDS = [
-    '0.25',
-    '0.5',
-    '1.0',
-    '1.25',
-    '1.5',
-    '2.0'
-];
+const MEDIA_SPEEDS = ['0.25', '0.5', '1.0', '1.25', '1.5', '2.0'];
 
 const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
-    <div role="menu">
+    <div class="bp-media-settings-menu-main bp-media-settings-menu" role="menu">
         <div class="bp-media-settings-item bp-media-settings-item-speed" data-type="speed" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-label" aria-label="${__('media_speed')}">${__('media_speed')}</div>
             <div class="bp-media-settings-value">${__('media_speed_normal')}</div>
@@ -31,8 +26,13 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
             <div class="bp-media-settings-value">${__('media_quality_auto')}</div>
             <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
         </div>
+        <div class="bp-media-settings-item bp-media-settings-item-subtitles bp-media-settings-is-hidden" data-type="subtitles" tabindex="0" role="menuitem" aria-haspopup="true">
+            <div class="bp-media-settings-label" aria-label="${__('subtitles')}/CC">${__('subtitles')}/CC</div>
+            <div class="bp-media-settings-value">${__('off')}</div>
+            <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
+        </div>
     </div>
-    <div class="bp-media-settings-options-speed" role="menu">
+    <div class="bp-media-settings-menu-speed bp-media-settings-menu" role="menu">
         <div class="bp-media-settings-sub-item bp-media-settings-sub-item-speed" data-type="menu" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
             <div class="bp-media-settings-label" aria-label="${__('media_speed')}">${__('media_speed')}</div>
@@ -62,7 +62,7 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
             <div class="bp-media-settings-value">2.0</div>
         </div>
     </div>
-    <div class="bp-media-settings-options-quality" role="menu">
+    <div class="bp-media-settings-menu-quality bp-media-settings-menu" role="menu">
         <div class="bp-media-settings-sub-item bp-media-settings-sub-item-quality" data-type="menu" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
             <div class="bp-media-settings-label" aria-label="${__('media_quality')}">${__('media_quality')}</div>
@@ -80,10 +80,79 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
             <div class="bp-media-settings-value">${__('media_quality_auto')}</div>
         </div>
     </div>
+    <div class="bp-media-settings-menu-subtitles bp-media-settings-menu bp-media-settings-is-hidden" role="menu">
+        <div class="bp-media-settings-sub-item bp-media-settings-sub-item-subtitles" data-type="menu" tabindex="0" role="menuitem" aria-haspopup="true">
+            <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
+            <div class="bp-media-settings-label" aria-label="${__('subtitles')}/CC">${__('subtitles')}/CC</div>
+        </div>
+        <div class="bp-media-settings-sub-item bp-media-settings-selected" data-type="subtitles" data-value="-1" tabindex="0" role="menuitemradio" aria-checked="true">
+            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+            <div class="bp-media-settings-value">${__('off')}</div>
+        </div>
+    </div>
 </div>`;
 
-@autobind
-class Settings extends EventEmitter {
+const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data-type="subtitles" data-value="{{dataValue}}" tabindex="0" role="menuitemradio">
+    <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+    <div class="bp-media-settings-value"></div>
+</div>`;
+
+@autobind class Settings extends EventEmitter {
+    /**
+     * The container of the settings element
+     *
+     * @property {HTMLElement}
+     */
+    containerEl;
+
+    /**
+     * The settings element
+     *
+     * @property {HTMLElement}
+     */
+    settingsEl;
+
+    /**
+     * The first item in the main menu
+     *
+     * @property {HTMLElement}
+     */
+    firstMenuItem;
+
+    /**
+     * The settings button element (gear icon that opens up the menu)
+     *
+     * @property {HTMLElement}
+     */
+    settingsButtonEl;
+
+    /**
+     * Whether the settings menu is visible or hiding
+     *
+     * @property {boolean}
+     */
+    visible = false;
+
+    /**
+     * List of subtitles in the menu. The subtitles menu will be populated in this order
+     *
+     * @property {array}
+     */
+    subtitles = [];
+
+    /**
+     * Default language to use for choosing subtitle to toggle on
+     *
+     * @property {string}
+     */
+    language = undefined;
+
+    /**
+     * An index (an integer >= 0) into the subtitles list, that should be toggled to when CC toggled on
+     *
+     * @property {string}
+     */
+    toggleToSubtitle = undefined;
 
     /**
      * Service to handle the position and movement of a slider element
@@ -103,12 +172,13 @@ class Settings extends EventEmitter {
         this.settingsButtonEl = this.containerEl.querySelector('.bp-media-gear-icon');
 
         addActivationListener(this.settingsEl, this.menuEventHandler);
-        this.visible = false;
+        this.containerEl.classList.add(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
         this.init();
     }
 
     /**
-     * Inits the menu
+     * Inits the menu. Note that we cannot initialize subtitles here because we don't know until we've loaded the video
+     * whether subtitles are available or not
      *
      * @return {void}
      */
@@ -137,6 +207,8 @@ class Settings extends EventEmitter {
      */
     reset() {
         this.settingsEl.className = CLASS_SETTINGS;
+        const mainMenu = this.settingsEl.querySelector('.bp-media-settings-menu-main');
+        this.setMenuContainerDimensions(mainMenu);
     }
 
     /**
@@ -176,6 +248,22 @@ class Settings extends EventEmitter {
     }
 
     /**
+     * Set the menu dimensions depending on which menu is being shown
+     *
+     * @private
+     * @param {HTMLElement} menu - The menu/submenu to use for sizing the container
+     * @return {void}
+     */
+    setMenuContainerDimensions(menu) {
+        // NOTE: need to explicitly set the dimensions in order to get css transitions. width=auto doesn't work with css transitions
+        this.settingsEl.style.width = `${menu.offsetWidth + 18}px`;
+        // height = n * $item-height + 2 * $padding (see Settings.scss) + 2 * border (see Settings.scss)
+        // where n is the number of displayed items in the menu
+        const sumHeight = [].reduce.call(menu.children, (sum, child) => sum + child.offsetHeight, 0);
+        this.settingsEl.style.height = `${sumHeight + 18}px`;
+    }
+
+    /**
      * Finds the parent node that has dataset type
      *
      * @param {HTMLElement} target - start dom location
@@ -203,9 +291,13 @@ class Settings extends EventEmitter {
      * @return {void}
      */
     showSubMenu(type) {
+        const subMenu = this.settingsEl.querySelector(`.bp-media-settings-menu-${type}`);
         this.settingsEl.classList.add(`bp-media-settings-show-${type}`);
+        this.setMenuContainerDimensions(subMenu);
         // Move focus to the currently selected value
-        const curSelectedOption = this.settingsEl.querySelector(`[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`);
+        const curSelectedOption = this.settingsEl.querySelector(
+            `[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`
+        );
         curSelectedOption.focus();
     }
 
@@ -289,12 +381,9 @@ class Settings extends EventEmitter {
                 case 'arrowright': {
                     if (itemIdx >= 0) {
                         const curNode = menuEl.children[itemIdx];
-                        if (curNode.classList.contains('bp-media-settings-item')) {
-                            if (curNode.getAttribute('data-type') === 'speed') {
-                                this.showSubMenu('speed');
-                            } else if (curNode.getAttribute('data-type') === 'quality') {
-                                this.showSubMenu('quality');
-                            }
+                        const dataType = curNode.getAttribute('data-type');
+                        if (curNode.classList.contains('bp-media-settings-item') && dataType !== 'menu') {
+                            this.showSubMenu(dataType);
                         }
                     }
                     break;
@@ -317,6 +406,19 @@ class Settings extends EventEmitter {
             event.preventDefault();
             event.stopPropagation();
         }
+    }
+
+    /**
+     * Returns the selected option in the submenu specified by `type`
+     *
+     * @private
+     * @param {string} type - The submenu (e.g. speed, quality, subtitles)
+     * @return {HTMLElement} The sub-item html element from the Settings menu that's selected
+     */
+    getSelectedOption(type) {
+        return this.settingsEl.querySelector(
+            `[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`
+        );
     }
 
     /**
@@ -343,7 +445,7 @@ class Settings extends EventEmitter {
         this.settingsEl.querySelector(`[data-type="${type}"] ${SELECTOR_SETTINGS_VALUE}`).textContent = label;
 
         // Remove the checkmark from the prior selected option in the sub menu
-        const prevSelected = this.settingsEl.querySelector(`[data-type="${type}"]${SELECTOR_SETTINGS_SUB_ITEM}.${CLASS_SETTINGS_SELECTED}`);
+        const prevSelected = this.getSelectedOption(type);
         prevSelected.classList.remove(CLASS_SETTINGS_SELECTED);
         prevSelected.removeAttribute('aria-checked');
 
@@ -354,6 +456,31 @@ class Settings extends EventEmitter {
         // Return to main menu
         this.reset();
         this.firstMenuItem.focus();
+
+        if (type === 'subtitles') {
+            this.handleSubtitleSelection(prevSelected.getAttribute('data-value'), value);
+        }
+    }
+
+    /**
+     * Helper function for special handling for subtitle selection. Needs to keep track
+     * of previous value (for toggling) and add CSS so that the CC button turns off
+     *
+     * @private
+     * @param {string} prevValue - This is a string but semantically a number (an index into the subtitle track list)
+     * @param {string} newValue - This is a string but semantically a number (an index into the subtitle track list)
+     * @return {void}
+     */
+    handleSubtitleSelection(prevValue, newValue) {
+        if (newValue === '-1') {
+            if (prevValue !== newValue) {
+                this.toggleToSubtitle = prevValue;
+            }
+
+            this.containerEl.classList.remove(CLASS_SETTINGS_SUBTITLES_ON);
+        } else {
+            this.containerEl.classList.add(CLASS_SETTINGS_SUBTITLES_ON);
+        }
     }
 
     /**
@@ -375,17 +502,20 @@ class Settings extends EventEmitter {
             }
             // Only if event happened outside the settings button as well, hide on click/space/enter; we ignore
             // settings button here because it has its own handler for this event
-            if (!this.settingsButtonEl.contains(event.target) && (event.type === 'click' || key === 'Space' || key === 'Enter')) {
+            if (
+                !this.settingsButtonEl.contains(event.target) &&
+                (event.type === 'click' || key === 'Space' || key === 'Enter')
+            ) {
                 this.hide();
             }
         }
     }
 
     /**
-     * Getter for the value of quality
+     * Getter for the value of visible
      *
      * @public
-     * @return {string} The quality
+     * @return {boolean} Whether the settings menu is open (visible) or not
      */
     isVisible() {
         return this.visible;
@@ -418,6 +548,81 @@ class Settings extends EventEmitter {
         this.visible = false;
         document.removeEventListener('click', this.blurHandler, true);
         document.removeEventListener('keydown', this.blurHandler, true);
+    }
+
+    /**
+     * Returns whether subtitles are on or not
+     *
+     * @private
+     * @return {boolean}
+     */
+    areSubtitlesOn() {
+        const selected = this.getSelectedOption('subtitles');
+        return selected.getAttribute('data-value') !== '-1';
+    }
+
+    /**
+     * Returns whether subtitles are available or not
+     *
+     * @return {boolean}
+     */
+    hasSubtitles() {
+        if (this.settingsEl.querySelector(`[data-type="subtitles"][data-value="0"]${SELECTOR_SETTINGS_SUB_ITEM}`)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Toggles subtitles on/off
+     *
+     * @return {void}
+     */
+    toggleSubtitles() {
+        if (this.areSubtitlesOn()) {
+            this.chooseOption('subtitles', '-1');
+        } else if (this.toggleToSubtitle !== undefined) {
+            this.chooseOption('subtitles', this.toggleToSubtitle.toString());
+        } else {
+            // Do intelligent selection: Prefer user's language, fallback to English, then first subtitle in list
+            // Use the previewer's locale to determine preferred language
+            let idx = this.subtitles.findIndex((subtitle) => subtitle === this.language);
+            if (idx === -1) {
+                // Fall back to English if user's language doesn't exist
+                idx = this.subtitles.findIndex((subtitle) => subtitle === 'English');
+                if (idx === -1) {
+                    idx = 0; // Fall back to first subtitle in list
+                }
+            }
+            this.chooseOption('subtitles', idx.toString());
+        }
+    }
+
+    /**
+     * Takes a list of subtitle names and populates the settings menu
+     *
+     * @param {Array} subtitles - A list of subtitle names as strings
+     * @param {string} language - The language of the user. Used in determining preferred subtitle when toggling
+     * @return {void}
+     */
+    loadSubtitles(subtitles, language) {
+        const subtitlesSubMenu = this.settingsEl.querySelector('.bp-media-settings-menu-subtitles');
+        this.subtitles = subtitles;
+        this.language = language;
+        this.subtitles.forEach((subtitle, idx) => {
+            insertTemplate(subtitlesSubMenu, SUBTITLES_SUBITEM_TEMPLATE.replace(/{{dataValue}}/g, idx));
+            const languageNode = subtitlesSubMenu.lastChild.querySelector('.bp-media-settings-value');
+            languageNode.textContent = subtitle;
+        });
+
+        this.containerEl.classList.remove(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
+        const subsCache = cache.get('media-subtitles');
+        if (subsCache !== null && subsCache !== '-1') {
+            // Last video watched with subtitles, so turn them on here too
+            this.toggleSubtitles();
+        }
+
+        this.reset();
     }
 }
 

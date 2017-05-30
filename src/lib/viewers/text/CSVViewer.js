@@ -6,8 +6,7 @@ import './CSV.scss';
 
 const JS = [`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/papaparse.min.js`, 'csv.js'];
 
-@autobind
-class CSVViewer extends TextBaseViewer {
+@autobind class CSVViewer extends TextBaseViewer {
     /**
      * @inheritdoc
      */
@@ -47,8 +46,7 @@ class CSVViewer extends TextBaseViewer {
 
         return Promise.all([this.loadAssets(JS), this.getRepStatus().getPromise()])
             .then(() => {
-                get(papaWorkerUrl, 'blob')
-                .then((papaWorkerBlob) => {
+                get(papaWorkerUrl, 'blob').then((papaWorkerBlob) => {
                     /* global Papa */
                     const workerSrc = URL.createObjectURL(papaWorkerBlob);
                     Papa.SCRIPT_PATH = workerSrc;

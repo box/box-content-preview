@@ -1,4 +1,4 @@
-import fetch from 'isomorphic-fetch';
+import 'whatwg-fetch';
 
 const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
 const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
@@ -26,7 +26,7 @@ const parseThrough = (response) => response;
  * @private
  * @param {Response} response - Fetch's Response object
  * @throws {Error} - Throws when the HTTP status is not 2XX
- * @return {Response} - Pass-thru the response if ther are no errors
+ * @return {Response} - Pass-thru the response if there are no errors
  */
 function checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {
@@ -50,8 +50,8 @@ function xhr(method, url, headers = {}, data = {}) {
         method,
         body: JSON.stringify(data)
     })
-    .then(checkStatus)
-    .then(parseJSON);
+        .then(checkStatus)
+        .then(parseJSON);
 }
 
 /**
@@ -119,9 +119,7 @@ export function get(url, ...rest) {
             break;
     }
 
-    return fetch(url, { headers })
-        .then(checkStatus)
-        .then(parser);
+    return fetch(url, { headers }).then(checkStatus).then(parser);
 }
 
 /**
@@ -425,10 +423,12 @@ export function loadScripts(urls) {
     urls.forEach((url) => {
         if (!head.querySelector(`script[src="${url}"]`)) {
             const script = createScript(url);
-            promises.push(new Promise((resolve, reject) => {
-                script.addEventListener('load', resolve);
-                script.addEventListener('error', reject);
-            }));
+            promises.push(
+                new Promise((resolve, reject) => {
+                    script.addEventListener('load', resolve);
+                    script.addEventListener('error', reject);
+                })
+            );
             head.appendChild(script);
         }
     });

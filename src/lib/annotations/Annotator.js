@@ -4,15 +4,11 @@ import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
 import * as constants from './annotationConstants';
 import * as annotatorUtil from './annotatorUtil';
-import {
-    CLASS_ACTIVE,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE
-} from '../constants';
+import { CLASS_ACTIVE, SELECTOR_BOX_PREVIEW_BTN_ANNOTATE, CLASS_HIDDEN } from '../constants';
+import { ICON_CLOSE } from '../icons/icons';
 import './Annotator.scss';
 
-@autobind
-class Annotator extends EventEmitter {
-
+@autobind class Annotator extends EventEmitter {
     //--------------------------------------------------------------------------
     // Typedef
     //--------------------------------------------------------------------------
@@ -44,6 +40,7 @@ class Annotator extends EventEmitter {
         this.fileVersionId = data.fileVersionId;
         this.locale = data.locale;
         this.validationErrorDisplayed = false;
+        this.isMobile = data.isMobile;
     }
 
     /**
@@ -82,9 +79,35 @@ class Annotator extends EventEmitter {
             canAnnotate: this.canAnnotate
         });
 
+        // Set up mobile annotations dialog
+        if (this.isMobile) {
+            this.setupMobileDialog();
+        }
+
         this.setScale(1);
         this.setupAnnotations();
         this.showAnnotations();
+    }
+
+    /**
+     * Sets up the shared mobile dialog element.
+     *
+     * @return {void}
+     */
+    setupMobileDialog() {
+        // Generate HTML of dialog
+        const mobileDialogEl = document.createElement('div');
+        mobileDialogEl.setAttribute('data-type', 'annotation-dialog');
+        mobileDialogEl.classList.add(constants.CLASS_MOBILE_ANNOTATION_DIALOG);
+        mobileDialogEl.classList.add(constants.CLASS_ANNOTATION_DIALOG);
+        mobileDialogEl.classList.add(CLASS_HIDDEN);
+
+        mobileDialogEl.innerHTML = `
+            <div class="bp-annotation-mobile-header">
+                <button class="bp-annotation-dialog-close">${ICON_CLOSE}</button>
+            </div>`.trim();
+
+        this.container.appendChild(mobileDialogEl);
     }
 
     /**
@@ -161,23 +184,25 @@ class Annotator extends EventEmitter {
      * @private
      */
     rotateAnnotations(rotationAngle = 0) {
+        this.renderAnnotations();
+
         // Only show/hide point annotation button if user has the
         // appropriate permissions
-        if (this.annotationService.canAnnotate) {
-            // Hide create annotations button if image is rotated
-            // TODO(@spramod) actually adjust getLocationFromEvent method
-            // in annotator to get correct location rather than disabling
-            // the creation of annotations on rotated images
-            const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-
-            if (rotationAngle !== 0) {
-                annotatorUtil.hideElement(annotateButton);
-            } else {
-                annotatorUtil.showElement(annotateButton);
-            }
+        if (!this.annotationService.canAnnotate) {
+            return;
         }
 
-        this.renderAnnotations();
+        // Hide create annotations button if image is rotated
+        // TODO(@spramod) actually adjust getLocationFromEvent method
+        // in annotator to get correct location rather than disabling
+        // the creation of annotations on rotated images
+        const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+
+        if (rotationAngle !== 0) {
+            annotatorUtil.hideElement(annotateButton);
+        } else {
+            annotatorUtil.showElement(annotateButton);
+        }
     }
 
     /**
@@ -212,7 +237,7 @@ class Annotator extends EventEmitter {
         if (this.isInPointMode()) {
             this.notification.hide();
 
-            this.emit('pointmodeexit');
+            this.emit('annotationmodeexit');
             this.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
                 buttonEl.classList.remove(CLASS_ACTIVE);
@@ -221,18 +246,18 @@ class Annotator extends EventEmitter {
             this.unbindPointModeListeners(); // Disable point mode
             this.bindDOMListeners(); // Re-enable other annotations
 
-        // Otherwise, enable annotation mode
+            // Otherwise, enable annotation mode
         } else {
             this.notification.show(__('notification_annotation_mode'));
 
-            this.emit('pointmodeenter');
+            this.emit('annotationmodeenter');
             this.annotatedElement.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
                 buttonEl.classList.add(CLASS_ACTIVE);
             }
 
             this.unbindDOMListeners(); // Disable other annotations
-            this.bindPointModeListeners();  // Enable point mode
+            this.bindPointModeListeners(); // Enable point mode
         }
     }
 
@@ -302,20 +327,21 @@ class Annotator extends EventEmitter {
     fetchAnnotations() {
         this.threads = {};
 
-        return this.annotationService.getThreadMap(this.fileVersionId)
-            .then((threadMap) => {
-                // Generate map of page to threads
-                Object.keys(threadMap).forEach((threadID) => {
-                    const annotations = threadMap[threadID];
-                    const firstAnnotation = annotations[0];
+        return this.annotationService.getThreadMap(this.fileVersionId).then((threadMap) => {
+            // Generate map of page to threads
+            Object.keys(threadMap).forEach((threadID) => {
+                const annotations = threadMap[threadID];
+                const firstAnnotation = annotations[0];
 
-                    // Bind events on valid annotation thread
-                    const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
-                    if (thread) {
-                        this.bindCustomListenersOnThread(thread);
-                    }
-                });
+                // Bind events on valid annotation thread
+                const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
+                if (thread) {
+                    this.bindCustomListenersOnThread(thread);
+                }
             });
+
+            this.emit('annotationsfetched');
+        });
     }
 
     /**
@@ -405,7 +431,9 @@ class Annotator extends EventEmitter {
 
             // Remove from map
             if (this.threads[page] instanceof Array) {
-                this.threads[page] = this.threads[page].filter((searchThread) => searchThread.threadID !== thread.threadID);
+                this.threads[page] = this.threads[page].filter(
+                    (searchThread) => searchThread.threadID !== thread.threadID
+                );
             }
         });
 
@@ -526,13 +554,12 @@ class Annotator extends EventEmitter {
     destroyPendingThreads() {
         let hasPendingThreads = false;
         Object.keys(this.threads).forEach((page) => {
-            this.threads[page]
-                .forEach((pendingThread) => {
-                    if (pendingThread.state === constants.ANNOTATION_STATE_PENDING) {
-                        hasPendingThreads = true;
-                        pendingThread.destroy();
-                    }
-                });
+            this.threads[page].forEach((pendingThread) => {
+                if (pendingThread.state === constants.ANNOTATION_STATE_PENDING) {
+                    hasPendingThreads = true;
+                    pendingThread.destroy();
+                }
+            });
         });
         return hasPendingThreads;
     }

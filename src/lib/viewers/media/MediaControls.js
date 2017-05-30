@@ -16,13 +16,12 @@ const VOLUME_LEVEL_CLASS_NAMES = [
     'bp-media-volume-icon-is-medium',
     'bp-media-volume-icon-is-high'
 ];
-const CRAWLER = '<div class="bp-media-crawler-wrapper"><div class="bp-crawler"><div></div><div></div><div></div></div></div>';
+const CRAWLER =
+    '<div class="bp-media-crawler-wrapper"><div class="bp-crawler"><div></div><div></div><div></div></div></div>';
 const FILMSTRIP_FRAMES_PER_ROW = 100;
 const FILMSTRIP_FRAME_HEIGHT = 90;
 
-@autobind
-class MediaControls extends EventEmitter {
-
+@autobind class MediaControls extends EventEmitter {
     /**
      * [constructor]
      *
@@ -58,6 +57,9 @@ class MediaControls extends EventEmitter {
 
         this.settingsButtonEl = this.wrapperEl.querySelector('.bp-media-gear-icon');
         this.setLabel(this.settingsButtonEl, __('media_settings'));
+
+        this.subtitlesButtonEl = this.wrapperEl.querySelector('.bp-media-cc-icon');
+        this.setLabel(this.subtitlesButtonEl, __('media_subtitles_cc'));
 
         this.setDuration(this.mediaEl.duration);
         this.setupSettings();
@@ -96,6 +98,7 @@ class MediaControls extends EventEmitter {
         if (this.settings) {
             this.settings.removeListener('quality', this.handleQuality);
             this.settings.removeListener('speed', this.handleRate);
+            this.settings.removeListener('subtitles', this.handleSubtitle);
             this.settings.destroy();
             this.settings = undefined;
         }
@@ -114,6 +117,10 @@ class MediaControls extends EventEmitter {
 
         if (this.settingsButtonEl) {
             removeActivationListener(this.settingsButtonEl, this.toggleSettingsHandler);
+        }
+
+        if (this.subtitlesButtonEl) {
+            removeActivationListener(this.subtitlesButtonEl, this.toggleSubtitlesHandler);
         }
 
         if (this.wrapperEl) {
@@ -160,6 +167,16 @@ class MediaControls extends EventEmitter {
     }
 
     /**
+     * Subtitle handler
+     *
+     * @private
+     * @return {void}
+     */
+    handleSubtitle() {
+        this.emit('subtitlechange');
+    }
+
+    /**
      * Attaches settings menu
      *
      * @private
@@ -188,7 +205,15 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     setupScrubbers() {
-        this.timeScrubber = new Scrubber(this.timeScrubberEl, __('media_time_slider'), 0, Math.floor(this.mediaEl.duration), 0, 0, 1);
+        this.timeScrubber = new Scrubber(
+            this.timeScrubberEl,
+            __('media_time_slider'),
+            0,
+            Math.floor(this.mediaEl.duration),
+            0,
+            0,
+            1
+        );
         this.setTimeCode(0); // This also sets the aria values
         this.timeScrubber.on('valuechange', () => {
             this.emit('timeupdate', this.getTimeFromScrubber());
@@ -210,8 +235,8 @@ class MediaControls extends EventEmitter {
      */
     formatTime(seconds) {
         const h = Math.floor(seconds / 3600);
-        const m = Math.floor((seconds % 3600) / 60);
-        const s = Math.floor((seconds % 3600) % 60);
+        const m = Math.floor(seconds % 3600 / 60);
+        const s = Math.floor(seconds % 3600 % 60);
         const hour = h > 0 ? `${h.toString()}:` : '';
         const sec = s < 10 ? `0${s.toString()}` : s.toString();
         let min = m.toString();
@@ -242,7 +267,10 @@ class MediaControls extends EventEmitter {
         const duration = this.mediaEl.duration;
         this.timeScrubber.setValue(duration ? (time || 0) / duration : 0);
         this.timecodeEl.textContent = this.formatTime(time || 0);
-        this.timeScrubber.setAriaValues(Math.floor(time), `${this.timecodeEl.textContent} ${__('of')} ${this.durationEl.textContent}`);
+        this.timeScrubber.setAriaValues(
+            Math.floor(time),
+            `${this.timecodeEl.textContent} ${__('of')} ${this.durationEl.textContent}`
+        );
     }
 
     /**
@@ -299,10 +327,11 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     setFullscreenLabel() {
-        const fullscreenTitle = fullscreen.isFullscreen(this.containerEl) ? __('exit_fullscreen') : __('enter_fullscreen');
+        const fullscreenTitle = fullscreen.isFullscreen(this.containerEl)
+            ? __('exit_fullscreen')
+            : __('enter_fullscreen');
         this.setLabel(this.fullscreenButtonEl, fullscreenTitle);
     }
-
 
     /**
      * Toggles settings menu
@@ -316,6 +345,17 @@ class MediaControls extends EventEmitter {
         } else {
             this.settings.show();
         }
+    }
+
+    /**
+     * Toggles subtitles
+     *
+     * @return {void}
+     */
+    toggleSubtitles() {
+        this.show();
+        this.settings.toggleSubtitles();
+        this.emit('togglesubtitles');
     }
 
     /**
@@ -496,11 +536,13 @@ class MediaControls extends EventEmitter {
         this.toggleMuteHandler = activationHandler(this.toggleMute);
         this.toggleFullscreenHandler = activationHandler(this.toggleFullscreen);
         this.toggleSettingsHandler = activationHandler(this.toggleSettings);
+        this.toggleSubtitlesHandler = activationHandler(this.toggleSubtitles);
 
         addActivationListener(this.playButtonEl, this.togglePlayHandler);
         addActivationListener(this.volButtonEl, this.toggleMuteHandler);
         addActivationListener(this.fullscreenButtonEl, this.toggleFullscreenHandler);
         addActivationListener(this.settingsButtonEl, this.toggleSettingsHandler);
+        addActivationListener(this.subtitlesButtonEl, this.toggleSubtitlesHandler);
 
         fullscreen.addListener('exit', this.setFullscreenLabel);
     }
@@ -690,11 +732,11 @@ class MediaControls extends EventEmitter {
      * @return {Object}
      */
     computeFilmstripPositions(pageX, rectLeft, rectWidth, filmstripWidth) {
-        const time = ((pageX - rectLeft) * this.mediaEl.duration) / rectWidth; // given the mouse X position, get the relative time
+        const time = this.timeScrubber.computeScrubberPosition(pageX) * this.mediaEl.duration; // given the mouse X position, get the relative time
         const frame = Math.floor(time / this.filmstripInterval); // get the frame number to show
         let frameWidth = filmstripWidth / FILMSTRIP_FRAMES_PER_ROW; // calculate the frame width based on the filmstrip width
         let left = -1 * (frame % FILMSTRIP_FRAMES_PER_ROW) * frameWidth; // get the frame position in a given row
-        let top = -FILMSTRIP_FRAME_HEIGHT * Math.floor((frame / FILMSTRIP_FRAMES_PER_ROW)); // get the row number if there is more than 1 row.
+        let top = -FILMSTRIP_FRAME_HEIGHT * Math.floor(frame / FILMSTRIP_FRAMES_PER_ROW); // get the row number if there is more than 1 row.
 
         // If the filmstrip is not ready yet, we are using a placeholder
         // which has a fixed dimension of 160 x 90
@@ -706,7 +748,7 @@ class MediaControls extends EventEmitter {
 
         // The filmstrip container positioning should fall within the viewport of the video itself. Relative to the video it
         // should be left positioned 0 <= filmstrip frame <= (video.width - filmstrip frame.width)
-        const minLeft = Math.max(0, pageX - rectLeft - (frameWidth / 2)); // don't allow the image to bleed out of the video viewport left edge
+        const minLeft = Math.max(0, pageX - rectLeft - frameWidth / 2); // don't allow the image to bleed out of the video viewport left edge
         const containerLeft = Math.min(minLeft, rectWidth - frameWidth); // don't allow the image to bleed out of the video viewport right edge
         return {
             time,
@@ -731,7 +773,12 @@ class MediaControls extends EventEmitter {
 
         const rect = this.containerEl.getBoundingClientRect();
         const pageX = event.pageX; // get the mouse X position
-        const filmstripPositions = this.computeFilmstripPositions(pageX, rect.left, rect.width, this.filmstripEl.naturalWidth);
+        const filmstripPositions = this.computeFilmstripPositions(
+            pageX,
+            rect.left,
+            rect.width,
+            this.filmstripEl.naturalWidth
+        );
 
         this.filmstripEl.style.left = `${filmstripPositions.left}px`;
         this.filmstripEl.style.top = `${filmstripPositions.top}px`;
@@ -768,6 +815,18 @@ class MediaControls extends EventEmitter {
      */
     isVolumeScrubberFocused() {
         return document.activeElement === this.volScrubberEl;
+    }
+
+    /**
+     * Takes a list of subtitle names and populates the settings menu
+     *
+     * @param {Array} subtitles - A list of subtitle names as strings
+     * @param {string} language - Language of the user, as derived from their locale (e.g. en-US -> "English")
+     * @return {void}
+     */
+    initSubtitles(subtitles, language) {
+        this.settings.addListener('subtitles', this.handleSubtitle);
+        this.settings.loadSubtitles(subtitles, language);
     }
 }
 

@@ -10,10 +10,10 @@ let stubs;
 let clock;
 
 const PLAYING_CLASS = 'bp-media-is-playing';
-const CRAWLER = '<div class="bp-media-crawler-wrapper"><div class="bp-crawler"><div></div><div></div><div></div></div></div>';
+const CRAWLER =
+    '<div class="bp-media-crawler-wrapper"><div class="bp-crawler"><div></div><div></div><div></div></div></div>';
 
 const sandbox = sinon.sandbox.create();
-
 
 describe('lib/viewers/media/MediaControls', () => {
     before(() => {
@@ -64,6 +64,9 @@ describe('lib/viewers/media/MediaControls', () => {
             expect(mediaControls.settingsButtonEl.getAttribute('title')).to.equal(__('media_settings'));
             expect(mediaControls.settingsButtonEl.getAttribute('aria-label')).to.equal(__('media_settings'));
 
+            expect(mediaControls.subtitlesButtonEl.getAttribute('title')).to.equal(__('media_subtitles_cc'));
+            expect(mediaControls.subtitlesButtonEl.getAttribute('aria-label')).to.equal(__('media_subtitles_cc'));
+
             expect(mediaControls.timeScrubberEl.getAttribute('aria-valuenow')).to.equal('0');
             expect(mediaControls.timeScrubberEl.getAttribute('aria-valuetext')).to.equal('0:00 of 20:10');
             expect(mediaControls.volScrubberEl.getAttribute('aria-valuenow')).to.equal('100');
@@ -78,7 +81,10 @@ describe('lib/viewers/media/MediaControls', () => {
     describe('destroy()', () => {
         beforeEach(() => {
             stubs.removeAllListeners = sandbox.stub(mediaControls, 'removeAllListeners');
-            stubs.removeVolumeScrubberWrapperExpansionHandlers = sandbox.stub(mediaControls, 'removeVolumeScrubberWrapperExpansionHandlers');
+            stubs.removeVolumeScrubberWrapperExpansionHandlers = sandbox.stub(
+                mediaControls,
+                'removeVolumeScrubberWrapperExpansionHandlers'
+            );
             stubs.removeEventListener = sandbox.stub(document, 'removeEventListener');
             stubs.removeActivationListener = sandbox.stub(util, 'removeActivationListener');
             stubs.genericEl = {
@@ -87,7 +93,6 @@ describe('lib/viewers/media/MediaControls', () => {
                 }),
                 getConvertedEl: sandbox.stub().returns({
                     removeEventListener: sandbox.stub()
-
                 }),
                 destroy: sandbox.stub(),
                 removeListener: sandbox.stub(),
@@ -114,9 +119,18 @@ describe('lib/viewers/media/MediaControls', () => {
 
             mediaControls.destroy();
 
-            expect(stubs.genericEl.getHandleEl().removeEventListener).to.be.calledWith('mousedown', mediaControls.timeScrubbingStartHandler);
-            expect(stubs.genericEl.getConvertedEl().removeEventListener).to.be.calledWith('mousemove', mediaControls.filmstripShowHandler);
-            expect(stubs.genericEl.getConvertedEl().removeEventListener).to.be.calledWith('mouseleave', mediaControls.filmstripHideHandler);
+            expect(stubs.genericEl.getHandleEl().removeEventListener).to.be.calledWith(
+                'mousedown',
+                mediaControls.timeScrubbingStartHandler
+            );
+            expect(stubs.genericEl.getConvertedEl().removeEventListener).to.be.calledWith(
+                'mousemove',
+                mediaControls.filmstripShowHandler
+            );
+            expect(stubs.genericEl.getConvertedEl().removeEventListener).to.be.calledWith(
+                'mouseleave',
+                mediaControls.filmstripHideHandler
+            );
             expect(stubs.genericEl.destroy).to.be.called;
             expect(mediaControls.timeScrubber).to.equal(undefined);
         });
@@ -144,14 +158,25 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.settingsButtonEl = stubs.genericEl;
             mediaControls.volButtonEl = stubs.genericEl;
             mediaControls.playButtonEl = stubs.genericEl;
+            mediaControls.subtitlesButtonEl = stubs.genericEl;
             mediaControls.wrapperEl = stubs.genericEl;
 
             mediaControls.destroy();
 
             expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.togglePlayHandler);
             expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.toggleMuteHandler);
-            expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.toggleFullscreenHandler);
-            expect(stubs.removeActivationListener).to.be.calledWith(stubs.genericEl, mediaControls.toggleSettingsHandler);
+            expect(stubs.removeActivationListener).to.be.calledWith(
+                stubs.genericEl,
+                mediaControls.toggleFullscreenHandler
+            );
+            expect(stubs.removeActivationListener).to.be.calledWith(
+                stubs.genericEl,
+                mediaControls.toggleSettingsHandler
+            );
+            expect(stubs.removeActivationListener).to.be.calledWith(
+                stubs.genericEl,
+                mediaControls.toggleSubtitlesHandler
+            );
         });
     });
 
@@ -170,6 +195,15 @@ describe('lib/viewers/media/MediaControls', () => {
 
             mediaControls.handleQuality();
             expect(stubs.emit).to.be.calledWith('qualitychange');
+        });
+    });
+
+    describe('handleSubtitle', () => {
+        it('should emit the subtitlechange event', () => {
+            stubs.emit = sandbox.stub(mediaControls, 'emit');
+
+            mediaControls.handleSubtitle();
+            expect(stubs.emit).to.be.calledWith('subtitlechange');
         });
     });
 
@@ -335,6 +369,18 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
+    describe('toggleSubtitles', () => {
+        it('should emit a togglesubtitles message', () => {
+            sandbox.stub(mediaControls.settings, 'toggleSubtitles');
+            stubs.emit = sandbox.stub(mediaControls, 'emit');
+
+            mediaControls.toggleSubtitles();
+
+            expect(stubs.emit).to.be.calledWith('togglesubtitles');
+            expect(mediaControls.settings.toggleSubtitles).to.be.called;
+        });
+    });
+
     describe('toggleFullscreen', () => {
         beforeEach(() => {
             stubs.emit = sandbox.stub(mediaControls, 'emit');
@@ -485,10 +531,26 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.attachEventHandlers();
             expect(stubs.wrapperAddEventListener).to.be.calledWith('mouseenter', mediaControls.mouseenterHandler);
             expect(stubs.wrapperAddEventListener).to.be.calledWith('mouseleave', mediaControls.mouseleaveHandler);
-            expect(stubs.addActivationListener).to.be.calledWith(mediaControls.playButtonEl, mediaControls.togglePlayHandler);
-            expect(stubs.addActivationListener).to.be.calledWith(mediaControls.volButtonEl, mediaControls.toggleMuteHandler);
-            expect(stubs.addActivationListener).to.be.calledWith(mediaControls.fullscreenButtonEl, mediaControls.toggleFullscreenHandler);
-            expect(stubs.addActivationListener).to.be.calledWith(mediaControls.settingsButtonEl, mediaControls.toggleSettingsHandler);
+            expect(stubs.addActivationListener).to.be.calledWith(
+                mediaControls.playButtonEl,
+                mediaControls.togglePlayHandler
+            );
+            expect(stubs.addActivationListener).to.be.calledWith(
+                mediaControls.volButtonEl,
+                mediaControls.toggleMuteHandler
+            );
+            expect(stubs.addActivationListener).to.be.calledWith(
+                mediaControls.fullscreenButtonEl,
+                mediaControls.toggleFullscreenHandler
+            );
+            expect(stubs.addActivationListener).to.be.calledWith(
+                mediaControls.settingsButtonEl,
+                mediaControls.toggleSettingsHandler
+            );
+            expect(stubs.addActivationListener).to.be.calledWith(
+                mediaControls.subtitlesButtonEl,
+                mediaControls.toggleSubtitlesHandler
+            );
             expect(stubs.addListener).to.be.called;
         });
     });
@@ -603,7 +665,10 @@ describe('lib/viewers/media/MediaControls', () => {
             };
             mediaControls.setupScrubbers();
             stubs.handleElAddEventListener = sandbox.stub(mediaControls.timeScrubber.getHandleEl(), 'addEventListener');
-            stubs.getConvertedElAddEventListener = sandbox.stub(mediaControls.timeScrubber.getConvertedEl(), 'addEventListener');
+            stubs.getConvertedElAddEventListener = sandbox.stub(
+                mediaControls.timeScrubber.getConvertedEl(),
+                'addEventListener'
+            );
             stubs.setFilmstrip = sandbox.stub(mediaControls, 'setFilmstrip');
         });
 
@@ -625,9 +690,18 @@ describe('lib/viewers/media/MediaControls', () => {
 
         it('should add the correct eventListeners to the handle and converted time scrubber elements', () => {
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
-            expect(stubs.handleElAddEventListener).to.be.calledWith('mousedown', mediaControls.timeScrubbingStartHandler);
-            expect(stubs.getConvertedElAddEventListener).to.be.calledWith('mousemove', mediaControls.filmstripShowHandler);
-            expect(stubs.getConvertedElAddEventListener).to.be.calledWith('mouseleave', mediaControls.filmstripHideHandler);
+            expect(stubs.handleElAddEventListener).to.be.calledWith(
+                'mousedown',
+                mediaControls.timeScrubbingStartHandler
+            );
+            expect(stubs.getConvertedElAddEventListener).to.be.calledWith(
+                'mousemove',
+                mediaControls.filmstripShowHandler
+            );
+            expect(stubs.getConvertedElAddEventListener).to.be.calledWith(
+                'mouseleave',
+                mediaControls.filmstripHideHandler
+            );
         });
 
         it('should add the onload function to the filmstrip', () => {
@@ -674,11 +748,10 @@ describe('lib/viewers/media/MediaControls', () => {
 
     describe('filmstripShowHandler', () => {
         beforeEach(() => {
-            stubs.getBoundingClientRect = sandbox.stub(mediaControls.containerEl, 'getBoundingClientRect')
-                .returns({
-                    left: 0,
-                    width: 260
-                });
+            stubs.getBoundingClientRect = sandbox.stub(mediaControls.containerEl, 'getBoundingClientRect').returns({
+                left: 0,
+                width: 260
+            });
             stubs.event = {
                 pageX: 100
             };
@@ -725,10 +798,11 @@ describe('lib/viewers/media/MediaControls', () => {
                 duration: 100
             };
             mediaControls.filmstripInterval = 1;
+            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.25);
 
             const positions = mediaControls.computeFilmstripPositions(400, 200, 1000, null);
 
-            expect(positions.time).to.equal(20);
+            expect(positions.time).to.equal(25);
             expect(positions.left).to.equal(0);
             expect(positions.top).to.equal(0);
             expect(positions.containerLeft).to.equal(120);
@@ -739,6 +813,7 @@ describe('lib/viewers/media/MediaControls', () => {
                 duration: 100
             };
             mediaControls.filmstripInterval = 1;
+            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.2);
 
             const positions = mediaControls.computeFilmstripPositions(400, 200, 1000, 16000);
 
@@ -753,6 +828,7 @@ describe('lib/viewers/media/MediaControls', () => {
                 duration: 1100
             };
             mediaControls.filmstripInterval = 1;
+            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.2);
 
             const positions = mediaControls.computeFilmstripPositions(400, 200, 1000, 16000);
 
@@ -767,6 +843,7 @@ describe('lib/viewers/media/MediaControls', () => {
                 duration: 2000
             };
             mediaControls.filmstripInterval = 5;
+            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.6);
 
             const positions = mediaControls.computeFilmstripPositions(800, 200, 1000, 16000);
 
@@ -781,6 +858,7 @@ describe('lib/viewers/media/MediaControls', () => {
                 duration: 100
             };
             mediaControls.filmstripInterval = 1;
+            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.01);
 
             const positions = mediaControls.computeFilmstripPositions(210, 200, 1000, 16000);
 
@@ -795,6 +873,7 @@ describe('lib/viewers/media/MediaControls', () => {
                 duration: 100
             };
             mediaControls.filmstripInterval = 1;
+            sandbox.stub(mediaControls.timeScrubber, 'computeScrubberPosition').returns(0.99);
 
             const positions = mediaControls.computeFilmstripPositions(1190, 200, 1000, 16000);
 
@@ -825,6 +904,15 @@ describe('lib/viewers/media/MediaControls', () => {
 
             mediaControls.filmstripHideHandler();
             expect(mediaControls.filmstripContainerEl.style.display).to.equal('');
+        });
+    });
+
+    describe('initSubtitles()', () => {
+        it('should load subtitles', () => {
+            sandbox.stub(mediaControls.settings, 'loadSubtitles');
+            const subs = ['English', 'Russian'];
+            mediaControls.initSubtitles(subs);
+            expect(mediaControls.settings.loadSubtitles).to.be.calledWith(subs);
         });
     });
 });

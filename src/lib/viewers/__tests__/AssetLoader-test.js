@@ -49,28 +49,34 @@ describe('lib/viewers/AssetLoader', () => {
 
     describe('determineViewer()', () => {
         beforeEach(() => {
-            loader.viewers = [{
-                NAME: 'Adobe',
-                REP: 'pdf',
-                EXT: ['pdf']
-            }, {
-                NAME: 'Document',
-                REP: 'ORIGINAL',
-                EXT: ['pdf']
-            }, {
-                NAME: 'SomeOtherPDFViewer',
-                REP: 'pdf',
-                EXT: ['pdf']
-            }];
+            loader.viewers = [
+                {
+                    NAME: 'Adobe',
+                    REP: 'pdf',
+                    EXT: ['pdf']
+                },
+                {
+                    NAME: 'Document',
+                    REP: 'ORIGINAL',
+                    EXT: ['pdf']
+                },
+                {
+                    NAME: 'SomeOtherPDFViewer',
+                    REP: 'pdf',
+                    EXT: ['pdf']
+                }
+            ];
         });
 
         it('should choose the first viewer that matches by extension and representation', () => {
             const file = {
                 extension: 'pdf',
                 representations: {
-                    entries: [{
-                        representation: 'pdf'
-                    }]
+                    entries: [
+                        {
+                            representation: 'pdf'
+                        }
+                    ]
                 }
             };
 
@@ -82,11 +88,14 @@ describe('lib/viewers/AssetLoader', () => {
             const file = {
                 extension: 'pdf',
                 representations: {
-                    entries: [{
-                        representation: 'ORIGINAL'
-                    }, {
-                        representation: 'pdf'
-                    }]
+                    entries: [
+                        {
+                            representation: 'ORIGINAL'
+                        },
+                        {
+                            representation: 'pdf'
+                        }
+                    ]
                 }
             };
 
@@ -98,11 +107,14 @@ describe('lib/viewers/AssetLoader', () => {
             const file = {
                 extension: 'mp3',
                 representations: {
-                    entries: [{
-                        representation: 'ORIGINAL'
-                    }, {
-                        representation: 'mp3'
-                    }]
+                    entries: [
+                        {
+                            representation: 'ORIGINAL'
+                        },
+                        {
+                            representation: 'mp3'
+                        }
+                    ]
                 }
             };
 
@@ -114,11 +126,14 @@ describe('lib/viewers/AssetLoader', () => {
     describe('determineRepresentation()', () => {
         const file = {
             representations: {
-                entries: [{
-                    representation: 'ORIGINAL'
-                }, {
-                    representation: 'pdf'
-                }]
+                entries: [
+                    {
+                        representation: 'ORIGINAL'
+                    },
+                    {
+                        representation: 'pdf'
+                    }
+                ]
             }
         };
 

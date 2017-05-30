@@ -157,7 +157,9 @@ describe('lib/viewers/text/CSVViewer', () => {
             window.BoxCSV = React.createClass({
                 destroy: sandbox.stub(),
                 renderCSV: sandbox.mock(),
-                render: () => { return ''; }
+                render: () => {
+                    return '';
+                }
             });
             sandbox.stub(csv, 'loadUI');
             sandbox.stub(csv, 'emit');

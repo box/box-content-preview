@@ -1,17 +1,12 @@
 import EventEmitter from 'events';
-import {
-    EVENT_TOGGLE_VR
-} from '../box3DConstants';
-import {
-    ICON_3D_VR
-} from '../../../icons/icons';
+import { EVENT_TOGGLE_VR } from '../box3DConstants';
+import { ICON_3D_VR } from '../../../icons/icons';
 
 const CSS_CLASS_HIDDEN = 'bp-is-hidden';
 const CSS_CLASS_MEDIA_CONTROLS_CONTAINER = 'bp-media-controls-container';
 const CSS_CLASS_MEDIA_CONTROL_BUTTON = 'bp-media-controls-btn';
 
 class Video360Controls extends EventEmitter {
-
     /**
      * Base class for building 3D previews on. Contains events for VR, Fullscreen,
      * Scene Reset, and Scene Loaded. Also, used for programmatic building of control
@@ -111,7 +106,6 @@ class Video360Controls extends EventEmitter {
         this.el = null;
         this.handleToggleVr = null;
     }
-
 }
 
 export default Video360Controls;

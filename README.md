@@ -1,5 +1,5 @@
 ![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg)
-![NPM version](https://img.shields.io/badge/npm-v0.122.0-blue.svg)
+![NPM version](https://img.shields.io/badge/npm-v0.126.1-blue.svg)
 
 [Box Content Preview](https://docs.box.com/docs/box-content-preview)
 ====================================================================
@@ -16,11 +16,11 @@ If you are using Internet Explorer 11, which doesn't natively support promises, 
 
 Current Version
 ---------------
-* Version: v0.122.0
+* Version: v0.126.1
 * Locale: en-US
 
-https://cdn01.boxcdn.net/platform/preview/0.122.0/en-US/preview.js
-https://cdn01.boxcdn.net/platform/preview/0.122.0/en-US/preview.css
+https://cdn01.boxcdn.net/platform/preview/0.126.1/en-US/preview.js
+https://cdn01.boxcdn.net/platform/preview/0.126.1/en-US/preview.css
 
 Supported Locales
 -----------------
@@ -47,8 +47,8 @@ You can self-host the Box Content Preview UI Kit or reference the versions avail
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise"></script>
 
     <!-- Latest version of Preview SDK for your locale -->
-    <script src="https://cdn01.boxcdn.net/platform/preview/0.122.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/0.122.0/en-US/preview.css" />
+    <script src="https://cdn01.boxcdn.net/platform/preview/0.126.1/en-US/preview.js"></script>
+    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/0.126.1/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
@@ -70,7 +70,7 @@ For security purposes, you must whitelist your application's HTTP origin, omitti
 
 Demo
 ----
-View a demo and sample code on CodePen - http://codepen.io/box-platform/pen/KaQbma.
+View a demo and sample code on CodePen - http://codepen.io/box-platform/pen/rmZdjm.
 
 Initialization
 --------------
@@ -298,7 +298,7 @@ Copyright and License
 ---------------------
 Copyright 2016-2017 Box, Inc. All Rights Reserved.
 
-Licensed under the Box SDK License Agreement v.09__17.
+Licensed under the Box Software License Agreement v.05162017.
 You may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 

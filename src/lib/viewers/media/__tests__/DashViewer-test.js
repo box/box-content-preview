@@ -34,6 +34,7 @@ describe('lib/viewers/media/DashViewer', () => {
                 }
             },
             container: containerEl,
+            location: { locale: 'en-US' },
             representation: {
                 content: {
                     url_template: 'url'
@@ -57,9 +58,12 @@ describe('lib/viewers/media/DashViewer', () => {
             destroy: () => {},
             getNetworkingEngine: sandbox.stub().returns(stubs.networkEngine),
             getStats: () => {},
+            getTextTracks: () => {},
             getVariantTracks: () => {},
             load: () => {},
-            selectVariantTrack: () => {}
+            selectTextTrack: () => {},
+            selectVariantTrack: () => {},
+            setTextTrackVisibility: () => {}
         };
         stubs.mockPlayer = sandbox.mock(dash.player);
 
@@ -67,6 +71,7 @@ describe('lib/viewers/media/DashViewer', () => {
             addListener: () => {},
             destroy: () => {},
             initFilmstrip: () => {},
+            initSubtitles: () => {},
             removeAllListeners: () => {},
             removeListener: () => {}
         };
@@ -126,11 +131,14 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
             sandbox.stub(Promise, 'all').returns(stubs.promise);
 
-            return dash.load().then(() => {
-                expect(dash.setup).to.be.called;
-                expect(dash.loadDashPlayer).to.be.called;
-                expect(dash.resetLoadTimeout).to.be.called;
-            }).catch(() => {});
+            return dash
+                .load()
+                .then(() => {
+                    expect(dash.setup).to.be.called;
+                    expect(dash.loadDashPlayer).to.be.called;
+                    expect(dash.resetLoadTimeout).to.be.called;
+                })
+                .catch(() => {});
         });
     });
 
@@ -343,12 +351,17 @@ describe('lib/viewers/media/DashViewer', () => {
         const listenerFunc = DashViewer.prototype.addEventListenersForMediaControls;
 
         afterEach(() => {
-            Object.defineProperty(VideoBaseViewer.prototype, 'addEventListenersForMediaControls', { value: listenerFunc });
+            Object.defineProperty(VideoBaseViewer.prototype, 'addEventListenersForMediaControls', {
+                value: listenerFunc
+            });
         });
 
         it('should add event listeners to the media controls', () => {
-            Object.defineProperty(VideoBaseViewer.prototype, 'addEventListenersForMediaControls', { value: sandbox.mock() });
+            Object.defineProperty(VideoBaseViewer.prototype, 'addEventListenersForMediaControls', {
+                value: sandbox.mock()
+            });
             stubs.mockControls.expects('addListener').withArgs('qualitychange', sinon.match.func);
+            stubs.mockControls.expects('addListener').withArgs('subtitlechange', sinon.match.func);
             dash.addEventListenersForMediaControls();
         });
     });
@@ -361,7 +374,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.showMedia).to.not.be.called;
         });
 
-        it('should load the meta data for the media element, show the media/play button, and focus on mediaContainerEl', () => {
+        it('should load the meta data for the media element, show the media/play button, load subs and set focus', () => {
             sandbox.stub(dash, 'isDestroyed').returns(false);
             sandbox.stub(dash, 'showMedia');
             sandbox.stub(dash, 'calculateVideoDimensions');
@@ -371,11 +384,13 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash, 'handleVolume');
             sandbox.stub(dash, 'startBandwidthTracking');
             sandbox.stub(dash, 'handleQuality');
+            sandbox.stub(dash, 'loadSubtitles');
             sandbox.stub(dash, 'showPlayButton');
 
             dash.loadeddataHandler();
             expect(dash.showMedia).to.be.called;
             expect(dash.showPlayButton).to.be.called;
+            expect(dash.loadSubtitles).to.be.called;
             expect(dash.emit).to.be.calledWith('load');
             expect(dash.loaded).to.be.true;
             expect(document.activeElement).to.equal(dash.mediaContainerEl);
@@ -439,6 +454,129 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should load the film strip', () => {
             dash.loadFilmStrip();
             expect(stubs.createUrl).to.be.called;
+        });
+    });
+
+    describe('loadSubtitles()', () => {
+        it('should translate and initialize subtitles in sorted order if there are available subtitles', () => {
+            const english = { language: 'eng', id: 5 };
+            const russian = { language: 'rus', id: 4 };
+            const spanish = { language: 'spa', id: 6 };
+            const korean = { language: 'kor', id: 3 };
+            const chinese = { language: 'zho', id: 7 };
+            const subs = [english, russian, spanish, korean, chinese];
+            stubs.mockPlayer.expects('getTextTracks').returns(subs);
+            stubs.mockControls
+                .expects('initSubtitles')
+                .withArgs(['Korean', 'Russian', 'English', 'Spanish', 'Chinese'], 'English');
+
+            dash.loadSubtitles();
+
+            expect(dash.textTracks).to.deep.equal([korean, russian, english, spanish, chinese]);
+        });
+
+        it('should be robust to capital iso639 codes', () => {
+            const russian = { language: 'RUS', id: 3 };
+            const spanish = { language: 'spa', id: 4 };
+            const korean = { language: 'KoR', id: 5 };
+            const chinese = { language: 'zHO', id: 6 };
+            const subs = [russian, spanish, korean, chinese];
+            stubs.mockPlayer.expects('getTextTracks').returns(subs);
+            stubs.mockControls
+                .expects('initSubtitles')
+                .withArgs(['Russian', 'Spanish', 'Korean', 'Chinese'], 'English');
+
+            dash.loadSubtitles();
+
+            expect(dash.textTracks).to.deep.equal([russian, spanish, korean, chinese]);
+        });
+
+        it('should pass through unrecognized codes', () => {
+            const russian = { language: 'rus', id: 3 };
+            const foo = { language: 'foo', id: 4 };
+            const und = { language: 'und', id: 5 };
+            const empty = { language: '', id: 6 };
+            const doesntmatter = { language: 'doesntmatter', id: 6 };
+            const zero = { language: '0', id: 7 };
+            const subs = [russian, foo, und, empty, doesntmatter, zero];
+            stubs.mockPlayer.expects('getTextTracks').returns(subs);
+            stubs.mockControls
+                .expects('initSubtitles')
+                .withArgs(['Russian', 'foo', 'und', '', 'doesntmatter', '0'], 'English');
+
+            dash.loadSubtitles();
+
+            expect(dash.textTracks).to.deep.equal([russian, foo, und, empty, doesntmatter, zero]);
+        });
+
+        it('should do nothing if there are no available subtitles', () => {
+            const subs = [];
+            stubs.mockPlayer.expects('getTextTracks').returns(subs);
+            stubs.mockControls.expects('initSubtitles').never();
+
+            dash.loadSubtitles();
+        });
+    });
+
+    describe('handleSubtitle()', () => {
+        it('should select track from front of text track list', () => {
+            const english = { language: 'eng', id: 3 };
+            const russian = { language: 'rus', id: 4 };
+            const french = { language: 'fra', id: 5 };
+            const spanish = { language: 'spa', id: 6 };
+            dash.textTracks = [english, russian, french, spanish];
+            sandbox.stub(cache, 'get').returns('0');
+            stubs.mockPlayer.expects('selectTextTrack').withArgs(english);
+            stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(true);
+
+            dash.handleSubtitle();
+
+            expect(stubs.emit).to.be.calledWith('subtitlechange', 'eng');
+        });
+
+        it('should select track from end of text track list', () => {
+            const english = { language: 'eng', id: 3 };
+            const russian = { language: 'rus', id: 4 };
+            const french = { language: 'fre', id: 5 };
+            const spanish = { language: 'spa', id: 6 };
+            dash.textTracks = [english, russian, french, spanish];
+            sandbox.stub(cache, 'get').returns('3');
+            stubs.mockPlayer.expects('selectTextTrack').withArgs(spanish);
+            stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(true);
+
+            dash.handleSubtitle();
+
+            expect(stubs.emit).to.be.calledWith('subtitlechange', 'spa');
+        });
+
+        it('should select track from middle of text track list', () => {
+            const english = { language: 'eng', id: 3 };
+            const russian = { language: 'rus', id: 4 };
+            const french = { language: 'fre', id: 5 };
+            const spanish = { language: 'spa', id: 6 };
+            dash.textTracks = [english, russian, french, spanish];
+            sandbox.stub(cache, 'get').returns('1');
+            stubs.mockPlayer.expects('selectTextTrack').withArgs(russian);
+            stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(true);
+
+            dash.handleSubtitle();
+
+            expect(stubs.emit).to.be.calledWith('subtitlechange', 'rus');
+        });
+
+        it('should turn off subtitles when idx out of bounds', () => {
+            const english = { language: 'eng', id: 3 };
+            const russian = { language: 'rus', id: 4 };
+            const french = { language: 'fre', id: 5 };
+            const spanish = { language: 'spa', id: 6 };
+            dash.textTracks = [english, russian, french, spanish];
+            sandbox.stub(cache, 'get').returns('-1');
+            stubs.mockPlayer.expects('selectTextTrack').never();
+            stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(false);
+
+            dash.handleSubtitle();
+
+            expect(stubs.emit).to.be.calledWith('subtitlechange', null);
         });
     });
 

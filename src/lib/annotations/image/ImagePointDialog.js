@@ -7,9 +7,7 @@ const PAGE_PADDING_TOP = 15;
 const POINT_ANNOTATION_ICON_HEIGHT = 31;
 const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
 
-@autobind
-class ImagePointDialog extends AnnotationDialog {
-
+@autobind class ImagePointDialog extends AnnotationDialog {
     //--------------------------------------------------------------------------
     // Abstract Implementations
     //--------------------------------------------------------------------------
@@ -21,7 +19,10 @@ class ImagePointDialog extends AnnotationDialog {
      * @return {void}
      */
     position() {
-        const [browserX, browserY] = imageAnnotatorUtil.getBrowserCoordinatesFromLocation(this.location, this.annotatedElement);
+        const [browserX, browserY] = imageAnnotatorUtil.getBrowserCoordinatesFromLocation(
+            this.location,
+            this.annotatedElement
+        );
 
         // Show dialog so we can get width
         this.annotatedElement.appendChild(this.element);
@@ -30,10 +31,12 @@ class ImagePointDialog extends AnnotationDialog {
         const dialogWidth = dialogDimensions.width;
 
         // Get image tag inside viewer, based on page number. All images are page 1 by default.
-        const imageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page || 1}"]`) || this.annotatedElement.querySelector('img');
+        const imageEl =
+            this.annotatedElement.querySelector(`[data-page-number="${this.location.page || 1}"]`) ||
+            this.annotatedElement.querySelector('img');
 
         // Center middle of dialog with point - this coordinate is with respect to the page
-        let dialogLeftX = browserX - (dialogWidth / 2);
+        let dialogLeftX = browserX - dialogWidth / 2;
 
         // Adjusts Y position for transparent top border
         const dialogTopY = browserY + 7;
@@ -41,7 +44,9 @@ class ImagePointDialog extends AnnotationDialog {
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing
         // else we can do
-        const pageWidth = (imageEl.clientWidth > this.annotatedElement.clientWidth) ? imageEl.clientWidth : this.annotatedElement.clientWidth;
+        const pageWidth = imageEl.clientWidth > this.annotatedElement.clientWidth
+            ? imageEl.clientWidth
+            : this.annotatedElement.clientWidth;
         dialogLeftX = annotatorUtil.repositionCaret(this.element, dialogLeftX, dialogWidth, browserX, pageWidth);
 
         // Position the dialog

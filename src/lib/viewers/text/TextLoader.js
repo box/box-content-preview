@@ -34,7 +34,6 @@ const VIEWERS = [
 ];
 
 class TextLoader extends AssetLoader {
-
     /**
      * [constructor]
      *

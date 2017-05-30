@@ -148,8 +148,44 @@
     right: 55px;
 }
 
+.bp-media-cc-icon {
+    position: absolute;
+    right: 100px;
+    visibility: visible;
+
+    .bp-media-settings-subtitles-unavailable & {
+        visibility: hidden;
+    }
+}
+
+.bp-media-controls-cc-icon-text {
+    background-color: rgba($black, .3); // Anything less than .3 looks too transparent on IE/Edge
+    border-radius: 4px;
+    bottom: 2px;
+    color: $white;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    height: 22px;
+    letter-spacing: .1em;
+    line-height: 22px;
+    padding: 0 0 0 1px; // Padding left 1px because text isn't perfectly centered on Safari/Firefox even with text-align:center. Looks fine with extra-padding on Chrome/IE/Edge
+    position: relative; // For lining up the bottom with other buttons in the controls bar
+    width: 24px;
+
+    &:hover {
+        background-color: $box-blue;
+        color: $white;
+    }
+
+    .bp-media-settings-subtitles-on & {
+        background-color: $box-blue;
+        color: $white;
+    }
+}
+
 .bp-media-controls-hd {
-    background: $box-blue;
+    background-color: $box-blue;
     border-radius: 3px;
     display: none;
     font-size: 8px;

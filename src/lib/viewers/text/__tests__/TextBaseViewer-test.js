@@ -124,9 +124,24 @@ describe('lib/viewers/text/TextBaseViewer', () => {
             textBase.loadUI();
             expect(textBase.controls instanceof Controls).to.be.true;
             expect(Controls.prototype.add.callCount).to.equal(4);
-            expect(Controls.prototype.add).to.be.calledWith(sinon.match.string, textBase.zoomOut, sinon.match.string, sinon.match.string);
-            expect(Controls.prototype.add).to.be.calledWith(sinon.match.string, textBase.zoomIn, sinon.match.string, sinon.match.string);
-            expect(Controls.prototype.add).to.be.calledWith(sinon.match.string, textBase.toggleFullscreen, sinon.match.string, sinon.match.string);
+            expect(Controls.prototype.add).to.be.calledWith(
+                sinon.match.string,
+                textBase.zoomOut,
+                sinon.match.string,
+                sinon.match.string
+            );
+            expect(Controls.prototype.add).to.be.calledWith(
+                sinon.match.string,
+                textBase.zoomIn,
+                sinon.match.string,
+                sinon.match.string
+            );
+            expect(Controls.prototype.add).to.be.calledWith(
+                sinon.match.string,
+                textBase.toggleFullscreen,
+                sinon.match.string,
+                sinon.match.string
+            );
         });
     });
 

@@ -1,5 +1,71 @@
 # Change Log
 
+## [v0.126.1](https://github.com/box/box-content-preview/tree/v0.126.1) (2017-05-25)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.126.0...v0.126.1)
+
+**Merged pull requests:**
+
+- Fix: Fixing vanity urls for excel online on IE11 [\#153](https://github.com/box/box-content-preview/pull/153) ([jeremypress](https://github.com/jeremypress))
+- Update: Make media viewer settings menu larger so scrollbars don't show [\#149](https://github.com/box/box-content-preview/pull/149) ([bhh1988](https://github.com/bhh1988))
+- Fix: Reinforcing release script [\#148](https://github.com/box/box-content-preview/pull/148) ([jeremypress](https://github.com/jeremypress))
+- Chore: Fix changelog [\#144](https://github.com/box/box-content-preview/pull/144) ([tonyjin](https://github.com/tonyjin))
+- Chore: Format everything with prettier [\#143](https://github.com/box/box-content-preview/pull/143) ([tonyjin](https://github.com/tonyjin))
+- 692 add toggle for box3d grid [\#138](https://github.com/box/box-content-preview/pull/138) ([MiiBond](https://github.com/MiiBond))
+
+## [v0.126.0](https://github.com/box/box-content-preview/tree/v0.126.0) (2017-05-24)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.125.0...v0.126.0)
+
+**Merged pull requests:**
+
+- Update Translations [\#142](https://github.com/box/box-content-preview/pull/142) ([boxmoji](https://github.com/boxmoji))
+
+## [v0.125.0](https://github.com/box/box-content-preview/tree/v0.125.0) (2017-05-24)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.124.0...v0.125.0)
+
+**Merged pull requests:**
+
+- Build: Update build script to tag release commits [\#141](https://github.com/box/box-content-preview/pull/141) ([tonyjin](https://github.com/tonyjin))
+- Chore: Update prettier line width to 80 [\#139](https://github.com/box/box-content-preview/pull/139) ([tonyjin](https://github.com/tonyjin))
+- Update: Show rate limit specific error message when a 429 occurs [\#137](https://github.com/box/box-content-preview/pull/137) ([jeremypress](https://github.com/jeremypress))
+- Update: Update Box3D with new material default [\#136](https://github.com/box/box-content-preview/pull/136) ([MiiBond](https://github.com/MiiBond))
+- Chore: Update license formatting [\#135](https://github.com/box/box-content-preview/pull/135) ([tonyjin](https://github.com/tonyjin))
+- Settings properties [\#134](https://github.com/box/box-content-preview/pull/134) ([bhh1988](https://github.com/bhh1988))
+- Chore: Add prettier code formatter [\#133](https://github.com/box/box-content-preview/pull/133) ([tonyjin](https://github.com/tonyjin))
+- Update Translations [\#132](https://github.com/box/box-content-preview/pull/132) ([boxmoji](https://github.com/boxmoji))
+- Fix: Seek time doesn't match filmstrip timecode [\#131](https://github.com/box/box-content-preview/pull/131) ([bhh1988](https://github.com/bhh1988))
+- Update: Adding more languages for subtitles [\#130](https://github.com/box/box-content-preview/pull/130) ([bhh1988](https://github.com/bhh1988))
+- Update: Improve subtitle selection algorithm [\#129](https://github.com/box/box-content-preview/pull/129) ([bhh1988](https://github.com/bhh1988))
+- Update: Some UI changes for video player [\#128](https://github.com/box/box-content-preview/pull/128) ([bhh1988](https://github.com/bhh1988))
+- Chore: Deleting old third-party packages [\#127](https://github.com/box/box-content-preview/pull/127) ([tonyjin](https://github.com/tonyjin))
+- Fix: fix excel setup when enabling the Office viewer via options [\#126](https://github.com/box/box-content-preview/pull/126) ([jeremypress](https://github.com/jeremypress))
+- Update Contributing.md [\#125](https://github.com/box/box-content-preview/pull/125) ([varunmaker](https://github.com/varunmaker))
+- Docs: Update license to Box Software License Agreement [\#124](https://github.com/box/box-content-preview/pull/124) ([tonyjin](https://github.com/tonyjin))
+- Update Translations [\#123](https://github.com/box/box-content-preview/pull/123) ([boxmoji](https://github.com/boxmoji))
+
+## [v0.124.0](https://github.com/box/box-content-preview/tree/v0.124.0) (2017-05-17)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.123.0...v0.124.0)
+
+## [v0.123.0](https://github.com/box/box-content-preview/tree/v0.123.0) (2017-05-17)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.122.0...v0.123.0)
+
+**Merged pull requests:**
+
+- Language codes [\#122](https://github.com/box/box-content-preview/pull/122) ([bhh1988](https://github.com/bhh1988))
+- Chore: Remove unnecessary mobile check [\#120](https://github.com/box/box-content-preview/pull/120) ([tonyjin](https://github.com/tonyjin))
+- Docs: Remove unneeded file types from image360 docs [\#119](https://github.com/box/box-content-preview/pull/119) ([MiiBond](https://github.com/MiiBond))
+- Fix: Older versions of webkit iOS incorrectly cache range requests [\#118](https://github.com/box/box-content-preview/pull/118) ([tonyjin](https://github.com/tonyjin))
+- Subtitles [\#117](https://github.com/box/box-content-preview/pull/117) ([bhh1988](https://github.com/bhh1988))
+- Fix: Set media viewers' settings menu dimensions with javascript [\#116](https://github.com/box/box-content-preview/pull/116) ([bhh1988](https://github.com/bhh1988))
+- Chore: Document viewer tweaks [\#114](https://github.com/box/box-content-preview/pull/114) ([tonyjin](https://github.com/tonyjin))
+- Update Translations [\#113](https://github.com/box/box-content-preview/pull/113) ([boxmoji](https://github.com/boxmoji))
+- Chore: Moving common annotation methods into Base classes [\#111](https://github.com/box/box-content-preview/pull/111) ([pramodsum](https://github.com/pramodsum))
+- Upgrade: Upgrade Shaka-player to 2.1.1 [\#110](https://github.com/box/box-content-preview/pull/110) ([bhh1988](https://github.com/bhh1988))
+- Multi image annotator [\#109](https://github.com/box/box-content-preview/pull/109) ([JustinHoldstock](https://github.com/JustinHoldstock))
+- Fix: Issue when 'load' event is fired before BoxAnnotations is loaded [\#108](https://github.com/box/box-content-preview/pull/108) ([pramodsum](https://github.com/pramodsum))
+- Chore: Bundling annotations.css separately from preview.css [\#106](https://github.com/box/box-content-preview/pull/106) ([pramodsum](https://github.com/pramodsum))
+- Fix: Don't rely on preview's script tag being present after execution [\#105](https://github.com/box/box-content-preview/pull/105) ([priyajeet](https://github.com/priyajeet))
+- New: platform excel online fork [\#101](https://github.com/box/box-content-preview/pull/101) ([jeremypress](https://github.com/jeremypress))
+
 ## [v0.122.0](https://github.com/box/box-content-preview/tree/v0.122.0) (2017-05-09)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.121.1...v0.122.0)
 

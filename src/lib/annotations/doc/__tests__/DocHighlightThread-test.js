@@ -137,9 +137,7 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
         it('should hide the add highlight button if the user does not have permissions', () => {
             const plainHighlightThread = new DocHighlightThread({
                 annotatedElement: document.querySelector('.annotated-element'),
-                annotations: [
-                    { permissions: { can_delete: false } }
-                ],
+                annotations: [{ permissions: { can_delete: false } }],
                 annotationService: new AnnotationService({
                     apiHost: 'https://app.box.com/api',
                     fileId: 1,
@@ -166,9 +164,7 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
         it('should display the add highlight button if the user has permissions', () => {
             const plainHighlightThread = new DocHighlightThread({
                 annotatedElement: document.querySelector('.annotated-element'),
-                annotations: [
-                    { permissions: { can_delete: true } }
-                ],
+                annotations: [{ permissions: { can_delete: true } }],
                 annotationService: new AnnotationService({
                     apiHost: 'https://app.box.com/api',
                     fileId: 1,
@@ -488,13 +484,38 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                 map: sandbox.stub()
             };
             highlightThread.location.quadPoints = [quadPoint, quadPoint, quadPoint];
-            const convertStub = sandbox.stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace').returns([0, 0, 0, 0, 0, 0, 0, 0]);
+            const convertStub = sandbox
+                .stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace')
+                .returns([0, 0, 0, 0, 0, 0, 0, 0]);
 
             highlightThread.isInHighlight({ clientX: 0, clientY: 0 });
             expect(pageElStub).to.be.called;
             expect(pageEl.getBoundingClientRect).to.be.called;
             expect(dimensionScaleStub).to.be.called;
             expect(quadPoint.map).to.not.be.called;
+            expect(convertStub).to.be.called;
+        });
+
+        it('should scale points if there is a dimensionScale', () => {
+            const pageEl = {
+                getBoundingClientRect: sandbox.stub()
+            };
+            pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
+            const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(pageEl);
+            const dimensionScaleStub = sandbox.stub(annotatorUtil, 'getDimensionScale').returns(true);
+            const quadPoint = {
+                map: sandbox.stub()
+            };
+            highlightThread.location.quadPoints = [quadPoint, quadPoint, quadPoint];
+            const convertStub = sandbox
+                .stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace')
+                .returns([0, 0, 0, 0, 0, 0, 0, 0]);
+
+            highlightThread.isInHighlight({ clientX: 0, clientY: 0 });
+            expect(pageElStub).to.be.called;
+            expect(pageEl.getBoundingClientRect).to.be.called;
+            expect(dimensionScaleStub).to.be.called;
+            expect(quadPoint.map).to.be.called;
             expect(convertStub).to.be.called;
         });
 
@@ -509,7 +530,9 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                 map: sandbox.stub()
             };
             highlightThread.location.quadPoints = [quadPoint, quadPoint, quadPoint];
-            const convertStub = sandbox.stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace').returns([0, 0, 0, 0, 0, 0, 0, 0]);
+            const convertStub = sandbox
+                .stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace')
+                .returns([0, 0, 0, 0, 0, 0, 0, 0]);
             const pointInPolyStub = sandbox.stub(docAnnotatorUtil, 'isPointInPolyOpt');
 
             highlightThread.isInHighlight({ clientX: 0, clientY: 0 });

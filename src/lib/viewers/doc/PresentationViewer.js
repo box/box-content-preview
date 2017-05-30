@@ -19,9 +19,7 @@ const WHEEL_THROTTLE = 200;
 const PADDING_OFFSET = 30;
 const SCROLL_EVENT_OFFSET = 5;
 
-@autobind
-class PresentationViewer extends DocBaseViewer {
-
+@autobind class PresentationViewer extends DocBaseViewer {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
@@ -192,14 +190,29 @@ class PresentationViewer extends DocBaseViewer {
         this.controls.add(__('zoom_out'), this.zoomOut, 'bp-exit-zoom-out-icon', ICON_ZOOM_OUT);
         this.controls.add(__('zoom_in'), this.zoomIn, 'bp-enter-zoom-in-icon', ICON_ZOOM_IN);
 
-        this.controls.add(__('previous_page'), this.previousPage, 'bp-presentation-previous-page-icon bp-previous-page', ICON_DROP_UP);
+        this.controls.add(
+            __('previous_page'),
+            this.previousPage,
+            'bp-presentation-previous-page-icon bp-previous-page',
+            ICON_DROP_UP
+        );
 
         const buttonContent = pageNumTemplate.replace(/>\s*</g, '><'); // removing new lines
         this.controls.add(__('enter_page_num'), this.showPageNumInput, 'bp-doc-page-num', buttonContent);
 
-        this.controls.add(__('next_page'), this.nextPage, 'bp-presentation-next-page-icon bp-next-page', ICON_DROP_DOWN);
+        this.controls.add(
+            __('next_page'),
+            this.nextPage,
+            'bp-presentation-next-page-icon bp-next-page',
+            ICON_DROP_DOWN
+        );
 
-        this.controls.add(__('enter_fullscreen'), this.toggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
+        this.controls.add(
+            __('enter_fullscreen'),
+            this.toggleFullscreen,
+            'bp-enter-fullscreen-icon',
+            ICON_FULLSCREEN_IN
+        );
         this.controls.add(__('exit_fullscreen'), this.toggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
     }
 
@@ -211,7 +224,12 @@ class PresentationViewer extends DocBaseViewer {
      */
     mobileScrollHandler(event) {
         // don't want to handle scroll if zoomed, if nothing has changed, or a touch move event which fixes intertia scroll bounce on iOS
-        if (this.checkOverflow() || !event.changedTouches || event.changedTouches.length === 0 || event.type === 'touchmove') {
+        if (
+            this.checkOverflow() ||
+            !event.changedTouches ||
+            event.changedTouches.length === 0 ||
+            event.type === 'touchmove'
+        ) {
             event.preventDefault();
             return;
         }
@@ -260,7 +278,6 @@ class PresentationViewer extends DocBaseViewer {
         this.setPage(e.pageNumber);
         super.pagechangeHandler(e);
     }
-
 
     /**
      * Handles zoom logic around opening the find bar.
@@ -311,10 +328,12 @@ class PresentationViewer extends DocBaseViewer {
         // elements since we lay out presentations differently
         this.pdfViewer._getVisiblePages = () => {
             const currentPageObj = this.pdfViewer._pages[this.pdfViewer._currentPageNumber - 1];
-            const visible = [{
-                id: currentPageObj.id,
-                view: currentPageObj
-            }];
+            const visible = [
+                {
+                    id: currentPageObj.id,
+                    view: currentPageObj
+                }
+            ];
 
             return {
                 first: currentPageObj,

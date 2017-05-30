@@ -40,7 +40,8 @@ describe('lib/annotations/image/ImagePointThread', () => {
 
             expect(imageAnnotatorUtil.getBrowserCoordinatesFromLocation).to.have.been.calledWith(
                 pointThread.location,
-                pointThread.annotatedElement);
+                pointThread.annotatedElement
+            );
             expect(annotatorUtil.showElement).to.have.been.calledWith(pointThread.element);
         });
 

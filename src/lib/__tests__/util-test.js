@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import 'isomorphic-fetch';
+import 'whatwg-fetch';
 import fetchMock from 'fetch-mock';
 import * as util from '../util';
 
@@ -245,7 +245,9 @@ describe('lib/util', () => {
             const url = 'foo';
             const token = 'sometoken';
             const sharedLink = 'someSharedLink';
-            expect(util.appendAuthParams(url, token, sharedLink)).to.equal(`${url}?access_token=${token}&shared_link=${sharedLink}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`);
+            expect(util.appendAuthParams(url, token, sharedLink)).to.equal(
+                `${url}?access_token=${token}&shared_link=${sharedLink}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`
+            );
         });
 
         it('should return correct url with password', () => {
@@ -253,7 +255,9 @@ describe('lib/util', () => {
             const token = 'sometoken';
             const sharedLink = 'someSharedLink';
             const sharedLinkPassword = 'somePass';
-            expect(util.appendAuthParams(url, token, sharedLink, sharedLinkPassword)).to.equal(`foobar?access_token=${token}&shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`);
+            expect(util.appendAuthParams(url, token, sharedLink, sharedLinkPassword)).to.equal(
+                `foobar?access_token=${token}&shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`
+            );
         });
     });
     /* eslint-enable no-undef */
@@ -366,79 +370,121 @@ describe('lib/util', () => {
                 assert.equal(loc.staticBaseURI, 'https://hostname:100/path/');
             });
             it('should throw an error when foobar.js is not found', () => {
-                expect(() => util.findScriptLocation('fobar.js')).to.throw(Error, /Missing or malformed fobar.js library/);
+                expect(() => util.findScriptLocation('fobar.js')).to.throw(
+                    Error,
+                    /Missing or malformed fobar.js library/
+                );
             });
             it('should throw an error when foobar.js is not found via script tag', () => {
                 const script = document.querySelector('script[src*="/file.js"]');
-                expect(() => util.findScriptLocation('fobar.js', script)).to.throw(Error, /Missing or malformed fobar.js library/);
+                expect(() => util.findScriptLocation('fobar.js', script)).to.throw(
+                    Error,
+                    /Missing or malformed fobar.js library/
+                );
             });
         });
     });
 
     describe('decodeKeydown()', () => {
         it('should return empty when no key', () => {
-            assert.equal(util.decodeKeydown({
-                key: ''
-            }), '');
+            assert.equal(
+                util.decodeKeydown({
+                    key: ''
+                }),
+                ''
+            );
         });
         it('should return empty when modifier and key are same', () => {
-            assert.equal(util.decodeKeydown({
-                key: 'Control',
-                ctrlKey: true
-            }), '');
+            assert.equal(
+                util.decodeKeydown({
+                    key: 'Control',
+                    ctrlKey: true
+                }),
+                ''
+            );
         });
         it('should return correct with ctrl modifier', () => {
-            assert.equal(util.decodeKeydown({
-                key: '1',
-                ctrlKey: true
-            }), 'Control+1');
+            assert.equal(
+                util.decodeKeydown({
+                    key: '1',
+                    ctrlKey: true
+                }),
+                'Control+1'
+            );
         });
         it('should return correct with shift modifier', () => {
-            assert.equal(util.decodeKeydown({
-                key: '1',
-                shiftKey: true
-            }), 'Shift+1');
+            assert.equal(
+                util.decodeKeydown({
+                    key: '1',
+                    shiftKey: true
+                }),
+                'Shift+1'
+            );
         });
         it('should return correct with meta modifier', () => {
-            assert.equal(util.decodeKeydown({
-                key: '1',
-                metaKey: true
-            }), 'Meta+1');
+            assert.equal(
+                util.decodeKeydown({
+                    key: '1',
+                    metaKey: true
+                }),
+                'Meta+1'
+            );
         });
         it('should return space key', () => {
-            assert.equal(util.decodeKeydown({
-                key: ' '
-            }), 'Space');
+            assert.equal(
+                util.decodeKeydown({
+                    key: ' '
+                }),
+                'Space'
+            );
         });
         it('should return right arrow key', () => {
-            assert.equal(util.decodeKeydown({
-                key: 'Right'
-            }), 'ArrowRight');
+            assert.equal(
+                util.decodeKeydown({
+                    key: 'Right'
+                }),
+                'ArrowRight'
+            );
         });
         it('should return left arrow key', () => {
-            assert.equal(util.decodeKeydown({
-                key: 'Left'
-            }), 'ArrowLeft');
+            assert.equal(
+                util.decodeKeydown({
+                    key: 'Left'
+                }),
+                'ArrowLeft'
+            );
         });
         it('should return up arrow key', () => {
-            assert.equal(util.decodeKeydown({
-                key: 'Up'
-            }), 'ArrowUp');
+            assert.equal(
+                util.decodeKeydown({
+                    key: 'Up'
+                }),
+                'ArrowUp'
+            );
         });
         it('should return down arrow key', () => {
-            assert.equal(util.decodeKeydown({
-                key: 'Down'
-            }), 'ArrowDown');
+            assert.equal(
+                util.decodeKeydown({
+                    key: 'Down'
+                }),
+                'ArrowDown'
+            );
         });
         it('should return esc key', () => {
-            assert.equal(util.decodeKeydown({
-                key: 'U+001B'
-            }), 'Escape');
+            assert.equal(
+                util.decodeKeydown({
+                    key: 'U+001B'
+                }),
+                'Escape'
+            );
         });
         it('should decode correct UTF8 key', () => {
-            assert.equal(util.decodeKeydown({
-                key: 'U+0041'
-            }), 'A');
+            assert.equal(
+                util.decodeKeydown({
+                    key: 'U+0041'
+                }),
+                'A'
+            );
         });
     });
 

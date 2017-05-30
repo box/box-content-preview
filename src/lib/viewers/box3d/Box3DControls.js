@@ -1,24 +1,13 @@
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import Controls from '../../Controls';
-import {
-    EVENT_RESET,
-    EVENT_SCENE_LOADED,
-    EVENT_TOGGLE_FULLSCREEN,
-    EVENT_TOGGLE_VR
-} from './box3DConstants';
-import {
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT,
-    ICON_3D_VR
-} from '../../icons/icons';
+import { EVENT_RESET, EVENT_SCENE_LOADED, EVENT_TOGGLE_FULLSCREEN, EVENT_TOGGLE_VR } from './box3DConstants';
+import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_3D_VR } from '../../icons/icons';
 
 import { CLASS_HIDDEN } from '../../constants';
 import { UIRegistry } from './Box3DUIUtils';
 
-@autobind
-class Box3DControls extends EventEmitter {
-
+@autobind class Box3DControls extends EventEmitter {
     /**
      * Base class for building 3D previews on. Contains events for VR, Fullscreen,
      * Scene Reset, and Scene Loaded. Also, used for programmatic building of control
@@ -54,8 +43,18 @@ class Box3DControls extends EventEmitter {
      * @return {void}
      */
     addFullscreenButton() {
-        this.controls.add(__('enter_fullscreen'), this.handleToggleFullscreen, 'bp-enter-fullscreen-icon', ICON_FULLSCREEN_IN);
-        this.controls.add(__('exit_fullscreen'), this.handleToggleFullscreen, 'bp-exit-fullscreen-icon', ICON_FULLSCREEN_OUT);
+        this.controls.add(
+            __('enter_fullscreen'),
+            this.handleToggleFullscreen,
+            'bp-enter-fullscreen-icon',
+            ICON_FULLSCREEN_IN
+        );
+        this.controls.add(
+            __('exit_fullscreen'),
+            this.handleToggleFullscreen,
+            'bp-exit-fullscreen-icon',
+            ICON_FULLSCREEN_OUT
+        );
     }
 
     /**
@@ -167,7 +166,6 @@ class Box3DControls extends EventEmitter {
         this.controls = null;
         this.uiRegistry = null;
     }
-
 }
 
 export default Box3DControls;

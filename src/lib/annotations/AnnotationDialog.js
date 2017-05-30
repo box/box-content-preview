@@ -4,12 +4,9 @@ import * as annotatorUtil from './annotatorUtil';
 import * as constants from './annotationConstants';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 import { decodeKeydown } from '../util';
-import { ICON_DELETE } from '../icons/icons';
+import { ICON_CLOSE, ICON_DELETE } from '../icons/icons';
 
-
-@autobind
-class AnnotationDialog extends EventEmitter {
-
+@autobind class AnnotationDialog extends EventEmitter {
     //--------------------------------------------------------------------------
     // Typedef
     //--------------------------------------------------------------------------
@@ -67,9 +64,28 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     show() {
-        const textAreaEl = this.hasAnnotations ?
-            this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA) :
-            this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+        // Populate mobile annotations dialog with annotations information
+        if (this.isMobile) {
+            this.element = document.querySelector(`.${constants.CLASS_MOBILE_ANNOTATION_DIALOG}`);
+            annotatorUtil.showElement(this.element);
+            this.element.appendChild(this.dialogEl);
+
+            if (this.highlightDialogEl && !this.hasComments) {
+                this.element.classList.add('bp-plain-highlight');
+
+                const headerEl = this.element.querySelector('.bp-annotation-mobile-header');
+                headerEl.classList.add(CLASS_HIDDEN);
+            }
+
+            const dialogCloseButtonEl = this.element.querySelector('.bp-annotation-dialog-close');
+            dialogCloseButtonEl.addEventListener('click', this.hideMobileDialog);
+
+            this.bindDOMListeners();
+        }
+
+        const textAreaEl = this.hasAnnotations
+            ? this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA)
+            : this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
 
         // Don't re-position if reply textarea is already active
         const textareaIsActive = textAreaEl.classList.contains(CLASS_ACTIVE);
@@ -79,7 +95,9 @@ class AnnotationDialog extends EventEmitter {
 
         // Position and show - we need to reposition every time since the DOM
         // could have changed from zooming
-        this.position();
+        if (!this.isMobile) {
+            this.position();
+        }
 
         // Activate appropriate textarea
         if (this.hasAnnotations) {
@@ -106,12 +124,38 @@ class AnnotationDialog extends EventEmitter {
     }
 
     /**
+     * Hides and resets the shared mobile dialog.
+     *
+     * @return {void}
+     */
+    hideMobileDialog() {
+        if (!this.element) {
+            return;
+        }
+
+        // Clear annotations from dialog
+        this.element.innerHTML = `
+            <div class="bp-annotation-mobile-header">
+                <button class="bp-annotation-dialog-close">${ICON_CLOSE}</button>
+            </div>`.trim();
+        this.element.classList.remove('bp-plain-highlight');
+
+        const dialogCloseButtonEl = this.element.querySelector('.bp-annotation-dialog-close');
+        dialogCloseButtonEl.removeEventListener('click', this.hideMobileDialog);
+
+        annotatorUtil.hideElement(this.element);
+    }
+
+    /**
      * Hides the dialog.
      *
      * @param {boolean} [noDelay] - Whether or not to have a timeout delay
      * @return {void}
      */
     hide() {
+        if (this.isMobile) {
+            this.hideMobileDialog();
+        }
         annotatorUtil.hideElement(this.element);
         this.deactivateReply();
     }
@@ -174,52 +218,28 @@ class AnnotationDialog extends EventEmitter {
      */
     setup(annotations) {
         // Generate HTML of dialog
-        this.element = document.createElement('div');
-        this.element.setAttribute('data-type', 'annotation-dialog');
-        this.element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
-        this.element.innerHTML = `
-            <div class="bp-annotation-caret"></div>
-            <div class="annotation-container">
-                <section class="${annotations.length ? CLASS_HIDDEN : ''}" data-section="create">
-                    <textarea class="bp-textarea annotation-textarea"
-                        placeholder="${__('annotation_add_comment_placeholder')}"></textarea>
-                    <div class="button-container">
-                        <button class="bp-btn cancel-annotation-btn" data-type="cancel-annotation-btn">
-                            ${__('annotation_cancel')}
-                        </button>
-                        <button class="bp-btn bp-btn-primary post-annotation-btn" data-type="post-annotation-btn">
-                            ${__('annotation_post')}
-                        </button>
-                    </div>
-                </section>
-                <section class="${annotations.length ? '' : CLASS_HIDDEN}" data-section="show">
-                    <div class="annotation-comments"></div>
-                    <div class="reply-container">
-                        <textarea class="bp-textarea reply-textarea"
-                            placeholder="${__('annotation_reply_placeholder')}" data-type="reply-textarea"></textarea>
-                        <div class="button-container ${CLASS_HIDDEN}">
-                            <button class="bp-btn cancel-annotation-btn" data-type="cancel-reply-btn">
-                                ${__('annotation_cancel')}
-                            </button>
-                            <button class="bp-btn bp-btn-primary post-annotation-btn" data-type="post-reply-btn">
-                                ${__('annotation_post')}
-                            </button>
-                        </div>
-                    </div>
-                </section>
-            </section>`.trim();
+        this.dialogEl = this.generateDialogEl(annotations.length);
+        this.dialogEl.classList.add('annotation-container');
 
-        // Adding thread number to dialog
-        if (annotations.length > 0) {
-            this.element.dataset.threadNumber = annotations[0].thread;
+        if (!this.isMobile) {
+            this.element = document.createElement('div');
+            this.element.setAttribute('data-type', 'annotation-dialog');
+            this.element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
+            this.element.innerHTML = '<div class="bp-annotation-caret"></div>';
+            this.element.appendChild(this.dialogEl);
+
+            // Adding thread number to dialog
+            if (annotations.length > 0) {
+                this.element.dataset.threadNumber = annotations[0].thread;
+            }
+
+            this.bindDOMListeners();
         }
 
         // Add annotation elements
         annotations.forEach((annotation) => {
             this.addAnnotationElement(annotation);
         });
-
-        this.bindDOMListeners();
     }
 
     /**
@@ -232,9 +252,12 @@ class AnnotationDialog extends EventEmitter {
         this.element.addEventListener('keydown', this.keydownHandler);
         this.element.addEventListener('click', this.clickHandler);
         this.element.addEventListener('mouseup', this.stopPropagation);
-        this.element.addEventListener('mouseenter', this.mouseenterHandler);
-        this.element.addEventListener('mouseleave', this.mouseleaveHandler);
         this.element.addEventListener('wheel', this.stopPropagation);
+
+        if (!this.isMobile) {
+            this.element.addEventListener('mouseenter', this.mouseenterHandler);
+            this.element.addEventListener('mouseleave', this.mouseleaveHandler);
+        }
     }
 
     /**
@@ -247,9 +270,12 @@ class AnnotationDialog extends EventEmitter {
         this.element.removeEventListener('keydown', this.keydownHandler);
         this.element.removeEventListener('click', this.clickHandler);
         this.element.removeEventListener('mouseup', this.stopPropagation);
-        this.element.removeEventListener('mouseenter', this.mouseenterHandler);
-        this.element.removeEventListener('mouseleave', this.mouseleaveHandler);
         this.element.removeEventListener('wheel', this.stopPropagation);
+
+        if (!this.isMobile) {
+            this.element.removeEventListener('mouseenter', this.mouseenterHandler);
+            this.element.removeEventListener('mouseleave', this.mouseleaveHandler);
+        }
     }
 
     /**
@@ -336,38 +362,31 @@ class AnnotationDialog extends EventEmitter {
             case 'post-annotation-btn':
                 this.postAnnotation();
                 break;
-
             // Clicking 'Cancel' button to cancel the annotation
             case 'cancel-annotation-btn':
                 this.cancelAnnotation();
                 this.deactivateReply(true);
                 break;
-
             // Clicking inside reply text area
             case 'reply-textarea':
                 this.activateReply();
                 break;
-
             // Canceling a reply
             case 'cancel-reply-btn':
                 this.deactivateReply(true);
                 break;
-
             // Clicking 'Post' button to create a reply annotation
             case 'post-reply-btn':
                 this.postReply();
                 break;
-
             // Clicking trash icon to initiate deletion
             case 'delete-btn':
                 this.showDeleteConfirmation(annotationID);
                 break;
-
             // Clicking 'Cancel' button to cancel deletion
             case 'cancel-delete-btn':
                 this.hideDeleteConfirmation(annotationID);
                 break;
-
             // Clicking 'Delete' button to confirm deletion
             case 'confirm-delete-btn': {
                 this.deleteAnnotation(annotationID);
@@ -403,9 +422,13 @@ class AnnotationDialog extends EventEmitter {
 
         const avatarUrl = annotatorUtil.htmlEscape(annotation.user.avatarUrl || '');
         const avatarHtml = annotatorUtil.getAvatarHtml(avatarUrl, userId, userName);
-        const created = new Date(annotation.created).toLocaleString(
-            this.locale, { month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }
-        );
+        const created = new Date(annotation.created).toLocaleString(this.locale, {
+            month: '2-digit',
+            day: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
         const text = annotatorUtil.htmlEscape(annotation.text);
 
         const annotationEl = document.createElement('div');
@@ -435,7 +458,7 @@ class AnnotationDialog extends EventEmitter {
                 </div>
             </div>`.trim();
 
-        const annotationContainerEl = this.element.querySelector(constants.SELECTOR_COMMENTS_CONTAINER);
+        const annotationContainerEl = this.dialogEl.querySelector(constants.SELECTOR_COMMENTS_CONTAINER);
         annotationContainerEl.appendChild(annotationEl);
     }
 
@@ -473,7 +496,11 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     activateReply() {
-        const replyTextEl = this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+        if (!this.dialogEl) {
+            return;
+        }
+
+        const replyTextEl = this.dialogEl.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
 
         // Don't activate if reply textarea is already active
         const isActive = replyTextEl.classList.contains(CLASS_ACTIVE);
@@ -486,8 +513,10 @@ class AnnotationDialog extends EventEmitter {
         annotatorUtil.showElement(replyButtonEls);
 
         // Auto scroll annotations dialog to bottom where new comment was added
-        const annotationsEl = this.element.querySelector('.annotation-container');
-        annotationsEl.scrollTop = annotationsEl.scrollHeight - annotationsEl.clientHeight;
+        const annotationsEl = this.dialogEl.querySelector('.annotation-container');
+        if (annotationsEl) {
+            annotationsEl.scrollTop = annotationsEl.scrollHeight - annotationsEl.clientHeight;
+        }
     }
 
     /**
@@ -498,12 +527,12 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     deactivateReply(clearText) {
-        if (!this.element) {
+        if (!this.dialogEl) {
             return;
         }
 
-        const replyTextEl = this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
-        const replyButtonEls = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
+        const replyTextEl = this.dialogEl.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+        const replyButtonEls = this.dialogEl.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
         annotatorUtil.resetTextarea(replyTextEl, clearText);
         annotatorUtil.hideElement(replyButtonEls);
 
@@ -512,8 +541,10 @@ class AnnotationDialog extends EventEmitter {
         }
 
         // Auto scroll annotations dialog to bottom where new comment was added
-        const annotationsEl = this.element.querySelector('.annotation-container');
-        annotationsEl.scrollTop = annotationsEl.scrollHeight - annotationsEl.clientHeight;
+        const annotationsEl = this.dialogEl.querySelector('.annotation-container');
+        if (annotationsEl) {
+            annotationsEl.scrollTop = annotationsEl.scrollHeight - annotationsEl.clientHeight;
+        }
     }
 
     /**
@@ -575,6 +606,46 @@ class AnnotationDialog extends EventEmitter {
      */
     deleteAnnotation(annotationID) {
         this.emit('annotationdelete', { annotationID });
+    }
+
+    /**
+     * Generates the annotation dialog DOM element
+     *
+     * @private
+     * @param {number} numAnnotations - length of annotations array
+     * @return {HTMLElement} Annotation dialog DOM element
+     */
+    generateDialogEl(numAnnotations) {
+        const dialogEl = document.createElement('div');
+        dialogEl.innerHTML = `
+            <section class="${numAnnotations ? CLASS_HIDDEN : ''}" data-section="create">
+                <textarea class="bp-textarea annotation-textarea"
+                    placeholder="${__('annotation_add_comment_placeholder')}"></textarea>
+                <div class="button-container">
+                    <button class="bp-btn cancel-annotation-btn" data-type="cancel-annotation-btn">
+                        ${__('annotation_cancel')}
+                    </button>
+                    <button class="bp-btn bp-btn-primary post-annotation-btn" data-type="post-annotation-btn">
+                        ${__('annotation_post')}
+                    </button>
+                </div>
+            </section>
+            <section class="${numAnnotations ? '' : CLASS_HIDDEN}" data-section="show">
+                <div class="annotation-comments"></div>
+                <div class="reply-container">
+                    <textarea class="bp-textarea reply-textarea"
+                        placeholder="${__('annotation_reply_placeholder')}" data-type="reply-textarea"></textarea>
+                    <div class="button-container ${CLASS_HIDDEN}">
+                        <button class="bp-btn cancel-annotation-btn" data-type="cancel-reply-btn">
+                            ${__('annotation_cancel')}
+                        </button>
+                        <button class="bp-btn bp-btn-primary post-annotation-btn" data-type="post-reply-btn">
+                            ${__('annotation_post')}
+                        </button>
+                    </div>
+                </div>
+            </section>`.trim();
+        return dialogEl;
     }
 }
 

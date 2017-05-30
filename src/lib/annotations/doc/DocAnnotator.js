@@ -7,7 +7,6 @@ import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 /* eslint-enable no-unused-vars */
 import autobind from 'autobind-decorator';
 import Annotator from '../Annotator';
-import Browser from '../../Browser';
 import DocHighlightThread from './DocHighlightThread';
 import DocPointThread from './DocPointThread';
 import * as annotatorUtil from '../annotatorUtil';
@@ -45,9 +44,7 @@ function isThreadInHoverState(thread) {
     return constants.HOVER_STATES.indexOf(thread.state) > 1;
 }
 
-@autobind
-class DocAnnotator extends Annotator {
-
+@autobind class DocAnnotator extends Annotator {
     /**
      * For tracking the most recent event fired by mouse move event.
      *
@@ -130,8 +127,15 @@ class DocAnnotator extends Annotator {
             const pageDimensions = pageEl.getBoundingClientRect();
             const pageWidth = pageDimensions.width;
             const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
-            const browserCoordinates = [event.clientX - pageDimensions.left, event.clientY - pageDimensions.top - PAGE_PADDING_TOP];
-            const pdfCoordinates = docAnnotatorUtil.convertDOMSpaceToPDFSpace(browserCoordinates, pageHeight, zoomScale);
+            const browserCoordinates = [
+                event.clientX - pageDimensions.left,
+                event.clientY - pageDimensions.top - PAGE_PADDING_TOP
+            ];
+            const pdfCoordinates = docAnnotatorUtil.convertDOMSpaceToPDFSpace(
+                browserCoordinates,
+                pageHeight,
+                zoomScale
+            );
             const [x, y] = pdfCoordinates;
 
             // We save the dimensions of the annotated element scaled to 100%
@@ -211,6 +215,7 @@ class DocAnnotator extends Annotator {
             annotations,
             annotationService: this.annotationService,
             fileVersionId: this.fileVersionId,
+            isMobile: this.isMobile,
             locale: this.locale,
             location,
             type
@@ -271,10 +276,12 @@ class DocAnnotator extends Annotator {
 
         // Init rangy and rangy highlight
         this.highlighter = rangy.createHighlighter();
-        this.highlighter.addClassApplier(rangy.createClassApplier('rangy-highlight', {
-            ignoreWhiteSpace: true,
-            tagNames: ['span', 'a']
-        }));
+        this.highlighter.addClassApplier(
+            rangy.createClassApplier('rangy-highlight', {
+                ignoreWhiteSpace: true,
+                tagNames: ['span', 'a']
+            })
+        );
     }
 
     /**
@@ -418,7 +425,6 @@ class DocAnnotator extends Annotator {
         // Kickstart event process loop.
         highlightLoop();
 
-
         return this.highlightMousemoveHandler;
     }
 
@@ -448,7 +454,10 @@ class DocAnnotator extends Annotator {
             const thread = pageThreads[i];
             // Determine if any highlight threads on page are pending or active
             // and ignore hover events of any highlights below
-            if (thread.state === constants.ANNOTATION_STATE_PENDING || thread.state === constants.ANNOTATION_STATE_ACTIVE) {
+            if (
+                thread.state === constants.ANNOTATION_STATE_PENDING ||
+                thread.state === constants.ANNOTATION_STATE_ACTIVE
+            ) {
                 return;
             }
 
@@ -490,8 +499,11 @@ class DocAnnotator extends Annotator {
      * @return {void}
      */
     onHighlightMouseMove(event) {
-        if (!this.didMouseMove && (Math.abs(event.clientX - this.mouseX) > MOUSE_MOVE_MIN_DISTANCE
-            || Math.abs(event.clientY - this.mouseY) > MOUSE_MOVE_MIN_DISTANCE)) {
+        if (
+            !this.didMouseMove &&
+            (Math.abs(event.clientX - this.mouseX) > MOUSE_MOVE_MIN_DISTANCE ||
+                Math.abs(event.clientY - this.mouseY) > MOUSE_MOVE_MIN_DISTANCE)
+        ) {
             this.didMouseMove = true;
         }
 
@@ -517,7 +529,7 @@ class DocAnnotator extends Annotator {
         // event we would listen to, selectionchange, fires continuously and
         // is unreliable. If the mouse moved or we double clicked text,
         // we trigger the create handler instead of the click handler
-        if (!Browser.isMobile() && (this.didMouseMove || event.type === 'dblclick')) {
+        if (!this.isMobile && (this.didMouseMove || event.type === 'dblclick')) {
             this.highlightCreateHandler(event);
         } else {
             this.highlightClickHandler(event);
@@ -546,7 +558,9 @@ class DocAnnotator extends Annotator {
         // Only filter through highlight threads on the current page
         // Reset active highlight threads before creating new highlight
         const page = annotatorUtil.getPageElAndPageNumber(event.target).page;
-        const activeThreads = this.getHighlightThreadsOnPage(page).filter((thread) => constants.ACTIVE_STATES.indexOf(thread.state) > -1);
+        const activeThreads = this.getHighlightThreadsOnPage(page).filter(
+            (thread) => constants.ACTIVE_STATES.indexOf(thread.state) > -1
+        );
         activeThreads.forEach((thread) => {
             thread.reset();
         });
@@ -622,9 +636,12 @@ class DocAnnotator extends Annotator {
 
         Object.keys(this.threads).forEach((page) => {
             // Concat threads with a matching state to array we're returning
-            [].push.apply(threads, this.threads[page].filter((thread) => {
-                return states.indexOf(thread.state) > -1;
-            }));
+            [].push.apply(
+                threads,
+                this.threads[page].filter((thread) => {
+                    return states.indexOf(thread.state) > -1;
+                })
+            );
         });
 
         return threads;

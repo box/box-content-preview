@@ -1,4 +1,4 @@
-/* global Box3D, THREE */
+/* global THREE */
 import autobind from 'autobind-decorator';
 
 /** The various object manipulation modes supported. */
@@ -13,7 +13,6 @@ const buttonMap = {
     grabObject: 1,
     grabWorld: 2
 };
-
 
 /**
  * Model3DVrControls
@@ -72,7 +71,12 @@ class Model3DVrControls {
         this.vrWorkMatrix.getInverse(threeNewParent.matrixWorld);
         threeObject.applyMatrix(this.vrWorkMatrix);
         object.setPosition(threeObject.position.x, threeObject.position.y, threeObject.position.z);
-        object.setQuaternion(threeObject.quaternion.x, threeObject.quaternion.y, threeObject.quaternion.z, threeObject.quaternion.w);
+        object.setQuaternion(
+            threeObject.quaternion.x,
+            threeObject.quaternion.y,
+            threeObject.quaternion.z,
+            threeObject.quaternion.w
+        );
         object.setScale(threeObject.scale.x, threeObject.scale.y, threeObject.scale.z);
         newParent.addChild(object);
     }
@@ -97,8 +101,7 @@ class Model3DVrControls {
      * Update the scale of the object each frame based on controller positions.
      * @return {void}
      */
-    @autobind
-    onScaleUpdate() {
+    @autobind onScaleUpdate() {
         this.vrGamepads[0].getPosition(this.vrWorkVector1);
         this.vrGamepads[1].getPosition(this.vrWorkVector2);
         const currentScaleDistance = this.vrWorkVector1.sub(this.vrWorkVector2).length();
@@ -143,7 +146,7 @@ class Model3DVrControls {
             this.endTranslation();
             this.controllerState.controlType = controlType.None;
             this.controllerState.selectedObject = null;
-        // If we were scaling, transition back to translation.
+            // If we were scaling, transition back to translation.
         } else if (this.controllerState.controlType === controlType.Scale) {
             this.controllerState.controlType = controlType.Translation;
             this.endScale();

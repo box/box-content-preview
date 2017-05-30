@@ -102,22 +102,12 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
 
     describe('isPointInPolyOpt()', () => {
         it('should return true if point is inside polygon', () => {
-            const polygon = [
-                [0, 0],
-                [100, 0],
-                [100, 100],
-                [0, 100]
-            ];
+            const polygon = [[0, 0], [100, 0], [100, 100], [0, 100]];
             assert.ok(isPointInPolyOpt(polygon, 50, 50));
         });
 
         it('should return false if point is outside polygon', () => {
-            const polygon = [
-                [0, 0],
-                [100, 0],
-                [100, 100],
-                [0, 100]
-            ];
+            const polygon = [[0, 0], [100, 0], [100, 100], [0, 100]];
             assert.ok(!isPointInPolyOpt(polygon, 120, 50));
         });
     });
@@ -177,10 +167,7 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
     });
 
     describe('getLowerRightCornerOfLastQuadPoint()', () => {
-        const quadPoints = [
-            [0, 10, 10, 10, 10, 20, 0, 20],
-            [0, 0, 10, 0, 10, 10, 0, 10]
-        ];
+        const quadPoints = [[0, 10, 10, 10, 10, 20, 0, 20], [0, 0, 10, 0, 10, 10, 0, 10]];
 
         assert.equal(getLowerRightCornerOfLastQuadPoint(quadPoints).toString(), [10, 0].toString());
     });

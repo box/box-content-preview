@@ -17,17 +17,20 @@ const ROTATION_THRICE_DEG = -270;
  */
 export function getRotatedLocation(x, y, rotation, imageDimensions, scale) {
     const { height, width } = imageDimensions;
+    const scaledWidth = width / scale;
+    const scaledHeight = height / scale;
 
     switch (rotation) {
         case ROTATION_ONCE_DEG:
-            return [y, (height / scale) - x];
+            return [y, scaledHeight - x];
         case ROTATION_TWICE_DEG:
-            return [(width / scale) - x, (height / scale) - y];
+            return [scaledWidth - x, scaledHeight - y];
         case ROTATION_THRICE_DEG:
-            return [(width / scale) - y, x];
+            return [scaledWidth - y, x];
         default:
             break;
     }
+
     return [x, y];
 }
 
@@ -46,11 +49,11 @@ export function getLocationWithoutRotation(x, y, rotation, imageDimensions, scal
 
     switch (rotation) {
         case ROTATION_ONCE_DEG:
-            return [(width / scale) - y, x];
+            return [width / scale - y, x];
         case ROTATION_TWICE_DEG:
-            return [(width / scale) - x, (height / scale) - y];
+            return [width / scale - x, height / scale - y];
         case ROTATION_THRICE_DEG:
-            return [y, (height / scale) - x];
+            return [y, height / scale - x];
         default:
             break;
     }
@@ -65,7 +68,7 @@ export function getLocationWithoutRotation(x, y, rotation, imageDimensions, scal
  * @return {number} Number of pixels above the image
  */
 export function getRotatedPadding(imageEl, isRotated) {
-    return (isRotated ? imageEl.offsetLeft - (IMAGE_PADDING * 3 / 2) : imageEl.offsetTop);
+    return isRotated ? imageEl.offsetLeft - IMAGE_PADDING * 3 / 2 : imageEl.offsetTop;
 }
 
 /**
@@ -77,7 +80,9 @@ export function getRotatedPadding(imageEl, isRotated) {
  * @return {number[]} [x,y] browser coordinates
  */
 export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
-    const imageEl = annotatedElement.querySelector(`[data-page-number="${location.page || 1}"]`) || annotatedElement.querySelector('img');
+    const imageEl =
+        annotatedElement.querySelector(`[data-page-number="${location.page || 1}"]`) ||
+        annotatedElement.querySelector('img');
     const wrapperDimensions = annotatedElement.getBoundingClientRect();
     const imageDimensions = imageEl.getBoundingClientRect();
     const scale = annotatorUtil.getScale(annotatedElement);
@@ -88,23 +93,7 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
 
     // Adjust annotation location if image is rotated
     const rotation = Number(imageEl.getAttribute('data-rotation-angle'));
-    const isRotated = Math.abs(rotation) % 180 === 90;
     let [x, y] = getRotatedLocation(location.x, location.y, rotation, imageDimensions, scale);
-
-    // Get scale coordinates for new image size
-    const topRotatedPadding = getRotatedPadding(imageEl, isRotated);
-    const rotatedDimensions = {
-        x: location.dimensions.y,
-        y: location.dimensions.x
-    };
-    const dimensions = (isRotated) ? rotatedDimensions : location.dimensions;
-    const dimensionScale = annotatorUtil.getDimensionScale(dimensions, imageDimensions, scale, topRotatedPadding);
-
-    // Scale coordinates to new image size
-    if (dimensionScale) {
-        x *= dimensionScale.x;
-        y *= dimensionScale.y;
-    }
 
     x *= scale;
     y *= scale;

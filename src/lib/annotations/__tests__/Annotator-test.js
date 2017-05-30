@@ -21,6 +21,7 @@ describe('lib/annotations/Annotator', () => {
             container: document,
             annotationService: {},
             fileVersionId: 1,
+            isMobile: false,
             options: {}
         });
 
@@ -85,20 +86,39 @@ describe('lib/annotations/Annotator', () => {
     });
 
     describe('init()', () => {
-        it('should set scale and setup annotations', () => {
+        beforeEach(() => {
             const annotatedEl = document.querySelector('.annotated-element');
             sandbox.stub(annotator, 'getAnnotatedEl').returns(annotatedEl);
-            const scaleStub = sandbox.stub(annotator, 'setScale');
-            const setupAnnotations = sandbox.stub(annotator, 'setupAnnotations');
-            const showAnnotations = sandbox.stub(annotator, 'showAnnotations');
+
+            stubs.scale = sandbox.stub(annotator, 'setScale');
+            stubs.setup = sandbox.stub(annotator, 'setupAnnotations');
+            stubs.show = sandbox.stub(annotator, 'showAnnotations');
+            stubs.setupMobileDialog = sandbox.stub(annotator, 'setupMobileDialog');
             annotator.canAnnotate = true;
+        });
 
+        it('should set scale and setup annotations', () => {
             annotator.init();
-
-            expect(scaleStub).to.be.called;
-            expect(setupAnnotations).to.be.called;
-            expect(showAnnotations).to.be.called;
+            expect(stubs.scale).to.be.called;
+            expect(stubs.setup).to.be.called;
+            expect(stubs.show).to.be.called;
             expect(annotator.annotationService).to.not.be.null;
+        });
+
+        it('should setup mobile dialog for mobile browsers', () => {
+            annotator.isMobile = true;
+            annotator.init();
+            expect(stubs.setupMobileDialog).to.be.called;
+        });
+    });
+
+    describe('setupMobileDialog()', () => {
+        it('should generate mobile annotations dialog and append to container', () => {
+            annotator.container = {
+                appendChild: sandbox.mock()
+            };
+            annotator.setupMobileDialog();
+            expect(annotator.container.appendChild).to.be.called;
         });
     });
 
@@ -246,7 +266,7 @@ describe('lib/annotations/Annotator', () => {
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
                 expect(annotator.notification.show).to.be.called;
-                expect(annotator.emit).to.be.calledWith('pointmodeenter');
+                expect(annotator.emit).to.be.calledWith('annotationmodeenter');
                 expect(annotatedEl).to.have.class(constants.CLASS_ANNOTATION_POINT_MODE);
                 expect(annotator.unbindDOMListeners).to.be.called;
                 expect(annotator.bindPointModeListeners).to.be.called;
@@ -261,7 +281,7 @@ describe('lib/annotations/Annotator', () => {
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
                 expect(annotator.notification.hide).to.be.called;
-                expect(annotator.emit).to.be.calledWith('pointmodeexit');
+                expect(annotator.emit).to.be.calledWith('annotationmodeexit');
                 expect(annotatedEl).to.not.have.class(constants.CLASS_ANNOTATION_POINT_MODE);
                 expect(annotator.unbindPointModeListeners).to.be.called;
                 expect(annotator.bindDOMListeners).to.be.called;
@@ -297,6 +317,13 @@ describe('lib/annotations/Annotator', () => {
                     expect(result).to.be.an.object;
                 });
             });
+
+            it('should emit a message to indicate that all annotations have been fetched', () => {
+                annotator.fetchAnnotations();
+                return stubs.threadPromise.then(() => {
+                    expect(annotator.emit).to.be.calledWith('annotationsfetched');
+                });
+            });
         });
 
         describe('bindCustomListenersOnService', () => {
@@ -323,7 +350,6 @@ describe('lib/annotations/Annotator', () => {
                 expect(addListenerStub).to.be.calledWith('annotationerror', sinon.match.func);
             });
         });
-
 
         describe('unbindCustomListenersOnService', () => {
             it('should do nothing if the service does not exist', () => {
@@ -370,7 +396,10 @@ describe('lib/annotations/Annotator', () => {
             it('should bind point mode click handler', () => {
                 sandbox.stub(annotator.annotatedElement, 'addEventListener');
                 annotator.bindPointModeListeners();
-                expect(annotator.annotatedElement.addEventListener).to.be.calledWith('click', annotator.pointClickHandler);
+                expect(annotator.annotatedElement.addEventListener).to.be.calledWith(
+                    'click',
+                    annotator.pointClickHandler
+                );
             });
         });
 
@@ -378,7 +407,10 @@ describe('lib/annotations/Annotator', () => {
             it('should unbind point mode click handler', () => {
                 sandbox.stub(annotator.annotatedElement, 'removeEventListener');
                 annotator.unbindPointModeListeners();
-                expect(annotator.annotatedElement.removeEventListener).to.be.calledWith('click', annotator.pointClickHandler);
+                expect(annotator.annotatedElement.removeEventListener).to.be.calledWith(
+                    'click',
+                    annotator.pointClickHandler
+                );
             });
         });
 

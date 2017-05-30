@@ -13,9 +13,7 @@ const MEDIA_VOLUME_CACHE_KEY = 'media-volume';
 const MEDIA_VOLUME_INCREMENT = 0.05;
 const EMIT_WAIT_TIME_IN_MILLIS = 100;
 
-
-@autobind
-class MediaBaseViewer extends BaseViewer {
+@autobind class MediaBaseViewer extends BaseViewer {
     /**
      * @inheritdoc
      */
@@ -99,9 +97,12 @@ class MediaBaseViewer extends BaseViewer {
             this.mediaEl.autoplay = true;
         }
 
-        return this.getRepStatus().getPromise().then(() => {
-            this.mediaEl.src = this.mediaUrl;
-        }).catch(this.handleAssetError);
+        return this.getRepStatus()
+            .getPromise()
+            .then(() => {
+                this.mediaEl.src = this.mediaUrl;
+            })
+            .catch(this.handleAssetError);
     }
 
     /**
@@ -166,7 +167,7 @@ class MediaBaseViewer extends BaseViewer {
         }
 
         this.emit('error', error);
-    }
+    };
 
     /**
      * Handler for playback rate
@@ -560,6 +561,10 @@ class MediaBaseViewer extends BaseViewer {
             case 'm':
             case 'shift+m':
                 this.toggleMute();
+                break;
+            case 'c':
+            case 'shift+c':
+                this.mediaControls.toggleSubtitles();
                 break;
             default:
                 return false;

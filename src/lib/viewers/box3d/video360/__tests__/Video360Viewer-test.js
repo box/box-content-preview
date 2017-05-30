@@ -1,12 +1,8 @@
-/* global BoxSDK */
 /* eslint-disable no-unused-expressions */
 import Video360Viewer from '../Video360Viewer';
 import Video360Controls from '../Video360Controls';
 import Video360Renderer from '../Video360Renderer';
-import {
-    EVENT_TOGGLE_VR,
-    EVENT_SHOW_VR_BUTTON
-} from '../../box3DConstants';
+import { EVENT_TOGGLE_VR, EVENT_SHOW_VR_BUTTON } from '../../box3DConstants';
 import JS from '../../box3DAssets';
 import sceneEntities from '../SceneEntities';
 import fullscreen from '../../../../Fullscreen';
@@ -31,8 +27,8 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
         imageId: 'VIDEO_ID',
         minFilter: 'linear',
         magFilter: 'linear',
-        uMapping: 'clamp',
-        vMapping: 'clamp'
+        wrapModeV: 'clampToEdge',
+        wrapModeU: 'clampToEdge'
     };
 
     let viewer;

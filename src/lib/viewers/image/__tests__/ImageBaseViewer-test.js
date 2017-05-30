@@ -382,11 +382,10 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             sandbox.stub(document, 'addEventListener');
             stubs.listeners = imageBase.imageEl.addEventListener;
-            stubs.isMobile = sandbox.stub(Browser, 'isMobile').returns(true);
+            imageBase.isMobile = true;
         });
 
         it('should bind all default image listeners', () => {
-            stubs.isMobile.returns(false);
             imageBase.bindDOMListeners();
             expect(stubs.listeners).to.have.been.calledWith('mousedown', imageBase.handleMouseDown);
             expect(stubs.listeners).to.have.been.calledWith('mouseup', imageBase.handleMouseUp);
@@ -419,13 +418,11 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.imageEl.removeEventListener = sandbox.stub();
             stubs.listeners = imageBase.imageEl.removeEventListener;
             stubs.documentListener = sandbox.stub(document, 'removeEventListener');
-            stubs.isMobile = sandbox.stub(Browser, 'isMobile').returns(true);
+            imageBase.isMobile = true;
         });
-
 
         it('should unbind all default image listeners if imageEl does not exist', () => {
             imageBase.imageEl = null;
-            stubs.isMobile.returns(false);
 
             imageBase.unbindDOMListeners();
             expect(stubs.listeners).to.not.be.calledWith('mousedown', imageBase.handleMouseDown);
@@ -441,7 +438,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         });
 
         it('should unbind all document listeners', () => {
-            stubs.isMobile.returns(false);
             imageBase.unbindDOMListeners();
             expect(stubs.documentListener).to.be.calledWith('mousemove', imageBase.pan);
             expect(stubs.documentListener).to.be.calledWith('mouseup', imageBase.stopPanning);
@@ -466,7 +462,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             sandbox.mock(window.console).expects('error').withArgs(err);
 
             imageBase.errorHandler(err);
-
 
             err.displayMessage = 'We\'re sorry, the preview didn\'t load. Please refresh the page.';
             expect(stubs.emit).to.have.been.calledWith('error', err);

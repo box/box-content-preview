@@ -15,8 +15,8 @@ const VIDEO_TEXTURE_PROPS = {
     imageId: VIDEO_ID,
     minFilter: 'linear',
     magFilter: 'linear',
-    uMapping: 'clamp',
-    vMapping: 'clamp'
+    wrapModeV: 'clampToEdge',
+    wrapModeU: 'clampToEdge'
 };
 
 class Video360Viewer extends DashViewer {
@@ -90,21 +90,18 @@ class Video360Viewer extends DashViewer {
      *
      * @inheritdoc
      */
-    @autobind
-    loadeddataHandler() {
+    @autobind loadeddataHandler() {
         const { token, apiHost } = this.options;
         this.renderer = new Video360Renderer(this.mediaContainerEl, new BoxSDK({ token, apiBase: apiHost }));
         this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
         this.renderer.staticBaseURI = this.options.location.staticBaseURI;
         this.options.sceneEntities = sceneEntities;
-        this.renderer.initBox3d(this.options)
-            .then(this.create360Environment)
-            .then(() => {
-                // calling super.loadeddataHandler() will ready video playback
-                super.loadeddataHandler();
-                this.createControls();
-                this.renderer.initVr();
-            });
+        this.renderer.initBox3d(this.options).then(this.create360Environment).then(() => {
+            // calling super.loadeddataHandler() will ready video playback
+            super.loadeddataHandler();
+            this.createControls();
+            this.renderer.initVr();
+        });
     }
 
     /**
@@ -132,8 +129,7 @@ class Video360Viewer extends DashViewer {
     /**
      * @inheritdoc
      */
-    @autobind
-    resize() {
+    @autobind resize() {
         super.resize();
         if (this.renderer) {
             this.renderer.resize();
@@ -147,17 +143,19 @@ class Video360Viewer extends DashViewer {
      * @private
      * @return {void}
      */
-    @autobind
-    create360Environment() {
+    @autobind create360Environment() {
         this.skybox = this.renderer.getScene().getComponentByScriptId('skybox_renderer');
 
-        this.videoAsset = this.renderer.getBox3D().createVideo({
-            loop: false,
-            generateMipmaps: false,
-            querySelector: `.${this.mediaContainerEl.className} video`,
-            autoPlay: false,
-            muted: false
-        }, VIDEO_ID);
+        this.videoAsset = this.renderer.getBox3D().createVideo(
+            {
+                loop: false,
+                generateMipmaps: false,
+                querySelector: `.${this.mediaContainerEl.className} video`,
+                autoPlay: false,
+                muted: false
+            },
+            VIDEO_ID
+        );
 
         // Texture props references the ID of the video texture created above, "VIDEO_ID"
         this.textureAsset = this.renderer.getBox3D().createTexture2d(VIDEO_TEXTURE_PROPS, 'VIDEO_TEX_ID');
@@ -175,8 +173,7 @@ class Video360Viewer extends DashViewer {
     /**
      * @inheritdoc
      */
-    @autobind
-    toggleFullscreen() {
+    @autobind toggleFullscreen() {
         fullscreen.toggle(this.wrapperEl);
     }
 
@@ -185,8 +182,7 @@ class Video360Viewer extends DashViewer {
      *
      * @return {void}
      */
-    @autobind
-    handleToggleVr() {
+    @autobind handleToggleVr() {
         this.renderer.toggleVr();
 
         if (!this.renderer.vrEnabled) {
@@ -206,8 +202,7 @@ class Video360Viewer extends DashViewer {
      *
      * @return {void}
      */
-    @autobind
-    handleShowVrButton() {
+    @autobind handleShowVrButton() {
         this.controls.showVrButton();
     }
 
@@ -216,8 +211,7 @@ class Video360Viewer extends DashViewer {
      *
      * @return {void}
      */
-    @autobind
-    onCanvasMouseDown() {
+    @autobind onCanvasMouseDown() {
         this.renderer.getBox3D().once('mouseUp', this.onCanvasMouseUp);
     }
 
@@ -226,12 +220,10 @@ class Video360Viewer extends DashViewer {
      *
      * @return {void}
      */
-    @autobind
-    onCanvasMouseUp() {
+    @autobind onCanvasMouseUp() {
         const input = this.renderer.getInputController();
         // Make sure the mouse hasn't moved (within mouse/touch buffer drag allowance)
-        if (!input.getPreviousMouseDragState() &&
-            !input.getPreviousTouchDragState()) {
+        if (!input.getPreviousMouseDragState() && !input.getPreviousTouchDragState()) {
             this.togglePlay();
         }
     }

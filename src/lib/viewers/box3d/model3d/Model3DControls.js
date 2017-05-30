@@ -11,6 +11,7 @@ import {
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
+    EVENT_SET_GRID_VISIBLE,
     EVENT_TOGGLE_ANIMATION,
     EVENT_TOGGLE_HELPERS,
     RENDER_MODE_LIT
@@ -18,13 +19,7 @@ import {
 
 import { CSS_CLASS_HIDDEN } from '../box3DConstants';
 
-import {
-    ICON_3D_RESET,
-    ICON_ANIMATION,
-    ICON_GEAR,
-    ICON_PAUSE,
-    ICON_PLAY
-} from '../../../icons/icons';
+import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from '../../../icons/icons';
 
 /**
  * Model3dControls
@@ -32,8 +27,7 @@ import {
  * Render Mode selection, VR and fullscreen buttons.
  * @class
  */
-@autobind
-class Model3DControls extends Box3DControls {
+@autobind class Model3DControls extends Box3DControls {
     /**
      * Creates UI and handles events for 3D Model Preview
      * @constructor
@@ -54,8 +48,18 @@ class Model3DControls extends Box3DControls {
 
         // Animation controls
         this.animationClipsPullup.addListener(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
-        this.animationToggleEl = this.controls.add(__('box3d_toggle_animation'), this.handleToggleAnimation, '', ICON_PLAY);
-        this.animationClipButtonEl = this.controls.add(__('box3d_animation_clips'), this.handleToggleAnimationClips, '', ICON_ANIMATION);
+        this.animationToggleEl = this.controls.add(
+            __('box3d_toggle_animation'),
+            this.handleToggleAnimation,
+            '',
+            ICON_PLAY
+        );
+        this.animationClipButtonEl = this.controls.add(
+            __('box3d_animation_clips'),
+            this.handleToggleAnimationClips,
+            '',
+            ICON_ANIMATION
+        );
         this.animationClipButtonEl.parentNode.appendChild(this.animationClipsPullup.pullupEl);
         this.hideAnimationControls();
 
@@ -67,6 +71,7 @@ class Model3DControls extends Box3DControls {
         this.settingsPullup.addListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
         this.settingsPullup.addListener(EVENT_SET_SKELETONS_VISIBLE, this.handleSetSkeletonsVisible);
         this.settingsPullup.addListener(EVENT_SET_WIREFRAMES_VISIBLE, this.handleSetWireframesVisible);
+        this.settingsPullup.addListener(EVENT_SET_GRID_VISIBLE, this.handleSetGridVisible);
         this.settingsPullup.addListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
         this.settingsPullup.addListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.addListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
@@ -127,6 +132,16 @@ class Model3DControls extends Box3DControls {
      */
     handleSetWireframesVisible(visible) {
         this.emit(EVENT_SET_WIREFRAMES_VISIBLE, visible);
+    }
+
+    /**
+     * Handle a change in grid visibility
+     * @param {boolean} visible - Indicates whether or not the grid is visible
+     * @return {void}
+     */
+    handleSetGridVisible(visible) {
+        this.emit(EVENT_SET_GRID_VISIBLE, visible);
+        this.settingsPullup.setGridVisible(visible);
     }
 
     /**
@@ -300,6 +315,7 @@ class Model3DControls extends Box3DControls {
         this.settingsPullup.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
         this.settingsPullup.removeListener(EVENT_SET_SKELETONS_VISIBLE, this.handleSetSkeletonsVisible);
         this.settingsPullup.removeListener(EVENT_SET_WIREFRAMES_VISIBLE, this.handleSetWireframesVisible);
+        this.settingsPullup.removeListener(EVENT_SET_GRID_VISIBLE, this.handleSetGridVisible);
         this.settingsPullup.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
         this.settingsPullup.removeListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.removeListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);

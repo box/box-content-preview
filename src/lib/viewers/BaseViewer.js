@@ -30,8 +30,21 @@ const ANNOTATIONS_CSS = ['annotations.css'];
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
-@autobind
-class BaseViewer extends EventEmitter {
+@autobind class BaseViewer extends EventEmitter {
+    /**
+     * Rotation value in degrees of the document, if rotated.
+     * 
+     * @property {number}
+     */
+    rotationAngle = 0;
+
+    /**
+     * Scale amount of the document, if zoomed.
+     * 
+     * @property {number}
+     */
+    scale = 1;
+
     /**
      * [constructor]
      *
@@ -43,6 +56,7 @@ class BaseViewer extends EventEmitter {
         super();
         this.options = options;
         this.repStatuses = [];
+        this.isMobile = Browser.isMobile();
     }
 
     /**
@@ -67,7 +81,7 @@ class BaseViewer extends EventEmitter {
         this.loadTimeout = LOAD_TIMEOUT_MS;
 
         // For mobile browsers add mobile class just in case viewers need it
-        if (Browser.isMobile()) {
+        if (this.isMobile) {
             this.containerEl.classList.add(CLASS_BOX_PREVIEW_MOBILE);
         }
 
@@ -158,7 +172,7 @@ class BaseViewer extends EventEmitter {
                 this.triggerError();
             }
         }, this.loadTimeout);
-    }
+    };
 
     /**
      * Emits an error when an asset (static or representation) fails to load.
@@ -169,7 +183,7 @@ class BaseViewer extends EventEmitter {
     handleAssetError = () => {
         this.triggerError();
         this.destroyed = true;
-    }
+    };
 
     /**
      * Emits error event with refresh message.
@@ -180,7 +194,7 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     triggerError(err) {
-        this.emit('error', (err instanceof Error) ? err : new Error(__('error_refresh')));
+        this.emit('error', err instanceof Error ? err : new Error(__('error_refresh')));
     }
 
     /**
@@ -275,24 +289,11 @@ class BaseViewer extends EventEmitter {
             this.resize();
         });
 
-        // Add a custom listener for events related to scaling/orientation changes
-        this.addListener('scale', (scale, rotationAngle) => {
-            if (this.annotator) {
-                this.annotator.setScale(scale);
-                this.annotator.rotateAnnotations(rotationAngle);
-            }
-        });
-
         // Add a resize handler for the window
         document.defaultView.addEventListener('resize', this.debouncedResizeHandler);
 
-        /* istanbul ignore next */
-        this.addListener('togglepointannotationmode', () => {
-            this.annotator.togglePointModeHandler();
-        });
-
         this.addListener('load', () => {
-            if (this.areAnnotationsEnabled()) {
+            if (this.annotationsPromise) {
                 this.annotationsPromise.then(this.loadAnnotator);
             }
         });
@@ -417,11 +418,17 @@ class BaseViewer extends EventEmitter {
             } else {
                 // calculating the distances between the initial and ending pinch positions
                 const initialDistance = Math.sqrt(
-                    ((this._pinchScale.initial[0][0] - this._pinchScale.initial[1][0]) * (this._pinchScale.initial[0][0] - this._pinchScale.initial[1][0])) +
-                    ((this._pinchScale.initial[0][1] - this._pinchScale.initial[1][1]) * (this._pinchScale.initial[0][1] - this._pinchScale.initial[1][1])));
+                    (this._pinchScale.initial[0][0] - this._pinchScale.initial[1][0]) *
+                        (this._pinchScale.initial[0][0] - this._pinchScale.initial[1][0]) +
+                        (this._pinchScale.initial[0][1] - this._pinchScale.initial[1][1]) *
+                            (this._pinchScale.initial[0][1] - this._pinchScale.initial[1][1])
+                );
                 const finalDistance = Math.sqrt(
-                    ((this._pinchScale.end[0][0] - this._pinchScale.end[1][0]) * (this._pinchScale.end[0][0] - this._pinchScale.end[1][0])) +
-                    ((this._pinchScale.end[0][1] - this._pinchScale.end[1][1]) * (this._pinchScale.end[0][1] - this._pinchScale.end[1][1])));
+                    (this._pinchScale.end[0][0] - this._pinchScale.end[1][0]) *
+                        (this._pinchScale.end[0][0] - this._pinchScale.end[1][0]) +
+                        (this._pinchScale.end[0][1] - this._pinchScale.end[1][1]) *
+                            (this._pinchScale.end[0][1] - this._pinchScale.end[1][1])
+                );
                 zoomScale = finalDistance - initialDistance;
             }
 
@@ -548,12 +555,25 @@ class BaseViewer extends EventEmitter {
             const { file } = this.options;
 
             // Users can currently only view annotations on mobile
-            this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE) && !Browser.isMobile();
+            this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE) && !this.isMobile;
             if (this.canAnnotate) {
                 this.showAnnotateButton(this.getPointModeClickHandler());
             }
             this.initAnnotations();
         }
+    }
+
+    /**
+     * Orient anntations to the correct scale and orientatio of the annotated document.
+     * @TODO(jholdstock|spramod): Remove this once we are emitting the correct messaging.
+     * 
+     * @protected
+     * @param {Object} data - Scale and orientation values needed to orient annotations.
+     * @return {void}
+     */
+    scaleAnnotations(data) {
+        this.annotator.setScale(data.scale);
+        this.annotator.rotateAnnotations(data.rotationAngle);
     }
 
     /**
@@ -576,16 +596,29 @@ class BaseViewer extends EventEmitter {
                 token
             },
             fileVersionId,
+            isMobile: this.isMobile,
             locale: location.locale
         });
         this.annotator.init();
 
         // Disables controls during point annotation mode
-        /* istanbul ignore next */
         this.annotator.addListener('annotationmodeenter', this.disableViewerControls);
 
-        /* istanbul ignore next */
         this.annotator.addListener('annotationmodeexit', this.enableViewerControls);
+
+        this.addListener('togglepointannotationmode', () => {
+            this.annotator.togglePointModeHandler();
+        });
+
+        // Add a custom listener for events related to scaling/orientation changes
+        this.addListener('scale', this.scaleAnnotations.bind(this));
+
+        this.annotator.addListener('annotationsfetched', () => {
+            this.scaleAnnotations({
+                scale: this.scale,
+                rotationAngle: this.rotationAngle
+            });
+        });
     }
 
     /**

@@ -108,7 +108,6 @@ $avatar-color-9: #f22c44;
     cursor: default; // Overrides cursor: none from annotation mode
     position: absolute;
     text-align: left;
-    width: 282px; // Hard-coded width to solve layout issues
     z-index: 9999; // Annotation dialog should be above other content
 
     .annotation-container {
@@ -119,6 +118,7 @@ $avatar-color-9: #f22c44;
         overflow-y: auto;
         padding: 15px;
         white-space: normal;
+        width: 282px; // Hard-coded width to solve layout issues
     }
 
     .bp-textarea {
@@ -438,3 +438,5 @@ $avatar-color-9: #f22c44;
 .bp-point-annotation-mode .textLayer .endOfContent {
     pointer-events: none;
 }
+
+@import './MobileAnnotator';

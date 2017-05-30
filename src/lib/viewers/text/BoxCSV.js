@@ -9,8 +9,7 @@ const WIDTH_SCROLLER = 5;
 const WIDTH_COLUMN = 160;
 const WIDTH_BORDER = 2;
 
-@autobind
-class BoxCSV {
+@autobind class BoxCSV {
     /**
      * [constructor]
      *
@@ -58,8 +57,12 @@ class BoxCSV {
      */
     cellRenderer = ({ columnIndex, key, rowIndex, style }) => {
         const rowClass = this.getRowClassName(rowIndex);
-        return <div className={`${rowClass} bp-text-csv-cell`} key={key} style={style}>{this.data[rowIndex][columnIndex]}</div>;
-    }
+        return (
+            <div className={`${rowClass} bp-text-csv-cell`} key={key} style={style}>
+                {this.data[rowIndex][columnIndex]}
+            </div>
+        );
+    };
     /* eslint-enable react/prop-types */
 
     /**

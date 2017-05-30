@@ -13,8 +13,30 @@ minor_release=false
 patch_release=false
 
 
-lint_and_test() {
-    yarn run lint && yarn run test
+reset_to_master() {
+    # Update to latest code on Github master
+    git checkout master || return 1
+
+    # Wipe tags
+    git tag -l | xargs git tag -d || return 1
+
+    # Add the upstream remote if it is not present
+    if ! git remote get-url github-upstream; then
+        git remote add github-upstream git@github.com:box/box-content-preview.git || return 1
+    fi
+
+    # Fetch latest code with tags
+    git fetch --tags github-upstream || return 1;
+
+    # Reset to latest code and clear unstashed changes
+    git reset --hard github-upstream/master || return 1
+    git clean -f  || return 1
+}
+
+
+build_lint_and_test() {
+    # The build command includes linting
+    yarn run build && yarn run test || return 1
 }
 
 
@@ -57,7 +79,7 @@ update_changelog() {
         echo "----------------------------------------------------"
         echo "Error: Could not update the CHANGELOG for this version"
         echo "----------------------------------------------------"
-        exit 1
+        return 1
     fi
 }
 
@@ -79,7 +101,7 @@ update_readme() {
 
 push_to_github() {
     # Add new files
-    git commit -am $VERSION
+    git commit -am "Release: $VERSION"
 
     # Force update tag after updating files
     git tag -a v$VERSION -m $VERSION
@@ -97,40 +119,30 @@ push_to_github() {
         echo "----------------------------------------------------"
         echo "Error while pushing version" $VERSION "to git"
         echo "----------------------------------------------------"
-        exit 1
+        return 1
     fi
 }
 
 
-# Check out latest code from git, build assets, increment version, and push t
+# Check out latest code from git, build assets, increment version, and push tags
 push_new_release() {
-    # Update to latest code on Github master
-    git checkout master || exit 1
+    # Get latest commited code and tags
+    reset_to_master || return 1
 
-    if git remote get-url github-upstream; then
-        git fetch --tags github-upstream;
-    else
-       git remote add github-upstream git@github.com:box/box-content-preview.git
-       git fetch --tags github-upstream;
-    fi;
-
-    git reset --hard github-upstream/master || exit 1
-    git clean -f || exit 1
-
-    # Run linting and tests
-    lint_and_test
+    # Run build script, linting, and tests
+    build_lint_and_test || return 1
 
     # Bump the version number
-    increment_version
+    increment_version || return 1
 
     # Update changelog
-    update_changelog
+    update_changelog || return 1
 
     # Update readme
-    update_readme
+    update_readme || return 1
 
     # Push to Github
-    push_to_github
+    push_to_github || return 1
 }
 
 
@@ -152,5 +164,19 @@ if ! push_new_release; then
     echo "----------------------------------------------------"
     echo "Error while pushing new release!"
     echo "----------------------------------------------------"
+
+    echo "----------------------------------------------------"
+    echo "Cleaning workspace by checking out master and removing tags"
+    echo "----------------------------------------------------"
+
+    if ! reset_to_master; then
+        echo "----------------------------------------------------"
+        echo "Error while cleaning workspace!"
+        echo "----------------------------------------------------"
+    else
+        echo "----------------------------------------------------"
+        echo "Workspace succesfully cleaned!"
+        echo "----------------------------------------------------"
+    fi;
     exit 1
 fi

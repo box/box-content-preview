@@ -17,7 +17,6 @@ const ANNOTATORS = [
 ];
 
 class BoxAnnotations {
-
     /**
      * [constructor]
      *
@@ -44,8 +43,8 @@ class BoxAnnotations {
      * @return {Object} The annotator to use
      */
     determineAnnotator(viewer, disabledAnnotators = []) {
-        return this.annotators.find((annotator) =>
-            !(disabledAnnotators.includes(annotator.NAME)) && annotator.VIEWER.includes(viewer)
+        return this.annotators.find(
+            (annotator) => !disabledAnnotators.includes(annotator.NAME) && annotator.VIEWER.includes(viewer)
         );
     }
 }

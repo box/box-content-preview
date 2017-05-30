@@ -32,7 +32,7 @@ const MIN_SCALE = 0.1;
 const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const IS_SAFARI_CLASS = 'is-safari';
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
-const SCROLL_END_TIMEOUT = Browser.isMobile() ? 500 : 250;
+const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
 
 const RANGE_REQUEST_CHUNK_SIZE_US = 1048576; // 1MB
 const RANGE_REQUEST_CHUNK_SIZE_NON_US = 524288; // 512KB
@@ -40,9 +40,7 @@ const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 5242880; // 5MB
 const DISABLE_RANGE_REQUEST_EXENSIONS = ['xls', 'xlsm', 'xlsx'];
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 
-@autobind
-class DocBaseViewer extends BaseViewer {
-
+@autobind class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
@@ -60,8 +58,6 @@ class DocBaseViewer extends BaseViewer {
         if (Browser.getName() === 'Safari') {
             this.docEl.classList.add(IS_SAFARI_CLASS);
         }
-
-        this.isMobile = Browser.isMobile();
 
         // We disable native pinch-to-zoom and double tap zoom on mobile to force users to use
         // our viewer's zoom controls
@@ -174,9 +170,7 @@ class DocBaseViewer extends BaseViewer {
         // Don't show preload if there is no preload rep, the 'preload' viewer option isn't set,
         // or the rep has an error
         const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
-        if (!preloadRep ||
-            !this.getViewerOption('preload') ||
-            RepStatus.getStatus(preloadRep) === STATUS_ERROR) {
+        if (!preloadRep || !this.getViewerOption('preload') || RepStatus.getStatus(preloadRep) === STATUS_ERROR) {
             return;
         }
 
@@ -226,7 +220,7 @@ class DocBaseViewer extends BaseViewer {
         this.initViewer(this.pdfUrl);
         this.initPrint();
         this.initFind();
-    }
+    };
 
     /**
      * Initializes the Find Bar and Find Controller
@@ -456,7 +450,7 @@ class DocBaseViewer extends BaseViewer {
      */
     setScale(scale) {
         this.pdfViewer.currentScaleValue = scale;
-        this.emit('scale', scale);
+        this.emit('scale', { scale });
     }
 
     /**
@@ -479,6 +473,8 @@ class DocBaseViewer extends BaseViewer {
      * @return {boolean} consumed or not
      */
     onKeydown(key) {
+        // test
+
         switch (key) {
             case 'ArrowLeft':
                 this.previousPage();
@@ -528,9 +524,9 @@ class DocBaseViewer extends BaseViewer {
         // smaller chunk size if not. This is using a rough assumption that
         // en-US users have higher bandwidth to Box.
         if (!rangeChunkSize) {
-            rangeChunkSize = this.options.location.locale === 'en-US' ?
-                RANGE_REQUEST_CHUNK_SIZE_US :
-                RANGE_REQUEST_CHUNK_SIZE_NON_US;
+            rangeChunkSize = this.options.location.locale === 'en-US'
+                ? RANGE_REQUEST_CHUNK_SIZE_US
+                : RANGE_REQUEST_CHUNK_SIZE_NON_US;
         }
 
         const docInitParams = {
@@ -540,7 +536,7 @@ class DocBaseViewer extends BaseViewer {
 
         // Fix incorrectly cached range requests on older versions of iOS webkit browsers,
         // see: https://bugs.webkit.org/show_bug.cgi?id=82672
-        if (this.isMobile && Browser.isIOS()) {
+        if (Browser.isIOS()) {
             docInitParams.httpHeaders = {
                 'If-None-Match': 'webkit-no-cache'
             };
@@ -549,26 +545,28 @@ class DocBaseViewer extends BaseViewer {
         // Load PDF from representation URL and set as document for pdf.js. Cache
         // the loading task so we can cancel if needed
         this.pdfLoadingTask = PDFJS.getDocument(docInitParams);
-        return this.pdfLoadingTask.then((doc) => {
-            this.pdfViewer.setDocument(doc);
+        return this.pdfLoadingTask
+            .then((doc) => {
+                this.pdfViewer.setDocument(doc);
 
-            const linkService = this.pdfViewer.linkService;
-            if (linkService instanceof PDFJS.PDFLinkService) {
-                linkService.setDocument(doc, pdfUrl);
-                linkService.setViewer(this.pdfViewer);
-            }
-        }).catch((err) => {
-            /* eslint-disable no-console */
-            console.error(err);
-            /* eslint-enable no-console */
+                const linkService = this.pdfViewer.linkService;
+                if (linkService instanceof PDFJS.PDFLinkService) {
+                    linkService.setDocument(doc, pdfUrl);
+                    linkService.setViewer(this.pdfViewer);
+                }
+            })
+            .catch((err) => {
+                /* eslint-disable no-console */
+                console.error(err);
+                /* eslint-enable no-console */
 
-            // Display a generic error message but log the real one
-            const error = err;
-            if (err instanceof Error) {
-                error.displayMessage = __('error_document');
-            }
-            this.triggerError(err);
-        });
+                // Display a generic error message but log the real one
+                const error = err;
+                if (err instanceof Error) {
+                    error.displayMessage = __('error_document');
+                }
+                this.triggerError(err);
+            });
     }
 
     /**
@@ -628,7 +626,8 @@ class DocBaseViewer extends BaseViewer {
         // the Excel check once WinExcel starts generating appropriately-sized representations. This
         // also overrides any range request disabling that may be set by pdf.js's compatibility checking
         // since the browsers we support should all be able to properly handle range requests.
-        PDFJS.disableRange = location.locale !== 'en-US' &&
+        PDFJS.disableRange =
+            location.locale !== 'en-US' &&
             size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US &&
             !DISABLE_RANGE_REQUEST_EXENSIONS.includes(extension);
 
@@ -636,8 +635,8 @@ class DocBaseViewer extends BaseViewer {
         PDFJS.disableRange = PDFJS.disableRange || (watermarkInfo && watermarkInfo.is_watermarked);
 
         // Disable text layer if user doesn't have download permissions
-        PDFJS.disableTextLayer = !checkPermission(file, PERMISSION_DOWNLOAD) ||
-            !!this.getViewerOption('disableTextLayer');
+        PDFJS.disableTextLayer =
+            !checkPermission(file, PERMISSION_DOWNLOAD) || !!this.getViewerOption('disableTextLayer');
 
         // Decrease mobile canvas size to ~3MP (1920x1536)
         PDFJS.maxCanvasPixels = this.isMobile ? MOBILE_MAX_CANVAS_SIZE : PDFJS.maxCanvasPixels;
@@ -755,7 +754,7 @@ class DocBaseViewer extends BaseViewer {
                 this.emit('printsuccess');
             }
 
-        // For other browsers, open and print in a new tab
+            // For other browsers, open and print in a new tab
         } else {
             const printURL = URL.createObjectURL(this.printBlob);
             const printResult = window.open(printURL);
@@ -770,7 +769,7 @@ class DocBaseViewer extends BaseViewer {
                         printResult.print();
                     });
 
-                // Safari print on load produces blank page, so we use a timeout
+                    // Safari print on load produces blank page, so we use a timeout
                 } else if (browser === 'Safari') {
                     setTimeout(() => {
                         printResult.print();

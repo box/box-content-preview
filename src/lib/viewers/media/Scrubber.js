@@ -6,9 +6,7 @@ const MIN_VALUE = 0;
 const MAX_VALUE = 1;
 const CLASS_SCRUBBER_HOVER = 'bp-media-scrubber-hover';
 
-@autobind
-class Scrubber extends EventEmitter {
-
+@autobind class Scrubber extends EventEmitter {
     /**
      * Service to handle the position and movement of a slider element
      *
@@ -22,7 +20,15 @@ class Scrubber extends EventEmitter {
      * @param {number} [convertedValue] - Optional initial converted value
      * @return {Scrubber} Scrubber instance
      */
-    constructor(containerEl, ariaLabel, ariaValuemin, ariaValuemax, value = MIN_VALUE, bufferedValue = MAX_VALUE, convertedValue = MAX_VALUE) {
+    constructor(
+        containerEl,
+        ariaLabel,
+        ariaValuemin,
+        ariaValuemax,
+        value = MIN_VALUE,
+        bufferedValue = MAX_VALUE,
+        convertedValue = MAX_VALUE
+    ) {
         super();
 
         this.containerEl = containerEl;
@@ -158,23 +164,35 @@ class Scrubber extends EventEmitter {
         //  no more than 1
         //  no less than 0
         //  no less than the last converted value
-        this.convertedValue = Math.max(Math.min(Math.max(value, this.convertedValue || MIN_VALUE), MAX_VALUE), MIN_VALUE);
+        this.convertedValue = Math.max(
+            Math.min(Math.max(value, this.convertedValue || MIN_VALUE), MAX_VALUE),
+            MIN_VALUE
+        );
         this.convertedEl.style.width = `${this.convertedValue * 100}%`;
+    }
+
+    /**
+     * Returns the relative X position of mouse on scrubber
+     *
+     * @param {number} pageX - Mouse X position
+     * @return {number} A float between 0 and 1, for the relative position of pageX
+     */
+    computeScrubberPosition(pageX) {
+        const rect = this.scrubberEl.getBoundingClientRect();
+        const relPos = (pageX - rect.left) / rect.width;
+        return Math.max(Math.min(relPos, MAX_VALUE), MIN_VALUE);
     }
 
     /**
      * Calculates the position of the scrubber handle based on mouse action
      *
      * @private
-     * @param {Event} event - the instance of the class
+     * @param {Event} event - The mouse event that this handler is subscribed to
      * @return {void}
      */
     scrubbingHandler(event) {
-        const rect = this.scrubberEl.getBoundingClientRect();
         const pageX = event.pageX;
-        let newValue = (pageX - rect.left) / rect.width;
-
-        newValue = Math.max(Math.min(newValue, MAX_VALUE), MIN_VALUE);
+        const newValue = this.computeScrubberPosition(pageX);
 
         this.setValue(newValue);
         this.emit('valuechange');

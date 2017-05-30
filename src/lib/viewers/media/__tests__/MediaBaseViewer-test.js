@@ -45,6 +45,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             showPauseIcon: sandbox.stub(),
             showPlayIcon: sandbox.stub(),
             toggleFullscreen: sandbox.stub(),
+            toggleSubtitles: sandbox.stub(),
             updateProgress: sandbox.stub(),
             updateVolumeIcon: sandbox.stub(),
             increaseSpeed: sandbox.stub(),
@@ -200,7 +201,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.mediaEl = document.createElement('video');
             media.mediaEl.volume = 0;
 
-
             media.handleVolume();
 
             expect(stubs.debouncedEmit).to.be.calledWith('volume', 50);
@@ -316,7 +316,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             const currentTime = 20;
             media.mediaEl = { currentTime };
             stubs.debouncedEmit = sandbox.stub(media, 'debouncedEmit');
-
 
             media.seekHandler();
 
@@ -710,6 +709,18 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             expect(media.onKeydown('Shift+M')).to.be.true;
             expect(media.toggleMute).to.be.called;
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should toggle subtitles and return true on c', () => {
+            expect(media.onKeydown('c')).to.be.true;
+            expect(media.mediaControls.toggleSubtitles).to.be.called;
+            expect(media.mediaControls.show).to.be.called;
+        });
+
+        it('should toggle subtitles and return true on Shift+C', () => {
+            expect(media.onKeydown('Shift+C')).to.be.true;
+            expect(media.mediaControls.toggleSubtitles).to.be.called;
             expect(media.mediaControls.show).to.be.called;
         });
 

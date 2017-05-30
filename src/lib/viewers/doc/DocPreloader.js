@@ -171,18 +171,20 @@ class DocPreloader extends EventEmitter {
         }
 
         // Calculate pdf width, height, and number of pages from EXIF if possible
-        return this.readEXIF(this.imageEl).then((pdfData) => {
-            const { pdfWidth, pdfHeight, numPages } = pdfData;
-            const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
-            this.scaleAndShowPreload(scaledWidth, scaledHeight, Math.min(numPages, NUM_PAGES_MAX));
+        return this.readEXIF(this.imageEl)
+            .then((pdfData) => {
+                const { pdfWidth, pdfHeight, numPages } = pdfData;
+                const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
+                this.scaleAndShowPreload(scaledWidth, scaledHeight, Math.min(numPages, NUM_PAGES_MAX));
 
-        // Otherwise, use the preload image's natural dimensions as a base to scale from
-        }).catch(() => {
-            const { naturalWidth: pdfWidth, naturalHeight: pdfHeight } = this.imageEl;
-            const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
-            this.scaleAndShowPreload(scaledWidth, scaledHeight, NUM_PAGES_DEFAULT);
-        });
-    }
+                // Otherwise, use the preload image's natural dimensions as a base to scale from
+            })
+            .catch(() => {
+                const { naturalWidth: pdfWidth, naturalHeight: pdfHeight } = this.imageEl;
+                const { scaledWidth, scaledHeight } = this.getScaledDimensions(pdfWidth, pdfHeight);
+                this.scaleAndShowPreload(scaledWidth, scaledHeight, NUM_PAGES_DEFAULT);
+            });
+    };
 
     /**
      * Reads EXIF from preload JPG for PDF width, height, and numPages. This is currently encoded
