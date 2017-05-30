@@ -564,6 +564,19 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     }
 
     /**
+     * Orient anntations to the correct scale and orientatio of the annotated document.
+     * @TODO(jholdstock|spramod): Remove this once we are emitting the correct messaging.
+     * 
+     * @protected
+     * @param {Object} data - Scale and orientation values needed to orient annotations.
+     * @return {void}
+     */
+    scaleAnnotations(data) {
+        this.annotator.setScale(data.scale);
+        this.annotator.rotateAnnotations(data.rotationAngle);
+    }
+
+    /**
      * Initializes annotations.
      *
      * @protected
@@ -597,17 +610,11 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
             this.annotator.togglePointModeHandler();
         });
 
-        /* istanbul ignore next */
-        const scaleAnnotations = (data) => {
-            this.annotator.setScale(data.scale);
-            this.annotator.rotateAnnotations(data.rotationAngle);
-        };
-
         // Add a custom listener for events related to scaling/orientation changes
-        this.addListener('scale', scaleAnnotations);
+        this.addListener('scale', this.scaleAnnotations.bind(this));
 
         this.annotator.addListener('annotationsfetched', () => {
-            scaleAnnotations({
+            this.scaleAnnotations({
                 scale: this.scale,
                 rotationAngle: this.rotationAngle
             });

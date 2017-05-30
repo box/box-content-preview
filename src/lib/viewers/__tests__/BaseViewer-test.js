@@ -664,6 +664,29 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('scaleAnnotations()', () => {
+        const scaleData = {
+            scale: 0.4321,
+            rotationAngle: 90
+        };
+        beforeEach(() => {
+            base.annotator = {
+                setScale: sandbox.stub(),
+                rotateAnnotations: sandbox.stub()
+            };
+
+            base.scaleAnnotations(scaleData);
+        });
+
+        it('should invoke setScale() on annotator to scale annotations', () => {
+            expect(base.annotator.setScale).to.be.calledWith(scaleData.scale);
+        });
+
+        it('should invoke rotateAnnotations() on annotator to orient annotations', () => {
+            expect(base.annotator.rotateAnnotations).to.be.calledWith(scaleData.rotationAngle);
+        });
+    });
+
     describe('initAnnotations()', () => {
         beforeEach(() => {
             base.options = {
