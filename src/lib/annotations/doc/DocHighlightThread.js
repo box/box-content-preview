@@ -471,7 +471,7 @@ const HOVER_TIMEOUT_MS = 75;
         const length = points.length;
 
         let index = 0;
-        while (index < length) {
+        while (index < length && !eventOccurredInHighlight) {
             const quadPoint = points[index];
             // If needed, scale quad points comparing current dimensions with saved dimensions
             const scaledQuadPoint = [...quadPoint];
