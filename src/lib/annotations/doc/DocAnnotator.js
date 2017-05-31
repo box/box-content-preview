@@ -41,7 +41,7 @@ function showFirstDialogFilter(thread, index) {
  * @return {boolean} True if the thread is in a state of hover
  */
 function isThreadInHoverState(thread) {
-    return constants.HOVER_STATES.indexOf(thread.state) > 1;
+    return constants.HOVER_STATES.indexOf(thread.state) > -1;
 }
 
 @autobind class DocAnnotator extends Annotator {
