@@ -1,6 +1,21 @@
 # Change Log
 
-## [v0.126.1](https://github.com/box/box-content-preview/tree/v0.126.1) (2017-05-25)
+## [v0.127.0](https://github.com/box/box-content-preview/tree/v0.127.0) (2017-05-30)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.126.1...v0.127.0)
+
+**Merged pull requests:**
+
+- Chore: Re-enabling controls for mobile viewers [\#157](https://github.com/box/box-content-preview/pull/157) ([pramodsum](https://github.com/pramodsum))
+- Fix: Image scaling/rotation is broken when an image has annotations [\#156](https://github.com/box/box-content-preview/pull/156) ([JustinHoldstock](https://github.com/JustinHoldstock))
+- Chore: Use whatwg-fetch instead of isomorphic-fetch [\#155](https://github.com/box/box-content-preview/pull/155) ([tonyjin](https://github.com/tonyjin))
+- Update Translations [\#154](https://github.com/box/box-content-preview/pull/154) ([boxmoji](https://github.com/boxmoji))
+- Fix: Error content jumps on error if download button is absent [\#152](https://github.com/box/box-content-preview/pull/152) ([jeremypress](https://github.com/jeremypress))
+- Fix: Ensure point annotation mode button is hidden on rotated images [\#151](https://github.com/box/box-content-preview/pull/151) ([pramodsum](https://github.com/pramodsum))
+- Fix: Disables annotations after 'load' event on shared links [\#150](https://github.com/box/box-content-preview/pull/150) ([pramodsum](https://github.com/pramodsum))
+- New: Initial mobile optimization of annotation dialogs [\#146](https://github.com/box/box-content-preview/pull/146) ([pramodsum](https://github.com/pramodsum))
+- Fix: Support disabling DASH player in DASH-compatible browser [\#140](https://github.com/box/box-content-preview/pull/140) ([tonyjin](https://github.com/tonyjin))
+
+## [v0.126.1](https://github.com/box/box-content-preview/tree/v0.126.1) (2017-05-26)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.126.0...v0.126.1)
 
 **Merged pull requests:**
