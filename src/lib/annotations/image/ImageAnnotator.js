@@ -44,7 +44,7 @@ const ANNOTATED_ELEMENT_SELECTOR = '.bp-image, .bp-images-wrapper';
         }
 
         // If no image page was selected, ignore, as all images have a page number.
-        const { page } = annotatorUtil.getPageElAndPageNumber(imageEl);
+        const { page } = annotatorUtil.getPage(imageEl);
         if (!page) {
             return location;
         }

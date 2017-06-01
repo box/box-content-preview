@@ -36,7 +36,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         annotator.annotatedElement = annotator.getAnnotatedEl(document);
         annotator.annotationService = {};
 
-        stubs.getPage = sandbox.stub(annotatorUtil, 'getPageElAndPageNumber');
+        stubs.getPage = sandbox.stub(annotatorUtil, 'getPage');
     });
 
     afterEach(() => {
