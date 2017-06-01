@@ -6,7 +6,7 @@ $tablet: "(min-width: 768px)";
     height: 100%;
     position: absolute;
     top: 0;
-    width: 100%; // Hard-coded width to solve layout issues
+    width: 100%;
 
     &.bp-animate-show-dialog:not(.bp-plain-highlight) {
         animation: show-dialog-small;
