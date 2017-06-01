@@ -4,6 +4,12 @@
     height: 100%;
     top: 0;
     width: 100%; // Hard-coded width to solve layout issues
+    position: absolute;
+
+    &.bp-animate-show-dialog:not(.bp-plain-highlight) {
+        animation: show-dialog 0.2s;
+        animation-fill-mode: forwards;
+    }
 }
 
 .bp-mobile-annotation-dialog.bp-annotation-dialog {
@@ -122,5 +128,14 @@
         .bp-highlight-comment-btn {
             display: none;
         }
+    }
+}
+
+@keyframes show-dialog {
+    0% {
+        top: 100%;
+    }
+    100% {
+        top: 0%;
     }
 }

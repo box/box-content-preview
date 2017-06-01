@@ -6,6 +6,8 @@ import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 import { decodeKeydown } from '../util';
 import { ICON_CLOSE, ICON_DELETE } from '../icons/icons';
 
+const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
+
 @autobind class AnnotationDialog extends EventEmitter {
     //--------------------------------------------------------------------------
     // Typedef
@@ -80,6 +82,8 @@ import { ICON_CLOSE, ICON_DELETE } from '../icons/icons';
             const dialogCloseButtonEl = this.element.querySelector('.bp-annotation-dialog-close');
             dialogCloseButtonEl.addEventListener('click', this.hideMobileDialog);
 
+            this.element.classList.add(CLASS_ANIMATE_DIALOG);
+
             this.bindDOMListeners();
         }
 
@@ -132,6 +136,8 @@ import { ICON_CLOSE, ICON_DELETE } from '../icons/icons';
         if (!this.element) {
             return;
         }
+
+        this.element.classList.remove(CLASS_ANIMATE_DIALOG);
 
         // Clear annotations from dialog
         this.element.innerHTML = `
