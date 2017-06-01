@@ -1,14 +1,44 @@
+$tablet: "(min-width: 768px)";
+
 .bp-mobile-annotation-dialog {
     background: white;
     border-top: 0;
     height: 100%;
+    position: absolute;
     top: 0;
     width: 100%; // Hard-coded width to solve layout issues
-    position: absolute;
 
     &.bp-animate-show-dialog:not(.bp-plain-highlight) {
-        animation: show-dialog 0.2s;
+        animation: show-dialog-small;
+        animation-duration: .2s;
         animation-fill-mode: forwards;
+
+        @media #{$tablet} {
+            animation: show-dialog-tablet;
+            animation-duration: .2s;
+            animation-fill-mode: forwards;
+            width: 450px;
+        }
+    }
+}
+
+@keyframes show-dialog-small {
+    0% {
+        top: 100%;
+    }
+
+    100% {
+        top: 0%;
+    }
+}
+
+@keyframes show-dialog-tablet {
+    0% {
+        right: -50%;
+    }
+
+    100% {
+        right: 0%;
     }
 }
 
@@ -128,14 +158,5 @@
         .bp-highlight-comment-btn {
             display: none;
         }
-    }
-}
-
-@keyframes show-dialog {
-    0% {
-        top: 100%;
-    }
-    100% {
-        top: 0%;
     }
 }
