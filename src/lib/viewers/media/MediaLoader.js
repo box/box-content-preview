@@ -69,7 +69,7 @@ class MediaLoader extends AssetLoader {
     determineViewer(file, disabledViewers = []) {
         const viewer = super.determineViewer(file, disabledViewers);
         if (viewer && requires360Viewer(file)) {
-            const message = replacePlaceholders(__('error_unsupported'), [__('360_videos')]);
+            const message = replacePlaceholders(__('error_browser_unsupported'), [__('360_videos')]);
             throw new Error(message);
         }
 

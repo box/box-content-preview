@@ -835,8 +835,9 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
         const loader = this.getLoader(this.file);
 
         // If no loader then throw an unsupported error
+        // If file type specific error message, throw the generic one
         if (!loader) {
-            throw new Error(FILE_EXT_ERROR_MAP[this.file.extension]);
+            throw new Error(FILE_EXT_ERROR_MAP[this.file.extension] || __('error_file_type_unsupported'));
         }
 
         // Determine the viewer to use

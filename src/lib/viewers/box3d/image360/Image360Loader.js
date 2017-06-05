@@ -29,7 +29,7 @@ class Image360Loader extends Base360Loader {
     determineViewer(file, disabledViewers = []) {
         const viewer = super.determineViewer(file, disabledViewers);
         if (viewer && !Browser.hasWebGL()) {
-            const message = replacePlaceholders(__('error_unsupported'), [__('360_images')]);
+            const message = replacePlaceholders(__('error_browser_unsupported'), [__('360_images')]);
             throw new Error(message);
         }
 
