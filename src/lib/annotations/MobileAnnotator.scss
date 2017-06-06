@@ -9,17 +9,16 @@ $tablet: "(min-width: 768px)";
     width: 100%;
 
     &.bp-animate-show-dialog {
-
         &:not(.bp-plain-highlight) {
             animation: show-dialog-small;
             animation-duration: .2s;
             animation-fill-mode: forwards;
 
             @media #{$tablet} {
-                border-left: solid 1px #ccc;
                 animation: show-dialog-tablet;
                 animation-duration: .2s;
                 animation-fill-mode: forwards;
+                border-left: solid 1px #ccc;
                 width: 450px;
             }
         }
@@ -51,7 +50,6 @@ $tablet: "(min-width: 768px)";
         right: 0%;
     }
 }
-
 
 @keyframes show-highlight-dialog {
     0% {
