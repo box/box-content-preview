@@ -1,5 +1,20 @@
 # Change Log
 
+## [v0.128.0](https://github.com/box/box-content-preview/tree/v0.128.0) (2017-06-06)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.127.0...v0.128.0)
+
+**Merged pull requests:**
+
+- Update: Change Preview loading message [\#166](https://github.com/box/box-content-preview/pull/166) ([tonyjin](https://github.com/tonyjin))
+- Update: Add support for 'ly' Lilypond musical annotation files [\#165](https://github.com/box/box-content-preview/pull/165) ([tonyjin](https://github.com/tonyjin))
+- Upgrade: Upgrade Shaka-player to fix infinite 401 issue [\#164](https://github.com/box/box-content-preview/pull/164) ([bhh1988](https://github.com/bhh1988))
+- Update: Displaying file type unsupported error [\#163](https://github.com/box/box-content-preview/pull/163) ([jeremypress](https://github.com/jeremypress))
+- Chore: refactored and renamed getPageElAndPageNumber [\#162](https://github.com/box/box-content-preview/pull/162) ([JustinHoldstock](https://github.com/JustinHoldstock))
+- Animate annotation dialog [\#161](https://github.com/box/box-content-preview/pull/161) ([JustinHoldstock](https://github.com/JustinHoldstock))
+- Update Translations [\#160](https://github.com/box/box-content-preview/pull/160) ([boxmoji](https://github.com/boxmoji))
+- Docs: Use ISO date format for LICENSE [\#158](https://github.com/box/box-content-preview/pull/158) ([tonyjin](https://github.com/tonyjin))
+- Chore: Optimizations for highlightMousemoveEvent [\#121](https://github.com/box/box-content-preview/pull/121) ([JustinHoldstock](https://github.com/JustinHoldstock))
+
 ## [v0.127.0](https://github.com/box/box-content-preview/tree/v0.127.0) (2017-05-30)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.126.1...v0.127.0)
 
