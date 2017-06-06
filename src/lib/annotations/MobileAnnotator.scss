@@ -1,9 +1,64 @@
+$tablet: "(min-width: 768px)";
+
 .bp-mobile-annotation-dialog {
     background: white;
     border-top: 0;
     height: 100%;
+    position: absolute;
     top: 0;
-    width: 100%; // Hard-coded width to solve layout issues
+    width: 100%;
+
+    &.bp-animate-show-dialog {
+        &:not(.bp-plain-highlight) {
+            animation: show-dialog-small;
+            animation-duration: .2s;
+            animation-fill-mode: forwards;
+
+            @media #{$tablet} {
+                animation: show-dialog-tablet;
+                animation-duration: .2s;
+                animation-fill-mode: forwards;
+                border-left: solid 1px #ccc;
+                width: 450px;
+            }
+        }
+
+        &.bp-plain-highlight {
+            animation: show-highlight-dialog;
+            animation-duration: .2s;
+            animation-fill-mode: forwards;
+        }
+    }
+}
+
+@keyframes show-dialog-small {
+    0% {
+        top: 100%;
+    }
+
+    100% {
+        top: 0%;
+    }
+}
+
+@keyframes show-dialog-tablet {
+    0% {
+        right: -50%;
+    }
+
+    100% {
+        right: 0%;
+    }
+}
+
+@keyframes show-highlight-dialog {
+    0% {
+        top: -48px;
+    }
+
+    100% {
+        top: 1px;
+    }
 }
 
 .bp-mobile-annotation-dialog.bp-annotation-dialog {
