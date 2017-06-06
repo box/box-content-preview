@@ -23,6 +23,7 @@ export const CODE_EXTENSIONS = [
     'java',
     'js',
     'less',
+    'ly',
     'm',
     'make',
     'ml',
