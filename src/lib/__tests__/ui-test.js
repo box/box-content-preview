@@ -52,7 +52,7 @@ describe('lib/ui', () => {
             // Check loading state
             const loadingWrapperEl = resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOADING_WRAPPER);
             expect(loadingWrapperEl).to.contain(constants.SELECTOR_BOX_PREVIEW_ICON);
-            expect(loadingWrapperEl).to.contain.html('Generating Preview...');
+            expect(loadingWrapperEl).to.contain.html('Loading Preview...');
             expect(loadingWrapperEl).to.contain.html('Download File');
         });
 
