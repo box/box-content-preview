@@ -36,7 +36,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         annotator.annotatedElement = annotator.getAnnotatedEl(document);
         annotator.annotationService = {};
 
-        stubs.getPage = sandbox.stub(annotatorUtil, 'getPageElAndPageNumber');
+        stubs.getPageInfo = sandbox.stub(annotatorUtil, 'getPageInfo');
     });
 
     afterEach(() => {
@@ -93,13 +93,13 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
             it('should not return a location if click isn\'t on page', () => {
                 stubs.selection.returns(false);
-                stubs.getPage.returns({ pageEl: null, page: -1 });
+                stubs.getPageInfo.returns({ pageEl: null, page: -1 });
                 expect(annotator.getLocationFromEvent({}, 'point')).to.be.null;
             });
 
             it('should not return a location if click is on dialog', () => {
                 stubs.selection.returns(false);
-                stubs.getPage.returns({
+                stubs.getPageInfo.returns({
                     pageEl: document.querySelector('.annotated-element'),
                     page: 1
                 });
@@ -110,7 +110,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 page = 2;
 
                 stubs.selection.returns(false);
-                stubs.getPage.returns({ pageEl: stubs.pageEl, page });
+                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 stubs.findClosest.returns('not-a-dialog');
                 sandbox.stub(docAnnotatorUtil, 'convertDOMSpaceToPDFSpace').returns([x, y]);
 
@@ -126,8 +126,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             });
 
             it('should infer page from selection if it cannot be inferred from event', () => {
-                stubs.getPage.onFirstCall().returns({ pageEl: null, page: -1 });
-                stubs.getPage.onSecondCall().returns({
+                stubs.getPageInfo.onFirstCall().returns({ pageEl: null, page: -1 });
+                stubs.getPageInfo.onSecondCall().returns({
                     pageEl: {
                         getBoundingClientRect: sandbox.stub().returns({
                             width: 100,
@@ -142,12 +142,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             });
 
             it('should not return a valid highlight location if no highlights exist', () => {
-                stubs.getPage.returns({ pageEl: stubs.pageEl, page });
+                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 expect(annotator.getLocationFromEvent({}, 'highlight')).to.deep.equal(null);
             });
 
             it('should return a valid highlight location if selection is valid', () => {
-                stubs.getPage.returns({ pageEl: stubs.pageEl, page });
+                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 stubs.points.onFirstCall().returns(quadPoints[0]);
                 stubs.points.onSecondCall().returns(quadPoints[1]);
 
@@ -166,7 +166,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             });
 
             it('should infer page from selection if it cannot be inferred from event', () => {
-                const getPageStub = stubs.getPage;
+                const getPageStub = stubs.getPageInfo;
                 getPageStub.onFirstCall().returns({ pageEl: null, page: -1 });
                 getPageStub.onSecondCall().returns({
                     pageEl: {
@@ -183,12 +183,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             });
 
             it('should not return a valid highlight location if no highlights exist', () => {
-                stubs.getPage.returns({ pageEl: stubs.pageEl, page });
+                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 expect(annotator.getLocationFromEvent({}, 'highlight-comment')).to.deep.equal(null);
             });
 
             it('should return a valid highlight location if selection is valid', () => {
-                stubs.getPage.returns({ pageEl: stubs.pageEl, page });
+                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 stubs.points.onFirstCall().returns(quadPoints[0]);
                 stubs.points.onSecondCall().returns(quadPoints[1]);
                 stubs.getHighlights.returns({ highlight: {}, highlightEls: [{}, {}] });
@@ -511,7 +511,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             };
             stubs.delayMock = sandbox.mock(stubs.delayThread);
 
-            stubs.getPage = stubs.getPage.returns({ pageEl: {}, page: 1 });
+            stubs.getPageInfo = stubs.getPageInfo.returns({ pageEl: {}, page: 1 });
             stubs.getThreads = sandbox.stub(annotator, 'getHighlightThreadsOnPage');
             stubs.clock = sinon.useFakeTimers();
 
@@ -634,7 +634,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             };
             stubs.threadMock = sandbox.mock(stubs.thread);
 
-            stubs.getPage = stubs.getPage.returns({ pageEl: {}, page: 1 });
+            stubs.getPageInfo = stubs.getPageInfo.returns({ pageEl: {}, page: 1 });
             stubs.hasActiveDialog = sandbox.stub(docAnnotatorUtil, 'hasActiveDialog').returns(false);
             stubs.getThreads = sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns([]);
             stubs.getLocation = sandbox.stub(annotator, 'getLocationFromEvent').returns(undefined);
@@ -707,7 +707,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             };
             stubs.threadMock = sandbox.mock(stubs.thread);
 
-            stubs.getPage = stubs.getPage.returns({ pageEl: {}, page: 1 });
+            stubs.getPageInfo = stubs.getPageInfo.returns({ pageEl: {}, page: 1 });
             stubs.getAllThreads = sandbox.stub(annotator, 'getThreadsWithStates').returns([]);
             stubs.getThreads = sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns([stubs.thread]);
         });

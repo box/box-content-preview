@@ -112,7 +112,7 @@ function isThreadInHoverState(thread) {
 
             // If click isn't on a page, ignore
             const eventTarget = event.target;
-            const { pageEl, page } = annotatorUtil.getPageElAndPageNumber(eventTarget);
+            const { pageEl, page } = annotatorUtil.getPageInfo(eventTarget);
             if (!pageEl) {
                 return location;
             }
@@ -153,10 +153,10 @@ function isThreadInHoverState(thread) {
             }
 
             // Get correct page
-            let { pageEl, page } = annotatorUtil.getPageElAndPageNumber(event.target);
+            let { pageEl, page } = annotatorUtil.getPageInfo(event.target);
             if (page === -1) {
                 // The ( .. ) around assignment is required syntax
-                ({ pageEl, page } = annotatorUtil.getPageElAndPageNumber(window.getSelection().anchorNode));
+                ({ pageEl, page } = annotatorUtil.getPageInfo(window.getSelection().anchorNode));
             }
 
             // Use Rangy to save the current selection because using the
@@ -199,8 +199,7 @@ function isThreadInHoverState(thread) {
     }
 
     /**
-     * Creates the proper type of thread, adds it to in-memory map, and returns
-     * it.
+     * Creates the proper type of thread, adds it to in-memory map, and returns it.
      *
      * @override
      * @param {Annotation[]} annotations - Annotations in thread
@@ -444,7 +443,7 @@ function isThreadInHoverState(thread) {
         this.mouseMoveEvent = null;
         this.throttleTimer = performance.now();
         // Only filter through highlight threads on the current page
-        const { page } = annotatorUtil.getPageElAndPageNumber(event.target);
+        const { page } = annotatorUtil.getPageInfo(event.target);
         const pageThreads = this.getHighlightThreadsOnPage(page);
         const delayThreads = [];
         let hoverActive = false;
@@ -557,7 +556,7 @@ function isThreadInHoverState(thread) {
 
         // Only filter through highlight threads on the current page
         // Reset active highlight threads before creating new highlight
-        const page = annotatorUtil.getPageElAndPageNumber(event.target).page;
+        const page = annotatorUtil.getPageInfo(event.target).page;
         const activeThreads = this.getHighlightThreadsOnPage(page).filter(
             (thread) => constants.ACTIVE_STATES.indexOf(thread.state) > -1
         );
@@ -604,7 +603,7 @@ function isThreadInHoverState(thread) {
         });
 
         // Only filter through highlight threads on the current page
-        const page = annotatorUtil.getPageElAndPageNumber(event.target).page;
+        const page = annotatorUtil.getPageInfo(event.target).page;
         const pageThreads = this.getHighlightThreadsOnPage(page);
         pageThreads.forEach((thread) => {
             // We use this to prevent a mousedown from activating two different
