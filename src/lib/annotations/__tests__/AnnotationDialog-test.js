@@ -5,6 +5,8 @@ import * as annotatorUtil from '../annotatorUtil';
 import * as constants from '../annotationConstants';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../../constants';
 
+const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
+
 let dialog;
 const sandbox = sinon.sandbox.create();
 let stubs = {};
@@ -147,6 +149,14 @@ describe('lib/annotations/AnnotationDialog', () => {
             expect(stubs.show).to.be.calledWith(dialog.element);
             expect(stubs.bind).to.be.called;
             expect(dialog.position).to.not.be.called;
+            expect(dialog.element.classList.contains(CLASS_ANIMATE_DIALOG)).to.be.true;
+        });
+
+        it('should add the animation class to the the mobile dialog if using a mobile browser', () => {
+            dialog.isMobile = true;
+
+            dialog.show();
+            expect(dialog.element.classList.contains(CLASS_ANIMATE_DIALOG)).to.be.true;
         });
 
         it('should hide the mobile header if a plain highlight', () => {
@@ -174,6 +184,13 @@ describe('lib/annotations/AnnotationDialog', () => {
             stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
             dialog.hideMobileDialog();
             expect(stubs.hide).to.be.called;
+            expect(dialog.element.classList.contains(CLASS_ANIMATE_DIALOG)).to.be.false;
+        });
+
+        it('should remove the animation class', () => {
+            dialog.element = document.querySelector('.bp-mobile-annotation-dialog');
+            dialog.hideMobileDialog();
+            expect(dialog.element.classList.contains(CLASS_ANIMATE_DIALOG)).to.be.false;
         });
     });
 

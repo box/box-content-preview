@@ -480,9 +480,7 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
             pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
             const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(pageEl);
             const dimensionScaleStub = sandbox.stub(annotatorUtil, 'getDimensionScale').returns(false);
-            const quadPoint = {
-                map: sandbox.stub()
-            };
+            const quadPoint = {};
             highlightThread.location.quadPoints = [quadPoint, quadPoint, quadPoint];
             const convertStub = sandbox
                 .stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace')
@@ -492,7 +490,6 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
             expect(pageElStub).to.be.called;
             expect(pageEl.getBoundingClientRect).to.be.called;
             expect(dimensionScaleStub).to.be.called;
-            expect(quadPoint.map).to.not.be.called;
             expect(convertStub).to.be.called;
         });
 
@@ -503,9 +500,7 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
             pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
             const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(pageEl);
             const dimensionScaleStub = sandbox.stub(annotatorUtil, 'getDimensionScale').returns(true);
-            const quadPoint = {
-                map: sandbox.stub()
-            };
+            const quadPoint = {};
             highlightThread.location.quadPoints = [quadPoint, quadPoint, quadPoint];
             const convertStub = sandbox
                 .stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace')
@@ -515,7 +510,6 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
             expect(pageElStub).to.be.called;
             expect(pageEl.getBoundingClientRect).to.be.called;
             expect(dimensionScaleStub).to.be.called;
-            expect(quadPoint.map).to.be.called;
             expect(convertStub).to.be.called;
         });
 
@@ -526,9 +520,7 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
             pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
             const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(pageEl);
             const dimensionScaleStub = sandbox.stub(annotatorUtil, 'getDimensionScale').returns(false);
-            const quadPoint = {
-                map: sandbox.stub()
-            };
+            const quadPoint = {};
             highlightThread.location.quadPoints = [quadPoint, quadPoint, quadPoint];
             const convertStub = sandbox
                 .stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace')
@@ -539,7 +531,6 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
             expect(pageElStub).to.be.called;
             expect(pageEl.getBoundingClientRect).to.be.called;
             expect(dimensionScaleStub).to.be.called;
-            expect(quadPoint.map).to.not.be.called;
             expect(convertStub).to.be.called;
             expect(pointInPolyStub).to.be.called;
         });

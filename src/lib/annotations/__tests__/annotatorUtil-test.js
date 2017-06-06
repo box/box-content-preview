@@ -2,7 +2,7 @@
 import {
     findClosestElWithClass,
     findClosestDataType,
-    getPageElAndPageNumber,
+    getPageInfo,
     showElement,
     hideElement,
     showInvisibleElement,
@@ -66,18 +66,18 @@ describe('lib/annotations/annotatorUtil', () => {
         });
     });
 
-    describe('getPageElAndPageNumber()', () => {
+    describe('getPageInfo()', () => {
         it('should return page element and page number that the specified element is on', () => {
             const fooEl = document.querySelector('.foo');
             const pageEl = document.querySelector('.page');
-            const result = getPageElAndPageNumber(fooEl);
+            const result = getPageInfo(fooEl);
             assert.equal(result.pageEl, pageEl, 'Page element should be equal');
             assert.equal(result.page, 2, 'Page number should be equal');
         });
 
         it('should return no page element and -1 page number if no page is found', () => {
             const barEl = document.querySelector('.bar');
-            const result = getPageElAndPageNumber(barEl);
+            const result = getPageInfo(barEl);
             assert.equal(result.pageEl, null, 'Page element should be null');
             assert.equal(result.page, -1, 'Page number should be -1');
         });
