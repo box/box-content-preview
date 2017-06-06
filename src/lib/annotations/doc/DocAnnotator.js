@@ -199,8 +199,7 @@ function isThreadInHoverState(thread) {
     }
 
     /**
-     * Creates the proper type of thread, adds it to in-memory map, and returns
-     * it.
+     * Creates the proper type of thread, adds it to in-memory map, and returns it.
      *
      * @override
      * @param {Annotation[]} annotations - Annotations in thread
