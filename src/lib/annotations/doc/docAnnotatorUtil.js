@@ -272,7 +272,7 @@ export function getQuadPoints(element, pageEl, scale) {
     // Cleanup helper container
     element.removeChild(quadCornerContainerEl);
 
-    // Calculate coordinates of these 4 corners
+    // Calculate coordinates of these 4 corners.
     const quadPoints = [
         corner1Dimensions.left - pageLeft,
         corner1Dimensions.top - pageTop,

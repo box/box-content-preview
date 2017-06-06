@@ -37,19 +37,15 @@ export function findClosestElWithClass(element, className) {
 * @param {HTMLElement} element - Element to find page and page number for
 * @return {Object} Page element/page number if found or null/-1 if not
 */
-export function getPageElAndPageNumber(element) {
-    const pageEl = findClosestElWithClass(element, 'page');
+export function getPageInfo(element) {
+    const pageEl = findClosestElWithClass(element, 'page') || null;
+    let page = -1;
+
     if (pageEl) {
-        return {
-            pageEl,
-            page: parseInt(pageEl.getAttribute('data-page-number'), 10)
-        };
+        page = parseInt(pageEl.getAttribute('data-page-number'), 10);
     }
 
-    return {
-        pageEl: null,
-        page: -1
-    };
+    return { pageEl, page };
 }
 
 /**

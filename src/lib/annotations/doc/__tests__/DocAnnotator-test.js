@@ -36,7 +36,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         annotator.annotatedElement = annotator.getAnnotatedEl(document);
         annotator.annotationService = {};
 
-        stubs.getPage = sandbox.stub(annotatorUtil, 'getPageElAndPageNumber');
+        stubs.getPageInfo = sandbox.stub(annotatorUtil, 'getPageInfo');
     });
 
     afterEach(() => {
@@ -93,13 +93,13 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
             it('should not return a location if click isn\'t on page', () => {
                 stubs.selection.returns(false);
-                stubs.getPage.returns({ pageEl: null, page: -1 });
+                stubs.getPageInfo.returns({ pageEl: null, page: -1 });
                 expect(annotator.getLocationFromEvent({}, 'point')).to.be.null;
             });
 
             it('should not return a location if click is on dialog', () => {
                 stubs.selection.returns(false);
-                stubs.getPage.returns({
+                stubs.getPageInfo.returns({
                     pageEl: document.querySelector('.annotated-element'),
                     page: 1
                 });
@@ -110,7 +110,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 page = 2;
 
                 stubs.selection.returns(false);
-                stubs.getPage.returns({ pageEl: stubs.pageEl, page });
+                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 stubs.findClosest.returns('not-a-dialog');
                 sandbox.stub(docAnnotatorUtil, 'convertDOMSpaceToPDFSpace').returns([x, y]);
 
@@ -126,8 +126,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             });
 
             it('should infer page from selection if it cannot be inferred from event', () => {
-                stubs.getPage.onFirstCall().returns({ pageEl: null, page: -1 });
-                stubs.getPage.onSecondCall().returns({
+                stubs.getPageInfo.onFirstCall().returns({ pageEl: null, page: -1 });
+                stubs.getPageInfo.onSecondCall().returns({
                     pageEl: {
                         getBoundingClientRect: sandbox.stub().returns({
                             width: 100,
@@ -142,12 +142,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             });
 
             it('should not return a valid highlight location if no highlights exist', () => {
-                stubs.getPage.returns({ pageEl: stubs.pageEl, page });
+                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 expect(annotator.getLocationFromEvent({}, 'highlight')).to.deep.equal(null);
             });
 
             it('should return a valid highlight location if selection is valid', () => {
-                stubs.getPage.returns({ pageEl: stubs.pageEl, page });
+                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 stubs.points.onFirstCall().returns(quadPoints[0]);
                 stubs.points.onSecondCall().returns(quadPoints[1]);
 
@@ -166,7 +166,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             });
 
             it('should infer page from selection if it cannot be inferred from event', () => {
-                const getPageStub = stubs.getPage;
+                const getPageStub = stubs.getPageInfo;
                 getPageStub.onFirstCall().returns({ pageEl: null, page: -1 });
                 getPageStub.onSecondCall().returns({
                     pageEl: {
@@ -183,12 +183,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             });
 
             it('should not return a valid highlight location if no highlights exist', () => {
-                stubs.getPage.returns({ pageEl: stubs.pageEl, page });
+                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 expect(annotator.getLocationFromEvent({}, 'highlight-comment')).to.deep.equal(null);
             });
 
             it('should return a valid highlight location if selection is valid', () => {
-                stubs.getPage.returns({ pageEl: stubs.pageEl, page });
+                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 stubs.points.onFirstCall().returns(quadPoints[0]);
                 stubs.points.onSecondCall().returns(quadPoints[1]);
                 stubs.getHighlights.returns({ highlight: {}, highlightEls: [{}, {}] });
@@ -356,6 +356,19 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.elMock.expects('removeEventListener').withArgs('dblclick', sinon.match.func);
             annotator.unbindDOMListeners();
         });
+
+        it('should stop and destroy the requestAnimationFrame handle created by getHighlightMousemoveHandler()', () => {
+            const rafHandle = 12; // RAF handles are integers
+            annotator.annotationService.canAnnotate = true;
+            annotator.highlightThrottleHandle = rafHandle;
+            sandbox.stub(annotator, 'getHighlightMouseMoveHandler').returns(sandbox.stub());
+
+            const cancelRAFStub = sandbox.stub(window, 'cancelAnimationFrame');
+            annotator.unbindDOMListeners();
+
+            expect(cancelRAFStub).to.be.calledWith(rafHandle);
+            expect(annotator.highlightThrottleHandle).to.not.exist;
+        });
     });
 
     describe('bindCustomListenersOnThread()', () => {
@@ -424,10 +437,66 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
     });
 
-    describe('highlightMousemoveHandler()', () => {
+    describe('getHighlightMouseMoveHandler()', () => {
         beforeEach(() => {
-            annotator.throttledHighlightMousemoveHandler = false;
+            annotator.highlightMousemoveHandler = false;
 
+            // Request animation frame stub
+            stubs.RAF = sandbox.stub(window, 'requestAnimationFrame');
+        });
+
+        it('should do nothing if the highlightMousemoveHandler already exists', () => {
+            annotator.highlightMousemoveHandler = true;
+            const result = annotator.getHighlightMouseMoveHandler();
+
+            expect(stubs.RAF).to.not.be.called;
+            expect(result).to.be.true;
+        });
+    });
+
+    describe('onHighlightMouseMove()', () => {
+        it('should set didMouseMove to true if the mouse was moved enough', () => {
+            annotator.mouseX = 0;
+            annotator.mouseY = 0;
+
+            annotator.onHighlightMouseMove({ clientX: 10, clientY: 10 });
+
+            expect(annotator.didMouseMove).to.equal(true);
+        });
+
+        it('should not set didMouseMove to true if the mouse was not moved enough', () => {
+            annotator.mouseX = 0;
+            annotator.mouseY = 0;
+
+            annotator.onHighlightMouseMove({ clientX: 3, clientY: 3 });
+
+            expect(annotator.didMouseMove).to.equal(undefined);
+        });
+
+        it('should assign the mouseMoveEvent if the annotator is highlighting', () => {
+            const moveEvent = { clientX: 10, clientY: 10 };
+            annotator.mouseX = 0;
+            annotator.mouseY = 0;
+
+            annotator.onHighlightMouseMove(moveEvent);
+
+            expect(annotator.mouseMoveEvent).to.deep.equal(moveEvent);
+        });
+
+        it('should not assign the mouseMoveEvent if the annotator is highlighting', () => {
+            const moveEvent = { clientX: 10, clientY: 10 };
+            annotator.mouseX = 0;
+            annotator.mouseY = 0;
+            annotator.isCreatingHighlight = true;
+
+            annotator.onHighlightMouseMove(moveEvent);
+
+            expect(annotator.mouseMoveEvent).to.not.deep.equal(moveEvent);
+        });
+    });
+
+    describe('onHighlightCheck()', () => {
+        beforeEach(() => {
             stubs.thread = {
                 onMousemove: () => {},
                 show: () => {}
@@ -442,42 +511,28 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             };
             stubs.delayMock = sandbox.mock(stubs.delayThread);
 
-            stubs.getPage = stubs.getPage.returns({ pageEl: {}, page: 1 });
+            stubs.getPageInfo = stubs.getPageInfo.returns({ pageEl: {}, page: 1 });
             stubs.getThreads = sandbox.stub(annotator, 'getHighlightThreadsOnPage');
-
             stubs.clock = sinon.useFakeTimers();
+
+            let timer = 0;
+            window.performance = window.performance || { now: () => {} };
+            sandbox.stub(window.performance, 'now', () => {
+                return (timer += 500);
+            });
         });
 
         afterEach(() => {
             stubs.clock.restore();
         });
 
-        it('should do nothing if the throttledHighlightMousemoveHandler already exists', () => {
-            annotator.throttledHighlightMousemoveHandler = true;
-            stubs.threadMock.expects('onMousemove').returns(false).never();
-            stubs.delayMock.expects('onMousemove').returns(true).never();
-
-            const result = annotator.highlightMousemoveHandler();
-
-            expect(stubs.getThreads).to.not.be.called;
-            expect(result).to.be.true;
-        });
-
-        it('should do nothing if there are pending, pending-active, active, or active hover highlight threads', () => {
-            stubs.thread.state = constants.ANNOTATION_STATE_PENDING;
-            stubs.getThreads.returns([stubs.thread]);
-
-            const result = annotator.highlightMousemoveHandler()({ x: 1, y: 2 });
-
-            expect(stubs.getThreads).to.be.called;
-            expect(result).to.equal(undefined);
-        });
-
         it('should not add any delayThreads if there are no threads on the current page', () => {
             stubs.threadMock.expects('onMousemove').returns(false).never();
             stubs.delayMock.expects('onMousemove').returns(true).never();
             stubs.getThreads.returns([]);
-            annotator.highlightMousemoveHandler()({ clientX: 3, clientY: 3 });
+
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
         });
 
         it('should add delayThreads and hide innactive threads if the page is found', () => {
@@ -487,7 +542,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.threadMock.expects('show').never();
             stubs.delayMock.expects('show');
 
-            annotator.highlightMousemoveHandler()({ clientX: 3, clientY: 3 });
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
         });
 
         it('should not trigger other highlights if user is creating a new highlight', () => {
@@ -495,27 +551,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.isCreatingHighlight = true;
             stubs.delayMock.expects('show').never();
             stubs.delayMock.expects('hideDialog').never();
-            annotator.highlightMousemoveHandler()({ clientX: 3, clientY: 3 });
-        });
 
-        it('should set _didMouseMove to true if the mouse was moved enough', () => {
-            stubs.getThreads.returns([]);
-            annotator.mouseX = 0;
-            annotator.mouseY = 0;
-
-            annotator.highlightMousemoveHandler()({ clientX: 10, clientY: 10 });
-
-            expect(annotator.didMouseMove).to.equal(true);
-        });
-
-        it('should not set _didMouseMove to true if the mouse was not moved enough', () => {
-            stubs.getThreads.returns([]);
-            annotator.mouseX = 0;
-            annotator.mouseY = 0;
-
-            annotator.highlightMousemoveHandler()({ clientX: 3, clientY: 3 });
-
-            expect(annotator.didMouseMove).to.equal(undefined);
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
         });
 
         it('should switch to the text cursor if mouse is no longer hovering over a highlight', () => {
@@ -523,11 +561,26 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.getThreads.returns([stubs.delayThread]);
             sandbox.stub(annotator, 'removeDefaultCursor');
 
-            annotator.highlightMousemoveHandler()({ clientX: 3, clientY: 3 });
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
+
             expect(annotator.removeDefaultCursor).to.not.be.called;
 
             stubs.clock.tick(75);
             expect(annotator.removeDefaultCursor).to.be.called;
+        });
+
+        it('should switch to the hand cursor if mouse is hovering over a highlight', () => {
+            stubs.delayMock.expects('onMousemove').returns(true);
+            stubs.getThreads.returns([stubs.delayThread]);
+            sandbox.stub(annotator, 'useDefaultCursor');
+
+            stubs.delayThread.state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
+
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
+
+            expect(annotator.useDefaultCursor).to.be.called;
         });
 
         it('should show the top-most delayed thread, and hide all others', () => {
@@ -536,7 +589,19 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.delayMock.expects('show');
             stubs.delayMock.expects('hideDialog');
 
-            annotator.highlightMousemoveHandler()({ clientX: 3, clientY: 3 });
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
+        });
+
+        it('should do nothing if there are pending, pending-active, active, or active hover highlight threads', () => {
+            stubs.thread.state = constants.ANNOTATION_STATE_PENDING;
+            stubs.threadMock.expects('onMousemove').returns(false).never();
+            stubs.getThreads.returns([stubs.thread]);
+
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
+
+            expect(stubs.getThreads).to.be.called;
         });
     });
 
@@ -569,7 +634,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             };
             stubs.threadMock = sandbox.mock(stubs.thread);
 
-            stubs.getPage = stubs.getPage.returns({ pageEl: {}, page: 1 });
+            stubs.getPageInfo = stubs.getPageInfo.returns({ pageEl: {}, page: 1 });
             stubs.hasActiveDialog = sandbox.stub(docAnnotatorUtil, 'hasActiveDialog').returns(false);
             stubs.getThreads = sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns([]);
             stubs.getLocation = sandbox.stub(annotator, 'getLocationFromEvent').returns(undefined);
@@ -642,7 +707,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             };
             stubs.threadMock = sandbox.mock(stubs.thread);
 
-            stubs.getPage = stubs.getPage.returns({ pageEl: {}, page: 1 });
+            stubs.getPageInfo = stubs.getPageInfo.returns({ pageEl: {}, page: 1 });
             stubs.getAllThreads = sandbox.stub(annotator, 'getThreadsWithStates').returns([]);
             stubs.getThreads = sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns([stubs.thread]);
         });
