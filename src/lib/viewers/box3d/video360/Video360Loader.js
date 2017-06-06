@@ -57,7 +57,7 @@ class Video360Loader extends Base360Loader {
             // If a 360 viewer but it is on IOS OR
             // If browser doesn't support WebGL
             if (!isSupportedBrowser || isIOS || !Browser.hasWebGL()) {
-                const message = replacePlaceholders(__('error_unsupported'), [__('360_videos')]);
+                const message = replacePlaceholders(__('error_browser_unsupported'), [__('360_videos')]);
                 throw new Error(message);
             }
         }
