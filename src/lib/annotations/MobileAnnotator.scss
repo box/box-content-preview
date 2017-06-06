@@ -8,16 +8,26 @@ $tablet: "(min-width: 768px)";
     top: 0;
     width: 100%;
 
-    &.bp-animate-show-dialog:not(.bp-plain-highlight) {
-        animation: show-dialog-small;
-        animation-duration: .2s;
-        animation-fill-mode: forwards;
+    &.bp-animate-show-dialog {
 
-        @media #{$tablet} {
-            animation: show-dialog-tablet;
+        &:not(.bp-plain-highlight) {
+            animation: show-dialog-small;
             animation-duration: .2s;
             animation-fill-mode: forwards;
-            width: 450px;
+
+            @media #{$tablet} {
+                border-left: solid 1px #ccc;
+                animation: show-dialog-tablet;
+                animation-duration: .2s;
+                animation-fill-mode: forwards;
+                width: 450px;
+            }
+        }
+
+        &.bp-plain-highlight {
+            animation: show-highlight-dialog;
+            animation-duration: .2s;
+            animation-fill-mode: forwards;
         }
     }
 }
@@ -39,6 +49,17 @@ $tablet: "(min-width: 768px)";
 
     100% {
         right: 0%;
+    }
+}
+
+
+@keyframes show-highlight-dialog {
+    0% {
+        top: -48px;
+    }
+
+    100% {
+        top: 1px;
     }
 }
 
