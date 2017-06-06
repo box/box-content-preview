@@ -443,7 +443,7 @@ function isThreadInHoverState(thread) {
         this.mouseMoveEvent = null;
         this.throttleTimer = performance.now();
         // Only filter through highlight threads on the current page
-        const { page } = annotatorUtil.getPageElAndPageNumber(event.target);
+        const { page } = annotatorUtil.getPageInfo(event.target);
         const pageThreads = this.getHighlightThreadsOnPage(page);
         const delayThreads = [];
         let hoverActive = false;
