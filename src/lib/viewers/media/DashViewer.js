@@ -129,6 +129,7 @@ const MANIFEST = 'manifest.mpd';
         this.adapting = true;
         this.player = new shaka.Player(this.mediaEl);
         this.player.addEventListener('adaptation', this.adaptationHandler);
+        this.player.addEventListener('error', this.shakaErrorHandler);
         this.player.configure({
             abr: {
                 enabled: true
@@ -291,6 +292,25 @@ const MANIFEST = 'manifest.mpd';
             this.emit('adaptation', activeTrack.bandwidth);
         }
         this.hideLoadingIcon();
+    }
+
+    /**
+     * Handles errors thrown by shaka player. See https://shaka-player-demo.appspot.com/docs/api/shaka.util.Error.html
+     *
+     * @private
+     * @param {Object} shakaError
+     * @return {void}
+     */
+    shakaErrorHandler(shakaError) {
+        const error = new Error(
+            `Shaka error. Code = ${shakaError.detail.code}, Category = ${shakaError.detail.category}, Severity = ${shakaError.detail.severity}`
+        );
+        error.displayMessage = __('error_refresh');
+
+        if (shakaError.detail.severity > 1) {
+            // critical error
+            this.emit('error', error);
+        }
     }
 
     /**

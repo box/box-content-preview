@@ -192,6 +192,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.mediaUrl = 'url';
             sandbox.stub(shaka, 'Player').returns(dash.player);
             stubs.mockPlayer.expects('addEventListener').withArgs('adaptation', sinon.match.func);
+            stubs.mockPlayer.expects('addEventListener').withArgs('error', sinon.match.func);
             stubs.mockPlayer.expects('configure');
             stubs.mockPlayer.expects('load').withArgs('url');
 
@@ -344,6 +345,36 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.adaptationHandler();
             expect(dash.emit).to.not.be.called;
             expect(stubs.hide).to.be.called;
+        });
+    });
+
+    describe('shakaErrorHandler()', () => {
+        it('should emit error on critical shaka errors', () => {
+            const shakaError = {
+                detail: {
+                    severity: 2, // critical severity
+                    category: 1,
+                    code: 1100
+                }
+            };
+
+            dash.shakaErrorHandler(shakaError);
+
+            expect(dash.emit).to.be.calledWith('error');
+        });
+
+        it('should not emit error on recoverable shaka errors', () => {
+            const shakaError = {
+                detail: {
+                    severity: 1, // recoverable severity
+                    category: 1,
+                    code: 1100
+                }
+            };
+
+            dash.shakaErrorHandler(shakaError);
+
+            expect(dash.emit).to.not.be.called;
         });
     });
 

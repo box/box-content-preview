@@ -74,7 +74,7 @@ function setupLoading() {
     iconWrapperEl.innerHTML = ICON_FILE_DEFAULT;
 
     const loadingTextEl = loadingWrapperEl.querySelector(SELECTOR_BOX_PREVIEW_LOADING_TEXT);
-    loadingTextEl.textContent = __('generating_preview');
+    loadingTextEl.textContent = __('loading_preview');
 
     const loadingDownloadButtonEl = loadingWrapperEl.querySelector(SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
     loadingDownloadButtonEl.textContent = __('download_file');
