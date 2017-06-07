@@ -81,11 +81,14 @@ class Box3DRenderer extends EventEmitter {
      */
     destroy() {
         this.removeListener(EVENT_TRIGGER_RENDER, this.handleOnRender);
-        this.box3d.canvas.removeEventListener('webglcontextlost', this.handleContextLost, false);
-        this.box3d.canvas.removeEventListener('webglcontextrestored', this.handleContextRestored, false);
 
         if (!this.box3d) {
             return;
+        }
+
+        if (this.box3d.canvas) {
+            this.box3d.canvas.removeEventListener('webglcontextlost', this.handleContextLost, false);
+            this.box3d.canvas.removeEventListener('webglcontextrestored', this.handleContextRestored, false);
         }
 
         this.disableVr();
@@ -218,8 +221,10 @@ class Box3DRenderer extends EventEmitter {
             engineName: 'Default',
             resourceLoader
         });
-        box3d.canvas.addEventListener('webglcontextlost', this.handleContextLost, false);
-        box3d.canvas.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+        if (box3d.canvas) {
+            box3d.canvas.addEventListener('webglcontextlost', this.handleContextLost, false);
+            box3d.canvas.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+        }
         return new Promise((resolve) => {
             box3d.addEntities(sceneEntities);
             const app = box3d.getAssetById('APP_ASSET_ID');
@@ -232,13 +237,21 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Catch loss of WebGL context and prevent browser default behavior
      * of displaying an error message. This could happen for various reasons
-     * @param {*} event The event for the context loss.
+     * including the browser trying to recover from a driver error to another
+     * application requesting a context.
+     *
+     * @param {Event} event The event for the context loss.
+     * @return {void}
      */
     handleContextLost(event) {
         event.preventDefault();
     }
 
-    /** When the WebGL context has been restored by the browser, reload the preview. */
+    /**
+     * When the WebGL context has been restored by the browser, reload the preview.
+     *
+     * @return {void}
+     */
     handleContextRestored() {
         this.emit(EVENT_WEBGL_CONTEXT_RESTORED);
     }
