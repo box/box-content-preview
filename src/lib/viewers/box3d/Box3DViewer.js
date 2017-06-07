@@ -194,7 +194,11 @@ const CLASS_VR_ENABLED = 'vr-enabled';
         fullscreen.toggle(this.containerEl);
     }
 
-    /** Handle the restoration of the WebGL context by reloading the preview. */
+    /**
+     * Handle the restoration of the WebGL context by reloading the preview.
+     *
+     * @return {void}
+     */
     handleContextRestored() {
         this.emit('reload');
     }
