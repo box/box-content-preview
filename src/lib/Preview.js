@@ -153,6 +153,13 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
     retryCount = 0;
 
     /**
+     * Lets Preview know that an intentional reload is happening.
+     *
+     * @property {boolean}
+     */
+    forceReload = false;
+
+    /**
      * Retry count for preview logging
      *
      * @property {number}
@@ -784,11 +791,14 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
             // - Cached file isn't valid
             // - Cached file is stale
             // - File is watermarked
+            // - We are doing an intentional reload
             const shouldLoadViewer =
                 !cachedFile ||
                 !checkFileValid(cachedFile) ||
                 cachedFile.file_version.sha1 !== file.file_version.sha1 ||
-                isWatermarked;
+                isWatermarked ||
+                this.forceReload;
+            this.forceReload = false;
 
             if (shouldLoadViewer) {
                 this.logger.setCacheStale();
@@ -886,6 +896,8 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
                     this.download();
                     break;
                 case 'reload':
+                    this.retryCount = 0;
+                    this.forceReload = true;
                     this.show(this.file.id, this.previewOptions);
                     break;
                 case 'load':

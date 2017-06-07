@@ -1,7 +1,11 @@
 /* global Box3D */
 /* eslint no-param-reassign:0 */
 import EventEmitter from 'events';
-import { EVENT_SHOW_VR_BUTTON, EVENT_SCENE_LOADED, EVENT_TRIGGER_RENDER } from './box3DConstants';
+import {
+    EVENT_SHOW_VR_BUTTON,
+    EVENT_SCENE_LOADED,
+    EVENT_TRIGGER_RENDER,
+    EVENT_WEBGL_CONTEXT_RESTORED } from './box3DConstants';
 import { MODEL3D_STATIC_ASSETS_VERSION } from '../../constants';
 
 const PREVIEW_CAMERA_CONTROLLER_ID = 'orbit_camera';
@@ -49,6 +53,8 @@ class Box3DRenderer extends EventEmitter {
         this.defaultCameraQuaternion = PREVIEW_CAMERA_QUATERNION;
         this.vrGamepadLoadPromises = {};
         this.vrCommonLoadPromise = null;
+        this.handleContextLost = this.handleContextLost.bind(this);
+        this.handleContextRestored = this.handleContextRestored.bind(this);
     }
 
     /**
@@ -75,6 +81,8 @@ class Box3DRenderer extends EventEmitter {
      */
     destroy() {
         this.removeListener(EVENT_TRIGGER_RENDER, this.handleOnRender);
+        this.box3d.canvas.removeEventListener('webglcontextlost', this.handleContextLost, false);
+        this.box3d.canvas.removeEventListener('webglcontextrestored', this.handleContextRestored, false);
 
         if (!this.box3d) {
             return;
@@ -210,6 +218,8 @@ class Box3DRenderer extends EventEmitter {
             engineName: 'Default',
             resourceLoader
         });
+        box3d.canvas.addEventListener('webglcontextlost', this.handleContextLost, false);
+        box3d.canvas.addEventListener('webglcontextrestored', this.handleContextRestored, false);
         return new Promise((resolve) => {
             box3d.addEntities(sceneEntities);
             const app = box3d.getAssetById('APP_ASSET_ID');
@@ -217,6 +227,20 @@ class Box3DRenderer extends EventEmitter {
             this.box3d = box3d;
             resolve(this.box3d);
         });
+    }
+
+    /**
+     * Catch loss of WebGL context and prevent browser default behavior
+     * of displaying an error message. This could happen for various reasons
+     * @param {*} event The event for the context loss.
+     */
+    handleContextLost(event) {
+        event.preventDefault();
+    }
+
+    /** When the WebGL context has been restored by the browser, reload the preview. */
+    handleContextRestored() {
+        this.emit(EVENT_WEBGL_CONTEXT_RESTORED);
     }
 
     /**

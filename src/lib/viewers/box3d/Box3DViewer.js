@@ -13,7 +13,8 @@ import {
     EVENT_SCENE_LOADED,
     EVENT_SHOW_VR_BUTTON,
     EVENT_TOGGLE_FULLSCREEN,
-    EVENT_TOGGLE_VR
+    EVENT_TOGGLE_VR,
+    EVENT_WEBGL_CONTEXT_RESTORED
 } from './box3DConstants';
 import JS from './box3DAssets';
 import './Box3D.scss';
@@ -72,6 +73,7 @@ const CLASS_VR_ENABLED = 'vr-enabled';
             this.renderer.on(EVENT_SCENE_LOADED, this.handleSceneLoaded);
             this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
             this.renderer.on(EVENT_ERROR, this.handleError);
+            this.renderer.on(EVENT_WEBGL_CONTEXT_RESTORED, this.handleContextRestored);
         }
 
         // For addition/removal of VR class when display stops presenting
@@ -96,6 +98,7 @@ const CLASS_VR_ENABLED = 'vr-enabled';
             this.renderer.removeListener(EVENT_SCENE_LOADED, this.handleSceneLoaded);
             this.renderer.removeListener(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
             this.renderer.removeListener(EVENT_ERROR, this.handleError);
+            this.renderer.removeListener(EVENT_WEBGL_CONTEXT_RESTORED, this.handleContextRestored);
         }
 
         window.removeEventListener('vrdisplaypresentchange', this.onVrPresentChange);
@@ -189,6 +192,11 @@ const CLASS_VR_ENABLED = 'vr-enabled';
      */
     toggleFullscreen() {
         fullscreen.toggle(this.containerEl);
+    }
+
+    /** Handle the restoration of the WebGL context by reloading the preview. */
+    handleContextRestored() {
+        this.emit('reload');
     }
 
     /**
