@@ -5,7 +5,9 @@ import {
     EVENT_SHOW_VR_BUTTON,
     EVENT_SCENE_LOADED,
     EVENT_TRIGGER_RENDER,
-    EVENT_WEBGL_CONTEXT_RESTORED } from './box3DConstants';
+    EVENT_WEBGL_CONTEXT_RESTORED,
+    EVENT_WEBGL_CONTEXT_LOST
+} from './box3DConstants';
 import { MODEL3D_STATIC_ASSETS_VERSION } from '../../constants';
 
 const PREVIEW_CAMERA_CONTROLLER_ID = 'orbit_camera';
@@ -245,6 +247,7 @@ class Box3DRenderer extends EventEmitter {
      */
     handleContextLost(event) {
         event.preventDefault();
+        this.emit(EVENT_WEBGL_CONTEXT_LOST);
     }
 
     /**

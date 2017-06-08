@@ -784,7 +784,6 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
             // - Cached file isn't valid
             // - Cached file is stale
             // - File is watermarked
-            // - We are doing an intentional reload
             const shouldLoadViewer =
                 !cachedFile ||
                 !checkFileValid(cachedFile) ||

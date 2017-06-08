@@ -533,15 +533,35 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
         });
     });
 
+    describe('handleContextLost()', () => {
+        it('should call destroySubModules', () => {
+            const destroySubModules = sandbox.stub(box3d, 'destroySubModules', () => {});
+            box3d.handleContextLost();
+            expect(destroySubModules).to.be.called;
+        });
+    });
+
     describe('handleContextRestored()', () => {
-        it('should call emit() with params ["reload"]', () => {
+        it('should call emit() with params ["progressstart"]', () => {
             const emitStub = sandbox.stub(box3d, 'emit', (eventName) => {
-                expect(eventName).to.equal('reload');
+                expect(eventName).to.equal('progressstart');
             });
 
             box3d.handleContextRestored();
 
             expect(emitStub).to.be.called;
+        });
+
+        it('should call detachEventHandlers', () => {
+            const detachHandlers = sandbox.stub(box3d, 'detachEventHandlers', () => {});
+            box3d.handleContextRestored();
+            expect(detachHandlers).to.be.called;
+        });
+
+        it('should call postLoad', () => {
+            box3d.postLoad = sandbox.stub();
+            box3d.handleContextRestored();
+            expect(box3d.postLoad).to.be.called;
         });
     });
 });
