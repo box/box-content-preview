@@ -4,7 +4,9 @@ import fullscreen from '../../Fullscreen';
 import Box3DControls from './Box3DControls';
 import Box3DRenderer from './Box3DRenderer';
 import Browser from '../../Browser';
+import Notification from '../../Notification';
 import { get } from '../../util';
+import { showLoadingIndicator } from '../../ui';
 import {
     CSS_CLASS_BOX3D,
     EVENT_ERROR,
@@ -13,7 +15,9 @@ import {
     EVENT_SCENE_LOADED,
     EVENT_SHOW_VR_BUTTON,
     EVENT_TOGGLE_FULLSCREEN,
-    EVENT_TOGGLE_VR
+    EVENT_TOGGLE_VR,
+    EVENT_WEBGL_CONTEXT_RESTORED,
+    EVENT_WEBGL_CONTEXT_LOST
 } from './box3DConstants';
 import JS from './box3DAssets';
 import './Box3D.scss';
@@ -42,6 +46,7 @@ const CLASS_VR_ENABLED = 'vr-enabled';
 
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_BOX3D;
+        this.contextNotification = new Notification(this.wrapperEl);
 
         this.loadTimeout = LOAD_TIMEOUT;
     }
@@ -72,6 +77,8 @@ const CLASS_VR_ENABLED = 'vr-enabled';
             this.renderer.on(EVENT_SCENE_LOADED, this.handleSceneLoaded);
             this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
             this.renderer.on(EVENT_ERROR, this.handleError);
+            this.renderer.on(EVENT_WEBGL_CONTEXT_RESTORED, this.handleContextRestored);
+            this.renderer.on(EVENT_WEBGL_CONTEXT_LOST, this.handleContextLost);
         }
 
         // For addition/removal of VR class when display stops presenting
@@ -96,6 +103,8 @@ const CLASS_VR_ENABLED = 'vr-enabled';
             this.renderer.removeListener(EVENT_SCENE_LOADED, this.handleSceneLoaded);
             this.renderer.removeListener(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
             this.renderer.removeListener(EVENT_ERROR, this.handleError);
+            this.renderer.removeListener(EVENT_WEBGL_CONTEXT_RESTORED, this.handleContextRestored);
+            this.renderer.removeListener(EVENT_WEBGL_CONTEXT_LOST, this.handleContextLost);
         }
 
         window.removeEventListener('vrdisplaypresentchange', this.onVrPresentChange);
@@ -122,15 +131,23 @@ const CLASS_VR_ENABLED = 'vr-enabled';
         super.destroy();
 
         this.detachEventHandlers();
+        this.destroySubModules();
 
+        this.destroyed = true;
+    }
+
+    /**
+     * Destroy any submodules required for previewing this document
+     *
+     * @return {void}
+     */
+    destroySubModules() {
         if (this.controls) {
             this.controls.destroy();
         }
         if (this.renderer) {
             this.renderer.destroy();
         }
-
-        this.destroyed = true;
     }
 
     /**
@@ -189,6 +206,29 @@ const CLASS_VR_ENABLED = 'vr-enabled';
      */
     toggleFullscreen() {
         fullscreen.toggle(this.containerEl);
+    }
+
+    /**
+     * Handle the loss of the WebGL context by cleaning up the controls and renderer.
+     *
+     * @return {void}
+     */
+    handleContextLost() {
+        this.contextNotification.show('WebGL Context Lost');
+        this.destroySubModules();
+    }
+
+    /**
+     * Handle the restoration of the WebGL context by reloading the preview.
+     *
+     * @return {void}
+     */
+    handleContextRestored() {
+        this.detachEventHandlers();
+        this.contextNotification.show('WebGL Context Restored');
+        this.emit('progressstart');
+        showLoadingIndicator();
+        this.postLoad();
     }
 
     /**

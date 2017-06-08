@@ -9,6 +9,8 @@ export const EVENT_SCENE_LOADED = 'sceneLoaded';
 export const EVENT_SHOW_VR_BUTTON = 'showVrButton';
 export const EVENT_TOGGLE_FULLSCREEN = 'toggleFullscreen';
 export const EVENT_TRIGGER_RENDER = 'triggerRender';
+export const EVENT_WEBGL_CONTEXT_RESTORED = 'webglContextRestored';
+export const EVENT_WEBGL_CONTEXT_LOST = 'webglContextLost';
 
 // CSS CLASSES
 export const CSS_CLASS_BOX3D = 'bp-box3d';

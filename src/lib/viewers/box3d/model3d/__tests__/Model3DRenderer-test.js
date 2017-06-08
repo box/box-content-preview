@@ -90,8 +90,9 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
     describe('destroy()', () => {
         it('should remove event listener from the engine instance canvas', () => {
-            sandbox.mock(renderer.box3d.canvas).expects('removeEventListener');
+            const removeListener = sandbox.stub(renderer.box3d.canvas, 'removeEventListener');
             renderer.destroy();
+            expect(removeListener).to.be.called;
         });
 
         it('should do nothing if there is not box3d runtime instance', () => {

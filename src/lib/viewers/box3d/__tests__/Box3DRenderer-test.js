@@ -1,7 +1,7 @@
 /* global Box3D */
 /* eslint-disable no-unused-expressions */
 import Box3DRenderer from '../Box3DRenderer';
-import { EVENT_SHOW_VR_BUTTON } from '../box3DConstants';
+import { EVENT_SHOW_VR_BUTTON, EVENT_WEBGL_CONTEXT_RESTORED } from '../box3DConstants';
 
 const sandbox = sinon.sandbox.create();
 const PREVIEW_CAMERA_CONTROLLER_ID = 'orbit_camera';
@@ -359,6 +359,28 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             expect(shouldBePromise).to.be.a('promise');
         });
 
+        it('should bind to context loss and restore events', (done) => {
+            sandbox.stub(renderer, 'handleContextRestored');
+            const Box3DFake = {
+                Engine: function constructor() {
+                    this.addEntities = sandbox.stub();
+                    this.getAssetById = sandbox.stub().returns({
+                        load: function load() {}
+                    });
+                    this.canvas = { addEventListener: () => {}};
+                    sandbox.stub(this.canvas, 'addEventListener', () => {
+                        renderer.handleContextRestored()
+                    })
+                }
+            };
+            window.Box3D = Box3DFake;
+            renderer.createBox3d({}, {}).then(() => {
+                expect(renderer.box3d.canvas.addEventListener).to.be.called.twice;
+                expect(renderer.handleContextRestored).to.be.called;
+                done();
+            });
+        });
+
         it('should not set reference if error occurs initializing engine', (done) => {
             const Box3DFake = {
                 Engine: function constructor() {
@@ -406,6 +428,16 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             mock.expects('emit').withArgs('sceneLoaded');
             mock.expects('initVr');
             renderer.onSceneLoad();
+        });
+    });
+
+    describe('handleContextRestored()', () => {
+        it('should fire event to be picked up by the viewer', () => {
+            const emitStub = sandbox.stub(renderer, 'emit', (eventName) => {
+                expect(eventName).to.equal(EVENT_WEBGL_CONTEXT_RESTORED);
+            });
+            renderer.handleContextRestored();
+            expect(emitStub).to.be.called;
         });
     });
 
