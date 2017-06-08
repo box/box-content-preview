@@ -66,7 +66,7 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
 
             if (this.mediaContainerEl) {
                 this.mediaContainerEl.removeChild(this.mediaEl);
-                this.mediaContainerEl.removeEventListener(this.containerClickHandler);
+                this.mediaContainerEl.removeEventListener('click', this.containerClickHandler);
             }
         } catch (e) {
             // do nothing
