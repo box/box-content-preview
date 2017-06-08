@@ -5,6 +5,7 @@ import Box3DControls from './Box3DControls';
 import Box3DRenderer from './Box3DRenderer';
 import Browser from '../../Browser';
 import { get } from '../../util';
+import { showLoadingIndicator } from '../../ui';
 import {
     CSS_CLASS_BOX3D,
     EVENT_ERROR,
@@ -125,15 +126,23 @@ const CLASS_VR_ENABLED = 'vr-enabled';
         super.destroy();
 
         this.detachEventHandlers();
+        this.destroySubModules();
 
+        this.destroyed = true;
+    }
+
+    /**
+     * Destroy any submodules required for previewing this document
+     *
+     * @return {void}
+     */
+    destroySubModules() {
         if (this.controls) {
             this.controls.destroy();
         }
         if (this.renderer) {
             this.renderer.destroy();
         }
-
-        this.destroyed = true;
     }
 
     /**
@@ -200,7 +209,11 @@ const CLASS_VR_ENABLED = 'vr-enabled';
      * @return {void}
      */
     handleContextRestored() {
-        this.emit('reload');
+        this.detachEventHandlers();
+        this.destroySubModules();
+        this.emit('progressstart');
+        showLoadingIndicator();
+        this.postLoad();
     }
 
     /**
