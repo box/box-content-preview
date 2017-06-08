@@ -89,8 +89,8 @@ class Box3DRenderer extends EventEmitter {
         }
 
         if (this.box3d.canvas) {
-            this.box3d.canvas.removeEventListener('webglcontextlost', this.handleContextLost, false);
-            this.box3d.canvas.removeEventListener('webglcontextrestored', this.handleContextRestored, false);
+            this.box3d.canvas.removeEventListener('webglcontextlost', this.handleContextLost);
+            this.box3d.canvas.removeEventListener('webglcontextrestored', this.handleContextRestored);
         }
 
         this.disableVr();
@@ -224,8 +224,8 @@ class Box3DRenderer extends EventEmitter {
             resourceLoader
         });
         if (box3d.canvas) {
-            box3d.canvas.addEventListener('webglcontextlost', this.handleContextLost, false);
-            box3d.canvas.addEventListener('webglcontextrestored', this.handleContextRestored, false);
+            box3d.canvas.addEventListener('webglcontextlost', this.handleContextLost);
+            box3d.canvas.addEventListener('webglcontextrestored', this.handleContextRestored);
         }
         return new Promise((resolve) => {
             box3d.addEntities(sceneEntities);
