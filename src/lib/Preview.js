@@ -891,6 +891,9 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
                 case 'load':
                     this.finishLoading(data.data);
                     break;
+                case 'progressstart':
+                    this.startProgressBar();
+                    break;
                 case 'progressend':
                     this.finishProgressBar();
                     break;

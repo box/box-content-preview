@@ -13,7 +13,8 @@ import {
     EVENT_SCENE_LOADED,
     EVENT_SHOW_VR_BUTTON,
     EVENT_TOGGLE_FULLSCREEN,
-    EVENT_TOGGLE_VR
+    EVENT_TOGGLE_VR,
+    EVENT_WEBGL_CONTEXT_RESTORED
 } from '../box3DConstants';
 
 const sandbox = sinon.sandbox.create();
@@ -177,6 +178,15 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
 
                 expect(onSpy.withArgs(EVENT_ERROR).called).to.be.true;
             });
+
+            it('should invoke box3d.renderer.on() with EVENT_WEBGL_CONTEXT_RESTORED', () => {
+                const onSpy = sandbox.spy(box3d.renderer, 'on');
+                onSpy.withArgs(EVENT_WEBGL_CONTEXT_RESTORED);
+
+                box3d.attachEventHandlers();
+
+                expect(onSpy.withArgs(EVENT_WEBGL_CONTEXT_RESTORED).called).to.be.true;
+            });
         });
 
         it('should not attach handlers to renderer if renderer instance doesn\'t exist', () => {
@@ -257,6 +267,15 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
                 box3d.detachEventHandlers();
 
                 expect(detachSpy.withArgs(EVENT_ERROR).called).to.be.true;
+            });
+
+            it('should invoke box3d.renderer.removeListener() with EVENT_WEBGL_CONTEXT_RESTORED', () => {
+                const detachSpy = sandbox.spy(box3d.renderer, 'removeListener');
+                detachSpy.withArgs(EVENT_WEBGL_CONTEXT_RESTORED);
+
+                box3d.detachEventHandlers();
+
+                expect(detachSpy.withArgs(EVENT_WEBGL_CONTEXT_RESTORED).called).to.be.true;
             });
         });
 
@@ -511,6 +530,38 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
             box3d.handleError(error);
 
             expect(emitStub).to.be.called;
+        });
+    });
+
+    describe('handleContextLost()', () => {
+        it('should call destroySubModules', () => {
+            const destroySubModules = sandbox.stub(box3d, 'destroySubModules', () => {});
+            box3d.handleContextLost();
+            expect(destroySubModules).to.be.called;
+        });
+    });
+
+    describe('handleContextRestored()', () => {
+        it('should call emit() with params ["progressstart"]', () => {
+            const emitStub = sandbox.stub(box3d, 'emit', (eventName) => {
+                expect(eventName).to.equal('progressstart');
+            });
+
+            box3d.handleContextRestored();
+
+            expect(emitStub).to.be.called;
+        });
+
+        it('should call detachEventHandlers', () => {
+            const detachHandlers = sandbox.stub(box3d, 'detachEventHandlers', () => {});
+            box3d.handleContextRestored();
+            expect(detachHandlers).to.be.called;
+        });
+
+        it('should call postLoad', () => {
+            box3d.postLoad = sandbox.stub();
+            box3d.handleContextRestored();
+            expect(box3d.postLoad).to.be.called;
         });
     });
 });
