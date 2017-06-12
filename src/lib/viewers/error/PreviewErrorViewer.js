@@ -20,7 +20,7 @@ import './PreviewError.scss';
 
         this.infoEl = this.containerEl.appendChild(document.createElement('div'));
         this.iconEl = this.infoEl.appendChild(document.createElement('div'));
-        this.iconEl.className = 'bp-icon';
+        this.iconEl.className = 'bp-icon bp-icon-file';
         this.messageEl = this.infoEl.appendChild(document.createElement('div'));
         this.infoEl.className = 'bp-error';
     }

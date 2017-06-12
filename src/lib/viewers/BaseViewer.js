@@ -36,17 +36,24 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 @autobind class BaseViewer extends EventEmitter {
     /**
      * Rotation value in degrees of the document, if rotated.
-     * 
+     *
      * @property {number}
      */
     rotationAngle = 0;
 
     /**
      * Scale amount of the document, if zoomed.
-     * 
+     *
      * @property {number}
      */
     scale = 1;
+
+    /**
+     * Viewer specific file loading Icon
+     *
+     * @property {string}
+     */
+    fileLoadingIcon;
 
     /**
      * [constructor]
@@ -587,7 +594,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     /**
      * Orient anntations to the correct scale and orientatio of the annotated document.
      * @TODO(jholdstock|spramod): Remove this once we are emitting the correct messaging.
-     * 
+     *
      * @protected
      * @param {Object} data - Scale and orientation values needed to orient annotations.
      * @return {void}

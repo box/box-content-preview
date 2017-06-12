@@ -71,7 +71,8 @@ $header-height: 48px;
     }
 }
 
-.bp-icon > svg {
+.bp-icon,
+.bp-icon-file > svg {
     height: 120px;
     margin-bottom: 20px;
 }
