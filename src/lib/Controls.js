@@ -24,14 +24,11 @@ class Controls {
         this.controlsEl = this.controlsWrapperEl.appendChild(document.createElement('div'));
         this.controlsEl.className = 'bp-controls';
 
-        // Bind event handlers
-        this.mousemoveHandler = throttle(this.mousemoveHandler.bind(this), CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS - 500);
-        this.moouseenterHandler = this.mouseenterHandler.bind(this);
-        this.mouseleaveHandler = this.mouseleaveHandler.bind(this);
-        this.focusinHandler = this.focusinHandler.bind(this);
-        this.focusoutHandler = this.focusoutHandler.bind(this);
-
-        this.bindControlListeners();
+        this.containerEl.addEventListener('mousemove', this.mousemoveHandler);
+        this.controlsEl.addEventListener('mouseenter', this.mouseenterHandler);
+        this.controlsEl.addEventListener('mouseleave', this.mouseleaveHandler);
+        this.controlsEl.addEventListener('focusin', this.focusinHandler);
+        this.controlsEl.addEventListener('focusout', this.focusoutHandler);
     }
 
     /**
@@ -50,14 +47,6 @@ class Controls {
         });
     }
 
-    bindControlListeners() {
-        this.containerEl.addEventListener('mousemove', this.mousemoveHandler);
-        this.controlsEl.addEventListener('mouseenter', this.mouseenterHandler);
-        this.controlsEl.addEventListener('mouseleave', this.mouseleaveHandler);
-        this.controlsEl.addEventListener('focusin', this.focusinHandler);
-        this.controlsEl.addEventListener('focusout', this.focusoutHandler);
-    }
-
     /**
      * Checks if the button is a preview controls button
      *
@@ -66,10 +55,7 @@ class Controls {
      * @return {boolean} true if element is a preview control button
      */
     isPreviewControlButton(element) {
-        return (
-            !!element &&
-            (element.classList.contains('bp-controls-btn') || element.parentNode.classList.contains('bp-controls-btn'))
-        );
+        return !!element && element.classList.contains('bp-controls-btn');
     }
 
     /**
@@ -99,10 +85,10 @@ class Controls {
      * @private
      * @return {void}
      */
-    mousemoveHandler() {
+    mousemoveHandler = throttle(() => {
         this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
         this.resetTimeout();
-    }
+    }, CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS - 500);
 
     /**
      * Mouse enter handler
@@ -110,9 +96,9 @@ class Controls {
      * @private
      * @return {void}
      */
-    mouseenterHandler() {
+    mouseenterHandler = () => {
         this.blockHiding = true;
-    }
+    };
 
     /**
      * Mouse leave handler
@@ -120,9 +106,9 @@ class Controls {
      * @private
      * @return {void}
      */
-    mouseleaveHandler() {
+    mouseleaveHandler = () => {
         this.blockHiding = false;
-    }
+    };
 
     /**
      * Handles all focusin events for the module.
@@ -130,12 +116,12 @@ class Controls {
      * @param {Event} event - A DOM-normalized event object.
      * @return {void}
      */
-    focusinHandler(event) {
+    focusinHandler = (event) => {
         // When we focus onto a preview control button, show controls
         if (this.isPreviewControlButton(event.target)) {
             this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
         }
-    }
+    };
 
     /**
      * Handles all focusout events for the module.
@@ -143,12 +129,12 @@ class Controls {
      * @param {Event} event - A DOM-normalized event object.
      * @return {void}
      */
-    focusoutHandler(event) {
+    focusoutHandler = (event) => {
         // When we focus out of a control button and aren't focusing onto another control button, hide the controls
         if (this.isPreviewControlButton(event.target) && !this.isPreviewControlButton(event.relatedTarget)) {
             this.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
         }
-    }
+    };
 
     /**
      * Adds buttons to controls
