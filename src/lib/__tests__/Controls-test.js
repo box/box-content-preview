@@ -6,7 +6,6 @@ let controls;
 let clock;
 
 const sandbox = sinon.sandbox.create();
-let stubs;
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 
@@ -18,7 +17,6 @@ describe('lib/Controls', () => {
     beforeEach(() => {
         fixture.load('__tests__/Controls-test.html');
         controls = new Controls(document.getElementById('test-controls-container'));
-        stubs = {};
     });
 
     afterEach(() => {
@@ -30,7 +28,6 @@ describe('lib/Controls', () => {
         }
 
         controls = null;
-        stubs = null;
     });
 
     describe('constructor()', () => {
@@ -47,15 +44,15 @@ describe('lib/Controls', () => {
 
     describe('destroy()', () => {
         it('should remove the correct event listeners', () => {
-            stubs.containerElEventListener = sandbox.stub(controls.containerEl, 'removeEventListener');
-            stubs.controlsElEventListener = sandbox.stub(controls.controlsEl, 'removeEventListener');
+            const containerElEventListener = sandbox.stub(controls.containerEl, 'removeEventListener');
+            const controlsElEventListener = sandbox.stub(controls.controlsEl, 'removeEventListener');
 
             controls.destroy();
-            expect(stubs.containerElEventListener).to.be.calledWith('mousemove', controls.mousemoveHandler);
-            expect(stubs.controlsElEventListener).to.be.calledWith('mouseenter', controls.mouseenterHandler);
-            expect(stubs.controlsElEventListener).to.be.calledWith('mouseleave', controls.mouseleaveHandler);
-            expect(stubs.controlsElEventListener).to.be.calledWith('focusin', controls.focusinHandler);
-            expect(stubs.controlsElEventListener).to.be.calledWith('focusout', controls.focusoutHandler);
+            expect(containerElEventListener).to.be.calledWith('mousemove', controls.mousemoveHandler);
+            expect(controlsElEventListener).to.be.calledWith('mouseenter', controls.mouseenterHandler);
+            expect(controlsElEventListener).to.be.calledWith('mouseleave', controls.mouseleaveHandler);
+            expect(controlsElEventListener).to.be.calledWith('focusin', controls.focusinHandler);
+            expect(controlsElEventListener).to.be.calledWith('focusout', controls.focusoutHandler);
         });
 
         it('should remove click listeners for any button references', () => {
@@ -75,35 +72,15 @@ describe('lib/Controls', () => {
         });
     });
 
-    describe('bindControlListeners()', () => {
-        it('should add the correct event listeners', () => {
-            stubs.addContainerElListener = sandbox.stub(controls.containerEl, 'addEventListener');
-            stubs.addControlsElListener = sandbox.stub(controls.controlsEl, 'addEventListener');
-
-            controls.bindControlListeners();
-            expect(stubs.addContainerElListener).to.be.calledWith('mousemove', controls.mousemoveHandler);
-            expect(stubs.addControlsElListener).to.be.calledWith('mouseenter', controls.mouseenterHandler);
-            expect(stubs.addControlsElListener).to.be.calledWith('mouseleave', controls.mouseleaveHandler);
-            expect(stubs.addControlsElListener).to.be.calledWith('focusin');
-            expect(stubs.addControlsElListener).to.be.calledWith('focusout');
-        });
-    });
-
     describe('isPreviewControlButton()', () => {
         it('should determine whether the element is a preview control button', () => {
             let element = null;
-            let parent = null;
             expect(controls.isPreviewControlButton(element)).to.be.false;
 
-            parent = document.createElement('div');
-            element = parent.appendChild(document.createElement('div'));
+            element = document.createElement('div');
             element.className = 'bp-controls-btn';
             expect(controls.isPreviewControlButton(element)).to.be.true;
 
-            parent.className = 'bp-controls-btn';
-            expect(controls.isPreviewControlButton(element)).to.be.true;
-
-            parent.className = '';
             element.className = '';
             expect(controls.isPreviewControlButton(element)).to.be.false;
         });
