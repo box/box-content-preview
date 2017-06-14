@@ -21,6 +21,7 @@ const LOADING_ICON_MAP = {
     csv: ICON_FILE_SPREADSHEET,
     doc: ICON_FILE_WORD,
     docx: ICON_FILE_WORD,
+    gdoc: ICON_FILE_WORD,
     gsheet: ICON_FILE_SPREADSHEET,
     pdf: ICON_FILE_PDF,
     xls: ICON_FILE_SPREADSHEET,
@@ -28,8 +29,7 @@ const LOADING_ICON_MAP = {
     xlsx: ICON_FILE_SPREADSHEET
 };
 
-@autobind
-class DocumentViewer extends DocBaseViewer {
+@autobind class DocumentViewer extends DocBaseViewer {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
