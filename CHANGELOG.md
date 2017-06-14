@@ -1,5 +1,17 @@
 # Change Log
 
+## [v0.129.0](https://github.com/box/box-content-preview/tree/v0.129.0) (2017-06-14)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.128.0...v0.129.0)
+
+**Merged pull requests:**
+
+- Revert "Chore: Refactoring Controls for mobile" [\#171](https://github.com/box/box-content-preview/pull/171) ([jeremypress](https://github.com/jeremypress))
+- New: File specific loading icons [\#170](https://github.com/box/box-content-preview/pull/170) ([jeremypress](https://github.com/jeremypress))
+- Fix: Fix removeEventListener in MediaBaseViewer [\#169](https://github.com/box/box-content-preview/pull/169) ([bhh1988](https://github.com/bhh1988))
+- Fix: Catch loss of WebGL context in Box3D and reload preview [\#168](https://github.com/box/box-content-preview/pull/168) ([MiiBond](https://github.com/MiiBond))
+- Update Translations [\#167](https://github.com/box/box-content-preview/pull/167) ([boxmoji](https://github.com/boxmoji))
+- Chore: Refactoring Controls for mobile [\#159](https://github.com/box/box-content-preview/pull/159) ([jeremypress](https://github.com/jeremypress))
+
 ## [v0.128.0](https://github.com/box/box-content-preview/tree/v0.128.0) (2017-06-06)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.127.0...v0.128.0)
 
