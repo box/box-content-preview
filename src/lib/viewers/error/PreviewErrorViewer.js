@@ -20,8 +20,19 @@ import './PreviewError.scss';
 
         this.infoEl = this.containerEl.appendChild(document.createElement('div'));
         this.iconEl = this.infoEl.appendChild(document.createElement('div'));
+        this.iconEl.className = 'bp-icon bp-icon-file';
         this.messageEl = this.infoEl.appendChild(document.createElement('div'));
         this.infoEl.className = 'bp-error';
+    }
+
+    /**
+     * Removes the crawler and sets the file type specific loading icon
+     *
+     * @override
+     * @return {void}
+     */
+    finishLoadingSetup() {
+        /* no op, custom loading logic for errors */
     }
 
     /**

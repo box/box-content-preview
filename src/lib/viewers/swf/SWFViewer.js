@@ -1,5 +1,6 @@
 import BaseViewer from '../BaseViewer';
 import { SWF_STATIC_ASSETS_VERSION } from '../../constants';
+import { ICON_FILE_IMAGE } from '../../icons/icons';
 
 const SWF_PARAMS = {
     allowfullscreen: 'true',
@@ -18,7 +19,9 @@ class SWFViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        // Call super() first to set up common layout
+        this.fileLoadingIcon = ICON_FILE_IMAGE;
+
+        // Call super() to set up common layout
         super.setup();
         this.playerEl = this.containerEl.appendChild(document.createElement('div'));
         this.playerEl.id = 'flash-player';

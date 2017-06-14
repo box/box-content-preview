@@ -21,9 +21,12 @@ import {
     CLASS_BOX_PREVIEW_MOBILE,
     SELECTOR_BOX_PREVIEW,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE,
+    SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
+    SELECTOR_BOX_PREVIEW_ICON,
     STATUS_SUCCESS,
     STATUS_VIEWABLE
 } from '../constants';
+import { ICON_FILE_DEFAULT } from '../icons/icons';
 
 const ANNOTATIONS_JS = ['annotations.js'];
 const ANNOTATIONS_CSS = ['annotations.css'];
@@ -33,17 +36,24 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 @autobind class BaseViewer extends EventEmitter {
     /**
      * Rotation value in degrees of the document, if rotated.
-     * 
+     *
      * @property {number}
      */
     rotationAngle = 0;
 
     /**
      * Scale amount of the document, if zoomed.
-     * 
+     *
      * @property {number}
      */
     scale = 1;
+
+    /**
+     * Viewer specific file loading Icon
+     *
+     * @property {string}
+     */
+    fileLoadingIcon;
 
     /**
      * [constructor]
@@ -60,11 +70,13 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     }
 
     /**
-     * Sets up the vewier and its DOM
+     * Sets up the viewer and its DOM
      *
      * @return {void}
      */
     setup() {
+        this.finishLoadingSetup();
+
         // Get the container dom element if selector was passed, in tests
         let { container } = this.options;
         if (typeof container === 'string') {
@@ -91,6 +103,22 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
         if (this.areAnnotationsEnabled() && !this.options.sharedLink) {
             this.annotationsPromise = this.loadAssets(ANNOTATIONS_JS, ANNOTATIONS_CSS);
         }
+    }
+
+    /**
+     * Removes the crawler and sets the file type specific loading icon
+     *
+     * @return {void}
+     */
+    finishLoadingSetup() {
+        const { container } = this.options;
+        const crawler = container.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
+        if (crawler) {
+            crawler.classList.add(CLASS_HIDDEN);
+        }
+
+        const iconWrapperEl = container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
+        iconWrapperEl.innerHTML = this.fileLoadingIcon || ICON_FILE_DEFAULT;
     }
 
     /**
@@ -566,7 +594,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     /**
      * Orient anntations to the correct scale and orientatio of the annotated document.
      * @TODO(jholdstock|spramod): Remove this once we are emitting the correct messaging.
-     * 
+     *
      * @protected
      * @param {Object} data - Scale and orientation values needed to orient annotations.
      * @return {void}

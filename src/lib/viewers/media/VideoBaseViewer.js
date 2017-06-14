@@ -12,7 +12,7 @@ const CLASS_PLAY_BUTTON = 'bp-media-play-button';
      * @inheritdoc
      */
     setup() {
-        // Call super() first to set up common layout
+        // Call super() to set up common layout
         super.setup();
 
         // Video element

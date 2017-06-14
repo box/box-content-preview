@@ -36,6 +36,7 @@ export const CLASS_DARK = 'bp-dark';
 
 export const SELECTOR_BOX_PREVIEW_CONTAINER = `.${CLASS_BOX_PREVIEW_CONTAINER}`;
 export const SELECTOR_BOX_PREVIEW = `.${CLASS_BOX_PREVIEW}`;
+export const SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER = '.bp-crawler-wrapper';
 export const SELECTOR_BOX_PREVIEW_HEADER_BTNS = `.${CLASS_BOX_PREVIEW_HEADER_BTNS}`;
 export const SELECTOR_NAVIGATION_LEFT = '.bp-navigate-left';
 export const SELECTOR_NAVIGATION_RIGHT = '.bp-navigate-right';

@@ -58,6 +58,7 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
 
     describe('setup()', () => {
         beforeEach(() => {
+            sandbox.stub(viewer, 'finishLoadingSetup');
             viewer.setup();
         });
 
@@ -365,6 +366,8 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
                 getBox3D: sandbox.stub().returns(box3d),
                 getScene: sandbox.stub().returns(scene)
             };
+
+            sandbox.stub(viewer, 'finishLoadingSetup');
 
             viewer.setup();
             viewer.renderer = renderer;

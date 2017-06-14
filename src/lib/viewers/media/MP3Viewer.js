@@ -1,5 +1,6 @@
 import autobind from 'autobind-decorator';
 import MediaBaseViewer from './MediaBaseViewer';
+import { ICON_FILE_AUDIO } from '../../icons/icons';
 import './MP3.scss';
 
 const CSS_CLASS_MP3 = 'bp-media-mp3';
@@ -9,7 +10,9 @@ const CSS_CLASS_MP3 = 'bp-media-mp3';
      * @inheritdoc
      */
     setup() {
-        // Call super() first to set up common layout
+        this.fileLoadingIcon = ICON_FILE_AUDIO;
+
+        // Call super() to set up common layout
         super.setup();
 
         // mp3 specific class

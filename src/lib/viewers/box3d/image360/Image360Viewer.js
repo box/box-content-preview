@@ -2,6 +2,7 @@ import './Image360.scss';
 import Box3DViewer from '../Box3DViewer';
 import Box3DControls from '../Box3DControls';
 import Image360Renderer from './Image360Renderer';
+import { ICON_FILE_IMAGE } from '../../../icons/icons';
 
 const CSS_CLASS_IMAGE_360 = 'bp-image-360';
 const LOAD_TIMEOUT = 120000;
@@ -11,7 +12,9 @@ class Image360Viewer extends Box3DViewer {
      * @inheritdoc
      */
     setup() {
-        // Call super() first to set up common layout
+        this.fileLoadingIcon = ICON_FILE_IMAGE;
+
+        // Call super() to set up common layout
         super.setup();
 
         this.wrapperEl.classList.add(CSS_CLASS_IMAGE_360);
