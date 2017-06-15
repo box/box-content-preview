@@ -1,10 +1,25 @@
 import throttle from 'lodash.throttle';
+import Browser from './Browser';
 import { CLASS_HIDDEN } from './constants';
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
 
 class Controls {
+    /**
+     * Indicates If the control bar should be hidden or not
+     *
+     * @property {boolean}
+     */
+    blockHiding = false;
+
+    /**
+     * Indicates If an element in the controls is focused
+     *
+     * @property {boolean}
+     */
+    controlsFocused = false;
+
     /**
      * [constructor]
      *
@@ -29,6 +44,11 @@ class Controls {
         this.controlsEl.addEventListener('mouseleave', this.mouseleaveHandler);
         this.controlsEl.addEventListener('focusin', this.focusinHandler);
         this.controlsEl.addEventListener('focusout', this.focusoutHandler);
+
+        if (Browser.hasTouch()) {
+            this.containerEl.addEventListener('touchstart', this.mousemoveHandler);
+            this.controlsEl.addEventListener('click', this.clickHandler);
+        }
     }
 
     /**
@@ -41,6 +61,11 @@ class Controls {
         this.controlsEl.removeEventListener('mouseleave', this.mouseleaveHandler);
         this.controlsEl.removeEventListener('focusin', this.focusinHandler);
         this.controlsEl.removeEventListener('focusout', this.focusoutHandler);
+
+        if (Browser.hasTouch()) {
+            this.containerEl.removeEventListener('touchstart', this.mousemoveHandler);
+            this.controlsEl.removeEventListener('click', this.clickHandler);
+        }
 
         this.buttonRefs.forEach((ref) => {
             ref.button.removeEventListener('click', ref.handler);
@@ -55,7 +80,10 @@ class Controls {
      * @return {boolean} true if element is a preview control button
      */
     isPreviewControlButton(element) {
-        return !!element && element.classList.contains('bp-controls-btn');
+        return (
+            !!element &&
+            (element.classList.contains('bp-controls-btn') || element.parentNode.classList.contains('bp-controls-btn'))
+        );
     }
 
     /**
@@ -119,22 +147,39 @@ class Controls {
     focusinHandler = (event) => {
         // When we focus onto a preview control button, show controls
         if (this.isPreviewControlButton(event.target)) {
+            this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
+            this.controlsFocused = true;
             this.blockHiding = true;
         }
     };
 
-    // /**
-    //  * Handles all focusout events for the module.
-    //  *
-    //  * @param {Event} event - A DOM-normalized event object.
-    //  * @return {void}
-    //  */
-    // focusoutHandler = (event) => {
-    //     // When we focus out of a control button and aren't focusing onto another control button, hide the controls
-    //     if (this.isPreviewControlButton(event.target) && !this.isPreviewControlButton(event.relatedTarget)) {
-    //         this.blockHiding = false;
-    //     }
-    // };
+    /**
+     * Handles all focusout events for the module.
+     *
+     * @param {Event} event - A DOM-normalized event object.
+     * @return {void}
+     */
+    focusoutHandler = (event) => {
+        // When we focus out of a control button and aren't focusing onto another control button, hide the controls
+        if (this.isPreviewControlButton(event.target) && !this.isPreviewControlButton(event.relatedTarget)) {
+            this.controlsFocused = false;
+            this.blockHiding = false;
+        }
+    };
+
+    /**
+     * Handles click events for the control bar.
+     *
+     * @param {Event} event - A DOM-normalized event object.
+     * @return {void}
+     */
+    clickHandler = (event) => {
+        event.preventDefault();
+        // If we are not focused in on the page num input, allow hiding after timeout
+        if (!this.controlsFocused) {
+            this.blockHiding = false;
+        }
+    };
 
     /**
      * Adds buttons to controls

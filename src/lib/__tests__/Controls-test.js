@@ -74,11 +74,15 @@ describe('lib/Controls', () => {
 
     describe('isPreviewControlButton()', () => {
         it('should determine whether the element is a preview control button', () => {
+            let parent = null;
             let element = null;
             expect(controls.isPreviewControlButton(element)).to.be.false;
 
+            parent = document.createElement('div');
             element = document.createElement('div');
             element.className = 'bp-controls-btn';
+            parent.appendChild(element);
+
             expect(controls.isPreviewControlButton(element)).to.be.true;
 
             element.className = '';
@@ -164,12 +168,14 @@ describe('lib/Controls', () => {
     });
 
     describe('focusinHandler()', () => {
-        it('should add the controls class if the element is a preview control button', () => {
+        it('should add the controls class, block hiding, and set the controls to be focused if the element is a preview control button', () => {
             const isControlButtonStub = sandbox.stub(controls, 'isPreviewControlButton').returns(true);
 
             controls.focusinHandler('event');
             expect(isControlButtonStub).to.be.called;
             expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.true;
+            expect(controls.blockHiding).to.be.true;
+            expect(controls.controlsFocused).to.be.true;
         });
 
         it('should not add the controls class if the element is not a preview control button', () => {
@@ -190,7 +196,8 @@ describe('lib/Controls', () => {
 
             controls.focusoutHandler('event');
             expect(isControlButtonStub).to.be.called;
-            expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.false;
+            expect(controls.blockHiding).to.be.false;
+            expect(controls.controlsFocused).to.be.false;
         });
 
         it('should not remove the controls class if the element is not a preview control button and the related target is not', () => {
@@ -224,6 +231,23 @@ describe('lib/Controls', () => {
             controls.focusoutHandler('event');
             expect(isControlButtonStub).to.be.called;
             expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.true;
+        });
+    });
+
+    describe('clickHandler()', () => {
+        const event = {
+            preventDefault: sandbox.stub()
+        };
+
+        it('should prevent default', () => {
+            controls.clickHandler(event);
+            expect(event.preventDefault).to.be.called;
+        });
+
+        it('should stop block hiding if the controls are not focused', () => {
+            controls.controlsFocused = false;
+            controls.clickHandler(event);
+            expect(controls.blockHiding).to.be.false;
         });
     });
 

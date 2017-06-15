@@ -265,6 +265,17 @@ class Browser {
     }
 
     /**
+     * Returns true if the browser supports touch.
+     * taken from Modernizr: https://github.com/Modernizr/Modernizr/blob/5eea7e2a213edc9e83a47b6414d0250468d83471/feature-detects/touchevents.js#L40
+     *
+     * @public
+     * @return {boolean} Is touch supported
+     */
+    static hasTouch() {
+        return 'ontouchstart' in window || (window.DocumentTouch && document instanceof DocumentTouch);
+    }
+
+    /**
      * Returns whether the browser is a mobile browser.
      *
      * @return {boolean} true if browser supports download
