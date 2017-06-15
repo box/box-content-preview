@@ -119,22 +119,22 @@ class Controls {
     focusinHandler = (event) => {
         // When we focus onto a preview control button, show controls
         if (this.isPreviewControlButton(event.target)) {
-            this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
+            this.blockHiding = true;
         }
     };
 
-    /**
-     * Handles all focusout events for the module.
-     *
-     * @param {Event} event - A DOM-normalized event object.
-     * @return {void}
-     */
-    focusoutHandler = (event) => {
-        // When we focus out of a control button and aren't focusing onto another control button, hide the controls
-        if (this.isPreviewControlButton(event.target) && !this.isPreviewControlButton(event.relatedTarget)) {
-            this.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
-        }
-    };
+    // /**
+    //  * Handles all focusout events for the module.
+    //  *
+    //  * @param {Event} event - A DOM-normalized event object.
+    //  * @return {void}
+    //  */
+    // focusoutHandler = (event) => {
+    //     // When we focus out of a control button and aren't focusing onto another control button, hide the controls
+    //     if (this.isPreviewControlButton(event.target) && !this.isPreviewControlButton(event.relatedTarget)) {
+    //         this.blockHiding = false;
+    //     }
+    // };
 
     /**
      * Adds buttons to controls
