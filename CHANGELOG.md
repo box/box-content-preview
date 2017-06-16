@@ -1,5 +1,12 @@
 # Change Log
 
+## [v0.129.1](https://github.com/box/box-content-preview/tree/v0.129.1) (2017-06-16)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.129.0...v0.129.1)
+
+**Merged pull requests:**
+
+- Fix: Box3D bug prevented loading video texture from video tag [\#172](https://github.com/box/box-content-preview/pull/172) ([MiiBond](https://github.com/MiiBond))
+
 ## [v0.129.0](https://github.com/box/box-content-preview/tree/v0.129.0) (2017-06-14)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.128.0...v0.129.0)
 
