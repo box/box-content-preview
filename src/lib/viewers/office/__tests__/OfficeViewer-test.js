@@ -40,8 +40,8 @@ describe('lib/viewers/office/OfficeViewer', () => {
             location: {
                 locale: 'en-US'
             },
-            appHost: 'app.box.com',
-            apiHost: 'app.box.com',
+            appHost: 'https://app.box.com',
+            apiHost: 'https://app.box.com',
             token: 'token'
         });
         stubs = {
@@ -185,7 +185,7 @@ describe('lib/viewers/office/OfficeViewer', () => {
                 office.options.file.id,
                 office.options.sharedLink
             );
-            expect(src).to.equal('app.box.com/integrations/officeonline/openExcelOnlinePreviewer?fileId=123');
+            expect(src).to.equal('https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?fileId=123');
         });
 
         it('should load a xlsx file and set the shared name in src url on load event when the file is a shared link', () => {
@@ -195,7 +195,9 @@ describe('lib/viewers/office/OfficeViewer', () => {
                 office.options.file.id,
                 office.options.sharedLink
             );
-            expect(src).to.equal('app.box.com/integrations/officeonline/openExcelOnlinePreviewer?s=abcd&fileId=123');
+            expect(src).to.equal(
+                'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?s=abcd&fileId=123'
+            );
         });
 
         it('should load a xlsx file and set the vanity name in src url on load event when the file is a vanity url without a subdomain', () => {
@@ -206,7 +208,7 @@ describe('lib/viewers/office/OfficeViewer', () => {
                 office.options.sharedLink
             );
             expect(src).to.equal(
-                'app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=app&fileId=123'
+                'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=app&fileId=123'
             );
         });
 
@@ -218,7 +220,7 @@ describe('lib/viewers/office/OfficeViewer', () => {
                 office.options.sharedLink
             );
             expect(src).to.equal(
-                'app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=cloud&fileId=123'
+                'https://cloud.app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=cloud&fileId=123'
             );
         });
     });
@@ -226,13 +228,13 @@ describe('lib/viewers/office/OfficeViewer', () => {
     describe('setupWOPISrc()', () => {
         it('should append the file ID if there is no shared link', () => {
             const src = office.setupWOPISrc(office.options.apiHost, office.options.file.id, office.options.sharedLink);
-            expect(src).to.equal('app.box.com/wopi/files/123');
+            expect(src).to.equal('https://app.box.com/wopi/files/123');
         });
 
         it('should append the shared name and file ID if there is a shared link', () => {
             office.options.sharedLink = 'https://app.box.com/s/abcd';
             const src = office.setupWOPISrc(office.options.apiHost, office.options.file.id, office.options.sharedLink);
-            expect(src).to.equal('app.box.com/wopi/files/s_abcd_f_123');
+            expect(src).to.equal('https://app.box.com/wopi/files/s_abcd_f_123');
         });
 
         it('should not append the shared name if there is a vanity link', () => {
