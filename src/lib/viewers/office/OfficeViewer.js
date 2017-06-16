@@ -184,28 +184,30 @@ const MESSAGE_HOST_READY = 'Host_PostmessageReady';
      */
     setupRunmodeURL(appHost, fileId, sharedLink) {
         // @TODO(jpress): Combine with setupWopiSrc Logic when removing the platform fork
-        let runmodeSrc = '/integrations/officeonline/openExcelOnlinePreviewer';
+        let route = '/integrations/officeonline/openExcelOnlinePreviewer';
 
         const domain = document.createElement('a');
         domain.href = sharedLink;
 
         if (sharedLink) {
             // Use the domain in case previewer has a different subdomain
-            runmodeSrc = `${domain.origin}${runmodeSrc}`;
+            // IE 11 does not support link.origin, so we combine the protocol and the hostname
+            const sharedLinkOrigin = `${domain.protocol}//${domain.hostname}`;
+            route = `${sharedLinkOrigin}${route}`;
             // Find the shared or vanity name
             const sharedName = sharedLink.split('/s/')[1];
             if (sharedName) {
-                runmodeSrc = `${runmodeSrc}?s=${sharedName}&fileId=${fileId}`;
+                route = `${route}?s=${sharedName}&fileId=${fileId}`;
             } else {
                 const vanitySubdomain = domain.hostname.split('.')[0];
                 const vanityName = domain.href.split('/v/')[1];
-                runmodeSrc = `${runmodeSrc}?v=${vanityName}&vanity_subdomain=${vanitySubdomain}&fileId=${fileId}`;
+                route = `${route}?v=${vanityName}&vanity_subdomain=${vanitySubdomain}&fileId=${fileId}`;
             }
         } else {
-            runmodeSrc = `${appHost}${runmodeSrc}?fileId=${fileId}`;
+            route = `${appHost}${route}?fileId=${fileId}`;
         }
 
-        return runmodeSrc;
+        return route;
     }
 
     /**

@@ -223,6 +223,29 @@ describe('lib/viewers/office/OfficeViewer', () => {
                 'https://cloud.app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=cloud&fileId=123'
             );
         });
+
+        it('should load a xlsx file with a runmode sourced to the original domain if the appHost differs', () => {
+            office.options.sharedLink = 'https://app.box.com/v/test';
+            office.options.appHost = 'https://cloud.app.box.com';
+            let src = office.setupRunmodeURL(office.options.appHost, office.options.file.id, office.options.sharedLink);
+            expect(src).to.equal(
+                'https://app.box.com/integrations/officeonline/openExcelOnlinePreviewer?v=test&vanity_subdomain=app&fileId=123'
+            );
+
+            office.options.sharedLink = 'https://ibm.box.com/s/abcd';
+            src = office.setupRunmodeURL(office.options.appHost, office.options.file.id, office.options.sharedLink);
+            expect(src).to.equal(
+                'https://ibm.box.com/integrations/officeonline/openExcelOnlinePreviewer?s=abcd&fileId=123'
+            );
+
+            office.options.sharedLink = 'https://cloud.box.com/s/abcd';
+            office.options.appHost = 'https://app.app.box.com';
+
+            src = office.setupRunmodeURL(office.options.appHost, office.options.file.id, office.options.sharedLink);
+            expect(src).to.equal(
+                'https://cloud.box.com/integrations/officeonline/openExcelOnlinePreviewer?s=abcd&fileId=123'
+            );
+        });
     });
 
     describe('setupWOPISrc()', () => {
