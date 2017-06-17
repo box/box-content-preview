@@ -264,6 +264,7 @@ Install the following plugins in your preferred editor
 
 * Editor Config (standardizes basic editor configuration)
 * ESLint (Javascript linting)
+* Prettier & Prettier - ESLint (Automatic Javascript formatting following ESLint config)
 * Stylelint (CSS linting)
 
 ### Yarn commands
