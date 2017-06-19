@@ -150,6 +150,12 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
         dialogCloseButtonEl.removeEventListener('click', this.hideMobileDialog);
 
         annotatorUtil.hideElement(this.element);
+        this.unbindDOMListeners();
+
+        // Cancel any unsaved annotations
+        if (!this.hasAnnotations) {
+            this.cancelAnnotation();
+        }
     }
 
     /**
@@ -370,7 +376,12 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
                 break;
             // Clicking 'Cancel' button to cancel the annotation
             case 'cancel-annotation-btn':
-                this.cancelAnnotation();
+                if (this.isMobile) {
+                    this.hideMobileDialog();
+                } else {
+                    this.cancelAnnotation();
+                }
+
                 this.deactivateReply(true);
                 break;
             // Clicking inside reply text area
