@@ -29,22 +29,94 @@
         "ActiveXObject": false
     },
     "rules": {
-        "quotes": ["error", "single"],
-        "comma-dangle": [2, "never"],
-        "indent": [2, 4, {"SwitchCase": 1}],
-        "import/imports-first": [0],
-        "jsx-quotes": [2, "prefer-single"],
-        "max-len": [0, 120],
-        "react/jsx-indent-props": [2, 4],
-        "react/jsx-indent": [2, 4],
-        "no-underscore-dangle": [0],
-        "react/jsx-filename-extension": [0],
-        "arrow-body-style": [0],
-        "class-methods-use-this": [0],
-        "arrow-parens": ["error", "always"],
-        "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
-        "import/no-extraneous-dependencies": [0],
-        "import/no-webpack-loader-syntax": [0]
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "comma-dangle": [
+            "error",
+            "never"
+        ],
+        "indent": [
+            "error",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "import/imports-first": [
+            "off"
+        ],
+        "jsx-quotes": [
+            "error",
+            "prefer-single"
+        ],
+        "max-len": [
+            "off"
+        ],
+        "react/jsx-indent-props": [
+            "error",
+            4
+        ],
+        "react/jsx-indent": [
+            "error",
+            4
+        ],
+        "no-underscore-dangle": [
+            "off"
+        ],
+        "react/jsx-filename-extension": [
+            "off"
+        ],
+        "arrow-body-style": [
+            "off"
+        ],
+        "class-methods-use-this": [
+            "off"
+        ],
+        "arrow-parens": [
+            "error",
+            "always"
+        ],
+        "no-plusplus": [
+            "error",
+            {
+                "allowForLoopAfterthoughts": true
+            }
+        ],
+        "import/no-extraneous-dependencies": [
+            "off"
+        ],
+        "import/no-webpack-loader-syntax": [
+            "off"
+        ],
+        "require-jsdoc": [
+            "warn",
+            {
+                "require": {
+                    "FunctionDeclaration": true,
+                    "MethodDefinition": false,
+                    "ClassDeclaration": false,
+                    "ArrowFunctionExpression": true
+                }
+            }
+        ],
+        "valid-jsdoc": [
+            "warn",
+            {
+                "prefer": {
+                    "returns": "return",
+                    "class": "constructor"
+                },
+                "preferType": {
+                    "object": "Object",
+                    "array": "Array",
+                    "String": "string",
+                    "Boolean": "boolean",
+                    "Number": "number"
+                }
+            }
+        ]
     },
     "settings": {
         "import/resolver": {
