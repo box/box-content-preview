@@ -58,7 +58,6 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     /**
      * [constructor]
      *
-     * @param {HTMLElement} containerEl - The container
      * @param {Object} options - some options
      * @return {BaseViewer} Instance of base viewer
      */

@@ -383,7 +383,7 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
      * @protected
      * @return {void}
      */
-    cancelAnnotation() {
+    cancelUnsaAnnotation() {
         if (
             !this.isMobile &&
             this.state !== constants.ANNOTATION_STATE_PENDING &&

@@ -224,7 +224,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
     /**
      * Sets up the dialog element.
      *
-     * @param {Annotation[]} Annotations - to show in the dialog
+     * @param {Annotation[]} annotations - to show in the dialog
      * @return {void}
      * @protected
      */
@@ -540,7 +540,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
      * Deactivate reply textarea.
      *
      * @private
-     * @param {Boolean} clearText - Whether or not text in text area should be cleared
+     * @param {boolean} clearText - Whether or not text in text area should be cleared
      * @return {void}
      */
     deactivateReply(clearText) {
