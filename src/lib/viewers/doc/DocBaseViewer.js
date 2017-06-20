@@ -590,7 +590,6 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
         this.pdfViewer.update();
 
         this.setPage(currentPageNumber);
-        this.setScale(this.pdfViewer.currentScale); // Set scale to current numerical scale
 
         super.resize();
     }
@@ -1030,6 +1029,7 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
      * Handler for 'pagerendered' event.
      *
      * @private
+     * @param {Event} event - Pagerendered event
      * @return {void}
      */
     pagerenderedHandler(event) {
@@ -1038,6 +1038,7 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
         if (pageNumber) {
             // Page rendered event
             this.emit('pagerender', pageNumber);
+            this.setScale(this.pdfViewer.currentScale); // Set scale to current numerical scale
 
             // Fire postload event to hide progress bar and cleanup preload after a page is rendered
             if (!this.somePageRendered) {

@@ -877,7 +877,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 pageViewsReady: true
             };
 
-            sandbox.stub(docBase, 'setScale');
             stubs.setPage = sandbox.stub(docBase, 'setPage');
             Object.defineProperty(Object.getPrototypeOf(DocBaseViewer.prototype), 'resize', {
                 value: sandbox.stub()
@@ -907,7 +906,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.pdfViewer.update).to.be.called;
             expect(stubs.setPage).to.be.called;
             expect(BaseViewer.prototype.resize).to.be.called;
-            expect(docBase.setScale).to.be.called;
         });
     });
 
@@ -1482,17 +1480,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
     describe('pagerenderedHandler()', () => {
         beforeEach(() => {
+            docBase.pdfViewer = {
+                currentScale: 0.5
+            };
             docBase.event = {
                 detail: {
                     pageNumber: 1
                 }
             };
             stubs.emit = sandbox.stub(docBase, 'emit');
+            stubs.setscale = sandbox.stub(docBase, 'setScale');
         });
 
         it('should emit the pagerender event', () => {
             docBase.pagerenderedHandler(docBase.event);
             expect(stubs.emit).to.be.calledWith('pagerender');
+            expect(stubs.setscale).to.be.called;
         });
 
         it('should emit postload event if not already emitted', () => {
