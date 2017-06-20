@@ -1,5 +1,14 @@
 # Change Log
 
+## [v0.129.2](https://github.com/box/box-content-preview/tree/v0.129.2) (2017-06-20)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.129.1...v0.129.2)
+
+**Merged pull requests:**
+
+- Chore: Update ESLint rules and VSCode settings [\#176](https://github.com/box/box-content-preview/pull/176) ([tonyjin](https://github.com/tonyjin))
+- Chore: Tweak fade-in timing of file loading animation [\#175](https://github.com/box/box-content-preview/pull/175) ([jeremypress](https://github.com/jeremypress))
+- Fix: Fix shared links previewed in other subdomains [\#173](https://github.com/box/box-content-preview/pull/173) ([jeremypress](https://github.com/jeremypress))
+
 ## [v0.129.1](https://github.com/box/box-content-preview/tree/v0.129.1) (2017-06-16)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.129.0...v0.129.1)
 
