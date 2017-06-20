@@ -184,25 +184,30 @@ const MESSAGE_HOST_READY = 'Host_PostmessageReady';
      */
     setupRunmodeURL(appHost, fileId, sharedLink) {
         // @TODO(jpress): Combine with setupWopiSrc Logic when removing the platform fork
-        let src = `${appHost}/integrations/officeonline/openExcelOnlinePreviewer`;
+        let route = '/integrations/officeonline/openExcelOnlinePreviewer';
+
+        const domain = document.createElement('a');
+        domain.href = sharedLink;
 
         if (sharedLink) {
+            // Use the domain in case previewer has a different subdomain
+            // IE 11 does not support link.origin, so we combine the protocol and the hostname
+            const sharedLinkOrigin = `${domain.protocol}//${domain.hostname}`;
+            route = `${sharedLinkOrigin}${route}`;
             // Find the shared or vanity name
             const sharedName = sharedLink.split('/s/')[1];
             if (sharedName) {
-                src = `${src}?s=${sharedName}&fileId=${fileId}`;
+                route = `${route}?s=${sharedName}&fileId=${fileId}`;
             } else {
-                const tempAnchor = document.createElement('a');
-                tempAnchor.href = sharedLink;
-                const vanitySubdomain = tempAnchor.hostname.split('.')[0];
-                const vanityName = tempAnchor.href.split('/v/')[1];
-                src = `${src}?v=${vanityName}&vanity_subdomain=${vanitySubdomain}&fileId=${fileId}`;
+                const vanitySubdomain = domain.hostname.split('.')[0];
+                const vanityName = domain.href.split('/v/')[1];
+                route = `${route}?v=${vanityName}&vanity_subdomain=${vanitySubdomain}&fileId=${fileId}`;
             }
         } else {
-            src = `${src}?fileId=${fileId}`;
+            route = `${appHost}${route}?fileId=${fileId}`;
         }
 
-        return src;
+        return route;
     }
 
     /**
