@@ -92,6 +92,13 @@
         }
     }
 
+    .bp-doc-page-num-wrapper {
+        background-color: #444;
+        border-radius: 3px;
+        margin: 5px;
+        padding: 7px 5px;
+    }
+
     .bp-doc-page-num-input {
         display: none;
         font-size: 14px;
@@ -101,6 +108,12 @@
     }
 
     &.show-page-number-input {
+        .bp-doc-page-num-wrapper {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+        }
+
         .bp-doc-page-num {
             opacity: 1;
         }
