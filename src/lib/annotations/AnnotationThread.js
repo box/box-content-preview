@@ -357,7 +357,7 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
         }
 
         this.dialog.addListener('annotationcreate', this.createAnnotation);
-        this.dialog.addListener('annotationcancel', this.cancelAnnotation);
+        this.dialog.addListener('annotationcancel', this.cancelUnsavedAnnotation);
         this.dialog.addListener('annotationdelete', this.deleteAnnotationWithID);
     }
 
@@ -383,7 +383,7 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
      * @protected
      * @return {void}
      */
-    cancelUnsaAnnotation() {
+    cancelUnsavedAnnotation() {
         if (
             !this.isMobile &&
             this.state !== constants.ANNOTATION_STATE_PENDING &&
