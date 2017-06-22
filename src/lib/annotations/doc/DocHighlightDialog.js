@@ -195,7 +195,7 @@ const PAGE_PADDING_TOP = 15;
         this.dialogEl = document.createElement('div');
         this.dialogEl.appendChild(this.highlightDialogEl);
         this.dialogEl.appendChild(this.commentsDialogEl);
-        if (annotations.length > 1) {
+        if (this.hasComments) {
             this.highlightDialogEl.classList.add(CLASS_HIDDEN);
         } else {
             this.commentsDialogEl.classList.add(CLASS_HIDDEN);
