@@ -66,6 +66,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
         this.options = options;
         this.repStatuses = [];
         this.isMobile = Browser.isMobile();
+        this.hasTouch = Browser.hasTouch();
     }
 
     /**
