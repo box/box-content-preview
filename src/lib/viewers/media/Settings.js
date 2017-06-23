@@ -14,7 +14,7 @@ const CLASS_SETTINGS_SUBTITLES_UNAVAILABLE = 'bp-media-settings-subtitles-unavai
 const CLASS_SETTINGS_SUBTITLES_ON = 'bp-media-settings-subtitles-on';
 const SELECTOR_SETTINGS_SUB_ITEM = '.bp-media-settings-sub-item';
 const SELECTOR_SETTINGS_VALUE = '.bp-media-settings-value';
-const MEDIA_SPEEDS = ['.25', '0.5', '1.0', '1.25', '1.5', '2.0'];
+const MEDIA_SPEEDS = ['0.25', '0.5', '1.0', '1.25', '1.5', '2.0'];
 
 const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
     <div class="bp-media-settings-menu-main bp-media-settings-menu" role="menu">
@@ -40,7 +40,7 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
             <div class="bp-media-settings-label" aria-label="${__('media_speed')}">${__('media_speed')}</div>
         </div>
         <div class="bp-media-settings-sub-item" data-type="speed" data-value="0.25" tabindex="0" role="menuitemradio">
-            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div
+            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
             <div class="bp-media-settings-value">0.25</div>
         </div>
         <div class="bp-media-settings-sub-item" data-type="speed" data-value="0.5" tabindex="0" role="menuitemradio">
