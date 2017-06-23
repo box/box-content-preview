@@ -45,7 +45,6 @@ const CSS_CLASS_MP3 = 'bp-media-mp3';
      */
     loadUI() {
         super.loadUI();
-
         this.mediaControls.show();
         this.mediaControls.resizeTimeScrubber();
     }
