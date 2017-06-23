@@ -48,6 +48,15 @@ describe('lib/viewers/media/Settings', () => {
         });
     });
 
+    it('should update media speed options upon removal of a speed', () => {
+        const speedsBefore = settings.getMediaSpeeds();
+
+        expect(speedsBefore.length).to.be.above(0);
+        settings.removeSettingOption('speed', speedsBefore[0]);
+        const speedsAfter = settings.getMediaSpeeds();
+        expect(speedsAfter.length).to.be.below(speedsBefore.length);
+    });
+
     describe('increaseSpeed()', () => {
         it('should increase speed one step', () => {
             settings.chooseOption('speed', '1.25');

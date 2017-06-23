@@ -14,7 +14,7 @@ const CLASS_SETTINGS_SUBTITLES_UNAVAILABLE = 'bp-media-settings-subtitles-unavai
 const CLASS_SETTINGS_SUBTITLES_ON = 'bp-media-settings-subtitles-on';
 const SELECTOR_SETTINGS_SUB_ITEM = '.bp-media-settings-sub-item';
 const SELECTOR_SETTINGS_VALUE = '.bp-media-settings-value';
-const MEDIA_SPEEDS = ['0.5', '1.0', '1.25', '1.5', '2.0'];
+const MEDIA_SPEEDS = ['.25', '0.5', '1.0', '1.25', '1.5', '2.0'];
 
 const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
     <div class="bp-media-settings-menu-main bp-media-settings-menu" role="menu">
@@ -38,6 +38,10 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
         <div class="bp-media-settings-sub-item bp-media-settings-sub-item-speed" data-type="menu" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
             <div class="bp-media-settings-label" aria-label="${__('media_speed')}">${__('media_speed')}</div>
+        </div>
+        <div class="bp-media-settings-sub-item" data-type="speed" data-value="0.25" tabindex="0" role="menuitemradio">
+            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div
+            <div class="bp-media-settings-value">0.25</div>
         </div>
         <div class="bp-media-settings-sub-item" data-type="speed" data-value="0.5" tabindex="0" role="menuitemradio">
             <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
@@ -153,6 +157,13 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
     toggleToSubtitle = undefined;
 
     /**
+     * An array of media playback speed options.
+     *
+     * @property {Array}
+     */
+    mediaSpeeds = MEDIA_SPEEDS;
+
+    /**
      * Service to handle the position and movement of a slider element
      *
      * [constructor]
@@ -216,9 +227,33 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      * @return {Array}
      */
     getMediaSpeeds() {
-        return MEDIA_SPEEDS;
+        return this.mediaSpeeds.splice();
     }
 
+    /**
+     * Removes a setting option. If the option does not exist, do nothing.
+     *
+     * @param {string} settingType - The type of setting to be removed.
+     * @param {string} value - The value of the setting to be removed.
+     * @return {void}
+     */
+    removeSettingOption(settingType, value) {
+        const settingRadioElementQuery = `.bp-media-settings-sub-item[data-type='${settingType}'][data-value='${value}']`;
+        const toRemove = this.settingsEl.querySelector(settingRadioElementQuery);
+        if (toRemove) {
+            toRemove.parentNode.removeChild(toRemove);
+        }
+
+        if (settingType === TYPE_SPEED) {
+            const mediaSpeedIndex = this.mediaSpeeds.indexOf(value);
+            if (mediaSpeedIndex > -1) {
+                this.mediaSpeeds.splice(mediaSpeedIndex, 1);
+            }
+            if (cache.get('media-speed') === TYPE_SPEED) {
+                this.chooseOption('speed', '1.0');
+            }
+        }
+    }
     /**
      * Increases the speed one step. If already maximum, does nothing
      *
@@ -226,7 +261,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      */
     increaseSpeed() {
         const current = parseFloat(cache.get('media-speed') || '1.0');
-        const higherSpeeds = MEDIA_SPEEDS.filter((speed) => parseFloat(speed) > current);
+        const higherSpeeds = this.mediaSpeeds.filter((speed) => parseFloat(speed) > current);
         if (higherSpeeds.length > 0) {
             this.chooseOption(TYPE_SPEED, higherSpeeds[0]);
         }
@@ -239,7 +274,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      */
     decreaseSpeed() {
         const current = parseFloat(cache.get('media-speed') || '1.0');
-        const lowerSpeeds = MEDIA_SPEEDS.filter((speed) => parseFloat(speed) < current);
+        const lowerSpeeds = this.mediaSpeeds.filter((speed) => parseFloat(speed) < current);
         if (lowerSpeeds.length > 0) {
             this.chooseOption(TYPE_SPEED, lowerSpeeds[lowerSpeeds.length - 1]);
         }
