@@ -108,8 +108,8 @@ describe('lib/Controls', () => {
             expect(clearTimeoutStub).to.be.calledTwice;
         });
 
-        it('should call resetTimeout again if block hiding is true', () => {
-            controls.blockHiding = true;
+        it('should call resetTimeout again if should hide is false', () => {
+            controls.shouldHide = false;
             controls.resetTimeout();
 
             const resetTimeoutStub = sandbox.stub(controls, 'resetTimeout');
@@ -118,8 +118,8 @@ describe('lib/Controls', () => {
             expect(resetTimeoutStub).to.be.called;
         });
 
-        it('should not remove the preview controls class if block hiding is true', () => {
-            controls.blockHiding = true;
+        it('should not remove the preview controls class if should hide is false', () => {
+            controls.shouldHide = false;
             controls.containerEl.className = SHOW_PREVIEW_CONTROLS_CLASS;
 
             controls.resetTimeout();
@@ -128,8 +128,8 @@ describe('lib/Controls', () => {
             expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.true;
         });
 
-        it('should remove the preview controls class if block hiding is false', () => {
-            controls.blockHiding = false;
+        it('should remove the preview controls class if should hide is true', () => {
+            controls.shouldHide = true;
             controls.containerEl.className = SHOW_PREVIEW_CONTROLS_CLASS;
 
             controls.resetTimeout();
@@ -139,7 +139,7 @@ describe('lib/Controls', () => {
         });
 
         it('should blur the controls if they are active', () => {
-            controls.blockHiding = false;
+            controls.shouldHide = true;
             const containsStub = sandbox.stub(controls.controlsEl, 'contains').returns(true);
             const blurStub = sandbox.stub(document.activeElement, 'blur');
 
@@ -155,7 +155,7 @@ describe('lib/Controls', () => {
         it('should make block hiding true', () => {
             controls.mouseenterHandler();
 
-            expect(controls.blockHiding).to.be.true;
+            expect(controls.shouldHide).to.be.false;
         });
     });
 
@@ -163,7 +163,7 @@ describe('lib/Controls', () => {
         it('should make block hiding false', () => {
             controls.mouseleaveHandler();
 
-            expect(controls.blockHiding).to.be.false;
+            expect(controls.shouldHide).to.be.true;
         });
     });
 
@@ -174,8 +174,8 @@ describe('lib/Controls', () => {
             controls.focusinHandler('event');
             expect(isControlButtonStub).to.be.called;
             expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.true;
-            expect(controls.blockHiding).to.be.true;
-            expect(controls.controlsFocused).to.be.true;
+            expect(controls.shouldHide).to.be.false;
+            expect(controls.isFocused).to.be.true;
         });
 
         it('should not add the controls class if the element is not a preview control button', () => {
@@ -196,8 +196,8 @@ describe('lib/Controls', () => {
 
             controls.focusoutHandler('event');
             expect(isControlButtonStub).to.be.called;
-            expect(controls.blockHiding).to.be.false;
-            expect(controls.controlsFocused).to.be.false;
+            expect(controls.shouldHide).to.be.true;
+            expect(controls.isFocused).to.be.false;
         });
 
         it('should not remove the controls class if the element is not a preview control button and the related target is not', () => {
@@ -245,9 +245,9 @@ describe('lib/Controls', () => {
         });
 
         it('should stop block hiding if the controls are not focused', () => {
-            controls.controlsFocused = false;
+            controls.isFocused = false;
             controls.clickHandler(event);
-            expect(controls.blockHiding).to.be.false;
+            expect(controls.shouldHide).to.be.true;
         });
     });
 
