@@ -46,15 +46,6 @@ describe('lib/viewers/media/Settings', () => {
             const mediaSpeeds = settings.getMediaSpeeds();
             expect(mediaSpeeds).to.deep.equal(dataValues);
         });
-
-        it('should update media speed options upon removal of a speed', () => {
-            const speedsBefore = settings.getMediaSpeeds();
-
-            expect(speedsBefore.length).to.be.above(0);
-            settings.removeMediaSpeed(speedsBefore[0]);
-            const speedsAfter = settings.getMediaSpeeds();
-            expect(speedsAfter.length).to.be.below(speedsBefore.length);
-        });
     });
 
     describe('increaseSpeed()', () => {

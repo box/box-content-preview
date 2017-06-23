@@ -5,6 +5,8 @@ import { addActivationListener, removeActivationListener, decodeKeydown, insertT
 import { ICON_ARROW_LEFT, ICON_ARROW_RIGHT, ICON_CHECK_MARK } from '../../icons/icons';
 import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../constants';
 
+const TYPE_SPEED = 'speed';
+const TYPE_QUALITY = 'quality';
 const CLASS_SETTINGS = 'bp-media-settings';
 const CLASS_SETTINGS_SELECTED = 'bp-media-settings-selected';
 const CLASS_SETTINGS_OPEN = 'bp-media-settings-is-open';
@@ -12,7 +14,7 @@ const CLASS_SETTINGS_SUBTITLES_UNAVAILABLE = 'bp-media-settings-subtitles-unavai
 const CLASS_SETTINGS_SUBTITLES_ON = 'bp-media-settings-subtitles-on';
 const SELECTOR_SETTINGS_SUB_ITEM = '.bp-media-settings-sub-item';
 const SELECTOR_SETTINGS_VALUE = '.bp-media-settings-value';
-const MEDIA_SPEEDS = ['0.25', '0.5', '1.0', '1.25', '1.5', '2.0'];
+const MEDIA_SPEEDS = ['0.5', '1.0', '1.25', '1.5', '2.0'];
 
 const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
     <div class="bp-media-settings-menu-main bp-media-settings-menu" role="menu">
@@ -36,10 +38,6 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
         <div class="bp-media-settings-sub-item bp-media-settings-sub-item-speed" data-type="menu" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
             <div class="bp-media-settings-label" aria-label="${__('media_speed')}">${__('media_speed')}</div>
-        </div>
-        <div class="bp-media-settings-sub-item" data-type="speed" data-value="0.25" tabindex="0" role="menuitemradio">
-            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
-            <div class="bp-media-settings-value">0.25</div>
         </div>
         <div class="bp-media-settings-sub-item" data-type="speed" data-value="0.5" tabindex="0" role="menuitemradio">
             <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
@@ -155,13 +153,6 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
     toggleToSubtitle = undefined;
 
     /**
-     * An array of media speed settings
-     *
-     * @property {Array}
-     */
-    mediaSpeeds = MEDIA_SPEEDS.slice();
-
-    /**
      * Service to handle the position and movement of a slider element
      *
      * [constructor]
@@ -193,8 +184,8 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
         const quality = cache.get('media-quality') || 'auto';
         const speed = cache.get('media-speed') || '1.0';
 
-        this.chooseOption('quality', quality);
-        this.chooseOption('speed', speed);
+        this.chooseOption(TYPE_QUALITY, quality);
+        this.chooseOption(TYPE_SPEED, speed);
     }
 
     /**
@@ -225,32 +216,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      * @return {Array}
      */
     getMediaSpeeds() {
-        return this.mediaSpeeds.slice();
-    }
-
-    /**
-     * Remove a media speed option, if the speed option does not exist, the function does nothing.
-     *
-     * @private
-     * @param {string} speed - speed to be removed
-     * @return {void}
-     */
-    removeMediaSpeed(speed) {
-        const mediaSpeedIndex = this.mediaSpeeds.indexOf(speed);
-
-        if (mediaSpeedIndex > -1) {
-            const mediaSpeedRadioElementQuery = `.bp-media-settings-sub-item[data-type='speed'][data-value='${speed}']`;
-
-            if (cache.get('media-speed') === speed) {
-                this.chooseOption('speed', '1.0');
-            }
-            this.mediaSpeeds.splice(mediaSpeedIndex, 1);
-
-            const toRemove = this.settingsEl.querySelector(mediaSpeedRadioElementQuery);
-            if (toRemove) {
-                toRemove.parentNode.removeChild(toRemove);
-            }
-        }
+        return MEDIA_SPEEDS;
     }
 
     /**
@@ -260,9 +226,9 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      */
     increaseSpeed() {
         const current = parseFloat(cache.get('media-speed') || '1.0');
-        const higherSpeeds = this.mediaSpeeds.filter((speed) => parseFloat(speed) > current);
+        const higherSpeeds = MEDIA_SPEEDS.filter((speed) => parseFloat(speed) > current);
         if (higherSpeeds.length > 0) {
-            this.chooseOption('speed', higherSpeeds[0]);
+            this.chooseOption(TYPE_SPEED, higherSpeeds[0]);
         }
     }
 
@@ -273,9 +239,9 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      */
     decreaseSpeed() {
         const current = parseFloat(cache.get('media-speed') || '1.0');
-        const lowerSpeeds = this.mediaSpeeds.filter((speed) => parseFloat(speed) < current);
+        const lowerSpeeds = MEDIA_SPEEDS.filter((speed) => parseFloat(speed) < current);
         if (lowerSpeeds.length > 0) {
-            this.chooseOption('speed', lowerSpeeds[lowerSpeeds.length - 1]);
+            this.chooseOption(TYPE_SPEED, lowerSpeeds[lowerSpeeds.length - 1]);
         }
     }
 
