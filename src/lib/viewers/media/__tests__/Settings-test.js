@@ -44,7 +44,6 @@ describe('lib/viewers/media/Settings', () => {
             const speedElements = [...document.querySelectorAll('.bp-media-settings-sub-item[data-type="speed"]')];
             const dataValues = speedElements.map((elem) => elem.getAttribute('data-value'));
             const mediaSpeeds = settings.getMediaSpeeds();
-            console.log(mediaSpeeds);
             expect(mediaSpeeds).to.deep.equal(dataValues);
         });
 
