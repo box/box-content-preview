@@ -136,7 +136,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
     /**
      * List of subtitles in the menu. The subtitles menu will be populated in this order
      *
-     * @property {array}
+     * @property {Array}
      */
     subtitles = [];
 
@@ -157,7 +157,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
     /**
      * An array of media speed settings
      *
-     * @property {array}
+     * @property {Array}
      */
     mediaSpeeds = MEDIA_SPEEDS.slice();
 
@@ -222,7 +222,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      * Getter for testing purposes
      *
      * @private
-     * @return {array}
+     * @return {Array}
      */
     getMediaSpeeds() {
         return this.mediaSpeeds.slice();
