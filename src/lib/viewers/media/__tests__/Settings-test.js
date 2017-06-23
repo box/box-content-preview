@@ -44,17 +44,18 @@ describe('lib/viewers/media/Settings', () => {
             const speedElements = [...document.querySelectorAll('.bp-media-settings-sub-item[data-type="speed"]')];
             const dataValues = speedElements.map((elem) => elem.getAttribute('data-value'));
             const mediaSpeeds = settings.getMediaSpeeds();
+            console.log(mediaSpeeds);
             expect(mediaSpeeds).to.deep.equal(dataValues);
         });
-    });
 
-    it('should update media speed options upon removal of a speed', () => {
-        const speedsBefore = settings.getMediaSpeeds();
+        it('should update media speed options upon removal of a speed', () => {
+            const speedsBefore = settings.getMediaSpeeds();
 
-        expect(speedsBefore.length).to.be.above(0);
-        settings.removeSettingOption('speed', speedsBefore[0]);
-        const speedsAfter = settings.getMediaSpeeds();
-        expect(speedsAfter.length).to.be.below(speedsBefore.length);
+            expect(speedsBefore.length).to.be.above(0);
+            settings.removeSettingOption('speed', speedsBefore[0]);
+            const speedsAfter = settings.getMediaSpeeds();
+            expect(speedsAfter.length).to.be.below(speedsBefore.length);
+        });
     });
 
     describe('increaseSpeed()', () => {

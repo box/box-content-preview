@@ -161,7 +161,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      *
      * @property {Array}
      */
-    mediaSpeeds = MEDIA_SPEEDS;
+    mediaSpeeds = MEDIA_SPEEDS.slice();
 
     /**
      * Service to handle the position and movement of a slider element
@@ -227,7 +227,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      * @return {Array}
      */
     getMediaSpeeds() {
-        return this.mediaSpeeds.splice();
+        return this.mediaSpeeds.slice();
     }
 
     /**
