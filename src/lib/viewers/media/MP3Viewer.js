@@ -45,6 +45,9 @@ const CSS_CLASS_MP3 = 'bp-media-mp3';
      */
     loadUI() {
         super.loadUI();
+
+        // removes 0.25 speed option since audio cannot be played at this speed
+        this.mediaControls.settings.removeSettingOption('speed', '0.25');
         this.mediaControls.show();
         this.mediaControls.resizeTimeScrubber();
     }
