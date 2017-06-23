@@ -155,6 +155,13 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
     toggleToSubtitle = undefined;
 
     /**
+     * An array of media speed settings
+     *
+     * @property {array}
+     */
+    mediaSpeeds = MEDIA_SPEEDS.slice();
+
+    /**
      * Service to handle the position and movement of a slider element
      *
      * [constructor]
@@ -218,7 +225,33 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      * @return {array}
      */
     getMediaSpeeds() {
-        return MEDIA_SPEEDS;
+        return this.mediaSpeeds.slice();
+    }
+
+    /**
+     * Remove a media speed option, if the speed option does not exist, the function does nothing.
+     *
+     * @private
+     * @param {string} speed - speed to be removed
+     * @return {void}
+     */
+    removeMediaSpeed(speed) {
+        const mediaSpeedIndex = this.mediaSpeeds.indexOf(speed);
+
+        if (mediaSpeedIndex > -1) {
+            const mediaSpeedRadioElementQuery = `.bp-media-settings-sub-item[data-type='speed'][data-value='${speed}']`;
+
+            if (cache.get('media-speed') === speed) {
+                this.chooseOption('speed', '1.0');
+            }
+            this.mediaSpeeds.splice(mediaSpeedIndex, 1);
+
+            const toRemove = this.settingsEl.querySelector(mediaSpeedRadioElementQuery);
+
+            if (toRemove) {
+                toRemove.parentNode.removeChild(toRemove);
+            }
+        }
     }
 
     /**
@@ -228,7 +261,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      */
     increaseSpeed() {
         const current = parseFloat(cache.get('media-speed') || '1.0');
-        const higherSpeeds = MEDIA_SPEEDS.filter((speed) => parseFloat(speed) > current);
+        const higherSpeeds = this.mediaSpeeds.filter((speed) => parseFloat(speed) > current);
         if (higherSpeeds.length > 0) {
             this.chooseOption('speed', higherSpeeds[0]);
         }
@@ -241,7 +274,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      */
     decreaseSpeed() {
         const current = parseFloat(cache.get('media-speed') || '1.0');
-        const lowerSpeeds = MEDIA_SPEEDS.filter((speed) => parseFloat(speed) < current);
+        const lowerSpeeds = this.mediaSpeeds.filter((speed) => parseFloat(speed) < current);
         if (lowerSpeeds.length > 0) {
             this.chooseOption('speed', lowerSpeeds[lowerSpeeds.length - 1]);
         }

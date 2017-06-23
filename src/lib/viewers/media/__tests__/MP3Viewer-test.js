@@ -84,11 +84,16 @@ describe('lib/viewers/media/MP3Viewer', () => {
         it('should load UI and controls', () => {
             Object.defineProperty(MediaBaseViewer.prototype, 'loadUI', { value: sandbox.mock() });
 
+            const settings = {
+                removeMediaSpeed: sandbox.stub()
+            };
+
             mp3.mediaControls = {
                 show: () => {},
                 destroy: () => {},
                 resizeTimeScrubber: () => {},
-                removeAllListeners: () => {}
+                removeAllListeners: () => {},
+                settings
             };
 
             const controlsMock = sandbox.mock(mp3.mediaControls);
@@ -96,6 +101,7 @@ describe('lib/viewers/media/MP3Viewer', () => {
             controlsMock.expects('resizeTimeScrubber');
 
             mp3.loadUI();
+            expect(settings.removeMediaSpeed).to.be.called;
         });
     });
 });
