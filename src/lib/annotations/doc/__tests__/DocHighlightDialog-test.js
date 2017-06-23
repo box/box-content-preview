@@ -223,13 +223,24 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
             expect(dialog.hasComments).to.be.false;
         });
 
-        it('should hide the highlight dialog if thread has more than 1 annotation', () => {
-            dialog.setup([stubs.annotation, stubs.annotation]);
+        it('should hide the highlight dialog if thread has comments', () => {
+            dialog.hasComments = true;
+            dialog.setup([stubs.annotation]);
             expect(dialog.highlightDialogEl).to.have.class(CLASS_HIDDEN);
         });
 
-        it('should hide the comments dialog if thread only 1 annotation', () => {
-            dialog.setup([stubs.annotation]);
+        it('should hide the comments dialog if thread does not have comments', () => {
+            dialog.hasComments = false;
+            const annotation = new Annotation({
+                text: '',
+                user: { id: 1, name: 'Bob' },
+                permissions: {
+                    can_delete: true
+                },
+                thread: 1
+            });
+
+            dialog.setup([annotation]);
             expect(dialog.commentsDialogEl).to.have.class(CLASS_HIDDEN);
         });
 
