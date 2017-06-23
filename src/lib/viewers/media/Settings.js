@@ -247,7 +247,6 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
             this.mediaSpeeds.splice(mediaSpeedIndex, 1);
 
             const toRemove = this.settingsEl.querySelector(mediaSpeedRadioElementQuery);
-
             if (toRemove) {
                 toRemove.parentNode.removeChild(toRemove);
             }
