@@ -182,8 +182,14 @@ describe('lib/annotations/AnnotationDialog', () => {
         it('should hide and reset the mobile annotations dialog', () => {
             dialog.element = document.querySelector('.bp-mobile-annotation-dialog');
             stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
+            stubs.unbind = sandbox.stub(dialog, 'unbindDOMListeners');
+            stubs.cancel = sandbox.stub(dialog, 'cancelAnnotation');
+            dialog.hasAnnotations = true;
+
             dialog.hideMobileDialog();
             expect(stubs.hide).to.be.called;
+            expect(stubs.unbind).to.be.called;
+            expect(stubs.cancel).to.not.be.called;
             expect(dialog.element.classList.contains(CLASS_ANIMATE_DIALOG)).to.be.false;
         });
 
@@ -191,6 +197,15 @@ describe('lib/annotations/AnnotationDialog', () => {
             dialog.element = document.querySelector('.bp-mobile-annotation-dialog');
             dialog.hideMobileDialog();
             expect(dialog.element.classList.contains(CLASS_ANIMATE_DIALOG)).to.be.false;
+        });
+
+        it('should cancel unsaved annotations only if the dialog does not have annotations', () => {
+            dialog.element = document.querySelector('.bp-mobile-annotation-dialog');
+            stubs.cancel = sandbox.stub(dialog, 'cancelAnnotation');
+            dialog.hasAnnotations = false;
+
+            dialog.hideMobileDialog();
+            expect(stubs.cancel).to.be.called;
         });
     });
 
@@ -460,6 +475,7 @@ describe('lib/annotations/AnnotationDialog', () => {
             stubs.hideDelete = sandbox.stub(dialog, 'hideDeleteConfirmation');
             stubs.delete = sandbox.stub(dialog, 'deleteAnnotation');
             stubs.reply = sandbox.stub(dialog, 'postReply');
+            stubs.hideMobile = sandbox.stub(dialog, 'hideMobileDialog');
         });
 
         it('should post annotation when post annotation button is clicked', () => {
@@ -471,9 +487,21 @@ describe('lib/annotations/AnnotationDialog', () => {
 
         it('should cancel annotation when cancel annotation button is clicked', () => {
             stubs.findClosest.returns('cancel-annotation-btn');
+            dialog.isMobile = false;
 
             dialog.clickHandler(stubs.event);
             expect(stubs.cancel).to.be.called;
+            expect(stubs.hideMobile).to.not.be.called;
+            expect(stubs.deactivate).to.be.calledWith(true);
+        });
+
+        it('should only hide the mobile dialog when the cancel annotation button is clicked on mobile', () => {
+            stubs.findClosest.returns('cancel-annotation-btn');
+            dialog.isMobile = true;
+
+            dialog.clickHandler(stubs.event);
+            expect(stubs.cancel).to.not.be.called;
+            expect(stubs.hideMobile).to.be.called;
             expect(stubs.deactivate).to.be.calledWith(true);
         });
 

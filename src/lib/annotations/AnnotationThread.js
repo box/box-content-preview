@@ -58,7 +58,7 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
      * @return {void}
      */
     destroy() {
-        if (this.dialog) {
+        if (this.dialog && !this.isMobile) {
             this.unbindCustomListenersOnDialog();
             this.dialog.destroy();
         }
@@ -204,6 +204,10 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
 
             // If this annotation was the last one in the thread, destroy the thread
         } else if (this.annotations.length === 0 || annotatorUtil.isPlainHighlight(this.annotations)) {
+            if (this.isMobile) {
+                this.dialog.removeAnnotation(annotationID);
+                this.dialog.hideMobileDialog();
+            }
             this.destroy();
 
             // Otherwise, remove deleted annotation from dialog
@@ -353,7 +357,7 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
         }
 
         this.dialog.addListener('annotationcreate', this.createAnnotation);
-        this.dialog.addListener('annotationcancel', this.destroy);
+        this.dialog.addListener('annotationcancel', this.cancelUnsavedAnnotation);
         this.dialog.addListener('annotationdelete', this.deleteAnnotationWithID);
     }
 
@@ -371,6 +375,23 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
         this.dialog.removeAllListeners('annotationcreate');
         this.dialog.removeAllListeners('annotationcancel');
         this.dialog.removeAllListeners('annotationdelete');
+    }
+
+    /**
+     * Destroys mobile and pending/pending-active annotation threads
+     *
+     * @protected
+     * @return {void}
+     */
+    cancelUnsavedAnnotation() {
+        if (
+            !this.isMobile &&
+            this.state !== constants.ANNOTATION_STATE_PENDING &&
+            this.state !== constants.ANNOTATION_STATE_PENDING_ACTIVE
+        ) {
+            return;
+        }
+        this.destroy();
     }
 
     //--------------------------------------------------------------------------
@@ -443,7 +464,7 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
      * Creates a new point annotation
      *
      * @private
-     * @param data - Annotation data
+     * @param {Object} data - Annotation data
      * @return {void}
      */
     createAnnotation(data) {
@@ -454,7 +475,7 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
      * Deletes annotation with annotationID from thread
      *
      * @private
-     * @param data - Annotation data
+     * @param {Object} data - Annotation data
      * @return {void}
      */
     deleteAnnotationWithID(data) {

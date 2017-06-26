@@ -58,7 +58,6 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     /**
      * [constructor]
      *
-     * @param {HTMLElement} containerEl - The container
      * @param {Object} options - some options
      * @return {BaseViewer} Instance of base viewer
      */
@@ -583,7 +582,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
             const { file } = this.options;
 
             // Users can currently only view annotations on mobile
-            this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE) && !this.isMobile;
+            this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
             if (this.canAnnotate) {
                 this.showAnnotateButton(this.getPointModeClickHandler());
             }
@@ -592,7 +591,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     }
 
     /**
-     * Orient anntations to the correct scale and orientatio of the annotated document.
+     * Orient annotations to the correct scale and orientation of the annotated document.
      * @TODO(jholdstock|spramod): Remove this once we are emitting the correct messaging.
      *
      * @protected

@@ -67,6 +67,17 @@ describe('lib/annotations/AnnotationThread', () => {
             expect(stubs.unbindDOM).to.be.called;
             expect(stubs.emit).to.be.calledWith('threaddeleted');
         });
+
+        it('should not destroy the dialog on mobile', () => {
+            stubs.unbindCustom = sandbox.stub(thread, 'unbindCustomListenersOnDialog');
+            stubs.destroyDialog = sandbox.stub(thread.dialog, 'destroy');
+            thread.element = null;
+            thread.isMobile = true;
+
+            thread.destroy();
+            expect(stubs.unbindCustom).to.not.be.called;
+            expect(stubs.destroyDialog).to.not.be.called;
+        });
     });
 
     describe('hide()', () => {
@@ -199,7 +210,8 @@ describe('lib/annotations/AnnotationThread', () => {
                 removeAllListeners: () => {},
                 show: () => {},
                 hide: () => {},
-                removeAnnotation: () => {}
+                removeAnnotation: () => {},
+                hideMobileDialog: () => {}
             };
             stubs.dialogMock = sandbox.mock(thread.dialog);
 
@@ -210,8 +222,18 @@ describe('lib/annotations/AnnotationThread', () => {
         });
 
         it('should destroy the thread if the deleted annotation was the last annotation in the thread', () => {
+            thread.isMobile = false;
+            stubs.dialogMock.expects('removeAnnotation').never();
+            stubs.dialogMock.expects('hideMobileDialog').never();
             thread.deleteAnnotation('someID', false);
             expect(stubs.destroy).to.be.called;
+        });
+
+        it('should destroy the thread and hide the mobile dialog if the deleted annotation was the last annotation in the thread on mobile', () => {
+            thread.isMobile = true;
+            stubs.dialogMock.expects('removeAnnotation');
+            stubs.dialogMock.expects('hideMobileDialog');
+            thread.deleteAnnotation('someID', false);
         });
 
         it('should remove the relevant annotation from its dialog if the deleted annotation was not the last one', () => {
@@ -434,6 +456,28 @@ describe('lib/annotations/AnnotationThread', () => {
             stubs.dialogMock.expects('removeAllListeners').withArgs('annotationcancel');
             stubs.dialogMock.expects('removeAllListeners').withArgs('annotationdelete');
             thread.unbindCustomListenersOnDialog();
+        });
+    });
+
+    describe('cancelUnsavedAnnotation()', () => {
+        it('should only destroy thread if on a mobile browser or in a pending/pending-active state', () => {
+            sandbox.stub(thread, 'destroy');
+
+            // mobile
+            thread.isMobile = true;
+            thread.cancelUnsavedAnnotation();
+            expect(thread.destroy).to.be.called;
+
+            // 'pending' state
+            thread.isMobile = false;
+            thread.state = constants.ANNOTATION_STATE_PENDING;
+            thread.cancelUnsavedAnnotation();
+            expect(thread.destroy).to.be.called;
+
+            // 'pending-active' state
+            thread.state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
+            thread.cancelUnsavedAnnotation();
+            expect(thread.destroy).to.be.called;
         });
     });
 
