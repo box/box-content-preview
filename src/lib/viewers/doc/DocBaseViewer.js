@@ -414,8 +414,7 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
                 canZoomIn: newScale < MAX_SCALE
             });
         }
-
-        this.setScale(newScale);
+        this.pdfViewer.currentScaleValue = newScale;
     }
 
     /**
@@ -440,19 +439,7 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
                 canZoomIn: true
             });
         }
-
-        this.setScale(newScale);
-    }
-
-    /**
-     * Sets zoom scale.
-     *
-     * @param {number} scale - Numerical zoom scale
-     * @return {void}
-     */
-    setScale(scale) {
-        this.pdfViewer.currentScaleValue = scale;
-        this.emit('scale', { scale });
+        this.pdfViewer.currentScaleValue = newScale;
     }
 
     /**
@@ -1029,7 +1016,7 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
      * Handler for 'pagerendered' event.
      *
      * @private
-     * @param {Event} event - Pagerendered event
+     * @param {Event} event - 'pagerendered' event
      * @return {void}
      */
     pagerenderedHandler(event) {
@@ -1038,7 +1025,12 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
         if (pageNumber) {
             // Page rendered event
             this.emit('pagerender', pageNumber);
-            this.setScale(this.pdfViewer.currentScale); // Set scale to current numerical scale
+
+            // Set scale to current numerical scale & rendered page number
+            this.emit('scale', {
+                scale: this.pdfViewer.currentScaleValue,
+                pageNum: pageNumber
+            });
 
             // Fire postload event to hide progress bar and cleanup preload after a page is rendered
             if (!this.somePageRendered) {
