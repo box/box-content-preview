@@ -274,6 +274,149 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
     });
 
+    describe('createBasicHighlight()', () => {
+        beforeEach(() => {
+            sandbox.stub(annotator, 'highlightCurrentSelection');
+            sandbox.stub(annotator, 'createHighlightAnnotation');
+            annotator.createBasicHighlight();
+        });
+
+        it('should invoke highlightCurrentSelection()', () => {
+            expect(annotator.highlightCurrentSelection).to.be.called;
+        });
+
+        it('should invoke createHighlightAnnotation()', () => {
+            expect(annotator.createHighlightAnnotation).to.be.called;
+        });
+    });
+
+    describe('createHighlightAnnotation()', () => {
+        let thread;
+        let dialog;
+        beforeEach(() => {
+            stubs.hideDialog = sandbox.stub(annotator.createHighlightDialog, 'hide');
+            stubs.getLocationFromEvent = sandbox.stub(annotator, 'getLocationFromEvent');
+            stubs.createAnnotationThread = sandbox.stub(annotator, 'createAnnotationThread');
+            stubs.bindCustomListenersOnThread = sandbox.stub(annotator, 'bindCustomListenersOnThread');
+            stubs.renderAnnotationsOnPage = sandbox.stub(annotator, 'renderAnnotationsOnPage');
+
+            dialog = {
+                hasComments: false,
+                drawAnnotation: sandbox.stub(),
+                postAnnotation: sandbox.stub()
+            };
+
+            thread = {
+                dialog,
+                show: sandbox.stub()
+            };
+        });
+
+        it('should do nothing and return null if empty string passed in', () => {
+            annotator.lastHighlightEvent = {};
+
+            annotator.createHighlightAnnotation('');
+            expect(stubs.hideDialog).to.not.be.called;
+        });
+
+        it('should do nothing and return null if there was no highlight event on the previous action', () => {
+            annotator.lastHighlightEvent = null;
+
+            annotator.createHighlightAnnotation('some text');
+            expect(stubs.hideDialog).to.not.be.called;
+        });
+
+        it('should do nothing and return null if not a valid annotation location', () => {
+            annotator.lastHighlightEvent = {};
+            stubs.getLocationFromEvent.returns(null);
+
+            annotator.createHighlightAnnotation('some text');
+            expect(stubs.createAnnotationThread).to.not.be.called;
+        });
+
+        it('should create an annotation thread off of the highlight selection by invoking createAnnotationThread() with correct type', () => {
+            annotator.lastHighlightEvent = {};
+            const location = { page: 1 };
+            stubs.getLocationFromEvent.returns(location);
+            stubs.createAnnotationThread.returns(thread);
+
+            annotator.createHighlightAnnotation('some text with severe passive agression');
+            expect(stubs.createAnnotationThread).to.be.calledWith([], location, constants.ANNOTATION_TYPE_HIGHLIGHT);
+        });
+
+        it('should render the annotation thread dialog if it is a basic annotation type', () => {
+            annotator.lastHighlightEvent = {};
+            const location = { page: 1 };
+            stubs.getLocationFromEvent.returns(location);
+            stubs.createAnnotationThread.returns(thread);
+
+            annotator.createHighlightAnnotation();
+            expect(dialog.drawAnnotation).to.be.called;
+        });
+
+        it('should set the dialog to have comments if it is a comment-highlight', () => {
+            annotator.lastHighlightEvent = {};
+            const location = { page: 1 };
+            stubs.getLocationFromEvent.returns(location);
+            stubs.createAnnotationThread.returns(thread);
+
+            annotator.createHighlightAnnotation('I think this document should be more better');
+            expect(dialog.hasComments).to.be.true;
+        });
+
+        it('should show the annotation', () => {
+            annotator.lastHighlightEvent = {};
+            const location = { page: 1 };
+            stubs.getLocationFromEvent.returns(location);
+            stubs.createAnnotationThread.returns(thread);
+
+            annotator.createHighlightAnnotation();
+            expect(thread.show).to.be.called;
+        });
+
+        it('should post the annotation via the dialog', () => {
+            annotator.lastHighlightEvent = {};
+            const location = { page: 1 };
+            stubs.getLocationFromEvent.returns(location);
+            stubs.createAnnotationThread.returns(thread);
+            const text = 'This is an annotation pointing out a mistake in the document!';
+
+            annotator.createHighlightAnnotation(text);
+            expect(dialog.postAnnotation).to.be.calledWith(text);
+        });
+
+        it('should bind event listeners by invoking bindCustomListenersOnThread()', () => {
+            annotator.lastHighlightEvent = {};
+            const location = { page: 1 };
+            stubs.getLocationFromEvent.returns(location);
+            stubs.createAnnotationThread.returns(thread);
+
+            annotator.createHighlightAnnotation();
+            expect(stubs.bindCustomListenersOnThread).to.be.calledWith(thread);
+        });
+
+        it('should cause a re-render of annotations on the current page', () => {
+            annotator.lastHighlightEvent = {};
+            const page = 999999999;
+            const location = { page };
+            stubs.getLocationFromEvent.returns(location);
+            stubs.createAnnotationThread.returns(thread);
+
+            annotator.createHighlightAnnotation();
+            expect(stubs.renderAnnotationsOnPage).to.be.calledWith(page);
+        });
+
+        it('should return an annotation thread', () => {
+            annotator.lastHighlightEvent = {};
+            const page = 999999999;
+            const location = { page };
+            stubs.getLocationFromEvent.returns(location);
+            stubs.createAnnotationThread.returns(thread);
+
+            expect(annotator.createHighlightAnnotation()).to.deep.equal(thread);
+        });
+    });
+
     describe('renderAnnotationsOnPage()', () => {
         const renderFunc = Annotator.prototype.renderAnnotationsOnPage;
 
@@ -422,9 +565,34 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     });
 
     describe('highlightCurrentSelection()', () => {
-        it('should do nothing if no highlighter reference');
-        it('should invoke highlighter.highlightSelection()');
-        it('should invoke highlighter.highlightSelection() with the annotated element\'s id');
+        beforeEach(() => {
+            annotator.setupAnnotations();
+        });
+
+        it('should do nothing if no highlighter reference', () => {
+            const highlightSelection = sandbox.stub(annotator.highlighter, 'highlightSelection');
+            annotator.highlighter = null;
+
+            annotator.highlightCurrentSelection();
+
+            expect(highlightSelection).to.not.be.called;
+        });
+
+        it('should invoke highlighter.highlightSelection()', () => {
+            const highlightSelection = sandbox.stub(annotator.highlighter, 'highlightSelection');
+
+            annotator.highlightCurrentSelection();
+
+            expect(highlightSelection).to.be.called;
+        });
+
+        it('should invoke highlighter.highlightSelection() with the annotated element\'s id', () => {
+            const highlightSelection = sandbox.stub(annotator.highlighter, 'highlightSelection');
+
+            annotator.highlightCurrentSelection();
+
+            expect(highlightSelection).to.be.calledWith('rangy-highlight', { containerElementId: 'doc-annotator-el' });
+        });
     });
 
     describe('getThreadsOnPage()', () => {
@@ -757,7 +925,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.isMobile = false;
 
             createDialog.expects('show');
-            createDialog.expects('setPosition').withArgs(35, 50); // 35 with page padding
+            createDialog.expects('setPosition').withArgs(50, 35); // 35 with page padding
 
             annotator.highlightCreateHandler(stubs.event);
         });

@@ -100,6 +100,10 @@ class CommentBox extends EventEmitter {
      * @return {void}
      */
     focus() {
+        if (!this.el) {
+            return;
+        }
+
         this.textAreaEl.focus();
     }
 

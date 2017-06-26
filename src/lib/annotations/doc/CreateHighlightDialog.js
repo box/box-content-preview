@@ -112,10 +112,6 @@ class CreateHighlightDialog extends EventEmitter {
      * @return {void}
      */
     setParentEl(newParentEl) {
-        if (newParentEl === this.parentEl) {
-            return;
-        }
-
         this.parentEl = newParentEl;
     }
 
@@ -217,10 +213,10 @@ class CreateHighlightDialog extends EventEmitter {
      * @return {void}
      */
     updatePosition() {
-        // Plus 5 pixels for caret
-        this.el.style.top = `${this.position.x + 5}px`;
         // Plus 1 pixel for caret
-        this.el.style.left = `${this.position.y - 1 - this.el.clientWidth / 2}px`;
+        this.el.style.left = `${this.position.x - 1 - this.el.clientWidth / 2}px`;
+        // Plus 5 pixels for caret
+        this.el.style.top = `${this.position.y + 5}px`;
     }
 
     /**

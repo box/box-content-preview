@@ -325,8 +325,8 @@ function isThreadInHoverState(thread) {
      * Creates an highlight annotation thread, adds it to in-memory map, and returns it.
      *
      * @override
-     * @param {Annotation[]} annotations - Annotations in thread
-     * @param {Object} location - Location object
+     * @param {string} [commentText] - If provided, this will save a highlight comment annotation, with commentText
+     * being the text as the first comment in the thread.
      * @return {DocHighlightThread} Created doc highlight annotation thread
      */
     createHighlightAnnotation(commentText) {
@@ -336,8 +336,13 @@ function isThreadInHoverState(thread) {
         }
         this.createHighlightDialog.hide();
 
-        const annotations = [];
         const location = this.getLocationFromEvent(this.lastHighlightEvent, constants.ANNOTATION_TYPE_HIGHLIGHT);
+        console.error(location);
+        if (!location) {
+            return null;
+        }
+
+        const annotations = [];
         const thread = this.createAnnotationThread(annotations, location, constants.ANNOTATION_TYPE_HIGHLIGHT);
         this.lastHighlightEvent = null;
 
@@ -718,7 +723,7 @@ function isThreadInHoverState(thread) {
 
         this.createHighlightDialog.show(pageEl);
         if (!this.isMobile) {
-            this.createHighlightDialog.setPosition(bottom - pageTop, right - pageLeft);
+            this.createHighlightDialog.setPosition(right - pageLeft, bottom - pageTop);
         }
 
         this.lastHighlightEvent = event;

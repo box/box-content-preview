@@ -376,8 +376,8 @@ $avatar-color-9: #f22c44;
 
 // Quad point positioning - the helper divs are positioned relative to the Rangy-created element
 .bp-doc .rangy-highlight {
+    background-color: #ff0;
     position: relative;
-    background-color: #ffff00;
 }
 
 // These helper divs allow us to calculate the quad points of an element
