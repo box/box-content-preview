@@ -699,12 +699,16 @@ describe('lib/viewers/BaseViewer', () => {
     describe('scaleAnnotations()', () => {
         const scaleData = {
             scale: 0.4321,
-            rotationAngle: 90
+            rotationAngle: 90,
+            pageNum: 2
         };
         beforeEach(() => {
             base.annotator = {
                 setScale: sandbox.stub(),
                 rotateAnnotations: sandbox.stub()
+            };
+            base.annotator.threads = {
+                2: [{}]
             };
 
             base.scaleAnnotations(scaleData);
@@ -715,7 +719,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should invoke rotateAnnotations() on annotator to orient annotations', () => {
-            expect(base.annotator.rotateAnnotations).to.be.calledWith(scaleData.rotationAngle);
+            expect(base.annotator.rotateAnnotations).to.be.calledWith(scaleData.rotationAngle, scaleData.pageNum);
         });
     });
 

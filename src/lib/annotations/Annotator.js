@@ -136,6 +136,7 @@ import './Annotator.scss';
     /**
      * Hides annotations on a specified page.
      *
+     * @param {number} pageNum - Page number
      * @return {void}
      */
     hideAnnotationsOnPage(pageNum) {
@@ -180,11 +181,18 @@ import './Annotator.scss';
      *
      * @override
      * @param {number} [rotationAngle] - current angle image is rotated
+     * @param {number} [pageNum] - Page number
      * @return {void}
      * @private
      */
-    rotateAnnotations(rotationAngle = 0) {
-        this.renderAnnotations();
+    rotateAnnotations(rotationAngle = 0, pageNum = 0) {
+        // Only render a specific page's annotations unless no page number
+        // is specified
+        if (pageNum) {
+            this.renderAnnotationsOnPage(pageNum);
+        } else {
+            this.renderAnnotations();
+        }
 
         // Only show/hide point annotation button if user has the
         // appropriate permissions
@@ -208,7 +216,7 @@ import './Annotator.scss';
     /**
      * Sets the zoom scale.
      *
-     * @param {number} scale
+     * @param {number} scale - current zoom scale
      * @return {void}
      */
     setScale(scale) {
