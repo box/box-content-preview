@@ -103,7 +103,8 @@ $avatar-color-9: #f22c44;
 // CSS for points and dialogs
 //------------------------------------------------------------------------------
 
-.bp-annotation-dialog {
+.bp-annotation-dialog,
+.bp-create-annotation-dialog {
     border-top: 20px solid transparent; // Transparent border for hover detection
     cursor: default; // Overrides cursor: none from annotation mode
     position: absolute;
@@ -376,6 +377,7 @@ $avatar-color-9: #f22c44;
 // Quad point positioning - the helper divs are positioned relative to the Rangy-created element
 .bp-doc .rangy-highlight {
     position: relative;
+    background-color: #ffff00;
 }
 
 // These helper divs allow us to calculate the quad points of an element

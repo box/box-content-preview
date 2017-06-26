@@ -120,12 +120,17 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         describe('highlight', () => {
+            beforeEach(() => {
+                annotator.setupAnnotations();
+                stubs.highlighter = sandbox.mock(annotator.highlighter);
+            });
+
             it('should not return a location if there is no selection present', () => {
-                stubs.selection.returns(false);
                 expect(annotator.getLocationFromEvent({}, 'highlight')).to.be.null;
             });
 
             it('should infer page from selection if it cannot be inferred from event', () => {
+                annotator.highlighter.highlights = [{}, {}];
                 stubs.getPageInfo.onFirstCall().returns({ pageEl: null, page: -1 });
                 stubs.getPageInfo.onSecondCall().returns({
                     pageEl: {
@@ -138,7 +143,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 });
 
                 annotator.getLocationFromEvent({}, 'highlight');
-                expect(window.getSelection).to.have.been.called;
+                expect(stubs.getPageInfo).to.be.called.twice;
             });
 
             it('should not return a valid highlight location if no highlights exist', () => {
@@ -147,6 +152,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             });
 
             it('should return a valid highlight location if selection is valid', () => {
+                annotator.highlighter.highlights = [{}];
                 stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 stubs.points.onFirstCall().returns(quadPoints[0]);
                 stubs.points.onSecondCall().returns(quadPoints[1]);
@@ -159,13 +165,19 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         describe('highlight-comment', () => {
+            beforeEach(() => {
+                annotator.setupAnnotations();
+                stubs.highlighter = sandbox.mock(annotator.highlighter);
+            });
+
             it('should not return a location if there is no selection present', () => {
-                stubs.selection.returns(false);
+                annotator.highlighter.highlights = [];
                 const location = annotator.getLocationFromEvent({}, 'highlight-comment');
                 expect(location).to.be.null;
             });
 
             it('should infer page from selection if it cannot be inferred from event', () => {
+                annotator.highlighter.highlights = [{}];
                 const getPageStub = stubs.getPageInfo;
                 getPageStub.onFirstCall().returns({ pageEl: null, page: -1 });
                 getPageStub.onSecondCall().returns({
@@ -179,15 +191,17 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 });
 
                 annotator.getLocationFromEvent({}, 'highlight-comment');
-                expect(window.getSelection).to.have.been.called;
+                expect(stubs.getSel).to.have.been.called;
             });
 
             it('should not return a valid highlight location if no highlights exist', () => {
+                annotator.highlighter.highlights = [{}];
                 stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 expect(annotator.getLocationFromEvent({}, 'highlight-comment')).to.deep.equal(null);
             });
 
             it('should return a valid highlight location if selection is valid', () => {
+                annotator.highlighter.highlights = [{}];
                 stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 stubs.points.onFirstCall().returns(quadPoints[0]);
                 stubs.points.onSecondCall().returns(quadPoints[1]);
@@ -407,6 +421,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
     });
 
+    describe('highlightCurrentSelection()', () => {
+        it('should do nothing if no highlighter reference');
+        it('should invoke highlighter.highlightSelection()');
+        it('should invoke highlighter.highlightSelection() with the annotated element\'s id');
+    });
+
     describe('getThreadsOnPage()', () => {
         it('should return empty array if no page number provided', () => {
             const threads = annotator.getThreadsOnPage(-1);
@@ -624,25 +644,43 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(stubs.click).to.be.called;
             expect(annotator.isCreatingHighlight).to.be.false;
         });
+
+        it('should call highlighter.removeAllHighlghts', () => {
+            annotator.setupAnnotations();
+            const removeAll = sandbox.stub(annotator.highlighter, 'removeAllHighlights');
+            annotator.highlightMouseupHandler({ x: 0, y: 0 });
+            expect(removeAll).to.be.called;
+        });
     });
 
     describe('highlightCreateHandler()', () => {
+        let selection;
+        let createDialog;
+        let pageInfo;
         beforeEach(() => {
             stubs.thread = {
                 reset: () => {},
                 show: () => {}
             };
             stubs.threadMock = sandbox.mock(stubs.thread);
+            selection = {
+                rangeCount: 0
+            };
+            pageInfo = { pageEl: {}, page: 1 };
 
-            stubs.getPageInfo = stubs.getPageInfo.returns({ pageEl: {}, page: 1 });
+            stubs.getPageInfo = stubs.getPageInfo.returns(pageInfo);
             stubs.hasActiveDialog = sandbox.stub(docAnnotatorUtil, 'hasActiveDialog').returns(false);
             stubs.getThreads = sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns([]);
             stubs.getLocation = sandbox.stub(annotator, 'getLocationFromEvent').returns(undefined);
             stubs.createThread = sandbox.stub(annotator, 'createAnnotationThread');
             stubs.bindListeners = sandbox.stub(annotator, 'bindCustomListenersOnThread');
+            stubs.getSel = sandbox.stub(window, 'getSelection');
 
             stubs.event = new Event({ x: 1, y: 1 });
             stubs.stopEvent = sandbox.stub(stubs.event, 'stopPropagation');
+            stubs.getSel.returns(selection);
+
+            createDialog = sandbox.mock(annotator.createHighlightDialog);
         });
 
         afterEach(() => {
@@ -654,17 +692,22 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(stubs.stopEvent).to.be.called;
         });
 
-        it('should do nothing if there are no pending threads', () => {
-            stubs.hasActiveDialog.returns(true);
+        it('should do nothing if there are no selections present', () => {
+            selection.rangeCount = 0;
             stubs.threadMock.expects('reset').never();
-            annotator.highlightCreateHandler(stubs.event);
+        });
 
-            stubs.getThreads.returns([stubs.thread]);
+        it('should do nothing if the selection is collapsed', () => {
+            selection.rangeCount = 1;
+            selection.isCollapsed = true;
             stubs.threadMock.expects('reset').never();
-            annotator.highlightCreateHandler(stubs.event);
         });
 
         it('should reset active highlight threads', () => {
+            selection.rangeCount = 1;
+            selection.getRangeAt = sandbox.stub().returns({
+                getClientRects: sandbox.stub().returns([])
+            });
             stubs.getThreads.returns([stubs.thread]);
 
             stubs.thread.state = constants.ANNOTATION_STATE_ACTIVE;
@@ -676,23 +719,47 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.highlightCreateHandler(stubs.event);
         });
 
-        it('should return before showing if the location is invalid', () => {
-            stubs.getLocation.returns(undefined);
+        it('should show the create highlight dialog', () => {
+            const pageRect = {
+                top: 0,
+                left: 0
+            };
+            const rect = {
+                right: 10,
+                bottom: 10
+            };
+            pageInfo.pageEl.getBoundingClientRect = sandbox.stub().returns(pageRect);
+            selection.rangeCount = 1;
+            selection.getRangeAt = sandbox.stub().returns({
+                getClientRects: sandbox.stub().returns([rect])
+            });
+
+            createDialog.expects('show').withArgs(pageInfo.pageEl);
+            createDialog.expects('setPosition');
 
             annotator.highlightCreateHandler(stubs.event);
-            expect(stubs.getLocation).to.be.called;
-            expect(stubs.createThread).to.not.be.called;
         });
 
-        it('should show and bind listeners to a thread', () => {
-            stubs.getLocation.returns(true);
-            stubs.createThread.returns(stubs.thread);
-            stubs.threadMock.expects('show');
+        it('should position the create highlight dialog, if not on mobile', () => {
+            const pageRect = {
+                top: 0,
+                left: 0
+            };
+            const rect = {
+                right: 50,
+                bottom: 50
+            };
+            pageInfo.pageEl.getBoundingClientRect = sandbox.stub().returns(pageRect);
+            selection.rangeCount = 1;
+            selection.getRangeAt = sandbox.stub().returns({
+                getClientRects: sandbox.stub().returns([rect])
+            });
+            annotator.isMobile = false;
+
+            createDialog.expects('show');
+            createDialog.expects('setPosition').withArgs(35, 50); // 35 with page padding
 
             annotator.highlightCreateHandler(stubs.event);
-            expect(stubs.getLocation).to.be.called;
-            expect(stubs.createThread).to.be.called;
-            expect(stubs.bindListeners).to.be.called;
         });
     });
 
