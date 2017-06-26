@@ -1,10 +1,26 @@
 import throttle from 'lodash.throttle';
+import Browser from './Browser';
 import { CLASS_HIDDEN } from './constants';
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
+const CONTROLS_BUTTON_CLASS = 'bp-controls-btn';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
 
 class Controls {
+    /**
+     * Indicates if the control bar should be hidden or not
+     *
+     * @property {boolean}
+     */
+    shouldHide = true;
+
+    /**
+     * Indicates if an element in the controls is focused
+     *
+     * @property {boolean}
+     */
+    isFocused = false;
+
     /**
      * [constructor]
      *
@@ -29,6 +45,11 @@ class Controls {
         this.controlsEl.addEventListener('mouseleave', this.mouseleaveHandler);
         this.controlsEl.addEventListener('focusin', this.focusinHandler);
         this.controlsEl.addEventListener('focusout', this.focusoutHandler);
+
+        if (Browser.hasTouch()) {
+            this.containerEl.addEventListener('touchstart', this.mousemoveHandler);
+            this.controlsEl.addEventListener('click', this.clickHandler);
+        }
     }
 
     /**
@@ -41,6 +62,11 @@ class Controls {
         this.controlsEl.removeEventListener('mouseleave', this.mouseleaveHandler);
         this.controlsEl.removeEventListener('focusin', this.focusinHandler);
         this.controlsEl.removeEventListener('focusout', this.focusoutHandler);
+
+        if (Browser.hasTouch()) {
+            this.containerEl.removeEventListener('touchstart', this.mousemoveHandler);
+            this.controlsEl.removeEventListener('click', this.clickHandler);
+        }
 
         this.buttonRefs.forEach((ref) => {
             ref.button.removeEventListener('click', ref.handler);
@@ -55,7 +81,11 @@ class Controls {
      * @return {boolean} true if element is a preview control button
      */
     isPreviewControlButton(element) {
-        return !!element && element.classList.contains('bp-controls-btn');
+        return (
+            !!element &&
+            (element.classList.contains(CONTROLS_BUTTON_CLASS) ||
+                element.parentNode.classList.contains(CONTROLS_BUTTON_CLASS))
+        );
     }
 
     /**
@@ -67,7 +97,7 @@ class Controls {
         this.controlDisplayTimeoutId = setTimeout(() => {
             clearTimeout(this.controlDisplayTimeoutId);
 
-            if (this.blockHiding) {
+            if (!this.shouldHide) {
                 this.resetTimeout();
             } else {
                 this.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
@@ -97,7 +127,7 @@ class Controls {
      * @return {void}
      */
     mouseenterHandler = () => {
-        this.blockHiding = true;
+        this.shouldHide = false;
     };
 
     /**
@@ -107,7 +137,7 @@ class Controls {
      * @return {void}
      */
     mouseleaveHandler = () => {
-        this.blockHiding = false;
+        this.shouldHide = true;
     };
 
     /**
@@ -120,6 +150,8 @@ class Controls {
         // When we focus onto a preview control button, show controls
         if (this.isPreviewControlButton(event.target)) {
             this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
+            this.isFocused = true;
+            this.shouldHide = false;
         }
     };
 
@@ -132,8 +164,21 @@ class Controls {
     focusoutHandler = (event) => {
         // When we focus out of a control button and aren't focusing onto another control button, hide the controls
         if (this.isPreviewControlButton(event.target) && !this.isPreviewControlButton(event.relatedTarget)) {
-            this.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
+            this.isFocused = false;
+            this.shouldHide = true;
         }
+    };
+
+    /**
+     * Handles click events for the control bar.
+     *
+     * @param {Event} event - A DOM-normalized event object.
+     * @return {void}
+     */
+    clickHandler = (event) => {
+        event.preventDefault();
+        // If we are not focused in on the page num input, allow hiding after timeout
+        this.shouldHide = !this.isFocused;
     };
 
     /**
@@ -153,7 +198,7 @@ class Controls {
         const button = document.createElement('button');
         button.setAttribute('aria-label', text);
         button.setAttribute('title', text);
-        button.className = `bp-controls-btn ${classList}`;
+        button.className = `${CONTROLS_BUTTON_CLASS} ${classList}`;
         button.addEventListener('click', handler);
 
         if (buttonContent) {
