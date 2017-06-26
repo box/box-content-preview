@@ -537,8 +537,9 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
             return;
         }
 
-        const replyTextEl = this.dialogEl.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
-        const replyButtonEls = this.dialogEl.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
+        const replyContainerEl = this.dialogEl.querySelector(constants.SELECTOR_REPLY_CONTAINER);
+        const replyTextEl = replyContainerEl.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+        const replyButtonEls = replyContainerEl.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
         annotatorUtil.resetTextarea(replyTextEl, clearText);
         annotatorUtil.hideElement(replyButtonEls);
 

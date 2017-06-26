@@ -73,10 +73,13 @@ describe('lib/viewers/media/Settings', () => {
         });
 
         it('should not decrease speed after min', () => {
-            settings.chooseOption('speed', '0.5');
+            const speedOptions = settings.getMediaSpeeds();
+            expect(speedOptions.length).to.be.above(0);
+
+            settings.chooseOption('speed', speedOptions[0]);
             settings.decreaseSpeed();
             const speed = cache.get('media-speed');
-            expect(speed).to.equal('0.25');
+            expect(speed).to.equal(speedOptions[0]);
         });
     });
 
