@@ -7,7 +7,6 @@ import rangySaveRestore from 'rangy/lib/rangy-selectionsaverestore';
 /* eslint-enable no-unused-vars */
 import * as docAnnotatorUtil from './docAnnotatorUtil';
 import * as annotatorUtil from '../annotatorUtil';
-import { ACTIVE_STATES, ANNOTATION_TYPE_HIGHLIGHT } from '../annotationConstants';
 import { PAGE_PADDING_BOTTOM, PAGE_PADDING_TOP } from './documentConstants';
 
 export default class DocHighlightAnnotator {
