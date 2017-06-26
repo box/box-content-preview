@@ -119,16 +119,34 @@ describe('lib/viewers/media/Scrubber', () => {
     });
 
     describe('scrubbingHandler()', () => {
-        it('should adjust the scrubber value to the current scrubber handle position value in the video', () => {
+        beforeEach(() => {
             stubs.setValue = sandbox.stub(scrubber, 'setValue');
             stubs.emit = sandbox.stub(scrubber, 'emit');
             stubs.scrubberPosition = sandbox.stub(scrubber, 'computeScrubberPosition').returns(0.5);
+            stubs.event = {
+                pageX: 50,
+                preventDefault: sandbox.stub()
+            };
+        });
+        it('should adjust the scrubber value to the current scrubber handle position value in the video', () => {
+            scrubber.scrubbingHandler(stubs.event);
 
-            scrubber.scrubbingHandler({ pageX: 50 });
-
+            expect(stubs.event.preventDefault).to.be.called;
             expect(stubs.scrubberPosition).to.be.calledWith(50);
             expect(stubs.setValue).to.be.calledWith(0.5);
             expect(stubs.emit).to.be.calledWith('valuechange');
+        });
+
+        it('should use the touch list if the event contains touches', () => {
+            stubs.event.touches = [
+                {
+                    pageX: 55
+                }
+            ];
+
+            scrubber.scrubbingHandler(stubs.event);
+
+            expect(stubs.scrubberPosition).to.be.calledWith(55);
         });
     });
 
@@ -167,7 +185,7 @@ describe('lib/viewers/media/Scrubber', () => {
         });
     });
 
-    describe('mouseDownHandler()', () => {
+    describe('pointerDownHandler()', () => {
         beforeEach(() => {
             stubs.scrub = sandbox.stub(scrubber, 'scrubbingHandler');
             stubs.event = {
@@ -179,35 +197,48 @@ describe('lib/viewers/media/Scrubber', () => {
         });
 
         it('should ignore if event is not a left click', () => {
-            scrubber.mouseDownHandler(stubs.event);
+            scrubber.pointerDownHandler(stubs.event);
             expect(stubs.scrub).to.not.be.called;
         });
 
         it('should ignore if event is a CTRL click', () => {
             stubs.event.ctrlKey = '';
-            scrubber.mouseDownHandler(stubs.event);
+            scrubber.pointerDownHandler(stubs.event);
             expect(stubs.scrub).to.not.be.called;
         });
 
         it('should ignore if event is a CMD click', () => {
             stubs.event.metaKey = '';
-            scrubber.mouseDownHandler(stubs.event);
+            scrubber.pointerDownHandler(stubs.event);
             expect(stubs.scrub).to.not.be.called;
         });
 
         it('should set the mouse move state to true and calls the mouse action handler', () => {
+            scrubber.hasTouch = false;
             stubs.event.button = 1;
-            scrubber.mouseDownHandler(stubs.event);
+            scrubber.pointerDownHandler(stubs.event);
 
             expect(stubs.scrub).to.be.calledWith(stubs.event);
             expect(scrubber.scrubberWrapperEl).to.have.class(CLASS_SCRUBBER_HOVER);
         });
+
+        it('should add touch events if the browser has touch', () => {
+            stubs.event.button = 1;
+            scrubber.hasTouch = true;
+            stubs.addEventListener = sandbox.stub(document, 'addEventListener');
+
+            scrubber.pointerDownHandler(stubs.event);
+
+            expect(stubs.addEventListener).to.be.calledWith('touchmove', scrubber.scrubbingHandler);
+            expect(stubs.addEventListener).to.be.calledWith('touchend', scrubber.pointerUpHandler);
+            expect(scrubber.scrubberWrapperEl).to.not.have.class(CLASS_SCRUBBER_HOVER);
+        });
     });
 
-    describe('mouseUpHandler()', () => {
+    describe('pointerUpHandler()', () => {
         it('should set the mouse move state to false thus stopping mouse action handling', () => {
             stubs.destroy = sandbox.stub(scrubber, 'destroyDocumentHandlers');
-            scrubber.mouseUpHandler(stubs.event);
+            scrubber.pointerUpHandler(stubs.event);
             expect(stubs.destroy).to.be.called;
             expect(scrubber.scrubberWrapperEl).to.not.have.class(CLASS_SCRUBBER_HOVER);
         });
@@ -219,8 +250,18 @@ describe('lib/viewers/media/Scrubber', () => {
             scrubber.destroyDocumentHandlers();
 
             expect(stubs.remove).to.be.calledWith('mousemove', scrubber.scrubbingHandler);
-            expect(stubs.remove).to.be.calledWith('mouseup', scrubber.mouseUpHandler);
-            expect(stubs.remove).to.be.calledWith('mouseleave', scrubber.mouseUpHandler);
+            expect(stubs.remove).to.be.calledWith('mouseup', scrubber.pointerUpHandler);
+            expect(stubs.remove).to.be.calledWith('mouseleave', scrubber.pointerUpHandler);
+        });
+
+        it('should remove touch events if the browser has touch', () => {
+            scrubber.hasTouch = true;
+            stubs.remove = sandbox.stub(document, 'removeEventListener');
+
+            scrubber.destroyDocumentHandlers();
+
+            expect(stubs.remove).to.be.calledWith('touchmove', scrubber.scrubbingHandler);
+            expect(stubs.remove).to.be.calledWith('touchend', scrubber.pointerUpHandler);
         });
     });
 
