@@ -274,11 +274,11 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
     });
 
-    describe('createBasicHighlight()', () => {
+    describe('createPlainHighlight()', () => {
         beforeEach(() => {
             sandbox.stub(annotator, 'highlightCurrentSelection');
             sandbox.stub(annotator, 'createHighlightAnnotation');
-            annotator.createBasicHighlight();
+            annotator.createPlainHighlight();
         });
 
         it('should invoke highlightCurrentSelection()', () => {

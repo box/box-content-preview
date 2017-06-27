@@ -9,14 +9,12 @@ import autobind from 'autobind-decorator';
 import Annotator from '../Annotator';
 import DocHighlightThread from './DocHighlightThread';
 import DocPointThread from './DocPointThread';
-import CreateHighlightDialog from './CreateHighlightDialog';
+import CreateHighlightDialog, { CreateEvents } from './CreateHighlightDialog';
 import * as annotatorUtil from '../annotatorUtil';
 import * as constants from '../annotationConstants';
 import * as docAnnotatorUtil from './docAnnotatorUtil';
 
 const MOUSEMOVE_THROTTLE_MS = 50;
-const PAGE_PADDING_BOTTOM = 15;
-const PAGE_PADDING_TOP = 15;
 const HOVER_TIMEOUT_MS = 75;
 const MOUSE_MOVE_MIN_DISTANCE = 5;
 
@@ -90,7 +88,7 @@ function isThreadInHoverState(thread) {
     lastHighlightEvent;
 
     /**
-     * Creates and mananges basic highlight and comment highlight and point annotations
+     * Creates and mananges plain highlight and comment highlight and point annotations
      * on document files.
      *
      * [constructor]
@@ -103,20 +101,14 @@ function isThreadInHoverState(thread) {
         // Explicit scoping
         this.highlightCurrentSelection = this.highlightCurrentSelection.bind(this);
         this.createHighlightAnnotation = this.createHighlightAnnotation.bind(this);
-        this.createBasicHighlight = this.createBasicHighlight.bind(this);
+        this.createPlainHighlight = this.createPlainHighlight.bind(this);
 
         this.createHighlightDialog = new CreateHighlightDialog();
-        this.createHighlightDialog.addListener(CreateHighlightDialog.CreateEvents.basic, this.createBasicHighlight);
+        this.createHighlightDialog.addListener(CreateEvents.plain, this.createPlainHighlight);
 
-        this.createHighlightDialog.addListener(
-            CreateHighlightDialog.CreateEvents.comment,
-            this.highlightCurrentSelection
-        );
+        this.createHighlightDialog.addListener(CreateEvents.comment, this.highlightCurrentSelection);
 
-        this.createHighlightDialog.addListener(
-            CreateHighlightDialog.CreateEvents.commentPost,
-            this.createHighlightAnnotation
-        );
+        this.createHighlightDialog.addListener(CreateEvents.commentPost, this.createHighlightAnnotation);
     }
 
     /**
@@ -127,17 +119,11 @@ function isThreadInHoverState(thread) {
     destroy() {
         super.destroy();
 
-        this.createHighlightDialog.removeListener(CreateHighlightDialog.CreateEvents.basic, this.createBasicHighlight);
+        this.createHighlightDialog.removeListener(CreateEvents.plain, this.createPlainHighlight);
 
-        this.createHighlightDialog.removeListener(
-            CreateHighlightDialog.CreateEvents.comment,
-            this.highlightCurrentSelection
-        );
+        this.createHighlightDialog.removeListener(CreateEvents.comment, this.highlightCurrentSelection);
 
-        this.createHighlightDialog.removeListener(
-            CreateHighlightDialog.CreateEvents.commentPost,
-            this.createHighlightAnnotation
-        );
+        this.createHighlightDialog.removeListener(CreateEvents.commentPost, this.createHighlightAnnotation);
         this.createHighlightDialog.destroy();
         this.createHighlightDialog = null;
     }
@@ -195,10 +181,10 @@ function isThreadInHoverState(thread) {
             // Store coordinates at 100% scale in PDF space in PDF units
             const pageDimensions = pageEl.getBoundingClientRect();
             const pageWidth = pageDimensions.width;
-            const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+            const pageHeight = pageDimensions.height - constants.PAGE_PADDING_TOP - constants.PAGE_PADDING_BOTTOM;
             const browserCoordinates = [
                 event.clientX - pageDimensions.left,
-                event.clientY - pageDimensions.top - PAGE_PADDING_TOP
+                event.clientY - pageDimensions.top - constants.PAGE_PADDING_TOP
             ];
             const pdfCoordinates = docAnnotatorUtil.convertDOMSpaceToPDFSpace(
                 browserCoordinates,
@@ -255,7 +241,7 @@ function isThreadInHoverState(thread) {
             // and scale if needed (in case the representation changes size)
             const pageDimensions = pageEl.getBoundingClientRect();
             const pageWidth = pageDimensions.width;
-            const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+            const pageHeight = pageDimensions.height - constants.PAGE_PADDING_TOP - constants.PAGE_PADDING_BOTTOM;
             const dimensions = {
                 x: pageWidth / zoomScale,
                 y: pageHeight / zoomScale
@@ -311,12 +297,12 @@ function isThreadInHoverState(thread) {
     }
 
     /**
-     * Creates a basic highlight annotation.
+     * Creates a plain highlight annotation.
      *
      * @private
      * @return {void}
      */
-    createBasicHighlight() {
+    createPlainHighlight() {
         this.highlightCurrentSelection();
         this.createHighlightAnnotation();
     }
@@ -337,7 +323,6 @@ function isThreadInHoverState(thread) {
         this.createHighlightDialog.hide();
 
         const location = this.getLocationFromEvent(this.lastHighlightEvent, constants.ANNOTATION_TYPE_HIGHLIGHT);
-        console.error(location);
         if (!location) {
             return null;
         }
@@ -719,7 +704,7 @@ function isThreadInHoverState(thread) {
 
         const pageDimensions = pageEl.getBoundingClientRect();
         const pageLeft = pageDimensions.left;
-        const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
+        const pageTop = pageDimensions.top + constants.PAGE_PADDING_TOP;
 
         this.createHighlightDialog.show(pageEl);
         if (!this.isMobile) {

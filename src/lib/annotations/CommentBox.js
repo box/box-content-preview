@@ -6,8 +6,6 @@ const TEXT_ANNOTATION_CANCEL = __('annotation_cancel');
 const TEXT_ANNOTATION_POST = __('annotation_post');
 const TEXT_ADD_COMMENT_PLACEHOLDER = __('annotation_add_comment_placeholder');
 
-// Styling
-
 class CommentBox extends EventEmitter {
     /**
      * Text displayed in the Cancel button element.
@@ -35,7 +33,7 @@ class CommentBox extends EventEmitter {
      *
      * @property {HTMLElement}
      */
-    el;
+    containerEl;
 
     /**
      * Reference to the cancel button element in the comment box.
@@ -100,7 +98,7 @@ class CommentBox extends EventEmitter {
      * @return {void}
      */
     focus() {
-        if (!this.el) {
+        if (!this.containerEl) {
             return;
         }
 
@@ -114,7 +112,7 @@ class CommentBox extends EventEmitter {
      * @return {void}
      */
     clear() {
-        if (!this.el) {
+        if (!this.containerEl) {
             return;
         }
 
@@ -128,11 +126,11 @@ class CommentBox extends EventEmitter {
      * @return {void}
      */
     hide() {
-        if (!this.el) {
+        if (!this.containerEl) {
             return;
         }
 
-        this.el.classList.add(CLASS_HIDDEN);
+        this.containerEl.classList.add(CLASS_HIDDEN);
     }
 
     /**
@@ -142,12 +140,12 @@ class CommentBox extends EventEmitter {
      * @return {void}
      */
     show() {
-        if (!this.el) {
-            this.el = this.createCommentBox();
-            this.parentEl.appendChild(this.el);
+        if (!this.containerEl) {
+            this.containerEl = this.createCommentBox();
+            this.parentEl.appendChild(this.containerEl);
         }
 
-        this.el.classList.remove(CLASS_HIDDEN);
+        this.containerEl.classList.remove(CLASS_HIDDEN);
     }
 
     /**
@@ -156,13 +154,13 @@ class CommentBox extends EventEmitter {
      * @public
      */
     destroy() {
-        if (!this.el) {
+        if (!this.containerEl) {
             return;
         }
 
-        this.el.remove();
+        this.containerEl.remove();
         this.parentEl = null;
-        this.el = null;
+        this.containerEl = null;
         this.cancelEl.removeEventListener('click', this.onCancel);
         this.postEl.removeEventListener('click', this.onPost);
     }
@@ -178,9 +176,9 @@ class CommentBox extends EventEmitter {
      * @return {HTMLElement} HTML containing UI for the comment box.
      */
     createHTML() {
-        const el = document.createElement('section');
-        el.classList.add('bp-create-highlight-comment');
-        el.innerHTML = `
+        const containerEl = document.createElement('section');
+        containerEl.classList.add('bp-create-highlight-comment');
+        containerEl.innerHTML = `
             <textarea class="bp-textarea annotation-textarea ${CLASS_ACTIVE}"
                 placeholder="${this.placeholderText}"></textarea>
             <div class="button-container">
@@ -192,7 +190,7 @@ class CommentBox extends EventEmitter {
                 </button>
             </div>`.trim();
 
-        return el;
+        return containerEl;
     }
 
     /**
@@ -225,18 +223,18 @@ class CommentBox extends EventEmitter {
      * @return {HTMLElement} The HTML to append to this.parentElement
      */
     createCommentBox() {
-        const el = this.createHTML();
+        const containerEl = this.createHTML();
 
         // Reference HTML
-        this.textAreaEl = el.querySelector('.annotation-textarea');
-        this.cancelEl = el.querySelector('.cancel-annotation-btn');
-        this.postEl = el.querySelector('.post-annotation-btn');
+        this.textAreaEl = containerEl.querySelector('.annotation-textarea');
+        this.cancelEl = containerEl.querySelector('.cancel-annotation-btn');
+        this.postEl = containerEl.querySelector('.post-annotation-btn');
 
         // Add event listeners
         this.cancelEl.addEventListener('click', this.onCancel);
         this.postEl.addEventListener('click', this.onPost);
 
-        return el;
+        return containerEl;
     }
 }
 

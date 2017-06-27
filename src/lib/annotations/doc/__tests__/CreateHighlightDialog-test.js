@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import CreateHighlightDialog from '../CreateHighlightDialog';
+import CreateHighlightDialog, { CreateEvents } from '../CreateHighlightDialog';
 import { CLASS_HIDDEN } from '../../../constants';
 import CommentBox from '../../CommentBox';
 
@@ -67,7 +67,7 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
         it('should move the UI element to the parent element if it does not already contain it', () => {
             const append = sandbox.stub(parentEl, 'appendChild');
             dialog.show();
-            expect(append).to.be.calledWith(dialog.el);
+            expect(append).to.be.calledWith(dialog.containerEl);
         });
 
         it('should invoke setButtonVisibility() to show the highlight buttons', () => {
@@ -78,7 +78,7 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
 
         it('should remove the hidden class from the UI element', () => {
             dialog.show();
-            expect(dialog.el.classList.contains(CLASS_HIDDEN)).to.be.false;
+            expect(dialog.containerEl.classList.contains(CLASS_HIDDEN)).to.be.false;
         });
     });
 
@@ -87,7 +87,7 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
             dialog.show();
         });
         it('should do nothing if there is no UI element', () => {
-            dialog.el = null;
+            dialog.containerEl = null;
             const hideComment = sandbox.stub(dialog.commentBox, 'hide');
             dialog.hide();
             expect(hideComment).to.not.be.called;
@@ -95,7 +95,7 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
 
         it('should add the hidden class to the ui element', () => {
             dialog.hide();
-            expect(dialog.el.classList.contains(CLASS_HIDDEN)).to.be.true;
+            expect(dialog.containerEl.classList.contains(CLASS_HIDDEN)).to.be.true;
         });
 
         it('should hide the comment box', () => {
@@ -117,14 +117,14 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
         });
 
         it('should do nothing if no ui has been created', () => {
-            dialog.el = null;
+            dialog.containerEl = null;
             const hide = sandbox.stub(dialog, 'hide');
             dialog.destroy();
             expect(hide).to.not.be.called;
         });
 
         it('should remove events that stopPropagation() from occurring outside the dialog', () => {
-            const remove = sandbox.stub(dialog.el, 'removeEventListener');
+            const remove = sandbox.stub(dialog.containerEl, 'removeEventListener');
             dialog.destroy();
             expect(remove).to.be.calledWith('click');
             expect(remove).to.be.calledWith('mouseup');
@@ -157,7 +157,7 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
         });
 
         it('should remove the ui element from the dom', () => {
-            const remove = sandbox.stub(dialog.el, 'remove');
+            const remove = sandbox.stub(dialog.containerEl, 'remove');
             dialog.destroy();
             expect(remove).to.be.called;
         });
@@ -178,23 +178,23 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
             const y = 50;
             dialog.position.y = y;
             dialog.updatePosition();
-            expect(dialog.el.style.top).to.equal(`${y + 5}px`);
+            expect(dialog.containerEl.style.top).to.equal(`${y + 5}px`);
         });
 
         it('should update the left of the ui element, to center it', () => {
-            const width = dialog.el.clientWidth;
+            const width = dialog.containerEl.clientWidth;
             const x = 50;
             dialog.position.x = x;
             dialog.updatePosition();
-            expect(dialog.el.style.left).to.equal(`${x - 1 - width / 2}px`);
+            expect(dialog.containerEl.style.left).to.equal(`${x - 1 - width / 2}px`);
         });
     });
 
     describe('onHighlightClick()', () => {
-        it('should invoke the "basic" highlight event', () => {
+        it('should invoke the "plain" highlight event', () => {
             const emit = sandbox.stub(dialog, 'emit');
             dialog.onHighlightClick();
-            expect(emit).to.be.calledWith(CreateHighlightDialog.CreateEvents.basic);
+            expect(emit).to.be.calledWith(CreateEvents.plain);
         });
     });
 
@@ -206,7 +206,7 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
         it('should invoke the "comment" highlight event', () => {
             const emit = sandbox.stub(dialog, 'emit');
             dialog.onCommentClick();
-            expect(emit).to.be.calledWith(CreateHighlightDialog.CreateEvents.comment);
+            expect(emit).to.be.calledWith(CreateEvents.comment);
         });
 
         it('should show the comment box', () => {
@@ -243,7 +243,7 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
             const emit = sandbox.stub(dialog, 'emit');
             const text = 'some text';
             dialog.onCommentPost(text);
-            expect(emit).to.be.calledWith(CreateHighlightDialog.CreateEvents.commentPost, text);
+            expect(emit).to.be.calledWith(CreateEvents.commentPost, text);
         });
 
         it('should clear the comment box', () => {

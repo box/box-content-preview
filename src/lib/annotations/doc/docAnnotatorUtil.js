@@ -1,8 +1,7 @@
 import * as annotatorUtil from '../annotatorUtil';
+import { PAGE_PADDING_TOP, PAGE_PADDING_BOTTOM } from '../annotationConstants';
 
 const PREVIEW_PRESENTATION_CLASS = 'bp-doc-presentation';
-const PAGE_PADDING_BOTTOM = 15;
-const PAGE_PADDING_TOP = 15;
 const HEIGHT_PADDING = 30;
 // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
 const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
@@ -114,17 +113,6 @@ export function isPointInPolyOpt(poly, x, y) {
  */
 /* istanbul ignore next */
 export function getHighlightAndHighlightEls(highlighter, pageEl) {
-    // We use Rangy to turn the selection into a highlight, which creates
-    // spans around the selection that we can then turn into quadpoints
-    // const highlight = highlighter.highlightSelection('rangy-highlight', {
-    //     containerElementId: pageEl.id
-    // })[0];
-
-    // // Only grab highlights on the text layer
-    // const textLayer = pageEl.querySelector('.textLayer');
-    // const highlightEls = [].slice.call(textLayer.querySelectorAll('.rangy-highlight'), 0).filter((element) => {
-    //     return element.tagName && element.tagName === 'SPAN' && element.textContent.trim() !== '';
-    // });
     const highlight = highlighter.highlights[0];
     // // Only grab highlights on the text layer
     const textLayer = pageEl.querySelector('.textLayer');

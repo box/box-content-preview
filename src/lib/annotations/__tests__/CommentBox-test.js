@@ -59,8 +59,8 @@ describe('lib/annotations/CommentBox', () => {
         });
 
         it('should do nothing if the comment box HTML doesn\'t exist', () => {
-            commentBox.el.remove();
-            commentBox.el = null;
+            commentBox.containerEl.remove();
+            commentBox.containerEl = null;
 
             const focus = sandbox.stub(commentBox.textAreaEl, 'focus');
 
@@ -83,8 +83,8 @@ describe('lib/annotations/CommentBox', () => {
         });
 
         it('should do nothing if the comment box HTML doesn\'t exist', () => {
-            commentBox.el.remove();
-            commentBox.el = null;
+            commentBox.containerEl.remove();
+            commentBox.containerEl = null;
             const text = 'yay';
             commentBox.textAreaEl.value = text;
 
@@ -107,8 +107,8 @@ describe('lib/annotations/CommentBox', () => {
         });
 
         it('should do nothing if the comment box HTML doesn\'t exist', () => {
-            const addClass = sandbox.stub(commentBox.el.classList, 'add');
-            commentBox.el = null;
+            const addClass = sandbox.stub(commentBox.containerEl.classList, 'add');
+            commentBox.containerEl = null;
             commentBox.hide();
 
             expect(addClass).to.not.be.called;
@@ -116,31 +116,31 @@ describe('lib/annotations/CommentBox', () => {
 
         it('should add the hidden class to the comment box element', () => {
             commentBox.hide();
-            expect(commentBox.el.classList.contains(CLASS_HIDDEN)).to.be.true;
+            expect(commentBox.containerEl.classList.contains(CLASS_HIDDEN)).to.be.true;
         });
     });
 
     describe('show()', () => {
         it('should invoke createComment box, if UI has not been created', () => {
-            const el = document.createElement('div');
-            const create = sandbox.stub(commentBox, 'createCommentBox').returns(el);
+            const containerEl = document.createElement('div');
+            const create = sandbox.stub(commentBox, 'createCommentBox').returns(containerEl);
 
             commentBox.show();
             expect(create).to.be.called;
             // Nullify to prevent fail during destroy
-            commentBox.el = null;
+            commentBox.containerEl = null;
         });
 
         it('should add the container element to the parent, if the UI has not been created', () => {
             const append = sandbox.stub(parentEl, 'appendChild');
 
             commentBox.show();
-            expect(append).to.be.calledWith(commentBox.el);
+            expect(append).to.be.calledWith(commentBox.containerEl);
         });
 
         it('should remove the hidden class from the container', () => {
             commentBox.show();
-            expect(commentBox.el.classList.contains(CLASS_HIDDEN)).to.be.false;
+            expect(commentBox.containerEl.classList.contains(CLASS_HIDDEN)).to.be.false;
         });
     });
 
@@ -154,7 +154,7 @@ describe('lib/annotations/CommentBox', () => {
 
         it('should remove the UI container from the parent element', () => {
             commentBox.show();
-            const remove = sandbox.stub(commentBox.el, 'remove');
+            const remove = sandbox.stub(commentBox.containerEl, 'remove');
             commentBox.destroy();
             expect(remove).to.be.called;
         });

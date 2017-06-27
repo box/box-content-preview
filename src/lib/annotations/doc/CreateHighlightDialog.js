@@ -25,16 +25,25 @@ const CREATE_HIGHLIGHT_DIALOG_TEMPLATE = `
         </div>
     </div>`.trim();
 
+/**
+ * Events emitted by this component.
+ */
+export const CreateEvents = {
+    plain: 'plain_highlight_create',
+    comment: 'comment_highlight_edit',
+    commentPost: 'comment_highlight_post'
+};
+
 class CreateHighlightDialog extends EventEmitter {
     /**
      * Container element for the dialog.
      *
      * @property {HTMLElement}
      */
-    el;
+    containerEl;
 
     /**
-     * The clickable element for creating basic highlights.
+     * The clickable element for creating plain highlights.
      *
      * @property {HTMLElement}
      */
@@ -79,16 +88,7 @@ class CreateHighlightDialog extends EventEmitter {
     };
 
     /**
-     * Events emitted by this component.
-     */
-    static CreateEvents = {
-        basic: 'highlight_basic_create',
-        comment: 'highlight_comment_edit',
-        commentPost: 'highlight_comment_post'
-    };
-
-    /**
-     * A dialog used to create basic and comment highlights.
+     * A dialog used to create plain and comment highlights.
      * 
      * [constructor]
      */
@@ -137,8 +137,8 @@ class CreateHighlightDialog extends EventEmitter {
      * @return {void}
      */
     show(newParentEl) {
-        if (!this.el) {
-            this.el = this.createElement();
+        if (!this.containerEl) {
+            this.containerEl = this.createElement();
         }
 
         // Move to the correct parent element
@@ -148,11 +148,11 @@ class CreateHighlightDialog extends EventEmitter {
 
         // Add to parent if it hasn't been added already
         if (!this.parentEl.querySelector(`.${CLASS_CREATE_DIALOG}`)) {
-            this.parentEl.appendChild(this.el);
+            this.parentEl.appendChild(this.containerEl);
         }
 
         this.setButtonVisibility(true);
-        this.el.classList.remove(CLASS_HIDDEN);
+        this.containerEl.classList.remove(CLASS_HIDDEN);
     }
 
     /**
@@ -161,11 +161,11 @@ class CreateHighlightDialog extends EventEmitter {
      * @return {void}
      */
     hide() {
-        if (!this.el) {
+        if (!this.containerEl) {
             return;
         }
 
-        this.el.classList.add(CLASS_HIDDEN);
+        this.containerEl.classList.add(CLASS_HIDDEN);
         this.commentBox.hide();
         this.commentBox.clear();
     }
@@ -176,17 +176,17 @@ class CreateHighlightDialog extends EventEmitter {
      * @public
      */
     destroy() {
-        if (!this.el) {
+        if (!this.containerEl) {
             return;
         }
 
         this.hide();
 
         // Stop interacting with this element from triggering outside actions
-        this.el.removeEventListener('click', this.stopPropagation);
-        this.el.removeEventListener('mouseup', this.stopPropagation);
-        this.el.removeEventListener('touchend', this.stopPropagation);
-        this.el.removeEventListener('dblclick', this.stopPropagation);
+        this.containerEl.removeEventListener('click', this.stopPropagation);
+        this.containerEl.removeEventListener('mouseup', this.stopPropagation);
+        this.containerEl.removeEventListener('touchend', this.stopPropagation);
+        this.containerEl.removeEventListener('dblclick', this.stopPropagation);
 
         // Event listeners
         this.highlightCreateEl.removeEventListener('click', this.onHighlightClick);
@@ -194,8 +194,8 @@ class CreateHighlightDialog extends EventEmitter {
         this.commentBox.removeListener(CommentBox.CommentEvents.post, this.onCommentPost);
         this.commentBox.removeListener(CommentBox.CommentEvents.cancel, this.onCommentCancel);
 
-        this.el.remove();
-        this.el = null;
+        this.containerEl.remove();
+        this.containerEl = null;
         this.parentEl = null;
 
         this.commentBox.destroy();
@@ -214,18 +214,18 @@ class CreateHighlightDialog extends EventEmitter {
      */
     updatePosition() {
         // Plus 1 pixel for caret
-        this.el.style.left = `${this.position.x - 1 - this.el.clientWidth / 2}px`;
+        this.containerEl.style.left = `${this.position.x - 1 - this.containerEl.clientWidth / 2}px`;
         // Plus 5 pixels for caret
-        this.el.style.top = `${this.position.y + 5}px`;
+        this.containerEl.style.top = `${this.position.y + 5}px`;
     }
 
     /**
-     * Fire an event notifying that the basic highlight button has been clicked.
+     * Fire an event notifying that the plain highlight button has been clicked.
      * 
      * @return {void}
      */
     onHighlightClick() {
-        this.emit(CreateHighlightDialog.CreateEvents.basic);
+        this.emit(CreateEvents.plain);
     }
 
     /**
@@ -235,7 +235,7 @@ class CreateHighlightDialog extends EventEmitter {
      * @return {void}
      */
     onCommentClick() {
-        this.emit(CreateHighlightDialog.CreateEvents.comment);
+        this.emit(CreateEvents.comment);
 
         this.commentBox.show();
         this.commentBox.focus();
@@ -251,7 +251,7 @@ class CreateHighlightDialog extends EventEmitter {
      * @return {void}
      */
     onCommentPost(text) {
-        this.emit(CreateHighlightDialog.CreateEvents.commentPost, text);
+        this.emit(CreateEvents.commentPost, text);
         this.commentBox.clear();
     }
 
@@ -268,9 +268,9 @@ class CreateHighlightDialog extends EventEmitter {
     }
 
     /**
-     * Hide or show the basic and comment buttons, in the dialog.
+     * Hide or show the plain and comment buttons, in the dialog.
      *
-     * @param {boolean} visible - If true, shows the basic and comment buttons
+     * @param {boolean} visible - If true, shows the plain and comment buttons
      */
     setButtonVisibility(visible) {
         if (visible) {

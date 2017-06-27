@@ -1,6 +1,6 @@
 import * as docAnnotatorUtil from './docAnnotatorUtil';
 import * as annotatorUtil from '../annotatorUtil';
-import { PAGE_PADDING_BOTTOM, PAGE_PADDING_TOP } from './documentConstants';
+import { PAGE_PADDING_BOTTOM, PAGE_PADDING_TOP } from '../annotationConstants';
 
 export default class PointHighlightAnnotator {
     /**
