@@ -257,7 +257,6 @@ const PAGE_PADDING_TOP = 15;
      */
     bindDOMListeners() {
         this.element.addEventListener('mousedown', this.mousedownHandler);
-        this.element.addEventListener('mouseup', this.mouseupHandler);
         this.element.addEventListener('keydown', this.keydownHandler);
 
         if (!this.isMobile) {
@@ -275,7 +274,6 @@ const PAGE_PADDING_TOP = 15;
      */
     unbindDOMListeners() {
         this.element.removeEventListener('mousedown', this.mousedownHandler);
-        this.element.removeEventListener('mouseup', this.mouseupHandler);
         this.element.removeEventListener('keydown', this.keydownHandler);
 
         if (!this.isMobile) {
