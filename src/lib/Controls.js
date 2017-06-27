@@ -4,6 +4,7 @@ import { CLASS_HIDDEN } from './constants';
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 const CONTROLS_BUTTON_CLASS = 'bp-controls-btn';
+const CONTROL_PAGE_NUM_WRAPPER_CLASS = 'bp-doc-page-num-wrapper';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
 
 class Controls {
@@ -84,7 +85,7 @@ class Controls {
         return (
             !!element &&
             (element.classList.contains(CONTROLS_BUTTON_CLASS) ||
-                element.parentNode.classList.contains(CONTROLS_BUTTON_CLASS))
+                element.parentNode.classList.contains(CONTROL_PAGE_NUM_WRAPPER_CLASS))
         );
     }
 
