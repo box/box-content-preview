@@ -5,6 +5,7 @@ import AnnotationDialog from '../../AnnotationDialog';
 import * as annotatorUtil from '../../annotatorUtil';
 import * as docAnnotatorUtil from '../docAnnotatorUtil';
 import { CLASS_HIDDEN } from '../../../constants';
+import * as util from '../../../util';
 import * as constants from '../../annotationConstants';
 
 let dialog;
@@ -190,6 +191,19 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
             expect(commentTextEl.classList.contains(CLASS_HIDDEN)).to.be.true;
             expect(replyTextEl.classList.contains(CLASS_HIDDEN)).to.be.false;
         });
+
+        it('should reposition the dialog if using a desktop browser', () => {
+            sandbox.stub(dialog, 'position');
+            dialog.toggleHighlightCommentsReply();
+            expect(dialog.position).to.be.called;
+        });
+
+        it('should not reposition the dialog on a mobile device', () => {
+            sandbox.stub(dialog, 'position');
+            dialog.isMobile = true;
+            dialog.toggleHighlightCommentsReply();
+            expect(dialog.position).to.not.be.called;
+        });
     });
 
     describe('setup()', () => {
@@ -297,6 +311,110 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         });
     });
 
+    describe('bindDOMListeners()', () => {
+        it('should bind DOM listeners', () => {
+            stubs.add = sandbox.stub(dialog.element, 'addEventListener');
+
+            dialog.bindDOMListeners();
+            expect(stubs.add).to.be.calledWith('mousedown', sinon.match.func);
+            expect(stubs.add).to.be.calledWith('keydown', sinon.match.func);
+            expect(stubs.add).to.be.calledWith('mouseleave', sinon.match.func);
+            expect(stubs.add).to.be.calledWith('mouseenter', sinon.match.func);
+        });
+
+        it('should not bind mouseenter/leave events for mobile browsers', () => {
+            stubs.add = sandbox.stub(dialog.element, 'addEventListener');
+            dialog.isMobile = true;
+
+            dialog.bindDOMListeners();
+            expect(stubs.add).to.be.calledWith('mousedown', sinon.match.func);
+            expect(stubs.add).to.be.calledWith('keydown', sinon.match.func);
+            expect(stubs.add).to.not.be.calledWith('mouseenter', sinon.match.func);
+            expect(stubs.add).to.not.be.calledWith('mouseleave', sinon.match.func);
+        });
+    });
+
+    describe('unbindDOMListeners()', () => {
+        it('should unbind DOM listeners', () => {
+            stubs.remove = sandbox.stub(dialog.element, 'removeEventListener');
+
+            dialog.unbindDOMListeners();
+            expect(stubs.remove).to.be.calledWith('mousedown', sinon.match.func);
+            expect(stubs.remove).to.be.calledWith('keydown', sinon.match.func);
+            expect(stubs.remove).to.be.calledWith('mouseleave', sinon.match.func);
+            expect(stubs.remove).to.be.calledWith('mouseenter', sinon.match.func);
+        });
+
+        it('should not unbind mouseenter/leave events for mobile browsers', () => {
+            stubs.remove = sandbox.stub(dialog.element, 'removeEventListener');
+            dialog.isMobile = true;
+
+            dialog.unbindDOMListeners();
+            expect(stubs.remove).to.be.calledWith('mousedown', sinon.match.func);
+            expect(stubs.remove).to.be.calledWith('keydown', sinon.match.func);
+            expect(stubs.remove).to.not.be.calledWith('mouseenter', sinon.match.func);
+            expect(stubs.remove).to.not.be.calledWith('mouseleave', sinon.match.func);
+        });
+    });
+
+    describe('keydownHandler()', () => {
+        const event = {
+            stopPropagation: sandbox.stub()
+        };
+
+        it('should call mousedownHandler if \'Enter\' is pressed', () => {
+            sandbox.stub(util, 'decodeKeydown').returns('Enter');
+            sandbox.stub(dialog, 'mousedownHandler');
+            dialog.keydownHandler(event);
+            expect(dialog.mousedownHandler).to.be.called;
+        });
+
+        it('should not call mousedownHandler if a key other than \'Enter\' is pressed', () => {
+            sandbox.stub(util, 'decodeKeydown').returns('Delete');
+            sandbox.stub(dialog, 'mousedownHandler');
+            dialog.keydownHandler(event);
+            expect(dialog.mousedownHandler).to.not.be.called;
+        });
+    });
+
+    describe('mousedownHandler()', () => {
+        const event = {
+            stopPropagation: sandbox.stub(),
+            preventDefault: sandbox.stub()
+        };
+
+        beforeEach(() => {
+            stubs.dataType = sandbox.stub(annotatorUtil, 'findClosestDataType');
+            sandbox.stub(dialog, 'toggleHighlight');
+            sandbox.stub(dialog, 'toggleHighlightCommentsReply');
+            sandbox.stub(dialog, 'toggleHighlightDialogs');
+            sandbox.stub(dialog, 'focusAnnotationsTextArea');
+        });
+
+        it('should create/remove a highlight when the \'highlight-btn\' is pressed', () => {
+            stubs.dataType.returns('highlight-btn');
+            dialog.mousedownHandler(event);
+            expect(stubs.emit).to.be.calledWith('annotationdraw');
+            expect(dialog.toggleHighlight).to.be.called;
+        });
+
+        it('should create highlight when the \'add-highlight-comment-btn\' is pressed', () => {
+            stubs.dataType.returns('add-highlight-comment-btn');
+            dialog.mousedownHandler(event);
+            expect(stubs.emit).to.be.calledWith('annotationdraw');
+            expect(dialog.toggleHighlightCommentsReply).to.be.called;
+            expect(dialog.toggleHighlightDialogs).to.be.called;
+            expect(event.preventDefault).to.be.called;
+            expect(dialog.focusAnnotationsTextArea).to.be.called;
+        });
+
+        it('should not create a highlight when any other button is pressed', () => {
+            stubs.dataType.returns('anything-else');
+            dialog.mousedownHandler(event);
+            expect(stubs.emit).to.not.be.calledWith('annotationdraw');
+        });
+    });
+
     describe('toggleHighlightIcon()', () => {
         it('should display active highlight icon when highlight is active', () => {
             const addHighlightBtn = dialog.element.querySelector('.bp-add-highlight-btn');
@@ -397,6 +515,14 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
             expect(comment).to.be.null;
             expect(highlight.dataset.annotationId).to.equal('1');
+        });
+    });
+
+    describe('generateHighlightDialogEl()', () => {
+        it('should return a highlight annotation dialog DOM element', () => {
+            const highlightEl = dialog.generateHighlightDialogEl();
+            const highlightBtnEl = highlightEl.querySelector('.bp-annotations-highlight-btns');
+            expect(highlightBtnEl).to.not.be.null;
         });
     });
 });
