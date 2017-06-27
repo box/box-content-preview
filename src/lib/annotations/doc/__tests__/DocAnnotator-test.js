@@ -277,7 +277,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     describe('createPlainHighlight()', () => {
         beforeEach(() => {
             sandbox.stub(annotator, 'highlightCurrentSelection');
-            sandbox.stub(annotator, 'createHighlightAnnotation');
+            sandbox.stub(annotator, 'createHighlightThread');
             annotator.createPlainHighlight();
         });
 
@@ -285,12 +285,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(annotator.highlightCurrentSelection).to.be.called;
         });
 
-        it('should invoke createHighlightAnnotation()', () => {
-            expect(annotator.createHighlightAnnotation).to.be.called;
+        it('should invoke createHighlightThread()', () => {
+            expect(annotator.createHighlightThread).to.be.called;
         });
     });
 
-    describe('createHighlightAnnotation()', () => {
+    describe('createHighlightThread()', () => {
         let thread;
         let dialog;
         beforeEach(() => {
@@ -315,14 +315,14 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         it('should do nothing and return null if empty string passed in', () => {
             annotator.lastHighlightEvent = {};
 
-            annotator.createHighlightAnnotation('');
+            annotator.createHighlightThread('');
             expect(stubs.hideDialog).to.not.be.called;
         });
 
         it('should do nothing and return null if there was no highlight event on the previous action', () => {
             annotator.lastHighlightEvent = null;
 
-            annotator.createHighlightAnnotation('some text');
+            annotator.createHighlightThread('some text');
             expect(stubs.hideDialog).to.not.be.called;
         });
 
@@ -330,7 +330,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.lastHighlightEvent = {};
             stubs.getLocationFromEvent.returns(null);
 
-            annotator.createHighlightAnnotation('some text');
+            annotator.createHighlightThread('some text');
             expect(stubs.createAnnotationThread).to.not.be.called;
         });
 
@@ -340,7 +340,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.getLocationFromEvent.returns(location);
             stubs.createAnnotationThread.returns(thread);
 
-            annotator.createHighlightAnnotation('some text with severe passive agression');
+            annotator.createHighlightThread('some text with severe passive agression');
             expect(stubs.createAnnotationThread).to.be.calledWith([], location, constants.ANNOTATION_TYPE_HIGHLIGHT);
         });
 
@@ -350,7 +350,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.getLocationFromEvent.returns(location);
             stubs.createAnnotationThread.returns(null);
 
-            annotator.createHighlightAnnotation('some text');
+            annotator.createHighlightThread('some text');
             expect(stubs.bindCustomListenersOnThread).to.not.be.called;
         });
 
@@ -360,7 +360,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.getLocationFromEvent.returns(location);
             stubs.createAnnotationThread.returns(thread);
 
-            annotator.createHighlightAnnotation();
+            annotator.createHighlightThread();
             expect(dialog.drawAnnotation).to.be.called;
         });
 
@@ -370,7 +370,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.getLocationFromEvent.returns(location);
             stubs.createAnnotationThread.returns(thread);
 
-            annotator.createHighlightAnnotation('I think this document should be more better');
+            annotator.createHighlightThread('I think this document should be more better');
             expect(dialog.hasComments).to.be.true;
         });
 
@@ -380,7 +380,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.getLocationFromEvent.returns(location);
             stubs.createAnnotationThread.returns(thread);
 
-            annotator.createHighlightAnnotation();
+            annotator.createHighlightThread();
             expect(thread.show).to.be.called;
         });
 
@@ -391,7 +391,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.createAnnotationThread.returns(thread);
             const text = 'This is an annotation pointing out a mistake in the document!';
 
-            annotator.createHighlightAnnotation(text);
+            annotator.createHighlightThread(text);
             expect(dialog.postAnnotation).to.be.calledWith(text);
         });
 
@@ -401,7 +401,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.getLocationFromEvent.returns(location);
             stubs.createAnnotationThread.returns(thread);
 
-            annotator.createHighlightAnnotation();
+            annotator.createHighlightThread();
             expect(stubs.bindCustomListenersOnThread).to.be.calledWith(thread);
         });
 
@@ -412,7 +412,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.getLocationFromEvent.returns(location);
             stubs.createAnnotationThread.returns(thread);
 
-            annotator.createHighlightAnnotation();
+            annotator.createHighlightThread();
             expect(stubs.renderAnnotationsOnPage).to.be.calledWith(page);
         });
 
@@ -423,7 +423,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.getLocationFromEvent.returns(location);
             stubs.createAnnotationThread.returns(thread);
 
-            expect(annotator.createHighlightAnnotation()).to.deep.equal(thread);
+            expect(annotator.createHighlightThread()).to.deep.equal(thread);
         });
     });
 
