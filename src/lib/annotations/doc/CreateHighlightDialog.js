@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import { ICON_HIGHLIGHT, ICON_HIGHLIGHT_COMMENT } from '../../icons/icons';
 import CommentBox from '../CommentBox';
-import { CLASS_HIDDEN } from '../../constants';
+import { hideElement, showElement } from '../annotatorUtil';
 
 const CLASS_CREATE_DIALOG = 'bp-create-annotation-dialog';
 const TITLE_HIGHLIGHT_TOGGLE = __('annotation_highlight_toggle');
@@ -152,7 +152,7 @@ class CreateHighlightDialog extends EventEmitter {
         }
 
         this.setButtonVisibility(true);
-        this.containerEl.classList.remove(CLASS_HIDDEN);
+        showElement(this.containerEl);
     }
 
     /**
@@ -165,7 +165,7 @@ class CreateHighlightDialog extends EventEmitter {
             return;
         }
 
-        this.containerEl.classList.add(CLASS_HIDDEN);
+        hideElement(this.containerEl);
         this.commentBox.hide();
         this.commentBox.clear();
     }
@@ -274,9 +274,9 @@ class CreateHighlightDialog extends EventEmitter {
      */
     setButtonVisibility(visible) {
         if (visible) {
-            this.buttonsEl.classList.remove(CLASS_HIDDEN);
+            showElement(this.buttonsEl);
         } else {
-            this.buttonsEl.classList.add(CLASS_HIDDEN);
+            hideElement(this.buttonsEl);
         }
     }
 

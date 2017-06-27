@@ -344,6 +344,16 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(stubs.createAnnotationThread).to.be.calledWith([], location, constants.ANNOTATION_TYPE_HIGHLIGHT);
         });
 
+        it('should bail out of making an annotation if thread is null', () => {
+            annotator.lastHighlightEvent = {};
+            const location = { page: 1 };
+            stubs.getLocationFromEvent.returns(location);
+            stubs.createAnnotationThread.returns(null);
+
+            annotator.createHighlightAnnotation('some text');
+            expect(stubs.bindCustomListenersOnThread).to.not.be.called;
+        });
+
         it('should render the annotation thread dialog if it is a basic annotation type', () => {
             annotator.lastHighlightEvent = {};
             const location = { page: 1 };

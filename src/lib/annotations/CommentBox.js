@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
-import { CLASS_HIDDEN, CLASS_ACTIVE } from '../constants';
+import { CLASS_ACTIVE } from '../constants';
+import { hideElement, showElement } from './annotatorUtil';
 
 // Display Text
 const TEXT_ANNOTATION_CANCEL = __('annotation_cancel');
@@ -130,7 +131,7 @@ class CommentBox extends EventEmitter {
             return;
         }
 
-        this.containerEl.classList.add(CLASS_HIDDEN);
+        hideElement(this.containerEl);
     }
 
     /**
@@ -145,7 +146,7 @@ class CommentBox extends EventEmitter {
             this.parentEl.appendChild(this.containerEl);
         }
 
-        this.containerEl.classList.remove(CLASS_HIDDEN);
+        showElement(this.containerEl);
     }
 
     /**

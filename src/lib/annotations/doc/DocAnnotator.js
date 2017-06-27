@@ -100,7 +100,7 @@ function isThreadInHoverState(thread) {
 
         // Explicit scoping
         this.highlightCurrentSelection = this.highlightCurrentSelection.bind(this);
-        this.createHighlightAnnotation = this.createHighlightAnnotation.bind(this);
+        this.createHighlightThread = this.createHighlightThread.bind(this);
         this.createPlainHighlight = this.createPlainHighlight.bind(this);
 
         this.createHighlightDialog = new CreateHighlightDialog();
@@ -108,7 +108,7 @@ function isThreadInHoverState(thread) {
 
         this.createHighlightDialog.addListener(CreateEvents.comment, this.highlightCurrentSelection);
 
-        this.createHighlightDialog.addListener(CreateEvents.commentPost, this.createHighlightAnnotation);
+        this.createHighlightDialog.addListener(CreateEvents.commentPost, this.createHighlightThread);
     }
 
     /**
@@ -123,7 +123,7 @@ function isThreadInHoverState(thread) {
 
         this.createHighlightDialog.removeListener(CreateEvents.comment, this.highlightCurrentSelection);
 
-        this.createHighlightDialog.removeListener(CreateEvents.commentPost, this.createHighlightAnnotation);
+        this.createHighlightDialog.removeListener(CreateEvents.commentPost, this.createHighlightThread);
         this.createHighlightDialog.destroy();
         this.createHighlightDialog = null;
     }
@@ -304,7 +304,7 @@ function isThreadInHoverState(thread) {
      */
     createPlainHighlight() {
         this.highlightCurrentSelection();
-        this.createHighlightAnnotation();
+        this.createHighlightThread();
     }
 
     /**
@@ -315,7 +315,7 @@ function isThreadInHoverState(thread) {
      * being the text as the first comment in the thread.
      * @return {DocHighlightThread} Created doc highlight annotation thread
      */
-    createHighlightAnnotation(commentText) {
+    createHighlightThread(commentText) {
         // Empty string will be passed in if no text submitted in comment
         if (commentText === '' || !this.lastHighlightEvent) {
             return null;
@@ -330,6 +330,10 @@ function isThreadInHoverState(thread) {
         const annotations = [];
         const thread = this.createAnnotationThread(annotations, location, constants.ANNOTATION_TYPE_HIGHLIGHT);
         this.lastHighlightEvent = null;
+
+        if (!thread) {
+            return null;
+        }
 
         if (!commentText) {
             thread.dialog.drawAnnotation();
