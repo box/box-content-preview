@@ -436,6 +436,17 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
             expect(highlightThread.showDialog).to.be.called;
             expect(highlightThread.draw).to.be.calledWith(constants.HIGHLIGHT_ACTIVE_FILL_STYLE);
         });
+
+        it('should do nothing if state is invalid', () => {
+            sandbox.stub(highlightThread, 'showDialog');
+            sandbox.stub(highlightThread, 'draw');
+
+            highlightThread.state = 'invalid';
+            highlightThread.show();
+
+            expect(highlightThread.showDialog).to.not.be.called;
+            expect(highlightThread.draw).to.not.be.called;
+        });
     });
 
     describe('createDialog()', () => {
@@ -460,6 +471,24 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
             expect(addListenerStub).to.be.calledWith('annotationcreate', sinon.match.func);
             expect(addListenerStub).to.be.calledWith('annotationcancel', sinon.match.func);
             expect(addListenerStub).to.be.calledWith('annotationdelete', sinon.match.func);
+        });
+    });
+
+    describe('unbindCustomListenersOnDialog()', () => {
+        it('should unbind custom listeners on dialog', () => {
+            highlightThread.dialog = {
+                removeAllListeners: () => {}
+            };
+
+            const removeAllListenersStub = sandbox.stub(highlightThread.dialog, 'removeAllListeners');
+
+            highlightThread.unbindCustomListenersOnDialog();
+
+            expect(removeAllListenersStub).to.be.calledWith('annotationdraw');
+            expect(removeAllListenersStub).to.be.calledWith('annotationcommentpending');
+            expect(removeAllListenersStub).to.be.calledWith('annotationcreate');
+            expect(removeAllListenersStub).to.be.calledWith('annotationcancel');
+            expect(removeAllListenersStub).to.be.calledWith('annotationdelete');
         });
     });
 

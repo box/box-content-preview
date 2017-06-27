@@ -360,11 +360,11 @@ const HOVER_TIMEOUT_MS = 75;
      * @return {void}
      */
     unbindCustomListenersOnDialog() {
-        this.removeAllListeners('annotationdraw');
-        this.removeAllListeners('annotationcommentpending');
-        this.removeAllListeners('annotationcreate');
-        this.removeAllListeners('annotationcancel');
-        this.removeAllListeners('annotationdelete');
+        this.dialog.removeAllListeners('annotationdraw');
+        this.dialog.removeAllListeners('annotationcommentpending');
+        this.dialog.removeAllListeners('annotationcreate');
+        this.dialog.removeAllListeners('annotationcancel');
+        this.dialog.removeAllListeners('annotationdelete');
     }
 
     //--------------------------------------------------------------------------

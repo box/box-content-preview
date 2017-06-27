@@ -170,7 +170,9 @@ const PAGE_PADDING_TOP = 15;
         }
 
         // Reposition dialog
-        this.position();
+        if (!this.isMobile) {
+            this.position();
+        }
     }
 
     //--------------------------------------------------------------------------
@@ -266,10 +268,12 @@ const PAGE_PADDING_TOP = 15;
      */
     bindDOMListeners() {
         this.element.addEventListener('mousedown', this.mousedownHandler);
-        this.element.addEventListener('mouseup', this.mouseupHandler);
         this.element.addEventListener('keydown', this.keydownHandler);
-        this.element.addEventListener('mouseenter', this.mouseenterHandler);
-        this.element.addEventListener('mouseleave', this.mouseleaveHandler);
+
+        if (!this.isMobile) {
+            this.element.addEventListener('mouseenter', this.mouseenterHandler);
+            this.element.addEventListener('mouseleave', this.mouseleaveHandler);
+        }
     }
 
     /**
@@ -281,10 +285,12 @@ const PAGE_PADDING_TOP = 15;
      */
     unbindDOMListeners() {
         this.element.removeEventListener('mousedown', this.mousedownHandler);
-        this.element.removeEventListener('mouseup', this.mouseupHandler);
         this.element.removeEventListener('keydown', this.keydownHandler);
-        this.element.removeEventListener('mouseenter', this.mouseenterHandler);
-        this.element.removeEventListener('mouseleave', this.mouseleaveHandler);
+
+        if (!this.isMobile) {
+            this.element.removeEventListener('mouseenter', this.mouseenterHandler);
+            this.element.removeEventListener('mouseleave', this.mouseleaveHandler);
+        }
     }
 
     /**
