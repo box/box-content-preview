@@ -61,7 +61,8 @@ $tablet: "(min-width: 768px)";
     }
 }
 
-.bp-mobile-annotation-dialog.bp-annotation-dialog {
+.bp-mobile-annotation-dialog.bp-annotation-dialog,
+.bp-mobile-annotation-dialog.bp-temp-annotation-dialog {
     .annotation-container {
         background-color: $white;
         border: 0;
