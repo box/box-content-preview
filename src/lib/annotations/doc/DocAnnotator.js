@@ -40,7 +40,7 @@ function showFirstDialogFilter(thread, index) {
  * @return {boolean} True if the thread is in a state of hover
  */
 function isThreadInHoverState(thread) {
-    return constants.HOVER_STATES.indexOf(thread.state) > -1;
+    return thread.state === constants.ANNOTATION_STATE_HOVER;
 }
 
 @autobind class DocAnnotator extends Annotator {
@@ -74,13 +74,13 @@ function isThreadInHoverState(thread) {
 
     /**
      * UI used to create new highlight annotations.
-     * 
+     *
      * @property {CreateHighlightDialog}
      */
     createHighlightDialog;
 
     /**
-     * For delaying creation of highlight quad points and dialog. Tracks the 
+     * For delaying creation of highlight quad points and dialog. Tracks the
      * current selection event, made in a previous event.
      *
      * @property {Event}
@@ -569,10 +569,7 @@ function isThreadInHoverState(thread) {
             const thread = pageThreads[i];
             // Determine if any highlight threads on page are pending or active
             // and ignore hover events of any highlights below
-            if (
-                thread.state === constants.ANNOTATION_STATE_PENDING ||
-                thread.state === constants.ANNOTATION_STATE_ACTIVE
-            ) {
+            if (thread.state === constants.ANNOTATION_STATE_PENDING) {
                 return;
             }
 
@@ -675,18 +672,11 @@ function isThreadInHoverState(thread) {
 
         // Only filter through highlight threads on the current page
         // Reset active highlight threads before creating new highlight
-        const { pageEl, page } = annotatorUtil.getPageInfo(event.target);
+        const { pageEl } = annotatorUtil.getPageInfo(event.target);
 
         if (!pageEl) {
             return;
         }
-
-        const activeThreads = this.getHighlightThreadsOnPage(page).filter(
-            (thread) => constants.ACTIVE_STATES.indexOf(thread.state) > -1
-        );
-        activeThreads.forEach((thread) => {
-            thread.reset();
-        });
 
         const lastRange = selection.getRangeAt(selection.rangeCount - 1);
         const rects = lastRange.getClientRects();
