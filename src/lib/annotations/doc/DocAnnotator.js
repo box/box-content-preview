@@ -214,13 +214,8 @@ function isThreadInHoverState(thread) {
                 ({ pageEl, page } = annotatorUtil.getPageInfo(window.getSelection().anchorNode));
             }
 
-            // Use Rangy to save the current selection because using the
-            // highlight module can mess with the selection. We restore this
-            // selection after we clean up the highlight
-            const savedSelection = rangy.saveSelection();
-
             // Use highlight module to calculate quad points
-            const { highlight, highlightEls } = docAnnotatorUtil.getHighlightAndHighlightEls(this.highlighter, pageEl);
+            const { highlightEls } = docAnnotatorUtil.getHighlightAndHighlightEls(this.highlighter, pageEl);
 
             // Do not create highlight annotation if no highlights are detected
             if (highlightEls.length === 0) {
@@ -231,10 +226,6 @@ function isThreadInHoverState(thread) {
             highlightEls.forEach((element) => {
                 quadPoints.push(docAnnotatorUtil.getQuadPoints(element, pageEl, zoomScale));
             });
-
-            // Remove rangy highlight and restore selection
-            this.removeRangyHighlight(highlight);
-            rangy.restoreSelection(savedSelection);
 
             // We save the dimensions of the annotated element scaled to 100%
             // so we can compare to the annotated element during render time
