@@ -405,17 +405,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(stubs.bindCustomListenersOnThread).to.be.calledWith(thread);
         });
 
-        it('should cause a re-render of annotations on the current page', () => {
-            annotator.lastHighlightEvent = {};
-            const page = 999999999;
-            const location = { page };
-            stubs.getLocationFromEvent.returns(location);
-            stubs.createAnnotationThread.returns(thread);
-
-            annotator.createHighlightThread();
-            expect(stubs.renderAnnotationsOnPage).to.be.calledWith(page);
-        });
-
         it('should return an annotation thread', () => {
             annotator.lastHighlightEvent = {};
             const page = 999999999;
