@@ -332,11 +332,11 @@ function isThreadInHoverState(thread) {
             thread.dialog.hasComments = true;
         }
 
+        thread.state = constants.ANNOTATION_STATE_HOVER;
         thread.show();
         thread.dialog.postAnnotation(commentText);
 
         this.bindCustomListenersOnThread(thread);
-        this.renderAnnotationsOnPage(location.page);
 
         return thread;
     }
