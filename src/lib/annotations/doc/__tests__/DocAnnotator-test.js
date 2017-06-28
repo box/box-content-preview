@@ -762,7 +762,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.getThreads.returns([stubs.delayThread]);
             sandbox.stub(annotator, 'useDefaultCursor');
 
-            stubs.delayThread.state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
+            stubs.delayThread.state = constants.ANNOTATION_STATE_HOVER;
 
             annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
             annotator.onHighlightCheck();
@@ -868,22 +868,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             selection.rangeCount = 1;
             selection.isCollapsed = true;
             stubs.threadMock.expects('reset').never();
-        });
-
-        it('should reset active highlight threads', () => {
-            selection.rangeCount = 1;
-            selection.getRangeAt = sandbox.stub().returns({
-                getClientRects: sandbox.stub().returns([])
-            });
-            stubs.getThreads.returns([stubs.thread]);
-
-            stubs.thread.state = constants.ANNOTATION_STATE_ACTIVE;
-            stubs.threadMock.expects('reset');
-            annotator.highlightCreateHandler(stubs.event);
-
-            stubs.thread.state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
-            stubs.threadMock.expects('reset');
-            annotator.highlightCreateHandler(stubs.event);
         });
 
         it('should show the create highlight dialog', () => {

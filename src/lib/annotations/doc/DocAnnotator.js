@@ -635,6 +635,7 @@ function isThreadInHoverState(thread) {
      *
      * @private
      * @param {Event} event - DOM event
+     * @return {void}
      */
     highlightMouseupHandler(event) {
         if (this.highlighter) {
@@ -661,6 +662,7 @@ function isThreadInHoverState(thread) {
      *
      * @private
      * @param {Event} event - DOM event
+     * @return {void}
      */
     highlightCreateHandler(event) {
         event.stopPropagation();
@@ -705,6 +707,7 @@ function isThreadInHoverState(thread) {
      *
      * @private
      * @param {Event} event - DOM event
+     * @return {void}
      */
     highlightClickHandler(event) {
         let consumed = false;
