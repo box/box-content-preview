@@ -1,5 +1,23 @@
 # Change Log
 
+## [v0.130.0](https://github.com/box/box-content-preview/tree/v0.130.0) (2017-06-28)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.129.2...v0.130.0)
+
+**Merged pull requests:**
+
+- Fix: Fix hiding on Android Chrome [\#190](https://github.com/box/box-content-preview/pull/190) ([jeremypress](https://github.com/jeremypress))
+- Chore: Add Webpack bundle visualizer [\#188](https://github.com/box/box-content-preview/pull/188) ([tonyjin](https://github.com/tonyjin))
+- Fix: Fix focus for new page number input [\#187](https://github.com/box/box-content-preview/pull/187) ([jeremypress](https://github.com/jeremypress))
+- Fix: Fixes issues with adding annotations on tablets [\#186](https://github.com/box/box-content-preview/pull/186) ([pramodsum](https://github.com/pramodsum))
+- Create highlight dialog [\#184](https://github.com/box/box-content-preview/pull/184) ([JustinHoldstock](https://github.com/JustinHoldstock))
+- Fix: Buttons fail to display when adding a comment to plain highlight [\#183](https://github.com/box/box-content-preview/pull/183) ([pramodsum](https://github.com/pramodsum))
+- Update: Remove 0.25x playback on media files [\#182](https://github.com/box/box-content-preview/pull/182) ([MinhHNguyen](https://github.com/MinhHNguyen))
+- Update: Readme with new badges [\#180](https://github.com/box/box-content-preview/pull/180) ([priyajeet](https://github.com/priyajeet))
+- Chore: Make page number input more visible [\#179](https://github.com/box/box-content-preview/pull/179) ([jeremypress](https://github.com/jeremypress))
+- Fix: Sets the pdf scale after page render rather than on resize [\#178](https://github.com/box/box-content-preview/pull/178) ([pramodsum](https://github.com/pramodsum))
+- New: Allowing users to add new mobile point annotations [\#177](https://github.com/box/box-content-preview/pull/177) ([pramodsum](https://github.com/pramodsum))
+- Chore: Refactor controls for mobile [\#174](https://github.com/box/box-content-preview/pull/174) ([jeremypress](https://github.com/jeremypress))
+
 ## [v0.129.2](https://github.com/box/box-content-preview/tree/v0.129.2) (2017-06-20)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.129.1...v0.129.2)
 
