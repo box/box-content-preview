@@ -42,6 +42,17 @@ const PAGE_PADDING_TOP = 15;
         super.addAnnotation(annotation);
     }
 
+    /**
+     * Emit the message to create a highlight and render it.
+     * 
+     * @public
+     * @return {void}
+     */
+    drawAnnotation() {
+        this.emit('annotationdraw');
+        this.toggleHighlight();
+    }
+
     //--------------------------------------------------------------------------
     // Abstract Implementations
     //--------------------------------------------------------------------------
@@ -312,8 +323,7 @@ const PAGE_PADDING_TOP = 15;
         switch (dataType) {
             // Clicking 'Highlight' button to create or remove a highlight
             case 'highlight-btn':
-                this.emit('annotationdraw');
-                this.toggleHighlight();
+                this.drawAnnotation();
                 break;
             // Clicking 'Highlight' button to create a highlight
             case 'add-highlight-comment-btn':
@@ -461,7 +471,7 @@ const PAGE_PADDING_TOP = 15;
         const highlightDialogEl = document.createElement('div');
         highlightDialogEl.innerHTML = `
             <span class="bp-annotation-highlight-label ${CLASS_HIDDEN}"></span>
-            <span class="bp-annotations-highlight-btns ${this.isMobile ? CLASS_HIDDEN : ''}">
+            <span class="bp-annotations-highlight-btns">
                 <button class="bp-btn-plain bp-add-highlight-btn"
                     data-type="highlight-btn"
                     title="${__('annotation_highlight_toggle')}">

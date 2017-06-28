@@ -206,6 +206,23 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
         }
     }
 
+    /**
+     * Posts an annotation in the dialog.
+     *
+     * @public
+     * @return {void}
+     */
+    postAnnotation(textInput) {
+        const annotationTextEl = this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+        const text = textInput || annotationTextEl.value;
+        if (text.trim() === '') {
+            return;
+        }
+
+        this.emit('annotationcreate', { text });
+        annotationTextEl.value = '';
+    }
+
     //--------------------------------------------------------------------------
     // Abstract
     //--------------------------------------------------------------------------
@@ -477,23 +494,6 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
 
         const annotationContainerEl = this.dialogEl.querySelector(constants.SELECTOR_COMMENTS_CONTAINER);
         annotationContainerEl.appendChild(annotationEl);
-    }
-
-    /**
-     * Posts an annotation in the dialog.
-     *
-     * @private
-     * @return {void}
-     */
-    postAnnotation() {
-        const annotationTextEl = this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
-        const text = annotationTextEl.value;
-        if (text.trim() === '') {
-            return;
-        }
-
-        this.emit('annotationcreate', { text });
-        annotationTextEl.value = '';
     }
 
     /**
