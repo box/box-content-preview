@@ -34,10 +34,11 @@ describe('lib/Controls', () => {
         it('should create the correct DOM structure', () => {
             expect(controls.containerEl).to.equal(document.getElementById('test-controls-container'));
 
-            expect(controls.controlsWrapperEl.parentNode).to.equal(controls.containerEl);
-            expect(controls.controlsWrapperEl.classList.contains('bp-controls-wrapper')).to.true;
+            const controlsWrapperEl = controls.controlsEl.parentNode;
+            expect(controlsWrapperEl.parentNode).to.equal(controls.containerEl);
+            expect(controlsWrapperEl.classList.contains('bp-controls-wrapper')).to.true;
 
-            expect(controls.controlsEl.parentNode).to.equal(controls.controlsWrapperEl);
+            expect(controls.controlsEl.parentNode).to.equal(controlsWrapperEl);
             expect(controls.controlsEl.classList.contains('bp-controls')).to.true;
         });
     });
@@ -46,13 +47,16 @@ describe('lib/Controls', () => {
         it('should remove the correct event listeners', () => {
             const containerElEventListener = sandbox.stub(controls.containerEl, 'removeEventListener');
             const controlsElEventListener = sandbox.stub(controls.controlsEl, 'removeEventListener');
+            controls.hasTouch = true;
 
             controls.destroy();
             expect(containerElEventListener).to.be.calledWith('mousemove', controls.mousemoveHandler);
+            expect(containerElEventListener).to.be.calledWith('touchstart', controls.mousemoveHandler);
             expect(controlsElEventListener).to.be.calledWith('mouseenter', controls.mouseenterHandler);
             expect(controlsElEventListener).to.be.calledWith('mouseleave', controls.mouseleaveHandler);
             expect(controlsElEventListener).to.be.calledWith('focusin', controls.focusinHandler);
             expect(controlsElEventListener).to.be.calledWith('focusout', controls.focusoutHandler);
+            expect(controlsElEventListener).to.be.calledWith('click', controls.clickHandler);
         });
 
         it('should remove click listeners for any button references', () => {
@@ -87,6 +91,9 @@ describe('lib/Controls', () => {
 
             element.className = '';
             expect(controls.isPreviewControlButton(element)).to.be.false;
+
+            parent.className = 'bp-doc-page-num-wrapper';
+            expect(controls.isPreviewControlButton(element)).to.be.true;
         });
     });
 
