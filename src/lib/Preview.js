@@ -641,7 +641,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
      *
      * @private
      * @param {Object} previewOptions - Options specified by show()
-     * @param {Object} token - Map of file ID to access token
+     * @param {Object} tokenMap - Map of file ID to access token
      * @return {void}
      */
     parseOptions(previewOptions, tokenMap) {
@@ -1073,7 +1073,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
      * message.
      *
      * @private
-     * @param {Error} reason - Error
+     * @param {Error} err - Error
      * @return {void}
      */
     triggerError(err) {

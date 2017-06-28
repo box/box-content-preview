@@ -91,6 +91,7 @@
     "stylelint-config-standard": "^16.0.0",
     "stylelint-order": "^0.4.1",
     "webpack": "^2.2.1",
+    "webpack-bundle-analyzer": "^2.8.2",
     "whatwg-fetch": "^2.0.3"
   },
   "scripts": {
