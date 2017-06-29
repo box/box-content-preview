@@ -14,6 +14,14 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
 const version = isRelease ? require('../package.json').version : 'dev';
 const fs = require('fs');
 
+const licenseNotification = `Box UI Element
+Copyright 2016-2017 Box, Inc. All rights reserved.
+
+This source code is licensed under the Box Software License Agreement found
+in the LICENSE file in the root directory of this source tree. Additional
+third party license disclosures can be found in the THIRD_PARTY_LICENSES
+file in the same directory.`;
+
 let rsyncLocation = '';
 if (fs.existsSync('build/rsync.json')) {
     /* eslint-disable */
@@ -117,11 +125,7 @@ function updateConfig(conf, language, index) {
         );
 
         // Add license message to top of code
-        config.plugins.push(
-            new BannerPlugin(
-                'Box Content Preview UI Kit | Copyright 2016-2017 Box | Licenses: https://cloud.box.com/v/preview-licenses-v1'
-            )
-        );
+        config.plugins.push(new BannerPlugin(licenseNotification));
     }
 
     return config;
