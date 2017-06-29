@@ -136,13 +136,8 @@ const HOVER_TIMEOUT_MS = 75;
     onClick(event, consumed) {
         // If state is in hover, it means mouse is already over this highlight
         // so we can skip the is in highlight calculation
-        if (
-            !consumed &&
-            (this.state === constants.ANNOTATION_STATE_HOVER ||
-                this.state === constants.ANNOTATION_STATE_ACTIVE_HOVER ||
-                this.isOnHighlight(event))
-        ) {
-            this.state = constants.ANNOTATION_STATE_ACTIVE;
+        if (!consumed && this.isOnHighlight(event)) {
+            this.state = constants.ANNOTATION_STATE_HOVER;
             return true;
         }
 
@@ -171,14 +166,7 @@ const HOVER_TIMEOUT_MS = 75;
      * @return {void}
      */
     activateDialog() {
-        if (
-            this.state === constants.ANNOTATION_STATE_ACTIVE ||
-            this.state === constants.ANNOTATION_STATE_ACTIVE_HOVER
-        ) {
-            this.state = constants.ANNOTATION_STATE_ACTIVE_HOVER;
-        } else {
-            this.state = constants.ANNOTATION_STATE_HOVER;
-        }
+        this.state = constants.ANNOTATION_STATE_HOVER;
 
         // Setup the dialog element if it has not already been created
         if (!this.dialog.element) {
@@ -210,8 +198,6 @@ const HOVER_TIMEOUT_MS = 75;
         } else if (this.isInHighlight(event)) {
             this.activateDialog();
 
-            // If mouse is not in highlight, and state is active, do not override
-        } else if (this.state === constants.ANNOTATION_STATE_ACTIVE) {
             // No-op
             // If mouse is not in highlight and state is not already inactive, reset
         } else if (this.state !== constants.ANNOTATION_STATE_INACTIVE) {
@@ -253,9 +239,7 @@ const HOVER_TIMEOUT_MS = 75;
                 this.draw(constants.HIGHLIGHT_NORMAL_FILL_STYLE);
                 break;
             case constants.ANNOTATION_STATE_HOVER:
-            case constants.ANNOTATION_STATE_ACTIVE:
             case constants.ANNOTATION_STATE_PENDING_ACTIVE:
-            case constants.ANNOTATION_STATE_ACTIVE_HOVER:
                 this.showDialog();
                 this.draw(constants.HIGHLIGHT_ACTIVE_FILL_STYLE);
                 break;

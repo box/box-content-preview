@@ -27,8 +27,6 @@ export const SELECTOR_COMMENTS_CONTAINER = `.${CLASS_COMMENTS_CONTAINER}`;
 export const SELECTOR_REPLY_CONTAINER = `.${CLASS_REPLY_CONTAINER}`;
 export const SELECTOR_REPLY_TEXTAREA = `.${CLASS_REPLY_TEXTAREA}`;
 
-export const ANNOTATION_STATE_ACTIVE = 'active'; // clicked
-export const ANNOTATION_STATE_ACTIVE_HOVER = 'active-hover'; // clicked and mouse is over
 export const ANNOTATION_STATE_HOVER = 'hover'; // mouse is over
 export const ANNOTATION_STATE_INACTIVE = 'inactive'; // not clicked and mouse is not over
 export const ANNOTATION_STATE_PENDING = 'pending'; // not saved
@@ -37,8 +35,6 @@ export const ANNOTATION_TYPE_POINT = 'point';
 export const ANNOTATION_TYPE_HIGHLIGHT = 'highlight';
 export const ANNOTATION_TYPE_HIGHLIGHT_COMMENT = 'highlight-comment';
 export const PENDING_STATES = [ANNOTATION_STATE_PENDING, ANNOTATION_STATE_PENDING_ACTIVE];
-export const ACTIVE_STATES = [ANNOTATION_STATE_ACTIVE, ANNOTATION_STATE_ACTIVE_HOVER];
-export const HOVER_STATES = [ANNOTATION_STATE_HOVER, ANNOTATION_STATE_ACTIVE_HOVER];
 
 export const HIGHLIGHT_NORMAL_FILL_STYLE = 'rgba(254, 217, 78, 0.5)';
 export const HIGHLIGHT_ACTIVE_FILL_STYLE = 'rgba(255, 201, 0, 0.5)';
