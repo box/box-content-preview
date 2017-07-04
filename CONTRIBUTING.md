@@ -6,7 +6,7 @@ All contributions are welcome to this project.
 
 Before a contribution can be merged into this project, please fill out the Contributor License Agreement (CLA) located at:
 
-https://developer.box.com/v2.0/docs/ui-kits-contribution-license
+https://developer.box.com/docs/box-ui-elements-cla
 
 To learn more about CLAs and why they are important to the UI Element projects, please see the [Wikipedia entry](http://en.wikipedia.org/wiki/Contributor_License_Agreement).
 
@@ -36,7 +36,7 @@ This will create your own copy of our repository.
 The upstream source is the project under the Box organization on GitHub. To add an upstream source for this project, type:
 
 ```
-git remote add upstream git@github.com:box/box-js-preview-sdk.git
+git remote add upstream git@github.com:box/box-content-preview.git
 ```
 
 This will come in useful later.
