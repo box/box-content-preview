@@ -131,6 +131,10 @@ class CommentBox extends EventEmitter {
         }
 
         hideElement(this.containerEl);
+
+        // Remove event listeners
+        this.cancelEl.removeEventListener('click', this.onCancel);
+        this.postEl.removeEventListener('click', this.onPost);
     }
 
     /**
@@ -145,6 +149,10 @@ class CommentBox extends EventEmitter {
         }
 
         showElement(this.containerEl);
+
+        // Add event listeners
+        this.cancelEl.addEventListener('click', this.onCancel);
+        this.postEl.addEventListener('click', this.onPost);
     }
 
     /**
