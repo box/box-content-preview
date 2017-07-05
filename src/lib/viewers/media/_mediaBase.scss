@@ -26,6 +26,7 @@
 .bp-media-container {
     outline: 0 none;
     position: relative;
+    user-select: none;  // Prevents copy paste dialog from appearing on mobile
 }
 
 .bp-media-play-button {

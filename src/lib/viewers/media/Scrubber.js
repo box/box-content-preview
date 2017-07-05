@@ -1,10 +1,12 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import scrubberTemplate from './Scrubber.html';
+import Browser from '../../Browser';
 
 const MIN_VALUE = 0;
 const MAX_VALUE = 1;
 const CLASS_SCRUBBER_HOVER = 'bp-media-scrubber-hover';
+const CLASS_SCRUBBER_TOUCH = 'bp-media-scrubber-touch';
 
 @autobind class Scrubber extends EventEmitter {
     /**
@@ -56,14 +58,21 @@ const CLASS_SCRUBBER_HOVER = 'bp-media-scrubber-hover';
         this.playedEl = this.scrubberEl.querySelector('.bp-media-scrubber-played');
         this.handleEl = this.scrubberEl.querySelector('.bp-media-scrubber-handle');
 
+        this.hasTouch = Browser.hasTouch();
+
         // Set the provided initial values
         this.setConvertedValue(convertedValue);
         this.setBufferedValue(bufferedValue);
         this.setValue(value);
 
-        this.playedEl.addEventListener('mousedown', this.mouseDownHandler);
-        this.convertedEl.addEventListener('mousedown', this.mouseDownHandler);
-        this.handleEl.addEventListener('mousedown', this.mouseDownHandler);
+        this.playedEl.addEventListener('mousedown', this.pointerDownHandler);
+        this.convertedEl.addEventListener('mousedown', this.pointerDownHandler);
+        this.handleEl.addEventListener('mousedown', this.pointerDownHandler);
+
+        if (this.hasTouch) {
+            this.scrubberContainerEl.addEventListener('touchstart', this.pointerDownHandler);
+            this.scrubberWrapperEl.classList.add(CLASS_SCRUBBER_TOUCH);
+        }
     }
 
     /**
@@ -74,9 +83,11 @@ const CLASS_SCRUBBER_HOVER = 'bp-media-scrubber-hover';
     destroy() {
         this.removeAllListeners();
         this.destroyDocumentHandlers();
-        this.playedEl.removeEventListener('mousedown', this.mouseDownHandler);
-        this.convertedEl.removeEventListener('mousedown', this.mouseDownHandler);
-        this.handleEl.removeEventListener('mousedown', this.mouseDownHandler);
+        this.playedEl.removeEventListener('mousedown', this.pointerDownHandler);
+        this.convertedEl.removeEventListener('mousedown', this.pointerDownHandler);
+        this.handleEl.removeEventListener('mousedown', this.pointerDownHandler);
+        this.scrubberContainerEl.removeEventListener('touchstart', this.pointerDownHandler);
+
         this.scrubberContainerEl = undefined;
         this.scrubberWrapperEl = undefined;
         this.scrubberEl = undefined;
@@ -100,8 +111,8 @@ const CLASS_SCRUBBER_HOVER = 'bp-media-scrubber-hover';
     /**
      * Set aria-valuenow and aria-valuetext attributes
      *
-     * @param {number} ariaValuenow
-     * @param {string} ariaValuetext
+     * @param {number} ariaValuenow - value for aria 'aria-valuenow'
+     * @param {string} ariaValuetext - value for aria 'aria-valuetext'
      * @return {void}
      */
     setAriaValues(ariaValuenow, ariaValuetext) {
@@ -191,7 +202,18 @@ const CLASS_SCRUBBER_HOVER = 'bp-media-scrubber-hover';
      * @return {void}
      */
     scrubbingHandler(event) {
-        const pageX = event.pageX;
+        // Stops vertical scrolling when scrubbing
+        event.preventDefault();
+
+        let pageX = event.pageX;
+
+        // Android Chrome fires both mousedown events and touchstart events. The touch start event
+        // does not include pageX, but pageX can be found in the touches list which is present for
+        // touch events across all browsers.
+        if (event.touches) {
+            pageX = event.touches[0].pageX;
+        }
+
         const newValue = this.computeScrubberPosition(pageX);
 
         this.setValue(newValue);
@@ -207,7 +229,7 @@ const CLASS_SCRUBBER_HOVER = 'bp-media-scrubber-hover';
      * @param {Event} event - the instance of the class
      * @return {void}
      */
-    mouseDownHandler(event) {
+    pointerDownHandler(event) {
         // If this is not a left click, then ignore
         // If this is a CTRL or CMD click, then ignore
         if ((typeof event.button !== 'number' || event.button < 2) && !event.ctrlKey && !event.metaKey) {
@@ -215,11 +237,17 @@ const CLASS_SCRUBBER_HOVER = 'bp-media-scrubber-hover';
             // All events are attached to the document so that the user doesn't have to keep the mouse
             // over the scrubber bar and has wiggle room. If the wiggling causes the mouse to leave
             // the whole view (embed use case) then we stop tracking all events.
-            document.addEventListener('mouseup', this.mouseUpHandler);
-            document.addEventListener('mouseleave', this.mouseUpHandler);
+            document.addEventListener('mouseup', this.pointerUpHandler);
+            document.addEventListener('mouseleave', this.pointerUpHandler);
             document.addEventListener('mousemove', this.scrubbingHandler);
 
-            this.scrubberWrapperEl.classList.add(CLASS_SCRUBBER_HOVER);
+            if (this.hasTouch) {
+                document.addEventListener('touchmove', this.scrubbingHandler);
+                document.addEventListener('touchend', this.pointerUpHandler);
+            } else {
+                this.scrubberWrapperEl.classList.add(CLASS_SCRUBBER_HOVER);
+            }
+
             event.preventDefault();
         }
     }
@@ -230,7 +258,7 @@ const CLASS_SCRUBBER_HOVER = 'bp-media-scrubber-hover';
      * @private
      * @return {void}
      */
-    mouseUpHandler() {
+    pointerUpHandler() {
         this.scrubberWrapperEl.classList.remove(CLASS_SCRUBBER_HOVER);
         this.destroyDocumentHandlers();
     }
@@ -242,8 +270,13 @@ const CLASS_SCRUBBER_HOVER = 'bp-media-scrubber-hover';
      */
     destroyDocumentHandlers() {
         document.removeEventListener('mousemove', this.scrubbingHandler);
-        document.removeEventListener('mouseup', this.mouseUpHandler);
-        document.removeEventListener('mouseleave', this.mouseUpHandler);
+        document.removeEventListener('mouseup', this.pointerUpHandler);
+        document.removeEventListener('mouseleave', this.pointerUpHandler);
+
+        if (this.hasTouch) {
+            document.removeEventListener('touchmove', this.scrubbingHandler);
+            document.removeEventListener('touchend', this.pointerUpHandler);
+        }
     }
 
     /**
