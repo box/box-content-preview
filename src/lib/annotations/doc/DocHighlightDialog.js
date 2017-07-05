@@ -42,6 +42,17 @@ const PAGE_PADDING_TOP = 15;
         super.addAnnotation(annotation);
     }
 
+    /**
+     * Emit the message to create a highlight and render it.
+     *
+     * @public
+     * @return {void}
+     */
+    drawAnnotation() {
+        this.emit('annotationdraw');
+        this.toggleHighlight();
+    }
+
     //--------------------------------------------------------------------------
     // Abstract Implementations
     //--------------------------------------------------------------------------
@@ -159,7 +170,9 @@ const PAGE_PADDING_TOP = 15;
         }
 
         // Reposition dialog
-        this.position();
+        if (!this.isMobile) {
+            this.position();
+        }
     }
 
     //--------------------------------------------------------------------------
@@ -255,10 +268,12 @@ const PAGE_PADDING_TOP = 15;
      */
     bindDOMListeners() {
         this.element.addEventListener('mousedown', this.mousedownHandler);
-        this.element.addEventListener('mouseup', this.mouseupHandler);
         this.element.addEventListener('keydown', this.keydownHandler);
-        this.element.addEventListener('mouseenter', this.mouseenterHandler);
-        this.element.addEventListener('mouseleave', this.mouseleaveHandler);
+
+        if (!this.isMobile) {
+            this.element.addEventListener('mouseenter', this.mouseenterHandler);
+            this.element.addEventListener('mouseleave', this.mouseleaveHandler);
+        }
     }
 
     /**
@@ -270,10 +285,12 @@ const PAGE_PADDING_TOP = 15;
      */
     unbindDOMListeners() {
         this.element.removeEventListener('mousedown', this.mousedownHandler);
-        this.element.removeEventListener('mouseup', this.mouseupHandler);
         this.element.removeEventListener('keydown', this.keydownHandler);
-        this.element.removeEventListener('mouseenter', this.mouseenterHandler);
-        this.element.removeEventListener('mouseleave', this.mouseleaveHandler);
+
+        if (!this.isMobile) {
+            this.element.removeEventListener('mouseenter', this.mouseenterHandler);
+            this.element.removeEventListener('mouseleave', this.mouseleaveHandler);
+        }
     }
 
     /**
@@ -306,8 +323,7 @@ const PAGE_PADDING_TOP = 15;
         switch (dataType) {
             // Clicking 'Highlight' button to create or remove a highlight
             case 'highlight-btn':
-                this.emit('annotationdraw');
-                this.toggleHighlight();
+                this.drawAnnotation();
                 break;
             // Clicking 'Highlight' button to create a highlight
             case 'add-highlight-comment-btn':

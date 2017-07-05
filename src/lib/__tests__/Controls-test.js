@@ -34,10 +34,11 @@ describe('lib/Controls', () => {
         it('should create the correct DOM structure', () => {
             expect(controls.containerEl).to.equal(document.getElementById('test-controls-container'));
 
-            expect(controls.controlsWrapperEl.parentNode).to.equal(controls.containerEl);
-            expect(controls.controlsWrapperEl.classList.contains('bp-controls-wrapper')).to.true;
+            const controlsWrapperEl = controls.controlsEl.parentNode;
+            expect(controlsWrapperEl.parentNode).to.equal(controls.containerEl);
+            expect(controlsWrapperEl.classList.contains('bp-controls-wrapper')).to.true;
 
-            expect(controls.controlsEl.parentNode).to.equal(controls.controlsWrapperEl);
+            expect(controls.controlsEl.parentNode).to.equal(controlsWrapperEl);
             expect(controls.controlsEl.classList.contains('bp-controls')).to.true;
         });
     });
@@ -46,13 +47,16 @@ describe('lib/Controls', () => {
         it('should remove the correct event listeners', () => {
             const containerElEventListener = sandbox.stub(controls.containerEl, 'removeEventListener');
             const controlsElEventListener = sandbox.stub(controls.controlsEl, 'removeEventListener');
+            controls.hasTouch = true;
 
             controls.destroy();
             expect(containerElEventListener).to.be.calledWith('mousemove', controls.mousemoveHandler);
+            expect(containerElEventListener).to.be.calledWith('touchstart', controls.mousemoveHandler);
             expect(controlsElEventListener).to.be.calledWith('mouseenter', controls.mouseenterHandler);
             expect(controlsElEventListener).to.be.calledWith('mouseleave', controls.mouseleaveHandler);
             expect(controlsElEventListener).to.be.calledWith('focusin', controls.focusinHandler);
             expect(controlsElEventListener).to.be.calledWith('focusout', controls.focusoutHandler);
+            expect(controlsElEventListener).to.be.calledWith('click', controls.clickHandler);
         });
 
         it('should remove click listeners for any button references', () => {
@@ -87,6 +91,9 @@ describe('lib/Controls', () => {
 
             element.className = '';
             expect(controls.isPreviewControlButton(element)).to.be.false;
+
+            parent.className = 'bp-doc-page-num-wrapper';
+            expect(controls.isPreviewControlButton(element)).to.be.true;
         });
     });
 
@@ -115,6 +122,18 @@ describe('lib/Controls', () => {
             const resetTimeoutStub = sandbox.stub(controls, 'resetTimeout');
             clock.tick(1501);
 
+            expect(resetTimeoutStub).to.be.called;
+        });
+
+        it('should call resetTimeout again if the page number input is focused', () => {
+            controls.shouldHide = true;
+            const isPageNumFocusedStub = sandbox.stub(controls, 'isPageNumFocused').returns(true);
+            controls.resetTimeout();
+
+            const resetTimeoutStub = sandbox.stub(controls, 'resetTimeout');
+            clock.tick(1501);
+
+            expect(isPageNumFocusedStub).to.be.called;
             expect(resetTimeoutStub).to.be.called;
         });
 
@@ -168,14 +187,13 @@ describe('lib/Controls', () => {
     });
 
     describe('focusinHandler()', () => {
-        it('should add the controls class, block hiding, and set the controls to be focused if the element is a preview control button', () => {
+        it('should add the controls class, block hiding if the element is a preview control button', () => {
             const isControlButtonStub = sandbox.stub(controls, 'isPreviewControlButton').returns(true);
 
             controls.focusinHandler('event');
             expect(isControlButtonStub).to.be.called;
             expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.true;
             expect(controls.shouldHide).to.be.false;
-            expect(controls.isFocused).to.be.true;
         });
 
         it('should not add the controls class if the element is not a preview control button', () => {
@@ -197,7 +215,6 @@ describe('lib/Controls', () => {
             controls.focusoutHandler('event');
             expect(isControlButtonStub).to.be.called;
             expect(controls.shouldHide).to.be.true;
-            expect(controls.isFocused).to.be.false;
         });
 
         it('should not remove the controls class if the element is not a preview control button and the related target is not', () => {
@@ -244,8 +261,7 @@ describe('lib/Controls', () => {
             expect(event.preventDefault).to.be.called;
         });
 
-        it('should stop block hiding if the controls are not focused', () => {
-            controls.isFocused = false;
+        it('should stop block hiding', () => {
             controls.clickHandler(event);
             expect(controls.shouldHide).to.be.true;
         });

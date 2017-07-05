@@ -4,9 +4,32 @@ import { CLASS_HIDDEN } from './constants';
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 const CONTROLS_BUTTON_CLASS = 'bp-controls-btn';
+const CONTROLS_PAGE_NUM_INPUT_CLASS = 'bp-doc-page-num-input';
+const CONTROLS_PAGE_NUM_WRAPPER_CLASS = 'bp-doc-page-num-wrapper';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
 
 class Controls {
+    /**
+     * Controls container element
+     *
+     * @property {HTMLElement}
+     */
+    containerEl;
+
+    /**
+     * Controls element
+     *
+     * @property {HTMLElement}
+     */
+    controlsEl;
+
+    /**
+     * Array of buttons for cleanup purposes
+     *
+     * @property {Array}
+     */
+    buttonRefs = [];
+
     /**
      * Indicates if the control bar should be hidden or not
      *
@@ -15,11 +38,11 @@ class Controls {
     shouldHide = true;
 
     /**
-     * Indicates if an element in the controls is focused
+     * Indicates if the browser supports touch events
      *
      * @property {boolean}
      */
-    isFocused = false;
+    hasTouch = Browser.hasTouch();
 
     /**
      * [constructor]
@@ -28,16 +51,12 @@ class Controls {
      * @return {Controls} Instance of controls
      */
     constructor(container) {
-        // Maintain a list of buttons for cleanup
-        this.buttonRefs = [];
-
-        // Container for the buttons
         this.containerEl = container;
 
-        this.controlsWrapperEl = this.containerEl.appendChild(document.createElement('div'));
-        this.controlsWrapperEl.className = 'bp-controls-wrapper';
+        const controlsWrapperEl = this.containerEl.appendChild(document.createElement('div'));
+        controlsWrapperEl.className = 'bp-controls-wrapper';
 
-        this.controlsEl = this.controlsWrapperEl.appendChild(document.createElement('div'));
+        this.controlsEl = controlsWrapperEl.appendChild(document.createElement('div'));
         this.controlsEl.className = 'bp-controls';
 
         this.containerEl.addEventListener('mousemove', this.mousemoveHandler);
@@ -46,7 +65,7 @@ class Controls {
         this.controlsEl.addEventListener('focusin', this.focusinHandler);
         this.controlsEl.addEventListener('focusout', this.focusoutHandler);
 
-        if (Browser.hasTouch()) {
+        if (this.hasTouch) {
             this.containerEl.addEventListener('touchstart', this.mousemoveHandler);
             this.controlsEl.addEventListener('click', this.clickHandler);
         }
@@ -63,7 +82,7 @@ class Controls {
         this.controlsEl.removeEventListener('focusin', this.focusinHandler);
         this.controlsEl.removeEventListener('focusout', this.focusoutHandler);
 
-        if (Browser.hasTouch()) {
+        if (this.hasTouch) {
             this.containerEl.removeEventListener('touchstart', this.mousemoveHandler);
             this.controlsEl.removeEventListener('click', this.clickHandler);
         }
@@ -84,7 +103,7 @@ class Controls {
         return (
             !!element &&
             (element.classList.contains(CONTROLS_BUTTON_CLASS) ||
-                element.parentNode.classList.contains(CONTROLS_BUTTON_CLASS))
+                element.parentNode.classList.contains(CONTROLS_PAGE_NUM_WRAPPER_CLASS))
         );
     }
 
@@ -97,7 +116,7 @@ class Controls {
         this.controlDisplayTimeoutId = setTimeout(() => {
             clearTimeout(this.controlDisplayTimeoutId);
 
-            if (!this.shouldHide) {
+            if (!this.shouldHide || this.isPageNumFocused()) {
                 this.resetTimeout();
             } else {
                 this.containerEl.classList.remove(SHOW_PREVIEW_CONTROLS_CLASS);
@@ -150,7 +169,6 @@ class Controls {
         // When we focus onto a preview control button, show controls
         if (this.isPreviewControlButton(event.target)) {
             this.containerEl.classList.add(SHOW_PREVIEW_CONTROLS_CLASS);
-            this.isFocused = true;
             this.shouldHide = false;
         }
     };
@@ -164,7 +182,6 @@ class Controls {
     focusoutHandler = (event) => {
         // When we focus out of a control button and aren't focusing onto another control button, hide the controls
         if (this.isPreviewControlButton(event.target) && !this.isPreviewControlButton(event.relatedTarget)) {
-            this.isFocused = false;
             this.shouldHide = true;
         }
     };
@@ -178,7 +195,7 @@ class Controls {
     clickHandler = (event) => {
         event.preventDefault();
         // If we are not focused in on the page num input, allow hiding after timeout
-        this.shouldHide = !this.isFocused;
+        this.shouldHide = true;
     };
 
     /**
@@ -233,6 +250,15 @@ class Controls {
      */
     disable() {
         this.controlsEl.classList.add(CLASS_HIDDEN);
+    }
+
+    /**
+     * Determines if the page number input is focused.
+     *
+     * @return {boolean} Is the input focused
+     */
+    isPageNumFocused() {
+        return document.activeElement.classList.contains(CONTROLS_PAGE_NUM_INPUT_CLASS);
     }
 }
 

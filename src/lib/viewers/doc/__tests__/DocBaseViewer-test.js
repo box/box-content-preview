@@ -638,7 +638,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.pdfViewer = {
                 currentScale: 5
             };
-            stubs.setScale = sandbox.stub(docBase, 'setScale');
             stubs.emit = sandbox.stub(docBase, 'emit');
         });
 
@@ -648,12 +647,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         describe('zoomIn()', () => {
             it('should zoom in until it hits the number of ticks or the max scale', () => {
-                docBase.zoomIn(10);
-                expect(stubs.setScale).to.be.calledWith(MAX_SCALE);
+                docBase.zoomIn(12);
+                expect(docBase.pdfViewer.currentScaleValue).to.equal(MAX_SCALE);
 
                 docBase.pdfViewer.currentScale = 1;
                 docBase.zoomIn(1);
-                expect(stubs.setScale).to.be.calledWith(DEFAULT_SCALE_DELTA);
+                expect(docBase.pdfViewer.currentScaleValue).to.equal(DEFAULT_SCALE_DELTA);
             });
 
             it('should emit the zoom event', () => {
@@ -674,11 +673,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.pdfViewer.currentScale = 0.2;
 
                 docBase.zoomOut(10);
-                expect(stubs.setScale).to.be.calledWith(MIN_SCALE);
+                expect(docBase.pdfViewer.currentScaleValue).to.equal(MIN_SCALE);
 
                 docBase.pdfViewer.currentScale = DEFAULT_SCALE_DELTA;
                 docBase.zoomOut(1);
-                expect(stubs.setScale).to.be.calledWith(1);
+                expect(docBase.pdfViewer.currentScaleValue).to.equal(1);
             });
 
             it('should emit the zoom event', () => {
@@ -692,20 +691,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 docBase.zoomOut(1);
                 expect(stubs.emit).to.not.be.calledWith('zoom');
             });
-        });
-    });
-
-    describe('setScale()', () => {
-        it('should set the pdf viewer and the annotator\'s scale if it exists', () => {
-            sandbox.stub(docBase, 'emit');
-            docBase.pdfViewer = {
-                currentScaleValue: 0
-            };
-            const newScale = 5;
-
-            docBase.setScale(newScale);
-            expect(docBase.emit).to.be.calledWith('scale', { scale: newScale });
-            expect(docBase.pdfViewer.currentScaleValue).to.equal(newScale);
         });
     });
 
@@ -877,7 +862,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 pageViewsReady: true
             };
 
-            sandbox.stub(docBase, 'setScale');
             stubs.setPage = sandbox.stub(docBase, 'setPage');
             Object.defineProperty(Object.getPrototypeOf(DocBaseViewer.prototype), 'resize', {
                 value: sandbox.stub()
@@ -907,7 +891,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.pdfViewer.update).to.be.called;
             expect(stubs.setPage).to.be.called;
             expect(BaseViewer.prototype.resize).to.be.called;
-            expect(docBase.setScale).to.be.called;
         });
     });
 
@@ -1482,6 +1465,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
     describe('pagerenderedHandler()', () => {
         beforeEach(() => {
+            docBase.pdfViewer = {
+                currentScale: 0.5,
+                currentScaleValue: 0.5
+            };
             docBase.event = {
                 detail: {
                     pageNumber: 1
@@ -1493,6 +1480,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should emit the pagerender event', () => {
             docBase.pagerenderedHandler(docBase.event);
             expect(stubs.emit).to.be.calledWith('pagerender');
+            expect(stubs.emit).to.be.calledWith('scale', { pageNum: 1, scale: 0.5 });
         });
 
         it('should emit postload event if not already emitted', () => {

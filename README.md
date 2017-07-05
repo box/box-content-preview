@@ -1,14 +1,14 @@
 ![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg?style=flat-square)
 [![Styled With Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![build status](https://img.shields.io/travis/box/box-content-preview/master.svg?style=flat-square)](https://travis-ci.com/box/box-content-preview)
-[![version](https://img.shields.io/badge/version-v0.129.2-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
+[![version](https://img.shields.io/badge/version-v0.130.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
 [![npm version](https://img.shields.io/npm/v/box-content-ui-kits.svg?style=flat-square)](https://www.npmjs.com/package/box-content-ui-kits)
 
 [Box Content Preview](https://docs.box.com/docs/box-content-preview)
 ====================================================================
-The Box Content Preview Javascript UI Kit allows developers to easily embed high quality and interactive previews of Box files in their desktop or mobile web application. The library fetches information about the file and its converted representations through the Box API, chooses the appropriate viewer for the file type, dynamically loads the necessary static assets and file representations, and finally renders the file. Box Content Preview also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
+The Box Content Preview UI Element allows developers to easily embed high quality and interactive previews of Box files in their desktop or mobile web application. The JavaScript library fetches information about the file and its converted representations through the Box API, chooses the appropriate viewer for the file type, dynamically loads the necessary static assets and file representations, and finally renders the file. Box Content Preview also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
 
-This UI Kit powers Preview in the main Box web application as well as the 'expiring embed' Box API endpoint.
+This UI Element powers Preview in the main Box web application as well as the 'expiring embed' Box API endpoint.
 
 Browser Support
 ---------------
@@ -19,11 +19,11 @@ If you are using Internet Explorer 11, which doesn't natively support promises, 
 
 Current Version
 ---------------
-* Version: v0.129.2
+* Version: v0.130.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/platform/preview/0.129.2/en-US/preview.js
-https://cdn01.boxcdn.net/platform/preview/0.129.2/en-US/preview.css
+https://cdn01.boxcdn.net/platform/preview/0.130.0/en-US/preview.js
+https://cdn01.boxcdn.net/platform/preview/0.130.0/en-US/preview.css
 
 Supported Locales
 -----------------
@@ -37,7 +37,7 @@ Box Content Preview supports 100+ file types, including most document and image 
 
 Usage
 -----
-You can self-host the Box Content Preview UI Kit or reference the versions available on Box's CDN.
+You can self-host the Box Content Preview UI Element or reference the versions available on Box's CDN.
 
 ```html
 <!DOCTYPE html>
@@ -50,8 +50,8 @@ You can self-host the Box Content Preview UI Kit or reference the versions avail
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise"></script>
 
     <!-- Latest version of Preview SDK for your locale -->
-    <script src="https://cdn01.boxcdn.net/platform/preview/0.129.2/en-US/preview.js"></script>
-    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/0.129.2/en-US/preview.css" />
+    <script src="https://cdn01.boxcdn.net/platform/preview/0.130.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/0.130.0/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
