@@ -92,9 +92,10 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
         this.mediaUrl = this.createContentUrlWithAuthParams(template);
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
         this.mediaEl.addEventListener('error', this.errorHandler);
+        this.mediaEl.setAttribute('title', this.options.file.name);
 
         if (Browser.isIOS()) {
-            // iOS doesn't fire loadeddata event till some data loads
+            // iOS doesn't fire loadeddata event until some data loads
             // Adding autoplay helps with that and itself won't autoplay.
             // https://webkit.org/blog/6784/new-video-policies-for-ios/
             this.mediaEl.autoplay = true;
@@ -155,6 +156,7 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
      * Handles media element loading errors.
      *
      * @private
+     * @param {Error} err - error object
      * @emits error
      * @return {void}
      */
@@ -263,6 +265,7 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
      *
      * @private
      * @param {double} time - Time in seconds
+     * @return {void}
      */
     setMediaTime(time) {
         this.mediaEl.currentTime = time;
@@ -273,6 +276,7 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
      *
      * @private
      * @param {number} volume - Must be a number between [0,1], per HTML5 spec
+     * @return {void}
      */
     setVolume(volume) {
         cache.set(MEDIA_VOLUME_CACHE_KEY, volume);
