@@ -6,9 +6,9 @@
 
 [Box Content Preview](https://docs.box.com/docs/box-content-preview)
 ====================================================================
-The Box Content Preview Javascript UI Kit allows developers to easily embed high quality and interactive previews of Box files in their desktop or mobile web application. The library fetches information about the file and its converted representations through the Box API, chooses the appropriate viewer for the file type, dynamically loads the necessary static assets and file representations, and finally renders the file. Box Content Preview also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
+The Box Content Preview UI Element allows developers to easily embed high quality and interactive previews of Box files in their desktop or mobile web application. The JavaScript library fetches information about the file and its converted representations through the Box API, chooses the appropriate viewer for the file type, dynamically loads the necessary static assets and file representations, and finally renders the file. Box Content Preview also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
 
-This UI Kit powers Preview in the main Box web application as well as the 'expiring embed' Box API endpoint.
+This UI Element powers Preview in the main Box web application as well as the 'expiring embed' Box API endpoint.
 
 Browser Support
 ---------------
@@ -37,7 +37,7 @@ Box Content Preview supports 100+ file types, including most document and image 
 
 Usage
 -----
-You can self-host the Box Content Preview UI Kit or reference the versions available on Box's CDN.
+You can self-host the Box Content Preview UI Element or reference the versions available on Box's CDN.
 
 ```html
 <!DOCTYPE html>

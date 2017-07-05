@@ -1,7 +1,6 @@
 import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
 import pageNumTemplate from './pageNumButtonContent.html';
-import Browser from '../../Browser';
 import DocBaseViewer from './DocBaseViewer';
 import PresentationPreloader from './PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../constants';
@@ -100,7 +99,7 @@ const SCROLL_EVENT_OFFSET = 5;
     /**
      * Determines if the document has overflow and adjusts the CSS accordingly.
      *
-     * @return {boolean}
+     * @return {boolean} Whether there is overflow or not
      */
     checkOverflow() {
         const doc = this.docEl;
@@ -155,9 +154,8 @@ const SCROLL_EVENT_OFFSET = 5;
         super.bindDOMListeners();
 
         this.docEl.addEventListener('wheel', this.wheelHandler());
-        if (Browser.isMobile()) {
+        if (this.hasTouch) {
             this.docEl.addEventListener('touchstart', this.mobileScrollHandler);
-            this.docEl.addEventListener('touchmove', this.mobileScrollHandler);
             this.docEl.addEventListener('touchend', this.mobileScrollHandler);
         }
     }
@@ -173,9 +171,8 @@ const SCROLL_EVENT_OFFSET = 5;
         super.unbindDOMListeners();
 
         this.docEl.removeEventListener('wheel', this.wheelHandler());
-        if (Browser.isMobile()) {
+        if (this.hasTouch) {
             this.docEl.removeEventListener('touchstart', this.mobileScrollHandler);
-            this.docEl.removeEventListener('touchmove', this.mobileScrollHandler);
             this.docEl.removeEventListener('touchend', this.mobileScrollHandler);
         }
     }
@@ -222,20 +219,15 @@ const SCROLL_EVENT_OFFSET = 5;
     /**
      * Handler for mobile scroll events.
      *
-     * @param {object} event - Scroll event
+     * @param {Object} event - Scroll event
      * @return {void}
      */
     mobileScrollHandler(event) {
-        // don't want to handle scroll if zoomed, if nothing has changed, or a touch move event which fixes intertia scroll bounce on iOS
-        if (
-            this.checkOverflow() ||
-            !event.changedTouches ||
-            event.changedTouches.length === 0 ||
-            event.type === 'touchmove'
-        ) {
-            event.preventDefault();
+        if (this.checkOverflow()) {
             return;
         }
+
+        event.preventDefault();
 
         if (event.type === 'touchstart') {
             this.scrollStart = event.changedTouches[0].clientY;
@@ -275,6 +267,7 @@ const SCROLL_EVENT_OFFSET = 5;
      * Page change handler.
      *
      * @private
+     * @param {event} e - Page change event
      * @return {void}
      */
     pagechangeHandler(e) {

@@ -3,7 +3,6 @@ import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import Grid from 'react-virtualized/dist/es/Grid/Grid';
 
-const PADDING = 80;
 const HEIGHT_ROW = 30;
 const WIDTH_SCROLLER = 5;
 const WIDTH_COLUMN = 160;
@@ -75,8 +74,8 @@ const WIDTH_BORDER = 2;
         const rowCount = this.data.length;
         const columnCount = this.data[0].length;
 
-        const maxWidth = this.csvEl.clientWidth - PADDING + WIDTH_BORDER;
-        const maxHeight = this.csvEl.clientHeight - PADDING + WIDTH_BORDER;
+        const maxWidth = this.csvEl.clientWidth;
+        const maxHeight = this.csvEl.clientHeight;
 
         const calculatedHeight = rowCount * HEIGHT_ROW;
         const calculatedWidth = columnCount * WIDTH_COLUMN;
