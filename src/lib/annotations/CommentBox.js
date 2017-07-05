@@ -10,21 +10,21 @@ const TEXT_ADD_COMMENT_PLACEHOLDER = __('annotation_add_comment_placeholder');
 class CommentBox extends EventEmitter {
     /**
      * Text displayed in the Cancel button element.
-     * 
+     *
      * @property {string}
      */
     cancelText = TEXT_ANNOTATION_CANCEL;
 
     /**
      * Text displayed in the Post button element.
-     * 
+     *
      * @property {string}
      */
     postText = TEXT_ANNOTATION_POST;
 
     /**
      * Placeholder text displayed in the text area element.
-     * 
+     *
      * @property {string}
      */
     placeholderText = TEXT_ADD_COMMENT_PLACEHOLDER;
@@ -73,6 +73,7 @@ class CommentBox extends EventEmitter {
     /**
      * Creates an element for text entry, submission and cancellation.
      *
+     * @param {HTMLElement} parentEl - Annotation parent element
      * @param {Object} [config] - Object containing text values to be displayed to the user.
      * config.cancel - Text displayed in the "Cancel" button
      * config.post - Text displayed in the "Post" button
@@ -94,7 +95,7 @@ class CommentBox extends EventEmitter {
 
     /**
      * Focus on the text box.
-     * 
+     *
      * @public
      * @return {void}
      */
@@ -108,7 +109,7 @@ class CommentBox extends EventEmitter {
 
     /**
      * Clear out the text box.
-     * 
+     *
      * @public
      * @return {void}
      */
@@ -132,6 +133,10 @@ class CommentBox extends EventEmitter {
         }
 
         hideElement(this.containerEl);
+
+        // Remove event listeners
+        this.cancelEl.removeEventListener('click', this.onCancel);
+        this.postEl.removeEventListener('click', this.onPost);
     }
 
     /**
@@ -147,12 +152,17 @@ class CommentBox extends EventEmitter {
         }
 
         showElement(this.containerEl);
+
+        // Add event listeners
+        this.cancelEl.addEventListener('click', this.onCancel);
+        this.postEl.addEventListener('click', this.onPost);
     }
 
     /**
      * Destructor
      *
      * @public
+     * @return {void}
      */
     destroy() {
         if (!this.containerEl) {
@@ -196,7 +206,7 @@ class CommentBox extends EventEmitter {
 
     /**
      * Clear the current text in the textarea element and notify listeners.
-     * 
+     *
      * @private
      * @return {void}
      */
@@ -207,7 +217,7 @@ class CommentBox extends EventEmitter {
 
     /**
      * Notify listeners of submit event and then clear textarea element.
-     * 
+     *
      * @private
      * @return {void}
      */
@@ -219,7 +229,7 @@ class CommentBox extends EventEmitter {
     /**
      * Create HTML for the comment box. Assigns references to elements, attach event listeners.
      * ie) Post button, cancel button
-     * 
+     *
      * @private
      * @return {HTMLElement} The HTML to append to this.parentElement
      */
