@@ -1,7 +1,7 @@
 import autobind from 'autobind-decorator';
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
-import { Grid } from 'react-virtualized';
+import Grid from 'react-virtualized/dist/es/Grid/Grid';
 
 const HEIGHT_ROW = 30;
 const WIDTH_SCROLLER = 5;
