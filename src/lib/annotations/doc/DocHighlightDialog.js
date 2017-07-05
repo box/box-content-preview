@@ -44,7 +44,7 @@ const PAGE_PADDING_TOP = 15;
 
     /**
      * Emit the message to create a highlight and render it.
-     * 
+     *
      * @public
      * @return {void}
      */
@@ -471,7 +471,7 @@ const PAGE_PADDING_TOP = 15;
         const highlightDialogEl = document.createElement('div');
         highlightDialogEl.innerHTML = `
             <span class="bp-annotation-highlight-label ${CLASS_HIDDEN}"></span>
-            <span class="bp-annotations-highlight-btns">
+            <span class="bp-annotations-highlight-btns ${this.isMobile ? CLASS_HIDDEN : ''}">
                 <button class="bp-btn-plain bp-add-highlight-btn"
                     data-type="highlight-btn"
                     title="${__('annotation_highlight_toggle')}">
