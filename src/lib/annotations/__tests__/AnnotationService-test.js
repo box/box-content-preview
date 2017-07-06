@@ -186,10 +186,6 @@ describe('lib/annotations/AnnotationService', () => {
         });
     });
 
-    describe('update()', () => {
-        // @TODO(tjin): Test when update() is implemented
-    });
-
     describe('delete()', () => {
         const url = `${API_HOST}/2.0/annotations/3`;
 
@@ -265,10 +261,6 @@ describe('lib/annotations/AnnotationService', () => {
                 );
             });
         });
-    });
-
-    describe('getAnnotationUser()', () => {
-        // @TODO(tjin): Test when getAnnotationUser() is updated after the release of transactional users
     });
 
     describe('createThreadMap()', () => {

@@ -11,7 +11,6 @@ const LOAD_TIMEOUT_MS = 120000;
 const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 
-// @TODO(jpress): replace with discovery and XML parsing once Microsoft allows CORS
 const EXCEL_ONLINE_EMBED_URL = 'https://excel.officeapps.live.com/x/_layouts/xlembed.aspx';
 const OFFICE_ONLINE_IFRAME_NAME = 'office-online-iframe';
 const MESSAGE_HOST_READY = 'Host_PostmessageReady';
@@ -181,7 +180,6 @@ const MESSAGE_HOST_READY = 'Host_PostmessageReady';
      * @return {string} Runmode URL
      */
     setupRunmodeURL(appHost, fileId, sharedLink) {
-        // @TODO(jpress): Combine with setupWopiSrc Logic when removing the platform fork
         let route = '/integrations/officeonline/openExcelOnlinePreviewer';
 
         const domain = document.createElement('a');
@@ -218,7 +216,6 @@ const MESSAGE_HOST_READY = 'Host_PostmessageReady';
      * @return {string} WOPI src URL
      */
     setupWOPISrc(apiHost, fileId, sharedLink) {
-        // @TODO(jpress): add support for vanity URLs once WOPI API is updated
         let wopiSrc = `${apiHost}/wopi/files/`;
 
         if (sharedLink) {
@@ -270,7 +267,6 @@ const MESSAGE_HOST_READY = 'Host_PostmessageReady';
         const WOPISrc = this.setupWOPISrc(apiHost, fileId, sharedLink);
         const origin = { origin: window.location.origin };
         const formEl = this.containerEl.appendChild(document.createElement('form'));
-        // @TODO(jpress): add suport for iframe performance logging via App_LoadingStatus message
         // We pass our origin in the sessionContext so that Microsoft will pass
         // this to the checkFileInfo endpoint. From their we can set it as the
         // origin for iframe postMessage communications.

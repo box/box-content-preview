@@ -593,7 +593,6 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
     /**
      * Orient annotations to the correct scale and orientation of the annotated document.
-     * @TODO(jholdstock|spramod): Remove this once we are emitting the correct messaging.
      *
      * @protected
      * @param {Object} data - Scale and orientation values needed to orient annotations.
