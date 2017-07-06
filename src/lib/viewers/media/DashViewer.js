@@ -154,6 +154,8 @@ const MANIFEST = 'manifest.mpd';
      * Manifest type will use an asset name. Segments will not.
      *
      * @private
+     * @param {string} type - Request type
+     * @param {Request} request - Request to filter
      * @return {void}
      */
     requestFilter(type, request) {
@@ -167,7 +169,7 @@ const MANIFEST = 'manifest.mpd';
      * Gets the active track
      *
      * @private
-     * @return {Object|undefined}
+     * @return {Object|undefined} Active track or undefined if there is no active track
      */
     getActiveTrack() {
         const tracks = this.player.getVariantTracks();
@@ -178,7 +180,7 @@ const MANIFEST = 'manifest.mpd';
      * Shows the loading indicator
      *
      * @override
-     * @param {number} id - rep id
+     * @param {number} id - Rep id
      * @return {void}
      */
     showLoadingIcon(id) {
@@ -214,7 +216,7 @@ const MANIFEST = 'manifest.mpd';
      * Enables or disables automatic adaptation
      *
      * @private
-     * @param {boolean} [adapt] - enable or disable adaptation
+     * @param {boolean} [adapt] - Enable or disable adaptation
      * @return {void}
      */
     enableAdaptation(adapt = true) {
@@ -298,7 +300,7 @@ const MANIFEST = 'manifest.mpd';
      * Handles errors thrown by shaka player. See https://shaka-player-demo.appspot.com/docs/api/shaka.util.Error.html
      *
      * @private
-     * @param {Object} shakaError
+     * @param {Object} shakaError - Error to handle
      * @return {void}
      */
     shakaErrorHandler(shakaError) {

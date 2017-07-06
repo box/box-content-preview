@@ -75,9 +75,8 @@ class Popup {
      * Shows a popup with a message.
      *
      * @param {string} message - Popup message
-     * @param {string} buttonText - Button text
-     * @param {function} [buttonHandler] - Optional onclick function for the button
      * @param {string} [buttonText] - Optional text to show in button
+     * @param {Function} [buttonHandler] - Optional onclick function for the button
      * @return {void}
      */
     show(message, buttonText, buttonHandler) {
@@ -185,7 +184,7 @@ class Popup {
     /**
      * Keydown handler for popup
      *
-     * @param {string} key - Keydown key
+     * @param {Event} event - Keydown event
      * @return {boolean} Consumed or not
      */
     keydownHandler = (event) => {

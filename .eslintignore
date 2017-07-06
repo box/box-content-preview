@@ -1,2 +1,3 @@
 src/third-party/*
 dist/*
+**/__tests__/*

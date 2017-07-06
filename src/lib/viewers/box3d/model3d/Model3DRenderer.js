@@ -49,10 +49,8 @@ const OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE_VR = 66.6; // 15 FPS
 const DEFAULT_MODEL_SIZE = 1;
 
 /**
- * Model3DRenderer
  * This class handles rendering the preview of the 3D model using the Box3D
  * Runtime library.
- * @class
  */
 class Model3DRenderer extends Box3DRenderer {
     /**
@@ -129,8 +127,7 @@ class Model3DRenderer extends Box3DRenderer {
      * Load a box3d representation and initialize the scene.
      *
      * @private
-     * @param {string} fileUrl - The representation URL.
-     * @param {string} assetPath - The asset path needed to access file
+     * @param {string} assetUrl - The representation URL
      * @return {void}
      */
     loadBox3dFile(assetUrl) {
@@ -186,9 +183,9 @@ class Model3DRenderer extends Box3DRenderer {
     }
 
     /**
-     * Create an instance of the specified prefab and add it to the scene.
-     * @param {object} prefab - The prefab entity to instance.
-     * @param {object} scene - The scene asset to add the instance to.
+     * Adjust model for a scene.
+     *
+     * @param {Object} instance - Instance to adjust
      * @return {void}
      */
     adjustModelForScene(instance) {
@@ -574,6 +571,7 @@ class Model3DRenderer extends Box3DRenderer {
      *
      * @private
      * @param {string} level - Level name
+     * @return {void}
      */
     setQualityLevel(level) {
         if (!this.box3d) {
@@ -607,6 +605,12 @@ class Model3DRenderer extends Box3DRenderer {
     listenToRotateComplete(position, alignment) {
         this.isRotating = true;
 
+        /**
+         * Alignment adjustment after update.
+         *
+         * @param {boolean} finalize - Whether or not this is final alignment
+         * @return {void}
+         */
         const postUpdate = (finalize) => {
             if (!this.instance) {
                 return;

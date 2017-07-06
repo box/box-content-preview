@@ -6,7 +6,6 @@ import sceneEntities from './SceneEntities';
  * Image360Renderer
  * This class handles rendering the preview of the 3D model using the Box3D
  * Runtime library.
- * @class
  */
 class Image360Renderer extends Box3DRenderer {
     /**
@@ -36,7 +35,7 @@ class Image360Renderer extends Box3DRenderer {
 
     /**
      * Cleanup the image and texture for the skybox.
-     * @method cleanupTexture
+     *
      * @private
      * @return {void}
      */
@@ -59,7 +58,6 @@ class Image360Renderer extends Box3DRenderer {
      * Get the skybox renderer component that exists on the root scene.
      *
      * @public
-     * @method getSkyboxComponent
      * @return {Object} A Box3d component for skybox rendering
      */
     getSkyboxComponent() {
@@ -74,7 +72,8 @@ class Image360Renderer extends Box3DRenderer {
      * Load a box3d json
      *
      * @inheritdoc
-     * @param  {string} jsonUrl The url to the box3d json
+     * @param {string} assetUrl - The url to the box3d json
+     * @param {Object} options - Options
      * @return {Promise} a promise that resolves with the newly created runtime
      */
     load(assetUrl, options = {}) {
@@ -89,9 +88,9 @@ class Image360Renderer extends Box3DRenderer {
 
     /**
      * Load a box3d representation and initialize the scene.
-     * @method loadBox3dFile
+     *
      * @private
-     * @param {string} fileUrl - The representation URL.
+     * @param {string} assetUrl - The representation URL.
      * @param {string} assetPath - The asset path needed to access file
      * @return {void}
      */
