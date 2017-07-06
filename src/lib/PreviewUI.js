@@ -256,8 +256,8 @@ class PreviewUI {
      *
      * @return {HTMLElement} Annotate button element
      */
-    getAnnotateButton() {
-        return this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+    getAnnotateButton(selector) {
+        return this.container.querySelector(selector);
     }
 
     /**
