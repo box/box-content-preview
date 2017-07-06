@@ -3,7 +3,12 @@ import autobind from 'autobind-decorator';
 import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
 import * as annotatorUtil from './annotatorUtil';
-import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
+import {
+    CLASS_ACTIVE,
+    CLASS_HIDDEN,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW
+} from '../constants';
 import { ICON_CLOSE } from '../icons/icons';
 import './Annotator.scss';
 import {
@@ -211,12 +216,19 @@ const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
         }
 
         // Hide create annotations button if image is rotated
+<<<<<<< HEAD
         const annotateButton = this.previewUI.getAnnotateButton();
+=======
+        // TODO(@spramod) actually adjust getLocationFromEvent method
+        // in annotator to get correct location rather than disabling
+        // the creation of annotations on rotated images
+        const pointAnnotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
+>>>>>>> New: starting to add drawing annotation
 
         if (rotationAngle !== 0) {
-            annotatorUtil.hideElement(annotateButton);
+            annotatorUtil.hideElement(pointAnnotateButton);
         } else {
-            annotatorUtil.showElement(annotateButton);
+            annotatorUtil.showElement(pointAnnotateButton);
         }
     }
 
@@ -238,6 +250,17 @@ const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
      * @return {void}
      */
     togglePointModeHandler(event = {}) {
+<<<<<<< HEAD
+=======
+        // This unfortunately breaks encapsulation, but the header currently
+        // doesn't manage its own functionality
+        let buttonEl = event.target;
+        if (!buttonEl) {
+            const containerEl = document.querySelector('.bp-header');
+            buttonEl = containerEl ? containerEl.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT) : null;
+        }
+
+>>>>>>> New: starting to add drawing annotation
         this.destroyPendingThreads();
         const buttonEl = event.target || this.previewUI.getAnnotateButton();
 
@@ -266,6 +289,23 @@ const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
 
             this.unbindDOMListeners(); // Disable other annotations
             this.bindPointModeListeners(); // Enable point mode
+        }
+    }
+
+    toggleDrawModeHandler(event = {}) {
+        let buttonEl = event.target;
+        if (!buttonEl) {
+            const headerEl = document.querySelector('.bp-header');
+            buttonEl = headerEl ? headerEl.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW) : null;
+        }
+
+        this.destroyPendingThreads();
+
+        if (this.isInDrawMode()) {
+            this.notification.hide();
+
+            this.emit('annotationmodeexit');
+            this.annotatedElement.classL;
         }
     }
 
