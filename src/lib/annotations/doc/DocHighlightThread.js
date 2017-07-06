@@ -441,6 +441,13 @@ const HOVER_TIMEOUT_MS = 75;
             PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM
         );
 
+        /**
+         * Scale verticies according to dimension scale.
+         *
+         * @param {number} val - Value to scale
+         * @param {number} index - Vertex index
+         * @return {number} - Scaled value
+         */
         const scaleVertices = (val, index) => {
             return index % 2 ? val * dimensionScale.y : val * dimensionScale.x;
         };

@@ -360,6 +360,9 @@ const FILMSTRIP_FRAME_HEIGHT = 90;
 
     /**
      * Toggles label for control element with more than one state
+     *
+     * @param {HTMLElement} el - Label element
+     * @param {string} label - String for label
      * @return {void}
      */
     setLabel(el, label) {
@@ -369,7 +372,8 @@ const FILMSTRIP_FRAME_HEIGHT = 90;
 
     /**
      * Tells if settings menu is open
-     * @return {boolean} true or false
+     *
+     * @return {boolean} Whether settings are visible
      */
     isSettingsVisible() {
         return !!this.settings && this.settings.isVisible();
@@ -729,7 +733,7 @@ const FILMSTRIP_FRAME_HEIGHT = 90;
      * @param {number} rectLeft - Left position of the bounding rectangle
      * @param {number} rectWidth - Width of the bounding rectangle
      * @param {number} filmstripWidth - Pixel width of the filmstrip
-     * @return {Object}
+     * @return {Object} Filmstrip position object
      */
     computeFilmstripPositions(pageX, rectLeft, rectWidth, filmstripWidth) {
         const time = this.timeScrubber.computeScrubberPosition(pageX) * this.mediaEl.duration; // given the mouse X position, get the relative time
@@ -802,7 +806,7 @@ const FILMSTRIP_FRAME_HEIGHT = 90;
     /**
      * Checks if focus is on the time-scrubber
      *
-     * @return {boolean}
+     * @return {boolean} Whether time scrubber is focused
      */
     isTimeScrubberFocused() {
         return document.activeElement === this.timeScrubberEl;
@@ -811,7 +815,7 @@ const FILMSTRIP_FRAME_HEIGHT = 90;
     /**
      * Checks if focus is on the volume-scrubber
      *
-     * @return {boolean}
+     * @return {boolean} Whether volume scrubber is focused
      */
     isVolumeScrubberFocused() {
         return document.activeElement === this.volScrubberEl;

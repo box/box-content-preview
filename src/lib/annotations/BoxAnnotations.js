@@ -36,9 +36,9 @@ class BoxAnnotations {
     }
 
     /**
-     * Chooses a annotator based on file extension.
+     * Chooses a annotator based on viewer.
      *
-     * @param {Object} file - Box file
+     * @param {Object} viewer - Current preview viewer
      * @param {Array} [disabledAnnotators] - List of disabled annotators
      * @return {Object} The annotator to use
      */

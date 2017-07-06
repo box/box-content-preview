@@ -15,9 +15,7 @@ const buttonMap = {
 };
 
 /**
- * Model3DVrControls
  * This class handles the gamepad input used my the Model3D viewer while in VR mode.
- * @class
  */
 class Model3DVrControls {
     constructor(vrGamepads, box3dEngine) {

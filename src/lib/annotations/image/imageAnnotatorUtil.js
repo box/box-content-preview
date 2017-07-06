@@ -11,8 +11,8 @@ const ROTATION_THRICE_DEG = -270;
  * @param {number} x - Annotation location x coordinate
  * @param {number} y - Annotation location y coordinate
  * @param {number} rotation - Current image rotation
- * @param {Object} imageDimensions
- * @param {number} scale
+ * @param {Object} imageDimensions - Image dimensions
+ * @param {number} scale - Zoom scale
  * @return {number[]} [x,y] browser coordinates
  */
 export function getRotatedLocation(x, y, rotation, imageDimensions, scale) {
@@ -40,8 +40,8 @@ export function getRotatedLocation(x, y, rotation, imageDimensions, scale) {
  * @param {number} x - Annotation location x coordinate
  * @param {number} y - Annotation location y coordinate
  * @param {number} rotation - Current image rotation
- * @param {Object} imageDimensions
- * @param {number} scale
+ * @param {Object} imageDimensions - Image dimensions
+ * @param {number} scale - Zoom scale
  * @return {number[]} [x,y] browser coordinates
  */
 export function getLocationWithoutRotation(x, y, rotation, imageDimensions, scale) {

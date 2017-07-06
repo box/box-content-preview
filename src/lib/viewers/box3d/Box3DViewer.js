@@ -322,7 +322,7 @@ const CLASS_VR_ENABLED = 'vr-enabled';
     /**
      * Handle error events and emit a message
      *
-     * @param {Error} The - error that caused this to be triggered. To be emitted.
+     * @param {Error} error - The error that caused this to be triggered. To be emitted.
      * @return {void}
      */
     handleError(error) {

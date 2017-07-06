@@ -144,8 +144,6 @@ function createDropdown(labelText = '', listText = '', listContent = []) {
 
 /**
  * Used to register HTMLElements and events for easy management and destruction later.
- *
- * @class
  */
 class UIRegistry {
     /**

@@ -8,6 +8,12 @@ const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
 const CSS_PIXEL_TO_PDF_UNIT = 3 / 4;
 const HIGHLIGHT_DIALOG_HEIGHT = 48;
 
+/**
+ * Checks whether this annotator is on a presentation (PPT) or not.
+ *
+ * @param {HTMLElement} annotatedElement - Annotated element
+ * @return {boolean} Whether annotations are on presentation or not
+ */
 export function isPresentation(annotatedElement) {
     return annotatedElement.classList.contains(PREVIEW_PRESENTATION_CLASS);
 }
@@ -19,9 +25,10 @@ export function isPresentation(annotatedElement) {
 /**
  * Checks whether mouse is inside the dialog represented by this thread.
  *
- * @param {Event} event - Mouse event
- * @return {boolean} Whether or not mouse is inside dialog
  * @private
+ * @param {Event} event - Mouse event
+ * @param {HTMLElement} dialogEl - Dialog element
+ * @return {boolean} Whether or not mouse is inside dialog
  */
 export function isInDialog(event, dialogEl) {
     if (!dialogEl) {
@@ -49,9 +56,9 @@ export function isInDialog(event, dialogEl) {
 /**
  * Checks if there is an active annotation in the annotated document
  *
+ * @private
  * @param {HTMLElement} annotatedEl - Annotated document
  * @return {boolean} Whether or not a dialog is active
- * @private
  */
 export function hasActiveDialog(annotatedEl) {
     const commentsDialogEl = annotatedEl.querySelector('.bp-annotation-dialog:not(.bp-is-hidden)');
@@ -65,11 +72,12 @@ export function hasActiveDialog(annotatedEl) {
  * dialog from being cut off since the presentation viewer doesn't allow
  * the annotations dialog to overflow below the file
  *
+ * @private
  * @param {HTMLElement} annotatedElement - Annotated element
  * @param {HTMLElement} dialogEl - Annotations dialog element
  * @param {number} pageHeight - Page height
+ * @param {number} dialogY - Dialog y position
  * @return {void}
- * @private
  */
 export function fitDialogHeightInPage(annotatedElement, dialogEl, pageHeight, dialogY) {
     if (isPresentation(annotatedElement)) {
@@ -89,6 +97,7 @@ export function fitDialogHeightInPage(annotatedElement, dialogEl, pageHeight, di
 /**
  * Fast test if a given point is within a polygon. Taken from
  * http://jsperf.com/ispointinpath-boundary-test-speed/6
+ *
  * @param {number[]} poly - Polygon defined by array of [x,y] coordinates
  * @param {number} x - X coordinate of point to Test
  * @param {number} y - Y coordinate of point to Test
@@ -104,14 +113,15 @@ export function isPointInPolyOpt(poly, x, y) {
     /* eslint-enable */
 }
 
+/* istanbul ignore next */
 /**
  * Returns the Rangy highlight object and highlight elements representing
  * the current selection on the given page element.
+ *
  * @param {Object} highlighter - Rangy highlighter
  * @param {HTMLElement} pageEl - Page element highlight is over
  * @return {Object} Rangy highlight object and highlight DOM elements
  */
-/* istanbul ignore next */
 export function getHighlightAndHighlightEls(highlighter, pageEl) {
     const highlight = highlighter.highlights[0];
     // // Only grab highlights on the text layer
@@ -129,6 +139,7 @@ export function getHighlightAndHighlightEls(highlighter, pageEl) {
 
 /**
  * Returns whether or not there currently is a non-empty selection.
+ *
  * @return {boolean} Whether there is a non-empty selection
  */
 export function isSelectionPresent() {
@@ -146,6 +157,7 @@ export function isSelectionPresent() {
 
 /**
  * Converts coordinates in PDF space to coordinates in DOM space.
+ *
  * @param {number[]} coordinates - Either a [x,y] coordinate location or
  * quad points in the format of 8xn numbers in PDF space in PDF units
  * @param {number} pageHeight - Height of page in CSS pixels, needed to convert
@@ -167,6 +179,7 @@ export function convertPDFSpaceToDOMSpace(coordinates, pageHeight, scale) {
 
 /**
  * Converts coordinates in DOM space to coordinates in PDF space.
+ *
  * @param {number[]} coordinates - Either a [x,y] coordinate location or
  * quad points in the format of 8xn numbers in DOM space in CSS pixels
  * @param {number} pageHeight - Height of page in CSS pixels, needed to convert
@@ -191,6 +204,7 @@ export function convertDOMSpaceToPDFSpace(coordinates, pageHeight, scale) {
 /**
  * Returns browser coordinates given an annotation location object and the HTML
  * element being annotated on.
+ *
  * @param {Object} location - Annotation location object
  * @param {HTMLElement} annotatedElement - HTML element being annotated on
  * @return {number[]} [x,y] browser coordinates
@@ -218,6 +232,7 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
     return convertPDFSpaceToDOMSpace([x, y], pageHeight, zoomScale);
 }
 
+/* istanbul ignore next */
 /**
  * Returns the coordinates of the quadrilateral representing this element
  * per the PDF text markup annotation spec. Note that these coordinates
@@ -226,6 +241,7 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
  *
  * We do this by letting the browser figure out the coordinates for us.
  * See http://stackoverflow.com/a/17098667
+ *
  * @param {HTMLElement} element - Element to get quad points for
  * @param {HTMLElement} pageEl - Page element quad points are relative to
  * @param {number} scale - Document zoom scale
@@ -234,7 +250,6 @@ export function getBrowserCoordinatesFromLocation(location, annotatedElement) {
  * element and the other 3 vertices in counterclockwise order. These are
  * in PDF default user space.
  */
-/* istanbul ignore next */
 export function getQuadPoints(element, pageEl, scale) {
     const quadCornerContainerEl = document.createElement('div');
     quadCornerContainerEl.classList.add('bp-quad-corner-container');

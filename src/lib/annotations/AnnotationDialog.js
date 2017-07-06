@@ -209,7 +209,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
     /**
      * Posts an annotation in the dialog.
      *
-     * @public
+     * @param {string} [textInput] - Annotation text to post
      * @return {void}
      */
     postAnnotation(textInput) {

@@ -153,9 +153,8 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
     toggleToSubtitle = undefined;
 
     /**
-     * Service to handle the position and movement of a slider element
-     *
      * [constructor]
+     *
      * @param {HTMLElement} containerEl - container node
      * @return {Settings} Settings menu instance
      */
@@ -190,6 +189,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
 
     /**
      * [destructor]
+     *
      * @return {void}
      */
     destroy() {
@@ -200,7 +200,8 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
     }
 
     /**
-     * [destructor]
+     * Reset settings element.
+     *
      * @return {void}
      */
     reset() {
@@ -213,7 +214,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      * Getter for testing purposes
      *
      * @private
-     * @return {Array}
+     * @return {Array} Media speeds
      */
     getMediaSpeeds() {
         return MEDIA_SPEEDS;
@@ -303,7 +304,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      * Helper method for selecting items/sub-items in the menu
      *
      * @private
-     * @param {HTMLElement} menuItem
+     * @param {HTMLElement} menuItem - Menu element
      * @return {void}
      */
     menuItemSelect(menuItem) {
@@ -552,7 +553,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      * Returns whether subtitles are on or not
      *
      * @private
-     * @return {boolean}
+     * @return {boolean} Whether subtitles are on
      */
     areSubtitlesOn() {
         const selected = this.getSelectedOption('subtitles');
@@ -562,7 +563,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
     /**
      * Returns whether subtitles are available or not
      *
-     * @return {boolean}
+     * @return {boolean} Whether subtitles are available
      */
     hasSubtitles() {
         if (this.settingsEl.querySelector(`[data-type="subtitles"][data-value="0"]${SELECTOR_SETTINGS_SUB_ITEM}`)) {

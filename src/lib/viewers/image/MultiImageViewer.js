@@ -131,8 +131,9 @@ const ZOOM_UPDATE_PAN_DELAY = 50;
 
     /**
      * Handles zoom
-     * @param {string} [type] - Type of zoom in|out|reset
+     *
      * @private
+     * @param {string} [type] - Type of zoom in|out|reset
      * @return {void}
      */
     zoom(type) {
@@ -196,7 +197,7 @@ const ZOOM_UPDATE_PAN_DELAY = 50;
     /**
      * Binds error and load event listeners for an image element.
      *
-     * @protected
+     * @param {number} index - Index of image to bind listeners to
      * @return {void}
      */
     bindImageListeners(index) {
@@ -210,7 +211,7 @@ const ZOOM_UPDATE_PAN_DELAY = 50;
     /**
      * Unbinds error and load event listeners for an image element.
      *
-     * @protected
+     * @param {number} index - Index of image to unbind listeners from
      * @return {void}
      */
     unbindImageListeners(index) {

@@ -53,7 +53,7 @@ export function getRepresentation(file, repName) {
 /**
  * Is Watermarked
  *
- * @param {object} file - Box file
+ * @param {Object} file - Box file
  * @return {boolean} Whether or not file is watermarked
  */
 export function isWatermarked(file) {
@@ -63,7 +63,7 @@ export function isWatermarked(file) {
 /**
  * Checks permission
  *
- * @param {object} file - Box file
+ * @param {Object} file - Box file
  * @param {string} operation - Action to check permission for
  * @return {boolean} Whether or not action is permitted
  */
@@ -74,7 +74,7 @@ export function checkPermission(file, operation) {
 /**
  * Checks feature
  *
- * @param {object} viewer - Viewer instance
+ * @param {Object} viewer - Viewer instance
  * @param {string} primary - Primary feature to check
  * @param {string} [secondary] - Secondary feature to check
  * @return {boolean} Whether or not feature is available
