@@ -6,7 +6,6 @@ import Box3DRenderer from './Box3DRenderer';
 import Browser from '../../Browser';
 import Notification from '../../Notification';
 import { get } from '../../util';
-import { showLoadingIndicator } from '../../ui';
 import {
     CSS_CLASS_BOX3D,
     EVENT_ERROR,
@@ -230,7 +229,7 @@ const CLASS_VR_ENABLED = 'vr-enabled';
         this.detachEventHandlers();
         this.contextNotification.show('WebGL Context Restored');
         this.emit('progressstart');
-        showLoadingIndicator();
+        this.previewUI.showLoadingIndicator();
         this.postLoad();
     }
 

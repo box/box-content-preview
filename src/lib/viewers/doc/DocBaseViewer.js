@@ -2,7 +2,6 @@ import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
-import cache from '../../Cache';
 import Controls from '../../Controls';
 import DocFindBar from './DocFindBar';
 import fullscreen from '../../Fullscreen';
@@ -323,8 +322,8 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
     getCachedPage() {
         let page = 1;
 
-        if (cache.has(CURRENT_PAGE_MAP_KEY)) {
-            const currentPageMap = cache.get(CURRENT_PAGE_MAP_KEY);
+        if (this.cache.has(CURRENT_PAGE_MAP_KEY)) {
+            const currentPageMap = this.cache.get(CURRENT_PAGE_MAP_KEY);
             page = currentPageMap[this.options.file.id] || page;
         }
 
@@ -340,12 +339,12 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
      */
     cachePage(page) {
         let currentPageMap = {};
-        if (cache.has(CURRENT_PAGE_MAP_KEY)) {
-            currentPageMap = cache.get(CURRENT_PAGE_MAP_KEY);
+        if (this.cache.has(CURRENT_PAGE_MAP_KEY)) {
+            currentPageMap = this.cache.get(CURRENT_PAGE_MAP_KEY);
         }
 
         currentPageMap[this.options.file.id] = page;
-        cache.set(CURRENT_PAGE_MAP_KEY, currentPageMap, true /* useLocalStorage */);
+        this.cache.set(CURRENT_PAGE_MAP_KEY, currentPageMap, true /* useLocalStorage */);
     }
 
     /**

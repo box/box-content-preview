@@ -23,6 +23,8 @@ export const CLASS_BOX_PREVIEW_PRELOAD = 'bp-preload';
 export const CLASS_BOX_PREVIEW_PRELOAD_CONTENT = 'bp-preload-content';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT = 'bp-document-preload-wrapper';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION = 'bp-presentation-preload-wrapper';
+export const CLASS_BOX_PREVIEW_PROGRESS_BAR = 'bp-progress-bar';
+export const CLASS_BOX_PREVIEW_PROGRESS_BAR_CONTAINER = 'bp-progress-bar-container';
 export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'bp-toggle-overlay';
 export const CLASS_BOX_PREVIEW_THEME_DARK = 'bp-theme-dark';
 export const CLASS_ELEM_KEYBOARD_FOCUS = 'bp-has-keyboard-focus';
@@ -50,6 +52,7 @@ export const SELECTOR_BOX_PREVIEW_LOADING_TEXT = `.${CLASS_BOX_PREVIEW_LOADING_T
 export const SELECTOR_BOX_PREVIEW_LOADING_WRAPPER = `.${CLASS_BOX_PREVIEW_LOADING_WRAPPER}`;
 export const SELECTOR_BOX_PREVIEW_LOGO_CUSTOM = `.${CLASS_BOX_PREVIEW_LOGO_CUSTOM}`;
 export const SELECTOR_BOX_PREVIEW_LOGO_DEFAULT = `.${CLASS_BOX_PREVIEW_LOGO_DEFAULT}`;
+export const SELECTOR_BOX_PREVIEW_PROGRESS_BAR = `.${CLASS_BOX_PREVIEW_PROGRESS_BAR}`;
 
 export const PERMISSION_DOWNLOAD = 'can_download';
 export const PERMISSION_ANNOTATE = 'can_annotate';

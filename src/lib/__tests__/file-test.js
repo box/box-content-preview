@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import cache from '../Cache';
+import Cache from '../Cache';
 import {
     getURL,
     getDownloadURL,
@@ -118,18 +118,22 @@ describe('lib/file', () => {
 
     describe('cacheFile', () => {
         it('should not add original representation if file object doesnt have any to start with', () => {
-            sandbox.stub(cache, 'set');
+            const cache = {
+                set: sandbox.stub()
+            };
             const file = {
                 id: '0'
             };
 
-            cacheFile(file);
+            cacheFile(cache, file);
 
             expect(file.representations).to.be.undefined;
         });
 
         it('should add an original rep and cache the file', () => {
-            sandbox.stub(cache, 'set');
+            const cache = {
+                set: sandbox.stub()
+            };
             const file = {
                 id: '0',
                 representations: {
@@ -137,14 +141,16 @@ describe('lib/file', () => {
                 }
             };
 
-            cacheFile(file);
+            cacheFile(cache, file);
 
             expect(file.representations.entries[0].representation).to.equal('ORIGINAL');
             expect(cache.set).to.be.calledWith(file.id, file);
         });
 
         it('should not add an original rep if original rep already exists', () => {
-            sandbox.stub(cache, 'set');
+            const cache = {
+                set: sandbox.stub()
+            };
             const file = {
                 id: '0',
                 representations: {
@@ -156,19 +162,20 @@ describe('lib/file', () => {
                 }
             };
 
-            cacheFile(file);
+            cacheFile(cache, file);
             expect(file.representations.entries.length).to.equal(1);
         });
     });
 
     describe('uncacheFile', () => {
         it('should uncache a file', () => {
+            const cache = new Cache();
             const file = {
                 id: '0'
             };
             cache.set(file.id, file);
 
-            uncacheFile(file);
+            uncacheFile(cache, file);
 
             expect(cache.get(file.id)).to.be.undefined;
         });

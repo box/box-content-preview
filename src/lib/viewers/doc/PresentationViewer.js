@@ -35,7 +35,7 @@ const SCROLL_EVENT_OFFSET = 5;
         this.docEl.classList.add('bp-doc-presentation');
 
         // Set up preloader
-        this.preloader = new PresentationPreloader();
+        this.preloader = new PresentationPreloader(this.previewUI);
         this.preloader.addListener('preload', () => {
             this.options.logger.setPreloaded();
             this.resetLoadTimeout(); // Some content is visible - reset load timeout

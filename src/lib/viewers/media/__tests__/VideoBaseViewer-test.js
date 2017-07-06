@@ -18,6 +18,12 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         fixture.load('viewers/media/__tests__/VideoBaseViewer-test.html');
         containerEl = document.querySelector('.container');
         videoBase = new VideoBaseViewer({
+            cache: {
+                set: () => {},
+                has: () => {},
+                get: () => {},
+                unset: () => {}
+            },
             file: {
                 id: 1
             },
