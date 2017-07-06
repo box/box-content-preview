@@ -92,8 +92,9 @@ function isThreadInHoverState(thread) {
      * on document files.
      *
      * [constructor]
+     *
      * @inheritdoc
-     * @return {DocAnnotator}
+     * @return {DocAnnotator} DocAnnotator instance
      */
     constructor(data) {
         super(data);
@@ -112,9 +113,9 @@ function isThreadInHoverState(thread) {
     }
 
     /**
-     * Destructor
+     * [destructor]
      *
-     * @public
+     * @return {void}
      */
     destroy() {
         super.destroy();
@@ -532,6 +533,11 @@ function isThreadInHoverState(thread) {
 
         this.highlightMousemoveHandler = this.onHighlightMouseMove.bind(this);
 
+        /**
+         * Highlight event loop
+         *
+         * @return {void}
+         */
         const highlightLoop = () => {
             this.highlightThrottleHandle = requestAnimationFrame(highlightLoop);
             this.onHighlightCheck();

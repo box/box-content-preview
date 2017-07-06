@@ -368,6 +368,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Enable the regular camera controls.
      *
+     * @param {string} cameraControllerId - Camera to enable
      * @return {void}
      */
     enableCameraControls(cameraControllerId = PREVIEW_CAMERA_CONTROLLER_ID) {
@@ -381,6 +382,7 @@ class Box3DRenderer extends EventEmitter {
     /**
      * Disable the regular camera controls. Useful when VR device is controlling camera.
      *
+     * @param {string} cameraControllerId - Camera to disable
      * @return {void}
      */
     disableCameraControls(cameraControllerId = PREVIEW_CAMERA_CONTROLLER_ID) {
@@ -437,6 +439,12 @@ class Box3DRenderer extends EventEmitter {
     createVrGamepad(handedness) {
         const controller = this.box3d.createNode();
 
+        /**
+         * Gamepad model load handler.
+         *
+         * @param {Object} entities - Loaded entities
+         * @return {void}
+         */
         const onGamepadModelLoad = (entities) => {
             const prefab = entities.find((e) => {
                 return e.type === 'prefab';
@@ -450,6 +458,12 @@ class Box3DRenderer extends EventEmitter {
             }
         };
 
+        /**
+         * Gamepad found handler.
+         *
+         * @param {Object} gamepad - Gamepad object
+         * @return {void}
+         */
         const onGamepadFound = (gamepad) => {
             let controllerName = null;
             let commonEntities = null;

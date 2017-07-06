@@ -89,8 +89,11 @@ class CreateHighlightDialog extends EventEmitter {
 
     /**
      * A dialog used to create plain and comment highlights.
-     * 
+     *
      * [constructor]
+     *
+     * @param {HTMLElement} parentEl - Parent element
+     * @return {CreateHighlightDialog} CreateHighlightDialog instance
      */
     constructor(parentEl) {
         super();
@@ -171,9 +174,9 @@ class CreateHighlightDialog extends EventEmitter {
     }
 
     /**
-     * Destructor
+     * [destructor]
      *
-     * @public
+     * @return {void}
      */
     destroy() {
         if (!this.containerEl) {
@@ -209,7 +212,7 @@ class CreateHighlightDialog extends EventEmitter {
     /**
      * Update the position styling for the dialog so that the chevron points to
      * the desired location.
-     * 
+     *
      * @return {void}
      */
     updatePosition() {
@@ -221,7 +224,7 @@ class CreateHighlightDialog extends EventEmitter {
 
     /**
      * Fire an event notifying that the plain highlight button has been clicked.
-     * 
+     *
      * @return {void}
      */
     onHighlightClick() {
@@ -271,6 +274,7 @@ class CreateHighlightDialog extends EventEmitter {
      * Hide or show the plain and comment buttons, in the dialog.
      *
      * @param {boolean} visible - If true, shows the plain and comment buttons
+     * @return {void}
      */
     setButtonVisibility(visible) {
         if (visible) {
@@ -281,7 +285,7 @@ class CreateHighlightDialog extends EventEmitter {
     }
 
     /**
-     * Stop the dialog from propagating events to parent container. Pairs with 
+     * Stop the dialog from propagating events to parent container. Pairs with
      * giving focus to the text area in the comment box and clicking "Post".
      *
      * @param {Event} event - The DOM event coming from interacting with the element.

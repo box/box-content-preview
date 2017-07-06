@@ -155,7 +155,7 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
 
     /**
      * Handle change of render quality
-     * @param {string} mode - The quality level to use
+     * @param {string} level - The quality level to use
      * @return {void}
      */
     handleSetQualityLevel(level) {

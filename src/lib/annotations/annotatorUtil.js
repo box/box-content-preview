@@ -18,6 +18,7 @@ const THREAD_PARAMS = [
 
 /**
  * Finds the closest ancestor DOM element with the specified class.
+ *
  * @param {HTMLElement} element - Element to search ancestors of
  * @param {string} className - Class name to query
  * @return {HTMLElement|null} Closest ancestor with given class or null
@@ -34,6 +35,7 @@ export function findClosestElWithClass(element, className) {
 
 /**
 * Returns the page element and page number that the element is on.
+*
 * @param {HTMLElement} element - Element to find page and page number for
 * @return {Object} Page element/page number if found or null/-1 if not
 */
@@ -52,6 +54,7 @@ export function getPageInfo(element) {
  * Finds the closest element with a data type and returns that data type. If
  * an attributeName is provided, search for that data atttribute instead of
  * data type.
+ *
  * @param {HTMLElement} element - Element to find closest data type for
  * @param {string} [attributeName] - Optional different data attribute to search
  * for
@@ -71,6 +74,7 @@ export function findClosestDataType(element, attributeName) {
 
 /**
  * Shows the specified element or element with specified selector.
+ *
  * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
  * @return {void}
  */
@@ -87,6 +91,7 @@ export function showElement(elementOrSelector) {
 
 /**
  * Hides the specified element or element with specified selector.
+ *
  * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
  * @return {void}
  */
@@ -103,6 +108,7 @@ export function hideElement(elementOrSelector) {
 
 /**
  * Shows the specified element or element with specified selector.
+ *
  * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
  * @return {void}
  */
@@ -120,6 +126,7 @@ export function showInvisibleElement(elementOrSelector) {
 /**
  * Hides the specified element or element with specified selector. The element
  * will still take up DOM space but not be visible in the UI
+ *
  * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
  * @return {void}
  */
@@ -137,8 +144,9 @@ export function hideElementVisibility(elementOrSelector) {
 /**
  * Reset textarea element - clears value, resets styles, and remove active
  * state.
+ *
  * @param {HTMLElement} element - Textarea to reset
- * @param {Boolean} clearText - Whether or not text in text area should be cleared
+ * @param {boolean} clearText - Whether or not text in text area should be cleared
  * @return {void}
  */
 export function resetTextarea(element, clearText) {
@@ -158,6 +166,8 @@ export function resetTextarea(element, clearText) {
 
 /**
  * Checks whether element is fully in viewport.
+ *
+ * @param {HTMLElement} element - Element to check
  * @return {boolean} Whether element is fully in viewport
  */
 export function isElementInViewport(element) {
@@ -175,6 +185,7 @@ export function isElementInViewport(element) {
  * Returns avatar image HTML for annotation dialog. This will be either an
  * image with the supplied avatar URL as a source if there is a URL passed in
  * or one generated using the initials of the annotator.
+ *
  * @param {string} avatarUrl - URL of avatar photo
  * @param {string} userId - User ID of annotator
  * @param {string} userName - Username of annotator
@@ -197,6 +208,7 @@ export function getAvatarHtml(avatarUrl, userId, userName) {
 
 /**
  * Returns zoom scale of annotated element.
+ *
  * @param {HTMLElement} annotatedElement - HTML element being annotated on
  * @return {number} Zoom scale
  */
@@ -210,8 +222,9 @@ export function getScale(annotatedElement) {
 
 /**
  * Whether or not a highlight annotation has comments or is a plain highlight
- * @param {Annotation[]} Annotations - in highlight thread
- * @return {Boolean} Whether annotation is a plain highlight annotation
+ *
+ * @param {Annotation[]} annotations - Annotations in highlight thread
+ * @return {boolean} Whether annotation is a plain highlight annotation
  */
 export function isPlainHighlight(annotations) {
     return annotations.length === 1 && annotations[0].text === '';
@@ -220,6 +233,8 @@ export function isPlainHighlight(annotations) {
 /**
  * Returns whether or not the annotation type is 'highlight' or
  * 'highlight-comment'
+ *
+ * @param {string} type - Annotatation type
  * @return {boolean} Whether or not annotation is a highlight
  */
 export function isHighlightAnnotation(type) {
@@ -263,6 +278,7 @@ export function getDimensionScale(dimensions, fileDimensions, zoomScale, heightP
 
 /**
  * Escapes HTML.
+ *
  * @param {string} str - Input string
  * @return {string} HTML escaped string
  */
@@ -280,6 +296,7 @@ export function htmlEscape(str) {
  * Repositions caret if annotations dialog will run off the right or left
  * side of the page. Otherwise positions caret at the center of the
  * annotations dialog and the updated left corner x coordinate.
+ *
  * @param  {HTMLElement} dialogEl Annotations dialog element
  * @param  {number} dialogX Left corner x coordinate of the annotations dialog
  * @param  {number} highlightDialogWidth Width of the annotations dialog
@@ -318,6 +335,8 @@ export function repositionCaret(dialogEl, dialogX, highlightDialogWidth, browser
 
 /**
  * Checks thread is in a pending or pending-active state
+ *
+ * @param {string} threadState - State of thread
  * @return {boolean} Whether annotation thread is in a pending state
  */
 export function isPending(threadState) {
