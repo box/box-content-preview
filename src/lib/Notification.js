@@ -1,9 +1,8 @@
-import autobind from 'autobind-decorator';
 import { CLASS_HIDDEN } from './constants';
 
 const HIDE_TIMEOUT_MS = 5000; // 5s
 
-@autobind class Notification {
+class Notification {
     /**
      * [constructor]
      *
@@ -57,7 +56,7 @@ const HIDE_TIMEOUT_MS = 5000; // 5s
         this.notificationEl.focus();
 
         // Hide notification automatically after a delay
-        setTimeout(this.hide, HIDE_TIMEOUT_MS);
+        setTimeout(this.hide.bind(this), HIDE_TIMEOUT_MS);
     }
 
     /**
