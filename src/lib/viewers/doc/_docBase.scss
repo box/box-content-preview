@@ -99,11 +99,26 @@
         padding: 7px 5px;
     }
 
+    /* stylelint-disable property-no-vendor-prefix */
+    // Removes the spinner for number type inputs in Webkit browsers
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+    }
+
+    // Removes the spinner for number type inputs in Firefox
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    /* stylelint-enable property-no-vendor-prefix */
+
     .bp-doc-page-num-input {
-        display: none;
         font-size: 14px;
         margin: 0 auto;
+        position: absolute;
         text-align: center;
+        visibility: hidden;
         width: 44px; // hard-coded to solve layout issues
     }
 
@@ -125,7 +140,9 @@
         }
 
         .bp-doc-page-num-input {
-            display: block;
+            display: inline-block;
+            position: static;
+            visibility: visible;
         }
     }
 }
