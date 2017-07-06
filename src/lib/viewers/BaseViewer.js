@@ -20,7 +20,8 @@ import {
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
     SELECTOR_BOX_PREVIEW,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
     SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
     SELECTOR_BOX_PREVIEW_ICON,
     STATUS_SUCCESS,
@@ -154,9 +155,14 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
         const { container } = this.options;
         if (container) {
-            const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-            if (annotateButtonEl) {
-                annotateButtonEl.removeEventListener('click', this.annotateClickHandler);
+            const pointAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
+            const drawAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
+
+            if (pointAnnotateButtonEl) {
+                pointAnnotateButtonEl.removeEventListener('click', this.pointAnnotateClickHandler);
+            }
+            if (drawAnnotateButtonEl) {
+                drawAnnotateButtonEl.removeEventListener('click', this.drawAnnotateClickHandler);
             }
         }
 
@@ -602,7 +608,8 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
             // Users can currently only view annotations on mobile
             this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
             if (this.canAnnotate) {
-                this.showAnnotateButton(this.getPointModeClickHandler());
+                this.showPointAnnotateButton(this.getPointModeClickHandler());
+                this.showDrawAnnotateButton(this.getDrawModeClickHandler());
             }
             this.initAnnotations();
         }
@@ -710,20 +717,34 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     /**
      * Shows the point annotate button.
      *
-     * @param {Function} handler - Annotation button handler
+     * @param {Function} handler - Point annotation button handler
      * @return {void}
      */
-    showAnnotateButton(handler) {
-        this.annotateClickHandler = handler;
+    showPointAnnotateButton(handler) {
+        this.pointAnnotateClickHandler = handler;
         const { container } = this.options;
-        const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-        if (!annotateButtonEl) {
-            return;
+        const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
+        if (annotateButtonEl) {
+            annotateButtonEl.title = __('annotation_point_toggle');
+            annotateButtonEl.classList.remove(CLASS_HIDDEN);
+            annotateButtonEl.addEventListener('click', this.pointAnnotateClickHandler);
         }
-
-        annotateButtonEl.title = __('annotation_point_toggle');
-        annotateButtonEl.classList.remove(CLASS_HIDDEN);
-        annotateButtonEl.addEventListener('click', this.annotateClickHandler);
+    }
+    /**
+     * Shows the draw annotate button.
+     *
+     * @param {Function} handler - Drawing annotation button handler
+     * @return {void}
+     */
+    showDrawAnnotateButton(handler) {
+        this.drawAnnotateClickHandler = handler;
+        const { container } = this.options;
+        const drawAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
+        if (drawAnnotateButtonEl) {
+            drawAnnotateButtonEl.title = __('annotation_draw_toggle');
+            drawAnnotateButtonEl.classList.remove(CLASS_HIDDEN);
+            drawAnnotateButtonEl.addEventListener('click', this.drawAnnotateClickHandler);
+        }
     }
 
     /**
@@ -734,6 +755,16 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
      */
     /* eslint-disable no-unused-vars */
     getPointModeClickHandler(containerEl) {}
+    /* eslint-enable no-unused-vars */
+
+    /**
+     * Returns click handler for toggling point annotation mode.
+     *
+     * @param {HTMLElement} containerEl - Preview container element
+     * @return {Function|null} Click handler
+     */
+    /* eslint-disable no-unused-vars */
+    getDrawModeClickHandler(containerEl) {}
     /* eslint-enable no-unused-vars */
 
     /**

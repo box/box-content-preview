@@ -6,13 +6,13 @@ const ANNOTATORS = [
         NAME: 'Document',
         CONSTRUCTOR: DocAnnotator,
         VIEWER: ['Document', 'Presentation'],
-        TYPE: ['point', 'highlight']
+        TYPE: ['point', 'highlight', 'drawing']
     },
     {
         NAME: 'Image',
         CONSTRUCTOR: ImageAnnotator,
         VIEWER: ['Image', 'MultiImage'],
-        TYPE: ['point']
+        TYPE: ['point'] // TODO: add 'drawing'
     }
 ];
 
