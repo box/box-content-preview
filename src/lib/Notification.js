@@ -56,7 +56,7 @@ class Notification {
         this.notificationEl.focus();
 
         // Hide notification automatically after a delay
-        setTimeout(this.hide.bind(this), HIDE_TIMEOUT_MS);
+        this.timeout = setTimeout(this.hide.bind(this), HIDE_TIMEOUT_MS);
     }
 
     /**
@@ -65,6 +65,10 @@ class Notification {
      * @return {void}
      */
     hide() {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+            this.timeout = null;
+        }
         if (this.notificationEl) {
             this.notificationEl.classList.add(CLASS_HIDDEN);
         }
