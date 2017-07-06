@@ -29,10 +29,8 @@ const MESSAGE_HOST_READY = 'Host_PostmessageReady';
 
         // Call super() to set up common layout
         super.setup();
-        // Set to false only in the WebApp, everywhere else we want to avoid hitting a runmode.
-        // This flag will be removed once we run the entire integration through the client.
-        const hasSetupOption = this.options.viewers.Office && 'shouldUsePlatformSetup' in this.options.viewers.Office;
-        this.platformSetup = hasSetupOption ? !!this.options.viewers.Office.shouldUsePlatformSetup : true;
+
+        this.platformSetup = false;
         this.setupIframe();
         this.initPrint();
         this.setupPDFUrl();
