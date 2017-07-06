@@ -1,8 +1,9 @@
+import autobind from 'autobind-decorator';
 import { CLASS_HIDDEN } from './constants';
 
 const HIDE_TIMEOUT_MS = 5000; // 5s
 
-class Notification {
+@autobind class Notification {
     /**
      * [constructor]
      *
