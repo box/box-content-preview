@@ -34,26 +34,32 @@ const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
 @autobind class BaseViewer extends EventEmitter {
-    /**
-     * Rotation value in degrees of the document, if rotated.
-     *
-     * @property {number}
-     */
+    /** @property {Object} - Reference to options passed in to configure this viewer */
+    options;
+
+    /** @property {RepStatus[]} - List of RepStatus objects that report status of a representation loading/converting/etc. */
+    repStatuses = [];
+
+    /** @property {boolean} - True if the browser is running on a mobile device */
+    isMobile;
+
+    /** @property {number} - Rotation value in degrees of the document, if rotated */
     rotationAngle = 0;
 
-    /**
-     * Scale amount of the document, if zoomed.
-     *
-     * @property {number}
-     */
+    /** @property {number} -Scale amount of the document, if zoomed */
     scale = 1;
 
-    /**
-     * Viewer specific file loading Icon
-     *
-     * @property {string}
-     */
+    /** @property {string} - Viewer specific file loading Icon */
     fileLoadingIcon;
+
+    /** @property {Controls} - UI used to interact with the document in the viewer */
+    controls;
+
+    /** @property {boolean} - Flag for tracking whether or not this viewer has been destroyed */
+    destroyed = false;
+
+    /** @property {number} - Number of milliseconds to wait, while loading, until messaging that the viewer took too long to load */
+    loadTimeout;
 
     /**
      * [constructor]
@@ -64,7 +70,6 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     constructor(options) {
         super();
         this.options = options;
-        this.repStatuses = [];
         this.isMobile = Browser.isMobile();
     }
 

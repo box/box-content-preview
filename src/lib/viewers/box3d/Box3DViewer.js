@@ -34,6 +34,15 @@ const CLASS_VR_ENABLED = 'vr-enabled';
  * @class
  */
 @autobind class Box3DViewer extends BaseViewer {
+    /** @property {Box3DRenderer} - Box3DRenderer instance. Renders the 3D scene */
+    renderer;
+
+    /** @property {HTMLElement} - Parent element for nesting the 3D scene and notifications in */
+    wrapperEl;
+
+    /** @property {Notification} - Used to notify users of WebGL context issues */
+    contextNotification;
+
     /**
      * @inheritdoc
      */
@@ -44,8 +53,6 @@ const CLASS_VR_ENABLED = 'vr-enabled';
         super.setup();
 
         this.renderer = null;
-        this.controls = null;
-        this.destroyed = false;
 
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_BOX3D;

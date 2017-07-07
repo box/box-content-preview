@@ -13,6 +13,15 @@ const CLIP_TEMPLATE = `
     </div>`.trim();
 
 class Model3DAnimationClipsPullup extends EventEmitter {
+    /** @property {HTMLElement} - Pullup element that contains 3D scene configuration properties */
+    pullupEl;
+
+    /** @property {UIRegistry} - Used to track and cleanup UI elements */
+    uiRegistry;
+
+    /** @property {Object} - Dictionary of elements linked to animation clips */
+    clipEls;
+
     /** @constructor */
     constructor() {
         super();
@@ -25,7 +34,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Add an animation clip to the pullup.
-     * @method addClip
+     *
      * @public
      * @param {string} id - The ID of the animation clip.
      * @param {string} name - The name of the animation clip.
@@ -48,7 +57,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Cleanup resources used by this pullup.
-     * @method destroy
+     *
      * @public
      * @return {void}
      */
@@ -60,7 +69,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Format a duration, in seconds, as a time code of the form: HH:MM:SS.
-     * @method formatDurationStr
+     *
      * @private
      * @method {number} duration The duration, in seconds.
      * @return {string} The time code string.
@@ -82,7 +91,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Get the number of clips in this pullup.
-     * @method getClipCount
+     * 
      * @public
      * @return {number} The number of clips in this pullup.
      */
@@ -92,7 +101,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Get the clip ID for the clip at the specified index.
-     * @method getClipId
+     * 
      * @public
      * @param {number} index - The clip index.
      * @return {string} The clip ID.
@@ -103,7 +112,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Handle clicks on clips.
-     * @method handleClipClick
+     * 
      * @private
      * @param {Event} event - The click event.
      * @return {void}
@@ -117,7 +126,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Hide this pullup.
-     * @method hide
+     * 
      * @public
      * @return {void}
      */
@@ -127,7 +136,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Left-pad the specified integer with zeroes.
-     * @method padLeft
+     * 
      * @private
      * @param {number} x - The integer to pad with zeroes.
      * @param {number} width - The total number of characters in the padded string.
@@ -139,7 +148,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Reset this pullup to its default state.
-     * @method reset
+     * 
      * @public
      * @return {void}
      */
@@ -151,7 +160,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Select the specified clip, firing EVENT_SELECT_ANIMATION_CLIP.
-     * @method selectClip
+     * 
      * @public
      * @param {string} selectedClipId - The ID of the clip to select.
      * @return {void}
@@ -168,7 +177,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Show this pullup.
-     * @method show
+     * 
      * @public
      * @return {void}
      */
@@ -178,7 +187,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
 
     /**
      * Toggle the visibility of this pullup.
-     * @method toggle
+     * 
      * @public
      * @return {void}
      */

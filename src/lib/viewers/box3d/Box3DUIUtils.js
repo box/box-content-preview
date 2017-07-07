@@ -148,13 +148,8 @@ function createDropdown(labelText = '', listText = '', listContent = []) {
  * @class
  */
 class UIRegistry {
-    /**
-     * @constructor
-     */
-    constructor() {
-        // List of registered elements and their events
-        this.registry = {};
-    }
+    /** @property {Object} - Collection of registered elements and their events */
+    registry = {};
 
     /**
      * Register an element for automatic event unbinding and cleanup.
