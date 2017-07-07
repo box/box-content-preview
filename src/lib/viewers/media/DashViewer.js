@@ -1,6 +1,5 @@
 import autobind from 'autobind-decorator';
 import VideoBaseViewer from './VideoBaseViewer';
-import cache from '../../Cache';
 import fullscreen from '../../Fullscreen';
 import { get } from '../../util';
 import { getRepresentation } from '../../file';
@@ -232,7 +231,7 @@ const MANIFEST = 'manifest.mpd';
      * @return {void}
      */
     handleSubtitle() {
-        const subtitleIdx = parseInt(cache.get('media-subtitles'), 10);
+        const subtitleIdx = parseInt(this.cache.get('media-subtitles'), 10);
         if (this.textTracks[subtitleIdx] !== undefined) {
             const track = this.textTracks[subtitleIdx];
             this.player.selectTextTrack(track);
@@ -252,7 +251,7 @@ const MANIFEST = 'manifest.mpd';
      * @return {void}
      */
     handleQuality() {
-        const quality = cache.get('media-quality');
+        const quality = this.cache.get('media-quality');
 
         switch (quality) {
             case 'hd':

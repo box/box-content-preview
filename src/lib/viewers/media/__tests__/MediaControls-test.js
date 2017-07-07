@@ -40,7 +40,16 @@ describe('lib/viewers/media/MediaControls', () => {
     describe('constructor()', () => {
         beforeEach(() => {
             stubs.insertTemplate = sandbox.stub(util, 'insertTemplate');
-            mediaControls = new MediaControls(document.getElementById('test-controls-container'), { duration: 1210 });
+            mediaControls = new MediaControls(
+                document.getElementById('test-controls-container'),
+                { duration: 1210 },
+                {
+                    set: () => {},
+                    has: () => {},
+                    get: () => {},
+                    unset: () => {}
+                }
+            );
         });
 
         it('should insert the DOM template', () => {
@@ -75,7 +84,16 @@ describe('lib/viewers/media/MediaControls', () => {
     });
 
     beforeEach(() => {
-        mediaControls = new MediaControls(document.getElementById('test-controls-container'), { duration: 10 });
+        mediaControls = new MediaControls(
+            document.getElementById('test-controls-container'),
+            { duration: 10 },
+            {
+                set: () => {},
+                has: () => {},
+                get: () => {},
+                unset: () => {}
+            }
+        );
     });
 
     describe('destroy()', () => {

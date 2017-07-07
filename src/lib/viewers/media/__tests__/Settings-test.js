@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-expressions */
 import Settings from '../Settings';
-import cache from '../../../Cache';
 
 let settings;
 const sandbox = sinon.sandbox.create();
@@ -13,7 +12,12 @@ describe('lib/viewers/media/Settings', () => {
     beforeEach(() => {
         fixture.load('viewers/media/__tests__/Settings-test.html');
         const containerEl = document.querySelector('.container');
-        settings = new Settings(containerEl);
+        settings = new Settings(containerEl, {
+            set: () => {},
+            has: () => {},
+            get: () => {},
+            unset: () => {}
+        });
     });
 
     afterEach(() => {
@@ -50,36 +54,44 @@ describe('lib/viewers/media/Settings', () => {
 
     describe('increaseSpeed()', () => {
         it('should increase speed one step', () => {
-            settings.chooseOption('speed', '1.25');
+            sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings.cache, 'get').withArgs('media-speed').returns('1.25');
+
             settings.increaseSpeed();
-            const speed = cache.get('media-speed');
-            expect(speed).to.equal('1.5');
+
+            expect(settings.chooseOption).to.be.calledWith('speed', '1.5');
         });
 
         it('should not increase speed after max', () => {
-            settings.chooseOption('speed', '2.0');
+            sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings.cache, 'get').withArgs('media-speed').returns('2.0');
+
             settings.increaseSpeed();
-            const speed = cache.get('media-speed');
-            expect(speed).to.equal('2.0');
+
+            expect(settings.chooseOption).to.not.be.called;
         });
     });
 
     describe('decreaseSpeed()', () => {
         it('should decrease speed one step', () => {
-            settings.chooseOption('speed', '1.5');
+            sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings.cache, 'get').withArgs('media-speed').returns('1.5');
+
             settings.decreaseSpeed();
-            const speed = cache.get('media-speed');
-            expect(speed).to.equal('1.25');
+
+            expect(settings.chooseOption).to.be.calledWith('speed', '1.25');
         });
 
         it('should not decrease speed after min', () => {
             const speedOptions = settings.getMediaSpeeds();
             expect(speedOptions.length).to.be.above(0);
 
-            settings.chooseOption('speed', speedOptions[0]);
+            sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings.cache, 'get').withArgs('media-speed').returns(speedOptions[0]);
+
             settings.decreaseSpeed();
-            const speed = cache.get('media-speed');
-            expect(speed).to.equal(speedOptions[0]);
+
+            expect(settings.chooseOption).to.not.be.called;
         });
     });
 
@@ -102,7 +114,7 @@ describe('lib/viewers/media/Settings', () => {
             const quality = 'HD';
             const speed = '2.0';
 
-            const getStub = sandbox.stub(cache, 'get');
+            const getStub = sandbox.stub(settings.cache, 'get');
             getStub.withArgs('media-quality').returns(quality);
             getStub.withArgs('media-speed').returns(speed);
 
@@ -572,14 +584,14 @@ describe('lib/viewers/media/Settings', () => {
     describe('chooseOption()', () => {
         it('should reset the menu and focus, cache option, and emit chosen option', () => {
             sandbox.stub(settings, 'reset');
-            sandbox.stub(cache, 'set');
+            sandbox.stub(settings.cache, 'set');
             sandbox.stub(settings, 'emit');
 
             const type = 'speed';
             const value = 0.5;
             settings.chooseOption(type, value);
 
-            expect(cache.set).to.be.calledWith(`media-${type}`, value);
+            expect(settings.cache.set).to.be.calledWith(`media-${type}`, value);
             expect(settings.emit).to.be.calledWith(type);
             expect(settings.reset).to.be.called;
             expect(document.activeElement).to.be.equal(settings.firstMenuItem);
@@ -721,7 +733,7 @@ describe('lib/viewers/media/Settings', () => {
         it('Should toggle on subtitles if they were on in the most recently viewed subtitled video', () => {
             sandbox.stub(settings, 'chooseOption');
             sandbox.stub(settings, 'areSubtitlesOn').returns(false);
-            sandbox.stub(cache, 'get').withArgs('media-subtitles').returns('2');
+            sandbox.stub(settings.cache, 'get').withArgs('media-subtitles').returns('2');
 
             settings.loadSubtitles(['English', 'Russian', 'Spanish']);
 
@@ -731,7 +743,7 @@ describe('lib/viewers/media/Settings', () => {
         it('Should not toggle on subtitles if they were off in the most recently viewed subtitled video', () => {
             sandbox.stub(settings, 'chooseOption');
             sandbox.stub(settings, 'areSubtitlesOn').returns(false);
-            sandbox.stub(cache, 'get').withArgs('media-subtitles').returns('-1');
+            sandbox.stub(settings.cache, 'get').withArgs('media-subtitles').returns('-1');
 
             settings.loadSubtitles(['English', 'Russian', 'Spanish']);
 

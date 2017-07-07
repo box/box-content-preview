@@ -1,7 +1,8 @@
-import { CLASS_IS_VISIBLE } from './constants';
-
-const CLASS_PROGRESS_BAR_CONTAINER = 'bp-progress-bar-container';
-const CLASS_PROGRESS_BAR = 'bp-progress-bar';
+import {
+    CLASS_IS_VISIBLE,
+    CLASS_BOX_PREVIEW_PROGRESS_BAR,
+    CLASS_BOX_PREVIEW_PROGRESS_BAR_CONTAINER
+} from './constants';
 
 const PROGRESS_INTERVAL_MS = 150;
 
@@ -15,10 +16,10 @@ class ProgressBar {
     constructor(mountEl) {
         this.mountEl = mountEl;
         this.containerEl = document.createElement('div');
-        this.containerEl.classList.add(CLASS_PROGRESS_BAR_CONTAINER);
+        this.containerEl.classList.add(CLASS_BOX_PREVIEW_PROGRESS_BAR_CONTAINER);
 
         this.progressBarEl = document.createElement('div');
-        this.progressBarEl.classList.add(CLASS_PROGRESS_BAR);
+        this.progressBarEl.classList.add(CLASS_BOX_PREVIEW_PROGRESS_BAR);
 
         this.containerEl.appendChild(this.progressBarEl);
         this.mountEl.appendChild(this.containerEl);
@@ -35,7 +36,11 @@ class ProgressBar {
         }
 
         clearInterval(this.progressInterval);
-        this.mountEl.removeChild(this.containerEl);
+
+        if (this.mountEl) {
+            this.mountEl.removeChild(this.containerEl);
+        }
+
         this.containerEl = null;
         this.progressBarEl = null;
     }

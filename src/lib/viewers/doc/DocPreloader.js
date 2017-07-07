@@ -7,7 +7,6 @@ import {
     CLASS_PREVIEW_LOADED
 } from '../../constants';
 import { get, setDimensions } from '../../util';
-import { hideLoadingIndicator } from '../../ui';
 
 const EXIF_COMMENT_TAG_NAME = 'UserComment'; // Read EXIF data from 'UserComment' tag
 const EXIF_COMMENT_REGEX = /pdfWidth:([0-9.]+)pts,pdfHeight:([0-9.]+)pts,numPages:([0-9]+)/;
@@ -26,10 +25,13 @@ class DocPreloader extends EventEmitter {
     /**
      * [constructor]
      *
+     * @param {PreviewUI} previewUI - UI instance
      * @return {DocPreloader} DocPreloader instance
      */
-    constructor() {
+    constructor(previewUI) {
         super();
+
+        this.previewUI = previewUI;
         this.wrapperClassName = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT;
     }
 
@@ -92,7 +94,7 @@ class DocPreloader extends EventEmitter {
         }
 
         // Hide the preview-level loading indicator
-        hideLoadingIndicator();
+        this.previewUI.hideLoadingIndicator();
 
         // Show preload element after content is properly sized
         this.preloadEl.classList.remove(CLASS_INVISIBLE);

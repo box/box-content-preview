@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import DocPreloader from '../DocPreloader';
 import * as util from '../../../util';
-import * as ui from '../../../ui';
 import { CLASS_BOX_PREVIEW_PRELOAD, CLASS_INVISIBLE, CLASS_PREVIEW_LOADED } from '../../../constants';
 
 const PDFJS_CSS_UNITS = 96.0 / 72.0;
@@ -19,7 +18,9 @@ describe('lib/viewers/doc/DocPreloader', () => {
     beforeEach(() => {
         fixture.load('viewers/doc/__tests__/DocPreloader-test.html');
         containerEl = document.querySelector('.container');
-        docPreloader = new DocPreloader();
+        docPreloader = new DocPreloader({
+            hideLoadingIndicator: () => {}
+        });
         stubs = {};
     });
 
@@ -89,7 +90,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
             stubs.checkDocumentLoaded = sandbox.stub(docPreloader, 'checkDocumentLoaded');
             stubs.emit = sandbox.stub(docPreloader, 'emit');
             stubs.setDimensions = sandbox.stub(util, 'setDimensions');
-            stubs.hideLoadingIndicator = sandbox.stub(ui, 'hideLoadingIndicator');
+            stubs.hideLoadingIndicator = sandbox.stub(docPreloader.previewUI, 'hideLoadingIndicator');
             docPreloader.imageEl = {};
             docPreloader.preloadEl = document.createElement('div');
         });
