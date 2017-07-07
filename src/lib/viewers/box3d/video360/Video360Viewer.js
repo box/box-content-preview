@@ -22,10 +22,10 @@ const VIDEO_TEXTURE_PROPS = {
 
 class Video360Viewer extends DashViewer {
     /** @property {Video360Renderer} - Instance of the Video360Renderer */
-    renderer = null;
+    renderer;
 
     /** @property {Video360Controls} - Instance of the Video360Controls */
-    controls = null;
+    controls;
 
     /** @property {Box3D.Asset} - Asset for the skybox texture */
     textureAsset;
