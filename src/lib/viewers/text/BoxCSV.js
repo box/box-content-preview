@@ -1,7 +1,7 @@
 import autobind from 'autobind-decorator';
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
-import { Grid } from 'react-virtualized';
+import Grid from 'react-virtualized/dist/es/Grid/Grid';
 
 const HEIGHT_ROW = 30;
 const WIDTH_SCROLLER = 5;
@@ -12,7 +12,9 @@ const WIDTH_BORDER = 2;
     /**
      * [constructor]
      *
-     * @return {void}
+     * @param {HTMLElement} csvEl - CSV element
+     * @param {Object} data - CSV data
+     * @return {BoxCSV} Instance
      */
     constructor(csvEl, data) {
         this.csvEl = csvEl;
@@ -46,12 +48,12 @@ const WIDTH_BORDER = 2;
     /**
      * Renders cell
      *
-     * @param {Object} cellInfo
-     * @param {number} cellInfo.columnIndex
-     * @param {string} cellInfo.key
-     * @param {number} cellInfo.rowIndex
-     * @param {string} cellInfo.style
-     * @return {function} Cell renderer function
+     * @param {Object} cellInfo - Cell data
+     * @param {number} cellInfo.columnIndex - Cell column index
+     * @param {string} cellInfo.key - Cell key
+     * @param {number} cellInfo.rowIndex - Cell row index
+     * @param {string} cellInfo.style - Cell style
+     * @return {Function} Cell renderer function
      * @private
      */
     cellRenderer = ({ columnIndex, key, rowIndex, style }) => {

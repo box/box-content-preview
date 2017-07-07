@@ -1,6 +1,5 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
-import cache from '../../Cache';
 import { addActivationListener, removeActivationListener, decodeKeydown, insertTemplate } from '../../util';
 import { ICON_ARROW_LEFT, ICON_ARROW_RIGHT, ICON_CHECK_MARK } from '../../icons/icons';
 import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../constants';
@@ -96,72 +95,44 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
 </div>`;
 
 @autobind class Settings extends EventEmitter {
-    /**
-     * The container of the settings element
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - Settings container element */
     containerEl;
 
-    /**
-     * The settings element
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - Settings element */
     settingsEl;
 
-    /**
-     * The first item in the main menu
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - First menu item in main menu */
     firstMenuItem;
 
-    /**
-     * The settings button element (gear icon that opens up the menu)
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - Settings button element (gear icon) */
     settingsButtonEl;
 
-    /**
-     * Whether the settings menu is visible or hiding
-     *
-     * @property {boolean}
-     */
+    /** @property {boolean} - Whether settings menu is visible */
     visible = false;
 
-    /**
-     * List of subtitles in the menu. The subtitles menu will be populated in this order
-     *
-     * @property {Array}
-     */
+    /** @property {Array} - List of subtitles - the subtitles menu will be populated in this order */
     subtitles = [];
 
-    /**
-     * Default language to use for choosing subtitle to toggle on
-     *
-     * @property {string}
-     */
+    /** @property {string} - Default language for subtitle */
     language = undefined;
 
-    /**
-     * An index (an integer >= 0) into the subtitles list, that should be toggled to when CC toggled on
-     *
-     * @property {string}
-     */
+    /** @property {string} - Name of subtitle to toggle to when CC button is clicked */
     toggleToSubtitle = undefined;
 
+    /** @property {Cache} - Preview's cache instance */
+    cache;
+
     /**
-     * Service to handle the position and movement of a slider element
-     *
      * [constructor]
+     *
      * @param {HTMLElement} containerEl - container node
+     * @param {Cache} cache - Preview cache instance
      * @return {Settings} Settings menu instance
      */
-    constructor(containerEl) {
+    constructor(containerEl, cache) {
         super();
         this.containerEl = containerEl;
+        this.cache = cache;
 
         insertTemplate(this.containerEl, SETTINGS_TEMPLATE, containerEl.querySelector('.bp-media-controls-wrapper'));
         this.settingsEl = this.containerEl.querySelector('.bp-media-settings');
@@ -181,8 +152,8 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      * @return {void}
      */
     init() {
-        const quality = cache.get('media-quality') || 'auto';
-        const speed = cache.get('media-speed') || '1.0';
+        const quality = this.cache.get('media-quality') || 'auto';
+        const speed = this.cache.get('media-speed') || '1.0';
 
         this.chooseOption(TYPE_QUALITY, quality);
         this.chooseOption(TYPE_SPEED, speed);
@@ -190,6 +161,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
 
     /**
      * [destructor]
+     *
      * @return {void}
      */
     destroy() {
@@ -200,7 +172,8 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
     }
 
     /**
-     * [destructor]
+     * Reset settings element.
+     *
      * @return {void}
      */
     reset() {
@@ -213,7 +186,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      * Getter for testing purposes
      *
      * @private
-     * @return {Array}
+     * @return {Array} Media speeds
      */
     getMediaSpeeds() {
         return MEDIA_SPEEDS;
@@ -225,7 +198,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      * @return {void}
      */
     increaseSpeed() {
-        const current = parseFloat(cache.get('media-speed') || '1.0');
+        const current = parseFloat(this.cache.get('media-speed') || '1.0');
         const higherSpeeds = MEDIA_SPEEDS.filter((speed) => parseFloat(speed) > current);
         if (higherSpeeds.length > 0) {
             this.chooseOption(TYPE_SPEED, higherSpeeds[0]);
@@ -238,7 +211,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      * @return {void}
      */
     decreaseSpeed() {
-        const current = parseFloat(cache.get('media-speed') || '1.0');
+        const current = parseFloat(this.cache.get('media-speed') || '1.0');
         const lowerSpeeds = MEDIA_SPEEDS.filter((speed) => parseFloat(speed) < current);
         if (lowerSpeeds.length > 0) {
             this.chooseOption(TYPE_SPEED, lowerSpeeds[lowerSpeeds.length - 1]);
@@ -303,7 +276,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      * Helper method for selecting items/sub-items in the menu
      *
      * @private
-     * @param {HTMLElement} menuItem
+     * @param {HTMLElement} menuItem - Menu element
      * @return {void}
      */
     menuItemSelect(menuItem) {
@@ -428,7 +401,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      */
     chooseOption(type, value) {
         // Save the value
-        cache.set(`media-${type}`, value);
+        this.cache.set(`media-${type}`, value);
 
         // Emit to the listener what was chosen
         this.emit(type);
@@ -552,7 +525,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
      * Returns whether subtitles are on or not
      *
      * @private
-     * @return {boolean}
+     * @return {boolean} Whether subtitles are on
      */
     areSubtitlesOn() {
         const selected = this.getSelectedOption('subtitles');
@@ -562,7 +535,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
     /**
      * Returns whether subtitles are available or not
      *
-     * @return {boolean}
+     * @return {boolean} Whether subtitles are available
      */
     hasSubtitles() {
         if (this.settingsEl.querySelector(`[data-type="subtitles"][data-value="0"]${SELECTOR_SETTINGS_SUB_ITEM}`)) {
@@ -614,7 +587,7 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
         });
 
         this.containerEl.classList.remove(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
-        const subsCache = cache.get('media-subtitles');
+        const subsCache = this.cache.get('media-subtitles');
         if (subsCache !== null && subsCache !== '-1') {
             // Last video watched with subtitles, so turn them on here too
             this.toggleSubtitles();

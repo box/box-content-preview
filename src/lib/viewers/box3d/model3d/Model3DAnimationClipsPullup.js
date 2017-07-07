@@ -71,7 +71,7 @@ class Model3DAnimationClipsPullup extends EventEmitter {
      * Format a duration, in seconds, as a time code of the form: HH:MM:SS.
      *
      * @private
-     * @method {number} duration The duration, in seconds.
+     * @param {number} duration - The duration, in seconds.
      * @return {string} The time code string.
      */
     formatDurationStr(duration) {

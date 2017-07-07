@@ -23,6 +23,8 @@ export const CLASS_BOX_PREVIEW_PRELOAD = 'bp-preload';
 export const CLASS_BOX_PREVIEW_PRELOAD_CONTENT = 'bp-preload-content';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT = 'bp-document-preload-wrapper';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION = 'bp-presentation-preload-wrapper';
+export const CLASS_BOX_PREVIEW_PROGRESS_BAR = 'bp-progress-bar';
+export const CLASS_BOX_PREVIEW_PROGRESS_BAR_CONTAINER = 'bp-progress-bar-container';
 export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'bp-toggle-overlay';
 export const CLASS_BOX_PREVIEW_THEME_DARK = 'bp-theme-dark';
 export const CLASS_ELEM_KEYBOARD_FOCUS = 'bp-has-keyboard-focus';
@@ -50,6 +52,7 @@ export const SELECTOR_BOX_PREVIEW_LOADING_TEXT = `.${CLASS_BOX_PREVIEW_LOADING_T
 export const SELECTOR_BOX_PREVIEW_LOADING_WRAPPER = `.${CLASS_BOX_PREVIEW_LOADING_WRAPPER}`;
 export const SELECTOR_BOX_PREVIEW_LOGO_CUSTOM = `.${CLASS_BOX_PREVIEW_LOGO_CUSTOM}`;
 export const SELECTOR_BOX_PREVIEW_LOGO_DEFAULT = `.${CLASS_BOX_PREVIEW_LOGO_DEFAULT}`;
+export const SELECTOR_BOX_PREVIEW_PROGRESS_BAR = `.${CLASS_BOX_PREVIEW_PROGRESS_BAR}`;
 
 export const PERMISSION_DOWNLOAD = 'can_download';
 export const PERMISSION_ANNOTATE = 'can_annotate';
@@ -74,7 +77,7 @@ export const X_REP_HINT_VIDEO_MP4 = '[mp4]';
 
 // These should be updated to match the Preview version in package.json
 // whenever a file in that third party directory is updated
-export const DOC_STATIC_ASSETS_VERSION = '0.121.1';
+export const DOC_STATIC_ASSETS_VERSION = '0.130.0';
 export const MEDIA_STATIC_ASSETS_VERSION = '0.127.0';
 export const MODEL3D_STATIC_ASSETS_VERSION = '0.125.0';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';

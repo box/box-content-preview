@@ -5,8 +5,6 @@ import ProgressBar from '../ProgressBar';
 import loaders from '../loaders';
 import Logger from '../Logger';
 import Browser from '../Browser';
-import cache from '../Cache';
-import * as ui from '../ui';
 import * as file from '../file';
 import * as util from '../util';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
@@ -77,22 +75,6 @@ describe('lib/Preview', () => {
             stubs.viewer = {
                 destroy: sandbox.stub()
             };
-
-            stubs.progressBar = {
-                destroy: sandbox.stub()
-            };
-        });
-
-        it('should destroy the progress bar if it exists', () => {
-            preview.progressBar = undefined;
-
-            preview.destroy();
-            expect(stubs.progressBar.destroy).to.not.be.called;
-
-            preview.progressBar = stubs.progressBar;
-
-            preview.destroy();
-            expect(preview.progressBar.destroy).to.be.called;
         });
 
         it('should destroy the viewer if it exists', () => {
@@ -157,7 +139,7 @@ describe('lib/Preview', () => {
     describe('hide()', () => {
         beforeEach(() => {
             stubs.destroy = sandbox.stub(preview, 'destroy');
-            stubs.cleanup = sandbox.stub(ui, 'cleanup');
+            stubs.cleanup = sandbox.stub(preview.ui, 'cleanup');
         });
 
         it('should indicate that the preview is closed', () => {
@@ -187,7 +169,7 @@ describe('lib/Preview', () => {
 
     describe('updateCollection()', () => {
         beforeEach(() => {
-            stubs.showNavigation = sandbox.stub(ui, 'showNavigation');
+            stubs.showNavigation = sandbox.stub(preview.ui, 'showNavigation');
         });
 
         it('should set the preview and preview options collection to an array', () => {
@@ -237,7 +219,7 @@ describe('lib/Preview', () => {
             stubs.checkFileValid.onCall(0).returns(true);
 
             preview.updateFileCache(files);
-            expect(stubs.cacheFile).to.be.calledWith(files);
+            expect(stubs.cacheFile).to.be.calledWith(preview.cache, files);
         });
 
         it('should add the file to the cache if it is valid', () => {
@@ -334,7 +316,7 @@ describe('lib/Preview', () => {
                 CONSTRUCTOR: () => {}
             };
 
-            sandbox.stub(cache, 'get').withArgs(fileId).returns(someFile);
+            sandbox.stub(preview.cache, 'get').withArgs(fileId).returns(someFile);
             sandbox.stub(preview, 'getLoader').withArgs(someFile).returns(loader);
         });
 
@@ -641,7 +623,7 @@ describe('lib/Preview', () => {
 
             stubs.getTokens = sandbox.stub(tokens, 'default').returns(stubs.promise);
             stubs.loadPreviewWithTokens = sandbox.stub(preview, 'loadPreviewWithTokens');
-            stubs.get = sandbox.stub(cache, 'get');
+            stubs.get = sandbox.stub(preview.cache, 'get');
             stubs.destroy = sandbox.stub(preview, 'destroy');
         });
 
@@ -689,11 +671,11 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             stubs.loadFromServer = sandbox.stub(preview, 'loadFromServer');
             stubs.parseOptions = sandbox.stub(preview, 'parseOptions');
-            stubs.setup = sandbox.stub(ui, 'setup');
-            stubs.showLoadingIndicator = sandbox.stub(ui, 'showLoadingIndicator');
-            stubs.startProgressBar = sandbox.stub(preview, 'startProgressBar');
+            stubs.setup = sandbox.stub(preview.ui, 'setup');
+            stubs.showLoadingIndicator = sandbox.stub(preview.ui, 'showLoadingIndicator');
+            stubs.startProgressBar = sandbox.stub(preview.ui, 'startProgressBar');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
-            stubs.showNavigation = sandbox.stub(ui, 'showNavigation');
+            stubs.showNavigation = sandbox.stub(preview.ui, 'showNavigation');
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
             stubs.loadFromCache = sandbox.stub(preview, 'loadFromCache');
         });
@@ -936,8 +918,8 @@ describe('lib/Preview', () => {
                 setCacheStale: sandbox.stub()
             };
 
-            stubs.get = sandbox.stub(cache, 'get').returns(true);
-            stubs.set = sandbox.stub(cache, 'set');
+            stubs.get = sandbox.stub(preview.cache, 'get').returns(true);
+            stubs.set = sandbox.stub(preview.cache, 'set');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.loadViewer = sandbox.stub(preview, 'loadViewer');
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid').returns(true);
@@ -1115,7 +1097,7 @@ describe('lib/Preview', () => {
             stubs.destroy = sandbox.stub(preview, 'destroy');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(true);
             stubs.canDownload = sandbox.stub(Browser, 'canDownload').returns(false);
-            stubs.showLoadingDownloadButton = sandbox.stub(ui, 'showLoadingDownloadButton');
+            stubs.showLoadingDownloadButton = sandbox.stub(preview.ui, 'showLoadingDownloadButton');
             stubs.loadPromiseResolve = Promise.resolve();
             stubs.determineRepresentationStatusPromise = Promise.resolve();
             stubs.loader = {
@@ -1274,13 +1256,13 @@ describe('lib/Preview', () => {
             stubs.checkFeature = sandbox.stub(file, 'checkFeature');
             stubs.isMobile = sandbox.stub(Browser, 'isMobile');
             stubs.canDownload = sandbox.stub(Browser, 'canDownload');
-            stubs.showDownloadButton = sandbox.stub(ui, 'showDownloadButton');
-            stubs.showPrintButton = sandbox.stub(ui, 'showPrintButton');
-            stubs.hideLoadingIndicator = sandbox.stub(ui, 'hideLoadingIndicator');
+            stubs.showDownloadButton = sandbox.stub(preview.ui, 'showDownloadButton');
+            stubs.showPrintButton = sandbox.stub(preview.ui, 'showPrintButton');
+            stubs.hideLoadingIndicator = sandbox.stub(preview.ui, 'hideLoadingIndicator');
             stubs.emit = sandbox.stub(preview, 'emit');
             stubs.logPreviewEvent = sandbox.stub(preview, 'logPreviewEvent');
             stubs.prefetchNextFiles = sandbox.stub(preview, 'prefetchNextFiles');
-            stubs.finishProgressBar = sandbox.stub(preview, 'finishProgressBar');
+            stubs.finishProgressBar = sandbox.stub(preview.ui, 'finishProgressBar');
 
             stubs.logger = {
                 done: sandbox.stub()
@@ -1475,7 +1457,7 @@ describe('lib/Preview', () => {
 
     describe('triggerFetchError()', () => {
         beforeEach(() => {
-            stubs.unset = sandbox.stub(cache, 'unset');
+            stubs.unset = sandbox.stub(preview.cache, 'unset');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.load = sandbox.stub(preview, 'load');
             stubs.error = {
@@ -1556,14 +1538,14 @@ describe('lib/Preview', () => {
         };
 
         beforeEach(() => {
-            stubs.unset = sandbox.stub(cache, 'unset');
+            stubs.unset = sandbox.stub(preview.cache, 'unset');
             stubs.destroy = sandbox.stub(preview, 'destroy');
             stubs.finishLoading = sandbox.stub(preview, 'finishLoading');
             stubs.getErrorViewer = sandbox.stub(preview, 'getErrorViewer').returns(ErrorViewer);
             stubs.promiseResolve = Promise.resolve();
-            stubs.hideLoadingIndicator = sandbox.stub(ui, 'hideLoadingIndicator');
+            stubs.hideLoadingIndicator = sandbox.stub(preview.ui, 'hideLoadingIndicator');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
-            stubs.showDownloadButton = sandbox.stub(ui, 'showDownloadButton');
+            stubs.showDownloadButton = sandbox.stub(preview.ui, 'showDownloadButton');
             stubs.emit = sandbox.stub(preview, 'emit');
             stubs.attachViewerListeners = sandbox.stub(preview, 'attachViewerListeners');
 
@@ -1659,7 +1641,7 @@ describe('lib/Preview', () => {
             stubs.get = sandbox.stub(util, 'get').returns(stubs.getPromiseResolve);
             stubs.getURL = sandbox.stub(file, 'getURL');
             stubs.getRequestHeaders = sandbox.stub(preview, 'getRequestHeaders');
-            stubs.set = sandbox.stub(cache, 'set');
+            stubs.set = sandbox.stub(preview.cache, 'set');
             stubs.prefetch = sandbox.stub(preview, 'prefetch');
             preview.prefetchedCollection = [];
         });
@@ -1727,35 +1709,6 @@ describe('lib/Preview', () => {
                     expect(preview.prefetchedCollection.length).to.equal(PREFETCH_COUNT);
                 });
             });
-        });
-    });
-
-    describe('startProgressBar()', () => {
-        it('should initialize the progress bar and start it', () => {
-            const start = ProgressBar.prototype.start;
-            Object.defineProperty(ProgressBar.prototype, 'start', {
-                value: sandbox.stub()
-            });
-
-            preview.startProgressBar();
-
-            expect(preview.progressBar instanceof ProgressBar).to.be.true;
-            expect(ProgressBar.prototype.start).to.be.called;
-
-            Object.defineProperty(ProgressBar.prototype, 'start', {
-                value: start
-            });
-        });
-    });
-
-    describe('finishProgressBar()', () => {
-        it('should finish the progress bar', () => {
-            preview.startProgressBar();
-            sandbox.stub(preview.progressBar, 'finish');
-
-            preview.finishProgressBar();
-
-            expect(preview.progressBar.finish).to.be.called;
         });
     });
 

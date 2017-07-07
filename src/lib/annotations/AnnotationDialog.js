@@ -68,7 +68,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
     show() {
         // Populate mobile annotations dialog with annotations information
         if (this.isMobile) {
-            this.element = document.querySelector(`.${constants.CLASS_MOBILE_ANNOTATION_DIALOG}`);
+            this.element = this.annotatedElement.querySelector(`.${constants.CLASS_MOBILE_ANNOTATION_DIALOG}`);
             annotatorUtil.showElement(this.element);
             this.element.appendChild(this.dialogEl);
 
@@ -209,7 +209,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
     /**
      * Posts an annotation in the dialog.
      *
-     * @public
+     * @param {string} [textInput] - Annotation text to post
      * @return {void}
      */
     postAnnotation(textInput) {

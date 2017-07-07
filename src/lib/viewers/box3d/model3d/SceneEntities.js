@@ -3,8 +3,9 @@ import { MODEL3D_STATIC_ASSETS_VERSION } from '../../../constants';
 
 /**
  * Returns the default scene entities array
- * @param  {string} prefix Prefix to be used for loading static assets
- * @return {array} Array of scene entities
+ *
+ * @param {string} prefix - Prefix to be used for loading static assets
+ * @return {Array} Array of scene entities
  */
 function sceneEntities(prefix) {
     return [

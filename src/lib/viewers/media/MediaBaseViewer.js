@@ -1,7 +1,6 @@
 import autobind from 'autobind-decorator';
 import debounce from 'lodash.debounce';
 import BaseViewer from '../BaseViewer';
-import cache from '../../Cache';
 import Browser from '../../Browser';
 import MediaControls from './MediaControls';
 import { CLASS_ELEM_KEYBOARD_FOCUS, CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
@@ -92,9 +91,10 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
         this.mediaUrl = this.createContentUrlWithAuthParams(template);
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
         this.mediaEl.addEventListener('error', this.errorHandler);
+        this.mediaEl.setAttribute('title', this.options.file.name);
 
         if (Browser.isIOS()) {
-            // iOS doesn't fire loadeddata event till some data loads
+            // iOS doesn't fire loadeddata event until some data loads
             // Adding autoplay helps with that and itself won't autoplay.
             // https://webkit.org/blog/6784/new-video-policies-for-ios/
             this.mediaEl.autoplay = true;
@@ -155,6 +155,7 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
      * Handles media element loading errors.
      *
      * @private
+     * @param {Error} err - error object
      * @emits error
      * @return {void}
      */
@@ -180,7 +181,7 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
      * @return {void}
      */
     handleRate() {
-        const speed = cache.get('media-speed') - 0;
+        const speed = this.cache.get('media-speed') - 0;
         if (speed && this.mediaEl.playbackRate !== speed && this.mediaEl.playbackRate > 0) {
             this.emit('ratechange', speed);
         }
@@ -196,7 +197,7 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
      * @return {void}
      */
     handleVolume() {
-        const volume = cache.has(MEDIA_VOLUME_CACHE_KEY) ? cache.get(MEDIA_VOLUME_CACHE_KEY) : DEFAULT_VOLUME;
+        const volume = this.cache.has(MEDIA_VOLUME_CACHE_KEY) ? this.cache.get(MEDIA_VOLUME_CACHE_KEY) : DEFAULT_VOLUME;
         if (volume !== 0) {
             this.oldVolume = volume;
         }
@@ -224,7 +225,7 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
      * @return {void}
      */
     loadUI() {
-        this.mediaControls = new MediaControls(this.mediaContainerEl, this.mediaEl);
+        this.mediaControls = new MediaControls(this.mediaContainerEl, this.mediaEl, this.cache);
 
         // Add event listeners for the media controls
         this.addEventListenersForMediaControls();
@@ -263,6 +264,7 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
      *
      * @private
      * @param {double} time - Time in seconds
+     * @return {void}
      */
     setMediaTime(time) {
         this.mediaEl.currentTime = time;
@@ -273,9 +275,10 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
      *
      * @private
      * @param {number} volume - Must be a number between [0,1], per HTML5 spec
+     * @return {void}
      */
     setVolume(volume) {
-        cache.set(MEDIA_VOLUME_CACHE_KEY, volume);
+        this.cache.set(MEDIA_VOLUME_CACHE_KEY, volume);
         this.handleVolume();
     }
 
@@ -402,9 +405,9 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
     toggleMute() {
         if (this.mediaEl.volume) {
             this.oldVolume = this.mediaEl.volume;
-            cache.set(MEDIA_VOLUME_CACHE_KEY, 0);
+            this.cache.set(MEDIA_VOLUME_CACHE_KEY, 0);
         } else {
-            cache.set(MEDIA_VOLUME_CACHE_KEY, this.oldVolume);
+            this.cache.set(MEDIA_VOLUME_CACHE_KEY, this.oldVolume);
         }
         this.handleVolume();
     }

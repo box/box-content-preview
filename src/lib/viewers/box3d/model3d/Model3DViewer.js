@@ -247,7 +247,8 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
 
     /**
      * Handle error triggered by metadata load issues
-     * @param err {Error} The error thrown when trying to load metadata
+     *
+     * @param {Error} err - The error thrown when trying to load metadata
      * @return {void}
      */
     onMetadataError(err) {
@@ -261,6 +262,7 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
 
     /**
      * Populate control bar with animation playback UI.
+     *
      * @method populateAnimationControls
      * @private
      * @return {void}
@@ -310,6 +312,7 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
 
     /**
      * Show the preview wrapper container element
+     *
      * @return {void}
      */
     showWrapper() {
@@ -338,7 +341,8 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
 
     /**
      * Handle set render mode event
-     * @param  {string} mode The selected render mode string
+     *
+     * @param {string} mode - The selected render mode string
      * @return {void}
      */
     handleSetRenderMode(mode = 'Lit') {
@@ -348,6 +352,7 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
     /**
      * Show, hide or toggle the 'helpers' in the scene. These include the grid display
      * and axis markings.
+     *
      * @method handleToggleHelpers
      * @private
      * @param {boolean} show - True or false to show or hide. If not specified, the helpers will be toggled.
@@ -359,7 +364,9 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
 
     /**
      * Handle setting camera projection
+     *
      * @private
+     * @param {string} projection - Camera projection
      * @return {void}
      */
     handleSetCameraProjection(projection) {
@@ -368,7 +375,9 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
 
     /**
      * Handle setting quality level for rendering
+     *
      * @private
+     * @param {string} level - Quality level
      * @return {void}
      */
     handleSetQualityLevel(level) {
@@ -377,6 +386,7 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
 
     /**
      * Handle setting skeleton visibility.
+     *
      * @private
      * @param {boolean} visible - Indicates whether or not skeletons are visible.
      * @return {void}
@@ -387,6 +397,7 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
 
     /**
      * Handle setting wireframe visibility.
+     *
      * @private
      * @param {boolean} visible - Indicates whether or not wireframes are visible.
      * @return {void}
@@ -397,6 +408,7 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
 
     /**
      * Handle setting grid visibility.
+     *
      * @private
      * @param {boolean} visible - Indicates whether or not the grid is visible.
      * @return {void}

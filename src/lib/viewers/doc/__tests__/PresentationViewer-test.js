@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import PresentationViewer from '../PresentationViewer';
 import BaseViewer from '../../BaseViewer';
-import Browser from '../../../Browser';
 import DocBaseViewer from '../DocBaseViewer';
 import PresentationPreloader from '../PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../../constants';
@@ -33,6 +32,12 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
         containerEl = document.querySelector('.container');
         presentation = new PresentationViewer({
+            cache: {
+                set: () => {},
+                has: () => {},
+                get: () => {},
+                unset: () => {}
+            },
             container: containerEl
         });
 
@@ -256,7 +261,6 @@ describe('lib/viewers/doc/PresentationViewer', () => {
     describe('bindDOMListeners()', () => {
         beforeEach(() => {
             stubs.addEventListener = sandbox.stub(presentation.docEl, 'addEventListener');
-            stubs.isMobile = sandbox.stub(Browser, 'isMobile');
         });
 
         it('should add a wheel handler', () => {
@@ -264,12 +268,11 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             expect(stubs.addEventListener).to.be.calledWith('wheel', presentation.wheelHandler());
         });
 
-        it('should add a touch handlers if on mobile', () => {
-            stubs.isMobile.returns(true);
+        it('should add a touch handlers if touch events are supported', () => {
+            presentation.hasTouch = true;
 
             presentation.bindDOMListeners();
             expect(stubs.addEventListener).to.be.calledWith('touchstart', presentation.mobileScrollHandler);
-            expect(stubs.addEventListener).to.be.calledWith('touchmove', presentation.mobileScrollHandler);
             expect(stubs.addEventListener).to.be.calledWith('touchend', presentation.mobileScrollHandler);
         });
     });
@@ -277,7 +280,6 @@ describe('lib/viewers/doc/PresentationViewer', () => {
     describe('unbindDOMListeners()', () => {
         beforeEach(() => {
             stubs.removeEventListener = sandbox.stub(presentation.docEl, 'removeEventListener');
-            stubs.isMobile = sandbox.stub(Browser, 'isMobile');
         });
 
         it('should remove a wheel handler', () => {
@@ -286,11 +288,10 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         });
 
         it('should remove the touchhandlers if on mobile', () => {
-            stubs.isMobile.returns(true);
+            presentation.hasTouch = true;
 
             presentation.unbindDOMListeners();
             expect(stubs.removeEventListener).to.be.calledWith('touchstart', presentation.mobileScrollHandler);
-            expect(stubs.removeEventListener).to.be.calledWith('touchmove', presentation.mobileScrollHandler);
             expect(stubs.removeEventListener).to.be.calledWith('touchend', presentation.mobileScrollHandler);
         });
     });
@@ -364,21 +365,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
             presentation.mobileScrollHandler(stubs.event);
             expect(presentation.scrollStart).to.equal(undefined);
-            expect(stubs.event.preventDefault).to.be.called;
-        });
-
-        it('should do nothing if there is no change', () => {
-            stubs.event.changedTouches = [];
-
-            presentation.mobileScrollHandler(stubs.event);
-            expect(presentation.scrollStart).to.equal(undefined);
-        });
-
-        it('should do nothing if it was a touch move event', () => {
-            stubs.event.type = 'touchmove';
-
-            presentation.mobileScrollHandler(stubs.event);
-            expect(presentation.scrollStart).to.equal(undefined);
+            expect(stubs.event.preventDefault).to.not.be.called;
         });
 
         it('should set the scroll start position if the event is a touch start', () => {
@@ -387,6 +374,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
             presentation.mobileScrollHandler(stubs.event);
             expect(presentation.scrollStart).to.equal(100);
+            expect(stubs.event.preventDefault).to.be.called;
         });
 
         it('should go to the next page if the scroll is in the correct direction', () => {

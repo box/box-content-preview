@@ -1,6 +1,7 @@
 import Browser from '../../Browser';
 /**
  * Returns the default scene entities array
+ *
  * @return {Array} Array of scene entities
  */
 function sceneEntities() {

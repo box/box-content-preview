@@ -2,6 +2,11 @@
 import Box3DRenderer from '../Box3DRenderer';
 import sceneEntities from './SceneEntities';
 
+/**
+ * Image360Renderer
+ * This class handles rendering the preview of the 3D model using the Box3D
+ * Runtime library.
+ */
 class Image360Renderer extends Box3DRenderer {
     /** @property {Box3D.Asset} - Asset for the skybox texture */
     textureAsset;
@@ -47,7 +52,6 @@ class Image360Renderer extends Box3DRenderer {
      * Get the skybox renderer component that exists on the root scene.
      *
      * @public
-     * @method getSkyboxComponent
      * @return {Object} A Box3d component for skybox rendering
      */
     getSkyboxComponent() {

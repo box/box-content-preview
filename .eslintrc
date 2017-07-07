@@ -109,11 +109,12 @@
                     "class": "constructor"
                 },
                 "preferType": {
-                    "object": "Object",
                     "array": "Array",
-                    "String": "string",
+                    "function": "Function",
+                    "object": "Object",
                     "Boolean": "boolean",
-                    "Number": "number"
+                    "Number": "number",
+                    "String": "string"
                 }
             }
         ]

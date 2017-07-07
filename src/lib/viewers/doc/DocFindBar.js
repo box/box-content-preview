@@ -15,10 +15,12 @@ const FIND_MATCH_PENDING = 3;
 
 @autobind class DocFindBar extends EventEmitter {
     /**
-     * @constructor
-     * @param  {string|HTML Element} findBar Find Bar node
-     * @param  {Object} findController
-     * @return {void}
+     * [constructor]
+     *
+     * @param {string|HTMLElement} findBar - Find bar selector or element
+     * @param {Object} findController - Document find controller to use
+     * @param {boolean} canDownload - Whether user can download document or not
+     * @return {DocFindBar} DocFindBar instance
      */
     constructor(findBar, findController, canDownload) {
         super();
@@ -106,8 +108,9 @@ const FIND_MATCH_PENDING = 3;
 
     /**
      * Dispatch custom find event based specified type
-     * @param  {string} type
-     * @param  {boolean} findPrev
+     *
+     * @param {string} type - Find event type
+     * @param {boolean} findPrev - Whether or not to find previous occurrence
      * @return {void}
      */
     dispatchFindEvent(type, findPrev) {
@@ -214,9 +217,10 @@ const FIND_MATCH_PENDING = 3;
     //--------------------------------------------------------------------------
     /**
      * Handler to show/hide find bar
-     * @param  {Event} event
-     * @return {void}
+     *
      * @private
+     * @param {Event} event - Key event
+     * @return {void}
      */
     displayFindBarHandler(event) {
         // Lowercase keydown so we capture both lower and uppercase
@@ -249,7 +253,8 @@ const FIND_MATCH_PENDING = 3;
 
     /**
      * Handler for find keyboard short cuts
-     * @param  {Event} event
+     *
+     * @param {Event} event - Key event
      * @return {void}
      * @private
      */

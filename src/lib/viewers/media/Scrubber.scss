@@ -78,3 +78,14 @@
 .bp-media-scrubber-container .bp-media-scrubber-hover .bp-media-scrubber-underlay {
     transform: scaleY(2);
 }
+
+.bp-media-scrubber-container .bp-media-scrubber-touch .bp-media-scrubber-handle {
+    transform: scale(1);
+}
+
+.bp-media-scrubber-container .bp-media-scrubber-touch .bp-media-scrubber-converted,
+.bp-media-scrubber-container .bp-media-scrubber-touch .bp-media-scrubber-buffered,
+.bp-media-scrubber-container .bp-media-scrubber-touch .bp-media-scrubber-played,
+.bp-media-scrubber-container .bp-media-scrubber-touch .bp-media-scrubber-underlay {
+    transform: scaleY(2);
+}

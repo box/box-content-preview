@@ -46,6 +46,9 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
                 content: {
                     url_template: 'foo'
                 }
+            },
+            ui: {
+                showLoadingIndicator: () => {}
             }
         });
 

@@ -34,24 +34,6 @@ const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
 @autobind class BaseViewer extends EventEmitter {
-    /** @property {Object} - Reference to options passed in to configure this viewer */
-    options;
-
-    /** @property {RepStatus[]} - List of RepStatus objects that report status of a representation loading/converting/etc. */
-    repStatuses = [];
-
-    /** @property {boolean} - True if the browser is running on a mobile device */
-    isMobile;
-
-    /** @property {number} - Rotation value in degrees of the document, if rotated */
-    rotationAngle = 0;
-
-    /** @property {number} -Scale amount of the document, if zoomed */
-    scale = 1;
-
-    /** @property {string} - Viewer specific file loading Icon */
-    fileLoadingIcon;
-
     /** @property {Controls} - UI used to interact with the document in the viewer */
     controls;
 
@@ -61,16 +43,47 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     /** @property {number} - Number of milliseconds to wait, while loading, until messaging that the viewer took too long to load */
     loadTimeout;
 
+    /** @property {number} - Rotation value in degrees, if rotated */
+    rotationAngle = 0;
+
+    /** @property {number} - Zoom scale, if zoomed */
+    scale = 1;
+
+    /** @property {string} - Viewer-specific file loading icon */
+    fileLoadingIcon;
+
+    /** @property {Object} - Viewer options */
+    options;
+
+    /** @property {Cache} - Preview's cache instance */
+    cache;
+
+    /** @property {PreviewUI} - Preview's UI instance */
+    previewUI;
+
+    /** @property {RepStatus[]} - Collection of representation status checkers */
+    repStatuses;
+
+    /** @property {boolean} - Whether viewer is being used on a mobile device */
+    isMobile;
+
+    /** @property {boolean} - Whether viewer is being used on a touch device */
+    hasTouch;
+
     /**
      * [constructor]
      *
-     * @param {Object} options - some options
+     * @param {Object} options - Some options
      * @return {BaseViewer} Instance of base viewer
      */
     constructor(options) {
         super();
         this.options = options;
+        this.cache = options.cache;
+        this.previewUI = options.ui;
+        this.repStatuses = [];
         this.isMobile = Browser.isMobile();
+        this.hasTouch = Browser.hasTouch();
     }
 
     /**
@@ -634,7 +647,8 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
             },
             fileVersionId,
             isMobile: this.isMobile,
-            locale: location.locale
+            locale: location.locale,
+            previewUI: this.previewUI
         });
         this.annotator.init();
 

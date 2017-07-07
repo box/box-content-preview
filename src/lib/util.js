@@ -9,6 +9,12 @@ const CLIENT_NAME = __NAME__;
 const CLIENT_VERSION = __VERSION__;
 /* eslint-enable no-undef */
 
+/**
+ * Retrieves JSON from response.
+ *
+ * @param {Response} response - Response to parse
+ * @return {Promise|Response} Response if 204, otherwise promise that resolves with JSON
+ */
 const parseJSON = (response) => {
     if (response.status === 204) {
         return response;
@@ -16,8 +22,29 @@ const parseJSON = (response) => {
 
     return response.json();
 };
+
+/**
+ * Extract response body as text.
+ *
+ * @param {Response} response - Response to parse
+ * @return {Promise} Promise that resolves with text
+ */
 const parseText = (response) => response.text();
+
+/**
+ * Extract response body as blob.
+ *
+ * @param {Response} response - Response to parse
+ * @return {Promise} Promise that resolves with blob
+ */
 const parseBlob = (response) => response.blob();
+
+/**
+ * Pass through response.
+ *
+ * @param {Response} response - Response to pass through
+ * @return {Response} Unextracted response
+ */
 const parseThrough = (response) => response;
 
 /**
@@ -42,6 +69,10 @@ function checkStatus(response) {
  * Wrapper function for XHR post put and delete
  *
  * @private
+ * @param {string} method - XHR method
+ * @param {string} url - URL for XHR
+ * @param {Object} headers - Request headers
+ * @param {Object} data - Request data
  * @return {Promise} XHR promise
  */
 function xhr(method, url, headers = {}, data = {}) {
@@ -163,7 +194,7 @@ export function put(...rest) {
  * Used for downloads
  *
  * @param {string} url - URL to open
- * @return {HTMLElement}
+ * @return {HTMLElement} IFrame element
  */
 export function openUrlInsideIframe(url) {
     const iframe = createDownloadIframe();
@@ -176,7 +207,7 @@ export function openUrlInsideIframe(url) {
  * Used for printing
  *
  * @param {string} content - HTML content
- * @return {HTMLElement}
+ * @return {HTMLElement} Iframe element
  */
 export function openContentInsideIframe(content) {
     const iframe = createDownloadIframe();
@@ -190,7 +221,7 @@ export function openContentInsideIframe(content) {
  *
  * @param {Element} node - DOM node
  * @param {string} template - HTML template
- * @return {DocumentFragment}
+ * @return {DocumentFragment} Document fragment
  */
 export function createFragment(node, template) {
     const range = document.createRange();
@@ -579,7 +610,7 @@ export function replacePlaceholders(string, placeholderValues) {
  * Check to see if a file requires a Box3D viewer to be viewed
  *
  * @param {Object} file - The file to check
- * @return {Boolean} True if the file needs a Box3D 360 degree viewer to be viewed
+ * @return {boolean} True if the file needs a Box3D 360 degree viewer to be viewed
  */
 export function requires360Viewer(file) {
     // For now, we'll only support this preview if the filename has a secondary
@@ -594,6 +625,7 @@ export function requires360Viewer(file) {
  * @param {HTMLElement} element - HTML element
  * @param {number} width - Width in pixels
  * @param {number} height - Height in pixels
+ * @return {void}
  */
 export function setDimensions(element, width, height) {
     /* eslint-disable no-param-reassign */

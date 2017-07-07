@@ -67,9 +67,9 @@ const STATIC_URI = `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/`;
      * Finishes loading by parsing Markdown and highlighting any necessary code.
      *
      * @override
+     * @protected
      * @param {string} content - Markdown text
      * @return {void}
-     * @protected
      */
     finishLoading(content) {
         const md = this.initRemarkable();
@@ -90,8 +90,8 @@ const STATIC_URI = `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/`;
      * Loads controls for fullscreen. Markdown viewer doesn't have zoom in or out.
      *
      * @override
-     * @return {void}
      * @protected
+     * @return {void}
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
@@ -107,8 +107,8 @@ const STATIC_URI = `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/`;
     /**
      * Initializes and returns Remarkable parser.
      *
-     * @return {Remarkable}
      * @private
+     * @return {Remarkable} Remarkable parser instance
      */
     initRemarkable() {
         /* global Remarkable */

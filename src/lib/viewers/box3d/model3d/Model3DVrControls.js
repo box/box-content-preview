@@ -14,6 +14,9 @@ const buttonMap = {
     grabWorld: 2
 };
 
+/**
+ * This class handles the gamepad input used my the Model3D viewer while in VR mode.
+ */
 class Model3DVrControls {
     /** @property {Box3D.NodeObject[]} - List of vr gamepads that exist in the 3D scene */
     vrGamepads;
