@@ -33,6 +33,7 @@ const VIEWERS = [
 class Video360Loader extends Base360Loader {
     /**
      * Instantiates a loader for 360 degree video preview.
+     *
      * @return {Video360Loader} Video360Loader instance
      */
     constructor() {
@@ -40,9 +41,7 @@ class Video360Loader extends Base360Loader {
         this.viewers = VIEWERS;
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     determineViewer(file, disabledViewers = []) {
         const viewer = super.determineViewer(file, disabledViewers);
         if (viewer) {
