@@ -2,7 +2,7 @@
 import Browser from '../../../Browser';
 import MediaBaseViewer from '../MediaBaseViewer';
 import BaseViewer from '../../BaseViewer';
-import cache from '../../../Cache';
+import Cache from '../../../Cache';
 import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../../constants';
 
 let media;
@@ -22,6 +22,12 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         stubs = {};
         containerEl = document.querySelector('.container');
         media = new MediaBaseViewer({
+            cache: {
+                set: () => {},
+                has: () => {},
+                get: () => {},
+                unset: () => {}
+            },
             file: {
                 id: 1
             },
@@ -171,7 +177,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         it('should emit speed change if speed has changed', () => {
             const speed = 2;
             sandbox.stub(media, 'emit');
-            sandbox.stub(cache, 'get').withArgs('media-speed').returns(speed);
+            sandbox.stub(media.cache, 'get').withArgs('media-speed').returns(speed);
             media.mediaEl = document.createElement('video');
             media.mediaEl.playbackRate = 1;
 
@@ -185,8 +191,8 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     describe('handleVolume()', () => {
         beforeEach(() => {
             stubs.volume = 50;
-            stubs.has = sandbox.stub(cache, 'has').withArgs('media-volume').returns(true);
-            stubs.get = sandbox.stub(cache, 'get').withArgs('media-volume').returns(stubs.volume);
+            stubs.has = sandbox.stub(media.cache, 'has').withArgs('media-volume').returns(true);
+            stubs.get = sandbox.stub(media.cache, 'get').withArgs('media-volume').returns(stubs.volume);
             stubs.debouncedEmit = sandbox.stub(media, 'debouncedEmit');
         });
 
@@ -258,12 +264,10 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     describe('setVolume()', () => {
         it('should set volume', () => {
             sandbox.stub(media, 'handleVolume');
-            cache.set('media-volume', 0.314);
+            sandbox.stub(media.cache, 'set');
             const newVol = 0.159;
-
             media.setVolume(newVol);
-
-            expect(cache.get('media-volume')).to.equal(newVol);
+            expect(media.cache.set).to.be.calledWith('media-volume', newVol);
             expect(media.handleVolume).to.be.called;
         });
     });
@@ -394,16 +398,20 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
     describe('toggleMute()', () => {
         it('should mute if volume was on', () => {
+            sandbox.stub(media.cache, 'set');
+
             media.mediaEl = {
                 volume: 0.3
             };
 
             media.toggleMute();
 
-            expect(media.mediaEl.volume).to.equal(0);
+            expect(media.cache.set).to.be.calledWith('media-volume', 0);
         });
 
         it('should restore old volume if volume was muted', () => {
+            sandbox.stub(media.cache, 'set');
+
             const oldVol = 0.3;
             media.mediaEl = {
                 volume: 0
@@ -412,10 +420,12 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             media.toggleMute();
 
-            expect(media.mediaEl.volume).to.equal(oldVol);
+            expect(media.cache.set).to.be.calledWith('media-volume', oldVol);
         });
 
         it('should leave no change if called twice', () => {
+            sandbox.stub(media.cache, 'set');
+
             const vol = 0.3;
             media.mediaEl = {
                 volume: vol
@@ -424,7 +434,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.toggleMute();
             media.toggleMute();
 
-            expect(media.mediaEl.volume).to.equal(vol);
+            expect(media.cache.set).to.be.calledWith('media-volume', 0);
         });
     });
 

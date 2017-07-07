@@ -3,7 +3,6 @@ import Annotator from '../Annotator';
 import ImagePointThread from './ImagePointThread';
 import * as annotatorUtil from '../annotatorUtil';
 import * as imageAnnotatorUtil from './imageAnnotatorUtil';
-import { SELECTOR_BOX_PREVIEW_BTN_ANNOTATE } from '../../constants';
 
 const IMAGE_NODE_NAME = 'img';
 // Selector for image container OR multi-image container
@@ -121,7 +120,7 @@ const ANNOTATED_ELEMENT_SELECTOR = '.bp-image, .bp-images-wrapper';
      * @return {void}
      */
     hideAllAnnotations() {
-        const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+        const annotateButton = this.previewUI.getAnnotateButton();
         const annotations = this.annotatedElement.getElementsByClassName('bp-point-annotation-btn');
         for (let i = 0; i < annotations.length; i++) {
             annotatorUtil.hideElement(annotations[i]);
@@ -136,7 +135,7 @@ const ANNOTATED_ELEMENT_SELECTOR = '.bp-image, .bp-images-wrapper';
      * @return {void}
      */
     showAllAnnotations() {
-        const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+        const annotateButton = this.previewUI.getAnnotateButton();
         const annotations = this.annotatedElement.getElementsByClassName('bp-point-annotation-btn');
         for (let i = 0; i < annotations.length; i++) {
             annotatorUtil.showElement(annotations[i]);

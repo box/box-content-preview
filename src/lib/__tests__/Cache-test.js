@@ -1,9 +1,14 @@
 import 'mock-local-storage';
-import cache from '../Cache';
+import Cache from '../Cache';
 
 const sandbox = sinon.sandbox.create();
+let cache;
 
 describe('Cache', () => {
+    beforeEach(() => {
+        cache = new Cache();
+    });
+
     afterEach(() => {
         sandbox.verifyAndRestore();
         localStorage.clear();
