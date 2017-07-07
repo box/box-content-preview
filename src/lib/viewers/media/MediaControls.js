@@ -27,13 +27,15 @@ const FILMSTRIP_FRAME_HEIGHT = 90;
      *
      * @param {HTMLElement} containerEl - container
      * @param {HTMLElement} mediaEl - media element
+     * @param {Cache} cache - Cache instance
      * @return {Controls} Controls instance
      */
-    constructor(containerEl, mediaEl) {
+    constructor(containerEl, mediaEl, cache) {
         super();
 
         this.containerEl = containerEl;
         this.mediaEl = mediaEl;
+        this.cache = cache;
 
         insertTemplate(this.containerEl, controlsTemplate);
 
@@ -183,7 +185,7 @@ const FILMSTRIP_FRAME_HEIGHT = 90;
      * @return {void}
      */
     setupSettings() {
-        this.settings = new Settings(this.containerEl);
+        this.settings = new Settings(this.containerEl, this.cache);
         this.settings.addListener('quality', this.handleQuality);
         this.settings.addListener('speed', this.handleRate);
     }

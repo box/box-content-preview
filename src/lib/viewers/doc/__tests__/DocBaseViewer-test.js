@@ -2,7 +2,6 @@
 import DocBaseViewer from '../DocBaseViewer';
 import Browser from '../../../Browser';
 import BaseViewer from '../../BaseViewer';
-import cache from '../../../Cache';
 import Controls from '../../../Controls';
 import fullscreen from '../../../Fullscreen';
 import DocPreloader from '../DocPreloader';
@@ -45,6 +44,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         containerEl = document.querySelector('.container');
         docBase = new DocBaseViewer({
+            cache: {
+                set: () => {},
+                has: () => {},
+                get: () => {},
+                unset: () => {}
+            },
             container: containerEl,
             representation: {
                 content: {
@@ -508,8 +513,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
     describe('getCachedPage()', () => {
         beforeEach(() => {
-            stubs.has = sandbox.stub(cache, 'has').returns(true);
-            stubs.get = sandbox.stub(cache, 'get').returns({ 0: 10 });
+            stubs.has = sandbox.stub(docBase.cache, 'has').returns(true);
+            stubs.get = sandbox.stub(docBase.cache, 'get').returns({ 0: 10 });
         });
 
         it('should return the cached current page if present', () => {
@@ -541,9 +546,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     id: 0
                 }
             };
-            stubs.has = sandbox.stub(cache, 'has').returns(true);
-            stubs.get = sandbox.stub(cache, 'get').returns({ 0: 10 });
-            stubs.set = sandbox.stub(cache, 'set').returns({ 0: 10 });
+            stubs.has = sandbox.stub(docBase.cache, 'has').returns(true);
+            stubs.get = sandbox.stub(docBase.cache, 'get').returns({ 0: 10 });
+            stubs.set = sandbox.stub(docBase.cache, 'set').returns({ 0: 10 });
         });
 
         it('should get the current page map if it does not exist and cache the given page', () => {

@@ -32,6 +32,12 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
         containerEl = document.querySelector('.container');
         presentation = new PresentationViewer({
+            cache: {
+                set: () => {},
+                has: () => {},
+                get: () => {},
+                unset: () => {}
+            },
             container: containerEl
         });
 

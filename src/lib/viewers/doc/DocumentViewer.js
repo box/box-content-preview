@@ -46,7 +46,7 @@ const LOADING_ICON_MAP = {
         this.docEl.classList.add('bp-doc-document');
 
         // Set up preloader
-        this.preloader = new DocPreloader();
+        this.preloader = new DocPreloader(this.previewUI);
         this.preloader.addListener('preload', () => {
             this.options.logger.setPreloaded();
             this.resetLoadTimeout(); // Some content is visible - reset load timeout

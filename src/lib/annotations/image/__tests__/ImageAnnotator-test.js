@@ -21,7 +21,10 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             annotationService: {},
             fileVersionId: 1,
             isMobile: false,
-            options: {}
+            options: {},
+            previewUI: {
+                getAnnotateButton: () => {}
+            }
         });
         annotator.annotatedElement = annotator.getAnnotatedEl(document);
         annotator.annotationService = {};
