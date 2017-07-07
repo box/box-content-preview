@@ -27,13 +27,13 @@ class Video360Viewer extends DashViewer {
     /** @property {Video360Controls} - Instance of the Video360Controls */
     controls;
 
-    /** @property {Box3D.Asset} - Asset for the skybox texture */
+    /** @property {Box3D.Texture2DAsset} - Asset for the skybox texture */
     textureAsset;
 
-    /** @property {Box3D.Asset} - Asset for the video to apply to the texture */
+    /** @property {Box3D.VideoAsset} - Asset for the video to apply to the texture */
     videoAsset;
 
-    /** @property {Box3D.Component} - The component for rendering the video as 360 degree (on a skybox) */
+    /** @property {Box3D.Components.SkyboxRenderer} - The component for rendering the video as 360 degree (on a skybox) */
     skybox;
 
     /** @inheritdoc */

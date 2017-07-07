@@ -8,13 +8,13 @@ import sceneEntities from './SceneEntities';
  * Runtime library.
  */
 class Image360Renderer extends Box3DRenderer {
-    /** @property {Box3D.Asset} - Asset for the skybox texture */
+    /** @property {Box3D.Texture2DAsset} - Asset for the skybox texture */
     textureAsset;
 
-    /** @property {Box3D.Asset} - Asset for the image to apply to the texture */
+    /** @property {Box3D.ImageAsset} - Asset for the image to apply to the texture */
     imageAsset;
 
-    /** @property {Box3D.Component} - The component for rendering the image as 360 degree (on a skybox) */
+    /** @property {Box3D.Components.SkyboxRenderer} - The component for rendering the image as 360 degree (on a skybox) */
     skybox;
 
     /**

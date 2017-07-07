@@ -1,7 +1,7 @@
 import Box3DRenderer from '../Box3DRenderer';
 
 class Video360Renderer extends Box3DRenderer {
-    /** @property {Box3D.Component} - Component that handles device input events */
+    /** @property {Box3D.Components.Input} - Component that handles device input events */
     inputController;
 
     /**

@@ -34,9 +34,6 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
     /** @property {Object[]} - List of Box3D instances added to the scene */
     instances = [];
 
-    /** @property {Object[]} - List of Box3D assets used in the scene. Models, textures, audio, etc. */
-    assets = [];
-
     /** @property {Object} - Tracks up and forward axes for the model alignment in the scene */
     axes = {
         up: null,
