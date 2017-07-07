@@ -1,5 +1,4 @@
 /* global Box3D, THREE */
-import autobind from 'autobind-decorator';
 import Box3DRenderer from '../Box3DRenderer';
 import Model3DVrControls from './Model3DVrControls';
 import sceneEntities from './SceneEntities';
@@ -48,13 +47,40 @@ const OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR_VR = 20.0; // 50 FPS
 const OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE_VR = 66.6; // 15 FPS
 const DEFAULT_MODEL_SIZE = 1;
 
-/**
- * Model3DRenderer
- * This class handles rendering the preview of the 3D model using the Box3D
- * Runtime library.
- * @class
- */
 class Model3DRenderer extends Box3DRenderer {
+    /** @property {Box3D.BaseObject} - The instance that contains the model that is added to the scene */
+    instance;
+
+    /** @property {THREE.GridHelper} - The grid overlayed on the scene when opening the settings panel. Used to judge scale */
+    grid;
+
+    /** @property {THREE.AxisHelper} - Axis lines overlayed on the scene to help judge alignment */
+    axisDisplay;
+
+    /** @property {boolean} - If true, the model is currently rotating to a new rotation. Throttles rotation events */
+    isRotating = false;
+
+    /** @property {Object} - X, Y, Z scale of the instance added to the scene */
+    modelSize = DEFAULT_MODEL_SIZE;
+
+    /** @property {Object} - X, Y, Z position of the instance added to the scene*/
+    modelAlignmentPosition = ORIGIN_VECTOR;
+
+    /** @property {Object} - X, Y, Z the origin point for the instance to align relative to */
+    modelAlignmentVector = FLOOR_VECTOR;
+
+    /** @property {boolean} - If true, the dynamic optimizer component is enabled. Will render lower res, etc. for better framerate */
+    dynamicOptimizerEnabled = true;
+
+    /** @property {Object} - X, Y, Z default position of the camera, in the 3D scene */
+    defaultCameraPosition = PREVIEW_CAMERA_POSITION;
+
+    /** @property {Object} - X, Y, Z default rotation of the camera, in the 3D scene */
+    defaultCameraQuaternion = PREVIEW_CAMERA_QUATERNION;
+
+    /** A mapping of preview render mode names to Box3D render mode enum values */
+    renderModeValues;
+
     /**
      * Creates a 3D runtime and loads in a 3D model for rendering
      *
@@ -67,18 +93,6 @@ class Model3DRenderer extends Box3DRenderer {
     constructor(containerEl, boxSdk) {
         super(containerEl, boxSdk);
 
-        this.instance = null;
-        this.grid = null;
-        this.axisDisplay = null;
-        this.isRotating = false;
-        this.modelSize = DEFAULT_MODEL_SIZE;
-        this.modelAlignmentPosition = ORIGIN_VECTOR;
-        this.modelAlignmentVector = FLOOR_VECTOR;
-        this.dynamicOptimizerEnabled = true;
-        this.defaultCameraPosition = PREVIEW_CAMERA_POSITION;
-        this.defaultCameraQuaternion = PREVIEW_CAMERA_QUATERNION;
-
-        // A mapping of preview render mode names to Box3D render mode enum values.
         this.renderModeValues = {
             [RENDER_MODE_LIT]: Box3D.RenderMode.Lit,
             [RENDER_MODE_UNLIT]: Box3D.RenderMode.Unlit,
@@ -86,6 +100,8 @@ class Model3DRenderer extends Box3DRenderer {
             [RENDER_MODE_SHAPE]: Box3D.RenderMode.Shape,
             [RENDER_MODE_UV]: Box3D.RenderMode.UVOverlay
         };
+
+        this.handleCanvasClick = this.handleCanvasClick.bind(this);
     }
 
     /** @inheritdoc */
@@ -121,7 +137,7 @@ class Model3DRenderer extends Box3DRenderer {
      * @param {Event} event - The click event.
      * @return {void}
      */
-    @autobind handleCanvasClick(event) {
+    handleCanvasClick(event) {
         this.emit(EVENT_CANVAS_CLICK, event);
     }
 
@@ -129,8 +145,7 @@ class Model3DRenderer extends Box3DRenderer {
      * Load a box3d representation and initialize the scene.
      *
      * @private
-     * @param {string} fileUrl - The representation URL.
-     * @param {string} assetPath - The asset path needed to access file
+     * @param {string} assetUrl - The representation URL.
      * @return {void}
      */
     loadBox3dFile(assetUrl) {
@@ -186,9 +201,9 @@ class Model3DRenderer extends Box3DRenderer {
     }
 
     /**
-     * Create an instance of the specified prefab and add it to the scene.
-     * @param {object} prefab - The prefab entity to instance.
-     * @param {object} scene - The scene asset to add the instance to.
+     * Resize and position an instance, in the scene.
+     *
+     * @param {Object} instance - The instance of a prefab
      * @return {void}
      */
     adjustModelForScene(instance) {
@@ -574,6 +589,7 @@ class Model3DRenderer extends Box3DRenderer {
      *
      * @private
      * @param {string} level - Level name
+     * @return {void}
      */
     setQualityLevel(level) {
         if (!this.box3d) {
