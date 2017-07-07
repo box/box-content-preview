@@ -62,14 +62,6 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             viewer.setup();
         });
 
-        it('should create an empty .renderer property', () => {
-            expect(viewer.renderer).to.be.null;
-        });
-
-        it('should create an empty .controls property', () => {
-            expect(viewer.controls).to.be.null;
-        });
-
         it('should create .destroyed property of false', () => {
             expect(viewer.destroyed).to.be.false;
         });
