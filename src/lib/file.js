@@ -1,4 +1,3 @@
-import cache from './Cache';
 import { ORIGINAL_REP_NAME } from './constants';
 
 // List of Box Content API fields that the Preview SDK requires for every file. Updating this list is most likely
@@ -130,10 +129,11 @@ function addOriginalRepresentation(file) {
  * Wrapper for caching a file object. Adds the faked 'ORIGINAL' representation
  * when appropraite before caching.
  *
+ * @param {Cache} cache - Cache instance
  * @param {Object} file - Box file or simple { id: fileId } object
  * @return {void}
  */
-export function cacheFile(file) {
+export function cacheFile(cache, file) {
     if (file.representations) {
         addOriginalRepresentation(file);
     }
@@ -144,9 +144,10 @@ export function cacheFile(file) {
 /**
  * Wrapper for uncaching a file object.
  *
+ * @param {Cache} cache - Cache instance
  * @param {Object} file - Box file or simple { id: fileId } object
  * @return {void}
  */
-export function uncacheFile(file) {
+export function uncacheFile(cache, file) {
     cache.unset(file.id);
 }

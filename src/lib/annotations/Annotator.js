@@ -4,7 +4,7 @@ import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
 import * as constants from './annotationConstants';
 import * as annotatorUtil from './annotatorUtil';
-import { CLASS_ACTIVE, SELECTOR_BOX_PREVIEW_BTN_ANNOTATE, CLASS_HIDDEN } from '../constants';
+import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 import { ICON_CLOSE } from '../icons/icons';
 import './Annotator.scss';
 
@@ -41,6 +41,7 @@ import './Annotator.scss';
         this.locale = data.locale;
         this.validationErrorDisplayed = false;
         this.isMobile = data.isMobile;
+        this.previewUI = data.previewUI;
     }
 
     /**
@@ -204,7 +205,7 @@ import './Annotator.scss';
         // TODO(@spramod) actually adjust getLocationFromEvent method
         // in annotator to get correct location rather than disabling
         // the creation of annotations on rotated images
-        const annotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+        const annotateButton = this.previewUI.getAnnotateButton();
 
         if (rotationAngle !== 0) {
             annotatorUtil.hideElement(annotateButton);
@@ -231,15 +232,8 @@ import './Annotator.scss';
      * @return {void}
      */
     togglePointModeHandler(event = {}) {
-        // This unfortunately breaks encapsulation, but the header currently
-        // doesn't manage its own functionality
-        let buttonEl = event.target;
-        if (!buttonEl) {
-            const containerEl = document.querySelector('.bp-header');
-            buttonEl = containerEl ? containerEl.querySelector('.bp-btn-annotate') : null;
-        }
-
         this.destroyPendingThreads();
+        const buttonEl = event.target || this.previewUI.getAnnotateButton();
 
         // If in annotation mode, turn it off
         if (this.isInPointMode()) {
