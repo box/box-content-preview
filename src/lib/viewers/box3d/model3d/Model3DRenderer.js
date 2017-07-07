@@ -1,5 +1,4 @@
 /* global Box3D, THREE */
-import autobind from 'autobind-decorator';
 import Box3DRenderer from '../Box3DRenderer';
 import Model3DVrControls from './Model3DVrControls';
 import sceneEntities from './SceneEntities';
@@ -53,6 +52,39 @@ const DEFAULT_MODEL_SIZE = 1;
  * Runtime library.
  */
 class Model3DRenderer extends Box3DRenderer {
+    /** @property {Box3D.BaseObject} - The instance that contains the model that is added to the scene */
+    instance;
+
+    /** @property {THREE.GridHelper} - The grid overlayed on the scene when opening the settings panel. Used to judge scale */
+    grid;
+
+    /** @property {THREE.AxisHelper} - Axis lines overlayed on the scene to help judge alignment */
+    axisDisplay;
+
+    /** @property {boolean} - If true, the model is currently rotating to a new rotation. Throttles rotation events */
+    isRotating = false;
+
+    /** @property {Object} - X, Y, Z scale of the instance added to the scene */
+    modelSize = DEFAULT_MODEL_SIZE;
+
+    /** @property {Object} - X, Y, Z position of the instance added to the scene*/
+    modelAlignmentPosition = ORIGIN_VECTOR;
+
+    /** @property {Object} - X, Y, Z the origin point for the instance to align relative to */
+    modelAlignmentVector = FLOOR_VECTOR;
+
+    /** @property {boolean} - If true, the dynamic optimizer component is enabled. Will render lower res, etc. for better framerate */
+    dynamicOptimizerEnabled = true;
+
+    /** @property {Object} - X, Y, Z default position of the camera, in the 3D scene */
+    defaultCameraPosition = PREVIEW_CAMERA_POSITION;
+
+    /** @property {Object} - X, Y, Z default rotation of the camera, in the 3D scene */
+    defaultCameraQuaternion = PREVIEW_CAMERA_QUATERNION;
+
+    /** A mapping of preview render mode names to Box3D render mode enum values */
+    renderModeValues;
+
     /**
      * Creates a 3D runtime and loads in a 3D model for rendering
      *
@@ -65,18 +97,6 @@ class Model3DRenderer extends Box3DRenderer {
     constructor(containerEl, boxSdk) {
         super(containerEl, boxSdk);
 
-        this.instance = null;
-        this.grid = null;
-        this.axisDisplay = null;
-        this.isRotating = false;
-        this.modelSize = DEFAULT_MODEL_SIZE;
-        this.modelAlignmentPosition = ORIGIN_VECTOR;
-        this.modelAlignmentVector = FLOOR_VECTOR;
-        this.dynamicOptimizerEnabled = true;
-        this.defaultCameraPosition = PREVIEW_CAMERA_POSITION;
-        this.defaultCameraQuaternion = PREVIEW_CAMERA_QUATERNION;
-
-        // A mapping of preview render mode names to Box3D render mode enum values.
         this.renderModeValues = {
             [RENDER_MODE_LIT]: Box3D.RenderMode.Lit,
             [RENDER_MODE_UNLIT]: Box3D.RenderMode.Unlit,
@@ -84,6 +104,8 @@ class Model3DRenderer extends Box3DRenderer {
             [RENDER_MODE_SHAPE]: Box3D.RenderMode.Shape,
             [RENDER_MODE_UV]: Box3D.RenderMode.UVOverlay
         };
+
+        this.handleCanvasClick = this.handleCanvasClick.bind(this);
     }
 
     /** @inheritdoc */
@@ -119,7 +141,7 @@ class Model3DRenderer extends Box3DRenderer {
      * @param {Event} event - The click event.
      * @return {void}
      */
-    @autobind handleCanvasClick(event) {
+    handleCanvasClick(event) {
         this.emit(EVENT_CANVAS_CLICK, event);
     }
 
@@ -127,7 +149,7 @@ class Model3DRenderer extends Box3DRenderer {
      * Load a box3d representation and initialize the scene.
      *
      * @private
-     * @param {string} assetUrl - The representation URL
+     * @param {string} assetUrl - The representation URL.
      * @return {void}
      */
     loadBox3dFile(assetUrl) {

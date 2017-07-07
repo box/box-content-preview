@@ -34,12 +34,6 @@ describe('lib/viewers/box3d/video360/Video360Renderer', () => {
         renderer = null;
     });
 
-    describe('constructor()', () => {
-        it('should create an empty variable, .inputController, for storing Input Controller component reference', () => {
-            expect(renderer.inputController).to.be.null;
-        });
-    });
-
     describe('getInputController()', () => {
         beforeEach(() => {
             renderer.box3d = {

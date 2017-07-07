@@ -8,6 +8,18 @@ import { CLASS_HIDDEN } from '../../constants';
 import { UIRegistry } from './Box3DUIUtils';
 
 @autobind class Box3DControls extends EventEmitter {
+    /** @property {HTMLElement} - Reference to the parent container to nest UI in */
+    el;
+
+    /** @property {Controls} - Control bar used to interact with the 3D scene */
+    controls;
+
+    /** @property {UIRegistry} - Used to track and cleanup UI components */
+    uiRegistry;
+
+    /** @property {HTMLElement} - Button used to enable/disable VR mode */
+    vrButtonEl;
+
     /**
      * Base class for building 3D previews on. Contains events for VR, Fullscreen,
      * Scene Reset, and Scene Loaded. Also, used for programmatic building of control

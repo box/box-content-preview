@@ -28,8 +28,30 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
  * @class
  */
 @autobind class Model3DControls extends Box3DControls {
+    /** @property {Model3DAnimationClipsPullup} - UI Component for listing and interacting with animation clips */
+    animationClipsPullup;
+
+    /** @property {Model3DSettingsPullup} - UI component for displaying 3D settings. IE) skeleton, render modes */
+    settingsPullup;
+
+    /** @property {boolean} - True if the current animation is playing */
+    isAnimationPlaying = false;
+
+    /** @property {HTMLElement} - Element for reset button. Resets the whole scene to default values, when selected */
+    resetButtonEl;
+
+    /** @property {HTMLElement} - Element for toggling playback of current selected animation */
+    animationToggleEl;
+
+    /** @property {HTMLElement} - Element for toggling open/close of the settings pullup */
+    settingsButtonEl;
+
+    /** @property {HTMLElement} - Element for toggling open/close of the animationClipsPullup */
+    animationClipButtonEl;
+
     /**
-     * Creates UI and handles events for 3D Model Preview
+     * Creates UI and handles events for 3D Model Preview.
+     *
      * @constructor
      * @inheritdoc
      * @return {Model3DControls} Model3DControls instance
@@ -38,7 +60,6 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
         super(containerEl);
         this.animationClipsPullup = new Model3DAnimationClipsPullup(containerEl);
         this.settingsPullup = new Model3DSettingsPullup();
-        this.isAnimationPlaying = false;
     }
 
     /** @inheritdoc */
@@ -86,7 +107,7 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
 
     /**
      * Hide any open pullups.
-     * @method hidePullups
+     *
      * @public
      * @return {void}
      */
@@ -97,7 +118,8 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
     }
 
     /**
-     * Handle toggle Settings ui event
+     * Handle toggle Settings ui event.
+     *
      * @return {void}
      */
     handleToggleSettings() {
@@ -107,7 +129,8 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
     }
 
     /**
-     * Handle a change of render mode, from the settings panel
+     * Handle a change of render mode, from the settings panel.
+     *
      * @param {string} renderMode - The render mode name to notify listeners of
      * @return {void}
      */
@@ -117,7 +140,8 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
     }
 
     /**
-     * Handle a change in skeleton visibility
+     * Handle a change in skeleton visibility.
+     *
      * @param {boolean} visible - Indicates whether or not skeletons are visible
      * @return {void}
      */
@@ -126,7 +150,8 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
     }
 
     /**
-     * Handle a change in wireframe visibility
+     * Handle a change in wireframe visibility.
+     *
      * @param {boolean} visible - Indicates whether or not wireframes are visible
      * @return {void}
      */
@@ -135,7 +160,8 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
     }
 
     /**
-     * Handle a change in grid visibility
+     * Handle a change in grid visibility.
+     *
      * @param {boolean} visible - Indicates whether or not the grid is visible
      * @return {void}
      */
@@ -145,7 +171,8 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
     }
 
     /**
-     * Handle change of camera projection
+     * Handle change of camera projection.
+     *
      * @param {string} mode - The projection mode to use
      * @return {void}
      */
@@ -154,7 +181,8 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
     }
 
     /**
-     * Handle change of render quality
+     * Handle change of render quality.
+     *
      * @param {string} level - The quality level to use
      * @return {void}
      */
@@ -163,7 +191,8 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
     }
 
     /**
-     * Handle rotation on axis
+     * Handle rotation on axis.
+     * 
      * @param {Object} rotation - Rotation axis description with axis and amount (in degrees)
      * @return {void}
      */
@@ -173,7 +202,7 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
 
     /**
      * Show the animation controls.
-     * @method showAnimationControls
+     *
      * @public
      * @return {void}
      */
@@ -188,7 +217,7 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
 
     /**
      * Hide the animation controls.
-     * @method hideAnimationControls
+     *
      * @public
      * @return {void}
      */
@@ -203,7 +232,7 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
 
     /**
      * Handle animation clip selection.
-     * @method handleSelectAnimationClip
+     *
      * @private
      * @param {string} clipId - The ID of the clip that was selected.
      * @return {void}
@@ -215,7 +244,7 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
 
     /**
      * Handle clicks on the animation clip button.
-     * @method handleToggleAnimationClips
+     *
      * @private
      * @return {void}
      */
@@ -226,7 +255,7 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
 
     /**
      * Handle clicks on the animation play / pause button.
-     * @method handleToggleAnimation
+     *
      * @private
      * @return {void}
      */
@@ -237,7 +266,7 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
 
     /**
      * Set the animation playback state, firing event EVENT_TOGGLE_ANIMATION.
-     * @method setAnimationPlaying
+     * 
      * @private
      * @param {boolean} playing - Whether or not the animation is playing.
      * @return {void}
@@ -250,7 +279,7 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
 
     /**
      * Add an animation clip to the clip pullup.
-     * @method addAnimationClip
+     *
      * @public
      * @param {string} id - The ID of the clip.
      * @param {string} name - The name of the clip.
@@ -263,7 +292,7 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
 
     /**
      * Select the animation clip with the specified ID.
-     * @method selectAnimationClip
+     *
      * @public
      * @param {string} clipId - The ID of the clip to select.
      * @return {void}
@@ -272,16 +301,15 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
         this.animationClipsPullup.selectClip(clipId);
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     handleToggleFullscreen() {
         super.handleToggleFullscreen();
         this.hidePullups();
     }
 
     /**
-     * Set the current projection mode being used by the settings pullup
+     * Set the current projection mode being used by the settings pullup.
+     *
      * @param {string} mode - The projection mode to set on the pullup
      * @return {void}
      */
@@ -290,9 +318,7 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
         this.settingsPullup.setCurrentProjectionMode(mode);
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     handleReset() {
         super.handleReset();
         this.hidePullups();
@@ -300,9 +326,7 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
         this.setAnimationPlaying(false);
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     destroy() {
         if (this.controls) {
             this.controls.controlsEl.removeEventListener('click', this.handleControlsClick);

@@ -85,20 +85,41 @@ const QUALITY_LEVELS = [
  * The UI and events system necessary to run the Settings Panel.
  */
 class Model3DSettingsPullup extends EventEmitter {
+    /** @property {HTMLElement} - Element that contains UI to interact with render modes */
+    renderModeEl;
+
+    /** @property {HTMLElement} - Element containing list of render modes */
+    renderModeListEl;
+
+    /** @property {HTMLElement} - Element that toggles on and off wireframe rendering */
+    showWireframesEl;
+
+    /** @property {HTMLElement} - Element that toggles on and off the grid */
+    showGridEl;
+
+    /** @property {HTMLElement} - Element that toggles on and off skeleton rendering */
+    showSkeletonsEl;
+
+    /** @property {HTMLElement} - Element that contains UI to interact with projection modes */
+    projectionEl;
+
+    /** @property {HTMLElement} - Element containing list of projection modes */
+    projectionListEl;
+
+    /** @property {HTMLElement} - Element that contains UI to interact with render quality */
+    qualityLevelEl;
+
+    /** @property {HTMLElement} - Element containing list of render quality levels */
+    qualityLevelListEl;
+
+    /** @property {UIRegistry} - Used to track and cleanup UI pieces and event handlers */
+    uiRegistry;
+
     /**
      * @constructor
      */
     constructor() {
         super();
-        this.renderModeEl = null;
-        this.renderModeListEl = null;
-        this.showWireframesEl = null;
-        this.showGridEl = null;
-        this.showSkeletonsEl = null;
-        this.projectionEl = null;
-        this.projectionListEl = null;
-        this.qualityLevelEl = null;
-        this.qualityLevelListEl = null;
 
         this.uiRegistry = new UIRegistry();
         this.createUi();
@@ -106,7 +127,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Convert the callback property of a config callback to a valid callback function.
-     * @method convertToValidCallback
+     *
      * @private
      * @param {Object} configEntry - A descriptor for the callback.
      * @param {Function} configEntry.callback - The callback function to search for and assign back to the entry.
@@ -124,7 +145,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Create the UI necessary to run the Settings panel pullup.
-     * @method createUi
+     *
      * @private
      * @return {void}
      */
@@ -231,7 +252,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Create the axis rotation widget.
-     * @method createAxisWidget
+     *
      * @private
      * @return {HtmlElement} The newly created rotation axis widget element.
      */
@@ -267,7 +288,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Create a single axis rotation widget.
-     * @method createRotationAxis
+     *
      * @private
      * @param {string} axisLabel - The label for the axis.
      * @param {Function} minusIconCallback - Called when the "minus" icon is clicked.
@@ -301,7 +322,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Emit a message with the render mode that has been selected.
-     * @method onRenderModeSelected
+     *
      * @private
      * @param {string} mode - The render mode to emit a message about.
      * @return {void}
@@ -312,7 +333,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Emit an axis rotation event with the axis of rotation and direction to rotate.
-     * @method onAxisRotationSelected
+     *
      * @private
      * @param {string} rotationAxis - The axis to rotate on.
      * @param {number} direction - The direction to rotate: 1 is positive rotation and -1 is negative.
@@ -326,7 +347,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Set the current projection mode being used.
-     * @method onProjectionSelected
+     *
      * @private
      * @param {string} mode - The projection mode to use.
      * @return {void}
@@ -337,7 +358,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Set the current quality level used for rendering.
-     * @method onQualityLevelSelected
+     *
      * @private
      * @param {string} level - The quality level to use.
      * @return {void}
@@ -348,7 +369,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Notify listeners that the show skeletons checkbox was toggled.
-     * @method onShowSkeletonsToggled
+     *
      * @private
      * @return {void}
      */
@@ -357,8 +378,8 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
-     * Hide skeletons and uncheck check box
-     * @method hideSkeletons
+     * Hide skeletons and uncheck check box.
+     *
      * @public
      * @return {void}
      */
@@ -369,7 +390,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Notify listeners that the show wireframes checkbox was toggled.
-     * @method onShowWireframesToggled
+     *
      * @private
      * @return {void}
      */
@@ -379,7 +400,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Notify listeners that the show grid checkbox was toggled.
-     * @method onShowGridToggled
+     *
      * @private
      * @return {void}
      */
@@ -389,7 +410,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Hide wireframes and uncheck check box
-     * @method hideWireframes
+     *
      * @public
      * @return {void}
      */
@@ -400,7 +421,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Show grid and check check box
-     * @method showGrid
+     *
      * @public
      * @return {void}
      */
@@ -411,7 +432,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Reset the pullup to its default state.
-     * @method reset
+     *
      * @public
      * @return {void}
      */
@@ -422,8 +443,8 @@ class Model3DSettingsPullup extends EventEmitter {
     }
 
     /**
-     * Set the current render mode being shown, in the dropdown label
-     * @method setCurrentRenderMode
+     * Set the current render mode being shown, in the dropdown label.
+     *
      * @public
      * @param {string} mode - The render mode name to display.
      * @return {void}
@@ -434,7 +455,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Set the current projection mode being used, in the dropdown label.
-     * @method setCurrentProjectionMode
+     *
      * @public
      * @param {string} mode - The projection mode name to display
      * @return {void}
@@ -445,7 +466,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Set the current state of the grid to the checkbox in the UI.
-     * @method setGridVisible
+     *
      * @public
      * @param {string} visible - Whether to check the box or not.
      * @return {void}
@@ -456,7 +477,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Show the settings panel.
-     * @method show
+     *
      * @public
      * @return {void}
      */
@@ -466,7 +487,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Hide the settings panel, and close inner dropdowns.
-     * @method hide
+     *
      * @public
      * @return {void}
      */
@@ -479,7 +500,7 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /**
      * Toggle display of settings panel, make sure dropdowns are closed.
-     * @method toggle
+     *
      * @public
      * @return {void}
      */

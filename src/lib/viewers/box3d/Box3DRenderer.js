@@ -34,6 +34,36 @@ function appendSharedLinkHeaders(xhr, sharedLink, sharedLinkPassword) {
 }
 
 class Box3DRenderer extends EventEmitter {
+    /** @property {HTMLElement} - Parent container element */
+    containerEl;
+
+    /** @property {boolean} - Flag for checking if VR mode is enabled */
+    vrEnabled = false;
+
+    /** @property {Box3D.NodeObject[]} - List of controller objects in the 3D scene */
+    vrGamepads = [];
+
+    /** @property {Box3D} - Box3D engine instance */
+    box3d;
+
+    /** @property {BoxSDK} - BoxSDK instance. Used for API calls to Box Metadata */
+    boxSdk;
+
+    /** @property {Object} - Default X, Y, Z position for the scene camera in 3D space */
+    defaultCameraPosition = PREVIEW_CAMERA_POSITION;
+
+    /** @property {Object} - Default X, Y, Z, W quaternion for the scene camera in 3D space */
+    defaultCameraQuaternion = PREVIEW_CAMERA_QUATERNION;
+
+    /** @property {Object} - Mapping of promises that each resolve when it's controller model file is loaded */
+    vrGamepadLoadPromises = {};
+
+    /** @property {Promise} - Promise that resolves IFF a common model file is loaded for left AND right controllers */
+    vrCommonLoadPromise;
+
+    /** @property {string} - Base URL for all static assets this file uses to be loaded from */
+    staticBaseURI;
+
     /**
      * Base class that handles creation of and communication with Box3DRuntime
      *
@@ -46,15 +76,9 @@ class Box3DRenderer extends EventEmitter {
         super();
 
         this.containerEl = containerEl;
-        this.vrEnabled = false;
-        this.vrGamepads = [];
-        this.box3d = null;
         this.boxSdk = boxSdk;
         this.on(EVENT_TRIGGER_RENDER, this.handleOnRender);
-        this.defaultCameraPosition = PREVIEW_CAMERA_POSITION;
-        this.defaultCameraQuaternion = PREVIEW_CAMERA_QUATERNION;
-        this.vrGamepadLoadPromises = {};
-        this.vrCommonLoadPromise = null;
+
         this.handleContextLost = this.handleContextLost.bind(this);
         this.handleContextRestored = this.handleContextRestored.bind(this);
     }
@@ -227,6 +251,7 @@ class Box3DRenderer extends EventEmitter {
             box3d.canvas.addEventListener('webglcontextlost', this.handleContextLost);
             box3d.canvas.addEventListener('webglcontextrestored', this.handleContextRestored);
         }
+
         return new Promise((resolve) => {
             box3d.addEntities(sceneEntities);
             const app = box3d.getAssetById('APP_ASSET_ID');

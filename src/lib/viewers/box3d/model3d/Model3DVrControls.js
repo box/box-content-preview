@@ -18,6 +18,37 @@ const buttonMap = {
  * This class handles the gamepad input used my the Model3D viewer while in VR mode.
  */
 class Model3DVrControls {
+    /** @property {Box3D.NodeObject[]} - List of vr gamepads that exist in the 3D scene */
+    vrGamepads;
+
+    /** @property {Box3D} - Instance of the Box3D runtime*/
+    box3d;
+
+    /** @property {Object} - Tracks the state of controller interaction */
+    controllerState;
+
+    /** @property {number} - Used to track the initial scale distance when entering scale mode */
+    initialScaleDistance = 0;
+
+    /** @property {THREE.Vector3} - Used to track the initial scale when entering scale mode  */
+    initialScale = new THREE.Vector3();
+
+    /** @property {THREE.Vector3} - Internal worker vector, for performing Math ops */
+    vrWorkVector1 = new THREE.Vector3();
+
+    /** @property {THREE.Vector3} - Internal worker vector, for performing Math ops */
+    vrWorkVector2 = new THREE.Vector3();
+
+    /** @property {THREE.Vector3} - Internal worker vector, for performing Math ops */
+    vrWorkMatrix = new THREE.Matrix4();
+
+    /**
+     * This class handles the gamepad input used my the Model3D viewer while in VR mode.
+     *
+     * @constructor
+     * @param {Box3D.NodeObject[]} vrGamepads - List of vr gamepads that exist in the 3D scene
+     * @param {Box3D} box3dEngine - Instance of the Box3D runtime
+     */
     constructor(vrGamepads, box3dEngine) {
         this.vrGamepads = vrGamepads;
         this.box3d = box3dEngine;
@@ -32,19 +63,11 @@ class Model3DVrControls {
             previousParent: null,
             controlType: controlType.None
         };
-        // Values to track information about the initial scale when the
-        // object scaling mode is entered.
-        this.initialScaleDistance = 0;
-        this.initialScale = new THREE.Vector3();
-
-        // Internal objects for calculations.
-        this.vrWorkVector1 = new THREE.Vector3();
-        this.vrWorkVector2 = new THREE.Vector3();
-        this.vrWorkMatrix = new THREE.Matrix4();
     }
 
     /**
      * Unbind from all events on the gamepads and do any other needed cleanup.
+     *
      * @return {void}
      */
     destroy() {
@@ -54,6 +77,7 @@ class Model3DVrControls {
     /**
      * Move an object from one parent to another while maintaining the object's
      * world transform values. i.e. the size, position and scale that it appears.
+     *
      * @param {Box3D.NodeObject} object - The object whose parent will be changed.
      * @param {Box3D.NodeObject} newParent - The new parent for the object.
      * @return {void}
@@ -81,6 +105,7 @@ class Model3DVrControls {
 
     /**
      * Start the object translation mode.
+     *
      * @return {void}
      */
     startTranslation() {
@@ -97,6 +122,7 @@ class Model3DVrControls {
 
     /**
      * Update the scale of the object each frame based on controller positions.
+     *
      * @return {void}
      */
     @autobind onScaleUpdate() {
@@ -122,6 +148,7 @@ class Model3DVrControls {
 
     /**
      * End the object scaling mode.
+     *
      * @return {void}
      */
     endScale() {
@@ -130,6 +157,7 @@ class Model3DVrControls {
 
     /**
      * When the controller trigger is released, transition control modes.
+     *
      * @param {Gamepad} gamepad - The Gamepad object whose button was released.
      * @param {number} buttonIdx - The ID of the button on the Gamepad.
      * @return {void}
@@ -159,6 +187,7 @@ class Model3DVrControls {
 
     /**
      * When the controller trigger is pressed, transition control modes.
+     *
      * @param {Gamepad} gamepad - The Gamepad object whose button was pressed.
      * @param {number} buttonIdx - The ID of the button on the Gamepad.
      * @return {void}

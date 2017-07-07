@@ -1,14 +1,8 @@
 import Box3DRenderer from '../Box3DRenderer';
 
 class Video360Renderer extends Box3DRenderer {
-    /**
-     * @inheritdoc
-     */
-    constructor(containerEl, boxSdk) {
-        super(containerEl, boxSdk);
-
-        this.inputController = null;
-    }
+    /** @property {Box3D.Components.Input} - Component that handles device input events */
+    inputController;
 
     /**
      * Get the input controller attached to the runtime
