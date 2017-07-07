@@ -85,34 +85,34 @@ const QUALITY_LEVELS = [
  * The UI and events system necessary to run the Settings Panel.
  */
 class Model3DSettingsPullup extends EventEmitter {
-    /** @property {} - */
+    /** @property {HTMLElement} - Element that contains UI to interact with render modes */
     renderModeEl;
 
-    /** @property {} - */
+    /** @property {HTMLElement} - Element containing list of render modes */
     renderModeListEl;
 
-    /** @property {} - */
+    /** @property {HTMLElement} - Element that toggles on and off wireframe rendering */
     showWireframesEl;
 
-    /** @property {} - */
+    /** @property {HTMLElement} - Element that toggles on and off the grid */
     showGridEl;
 
-    /** @property {} - */
+    /** @property {HTMLElement} - Element that toggles on and off skeleton rendering */
     showSkeletonsEl;
 
-    /** @property {} - */
+    /** @property {HTMLElement} - Element that contains UI to interact with projection modes */
     projectionEl;
 
-    /** @property {} - */
+    /** @property {HTMLElement} - Element containing list of projection modes */
     projectionListEl;
 
-    /** @property {} - */
+    /** @property {HTMLElement} - Element that contains UI to interact with render quality */
     qualityLevelEl;
 
-    /** @property {} - */
+    /** @property {HTMLElement} - Element containing list of render quality levels */
     qualityLevelListEl;
 
-    /** @property {} - */
+    /** @property {UIRegistry} - Used to track and cleanup UI pieces and event handlers */
     uiRegistry;
 
     /**

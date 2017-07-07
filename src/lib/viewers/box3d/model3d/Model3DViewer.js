@@ -23,6 +23,7 @@ import './Model3D.scss';
 const DEFAULT_AXIS_UP = '+Y';
 const DEFAULT_AXIS_FORWARD = '+Z';
 const DEFAULT_RENDER_GRID = true;
+const LOAD_TIMEOUT = 180000; // 3 minutes
 
 /**
  * Model3d
@@ -30,6 +31,18 @@ const DEFAULT_RENDER_GRID = true;
  * @class
  */
 @autobind class Model3DViewer extends Box3DViewer {
+    /** @property {Object[]} - List of Box3D instances added to the scene */
+    instances = [];
+
+    /** @property {Object[]} - List of Box3D assets used in the scene. Models, textures, audio, etc. */
+    assets = [];
+
+    /** @property {Object} - Tracks up and forward axes for the model alignment in the scene */
+    axes = {
+        up: null,
+        forward: null
+    };
+
     /**
      * @inheritdoc
      */
@@ -39,13 +52,7 @@ const DEFAULT_RENDER_GRID = true;
 
         this.wrapperEl.classList.add(CSS_CLASS_INVISIBLE);
 
-        this.loadTimeout = 180000; // 3 minutes
-        this.instances = [];
-        this.assets = [];
-        this.axes = {
-            up: null,
-            forward: null
-        };
+        this.loadTimeout = LOAD_TIMEOUT;
     }
 
     /**
