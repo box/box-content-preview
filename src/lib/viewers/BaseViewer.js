@@ -34,6 +34,15 @@ const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
 @autobind class BaseViewer extends EventEmitter {
+    /** @property {Controls} - UI used to interact with the document in the viewer */
+    controls;
+
+    /** @property {boolean} - Flag for tracking whether or not this viewer has been destroyed */
+    destroyed = false;
+
+    /** @property {number} - Number of milliseconds to wait, while loading, until messaging that the viewer took too long to load */
+    loadTimeout;
+
     /** @property {number} - Rotation value in degrees, if rotated */
     rotationAngle = 0;
 

@@ -15,6 +15,7 @@ const VIEWERS = [
 class Model3DLoader extends AssetLoader {
     /**
      * Instantiates a loader for 3D model preview.
+     *
      * @constructor
      * @inheritdoc
      * @return {Model3DLoader} The model3d loader instance
@@ -24,9 +25,7 @@ class Model3DLoader extends AssetLoader {
         this.viewers = VIEWERS;
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     determineViewer(file, disabledViewers = []) {
         const viewer = super.determineViewer(file, disabledViewers);
 

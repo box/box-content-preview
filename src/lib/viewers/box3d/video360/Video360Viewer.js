@@ -21,17 +21,28 @@ const VIDEO_TEXTURE_PROPS = {
 };
 
 class Video360Viewer extends DashViewer {
-    /**
-     * @inheritdoc
-     */
+    /** @property {Video360Renderer} - Instance of the Video360Renderer */
+    renderer;
+
+    /** @property {Video360Controls} - Instance of the Video360Controls */
+    controls;
+
+    /** @property {Box3D.Texture2DAsset} - Asset for the skybox texture */
+    textureAsset;
+
+    /** @property {Box3D.VideoAsset} - Asset for the video to apply to the texture */
+    videoAsset;
+
+    /** @property {Box3D.Components.SkyboxRenderer} - The component for rendering the video as 360 degree (on a skybox) */
+    skybox;
+
+    /** @inheritdoc */
     setup() {
         this.fileLoadingIcon = ICON_FILE_MEDIA;
 
         // Call super() to set up common layout
         super.setup();
 
-        this.renderer = null;
-        this.controls = null;
         this.destroyed = false;
 
         // Hide video element
@@ -42,9 +53,7 @@ class Video360Viewer extends DashViewer {
         this.wrapperEl.classList.add(CSS_CLASS_VIDEO_360);
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     destroy() {
         super.destroy();
         if (this.skybox) {

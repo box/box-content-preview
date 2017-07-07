@@ -15,6 +15,7 @@ const VIEWERS = [
 class Image360Loader extends Base360Loader {
     /**
      * Instantiates a loader for 360 degree image preview.
+     *
      * @constructor
      * @return {Image360Loader} The image360 loader instance
      */
@@ -23,9 +24,7 @@ class Image360Loader extends Base360Loader {
         this.viewers = VIEWERS;
     }
 
-    /**
-     * @inheritdoc
-     */
+    /** @inheritdoc */
     determineViewer(file, disabledViewers = []) {
         const viewer = super.determineViewer(file, disabledViewers);
         if (viewer && !Browser.hasWebGL()) {

@@ -7,6 +7,12 @@ const CSS_CLASS_MEDIA_CONTROLS_CONTAINER = 'bp-media-controls-container';
 const CSS_CLASS_MEDIA_CONTROL_BUTTON = 'bp-media-controls-btn';
 
 class Video360Controls extends EventEmitter {
+    /** @property {HTMLElement} - Parent container for the controls */
+    el;
+
+    /** @property {HTMLElement} - Container that provides enabling/disabling of VR mode */
+    vrButtonEl;
+
     /**
      * Base class for building 3D previews on. Contains events for VR, Fullscreen,
      * Scene Reset, and Scene Loaded. Also, used for programmatic building of control
@@ -29,7 +35,7 @@ class Video360Controls extends EventEmitter {
     }
 
     /**
-     * Add and create any UI to the container element and control bar
+     * Add and create any UI to the container element and control bar.
      *
      * @return {void}
      */
@@ -48,7 +54,7 @@ class Video360Controls extends EventEmitter {
     }
 
     /**
-     * Attaches event handlers to buttons
+     * Attaches event handlers to buttons.
      *
      * @return {void}
      */
@@ -59,7 +65,7 @@ class Video360Controls extends EventEmitter {
     }
 
     /**
-     * Detach event handlers from buttons
+     * Detach event handlers from buttons.
      *
      * @return {void}
      */
@@ -70,7 +76,7 @@ class Video360Controls extends EventEmitter {
     }
 
     /**
-     * Handle a toggle of VR event, and emit a message
+     * Handle a toggle of VR event, and emit a message.
      *
      * @return {void}
      */
@@ -79,7 +85,7 @@ class Video360Controls extends EventEmitter {
     }
 
     /**
-     * Enables the VR button
+     * Enables the VR button.
      *
      * @return {void}
      */
@@ -90,7 +96,7 @@ class Video360Controls extends EventEmitter {
     }
 
     /**
-     * Destroy all controls, and this module
+     * Destroy all controls, and this module.
      *
      * @return {void}
      */
