@@ -1,5 +1,27 @@
 # Change Log
 
+## [v0.131.0](https://github.com/box/box-content-preview/tree/v0.131.0) (2017-07-07)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.130.0...v0.131.0)
+
+**Merged pull requests:**
+
+- Cleanup for 1.0 for 3D [\#205](https://github.com/box/box-content-preview/pull/205) ([JustinHoldstock](https://github.com/JustinHoldstock))
+- Chore: Preview UI as instance [\#204](https://github.com/box/box-content-preview/pull/204) ([tonyjin](https://github.com/tonyjin))
+- Chore: Update README to include token scope information [\#203](https://github.com/box/box-content-preview/pull/203) ([jeremypress](https://github.com/jeremypress))
+- Chore: Preview Cleanup [\#202](https://github.com/box/box-content-preview/pull/202) ([jeremypress](https://github.com/jeremypress))
+- Fix/notification message timeout [\#201](https://github.com/box/box-content-preview/pull/201) ([MinhHNguyen](https://github.com/MinhHNguyen))
+- Chore: Page num input uses numeric keyboard on mobile devices [\#200](https://github.com/box/box-content-preview/pull/200) ([jeremypress](https://github.com/jeremypress))
+- Chore: Fix ESLint warnings \(JSDoc cleanup\) [\#199](https://github.com/box/box-content-preview/pull/199) ([tonyjin](https://github.com/tonyjin))
+- Update: pdf.js 1.8.514 [\#197](https://github.com/box/box-content-preview/pull/197) ([tonyjin](https://github.com/tonyjin))
+- Fix: Ensures highlight buttons are hidden on mobile devices [\#196](https://github.com/box/box-content-preview/pull/196) ([pramodsum](https://github.com/pramodsum))
+- Docs: Update contributing.md [\#195](https://github.com/box/box-content-preview/pull/195) ([tonyjin](https://github.com/tonyjin))
+- Chore: Remove padding for CSV files [\#194](https://github.com/box/box-content-preview/pull/194) ([jeremypress](https://github.com/jeremypress))
+- Chore: Update to new 'Elements' branding [\#193](https://github.com/box/box-content-preview/pull/193) ([tonyjin](https://github.com/tonyjin))
+- Fix: Allow panning on mobile while zooming into ppt files [\#192](https://github.com/box/box-content-preview/pull/192) ([jeremypress](https://github.com/jeremypress))
+- Fix: Tree shaking bug workaround for csv bundle [\#191](https://github.com/box/box-content-preview/pull/191) ([priyajeet](https://github.com/priyajeet))
+- Chore: Removing unused 'active' & 'active-hover' states for annotations [\#189](https://github.com/box/box-content-preview/pull/189) ([pramodsum](https://github.com/pramodsum))
+- Chore: Scrubber/Media fixes for mobile [\#185](https://github.com/box/box-content-preview/pull/185) ([jeremypress](https://github.com/jeremypress))
+
 ## [v0.130.0](https://github.com/box/box-content-preview/tree/v0.130.0) (2017-06-28)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.129.2...v0.130.0)
 
