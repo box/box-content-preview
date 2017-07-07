@@ -1148,7 +1148,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 pagesCount: 5
             };
             stubs.totalPageEl = {
-                textContent: 0
+                textContent: 0,
+                setAttribute: sandbox.stub()
             };
             stubs.querySelector = {
                 querySelector: sandbox.stub().returns(stubs.totalPageEl)
