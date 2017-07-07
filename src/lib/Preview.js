@@ -8,22 +8,12 @@ import cloneDeep from 'lodash.clonedeep';
 import Browser from './Browser';
 import Logger from './Logger';
 import loaderList from './loaders';
-import cache from './Cache';
-import ProgressBar from './ProgressBar';
+import Cache from './Cache';
 import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
+import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
 import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
 import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid, cacheFile, uncacheFile } from './file';
-import {
-    setup,
-    cleanup,
-    showLoadingIndicator,
-    hideLoadingIndicator,
-    showDownloadButton,
-    showLoadingDownloadButton,
-    showPrintButton,
-    showNavigation
-} from './ui';
 import {
     API_HOST,
     APP_HOST,
@@ -57,128 +47,63 @@ const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
 
 @autobind class Preview extends EventEmitter {
-    /**
-     * Indicates id preview is open or not
-     *
-     * @property {boolean}
-     */
+    /** @property {boolean} - Whether preview is open */
     open = false;
 
-    /**
-     * Some analytics that span across preview sessions
-     *
-     * @property {Object}
-     */
+    /** @property {Object} - Analytics that span across preview sessions */
     count = {
         success: 0, // Counts how many previews have happened overall
         error: 0, // Counts how many errors have happened overall
         navigation: 0 // Counts how many previews have happened by prev next navigation
     };
 
-    /**
-     * Current file being previewed
-     *
-     * @property {Object}
-     */
+    /** @property {Object} - Current file being previewed */
     file = {};
 
-    /**
-     * User passed in preview options
-     *
-     * @property {Object}
-     */
+    /** @property {Object} - User-specified preview options */
     previewOptions = {};
 
-    /**
-     * Calculated preview options
-     *
-     * @property {Object}
-     */
+    /** @property {Object} - Parsed & computed preview options */
     options = {};
 
-    /**
-     * Map of disabled viewers
-     *
-     * @property {Object}
-     */
+    /** @property {Object} - Map of disabled viewer names */
     disabledViewers = {};
 
-    /**
-     * Auth token
-     *
-     * @property {string}
-     */
+    /** @property {string} - Access token */
     token = '';
 
-    /**
-     * The current viewer
-     *
-     * @property {Object}
-     */
+    /** @property {Object} - Current viewer instance */
     viewer;
 
-    /**
-     * Collection of file ids
-     *
-     * @property {string[]}
-     */
+    /** @property {string[]} - List of file IDs to preview */
     collection = [];
 
-    /**
-     * User passed in preview options
-     *
-     * @property {AssetLoader[]}
-     */
+    /** @property {AssetLoader[]} - List of asset loaders */
     loaders = loaderList;
 
-    /**
-     * Progress bar instance
-     *
-     * @property {Object}
-     */
-    progressBar;
-
-    /**
-     * Logger instance
-     *
-     * @property {Object}
-     */
+    /** @property {Logger} - Logger instance */
     logger;
 
-    /**
-     * Retry count for network errors
-     *
-     * @property {number}
-     */
+    /** @property {number} - Number of times a particular preview has been retried */
     retryCount = 0;
 
-    /**
-     * Retry count for preview logging
-     *
-     * @property {number}
-     */
+    /** @property {number} - Number of times a particular logging call cas been retried */
     logRetryCount = 0;
 
-    /**
-     * Retry timeout id
-     *
-     * @property {number}
-     */
+    /** @property {number} - Reference to preview retry timeout */
     retryTimeout;
 
-    /**
-     * DOM container for preview
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - Preview DOM container */
     container;
 
-    /**
-     * Mouse move handler function
-     *
-     * @property {function}
-     */
+    /** @property {Function} - Throttled mousemove handler */
     throttledMousemoveHandler;
+
+    /** @property {Cache} - Preview's cache instance */
+    cache;
+
+    /** @property {PreviewUI} - Preview's UI instance */
+    ui;
 
     //--------------------------------------------------------------------------
     // Public
@@ -200,6 +125,9 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
         // object that mimics the window location object and points to where
         // preview.js is loaded from by the browser.
         this.location = PREVIEW_LOCATION;
+
+        this.cache = new Cache();
+        this.ui = new PreviewUI();
     }
 
     /**
@@ -208,11 +136,6 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
      * @return {void}
      */
     destroy() {
-        // Cleanup progress bar
-        if (this.progressBar) {
-            this.progressBar.destroy();
-        }
-
         // Destroy viewer
         if (this.viewer && typeof this.viewer.destroy === 'function') {
             this.viewer.destroy();
@@ -256,7 +179,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
         this.destroy();
 
         // Clean the UI
-        cleanup();
+        this.ui.cleanup();
 
         // Nuke the file
         this.file = undefined;
@@ -273,7 +196,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
         // Also update the original collection that was saved from the initial show
         this.previewOptions.collection = this.collection;
         if (this.file) {
-            showNavigation(this.file.id, this.collection);
+            this.ui.showNavigation(this.file.id, this.collection);
         }
     }
 
@@ -298,7 +221,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
             }
 
             if (checkFileValid(file)) {
-                cacheFile(file);
+                cacheFile(this.cache, file);
             } else {
                 /* eslint-disable no-console */
                 console.error('[Preview SDK] Tried to cache invalid file: ', file);
@@ -478,7 +401,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
 
         // Determining the viewer could throw an error
         try {
-            file = cache.get(fileId);
+            file = this.cache.get(fileId);
             loader = file ? this.getLoader(file) : null;
             viewer = loader ? loader.determineViewer(file) : null;
             if (!viewer) {
@@ -571,7 +494,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
         const currentFileId = this.file ? this.file.id : undefined;
 
         // Use cached file data if available, otherwise create empty file object
-        this.file = cache.get(fileId) || { id: fileId };
+        this.file = this.cache.get(fileId) || { id: fileId };
 
         // Retry up to RETRY_COUNT if we are reloading same file
         if (this.file.id === currentFileId) {
@@ -604,7 +527,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
         this.parseOptions(this.previewOptions, tokenMap);
 
         // Setup the shell
-        this.container = setup(
+        this.container = this.ui.setup(
             this.options,
             this.keydownHandler,
             this.navigateLeft,
@@ -613,11 +536,11 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
         );
 
         // Setup loading UI and progress bar
-        showLoadingIndicator();
-        this.startProgressBar();
+        this.ui.showLoadingIndicator();
+        this.ui.startProgressBar();
 
         // Update navigation
-        showNavigation(this.file.id, this.collection);
+        this.ui.showNavigation(this.file.id, this.collection);
 
         // If preview collection is empty, create a collection of one with the
         // current file ID. Otherwise, assume the current file ID is already in
@@ -712,7 +635,9 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
      * @return {Object} combined options
      */
     createViewerOptions(moreOptions) {
-        return cloneDeep(Object.assign({ location: this.location }, this.options, moreOptions));
+        return cloneDeep(
+            Object.assign({}, this.options, moreOptions, { location: this.location, cache: this.cache, ui: this.ui })
+        );
     }
 
     /**
@@ -754,11 +679,6 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
     handleLoadResponse(file) {
         // If preview is closed or response comes back for an incorrect file, don't do anything
         if (!this.open || (this.file && this.file.id !== file.id)) {
-            /* eslint-disable no-console */
-            console.error(
-                `handleLoadResponse returned early - this.open: ${this.open}, this.file: ${this.file}, this.file.id: ${this.file.id}, file.id: ${file.id}`
-            );
-            /* eslint-enable no-console */
             return;
         }
 
@@ -768,14 +688,14 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
             this.logger.setFile(file);
 
             // Keep reference to previously cached file version
-            const cachedFile = cache.get(file.id);
+            const cachedFile = this.cache.get(file.id);
 
             // Explicitly uncache watermarked files, otherwise update cache
             const isWatermarked = file.watermark_info && file.watermark_info.is_watermarked;
             if (isWatermarked) {
-                uncacheFile(file);
+                uncacheFile(this.cache, file);
             } else {
-                cacheFile(file);
+                cacheFile(this.cache, file);
             }
 
             // Should load/reload viewer if:
@@ -792,12 +712,6 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
             if (shouldLoadViewer) {
                 this.logger.setCacheStale();
                 this.loadViewer();
-            } else {
-                /* eslint-disable no-console */
-                console.error(
-                    `shouldLoadViewer was false - cachedFile: ${cachedFile}, checkFileValid: ${checkFileValid(cachedFile)}, cachedFile.file_version.sha1: ${cachedFile.file_version.sha1}, file.file_version.sha1: ${file.file_version.sha1}, isWatermarked: ${isWatermarked}`
-                );
-                /* eslint-enable no-console */
             }
         } catch (err) {
             this.triggerError(err instanceof Error ? err : new Error(__('error_refresh')));
@@ -814,9 +728,6 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
     loadViewer() {
         // If preview is closed don't do anything
         if (!this.open) {
-            /* eslint-disable no-console */
-            console.error(`loadViewer returned early - this.open: ${this.open}`);
-            /* eslint-enable no-console */
             return;
         }
 
@@ -827,7 +738,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
 
         // Show download button if download permissions exist, options allow, and browser has ability
         if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
-            showLoadingDownloadButton(this.download);
+            this.ui.showLoadingDownloadButton(this.download);
         }
 
         // Determine the asset loader to use
@@ -891,10 +802,10 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
                     this.finishLoading(data.data);
                     break;
                 case 'progressstart':
-                    this.startProgressBar();
+                    this.ui.startProgressBar();
                     break;
                 case 'progressend':
-                    this.finishProgressBar();
+                    this.ui.finishProgressBar();
                     break;
                 default:
                     // This includes 'notification', 'preload' and others
@@ -916,10 +827,10 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
         // Show or hide annotate/print/download buttons
         // canDownload is not supported by all of our browsers, so for now we need to check isMobile
         if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
-            showDownloadButton(this.download);
+            this.ui.showDownloadButton(this.download);
 
             if (checkFeature(this.viewer, 'print') && !Browser.isMobile()) {
-                showPrintButton(this.print);
+                this.ui.showPrintButton(this.print);
             }
         }
 
@@ -961,7 +872,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
 
         // Finish the progress bar unless instructed not to
         if (data.endProgress !== false) {
-            this.finishProgressBar();
+            this.ui.finishProgressBar();
         }
 
         // Programmtically focus on the viewer after it loads
@@ -970,7 +881,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
         }
 
         // Hide the loading indicator
-        hideLoadingIndicator();
+        this.ui.hideLoadingIndicator();
 
         // Prefetch next few files
         this.prefetchNextFiles();
@@ -1032,7 +943,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
         }
 
         // Nuke the cache
-        cache.unset(this.file.id);
+        this.cache.unset(this.file.id);
 
         // Check if hit the retry limit
         if (this.retryCount > RETRY_COUNT) {
@@ -1085,7 +996,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
         this.open = false;
 
         // Nuke the cache
-        cache.unset(this.file.id);
+        this.cache.unset(this.file.id);
 
         // Destroy anything still showing
         this.destroy();
@@ -1164,7 +1075,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
                     get(getURL(id, this.options.apiHost), this.getRequestHeaders(token))
                         .then((file) => {
                             // Cache file info
-                            cacheFile(file);
+                            cacheFile(this.cache, file);
                             this.prefetchedCollection.push(file.id);
 
                             // Prefetch assets and content for file
@@ -1185,29 +1096,6 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
                 console.error('Error prefetching files');
                 /* eslint-enable no-console */
             });
-    }
-
-    /**
-     * Shows and starts a progress bar at the top of the preview.
-     *
-     * @private
-     * @return {void}
-     */
-    startProgressBar() {
-        this.progressBar = new ProgressBar(this.container);
-        this.progressBar.start();
-    }
-
-    /**
-     * Finishes and hides the top progress bar if present.
-     *
-     * @private
-     * @return {void}
-     */
-    finishProgressBar() {
-        if (this.progressBar) {
-            this.progressBar.finish();
-        }
     }
 
     /**

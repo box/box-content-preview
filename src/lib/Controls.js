@@ -9,39 +9,19 @@ const CONTROLS_PAGE_NUM_WRAPPER_CLASS = 'bp-doc-page-num-wrapper';
 const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
 
 class Controls {
-    /**
-     * Controls container element
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - Controls container element */
     containerEl;
 
-    /**
-     * Controls element
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - Controls element */
     controlsEl;
 
-    /**
-     * Array of buttons for cleanup purposes
-     *
-     * @property {Array}
-     */
+    /** @property {Object[]} - Array of button elements and their event listeners, used for cleanup */
     buttonRefs = [];
 
-    /**
-     * Indicates if the control bar should be hidden or not
-     *
-     * @property {boolean}
-     */
+    /** @property {boolean} - Whether control bar should be hidden */
     shouldHide = true;
 
-    /**
-     * Indicates if the browser supports touch events
-     *
-     * @property {boolean}
-     */
+    /** @property {boolean} - Whether browser supports touch */
     hasTouch = Browser.hasTouch();
 
     /**

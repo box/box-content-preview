@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-expressions */
 import * as constants from '../constants';
-import * as ui from '../ui';
+import PreviewUI from '../PreviewUI';
 
+let ui;
 const sandbox = sinon.sandbox.create();
 
-describe('lib/ui', () => {
+describe('lib/PreviewUI', () => {
     let containerEl;
     let options;
     const handler = () => {};
@@ -14,7 +15,8 @@ describe('lib/ui', () => {
     });
 
     beforeEach(() => {
-        fixture.load('__tests__/ui-test.html');
+        ui = new PreviewUI();
+        fixture.load('__tests__/PreviewUI-test.html');
         containerEl = document.querySelector('.ui');
         options = {
             container: containerEl
@@ -27,20 +29,23 @@ describe('lib/ui', () => {
     });
 
     describe('cleanup()', () => {
-        it('should clean up shell and remove event listeners', () => {
+        it('should destroy progress bar, clean up shell, and remove event listeners', () => {
             const resultEl = ui.setup(options, handler, null, null, handler);
+
+            sandbox.stub(ui.progressBar, 'destroy');
             const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
             sandbox.mock(contentContainerEl).expects('removeEventListener').withArgs('mousemove', handler);
             sandbox.mock(document).expects('removeEventListener').withArgs('keydown', handler);
 
             ui.cleanup();
 
+            expect(ui.progressBar.destroy).to.be.called;
             expect(resultEl).to.be.empty;
         });
     });
 
     describe('setup()', () => {
-        it('should setup shell structure, header, and loading state', () => {
+        it('should setup shell structure, header, progress bar, and loading state', () => {
             const resultEl = ui.setup(options);
 
             // Check shell structure
@@ -48,6 +53,9 @@ describe('lib/ui', () => {
 
             // Check header
             expect(resultEl).to.contain(constants.SELECTOR_BOX_PREVIEW_HEADER);
+
+            // Check progress bar
+            expect(resultEl).to.contain(constants.SELECTOR_BOX_PREVIEW_PROGRESS_BAR);
 
             // Check loading state
             const loadingWrapperEl = resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOADING_WRAPPER);
@@ -101,19 +109,15 @@ describe('lib/ui', () => {
             it('should reset nav event listeners if collection has more than one file', () => {
                 const leftNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_LEFT);
                 const rightNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_RIGHT);
-                const leftNavMock = sandbox.mock(leftNavEl);
-                const rightNavMock = sandbox.mock(rightNavEl);
-
-                leftNavMock.expects('removeEventListener').withArgs('click');
-                leftNavMock.expects('addEventListener').withArgs('click');
-                rightNavMock.expects('removeEventListener').withArgs('click');
-                rightNavMock.expects('addEventListener').withArgs('click');
+                sandbox.mock(leftNavEl).expects('removeEventListener').withArgs('click');
+                sandbox.mock(rightNavEl).expects('removeEventListener').withArgs('click');
 
                 ui.showNavigation('1', ['1', '2']);
             });
 
             it('should show left nav arrow if passed in ID is not the first in the collection', () => {
                 const leftNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_LEFT);
+                sandbox.mock(leftNavEl).expects('removeEventListener').withArgs('click');
                 sandbox.mock(leftNavEl.classList).expects('remove').withArgs(constants.CLASS_HIDDEN);
 
                 ui.showNavigation('2', ['1', '2']);
@@ -121,6 +125,7 @@ describe('lib/ui', () => {
 
             it('should show right nav arrow if passed in ID is not the last in the collection', () => {
                 const rightNavEl = containerEl.querySelector(constants.SELECTOR_NAVIGATION_RIGHT);
+                sandbox.mock(rightNavEl).expects('addEventListener').withArgs('click');
                 sandbox.mock(rightNavEl.classList).expects('remove').withArgs(constants.CLASS_HIDDEN);
 
                 ui.showNavigation('1', ['1', '2']);
@@ -142,7 +147,9 @@ describe('lib/ui', () => {
 
         describe('showDownloadButton()', () => {
             it('should set up and show download button', () => {
-                const buttonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD);
+                const buttonEl = containerEl.querySelector(
+                    constants.SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD
+                );
                 buttonEl.classList.add(constants.CLASS_HIDDEN);
                 sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', handler);
 
@@ -155,7 +162,9 @@ describe('lib/ui', () => {
 
         describe('showLoadingDownloadButton()', () => {
             it('should set up and show loading download button', () => {
-                const buttonEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD);
+                const buttonEl = containerEl.querySelector(
+                    constants.SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD
+                );
                 buttonEl.classList.add(constants.CLASS_INVISIBLE);
                 sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', handler);
 
@@ -183,6 +192,35 @@ describe('lib/ui', () => {
                 ui.hideLoadingIndicator();
                 expect(contentContainerEl).to.have.class(constants.CLASS_PREVIEW_LOADED);
             });
+        });
+    });
+
+    describe('getAnnotateButton()', () => {
+        it('should return the annotate button', () => {
+            containerEl = ui.setup(options);
+            expect(ui.getAnnotateButton()).to.equal(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_ANNOTATE));
+        });
+    });
+
+    describe('startProgressBar()', () => {
+        it('should start the progress bar', () => {
+            ui.progressBar = {
+                start: sandbox.stub()
+            };
+
+            ui.startProgressBar();
+            expect(ui.progressBar.start).to.be.called;
+        });
+    });
+
+    describe('finishProgressBar()', () => {
+        it('should finish the progress bar', () => {
+            ui.progressBar = {
+                finish: sandbox.stub()
+            };
+
+            ui.finishProgressBar();
+            expect(ui.progressBar.finish).to.be.called;
         });
     });
 });

@@ -1,7 +1,6 @@
 import autobind from 'autobind-decorator';
 import debounce from 'lodash.debounce';
 import BaseViewer from '../BaseViewer';
-import cache from '../../Cache';
 import Browser from '../../Browser';
 import MediaControls from './MediaControls';
 import { CLASS_ELEM_KEYBOARD_FOCUS, CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
@@ -182,7 +181,7 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
      * @return {void}
      */
     handleRate() {
-        const speed = cache.get('media-speed') - 0;
+        const speed = this.cache.get('media-speed') - 0;
         if (speed && this.mediaEl.playbackRate !== speed && this.mediaEl.playbackRate > 0) {
             this.emit('ratechange', speed);
         }
@@ -198,7 +197,7 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
      * @return {void}
      */
     handleVolume() {
-        const volume = cache.has(MEDIA_VOLUME_CACHE_KEY) ? cache.get(MEDIA_VOLUME_CACHE_KEY) : DEFAULT_VOLUME;
+        const volume = this.cache.has(MEDIA_VOLUME_CACHE_KEY) ? this.cache.get(MEDIA_VOLUME_CACHE_KEY) : DEFAULT_VOLUME;
         if (volume !== 0) {
             this.oldVolume = volume;
         }
@@ -226,7 +225,7 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
      * @return {void}
      */
     loadUI() {
-        this.mediaControls = new MediaControls(this.mediaContainerEl, this.mediaEl);
+        this.mediaControls = new MediaControls(this.mediaContainerEl, this.mediaEl, this.cache);
 
         // Add event listeners for the media controls
         this.addEventListenersForMediaControls();
@@ -279,7 +278,7 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
      * @return {void}
      */
     setVolume(volume) {
-        cache.set(MEDIA_VOLUME_CACHE_KEY, volume);
+        this.cache.set(MEDIA_VOLUME_CACHE_KEY, volume);
         this.handleVolume();
     }
 
@@ -406,9 +405,9 @@ const EMIT_WAIT_TIME_IN_MILLIS = 100;
     toggleMute() {
         if (this.mediaEl.volume) {
             this.oldVolume = this.mediaEl.volume;
-            cache.set(MEDIA_VOLUME_CACHE_KEY, 0);
+            this.cache.set(MEDIA_VOLUME_CACHE_KEY, 0);
         } else {
-            cache.set(MEDIA_VOLUME_CACHE_KEY, this.oldVolume);
+            this.cache.set(MEDIA_VOLUME_CACHE_KEY, this.oldVolume);
         }
         this.handleVolume();
     }

@@ -2,7 +2,6 @@
 import DashViewer from '../DashViewer';
 import VideoBaseViewer from '../VideoBaseViewer';
 import BaseViewer from '../../BaseViewer';
-import cache from '../../../Cache';
 import fullscreen from '../../../Fullscreen';
 import * as util from '../../../util';
 import { MEDIA_STATIC_ASSETS_VERSION } from '../../../constants';
@@ -27,6 +26,12 @@ describe('lib/viewers/media/DashViewer', () => {
         const containerEl = document.querySelector('.container');
 
         dash = new DashViewer({
+            cache: {
+                set: () => {},
+                has: () => {},
+                get: () => {},
+                unset: () => {}
+            },
             file: {
                 id: 0,
                 permissions: {
@@ -275,28 +280,28 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         it('should enable HD video', () => {
-            sandbox.stub(cache, 'get').returns('hd');
+            sandbox.stub(dash.cache, 'get').returns('hd');
             dash.handleQuality();
             expect(stubs.hd).to.be.called;
             expect(dash.emit).to.be.calledWith('qualitychange', 'hd');
         });
 
         it('should enable SD video', () => {
-            sandbox.stub(cache, 'get').returns('sd');
+            sandbox.stub(dash.cache, 'get').returns('sd');
             dash.handleQuality();
             expect(stubs.sd).to.be.called;
             expect(dash.emit).to.be.calledWith('qualitychange', 'sd');
         });
 
         it('should enable auto video', () => {
-            sandbox.stub(cache, 'get').returns('auto');
+            sandbox.stub(dash.cache, 'get').returns('auto');
             dash.handleQuality();
             expect(stubs.auto).to.be.called;
             expect(dash.emit).to.be.calledWith('qualitychange', 'auto');
         });
 
         it('should not emit "qualitychange" event if no quality was cached', () => {
-            sandbox.stub(cache, 'get');
+            sandbox.stub(dash.cache, 'get');
             dash.handleQuality();
             expect(stubs.auto).to.be.called;
             expect(dash.emit).to.not.be.called;
@@ -556,7 +561,7 @@ describe('lib/viewers/media/DashViewer', () => {
             const french = { language: 'fra', id: 5 };
             const spanish = { language: 'spa', id: 6 };
             dash.textTracks = [english, russian, french, spanish];
-            sandbox.stub(cache, 'get').returns('0');
+            sandbox.stub(dash.cache, 'get').returns('0');
             stubs.mockPlayer.expects('selectTextTrack').withArgs(english);
             stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(true);
 
@@ -571,7 +576,7 @@ describe('lib/viewers/media/DashViewer', () => {
             const french = { language: 'fre', id: 5 };
             const spanish = { language: 'spa', id: 6 };
             dash.textTracks = [english, russian, french, spanish];
-            sandbox.stub(cache, 'get').returns('3');
+            sandbox.stub(dash.cache, 'get').returns('3');
             stubs.mockPlayer.expects('selectTextTrack').withArgs(spanish);
             stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(true);
 
@@ -586,7 +591,7 @@ describe('lib/viewers/media/DashViewer', () => {
             const french = { language: 'fre', id: 5 };
             const spanish = { language: 'spa', id: 6 };
             dash.textTracks = [english, russian, french, spanish];
-            sandbox.stub(cache, 'get').returns('1');
+            sandbox.stub(dash.cache, 'get').returns('1');
             stubs.mockPlayer.expects('selectTextTrack').withArgs(russian);
             stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(true);
 
@@ -601,7 +606,7 @@ describe('lib/viewers/media/DashViewer', () => {
             const french = { language: 'fre', id: 5 };
             const spanish = { language: 'spa', id: 6 };
             dash.textTracks = [english, russian, french, spanish];
-            sandbox.stub(cache, 'get').returns('-1');
+            sandbox.stub(dash.cache, 'get').returns('-1');
             stubs.mockPlayer.expects('selectTextTrack').never();
             stubs.mockPlayer.expects('setTextTrackVisibility').withArgs(false);
 

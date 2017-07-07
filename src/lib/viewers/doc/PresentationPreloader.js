@@ -1,16 +1,16 @@
 import DocPreloader from './DocPreloader';
 import { CLASS_INVISIBLE, CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION } from '../../constants';
 import { setDimensions } from '../../util';
-import { hideLoadingIndicator } from '../../ui';
 
 class PresentationPreloader extends DocPreloader {
     /**
      * [constructor]
      *
+     * @param {PreviewUI} previewUI - UI instance
      * @return {PresentationPreloader} PresentationPreloader instance
      */
-    constructor() {
-        super();
+    constructor(previewUI) {
+        super(previewUI);
         this.wrapperClassName = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION;
     }
 
@@ -31,7 +31,7 @@ class PresentationPreloader extends DocPreloader {
         setDimensions(this.imageEl, scaledWidth, scaledHeight);
 
         // Hide the preview-level loading indicator
-        hideLoadingIndicator();
+        this.previewUI.hideLoadingIndicator();
 
         // Show preload element after content is properly sized
         this.preloadEl.classList.remove(CLASS_INVISIBLE);

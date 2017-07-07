@@ -22,7 +22,10 @@ describe('lib/annotations/Annotator', () => {
             annotationService: {},
             fileVersionId: 1,
             isMobile: false,
-            options: {}
+            options: {},
+            previewUI: {
+                getAnnotateButton: () => {}
+            }
         });
 
         stubs.thread = {

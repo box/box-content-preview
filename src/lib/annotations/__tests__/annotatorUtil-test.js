@@ -336,8 +336,6 @@ describe('lib/annotations/annotatorUtil', () => {
         });
 
         it('should return false if thread is notpending', () => {
-            expect(isPending(constants.ANNOTATION_STATE_ACTIVE)).to.be.false;
-            expect(isPending(constants.ANNOTATION_STATE_ACTIVE_HOVER)).to.be.false;
             expect(isPending(constants.ANNOTATION_STATE_HOVER)).to.be.false;
             expect(isPending(constants.ANNOTATION_STATE_INACTIVE)).to.be.false;
         });
