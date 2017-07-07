@@ -29,20 +29,6 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
         renderer = null;
     });
 
-    describe('constructor()', () => {
-        it('should create a null variable called .textureAsset', () => {
-            expect(renderer.textureAsset).to.be.null;
-        });
-
-        it('should create a null variable called .imageAsset', () => {
-            expect(renderer.imageAsset).to.be.null;
-        });
-
-        it('should create a null variable called .skybox', () => {
-            expect(renderer.skybox).to.be.null;
-        });
-    });
-
     describe('destroy()', () => {
         it('should call cleanupTexture()', () => {
             const stub = sandbox.stub(renderer, 'cleanupTexture');
