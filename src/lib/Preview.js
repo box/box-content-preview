@@ -157,7 +157,6 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
         if (typeof token === 'string' || typeof token === 'function') {
             this.previewOptions = Object.assign({}, options, { token });
         } else if (token) {
-            // @TODO(tjin): Remove this after expiring embed updates to new calling pattern
             this.previewOptions = Object.assign({}, token || {});
         } else {
             throw new Error('Missing access token!');
@@ -1201,8 +1200,6 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
     /**
      * Global keydown handler for preview.
      *
-     * @TODO fix multiple preview key issue
-     * @TODO fire key event
      *
      * @private
      * @param {Event} event - keydown event

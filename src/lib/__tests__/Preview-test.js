@@ -1860,26 +1860,6 @@ describe('lib/Preview', () => {
             const loader = preview.getLoader('file');
             expect(loader.name).to.equal('csv');
         });
-
-        // it('should not rethrow errors by default', () => {
-        //     preview.loaders = [
-        //         {
-        //             canLoad: () => { throw new Error('test'); }
-        //         }
-        //     ];
-
-        //     expect(preview.getLoader('file')).to.be.null;
-        // });
-
-        // it('should throw errors if rethrow is true', () => {
-        //     preview.loaders = [
-        //         {
-        //             canLoad: () => { throw new Error('test'); }
-        //         }
-        //     ];
-
-        //     expect(() => { preview.getLoader('file', true); }).to.throw(Error, /test/);
-        // });
     });
 
     describe('keydownHandler()', () => {

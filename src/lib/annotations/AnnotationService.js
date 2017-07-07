@@ -89,7 +89,6 @@ const ANONYMOUS_USER = {
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.type !== 'error' && data.id) {
-                        // @TODO(tjin): Remove this when response has permissions
                         const tempData = data;
                         tempData.permissions = {
                             can_edit: true,
