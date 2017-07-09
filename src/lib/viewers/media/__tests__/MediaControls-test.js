@@ -1021,5 +1021,17 @@ describe('lib/viewers/media/MediaControls', () => {
             expect(mediaControls.settings.loadSubtitles).to.be.calledWith(subs);
         });
     });
+
+    describe('initAlternateAudio()', () => {
+        it('should load alternate audio', () => {
+            sandbox.stub(mediaControls.settings, 'loadAlternateAudio');
+            const audios = [
+                { language: 'eng', role: 'audio0' },
+                { language: 'rus', role: 'audio1' }
+            ];
+            mediaControls.initAlternateAudio(audios);
+        expect(mediaControls.settings.loadAlternateAudio).to.be.calledWith(audios);
+        });
+    });
 });
 /* eslint-enable no-unused-expressions */
