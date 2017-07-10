@@ -56,6 +56,7 @@ const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
         this.validationErrorDisplayed = false;
         this.isMobile = data.isMobile;
         this.previewUI = data.previewUI;
+        this.pointHandlers = []; // Point handler functions
     }
 
     /**
@@ -216,14 +217,7 @@ const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
         }
 
         // Hide create annotations button if image is rotated
-<<<<<<< HEAD
-        const annotateButton = this.previewUI.getAnnotateButton();
-=======
-        // TODO(@spramod) actually adjust getLocationFromEvent method
-        // in annotator to get correct location rather than disabling
-        // the creation of annotations on rotated images
-        const pointAnnotateButton = document.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
->>>>>>> New: starting to add drawing annotation
+        const pointAnnotateButton = this.previewUI.getAnnotateButton();
 
         if (rotationAngle !== 0) {
             annotatorUtil.hideElement(pointAnnotateButton);
@@ -250,19 +244,12 @@ const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
      * @return {void}
      */
     togglePointModeHandler(event = {}) {
-<<<<<<< HEAD
-=======
-        // This unfortunately breaks encapsulation, but the header currently
-        // doesn't manage its own functionality
-        let buttonEl = event.target;
-        if (!buttonEl) {
-            const containerEl = document.querySelector('.bp-header');
-            buttonEl = containerEl ? containerEl.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT) : null;
-        }
-
->>>>>>> New: starting to add drawing annotation
         this.destroyPendingThreads();
         const buttonEl = event.target || this.previewUI.getAnnotateButton();
+
+        if (this.isInDrawMode()) {
+            this.toggleDrawModeHandler();
+        }
 
         // If in annotation mode, turn it off
         if (this.isInPointMode()) {
@@ -279,8 +266,7 @@ const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
 
             // Otherwise, enable annotation mode
         } else {
-            this.notification.show(__('notification_annotation_mode'));
-
+            this.notification.show(__('notification_annotation_point_mode'));
             this.emit('annotationmodeenter');
             this.annotatedElement.classList.add(CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
@@ -293,19 +279,46 @@ const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
     }
 
     toggleDrawModeHandler(event = {}) {
-        let buttonEl = event.target;
+        let buttonEl = event.target || this.previewUI;
         if (!buttonEl) {
             const headerEl = document.querySelector('.bp-header');
             buttonEl = headerEl ? headerEl.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW) : null;
         }
 
-        this.destroyPendingThreads();
+        // Create drawingController if it does not exist
+        if (!this.drawingController) {
+            this.drawingController = new DrawingAnnotationController(this.annotatedElement);
+        }
 
+        this.destroyPendingThreads();
+        if (this.isInPointMode()) {
+            this.togglePointModeHandler();
+        }
+
+        // Exit if in draw mode
         if (this.isInDrawMode()) {
             this.notification.hide();
 
             this.emit('annotationmodeexit');
-            this.annotatedElement.classL;
+            this.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_DRAW_MODE);
+            if (buttonEl) {
+                buttonEl.classList.remove(CLASS_ACTIVE);
+            }
+
+            this.unbindDrawModeListeners(); // Disable draw mode
+            this.bindDOMListeners(); // Re-enable other annotations
+
+            // Otherwise enter draw mode
+        } else {
+            this.notification.show(__('notification_annotation_draw_mode'));
+            this.emit('annotationmodeenter');
+            this.annotatedElement.classList.add(constants.CLASS_ANNOTATION_DRAW_MODE);
+            if (buttonEl) {
+                buttonEl.classList.add(CLASS_ACTIVE);
+            }
+
+            this.unbindDOMListeners();
+            this.bindDrawModeListeners();
         }
     }
 
@@ -543,15 +556,14 @@ const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
             return;
         }
 
+        // Exits point annotation mode on first click
+        this.togglePointModeHandler();
+
         // Get annotation location from click event, ignore click if location is invalid
         const location = this.getLocationFromEvent(event, TYPES.point);
         if (!location) {
-            this.togglePointModeHandler();
             return;
         }
-
-        // Exits point annotation mode on first click
-        this.togglePointModeHandler();
 
         // Create new thread with no annotations, show indicator, and show dialog
         const thread = this.createAnnotationThread([], location, TYPES.point);
@@ -564,6 +576,60 @@ const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
         }
     }
 
+    /**
+     * Binds event listeners for point annotation mode.
+     *
+     * @protected
+     * @return {void}
+     */
+    bindDrawModeListeners() {
+        if (this.drawingController) {
+            const moveHandler = this.getPointHandler(this.drawingController.handleMove.bind(this.drawingController));
+            const startHandler = this.getPointHandler(this.drawingController.handleStart.bind(this.drawingController));
+            const stopHandler = this.getPointHandler(this.drawingController.handleStop.bind(this.drawingController));
+            const handlers = [
+                { eventName: 'mousemove', handler: moveHandler },
+                { eventName: 'mousedown', handler: startHandler },
+                { eventName: 'mouseup', handler: stopHandler }
+            ];
+            this.annotatedElement.addEventListener('mousemove', moveHandler);
+            this.annotatedElement.addEventListener('mousedown', startHandler);
+            this.annotatedElement.addEventListener('mouseup', stopHandler);
+
+            Array.prototype.push.apply(this.pointHandlers, handlers);
+        }
+    }
+
+    /**
+     * Unbinds event listeners for point annotation mode.
+     *
+     * @protected
+     * @return {void}
+     */
+    unbindDrawModeListeners() {
+        while (this.pointHandlers.length > 0) {
+            const handlerObj = this.pointHandlers.pop();
+            this.annotatedElement.removeEventListener(handlerObj.eventName, handlerObj.handler);
+        }
+    }
+
+    getPointHandler(callback) {
+        return (event) => {
+            // TODO: remove silly comment //realcomment: This block makes me cry
+            if (event) {
+                if (event.stopPropagation) {
+                    event.stopPropagation();
+                }
+                event.preventDefault();
+            }
+
+            // Get annotation location from click event, ignore click if location is invalid
+            const location = this.getLocationFromEvent(event, constants.ANNOTATION_TYPE_POINT);
+            if (location) {
+                callback(location);
+            }
+        };
+    }
     /**
      * Adds thread to in-memory map.
      *
@@ -588,6 +654,15 @@ const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
         return this.annotatedElement.classList.contains(CLASS_ANNOTATION_POINT_MODE);
     }
 
+    /**
+     * Returns whether or not annotator is in drawing mode.
+     *
+     * @protected
+     * @return {boolean} True if drawing mode is on, otherwise returns false.
+     */
+    isInDrawMode() {
+        return this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_DRAW_MODE);
+    }
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------

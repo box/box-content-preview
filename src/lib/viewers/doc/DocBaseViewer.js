@@ -444,13 +444,13 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
     /**
      * @inheritdoc
      */
-    getPointModeClickHandler() {
-        if (!this.isAnnotatable('point')) {
+    getAnnotationModeClickHandler(mode, eventName) {
+        if (!this.isAnnotatable(mode)) {
             return null;
         }
 
         return () => {
-            this.emit('togglepointannotationmode');
+            this.emit(eventName);
         };
     }
 
