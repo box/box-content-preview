@@ -7,6 +7,7 @@ export const CLASS_ANNOTATION_TEXT_HIGHLIGHTED = 'bp-is-text-highlighted';
 export const CLASS_ANNOTATION_POINT = 'bp-show-point-annotation-btn';
 export const CLASS_ANNOTATION_POINT_ICON = 'bp-point-annotation-icon';
 export const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
+export const CLASS_ANNOTATION_DRAW_MODE = 'bp-draw-annotation-mode';
 export const CLASS_ANNOTATION_TEXTAREA = 'annotation-textarea';
 export const CLASS_BUTTON_CONTAINER = 'button-container';
 export const CLASS_BUTTON_DELETE_COMMENT = 'delete-comment-btn';

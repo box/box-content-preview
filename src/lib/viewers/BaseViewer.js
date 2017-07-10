@@ -608,8 +608,8 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
             // Users can currently only view annotations on mobile
             this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
             if (this.canAnnotate) {
-                this.showPointAnnotateButton(this.getPointModeClickHandler());
-                this.showDrawAnnotateButton(this.getDrawModeClickHandler());
+                this.showPointAnnotateButton(this.getAnnotationModeClickHandler('point', 'togglepointannotationmode'));
+                this.showDrawAnnotateButton(this.getAnnotationModeClickHandler('drawing', 'toggledrawannotationmode'));
             }
             this.initAnnotations();
         }
@@ -665,6 +665,10 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
         this.addListener('togglepointannotationmode', () => {
             this.annotator.togglePointModeHandler();
+        });
+
+        this.addListener('toggledrawannotationmode', () => {
+            this.annotator.toggleDrawModeHandler();
         });
 
         // Add a custom listener for events related to scaling/orientation changes
@@ -748,23 +752,13 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     }
 
     /**
-     * Returns click handler for toggling point annotation mode.
+     * Returns click handler for toggling annotation mode.
      *
-     * @param {HTMLElement} containerEl - Preview container element
+     * @param {string} mode - Target annotation mode
      * @return {Function|null} Click handler
      */
     /* eslint-disable no-unused-vars */
-    getPointModeClickHandler(containerEl) {}
-    /* eslint-enable no-unused-vars */
-
-    /**
-     * Returns click handler for toggling point annotation mode.
-     *
-     * @param {HTMLElement} containerEl - Preview container element
-     * @return {Function|null} Click handler
-     */
-    /* eslint-disable no-unused-vars */
-    getDrawModeClickHandler(containerEl) {}
+    getAnnotationModeClickHandler(mode, eventName) {}
     /* eslint-enable no-unused-vars */
 
     /**
