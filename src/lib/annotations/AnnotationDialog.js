@@ -161,7 +161,6 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
     /**
      * Hides the dialog.
      *
-     * @param {boolean} [noDelay] - Whether or not to have a timeout delay
      * @return {void}
      */
     hide() {
@@ -319,7 +318,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
 
         const key = decodeKeydown(event);
         if (key === 'Escape') {
-            this.hide(); // hide without delay
+            this.hide();
         } else {
             const dataType = annotatorUtil.findClosestDataType(event.target);
             if (dataType === 'reply-textarea') {
