@@ -122,7 +122,7 @@ const ANNOTATED_ELEMENT_SELECTOR = '.bp-image, .bp-images-wrapper';
      * @return {void}
      */
     hideAllAnnotations() {
-        const annotateButton = this.previewUI.getAnnotateButton();
+        const annotateButton = this.previewUI.getAnnotateButton(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
         const annotations = this.annotatedElement.getElementsByClassName('bp-point-annotation-btn');
         for (let i = 0; i < annotations.length; i++) {
             annotatorUtil.hideElement(annotations[i]);
@@ -137,7 +137,7 @@ const ANNOTATED_ELEMENT_SELECTOR = '.bp-image, .bp-images-wrapper';
      * @return {void}
      */
     showAllAnnotations() {
-        const annotateButton = this.previewUI.getAnnotateButton();
+        const annotateButton = this.previewUI.getAnnotateButton(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
         const annotations = this.annotatedElement.getElementsByClassName('bp-point-annotation-btn');
         for (let i = 0; i < annotations.length; i++) {
             annotatorUtil.showElement(annotations[i]);

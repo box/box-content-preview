@@ -762,16 +762,6 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     /* eslint-enable no-unused-vars */
 
     /**
-     * Returns click handler for toggling point annotation mode.
-     *
-     * @param {HTMLElement} containerEl - Preview container element
-     * @return {Function|null} Click handler
-     */
-    /* eslint-disable no-unused-vars */
-    getDrawModeClickHandler(containerEl) {}
-    /* eslint-enable no-unused-vars */
-
-    /**
      * Disables viewer controls
      *
      * @return {void}
