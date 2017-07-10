@@ -4,6 +4,7 @@ export const CLASS_ANNOTATION_DIALOG = 'bp-annotation-dialog';
 export const CLASS_ANNOTATION_HIGHLIGHT_DIALOG = 'bp-annotation-highlight-dialog';
 export const CLASS_ANNOTATION_POINT_BUTTON = 'bp-point-annotation-btn';
 export const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
+export const CLASS_ANNOTATION_DRAW_MODE = 'bp-draw-annotation-mode';
 export const CLASS_ANNOTATION_CARET = 'bp-annotation-caret';
 export const CLASS_ANNOTATION_TEXTAREA = 'annotation-textarea';
 export const CLASS_BUTTON_CONTAINER = 'button-container';

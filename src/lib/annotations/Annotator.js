@@ -15,12 +15,12 @@ import {
     DATA_TYPE_ANNOTATION_DIALOG,
     CLASS_MOBILE_ANNOTATION_DIALOG,
     CLASS_ANNOTATION_DIALOG,
+    CLASS_ANNOTATION_DRAW_MODE,
+    CLASS_ANNOTATION_POINT_MODE,
     CLASS_MOBILE_DIALOG_HEADER,
     CLASS_DIALOG_CLOSE,
     TYPES
 } from './annotationConstants';
-
-const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
 
 @autobind class Annotator extends EventEmitter {
     //--------------------------------------------------------------------------
@@ -280,13 +280,40 @@ const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
 
     toggleDrawModeHandler(event = {}) {
         this.destroyPendingThreads();
-        const buttonEl = event.target || this.previewUI.getAnnotateButton(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
+        if (this.isInPointMode()) {
+            this.togglePointModeHandler();
+        }
 
+        const buttonEl = event.target || this.previewUI.getAnnotateButton(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
+        // Create drawingController if it does not exist
+        if (!this.drawingController) {
+            this.drawingController = new DrawingAnnotationController(this.annotatedElement);
+        }
+
+        // Exit if in draw mode
         if (this.isInDrawMode()) {
             this.notification.hide();
 
             this.emit('annotationmodeexit');
-            this.annotatedElement.classL;
+            this.annotatedElement.classList.remove(CLASS_ANNOTATION_DRAW_MODE);
+            if (buttonEl) {
+                buttonEl.classList.remove(CLASS_ACTIVE);
+            }
+
+            this.unbindDrawModeListeners(); // Disable draw mode
+            this.bindDOMListeners(); // Re-enable other annotations
+
+            // Otherwise enter draw mode
+        } else {
+            this.notification.show(__('notification_annotation_draw_mode'));
+            this.emit('annotationmodeenter');
+            this.annotatedElement.classList.add(CLASS_ANNOTATION_DRAW_MODE);
+            if (buttonEl) {
+                buttonEl.classList.add(CLASS_ACTIVE);
+            }
+
+            this.unbindDOMListeners();
+            this.bindDrawModeListeners();
         }
     }
 
