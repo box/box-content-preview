@@ -1,11 +1,11 @@
+/* global Rbush */
 import { PAGE_PADDING_TOP, PAGE_PADDING_BOTTOM } from './annotationConstants';
-import * as annotatorUtil from './annotatorUtil';
 import * as docAnnotatorUtil from './doc/docAnnotatorUtil';
-import * as RTree from '../rbush.min';
+// import * as annotatorUtil from './annotatorUtil';
 
 const POINTER_DOWN = 0;
 const POINTER_UP = 1;
-const POINTER_ERASE = 2;
+// const POINTER_ERASE = 2;
 
 const RENDER_THRES = 16.67; // 60 FPS target
 const RTREE_WIDTH = 5;
@@ -61,7 +61,7 @@ class DrawingAnnotation {
         this.drawingFlag = POINTER_UP;
         this.page = 0;
         this.annotatedEl = annotatedElement;
-        this.pathContainer = new RTree(RTREE_WIDTH);
+        this.pathContainer = new Rbush(RTREE_WIDTH);
         this.pointerPosition = null;
         this.canvasCache = {};
         // Insert metadata into this object
@@ -89,6 +89,7 @@ class DrawingAnnotation {
     }
 
     handleStart(location) {
+        this.location = location; // using to pass commit check
         window.requestAnimationFrame(this.render.bind(this));
         this.drawingFlag = POINTER_DOWN;
         this.scale = this.annotatorUtil.getScale(this.annotatedEl);
