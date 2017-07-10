@@ -5,6 +5,7 @@
 .bp-media-controls-wrapper:active,
 .bp-media-controls-wrapper:focus {
     opacity: 1;
+    visibility: visible;
 }
 
 .bp-media-controls-wrapper {
@@ -17,7 +18,8 @@
     overflow: hidden;
     position: absolute;
     right: 0;
-    transition: opacity .3s;
+    transition: visibility .3s, opacity .3s;
+    visibility: hidden;
     width: 100%;
 }
 

@@ -3,6 +3,7 @@ import throttle from 'lodash.throttle';
 import MediaBaseViewer from './MediaBaseViewer';
 import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_DARK } from '../../constants';
 import { ICON_PLAY_LARGE } from '../../icons/icons';
+import Browser from '../../Browser';
 
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
 const CLASS_PLAY_BUTTON = 'bp-media-play-button';
@@ -15,9 +16,13 @@ const CLASS_PLAY_BUTTON = 'bp-media-play-button';
         // Call super() to set up common layout
         super.setup();
 
+        this.hasTouch = Browser.hasTouch();
+
         // Video element
         this.mediaEl = this.mediaContainerEl.appendChild(document.createElement('video'));
         this.mediaEl.setAttribute('preload', 'auto');
+        // Prevents native iOS UI from taking over
+        this.mediaEl.setAttribute('playsinline', '');
 
         // Play button
         this.playButtonEl = this.mediaContainerEl.appendChild(document.createElement('div'));
@@ -37,7 +42,8 @@ const CLASS_PLAY_BUTTON = 'bp-media-play-button';
     destroy() {
         if (this.mediaEl) {
             this.mediaEl.removeEventListener('mousemove', this.mousemoveHandler);
-            this.mediaEl.removeEventListener('click', this.togglePlay);
+            this.mediaEl.removeEventListener('click', this.pointerHandler);
+            this.mediaEl.removeEventListener('touchstart', this.pointerHandler);
             this.mediaEl.removeEventListener('waiting', this.waitingHandler);
         }
 
@@ -57,6 +63,24 @@ const CLASS_PLAY_BUTTON = 'bp-media-play-button';
     loadeddataHandler() {
         super.loadeddataHandler();
         this.showPlayButton();
+        this.mediaControls.show();
+    }
+
+    /**
+     * Handler for a pointer event on the media element.
+     *
+     * @param  {Event} event pointer event, either touch or mouse
+     * @return {void}
+     */
+    pointerHandler(event) {
+        if (event.type === 'touchstart') {
+            // Prevents 'click' event from firing which would pause the video
+            event.preventDefault();
+            event.stopPropagation();
+            this.mediaControls.toggle();
+        } else if (event.type === 'click') {
+            this.togglePlay();
+        }
     }
 
     /**
@@ -132,7 +156,11 @@ const CLASS_PLAY_BUTTON = 'bp-media-play-button';
         }, MOUSE_MOVE_TIMEOUT_IN_MILLIS);
 
         this.mediaEl.addEventListener('mousemove', this.mousemoveHandler);
-        this.mediaEl.addEventListener('click', this.togglePlay);
+        if (this.hasTouch) {
+            this.mediaEl.addEventListener('touchstart', this.pointerHandler);
+        }
+
+        this.mediaEl.addEventListener('click', this.pointerHandler);
         this.mediaEl.addEventListener('waiting', this.waitingHandler);
         this.playButtonEl.addEventListener('click', this.togglePlay);
     }
