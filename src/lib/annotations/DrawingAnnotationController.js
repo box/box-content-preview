@@ -92,7 +92,7 @@ class DrawingAnnotation {
         this.location = location; // using to pass commit check
         window.requestAnimationFrame(this.render.bind(this));
         this.drawingFlag = POINTER_DOWN;
-        this.scale = this.annotatorUtil.getScale(this.annotatedEl);
+        this.scale = 2.77;
     }
 
     handleStop(location) {
@@ -159,8 +159,7 @@ class DrawingAnnotation {
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.strokeStyle = 'black';
-        ctx.lineWidth = 5 / this.scale;
-        console.log(ctx.width);
+        ctx.lineWidth = 3 * this.scale;
         for (let i = 0; i < path.length; i++) {
             let xLast;
             let yLast;
