@@ -1,5 +1,13 @@
 # Change Log
 
+## [v0.131.1](https://github.com/box/box-content-preview/tree/v0.131.1) (2017-07-10)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.131.0...v0.131.1)
+
+**Merged pull requests:**
+
+- Fix: Properly scope typography CSS [\#207](https://github.com/box/box-content-preview/pull/207) ([tonyjin](https://github.com/tonyjin))
+- Chore: Cleaning up annotations code comments [\#206](https://github.com/box/box-content-preview/pull/206) ([pramodsum](https://github.com/pramodsum))
+
 ## [v0.131.0](https://github.com/box/box-content-preview/tree/v0.131.0) (2017-07-07)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.130.0...v0.131.0)
 
