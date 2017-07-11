@@ -1,16 +1,15 @@
 /* global Rbush */
 import { PAGE_PADDING_TOP, PAGE_PADDING_BOTTOM } from './annotationConstants';
-import * as docAnnotatorUtil from './doc/docAnnotatorUtil';
-// import * as annotatorUtil from './annotatorUtil';
+import * as DocAnnotatorUtil from './doc/DocAnnotatorUtil';
+import * as AnnotatorUtil from './AnnotatorUtil';
 
 const POINTER_DOWN = 0;
 const POINTER_UP = 1;
 // const POINTER_ERASE = 2;
 
-const RENDER_THRES = 16.67; // 60 FPS target
+const RENDER_THRESHOLD = 16.67; // 60 FPS target. 16.667ms/frame
 const RTREE_WIDTH = 5;
 
-// Should extend annotation thread?
 class DrawingPath {
     constructor(metadata) {
         this.path = [];
@@ -55,6 +54,7 @@ class DrawingAnnotation {
     /**
      * [constructor]
      *
+     * @param {Object} annotatedElement DOM Object to be annotated
      * @return {DrawingAnnotationController} Drawing controller instance
      */
     constructor(annotatedElement) {
@@ -63,15 +63,19 @@ class DrawingAnnotation {
         this.annotatedEl = annotatedElement;
         this.pathContainer = new Rbush(RTREE_WIDTH);
         this.pointerPosition = null;
-        this.canvasCache = {};
         // Insert metadata into this object
         this.pendingPath = new DrawingPath();
     }
 
     handleMove(location) {
         const pageEl = this.getPageEl(location.page);
-        this.context = this.getCanvas(location.page, pageEl).getContext('2d');
-        const [x, y] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(location, pageEl);
+        if (this.pageEl && pageEl !== this.pageEl) {
+            this.handleStop(location);
+            this.pageEl = pageEl;
+            return;
+        }
+        this.pageEl = pageEl;
+        const [x, y] = DocAnnotatorUtil.getBrowserCoordinatesFromLocation(location, pageEl);
         this.pointerPosition = {
             x,
             y,
@@ -103,23 +107,6 @@ class DrawingAnnotation {
         this.finalizePath();
     }
 
-    /*
-            const page = this.getPageEl(location.page);
-            let annotationLayerEl = page.querySelector('.bp-annotation-layer');
-            if (!annotationLayerEl) {
-                annotationLayerEl = document.createElement('canvas');
-                annotationLayerEl.classList.add('bp-annotation-layer');
-                const pageDimensions = page.getBoundingClientRect();
-                annotationLayerEl.width = pageDimensions.width;
-                annotationLayerEl.height = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
-
-                const textLayerEl = page.querySelector('.textLayer');
-                page.insertBefore(annotationLayerEl, textLayerEl);
-            }
-            const ctx = annotationLayerEl.getContext('2d');
-            const scale = annotatorUtil.getScale(this.annotatedEl);
-            const [x,y] = docAnnotatorUtil.convertPDFSpaceToDOMSpace([location.x, location.y], annotationLayerEl.height, scale);
-    */
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -133,16 +120,14 @@ class DrawingAnnotation {
         this.pendingPath.addCoordinate(x, y);
     }
     getPageEl(pageNum) {
-        this.pageEl = this.annotatedEl.querySelector(`[data-page-number="${pageNum}"]`);
-        return this.pageEl;
+        return this.annotatedEl.querySelector(`[data-page-number="${pageNum}"]`);
     }
     render(timeElapsed) {
         if (this.drawingFlag === POINTER_DOWN) {
             const elapsed = timeElapsed - (this.timeElapsed || 0);
             if (elapsed >= RENDER_THRES) {
                 this.timeElapsed = timeElapsed;
-                const canvas = this.getCanvas(this.page, this.pageEl);
-                const context = canvas.getContext('2d');
+                const context = this.context;
                 if (this.savedState) {
                     context.putImageData(this.savedState, 0, 0);
                 }
@@ -156,10 +141,13 @@ class DrawingAnnotation {
     }
     plotPath(path, context) {
         const ctx = context;
+<<<<<<< HEAD
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 3 * this.scale;
+=======
+>>>>>>> Update: do not get canvas on render
         for (let i = 0; i < path.length; i++) {
             let xLast;
             let yLast;
@@ -170,6 +158,7 @@ class DrawingAnnotation {
             } else {
                 xLast = path[i].x - 1;
                 yLast = path[i].y;
+                ctx.moveTo(xLast, yLast);
             }
 
             const xMid = (path[i].x + xLast) / 2;
