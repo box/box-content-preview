@@ -41,6 +41,7 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
         this.annotatedElement = data.annotatedElement;
         this.annotations = data.annotations || [];
         this.annotationService = data.annotationService;
+        this.container = data.container;
         this.fileVersionId = data.fileVersionId;
         this.location = data.location;
         this.threadID = data.threadID || AnnotationService.generateID();

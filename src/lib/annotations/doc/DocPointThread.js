@@ -70,6 +70,7 @@ const POINT_ANNOTATION_ICON_WIDTH = 24;
     createDialog() {
         this.dialog = new DocPointDialog({
             annotatedElement: this.annotatedElement,
+            container: this.container,
             annotations: this.annotations,
             locale: this.locale,
             location: this.location,

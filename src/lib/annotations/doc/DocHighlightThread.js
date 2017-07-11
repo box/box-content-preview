@@ -257,6 +257,7 @@ const HOVER_TIMEOUT_MS = 75;
     createDialog() {
         this.dialog = new DocHighlightDialog({
             annotatedElement: this.annotatedElement,
+            container: this.container,
             annotations: this.annotations,
             locale: this.locale,
             location: this.location,
