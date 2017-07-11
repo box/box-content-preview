@@ -21,6 +21,7 @@ describe('lib/annotations/AnnotationDialog', () => {
 
         dialog = new AnnotationDialog({
             annotatedElement: document.querySelector('.annotated-element'),
+            container: document,
             location: {},
             annotations: [],
             canAnnotate: true
