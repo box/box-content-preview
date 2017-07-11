@@ -91,6 +91,7 @@ const ANNOTATED_ELEMENT_SELECTOR = '.bp-image, .bp-images-wrapper';
             annotatedElement: this.annotatedElement,
             annotations,
             annotationService: this.annotationService,
+            container: this.container,
             fileVersionId: this.fileVersionId,
             isMobile: this.isMobile,
             locale: this.locale,
