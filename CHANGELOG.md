@@ -1,6 +1,14 @@
 # Change Log
 
-## [v0.131.1](https://github.com/box/box-content-preview/tree/v0.131.1) (2017-07-10)
+## [v0.131.2](https://github.com/box/box-content-preview/tree/v0.131.2) (2017-07-11)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.131.1...v0.131.2)
+
+**Merged pull requests:**
+
+- Fix: Search preview container for mobile annotations dialog [\#209](https://github.com/box/box-content-preview/pull/209) ([pramodsum](https://github.com/pramodsum))
+- Fix: Ensure that annotation scale is never being set to auto [\#208](https://github.com/box/box-content-preview/pull/208) ([pramodsum](https://github.com/pramodsum))
+
+## [v0.131.1](https://github.com/box/box-content-preview/tree/v0.131.1) (2017-07-11)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.131.0...v0.131.1)
 
 **Merged pull requests:**
