@@ -3,7 +3,6 @@ import Annotator from '../Annotator';
 import ImagePointThread from './ImagePointThread';
 import * as annotatorUtil from '../annotatorUtil';
 import * as imageAnnotatorUtil from './imageAnnotatorUtil';
-import { SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT } from '../../constants';
 
 const IMAGE_NODE_NAME = 'img';
 // Selector for image container OR multi-image container
