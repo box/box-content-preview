@@ -6,17 +6,22 @@
 //------------------------------------------------------------------------------
 // Typography
 //------------------------------------------------------------------------------
-html,
-a {
+.bp,
+.bp-header,
+.bp a,
+.bp-header a {
     text-shadow: 1px 1px 1px fade-out($white, .996);
 }
 
-body,
-button {
+.bp,
+.bp-header,
+.bp button,
+.bp-header button {
     font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-li {
+.bp li,
+.bp-header li {
     margin: 0;
     padding: 0;
 }
