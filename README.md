@@ -2,7 +2,7 @@
 [![Styled With Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![build status](https://img.shields.io/travis/box/box-content-preview/master.svg?style=flat-square)](https://travis-ci.com/box/box-content-preview)
 [![version](https://img.shields.io/badge/version-v1.0.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
-[![npm version](https://img.shields.io/npm/v/box-content-ui-kits.svg?style=flat-square)](https://www.npmjs.com/package/box-content-ui-kits)
+[![npm version](https://img.shields.io/npm/v/box-ui-elements.svg?style=flat-square)](https://www.npmjs.com/package/box-ui-elements)
 
 [Box Content Preview](https://docs.box.com/docs/box-content-preview)
 ====================================================================
