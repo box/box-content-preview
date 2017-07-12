@@ -37,6 +37,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
         super();
 
         this.annotatedElement = data.annotatedElement;
+        this.container = data.container;
         this.location = data.location;
         this.hasAnnotations = data.annotations.length > 0;
         this.canAnnotate = data.canAnnotate;
@@ -68,7 +69,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
     show() {
         // Populate mobile annotations dialog with annotations information
         if (this.isMobile) {
-            this.element = this.annotatedElement.querySelector(`.${constants.CLASS_MOBILE_ANNOTATION_DIALOG}`);
+            this.element = this.container.querySelector(`.${constants.CLASS_MOBILE_ANNOTATION_DIALOG}`);
             annotatorUtil.showElement(this.element);
             this.element.appendChild(this.dialogEl);
 
@@ -161,7 +162,6 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
     /**
      * Hides the dialog.
      *
-     * @param {boolean} [noDelay] - Whether or not to have a timeout delay
      * @return {void}
      */
     hide() {
@@ -319,7 +319,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
 
         const key = decodeKeydown(event);
         if (key === 'Escape') {
-            this.hide(); // hide without delay
+            this.hide();
         } else {
             const dataType = annotatorUtil.findClosestDataType(event.target);
             if (dataType === 'reply-textarea') {

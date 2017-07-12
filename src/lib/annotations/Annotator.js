@@ -202,9 +202,6 @@ import './Annotator.scss';
         }
 
         // Hide create annotations button if image is rotated
-        // TODO(@spramod) actually adjust getLocationFromEvent method
-        // in annotator to get correct location rather than disabling
-        // the creation of annotations on rotated images
         const annotateButton = this.previewUI.getAnnotateButton();
 
         if (rotationAngle !== 0) {

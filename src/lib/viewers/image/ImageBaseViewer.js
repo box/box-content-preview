@@ -317,10 +317,6 @@ const CSS_CLASS_PANNABLE = 'pannable';
         event.stopPropagation();
     }
 
-    //----------------------------------------------------------------------------------------------
-    // Annotations. TODO(jholdstock|spramod) Refactor out all annotations code from viewers
-    //----------------------------------------------------------------------------------------------
-
     /**
      * Disables viewer controls
      *

@@ -1030,7 +1030,7 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 
             // Set scale to current numerical scale & rendered page number
             this.emit('scale', {
-                scale: this.pdfViewer.currentScaleValue,
+                scale: this.pdfViewer.currentScale,
                 pageNum: pageNumber
             });
 
