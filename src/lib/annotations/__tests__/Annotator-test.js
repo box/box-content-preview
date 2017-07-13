@@ -257,7 +257,7 @@ describe('lib/annotations/Annotator', () => {
                 sandbox.stub(annotator, 'unbindDOMListeners');
                 sandbox.stub(annotator, 'bindDOMListeners');
                 sandbox.stub(annotator, 'bindPointModeListeners');
-                sandbox.stub(annotator, 'unbindPointModeListeners');
+                sandbox.stub(annotator, 'unbindModeListeners');
             });
 
             it('should turn annotation mode on if it is off', () => {
@@ -398,7 +398,10 @@ describe('lib/annotations/Annotator', () => {
         describe('bindPointModeListeners', () => {
             it('should bind point mode click handler', () => {
                 sandbox.stub(annotator.annotatedElement, 'addEventListener');
+                sandbox.stub(annotator.pointClickHandler, 'bind', () => annotator.pointClickHandler);
+
                 annotator.bindPointModeListeners();
+                expect(annotator.pointClickHandler.bind).to.be.called;
                 expect(annotator.annotatedElement.addEventListener).to.be.calledWith(
                     'click',
                     annotator.pointClickHandler
@@ -409,7 +412,11 @@ describe('lib/annotations/Annotator', () => {
         describe('unbindPointModeListeners', () => {
             it('should unbind point mode click handler', () => {
                 sandbox.stub(annotator.annotatedElement, 'removeEventListener');
-                annotator.unbindPointModeListeners();
+                sandbox.stub(annotator.pointClickHandler, 'bind', () => annotator.pointClickHandler);
+
+                annotator.bindPointModeListeners();
+                annotator.unbindModeListeners();
+                expect(annotator.pointClickHandler.bind).to.be.called;
                 expect(annotator.annotatedElement.removeEventListener).to.be.calledWith(
                     'click',
                     annotator.pointClickHandler
