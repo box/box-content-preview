@@ -37,6 +37,7 @@ export const ANNOTATION_STATE_INACTIVE = 'inactive'; // not clicked and mouse is
 export const ANNOTATION_STATE_PENDING = 'pending'; // not saved
 export const ANNOTATION_STATE_PENDING_ACTIVE = 'pending-active'; // not saved and pending comment
 export const ANNOTATION_TYPE_POINT = 'point';
+export const ANNOTATION_TYPE_DRAW = 'draw';
 export const ANNOTATION_TYPE_HIGHLIGHT = 'highlight';
 export const ANNOTATION_TYPE_HIGHLIGHT_COMMENT = 'highlight-comment';
 export const PENDING_STATES = [ANNOTATION_STATE_PENDING, ANNOTATION_STATE_PENDING_ACTIVE];
