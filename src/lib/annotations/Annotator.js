@@ -564,11 +564,11 @@ import {
         }
     }
 
+    // Note: should probably be hooking up eventListeners in the thread itself
+    // Function is here to be in the same pattern as bindPointModeListeners
     /**
-     * Binds event listeners for point annotation mode.
-     *
-     * @protected
-     * @param
+     * Binds event listeners for draw annotation mode.
+     * @param {DrawingThread} drawingThread The
      * @return {void}
      */
     bindDrawModeListeners(drawingThread) {
