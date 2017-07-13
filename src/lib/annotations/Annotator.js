@@ -13,7 +13,8 @@ import {
 import { ICON_CLOSE } from '../icons/icons';
 import './Annotator.scss';
 
-@autobind class Annotator extends EventEmitter {
+@autobind
+class Annotator extends EventEmitter {
     //--------------------------------------------------------------------------
     // Typedef
     //--------------------------------------------------------------------------
@@ -508,9 +509,10 @@ import './Annotator.scss';
      * @return {void}
      */
     bindPointModeListeners() {
+        const pointFunc = this.pointClickHandler.bind(this.annotatedElement);
         const handler = {
             type: 'click',
-            func: this.pointClickHandler.bind(this.annotatedElement)
+            func: pointFunc
         };
         this.annotatedElement.addEventListener(handler.type, handler.func);
         this.annotationModeHandlers.push(handler);

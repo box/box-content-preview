@@ -13,7 +13,7 @@ import {
     CLASS_HIDDEN,
     PERMISSION_DOWNLOAD,
     STATUS_ERROR,
-    STATUS_SUCCESS
+    STATUS_SUCCESS,
 } from '../../../constants';
 
 import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
@@ -705,7 +705,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should return null if you cannot annotate', () => {
-            const handler = docBase.getPointModeClickHandler();
+            const handler = docBase.getAnnotationModeClickHandler('point', 'togglepointannotationmode');
             expect(stubs.isAnnotatable).to.be.called;
             expect(handler).to.equal(null);
         });
@@ -717,7 +717,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 togglePointModeHandler: () => {}
             };
 
-            const handler = docBase.getPointModeClickHandler();
+            const handler = docBase.getAnnotationModeClickHandler('point', 'togglepointannotationmode');
             expect(stubs.isAnnotatable).to.be.called;
             expect(handler).to.be.a('function');
 

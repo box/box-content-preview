@@ -198,7 +198,7 @@ describe('lib/PreviewUI', () => {
     describe('getAnnotateButton()', () => {
         it('should return the annotate button', () => {
             containerEl = ui.setup(options);
-            expect(ui.getAnnotateButton()).to.equal(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_ANNOTATE));
+            expect(ui.getAnnotateButton()).to.equal(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT));
         });
     });
 

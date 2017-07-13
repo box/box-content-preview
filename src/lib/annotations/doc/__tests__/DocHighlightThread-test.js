@@ -428,9 +428,12 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
     describe('draw()', () => {
         it('should not draw if no context exists', () => {
             sandbox.stub(highlightThread, 'getPageEl');
-            sandbox.stub(highlightThread, 'getContext');
+            sandbox.stub(docAnnotatorUtil, 'getContext').returns(null);
+            sandbox.stub(annotatorUtil, 'getScale');
+
             highlightThread.draw('fill');
-            expect(highlightThread.getPageEl).to.not.be.called;
+            expect(highlightThread.pageEl).to.be.undefined;
+            expect(annotatorUtil.getScale).to.not.be.called;
         });
     });
 
@@ -495,73 +498,6 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
             expect(dimensionScaleStub).to.be.called;
             expect(convertStub).to.be.called;
             expect(pointInPolyStub).to.be.called;
-        });
-    });
-
-    describe('getPageEl()', () => {
-        it('should return the result of querySelector', () => {
-            const queryStub = sandbox.stub(highlightThread.annotatedElement, 'querySelector');
-
-            highlightThread.getPageEl();
-            expect(queryStub).to.be.called;
-        });
-    });
-
-    describe('getContext()', () => {
-        it('should return null if there is no pageEl', () => {
-            const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(false);
-            const result = highlightThread.getContext();
-
-            expect(pageElStub).to.be.called;
-            expect(result).to.equal(null);
-        });
-
-        it('should not insert the pageEl if the annotationLayerEl already exists', () => {
-            const pageEl = {
-                querySelector: sandbox.stub(),
-                getBoundingClientRect: sandbox.stub(),
-                insertBefore: sandbox.stub()
-            };
-            const annotationLayer = {
-                width: 0,
-                height: 0,
-                getContext: sandbox.stub()
-            };
-            const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(pageEl);
-            pageEl.querySelector.returns(annotationLayer);
-            annotationLayer.getContext.returns('2d context');
-
-            highlightThread.getContext();
-            expect(pageElStub).to.be.called;
-            expect(annotationLayer.getContext).to.be.called;
-            expect(pageEl.insertBefore).to.not.be.called;
-        });
-
-        it('should insert the pageEl if the annotationLayerEl does not exist', () => {
-            const pageEl = {
-                querySelector: sandbox.stub(),
-                getBoundingClientRect: sandbox.stub(),
-                insertBefore: sandbox.stub()
-            };
-            const annotationLayer = {
-                width: 0,
-                height: 0,
-                getContext: sandbox.stub(),
-                classList: {
-                    add: sandbox.stub()
-                }
-            };
-            const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(pageEl);
-            pageEl.querySelector.returns(undefined);
-            const docStub = sandbox.stub(document, 'createElement').returns(annotationLayer);
-            annotationLayer.getContext.returns('2d context');
-            pageEl.getBoundingClientRect.returns({ width: 0, height: 0 });
-
-            highlightThread.getContext();
-            expect(pageElStub).to.be.called;
-            expect(docStub).to.be.called;
-            expect(annotationLayer.getContext).to.be.called;
-            expect(pageEl.insertBefore).to.be.called;
         });
     });
 });
