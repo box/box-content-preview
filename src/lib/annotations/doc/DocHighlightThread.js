@@ -5,8 +5,6 @@ import * as annotatorUtil from '../annotatorUtil';
 import * as constants from '../annotationConstants';
 import * as docAnnotatorUtil from './docAnnotatorUtil';
 
-const PAGE_PADDING_BOTTOM = 15;
-const PAGE_PADDING_TOP = 15;
 const HOVER_TIMEOUT_MS = 75;
 
 @autobind class DocHighlightThread extends AnnotationThread {
@@ -365,19 +363,25 @@ const HOVER_TIMEOUT_MS = 75;
      */
     /* istanbul ignore next */
     draw(fillStyle) {
-        const context = this.getContext();
+        const pageEl = this.getPageEl(this.annotatedElement, this.location.page);
+        const context = docAnnotatorUtil.getContext(
+            pageEl,
+            constants.CLASS_ANNOTATION_LAYER_HIGHLIGHT,
+            constants.PAGE_PADDING_TOP,
+            constants.PAGE_PADDING_BOTTOM
+        );
         if (!context) {
             return;
         }
 
-        const pageDimensions = this.getPageEl().getBoundingClientRect();
-        const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+        const pageDimensions = pageEl.getBoundingClientRect();
+        const pageHeight = pageDimensions.height - constants.PAGE_PADDING_TOP - constants.PAGE_PADDING_BOTTOM;
         const zoomScale = annotatorUtil.getScale(this.annotatedElement);
         const dimensionScale = annotatorUtil.getDimensionScale(
             this.location.dimensions,
             pageDimensions,
             zoomScale,
-            PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM
+            constants.PAGE_PADDING_TOP + constants.PAGE_PADDING_BOTTOM
         );
 
         this.location.quadPoints.forEach((quadPoint) => {
@@ -430,16 +434,16 @@ const HOVER_TIMEOUT_MS = 75;
      * @return {boolean} Whether or not mouse is inside highlight
      */
     isInHighlight(event) {
-        const pageEl = this.getPageEl();
+        const pageEl = this.getPageEl(this.annotatedElement, this.location.page);
         const pageDimensions = pageEl.getBoundingClientRect();
-        const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
-        const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
+        const pageHeight = pageDimensions.height - constants.PAGE_PADDING_TOP - constants.PAGE_PADDING_BOTTOM;
+        const pageTop = pageDimensions.top + constants.PAGE_PADDING_TOP;
         const zoomScale = annotatorUtil.getScale(this.annotatedElement);
         const dimensionScale = annotatorUtil.getDimensionScale(
             this.location.dimensions,
             pageDimensions,
             zoomScale,
-            PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM
+            constants.PAGE_PADDING_TOP + constants.PAGE_PADDING_BOTTOM
         );
 
         /**
@@ -498,38 +502,9 @@ const HOVER_TIMEOUT_MS = 75;
      */
     getPageEl() {
         if (!this.pageEl) {
-            this.pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
+            this.pageEl = docAnnotatorUtil.getPageEl(this.annotatedElement, this.location.page);
         }
-
         return this.pageEl;
-    }
-
-    /**
-     * Gets the context this highlight should be drawn on.
-     *
-     * @private
-     * @return {RenderingContext|null} Context
-     */
-    getContext() {
-        // Create annotation layer if one does not exist (e.g. first load or page resize)
-        const pageEl = this.getPageEl();
-        if (!pageEl) {
-            return null;
-        }
-
-        let annotationLayerEl = pageEl.querySelector('.bp-annotation-layer');
-        if (!annotationLayerEl) {
-            annotationLayerEl = document.createElement('canvas');
-            annotationLayerEl.classList.add('bp-annotation-layer');
-            const pageDimensions = pageEl.getBoundingClientRect();
-            annotationLayerEl.width = pageDimensions.width;
-            annotationLayerEl.height = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
-
-            const textLayerEl = pageEl.querySelector('.textLayer');
-            pageEl.insertBefore(annotationLayerEl, textLayerEl);
-        }
-
-        return annotationLayerEl.getContext('2d');
     }
 }
 

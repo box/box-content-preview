@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
-import DrawingAnnotationController from './DrawingAnnotationController';
+import DocDrawingThread from './doc/DocDrawingThread';
 import * as constants from './annotationConstants';
 import * as annotatorUtil from './annotatorUtil';
 import {
@@ -279,7 +279,7 @@ import './Annotator.scss';
         const buttonEl = event.target || this.previewUI.getAnnotateButton(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
         // Create drawingController if it does not exist
         if (!this.drawingController) {
-            this.drawingController = new DrawingAnnotationController(this.annotatedElement);
+            this.drawingController = new DocDrawingThread({ annotatedElement: this.annotatedElement });
         }
 
         // Exit if in draw mode

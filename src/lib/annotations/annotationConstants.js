@@ -16,6 +16,8 @@ export const CLASS_COMMENTS_CONTAINER = 'annotation-comments';
 export const CLASS_ANNOTATION_CONTAINER = 'annotation-container';
 export const CLASS_REPLY_CONTAINER = 'reply-container';
 export const CLASS_REPLY_TEXTAREA = 'reply-textarea';
+export const CLASS_ANNOTATION_LAYER_HIGHLIGHT = 'bp-annotation-layer-highlight';
+export const CLASS_ANNOTATION_LAYER_DRAW = 'bp-annotation-layer-draw';
 
 export const SELECTOR_ANNOTATION_BUTTON_CANCEL = `.${CLASS_ANNOTATION_BUTTON_CANCEL}`;
 export const SELECTOR_ANNOTATION_BUTTON_POST = `.${CLASS_ANNOTATION_BUTTON_POST}`;
@@ -27,6 +29,8 @@ export const SELECTOR_BUTTON_DELETE_COMMENT = `.${CLASS_BUTTON_DELETE_COMMENT}`;
 export const SELECTOR_COMMENTS_CONTAINER = `.${CLASS_COMMENTS_CONTAINER}`;
 export const SELECTOR_REPLY_CONTAINER = `.${CLASS_REPLY_CONTAINER}`;
 export const SELECTOR_REPLY_TEXTAREA = `.${CLASS_REPLY_TEXTAREA}`;
+export const SELECTOR_ANNOTATION_LAYER_HIGHLIGHT = `.${CLASS_ANNOTATION_LAYER_HIGHLIGHT}`;
+export const SELECTOR_ANNOTATION_LAYER_DRAW = `.${CLASS_ANNOTATION_LAYER_DRAW}`;
 
 export const ANNOTATION_STATE_HOVER = 'hover'; // mouse is over
 export const ANNOTATION_STATE_INACTIVE = 'inactive'; // not clicked and mouse is not over
@@ -43,3 +47,8 @@ export const HIGHLIGHT_ERASE_FILL_STYLE = 'rgba(255, 245, 132, 1)';
 
 export const PAGE_PADDING_TOP = 15;
 export const PAGE_PADDING_BOTTOM = 15;
+
+export const DRAW_RENDER_THRESHOLD = 16.67; // 60 FPS target using 16.667ms/frame
+export const DRAW_POINTER_DOWN = 0;
+export const DRAW_POINTER_UP = 1;
+export const DRAW_POINTER_ERASE = 2;

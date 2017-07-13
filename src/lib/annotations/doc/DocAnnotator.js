@@ -817,7 +817,7 @@ function isThreadInHoverState(thread) {
     showHighlightsOnPage(page) {
         // Clear context if needed
         const pageEl = this.annotatedElement.querySelector(`[data-page-number="${page}"]`);
-        const annotationLayerEl = pageEl.querySelector('.bp-annotation-layer');
+        const annotationLayerEl = pageEl.querySelector(constants.SELECTOR_ANNOTATION_LAYER_HIGHLIGHT);
         if (annotationLayerEl) {
             const context = annotationLayerEl.getContext('2d');
             context.clearRect(0, 0, annotationLayerEl.width, annotationLayerEl.height);
