@@ -2,6 +2,7 @@ import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
+import DocDrawingThread from './doc/DocDrawingThread';
 import * as annotatorUtil from './annotatorUtil';
 import {
     CLASS_ACTIVE,
@@ -287,7 +288,7 @@ import {
         const buttonEl = event.target || this.previewUI.getAnnotateButton(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
         // Create drawingController if it does not exist
         if (!this.drawingController) {
-            this.drawingController = new DrawingAnnotationController(this.annotatedElement);
+            this.drawingController = new DocDrawingThread({ annotatedElement: this.annotatedElement });
         }
 
         // Exit if in draw mode
@@ -619,7 +620,7 @@ import {
             }
 
             // Get annotation location from click event, ignore click if location is invalid
-            const location = this.getLocationFromEvent(event, constants.ANNOTATION_TYPE_POINT);
+            const location = this.getLocationFromEvent(event, TYPES.point);
             if (location) {
                 callback(location);
             }
@@ -656,7 +657,7 @@ import {
      * @return {boolean} True if drawing mode is on, otherwise returns false.
      */
     isInDrawMode() {
-        return this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_DRAW_MODE);
+        return this.annotatedElement.classList.contains(CLASS_ANNOTATION_DRAW_MODE);
     }
     //--------------------------------------------------------------------------
     // Private

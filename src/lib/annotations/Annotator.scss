@@ -324,8 +324,8 @@ $avatar-color-9: #f22c44;
 //------------------------------------------------------------------------------
 // CSS for highlights
 //------------------------------------------------------------------------------
-.bp-drawing-annotation-layer,
-.bp-annotation-layer {
+.bp-annotation-layer-draw,
+.bp-annotation-layer-highlight {
     cursor: text;
     left: 0;
     mix-blend-mode: multiply;
@@ -427,14 +427,14 @@ $avatar-color-9: #f22c44;
 //------------------------------------------------------------------------------
 
 .bp-point-annotation-mode .page,
-.bp-point-annotation-mode .bp-annotation-layer,
+.bp-point-annotation-mode .bp-annotation-layer-highlight,
 .bp-point-annotation-mode .textLayer > div,
 .bp-point-annotation-mode > img {
     cursor: crosshair;
 }
 
 .bp-draw-annotation-mode .page,
-.bp-draw-annotation-mode .bp-annotation-layer,
+.bp-draw-annotation-mode .bp-annotation-layer-highlight,
 .bp-draw-annotation-mode .textLayer > div,
 .bp-draw-annotation-mode > img {
     cursor: crosshair;

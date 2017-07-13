@@ -16,7 +16,7 @@ export const CLASS_TEXTAREA = 'bp-textarea';
 export const CLASS_HIGHLIGHT_BTNS = 'bp-annotation-highlight-btns';
 export const CLASS_ADD_HIGHLIGHT_BTN = 'bp-add-highlight-btn';
 export const CLASS_ADD_HIGHLIGHT_COMMENT_BTN = 'bp-highlight-comment-btn';
-export const CLASS_ANNOTATION_LAYER = 'bp-annotation-layer';
+export const CLASS_ANNOTATION_LAYER_HIGHLIGHT = 'bp-annotation-layer-highlight';
 
 export const DATA_TYPE_ANNOTATION_DIALOG = 'annotation-dialog';
 export const DATA_TYPE_ANNOTATION_INDICATOR = 'annotation-indicator';
@@ -51,6 +51,7 @@ export const PENDING_STATES = [STATES.pending, STATES.pending_active];
 export const TYPES = {
     point: 'point',
     highlight: 'highlight',
+    draw: 'draw',
     highlight_comment: 'highlight-comment'
 };
 
@@ -62,3 +63,8 @@ export const HIGHLIGHT_FILL = {
 
 export const PAGE_PADDING_TOP = 15;
 export const PAGE_PADDING_BOTTOM = 15;
+
+export const DRAW_RENDER_THRESHOLD = 16.67; // 60 FPS target using 16.667ms/frame
+export const DRAW_POINTER_DOWN = 0;
+export const DRAW_POINTER_UP = 1;
+export const DRAW_POINTER_ERASE = 2;
