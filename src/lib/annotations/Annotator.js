@@ -47,7 +47,7 @@ import './Annotator.scss';
         this.validationErrorDisplayed = false;
         this.isMobile = data.isMobile;
         this.previewUI = data.previewUI;
-        this.pointHandlers = []; // Point handler functions
+        this.annotationModeHandlers = [];
     }
 
     /**
@@ -513,7 +513,7 @@ import './Annotator.scss';
             func: this.pointClickHandler.bind(this.annotatedElement)
         };
         this.annotatedElement.addEventListener(handler.type, handler.func);
-        this.pointHandlers.push(handler);
+        this.annotationModeHandlers.push(handler);
     }
 
     /**
@@ -595,7 +595,7 @@ import './Annotator.scss';
 
             handlers.forEach((handler) => {
                 this.annotatedElement.addEventListener(handler.type, handler.func);
-                this.pointHandlers.push(handler);
+                this.annotationModeHandlers.push(handler);
             });
         }
     }
@@ -607,8 +607,8 @@ import './Annotator.scss';
      * @return {void}
      */
     unbindModeListeners() {
-        while (this.pointHandlers.length > 0) {
-            const handler = this.pointHandlers.pop();
+        while (this.annotationModeHandlers.length > 0) {
+            const handler = this.annotationModeHandlers.pop();
             this.annotatedElement.removeEventListener(handler.type, handler.func);
         }
     }

@@ -1,25 +1,19 @@
 class DrawingPath {
     //--------------------------------------------------------------------------
-    // Typedef
-    //--------------------------------------------------------------------------
-
-    /**
-     * Keeps track of a drawn path and its boundaries
-     * @typedef {Object} AnnotatorData
-     */
-
-    //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
-
     /** @property {Array} - The array of coordinates that form the path */
     path;
+
     /** @property {number} - The maximum X position of all coordinates */
     maxX;
+
     /** @property {number} - The maximum Y position of all coordinates */
     maxY;
+
     /** @property {number} - The minimum X position of all coordinates */
     minX;
+
     /** @property {number} - The minimum Y position of all coordinates */
     minY;
 
@@ -88,15 +82,15 @@ class DrawingPath {
                     xLast = this.path[i - 1].x;
                     yLast = this.path[i - 1].y;
                 } else {
-                    xLast = this.path[i].x - 1;
+                    xLast = this.path[i].x;
                     yLast = this.path[i].y;
                     ctx.moveTo(xLast, yLast);
                 }
 
-                // Arithmetic shift right here is faster but less accurate
+                // OPTIMIZE: Arithmetic shift right here is faster but less accurate
                 const xMid = (this.path[i].x + xLast) / 2;
                 const yMid = (this.path[i].y + yLast) / 2;
-                // lineTo is much faster than quadraticCurveTo but less smooth
+                // OPTIMIZE: lineTo is much faster than quadraticCurveTo but it is also appears to be less smooth
                 ctx.quadraticCurveTo(xLast, yLast, xMid, yMid);
             }
             ctx.stroke();

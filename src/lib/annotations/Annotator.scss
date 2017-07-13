@@ -425,7 +425,10 @@ $avatar-color-9: #f22c44;
 //------------------------------------------------------------------------------
 // Annotation mode
 //------------------------------------------------------------------------------
-
+.bp-draw-annotation-mode .page,
+.bp-draw-annotation-mode .bp-annotation-layer-highlight,
+.bp-draw-annotation-mode .textLayer > div,
+.bp-draw-annotation-mode > img,
 .bp-point-annotation-mode .page,
 .bp-point-annotation-mode .bp-annotation-layer-highlight,
 .bp-point-annotation-mode .textLayer > div,
@@ -433,12 +436,6 @@ $avatar-color-9: #f22c44;
     cursor: crosshair;
 }
 
-.bp-draw-annotation-mode .page,
-.bp-draw-annotation-mode .bp-annotation-layer-highlight,
-.bp-draw-annotation-mode .textLayer > div,
-.bp-draw-annotation-mode > img {
-    cursor: crosshair;
-}
 // Needed to allow point annotations since PDF.js adds a funky mousedown handler
 // that helps with text selection - we need to disable this since it interacts
 // badly with point annotations on non-text divs in non-Chrome browsers
