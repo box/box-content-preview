@@ -363,7 +363,7 @@ const HOVER_TIMEOUT_MS = 75;
      */
     /* istanbul ignore next */
     draw(fillStyle) {
-        const pageEl = this.getPageEl(this.annotatedElement, this.location.page);
+        const pageEl = this.getPageEl();
         const context = docAnnotatorUtil.getContext(
             pageEl,
             constants.CLASS_ANNOTATION_LAYER_HIGHLIGHT,
@@ -434,7 +434,7 @@ const HOVER_TIMEOUT_MS = 75;
      * @return {boolean} Whether or not mouse is inside highlight
      */
     isInHighlight(event) {
-        const pageEl = this.getPageEl(this.annotatedElement, this.location.page);
+        const pageEl = this.getPageEl();
         const pageDimensions = pageEl.getBoundingClientRect();
         const pageHeight = pageDimensions.height - constants.PAGE_PADDING_TOP - constants.PAGE_PADDING_BOTTOM;
         const pageTop = pageDimensions.top + constants.PAGE_PADDING_TOP;

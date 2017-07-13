@@ -55,7 +55,7 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     getDrawings() {
-        return this.pathContainer.children;
+        return this.pathContainer.data.children;
     }
 
     /* eslint-disable no-unused-vars */

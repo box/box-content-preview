@@ -11,16 +11,28 @@ class DrawingPath {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
+
+    /** @property {Array} - The array of coordinates that form the path */
+    path;
+    /** @property {number} - The maximum X position of all coordinates */
+    maxX;
+    /** @property {number} - The maximum Y position of all coordinates */
+    maxY;
+    /** @property {number} - The minimum X position of all coordinates */
+    minX;
+    /** @property {number} - The minimum Y position of all coordinates */
+    minY;
+
     /**
      * [constructor]
      * @return {DrawingPath} DrawingPath instance
      */
     constructor() {
         this.path = [];
-        this.minX = undefined;
-        this.minY = undefined;
-        this.maxX = undefined;
-        this.maxY = undefined;
+        this.maxX = -Infinity;
+        this.maxY = -Infinity;
+        this.minX = Infinity;
+        this.minY = Infinity;
     }
 
     /**
@@ -31,16 +43,16 @@ class DrawingPath {
      * @return {void}
      */
     addCoordinate(xPos, yPos) {
-        if (this.minX === undefined || xPos < this.minX) {
+        if (xPos < this.minX) {
             this.minX = xPos;
         }
-        if (this.maxX === undefined || xPos < this.maxX) {
+        if (xPos < this.maxX) {
             this.maxX = xPos;
         }
-        if (this.minY === undefined || yPos < this.minY) {
+        if (yPos < this.minY) {
             this.minY = yPos;
         }
-        if (this.maxY === undefined || yPos < this.maxY) {
+        if (yPos < this.maxY) {
             this.maxY = yPos;
         }
         this.path.push({
