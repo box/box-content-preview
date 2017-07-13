@@ -262,7 +262,7 @@ import {
                 buttonEl.classList.remove(CLASS_ACTIVE);
             }
 
-            this.unbindPointModeListeners(); // Disable point mode
+            this.unbindModeListeners(); // Disable point mode
             this.bindDOMListeners(); // Re-enable other annotations
 
             // Otherwise, enable annotation mode
@@ -286,10 +286,6 @@ import {
         }
 
         const buttonEl = event.target || this.previewUI.getAnnotateButton(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
-        // Create drawingController if it does not exist
-        if (!this.drawingController) {
-            this.drawingController = new DocDrawingThread({ annotatedElement: this.annotatedElement });
-        }
 
         // Exit if in draw mode
         if (this.isInDrawMode()) {
@@ -301,11 +297,12 @@ import {
                 buttonEl.classList.remove(CLASS_ACTIVE);
             }
 
-            this.unbindDrawModeListeners(); // Disable draw mode
+            this.unbindModeListeners(); // Disable draw mode
             this.bindDOMListeners(); // Re-enable other annotations
 
             // Otherwise enter draw mode
         } else {
+            const thread = this.createAnnotationThread([], location, TYPES.draw);
             this.notification.show(__('notification_annotation_draw_mode'));
             this.emit('annotationmodeenter');
             this.annotatedElement.classList.add(CLASS_ANNOTATION_DRAW_MODE);
@@ -314,7 +311,7 @@ import {
             }
 
             this.unbindDOMListeners();
-            this.bindDrawModeListeners();
+            this.bindDrawModeListeners(thread);
         }
     }
 
@@ -521,17 +518,12 @@ import {
      * @return {void}
      */
     bindPointModeListeners() {
-        this.annotatedElement.addEventListener('click', this.pointClickHandler);
-    }
-
-    /**
-     * Unbinds event listeners for point annotation mode.
-     *
-     * @protected
-     * @return {void}
-     */
-    unbindPointModeListeners() {
-        this.annotatedElement.removeEventListener('click', this.pointClickHandler);
+        const handler = {
+            type: 'click',
+            func: this.pointClickHandler.bind(this.annotatedElement)
+        };
+        this.annotatedElement.addEventListener(handler.type, handler.func);
+        this.pointHandlers.push(handler);
     }
 
     /**
@@ -576,39 +568,60 @@ import {
      * Binds event listeners for point annotation mode.
      *
      * @protected
+     * @param
      * @return {void}
      */
-    bindDrawModeListeners() {
-        if (this.drawingController) {
-            const moveHandler = this.getPointHandler(this.drawingController.handleMove.bind(this.drawingController));
-            const startHandler = this.getPointHandler(this.drawingController.handleStart.bind(this.drawingController));
-            const stopHandler = this.getPointHandler(this.drawingController.handleStop.bind(this.drawingController));
-            const handlers = [
-                { eventName: 'mousemove', handler: moveHandler },
-                { eventName: 'mousedown', handler: startHandler },
-                { eventName: 'mouseup', handler: stopHandler }
-            ];
-            this.annotatedElement.addEventListener('mousemove', moveHandler);
-            this.annotatedElement.addEventListener('mousedown', startHandler);
-            this.annotatedElement.addEventListener('mouseup', stopHandler);
+    bindDrawModeListeners(drawingThread) {
+        if (drawingThread) {
+            /**
+             * Returns a function that passes a callback a location when given an event
+             * @param {Function} callback Callback to be called upon receiving an event
+             * @return {Function} Event listener to convert to document location
+             */
+            const eventToLocationHandler = (callback) => {
+                return (event) => {
+                    if (event) {
+                        if (event.stopPropagation) {
+                            event.stopPropagation();
+                        }
+                        event.preventDefault();
+                    }
 
-            Array.prototype.push.apply(this.pointHandlers, handlers);
+                    const location = this.getLocationFromEvent(event, TYPES.point);
+                    if (location) {
+                        callback(location);
+                    }
+                };
+            };
+
+            const startCallback = drawingThread.handleStart.bind(drawingThread);
+            const stopCallback = drawingThread.handleStop.bind(drawingThread);
+            const moveCallback = drawingThread.handleMove.bind(drawingThread);
+            const handlers = [
+                { type: 'mousemove', func: eventToLocationHandler(moveCallback) },
+                { type: 'mousedown', func: eventToLocationHandler(startCallback) },
+                { type: 'mouseup', func: eventToLocationHandler(stopCallback) }
+            ];
+
+            handlers.forEach((handler) => {
+                this.annotatedElement.addEventListener(handler.type, handler.func);
+                this.pointHandlers.push(handler);
+            });
         }
     }
 
     /**
-     * Unbinds event listeners for point annotation mode.
+     * Unbinds event listeners for annotation modes.
      *
      * @protected
      * @return {void}
      */
-    unbindDrawModeListeners() {
+    unbindModeListeners() {
         while (this.pointHandlers.length > 0) {
-            const handlerObj = this.pointHandlers.pop();
-            this.annotatedElement.removeEventListener(handlerObj.eventName, handlerObj.handler);
+            const handler = this.pointHandlers.pop();
+            this.annotatedElement.removeEventListener(handler.type, handler.func);
         }
     }
-
     getPointHandler(callback) {
         return (event) => {
             // TODO: remove silly comment //realcomment: This block makes me cry

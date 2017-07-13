@@ -42,6 +42,15 @@ class DrawingThread extends AnnotationThread {
     }
 
     /**
+     * Unbind any listeners still attached
+     *
+     * [destructor]
+     * @return {void}
+     */
+    destroy() {
+        this.removeAllListeners();
+    }
+    /**
      * Get all of the DrawingPaths in the current thread.
      * @return {void}
      */
@@ -76,11 +85,11 @@ class DrawingThread extends AnnotationThread {
     /* eslint-disable no-unused-vars */
 
     //--------------------------------------------------------------------------
-    // Private
+    // Protected
     //--------------------------------------------------------------------------
 
     /**
-     * @private
+     * @protected
      * @param {number} scale The document scale
      * @return {void}
      */
@@ -94,7 +103,7 @@ class DrawingThread extends AnnotationThread {
     }
 
     /**
-     * @private
+     * @protected
      * @param {number} timestamp The time when the function was called;
      * @return {void}
      */

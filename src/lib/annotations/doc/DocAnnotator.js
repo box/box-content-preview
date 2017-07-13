@@ -9,6 +9,7 @@ import autobind from 'autobind-decorator';
 import Annotator from '../Annotator';
 import DocHighlightThread from './DocHighlightThread';
 import DocPointThread from './DocPointThread';
+import DocDrawingThread from './DocDrawingThread';
 import CreateHighlightDialog, { CreateEvents } from './CreateHighlightDialog';
 import * as annotatorUtil from '../annotatorUtil';
 import * as docAnnotatorUtil from './docAnnotatorUtil';
@@ -293,8 +294,12 @@ function isThreadInHoverState(thread) {
 
         if (annotatorUtil.isHighlightAnnotation(type)) {
             thread = new DocHighlightThread(threadParams);
-        } else {
+        } else if (type === constants.ANNOTATION_TYPE_DRAW) {
+            thread = new DocDrawingThread(threadParams);
+        } else if (type === constants.ANNOTATION_TYPE_POINT) {
             thread = new DocPointThread(threadParams);
+        } else {
+            throw new Error(`DocAnnotator: Unknown Annotation Type: ${type}`);
         }
 
         this.addThreadToMap(thread);
