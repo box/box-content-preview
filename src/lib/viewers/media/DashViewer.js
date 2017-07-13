@@ -368,6 +368,7 @@ const MANIFEST = 'manifest.mpd';
 
         // Make media element visible after resize
         this.showMedia();
+        this.mediaControls.show();
         this.mediaContainerEl.focus();
     }
 

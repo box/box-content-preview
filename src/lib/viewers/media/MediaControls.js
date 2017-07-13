@@ -9,7 +9,7 @@ import { activationHandler, addActivationListener, removeActivationListener, ins
 const SHOW_CONTROLS_CLASS = 'bp-media-controls-is-visible';
 const PLAYING_CLASS = 'bp-media-is-playing';
 const VOLUME_SCRUBBER_EXPAND_CLASS = 'bp-media-controls-volume-scrubber-expand';
-const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 1500;
+const CONTROLS_AUTO_HIDE_TIMEOUT_IN_MILLIS = 2000;
 const VOLUME_LEVEL_CLASS_NAMES = [
     'bp-media-volume-icon-is-mute',
     'bp-media-volume-icon-is-low',
@@ -614,6 +614,31 @@ const FILMSTRIP_FRAME_HEIGHT = 90;
     }
 
     /**
+     * Toggles the media controls
+     *
+     * @return {void}
+     */
+    toggle() {
+        if (this.isVisible()) {
+            // Clear all controls hiding blockers to allow hiding
+            this.preventHiding = false;
+            this.settings.hide();
+            this.hide();
+        } else {
+            this.show();
+        }
+    }
+
+    /**
+     * Determines if media controls are shown
+     *
+     * @return {boolean} If the controls are visible
+     */
+    isVisible() {
+        return this.wrapperEl.parentNode.classList.contains(SHOW_CONTROLS_CLASS);
+    }
+
+    /**
      * Resizes the time scrubber
      *
      * @return {void}
@@ -669,6 +694,11 @@ const FILMSTRIP_FRAME_HEIGHT = 90;
         // aspect ratio as the original video.
 
         this.timeScrubber.getHandleEl().addEventListener('mousedown', this.timeScrubbingStartHandler);
+
+        if (this.hasTouch) {
+            this.timeScrubberEl.addEventListener('touchstart', this.timeScrubbingStartHandler);
+        }
+
         this.timeScrubber.getConvertedEl().addEventListener('mousemove', this.filmstripShowHandler);
         this.timeScrubber.getConvertedEl().addEventListener('mouseleave', this.filmstripHideHandler);
 
@@ -692,16 +722,23 @@ const FILMSTRIP_FRAME_HEIGHT = 90;
     timeScrubbingStartHandler() {
         // Flag that we are scrubbing
         this.isScrubbing = true;
+        this.preventHiding = true;
 
         // Add event listener for the entire document that when mouse up happens
         // anywhere, consider scrubbing has stopped. This is added on the document
         // itself so that the user doesn't have to scrub in a straight line.
         document.addEventListener('mouseup', this.timeScrubbingStopHandler);
+        if (this.hasTouch) {
+            document.addEventListener('touchend', this.timeScrubbingStopHandler);
+        }
 
         // Likewise add a mouse move handler to the entire document so that when
         // the user is scrubbing and they are randomly moving mouse anywhere on the
         // document, we still continue to show the film strip
         document.addEventListener('mousemove', this.filmstripShowHandler);
+        if (this.hasTouch) {
+            document.addEventListener('touchmove', this.show);
+        }
     }
 
     /**
@@ -714,10 +751,14 @@ const FILMSTRIP_FRAME_HEIGHT = 90;
     timeScrubbingStopHandler(event) {
         // Flag that scrubbing is done
         this.isScrubbing = false;
+        this.preventHiding = false;
 
         // Remove any even listeners that were added when scrubbing started
         document.removeEventListener('mouseup', this.timeScrubbingStopHandler);
         document.removeEventListener('mousemove', this.filmstripShowHandler);
+
+        document.removeEventListener('touchend', this.timeScrubbingStopHandler);
+        document.removeEventListener('touchmove', this.show);
 
         if (!this.timeScrubberEl.contains(event.target)) {
             // Don't hide the filmstrip if we were hovering over the scrubber when
