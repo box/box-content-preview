@@ -609,7 +609,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
             this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
             if (this.canAnnotate) {
                 this.showPointAnnotateButton(this.getAnnotationModeClickHandler('point', 'togglepointannotationmode'));
-                this.showDrawAnnotateButton(this.getAnnotationModeClickHandler('drawing', 'toggledrawannotationmode'));
+                this.showDrawAnnotateButton(this.getAnnotationModeClickHandler('draw', 'toggledrawannotationmode'));
             }
             this.initAnnotations();
         }
@@ -725,6 +725,10 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
      * @return {void}
      */
     showPointAnnotateButton(handler) {
+        if (!this.isAnnotatable('point')) {
+            return;
+        }
+
         this.pointAnnotateClickHandler = handler;
         const { container } = this.options;
         const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
@@ -741,6 +745,10 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
      * @return {void}
      */
     showDrawAnnotateButton(handler) {
+        if (!this.isAnnotatable('draw')) {
+            return;
+        }
+
         this.drawAnnotateClickHandler = handler;
         const { container } = this.options;
         const drawAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);

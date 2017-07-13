@@ -42,14 +42,18 @@ class DrawingThread extends AnnotationThread {
     }
 
     /**
-     * Unbind any listeners still attached
+     * Soft destroy a drawingthread object
      *
-     * [destructor]
+     * [constructor]
+     * @inheritdoc
      * @return {void}
      */
     destroy() {
         this.removeAllListeners();
+        this.reset();
+        super.destroy();
     }
+
     /**
      * Get all of the DrawingPaths in the current thread.
      * @return {void}
