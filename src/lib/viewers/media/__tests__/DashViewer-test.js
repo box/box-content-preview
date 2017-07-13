@@ -78,7 +78,8 @@ describe('lib/viewers/media/DashViewer', () => {
             initFilmstrip: () => {},
             initSubtitles: () => {},
             removeAllListeners: () => {},
-            removeListener: () => {}
+            removeListener: () => {},
+            show: sandbox.stub()
         };
         stubs.mockControls = sandbox.mock(dash.mediaControls);
 
@@ -430,6 +431,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.emit).to.be.calledWith('load');
             expect(dash.loaded).to.be.true;
             expect(document.activeElement).to.equal(dash.mediaContainerEl);
+            expect(dash.mediaControls.show).to.be.called;
         });
     });
 
