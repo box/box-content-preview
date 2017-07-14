@@ -824,7 +824,7 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
      * @return {void}
      */
     finishLoading(data = {}) {
-        // Show or hide annotate/print/download buttons
+        // Show or hide print/download buttons
         // canDownload is not supported by all of our browsers, so for now we need to check isMobile
         if (checkPermission(this.file, PERMISSION_DOWNLOAD) && this.options.showDownload && Browser.canDownload()) {
             this.ui.showDownloadButton(this.download);

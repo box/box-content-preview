@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
 import Annotator from '../Annotator';
-import * as constants from '../annotationConstants';
 import * as annotatorUtil from '../annotatorUtil';
 import AnnotationService from '../AnnotationService';
+import { STATES, CLASS_ANNOTATION_POINT_MODE } from '../annotationConstants';
 
 let annotator;
 let stubs = {};
@@ -270,7 +270,7 @@ describe('lib/annotations/Annotator', () => {
                 expect(destroyStub).to.be.called;
                 expect(annotator.notification.show).to.be.called;
                 expect(annotator.emit).to.be.calledWith('annotationmodeenter');
-                expect(annotatedEl).to.have.class(constants.CLASS_ANNOTATION_POINT_MODE);
+                expect(annotatedEl).to.have.class(CLASS_ANNOTATION_POINT_MODE);
                 expect(annotator.unbindDOMListeners).to.be.called;
                 expect(annotator.bindPointModeListeners).to.be.called;
             });
@@ -285,7 +285,7 @@ describe('lib/annotations/Annotator', () => {
                 expect(destroyStub).to.be.called;
                 expect(annotator.notification.hide).to.be.called;
                 expect(annotator.emit).to.be.calledWith('annotationmodeexit');
-                expect(annotatedEl).to.not.have.class(constants.CLASS_ANNOTATION_POINT_MODE);
+                expect(annotatedEl).to.not.have.class(CLASS_ANNOTATION_POINT_MODE);
                 expect(annotator.unbindPointModeListeners).to.be.called;
                 expect(annotator.bindDOMListeners).to.be.called;
             });
@@ -505,10 +505,10 @@ describe('lib/annotations/Annotator', () => {
 
         describe('isInPointMode', () => {
             it('should return whether the annotator is in point mode or not', () => {
-                annotator.annotatedElement.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
+                annotator.annotatedElement.classList.add(CLASS_ANNOTATION_POINT_MODE);
                 expect(annotator.isInPointMode()).to.be.true;
 
-                annotator.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
+                annotator.annotatedElement.classList.remove(CLASS_ANNOTATION_POINT_MODE);
                 expect(annotator.isInPointMode()).to.be.false;
             });
         });
@@ -518,7 +518,7 @@ describe('lib/annotations/Annotator', () => {
                 stubs.thread = {
                     location: { page: 2 },
                     type: 'type',
-                    state: constants.ANNOTATION_STATE_PENDING,
+                    state: STATES.pending,
                     destroy: () => {},
                     unbindCustomListenersOnThread: () => {},
                     removeAllListeners: () => {}
@@ -555,7 +555,7 @@ describe('lib/annotations/Annotator', () => {
                 const pendingThread = {
                     location: { page: 2 },
                     type: 'type',
-                    state: constants.ANNOTATION_STATE_PENDING,
+                    state: STATES.pending,
                     destroy: () => {},
                     unbindCustomListenersOnThread: () => {},
                     removeAllListeners: () => {}

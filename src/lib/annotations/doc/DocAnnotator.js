@@ -11,12 +11,24 @@ import DocHighlightThread from './DocHighlightThread';
 import DocPointThread from './DocPointThread';
 import CreateHighlightDialog, { CreateEvents } from './CreateHighlightDialog';
 import * as annotatorUtil from '../annotatorUtil';
-import * as constants from '../annotationConstants';
 import * as docAnnotatorUtil from './docAnnotatorUtil';
+import {
+    STATES,
+    TYPES,
+    DATA_TYPE_ANNOTATION_DIALOG,
+    DATA_TYPE_ANNOTATION_INDICATOR,
+    PAGE_PADDING_TOP,
+    PAGE_PADDING_BOTTOM,
+    CLASS_ANNOTATION_LAYER,
+    PENDING_STATES
+} from '../annotationConstants';
 
 const MOUSEMOVE_THROTTLE_MS = 50;
 const HOVER_TIMEOUT_MS = 75;
 const MOUSE_MOVE_MIN_DISTANCE = 5;
+
+const SELECTOR_PREVIEW_DOC = '.bp-doc';
+const CLASS_DEFAULT_CURSOR = 'bp-use-default-cursor';
 
 /**
  * For filtering out and only showing the first thread in a list of threads.
@@ -40,7 +52,7 @@ function showFirstDialogFilter(thread, index) {
  * @return {boolean} True if the thread is in a state of hover
  */
 function isThreadInHoverState(thread) {
-    return thread.state === constants.ANNOTATION_STATE_HOVER;
+    return thread.state === STATES.hover;
 }
 
 @autobind class DocAnnotator extends Annotator {
@@ -140,7 +152,7 @@ function isThreadInHoverState(thread) {
      * @return {HTMLElement} Annotated element in the viewer
      */
     getAnnotatedEl(containerEl) {
-        return containerEl.querySelector('.bp-doc');
+        return containerEl.querySelector(SELECTOR_PREVIEW_DOC);
     }
 
     /**
@@ -160,7 +172,7 @@ function isThreadInHoverState(thread) {
         let location = null;
         const zoomScale = annotatorUtil.getScale(this.annotatedElement);
 
-        if (annotationType === constants.ANNOTATION_TYPE_POINT) {
+        if (annotationType === TYPES.point) {
             // If there is a selection, ignore
             if (docAnnotatorUtil.isSelectionPresent()) {
                 return location;
@@ -175,17 +187,17 @@ function isThreadInHoverState(thread) {
 
             // If click is inside an annotation dialog, ignore
             const dataType = annotatorUtil.findClosestDataType(eventTarget);
-            if (dataType === 'annotation-dialog' || dataType === 'annotation-indicator') {
+            if (dataType === DATA_TYPE_ANNOTATION_DIALOG || dataType === DATA_TYPE_ANNOTATION_INDICATOR) {
                 return location;
             }
 
             // Store coordinates at 100% scale in PDF space in PDF units
             const pageDimensions = pageEl.getBoundingClientRect();
             const pageWidth = pageDimensions.width;
-            const pageHeight = pageDimensions.height - constants.PAGE_PADDING_TOP - constants.PAGE_PADDING_BOTTOM;
+            const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
             const browserCoordinates = [
                 event.clientX - pageDimensions.left,
-                event.clientY - pageDimensions.top - constants.PAGE_PADDING_TOP
+                event.clientY - pageDimensions.top - PAGE_PADDING_TOP
             ];
             const pdfCoordinates = docAnnotatorUtil.convertDOMSpaceToPDFSpace(
                 browserCoordinates,
@@ -233,7 +245,7 @@ function isThreadInHoverState(thread) {
             // and scale if needed (in case the representation changes size)
             const pageDimensions = pageEl.getBoundingClientRect();
             const pageWidth = pageDimensions.width;
-            const pageHeight = pageDimensions.height - constants.PAGE_PADDING_TOP - constants.PAGE_PADDING_BOTTOM;
+            const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
             const dimensions = {
                 x: pageWidth / zoomScale,
                 y: pageHeight / zoomScale
@@ -315,13 +327,13 @@ function isThreadInHoverState(thread) {
         }
         this.createHighlightDialog.hide();
 
-        const location = this.getLocationFromEvent(this.lastHighlightEvent, constants.ANNOTATION_TYPE_HIGHLIGHT);
+        const location = this.getLocationFromEvent(this.lastHighlightEvent, TYPES.highlight);
         if (!location) {
             return null;
         }
 
         const annotations = [];
-        const thread = this.createAnnotationThread(annotations, location, constants.ANNOTATION_TYPE_HIGHLIGHT);
+        const thread = this.createAnnotationThread(annotations, location, TYPES.highlight);
         this.lastHighlightEvent = null;
 
         if (!thread) {
@@ -334,7 +346,7 @@ function isThreadInHoverState(thread) {
             thread.dialog.hasComments = true;
         }
 
-        thread.state = constants.ANNOTATION_STATE_HOVER;
+        thread.state = STATES.hover;
         thread.show();
         thread.dialog.postAnnotation(commentText);
 
@@ -576,7 +588,7 @@ function isThreadInHoverState(thread) {
             const thread = pageThreads[i];
             // Determine if any highlight threads on page are pending or active
             // and ignore hover events of any highlights below
-            if (thread.state === constants.ANNOTATION_STATE_PENDING) {
+            if (thread.state === STATES.pending) {
                 return;
             }
 
@@ -698,7 +710,7 @@ function isThreadInHoverState(thread) {
 
         const pageDimensions = pageEl.getBoundingClientRect();
         const pageLeft = pageDimensions.left;
-        const pageTop = pageDimensions.top + constants.PAGE_PADDING_TOP;
+        const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
 
         this.createHighlightDialog.show(pageEl);
         if (!this.isMobile) {
@@ -721,9 +733,9 @@ function isThreadInHoverState(thread) {
         let activeThread = null;
 
         // Destroy any pending highlights on click outside the highlight
-        const pendingThreads = this.getThreadsWithStates(constants.PENDING_STATES);
+        const pendingThreads = this.getThreadsWithStates(PENDING_STATES);
         pendingThreads.forEach((thread) => {
-            if (thread.type === constants.ANNOTATION_TYPE_POINT) {
+            if (thread.type === TYPES.point) {
                 thread.destroy();
             } else {
                 thread.cancelFirstComment();
@@ -781,7 +793,7 @@ function isThreadInHoverState(thread) {
      * @return {void}
      */
     useDefaultCursor() {
-        this.annotatedElement.classList.add('bp-use-default-cursor');
+        this.annotatedElement.classList.add(CLASS_DEFAULT_CURSOR);
     }
 
     /**
@@ -791,7 +803,7 @@ function isThreadInHoverState(thread) {
      * @return {void}
      */
     removeDefaultCursor() {
-        this.annotatedElement.classList.remove('bp-use-default-cursor');
+        this.annotatedElement.classList.remove(CLASS_DEFAULT_CURSOR);
     }
 
     /**
@@ -817,7 +829,7 @@ function isThreadInHoverState(thread) {
     showHighlightsOnPage(page) {
         // Clear context if needed
         const pageEl = this.annotatedElement.querySelector(`[data-page-number="${page}"]`);
-        const annotationLayerEl = pageEl.querySelector('.bp-annotation-layer');
+        const annotationLayerEl = pageEl.querySelector(`.${CLASS_ANNOTATION_LAYER}`);
         if (annotationLayerEl) {
             const context = annotationLayerEl.getContext('2d');
             context.clearRect(0, 0, annotationLayerEl.width, annotationLayerEl.height);

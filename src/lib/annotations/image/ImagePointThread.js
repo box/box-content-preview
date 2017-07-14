@@ -3,7 +3,7 @@ import AnnotationThread from '../AnnotationThread';
 import ImagePointDialog from './ImagePointDialog';
 import * as annotatorUtil from '../annotatorUtil';
 import * as imageAnnotatorUtil from './imageAnnotatorUtil';
-import * as constants from '../annotationConstants';
+import { STATES } from '../annotationConstants';
 
 const POINT_ANNOTATION_ICON_HEIGHT = 31;
 const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
@@ -33,7 +33,7 @@ const POINT_ANNOTATION_ICON_WIDTH = 24;
 
         annotatorUtil.showElement(this.element);
 
-        if (this.state === constants.ANNOTATION_STATE_PENDING) {
+        if (this.state === STATES.pending) {
             this.showDialog();
         }
     }

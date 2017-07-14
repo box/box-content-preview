@@ -4,7 +4,7 @@ import Annotation from '../../Annotation';
 import AnnotationDialog from '../../AnnotationDialog';
 import * as annotatorUtil from '../../annotatorUtil';
 import * as docAnnotatorUtil from '../docAnnotatorUtil';
-import { CLASS_HIDDEN } from '../../../constants';
+import { CLASS_HIDDEN, CLASS_ACTIVE } from '../../../constants';
 import * as util from '../../../util';
 import * as constants from '../../annotationConstants';
 
@@ -12,6 +12,10 @@ let dialog;
 const sandbox = sinon.sandbox.create();
 let stubs = {};
 
+const CLASS_TEXT_HIGHLIGHTED = 'bp-is-text-highlighted';
+const CLASS_HIGHLIGHT_LABEL = 'bp-annotation-highlight-label';
+const DATA_TYPE_HIGHLIGHT_BTN = 'highlight-btn';
+const DATA_TYPE_ADD_HIGHLIGHT_COMMENT = 'add-highlight-comment-btn';
 const PAGE_PADDING_TOP = 15;
 
 describe('lib/annotations/doc/DocHighlightDialog', () => {
@@ -77,7 +81,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
                 })
             );
 
-            const highlightLabelEl = dialog.element.querySelector('.bp-annotation-highlight-label');
+            const highlightLabelEl = dialog.element.querySelector(`.${CLASS_HIGHLIGHT_LABEL}`);
             expect(highlightLabelEl).to.contain.html('Bob highlighted');
             expect(dialog.position).to.be.called;
         });
@@ -141,7 +145,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
     describe('toggleHighlightDialogs()', () => {
         it('should display comments dialog on toggle when comments dialog is currently hidden', () => {
-            const commentsDialogEl = dialog.element.querySelector('.annotation-container');
+            const commentsDialogEl = dialog.element.querySelector(constants.SELECTOR_ANNOTATION_CONTAINER);
             commentsDialogEl.classList.add(CLASS_HIDDEN);
 
             sandbox.stub(annotatorUtil, 'hideElement');
@@ -154,7 +158,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         });
 
         it('should display highlight buttons dialog on toggle when comments dialog is currently shown', () => {
-            const commentsDialogEl = dialog.element.querySelector('.annotation-container');
+            const commentsDialogEl = dialog.element.querySelector(constants.SELECTOR_ANNOTATION_CONTAINER);
             commentsDialogEl.classList.remove(CLASS_HIDDEN);
 
             sandbox.stub(annotatorUtil, 'hideElement');
@@ -169,8 +173,8 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
     describe('toggleHighlightCommentsReply()', () => {
         it('should display "Reply" text area in dialog when multiple comments exist', () => {
-            const replyTextEl = dialog.commentsDialogEl.querySelector('[data-section="create"]');
-            const commentTextEl = dialog.commentsDialogEl.querySelector('[data-section="show"]');
+            const replyTextEl = dialog.commentsDialogEl.querySelector(constants.SECTION_CREATE);
+            const commentTextEl = dialog.commentsDialogEl.querySelector(constants.SECTION_SHOW);
 
             sandbox.stub(dialog, 'position');
 
@@ -181,8 +185,8 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         });
 
         it('should display "Add a comment here" text area in dialog when no comments exist', () => {
-            const replyTextEl = dialog.commentsDialogEl.querySelector('[data-section="create"]');
-            const commentTextEl = dialog.commentsDialogEl.querySelector('[data-section="show"]');
+            const replyTextEl = dialog.commentsDialogEl.querySelector(constants.SECTION_CREATE);
+            const commentTextEl = dialog.commentsDialogEl.querySelector(constants.SECTION_SHOW);
 
             sandbox.stub(dialog, 'position');
 
@@ -271,7 +275,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
         it('should add the text highlighted class if thread has multiple annotations', () => {
             dialog.setup([stubs.annotation]);
-            expect(dialog.dialogEl).to.have.class(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            expect(dialog.dialogEl).to.have.class(CLASS_TEXT_HIGHLIGHTED);
         });
 
         it('should setup and show plain highlight dialog', () => {
@@ -285,8 +289,8 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
             stubs.annotation.permissions.can_delete = false;
 
             dialog.setup([stubs.annotation]);
-            const highlightLabelEl = dialog.highlightDialogEl.querySelector('.bp-annotation-highlight-label');
-            const addHighlightBtn = dialog.highlightDialogEl.querySelector('.bp-add-highlight-btn');
+            const highlightLabelEl = dialog.highlightDialogEl.querySelector(`.${CLASS_HIGHLIGHT_LABEL}`);
+            const addHighlightBtn = dialog.highlightDialogEl.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
             expect(stubs.show).to.be.calledWith(highlightLabelEl);
             expect(stubs.hide).to.be.calledWith(addHighlightBtn);
         });
@@ -392,14 +396,14 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         });
 
         it('should create/remove a highlight when the \'highlight-btn\' is pressed', () => {
-            stubs.dataType.returns('highlight-btn');
+            stubs.dataType.returns(DATA_TYPE_HIGHLIGHT_BTN);
             dialog.mousedownHandler(event);
             expect(stubs.emit).to.be.calledWith('annotationdraw');
             expect(dialog.toggleHighlight).to.be.called;
         });
 
         it('should create highlight when the \'add-highlight-comment-btn\' is pressed', () => {
-            stubs.dataType.returns('add-highlight-comment-btn');
+            stubs.dataType.returns(DATA_TYPE_ADD_HIGHLIGHT_COMMENT);
             dialog.mousedownHandler(event);
             expect(stubs.emit).to.be.calledWith('annotationdraw');
             expect(dialog.toggleHighlightCommentsReply).to.be.called;
@@ -417,31 +421,31 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
     describe('toggleHighlightIcon()', () => {
         it('should display active highlight icon when highlight is active', () => {
-            const addHighlightBtn = dialog.element.querySelector('.bp-add-highlight-btn');
-            dialog.toggleHighlightIcon(constants.HIGHLIGHT_ACTIVE_FILL_STYLE);
-            expect(addHighlightBtn).to.have.class('highlight-active');
+            const addHighlightBtn = dialog.element.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
+            dialog.toggleHighlightIcon(constants.HIGHLIGHT_FILL.active);
+            expect(addHighlightBtn).to.have.class(CLASS_ACTIVE);
         });
 
         it('should display normal \'text highlighted\' highlight icon when highlight is not active', () => {
-            const addHighlightBtn = dialog.element.querySelector('.bp-add-highlight-btn');
-            dialog.toggleHighlightIcon(constants.HIGHLIGHT_NORMAL_FILL_STYLE);
-            expect(addHighlightBtn).to.not.have.class('highlight-active');
+            const addHighlightBtn = dialog.element.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
+            dialog.toggleHighlightIcon(constants.HIGHLIGHT_FILL.normal);
+            expect(addHighlightBtn).to.not.have.class(CLASS_ACTIVE);
         });
     });
 
     describe('toggleHighlight()', () => {
         it('should delete a blank annotation if text is highlighted', () => {
-            dialog.dialogEl.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            dialog.dialogEl.classList.add(CLASS_TEXT_HIGHLIGHTED);
             dialog.toggleHighlight();
             expect(dialog.hasComments).to.be.true;
             expect(stubs.emit).to.be.calledWith('annotationdelete');
         });
 
         it('should create a blank annotation if text is not highlighted', () => {
-            dialog.dialogEl.classList.remove(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            dialog.dialogEl.classList.remove(CLASS_TEXT_HIGHLIGHTED);
 
             dialog.toggleHighlight();
-            expect(dialog.dialogEl).to.have.class(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            expect(dialog.dialogEl).to.have.class(CLASS_TEXT_HIGHLIGHTED);
             expect(dialog.hasComments).to.be.false;
             expect(stubs.emit).to.be.calledWith('annotationcreate');
         });
@@ -471,7 +475,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
     describe('getDialogWidth', () => {
         it('should calculate dialog width once annotator\'s user name has been populated', () => {
-            const highlightLabelEl = dialog.element.querySelector('.bp-annotation-highlight-label');
+            const highlightLabelEl = dialog.element.querySelector(`.${CLASS_HIGHLIGHT_LABEL}`);
             highlightLabelEl.innerHTML = 'Bob highlighted';
             dialog.element.style.width = '100px';
 
@@ -510,7 +514,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
                     permissions: {}
                 })
             );
-            const highlight = dialog.element.querySelector('.bp-annotation-highlight-dialog');
+            const highlight = dialog.element.querySelector(constants.SELECTOR_ANNOTATION_HIGHLIGHT_DIALOG);
             const comment = document.querySelector('.annotation-comment');
 
             expect(comment).to.be.null;
@@ -521,7 +525,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
     describe('generateHighlightDialogEl()', () => {
         it('should return a highlight annotation dialog DOM element', () => {
             const highlightEl = dialog.generateHighlightDialogEl();
-            const highlightBtnEl = highlightEl.querySelector('.bp-annotations-highlight-btns');
+            const highlightBtnEl = highlightEl.querySelector(constants.SELECTOR_HIGHLIGHT_BTNS);
             expect(highlightBtnEl).to.not.be.null;
         });
     });

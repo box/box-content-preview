@@ -19,7 +19,12 @@ import {
     isPending,
     validateThreadParams
 } from '../annotatorUtil';
-import * as constants from '../annotationConstants';
+import {
+    STATES,
+    TYPES,
+    SELECTOR_ANNOTATION_DIALOG,
+    SELECTOR_ANNOTATION_CARET
+} from '../annotationConstants';
 
 const DIALOG_WIDTH = 81;
 
@@ -233,15 +238,15 @@ describe('lib/annotations/annotatorUtil', () => {
 
     describe('isHighlightAnnotation()', () => {
         it('should return true if annotation is a plain highlight annotation', () => {
-            assert.ok(isHighlightAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT));
+            assert.ok(isHighlightAnnotation(TYPES.highlight));
         });
 
         it('should return true if annotation is a highlight comment annotation', () => {
-            assert.ok(isHighlightAnnotation(constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT));
+            assert.ok(isHighlightAnnotation(TYPES.highlight_comment));
         });
 
         it('should return false if annotation is a point annotation', () => {
-            assert.ok(!isHighlightAnnotation(constants.ANNOTATION_TYPE_POINT));
+            assert.ok(!isHighlightAnnotation(TYPES.point));
         });
     });
 
@@ -293,11 +298,11 @@ describe('lib/annotations/annotatorUtil', () => {
             const browserX = 1;
             const pageWidth = 100;
             const initX = browserX - DIALOG_WIDTH / 2;
-            const dialogEl = document.querySelector('.bp-annotation-dialog');
+            const dialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
 
             const dialogX = repositionCaret(dialogEl, initX, DIALOG_WIDTH, browserX, pageWidth);
 
-            const annotationCaretEl = dialogEl.querySelector('.bp-annotation-caret');
+            const annotationCaretEl = dialogEl.querySelector(SELECTOR_ANNOTATION_CARET);
             expect(dialogX).to.equal(0); // dialog aligned to the left
             expect(annotationCaretEl.style.left).to.equal('10px'); // caret aligned to the left
         });
@@ -306,11 +311,11 @@ describe('lib/annotations/annotatorUtil', () => {
             const browserX = 400;
             const pageWidth = 100;
             const initX = browserX - DIALOG_WIDTH / 2;
-            const dialogEl = document.querySelector('.bp-annotation-dialog');
+            const dialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
 
             const dialogX = repositionCaret(dialogEl, initX, DIALOG_WIDTH, browserX, pageWidth);
 
-            const annotationCaretEl = dialogEl.querySelector('.bp-annotation-caret');
+            const annotationCaretEl = dialogEl.querySelector(SELECTOR_ANNOTATION_CARET);
             expect(dialogX).to.equal(19); // dialog aligned to the right
             expect(annotationCaretEl.style.left).to.equal('71px'); // caret aligned to the right
         });
@@ -319,11 +324,11 @@ describe('lib/annotations/annotatorUtil', () => {
             const browserX = 100;
             const pageWidth = 1000;
             const initX = browserX - DIALOG_WIDTH / 2;
-            const dialogEl = document.querySelector('.bp-annotation-dialog');
+            const dialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
 
             const dialogX = repositionCaret(dialogEl, initX, DIALOG_WIDTH, browserX, pageWidth);
 
-            const annotationCaretEl = dialogEl.querySelector('.bp-annotation-caret');
+            const annotationCaretEl = dialogEl.querySelector(SELECTOR_ANNOTATION_CARET);
             expect(dialogX).to.equal(initX); // dialog x unchanged
             expect(annotationCaretEl.style.left).to.equal('50%'); // caret centered with dialog
         });
@@ -331,13 +336,13 @@ describe('lib/annotations/annotatorUtil', () => {
 
     describe('isPending()', () => {
         it('should return true if thread is pending or pending-active', () => {
-            expect(isPending(constants.ANNOTATION_STATE_PENDING)).to.be.true;
-            expect(isPending(constants.ANNOTATION_STATE_PENDING_ACTIVE)).to.be.true;
+            expect(isPending(STATES.pending)).to.be.true;
+            expect(isPending(STATES.pending_active)).to.be.true;
         });
 
         it('should return false if thread is notpending', () => {
-            expect(isPending(constants.ANNOTATION_STATE_HOVER)).to.be.false;
-            expect(isPending(constants.ANNOTATION_STATE_INACTIVE)).to.be.false;
+            expect(isPending(STATES.hover)).to.be.false;
+            expect(isPending(STATES.inactive)).to.be.false;
         });
     });
 

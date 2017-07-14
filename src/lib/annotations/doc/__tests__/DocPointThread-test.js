@@ -3,8 +3,8 @@ import DocPointDialog from '../DocPointDialog';
 import DocPointThread from '../DocPointThread';
 import AnnotationThread from '../../AnnotationThread';
 import * as annotatorUtil from '../../annotatorUtil';
-import * as constants from '../../annotationConstants';
 import * as docAnnotatorUtil from '../docAnnotatorUtil';
+import { STATES } from '../../annotationConstants';
 
 let pointThread;
 const sandbox = sinon.sandbox.create();
@@ -93,7 +93,7 @@ describe('lib/annotations/doc/DocPointThread', () => {
             sandbox.stub(annotatorUtil, 'showElement');
             sandbox.stub(pointThread, 'showDialog');
 
-            pointThread.state = constants.ANNOTATION_STATE_PENDING;
+            pointThread.state = STATES.pending;
             pointThread.show();
 
             expect(pointThread.showDialog).to.have.been.called;
@@ -104,7 +104,7 @@ describe('lib/annotations/doc/DocPointThread', () => {
             sandbox.stub(annotatorUtil, 'showElement');
             sandbox.stub(pointThread, 'showDialog');
 
-            pointThread.state = constants.ANNOTATION_STATE_INACTIVE;
+            pointThread.state = STATES.inactive;
             pointThread.show();
 
             expect(pointThread.showDialog).to.not.have.been.called;

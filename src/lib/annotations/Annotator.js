@@ -2,11 +2,20 @@ import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
-import * as constants from './annotationConstants';
 import * as annotatorUtil from './annotatorUtil';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 import { ICON_CLOSE } from '../icons/icons';
 import './Annotator.scss';
+import {
+    DATA_TYPE_ANNOTATION_DIALOG,
+    CLASS_MOBILE_ANNOTATION_DIALOG,
+    CLASS_ANNOTATION_DIALOG,
+    CLASS_MOBILE_DIALOG_HEADER,
+    CLASS_DIALOG_CLOSE,
+    TYPES
+} from './annotationConstants';
+
+const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
 
 @autobind class Annotator extends EventEmitter {
     //--------------------------------------------------------------------------
@@ -98,14 +107,14 @@ import './Annotator.scss';
     setupMobileDialog() {
         // Generate HTML of dialog
         const mobileDialogEl = document.createElement('div');
-        mobileDialogEl.setAttribute('data-type', 'annotation-dialog');
-        mobileDialogEl.classList.add(constants.CLASS_MOBILE_ANNOTATION_DIALOG);
-        mobileDialogEl.classList.add(constants.CLASS_ANNOTATION_DIALOG);
+        mobileDialogEl.setAttribute('data-type', DATA_TYPE_ANNOTATION_DIALOG);
+        mobileDialogEl.classList.add(CLASS_MOBILE_ANNOTATION_DIALOG);
+        mobileDialogEl.classList.add(CLASS_ANNOTATION_DIALOG);
         mobileDialogEl.classList.add(CLASS_HIDDEN);
 
         mobileDialogEl.innerHTML = `
-            <div class="bp-annotation-mobile-header">
-                <button class="bp-annotation-dialog-close">${ICON_CLOSE}</button>
+            <div class="${CLASS_MOBILE_DIALOG_HEADER}">
+                <button class="${CLASS_DIALOG_CLOSE}">${ICON_CLOSE}</button>
             </div>`.trim();
 
         this.container.appendChild(mobileDialogEl);
@@ -237,7 +246,7 @@ import './Annotator.scss';
             this.notification.hide();
 
             this.emit('annotationmodeexit');
-            this.annotatedElement.classList.remove(constants.CLASS_ANNOTATION_POINT_MODE);
+            this.annotatedElement.classList.remove(CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
                 buttonEl.classList.remove(CLASS_ACTIVE);
             }
@@ -250,7 +259,7 @@ import './Annotator.scss';
             this.notification.show(__('notification_annotation_mode'));
 
             this.emit('annotationmodeenter');
-            this.annotatedElement.classList.add(constants.CLASS_ANNOTATION_POINT_MODE);
+            this.annotatedElement.classList.add(CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
                 buttonEl.classList.add(CLASS_ACTIVE);
             }
@@ -495,7 +504,7 @@ import './Annotator.scss';
         }
 
         // Get annotation location from click event, ignore click if location is invalid
-        const location = this.getLocationFromEvent(event, constants.ANNOTATION_TYPE_POINT);
+        const location = this.getLocationFromEvent(event, TYPES.point);
         if (!location) {
             this.togglePointModeHandler();
             return;
@@ -505,7 +514,7 @@ import './Annotator.scss';
         this.togglePointModeHandler();
 
         // Create new thread with no annotations, show indicator, and show dialog
-        const thread = this.createAnnotationThread([], location, constants.ANNOTATION_TYPE_POINT);
+        const thread = this.createAnnotationThread([], location, TYPES.point);
 
         if (thread) {
             thread.show();
@@ -536,7 +545,7 @@ import './Annotator.scss';
      * @return {boolean} Whether or not in point mode
      */
     isInPointMode() {
-        return this.annotatedElement.classList.contains(constants.CLASS_ANNOTATION_POINT_MODE);
+        return this.annotatedElement.classList.contains(CLASS_ANNOTATION_POINT_MODE);
     }
 
     //--------------------------------------------------------------------------
@@ -554,7 +563,7 @@ import './Annotator.scss';
         let hasPendingThreads = false;
         Object.keys(this.threads).forEach((page) => {
             this.threads[page].forEach((pendingThread) => {
-                if (pendingThread.state === constants.ANNOTATION_STATE_PENDING) {
+                if (annotatorUtil.isPending(pendingThread.state)) {
                     hasPendingThreads = true;
                     pendingThread.destroy();
                 }

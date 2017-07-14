@@ -2,8 +2,14 @@ import autobind from 'autobind-decorator';
 import AnnotationThread from '../AnnotationThread';
 import DocHighlightDialog from './DocHighlightDialog';
 import * as annotatorUtil from '../annotatorUtil';
-import * as constants from '../annotationConstants';
 import * as docAnnotatorUtil from './docAnnotatorUtil';
+import {
+    STATES,
+    TYPES,
+    CLASS_ANNOTATION_LAYER,
+    SELECTOR_ADD_HIGHLIGHT_BTN,
+    HIGHLIGHT_FILL
+} from '../annotationConstants';
 
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
@@ -32,7 +38,7 @@ const HOVER_TIMEOUT_MS = 75;
             this.reset();
 
             // Reset type from highlight-comment to highlight
-            this.type = constants.ANNOTATION_TYPE_HIGHLIGHT;
+            this.type = TYPES.highlight;
         } else {
             this.destroy();
         }
@@ -47,7 +53,7 @@ const HOVER_TIMEOUT_MS = 75;
     destroy() {
         super.destroy();
 
-        if (this.state === constants.ANNOTATION_STATE_PENDING) {
+        if (this.state === STATES.pending) {
             window.getSelection().removeAllRanges();
         }
     }
@@ -61,7 +67,7 @@ const HOVER_TIMEOUT_MS = 75;
      * @return {void}
      */
     hide() {
-        this.draw(constants.HIGHLIGHT_ERASE_FILL_STYLE);
+        this.draw(HIGHLIGHT_FILL.erase);
     }
 
     /**
@@ -71,7 +77,7 @@ const HOVER_TIMEOUT_MS = 75;
      * @return {void}
      */
     reset() {
-        this.state = constants.ANNOTATION_STATE_INACTIVE;
+        this.state = STATES.inactive;
         this.show();
     }
 
@@ -101,7 +107,7 @@ const HOVER_TIMEOUT_MS = 75;
         // Hide delete button on plain highlights if user doesn't have
         // permissions
         if (this.annotations.length && this.annotations[0].permissions && !this.annotations[0].permissions.can_delete) {
-            const addHighlightBtn = this.dialog.element.querySelector('.bp-add-highlight-btn');
+            const addHighlightBtn = this.dialog.element.querySelector(SELECTOR_ADD_HIGHLIGHT_BTN);
             annotatorUtil.hideElement(addHighlightBtn);
         }
     }
@@ -113,7 +119,7 @@ const HOVER_TIMEOUT_MS = 75;
      */
     onMousedown() {
         // Destroy pending highlights on mousedown
-        if (this.state === constants.ANNOTATION_STATE_PENDING) {
+        if (this.state === STATES.pending) {
             this.destroy();
         }
     }
@@ -137,7 +143,7 @@ const HOVER_TIMEOUT_MS = 75;
         // If state is in hover, it means mouse is already over this highlight
         // so we can skip the is in highlight calculation
         if (!consumed && this.isOnHighlight(event)) {
-            this.state = constants.ANNOTATION_STATE_HOVER;
+            this.state = STATES.hover;
             return true;
         }
 
@@ -166,7 +172,7 @@ const HOVER_TIMEOUT_MS = 75;
      * @return {void}
      */
     activateDialog() {
-        this.state = constants.ANNOTATION_STATE_HOVER;
+        this.state = STATES.hover;
 
         // Setup the dialog element if it has not already been created
         if (!this.dialog.element) {
@@ -189,10 +195,10 @@ const HOVER_TIMEOUT_MS = 75;
         // If mouse is in dialog, change state to hover or active-hover
         if (docAnnotatorUtil.isInDialog(event, this.dialog.element)) {
             // Keeps dialog open if comment is pending
-            if (this.state === constants.ANNOTATION_STATE_PENDING_ACTIVE) {
+            if (this.state === STATES.pending_ACTIVE) {
                 return false;
             }
-            this.state = constants.ANNOTATION_STATE_HOVER;
+            this.state = STATES.hover;
 
             // If mouse is in highlight, change state to hover or active-hover
         } else if (this.isInHighlight(event)) {
@@ -200,7 +206,7 @@ const HOVER_TIMEOUT_MS = 75;
 
             // No-op
             // If mouse is not in highlight and state is not already inactive, reset
-        } else if (this.state !== constants.ANNOTATION_STATE_INACTIVE) {
+        } else if (this.state !== STATES.inactive) {
             // Add timeout before resettting highlight to inactive so
             // hovering over line breaks doesn't cause flickering
             this.hoverTimeoutHandler = setTimeout(() => {
@@ -231,17 +237,17 @@ const HOVER_TIMEOUT_MS = 75;
      */
     show() {
         switch (this.state) {
-            case constants.ANNOTATION_STATE_PENDING:
+            case STATES.pending:
                 this.showDialog();
                 break;
-            case constants.ANNOTATION_STATE_INACTIVE:
+            case STATES.inactive:
                 this.hideDialog();
-                this.draw(constants.HIGHLIGHT_NORMAL_FILL_STYLE);
+                this.draw(HIGHLIGHT_FILL.normal);
                 break;
-            case constants.ANNOTATION_STATE_HOVER:
-            case constants.ANNOTATION_STATE_PENDING_ACTIVE:
+            case STATES.hover:
+            case STATES.pending_ACTIVE:
                 this.showDialog();
-                this.draw(constants.HIGHLIGHT_ACTIVE_FILL_STYLE);
+                this.draw(HIGHLIGHT_FILL.active);
                 break;
             default:
                 break;
@@ -266,11 +272,8 @@ const HOVER_TIMEOUT_MS = 75;
 
         // Ensures that previously created annotations have the right type
         if (this.annotations.length) {
-            if (
-                (this.annotations[0].text !== '' || this.annotations.length > 1) &&
-                this.type === constants.ANNOTATION_TYPE_HIGHLIGHT
-            ) {
-                this.type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
+            if ((this.annotations[0].text !== '' || this.annotations.length > 1) && this.type === TYPES.highlight) {
+                this.type = TYPES.highlight_comment;
             }
         }
     }
@@ -300,23 +303,23 @@ const HOVER_TIMEOUT_MS = 75;
     bindCustomListenersOnDialog() {
         // Annotation drawn
         this.dialog.addListener('annotationdraw', () => {
-            this.state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
+            this.state = STATES.pending_ACTIVE;
             window.getSelection().removeAllRanges();
             this.show();
         });
 
         // Annotation drawn
         this.dialog.addListener('annotationcommentpending', () => {
-            this.state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
+            this.state = STATES.pending_ACTIVE;
         });
 
         // Annotation created
         this.dialog.addListener('annotationcreate', (data) => {
             if (data) {
-                this.type = constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
+                this.type = TYPES.highlight_comment;
                 this.dialog.toggleHighlightCommentsReply(this.annotations.length);
             } else {
-                this.type = constants.ANNOTATION_TYPE_HIGHLIGHT;
+                this.type = TYPES.highlight;
             }
 
             this.saveAnnotation(this.type, data ? data.text : '');
@@ -405,12 +408,12 @@ const HOVER_TIMEOUT_MS = 75;
             // transparency
             context.save();
             context.globalCompositeOperation = 'destination-out';
-            context.fillStyle = constants.HIGHLIGHT_ERASE_FILL_STYLE;
+            context.fillStyle = HIGHLIGHT_FILL.erase;
             context.fill();
             context.restore();
 
             // Draw actual highlight rectangle if needed
-            if (fillStyle !== constants.HIGHLIGHT_ERASE_FILL_STYLE) {
+            if (fillStyle !== HIGHLIGHT_FILL.erase) {
                 context.fill();
 
                 // Update highlight icon hover to appropriate color
@@ -517,10 +520,10 @@ const HOVER_TIMEOUT_MS = 75;
             return null;
         }
 
-        let annotationLayerEl = pageEl.querySelector('.bp-annotation-layer');
+        let annotationLayerEl = pageEl.querySelector(`.${CLASS_ANNOTATION_LAYER}`);
         if (!annotationLayerEl) {
             annotationLayerEl = document.createElement('canvas');
-            annotationLayerEl.classList.add('bp-annotation-layer');
+            annotationLayerEl.classList.add(CLASS_ANNOTATION_LAYER);
             const pageDimensions = pageEl.getBoundingClientRect();
             annotationLayerEl.width = pageDimensions.width;
             annotationLayerEl.height = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;

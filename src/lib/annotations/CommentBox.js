@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
 import { CLASS_ACTIVE } from '../constants';
+import * as constants from './annotationConstants';
 import { hideElement, showElement } from './annotatorUtil';
 
 // Display Text
@@ -177,13 +178,13 @@ class CommentBox extends EventEmitter {
         const containerEl = document.createElement('section');
         containerEl.classList.add('bp-create-highlight-comment');
         containerEl.innerHTML = `
-            <textarea class="bp-textarea annotation-textarea ${CLASS_ACTIVE}"
+            <textarea class="${constants.CLASS_TEXTAREA} ${constants.CLASS_ANNOTATION_TEXTAREA} ${CLASS_ACTIVE}"
                 placeholder="${this.placeholderText}"></textarea>
-            <div class="button-container">
-                <button class="bp-btn cancel-annotation-btn">
+            <div class="${constants.CLASS_BUTTON_CONTAINER}">
+                <button class="bp-btn ${constants.CLASS_ANNOTATION_BUTTON_CANCEL}">
                     ${this.cancelText}
                 </button>
-                <button class="bp-btn bp-btn-primary post-annotation-btn">
+                <button class="bp-btn bp-btn-primary ${constants.CLASS_ANNOTATION_BUTTON_POST}">
                     ${this.postText}
                 </button>
             </div>`.trim();
@@ -224,9 +225,9 @@ class CommentBox extends EventEmitter {
         const containerEl = this.createHTML();
 
         // Reference HTML
-        this.textAreaEl = containerEl.querySelector('.annotation-textarea');
-        this.cancelEl = containerEl.querySelector('.cancel-annotation-btn');
-        this.postEl = containerEl.querySelector('.post-annotation-btn');
+        this.textAreaEl = containerEl.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+        this.cancelEl = containerEl.querySelector(constants.SELECTOR_ANNOTATION_BUTTON_CANCEL);
+        this.postEl = containerEl.querySelector(constants.SELECTOR_ANNOTATION_BUTTON_POST);
 
         // Add event listeners
         this.cancelEl.addEventListener('click', this.onCancel);

@@ -3,8 +3,8 @@ import autobind from 'autobind-decorator';
 import Annotation from './Annotation';
 import AnnotationService from './AnnotationService';
 import * as annotatorUtil from './annotatorUtil';
-import * as constants from './annotationConstants';
 import { ICON_PLACED_ANNOTATION } from '../icons/icons';
+import { STATES, TYPES, CLASS_ANNOTATION_POINT_BUTTON, DATA_TYPE_ANNOTATION_INDICATOR } from './annotationConstants';
 
 @autobind class AnnotationThread extends EventEmitter {
     //--------------------------------------------------------------------------
@@ -92,7 +92,7 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
      * @return {void}
      */
     reset() {
-        this.state = constants.ANNOTATION_STATE_INACTIVE;
+        this.state = STATES.inactive;
     }
 
     /**
@@ -144,7 +144,7 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
         this.saveAnnotationToThread(tempAnnotation);
 
         // Changing state from pending
-        this.state = constants.ANNOTATION_STATE_HOVER;
+        this.state = STATES.hover;
 
         // Save annotation on server
         this.annotationService
@@ -282,9 +282,9 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
      */
     setup() {
         if (this.annotations.length === 0) {
-            this.state = constants.ANNOTATION_STATE_PENDING;
+            this.state = STATES.pending;
         } else {
-            this.state = constants.ANNOTATION_STATE_INACTIVE;
+            this.state = STATES.inactive;
         }
 
         this.createDialog();
@@ -385,11 +385,7 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
      * @return {void}
      */
     cancelUnsavedAnnotation() {
-        if (
-            !this.isMobile &&
-            this.state !== constants.ANNOTATION_STATE_PENDING &&
-            this.state !== constants.ANNOTATION_STATE_PENDING_ACTIVE
-        ) {
+        if (!this.isMobile && !annotatorUtil.isPending(this.state)) {
             return;
         }
         this.destroy();
@@ -407,8 +403,8 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
      */
     createElement() {
         const indicatorEl = document.createElement('button');
-        indicatorEl.classList.add('bp-point-annotation-btn');
-        indicatorEl.setAttribute('data-type', 'annotation-indicator');
+        indicatorEl.classList.add(CLASS_ANNOTATION_POINT_BUTTON);
+        indicatorEl.setAttribute('data-type', DATA_TYPE_ANNOTATION_INDICATOR);
         indicatorEl.innerHTML = ICON_PLACED_ANNOTATION;
         return indicatorEl;
     }
@@ -469,7 +465,7 @@ import { ICON_PLACED_ANNOTATION } from '../icons/icons';
      * @return {void}
      */
     createAnnotation(data) {
-        this.saveAnnotation(constants.ANNOTATION_TYPE_POINT, data.text);
+        this.saveAnnotation(TYPES.point, data.text);
     }
 
     /**
