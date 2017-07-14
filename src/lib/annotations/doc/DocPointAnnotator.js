@@ -1,12 +1,17 @@
 import * as docAnnotatorUtil from './docAnnotatorUtil';
 import * as annotatorUtil from '../annotatorUtil';
-import { PAGE_PADDING_BOTTOM, PAGE_PADDING_TOP } from '../annotationConstants';
+import {
+    DATA_TYPE_ANNOTATION_DIALOG,
+    DATA_TYPE_ANNOTATION_INDICATOR,
+    PAGE_PADDING_BOTTOM,
+    PAGE_PADDING_TOP
+} from '../annotationConstants';
 
 export default class PointHighlightAnnotator {
     /**
      * Returns an annotation location on a document from the DOM event or null
-     * if no correct annotation location can be inferred from the event. Return 
-     * the (x, y) coordinates and page the point is on in PDF units with the 
+     * if no correct annotation location can be inferred from the event. Return
+     * the (x, y) coordinates and page the point is on in PDF units with the
      * lower left corner of the document as the origin.
      *
      * @override
@@ -29,7 +34,7 @@ export default class PointHighlightAnnotator {
 
         // If click is inside an annotation dialog, ignore
         const dataType = annotatorUtil.findClosestDataType(eventTarget);
-        if (dataType === 'annotation-dialog' || dataType === 'annotation-indicator') {
+        if (dataType === DATA_TYPE_ANNOTATION_DIALOG || dataType === DATA_TYPE_ANNOTATION_INDICATOR) {
             return null;
         }
 

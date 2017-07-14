@@ -2,7 +2,7 @@
 import ImagePointDialog from '../ImagePointDialog';
 import ImagePointThread from '../ImagePointThread';
 import * as annotatorUtil from '../../annotatorUtil';
-import * as constants from '../../annotationConstants';
+import { STATES } from '../../annotationConstants';
 import * as imageAnnotatorUtil from '../imageAnnotatorUtil';
 
 let pointThread;
@@ -50,7 +50,7 @@ describe('lib/annotations/image/ImagePointThread', () => {
             sandbox.stub(annotatorUtil, 'showElement');
             sandbox.stub(pointThread, 'showDialog');
 
-            pointThread.state = constants.ANNOTATION_STATE_PENDING;
+            pointThread.state = STATES.pending;
             pointThread.show();
 
             expect(pointThread.showDialog).to.have.been.called;
@@ -61,7 +61,7 @@ describe('lib/annotations/image/ImagePointThread', () => {
             sandbox.stub(annotatorUtil, 'showElement');
             sandbox.stub(pointThread, 'showDialog');
 
-            pointThread.state = constants.ANNOTATION_STATE_INACTIVE;
+            pointThread.state = STATES.inactive;
             pointThread.show();
 
             expect(pointThread.showDialog).to.not.have.been.called;

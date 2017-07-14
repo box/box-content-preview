@@ -1,5 +1,11 @@
 import * as annotatorUtil from '../annotatorUtil';
-import { PAGE_PADDING_TOP, PAGE_PADDING_BOTTOM } from '../annotationConstants';
+import {
+    CLASS_ANNOTATION_DIALOG,
+    CLASS_ANNOTATION_HIGHLIGHT_DIALOG,
+    SELECTOR_ANNOTATION_CONTAINER,
+    PAGE_PADDING_TOP,
+    PAGE_PADDING_BOTTOM
+} from '../annotationConstants';
 
 const PREVIEW_PRESENTATION_CLASS = 'bp-doc-presentation';
 const HEIGHT_PADDING = 30;
@@ -61,8 +67,8 @@ export function isInDialog(event, dialogEl) {
  * @return {boolean} Whether or not a dialog is active
  */
 export function hasActiveDialog(annotatedEl) {
-    const commentsDialogEl = annotatedEl.querySelector('.bp-annotation-dialog:not(.bp-is-hidden)');
-    const highlightDialogEl = annotatedEl.querySelector('.bp-highlight-dialog:not(.bp-is-hidden)');
+    const commentsDialogEl = annotatedEl.querySelector(`.${CLASS_ANNOTATION_DIALOG}:not(.bp-is-hidden)`);
+    const highlightDialogEl = annotatedEl.querySelector(`.${CLASS_ANNOTATION_HIGHLIGHT_DIALOG}:not(.bp-is-hidden)`);
 
     return !!(commentsDialogEl || highlightDialogEl);
 }
@@ -85,7 +91,7 @@ export function fitDialogHeightInPage(annotatedElement, dialogEl, pageHeight, di
         const topPadding = (wrapperHeight - pageHeight) / 2;
         const maxHeight = wrapperHeight - dialogY - topPadding - HIGHLIGHT_DIALOG_HEIGHT;
 
-        const annotationsEl = dialogEl.querySelector('.annotation-container');
+        const annotationsEl = dialogEl.querySelector(SELECTOR_ANNOTATION_CONTAINER);
         annotationsEl.style.maxHeight = `${maxHeight}px`;
     }
 }

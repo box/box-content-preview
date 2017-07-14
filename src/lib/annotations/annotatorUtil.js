@@ -1,5 +1,5 @@
 import { CLASS_ACTIVE, CLASS_HIDDEN, CLASS_INVISIBLE } from '../constants';
-import * as constants from './annotationConstants';
+import { TYPES, SELECTOR_ANNOTATION_CARET, PENDING_STATES } from './annotationConstants';
 
 const AVATAR_COLOR_COUNT = 9; // 9 colors defined in Box React UI avatar code
 const THREAD_PARAMS = [
@@ -238,7 +238,7 @@ export function isPlainHighlight(annotations) {
  * @return {boolean} Whether or not annotation is a highlight
  */
 export function isHighlightAnnotation(type) {
-    return type === constants.ANNOTATION_TYPE_HIGHLIGHT || type === constants.ANNOTATION_TYPE_HIGHLIGHT_COMMENT;
+    return type === TYPES.highlight || type === TYPES.highlight_comment;
 }
 
 //------------------------------------------------------------------------------
@@ -309,7 +309,7 @@ export function repositionCaret(dialogEl, dialogX, highlightDialogWidth, browser
     // ${pageWidth}px
     const dialogPastLeft = dialogX < 0;
     const dialogPastRight = dialogX + highlightDialogWidth > pageWidth;
-    const annotationCaretEl = dialogEl.querySelector('.bp-annotation-caret');
+    const annotationCaretEl = dialogEl.querySelector(SELECTOR_ANNOTATION_CARET);
 
     if (dialogPastLeft && !dialogPastRight) {
         // Leave a minimum of 10 pixels so caret doesn't go off edge
@@ -340,7 +340,7 @@ export function repositionCaret(dialogEl, dialogX, highlightDialogWidth, browser
  * @return {boolean} Whether annotation thread is in a pending state
  */
 export function isPending(threadState) {
-    return constants.PENDING_STATES.indexOf(threadState) > -1;
+    return PENDING_STATES.indexOf(threadState) > -1;
 }
 
 /**

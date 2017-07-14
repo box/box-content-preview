@@ -5,7 +5,13 @@ import * as annotatorUtil from '../annotatorUtil';
 import * as constants from '../annotationConstants';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../../constants';
 
+const CLASS_ANNOTATION_PLAIN_HIGHLIGHT = 'bp-plain-highlight';
+const CLASS_CANCEL_DELETE = 'cancel-delete-btn';
+const CLASS_CANNOT_ANNOTATE = 'cannot-annotate';
+const CLASS_REPLY_TEXTAREA = 'reply-textarea';
 const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
+const CLASS_BUTTON_DELETE_COMMENT = 'delete-comment-btn';
+const SELECTOR_DELETE_CONFIRMATION = '.delete-confirmation';
 
 let dialog;
 const sandbox = sinon.sandbox.create();
@@ -103,7 +109,7 @@ describe('lib/annotations/AnnotationDialog', () => {
             dialog.deactivateReply();
 
             dialog.show();
-            expect(dialog.element).to.have.class(constants.CLASS_CANNOT_ANNOTATE);
+            expect(dialog.element).to.have.class(CLASS_CANNOT_ANNOTATE);
         });
 
         it('should focus textarea if in viewport', () => {
@@ -113,7 +119,7 @@ describe('lib/annotations/AnnotationDialog', () => {
             sandbox.stub(annotatorUtil, 'isElementInViewport').returns(true);
 
             dialog.show();
-            expect(document.activeElement).to.have.class('reply-textarea');
+            expect(document.activeElement).to.have.class(CLASS_REPLY_TEXTAREA);
         });
 
         it('should activate reply textarea if dialog has annotations', () => {
@@ -123,7 +129,7 @@ describe('lib/annotations/AnnotationDialog', () => {
             sandbox.stub(dialog, 'activateReply');
 
             dialog.show();
-            const textArea = dialog.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            const textArea = dialog.element.querySelector(`.${CLASS_REPLY_TEXTAREA}`);
             expect(textArea).to.not.have.class(CLASS_ACTIVE);
             expect(dialog.activateReply).to.be.called;
         });
@@ -168,7 +174,7 @@ describe('lib/annotations/AnnotationDialog', () => {
             stubs.bind = sandbox.stub(dialog, 'bindDOMListeners');
 
             dialog.show();
-            expect(dialog.element).to.have.class('bp-plain-highlight');
+            expect(dialog.element).to.have.class(CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
         });
     });
 
@@ -181,7 +187,7 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should hide and reset the mobile annotations dialog', () => {
-            dialog.element = document.querySelector('.bp-mobile-annotation-dialog');
+            dialog.element = document.querySelector(constants.SELECTOR_MOBILE_ANNOTATION_DIALOG);
             stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
             stubs.unbind = sandbox.stub(dialog, 'unbindDOMListeners');
             stubs.cancel = sandbox.stub(dialog, 'cancelAnnotation');
@@ -195,13 +201,13 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should remove the animation class', () => {
-            dialog.element = document.querySelector('.bp-mobile-annotation-dialog');
+            dialog.element = document.querySelector(constants.SELECTOR_MOBILE_ANNOTATION_DIALOG);
             dialog.hideMobileDialog();
             expect(dialog.element.classList.contains(CLASS_ANIMATE_DIALOG)).to.be.false;
         });
 
         it('should cancel unsaved annotations only if the dialog does not have annotations', () => {
-            dialog.element = document.querySelector('.bp-mobile-annotation-dialog');
+            dialog.element = document.querySelector(constants.SELECTOR_MOBILE_ANNOTATION_DIALOG);
             stubs.cancel = sandbox.stub(dialog, 'cancelAnnotation');
             dialog.hasAnnotations = false;
 
@@ -241,8 +247,8 @@ describe('lib/annotations/AnnotationDialog', () => {
             dialog.annotatedElement.appendChild(dialog.element);
 
             dialog.addAnnotation(new Annotation({}));
-            const createSectionEl = document.querySelector('[data-section="create"]');
-            const showSectionEl = document.querySelector('[data-section="show"]');
+            const createSectionEl = document.querySelector(constants.SECTION_CREATE);
+            const showSectionEl = document.querySelector(constants.SECTION_SHOW);
             expect(createSectionEl).to.have.class(CLASS_HIDDEN);
             expect(showSectionEl).to.not.have.class(CLASS_HIDDEN);
         });
@@ -389,7 +395,7 @@ describe('lib/annotations/AnnotationDialog', () => {
 
             dialog.keydownHandler({
                 key: ' ', // space
-                target: dialog.element.querySelector('.reply-textarea'),
+                target: dialog.element.querySelector(`.${CLASS_REPLY_TEXTAREA}`),
                 stopPropagation: () => {}
             });
             expect(stubs.activate).to.be.called;
@@ -480,14 +486,14 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should post annotation when post annotation button is clicked', () => {
-            stubs.findClosest.returns('post-annotation-btn');
+            stubs.findClosest.returns(constants.CLASS_ANNOTATION_BUTTON_POST);
 
             dialog.clickHandler(stubs.event);
             expect(stubs.post).to.be.called;
         });
 
         it('should cancel annotation when cancel annotation button is clicked', () => {
-            stubs.findClosest.returns('cancel-annotation-btn');
+            stubs.findClosest.returns(constants.CLASS_ANNOTATION_BUTTON_CANCEL);
             dialog.isMobile = false;
 
             dialog.clickHandler(stubs.event);
@@ -497,7 +503,7 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should only hide the mobile dialog when the cancel annotation button is clicked on mobile', () => {
-            stubs.findClosest.returns('cancel-annotation-btn');
+            stubs.findClosest.returns(constants.CLASS_ANNOTATION_BUTTON_CANCEL);
             dialog.isMobile = true;
 
             dialog.clickHandler(stubs.event);
@@ -507,7 +513,7 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should activate reply area when textarea is clicked', () => {
-            stubs.findClosest.returns('reply-textarea');
+            stubs.findClosest.returns(CLASS_REPLY_TEXTAREA);
 
             dialog.clickHandler(stubs.event);
             expect(stubs.activate).to.be.called;
@@ -536,7 +542,7 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should cancel deletion when cancel delete button is clicked', () => {
-            stubs.findClosest.onFirstCall().returns('cancel-delete-btn');
+            stubs.findClosest.onFirstCall().returns(CLASS_CANCEL_DELETE);
             stubs.findClosest.onSecondCall().returns('someID');
 
             dialog.clickHandler(stubs.event);
@@ -616,7 +622,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                     permissions: { can_delete: false }
                 })
             );
-            const deleteButton = document.querySelector('.delete-comment-btn');
+            const deleteButton = document.querySelector(`.${CLASS_BUTTON_DELETE_COMMENT}`);
             expect(deleteButton).to.have.class(CLASS_HIDDEN);
         });
 
@@ -629,7 +635,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                     permissions: {}
                 })
             );
-            const deleteButton = document.querySelector('.delete-comment-btn');
+            const deleteButton = document.querySelector(`.${CLASS_BUTTON_DELETE_COMMENT}`);
             expect(deleteButton).to.have.class(CLASS_HIDDEN);
         });
 
@@ -642,7 +648,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                     permissions: { can_delete: true }
                 })
             );
-            const deleteButton = document.querySelector('.delete-comment-btn');
+            const deleteButton = document.querySelector(`.${CLASS_BUTTON_DELETE_COMMENT}`);
             expect(deleteButton).to.not.have.class(CLASS_HIDDEN);
         });
 
@@ -655,7 +661,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                     permissions: { can_delete: true }
                 })
             );
-            const deleteConfirmation = document.querySelector('.delete-confirmation');
+            const deleteConfirmation = document.querySelector(SELECTOR_DELETE_CONFIRMATION);
             expect(deleteConfirmation).to.have.class(CLASS_HIDDEN);
         });
 
@@ -715,7 +721,7 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should do nothing if reply textarea is already active', () => {
-            const replyTextEl = dialog.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            const replyTextEl = dialog.element.querySelector(`.${CLASS_REPLY_TEXTAREA}`);
             replyTextEl.classList.add('bp-is-active');
             sandbox.stub(annotatorUtil, 'showElement');
 
@@ -731,7 +737,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                 user: { id: 1, name: 'user' },
                 permissions: { can_delete: true }
             });
-            const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            const replyTextEl = document.querySelector(`.${CLASS_REPLY_TEXTAREA}`);
             const buttonContainer = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
 
             dialog.activateReply();
@@ -758,7 +764,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                     permissions: { can_delete: true }
                 })
             );
-            const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            const replyTextEl = document.querySelector(`.${CLASS_REPLY_TEXTAREA}`);
             const buttonContainer = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
 
             dialog.deactivateReply();
@@ -792,7 +798,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                     permissions: { can_delete: true }
                 })
             );
-            const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            const replyTextEl = document.querySelector(`.${CLASS_REPLY_TEXTAREA}`);
             dialog.activateReply();
             replyTextEl.innerHTML += 'the preview SDK is great!';
 
@@ -809,7 +815,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                     permissions: { can_delete: true }
                 })
             );
-            const replyTextEl = document.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            const replyTextEl = document.querySelector(`.${CLASS_REPLY_TEXTAREA}`);
             dialog.activateReply();
             replyTextEl.innerHTML += 'the preview SDK is great!';
 
@@ -872,16 +878,16 @@ describe('lib/annotations/AnnotationDialog', () => {
     describe('generateDialogEl', () => {
         it('should generate a blank annotations dialog element', () => {
             const dialogEl = dialog.generateDialogEl(0);
-            const createSectionEl = dialogEl.querySelector('[data-section="create"]');
-            const showSectionEl = dialogEl.querySelector('[data-section="show"]');
+            const createSectionEl = dialogEl.querySelector(constants.SECTION_CREATE);
+            const showSectionEl = dialogEl.querySelector(constants.SECTION_SHOW);
             expect(createSectionEl).to.not.have.class(CLASS_HIDDEN);
             expect(showSectionEl).to.have.class(CLASS_HIDDEN);
         });
 
         it('should generate an annotations dialog element with annotations', () => {
             const dialogEl = dialog.generateDialogEl(1);
-            const createSectionEl = dialogEl.querySelector('[data-section="create"]');
-            const showSectionEl = dialogEl.querySelector('[data-section="show"]');
+            const createSectionEl = dialogEl.querySelector(constants.SECTION_CREATE);
+            const showSectionEl = dialogEl.querySelector(constants.SECTION_SHOW);
             expect(createSectionEl).to.have.class(CLASS_HIDDEN);
             expect(showSectionEl).to.not.have.class(CLASS_HIDDEN);
         });

@@ -6,9 +6,28 @@ import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 import { decodeKeydown } from '../util';
 import { ICON_CLOSE, ICON_DELETE } from '../icons/icons';
 
+const CLASS_ANNOTATION_PLAIN_HIGHLIGHT = 'bp-plain-highlight';
+const CLASS_BUTTON_DELETE_COMMENT = 'delete-comment-btn';
+const CLASS_CANCEL_DELETE = 'cancel-delete-btn';
+const CLASS_CANNOT_ANNOTATE = 'cannot-annotate';
+const CLASS_COMMENTS_CONTAINER = 'annotation-comments';
+const CLASS_REPLY_CONTAINER = 'reply-container';
+const CLASS_REPLY_TEXTAREA = 'reply-textarea';
 const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
+const CLASS_DELETE_CONFIRMATION = 'delete-confirmation';
+const CLASS_BUTTON_DELETE_CONFIRM = 'confirm-delete-btn';
 
-@autobind class AnnotationDialog extends EventEmitter {
+const DATA_TYPE_POST = 'post-annotation-btn';
+const DATA_TYPE_CANCEL = 'cancel-annotation-btn';
+const DATA_TYPE_REPLY_TEXTAREA = 'reply-textarea';
+const DATA_TYPE_CANCEL_REPLY = 'cancel-reply-btn';
+const DATA_TYPE_POST_REPLY = 'post-reply-btn';
+const DATA_TYPE_DELETE = 'delete-btn';
+const DATA_TYPE_CANCEL_DELETE = 'cancel-delete-btn';
+const DATA_TYPE_CONFIRM_DELETE = 'confirm-delete-btn';
+
+@autobind
+class AnnotationDialog extends EventEmitter {
     //--------------------------------------------------------------------------
     // Typedef
     //--------------------------------------------------------------------------
@@ -74,13 +93,13 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
             this.element.appendChild(this.dialogEl);
 
             if (this.highlightDialogEl && !this.hasComments) {
-                this.element.classList.add('bp-plain-highlight');
+                this.element.classList.add(CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
 
-                const headerEl = this.element.querySelector('.bp-annotation-mobile-header');
+                const headerEl = this.element.querySelector(constants.SELECTOR_MOBILE_DIALOG_HEADER);
                 headerEl.classList.add(CLASS_HIDDEN);
             }
 
-            const dialogCloseButtonEl = this.element.querySelector('.bp-annotation-dialog-close');
+            const dialogCloseButtonEl = this.element.querySelector(constants.SELECTOR_DIALOG_CLOSE);
             dialogCloseButtonEl.addEventListener('click', this.hideMobileDialog);
 
             this.element.classList.add(CLASS_ANIMATE_DIALOG);
@@ -89,7 +108,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
         }
 
         const textAreaEl = this.hasAnnotations
-            ? this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA)
+            ? this.element.querySelector(`.${CLASS_REPLY_TEXTAREA}`)
             : this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
 
         // Don't re-position if reply textarea is already active
@@ -119,7 +138,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
 
         // If user cannot annotate, hide reply/edit/delete UI
         if (!this.canAnnotate) {
-            this.element.classList.add(constants.CLASS_CANNOT_ANNOTATE);
+            this.element.classList.add(CLASS_CANNOT_ANNOTATE);
         }
 
         // Focus the textarea if visible
@@ -142,12 +161,12 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
 
         // Clear annotations from dialog
         this.element.innerHTML = `
-            <div class="bp-annotation-mobile-header">
-                <button class="bp-annotation-dialog-close">${ICON_CLOSE}</button>
+            <div class="${constants.CLASS_MOBILE_DIALOG_HEADER}">
+                <button class="${constants.CLASS_DIALOG_CLOSE}">${ICON_CLOSE}</button>
             </div>`.trim();
-        this.element.classList.remove('bp-plain-highlight');
+        this.element.classList.remove(CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
 
-        const dialogCloseButtonEl = this.element.querySelector('.bp-annotation-dialog-close');
+        const dialogCloseButtonEl = this.element.querySelector(constants.SELECTOR_DIALOG_CLOSE);
         dialogCloseButtonEl.removeEventListener('click', this.hideMobileDialog);
 
         annotatorUtil.hideElement(this.element);
@@ -168,6 +187,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
         if (this.isMobile) {
             this.hideMobileDialog();
         }
+
         annotatorUtil.hideElement(this.element);
         this.deactivateReply();
     }
@@ -181,8 +201,8 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
     addAnnotation(annotation) {
         // Show new section if needed
         if (!this.hasAnnotations) {
-            const createSectionEl = this.element.querySelector('[data-section="create"]');
-            const showSectionEl = this.element.querySelector('[data-section="show"]');
+            const createSectionEl = this.element.querySelector(constants.SECTION_CREATE);
+            const showSectionEl = this.element.querySelector(constants.SECTION_SHOW);
             annotatorUtil.hideElement(createSectionEl);
             annotatorUtil.showElement(showSectionEl);
             this.hasAnnotations = true;
@@ -248,13 +268,14 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
     setup(annotations) {
         // Generate HTML of dialog
         this.dialogEl = this.generateDialogEl(annotations.length);
-        this.dialogEl.classList.add('annotation-container');
+        this.dialogEl.classList.add(constants.CLASS_ANNOTATION_CONTAINER);
 
+        // Setup shared mobile annotations dialog
         if (!this.isMobile) {
             this.element = document.createElement('div');
-            this.element.setAttribute('data-type', 'annotation-dialog');
+            this.element.setAttribute('data-type', constants.DATA_TYPE_ANNOTATION_DIALOG);
             this.element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
-            this.element.innerHTML = '<div class="bp-annotation-caret"></div>';
+            this.element.innerHTML = `<div class="${constants.CLASS_ANNOTATION_CARET}"></div>`;
             this.element.appendChild(this.dialogEl);
 
             // Adding thread number to dialog
@@ -322,7 +343,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
             this.hide();
         } else {
             const dataType = annotatorUtil.findClosestDataType(event.target);
-            if (dataType === 'reply-textarea') {
+            if (dataType === CLASS_REPLY_TEXTAREA) {
                 this.activateReply();
             }
         }
@@ -349,7 +370,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
         if (this.element.classList.contains(CLASS_HIDDEN)) {
             annotatorUtil.showElement(this.element);
 
-            const replyTextArea = this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+            const replyTextArea = this.element.querySelector(`.${CLASS_REPLY_TEXTAREA}`);
             const commentsTextArea = this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
             if (replyTextArea.textContent !== '' || commentsTextArea.textContent !== '') {
                 this.emit('annotationcommentpending');
@@ -388,41 +409,43 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
 
         switch (dataType) {
             // Clicking 'Post' button to create an annotation
-            case 'post-annotation-btn':
+            case DATA_TYPE_POST:
                 this.postAnnotation();
                 break;
             // Clicking 'Cancel' button to cancel the annotation
-            case 'cancel-annotation-btn':
+            case DATA_TYPE_CANCEL:
                 if (this.isMobile) {
+                    // Hide mobile dialog without destroying the thread
                     this.hideMobileDialog();
                 } else {
+                    // Cancels + destroys the annotation thread
                     this.cancelAnnotation();
                 }
 
                 this.deactivateReply(true);
                 break;
             // Clicking inside reply text area
-            case 'reply-textarea':
+            case DATA_TYPE_REPLY_TEXTAREA:
                 this.activateReply();
                 break;
             // Canceling a reply
-            case 'cancel-reply-btn':
+            case DATA_TYPE_CANCEL_REPLY:
                 this.deactivateReply(true);
                 break;
             // Clicking 'Post' button to create a reply annotation
-            case 'post-reply-btn':
+            case DATA_TYPE_POST_REPLY:
                 this.postReply();
                 break;
             // Clicking trash icon to initiate deletion
-            case 'delete-btn':
+            case DATA_TYPE_DELETE:
                 this.showDeleteConfirmation(annotationID);
                 break;
             // Clicking 'Cancel' button to cancel deletion
-            case 'cancel-delete-btn':
+            case DATA_TYPE_CANCEL_DELETE:
                 this.hideDeleteConfirmation(annotationID);
                 break;
             // Clicking 'Delete' button to confirm deletion
-            case 'confirm-delete-btn': {
+            case DATA_TYPE_CONFIRM_DELETE: {
                 this.deleteAnnotation(annotationID);
                 break;
             }
@@ -475,24 +498,26 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
                 <div class="comment-date">${created}</div>
             </div>
             <div class="comment-text">${text}</div>
-            <button class="bp-btn-plain delete-comment-btn ${annotation.permissions.can_delete ? '' : 'bp-is-hidden'}" data-type="delete-btn" title="${__('annotation_delete')}">
+            <button class="bp-btn-plain ${CLASS_BUTTON_DELETE_COMMENT} ${annotation.permissions.can_delete
+            ? ''
+            : CLASS_HIDDEN}" data-type="${DATA_TYPE_DELETE}" title="${__('annotation_delete')}">
                 ${ICON_DELETE}
             </button>
-            <div class="delete-confirmation ${CLASS_HIDDEN}">
+            <div class="${CLASS_DELETE_CONFIRMATION} ${CLASS_HIDDEN}">
                 <div class="delete-confirmation-message">
                     ${__('annotation_delete_confirmation_message')}
                 </div>
-                <div class="button-container">
-                    <button class="bp-btn cancel-delete-btn" data-type="cancel-delete-btn">
+                <div class="${constants.CLASS_BUTTON_CONTAINER}">
+                    <button class="bp-btn ${CLASS_CANCEL_DELETE}" data-type="${DATA_TYPE_CANCEL_DELETE}">
                         ${__('annotation_cancel')}
                     </button>
-                    <button class="bp-btn bp-btn-primary confirm-delete-btn" data-type="confirm-delete-btn">
+                    <button class="bp-btn bp-btn-primary ${CLASS_BUTTON_DELETE_CONFIRM}" data-type="${DATA_TYPE_CONFIRM_DELETE}">
                         ${__('annotation_delete')}
                     </button>
                 </div>
             </div>`.trim();
 
-        const annotationContainerEl = this.dialogEl.querySelector(constants.SELECTOR_COMMENTS_CONTAINER);
+        const annotationContainerEl = this.dialogEl.querySelector(`.${CLASS_COMMENTS_CONTAINER}`);
         annotationContainerEl.appendChild(annotationEl);
     }
 
@@ -517,7 +542,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
             return;
         }
 
-        const replyTextEl = this.dialogEl.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+        const replyTextEl = this.dialogEl.querySelector(`.${CLASS_REPLY_TEXTAREA}`);
 
         // Don't activate if reply textarea is already active
         const isActive = replyTextEl.classList.contains(CLASS_ACTIVE);
@@ -530,7 +555,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
         annotatorUtil.showElement(replyButtonEls);
 
         // Auto scroll annotations dialog to bottom where new comment was added
-        const annotationsEl = this.dialogEl.querySelector('.annotation-container');
+        const annotationsEl = this.dialogEl.querySelector(constants.SELECTOR_ANNOTATION_CONTAINER);
         if (annotationsEl) {
             annotationsEl.scrollTop = annotationsEl.scrollHeight - annotationsEl.clientHeight;
         }
@@ -548,18 +573,19 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
             return;
         }
 
-        const replyContainerEl = this.dialogEl.querySelector(constants.SELECTOR_REPLY_CONTAINER);
-        const replyTextEl = replyContainerEl.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+        const replyContainerEl = this.dialogEl.querySelector(`.${CLASS_REPLY_CONTAINER}`);
+        const replyTextEl = replyContainerEl.querySelector(`.${CLASS_REPLY_TEXTAREA}`);
         const replyButtonEls = replyContainerEl.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
         annotatorUtil.resetTextarea(replyTextEl, clearText);
         annotatorUtil.hideElement(replyButtonEls);
 
+        // Only focus on textarea if dialog is visible
         if (annotatorUtil.isElementInViewport(replyTextEl)) {
             replyTextEl.focus();
         }
 
         // Auto scroll annotations dialog to bottom where new comment was added
-        const annotationsEl = this.dialogEl.querySelector('.annotation-container');
+        const annotationsEl = this.dialogEl.querySelector(constants.SELECTOR_ANNOTATION_CONTAINER);
         if (annotationsEl) {
             annotationsEl.scrollTop = annotationsEl.scrollHeight - annotationsEl.clientHeight;
         }
@@ -572,7 +598,7 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
      * @return {void}
      */
     postReply() {
-        const replyTextEl = this.element.querySelector(constants.SELECTOR_REPLY_TEXTAREA);
+        const replyTextEl = this.element.querySelector(`.${CLASS_REPLY_TEXTAREA}`);
         const text = replyTextEl.value;
         if (text.trim() === '') {
             return;
@@ -591,9 +617,9 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
      */
     showDeleteConfirmation(annotationID) {
         const annotationEl = this.element.querySelector(`[data-annotation-id="${annotationID}"]`);
-        const deleteConfirmationEl = annotationEl.querySelector('.delete-confirmation');
-        const cancelDeleteButtonEl = annotationEl.querySelector('.cancel-delete-btn');
-        const deleteButtonEl = annotationEl.querySelector('.delete-comment-btn');
+        const deleteConfirmationEl = annotationEl.querySelector(`.${CLASS_DELETE_CONFIRMATION}`);
+        const cancelDeleteButtonEl = annotationEl.querySelector(`.${CLASS_CANCEL_DELETE}`);
+        const deleteButtonEl = annotationEl.querySelector(`.${CLASS_BUTTON_DELETE_COMMENT}`);
         annotatorUtil.hideElement(deleteButtonEl);
         annotatorUtil.showElement(deleteConfirmationEl);
         cancelDeleteButtonEl.focus();
@@ -608,8 +634,8 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
      */
     hideDeleteConfirmation(annotationID) {
         const annotationEl = this.element.querySelector(`[data-annotation-id="${annotationID}"]`);
-        const deleteConfirmationEl = annotationEl.querySelector('.delete-confirmation');
-        const deleteButtonEl = annotationEl.querySelector('.delete-comment-btn');
+        const deleteConfirmationEl = annotationEl.querySelector(`.${CLASS_DELETE_CONFIRMATION}`);
+        const deleteButtonEl = annotationEl.querySelector(`.${CLASS_BUTTON_DELETE_COMMENT}`);
         annotatorUtil.showElement(deleteButtonEl);
         annotatorUtil.hideElement(deleteConfirmationEl);
         deleteButtonEl.focus();
@@ -637,27 +663,29 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
         const dialogEl = document.createElement('div');
         dialogEl.innerHTML = `
             <section class="${numAnnotations ? CLASS_HIDDEN : ''}" data-section="create">
-                <textarea class="bp-textarea annotation-textarea"
+                <textarea class="${constants.CLASS_TEXTAREA} ${constants.CLASS_ANNOTATION_TEXTAREA}"
                     placeholder="${__('annotation_add_comment_placeholder')}"></textarea>
-                <div class="button-container">
-                    <button class="bp-btn cancel-annotation-btn" data-type="cancel-annotation-btn">
+                <div class="${constants.CLASS_BUTTON_CONTAINER}">
+                    <button class="bp-btn ${constants.CLASS_ANNOTATION_BUTTON_CANCEL}" data-type="${DATA_TYPE_CANCEL}">
                         ${__('annotation_cancel')}
                     </button>
-                    <button class="bp-btn bp-btn-primary post-annotation-btn" data-type="post-annotation-btn">
+                    <button class="bp-btn bp-btn-primary ${constants.CLASS_ANNOTATION_BUTTON_POST}" data-type="${DATA_TYPE_POST}">
                         ${__('annotation_post')}
                     </button>
                 </div>
             </section>
             <section class="${numAnnotations ? '' : CLASS_HIDDEN}" data-section="show">
-                <div class="annotation-comments"></div>
-                <div class="reply-container">
-                    <textarea class="bp-textarea reply-textarea"
-                        placeholder="${__('annotation_reply_placeholder')}" data-type="reply-textarea"></textarea>
-                    <div class="button-container ${CLASS_HIDDEN}">
-                        <button class="bp-btn cancel-annotation-btn" data-type="cancel-reply-btn">
+                <div class="${CLASS_COMMENTS_CONTAINER}"></div>
+                <div class="${CLASS_REPLY_CONTAINER}">
+                    <textarea class="${constants.CLASS_TEXTAREA} ${CLASS_REPLY_TEXTAREA}"
+                        placeholder="${__(
+                            'annotation_reply_placeholder'
+                        )}" data-type="${DATA_TYPE_REPLY_TEXTAREA}"></textarea>
+                    <div class="${constants.CLASS_BUTTON_CONTAINER} ${CLASS_HIDDEN}">
+                        <button class="bp-btn ${constants.CLASS_ANNOTATION_BUTTON_CANCEL}" data-type="${DATA_TYPE_CANCEL_REPLY}">
                             ${__('annotation_cancel')}
                         </button>
-                        <button class="bp-btn bp-btn-primary post-annotation-btn" data-type="post-reply-btn">
+                        <button class="bp-btn bp-btn-primary ${constants.CLASS_ANNOTATION_BUTTON_POST}" data-type="${DATA_TYPE_POST_REPLY}">
                             ${__('annotation_post')}
                         </button>
                     </div>

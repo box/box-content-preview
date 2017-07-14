@@ -2,8 +2,13 @@
 import AnnotationThread from '../AnnotationThread';
 import Annotation from '../Annotation';
 import * as annotatorUtil from '../annotatorUtil';
-import * as constants from '../annotationConstants';
 import { CLASS_HIDDEN } from '../../constants';
+import {
+    STATES,
+    TYPES,
+    CLASS_ANNOTATION_POINT_BUTTON,
+    DATA_TYPE_ANNOTATION_INDICATOR
+} from '../annotationConstants';
 
 let thread;
 const sandbox = sinon.sandbox.create();
@@ -90,7 +95,7 @@ describe('lib/annotations/AnnotationThread', () => {
     describe('reset()', () => {
         it('should set the thread state to inactive', () => {
             thread.reset();
-            expect(thread.state).to.equal(constants.ANNOTATION_STATE_INACTIVE);
+            expect(thread.state).to.equal(STATES.inactive);
         });
     });
 
@@ -152,7 +157,7 @@ describe('lib/annotations/AnnotationThread', () => {
                     thread: '1'
                 })
             );
-            expect(thread.state).to.equal(constants.ANNOTATION_STATE_HOVER);
+            expect(thread.state).to.equal(STATES.hover);
         });
 
         it('should delete the temporary annotation and broadcast an error if there was an error saving', (done) => {
@@ -339,7 +344,7 @@ describe('lib/annotations/AnnotationThread', () => {
 
         it('should set state to pending if thread is initialized with no annotations', () => {
             thread.setup();
-            expect(thread.state).to.equal(constants.ANNOTATION_STATE_PENDING);
+            expect(thread.state).to.equal(STATES.pending);
         });
 
         it('should set state to inactive if thread is initialized with annotations', () => {
@@ -356,7 +361,7 @@ describe('lib/annotations/AnnotationThread', () => {
             });
 
             thread.setup();
-            expect(thread.state).to.equal(constants.ANNOTATION_STATE_INACTIVE);
+            expect(thread.state).to.equal(STATES.inactive);
         });
     });
 
@@ -366,7 +371,7 @@ describe('lib/annotations/AnnotationThread', () => {
 
             thread.setupElement();
             expect(thread.element instanceof HTMLElement).to.be.true;
-            expect(thread.element).to.have.class('bp-point-annotation-btn');
+            expect(thread.element).to.have.class(CLASS_ANNOTATION_POINT_BUTTON);
             expect(stubs.bind).to.be.called;
         });
     });
@@ -470,12 +475,12 @@ describe('lib/annotations/AnnotationThread', () => {
 
             // 'pending' state
             thread.isMobile = false;
-            thread.state = constants.ANNOTATION_STATE_PENDING;
+            thread.state = STATES.pending;
             thread.cancelUnsavedAnnotation();
             expect(thread.destroy).to.be.called;
 
             // 'pending-active' state
-            thread.state = constants.ANNOTATION_STATE_PENDING_ACTIVE;
+            thread.state = STATES.pending_ACTIVE;
             thread.cancelUnsavedAnnotation();
             expect(thread.destroy).to.be.called;
         });
@@ -484,8 +489,8 @@ describe('lib/annotations/AnnotationThread', () => {
     describe('createElement()', () => {
         it('should create an element with the right class and attribute', () => {
             const element = thread.createElement();
-            expect(element).to.have.class('bp-point-annotation-btn');
-            expect(element).to.have.attribute('data-type', 'annotation-indicator');
+            expect(element).to.have.class(CLASS_ANNOTATION_POINT_BUTTON);
+            expect(element).to.have.attribute('data-type', DATA_TYPE_ANNOTATION_INDICATOR);
         });
     });
 
@@ -565,7 +570,7 @@ describe('lib/annotations/AnnotationThread', () => {
         it('should create a new point annotation', () => {
             sandbox.stub(thread, 'saveAnnotation');
             thread.createAnnotation({ text: 'bleh' });
-            expect(thread.saveAnnotation).to.be.calledWith(constants.ANNOTATION_TYPE_POINT, 'bleh');
+            expect(thread.saveAnnotation).to.be.calledWith(TYPES.point, 'bleh');
         });
     });
 
