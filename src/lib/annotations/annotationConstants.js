@@ -1,44 +1,63 @@
 export const CLASS_ANNOTATION_BUTTON_CANCEL = 'cancel-annotation-btn';
 export const CLASS_ANNOTATION_BUTTON_POST = 'post-annotation-btn';
-export const CLASS_MOBILE_ANNOTATION_DIALOG = 'bp-mobile-annotation-dialog';
 export const CLASS_ANNOTATION_DIALOG = 'bp-annotation-dialog';
-export const CLASS_ANNOTATION_DIALOG_HIGHLIGHT = 'bp-highlight-dialog';
-export const CLASS_ANNOTATION_TEXT_HIGHLIGHTED = 'bp-is-text-highlighted';
-export const CLASS_ANNOTATION_POINT = 'bp-show-point-annotation-btn';
-export const CLASS_ANNOTATION_POINT_ICON = 'bp-point-annotation-icon';
+export const CLASS_ANNOTATION_HIGHLIGHT_DIALOG = 'bp-annotation-highlight-dialog';
+export const CLASS_ANNOTATION_POINT_BUTTON = 'bp-point-annotation-btn';
 export const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
+export const CLASS_ANNOTATION_CARET = 'bp-annotation-caret';
 export const CLASS_ANNOTATION_TEXTAREA = 'annotation-textarea';
 export const CLASS_BUTTON_CONTAINER = 'button-container';
-export const CLASS_BUTTON_DELETE_COMMENT = 'delete-comment-btn';
-export const CLASS_CANNOT_ANNOTATE = 'cannot-annotate';
-export const CLASS_COMMENTS_CONTAINER = 'annotation-comments';
 export const CLASS_ANNOTATION_CONTAINER = 'annotation-container';
-export const CLASS_REPLY_CONTAINER = 'reply-container';
-export const CLASS_REPLY_TEXTAREA = 'reply-textarea';
+export const CLASS_MOBILE_ANNOTATION_DIALOG = 'bp-mobile-annotation-dialog';
+export const CLASS_MOBILE_DIALOG_HEADER = 'bp-annotation-mobile-header';
+export const CLASS_DIALOG_CLOSE = 'bp-annotation-dialog-close';
+export const CLASS_TEXTAREA = 'bp-textarea';
+export const CLASS_HIGHLIGHT_BTNS = 'bp-annotation-highlight-btns';
+export const CLASS_ADD_HIGHLIGHT_BTN = 'bp-add-highlight-btn';
+export const CLASS_ADD_HIGHLIGHT_COMMENT_BTN = 'bp-highlight-comment-btn';
+export const CLASS_ANNOTATION_LAYER = 'bp-annotation-layer';
+
+export const DATA_TYPE_ANNOTATION_DIALOG = 'annotation-dialog';
+export const DATA_TYPE_ANNOTATION_INDICATOR = 'annotation-indicator';
+
+export const SECTION_CREATE = '[data-section="create"]';
+export const SECTION_SHOW = '[data-section="show"]';
 
 export const SELECTOR_ANNOTATION_BUTTON_CANCEL = `.${CLASS_ANNOTATION_BUTTON_CANCEL}`;
 export const SELECTOR_ANNOTATION_BUTTON_POST = `.${CLASS_ANNOTATION_BUTTON_POST}`;
-export const SELECTOR_ANNOTATION_POINT = `.${CLASS_ANNOTATION_POINT}`;
-export const SELECTOR_ANNOTATION_POINT_ICON = `.${CLASS_ANNOTATION_POINT_ICON}`;
+export const SELECTOR_ANNOTATION_DIALOG = `.${CLASS_ANNOTATION_DIALOG}`;
+export const SELECTOR_ANNOTATION_HIGHLIGHT_DIALOG = `.${CLASS_ANNOTATION_HIGHLIGHT_DIALOG}`;
+export const SELECTOR_ANNOTATION_POINT_BUTTON = `.${CLASS_ANNOTATION_POINT_BUTTON}`;
+export const SELECTOR_ANNOTATION_POINT_MODE = `.${CLASS_ANNOTATION_POINT_MODE}`;
+export const SELECTOR_ANNOTATION_CARET = `.${CLASS_ANNOTATION_CARET}`;
 export const SELECTOR_ANNOTATION_TEXTAREA = `.${CLASS_ANNOTATION_TEXTAREA}`;
 export const SELECTOR_BUTTON_CONTAINER = `.${CLASS_BUTTON_CONTAINER}`;
-export const SELECTOR_BUTTON_DELETE_COMMENT = `.${CLASS_BUTTON_DELETE_COMMENT}`;
-export const SELECTOR_COMMENTS_CONTAINER = `.${CLASS_COMMENTS_CONTAINER}`;
-export const SELECTOR_REPLY_CONTAINER = `.${CLASS_REPLY_CONTAINER}`;
-export const SELECTOR_REPLY_TEXTAREA = `.${CLASS_REPLY_TEXTAREA}`;
+export const SELECTOR_ANNOTATION_CONTAINER = `.${CLASS_ANNOTATION_CONTAINER}`;
+export const SELECTOR_MOBILE_ANNOTATION_DIALOG = `.${CLASS_MOBILE_ANNOTATION_DIALOG}`;
+export const SELECTOR_MOBILE_DIALOG_HEADER = `.${CLASS_MOBILE_DIALOG_HEADER}`;
+export const SELECTOR_DIALOG_CLOSE = `.${CLASS_DIALOG_CLOSE}`;
+export const SELECTOR_HIGHLIGHT_BTNS = `.${CLASS_HIGHLIGHT_BTNS}`;
+export const SELECTOR_ADD_HIGHLIGHT_BTN = `.${CLASS_ADD_HIGHLIGHT_BTN}`;
 
-export const ANNOTATION_STATE_HOVER = 'hover'; // mouse is over
-export const ANNOTATION_STATE_INACTIVE = 'inactive'; // not clicked and mouse is not over
-export const ANNOTATION_STATE_PENDING = 'pending'; // not saved
-export const ANNOTATION_STATE_PENDING_ACTIVE = 'pending-active'; // not saved and pending comment
-export const ANNOTATION_TYPE_POINT = 'point';
-export const ANNOTATION_TYPE_HIGHLIGHT = 'highlight';
-export const ANNOTATION_TYPE_HIGHLIGHT_COMMENT = 'highlight-comment';
-export const PENDING_STATES = [ANNOTATION_STATE_PENDING, ANNOTATION_STATE_PENDING_ACTIVE];
+export const STATES = {
+    hover: 'hover', // mouse is over
+    inactive: 'inactive', // not clicked and mouse is not over
+    pending: 'pending', // not saved
+    pending_active: 'pending-active' // not saved and pending comment
+};
+export const PENDING_STATES = [STATES.pending, STATES.pending_active];
 
-export const HIGHLIGHT_NORMAL_FILL_STYLE = 'rgba(254, 217, 78, 0.5)';
-export const HIGHLIGHT_ACTIVE_FILL_STYLE = 'rgba(255, 201, 0, 0.5)';
-export const HIGHLIGHT_ERASE_FILL_STYLE = 'rgba(255, 245, 132, 1)';
+export const TYPES = {
+    point: 'point',
+    highlight: 'highlight',
+    highlight_comment: 'highlight-comment'
+};
+
+export const HIGHLIGHT_FILL = {
+    normal: 'rgba(254, 217, 78, 0.5)',
+    active: 'rgba(255, 201, 0, 0.5)',
+    erase: 'rgba(255, 245, 132, 1)'
+};
 
 export const PAGE_PADDING_TOP = 15;
 export const PAGE_PADDING_BOTTOM = 15;

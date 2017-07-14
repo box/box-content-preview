@@ -1,18 +1,19 @@
 import DocAnnotator from './doc/DocAnnotator';
 import ImageAnnotator from './image/ImageAnnotator';
+import { TYPES } from './annotationConstants';
 
 const ANNOTATORS = [
     {
         NAME: 'Document',
         CONSTRUCTOR: DocAnnotator,
         VIEWER: ['Document', 'Presentation'],
-        TYPE: ['point', 'highlight']
+        TYPE: [TYPES.point, TYPES.highlight]
     },
     {
         NAME: 'Image',
         CONSTRUCTOR: ImageAnnotator,
         VIEWER: ['Image', 'MultiImage'],
-        TYPE: ['point']
+        TYPE: [TYPES.point]
     }
 ];
 

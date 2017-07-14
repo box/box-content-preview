@@ -3,20 +3,28 @@ import AnnotationDialog from '../AnnotationDialog';
 import * as annotatorUtil from '../annotatorUtil';
 import * as docAnnotatorUtil from './docAnnotatorUtil';
 import { CLASS_HIDDEN, CLASS_ACTIVE } from '../../constants';
-import * as constants from '../annotationConstants';
 import { replacePlaceholders, decodeKeydown } from '../../util';
 import { ICON_HIGHLIGHT, ICON_HIGHLIGHT_COMMENT } from '../../icons/icons';
+import * as constants from '../annotationConstants';
+
+const CLASS_HIGHLIGHT_DIALOG = 'bp-highlight-dialog';
+const CLASS_ANNOTATION_HIGHLIGHT_DIALOG = 'bp-annotation-highlight-dialog';
+const CLASS_TEXT_HIGHLIGHTED = 'bp-is-text-highlighted';
+const CLASS_HIGHLIGHT_LABEL = 'bp-annotation-highlight-label';
+const DATA_TYPE_HIGHLIGHT = 'highlight-btn';
+const DATA_TYPE_ADD_HIGHLIGHT_COMMENT = 'add-highlight-comment-btn';
 
 const HIGHLIGHT_DIALOG_HEIGHT = 38;
 const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 
-@autobind class DocHighlightDialog extends AnnotationDialog {
+@autobind
+class DocHighlightDialog extends AnnotationDialog {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
 
-    /**
+    /** D
      * Saves an annotation with the associated text or blank if only
      * highlighting. Only adds an annotation to the dialog if it contains text.
      * The annotation is still added to the thread on the server side.
@@ -29,7 +37,7 @@ const PAGE_PADDING_TOP = 15;
         // If annotation is blank then display who highlighted the text
         // Will be displayed as '{name} highlighted'
         if (annotation.text === '' && annotation.user.id !== '0') {
-            const highlightLabelEl = this.highlightDialogEl.querySelector('.bp-annotation-highlight-label');
+            const highlightLabelEl = this.highlightDialogEl.querySelector(`.${CLASS_HIGHLIGHT_LABEL}`);
             highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [
                 annotation.user.name
             ]);
@@ -120,7 +128,7 @@ const PAGE_PADDING_TOP = 15;
 
         // Displays comments dialog and hides highlight annotations button
         if (commentsDialogIsHidden) {
-            this.element.classList.remove(constants.CLASS_ANNOTATION_DIALOG_HIGHLIGHT);
+            this.element.classList.remove(CLASS_HIGHLIGHT_DIALOG);
             annotatorUtil.hideElement(this.highlightDialogEl);
 
             this.element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
@@ -136,7 +144,7 @@ const PAGE_PADDING_TOP = 15;
             this.element.classList.remove(constants.CLASS_ANNOTATION_DIALOG);
             annotatorUtil.hideElement(this.commentsDialogEl);
 
-            this.element.classList.add(constants.CLASS_ANNOTATION_DIALOG_HIGHLIGHT);
+            this.element.classList.add(CLASS_HIGHLIGHT_DIALOG);
             annotatorUtil.showElement(this.highlightDialogEl);
             this.hasComments = false;
         }
@@ -154,8 +162,8 @@ const PAGE_PADDING_TOP = 15;
      * @return {void}
      */
     toggleHighlightCommentsReply(hasAnnotations) {
-        const replyTextEl = this.commentsDialogEl.querySelector('[data-section="create"]');
-        const commentTextEl = this.commentsDialogEl.querySelector('[data-section="show"]');
+        const replyTextEl = this.commentsDialogEl.querySelector(constants.SECTION_CREATE);
+        const commentTextEl = this.commentsDialogEl.querySelector(constants.SECTION_SHOW);
 
         // Ensures that "Add a comment here" text area is shown
         if (hasAnnotations) {
@@ -199,7 +207,7 @@ const PAGE_PADDING_TOP = 15;
 
         // Generate HTML of highlight dialog
         this.highlightDialogEl = this.generateHighlightDialogEl();
-        this.highlightDialogEl.classList.add('bp-annotation-highlight-dialog');
+        this.highlightDialogEl.classList.add(CLASS_ANNOTATION_HIGHLIGHT_DIALOG);
 
         // Generate HTML of comments dialog
         this.commentsDialogEl = this.generateDialogEl(annotations.length);
@@ -215,9 +223,9 @@ const PAGE_PADDING_TOP = 15;
         }
 
         if (!this.isMobile) {
-            this.element.setAttribute('data-type', 'annotation-dialog');
+            this.element.setAttribute('data-type', constants.DATA_TYPE_ANNOTATION_DIALOG);
             this.element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
-            this.element.innerHTML = '<div class="bp-annotation-caret"></div>';
+            this.element.innerHTML = `<div class="${constants.CLASS_ANNOTATION_CARET}"></div>`;
             this.element.appendChild(this.dialogEl);
 
             // Adding thread number to dialog
@@ -228,14 +236,14 @@ const PAGE_PADDING_TOP = 15;
 
         // Indicate that text is highlighted in the highlight buttons dialog
         if (annotations.length > 0) {
-            this.dialogEl.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            this.dialogEl.classList.add(CLASS_TEXT_HIGHLIGHTED);
         }
 
         // Checks if highlight is a plain highlight annotation and if
         // user name has been populated. If userID is 0, user name will
         // be 'Some User'
         if (annotatorUtil.isPlainHighlight(annotations) && annotations[0].user.id !== '0') {
-            const highlightLabelEl = this.highlightDialogEl.querySelector('.bp-annotation-highlight-label');
+            const highlightLabelEl = this.highlightDialogEl.querySelector(`.${CLASS_HIGHLIGHT_LABEL}`);
             highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [
                 annotations[0].user.name
             ]);
@@ -244,7 +252,7 @@ const PAGE_PADDING_TOP = 15;
             // Hide delete button on plain highlights if user doesn't have
             // permissions
             if (annotations[0].permissions && !annotations[0].permissions.can_delete) {
-                const addHighlightBtn = this.highlightDialogEl.querySelector('.bp-add-highlight-btn');
+                const addHighlightBtn = this.highlightDialogEl.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
                 annotatorUtil.hideElement(addHighlightBtn);
             }
         }
@@ -322,11 +330,11 @@ const PAGE_PADDING_TOP = 15;
 
         switch (dataType) {
             // Clicking 'Highlight' button to create or remove a highlight
-            case 'highlight-btn':
+            case DATA_TYPE_HIGHLIGHT:
                 this.drawAnnotation();
                 break;
             // Clicking 'Highlight' button to create a highlight
-            case 'add-highlight-comment-btn':
+            case DATA_TYPE_ADD_HIGHLIGHT_COMMENT:
                 this.emit('annotationdraw');
                 this.toggleHighlightCommentsReply(false);
                 this.toggleHighlightDialogs();
@@ -350,11 +358,11 @@ const PAGE_PADDING_TOP = 15;
      * @return {void}
      */
     toggleHighlightIcon(fillStyle) {
-        const addHighlightBtn = this.dialogEl.querySelector('.bp-add-highlight-btn');
-        if (fillStyle === constants.HIGHLIGHT_ACTIVE_FILL_STYLE) {
-            addHighlightBtn.classList.add('highlight-active');
+        const addHighlightBtn = this.dialogEl.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
+        if (fillStyle === constants.HIGHLIGHT_FILL.active) {
+            addHighlightBtn.classList.add(CLASS_ACTIVE);
         } else {
-            addHighlightBtn.classList.remove('highlight-active');
+            addHighlightBtn.classList.remove(CLASS_ACTIVE);
         }
     }
 
@@ -370,12 +378,12 @@ const PAGE_PADDING_TOP = 15;
      * @return {void}
      */
     toggleHighlight() {
-        const isTextHighlighted = this.dialogEl.classList.contains(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+        const isTextHighlighted = this.dialogEl.classList.contains(CLASS_TEXT_HIGHLIGHTED);
 
         // Creates a blank highlight annotation
         if (!isTextHighlighted) {
             this.hasComments = false;
-            this.dialogEl.classList.add(constants.CLASS_ANNOTATION_TEXT_HIGHLIGHTED);
+            this.dialogEl.classList.add(CLASS_TEXT_HIGHLIGHTED);
             this.emit('annotationcreate');
 
             // Deletes blank highlight annotation if user has permission
@@ -470,15 +478,15 @@ const PAGE_PADDING_TOP = 15;
     generateHighlightDialogEl() {
         const highlightDialogEl = document.createElement('div');
         highlightDialogEl.innerHTML = `
-            <span class="bp-annotation-highlight-label ${CLASS_HIDDEN}"></span>
-            <span class="bp-annotations-highlight-btns ${this.isMobile ? CLASS_HIDDEN : ''}">
-                <button class="bp-btn-plain bp-add-highlight-btn"
-                    data-type="highlight-btn"
+            <span class="${CLASS_HIGHLIGHT_LABEL} ${CLASS_HIDDEN}"></span>
+            <span class="${constants.CLASS_HIGHLIGHT_BTNS} ${this.isMobile ? CLASS_HIDDEN : ''}">
+                <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_BTN}"
+                    data-type="${DATA_TYPE_HIGHLIGHT}"
                     title="${__('annotation_highlight_toggle')}">
                     ${ICON_HIGHLIGHT}
                 </button>
-                <button class="bp-btn-plain bp-highlight-comment-btn"
-                    data-type="add-highlight-comment-btn"
+                <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_COMMENT_BTN}"
+                    data-type="${DATA_TYPE_ADD_HIGHLIGHT_COMMENT}"
                     title="${__('annotation_highlight_comment')}">
                     ${ICON_HIGHLIGHT_COMMENT}
                 </button>

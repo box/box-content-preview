@@ -2,22 +2,25 @@ import EventEmitter from 'events';
 import { ICON_HIGHLIGHT, ICON_HIGHLIGHT_COMMENT } from '../../icons/icons';
 import CommentBox from '../CommentBox';
 import { hideElement, showElement } from '../annotatorUtil';
+import * as constants from '../annotationConstants';
 
 const CLASS_CREATE_DIALOG = 'bp-create-annotation-dialog';
 const TITLE_HIGHLIGHT_TOGGLE = __('annotation_highlight_toggle');
 const TITLE_HIGHLIGHT_COMMENT = __('annotation_highlight_comment');
+const DATA_TYPE_HIGHLIGHT = 'highlight-btn';
+const DATA_TYPE_ADD_HIGHLIGHT_COMMENT = 'add-highlight-comment-btn';
 const CREATE_HIGHLIGHT_DIALOG_TEMPLATE = `
-    <div class="bp-annotation-caret" style="left: 50%;"></div>
+    <div class="${constants.CLASS_ANNOTATION_CARET}" style="left: 50%;"></div>
     <div>
-        <div class="bp-annotation-highlight-dialog">
-            <span class="bp-annotations-highlight-btns">
-                <button class="bp-btn-plain bp-add-highlight-btn"
-                    data-type="highlight-btn"
+        <div class="${constants.CLASS_ANNOTATION_HIGHLIGHT_DIALOG}">
+            <span class="${constants.CLASS_HIGHLIGHT_BTNS}">
+                <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_BTN}"
+                    data-type="${DATA_TYPE_HIGHLIGHT}""
                     title="${TITLE_HIGHLIGHT_TOGGLE}">
                     ${ICON_HIGHLIGHT}
                 </button>
-                <button class="bp-btn-plain bp-highlight-comment-btn"
-                    data-type="add-highlight-comment-btn"
+                <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_COMMENT_BTN}"
+                    data-type="${DATA_TYPE_ADD_HIGHLIGHT_COMMENT}""
                     title="${TITLE_HIGHLIGHT_COMMENT}">
                     ${ICON_HIGHLIGHT_COMMENT}
                 </button>
@@ -306,12 +309,12 @@ class CreateHighlightDialog extends EventEmitter {
         highlightDialogEl.classList.add(CLASS_CREATE_DIALOG);
         highlightDialogEl.innerHTML = CREATE_HIGHLIGHT_DIALOG_TEMPLATE;
 
-        const containerEl = highlightDialogEl.querySelector('.bp-annotation-highlight-dialog');
+        const containerEl = highlightDialogEl.querySelector(constants.SELECTOR_ANNOTATION_HIGHLIGHT_DIALOG);
 
         // Reference HTML
-        this.highlightCreateEl = containerEl.querySelector('.bp-add-highlight-btn');
-        this.commentCreateEl = containerEl.querySelector('.bp-highlight-comment-btn');
-        this.buttonsEl = containerEl.querySelector('.bp-annotations-highlight-btns');
+        this.highlightCreateEl = containerEl.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
+        this.commentCreateEl = containerEl.querySelector(`.${constants.CLASS_ADD_HIGHLIGHT_COMMENT_BTN}`);
+        this.buttonsEl = containerEl.querySelector(constants.SELECTOR_HIGHLIGHT_BTNS);
 
         // Create comment box
         this.commentBox = new CommentBox(containerEl);

@@ -2,8 +2,8 @@ import autobind from 'autobind-decorator';
 import AnnotationThread from '../AnnotationThread';
 import DocPointDialog from './DocPointDialog';
 import * as annotatorUtil from '../annotatorUtil';
-import * as constants from '../annotationConstants';
 import * as docAnnotatorUtil from './docAnnotatorUtil';
+import { STATES } from '../annotationConstants';
 
 const PAGE_PADDING_TOP = 15;
 const POINT_ANNOTATION_ICON_HEIGHT = 31;
@@ -56,7 +56,7 @@ const POINT_ANNOTATION_ICON_WIDTH = 24;
 
         annotatorUtil.showElement(this.element);
 
-        if (this.state === constants.ANNOTATION_STATE_PENDING) {
+        if (this.state === STATES.pending) {
             this.showDialog();
         }
     }
