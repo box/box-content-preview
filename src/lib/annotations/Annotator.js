@@ -2,7 +2,6 @@ import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
-import DocDrawingThread from './doc/DocDrawingThread';
 import * as annotatorUtil from './annotatorUtil';
 import {
     CLASS_ACTIVE,
@@ -280,6 +279,13 @@ class Annotator extends EventEmitter {
         }
     }
 
+    /**
+     * Toggles draw annotation mode on and off. When draw annotation mode is
+     * on, a click and draw
+     *
+     * @param {HTMLEvent} event - DOM event
+     * @return {void}
+     */
     toggleDrawModeHandler(event = {}) {
         this.destroyPendingThreads();
         if (this.isInPointMode()) {
@@ -303,7 +309,6 @@ class Annotator extends EventEmitter {
 
             // Otherwise enter draw mode
         } else {
-            const thread = this.createAnnotationThread([], location, TYPES.draw);
             this.notification.show(__('notification_annotation_draw_mode'));
             this.emit('annotationmodeenter');
             this.annotatedElement.classList.add(CLASS_ANNOTATION_DRAW_MODE);
@@ -312,6 +317,7 @@ class Annotator extends EventEmitter {
             }
 
             this.unbindDOMListeners();
+            const thread = this.createAnnotationThread([], location, TYPES.draw);
             this.bindDrawModeListeners(thread);
         }
     }
@@ -566,11 +572,9 @@ class Annotator extends EventEmitter {
         }
     }
 
-    // Note: should probably be hooking up eventListeners in the thread itself
-    // Function is here to be in the same pattern as bindPointModeListeners
     /**
      * Binds event listeners for draw annotation mode.
-     * @param {DrawingThread} drawingThread The
+     * @param {DrawingThread} drawingThread - The drawing thread to bind event listeners to.
      * @return {void}
      */
     bindDrawModeListeners(drawingThread) {
@@ -599,10 +603,22 @@ class Annotator extends EventEmitter {
             const startCallback = drawingThread.handleStart.bind(drawingThread);
             const stopCallback = drawingThread.handleStop.bind(drawingThread);
             const moveCallback = drawingThread.handleMove.bind(drawingThread);
+            /* eslint-disable require-jsdoc */
+            const locationFunction = (event) => this.getLocationFromEvent(event, constants.ANNOTATION_TYPE_POINT);
+            /* eslint-enable */
             const handlers = [
-                { type: 'mousemove', func: eventToLocationHandler(moveCallback) },
-                { type: 'mousedown', func: eventToLocationHandler(startCallback) },
-                { type: 'mouseup', func: eventToLocationHandler(stopCallback) }
+                {
+                    type: 'mousemove',
+                    func: annotatorUtil.eventToLocationHandler(locationFunction, moveCallback)
+                },
+                {
+                    type: 'mousedown',
+                    func: annotatorUtil.eventToLocationHandler(locationFunction, startCallback)
+                },
+                {
+                    type: 'mouseup',
+                    func: annotatorUtil.eventToLocationHandler(locationFunction, stopCallback)
+                }
             ];
 
             handlers.forEach((handler) => {

@@ -1,6 +1,10 @@
 import DocAnnotator from './doc/DocAnnotator';
 import ImageAnnotator from './image/ImageAnnotator';
+<<<<<<< HEAD
 import { TYPES } from './annotationConstants';
+=======
+import { ANNOTATION_TYPE_POINT, ANNOTATION_TYPE_HIGHLIGHT, ANNOTATION_TYPE_DRAW } from './annotationConstants';
+>>>>>>> Update: drawing annotations with pull request changes
 
 const ANNOTATORS = [
     {

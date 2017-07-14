@@ -23,7 +23,7 @@ class DocDrawingThread extends DrawingThread {
     /**
      * Handle a pointer movement
      *
-     * @param {Object} location The location information of the pointer
+     * @param {Object} location - The location information of the pointer
      * @return {void}
      */
     handleMove(location) {
@@ -41,6 +41,13 @@ class DocDrawingThread extends DrawingThread {
         const [x, y] = DocAnnotatorUtil.getBrowserCoordinatesFromLocation(location, this.pageEl);
         if (this.drawingFlag === DRAW_POINTER_DOWN) {
             this.pendingPath.addCoordinate(x, y);
+
+            // Cancel any pending animation to a new request.
+            if (this.lastAnimRequestId) {
+                window.cancelAnimationFrame(this.lastAnimRequestId);
+            }
+            // Keep animating while the drawing flag is down
+            this.lastAnimRequestId = window.requestAnimationFrame(this.renderCall);
         }
     }
 
@@ -58,16 +65,13 @@ class DocDrawingThread extends DrawingThread {
             PAGE_PADDING_TOP,
             PAGE_PADDING_BOTTOM
         );
-        const canvas = context.canvas;
-
-        this.savedState = context.getImageData(0, 0, canvas.width, canvas.height);
 
         if (!this.pendingPath) {
             this.pendingPath = new DrawingPath();
         }
+
         this.context = context;
-        this.updateContextStyles(scale);
-        window.requestAnimationFrame(this.render.bind(this));
+        this.setContextStyles(scale);
     }
 
     /**
@@ -78,7 +82,7 @@ class DocDrawingThread extends DrawingThread {
     handleStop() {
         this.drawingFlag = DRAW_POINTER_UP;
 
-        if (!this.pendingPath.isEmpty()) {
+        if (this.pendingPath && !this.pendingPath.isEmpty()) {
             this.pathContainer.insert(this.pendingPath);
             this.pendingPath = null;
         }

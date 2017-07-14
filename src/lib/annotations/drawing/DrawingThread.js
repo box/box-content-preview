@@ -6,17 +6,17 @@ const RTREE_WIDTH = 5; // Lower number - faster search, higher - faster insert
 const BASE_LINE_WIDTH = 3;
 
 class DrawingThread extends AnnotationThread {
-    /** @property {number} - Timestamp of the last render */
-    lastRenderTimestamp;
-
     /** @property {number} - Drawing state */
-    drawingFlag;
+    drawingFlag = DRAW_POINTER_UP;
 
     /** @property {Rbush} - Rtree path container */
-    pathContainer;
+    pathContainer = new Rbush(RTREE_WIDTH);
 
-    /** @property {ImageData} - The ImageData after the last saved stroke */
-    savedState;
+    /** @property {function} - A call to render that is bound with 'this' object */
+    renderCall = this.render.bind(this);
+
+    /** @property {CanvasContext} - A canvas for drawing new strokes */
+    memoryCanvas;
 
     /** @property {DrawingPath} - The path being drawn but not yet finalized */
     pendingPath;
@@ -24,31 +24,23 @@ class DrawingThread extends AnnotationThread {
     /** @property {CanvasContext} - The context to be drawn on */
     context;
 
-    //--------------------------------------------------------------------------
-    // Public
-    //--------------------------------------------------------------------------
-    /**
-     * Creates and mananges drawing annotations
-     *
-     * [constructor]
-     * @inheritdoc
-     * @return {DrawingThread} DrawingThread
-     */
-    constructor(data) {
-        super(data);
+    /** @property {number} - Timestamp of the last render */
+    lastRenderTimestamp;
 
-        this.drawingFlag = DRAW_POINTER_UP;
-        this.pathContainer = new Rbush(RTREE_WIDTH);
-    }
+    /** @property {number} - The the last animation frame request id */
+    lastAnimRequestId;
 
     /**
-     * Soft destroy a drawingthread object
+     * Soft destructor for a drawingthread object
      *
      * [constructor]
      * @inheritdoc
      * @return {void}
      */
     destroy() {
+        if (this.lastAnimRequestId) {
+            window.cancelAnimationFrame(this.lastAnimRequestId);
+        }
         this.removeAllListeners();
         this.reset();
         super.destroy();
@@ -56,6 +48,7 @@ class DrawingThread extends AnnotationThread {
 
     /**
      * Get all of the DrawingPaths in the current thread.
+     *
      * @return {void}
      */
     getDrawings() {
@@ -66,7 +59,7 @@ class DrawingThread extends AnnotationThread {
     /**
      * Handle a pointer movement
      *
-     * @param {Object} location The location information of the pointer
+     * @param {Object} location - The location information of the pointer
      * @return {void}
      */
     handleMove(location) {}
@@ -74,7 +67,7 @@ class DrawingThread extends AnnotationThread {
     /**
      * Start a drawing stroke
      *
-     * @param {Object} location The location information of the pointer
+     * @param {Object} location - The location information of the pointer
      * @return {void}
      */
     handleStart(location) {}
@@ -82,7 +75,7 @@ class DrawingThread extends AnnotationThread {
     /**
      * End a drawing stroke
      *
-     * @param {Object} location The location information of the pointer
+     * @param {Object} location - The location information of the pointer
      * @return {void}
      */
     handleStop(location) {}
@@ -93,22 +86,29 @@ class DrawingThread extends AnnotationThread {
     //--------------------------------------------------------------------------
 
     /**
+     * Set the drawing styles
+     *
      * @protected
-     * @param {number} scale The document scale
+     * @param {number} scale - The document scale
      * @return {void}
      */
-    updateContextStyles(scale) {
-        if (this.context) {
-            this.context.lineCap = 'round';
-            this.context.lineJoin = 'round';
-            this.context.strokeStyle = 'black';
-            this.context.lineWidth = BASE_LINE_WIDTH * scale;
+    setContextStyles(scale) {
+        if (!this.context) {
+            return;
         }
+
+        this.context.lineCap = 'round';
+        this.context.lineJoin = 'round';
+        this.context.strokeStyle = 'black';
+        this.context.lineWidth = BASE_LINE_WIDTH * scale;
     }
 
     /**
+     * Draw the pending path onto the DrawingThread CanvasContext. Should be used
+     * in conjunction with requestAnimationFrame.
+     *
      * @protected
-     * @param {number} timestamp The time when the function was called;
+     * @param {number} timestamp - The time when the function was called;
      * @return {void}
      */
     render(timestamp) {
@@ -117,13 +117,12 @@ class DrawingThread extends AnnotationThread {
             if (elapsed >= DRAW_RENDER_THRESHOLD && this.context) {
                 this.lastRenderTimestamp = timestamp;
                 const context = this.context;
-                if (this.savedState) {
-                    context.putImageData(this.savedState, 0, 0);
+
+                const numLines = this.container.data.children.length;
+                for (let i = 0; i < numLines; i++) {
+                    this.container.data.children[i].drawPath(context);
                 }
-                this.pendingPath.drawPath(context);
             }
-            // Keep animating while the drawing flag is down
-            window.requestAnimationFrame(this.render.bind(this));
         }
     }
 }
