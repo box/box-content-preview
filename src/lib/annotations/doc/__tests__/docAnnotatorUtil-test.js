@@ -11,8 +11,11 @@ import {
     getBrowserCoordinatesFromLocation,
     getLowerRightCornerOfLastQuadPoint
 } from '../docAnnotatorUtil';
-
-const DIALOG_CLASS = '.bp-annotation-dialog';
+import {
+    SELECTOR_ANNOTATION_DIALOG,
+    SELECTOR_ANNOTATION_CONTAINER,
+    CLASS_ANNOTATION_DIALOG
+} from '../../annotationConstants';
 
 describe('lib/annotations/doc/docAnnotatorUtil', () => {
     before(() => {
@@ -49,13 +52,13 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
         });
 
         it('should return true if the event is in the given dialog', () => {
-            const dialogEl = document.querySelector(DIALOG_CLASS);
+            const dialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
             const result = isInDialog({ clientX: 8, clientY: 8 }, dialogEl);
             expect(result).to.be.true;
         });
 
         it('should return false if the event is in the given dialog', () => {
-            const dialogEl = document.querySelector(DIALOG_CLASS);
+            const dialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
             const result = isInDialog({ clientX: 100, clientY: 100 }, dialogEl);
             expect(result).to.be.false;
         });
@@ -63,7 +66,7 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
 
     describe('hasActiveDialog()', () => {
         it('should return false if no annotation dialog is open', () => {
-            const currDialogEl = document.querySelector(DIALOG_CLASS);
+            const currDialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
             currDialogEl.classList.add('bp-is-hidden');
             const result = hasActiveDialog(document);
             expect(result).to.be.false;
@@ -71,11 +74,11 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
 
         it('should return true if an annotion dialog is open', () => {
             const docEl = document.querySelector('.annotatedElement');
-            const currDialogEl = document.querySelector(DIALOG_CLASS);
+            const currDialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
             currDialogEl.classList.add('bp-is-hidden');
 
             const openDialogEl = document.createElement('div');
-            openDialogEl.classList.add('bp-annotation-dialog');
+            openDialogEl.classList.add(CLASS_ANNOTATION_DIALOG);
             docEl.appendChild(openDialogEl);
 
             const result = hasActiveDialog(document);
@@ -89,13 +92,13 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
             docEl.classList.add('bp-doc-presentation');
             docEl.style.height = 100;
 
-            const dialogEl = document.querySelector(DIALOG_CLASS);
+            const dialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
             const pageHeight = 20;
             const yPos = 5;
 
             fitDialogHeightInPage(docEl, dialogEl, pageHeight, yPos);
 
-            const annotationsEl = dialogEl.querySelector('.annotation-container');
+            const annotationsEl = dialogEl.querySelector(SELECTOR_ANNOTATION_CONTAINER);
             expect(annotationsEl.style.maxHeight).to.not.be.undefined;
         });
     });

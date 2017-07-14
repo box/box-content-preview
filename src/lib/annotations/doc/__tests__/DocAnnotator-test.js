@@ -9,11 +9,17 @@ import DocHighlightThread from '../DocHighlightThread';
 import DocPointThread from '../DocPointThread';
 import * as annotatorUtil from '../../annotatorUtil';
 import * as docAnnotatorUtil from '../docAnnotatorUtil';
-import * as constants from '../../annotationConstants';
+import {
+    STATES,
+    TYPES,
+    DATA_TYPE_ANNOTATION_DIALOG
+} from '../../annotationConstants';
 
 let annotator;
 let stubs = {};
 const sandbox = sinon.sandbox.create();
+
+const CLASS_DEFAULT_CURSOR = 'bp-use-default-cursor';
 
 describe('lib/annotations/doc/DocAnnotator', () => {
     before(() => {
@@ -75,7 +81,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 highlightEls: []
             });
 
-            stubs.findClosest = sandbox.stub(annotatorUtil, 'findClosestDataType').returns('annotation-dialog');
+            stubs.findClosest = sandbox.stub(annotatorUtil, 'findClosestDataType').returns(DATA_TYPE_ANNOTATION_DIALOG);
             stubs.scale = sandbox.stub(annotatorUtil, 'getScale').returns(1);
 
             // stub highlight methods
@@ -86,15 +92,15 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.restoreSel = sandbox.stub(rangy, 'restoreSelection');
         });
 
-        describe('point', () => {
+        describe(TYPES.point, () => {
             it('should not return a location if there is a selection present', () => {
-                expect(annotator.getLocationFromEvent({}, 'point')).to.be.null;
+                expect(annotator.getLocationFromEvent({}, TYPES.point)).to.be.null;
             });
 
             it('should not return a location if click isn\'t on page', () => {
                 stubs.selection.returns(false);
                 stubs.getPageInfo.returns({ pageEl: null, page: -1 });
-                expect(annotator.getLocationFromEvent({}, 'point')).to.be.null;
+                expect(annotator.getLocationFromEvent({}, TYPES.point)).to.be.null;
             });
 
             it('should not return a location if click is on dialog', () => {
@@ -103,7 +109,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                     pageEl: document.querySelector('.annotated-element'),
                     page: 1
                 });
-                expect(annotator.getLocationFromEvent({}, 'point')).to.be.null;
+                expect(annotator.getLocationFromEvent({}, TYPES.point)).to.be.null;
             });
 
             it('should return a valid point location if click is valid', () => {
@@ -114,19 +120,19 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 stubs.findClosest.returns('not-a-dialog');
                 sandbox.stub(docAnnotatorUtil, 'convertDOMSpaceToPDFSpace').returns([x, y]);
 
-                const location = annotator.getLocationFromEvent({}, 'point');
+                const location = annotator.getLocationFromEvent({}, TYPES.point);
                 expect(location).to.deep.equal({ x, y, page, dimensions });
             });
         });
 
-        describe('highlight', () => {
+        describe(TYPES.highlight, () => {
             beforeEach(() => {
                 annotator.setupAnnotations();
                 stubs.highlighter = sandbox.mock(annotator.highlighter);
             });
 
             it('should not return a location if there is no selection present', () => {
-                expect(annotator.getLocationFromEvent({}, 'highlight')).to.be.null;
+                expect(annotator.getLocationFromEvent({}, TYPES.highlight)).to.be.null;
             });
 
             it('should infer page from selection if it cannot be inferred from event', () => {
@@ -142,13 +148,13 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                     page: 2
                 });
 
-                annotator.getLocationFromEvent({}, 'highlight');
+                annotator.getLocationFromEvent({}, TYPES.highlight);
                 expect(stubs.getPageInfo).to.be.called.twice;
             });
 
             it('should not return a valid highlight location if no highlights exist', () => {
                 stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
-                expect(annotator.getLocationFromEvent({}, 'highlight')).to.deep.equal(null);
+                expect(annotator.getLocationFromEvent({}, TYPES.highlight)).to.deep.equal(null);
             });
 
             it('should return a valid highlight location if selection is valid', () => {
@@ -159,12 +165,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
                 stubs.getHighlights.returns({ highlight: {}, highlightEls: [{}, {}] });
 
-                const location = annotator.getLocationFromEvent({}, 'highlight');
+                const location = annotator.getLocationFromEvent({}, TYPES.highlight);
                 expect(location).to.deep.equal({ page, quadPoints, dimensions });
             });
         });
 
-        describe('highlight-comment', () => {
+        describe(TYPES.highlight_comment, () => {
             beforeEach(() => {
                 annotator.setupAnnotations();
                 stubs.highlighter = sandbox.mock(annotator.highlighter);
@@ -172,7 +178,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
             it('should not return a location if there is no selection present', () => {
                 annotator.highlighter.highlights = [];
-                const location = annotator.getLocationFromEvent({}, 'highlight-comment');
+                const location = annotator.getLocationFromEvent({}, TYPES.highlight_comment);
                 expect(location).to.be.null;
             });
 
@@ -190,14 +196,14 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                     page: 2
                 });
 
-                annotator.getLocationFromEvent({}, 'highlight-comment');
+                annotator.getLocationFromEvent({}, TYPES.highlight_comment);
                 expect(stubs.getSel).to.have.been.called;
             });
 
             it('should not return a valid highlight location if no highlights exist', () => {
                 annotator.highlighter.highlights = [{}];
                 stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
-                expect(annotator.getLocationFromEvent({}, 'highlight-comment')).to.deep.equal(null);
+                expect(annotator.getLocationFromEvent({}, TYPES.highlight_comment)).to.deep.equal(null);
             });
 
             it('should return a valid highlight location if selection is valid', () => {
@@ -207,7 +213,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 stubs.points.onSecondCall().returns(quadPoints[1]);
                 stubs.getHighlights.returns({ highlight: {}, highlightEls: [{}, {}] });
 
-                const location = annotator.getLocationFromEvent({}, 'highlight-comment');
+                const location = annotator.getLocationFromEvent({}, TYPES.highlight_comment);
                 expect(location).to.deep.equal({ page, quadPoints, dimensions });
             });
         });
@@ -226,21 +232,21 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should create, add highlight thread to internal map, and return it', () => {
-            const thread = annotator.createAnnotationThread([], {}, 'highlight');
+            const thread = annotator.createAnnotationThread([], {}, TYPES.highlight);
             expect(stubs.addThread).to.have.been.called;
             expect(thread instanceof DocHighlightThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
         });
 
         it('should create, add highlight comment thread to internal map, and return it', () => {
-            const thread = annotator.createAnnotationThread([], {}, 'highlight-comment');
+            const thread = annotator.createAnnotationThread([], {}, TYPES.highlight_comment);
             expect(stubs.addThread).to.have.been.called;
             expect(thread instanceof DocHighlightThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
         });
 
         it('should create, add point thread to internal map, and return it', () => {
-            const thread = annotator.createAnnotationThread([], {}, 'point');
+            const thread = annotator.createAnnotationThread([], {}, TYPES.point);
             expect(stubs.addThread).to.have.been.called;
             expect(thread instanceof DocPointThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
@@ -251,12 +257,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             const annotation = new Annotation({
                 fileVersionId: 2,
                 threadID: '1',
-                type: 'point',
+                type: TYPES.point,
                 thread: '1',
                 text: 'blah',
                 location: { x: 0, y: 0 }
             });
-            const thread = annotator.createAnnotationThread([annotation], {}, 'highlight');
+            const thread = annotator.createAnnotationThread([annotation], {}, TYPES.highlight);
 
             expect(stubs.addThread).to.have.been.called;
             expect(thread.threadID).to.equal(annotation.threadID);
@@ -268,7 +274,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         it('should emit error and return undefined if thread params are invalid', () => {
             stubs.validateThread.returns(false);
             sandbox.stub(annotator, 'emit');
-            const thread = annotator.createAnnotationThread([], {}, 'highlight');
+            const thread = annotator.createAnnotationThread([], {}, TYPES.highlight);
             expect(thread instanceof DocHighlightThread).to.be.false;
             expect(annotator.handleValidationError).to.be.called;
         });
@@ -341,7 +347,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.createAnnotationThread.returns(thread);
 
             annotator.createHighlightThread('some text with severe passive agression');
-            expect(stubs.createAnnotationThread).to.be.calledWith([], location, constants.ANNOTATION_TYPE_HIGHLIGHT);
+            expect(stubs.createAnnotationThread).to.be.calledWith([], location, TYPES.highlight);
         });
 
         it('should bail out of making an annotation if thread is null', () => {
@@ -694,7 +700,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 onMousemove: () => {},
                 hideDialog: () => {},
                 show: () => {},
-                state: constants.ANNOTATION_STATE_HOVER
+                state: STATES.hover
             };
             stubs.delayMock = sandbox.mock(stubs.delayThread);
 
@@ -762,7 +768,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.getThreads.returns([stubs.delayThread]);
             sandbox.stub(annotator, 'useDefaultCursor');
 
-            stubs.delayThread.state = constants.ANNOTATION_STATE_HOVER;
+            stubs.delayThread.state = STATES.hover;
 
             annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
             annotator.onHighlightCheck();
@@ -781,7 +787,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should do nothing if there are pending, pending-active, active, or active hover highlight threads', () => {
-            stubs.thread.state = constants.ANNOTATION_STATE_PENDING;
+            stubs.thread.state = STATES.pending;
             stubs.threadMock.expects('onMousemove').returns(false).never();
             stubs.getThreads.returns([stubs.thread]);
 
@@ -935,16 +941,16 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should cancel the first comment of pending threads', () => {
-            stubs.thread.state = constants.ANNOTATION_STATE_PENDING;
+            stubs.thread.state = STATES.pending;
             stubs.getAllThreads.returns([stubs.thread]);
 
             // Point annotation
-            stubs.thread.type = constants.ANNOTATION_TYPE_POINT;
+            stubs.thread.type = TYPES.point;
             stubs.threadMock.expects('destroy');
             annotator.highlightClickHandler(stubs.event);
 
             // Highlight annotation
-            stubs.thread.type = constants.ANNOTATION_TYPE_HIGHLIGHT;
+            stubs.thread.type = TYPES.highlight;
             stubs.threadMock.expects('cancelFirstComment');
             annotator.highlightClickHandler(stubs.event);
         });
@@ -967,26 +973,26 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     describe('getThreadsWithStates()', () => {
         it('return all of the threads in the specified state', () => {
             const thread1 = {
-                type: 'highlight',
-                state: constants.ANNOTATION_STATE_HOVER,
+                type: TYPES.highlight,
+                state: STATES.hover,
                 unbindCustomListenersOnThread: sandbox.stub(),
                 removeAllListeners: sandbox.stub()
             };
             const thread2 = {
-                type: 'point',
-                state: constants.ANNOTATION_STATE_HOVER,
+                type: TYPES.point,
+                state: STATES.hover,
                 unbindCustomListenersOnThread: sandbox.stub(),
                 removeAllListeners: sandbox.stub()
             };
             const thread3 = {
-                type: 'highlight',
-                state: constants.ANNOTATION_STATE_PENDING,
+                type: TYPES.highlight,
+                state: STATES.pending,
                 unbindCustomListenersOnThread: sandbox.stub(),
                 removeAllListeners: sandbox.stub()
             };
             annotator.threads = { 0: [thread1, thread2], 1: [thread3] };
 
-            const threads = annotator.getThreadsWithStates(constants.ANNOTATION_STATE_HOVER);
+            const threads = annotator.getThreadsWithStates(STATES.hover);
             expect(threads).to.deep.equal([thread1, thread2]);
         });
     });
@@ -994,21 +1000,21 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     describe('useDefaultCursor()', () => {
         it('should use the default cursor instead of the text cursor', () => {
             annotator.useDefaultCursor();
-            expect(annotator.annotatedElement).to.have.class('bp-use-default-cursor');
+            expect(annotator.annotatedElement).to.have.class(CLASS_DEFAULT_CURSOR);
         });
     });
 
     describe('removeDefaultCursor()', () => {
         it('should use the text cursor instead of the default cursor', () => {
             annotator.removeDefaultCursor();
-            expect(annotator.annotatedElement).to.not.have.class('bp-use-default-cursor');
+            expect(annotator.annotatedElement).to.not.have.class(CLASS_DEFAULT_CURSOR);
         });
     });
 
     describe('getHighlightThreadsOnPage()', () => {
         it('return the highlight threads on that page', () => {
             const thread = {
-                type: 'highlight',
+                type: TYPES.highlight,
                 unbindCustomListenersOnThread: sandbox.stub(),
                 removeAllListeners: sandbox.stub()
             };
@@ -1016,7 +1022,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.isHighlight = sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(thread);
 
             const threads = annotator.getHighlightThreadsOnPage(0);
-            expect(stubs.isHighlight).to.be.calledWith('highlight');
+            expect(stubs.isHighlight).to.be.calledWith(TYPES.highlight);
             expect(threads).to.deep.equal([thread]);
         });
     });
