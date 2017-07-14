@@ -1,6 +1,10 @@
 /* eslint-disable no-unused-expressions */
 import CommentBox from '../CommentBox';
 import { CLASS_HIDDEN } from '../../constants';
+import {
+    SELECTOR_ANNOTATION_BUTTON_CANCEL,
+    SELECTOR_ANNOTATION_BUTTON_POST
+} from '../annotationConstants';
 
 describe('lib/annotations/CommentBox', () => {
     const sandbox = sinon.sandbox.create();
@@ -190,11 +194,11 @@ describe('lib/annotations/CommentBox', () => {
         });
 
         it('should create a cancel button with the provided cancel text', () => {
-            expect(el.querySelector('.cancel-annotation-btn')).to.exist;
+            expect(el.querySelector(SELECTOR_ANNOTATION_BUTTON_CANCEL)).to.exist;
         });
 
         it('should create a post button with the provided text', () => {
-            expect(el.querySelector('.post-annotation-btn')).to.exist;
+            expect(el.querySelector(SELECTOR_ANNOTATION_BUTTON_POST)).to.exist;
         });
     });
 

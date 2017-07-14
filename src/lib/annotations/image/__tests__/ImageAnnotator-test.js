@@ -3,6 +3,7 @@ import ImageAnnotator from '../ImageAnnotator';
 import ImagePointThread from '../ImagePointThread';
 import * as annotatorUtil from '../../annotatorUtil';
 import * as imageAnnotatorUtil from '../imageAnnotatorUtil';
+import { SELECTOR_ANNOTATION_POINT_BUTTON } from '../../annotationConstants';
 
 let annotator;
 const sandbox = sinon.sandbox.create();
@@ -101,7 +102,7 @@ describe('lib/annotations/image/ImageAnnotator', () => {
     describe('hideAllAnnotations()', () => {
         it('should hide all annotations on image', () => {
             annotator.hideAllAnnotations();
-            const annotation = document.querySelector('.bp-point-annotation-btn');
+            const annotation = document.querySelector(SELECTOR_ANNOTATION_POINT_BUTTON);
             const classList = Array.from(annotation.classList);
             expect(classList).to.include('bp-is-hidden');
         });
@@ -110,7 +111,7 @@ describe('lib/annotations/image/ImageAnnotator', () => {
     describe('showAllAnnotations()', () => {
         it('should show all annotations on image', () => {
             annotator.showAllAnnotations();
-            const annotation = document.querySelector('.bp-point-annotation-btn');
+            const annotation = document.querySelector(SELECTOR_ANNOTATION_POINT_BUTTON);
             const classList = Array.from(annotation.classList);
             expect(classList).to.not.include('bp-is-hidden');
         });
