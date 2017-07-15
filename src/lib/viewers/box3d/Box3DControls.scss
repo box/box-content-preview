@@ -1,0 +1,12 @@
+@media (max-width: 375px) {
+    .bp-box3d .bp-pullup {
+        right: 0;
+    }
+}
+
+@media (max-height: 550px) {
+    .bp-box3d .bp-pullup {
+        height: 250px;
+        overflow: scroll;
+    }
+}

@@ -3,6 +3,7 @@ import autobind from 'autobind-decorator';
 import Controls from '../../Controls';
 import { EVENT_RESET, EVENT_SCENE_LOADED, EVENT_TOGGLE_FULLSCREEN, EVENT_TOGGLE_VR } from './box3DConstants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_3D_VR } from '../../icons/icons';
+import './Box3DControls.scss';
 
 import { CLASS_HIDDEN } from '../../constants';
 import { UIRegistry } from './Box3DUIUtils';
