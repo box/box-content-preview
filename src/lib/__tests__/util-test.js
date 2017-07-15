@@ -520,6 +520,31 @@ describe('lib/util', () => {
         });
     });
 
+    describe('isVeraProtectedFile()', () => {
+        [
+            'some.vera.pdf.html',
+            '.vera.test.html',
+            'blah.vera..html',
+            'another.vera.3.html',
+            'test.vera.html'
+        ].forEach((fileName) => {
+            it('should return true if file is named like a Vera-protected file', () => {
+                expect(util.isVeraProtectedFile({ name: fileName })).to.be.true;
+            });
+        });
+
+        [
+            'vera.pdf.html',
+            'test.vera1.pdf.html',
+            'blah.vera..htm',
+            'another.verahtml',
+        ].forEach((fileName) => {
+            it('should return false if file is not named like a Vera-protected file', () => {
+                expect(util.isVeraProtectedFile({ name: fileName })).to.be.false;
+            });
+        });
+    });
+
     describe('setDimensions()', () => {
         it('should set dimensions for the specified element', () => {
             const element = document.createElement('div');

@@ -607,7 +607,7 @@ export function replacePlaceholders(string, placeholderValues) {
 }
 
 /**
- * Check to see if a file requires a Box3D viewer to be viewed
+ * Check to see if a file requires a Box3D viewer to be viewed.
  *
  * @param {Object} file - The file to check
  * @return {boolean} True if the file needs a Box3D 360 degree viewer to be viewed
@@ -617,6 +617,17 @@ export function requires360Viewer(file) {
     // extension of '360' (e.g. file.360.mp4)
     const basename = file.name.slice(0, file.name.lastIndexOf('.'));
     return basename.endsWith('360');
+}
+
+/**
+ * Check to see if file is a Vera-protected file.
+ *
+ * @param {Object} file - File to check
+ * @return {boolean} Whether file is a Vera-protected HTML file
+ */
+export function isVeraProtectedFile(file) {
+    // Vera protected files will match this regex
+    return /.*\.(vera\..*|vera)\.html/i.test(file.name);
 }
 
 /**
