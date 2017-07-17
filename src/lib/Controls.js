@@ -172,8 +172,7 @@ class Controls {
      * @param {Event} event - A DOM-normalized event object.
      * @return {void}
      */
-    clickHandler = (event) => {
-        event.preventDefault();
+    clickHandler = () => {
         // If we are not focused in on the page num input, allow hiding after timeout
         this.shouldHide = true;
     };

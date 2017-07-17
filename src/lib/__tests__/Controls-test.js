@@ -252,15 +252,6 @@ describe('lib/Controls', () => {
     });
 
     describe('clickHandler()', () => {
-        const event = {
-            preventDefault: sandbox.stub()
-        };
-
-        it('should prevent default', () => {
-            controls.clickHandler(event);
-            expect(event.preventDefault).to.be.called;
-        });
-
         it('should stop block hiding', () => {
             controls.clickHandler(event);
             expect(controls.shouldHide).to.be.true;
