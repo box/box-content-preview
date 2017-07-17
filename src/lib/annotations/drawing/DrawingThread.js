@@ -1,6 +1,6 @@
 /* global Rbush */
 import AnnotationThread from '../AnnotationThread';
-import { DRAW_POINTER_UP, DRAW_POINTER_DOWN, DRAW_RENDER_THRESHOLD } from '../annotationConstants';
+import { DRAW_POINTER_UP, DRAW_RENDER_THRESHOLD } from '../annotationConstants';
 
 const RTREE_WIDTH = 5; // Lower number - faster search, higher - faster insert
 const BASE_LINE_WIDTH = 3;
@@ -11,9 +11,6 @@ class DrawingThread extends AnnotationThread {
 
     /** @property {Rbush} - Rtree path container */
     pathContainer = new Rbush(RTREE_WIDTH);
-
-    /** @property {function} - A call to render that is bound with 'this' object */
-    renderCall = this.render.bind(this);
 
     /** @property {CanvasContext} - A canvas for drawing new strokes */
     memoryCanvas;
@@ -31,9 +28,21 @@ class DrawingThread extends AnnotationThread {
     lastAnimRequestId;
 
     /**
+     * [constructor]
+     *
+     * @inheritdoc
+     * @param {AnnotationThreadData} data - Data for constructing thread
+     * @return {DrawingThread} Drawing annotation thread instance
+     */
+    constructor(data) {
+        super(data);
+        this.render = this.render.bind(this);
+    }
+
+    /**
      * Soft destructor for a drawingthread object
      *
-     * [constructor]
+     * [destructor]
      * @inheritdoc
      * @return {void}
      */
@@ -52,7 +61,7 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     getDrawings() {
-        return this.pathContainer.data.children;
+        return this.pathContainer.all();
     }
 
     /* eslint-disable no-unused-vars */
@@ -65,7 +74,7 @@ class DrawingThread extends AnnotationThread {
     handleMove(location) {}
 
     /**
-     * Start a drawing stroke
+     * Start a drawing stroke *
      *
      * @param {Object} location - The location information of the pointer
      * @return {void}
@@ -112,18 +121,48 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     render(timestamp) {
-        if (this.drawingFlag === DRAW_POINTER_DOWN) {
-            const elapsed = timestamp - (this.lastRenderTimestamp || 0);
-            if (elapsed >= DRAW_RENDER_THRESHOLD && this.context) {
-                this.lastRenderTimestamp = timestamp;
-                const context = this.context;
+        const elapsed = timestamp - (this.lastRenderTimestamp || 0);
+        if (elapsed >= DRAW_RENDER_THRESHOLD && this.context) {
+            this.lastRenderTimestamp = timestamp;
+            const context = this.context;
+            const canvas = context.canvas;
+            this.context.clearRect(0, 0, canvas.width, canvas.height);
 
-                const numLines = this.container.data.children.length;
-                for (let i = 0; i < numLines; i++) {
-                    this.container.data.children[i].drawPath(context);
-                }
+            const drawings = this.getDrawings();
+            /* OPTIMIZE: Render only what has been obstructed by the new drawing
+             *           rather than every single line in the thread. If we do end
+             *           up splitting saves into multiple requests, we can buffer
+             *           the amount of re-renders onto a temporary memory canvas.
+             */
+            drawings.forEach((drawing) => drawing.drawPath(context));
+            if (this.pendingPath) {
+                this.pendingPath.drawPath(context);
             }
         }
+    }
+
+    //--------------------------------------------------------------------------
+    // Protected
+    //--------------------------------------------------------------------------
+
+    /**
+     * Create an annotation data object to pass to annotation service.
+     *
+     * @inheritdoc
+     * @private
+     * @param {string} type - Type of annotation
+     * @param {string} text - Annotation text
+     * @return {Object} Annotation data
+     */
+    createAnnotationData(type, text) {
+        return {
+            type,
+            fileVersionId: this.fileVersionId,
+            DrawingPaths: this.getDrawings(),
+            user: this.annotationService.user,
+            threadID: this.threadID,
+            thread: this.thread
+        };
     }
 }
 

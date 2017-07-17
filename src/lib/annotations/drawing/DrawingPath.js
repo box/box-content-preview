@@ -25,25 +25,34 @@ class DrawingPath {
      * @return {void}
      */
     addCoordinate(xPos, yPos) {
-        if (xPos < this.minX) {
-            this.minX = xPos;
+        if (!xPos || !yPos) {
+            return;
+        }
+        const x = parseFloat(xPos.toFixed(2));
+        const y = parseFloat(yPos.toFixed(2));
+        /* OPTIMIZE: We convert a number to a string using toFixed and then back to
+         *           a number. We might want to truncate only on annotation save.
+         */
+
+        if (x < this.minX) {
+            this.minX = x;
         }
 
-        if (yPos < this.minY) {
-            this.minY = yPos;
+        if (y < this.minY) {
+            this.minY = y;
         }
 
-        if (yPos > this.maxY) {
-            this.maxY = yPos;
+        if (y > this.maxY) {
+            this.maxY = y;
         }
 
-        if (xPos > this.maxX) {
-            this.maxX = xPos;
+        if (x > this.maxX) {
+            this.maxX = x;
         }
 
         this.path.push({
-            x: xPos,
-            y: yPos
+            x,
+            y
         });
     }
 

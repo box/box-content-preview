@@ -20,7 +20,7 @@ import {
     DATA_TYPE_ANNOTATION_INDICATOR,
     PAGE_PADDING_TOP,
     PAGE_PADDING_BOTTOM,
-    CLASS_ANNOTATION_LAYER,
+    CLASS_ANNOTATION_LAYER_HIGHLIGHT,
     PENDING_STATES
 } from '../annotationConstants';
 
@@ -56,7 +56,8 @@ function isThreadInHoverState(thread) {
     return thread.state === STATES.hover;
 }
 
-@autobind class DocAnnotator extends Annotator {
+@autobind
+class DocAnnotator extends Annotator {
     /**
      * For tracking the most recent event fired by mouse move event.
      *
@@ -294,9 +295,9 @@ function isThreadInHoverState(thread) {
 
         if (annotatorUtil.isHighlightAnnotation(type)) {
             thread = new DocHighlightThread(threadParams);
-        } else if (type === constants.ANNOTATION_TYPE_DRAW) {
+        } else if (type === TYPES.draw) {
             thread = new DocDrawingThread(threadParams);
-        } else if (type === constants.ANNOTATION_TYPE_POINT) {
+        } else if (type === TYPES.point) {
             thread = new DocPointThread(threadParams);
         } else {
             throw new Error(`DocAnnotator: Unknown Annotation Type: ${type}`);
@@ -834,7 +835,7 @@ function isThreadInHoverState(thread) {
     showHighlightsOnPage(page) {
         // Clear context if needed
         const pageEl = this.annotatedElement.querySelector(`[data-page-number="${page}"]`);
-        const annotationLayerEl = pageEl.querySelector(`.${CLASS_ANNOTATION_LAYER}`);
+        const annotationLayerEl = pageEl.querySelector(`.${CLASS_ANNOTATION_LAYER_HIGHLIGHT}`);
         if (annotationLayerEl) {
             const context = annotationLayerEl.getContext('2d');
             context.clearRect(0, 0, annotationLayerEl.width, annotationLayerEl.height);

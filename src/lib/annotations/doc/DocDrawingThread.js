@@ -47,7 +47,7 @@ class DocDrawingThread extends DrawingThread {
                 window.cancelAnimationFrame(this.lastAnimRequestId);
             }
             // Keep animating while the drawing flag is down
-            this.lastAnimRequestId = window.requestAnimationFrame(this.renderCall);
+            this.lastAnimRequestId = window.requestAnimationFrame(this.render);
         }
     }
 

@@ -286,7 +286,7 @@ describe('lib/annotations/Annotator', () => {
                 expect(annotator.notification.hide).to.be.called;
                 expect(annotator.emit).to.be.calledWith('annotationmodeexit');
                 expect(annotatedEl).to.not.have.class(CLASS_ANNOTATION_POINT_MODE);
-                expect(annotator.unbindPointModeListeners).to.be.called;
+                expect(annotator.unbindModeListeners).to.be.called;
                 expect(annotator.bindDOMListeners).to.be.called;
             });
         });

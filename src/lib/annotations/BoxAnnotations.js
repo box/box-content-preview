@@ -1,17 +1,13 @@
 import DocAnnotator from './doc/DocAnnotator';
 import ImageAnnotator from './image/ImageAnnotator';
-<<<<<<< HEAD
 import { TYPES } from './annotationConstants';
-=======
-import { ANNOTATION_TYPE_POINT, ANNOTATION_TYPE_HIGHLIGHT, ANNOTATION_TYPE_DRAW } from './annotationConstants';
->>>>>>> Update: drawing annotations with pull request changes
 
 const ANNOTATORS = [
     {
         NAME: 'Document',
         CONSTRUCTOR: DocAnnotator,
         VIEWER: ['Document', 'Presentation'],
-        TYPE: [TYPES.point, TYPES.highlight]
+        TYPE: [TYPES.point, TYPES.highlight, TYPES.draw]
     },
     {
         NAME: 'Image',
