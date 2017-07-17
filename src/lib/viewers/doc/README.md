@@ -39,7 +39,7 @@ The document viewer fires the following events
 | reload | The preview reloads ||
 | resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
 | zoom | The preview zooms in or out | 1. {number} **newScale**: new zoom value 2. {boolean} **canZoomIn**: true if the viewer can zoom in more 3. {boolean} **canZoomOut**: true if the viewer can zoom out more |
-| pagerendered | A page is rendered | {number} page number of rendered page |
+| pagerender | A page is rendered | {number} page number of rendered page |
 | pagefocus | A page is visible | {number} page number of focused page |
 | scrollstart | The viewer starts to scroll | 1. {number} **scrollTop**: number of pixels scrolled from top of viewport 2. {number} **scrollLeft**: number of pixels scrolled from left of viewport |
 | scrollend | The viewer stops scrolling | 1. {number} **scrollTop**: number of pixels scrolled from top of viewport 2. {number} **scrollLeft**: number of pixels scrolled from left of viewport |
