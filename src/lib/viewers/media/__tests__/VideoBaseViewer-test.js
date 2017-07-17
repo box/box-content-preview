@@ -164,12 +164,28 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
             expect(videoBase.showPlayButton).to.be.called;
         });
+
+        it('should hide the loading icon', () => {
+            sandbox.stub(videoBase, 'hideLoadingIcon');
+            videoBase.loadeddataHandler(); // load media controls UI
+
+            videoBase.pauseHandler();
+
+            expect(videoBase.hideLoadingIcon).to.be.called;
+        });
     });
 
     describe('waitingHandler()', () => {
         it('should add the buffering class', () => {
             videoBase.waitingHandler();
             expect(videoBase.containerEl.classList.contains('bp-is-buffering'));
+        });
+
+        it('should hide the play button', () => {
+            sandbox.stub(videoBase, 'hidePlayButton');
+
+            videoBase.waitingHandler();
+            expect(videoBase.hidePlayButton).to.be.called;
         });
     });
 

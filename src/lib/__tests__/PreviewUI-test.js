@@ -192,6 +192,12 @@ describe('lib/PreviewUI', () => {
                 ui.hideLoadingIndicator();
                 expect(contentContainerEl).to.have.class(constants.CLASS_PREVIEW_LOADED);
             });
+
+            it('should remove the hidden class from the crawler', () => {
+                const crawlerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
+                ui.hideLoadingIndicator();
+                expect(crawlerEl).to.not.have.class(constants.CLASS_HIDDEN);
+            });
         });
     });
 

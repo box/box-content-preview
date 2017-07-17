@@ -14,6 +14,7 @@ import {
     SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
     SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD,
+    SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
     SELECTOR_BOX_PREVIEW_LOADING_TEXT,
     SELECTOR_BOX_PREVIEW_LOADING_WRAPPER,
     SELECTOR_BOX_PREVIEW_LOGO_CUSTOM,
@@ -248,6 +249,12 @@ class PreviewUI {
     hideLoadingIndicator() {
         if (this.contentContainer) {
             this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
+            const crawler = this.contentContainer.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
+            if (crawler) {
+                // We need to remove this since it was hidden specially as a
+                // part of finishLoadingSetup in BaseViewer.js
+                crawler.classList.remove(CLASS_HIDDEN);
+            }
         }
     }
 

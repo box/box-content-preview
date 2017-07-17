@@ -100,6 +100,7 @@ const CLASS_PLAY_BUTTON = 'bp-media-play-button';
     pauseHandler() {
         super.pauseHandler();
         this.showPlayButton();
+        this.hideLoadingIcon();
     }
 
     /**
@@ -111,6 +112,7 @@ const CLASS_PLAY_BUTTON = 'bp-media-play-button';
     waitingHandler() {
         if (this.containerEl) {
             this.containerEl.classList.add(CLASS_IS_BUFFERING);
+            this.hidePlayButton();
         }
     }
 
