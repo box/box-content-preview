@@ -32,6 +32,16 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 url_template: 'www.netflix.com'
             }
         });
+        videoBase.mediaControls = {
+            on: sandbox.stub(),
+            addListener: sandbox.stub(),
+            removeAllListeners: sandbox.stub(),
+            destroy: sandbox.stub(),
+            show: sandbox.stub(),
+            toggle: sandbox.stub(),
+            resizeTimeScrubber: sandbox.stub(),
+        };
+
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
         videoBase.containerEl = containerEl;
         videoBase.setup();
@@ -67,6 +77,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.setup();
 
             expect(videoBase.mediaEl.getAttribute('preload')).to.equal('auto');
+            expect(videoBase.mediaEl.getAttribute('playsinline')).to.equal('');
             expect(videoBase.playButtonEl.className).to.equal('bp-media-play-button bp-is-hidden');
             expect(videoBase.playButtonEl.innerHTML).contains('<path d="M0 0h24v24H0z" fill="none"');
             expect(VideoBaseViewer.prototype.lowerLights).to.be.called;
@@ -85,7 +96,8 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             videoBase.destroy();
 
             expect(videoBase.mediaEl.removeEventListener).to.be.calledWith('mousemove', videoBase.mousemoveHandler);
-            expect(videoBase.mediaEl.removeEventListener).to.be.calledWith('click', videoBase.togglePlay);
+            expect(videoBase.mediaEl.removeEventListener).to.be.calledWith('click', videoBase.pointerHandler);
+            expect(videoBase.mediaEl.removeEventListener).to.be.calledWith('touchstart', videoBase.pointerHandler);
             expect(videoBase.mediaEl.removeEventListener).to.be.calledWith('waiting', videoBase.waitingHandler);
             expect(videoBase.playButtonEl.removeEventListener).to.be.calledWith('click', videoBase.togglePlay);
         });
@@ -103,6 +115,32 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             sandbox.stub(videoBase, 'showPlayButton');
             videoBase.loadeddataHandler();
             expect(videoBase.showPlayButton).to.be.called;
+        });
+    });
+
+    describe('pointerHandler()', () => {
+        it('should prevent default, stop propagation, and toggle the controls on touchstart', () => {
+            const event = {
+                type: 'touchstart',
+                preventDefault: sandbox.stub(),
+                stopPropagation: sandbox.stub()
+            }
+
+            videoBase.pointerHandler(event);
+            expect(event.stopPropagation).to.be.called;
+            expect(event.preventDefault).to.be.called;
+            expect(videoBase.mediaControls.toggle).to.be.called;
+
+        });
+
+        it('should toggle play on click', () => {
+            const event = {
+                type: 'click',
+            }
+            const togglePlayStub = sandbox.stub(videoBase, 'togglePlay');
+
+            videoBase.pointerHandler(event);
+            expect(togglePlayStub).to.be.called;
         });
     });
 
@@ -153,12 +191,6 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
     describe('addEventListenersForMediaControls()', () => {
         it('should add a handler for toggling fullscreen', () => {
-            videoBase.mediaControls = {
-                on: sandbox.stub(),
-                addListener: sandbox.stub(),
-                removeAllListeners: sandbox.stub(),
-                destroy: sandbox.stub()
-            };
             videoBase.addEventListenersForMediaControls();
             expect(videoBase.mediaControls.on).to.be.calledWith('togglefullscreen', sinon.match.func);
         });
@@ -173,7 +205,8 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
             expect(videoBase.mousemoveHandler).to.be.a.func;
             expect(videoBase.mediaEl.addEventListener).to.be.calledWith('mousemove', videoBase.mousemoveHandler);
-            expect(videoBase.mediaEl.addEventListener).to.be.calledWith('click', videoBase.togglePlay);
+            expect(videoBase.mediaEl.addEventListener).to.be.calledWith('click', videoBase.pointerHandler);
+            expect(videoBase.mediaEl.addEventListener).to.be.calledWith('touchstart', videoBase.pointerHandler);
             expect(videoBase.mediaEl.addEventListener).to.be.calledWith('waiting', videoBase.waitingHandler);
             expect(videoBase.playButtonEl.addEventListener).to.be.calledWith('click', videoBase.togglePlay);
         });
@@ -181,11 +214,6 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
 
     describe('resize()', () => {
         it('should resize the time scrubber', () => {
-            videoBase.mediaControls = {
-                resizeTimeScrubber: sandbox.stub(),
-                removeAllListeners: sandbox.stub(),
-                destroy: sandbox.stub()
-            };
             videoBase.resize();
             expect(videoBase.mediaControls.resizeTimeScrubber).to.be.called;
         });
