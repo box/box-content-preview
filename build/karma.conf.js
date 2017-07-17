@@ -117,7 +117,7 @@ module.exports = (config) => config.set({
 
     reporters: ['mocha', 'coverage', 'junit'],
 
-    logLevel: config.LOG_INFO,
+    logLevel: config.LOG_ERROR,
 
     singleRun: true,
 
