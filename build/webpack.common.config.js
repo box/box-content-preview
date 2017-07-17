@@ -1,8 +1,11 @@
 const path = require('path');
 const pkg = require('../package.json');
+const webpack = require('webpack');
 const I18nPlugin = require('i18n-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const DefinePlugin = require('webpack').DefinePlugin;
+
+const DefinePlugin = webpack.DefinePlugin;
+const NormalPlugin = webpack.NormalModuleReplacementPlugin;
 
 /* eslint-disable global-require */
 /* eslint-disable import/no-dynamic-require */
@@ -84,7 +87,8 @@ module.exports = (language) => {
                     NODE_ENV: JSON.stringify(process.env.NODE_ENV),
                     BABEL_ENV: JSON.stringify(process.env.BABEL_ENV)
                 }
-            })
+            }),
+            new NormalPlugin(/\/iconv-loader$/, 'node-noop')
         ],
         stats: {
             assets: true,
