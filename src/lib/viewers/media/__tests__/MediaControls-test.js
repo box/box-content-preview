@@ -198,7 +198,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('handleRate', () => {
+    describe('handleRate()', () => {
         it('should emit the ratechange event', () => {
             stubs.emit = sandbox.stub(mediaControls, 'emit');
 
@@ -207,7 +207,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('handleQuality', () => {
+    describe('handleQuality()', () => {
         it('should emit the qualitychange event', () => {
             stubs.emit = sandbox.stub(mediaControls, 'emit');
 
@@ -216,7 +216,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('handleSubtitle', () => {
+    describe('handleSubtitle()', () => {
         it('should emit the subtitlechange event', () => {
             stubs.emit = sandbox.stub(mediaControls, 'emit');
 
@@ -225,7 +225,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('setupSettings', () => {
+    describe('setupSettings()', () => {
         it('should create a settings obect and bind listeners', () => {
             const settingsStub = sandbox.stub(Settings.prototype, 'addListener');
 
@@ -236,7 +236,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('setupScrubbers', () => {
+    describe('setupScrubbers()', () => {
         beforeEach(() => {
             stubs.on = sandbox.stub(Scrubber.prototype, 'on');
         });
@@ -268,7 +268,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('formatTime', () => {
+    describe('formatTime()', () => {
         it('should correctly format 3 hours', () => {
             const result = mediaControls.formatTime(10800);
             expect(result).to.equal('3:00:00');
@@ -300,7 +300,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('setDuration', () => {
+    describe('setDuration()', () => {
         beforeEach(() => {
             mediaControls.durationEl = {
                 textContent: ''
@@ -319,7 +319,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('setTimeCode', () => {
+    describe('setTimeCode()', () => {
         beforeEach(() => {
             mediaControls.mediaEl = {
                 textContent: '',
@@ -352,7 +352,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('updateProgress', () => {
+    describe('updateProgress()', () => {
         it('should correctly set the buffered value of the time scrubber', () => {
             mediaControls.mediaEl = {
                 buffered: {
@@ -369,7 +369,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('toggleMute', () => {
+    describe('toggleMute()', () => {
         it('should emit a togglemute message', () => {
             stubs.emit = sandbox.stub(mediaControls, 'emit');
 
@@ -378,7 +378,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('togglePlay', () => {
+    describe('togglePlay()', () => {
         it('should emit a toggleplayback message', () => {
             stubs.emit = sandbox.stub(mediaControls, 'emit');
 
@@ -387,7 +387,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('toggleSubtitles', () => {
+    describe('toggleSubtitles()', () => {
         it('should emit a togglesubtitles message', () => {
             sandbox.stub(mediaControls.settings, 'toggleSubtitles');
             stubs.emit = sandbox.stub(mediaControls, 'emit');
@@ -399,7 +399,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('toggleFullscreen', () => {
+    describe('toggleFullscreen()', () => {
         beforeEach(() => {
             stubs.emit = sandbox.stub(mediaControls, 'emit');
             stubs.setFullscreenLabel = sandbox.stub(mediaControls, 'setFullscreenLabel');
@@ -416,7 +416,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('setFullscreenLabel', () => {
+    describe('setFullscreenLabel()', () => {
         beforeEach(() => {
             stubs.isFullscreen = sandbox.stub(fullscreen, 'isFullscreen');
             stubs.setLabel = sandbox.stub(mediaControls, 'setLabel');
@@ -437,7 +437,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('toggleSettings', () => {
+    describe('toggleSettings()', () => {
         beforeEach(() => {
             stubs.show = sandbox.stub(mediaControls.settings, 'show');
             stubs.hide = sandbox.stub(mediaControls.settings, 'hide');
@@ -459,7 +459,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('setLabel', () => {
+    describe('setLabel()', () => {
         it('should set the aria label and the title of the given label', () => {
             const el = document.createElement('button');
 
@@ -469,7 +469,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('isSettingsVisible', () => {
+    describe('isSettingsVisible()', () => {
         it('should return true if the settings exist and are visible', () => {
             stubs.isVisible = sandbox.stub(mediaControls.settings, 'isVisible').returns(true);
 
@@ -483,7 +483,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('showPauseIcon', () => {
+    describe('showPauseIcon()', () => {
         it('should add the playing class to the wrapper el and update the label', () => {
             stubs.setLabel = sandbox.stub(mediaControls, 'setLabel');
 
@@ -493,7 +493,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('showPlayIcon', () => {
+    describe('showPlayIcon()', () => {
         it('should remove the playing class to the wrapper el and update the label', () => {
             stubs.setLabel = sandbox.stub(mediaControls, 'setLabel');
 
@@ -503,7 +503,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('updateVolumeIcon', () => {
+    describe('updateVolumeIcon()', () => {
         beforeEach(() => {
             mediaControls.setupScrubbers();
             stubs.setValue = sandbox.stub(mediaControls.volScrubber, 'setValue');
@@ -538,7 +538,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('attachEventHandlers', () => {
+    describe('attachEventHandlers()', () => {
         beforeEach(() => {
             stubs.wrapperAddEventListener = sandbox.stub(mediaControls.wrapperEl, 'addEventListener');
             stubs.addActivationListener = sandbox.stub(util, 'addActivationListener');
@@ -573,7 +573,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('mouseenterHandler', () => {
+    describe('mouseenterHandler()', () => {
         it('should set preventHiding to true and show the controls', () => {
             stubs.show = sandbox.stub(mediaControls, 'show');
 
@@ -583,7 +583,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('mouseleaveHandler', () => {
+    describe('mouseleaveHandler()', () => {
         it('should allow hiding via setHiding and show the controls', () => {
             stubs.show = sandbox.stub(mediaControls, 'show');
 
@@ -593,10 +593,10 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('show', () => {
+    describe('show()', () => {
         beforeEach(() => {
             stubs.showControlClass = 'bp-media-controls-is-visible';
-            stubs.timeout = 1501;
+            stubs.timeout = 2001;
             stubs.hide = sandbox.stub(mediaControls, 'hide');
             clock = sinon.useFakeTimers();
         });
@@ -622,7 +622,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('hide', () => {
+    describe('hide()', () => {
         beforeEach(() => {
             stubs.isSettingsVisible = sandbox.stub(mediaControls, 'isSettingsVisible');
             stubs.show = sandbox.stub(mediaControls, 'show');
@@ -653,7 +653,48 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('resizeTimeScrubber', () => {
+    describe('toggle()', () => {
+        beforeEach(() => {
+            stubs.isVisible = sandbox.stub(mediaControls, 'isVisible');
+            stubs.hide = sandbox.stub(mediaControls, 'hide');
+            stubs.show = sandbox.stub(mediaControls, 'show');
+        });
+
+        it('should hide the settings and remove preventHiding if the controls are visible', () => {
+            stubs.isVisible.returns(true);
+
+            mediaControls.toggle();
+            expect(stubs.hide).to.be.called;
+            expect(mediaControls.preventHiding).to.be.false;
+        });
+
+        it('should show the controls if they are not visible', () => {
+            stubs.isVisible.returns(false);
+
+            mediaControls.toggle();
+            expect(stubs.show).to.be.called;
+        });
+    });
+
+    describe('isVisible()', () => {
+        beforeEach(() => {
+            stubs.wrapperParent = document.createElement('div')
+            mediaControls.wrapperEl = stubs.wrapperParent.appendChild(document.createElement('div'));
+        });
+
+        it('should return false if the controls show class is missing', () => {
+            const result = mediaControls.isVisible();
+            expect(result).to.be.false;
+        });
+
+        it('should return true if the controls show class is present', () => {
+            stubs.wrapperParent.classList.add('bp-media-controls-is-visible');
+            const result = mediaControls.isVisible();
+            expect(result).to.be.true;
+        });
+    });
+
+    describe('resizeTimeScrubber()', () => {
         it('should resize the time scrubber', () => {
             mediaControls.setupScrubbers();
             stubs.resize = sandbox.stub(mediaControls.timeScrubber, 'resize');
@@ -663,7 +704,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('setFilmstrip', () => {
+    describe('setFilmstrip()', () => {
         it('should set the filmstrip source to the provided URL', () => {
             mediaControls.filmstripEl = {
                 src: ''
@@ -676,7 +717,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('initFilmstrip', () => {
+    describe('initFilmstrip()', () => {
         beforeEach(() => {
             stubs.status = {
                 getPromise: sandbox.stub().returns(Promise.resolve())
@@ -687,6 +728,10 @@ describe('lib/viewers/media/MediaControls', () => {
                 mediaControls.timeScrubber.getConvertedEl(),
                 'addEventListener'
             );
+
+            mediaControls.timeScrubberEl = {
+                addEventListener: sandbox.stub()
+            }
             stubs.setFilmstrip = sandbox.stub(mediaControls, 'setFilmstrip');
         });
 
@@ -722,24 +767,40 @@ describe('lib/viewers/media/MediaControls', () => {
             );
         });
 
+        it('should add the touchstart eventListener if touch is detected', () => {
+            mediaControls.hasTouch = true;
+            mediaControls.initFilmstrip('url', stubs.status, '380', 1);
+            expect(mediaControls.timeScrubberEl.addEventListener).to.be.calledWith('touchstart', mediaControls.timeScrubbingStartHandler)
+        });
+
         it('should add the onload function to the filmstrip', () => {
             mediaControls.initFilmstrip('url', stubs.status, '380', 1);
             expect(typeof mediaControls.filmstripEl.onload === 'function');
         });
     });
 
-    describe('timeScrubbingStartHandler', () => {
-        it('should set isScrubbing to true and add show and stop handlers', () => {
+    describe('timeScrubbingStartHandler()', () => {
+        it('should set isScrubbing to true, preventHiding to true, and add show and stop handlers', () => {
             stubs.addEventListener = sandbox.stub(document, 'addEventListener');
 
             mediaControls.timeScrubbingStartHandler();
             expect(mediaControls.isScrubbing).to.equal(true);
+            expect(mediaControls.preventHiding).to.equal(true);
             expect(stubs.addEventListener).to.be.calledWith('mouseup', mediaControls.timeScrubbingStopHandler);
             expect(stubs.addEventListener).to.be.calledWith('mousemove', mediaControls.filmstripShowHandler);
         });
+
+        it('should add show and stop touch events if touch is present', () => {
+            mediaControls.hasTouch = true;
+            stubs.addEventListener = sandbox.stub(document, 'addEventListener');
+
+            mediaControls.timeScrubbingStartHandler();
+            expect(stubs.addEventListener).to.be.calledWith('touchend', mediaControls.timeScrubbingStopHandler);
+            expect(stubs.addEventListener).to.be.calledWith('touchmove', mediaControls.show);
+        });
     });
 
-    describe('timeScrubbingStopHandler', () => {
+    describe('timeScrubbingStopHandler()', () => {
         beforeEach(() => {
             mediaControls.setupScrubbers();
             stubs.event = {
@@ -749,11 +810,20 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.filmstripContainerEl = document.createElement('div');
         });
 
-        it('should set isScrubbing to false and remove show and stop handlers', () => {
+        it('should set isScrubbing to false, preventHiding to false, and remove show and stop handlers', () => {
             mediaControls.timeScrubbingStopHandler(stubs.event);
             expect(mediaControls.isScrubbing).to.equal(false);
+            expect(mediaControls.preventHiding).to.equal(false);
             expect(stubs.removeEventListener).to.be.calledWith('mouseup', mediaControls.timeScrubbingStopHandler);
             expect(stubs.removeEventListener).to.be.calledWith('mousemove', mediaControls.filmstripShowHandler);
+        });
+
+        it('should remove touch show and stop handlers if touch is present', () => {
+            mediaControls.hasTouch = true;
+            mediaControls.timeScrubbingStopHandler(stubs.event);
+
+            expect(stubs.removeEventListener).to.be.calledWith('touchend', mediaControls.timeScrubbingStopHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('touchmove', mediaControls.show);
         });
 
         it('should hide the filmstrip if it is not being hovered over', () => {
@@ -764,7 +834,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('filmstripShowHandler', () => {
+    describe('filmstripShowHandler()', () => {
         beforeEach(() => {
             stubs.getBoundingClientRect = sandbox.stub(mediaControls.containerEl, 'getBoundingClientRect').returns({
                 left: 0,
@@ -810,7 +880,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('computeFilmstripPositions', () => {
+    describe('computeFilmstripPositions()', () => {
         it('should compute correct positions when filmstrip not ready', () => {
             mediaControls.mediaEl = {
                 duration: 100
@@ -902,7 +972,7 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
-    describe('filmstripHideHandler', () => {
+    describe('filmstripHideHandler()', () => {
         beforeEach(() => {
             stubs.status = {
                 getPromise: sandbox.stub().returns(Promise.resolve())
