@@ -9,6 +9,7 @@ const VIDEO_FORMATS = [
     '3g2',
     '3gp',
     'avi',
+    'flv',
     'm2v',
     'm2ts',
     'm4v',
@@ -17,9 +18,10 @@ const VIDEO_FORMATS = [
     'mp4',
     'mpeg',
     'mpg',
-    'ogg',
     'mts',
+    'ogg',
     'qt',
+    'ts',
     'wmv'
 ];
 
