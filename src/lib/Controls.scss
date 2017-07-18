@@ -26,6 +26,7 @@
     display: table-cell;
     margin: 0;
     padding: 0;
+    touch-action: manipulation;
     vertical-align: middle;
 }
 
@@ -40,6 +41,8 @@
     opacity: .7;
     outline: 0;
     padding: 0;
+    touch-action: manipulation;
+    user-select: none;
     width: 48px;
     zoom: 1;
 
