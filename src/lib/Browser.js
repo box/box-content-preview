@@ -314,12 +314,12 @@ class Browser {
     }
 
     /**
-     * Returns whether or not the device is running IOS 10.3.X that has Font Ligature rendering issue.
+     * Returns whether or not the device is running IOS 10.3.1 that has Font Ligature rendering issue.
      *
-     * @return {boolean} True if device is running IOS 10.3.x
+     * @return {boolean} Whether device is running 10.3.1
      */
     static isIOSWithFontIssue() {
-        return Browser.isIOS() && /(?:OS\s)10_3/i.test(userAgent);
+        return Browser.isIOS() && /(?:OS\s)10_3_1/i.test(userAgent);
     }
 }
 
