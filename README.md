@@ -324,7 +324,9 @@ For more script commands see `package.json`. Test coverage reports are available
 
 Support
 -------
-Need to contact us directly? Email oss@box.com and be sure to include the name of this project in the subject.
+If you have any questions, please visit our [developer forum](https://community.box.com/t5/Developer-Forum/bd-p/DeveloperForum) or contact us via one of our [available support channels](https://community.box.com/t5/Community/ct-p/English).
+
+Please report any issues you encounter [here](https://github.com/box/box-content-preview/issues/new).
 
 Copyright and License
 ---------------------
