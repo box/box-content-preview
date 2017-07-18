@@ -34,7 +34,8 @@ const ANNOTATIONS_CSS = ['annotations.css'];
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
-@autobind class BaseViewer extends EventEmitter {
+@autobind
+class BaseViewer extends EventEmitter {
     /** @property {Controls} - UI used to interact with the document in the viewer */
     controls;
 
@@ -609,7 +610,7 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
             this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
             if (this.canAnnotate) {
                 this.showPointAnnotateButton(this.getAnnotationModeClickHandler('point', 'togglepointannotationmode'));
-                this.showDrawAnnotateButton(this.getAnnotationModeClickHandler('draw', 'toggledrawannotationmode'));
+                // this.showDrawAnnotateButton(this.getAnnotationModeClickHandler('draw', 'toggledrawannotationmode'));
             }
             this.initAnnotations();
         }
