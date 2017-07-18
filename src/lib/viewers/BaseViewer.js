@@ -20,7 +20,8 @@ import {
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
     SELECTOR_BOX_PREVIEW,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
     SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER,
     SELECTOR_BOX_PREVIEW_ICON,
     STATUS_SUCCESS,
@@ -33,7 +34,8 @@ const ANNOTATIONS_CSS = ['annotations.css'];
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
-@autobind class BaseViewer extends EventEmitter {
+@autobind
+class BaseViewer extends EventEmitter {
     /** @property {Controls} - UI used to interact with the document in the viewer */
     controls;
 
@@ -154,9 +156,14 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
         const { container } = this.options;
         if (container) {
-            const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-            if (annotateButtonEl) {
-                annotateButtonEl.removeEventListener('click', this.annotateClickHandler);
+            const pointAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
+            const drawAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
+
+            if (pointAnnotateButtonEl) {
+                pointAnnotateButtonEl.removeEventListener('click', this.pointAnnotateClickHandler);
+            }
+            if (drawAnnotateButtonEl) {
+                drawAnnotateButtonEl.removeEventListener('click', this.drawAnnotateClickHandler);
             }
         }
 
@@ -602,7 +609,8 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
             // Users can currently only view annotations on mobile
             this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
             if (this.canAnnotate) {
-                this.showAnnotateButton(this.getPointModeClickHandler());
+                this.showPointAnnotateButton(this.getAnnotationModeClickHandler('point', 'togglepointannotationmode'));
+                // this.showDrawAnnotateButton(this.getAnnotationModeClickHandler('draw', 'toggledrawannotationmode'));
             }
             this.initAnnotations();
         }
@@ -660,6 +668,10 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
             this.annotator.togglePointModeHandler();
         });
 
+        this.addListener('toggledrawannotationmode', () => {
+            this.annotator.toggleDrawModeHandler();
+        });
+
         // Add a custom listener for events related to scaling/orientation changes
         this.addListener('scale', this.scaleAnnotations.bind(this));
 
@@ -710,30 +722,52 @@ const RESIZE_WAIT_TIME_IN_MILLIS = 300;
     /**
      * Shows the point annotate button.
      *
-     * @param {Function} handler - Annotation button handler
+     * @param {Function} handler - Point annotation button handler
      * @return {void}
      */
-    showAnnotateButton(handler) {
-        this.annotateClickHandler = handler;
-        const { container } = this.options;
-        const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
-        if (!annotateButtonEl) {
+    showPointAnnotateButton(handler) {
+        if (!this.isAnnotatable('point')) {
             return;
         }
 
-        annotateButtonEl.title = __('annotation_point_toggle');
-        annotateButtonEl.classList.remove(CLASS_HIDDEN);
-        annotateButtonEl.addEventListener('click', this.annotateClickHandler);
+        this.pointAnnotateClickHandler = handler;
+        const { container } = this.options;
+        const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
+        if (annotateButtonEl) {
+            annotateButtonEl.title = __('annotation_point_toggle');
+            annotateButtonEl.classList.remove(CLASS_HIDDEN);
+            annotateButtonEl.addEventListener('click', this.pointAnnotateClickHandler);
+        }
+    }
+    /**
+     * Shows the draw annotate button.
+     *
+     * @param {Function} handler - Drawing annotation button handler
+     * @return {void}
+     */
+    showDrawAnnotateButton(handler) {
+        if (!this.isAnnotatable('draw')) {
+            return;
+        }
+
+        this.drawAnnotateClickHandler = handler;
+        const { container } = this.options;
+        const drawAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
+        if (drawAnnotateButtonEl) {
+            drawAnnotateButtonEl.title = __('annotation_draw_toggle');
+            drawAnnotateButtonEl.classList.remove(CLASS_HIDDEN);
+            drawAnnotateButtonEl.addEventListener('click', this.drawAnnotateClickHandler);
+        }
     }
 
     /**
-     * Returns click handler for toggling point annotation mode.
+     * Returns click handler for toggling annotation mode.
      *
-     * @param {HTMLElement} containerEl - Preview container element
+     * @param {string} mode - Target annotation mode
      * @return {Function|null} Click handler
      */
     /* eslint-disable no-unused-vars */
-    getPointModeClickHandler(containerEl) {}
+    getAnnotationModeClickHandler(mode, eventName) {}
     /* eslint-enable no-unused-vars */
 
     /**

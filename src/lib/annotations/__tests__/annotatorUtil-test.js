@@ -17,7 +17,8 @@ import {
     htmlEscape,
     repositionCaret,
     isPending,
-    validateThreadParams
+    validateThreadParams,
+    eventToLocationHandler
 } from '../annotatorUtil';
 import {
     STATES,
@@ -363,6 +364,39 @@ describe('lib/annotations/annotatorUtil', () => {
                 type: 'point'
             };
             expect(validateThreadParams(threadParams)).to.be.true;
+        });
+    });
+
+    describe('eventToLocationHandler()', () => {
+        it('should not call the callback when the location is valid', () => {
+            const annotator = {
+                isChanged: false
+            }
+            const getLocation = ((event) => 'location');
+            const callback = ((location) => {
+                annotator.isChanged = true
+            });
+            const locationHandler = eventToLocationHandler(getLocation, callback);
+
+            locationHandler(undefined);
+            expect(annotator.isChanged).to.be.false;
+        });
+
+        it('should call the callback when the location is valid', () => {
+            const annotator = {
+                isChanged: false
+            }
+            const getLocation = ((event) => 'location');
+            const callback = ((location) => {
+                annotator.isChanged = true
+            });
+            const locationHandler = eventToLocationHandler(getLocation, callback);
+            const event = {
+                preventDefault: () => {}
+            };
+
+            locationHandler(event);
+            expect(annotator.isChanged).to.be.true;
         });
     });
 });

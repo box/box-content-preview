@@ -356,3 +356,26 @@ export function validateThreadParams(thread) {
     }
     return false;
 }
+
+/**
+ * Returns a function that passes a callback a location when given an event
+ *
+ * @param {Function} locationFunction - The function to get a location from an event
+ * @param {Function} callback - Callback to be called upon receiving an event
+ * @return {Function} Event listener to convert to document location
+ */
+export const eventToLocationHandler = (locationFunction, callback) => {
+    return (event) => {
+        if (event) {
+            if (event.stopPropagation) {
+                event.stopPropagation();
+            }
+            event.preventDefault();
+
+            const location = locationFunction(event);
+            if (location) {
+                callback(location);
+            }
+        }
+    };
+};

@@ -6,13 +6,13 @@ import * as docAnnotatorUtil from './docAnnotatorUtil';
 import {
     STATES,
     TYPES,
-    CLASS_ANNOTATION_LAYER,
     SELECTOR_ADD_HIGHLIGHT_BTN,
-    HIGHLIGHT_FILL
+    HIGHLIGHT_FILL,
+    CLASS_ANNOTATION_LAYER_HIGHLIGHT,
+    PAGE_PADDING_TOP,
+    PAGE_PADDING_BOTTOM
 } from '../annotationConstants';
 
-const PAGE_PADDING_BOTTOM = 15;
-const PAGE_PADDING_TOP = 15;
 const HOVER_TIMEOUT_MS = 75;
 
 @autobind class DocHighlightThread extends AnnotationThread {
@@ -368,12 +368,18 @@ const HOVER_TIMEOUT_MS = 75;
      */
     /* istanbul ignore next */
     draw(fillStyle) {
-        const context = this.getContext();
+        const pageEl = this.getPageEl();
+        const context = docAnnotatorUtil.getContext(
+            pageEl,
+            CLASS_ANNOTATION_LAYER_HIGHLIGHT,
+            PAGE_PADDING_TOP,
+            PAGE_PADDING_BOTTOM
+        );
         if (!context) {
             return;
         }
 
-        const pageDimensions = this.getPageEl().getBoundingClientRect();
+        const pageDimensions = pageEl.getBoundingClientRect();
         const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
         const zoomScale = annotatorUtil.getScale(this.annotatedElement);
         const dimensionScale = annotatorUtil.getDimensionScale(
@@ -501,38 +507,9 @@ const HOVER_TIMEOUT_MS = 75;
      */
     getPageEl() {
         if (!this.pageEl) {
-            this.pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
+            this.pageEl = docAnnotatorUtil.getPageEl(this.annotatedElement, this.location.page);
         }
-
         return this.pageEl;
-    }
-
-    /**
-     * Gets the context this highlight should be drawn on.
-     *
-     * @private
-     * @return {RenderingContext|null} Context
-     */
-    getContext() {
-        // Create annotation layer if one does not exist (e.g. first load or page resize)
-        const pageEl = this.getPageEl();
-        if (!pageEl) {
-            return null;
-        }
-
-        let annotationLayerEl = pageEl.querySelector(`.${CLASS_ANNOTATION_LAYER}`);
-        if (!annotationLayerEl) {
-            annotationLayerEl = document.createElement('canvas');
-            annotationLayerEl.classList.add(CLASS_ANNOTATION_LAYER);
-            const pageDimensions = pageEl.getBoundingClientRect();
-            annotationLayerEl.width = pageDimensions.width;
-            annotationLayerEl.height = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
-
-            const textLayerEl = pageEl.querySelector('.textLayer');
-            pageEl.insertBefore(annotationLayerEl, textLayerEl);
-        }
-
-        return annotationLayerEl.getContext('2d');
     }
 }
 

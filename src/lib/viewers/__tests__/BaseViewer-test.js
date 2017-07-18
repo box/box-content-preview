@@ -643,7 +643,12 @@ describe('lib/viewers/BaseViewer', () => {
             };
             stubs.isAnnotatable = sandbox.stub(base, 'isAnnotatable').returns(true);
             sandbox.stub(base, 'initAnnotations');
-            sandbox.stub(base, 'showAnnotateButton');
+            sandbox.stub(base, 'showPointAnnotateButton', () =>
+                base.getAnnotationModeClickHandler('point', 'togglepointannotationmode')
+            );
+            sandbox.stub(base, 'showDrawAnnotateButton', () =>
+                base.getAnnotationModeClickHandler('draw', 'toggledrawannotationmode')
+            );
             stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(false);
         });
 
@@ -658,10 +663,11 @@ describe('lib/viewers/BaseViewer', () => {
             window.BoxAnnotations = BoxAnnotations;
             base.loadAnnotator();
             expect(base.initAnnotations).to.be.called;
-            expect(base.showAnnotateButton).to.be.called;
+            expect(base.showPointAnnotateButton).to.be.called;
+            expect(base.showDrawAnnotateButton).to.be.called;
         });
 
-        it('should not display the point annotation button if the user does not have the appropriate permissions', () => {
+        it('should not display the point or draw annotation button if the user does not have the appropriate permissions', () => {
             class BoxAnnotations {
                 determineAnnotator() {}
             }
@@ -669,7 +675,8 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.loadAnnotator();
             expect(base.initAnnotations).to.not.be.called;
-            expect(base.showAnnotateButton).to.not.be.called;
+            expect(base.showPointAnnotateButton).to.not.be.called;
+            expect(base.showDrawAnnotateButton).to.not.be.called;
         });
 
         it('should not load an annotator if no loader was found', () => {
@@ -679,7 +686,8 @@ describe('lib/viewers/BaseViewer', () => {
             window.BoxAnnotations = BoxAnnotations;
             base.loadAnnotator();
             expect(base.initAnnotations).to.not.be.called;
-            expect(base.showAnnotateButton).to.not.be.called;
+            expect(base.showPointAnnotateButton).to.not.be.called;
+            expect(base.showDrawAnnotateButton).to.not.be.called;
         });
 
         it('should not load an annotator if the viewer is not annotatable', () => {
@@ -692,7 +700,8 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.isAnnotatable.returns(false);
             base.loadAnnotator();
             expect(base.initAnnotations).to.not.be.called;
-            expect(base.showAnnotateButton).to.not.be.called;
+            expect(base.showPointAnnotateButton).to.not.be.called;
+            expect(base.showDrawAnnotateButton).to.not.be.called;
         });
     });
 
@@ -794,10 +803,10 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('showAnnotateButton()', () => {
-        it('should set up and show annotate button', () => {
+    describe('showPointAnnotateButton()', () => {
+        it('should set up and show point annotate button', () => {
             const buttonEl = document.createElement('div');
-            buttonEl.classList.add('bp-btn-annotate');
+            buttonEl.classList.add('bp-btn-annotate-point');
             buttonEl.classList.add(constants.CLASS_HIDDEN);
             base.options = {
                 container: document,
@@ -806,9 +815,10 @@ describe('lib/viewers/BaseViewer', () => {
                 }
             };
             containerEl.appendChild(buttonEl);
+            sandbox.stub(base, 'isAnnotatable').returns(true);
             sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', base.handler);
 
-            base.showAnnotateButton(base.handler);
+            base.showPointAnnotateButton(base.handler);
             expect(buttonEl.title).to.equal('Point annotation mode');
             expect(buttonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
         });
