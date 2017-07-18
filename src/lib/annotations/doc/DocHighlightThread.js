@@ -15,7 +15,8 @@ import {
 
 const HOVER_TIMEOUT_MS = 75;
 
-@autobind class DocHighlightThread extends AnnotationThread {
+@autobind
+class DocHighlightThread extends AnnotationThread {
     /**
      * Cached page element for the document.
      *

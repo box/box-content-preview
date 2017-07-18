@@ -30,7 +30,8 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
  * This is the entry point for the model3d preview.
  * @class
  */
-@autobind class Model3DViewer extends Box3DViewer {
+@autobind
+class Model3DViewer extends Box3DViewer {
     /** @property {Object[]} - List of Box3D instances added to the scene */
     instances = [];
 

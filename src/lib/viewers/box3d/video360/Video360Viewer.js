@@ -102,7 +102,8 @@ class Video360Viewer extends DashViewer {
      *
      * @inheritdoc
      */
-    @autobind loadeddataHandler() {
+    @autobind
+    loadeddataHandler() {
         const { token, apiHost } = this.options;
         this.renderer = new Video360Renderer(this.mediaContainerEl, new BoxSDK({ token, apiBase: apiHost }));
         this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
@@ -141,7 +142,8 @@ class Video360Viewer extends DashViewer {
     /**
      * @inheritdoc
      */
-    @autobind resize() {
+    @autobind
+    resize() {
         super.resize();
         if (this.renderer) {
             this.renderer.resize();
@@ -155,7 +157,8 @@ class Video360Viewer extends DashViewer {
      * @private
      * @return {void}
      */
-    @autobind create360Environment() {
+    @autobind
+    create360Environment() {
         this.skybox = this.renderer.getScene().getComponentByScriptId('skybox_renderer');
 
         this.videoAsset = this.renderer.getBox3D().createVideo(
@@ -185,7 +188,8 @@ class Video360Viewer extends DashViewer {
     /**
      * @inheritdoc
      */
-    @autobind toggleFullscreen() {
+    @autobind
+    toggleFullscreen() {
         fullscreen.toggle(this.wrapperEl);
     }
 
@@ -194,7 +198,8 @@ class Video360Viewer extends DashViewer {
      *
      * @return {void}
      */
-    @autobind handleToggleVr() {
+    @autobind
+    handleToggleVr() {
         this.renderer.toggleVr();
 
         if (!this.renderer.vrEnabled) {
@@ -214,7 +219,8 @@ class Video360Viewer extends DashViewer {
      *
      * @return {void}
      */
-    @autobind handleShowVrButton() {
+    @autobind
+    handleShowVrButton() {
         this.controls.showVrButton();
     }
 
@@ -223,7 +229,8 @@ class Video360Viewer extends DashViewer {
      *
      * @return {void}
      */
-    @autobind onCanvasMouseDown() {
+    @autobind
+    onCanvasMouseDown() {
         this.renderer.getBox3D().once('mouseUp', this.onCanvasMouseUp);
     }
 
@@ -232,7 +239,8 @@ class Video360Viewer extends DashViewer {
      *
      * @return {void}
      */
-    @autobind onCanvasMouseUp() {
+    @autobind
+    onCanvasMouseUp() {
         const input = this.renderer.getInputController();
         // Make sure the mouse hasn't moved (within mouse/touch buffer drag allowance)
         if (!input.getPreviousMouseDragState() && !input.getPreviousTouchDragState()) {

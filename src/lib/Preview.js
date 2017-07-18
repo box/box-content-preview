@@ -46,7 +46,8 @@ const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 // and not when preview is instantiated, which is too late.
 const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
 
-@autobind class Preview extends EventEmitter {
+@autobind
+class Preview extends EventEmitter {
     /** @property {boolean} - Whether preview is open */
     open = false;
 
@@ -1023,9 +1024,8 @@ const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.curren
      * @return {Object} Headers
      */
     getRequestHeaders(token) {
-        const videoHint = Browser.canPlayDash() && !this.disabledViewers.Dash
-            ? X_REP_HINT_VIDEO_DASH
-            : X_REP_HINT_VIDEO_MP4;
+        const videoHint =
+            Browser.canPlayDash() && !this.disabledViewers.Dash ? X_REP_HINT_VIDEO_DASH : X_REP_HINT_VIDEO_MP4;
         const headers = {
             'X-Rep-Hints': `${X_REP_HINT_BASE}${X_REP_HINT_DOC_THUMBNAIL}${X_REP_HINT_IMAGE}${videoHint}`
         };

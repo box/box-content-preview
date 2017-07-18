@@ -15,7 +15,8 @@ const EXCEL_ONLINE_EMBED_URL = 'https://excel.officeapps.live.com/x/_layouts/xle
 const OFFICE_ONLINE_IFRAME_NAME = 'office-online-iframe';
 const MESSAGE_HOST_READY = 'Host_PostmessageReady';
 
-@autobind class OfficeViewer extends BaseViewer {
+@autobind
+class OfficeViewer extends BaseViewer {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------

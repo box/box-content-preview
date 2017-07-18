@@ -8,7 +8,8 @@ import './Box3DControls.scss';
 import { CLASS_HIDDEN } from '../../constants';
 import { UIRegistry } from './Box3DUIUtils';
 
-@autobind class Box3DControls extends EventEmitter {
+@autobind
+class Box3DControls extends EventEmitter {
     /** @property {HTMLElement} - Reference to the parent container to nest UI in */
     el;
 

@@ -13,7 +13,8 @@ const MEDIA_VOLUME_CACHE_KEY = 'media-volume';
 const MEDIA_VOLUME_INCREMENT = 0.05;
 const EMIT_WAIT_TIME_IN_MILLIS = 100;
 
-@autobind class MediaBaseViewer extends BaseViewer {
+@autobind
+class MediaBaseViewer extends BaseViewer {
     /**
      * @inheritdoc
      */

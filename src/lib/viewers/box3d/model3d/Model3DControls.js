@@ -27,7 +27,8 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
  * Render Mode selection, VR and fullscreen buttons.
  * @class
  */
-@autobind class Model3DControls extends Box3DControls {
+@autobind
+class Model3DControls extends Box3DControls {
     /** @property {Model3DAnimationClipsPullup} - UI Component for listing and interacting with animation clips */
     animationClipsPullup;
 

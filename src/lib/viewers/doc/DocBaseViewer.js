@@ -39,7 +39,8 @@ const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 5242880; // 5MB
 const DISABLE_RANGE_REQUEST_EXENSIONS = ['xls', 'xlsm', 'xlsx'];
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 
-@autobind class DocBaseViewer extends BaseViewer {
+@autobind
+class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
@@ -512,9 +513,10 @@ const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
         // smaller chunk size if not. This is using a rough assumption that
         // en-US users have higher bandwidth to Box.
         if (!rangeChunkSize) {
-            rangeChunkSize = this.options.location.locale === 'en-US'
-                ? RANGE_REQUEST_CHUNK_SIZE_US
-                : RANGE_REQUEST_CHUNK_SIZE_NON_US;
+            rangeChunkSize =
+                this.options.location.locale === 'en-US'
+                    ? RANGE_REQUEST_CHUNK_SIZE_US
+                    : RANGE_REQUEST_CHUNK_SIZE_NON_US;
         }
 
         const docInitParams = {
