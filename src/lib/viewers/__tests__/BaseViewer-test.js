@@ -664,7 +664,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.loadAnnotator();
             expect(base.initAnnotations).to.be.called;
             expect(base.showPointAnnotateButton).to.be.called;
-            expect(base.showDrawAnnotateButton).to.be.called;
+            // expect(base.showDrawAnnotateButton).to.be.called;
         });
 
         it('should not display the point or draw annotation button if the user does not have the appropriate permissions', () => {
@@ -676,7 +676,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.loadAnnotator();
             expect(base.initAnnotations).to.not.be.called;
             expect(base.showPointAnnotateButton).to.not.be.called;
-            expect(base.showDrawAnnotateButton).to.not.be.called;
+            // expect(base.showDrawAnnotateButton).to.not.be.called;
         });
 
         it('should not load an annotator if no loader was found', () => {
