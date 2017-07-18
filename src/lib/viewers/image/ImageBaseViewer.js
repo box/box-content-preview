@@ -10,7 +10,8 @@ const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
 
-@autobind class ImageBaseViewer extends BaseViewer {
+@autobind
+class ImageBaseViewer extends BaseViewer {
     /**
      * [destructor]
      *

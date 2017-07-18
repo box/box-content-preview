@@ -33,7 +33,8 @@ const ANNOTATIONS_CSS = ['annotations.css'];
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
-@autobind class BaseViewer extends EventEmitter {
+@autobind
+class BaseViewer extends EventEmitter {
     /** @property {Controls} - UI used to interact with the document in the viewer */
     controls;
 

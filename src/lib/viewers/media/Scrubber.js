@@ -8,7 +8,8 @@ const MAX_VALUE = 1;
 const CLASS_SCRUBBER_HOVER = 'bp-media-scrubber-hover';
 const CLASS_SCRUBBER_TOUCH = 'bp-media-scrubber-touch';
 
-@autobind class Scrubber extends EventEmitter {
+@autobind
+class Scrubber extends EventEmitter {
     /**
      * Service to handle the position and movement of a slider element
      *

@@ -5,7 +5,8 @@ import './MP3.scss';
 
 const CSS_CLASS_MP3 = 'bp-media-mp3';
 
-@autobind class MP3Viewer extends MediaBaseViewer {
+@autobind
+class MP3Viewer extends MediaBaseViewer {
     /**
      * @inheritdoc
      */

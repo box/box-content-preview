@@ -6,7 +6,8 @@ import * as annotatorUtil from './annotatorUtil';
 import { ICON_PLACED_ANNOTATION } from '../icons/icons';
 import { STATES, TYPES, CLASS_ANNOTATION_POINT_BUTTON, DATA_TYPE_ANNOTATION_INDICATOR } from './annotationConstants';
 
-@autobind class AnnotationThread extends EventEmitter {
+@autobind
+class AnnotationThread extends EventEmitter {
     //--------------------------------------------------------------------------
     // Typedef
     //--------------------------------------------------------------------------

@@ -1,12 +1,7 @@
 import autobind from 'autobind-decorator';
 import Browser from '../../Browser';
 import ImageBaseViewer from './ImageBaseViewer';
-import {
-    ICON_FILE_IMAGE,
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT,
-    ICON_ROTATE_LEFT
-} from '../../icons/icons';
+import { ICON_FILE_IMAGE, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
 import { openContentInsideIframe } from '../../util';
 import './Image.scss';
@@ -15,7 +10,8 @@ const CSS_CLASS_IMAGE = 'bp-image';
 const IMAGE_PADDING = 15;
 const IMAGE_ZOOM_SCALE = 1.2;
 
-@autobind class ImageViewer extends ImageBaseViewer {
+@autobind
+class ImageViewer extends ImageBaseViewer {
     /**
      * @inheritdoc
      */
@@ -312,19 +308,21 @@ const IMAGE_ZOOM_SCALE = 1.2;
         };
 
         if (this.isRotated()) {
-            largerWidth = wrapperDimensions.width > this.imageEl.clientHeight
-                ? wrapperDimensions.width
-                : this.imageEl.clientHeight;
-            largerHeight = wrapperDimensions.height > this.imageEl.clientWidth
-                ? wrapperDimensions.height
-                : this.imageEl.clientWidth;
+            largerWidth =
+                wrapperDimensions.width > this.imageEl.clientHeight
+                    ? wrapperDimensions.width
+                    : this.imageEl.clientHeight;
+            largerHeight =
+                wrapperDimensions.height > this.imageEl.clientWidth
+                    ? wrapperDimensions.height
+                    : this.imageEl.clientWidth;
         } else {
-            largerWidth = wrapperDimensions.width > this.imageEl.clientWidth
-                ? wrapperDimensions.width
-                : this.imageEl.clientWidth;
-            largerHeight = wrapperDimensions.height > this.imageEl.clientHeight
-                ? wrapperDimensions.height
-                : this.imageEl.clientHeight;
+            largerWidth =
+                wrapperDimensions.width > this.imageEl.clientWidth ? wrapperDimensions.width : this.imageEl.clientWidth;
+            largerHeight =
+                wrapperDimensions.height > this.imageEl.clientHeight
+                    ? wrapperDimensions.height
+                    : this.imageEl.clientHeight;
         }
 
         leftPadding = (largerWidth - this.imageEl.clientWidth) / 2;

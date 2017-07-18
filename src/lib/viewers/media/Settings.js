@@ -94,7 +94,8 @@ const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data
     <div class="bp-media-settings-value"></div>
 </div>`;
 
-@autobind class Settings extends EventEmitter {
+@autobind
+class Settings extends EventEmitter {
     /** @property {HTMLElement} - Settings container element */
     containerEl;
 

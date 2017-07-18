@@ -125,7 +125,8 @@ class Model3DVrControls {
      *
      * @return {void}
      */
-    @autobind onScaleUpdate() {
+    @autobind
+    onScaleUpdate() {
         this.vrGamepads[0].getPosition(this.vrWorkVector1);
         this.vrGamepads[1].getPosition(this.vrWorkVector2);
         const currentScaleDistance = this.vrWorkVector1.sub(this.vrWorkVector2).length();

@@ -9,7 +9,8 @@ const ANONYMOUS_USER = {
     name: __('annotation_anonymous_user_name')
 };
 
-@autobind class AnnotationService extends EventEmitter {
+@autobind
+class AnnotationService extends EventEmitter {
     //--------------------------------------------------------------------------
     // Static
     //--------------------------------------------------------------------------
@@ -23,7 +24,8 @@ const ANONYMOUS_USER = {
     static generateID() {
         /* eslint-disable */
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-            var r = (Math.random() * 16) | 0, v = c == 'x' ? r : (r & 0x3) | 0x8;
+            var r = (Math.random() * 16) | 0,
+                v = c == 'x' ? r : (r & 0x3) | 0x8;
             return v.toString(16);
         });
         /* eslint-enable */
@@ -248,7 +250,8 @@ const ANONYMOUS_USER = {
      * @return {Promise} Promise that resolves with fetched annotations
      */
     getReadUrl(fileVersionId, marker = null, limit = null) {
-        let apiUrl = `${this.api}/2.0/files/${this.fileId}/annotations?version=${fileVersionId}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
+        let apiUrl = `${this.api}/2.0/files/${this
+            .fileId}/annotations?version=${fileVersionId}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
         if (marker) {
             apiUrl += `&marker=${marker}`;
         }

@@ -41,10 +41,12 @@ class Fullscreen extends EventEmitter {
     isFullscreen(element) {
         let fullscreen;
         if (this.isSupported()) {
-            fullscreen = !!(document.fullscreenElement ||
+            fullscreen = !!(
+                document.fullscreenElement ||
                 document.mozFullScreenElement ||
                 document.webkitFullscreenElement ||
-                document.msFullscreenElement);
+                document.msFullscreenElement
+            );
         } else {
             fullscreen = element instanceof HTMLElement && element.classList.contains(CLASS_FULLSCREEN);
         }

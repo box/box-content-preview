@@ -38,7 +38,7 @@ const PREVIEW_CAMERA_QUATERNION = {
     x: -0.101,
     y: -0.325,
     z: -0.035,
-    w: 0.940
+    w: 0.94
 };
 
 const OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR = 30; // 20 FPS

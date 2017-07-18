@@ -8,7 +8,8 @@ const PAGE_PADDING_TOP = 15;
 const POINT_ANNOTATION_ICON_HEIGHT = 31;
 const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
 
-@autobind class ImagePointDialog extends AnnotationDialog {
+@autobind
+class ImagePointDialog extends AnnotationDialog {
     //--------------------------------------------------------------------------
     // Abstract Implementations
     //--------------------------------------------------------------------------
@@ -45,14 +46,18 @@ const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing
         // else we can do
-        const pageWidth = imageEl.clientWidth > this.annotatedElement.clientWidth
-            ? imageEl.clientWidth
-            : this.annotatedElement.clientWidth;
+        const pageWidth =
+            imageEl.clientWidth > this.annotatedElement.clientWidth
+                ? imageEl.clientWidth
+                : this.annotatedElement.clientWidth;
         dialogLeftX = annotatorUtil.repositionCaret(this.element, dialogLeftX, dialogWidth, browserX, pageWidth);
 
         // Position the dialog
         this.element.style.left = `${dialogLeftX}px`;
-        this.element.style.top = `${dialogTopY + PAGE_PADDING_TOP - POINT_ANNOTATION_ICON_HEIGHT + POINT_ANNOTATION_ICON_DOT_HEIGHT}px`;
+        this.element.style.top = `${dialogTopY +
+            PAGE_PADDING_TOP -
+            POINT_ANNOTATION_ICON_HEIGHT +
+            POINT_ANNOTATION_ICON_DOT_HEIGHT}px`;
     }
 }
 

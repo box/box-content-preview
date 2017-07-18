@@ -21,7 +21,8 @@ const CRAWLER =
 const FILMSTRIP_FRAMES_PER_ROW = 100;
 const FILMSTRIP_FRAME_HEIGHT = 90;
 
-@autobind class MediaControls extends EventEmitter {
+@autobind
+class MediaControls extends EventEmitter {
     /**
      * [constructor]
      *

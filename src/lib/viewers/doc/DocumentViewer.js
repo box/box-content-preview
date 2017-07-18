@@ -29,7 +29,8 @@ const LOADING_ICON_MAP = {
     xlsx: ICON_FILE_SPREADSHEET
 };
 
-@autobind class DocumentViewer extends DocBaseViewer {
+@autobind
+class DocumentViewer extends DocBaseViewer {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
