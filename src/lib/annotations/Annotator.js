@@ -17,7 +17,8 @@ import {
 
 const CLASS_ANNOTATION_POINT_MODE = 'bp-point-annotation-mode';
 
-@autobind class Annotator extends EventEmitter {
+@autobind
+class Annotator extends EventEmitter {
     //--------------------------------------------------------------------------
     // Typedef
     //--------------------------------------------------------------------------

@@ -10,7 +10,8 @@ const CSS_CLASS_IMAGE = 'bp-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
 const ZOOM_UPDATE_PAN_DELAY = 50;
 
-@autobind class MultiImageViewer extends ImageBaseViewer {
+@autobind
+class MultiImageViewer extends ImageBaseViewer {
     /**
      * @inheritdoc
      */

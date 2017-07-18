@@ -13,7 +13,8 @@ const SEGMENT_SIZE = 5;
 const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 const MANIFEST = 'manifest.mpd';
 
-@autobind class DashViewer extends VideoBaseViewer {
+@autobind
+class DashViewer extends VideoBaseViewer {
     /**
      * @inheritdoc
      */
@@ -304,7 +305,8 @@ const MANIFEST = 'manifest.mpd';
      */
     shakaErrorHandler(shakaError) {
         const error = new Error(
-            `Shaka error. Code = ${shakaError.detail.code}, Category = ${shakaError.detail.category}, Severity = ${shakaError.detail.severity}`
+            `Shaka error. Code = ${shakaError.detail.code}, Category = ${shakaError.detail
+                .category}, Severity = ${shakaError.detail.severity}`
         );
         error.displayMessage = __('error_refresh');
 

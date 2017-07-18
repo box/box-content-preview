@@ -7,7 +7,8 @@ import './Markdown.scss';
 
 const STATIC_URI = `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/`;
 
-@autobind class MarkdownViewer extends PlainTextViewer {
+@autobind
+class MarkdownViewer extends PlainTextViewer {
     /**
      * @inheritdoc
      */

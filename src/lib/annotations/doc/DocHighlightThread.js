@@ -15,7 +15,8 @@ const PAGE_PADDING_BOTTOM = 15;
 const PAGE_PADDING_TOP = 15;
 const HOVER_TIMEOUT_MS = 75;
 
-@autobind class DocHighlightThread extends AnnotationThread {
+@autobind
+class DocHighlightThread extends AnnotationThread {
     /**
      * Cached page element for the document.
      *

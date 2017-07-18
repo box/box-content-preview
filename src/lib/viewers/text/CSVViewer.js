@@ -6,7 +6,8 @@ import './CSV.scss';
 
 const JS = [`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/papaparse.min.js`, 'csv.js'];
 
-@autobind class CSVViewer extends TextBaseViewer {
+@autobind
+class CSVViewer extends TextBaseViewer {
     /**
      * @inheritdoc
      */

@@ -19,7 +19,8 @@ const WHEEL_THROTTLE = 200;
 const PADDING_OFFSET = 30;
 const SCROLL_EVENT_OFFSET = 5;
 
-@autobind class PresentationViewer extends DocBaseViewer {
+@autobind
+class PresentationViewer extends DocBaseViewer {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------

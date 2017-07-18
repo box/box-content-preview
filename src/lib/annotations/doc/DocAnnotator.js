@@ -55,7 +55,8 @@ function isThreadInHoverState(thread) {
     return thread.state === STATES.hover;
 }
 
-@autobind class DocAnnotator extends Annotator {
+@autobind
+class DocAnnotator extends Annotator {
     /**
      * For tracking the most recent event fired by mouse move event.
      *

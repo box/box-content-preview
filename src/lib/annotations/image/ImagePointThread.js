@@ -9,7 +9,8 @@ const POINT_ANNOTATION_ICON_HEIGHT = 31;
 const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
 const POINT_ANNOTATION_ICON_WIDTH = 24;
 
-@autobind class ImagePointThread extends AnnotationThread {
+@autobind
+class ImagePointThread extends AnnotationThread {
     //--------------------------------------------------------------------------
     // Abstract Implementations
     //--------------------------------------------------------------------------

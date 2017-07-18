@@ -8,7 +8,8 @@ const WIDTH_SCROLLER = 5;
 const WIDTH_COLUMN = 160;
 const WIDTH_BORDER = 2;
 
-@autobind class BoxCSV {
+@autobind
+class BoxCSV {
     /**
      * [constructor]
      *

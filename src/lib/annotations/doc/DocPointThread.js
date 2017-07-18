@@ -10,7 +10,8 @@ const POINT_ANNOTATION_ICON_HEIGHT = 31;
 const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
 const POINT_ANNOTATION_ICON_WIDTH = 24;
 
-@autobind class DocPointThread extends AnnotationThread {
+@autobind
+class DocPointThread extends AnnotationThread {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
@@ -51,7 +52,10 @@ const POINT_ANNOTATION_ICON_WIDTH = 24;
         // Position and append to page
         this.element.style.left = `${browserX - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
         // Add 15px for vertical padding on page
-        this.element.style.top = `${browserY - POINT_ANNOTATION_ICON_HEIGHT + POINT_ANNOTATION_ICON_DOT_HEIGHT / 2 + PAGE_PADDING_TOP}px`;
+        this.element.style.top = `${browserY -
+            POINT_ANNOTATION_ICON_HEIGHT +
+            POINT_ANNOTATION_ICON_DOT_HEIGHT / 2 +
+            PAGE_PADDING_TOP}px`;
         pageEl.appendChild(this.element);
 
         annotatorUtil.showElement(this.element);

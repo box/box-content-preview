@@ -6,7 +6,8 @@ import * as docAnnotatorUtil from './docAnnotatorUtil';
 const PAGE_PADDING_TOP = 15;
 const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
 
-@autobind class DocPointDialog extends AnnotationDialog {
+@autobind
+class DocPointDialog extends AnnotationDialog {
     //--------------------------------------------------------------------------
     // Abstract Implementations
     //--------------------------------------------------------------------------

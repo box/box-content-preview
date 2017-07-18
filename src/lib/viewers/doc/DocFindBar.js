@@ -13,7 +13,8 @@ const FIND_MATCH_FOUND = 0;
 const FIND_MATCH_NOT_FOUND = 1;
 const FIND_MATCH_PENDING = 3;
 
-@autobind class DocFindBar extends EventEmitter {
+@autobind
+class DocFindBar extends EventEmitter {
     /**
      * [constructor]
      *
