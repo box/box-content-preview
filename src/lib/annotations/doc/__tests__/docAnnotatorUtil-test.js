@@ -21,6 +21,8 @@ import {
 
 const sandbox = sinon.sandbox.create();
 
+const sandbox = sinon.sandbox.create();
+
 describe('lib/annotations/doc/docAnnotatorUtil', () => {
     before(() => {
         fixture.setBase('src/lib');
