@@ -324,9 +324,9 @@ For more script commands see `package.json`. Test coverage reports are available
 
 Support
 -------
-If you have any questions, please visit our [developer forum](https://community.box.com/t5/Developer-Forum/bd-p/DeveloperForum) or contact us via one of our [available support channels](https://community.box.com/t5/Community/ct-p/English).
+If you have any questions, please search our [issues list](https://github.com/box/box-content-preview/issues) to see if they have been previously answered. Report new issues [here](https://github.com/box/box-content-preview/issues/new).
 
-Please report any issues you encounter [here](https://github.com/box/box-content-preview/issues/new).
+For general Box Platform, API, and UI Element questions, please visit our [developer forum](https://community.box.com/t5/Developer-Forum/bd-p/DeveloperForum) or contact us via one of our [available support channels](https://community.box.com/t5/Community/ct-p/English).
 
 Copyright and License
 ---------------------
