@@ -684,6 +684,7 @@ class Annotator extends EventEmitter {
     isInDrawMode() {
         return this.annotatedElement.classList.contains(CLASS_ANNOTATION_DRAW_MODE);
     }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
