@@ -16,8 +16,6 @@ $three-c: #ccc;
     width: 100%;
 
     &.bp-animate-show-dialog {
-        // padding: 0;
-
         &:not(.bp-plain-highlight) {
             animation: show-dialog-small;
             animation-duration: .2s;

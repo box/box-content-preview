@@ -102,13 +102,6 @@ class DocAnnotator extends Annotator {
     lastHighlightEvent;
 
     /**
-     * Container element for mobile annotation dialogs.
-     *
-     * @property {HTMLElement}
-     */
-    mobileDialogParentEl;
-
-    /**
      * Creates and mananges plain highlight and comment highlight and point annotations
      * on document files.
      *
