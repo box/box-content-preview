@@ -28,12 +28,11 @@ class DrawingPath {
         if (!xPos || !yPos) {
             return;
         }
+
         const x = parseFloat(xPos.toFixed(2));
         const y = parseFloat(yPos.toFixed(2));
-        /* OPTIMIZE: We convert a number to a string using toFixed and then back to
-         *           a number. We might want to truncate only on annotation save.
-         */
-
+        // OPTIMIZE (minhnguyen): We convert a number to a string using toFixed and then back a number.
+        //           As a result, it might be better to truncate only on annotation save.
         if (x < this.minX) {
             this.minX = x;
         }

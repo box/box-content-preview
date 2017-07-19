@@ -705,7 +705,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should return null if you cannot annotate', () => {
-            const handler = docBase.getAnnotationModeClickHandler('point', 'togglepointannotationmode');
+            const handler = docBase.getAnnotationModeClickHandler('point');
             expect(stubs.isAnnotatable).to.be.called;
             expect(handler).to.equal(null);
         });
@@ -714,10 +714,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             stubs.isAnnotatable.returns(true);
             sandbox.stub(docBase, 'emit');
             docBase.annotator = {
-                togglePointModeHandler: () => {}
+                togglePointAnnotationHandler: () => {}
             };
 
-            const handler = docBase.getAnnotationModeClickHandler('point', 'togglepointannotationmode');
+            const handler = docBase.getAnnotationModeClickHandler('point');
             expect(stubs.isAnnotatable).to.be.called;
             expect(handler).to.be.a('function');
 

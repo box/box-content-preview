@@ -367,12 +367,11 @@ export function validateThreadParams(thread) {
 export const eventToLocationHandler = (locationFunction, callback) => {
     return (event) => {
         if (event) {
-            if (event.stopPropagation) {
-                event.stopPropagation();
-            }
-            event.preventDefault();
+            const evt = event || window.event;
+            evt.stopPropagation();
+            evt.preventDefault();
 
-            const location = locationFunction(event);
+            const location = locationFunction(evt);
             if (location) {
                 callback(location);
             }

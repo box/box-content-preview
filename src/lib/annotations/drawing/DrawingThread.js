@@ -1,13 +1,13 @@
 /* global Rbush */
 import AnnotationThread from '../AnnotationThread';
-import { DRAW_POINTER_UP, DRAW_RENDER_THRESHOLD } from '../annotationConstants';
+import { STATES_DRAW, DRAW_RENDER_THRESHOLD } from '../annotationConstants';
 
 const RTREE_WIDTH = 5; // Lower number - faster search, higher - faster insert
 const BASE_LINE_WIDTH = 3;
 
 class DrawingThread extends AnnotationThread {
     /** @property {number} - Drawing state */
-    drawingFlag = DRAW_POINTER_UP;
+    drawingFlag = STATES_DRAW.idle;
 
     /** @property {Rbush} - Rtree path container */
     pathContainer = new Rbush(RTREE_WIDTH);
@@ -50,6 +50,7 @@ class DrawingThread extends AnnotationThread {
         if (this.lastAnimRequestId) {
             window.cancelAnimationFrame(this.lastAnimRequestId);
         }
+
         this.removeAllListeners();
         this.reset();
         super.destroy();
@@ -98,18 +99,21 @@ class DrawingThread extends AnnotationThread {
      * Set the drawing styles
      *
      * @protected
-     * @param {number} scale - The document scale
+     * @param {Object} config - The configuration Object
+     * @param {number} config.scale - The document scale
+     * @param {string} config.color - The brush color
      * @return {void}
      */
-    setContextStyles(scale) {
+    setContextStyles(config) {
         if (!this.context) {
             return;
         }
+        const { SCALE, COLOR } = config;
 
         this.context.lineCap = 'round';
         this.context.lineJoin = 'round';
-        this.context.strokeStyle = 'black';
-        this.context.lineWidth = BASE_LINE_WIDTH * scale;
+        this.context.strokeStyle = COLOR || 'black';
+        this.context.lineWidth = BASE_LINE_WIDTH * (SCALE || 1);
     }
 
     /**
@@ -122,22 +126,23 @@ class DrawingThread extends AnnotationThread {
      */
     render(timestamp) {
         const elapsed = timestamp - (this.lastRenderTimestamp || 0);
-        if (elapsed >= DRAW_RENDER_THRESHOLD && this.context) {
-            this.lastRenderTimestamp = timestamp;
-            const context = this.context;
-            const canvas = context.canvas;
-            this.context.clearRect(0, 0, canvas.width, canvas.height);
+        const context = this.context;
+        if (elapsed < DRAW_RENDER_THRESHOLD || !this.context) {
+            return;
+        }
 
-            const drawings = this.getDrawings();
-            /* OPTIMIZE: Render only what has been obstructed by the new drawing
-             *           rather than every single line in the thread. If we do end
-             *           up splitting saves into multiple requests, we can buffer
-             *           the amount of re-renders onto a temporary memory canvas.
-             */
-            drawings.forEach((drawing) => drawing.drawPath(context));
-            if (this.pendingPath) {
-                this.pendingPath.drawPath(context);
-            }
+        this.lastRenderTimestamp = timestamp;
+        const canvas = context.canvas;
+        const drawings = this.getDrawings();
+        /* OPTIMIZE (minhnguyen): Render only what has been obstructed by the new drawing
+         *           rather than every single line in the thread. If we do end
+         *           up splitting saves into multiple requests, we can buffer
+         *           the amount of re-renders onto a temporary memory canvas.
+         */
+        this.context.clearRect(0, 0, canvas.width, canvas.height);
+        drawings.forEach((drawing) => drawing.drawPath(context));
+        if (this.pendingPath) {
+            this.pendingPath.drawPath(context);
         }
     }
 
@@ -157,8 +162,8 @@ class DrawingThread extends AnnotationThread {
     createAnnotationData(type, text) {
         return {
             type,
-            fileVersionId: this.fileVersionId,
             DrawingPaths: this.getDrawings(),
+            fileVersionId: this.fileVersionId,
             user: this.annotationService.user,
             threadID: this.threadID,
             thread: this.thread

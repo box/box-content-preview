@@ -643,12 +643,8 @@ describe('lib/viewers/BaseViewer', () => {
             };
             stubs.isAnnotatable = sandbox.stub(base, 'isAnnotatable').returns(true);
             sandbox.stub(base, 'initAnnotations');
-            sandbox.stub(base, 'showPointAnnotateButton', () =>
-                base.getAnnotationModeClickHandler('point', 'togglepointannotationmode')
-            );
-            sandbox.stub(base, 'showDrawAnnotateButton', () =>
-                base.getAnnotationModeClickHandler('draw', 'toggledrawannotationmode')
-            );
+            sandbox.stub(base, 'showPointAnnotateButton', () => base.getAnnotationModeClickHandler('point'));
+            sandbox.stub(base, 'showDrawAnnotateButton', () => base.getAnnotationModeClickHandler('draw'));
             stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(false);
         });
 

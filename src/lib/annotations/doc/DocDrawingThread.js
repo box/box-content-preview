@@ -1,6 +1,5 @@
 import {
-    DRAW_POINTER_UP,
-    DRAW_POINTER_DOWN,
+    STATES_DRAW,
     PAGE_PADDING_TOP,
     PAGE_PADDING_BOTTOM,
     CLASS_ANNOTATION_LAYER_DRAW
@@ -39,7 +38,7 @@ class DocDrawingThread extends DrawingThread {
         }
 
         const [x, y] = DocAnnotatorUtil.getBrowserCoordinatesFromLocation(location, this.pageEl);
-        if (this.drawingFlag === DRAW_POINTER_DOWN) {
+        if (this.drawingFlag === STATES_DRAW.draw) {
             this.pendingPath.addCoordinate(x, y);
 
             // Cancel any pending animation to a new request.
@@ -57,7 +56,7 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     handleStart() {
-        this.drawingFlag = DRAW_POINTER_DOWN;
+        this.drawingFlag = STATES_DRAW.draw;
         const scale = getScale(this.annotatedElement);
         const context = DocAnnotatorUtil.getContext(
             this.pageEl,
@@ -70,8 +69,10 @@ class DocDrawingThread extends DrawingThread {
             this.pendingPath = new DrawingPath();
         }
 
-        this.context = context;
-        this.setContextStyles(scale);
+        if (!this.context || context !== this.context) {
+            this.context = context;
+            this.setContextStyles(scale);
+        }
     }
 
     /**
@@ -80,8 +81,7 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     handleStop() {
-        this.drawingFlag = DRAW_POINTER_UP;
-
+        this.drawingFlag = STATES_DRAW.idle;
         if (this.pendingPath && !this.pendingPath.isEmpty()) {
             this.pathContainer.insert(this.pendingPath);
             this.pendingPath = null;

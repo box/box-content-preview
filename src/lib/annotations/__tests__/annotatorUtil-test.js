@@ -392,7 +392,8 @@ describe('lib/annotations/annotatorUtil', () => {
             });
             const locationHandler = eventToLocationHandler(getLocation, callback);
             const event = {
-                preventDefault: () => {}
+                preventDefault: () => {},
+                stopPropagation: () => {}
             };
 
             locationHandler(event);

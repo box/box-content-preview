@@ -160,7 +160,7 @@ class BaseViewer extends EventEmitter {
             const drawAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
 
             if (pointAnnotateButtonEl) {
-                pointAnnotateButtonEl.removeEventListener('click', this.pointAnnotateClickHandler);
+                pointAnnotateButtonEl.removeEventListener('click', this.getPointModeClickHandler);
             }
             if (drawAnnotateButtonEl) {
                 drawAnnotateButtonEl.removeEventListener('click', this.drawAnnotateClickHandler);
@@ -609,8 +609,8 @@ class BaseViewer extends EventEmitter {
             // Users can currently only view annotations on mobile
             this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
             if (this.canAnnotate) {
-                this.showPointAnnotateButton(this.getAnnotationModeClickHandler('point', 'togglepointannotationmode'));
-                // this.showDrawAnnotateButton(this.getAnnotationModeClickHandler('draw', 'toggledrawannotationmode'));
+                this.showPointAnnotateButton(this.getAnnotationModeClickHandler('point'));
+                // this.showDrawAnnotateButton(this.getAnnotationModeClickHandler('draw'));
             }
             this.initAnnotations();
         }
@@ -665,11 +665,11 @@ class BaseViewer extends EventEmitter {
         this.annotator.addListener('annotationmodeexit', this.enableViewerControls);
 
         this.addListener('togglepointannotationmode', () => {
-            this.annotator.togglePointModeHandler();
+            this.annotator.togglePointAnnotationHandler();
         });
 
         this.addListener('toggledrawannotationmode', () => {
-            this.annotator.toggleDrawModeHandler();
+            this.annotator.toggleDrawAnnotationHandler();
         });
 
         // Add a custom listener for events related to scaling/orientation changes
@@ -730,13 +730,19 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        this.pointAnnotateClickHandler = handler;
+        // NOTE (@spramod): For Webapp support, need to change the following line in preview-content.js
+        // var togglePointAnnotationHandler = preview.viewer.getPointModeClickHandler();
+        // to the following line
+        // var togglePointAnnotationHandler = preview.viewer.getAnnotationModeClickHandler('point');
+
+        this.getPointModeClickHandler = () => handler;
+
         const { container } = this.options;
         const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
         if (annotateButtonEl) {
             annotateButtonEl.title = __('annotation_point_toggle');
             annotateButtonEl.classList.remove(CLASS_HIDDEN);
-            annotateButtonEl.addEventListener('click', this.pointAnnotateClickHandler);
+            annotateButtonEl.addEventListener('click', handler);
         }
     }
     /**
@@ -751,12 +757,13 @@ class BaseViewer extends EventEmitter {
         }
 
         this.drawAnnotateClickHandler = handler;
+
         const { container } = this.options;
         const drawAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
         if (drawAnnotateButtonEl) {
             drawAnnotateButtonEl.title = __('annotation_draw_toggle');
             drawAnnotateButtonEl.classList.remove(CLASS_HIDDEN);
-            drawAnnotateButtonEl.addEventListener('click', this.drawAnnotateClickHandler);
+            drawAnnotateButtonEl.addEventListener('click', handler);
         }
     }
 
@@ -767,7 +774,7 @@ class BaseViewer extends EventEmitter {
      * @return {Function|null} Click handler
      */
     /* eslint-disable no-unused-vars */
-    getAnnotationModeClickHandler(mode, eventName) {}
+    getAnnotationModeClickHandler(mode) {}
     /* eslint-enable no-unused-vars */
 
     /**

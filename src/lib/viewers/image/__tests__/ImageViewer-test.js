@@ -594,7 +594,7 @@ describe('lib/viewers/image/ImageViewer', () => {
         it('should return event listener', () => {
             const event = {};
             image.annotator = {
-                togglePointModeHandler: () => {}
+                togglePointAnnotationHandler: () => {}
             };
             sandbox.stub(image, 'emit');
             image.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
