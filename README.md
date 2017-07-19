@@ -1,7 +1,7 @@
 [![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg?style=flat-square)](http://opensource.box.com/badges/)
 [![Styled With Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![build status](https://img.shields.io/travis/box/box-content-preview/master.svg?style=flat-square)](https://travis-ci.org/box/box-content-preview)
-[![version](https://img.shields.io/badge/version-v1.0.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
+[![version](https://img.shields.io/badge/version-v1.1.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
 [![npm version](https://img.shields.io/npm/v/box-ui-elements.svg?style=flat-square)](https://www.npmjs.com/package/box-ui-elements)
 
 [Box Content Preview](https://docs.box.com/docs/box-content-preview)
@@ -19,11 +19,11 @@ If you are using Internet Explorer 11, which doesn't natively support promises, 
 
 Current Version
 ---------------
-* Version: v1.0.0
+* Version: v1.1.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/platform/preview/1.0.0/en-US/preview.js
-https://cdn01.boxcdn.net/platform/preview/1.0.0/en-US/preview.css
+https://cdn01.boxcdn.net/platform/preview/1.1.0/en-US/preview.js
+https://cdn01.boxcdn.net/platform/preview/1.1.0/en-US/preview.css
 
 Supported Locales
 -----------------
@@ -50,8 +50,8 @@ You can self-host the Box Content Preview UI Element or reference the versions a
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise"></script>
 
     <!-- Latest version of Preview SDK for your locale -->
-    <script src="https://cdn01.boxcdn.net/platform/preview/1.0.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/1.0.0/en-US/preview.css" />
+    <script src="https://cdn01.boxcdn.net/platform/preview/1.1.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/1.1.0/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
@@ -324,7 +324,9 @@ For more script commands see `package.json`. Test coverage reports are available
 
 Support
 -------
-Need to contact us directly? Email oss@box.com and be sure to include the name of this project in the subject.
+If you have any questions, please search our [issues list](https://github.com/box/box-content-preview/issues) to see if they have been previously answered. Report new issues [here](https://github.com/box/box-content-preview/issues/new).
+
+For general Box Platform, API, and UI Element questions, please visit our [developer forum](https://community.box.com/t5/Developer-Forum/bd-p/DeveloperForum) or contact us via one of our [available support channels](https://community.box.com/t5/Community/ct-p/English).
 
 Copyright and License
 ---------------------

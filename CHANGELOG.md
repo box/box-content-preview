@@ -1,5 +1,28 @@
 # Change Log
 
+## [v1.1.0](https://github.com/box/box-content-preview/tree/v1.1.0) (2017-07-18)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v1.0.0...v1.1.0)
+
+**Merged pull requests:**
+
+- Docs: Add issue reporting template [\#228](https://github.com/box/box-content-preview/pull/228) ([tonyjin](https://github.com/tonyjin))
+- Fix: Prevent double tap zoom in control bar [\#227](https://github.com/box/box-content-preview/pull/227) ([jeremypress](https://github.com/jeremypress))
+- New: Add ts and flv formats to MediaLoader.js [\#226](https://github.com/box/box-content-preview/pull/226) ([bhh1988](https://github.com/bhh1988))
+- Fix: Limit iOS font fix to 10.3.1 [\#225](https://github.com/box/box-content-preview/pull/225) ([tonyjin](https://github.com/tonyjin))
+- Chore: Full pass of prettier formatting [\#223](https://github.com/box/box-content-preview/pull/223) ([tonyjin](https://github.com/tonyjin))
+- Fix settings pullup for model3D files on mobile [\#222](https://github.com/box/box-content-preview/pull/222) ([jeremypress](https://github.com/jeremypress))
+- Chore: Fix webpack errors and upgrade some packages [\#221](https://github.com/box/box-content-preview/pull/221) ([tonyjin](https://github.com/tonyjin))
+- Update: Render Vera-protected HTML files [\#220](https://github.com/box/box-content-preview/pull/220) ([tonyjin](https://github.com/tonyjin))
+- Chore: Update Travis config [\#219](https://github.com/box/box-content-preview/pull/219) ([tonyjin](https://github.com/tonyjin))
+- Fix: Restore crawler for buffering video [\#218](https://github.com/box/box-content-preview/pull/218) ([jeremypress](https://github.com/jeremypress))
+- Fix: Media controls and usability fixes for mobile [\#217](https://github.com/box/box-content-preview/pull/217) ([jeremypress](https://github.com/jeremypress))
+- Chore: Cleaning up annotation strings/classes [\#215](https://github.com/box/box-content-preview/pull/215) ([pramodsum](https://github.com/pramodsum))
+- Chore: Update .travis.yml to build PRs and merges to master [\#214](https://github.com/box/box-content-preview/pull/214) ([tonyjin](https://github.com/tonyjin))
+- Docs: Update project status badge [\#212](https://github.com/box/box-content-preview/pull/212) ([tonyjin](https://github.com/tonyjin))
+
+## [v1.0.0](https://github.com/box/box-content-preview/tree/v1.0.0) (2017-07-12)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v0.131.2...v1.0.0)
+
 ## [v0.131.2](https://github.com/box/box-content-preview/tree/v0.131.2) (2017-07-11)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v0.131.1...v0.131.2)
 
