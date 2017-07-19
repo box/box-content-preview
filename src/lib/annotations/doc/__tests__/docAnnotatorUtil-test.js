@@ -9,7 +9,8 @@ import {
     convertPDFSpaceToDOMSpace,
     convertDOMSpaceToPDFSpace,
     getBrowserCoordinatesFromLocation,
-    getLowerRightCornerOfLastQuadPoint
+    getLowerRightCornerOfLastQuadPoint,
+    isValidSelection
 } from '../docAnnotatorUtil';
 import {
     SELECTOR_ANNOTATION_DIALOG,
@@ -173,5 +174,43 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
         const quadPoints = [[0, 10, 10, 10, 10, 20, 0, 20], [0, 0, 10, 0, 10, 10, 0, 10]];
 
         assert.equal(getLowerRightCornerOfLastQuadPoint(quadPoints).toString(), [10, 0].toString());
+    });
+
+    describe('isValidSelection', () => {
+        it('should return false if there are no ranges present in the selection', () => {
+            const selection = {
+                rangeCount: 0,
+                isCollapsed: false,
+                toString: () => 'I am valid!'
+            };
+            expect(isValidSelection(selection)).to.be.false;
+        });
+
+        it('should return false if the selection isn\'t collapsed', () => {
+            const selection = {
+                rangeCount: 1,
+                isCollapsed: true,
+                toString: () => 'I am valid!'
+            };
+            expect(isValidSelection(selection)).to.be.false;
+        });
+
+        it('should return false if the selection is empty', () => {
+            const selection = {
+                rangeCount: 1,
+                isCollapsed: false,
+                toString: () => ''
+            };
+            expect(isValidSelection(selection)).to.be.false;
+        });
+
+        it('should return true if the selection is valid', () => {
+            const selection = {
+                rangeCount: 1,
+                isCollapsed: false,
+                toString: () => 'I am valid!'
+            };
+            expect(isValidSelection(selection)).to.be.true;
+        });
     });
 });

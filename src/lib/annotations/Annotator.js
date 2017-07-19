@@ -12,6 +12,7 @@ import {
     CLASS_ANNOTATION_DIALOG,
     CLASS_MOBILE_DIALOG_HEADER,
     CLASS_DIALOG_CLOSE,
+    ID_MOBILE_ANNOTATION_DIALOG,
     TYPES
 } from './annotationConstants';
 
@@ -112,6 +113,7 @@ class Annotator extends EventEmitter {
         mobileDialogEl.classList.add(CLASS_MOBILE_ANNOTATION_DIALOG);
         mobileDialogEl.classList.add(CLASS_ANNOTATION_DIALOG);
         mobileDialogEl.classList.add(CLASS_HIDDEN);
+        mobileDialogEl.id = ID_MOBILE_ANNOTATION_DIALOG;
 
         mobileDialogEl.innerHTML = `
             <div class="${CLASS_MOBILE_DIALOG_HEADER}">

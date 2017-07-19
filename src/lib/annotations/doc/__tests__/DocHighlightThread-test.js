@@ -296,7 +296,7 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
             sandbox.stub(highlightThread, 'getPageEl').returns(highlightThread.annotatedElement);
             sandbox.stub(docAnnotatorUtil, 'isInDialog').returns(true);
             sandbox.stub(highlightThread, 'activateDialog');
-            highlightThread.state = STATES.pending_ACTIVE;
+            highlightThread.state = STATES.pending_active;
 
             const result = highlightThread.onMousemove({});
 

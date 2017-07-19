@@ -91,17 +91,26 @@ class CreateHighlightDialog extends EventEmitter {
     };
 
     /**
+     * Whether or not we're on a mobile device.
+     *
+     * @property {boolean}
+     */
+    isMobile;
+
+    /**
      * A dialog used to create plain and comment highlights.
      *
      * [constructor]
      *
      * @param {HTMLElement} parentEl - Parent element
+     * @param {boolean} isMobile - Whether or not this is running on a mobile device
      * @return {CreateHighlightDialog} CreateHighlightDialog instance
      */
-    constructor(parentEl) {
+    constructor(parentEl, isMobile = false) {
         super();
 
         this.parentEl = parentEl;
+        this.isMobile = isMobile;
 
         // Explicit scope binding for event listeners
         this.onHighlightClick = this.onHighlightClick.bind(this);
@@ -158,6 +167,7 @@ class CreateHighlightDialog extends EventEmitter {
         }
 
         this.setButtonVisibility(true);
+
         showElement(this.containerEl);
     }
 
@@ -172,6 +182,7 @@ class CreateHighlightDialog extends EventEmitter {
         }
 
         hideElement(this.containerEl);
+
         this.commentBox.hide();
         this.commentBox.clear();
     }
@@ -219,6 +230,10 @@ class CreateHighlightDialog extends EventEmitter {
      * @return {void}
      */
     updatePosition() {
+        if (this.isMobile) {
+            return;
+        }
+
         // Plus 1 pixel for caret
         this.containerEl.style.left = `${this.position.x - 1 - this.containerEl.clientWidth / 2}px`;
         // Plus 5 pixels for caret
@@ -308,6 +323,12 @@ class CreateHighlightDialog extends EventEmitter {
         const highlightDialogEl = document.createElement('div');
         highlightDialogEl.classList.add(CLASS_CREATE_DIALOG);
         highlightDialogEl.innerHTML = CREATE_HIGHLIGHT_DIALOG_TEMPLATE;
+        // Get rid of the caret
+        if (this.isMobile) {
+            highlightDialogEl.classList.add('bp-mobile-annotation-dialog');
+            highlightDialogEl.classList.add('bp-annotation-dialog');
+            highlightDialogEl.querySelector('.bp-annotation-caret').remove();
+        }
 
         const containerEl = highlightDialogEl.querySelector(constants.SELECTOR_ANNOTATION_HIGHLIGHT_DIALOG);
 
@@ -323,6 +344,7 @@ class CreateHighlightDialog extends EventEmitter {
         highlightDialogEl.addEventListener('click', this.stopPropagation);
         highlightDialogEl.addEventListener('mouseup', this.stopPropagation);
         highlightDialogEl.addEventListener('touchend', this.stopPropagation);
+        highlightDialogEl.addEventListener('touchstart', this.stopPropagation);
         highlightDialogEl.addEventListener('dblclick', this.stopPropagation);
 
         // Event listeners
