@@ -1,3 +1,12 @@
+.bp-is-mobile {
+    .bp-box3d .bp-controls {
+        /* stylelint-disable declaration-no-important */
+        opacity: 1 !important;
+        /* stylelint-enable declaration-no-important */
+        z-index: 1;
+    }
+}
+
 .bp-box3d {
     border: 0 none;
     display: flex;
@@ -69,12 +78,4 @@
 
 .bp-box3d input[type="checkbox"] {
     opacity: 1;
-}
-
-.bp-is-mobile {
-    .bp-box3d .bp-controls {
-        /* stylelint-disable declaration-no-important */
-        opacity: 1 !important;
-        /* stylelint-enable declaration-no-important */
-    }
 }

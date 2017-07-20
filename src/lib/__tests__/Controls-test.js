@@ -8,6 +8,7 @@ let clock;
 const sandbox = sinon.sandbox.create();
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
+const RESET_TIMEOUT_CLOCK_TICK = 2001;
 
 describe('lib/Controls', () => {
     before(() => {
@@ -110,7 +111,7 @@ describe('lib/Controls', () => {
             const clearTimeoutStub = sandbox.stub(window, 'clearTimeout');
 
             controls.resetTimeout();
-            clock.tick(1501);
+            clock.tick(RESET_TIMEOUT_CLOCK_TICK);
 
             expect(clearTimeoutStub).to.be.calledTwice;
         });
@@ -120,7 +121,7 @@ describe('lib/Controls', () => {
             controls.resetTimeout();
 
             const resetTimeoutStub = sandbox.stub(controls, 'resetTimeout');
-            clock.tick(1501);
+            clock.tick(RESET_TIMEOUT_CLOCK_TICK);
 
             expect(resetTimeoutStub).to.be.called;
         });
@@ -131,7 +132,7 @@ describe('lib/Controls', () => {
             controls.resetTimeout();
 
             const resetTimeoutStub = sandbox.stub(controls, 'resetTimeout');
-            clock.tick(1501);
+            clock.tick(RESET_TIMEOUT_CLOCK_TICK);
 
             expect(isPageNumFocusedStub).to.be.called;
             expect(resetTimeoutStub).to.be.called;
@@ -142,7 +143,7 @@ describe('lib/Controls', () => {
             controls.containerEl.className = SHOW_PREVIEW_CONTROLS_CLASS;
 
             controls.resetTimeout();
-            clock.tick(1501);
+            clock.tick(RESET_TIMEOUT_CLOCK_TICK);
 
             expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.true;
         });
@@ -152,7 +153,7 @@ describe('lib/Controls', () => {
             controls.containerEl.className = SHOW_PREVIEW_CONTROLS_CLASS;
 
             controls.resetTimeout();
-            clock.tick(1501);
+            clock.tick(RESET_TIMEOUT_CLOCK_TICK);
 
             expect(controls.containerEl.classList.contains(SHOW_PREVIEW_CONTROLS_CLASS)).to.be.false;
         });
@@ -163,7 +164,7 @@ describe('lib/Controls', () => {
             const blurStub = sandbox.stub(document.activeElement, 'blur');
 
             controls.resetTimeout();
-            clock.tick(1501);
+            clock.tick(RESET_TIMEOUT_CLOCK_TICK);
 
             expect(containsStub).to.be.called;
             expect(blurStub).to.be.called;
