@@ -596,7 +596,8 @@ describe('lib/annotations/Annotator', () => {
                     handleMove: () => {}
                 };
                 const postButtonEl = {
-                    addEventListener: sandbox.stub()
+                    addEventListener: sandbox.stub(),
+                    removeEventListener: sandbox.stub()
                 };
                 const locationHandler = (() => {});
 
