@@ -37,7 +37,7 @@ Box Content Preview supports 100+ file types, including most document and image 
 
 Usage
 -----
-The Box Content Preview UI Element can be used either by including one of our Javascript libraries linked above or by pulling from our [NPM package](https://www.npmjs.com/package/box-ui-elements).
+The Box Content Preview UI Element can be used either by including the JavaScript/CSS scripts linked above or by pulling from our [NPM package](https://www.npmjs.com/package/box-ui-elements).
 
 ### Including preview as a library
 You can self-host the Box Content Preview UI Element or reference the versions available on Box's CDN.
