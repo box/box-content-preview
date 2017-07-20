@@ -14,7 +14,7 @@ class DocDrawingThread extends DrawingThread {
     lastPage;
 
     /** @property {HTMLElement} - Page element being observed */
-    pageEls;
+    pageEl;
 
     //--------------------------------------------------------------------------
     // Public
