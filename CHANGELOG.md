@@ -1,5 +1,13 @@
 # Change Log
 
+## [v1.1.1](https://github.com/box/box-content-preview/tree/v1.1.1) (2017-07-19)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v1.1.0...v1.1.1)
+
+**Merged pull requests:**
+
+- Fix: Don't swallow 'touchstart' event to prevent iOS inertia scrolling [\#233](https://github.com/box/box-content-preview/pull/233) ([jeremypress](https://github.com/jeremypress))
+- Fix: Prevent MP3 from hiding [\#230](https://github.com/box/box-content-preview/pull/230) ([jeremypress](https://github.com/jeremypress))
+
 ## [v1.1.0](https://github.com/box/box-content-preview/tree/v1.1.0) (2017-07-18)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v1.0.0...v1.1.0)
 
