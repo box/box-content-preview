@@ -180,7 +180,7 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     renderAnnotationsOnPage(pageNum) {
-        if (this.threads[pageNum]) {
+        if (this.threads && this.threads[pageNum]) {
             this.threads[pageNum].forEach((thread) => {
                 thread.show();
             });

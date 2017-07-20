@@ -617,11 +617,6 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     scaleAnnotations(data) {
-        // Don't try to render annotations if none have been fetched yet
-        if (Object.keys(this.annotator.threads).length === 0) {
-            return;
-        }
-
         this.annotator.setScale(data.scale);
         this.annotator.rotateAnnotations(data.rotationAngle, data.pageNum);
     }
