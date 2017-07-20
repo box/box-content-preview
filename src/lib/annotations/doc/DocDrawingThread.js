@@ -7,7 +7,7 @@ import {
 import { getScale } from '../annotatorUtil';
 import DrawingPath from '../drawing/DrawingPath';
 import DrawingThread from '../drawing/DrawingThread';
-import * as DocAnnotatorUtil from './docAnnotatorUtil';
+import * as docAnnotatorUtil from './docAnnotatorUtil';
 
 class DocDrawingThread extends DrawingThread {
     /** @property {number} - Drawing state */
@@ -30,23 +30,23 @@ class DocDrawingThread extends DrawingThread {
 
         this.lastPage = location.page;
         if (!this.pageEl || pageChanged) {
-            this.pageEl = DocAnnotatorUtil.getPageEl(this.annotatedElement, location.page);
+            this.pageEl = docAnnotatorUtil.getPageEl(this.annotatedElement, location.page);
             if (pageChanged) {
                 this.handleStop(location);
             }
             return;
         }
 
-        const [x, y] = DocAnnotatorUtil.getBrowserCoordinatesFromLocation(location, this.pageEl);
+        const [x, y] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(location, this.pageEl);
         if (this.drawingFlag === STATES_DRAW.draw) {
             this.pendingPath.addCoordinate(x, y);
 
             // Cancel any pending animation to a new request.
-            if (this.lastAnimRequestId) {
-                window.cancelAnimationFrame(this.lastAnimRequestId);
+            if (this.lastAnimationRequestId) {
+                window.cancelAnimationFrame(this.lastAnimationRequestId);
             }
             // Keep animating while the drawing flag is down
-            this.lastAnimRequestId = window.requestAnimationFrame(this.render);
+            this.lastAnimationRequestId = window.requestAnimationFrame(this.render);
         }
     }
 
@@ -58,7 +58,7 @@ class DocDrawingThread extends DrawingThread {
     handleStart() {
         this.drawingFlag = STATES_DRAW.draw;
         const scale = getScale(this.annotatedElement);
-        const context = DocAnnotatorUtil.getContext(
+        const context = docAnnotatorUtil.getContext(
             this.pageEl,
             CLASS_ANNOTATION_LAYER_DRAW,
             PAGE_PADDING_TOP,
@@ -69,8 +69,8 @@ class DocDrawingThread extends DrawingThread {
             this.pendingPath = new DrawingPath();
         }
 
-        if (!this.context || context !== this.context) {
-            this.context = context;
+        if (!this.drawingContext || context !== this.drawingContext) {
+            this.drawingContext = context;
             this.setContextStyles(scale);
         }
     }
@@ -82,6 +82,7 @@ class DocDrawingThread extends DrawingThread {
      */
     handleStop() {
         this.drawingFlag = STATES_DRAW.idle;
+
         if (this.pendingPath && !this.pendingPath.isEmpty()) {
             this.pathContainer.insert(this.pendingPath);
             this.pendingPath = null;

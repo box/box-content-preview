@@ -337,9 +337,9 @@ export function getContext(pageEl, annotationLayerClass, paddingTop, paddingBott
         annotationLayerEl.classList.add(annotationLayerClass);
         const pageDimensions = pageEl.getBoundingClientRect();
         const pagePaddingTop = paddingTop || 0;
-        const pagePaddingBot = paddingBottom || 0;
+        const pagePaddingBottom = paddingBottom || 0;
         annotationLayerEl.width = pageDimensions.width;
-        annotationLayerEl.height = pageDimensions.height - pagePaddingTop - pagePaddingBot;
+        annotationLayerEl.height = pageDimensions.height - pagePaddingTop - pagePaddingBottom;
 
         const textLayerEl = pageEl.querySelector('.textLayer');
         pageEl.insertBefore(annotationLayerEl, textLayerEl);
@@ -357,6 +357,5 @@ export function getContext(pageEl, annotationLayerClass, paddingTop, paddingBott
  * @return {HTMLElement|null} Page element if it exists, otherwise null
  */
 export function getPageEl(annotatedEl, pageNum) {
-    const pageEl = annotatedEl.querySelector(`[data-page-number="${pageNum}"]`);
-    return pageEl;
+    return annotatedEl.querySelector(`[data-page-number="${pageNum}"]`);
 }

@@ -78,6 +78,7 @@ class Annotator extends EventEmitter {
         }
 
         this.unbindDOMListeners();
+        this.unbindModeListeners();
         this.unbindCustomListenersOnService();
     }
 

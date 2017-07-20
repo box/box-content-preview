@@ -29,10 +29,11 @@ class DrawingPath {
             return;
         }
 
-        const x = parseFloat(xPos.toFixed(2));
-        const y = parseFloat(yPos.toFixed(2));
         // OPTIMIZE (@minhnguyen): We convert a number to a string using toFixed and then back a number.
         //           As a result, it might be better to truncate only on annotation save.
+        const x = parseFloat(xPos.toFixed(2));
+        const y = parseFloat(yPos.toFixed(2));
+
         if (x < this.minX) {
             this.minX = x;
         }
@@ -67,11 +68,11 @@ class DrawingPath {
     /**
      * Draw the recorded coordinates onto a CanvasContext
      *
-     * @param {CanvasContext} context - Context to draw the recorded path on
+     * @param {CanvasContext} drawingContext - Context to draw the recorded path on
      * @return {void}
      */
-    drawPath(context) {
-        const ctx = context;
+    drawPath(drawingContext) {
+        const ctx = drawingContext;
         if (!ctx) {
             return;
         }

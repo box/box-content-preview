@@ -28,7 +28,7 @@ describe('lib/annotations/Annotator', () => {
             isMobile: false,
             options: {},
             previewUI: {
-                getAnnotateButton: (() => {})
+                getAnnotateButton: () => {}
             }
         });
 

@@ -610,6 +610,7 @@ class BaseViewer extends EventEmitter {
             this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
             if (this.canAnnotate) {
                 this.showPointAnnotateButton(this.getAnnotationModeClickHandler('point'));
+                // Note: Leave drawing annotation code entry disabled for now
                 // this.showDrawAnnotateButton(this.getAnnotationModeClickHandler('draw'));
             }
             this.initAnnotations();
@@ -725,17 +726,13 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        // NOTE (@spramod): For Webapp support, need to change the following line in preview-content.js
-        // var togglePointAnnotationHandler = preview.viewer.getPointModeClickHandler();
-        // to the following line
-        // var togglePointAnnotationHandler = preview.viewer.getAnnotationModeClickHandler('point');
-
         if (!this.getPointModeClickHandler) {
             this.getPointModeClickHandler = () => handler;
         }
 
         const { container } = this.options;
         const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
+
         if (annotateButtonEl) {
             annotateButtonEl.title = __('annotation_point_toggle');
             annotateButtonEl.classList.remove(CLASS_HIDDEN);

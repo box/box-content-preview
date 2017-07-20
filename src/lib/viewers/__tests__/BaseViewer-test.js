@@ -660,6 +660,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.loadAnnotator();
             expect(base.initAnnotations).to.be.called;
             expect(base.showPointAnnotateButton).to.be.called;
+            // NOTE: Enable once drawing annotations are enabled
             // expect(base.showDrawAnnotateButton).to.be.called;
         });
 
@@ -672,6 +673,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.loadAnnotator();
             expect(base.initAnnotations).to.not.be.called;
             expect(base.showPointAnnotateButton).to.not.be.called;
+            // NOTE: Enable once drawing annotations are enabled
             // expect(base.showDrawAnnotateButton).to.not.be.called;
         });
 

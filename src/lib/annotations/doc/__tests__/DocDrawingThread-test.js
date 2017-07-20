@@ -1,5 +1,5 @@
-import * as DocAnnotatorUtil from '../docAnnotatorUtil';
-import * as AnnotatorUtil from '../../annotatorUtil';
+import * as docAnnotatorUtil from '../docAnnotatorUtil';
+import * as annotatorUtil from '../../annotatorUtil';
 import DocDrawingThread from '../DocDrawingThread';
 import DrawingPath from '../../drawing/DrawingPath';
 import {
@@ -35,9 +35,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             };
 
             sandbox.stub(window, 'requestAnimationFrame');
-            sandbox.stub(DocAnnotatorUtil, 'getPageEl')
+            sandbox.stub(docAnnotatorUtil, 'getPageEl')
                    .returns(docDrawingThread.pageEl);
-            sandbox.stub(DocAnnotatorUtil, 'getBrowserCoordinatesFromLocation')
+            sandbox.stub(docAnnotatorUtil, 'getBrowserCoordinatesFromLocation')
                    .returns([location.x, location.y]);
         });
 
@@ -71,9 +71,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         it('should set the drawingFlag, pendingPath, and context if they do not exist', () => {
             const context = "I'm a real context";
 
-            sandbox.stub(AnnotatorUtil, 'getScale');
+            sandbox.stub(annotatorUtil, 'getScale');
             sandbox.stub(docDrawingThread, 'setContextStyles');
-            sandbox.stub(DocAnnotatorUtil, 'getContext')
+            sandbox.stub(docAnnotatorUtil, 'getContext')
                    .returns(context);
 
             docDrawingThread.drawingFlag = STATES_DRAW.idle;
@@ -84,8 +84,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(docDrawingThread.drawingFlag).to.equal(STATES_DRAW.draw);
             expect(docDrawingThread.context).to.equal(context);
             expect(docDrawingThread.pendingPath).to.be.an.instanceof(DrawingPath);
-            expect(AnnotatorUtil.getScale).to.be.called;
-            expect(DocAnnotatorUtil.getContext).to.be.called;
+            expect(annotatorUtil.getScale).to.be.called;
+            expect(docAnnotatorUtil.getContext).to.be.called;
             expect(docDrawingThread.setContextStyles).to.be.called;
         });
     });

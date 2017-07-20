@@ -19,13 +19,13 @@ class DrawingThread extends AnnotationThread {
     pendingPath;
 
     /** @property {CanvasContext} - The context to be drawn on */
-    context;
+    drawingContext;
 
     /** @property {number} - Timestamp of the last render */
     lastRenderTimestamp;
 
     /** @property {number} - The the last animation frame request id */
-    lastAnimRequestId;
+    lastAnimationRequestId;
 
     /**
      * [constructor]
@@ -47,8 +47,8 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     destroy() {
-        if (this.lastAnimRequestId) {
-            window.cancelAnimationFrame(this.lastAnimRequestId);
+        if (this.lastAnimationRequestId) {
+            window.cancelAnimationFrame(this.lastAnimationRequestId);
         }
 
         this.removeAllListeners();
@@ -105,15 +105,15 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     setContextStyles(config) {
-        if (!this.context) {
+        if (!this.drawingContext) {
             return;
         }
-        const { SCALE, COLOR } = config;
+        const { scale, color } = config;
 
-        this.context.lineCap = 'round';
-        this.context.lineJoin = 'round';
-        this.context.strokeStyle = COLOR || 'black';
-        this.context.lineWidth = BASE_LINE_WIDTH * (SCALE || 1);
+        this.drawingContext.lineCap = 'round';
+        this.drawingContext.lineJoin = 'round';
+        this.drawingContext.strokeStyle = color || 'black';
+        this.drawingContext.lineWidth = BASE_LINE_WIDTH * (scale || 1);
     }
 
     /**
@@ -126,21 +126,22 @@ class DrawingThread extends AnnotationThread {
      */
     render(timestamp) {
         const elapsed = timestamp - (this.lastRenderTimestamp || 0);
-        const context = this.context;
-        if (elapsed < DRAW_RENDER_THRESHOLD || !this.context) {
+        if (elapsed < DRAW_RENDER_THRESHOLD || !this.drawingContext) {
             return;
         }
 
         this.lastRenderTimestamp = timestamp;
-        const canvas = context.canvas;
+        const canvas = this.drawingContext.canvas;
         const drawings = this.getDrawings();
+
         /* OPTIMIZE (@minhnguyen): Render only what has been obstructed by the new drawing
          *           rather than every single line in the thread. If we do end
          *           up splitting saves into multiple requests, we can buffer
          *           the amount of re-renders onto a temporary memory canvas.
          */
-        this.context.clearRect(0, 0, canvas.width, canvas.height);
-        drawings.forEach((drawing) => drawing.drawPath(context));
+        this.drawingContext.clearRect(0, 0, canvas.width, canvas.height);
+        drawings.forEach((drawing) => drawing.drawPath(this.drawingContext));
+
         if (this.pendingPath) {
             this.pendingPath.drawPath(context);
         }
@@ -162,7 +163,7 @@ class DrawingThread extends AnnotationThread {
     createAnnotationData(type, text) {
         return {
             type,
-            DrawingPaths: this.getDrawings(),
+            drawingPaths: this.getDrawings(),
             fileVersionId: this.fileVersionId,
             user: this.annotationService.user,
             threadID: this.threadID,
