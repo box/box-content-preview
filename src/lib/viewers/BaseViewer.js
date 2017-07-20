@@ -730,7 +730,9 @@ class BaseViewer extends EventEmitter {
         // to the following line
         // var togglePointAnnotationHandler = preview.viewer.getAnnotationModeClickHandler('point');
 
-        this.getPointModeClickHandler = () => handler;
+        if (!this.getPointModeClickHandler) {
+            this.getPointModeClickHandler = () => handler;
+        }
 
         const { container } = this.options;
         const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
