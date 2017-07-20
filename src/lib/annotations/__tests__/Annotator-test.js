@@ -446,6 +446,7 @@ describe('lib/annotations/Annotator', () => {
         describe('bindPointModeListeners', () => {
             it('should bind point mode click handler', () => {
                 sandbox.stub(annotator.annotatedElement, 'addEventListener');
+                sandbox.stub(annotator.annotatedElement, 'removeEventListener');
                 sandbox.stub(annotator.pointClickHandler, 'bind', () => annotator.pointClickHandler);
 
                 annotator.bindPointModeListeners();
@@ -600,6 +601,7 @@ describe('lib/annotations/Annotator', () => {
                 const locationHandler = (() => {});
 
                 sandbox.stub(annotator.annotatedElement, 'addEventListener');
+                sandbox.stub(annotator.annotatedElement, 'removeEventListener');
                 sandbox.stub(annotator, 'isInDrawMode').returns(true);
                 sandbox.stub(drawingThread.handleStart, 'bind', () => drawingThread.pointClickHandler);
                 sandbox.stub(drawingThread.handleStop, 'bind', () => drawingThread.pointClickHandler);

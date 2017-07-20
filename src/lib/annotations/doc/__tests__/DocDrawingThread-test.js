@@ -9,7 +9,7 @@ import {
 let docDrawingThread;
 const sandbox = sinon.sandbox.create();
 
-describe('lib/annotations/doc/DocAnnotator', () => {
+describe('lib/annotations/doc/DocDrawingThread', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -82,7 +82,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             docDrawingThread.handleStart();
 
             expect(docDrawingThread.drawingFlag).to.equal(STATES_DRAW.draw);
-            expect(docDrawingThread.context).to.equal(context);
+            expect(docDrawingThread.drawingContext).to.equal(context);
             expect(docDrawingThread.pendingPath).to.be.an.instanceof(DrawingPath);
             expect(annotatorUtil.getScale).to.be.called;
             expect(docAnnotatorUtil.getContext).to.be.called;

@@ -69,6 +69,8 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     destroy() {
+        this.unbindModeListeners();
+
         if (this.threads) {
             Object.keys(this.threads).forEach((page) => {
                 this.threads[page].forEach((thread) => {
@@ -78,7 +80,6 @@ class Annotator extends EventEmitter {
         }
 
         this.unbindDOMListeners();
-        this.unbindModeListeners();
         this.unbindCustomListenersOnService();
     }
 

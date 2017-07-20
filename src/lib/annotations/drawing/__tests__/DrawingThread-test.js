@@ -74,7 +74,7 @@ describe('lib/annotations/drawing/DrawingThread', () => {
 
     describe('setContextStyles()', () => {
         it('should set configurable context properties', () => {
-            drawingThread.context = {
+            drawingThread.drawingContext = {
                 lineCap: 'not set',
                 lineJoin: 'not set',
                 strokeStyle: 'no color',
@@ -82,20 +82,20 @@ describe('lib/annotations/drawing/DrawingThread', () => {
             };
 
             const config = {
-                SCALE: 2,
-                COLOR: 'blue'
+                scale: 2,
+                color: 'blue'
             };
 
             drawingThread.setContextStyles(config);
 
-            assert.deepEqual(drawingThread.context, {
+            assert.deepEqual(drawingThread.drawingContext, {
                 lineCap: 'round',
                 lineJoin: 'round',
                 strokeStyle: 'blue',
-                lineWidth: drawingThread.context.lineWidth
+                lineWidth: drawingThread.drawingContext.lineWidth
             });
 
-            assert.ok(drawingThread.context.lineWidth % config.SCALE == 0);
+            assert.ok(drawingThread.drawingContext.lineWidth % config.scale == 0);
         })
     });
 
@@ -111,7 +111,7 @@ describe('lib/annotations/drawing/DrawingThread', () => {
             drawingThread.pendingPath = {
                 drawPath: sandbox.stub()
             };
-            drawingThread.context = {
+            drawingThread.drawingContext = {
                 clearRect: sandbox.stub(),
                 canvas: {
                     width: 2,
@@ -122,7 +122,7 @@ describe('lib/annotations/drawing/DrawingThread', () => {
 
             expect(drawingThread.getDrawings).to.be.called;
             expect(drawingArray.forEach).to.be.called;
-            expect(drawingThread.context.clearRect).to.be.called;
+            expect(drawingThread.drawingContext.clearRect).to.be.called;
             expect(drawingThread.pendingPath.drawPath).to.be.called;
         });
 
