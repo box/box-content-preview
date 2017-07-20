@@ -157,6 +157,7 @@ class PresentationViewer extends DocBaseViewer {
         this.docEl.addEventListener('wheel', this.wheelHandler());
         if (this.hasTouch) {
             this.docEl.addEventListener('touchstart', this.mobileScrollHandler);
+            this.docEl.addEventListener('touchmove', this.mobileScrollHandler);
             this.docEl.addEventListener('touchend', this.mobileScrollHandler);
         }
     }
@@ -174,6 +175,7 @@ class PresentationViewer extends DocBaseViewer {
         this.docEl.removeEventListener('wheel', this.wheelHandler());
         if (this.hasTouch) {
             this.docEl.removeEventListener('touchstart', this.mobileScrollHandler);
+            this.docEl.removeEventListener('touchmove', this.mobileScrollHandler);
             this.docEl.removeEventListener('touchend', this.mobileScrollHandler);
         }
     }
@@ -228,10 +230,10 @@ class PresentationViewer extends DocBaseViewer {
             return;
         }
 
-        event.preventDefault();
-
         if (event.type === 'touchstart') {
             this.scrollStart = event.changedTouches[0].clientY;
+        } else if (event.type === 'touchmove') {
+            event.preventDefault();
         } else {
             const scrollEnd = event.changedTouches[0].clientY;
 
