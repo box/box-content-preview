@@ -134,7 +134,7 @@ class DrawingThread extends AnnotationThread {
         this.lastRenderTimestamp = timestamp;
         const canvas = context.canvas;
         const drawings = this.getDrawings();
-        /* OPTIMIZE (minhnguyen): Render only what has been obstructed by the new drawing
+        /* OPTIMIZE (@minhnguyen): Render only what has been obstructed by the new drawing
          *           rather than every single line in the thread. If we do end
          *           up splitting saves into multiple requests, we can buffer
          *           the amount of re-renders onto a temporary memory canvas.

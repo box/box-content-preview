@@ -364,7 +364,7 @@ export function validateThreadParams(thread) {
  * @param {Function} callback - Callback to be called upon receiving an event
  * @return {Function} Event listener to convert to document location
  */
-export const eventToLocationHandler = (locationFunction, callback) => {
+export function eventToLocationHandler(locationFunction, callback) {
     return (event) => {
         const evt = event || window.event;
         if (!evt) {
@@ -378,4 +378,4 @@ export const eventToLocationHandler = (locationFunction, callback) => {
             callback(location);
         }
     };
-};
+}

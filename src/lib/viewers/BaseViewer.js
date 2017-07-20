@@ -158,10 +158,10 @@ class BaseViewer extends EventEmitter {
         if (container) {
             const pointAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
             const drawAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
-
             if (pointAnnotateButtonEl) {
                 pointAnnotateButtonEl.removeEventListener('click', this.getPointModeClickHandler);
             }
+
             if (drawAnnotateButtonEl) {
                 drawAnnotateButtonEl.removeEventListener('click', this.drawAnnotateClickHandler);
             }

@@ -819,4 +819,26 @@ describe('lib/viewers/BaseViewer', () => {
             expect(buttonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
         });
     });
+
+    describe('showDrawAnnotateButton()', () => {
+        it('should set up and show point annotate button', () => {
+            const buttonEl = document.createElement('div');
+            buttonEl.classList.add('bp-btn-annotate-draw');
+            buttonEl.classList.add(constants.CLASS_HIDDEN);
+            base.options = {
+                container: document,
+                file: {
+                    id: 123
+                }
+            };
+
+            containerEl.appendChild(buttonEl);
+            sandbox.stub(base, 'isAnnotatable').returns(true);
+            sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', base.handler);
+
+            base.showDrawAnnotateButton(base.handler);
+            expect(buttonEl.title).to.equal('Drawing annotation mode');
+            expect(buttonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
+        });
+    });
 });
