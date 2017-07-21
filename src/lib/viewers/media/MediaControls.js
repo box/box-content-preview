@@ -611,6 +611,7 @@ class MediaControls extends EventEmitter {
 
         if (this.wrapperEl && this.wrapperEl.parentNode) {
             this.wrapperEl.parentNode.classList.remove(SHOW_CONTROLS_CLASS);
+            this.filmstripHideHandler();
         }
     }
 
