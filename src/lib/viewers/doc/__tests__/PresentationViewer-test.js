@@ -273,6 +273,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
             presentation.bindDOMListeners();
             expect(stubs.addEventListener).to.be.calledWith('touchstart', presentation.mobileScrollHandler);
+            expect(stubs.addEventListener).to.be.calledWith('touchmove', presentation.mobileScrollHandler);
             expect(stubs.addEventListener).to.be.calledWith('touchend', presentation.mobileScrollHandler);
         });
     });
@@ -292,6 +293,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
             presentation.unbindDOMListeners();
             expect(stubs.removeEventListener).to.be.calledWith('touchstart', presentation.mobileScrollHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('touchmove', presentation.mobileScrollHandler);
             expect(stubs.removeEventListener).to.be.calledWith('touchend', presentation.mobileScrollHandler);
         });
     });
@@ -374,6 +376,13 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
             presentation.mobileScrollHandler(stubs.event);
             expect(presentation.scrollStart).to.equal(100);
+        });
+
+        it('should prevent default behaviour if the event is touchmove', () => {
+            stubs.event.type = 'touchmove';
+            stubs.event.changedTouches[0].clientY = 100;
+
+            presentation.mobileScrollHandler(stubs.event);
             expect(stubs.event.preventDefault).to.be.called;
         });
 
