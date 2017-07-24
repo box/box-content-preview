@@ -10,7 +10,6 @@ import {
     CLASS_PREVIEW_LOADED,
     SELECTOR_BOX_PREVIEW_CONTAINER,
     SELECTOR_BOX_PREVIEW,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE,
     SELECTOR_BOX_PREVIEW_BTN_PRINT,
     SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD,
     SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD,
@@ -261,10 +260,11 @@ class PreviewUI {
     /**
      * Gets the annotation button element.
      *
-     * @return {HTMLElement} Annotate button element
+     * @param {string} annotatorSelector - Class selector for a custom annotation button.
+     * @return {HTMLElement|null} Annotate button element or null if the selector did not find an element.
      */
-    getAnnotateButton() {
-        return this.container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE);
+    getAnnotateButton(annotatorSelector) {
+        return this.container.querySelector(annotatorSelector);
     }
 
     /**

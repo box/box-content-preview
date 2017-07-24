@@ -9,13 +9,17 @@ import {
     convertPDFSpaceToDOMSpace,
     convertDOMSpaceToPDFSpace,
     getBrowserCoordinatesFromLocation,
-    getLowerRightCornerOfLastQuadPoint
+    getLowerRightCornerOfLastQuadPoint,
+    getContext,
+    getPageEl
 } from '../docAnnotatorUtil';
 import {
     SELECTOR_ANNOTATION_DIALOG,
     SELECTOR_ANNOTATION_CONTAINER,
     CLASS_ANNOTATION_DIALOG
 } from '../../annotationConstants';
+
+const sandbox = sinon.sandbox.create();
 
 describe('lib/annotations/doc/docAnnotatorUtil', () => {
     before(() => {
@@ -27,6 +31,7 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
     });
 
     afterEach(() => {
+        sandbox.verifyAndRestore();
         fixture.cleanup();
     });
 
@@ -173,5 +178,65 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
         const quadPoints = [[0, 10, 10, 10, 10, 20, 0, 20], [0, 0, 10, 0, 10, 10, 0, 10]];
 
         assert.equal(getLowerRightCornerOfLastQuadPoint(quadPoints).toString(), [10, 0].toString());
+    });
+
+
+    describe('getContext()', () => {
+        it('should return null if there is no pageEl', () => {
+            const result = getContext(null, 'random-class-name', 0, 0);
+            expect(result).to.equal(null);
+        });
+
+        it('should not insert into the pageEl if the annotationLayerEl already exists', () => {
+            const annotationLayer = {
+                width: 0,
+                height: 0,
+                getContext: sandbox.stub().returns('2d context')
+            };
+            const pageEl = {
+                querySelector: sandbox.stub().returns(annotationLayer),
+                getBoundingClientRect: sandbox.stub(),
+                insertBefore: sandbox.stub()
+            };
+
+            getContext(pageEl, 'random-class-name');
+            expect(annotationLayer.getContext).to.be.called;
+            expect(pageEl.insertBefore).to.not.be.called;
+        });
+
+        it('should insert into the pageEl if the annotationLayerEl does not exist', () => {
+            const annotationLayer = {
+                width: 0,
+                height: 0,
+                getContext: sandbox.stub().returns('2d context'),
+                classList: {
+                    add: sandbox.stub()
+                }
+            };
+            const pageEl = {
+                querySelector: sandbox.stub().returns(undefined),
+                getBoundingClientRect: sandbox.stub().returns({ width: 0, height: 0 }),
+                insertBefore: sandbox.stub()
+            };
+            const docStub = sandbox.stub(document, 'createElement').returns(annotationLayer);
+
+            getContext(pageEl, 'random-class-name', 0, 0);
+            expect(docStub).to.be.called;
+            expect(annotationLayer.getContext).to.be.called;
+            expect(annotationLayer.classList.add).to.be.called;
+            expect(pageEl.insertBefore).to.be.called;
+        });
+    });
+
+    describe('getPageEl()', () => {
+        it('should return the result of querySelector', () => {
+            const page = 2;
+            const docEl = document.querySelector('.annotatedElement');
+            const truePageEl = document.querySelector(`.page[data-page-number="${page}"]`);
+            docEl.appendChild(truePageEl);
+
+            const pageEl = getPageEl(docEl, page);
+            assert.equal(pageEl, truePageEl);
+        });
     });
 });

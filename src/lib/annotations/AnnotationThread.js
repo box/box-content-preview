@@ -4,7 +4,7 @@ import Annotation from './Annotation';
 import AnnotationService from './AnnotationService';
 import * as annotatorUtil from './annotatorUtil';
 import { ICON_PLACED_ANNOTATION } from '../icons/icons';
-import { STATES, TYPES, CLASS_ANNOTATION_POINT_BUTTON, DATA_TYPE_ANNOTATION_INDICATOR } from './annotationConstants';
+import { STATES, TYPES, CLASS_ANNOTATION_POINT_MARKER, DATA_TYPE_ANNOTATION_INDICATOR } from './annotationConstants';
 
 @autobind
 class AnnotationThread extends EventEmitter {
@@ -404,7 +404,7 @@ class AnnotationThread extends EventEmitter {
      */
     createElement() {
         const indicatorEl = document.createElement('button');
-        indicatorEl.classList.add(CLASS_ANNOTATION_POINT_BUTTON);
+        indicatorEl.classList.add(CLASS_ANNOTATION_POINT_MARKER);
         indicatorEl.setAttribute('data-type', DATA_TYPE_ANNOTATION_INDICATOR);
         indicatorEl.innerHTML = ICON_PLACED_ANNOTATION;
         return indicatorEl;

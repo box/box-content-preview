@@ -3,7 +3,7 @@ import Annotator from '../Annotator';
 import ImagePointThread from './ImagePointThread';
 import * as annotatorUtil from '../annotatorUtil';
 import * as imageAnnotatorUtil from './imageAnnotatorUtil';
-import { CLASS_ANNOTATION_POINT_BUTTON } from '../annotationConstants';
+import { CLASS_ANNOTATION_POINT_MARKER, SELECTOR_ANNOTATION_BUTTON_POINT } from '../annotationConstants';
 
 const IMAGE_NODE_NAME = 'img';
 // Selector for image container OR multi-image container
@@ -123,8 +123,8 @@ class ImageAnnotator extends Annotator {
      * @return {void}
      */
     hideAllAnnotations() {
-        const annotateButton = this.previewUI.getAnnotateButton();
-        const annotations = this.annotatedElement.getElementsByClassName(CLASS_ANNOTATION_POINT_BUTTON);
+        const annotateButton = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_POINT);
+        const annotations = this.annotatedElement.getElementsByClassName(CLASS_ANNOTATION_POINT_MARKER);
         for (let i = 0; i < annotations.length; i++) {
             annotatorUtil.hideElement(annotations[i]);
         }
@@ -138,8 +138,8 @@ class ImageAnnotator extends Annotator {
      * @return {void}
      */
     showAllAnnotations() {
-        const annotateButton = this.previewUI.getAnnotateButton();
-        const annotations = this.annotatedElement.getElementsByClassName(CLASS_ANNOTATION_POINT_BUTTON);
+        const annotateButton = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_POINT);
+        const annotations = this.annotatedElement.getElementsByClassName(CLASS_ANNOTATION_POINT_MARKER);
         for (let i = 0; i < annotations.length; i++) {
             annotatorUtil.showElement(annotations[i]);
         }

@@ -6,7 +6,7 @@ import { CLASS_HIDDEN } from '../../constants';
 import {
     STATES,
     TYPES,
-    CLASS_ANNOTATION_POINT_BUTTON,
+    CLASS_ANNOTATION_POINT_MARKER,
     DATA_TYPE_ANNOTATION_INDICATOR
 } from '../annotationConstants';
 
@@ -371,7 +371,7 @@ describe('lib/annotations/AnnotationThread', () => {
 
             thread.setupElement();
             expect(thread.element instanceof HTMLElement).to.be.true;
-            expect(thread.element).to.have.class(CLASS_ANNOTATION_POINT_BUTTON);
+            expect(thread.element).to.have.class(CLASS_ANNOTATION_POINT_MARKER);
             expect(stubs.bind).to.be.called;
         });
     });
@@ -489,7 +489,7 @@ describe('lib/annotations/AnnotationThread', () => {
     describe('createElement()', () => {
         it('should create an element with the right class and attribute', () => {
             const element = thread.createElement();
-            expect(element).to.have.class(CLASS_ANNOTATION_POINT_BUTTON);
+            expect(element).to.have.class(CLASS_ANNOTATION_POINT_MARKER);
             expect(element).to.have.attribute('data-type', DATA_TYPE_ANNOTATION_INDICATOR);
         });
     });
