@@ -81,6 +81,8 @@ class Annotator extends EventEmitter {
 
         this.unbindDOMListeners();
         this.unbindCustomListenersOnService();
+
+        this.removeListener('annotationfocus', this.focusAnnotation);
     }
 
     /**
@@ -389,6 +391,28 @@ class Annotator extends EventEmitter {
         this.threads = {};
         this.bindDOMListeners();
         this.bindCustomListenersOnService(this.annotationService);
+
+        this.addListener('annotationfocus', this.focusAnnotation);
+    }
+    /**
+     * Toggles annotation thread specified from
+     *
+     * @param {Object} options - annotation options
+     * @param {Object} options.threadNumber - Annotation thread number
+     * @param {Object} options.page - Annotation location page
+     * @private
+     * @return {void}
+     */
+    focusAnnotation(options) {
+        if (!this.threads[options.page]) {
+            return;
+        }
+
+        this.threads[options.page].forEach((thread) => {
+            if (parseInt(thread.thread, 10) === options.threadNumber) {
+                thread.toggleThreadFocus();
+            }
+        });
     }
 
     /**
