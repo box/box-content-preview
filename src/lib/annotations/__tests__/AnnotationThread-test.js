@@ -30,7 +30,7 @@ describe('lib/annotations/AnnotationThread', () => {
             isMobile: false,
             location: {},
             threadID: '2',
-            thread: '1',
+            threadNumber: '1',
             type: 'point'
         });
 
@@ -137,7 +137,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 fileVersionId: '1',
                 location: {},
                 threadID: '2',
-                thread: '1',
+                threadNumber: '1',
                 type: 'point'
             });
 
@@ -154,7 +154,7 @@ describe('lib/annotations/AnnotationThread', () => {
                     type: 'point',
                     text: 'blah',
                     threadID: '2',
-                    thread: '1'
+                    threadNumber: '1'
                 })
             );
             expect(thread.state).to.equal(STATES.hover);
@@ -204,7 +204,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 isMobile: false,
                 location: {},
                 threadID: '2',
-                thread: '1',
+                threadNumber: '1',
                 type: 'point'
             });
 
@@ -356,7 +356,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 isMobile: false,
                 location: {},
                 threadID: '2',
-                thread: '1',
+                threadNumber: '1',
                 type: 'point'
             });
 
@@ -508,7 +508,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 threadID: '1',
                 type: 'point',
                 text: 'blah',
-                thread: '1',
+                threadNumber: '1',
                 location: { x: 0, y: 0 },
                 created: Date.now()
             });
@@ -528,7 +528,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 threadID: '1',
                 type: 'point',
                 text: 'blah',
-                thread: '1',
+                threadNumber: '1',
                 location: { x: 0, y: 0 },
                 created: Date.now()
             });
@@ -545,7 +545,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 threadID: '1',
                 type: 'point',
                 text: 'blah',
-                thread: '1',
+                threadNumber: '1',
                 location: { x: 0, y: 0 },
                 created: Date.now()
             });

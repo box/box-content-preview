@@ -299,7 +299,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                 text: 'blah',
                 user: {},
                 permissions: {},
-                thread: 1
+                threadNumber: 1
             });
 
             dialog.isMobile = false;

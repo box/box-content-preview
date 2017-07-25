@@ -42,7 +42,7 @@ describe('lib/annotations/AnnotationService', () => {
             fileVersionId: 2,
             threadID: AnnotationService.generateID(),
             type: 'point',
-            thread: '1',
+            threadNumber: '1',
             text: 'blah',
             location: { x: 0, y: 0 }
         });
@@ -60,7 +60,7 @@ describe('lib/annotations/AnnotationService', () => {
                         threadID: annotationToSave.threadID,
                         location: annotationToSave.location
                     },
-                    thread: annotationToSave.thread,
+                    thread: annotationToSave.threadNumber,
                     message: annotationToSave.text,
                     created_by: {}
                 }
@@ -70,7 +70,7 @@ describe('lib/annotations/AnnotationService', () => {
             return annotationService.create(annotationToSave).then((createdAnnotation) => {
                 expect(createdAnnotation.fileVersionId).to.equal(annotationToSave.fileVersionId);
                 expect(createdAnnotation.threadID).to.equal(annotationToSave.threadID);
-                expect(createdAnnotation.thread).to.equal(annotationToSave.thread);
+                expect(createdAnnotation.threadNumber).to.equal(annotationToSave.threadNumber);
                 expect(createdAnnotation.type).to.equal(annotationToSave.type);
                 expect(createdAnnotation.text).to.equal(annotationToSave.text);
                 expect(createdAnnotation.location.x).to.equal(annotationToSave.location.x);
@@ -110,7 +110,7 @@ describe('lib/annotations/AnnotationService', () => {
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah',
-                thread: '1',
+                threadNumber: '1',
                 location: { x: 0, y: 0 }
             });
 
@@ -119,7 +119,7 @@ describe('lib/annotations/AnnotationService', () => {
                 threadID: AnnotationService.generateID(),
                 type: 'highlight',
                 text: 'blah2',
-                thread: '2',
+                threadNumber: '2',
                 location: { x: 0, y: 0 }
             });
 
@@ -137,7 +137,7 @@ describe('lib/annotations/AnnotationService', () => {
                                 location: annotation1.location
                             },
                             message: annotation1.text,
-                            thread: annotation1.thread,
+                            thread: annotation1.threadNumber,
                             created_by: {}
                         },
                         {
@@ -151,7 +151,7 @@ describe('lib/annotations/AnnotationService', () => {
                                 location: annotation2.location
                             },
                             message: annotation2.text,
-                            thread: annotation2.thread,
+                            threadNumber: annotation2.threadNumber,
                             created_by: {}
                         }
                     ]
@@ -228,7 +228,7 @@ describe('lib/annotations/AnnotationService', () => {
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah',
-                thread: '1',
+                threadNumber: '1',
                 location: { x: 0, y: 0 }
             });
 
@@ -237,7 +237,7 @@ describe('lib/annotations/AnnotationService', () => {
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah2',
-                thread: '2',
+                threadNumber: '2',
                 location: { x: 0, y: 0 }
             });
 
@@ -246,7 +246,7 @@ describe('lib/annotations/AnnotationService', () => {
                 threadID: annotation1.threadID,
                 type: 'point',
                 text: 'blah3',
-                thread: '1',
+                threadNumber: '1',
                 location: { x: 0, y: 0 }
             });
 
@@ -255,8 +255,8 @@ describe('lib/annotations/AnnotationService', () => {
             return annotationService.getThreadMap(2).then((threadMap) => {
                 expect(threadMap[annotation1.threadID].length).to.equal(2);
                 expect(threadMap[annotation2.threadID][0]).to.contain(annotation2);
-                expect(threadMap[annotation1.threadID][0].thread).to.equal(threadMap[annotation1.threadID][1].thread);
-                expect(threadMap[annotation1.threadID][0].thread).to.not.equal(
+                expect(threadMap[annotation1.threadID][0].threadNumber).to.equal(threadMap[annotation1.threadID][1].threadNumber);
+                expect(threadMap[annotation1.threadID][0].threadNumber).to.not.equal(
                     threadMap[annotation2.threadID][0].thread
                 );
             });
@@ -273,7 +273,7 @@ describe('lib/annotations/AnnotationService', () => {
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah',
-                thread: '1',
+                threadNumber: '1',
                 location: { x: 0, y: 0 },
                 created: '2016-10-29T14:19:56'
             });
@@ -284,7 +284,7 @@ describe('lib/annotations/AnnotationService', () => {
                 threadID: annotation1.threadID,
                 type: 'point',
                 text: 'blah4',
-                thread: '1',
+                threadNumber: '1',
                 location: { x: 0, y: 0 },
                 created: '2016-10-30T14:19:56'
             });
@@ -294,7 +294,7 @@ describe('lib/annotations/AnnotationService', () => {
                 threadID: AnnotationService.generateID(),
                 type: 'point',
                 text: 'blah2',
-                thread: '2',
+                threadNumber: '2',
                 location: { x: 0, y: 0 },
                 created: '2016-10-30T14:19:56'
             });
@@ -304,7 +304,7 @@ describe('lib/annotations/AnnotationService', () => {
                 threadID: annotation1.threadID,
                 type: 'point',
                 text: 'blah3',
-                thread: '1',
+                threadNumber: '1',
                 location: { x: 0, y: 0 },
                 created: '2016-10-31T14:19:56'
             });
@@ -314,8 +314,8 @@ describe('lib/annotations/AnnotationService', () => {
             expect(threadMap[annotation1.threadID].length).to.equal(3);
             expect(threadMap[annotation1.threadID][0]).to.equal(annotation1);
             expect(threadMap[annotation1.threadID][1]).to.equal(annotation4);
-            expect(threadMap[annotation1.threadID][0].thread).to.equal(threadMap[annotation1.threadID][1].thread);
-            expect(threadMap[annotation1.threadID][0].thread).to.not.equal(threadMap[annotation2.threadID][0].thread);
+            expect(threadMap[annotation1.threadID][0].threadNumber).to.equal(threadMap[annotation1.threadID][1].threadNumber);
+            expect(threadMap[annotation1.threadID][0].threadNumber).to.not.equal(threadMap[annotation2.threadID][0].threadNumber);
         });
     });
 
@@ -326,7 +326,7 @@ describe('lib/annotations/AnnotationService', () => {
                 threadID: 1,
                 type: 'point',
                 text: 'blah3',
-                thread: '1',
+                threadNumber: '1',
                 location: { x: 0, y: 0 },
                 created: Date.now(),
                 item: { id: 1 },
@@ -348,7 +348,7 @@ describe('lib/annotations/AnnotationService', () => {
                 threadID: AnnotationService.generateID(),
                 type: 'highlight',
                 text: 'blah2',
-                thread: '1',
+                threadNumber: '1',
                 location: { x: 0, y: 0 }
             });
 
@@ -365,7 +365,7 @@ describe('lib/annotations/AnnotationService', () => {
                                 threadID: annotation2.threadID,
                                 location: annotation2.location
                             },
-                            thread: annotation2.thread,
+                            thread: annotation2.threadNumber,
                             message: annotation2.text,
                             created_by: {}
                         }
@@ -385,7 +385,7 @@ describe('lib/annotations/AnnotationService', () => {
             promise.then((result) => {
                 expect(result.length).to.equal(1);
                 expect(result[0].text).to.equal(annotation2.text);
-                expect(result[0].thread).to.equal(annotation2.thread);
+                expect(result[0].threadNumber).to.equal(annotation2.threadNumber);
             });
         });
 
