@@ -120,7 +120,7 @@ class DocAnnotator extends Annotator {
         this.highlightCreateHandler = this.highlightCreateHandler.bind(this);
         this.onTouchStart = this.onTouchStart.bind(this);
 
-        this.createHighlightDialog = new CreateHighlightDialog(undefined, this.isMobile);
+        this.createHighlightDialog = new CreateHighlightDialog(this.container, this.isMobile);
         this.createHighlightDialog.addListener(CreateEvents.plain, this.createPlainHighlight);
 
         this.createHighlightDialog.addListener(CreateEvents.comment, this.highlightCurrentSelection);
@@ -674,6 +674,7 @@ class DocAnnotator extends Annotator {
         if (this.highlighter) {
             this.highlighter.removeAllHighlights();
         }
+
         this.createHighlightDialog.hide();
         // Creating highlights is disabled on mobile for now since the
         // event we would listen to, selectionchange, fires continuously and
@@ -684,6 +685,7 @@ class DocAnnotator extends Annotator {
         } else {
             this.highlightClickHandler(event);
         }
+
         this.isCreatingHighlight = false;
     }
 
@@ -696,6 +698,7 @@ class DocAnnotator extends Annotator {
         if (this.highlighter) {
             this.highlighter.removeAllHighlights();
         }
+
         this.createHighlightDialog.hide();
     }
 

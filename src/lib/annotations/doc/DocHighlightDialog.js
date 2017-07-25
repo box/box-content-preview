@@ -58,6 +58,7 @@ class DocHighlightDialog extends AnnotationDialog {
         if (text.trim() === '') {
             return;
         }
+
         // Convert from plain highlight to comment
         const headerEl = this.isMobile ? this.element.querySelector('.bp-annotation-mobile-header') : null;
         if (headerEl) {

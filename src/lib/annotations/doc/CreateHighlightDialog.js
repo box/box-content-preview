@@ -38,63 +38,31 @@ export const CreateEvents = {
 };
 
 class CreateHighlightDialog extends EventEmitter {
-    /**
-     * Container element for the dialog.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - Container element for the dialog. */
     containerEl;
 
-    /**
-     * The clickable element for creating plain highlights.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - The clickable element for creating plain highlights. */
     highlightCreateEl;
 
-    /**
-     * The clickable element got creating comment highlights.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - The clickable element got creating comment highlights. */
     commentCreateEl;
 
-    /**
-     * The parent container to nest the dialog element in.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - The parent container to nest the dialog element in. */
     parentEl;
 
-    /**
-     * The element containing the buttons that can creaet highlights.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - The element containing the buttons that can creaet highlights. */
     buttonsEl;
 
-    /**
-     * The comment box instance. Contains area for text input and post/cancel buttons.
-     *
-     * @property {CommentBox}
-     */
+    /** @property {CommentBox} - The comment box instance. Contains area for text input and post/cancel buttons. */
     commentBox;
 
-    /**
-     * Position, on the DOM, to align the dialog to the end of a highlight.
-     *
-     * @property {Object}
-     */
+    /** @property {Object} - Position, on the DOM, to align the dialog to the end of a highlight. */
     position = {
         x: 0,
         y: 0
     };
 
-    /**
-     * Whether or not we're on a mobile device.
-     *
-     * @property {boolean}
-     */
+    /** @property {boolean} - Whether or not we're on a mobile device. */
     isMobile;
 
     /**
@@ -323,6 +291,7 @@ class CreateHighlightDialog extends EventEmitter {
         const highlightDialogEl = document.createElement('div');
         highlightDialogEl.classList.add(CLASS_CREATE_DIALOG);
         highlightDialogEl.innerHTML = CREATE_HIGHLIGHT_DIALOG_TEMPLATE;
+
         // Get rid of the caret
         if (this.isMobile) {
             highlightDialogEl.classList.add('bp-mobile-annotation-dialog');
