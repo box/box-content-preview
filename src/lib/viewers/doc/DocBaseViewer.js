@@ -361,7 +361,7 @@ class DocBaseViewer extends BaseViewer {
         const previousPageButtonEl = this.containerEl.querySelector('.bp-previous-page');
         const nextPageButtonEl = this.containerEl.querySelector('.bp-next-page');
 
-        // Safari disables keyboard input in fullscreen
+        // Safari disables keyboard input in fullscreen before Safari 10.1
         const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen(this.containerEl);
 
         // Disable page number selector if there is only one page or less

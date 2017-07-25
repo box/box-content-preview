@@ -17,6 +17,7 @@ import Browser from '../Browser';
 import {
     PERMISSION_ANNOTATE,
     CLASS_FULLSCREEN,
+    CLASS_FULLSCREEN_UNSUPPORTED,
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
     SELECTOR_BOX_PREVIEW,
@@ -332,12 +333,20 @@ class BaseViewer extends EventEmitter {
         /* istanbul ignore next */
         fullscreen.addListener('enter', () => {
             this.containerEl.classList.add(CLASS_FULLSCREEN);
+            if (!fullscreen.isSupported()) {
+                this.containerEl.classList.add(CLASS_FULLSCREEN_UNSUPPORTED);
+            }
+
             this.resize();
         });
 
         /* istanbul ignore next */
         fullscreen.addListener('exit', () => {
             this.containerEl.classList.remove(CLASS_FULLSCREEN);
+            if (!fullscreen.isSupported()) {
+                this.containerEl.classList.remove(CLASS_FULLSCREEN_UNSUPPORTED);
+            }
+
             this.resize();
         });
 
