@@ -6,6 +6,7 @@ import AnnotationThread from '../../AnnotationThread';
 import Browser from '../../../Browser';
 import DocAnnotator from '../DocAnnotator';
 import DocHighlightThread from '../DocHighlightThread';
+import DocDrawingThread from '../DocDrawingThread';
 import DocPointThread from '../DocPointThread';
 import * as annotatorUtil from '../../annotatorUtil';
 import * as docAnnotatorUtil from '../docAnnotatorUtil';
@@ -268,6 +269,13 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(thread.threadID).to.equal(annotation.threadID);
             expect(thread.thread).to.equal(annotation.thread);
             expect(thread instanceof DocHighlightThread).to.be.true;
+            expect(annotator.handleValidationError).to.not.be.called;
+        });
+
+        it('should create, add drawing thread to internal map, and return it', () => {
+            const thread = annotator.createAnnotationThread([], {}, TYPES.draw);
+            expect(stubs.addThread).to.have.been.called;
+            expect(thread instanceof DocDrawingThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
         });
 

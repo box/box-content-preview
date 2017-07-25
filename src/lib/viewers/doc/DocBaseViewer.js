@@ -445,13 +445,14 @@ class DocBaseViewer extends BaseViewer {
     /**
      * @inheritdoc
      */
-    getPointModeClickHandler() {
-        if (!this.isAnnotatable('point')) {
+    getAnnotationModeClickHandler(mode) {
+        if (!mode || !this.isAnnotatable(mode)) {
             return null;
         }
 
+        const eventName = `toggle${mode}annotationmode`;
         return () => {
-            this.emit('togglepointannotationmode');
+            this.emit(eventName);
         };
     }
 

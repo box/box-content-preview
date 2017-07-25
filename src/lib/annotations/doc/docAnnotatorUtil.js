@@ -328,3 +328,47 @@ export function isValidSelection(selection) {
 
     return !isInvalid;
 }
+
+/**
+ * Gets the context an annotation should be drawn on.
+ *
+ * @param {HTMLElement} pageEl The DOM element for the current page
+ * @param {string} annotationLayerClass The class name for the annotation layer
+ * @param {number} [paddingTop] The top padding of each page element
+ * @param {number} [paddingBottom] The bottom padding of each page element
+ * @return {RenderingContext|null} Context or null if no page element was given
+ */
+export function getContext(pageEl, annotationLayerClass, paddingTop, paddingBottom) {
+    if (!pageEl) {
+        return null;
+    }
+
+    let annotationLayerEl = pageEl.querySelector(`.${annotationLayerClass}`);
+    // Create annotation layer if one does not exist (e.g. first load or page resize)
+    if (!annotationLayerEl) {
+        annotationLayerEl = document.createElement('canvas');
+        annotationLayerEl.classList.add(annotationLayerClass);
+        const pageDimensions = pageEl.getBoundingClientRect();
+        const pagePaddingTop = paddingTop || 0;
+        const pagePaddingBottom = paddingBottom || 0;
+        annotationLayerEl.width = pageDimensions.width;
+        annotationLayerEl.height = pageDimensions.height - pagePaddingTop - pagePaddingBottom;
+
+        const textLayerEl = pageEl.querySelector('.textLayer');
+        pageEl.insertBefore(annotationLayerEl, textLayerEl);
+    }
+
+    return annotationLayerEl.getContext('2d');
+}
+
+/**
+ * Gets the current page element.
+ *
+ * @private
+ * @param {HTMLElement} annotatedEl HTML Element being annotated on
+ * @param {number} pageNum Page number
+ * @return {HTMLElement|null} Page element if it exists, otherwise null
+ */
+export function getPageEl(annotatedEl, pageNum) {
+    return annotatedEl.querySelector(`[data-page-number="${pageNum}"]`);
+}

@@ -256,7 +256,7 @@ $avatar-color-9: #f22c44;
     }
 }
 
-.bp-point-annotation-btn {
+.bp-point-annotation-marker {
     background-color: transparent;
     border-style: none;
     cursor: pointer;
@@ -324,8 +324,8 @@ $avatar-color-9: #f22c44;
 //------------------------------------------------------------------------------
 // CSS for highlights
 //------------------------------------------------------------------------------
-
-.bp-annotation-layer {
+.bp-annotation-layer-draw,
+.bp-annotation-layer-highlight {
     cursor: text;
     left: 0;
     mix-blend-mode: multiply;
@@ -425,9 +425,12 @@ $avatar-color-9: #f22c44;
 //------------------------------------------------------------------------------
 // Annotation mode
 //------------------------------------------------------------------------------
-
+.bp-draw-annotation-mode .page,
+.bp-draw-annotation-mode .bp-annotation-layer-highlight,
+.bp-draw-annotation-mode .textLayer > div,
+.bp-draw-annotation-mode > img,
 .bp-point-annotation-mode .page,
-.bp-point-annotation-mode .bp-annotation-layer,
+.bp-point-annotation-mode .bp-annotation-layer-highlight,
 .bp-point-annotation-mode .textLayer > div,
 .bp-point-annotation-mode > img {
     cursor: crosshair;

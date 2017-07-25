@@ -42,7 +42,8 @@ export const SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER = '.bp-crawler-wrapper';
 export const SELECTOR_BOX_PREVIEW_HEADER_BTNS = `.${CLASS_BOX_PREVIEW_HEADER_BTNS}`;
 export const SELECTOR_NAVIGATION_LEFT = '.bp-navigate-left';
 export const SELECTOR_NAVIGATION_RIGHT = '.bp-navigate-right';
-export const SELECTOR_BOX_PREVIEW_BTN_ANNOTATE = '.bp-btn-annotate';
+export const SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT = '.bp-btn-annotate-point';
+export const SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW = '.bp-btn-annotate-draw';
 export const SELECTOR_BOX_PREVIEW_BTN_PRINT = '.bp-btn-print';
 export const SELECTOR_BOX_PREVIEW_BTN_DOWNLOAD = '.bp-btn-download';
 export const SELECTOR_BOX_PREVIEW_BTN_LOADING_DOWNLOAD = '.bp-btn-loading-download';
@@ -79,7 +80,7 @@ export const X_REP_HINT_VIDEO_MP4 = '[mp4]';
 // whenever a file in that third party directory is updated
 export const DOC_STATIC_ASSETS_VERSION = '0.130.0';
 export const MEDIA_STATIC_ASSETS_VERSION = '0.127.0';
-export const MODEL3D_STATIC_ASSETS_VERSION = '0.125.0';
+export const MODEL3D_STATIC_ASSETS_VERSION = '1.1.1';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';
 export const TEXT_STATIC_ASSETS_VERSION = '0.114.0';
 
