@@ -4,7 +4,19 @@ import {
     CLASS_ANNOTATION_HIGHLIGHT_DIALOG,
     SELECTOR_ANNOTATION_CONTAINER,
     PAGE_PADDING_TOP,
-    PAGE_PADDING_BOTTOM
+    PAGE_PADDING_BOTTOM,
+    DATA_TYPE_ANNOTATION_DIALOG,
+    DATA_TYPE_ANNOTATION_INDICATOR,
+    DATA_TYPE_HIGHLIGHT,
+    DATA_TYPE_ADD_HIGHLIGHT_COMMENT,
+    DATA_TYPE_POST,
+    DATA_TYPE_CANCEL,
+    DATA_TYPE_REPLY_TEXTAREA,
+    DATA_TYPE_CANCEL_REPLY,
+    DATA_TYPE_POST_REPLY,
+    DATA_TYPE_DELETE,
+    DATA_TYPE_CANCEL_DELETE,
+    DATA_TYPE_CONFIRM_DELETE
 } from '../annotationConstants';
 
 const PREVIEW_PRESENTATION_CLASS = 'bp-doc-presentation';
@@ -13,6 +25,21 @@ const HEIGHT_PADDING = 30;
 const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
 const CSS_PIXEL_TO_PDF_UNIT = 3 / 4;
 const HIGHLIGHT_DIALOG_HEIGHT = 48;
+
+const DIALOG_DATATYPES = [
+    DATA_TYPE_ANNOTATION_DIALOG,
+    DATA_TYPE_ANNOTATION_INDICATOR,
+    DATA_TYPE_HIGHLIGHT,
+    DATA_TYPE_ADD_HIGHLIGHT_COMMENT,
+    DATA_TYPE_POST,
+    DATA_TYPE_CANCEL,
+    DATA_TYPE_REPLY_TEXTAREA,
+    DATA_TYPE_CANCEL_REPLY,
+    DATA_TYPE_POST_REPLY,
+    DATA_TYPE_DELETE,
+    DATA_TYPE_CANCEL_DELETE,
+    DATA_TYPE_CONFIRM_DELETE
+];
 
 /**
  * Checks whether this annotator is on a presentation (PPT) or not.
@@ -358,4 +385,9 @@ export function getContext(pageEl, annotationLayerClass, paddingTop, paddingBott
  */
 export function getPageEl(annotatedEl, pageNum) {
     return annotatedEl.querySelector(`[data-page-number="${pageNum}"]`);
+}
+
+export function isDialogDatatype(eventTarget) {
+    const dataType = annotatorUtil.findClosestDataType(eventTarget);
+    return DIALOG_DATATYPES.indexOf(dataType) !== -1;
 }
