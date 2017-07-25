@@ -269,7 +269,9 @@ $avatar-color-9: #f22c44;
         transition: fill .5s;
     }
 
-    &:hover svg {
+    &:hover svg,
+    &.bp-has-focus path,
+    &.bp-has-focus circle {
         fill: $box-blue;
     }
 }

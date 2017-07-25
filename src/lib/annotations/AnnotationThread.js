@@ -6,6 +6,8 @@ import * as annotatorUtil from './annotatorUtil';
 import { ICON_PLACED_ANNOTATION } from '../icons/icons';
 import { STATES, TYPES, CLASS_ANNOTATION_POINT_MARKER, DATA_TYPE_ANNOTATION_INDICATOR } from './annotationConstants';
 
+const CLASS_HAS_FOCUS = 'bp-has-focus';
+
 @autobind
 class AnnotationThread extends EventEmitter {
     //--------------------------------------------------------------------------
@@ -408,6 +410,41 @@ class AnnotationThread extends EventEmitter {
         indicatorEl.setAttribute('data-type', DATA_TYPE_ANNOTATION_INDICATOR);
         indicatorEl.innerHTML = ICON_PLACED_ANNOTATION;
         return indicatorEl;
+    }
+
+    /**
+     * Toggles annotation focus on/off
+     *
+     * @protected
+     * @return {void}
+     */
+    toggleThreadFocus() {
+        const threadIsFocused = this.element.classList.contains(`${CLASS_HAS_FOCUS}`);
+        const svgElement = this.element.querySelector('.icon');
+        const xVal = parseInt(this.element.style.left, 10);
+        const yVal = parseInt(this.element.style.top, 10);
+
+        if (threadIsFocused) {
+            this.element.classList.remove(CLASS_HAS_FOCUS);
+
+            // Shrink SVG to original size
+            svgElement.setAttribute('height', '30px');
+            svgElement.setAttribute('width', '24px');
+
+            // Re-adjust positioning
+            this.element.style.left = `${xVal + 3}px`;
+            this.element.style.top = `${yVal + 3}px`;
+        } else {
+            this.element.classList.add(CLASS_HAS_FOCUS);
+
+            // Enlarge SVG
+            svgElement.setAttribute('height', '36px');
+            svgElement.setAttribute('width', '30px');
+
+            // Re-adjust positioning
+            this.element.style.left = `${xVal - 3}px`;
+            this.element.style.top = `${yVal - 3}px`;
+        }
     }
 
     /**
