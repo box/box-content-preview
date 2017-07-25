@@ -1,6 +1,21 @@
 # Change Log
 
-## [v1.1.1](https://github.com/box/box-content-preview/tree/v1.1.1) (2017-07-19)
+## [v1.2.0](https://github.com/box/box-content-preview/tree/v1.2.0) (2017-07-25)
+[Full Changelog](https://github.com/box/box-content-preview/compare/v1.1.1...v1.2.0)
+
+**Merged pull requests:**
+
+- Fix: Update box3d to fix camera reload bug [\#245](https://github.com/box/box-content-preview/pull/245) ([MiiBond](https://github.com/MiiBond))
+- New: added support for compressed \(DDS\) textures to 3D preview [\#244](https://github.com/box/box-content-preview/pull/244) ([ikerr](https://github.com/ikerr))
+- Update Translations [\#240](https://github.com/box/box-content-preview/pull/240) ([boxmoji](https://github.com/boxmoji))
+- Fix: Allow legacy annotations to render in PDF.js [\#238](https://github.com/box/box-content-preview/pull/238) ([jeremypress](https://github.com/jeremypress))
+- Fix: Give preview some min width and height [\#237](https://github.com/box/box-content-preview/pull/237) ([priyajeet](https://github.com/priyajeet))
+- Docs: Adding section of using Preview as a component [\#236](https://github.com/box/box-content-preview/pull/236) ([priyajeet](https://github.com/priyajeet))
+- Fix: Increase controls timeout and fix controls behavior for mobile VR [\#235](https://github.com/box/box-content-preview/pull/235) ([jeremypress](https://github.com/jeremypress))
+- Fix: Ensuring annotation scale is set on files with 0 annotations [\#234](https://github.com/box/box-content-preview/pull/234) ([pramodsum](https://github.com/pramodsum))
+- Feature: DrawingAnnotations starting code [\#224](https://github.com/box/box-content-preview/pull/224) ([MinhHNguyen](https://github.com/MinhHNguyen))
+
+## [v1.1.1](https://github.com/box/box-content-preview/tree/v1.1.1) (2017-07-20)
 [Full Changelog](https://github.com/box/box-content-preview/compare/v1.1.0...v1.1.1)
 
 **Merged pull requests:**
