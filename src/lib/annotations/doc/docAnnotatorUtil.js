@@ -387,6 +387,13 @@ export function getPageEl(annotatedEl, pageNum) {
     return annotatedEl.querySelector(`[data-page-number="${pageNum}"]`);
 }
 
+/**
+ * Checks whether the mouse event occured in a highlight dialog
+ *
+ * @private
+ * @param {HTMLElement} eventTarget mouse event target element
+ * @return {boolean} Whether mouse event occured in a highlight dialog
+ */
 export function isDialogDatatype(eventTarget) {
     const dataType = annotatorUtil.findClosestDataType(eventTarget);
     return DIALOG_DATATYPES.indexOf(dataType) !== -1;
