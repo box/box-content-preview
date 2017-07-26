@@ -35,6 +35,7 @@ Preview gives users the ability to view a single file within Box so, by default,
 `box3d, fbx, dae, 3ds, obj, stl, ply`
 
 ## Events
+
 The Model3D viewer fires the following events
 
 | Event Name | Explanation | Event Data |
@@ -45,3 +46,13 @@ The Model3D viewer fires the following events
 | navigate | The preview is shown for a given index | {object} file |
 | reload | The preview reloads ||
 | resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
+
+## Methods
+
+The following methods are available for the model3D viewer.
+
+| Method Name | Explanation | Method Parameters |
+| --- | --- | --- |
+| setModelScale | Sets the scale used to render the model | {number} the size of the largest dimension of the model in meters|
+| setModelAlignment | Set the position of the model relative a point and the model's bounding box | {vector} position, {vector} alignment vector |
+| toggleFullscreen | Toggles fullscreen mode ||
