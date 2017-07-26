@@ -151,20 +151,23 @@ class AnnotationThread extends EventEmitter {
         this.annotationService
             .create(annotationData)
             .then((savedAnnotation) => {
-                // If no temporary annotation is found, save to thread normally
                 const tempIdx = this.annotations.indexOf(tempAnnotation);
                 if (tempIdx === -1) {
+                    // If no temporary annotation is found, save to thread normally
                     this.saveAnnotationToThread(savedAnnotation);
+                } else {
+                    // Otherwise, replace temporary annotation with annotation saved to server
+                    this.annotations[tempIdx] = savedAnnotation;
                 }
 
-                // Add thread number to associated dialog and thread
                 this.thread = this.thread || savedAnnotation.thread;
-                this.dialog.element.dataset.threadNumber = this.thread;
-
-                // Otherwise, replace temporary annotation with annotation saved to server
-                this.annotations[tempIdx] = savedAnnotation;
 
                 if (this.dialog) {
+                    // Add thread number to associated dialog and thread
+                    if (this.dialog.element && this.dialog.element.dataset) {
+                        this.dialog.element.dataset.threadNumber = this.thread;
+                    }
+
                     this.dialog.addAnnotation(savedAnnotation);
                     this.dialog.removeAnnotation(tempAnnotationID);
                 }
