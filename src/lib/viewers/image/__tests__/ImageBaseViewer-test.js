@@ -26,6 +26,12 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         imageBase = new ImageBaseViewer(containerEl);
         imageBase.containerEl = containerEl;
         imageBase.imageEl = document.createElement('div');
+
+        event = {
+            preventDefault: sandbox.stub(),
+            stopPropagation: sandbox.stub(),
+            touches: [0, 0]
+        };
     });
 
     afterEach(() => {
@@ -38,6 +44,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
         imageBase = null;
         stubs = {};
+        event = {};
     });
 
     describe('destroy()', () => {
@@ -465,6 +472,38 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             err.displayMessage = 'We\'re sorry, the preview didn\'t load. Please refresh the page.';
             expect(stubs.emit).to.have.been.calledWith('error', err);
+        });
+    });
+
+    describe('getAnnotationModeClickHandler()', () => {
+        beforeEach(() => {
+            stubs.isAnnotatable = sandbox.stub(imageBase, 'isAnnotatable').returns(false);
+        });
+
+        it('should return null if you cannot annotate', () => {
+            const handler = imageBase.getAnnotationModeClickHandler('point');
+            expect(stubs.isAnnotatable).to.be.called;
+            expect(handler).to.equal(null);
+        });
+
+        it('should return the toggle point mode handler', () => {
+            stubs.isAnnotatable.returns(true);
+            stubs.emitter = sandbox.stub(imageBase, 'emit');
+            imageBase.annotator = {
+                togglePointAnnotationHandler: () => {}
+            };
+            imageBase.imageEl.classList.add(CSS_CLASS_PANNABLE);
+            imageBase.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
+
+            const handler = imageBase.getAnnotationModeClickHandler('point');
+            expect(stubs.isAnnotatable).to.be.called;
+            expect(handler).to.be.a('function');
+
+            handler(event);
+
+            expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_PANNABLE);
+            expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_ZOOMABLE);
+            expect(imageBase.emit).to.have.been.calledWith('togglepointannotationmode');
         });
     });
 

@@ -767,9 +767,16 @@ class BaseViewer extends EventEmitter {
      * @param {string} mode - Target annotation mode
      * @return {Function|null} Click handler
      */
-    /* eslint-disable no-unused-vars */
-    getAnnotationModeClickHandler(mode) {}
-    /* eslint-enable no-unused-vars */
+    getAnnotationModeClickHandler(mode) {
+        if (!mode || !this.isAnnotatable(mode)) {
+            return null;
+        }
+
+        const eventName = `toggle${mode}annotationmode`;
+        return () => {
+            this.emit(eventName);
+        };
+    }
 
     /**
      * Disables viewer controls
