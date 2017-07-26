@@ -347,15 +347,16 @@ class ImageBaseViewer extends BaseViewer {
     /**
      * @inheritdoc
      */
-    getPointModeClickHandler() {
-        if (!this.isAnnotatable('point')) {
+    getAnnotationModeClickHandler(mode) {
+        if (!mode || !this.isAnnotatable(mode)) {
             return null;
         }
 
+        const eventName = `toggle${mode}annotationmode`;
         return () => {
             this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
             this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-            this.emit('togglepointannotationmode');
+            this.emit(eventName);
         };
     }
 

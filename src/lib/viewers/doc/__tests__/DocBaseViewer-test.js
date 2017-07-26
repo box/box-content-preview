@@ -699,33 +699,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
     });
 
-    describe('getPointModeClickHandler()', () => {
-        beforeEach(() => {
-            stubs.isAnnotatable = sandbox.stub(docBase, 'isAnnotatable').returns(false);
-        });
-
-        it('should return null if you cannot annotate', () => {
-            const handler = docBase.getAnnotationModeClickHandler('point');
-            expect(stubs.isAnnotatable).to.be.called;
-            expect(handler).to.equal(null);
-        });
-
-        it('should return the toggle point mode handler', () => {
-            stubs.isAnnotatable.returns(true);
-            sandbox.stub(docBase, 'emit');
-            docBase.annotator = {
-                togglePointAnnotationHandler: () => {}
-            };
-
-            const handler = docBase.getAnnotationModeClickHandler('point');
-            expect(stubs.isAnnotatable).to.be.called;
-            expect(handler).to.be.a('function');
-
-            handler(event);
-            expect(docBase.emit).to.have.been.calledWith('togglepointannotationmode');
-        });
-    });
-
     describe('onKeyDown()', () => {
         beforeEach(() => {
             stubs.previousPage = sandbox.stub(docBase, 'previousPage');
