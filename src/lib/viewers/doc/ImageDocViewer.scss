@@ -1,0 +1,25 @@
+.bp-doc-simple-document {
+    height: 100%;
+    overflow: scroll;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+}
+
+.bp-page {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin: 15px;
+    position: relative;
+    top: 0;
+}
+
+.bp-page > img {
+    width: 100%;
+}
+
+.bp-invisible {
+    opacity: 0;
+}

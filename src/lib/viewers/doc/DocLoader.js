@@ -2,6 +2,7 @@ import AssetLoader from '../AssetLoader';
 import { getRepresentation } from '../../file';
 import DocumentViewer from './DocumentViewer';
 import PresentationViewer from './PresentationViewer';
+import ImageDocViewer from '../doc/ImageDocViewer';
 import RepStatus from '../../RepStatus';
 import { ORIGINAL_REP_NAME, STATUS_SUCCESS } from '../../constants';
 import { DOCUMENT_EXTENSIONS } from '../../extensions';
@@ -10,6 +11,13 @@ import { DOCUMENT_EXTENSIONS } from '../../extensions';
 // or the original as a fallback. Additionally, we include multiple entries for the presentation viewer so that it can be
 // used by other docoument types if the document viewer is disabled.
 const VIEWERS = [
+    {
+        NAME: 'Simple',
+        CONSTRUCTOR: ImageDocViewer,
+        REP: 'png',
+        EXT: DOCUMENT_EXTENSIONS,
+        ASSET: '{page}.png'
+    },
     {
         NAME: 'Presentation',
         CONSTRUCTOR: PresentationViewer,

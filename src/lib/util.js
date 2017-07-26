@@ -741,6 +741,10 @@ export function pageNumberFromScroll(currentPageNum, previousScrollTop, currentP
     const currentScrollTop = wrapperEl.scrollTop;
     const currentScrollBottom = wrapperEl.scrollTop + wrapperEl.offsetHeight;
     const currentPageMiddleY = currentPageEl.offsetTop + currentPageEl.clientHeight / 2;
+    console.log(currentPageEl);
+    console.log(`currentScrollTop: ${currentScrollTop}`);
+    console.log(`currentScrollBottom: ${currentScrollBottom}`);
+    console.log(`currentPageMiddleY: ${currentPageMiddleY}`);
 
     if (currentScrollTop > previousScrollTop) {
         // Scrolling down

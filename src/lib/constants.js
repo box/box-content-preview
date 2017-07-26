@@ -77,7 +77,7 @@ export const STATUS_VIEWABLE = 'viewable';
 // X-Rep-Hints for Representations API
 export const X_REP_HINT_BASE = '[3d][pdf][text][mp3]';
 export const X_REP_HINT_DOC_THUMBNAIL = '[jpg?dimensions=1024x1024&paged=false]';
-export const X_REP_HINT_IMAGE = '[jpg?dimensions=2048x2048,png?dimensions=2048x2048]';
+export const X_REP_HINT_IMAGE = '[jpg?dimensions=2048x2048][png?dimensions=1024x1024][png?dimensions=2048x2048]';
 export const X_REP_HINT_VIDEO_DASH = '[dash,mp4][filmstrip]';
 export const X_REP_HINT_VIDEO_MP4 = '[mp4]';
 
