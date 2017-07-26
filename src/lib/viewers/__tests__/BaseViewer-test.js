@@ -843,4 +843,31 @@ describe('lib/viewers/BaseViewer', () => {
             expect(buttonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
         });
     });
+
+    describe('getAnnotationModeClickHandler()', () => {
+        beforeEach(() => {
+            stubs.isAnnotatable = sandbox.stub(base, 'isAnnotatable').returns(false);
+        });
+
+        it('should return null if you cannot annotate', () => {
+            const handler = base.getAnnotationModeClickHandler('point');
+            expect(stubs.isAnnotatable).to.be.called;
+            expect(handler).to.equal(null);
+        });
+
+        it('should return the toggle point mode handler', () => {
+            stubs.isAnnotatable.returns(true);
+            sandbox.stub(base, 'emit');
+            base.annotator = {
+                togglePointAnnotationHandler: () => {}
+            };
+
+            const handler = base.getAnnotationModeClickHandler('point');
+            expect(stubs.isAnnotatable).to.be.called;
+            expect(handler).to.be.a('function');
+
+            handler(event);
+            expect(base.emit).to.have.been.calledWith('togglepointannotationmode');
+        });
+    });
 });
