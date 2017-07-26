@@ -132,7 +132,7 @@ push_new_release() {
         echo "Starting patch release - skipping reset to master"
         echo "IMPORTANT - your branch should be in the state you want for the patch"
         echo "----------------------------------------------------------------------"
-    if $minor_release; then
+    elif $minor_release; then
         echo "----------------------------------------------------------------------"
         echo "Starting minor release - reset to upstream master"
         echo "----------------------------------------------------------------------"
