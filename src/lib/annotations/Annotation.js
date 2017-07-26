@@ -37,7 +37,7 @@ class Annotation {
         this.annotationID = data.annotationID;
         this.fileVersionId = data.fileVersionId;
         this.threadID = data.threadID;
-        this.thread = data.thread;
+        this.threadNumber = data.threadNumber;
         this.type = data.type;
         this.text = data.text;
         this.location = data.location;
