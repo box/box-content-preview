@@ -322,6 +322,36 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('onFullscreenToggled()', () => {
+        beforeEach(() => {
+            base.containerEl = document.createElement('div');
+            sandbox.stub(fullscreen, 'isSupported').returns(false);
+            sandbox.stub(base, 'resize');
+
+        });
+
+        it('should toggle the fullscreen class', () => {
+            base.onFullscreenToggled();
+            expect(base.containerEl.classList.contains(constants.CLASS_FULLSCREEN)).to.be.true;
+
+            base.onFullscreenToggled();
+            expect(base.containerEl.classList.contains(constants.CLASS_FULLSCREEN)).to.be.false;
+        });
+
+        it('should toggle the unsupported class if the browser does not support the fullscreen API', () => {
+            base.onFullscreenToggled();
+            expect(base.containerEl.classList.contains(constants.CLASS_FULLSCREEN_UNSUPPORTED)).to.be.true;
+
+            base.onFullscreenToggled();
+            expect(base.containerEl.classList.contains(constants.CLASS_FULLSCREEN_UNSUPPORTED)).to.be.false;
+        });
+
+        it('should resize the viewer', () => {
+            base.onFullscreenToggled();
+            expect(base.resize).to.be.called;
+        });
+    });
+
     describe('resize()', () => {
         it('should broadcast resize event', () => {
             sandbox.stub(base, 'emit');
