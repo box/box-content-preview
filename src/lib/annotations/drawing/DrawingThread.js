@@ -167,7 +167,7 @@ class DrawingThread extends AnnotationThread {
             fileVersionId: this.fileVersionId,
             user: this.annotationService.user,
             threadID: this.threadID,
-            thread: this.thread
+            threadNumber: this.threadNumber
         };
     }
 }

@@ -259,7 +259,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 fileVersionId: 2,
                 threadID: '1',
                 type: TYPES.point,
-                thread: '1',
+                threadNumber: '1',
                 text: 'blah',
                 location: { x: 0, y: 0 }
             });
@@ -267,7 +267,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
             expect(stubs.addThread).to.have.been.called;
             expect(thread.threadID).to.equal(annotation.threadID);
-            expect(thread.thread).to.equal(annotation.thread);
+            expect(thread.threadNumber).to.equal(annotation.threadNumber);
             expect(thread instanceof DocHighlightThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
         });

@@ -46,7 +46,7 @@ class AnnotationThread extends EventEmitter {
         this.fileVersionId = data.fileVersionId;
         this.location = data.location;
         this.threadID = data.threadID || AnnotationService.generateID();
-        this.thread = data.thread || '';
+        this.threadNumber = data.threadNumber || '';
         this.type = data.type;
         this.locale = data.locale;
         this.isMobile = data.isMobile;
@@ -160,7 +160,7 @@ class AnnotationThread extends EventEmitter {
                     this.annotations[tempIdx] = savedAnnotation;
                 }
 
-                this.thread = this.thread || savedAnnotation.thread;
+                this.threadNumber = this.threadNumber || savedAnnotation.threadNumber;
 
                 if (this.dialog) {
                     // Add thread number to associated dialog and thread
@@ -457,7 +457,7 @@ class AnnotationThread extends EventEmitter {
             location: this.location,
             user: this.annotationService.user,
             threadID: this.threadID,
-            thread: this.thread
+            threadNumber: this.threadNumber
         };
     }
 

@@ -218,7 +218,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
                 permissions: {
                     can_delete: true
                 },
-                thread: 1
+                threadNumber: 1
             });
             stubs.show = sandbox.stub(annotatorUtil, 'showElement');
             stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
@@ -255,7 +255,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
                 permissions: {
                     can_delete: true
                 },
-                thread: 1
+                threadNumber: 1
             });
 
             dialog.setup([annotation]);

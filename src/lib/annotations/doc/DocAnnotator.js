@@ -285,7 +285,7 @@ class DocAnnotator extends Annotator {
         // Set existing thread ID if created with annotations
         if (annotations.length > 0) {
             threadParams.threadID = annotations[0].threadID;
-            threadParams.thread = annotations[0].thread;
+            threadParams.threadNumber = annotations[0].threadNumber;
         }
 
         if (!annotatorUtil.validateThreadParams(threadParams)) {
