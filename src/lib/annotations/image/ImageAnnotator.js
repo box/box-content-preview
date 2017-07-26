@@ -89,6 +89,13 @@ class ImageAnnotator extends Annotator {
      */
     createAnnotationThread(annotations, location, type) {
         let thread;
+
+        // Corrects any image annotation page number to 1 instead of -1
+        const fixedLocation = location;
+        if (fixedLocation.page < 0) {
+            fixedLocation.page = 1;
+        }
+
         const threadParams = {
             annotatedElement: this.annotatedElement,
             annotations,
@@ -97,7 +104,7 @@ class ImageAnnotator extends Annotator {
             fileVersionId: this.fileVersionId,
             isMobile: this.isMobile,
             locale: this.locale,
-            location,
+            location: fixedLocation,
             type
         };
 

@@ -3,7 +3,7 @@ import ImagePointDialog from '../ImagePointDialog';
 import * as annotatorUtil from '../../annotatorUtil';
 import * as imageAnnotatorUtil from '../imageAnnotatorUtil';
 
-let pointDialog;
+let dialog;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/annotations/image/ImagePointDialog', () => {
@@ -14,21 +14,23 @@ describe('lib/annotations/image/ImagePointDialog', () => {
     beforeEach(() => {
         fixture.load('annotations/image/__tests__/ImagePointDialog-test.html');
 
-        pointDialog = new ImagePointDialog({
+        dialog = new ImagePointDialog({
             annotatedElement: document.querySelector('.annotated-element'),
-            location: {},
+            location: {
+                page: 1
+            },
             annotations: [],
             canAnnotate: true
         });
-        pointDialog.setup([]);
-        pointDialog.element.style.width = '282px';
+        dialog.setup([]);
+        dialog.element.style.width = '282px';
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
-        if (typeof pointDialog.destroy === 'function') {
-            pointDialog.destroy();
-            pointDialog = null;
+        if (typeof dialog.destroy === 'function') {
+            dialog.destroy();
+            dialog = null;
         }
     });
 
@@ -38,7 +40,7 @@ describe('lib/annotations/image/ImagePointDialog', () => {
             sandbox.stub(annotatorUtil, 'repositionCaret');
             sandbox.stub(annotatorUtil, 'showElement');
 
-            pointDialog.position();
+            dialog.position();
 
             expect(imageAnnotatorUtil.getBrowserCoordinatesFromLocation).to.have.been.called;
             expect(annotatorUtil.repositionCaret).to.have.been.called;
