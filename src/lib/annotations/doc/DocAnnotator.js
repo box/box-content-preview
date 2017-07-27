@@ -21,7 +21,8 @@ import {
     PAGE_PADDING_TOP,
     PAGE_PADDING_BOTTOM,
     CLASS_ANNOTATION_LAYER_HIGHLIGHT,
-    PENDING_STATES
+    PENDING_STATES,
+    SELECTOR_ANNOTATION_BUTTON_DRAW_POST
 } from '../annotationConstants';
 
 const MOUSEMOVE_THROTTLE_MS = 50;
@@ -296,7 +297,10 @@ class DocAnnotator extends Annotator {
         if (annotatorUtil.isHighlightAnnotation(type)) {
             thread = new DocHighlightThread(threadParams);
         } else if (type === TYPES.draw) {
-            thread = new DocDrawingThread(threadParams);
+            const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
+            if (postButtonEl) {
+                thread = new DocDrawingThread(threadParams, postButtonEl);
+            }
         } else if (type === TYPES.point) {
             thread = new DocPointThread(threadParams);
         } else {

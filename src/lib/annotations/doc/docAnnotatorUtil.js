@@ -319,10 +319,10 @@ export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
 /**
  * Gets the context an annotation should be drawn on.
  *
- * @param {HTMLElement} pageEl The DOM element for the current page
- * @param {string} annotationLayerClass The class name for the annotation layer
- * @param {number} [paddingTop] The top padding of each page element
- * @param {number} [paddingBottom] The bottom padding of each page element
+ * @param {HTMLElement} pageEl - The DOM element for the current page
+ * @param {string} annotationLayerClass - The class name for the annotation layer
+ * @param {number} [paddingTop] - The top padding of each page element
+ * @param {number} [paddingBottom] - The bottom padding of each page element
  * @return {RenderingContext|null} Context or null if no page element was given
  */
 export function getContext(pageEl, annotationLayerClass, paddingTop, paddingBottom) {
@@ -352,8 +352,8 @@ export function getContext(pageEl, annotationLayerClass, paddingTop, paddingBott
  * Gets the current page element.
  *
  * @private
- * @param {HTMLElement} annotatedEl HTML Element being annotated on
- * @param {number} pageNum Page number
+ * @param {HTMLElement} annotatedEl - HTML Element being annotated on
+ * @param {number} pageNum - Page number
  * @return {HTMLElement|null} Page element if it exists, otherwise null
  */
 export function getPageEl(annotatedEl, pageNum) {

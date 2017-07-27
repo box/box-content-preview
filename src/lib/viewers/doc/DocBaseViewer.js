@@ -1012,7 +1012,8 @@ class DocBaseViewer extends BaseViewer {
             this.loaded = true;
             this.emit('load', {
                 numPages: this.pdfViewer.pagesCount,
-                endProgress: false // Indicate that viewer will end progress later
+                endProgress: false, // Indicate that viewer will end progress later
+                scale: this.pdfViewer.currentScale
             });
         }
     }

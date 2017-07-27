@@ -379,3 +379,20 @@ export function eventToLocationHandler(locationFunction, callback) {
         }
     };
 }
+
+/**
+ * Create a JSON object containing x/y coordinates and optionally dimensional information
+ *
+ * @param {number} x - The x position of the location object
+ * @param {number} y - The y position of the location object
+ * @param {Object} [dimensions] - The dimensional information of the location object
+ * @return {Object} - A location object with x/y position information as well as provided dimensional information
+ */
+export function createLocation(x, y, dimensions) {
+    const loc = { x, y };
+    if (dimensions) {
+        loc.dimensions = dimensions;
+    }
+
+    return loc;
+}

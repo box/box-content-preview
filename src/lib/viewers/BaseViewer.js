@@ -344,7 +344,11 @@ class BaseViewer extends EventEmitter {
         // Add a resize handler for the window
         document.defaultView.addEventListener('resize', this.debouncedResizeHandler);
 
-        this.addListener('load', () => {
+        this.addListener('load', (event) => {
+            if (event && event.scale) {
+                this.scale = event.scale;
+            }
+
             if (this.annotationsPromise) {
                 this.annotationsPromise.then(this.loadAnnotator);
             }
@@ -611,7 +615,7 @@ class BaseViewer extends EventEmitter {
             if (this.canAnnotate) {
                 this.showPointAnnotateButton(this.getAnnotationModeClickHandler('point'));
                 // Note: Leave drawing annotation code entry disabled for now
-                // this.showDrawAnnotateButton(this.getAnnotationModeClickHandler('draw'));
+                this.showDrawAnnotateButton(this.getAnnotationModeClickHandler('draw'));
             }
             this.initAnnotations();
         }
@@ -653,7 +657,7 @@ class BaseViewer extends EventEmitter {
             locale: location.locale,
             previewUI: this.previewUI
         });
-        this.annotator.init();
+        this.annotator.init(this.scale);
 
         // Disables controls during point annotation mode
         this.annotator.addListener('annotationmodeenter', this.disableViewerControls);

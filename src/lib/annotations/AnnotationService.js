@@ -81,7 +81,6 @@ class AnnotationService extends EventEmitter {
                     },
                     details: {
                         type: annotation.type,
-                        drawingPaths: annotation.drawingPaths,
                         location: annotation.location,
                         threadID: annotation.threadID
                     },

@@ -28,7 +28,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
     describe('handleMove()', () => {
         beforeEach(() => {
             docDrawingThread.pageEl = document.querySelector('.page-element');
-            docDrawingThread.lastPage = docDrawingThread.pageEl.getAttribute('page');
+            docDrawingThread.page = docDrawingThread.pageEl.getAttribute('page');
             docDrawingThread.pendingPath = {
                 addCoordinate: sandbox.stub(),
                 isEmpty: sandbox.stub()
@@ -45,7 +45,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             const location = {
                 x: 0,
                 y: 0,
-                page: docDrawingThread.lastPage
+                page: docDrawingThread.page
             };
             docDrawingThread.drawingFlag = STATES_DRAW.idle;
             docDrawingThread.handleMove(location);
@@ -57,7 +57,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             const location = {
                 x: 0,
                 y: 0,
-                page: docDrawingThread.lastPage
+                page: docDrawingThread.page
             };
             docDrawingThread.drawingFlag = STATES_DRAW.draw;
             docDrawingThread.handleMove(location);

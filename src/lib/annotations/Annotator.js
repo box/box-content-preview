@@ -88,7 +88,7 @@ class Annotator extends EventEmitter {
      *
      * @return {void}
      */
-    init() {
+    init(initialScale) {
         this.annotatedElement = this.getAnnotatedEl(this.container);
         this.notification = new Notification(this.annotatedElement);
 
@@ -106,7 +106,8 @@ class Annotator extends EventEmitter {
             this.setupMobileDialog();
         }
 
-        this.setScale(1);
+        const scale = initialScale || 1;
+        this.setScale(scale);
         this.setupAnnotations();
         this.showAnnotations();
     }
@@ -310,6 +311,9 @@ class Annotator extends EventEmitter {
                 buttonEl.classList.remove(CLASS_ACTIVE);
                 buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER).classList.remove(CLASS_HIDDEN);
                 buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL).classList.add(CLASS_HIDDEN);
+            }
+
+            if (postButtonEl) {
                 postButtonEl.classList.add(CLASS_HIDDEN);
             }
 
@@ -326,11 +330,15 @@ class Annotator extends EventEmitter {
                 buttonEl.classList.add(CLASS_ACTIVE);
                 buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER).classList.add(CLASS_HIDDEN);
                 buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL).classList.remove(CLASS_HIDDEN);
+            }
+
+            if (postButtonEl) {
                 postButtonEl.classList.remove(CLASS_HIDDEN);
             }
 
             const thread = this.createAnnotationThread([], {}, TYPES.draw);
             this.unbindDOMListeners();
+            this.bindCustomListenersOnThread(thread);
             this.bindDrawModeListeners(thread, postButtonEl);
         }
     }
@@ -400,6 +408,7 @@ class Annotator extends EventEmitter {
      */
     fetchAnnotations() {
         this.threads = {};
+        window.globalThreads = this.threads;
 
         return this.annotationService.getThreadMap(this.fileVersionId).then((threadMap) => {
             // Generate map of page to threads
