@@ -223,11 +223,7 @@ class DocAnnotator extends Annotator {
             }
 
             // Get correct page
-            let { pageEl, page } = annotatorUtil.getPageInfo(event.target);
-            if (page === -1) {
-                // The ( .. ) around assignment is required syntax
-                ({ pageEl, page } = annotatorUtil.getPageInfo(window.getSelection().anchorNode));
-            }
+            const { pageEl, page } = annotatorUtil.getPageInfo(event.target);
 
             // Use highlight module to calculate quad points
             const { highlightEls } = docAnnotatorUtil.getHighlightAndHighlightEls(this.highlighter, pageEl);

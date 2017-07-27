@@ -46,9 +46,6 @@ class ImageAnnotator extends Annotator {
 
         // If no image page was selected, ignore, as all images have a page number.
         const { page } = annotatorUtil.getPageInfo(imageEl);
-        if (!page) {
-            return location;
-        }
 
         // Location based only on image position
         const imageDimensions = imageEl.getBoundingClientRect();
