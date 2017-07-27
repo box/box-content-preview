@@ -46,9 +46,6 @@ class ImageAnnotator extends Annotator {
 
         // If no image page was selected, ignore, as all images have a page number.
         const { page } = annotatorUtil.getPageInfo(imageEl);
-        if (!page) {
-            return location;
-        }
 
         // Location based only on image position
         const imageDimensions = imageEl.getBoundingClientRect();
@@ -89,6 +86,13 @@ class ImageAnnotator extends Annotator {
      */
     createAnnotationThread(annotations, location, type) {
         let thread;
+
+        // Corrects any image annotation page number to 1 instead of -1
+        const fixedLocation = location;
+        if (fixedLocation.page < 0) {
+            fixedLocation.page = 1;
+        }
+
         const threadParams = {
             annotatedElement: this.annotatedElement,
             annotations,
@@ -97,7 +101,7 @@ class ImageAnnotator extends Annotator {
             fileVersionId: this.fileVersionId,
             isMobile: this.isMobile,
             locale: this.locale,
-            location,
+            location: fixedLocation,
             type
         };
 

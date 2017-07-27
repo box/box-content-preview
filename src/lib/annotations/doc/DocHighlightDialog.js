@@ -11,8 +11,6 @@ const CLASS_HIGHLIGHT_DIALOG = 'bp-highlight-dialog';
 const CLASS_ANNOTATION_HIGHLIGHT_DIALOG = 'bp-annotation-highlight-dialog';
 const CLASS_TEXT_HIGHLIGHTED = 'bp-is-text-highlighted';
 const CLASS_HIGHLIGHT_LABEL = 'bp-annotation-highlight-label';
-const DATA_TYPE_HIGHLIGHT = 'highlight-btn';
-const DATA_TYPE_ADD_HIGHLIGHT_COMMENT = 'add-highlight-comment-btn';
 
 const HIGHLIGHT_DIALOG_HEIGHT = 38;
 const PAGE_PADDING_BOTTOM = 15;
@@ -330,11 +328,11 @@ class DocHighlightDialog extends AnnotationDialog {
 
         switch (dataType) {
             // Clicking 'Highlight' button to create or remove a highlight
-            case DATA_TYPE_HIGHLIGHT:
+            case constants.DATA_TYPE_HIGHLIGHT:
                 this.drawAnnotation();
                 break;
             // Clicking 'Highlight' button to create a highlight
-            case DATA_TYPE_ADD_HIGHLIGHT_COMMENT:
+            case constants.DATA_TYPE_ADD_HIGHLIGHT_COMMENT:
                 this.emit('annotationdraw');
                 this.toggleHighlightCommentsReply(false);
                 this.toggleHighlightDialogs();
@@ -481,12 +479,12 @@ class DocHighlightDialog extends AnnotationDialog {
             <span class="${CLASS_HIGHLIGHT_LABEL} ${CLASS_HIDDEN}"></span>
             <span class="${constants.CLASS_HIGHLIGHT_BTNS} ${this.isMobile ? CLASS_HIDDEN : ''}">
                 <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_BTN}"
-                    data-type="${DATA_TYPE_HIGHLIGHT}"
+                    data-type="${constants.DATA_TYPE_HIGHLIGHT}"
                     title="${__('annotation_highlight_toggle')}">
                     ${ICON_HIGHLIGHT}
                 </button>
                 <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_COMMENT_BTN}"
-                    data-type="${DATA_TYPE_ADD_HIGHLIGHT_COMMENT}"
+                    data-type="${constants.DATA_TYPE_ADD_HIGHLIGHT_COMMENT}"
                     title="${__('annotation_highlight_comment')}">
                     ${ICON_HIGHLIGHT_COMMENT}
                 </button>
