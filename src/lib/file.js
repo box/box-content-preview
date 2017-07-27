@@ -99,7 +99,7 @@ export function checkFileValid(file) {
 }
 
 /**
- * If the file doens't already have an original representation, creates an
+ * If the file doesn't already have an original representation, creates an
  * original representation url from the authenticated download url and adds
  * it to the file representations
  *
