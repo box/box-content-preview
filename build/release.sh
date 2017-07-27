@@ -71,7 +71,7 @@ update_changelog() {
     echo "Updating CHANGELOG.md"
     echo "----------------------------------------------------------------------"
 
-    if ./node_modules/.bin/conventional-changelog -i CHANGELOG.md --same-file then
+    if ./node_modules/.bin/conventional-changelog -i CHANGELOG.md --same-file; then
         echo "----------------------------------------------------------------------"
         echo "Updated CHANGELOG successfully"
         echo "----------------------------------------------------------------------"
