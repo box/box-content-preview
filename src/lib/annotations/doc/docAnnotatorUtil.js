@@ -394,7 +394,7 @@ export function getPageEl(annotatedEl, pageNum) {
  * @param {HTMLElement} eventTarget mouse event target element
  * @return {boolean} Whether mouse event occured in a highlight dialog
  */
-export function isDialogDatatype(eventTarget) {
+export function isDialogDataType(eventTarget) {
     const dataType = annotatorUtil.findClosestDataType(eventTarget);
     return DIALOG_DATATYPES.indexOf(dataType) !== -1;
 }

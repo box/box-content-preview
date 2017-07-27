@@ -579,7 +579,7 @@ class DocAnnotator extends Annotator {
         // Determine if mouse is over any highlight dialog currently
         // and ignore hover events of any highlights below
         const event = this.mouseMoveEvent;
-        if (docAnnotatorUtil.isDialogDatatype(event.target)) {
+        if (docAnnotatorUtil.isDialogDataType(event.target)) {
             return;
         }
 
