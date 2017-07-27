@@ -54,7 +54,7 @@
 
         // Fixes annotation icon broken src
         .textAnnotation > img {
-            display: none;
+            opacity: 0;
         }
     }
 

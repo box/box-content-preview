@@ -230,7 +230,7 @@ class DocHighlightDialog extends AnnotationDialog {
 
             // Adding thread number to dialog
             if (annotations.length > 0) {
-                this.element.dataset.threadNumber = annotations[0].thread;
+                this.element.dataset.threadNumber = annotations[0].threadNumber;
             }
         }
 

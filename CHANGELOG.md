@@ -1,393 +1,365 @@
-# Change Log
-
-## [v1.1.1](https://github.com/box/box-content-preview/tree/v1.1.1) (2017-07-19)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v1.1.0...v1.1.1)
-
-**Merged pull requests:**
-
-- Fix: Don't swallow 'touchstart' event to prevent iOS inertia scrolling [\#233](https://github.com/box/box-content-preview/pull/233) ([jeremypress](https://github.com/jeremypress))
-- Fix: Prevent MP3 from hiding [\#230](https://github.com/box/box-content-preview/pull/230) ([jeremypress](https://github.com/jeremypress))
-
-## [v1.1.0](https://github.com/box/box-content-preview/tree/v1.1.0) (2017-07-18)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v1.0.0...v1.1.0)
+<a name="1.2.0"></a>
+# 1.2.0 (2017-07-25)
 
-**Merged pull requests:**
-
-- Docs: Add issue reporting template [\#228](https://github.com/box/box-content-preview/pull/228) ([tonyjin](https://github.com/tonyjin))
-- Fix: Prevent double tap zoom in control bar [\#227](https://github.com/box/box-content-preview/pull/227) ([jeremypress](https://github.com/jeremypress))
-- New: Add ts and flv formats to MediaLoader.js [\#226](https://github.com/box/box-content-preview/pull/226) ([bhh1988](https://github.com/bhh1988))
-- Fix: Limit iOS font fix to 10.3.1 [\#225](https://github.com/box/box-content-preview/pull/225) ([tonyjin](https://github.com/tonyjin))
-- Chore: Full pass of prettier formatting [\#223](https://github.com/box/box-content-preview/pull/223) ([tonyjin](https://github.com/tonyjin))
-- Fix settings pullup for model3D files on mobile [\#222](https://github.com/box/box-content-preview/pull/222) ([jeremypress](https://github.com/jeremypress))
-- Chore: Fix webpack errors and upgrade some packages [\#221](https://github.com/box/box-content-preview/pull/221) ([tonyjin](https://github.com/tonyjin))
-- Update: Render Vera-protected HTML files [\#220](https://github.com/box/box-content-preview/pull/220) ([tonyjin](https://github.com/tonyjin))
-- Chore: Update Travis config [\#219](https://github.com/box/box-content-preview/pull/219) ([tonyjin](https://github.com/tonyjin))
-- Fix: Restore crawler for buffering video [\#218](https://github.com/box/box-content-preview/pull/218) ([jeremypress](https://github.com/jeremypress))
-- Fix: Media controls and usability fixes for mobile [\#217](https://github.com/box/box-content-preview/pull/217) ([jeremypress](https://github.com/jeremypress))
-- Chore: Cleaning up annotation strings/classes [\#215](https://github.com/box/box-content-preview/pull/215) ([pramodsum](https://github.com/pramodsum))
-- Chore: Update .travis.yml to build PRs and merges to master [\#214](https://github.com/box/box-content-preview/pull/214) ([tonyjin](https://github.com/tonyjin))
-- Docs: Update project status badge [\#212](https://github.com/box/box-content-preview/pull/212) ([tonyjin](https://github.com/tonyjin))
-
-## [v1.0.0](https://github.com/box/box-content-preview/tree/v1.0.0) (2017-07-12)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.131.2...v1.0.0)
-
-## [v0.131.2](https://github.com/box/box-content-preview/tree/v0.131.2) (2017-07-11)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.131.1...v0.131.2)
-
-**Merged pull requests:**
-
-- Fix: Search preview container for mobile annotations dialog [\#209](https://github.com/box/box-content-preview/pull/209) ([pramodsum](https://github.com/pramodsum))
-- Fix: Ensure that annotation scale is never being set to auto [\#208](https://github.com/box/box-content-preview/pull/208) ([pramodsum](https://github.com/pramodsum))
-
-## [v0.131.1](https://github.com/box/box-content-preview/tree/v0.131.1) (2017-07-11)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.131.0...v0.131.1)
-
-**Merged pull requests:**
-
-- Fix: Properly scope typography CSS [\#207](https://github.com/box/box-content-preview/pull/207) ([tonyjin](https://github.com/tonyjin))
-- Chore: Cleaning up annotations code comments [\#206](https://github.com/box/box-content-preview/pull/206) ([pramodsum](https://github.com/pramodsum))
-
-## [v0.131.0](https://github.com/box/box-content-preview/tree/v0.131.0) (2017-07-07)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.130.0...v0.131.0)
-
-**Merged pull requests:**
-
-- Cleanup for 1.0 for 3D [\#205](https://github.com/box/box-content-preview/pull/205) ([JustinHoldstock](https://github.com/JustinHoldstock))
-- Chore: Preview UI as instance [\#204](https://github.com/box/box-content-preview/pull/204) ([tonyjin](https://github.com/tonyjin))
-- Chore: Update README to include token scope information [\#203](https://github.com/box/box-content-preview/pull/203) ([jeremypress](https://github.com/jeremypress))
-- Chore: Preview Cleanup [\#202](https://github.com/box/box-content-preview/pull/202) ([jeremypress](https://github.com/jeremypress))
-- Fix/notification message timeout [\#201](https://github.com/box/box-content-preview/pull/201) ([MinhHNguyen](https://github.com/MinhHNguyen))
-- Chore: Page num input uses numeric keyboard on mobile devices [\#200](https://github.com/box/box-content-preview/pull/200) ([jeremypress](https://github.com/jeremypress))
-- Chore: Fix ESLint warnings \(JSDoc cleanup\) [\#199](https://github.com/box/box-content-preview/pull/199) ([tonyjin](https://github.com/tonyjin))
-- Update: pdf.js 1.8.514 [\#197](https://github.com/box/box-content-preview/pull/197) ([tonyjin](https://github.com/tonyjin))
-- Fix: Ensures highlight buttons are hidden on mobile devices [\#196](https://github.com/box/box-content-preview/pull/196) ([pramodsum](https://github.com/pramodsum))
-- Docs: Update contributing.md [\#195](https://github.com/box/box-content-preview/pull/195) ([tonyjin](https://github.com/tonyjin))
-- Chore: Remove padding for CSV files [\#194](https://github.com/box/box-content-preview/pull/194) ([jeremypress](https://github.com/jeremypress))
-- Chore: Update to new 'Elements' branding [\#193](https://github.com/box/box-content-preview/pull/193) ([tonyjin](https://github.com/tonyjin))
-- Fix: Allow panning on mobile while zooming into ppt files [\#192](https://github.com/box/box-content-preview/pull/192) ([jeremypress](https://github.com/jeremypress))
-- Fix: Tree shaking bug workaround for csv bundle [\#191](https://github.com/box/box-content-preview/pull/191) ([priyajeet](https://github.com/priyajeet))
-- Chore: Removing unused 'active' & 'active-hover' states for annotations [\#189](https://github.com/box/box-content-preview/pull/189) ([pramodsum](https://github.com/pramodsum))
-- Chore: Scrubber/Media fixes for mobile [\#185](https://github.com/box/box-content-preview/pull/185) ([jeremypress](https://github.com/jeremypress))
-
-## [v0.130.0](https://github.com/box/box-content-preview/tree/v0.130.0) (2017-06-28)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.129.2...v0.130.0)
-
-**Merged pull requests:**
-
-- Fix: Fix hiding on Android Chrome [\#190](https://github.com/box/box-content-preview/pull/190) ([jeremypress](https://github.com/jeremypress))
-- Chore: Add Webpack bundle visualizer [\#188](https://github.com/box/box-content-preview/pull/188) ([tonyjin](https://github.com/tonyjin))
-- Fix: Fix focus for new page number input [\#187](https://github.com/box/box-content-preview/pull/187) ([jeremypress](https://github.com/jeremypress))
-- Fix: Fixes issues with adding annotations on tablets [\#186](https://github.com/box/box-content-preview/pull/186) ([pramodsum](https://github.com/pramodsum))
-- Create highlight dialog [\#184](https://github.com/box/box-content-preview/pull/184) ([JustinHoldstock](https://github.com/JustinHoldstock))
-- Fix: Buttons fail to display when adding a comment to plain highlight [\#183](https://github.com/box/box-content-preview/pull/183) ([pramodsum](https://github.com/pramodsum))
-- Update: Remove 0.25x playback on media files [\#182](https://github.com/box/box-content-preview/pull/182) ([MinhHNguyen](https://github.com/MinhHNguyen))
-- Update: Readme with new badges [\#180](https://github.com/box/box-content-preview/pull/180) ([priyajeet](https://github.com/priyajeet))
-- Chore: Make page number input more visible [\#179](https://github.com/box/box-content-preview/pull/179) ([jeremypress](https://github.com/jeremypress))
-- Fix: Sets the pdf scale after page render rather than on resize [\#178](https://github.com/box/box-content-preview/pull/178) ([pramodsum](https://github.com/pramodsum))
-- New: Allowing users to add new mobile point annotations [\#177](https://github.com/box/box-content-preview/pull/177) ([pramodsum](https://github.com/pramodsum))
-- Chore: Refactor controls for mobile [\#174](https://github.com/box/box-content-preview/pull/174) ([jeremypress](https://github.com/jeremypress))
-
-## [v0.129.2](https://github.com/box/box-content-preview/tree/v0.129.2) (2017-06-20)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.129.1...v0.129.2)
-
-**Merged pull requests:**
-
-- Chore: Update ESLint rules and VSCode settings [\#176](https://github.com/box/box-content-preview/pull/176) ([tonyjin](https://github.com/tonyjin))
-- Chore: Tweak fade-in timing of file loading animation [\#175](https://github.com/box/box-content-preview/pull/175) ([jeremypress](https://github.com/jeremypress))
-- Fix: Fix shared links previewed in other subdomains [\#173](https://github.com/box/box-content-preview/pull/173) ([jeremypress](https://github.com/jeremypress))
-
-## [v0.129.1](https://github.com/box/box-content-preview/tree/v0.129.1) (2017-06-16)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.129.0...v0.129.1)
-
-**Merged pull requests:**
-
-- Fix: Box3D bug prevented loading video texture from video tag [\#172](https://github.com/box/box-content-preview/pull/172) ([MiiBond](https://github.com/MiiBond))
-
-## [v0.129.0](https://github.com/box/box-content-preview/tree/v0.129.0) (2017-06-14)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.128.0...v0.129.0)
-
-**Merged pull requests:**
-
-- Revert "Chore: Refactoring Controls for mobile" [\#171](https://github.com/box/box-content-preview/pull/171) ([jeremypress](https://github.com/jeremypress))
-- New: File specific loading icons [\#170](https://github.com/box/box-content-preview/pull/170) ([jeremypress](https://github.com/jeremypress))
-- Fix: Fix removeEventListener in MediaBaseViewer [\#169](https://github.com/box/box-content-preview/pull/169) ([bhh1988](https://github.com/bhh1988))
-- Fix: Catch loss of WebGL context in Box3D and reload preview [\#168](https://github.com/box/box-content-preview/pull/168) ([MiiBond](https://github.com/MiiBond))
-- Update Translations [\#167](https://github.com/box/box-content-preview/pull/167) ([boxmoji](https://github.com/boxmoji))
-- Chore: Refactoring Controls for mobile [\#159](https://github.com/box/box-content-preview/pull/159) ([jeremypress](https://github.com/jeremypress))
-
-## [v0.128.0](https://github.com/box/box-content-preview/tree/v0.128.0) (2017-06-06)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.127.0...v0.128.0)
-
-**Merged pull requests:**
-
-- Update: Change Preview loading message [\#166](https://github.com/box/box-content-preview/pull/166) ([tonyjin](https://github.com/tonyjin))
-- Update: Add support for 'ly' Lilypond musical annotation files [\#165](https://github.com/box/box-content-preview/pull/165) ([tonyjin](https://github.com/tonyjin))
-- Upgrade: Upgrade Shaka-player to fix infinite 401 issue [\#164](https://github.com/box/box-content-preview/pull/164) ([bhh1988](https://github.com/bhh1988))
-- Update: Displaying file type unsupported error [\#163](https://github.com/box/box-content-preview/pull/163) ([jeremypress](https://github.com/jeremypress))
-- Chore: refactored and renamed getPageElAndPageNumber [\#162](https://github.com/box/box-content-preview/pull/162) ([JustinHoldstock](https://github.com/JustinHoldstock))
-- Animate annotation dialog [\#161](https://github.com/box/box-content-preview/pull/161) ([JustinHoldstock](https://github.com/JustinHoldstock))
-- Update Translations [\#160](https://github.com/box/box-content-preview/pull/160) ([boxmoji](https://github.com/boxmoji))
-- Docs: Use ISO date format for LICENSE [\#158](https://github.com/box/box-content-preview/pull/158) ([tonyjin](https://github.com/tonyjin))
-- Chore: Optimizations for highlightMousemoveEvent [\#121](https://github.com/box/box-content-preview/pull/121) ([JustinHoldstock](https://github.com/JustinHoldstock))
-
-## [v0.127.0](https://github.com/box/box-content-preview/tree/v0.127.0) (2017-05-30)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.126.1...v0.127.0)
-
-**Merged pull requests:**
-
-- Chore: Re-enabling controls for mobile viewers [\#157](https://github.com/box/box-content-preview/pull/157) ([pramodsum](https://github.com/pramodsum))
-- Fix: Image scaling/rotation is broken when an image has annotations [\#156](https://github.com/box/box-content-preview/pull/156) ([JustinHoldstock](https://github.com/JustinHoldstock))
-- Chore: Use whatwg-fetch instead of isomorphic-fetch [\#155](https://github.com/box/box-content-preview/pull/155) ([tonyjin](https://github.com/tonyjin))
-- Update Translations [\#154](https://github.com/box/box-content-preview/pull/154) ([boxmoji](https://github.com/boxmoji))
-- Fix: Error content jumps on error if download button is absent [\#152](https://github.com/box/box-content-preview/pull/152) ([jeremypress](https://github.com/jeremypress))
-- Fix: Ensure point annotation mode button is hidden on rotated images [\#151](https://github.com/box/box-content-preview/pull/151) ([pramodsum](https://github.com/pramodsum))
-- Fix: Disables annotations after 'load' event on shared links [\#150](https://github.com/box/box-content-preview/pull/150) ([pramodsum](https://github.com/pramodsum))
-- New: Initial mobile optimization of annotation dialogs [\#146](https://github.com/box/box-content-preview/pull/146) ([pramodsum](https://github.com/pramodsum))
-- Fix: Support disabling DASH player in DASH-compatible browser [\#140](https://github.com/box/box-content-preview/pull/140) ([tonyjin](https://github.com/tonyjin))
-
-## [v0.126.1](https://github.com/box/box-content-preview/tree/v0.126.1) (2017-05-26)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.126.0...v0.126.1)
-
-**Merged pull requests:**
-
-- Fix: Fixing vanity urls for excel online on IE11 [\#153](https://github.com/box/box-content-preview/pull/153) ([jeremypress](https://github.com/jeremypress))
-- Update: Make media viewer settings menu larger so scrollbars don't show [\#149](https://github.com/box/box-content-preview/pull/149) ([bhh1988](https://github.com/bhh1988))
-- Fix: Reinforcing release script [\#148](https://github.com/box/box-content-preview/pull/148) ([jeremypress](https://github.com/jeremypress))
-- Chore: Fix changelog [\#144](https://github.com/box/box-content-preview/pull/144) ([tonyjin](https://github.com/tonyjin))
-- Chore: Format everything with prettier [\#143](https://github.com/box/box-content-preview/pull/143) ([tonyjin](https://github.com/tonyjin))
-- 692 add toggle for box3d grid [\#138](https://github.com/box/box-content-preview/pull/138) ([MiiBond](https://github.com/MiiBond))
-
-## [v0.126.0](https://github.com/box/box-content-preview/tree/v0.126.0) (2017-05-24)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.125.0...v0.126.0)
-
-**Merged pull requests:**
-
-- Update Translations [\#142](https://github.com/box/box-content-preview/pull/142) ([boxmoji](https://github.com/boxmoji))
-
-## [v0.125.0](https://github.com/box/box-content-preview/tree/v0.125.0) (2017-05-24)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.124.0...v0.125.0)
-
-**Merged pull requests:**
-
-- Build: Update build script to tag release commits [\#141](https://github.com/box/box-content-preview/pull/141) ([tonyjin](https://github.com/tonyjin))
-- Chore: Update prettier line width to 80 [\#139](https://github.com/box/box-content-preview/pull/139) ([tonyjin](https://github.com/tonyjin))
-- Update: Show rate limit specific error message when a 429 occurs [\#137](https://github.com/box/box-content-preview/pull/137) ([jeremypress](https://github.com/jeremypress))
-- Update: Update Box3D with new material default [\#136](https://github.com/box/box-content-preview/pull/136) ([MiiBond](https://github.com/MiiBond))
-- Chore: Update license formatting [\#135](https://github.com/box/box-content-preview/pull/135) ([tonyjin](https://github.com/tonyjin))
-- Settings properties [\#134](https://github.com/box/box-content-preview/pull/134) ([bhh1988](https://github.com/bhh1988))
-- Chore: Add prettier code formatter [\#133](https://github.com/box/box-content-preview/pull/133) ([tonyjin](https://github.com/tonyjin))
-- Update Translations [\#132](https://github.com/box/box-content-preview/pull/132) ([boxmoji](https://github.com/boxmoji))
-- Fix: Seek time doesn't match filmstrip timecode [\#131](https://github.com/box/box-content-preview/pull/131) ([bhh1988](https://github.com/bhh1988))
-- Update: Adding more languages for subtitles [\#130](https://github.com/box/box-content-preview/pull/130) ([bhh1988](https://github.com/bhh1988))
-- Update: Improve subtitle selection algorithm [\#129](https://github.com/box/box-content-preview/pull/129) ([bhh1988](https://github.com/bhh1988))
-- Update: Some UI changes for video player [\#128](https://github.com/box/box-content-preview/pull/128) ([bhh1988](https://github.com/bhh1988))
-- Chore: Deleting old third-party packages [\#127](https://github.com/box/box-content-preview/pull/127) ([tonyjin](https://github.com/tonyjin))
-- Fix: fix excel setup when enabling the Office viewer via options [\#126](https://github.com/box/box-content-preview/pull/126) ([jeremypress](https://github.com/jeremypress))
-- Update Contributing.md [\#125](https://github.com/box/box-content-preview/pull/125) ([varunmaker](https://github.com/varunmaker))
-- Docs: Update license to Box Software License Agreement [\#124](https://github.com/box/box-content-preview/pull/124) ([tonyjin](https://github.com/tonyjin))
-- Update Translations [\#123](https://github.com/box/box-content-preview/pull/123) ([boxmoji](https://github.com/boxmoji))
-
-## [v0.124.0](https://github.com/box/box-content-preview/tree/v0.124.0) (2017-05-17)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.123.0...v0.124.0)
-
-## [v0.123.0](https://github.com/box/box-content-preview/tree/v0.123.0) (2017-05-17)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.122.0...v0.123.0)
-
-**Merged pull requests:**
-
-- Language codes [\#122](https://github.com/box/box-content-preview/pull/122) ([bhh1988](https://github.com/bhh1988))
-- Chore: Remove unnecessary mobile check [\#120](https://github.com/box/box-content-preview/pull/120) ([tonyjin](https://github.com/tonyjin))
-- Docs: Remove unneeded file types from image360 docs [\#119](https://github.com/box/box-content-preview/pull/119) ([MiiBond](https://github.com/MiiBond))
-- Fix: Older versions of webkit iOS incorrectly cache range requests [\#118](https://github.com/box/box-content-preview/pull/118) ([tonyjin](https://github.com/tonyjin))
-- Subtitles [\#117](https://github.com/box/box-content-preview/pull/117) ([bhh1988](https://github.com/bhh1988))
-- Fix: Set media viewers' settings menu dimensions with javascript [\#116](https://github.com/box/box-content-preview/pull/116) ([bhh1988](https://github.com/bhh1988))
-- Chore: Document viewer tweaks [\#114](https://github.com/box/box-content-preview/pull/114) ([tonyjin](https://github.com/tonyjin))
-- Update Translations [\#113](https://github.com/box/box-content-preview/pull/113) ([boxmoji](https://github.com/boxmoji))
-- Chore: Moving common annotation methods into Base classes [\#111](https://github.com/box/box-content-preview/pull/111) ([pramodsum](https://github.com/pramodsum))
-- Upgrade: Upgrade Shaka-player to 2.1.1 [\#110](https://github.com/box/box-content-preview/pull/110) ([bhh1988](https://github.com/bhh1988))
-- Multi image annotator [\#109](https://github.com/box/box-content-preview/pull/109) ([JustinHoldstock](https://github.com/JustinHoldstock))
-- Fix: Issue when 'load' event is fired before BoxAnnotations is loaded [\#108](https://github.com/box/box-content-preview/pull/108) ([pramodsum](https://github.com/pramodsum))
-- Chore: Bundling annotations.css separately from preview.css [\#106](https://github.com/box/box-content-preview/pull/106) ([pramodsum](https://github.com/pramodsum))
-- Fix: Don't rely on preview's script tag being present after execution [\#105](https://github.com/box/box-content-preview/pull/105) ([priyajeet](https://github.com/priyajeet))
-- New: platform excel online fork [\#101](https://github.com/box/box-content-preview/pull/101) ([jeremypress](https://github.com/jeremypress))
-
-## [v0.122.0](https://github.com/box/box-content-preview/tree/v0.122.0) (2017-05-09)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.121.1...v0.122.0)
-
-**Merged pull requests:**
-
-- Update Translations [\#107](https://github.com/box/box-content-preview/pull/107) ([boxmoji](https://github.com/boxmoji))
-- Chore: Remove font-smoothing and update progress bar color [\#104](https://github.com/box/box-content-preview/pull/104) ([tonyjin](https://github.com/tonyjin))
-- Cleaning up DocBaseViewer [\#103](https://github.com/box/box-content-preview/pull/103) ([jeremypress](https://github.com/jeremypress))
-- Chore: Allow console logging to show in tests [\#100](https://github.com/box/box-content-preview/pull/100) ([bhh1988](https://github.com/bhh1988))
-- Update: Re-enable font loading API support check [\#99](https://github.com/box/box-content-preview/pull/99) ([tonyjin](https://github.com/tonyjin))
-- Fix: Make all svgs not focusable [\#98](https://github.com/box/box-content-preview/pull/98) ([bhh1988](https://github.com/bhh1988))
-- Update: Make media player web-accessible according WCAG2.0 spec [\#97](https://github.com/box/box-content-preview/pull/97) ([bhh1988](https://github.com/bhh1988))
-- Fix: Add Annotations bundling changes back  [\#95](https://github.com/box/box-content-preview/pull/95) ([pramodsum](https://github.com/pramodsum))
-- Chore: Remove unused 'parent' field from Box File object [\#91](https://github.com/box/box-content-preview/pull/91) ([tonyjin](https://github.com/tonyjin))
-
-## [v0.121.1](https://github.com/box/box-content-preview/tree/v0.121.1) (2017-04-29)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.121.0...v0.121.1)
-
-**Merged pull requests:**
+* Release: 1.2.0 ([11b1802](https://github.com/box/box-content-preview/commit/11b1802))
+* Fix: Allow legacy annotations to render in PDF.js (#238) ([ed3b5cb](https://github.com/box/box-content-preview/commit/ed3b5cb))
+* Fix: Ensuring annotation scale is set on files without any annotations (#234) ([aa93d09](https://github.com/box/box-content-preview/commit/aa93d09))
+* Fix: Give preview some min width and height (#237) ([20f6056](https://github.com/box/box-content-preview/commit/20f6056))
+* Fix: Increase controls timeout and fix controls behavior for mobile VR (#235) ([1df8b55](https://github.com/box/box-content-preview/commit/1df8b55)), closes [#235](https://github.com/box/box-content-preview/issues/235)
+* Fix: Update box3d to fix camera reload bug (#245) ([1e1495f](https://github.com/box/box-content-preview/commit/1e1495f)), closes [#245](https://github.com/box/box-content-preview/issues/245)
+* Chore: Update translations (#240) ([cf1a799](https://github.com/box/box-content-preview/commit/cf1a799))
+* New: added support for compressed (DDS) textures to 3D preview (#244) ([4b5e203](https://github.com/box/box-content-preview/commit/4b5e203))
+* Feature: DrawingAnnotations starting code (#224) ([3960927](https://github.com/box/box-content-preview/commit/3960927))
+* Docs: Adding section of using Preview as a component (#236) ([3c3eb06](https://github.com/box/box-content-preview/commit/3c3eb06))
 
-- Revert annotations bundling [\#94](https://github.com/box/box-content-preview/pull/94) ([tonyjin](https://github.com/tonyjin))
-
-## [v0.121.0](https://github.com/box/box-content-preview/tree/v0.121.0) (2017-04-25)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.120.1...v0.121.0)
-
-**Merged pull requests:**
-
-- Chore: Add console logging to better debug hanging preview [\#93](https://github.com/box/box-content-preview/pull/93) ([tonyjin](https://github.com/tonyjin))
-- Fix: Don't load preload if the rep has an error [\#92](https://github.com/box/box-content-preview/pull/92) ([tonyjin](https://github.com/tonyjin))
-- Fix: Ensuring annotations are loaded when viewer has permissions [\#90](https://github.com/box/box-content-preview/pull/90) ([pramodsum](https://github.com/pramodsum))
-- Update: Document viewer optimizations [\#89](https://github.com/box/box-content-preview/pull/89) ([tonyjin](https://github.com/tonyjin))
-- Chore: Do not load annotations on shared links [\#88](https://github.com/box/box-content-preview/pull/88) ([pramodsum](https://github.com/pramodsum))
-- Chore: User agent refactor and Browser tests [\#87](https://github.com/box/box-content-preview/pull/87) ([JustinHoldstock](https://github.com/JustinHoldstock))
-- Upgrade: Shaka Player 2.0.8 [\#85](https://github.com/box/box-content-preview/pull/85) ([tonyjin](https://github.com/tonyjin))
-- Chore: Removed underscored variables and getters from all annotation files [\#83](https://github.com/box/box-content-preview/pull/83) ([pramodsum](https://github.com/pramodsum))
-- Chore: Bundling Annotators separately in annotations.js [\#75](https://github.com/box/box-content-preview/pull/75) ([pramodsum](https://github.com/pramodsum))
-
-## [v0.120.1](https://github.com/box/box-content-preview/tree/v0.120.1) (2017-04-19)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.120.0...v0.120.1)
-
-**Merged pull requests:**
-
-- Update: Tweak pdf.js range requests for improved performance [\#84](https://github.com/box/box-content-preview/pull/84) ([tonyjin](https://github.com/tonyjin))
-
-## [v0.120.0](https://github.com/box/box-content-preview/tree/v0.120.0) (2017-04-18)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.119.1...v0.120.0)
-
-**Merged pull requests:**
-
-- Fix: Prevent WebGL error when prefetching Preview.js [\#82](https://github.com/box/box-content-preview/pull/82) ([jeremypress](https://github.com/jeremypress))
-- Chore: Mock super.setup\(\) in all Viewer unit tests [\#81](https://github.com/box/box-content-preview/pull/81) ([pramodsum](https://github.com/pramodsum))
-- Update: Add client information to performance logging [\#80](https://github.com/box/box-content-preview/pull/80) ([tonyjin](https://github.com/tonyjin))
-- Update: Changing analytics client name to 'box-content-preview' [\#79](https://github.com/box/box-content-preview/pull/79) ([tonyjin](https://github.com/tonyjin))
-- Chore: Rename test-html files and update fixture loading [\#78](https://github.com/box/box-content-preview/pull/78) ([JustinHoldstock](https://github.com/JustinHoldstock))
-- Chore: Triggering point annotation mode by emitting a message [\#77](https://github.com/box/box-content-preview/pull/77) ([pramodsum](https://github.com/pramodsum))
-- Chore: Updating annotations icons to the new Box blue [\#76](https://github.com/box/box-content-preview/pull/76) ([pramodsum](https://github.com/pramodsum))
-- Fix: Only bind custom listeners when annotation threads exist [\#74](https://github.com/box/box-content-preview/pull/74) ([pramodsum](https://github.com/pramodsum))
-- Fix: Handle text representation error [\#72](https://github.com/box/box-content-preview/pull/72) ([tonyjin](https://github.com/tonyjin))
-- Update: Add disableTextLayer option for doc and text viewers [\#71](https://github.com/box/box-content-preview/pull/71) ([tonyjin](https://github.com/tonyjin))
-- Update Translations [\#70](https://github.com/box/box-content-preview/pull/70) ([boxmoji](https://github.com/boxmoji))
-- Update: Disabling font loading API for pdf.js to prevent glitches [\#68](https://github.com/box/box-content-preview/pull/68) ([tonyjin](https://github.com/tonyjin))
-
-## [v0.119.1](https://github.com/box/box-content-preview/tree/v0.119.1) (2017-04-12)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.119.0...v0.119.1)
-
-**Merged pull requests:**
-
-- Fix: adding patch to options check in release script [\#69](https://github.com/box/box-content-preview/pull/69) ([jeremypress](https://github.com/jeremypress))
-- Fix: updating metadata from repStatus [\#60](https://github.com/box/box-content-preview/pull/60) ([jeremypress](https://github.com/jeremypress))
-
-## [v0.119.0](https://github.com/box/box-content-preview/tree/v0.119.0) (2017-04-11)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.118.0...v0.119.0)
-
-**Merged pull requests:**
-
-- Disable font faces on safari 10\_3 [\#67](https://github.com/box/box-content-preview/pull/67) ([JustinHoldstock](https://github.com/JustinHoldstock))
-- Update: Decrease mobile web max pdf.js canvas size to 3MP [\#66](https://github.com/box/box-content-preview/pull/66) ([tonyjin](https://github.com/tonyjin))
-- Chore: Removing unneeded compatibility.js from pdf.js [\#65](https://github.com/box/box-content-preview/pull/65) ([tonyjin](https://github.com/tonyjin))
-- Update: Increase default doc chunk size to 384KB [\#64](https://github.com/box/box-content-preview/pull/64) ([tonyjin](https://github.com/tonyjin))
-- Update: Upgrade pdf.js to v1.8.175 [\#63](https://github.com/box/box-content-preview/pull/63) ([tonyjin](https://github.com/tonyjin))
-- Fix: Hiding download button in all cases if browser cannot download [\#61](https://github.com/box/box-content-preview/pull/61) ([jeremypress](https://github.com/jeremypress))
-- Chore: Update changelog generator to ignore old pull requests [\#59](https://github.com/box/box-content-preview/pull/59) ([tonyjin](https://github.com/tonyjin))
-
-## [v0.118.0](https://github.com/box/box-content-preview/tree/v0.118.0) (2017-04-06)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.117.0...v0.118.0)
-
-**Merged pull requests:**
-
-- Update: New Box-branding for Oculus Touch models [\#58](https://github.com/box/box-content-preview/pull/58) ([MiiBond](https://github.com/MiiBond))
-- Chore: Updating README describing .conventional-changelog-lintrc [\#57](https://github.com/box/box-content-preview/pull/57) ([tonyjin](https://github.com/tonyjin))
-
-# Historical Change Log
-
-## [v0.117.0](https://github.com/box/box-content-preview/tree/v0.117.0) (2017-04-06)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.116.0...v0.117.0)
-
-**Merged pull requests:**
-
-- Chore: Fixing changelog generator again [\#56](https://github.com/box/box-content-preview/pull/56) ([tonyjin](https://github.com/tonyjin))
-
-## [v0.116.0](https://github.com/box/box-content-preview/tree/v0.116.0) (2017-04-06)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.115.0...v0.116.0)
-
-**Merged pull requests:**
-
-- Chore: Updating changelog generator [\#55](https://github.com/box/box-content-preview/pull/55) ([tonyjin](https://github.com/tonyjin))
-- Fix: 3D Error messages [\#54](https://github.com/box/box-content-preview/pull/54) ([jeremypress](https://github.com/jeremypress))
-- Chore: Removing rotateLeft method from DocBaseViewer [\#52](https://github.com/box/box-content-preview/pull/52) ([pramodsum](https://github.com/pramodsum))
-- Chore: Switching changelog generation to conventional-changelog [\#51](https://github.com/box/box-content-preview/pull/51) ([jeremypress](https://github.com/jeremypress))
-- Update Translations [\#50](https://github.com/box/box-content-preview/pull/50) ([boxmoji](https://github.com/boxmoji))
-- Fix: COXP-3500 Reset camera issue in Box3D [\#47](https://github.com/box/box-content-preview/pull/47) ([MiiBond](https://github.com/MiiBond))
-- Fix: Don't display find bar when the text-layer/downloads are disabled [\#41](https://github.com/box/box-content-preview/pull/41) ([pramodsum](https://github.com/pramodsum))
-- Chore: Rename viewers [\#29](https://github.com/box/box-content-preview/pull/29) ([JustinHoldstock](https://github.com/JustinHoldstock))
-
-## [v0.115.0](https://github.com/box/box-content-preview/tree/v0.115.0) (2017-04-05)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.114.0...v0.115.0)
-
-**Merged pull requests:**
-
-- Chore: Add support for build/rsync.json for local development [\#49](https://github.com/box/box-content-preview/pull/49) ([tonyjin](https://github.com/tonyjin))
-- Update: Don't time out during conversion [\#46](https://github.com/box/box-content-preview/pull/46) ([tonyjin](https://github.com/tonyjin))
-- Chore: Minify third party CSS with cssnano [\#45](https://github.com/box/box-content-preview/pull/45) ([tonyjin](https://github.com/tonyjin))
-- Chore: Upgrading PDF.js to 1.7.401 [\#44](https://github.com/box/box-content-preview/pull/44) ([jeremypress](https://github.com/jeremypress))
-- Build: Updating upgrade\_pdfjs script [\#43](https://github.com/box/box-content-preview/pull/43) ([jeremypress](https://github.com/jeremypress))
-- Update Translations [\#40](https://github.com/box/box-content-preview/pull/40) ([boxmoji](https://github.com/boxmoji))
-- Chore: Fixing link in README [\#38](https://github.com/box/box-content-preview/pull/38) ([pramodsum](https://github.com/pramodsum))
-- Build: Adding commit linting [\#37](https://github.com/box/box-content-preview/pull/37) ([jeremypress](https://github.com/jeremypress))
-- Fix: replacing .keynote extension with .key [\#36](https://github.com/box/box-content-preview/pull/36) ([jeremypress](https://github.com/jeremypress))
-- Chore: isMobile refactor [\#35](https://github.com/box/box-content-preview/pull/35) ([jeremypress](https://github.com/jeremypress))
-- Chore: Adding browser canDownload check [\#34](https://github.com/box/box-content-preview/pull/34) ([jeremypress](https://github.com/jeremypress))
-- Chore: Refactor filmstripShowHandler for testability [\#33](https://github.com/box/box-content-preview/pull/33) ([bhh1988](https://github.com/bhh1988))
-- Chore: Continuing to fix release script [\#32](https://github.com/box/box-content-preview/pull/32) ([tonyjin](https://github.com/tonyjin))
-- Fix: Validating annotation thread params [\#17](https://github.com/box/box-content-preview/pull/17) ([pramodsum](https://github.com/pramodsum))
-- Update: Updating box ui colors [\#14](https://github.com/box/box-content-preview/pull/14) ([priyajeet](https://github.com/priyajeet))
-
-## [v0.114.0](https://github.com/box/box-content-preview/tree/v0.114.0) (2017-03-29)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.113.0...v0.114.0)
-
-**Merged pull requests:**
-
-- Chore: Update release script [\#31](https://github.com/box/box-content-preview/pull/31) ([tonyjin](https://github.com/tonyjin))
-
-## [v0.113.0](https://github.com/box/box-content-preview/tree/v0.113.0) (2017-03-28)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.112.0...v0.113.0)
-
-**Merged pull requests:**
-
-- Chore: Separate tagging from build [\#30](https://github.com/box/box-content-preview/pull/30) ([tonyjin](https://github.com/tonyjin))
-- Fix: Bug fixes for expiring embed Preview [\#28](https://github.com/box/box-content-preview/pull/28) ([tonyjin](https://github.com/tonyjin))
-- New: adding error messages for iWork files [\#27](https://github.com/box/box-content-preview/pull/27) ([jeremypress](https://github.com/jeremypress))
-- Fix: Don't show error download btn if option is not set [\#25](https://github.com/box/box-content-preview/pull/25) ([tonyjin](https://github.com/tonyjin))
-- Chore: Preview.js cleanup and slight refactor [\#24](https://github.com/box/box-content-preview/pull/24) ([tonyjin](https://github.com/tonyjin))
-- Filmstrip interval should be determined from rep metadata field [\#23](https://github.com/box/box-content-preview/pull/23) ([bhh1988](https://github.com/bhh1988))
-- Breaking: Support {+asset\_path} to follow RFC6570 [\#22](https://github.com/box/box-content-preview/pull/22) ([tonyjin](https://github.com/tonyjin))
-- Fix: Guard against unsupported lose\_context extension on IE11 and Edge [\#21](https://github.com/box/box-content-preview/pull/21) ([MiiBond](https://github.com/MiiBond))
-- New: centering image prints [\#18](https://github.com/box/box-content-preview/pull/18) ([jeremypress](https://github.com/jeremypress))
-- Chore: Remove dist folder from repo [\#16](https://github.com/box/box-content-preview/pull/16) ([tonyjin](https://github.com/tonyjin))
-- Chore: Separately version third-party assets [\#15](https://github.com/box/box-content-preview/pull/15) ([tonyjin](https://github.com/tonyjin))
-- New: Enable activation/deactivation of VR when headset put on/off [\#13](https://github.com/box/box-content-preview/pull/13) ([MiiBond](https://github.com/MiiBond))
-- New: Preload for presentation viewer [\#12](https://github.com/box/box-content-preview/pull/12) ([tonyjin](https://github.com/tonyjin))
-- Release: 0.112.0 [\#11](https://github.com/box/box-content-preview/pull/11) ([tonyjin](https://github.com/tonyjin))
-- Update: Added Box branding to Vive controllers. [\#10](https://github.com/box/box-content-preview/pull/10) ([MiiBond](https://github.com/MiiBond))
-- Breaking: Switching to Preview class instead of Preview singleton [\#7](https://github.com/box/box-content-preview/pull/7) ([priyajeet](https://github.com/priyajeet))
-
-## [v0.112.0](https://github.com/box/box-content-preview/tree/v0.112.0) (2017-03-22)
-[Full Changelog](https://github.com/box/box-content-preview/compare/v0.111.0...v0.112.0)
-
-**Merged pull requests:**
-
-- Build: Add release script [\#9](https://github.com/box/box-content-preview/pull/9) ([tonyjin](https://github.com/tonyjin))
-- Fix uncaught exceptions box3d [\#8](https://github.com/box/box-content-preview/pull/8) ([JustinHoldstock](https://github.com/JustinHoldstock))
-- 397 animation controls dont appear [\#6](https://github.com/box/box-content-preview/pull/6) ([MiiBond](https://github.com/MiiBond))
-- Update: Adjust default camera distance for model3d viewer [\#5](https://github.com/box/box-content-preview/pull/5) ([MiiBond](https://github.com/MiiBond))
-- 360 update oculus touch materials [\#4](https://github.com/box/box-content-preview/pull/4) ([MiiBond](https://github.com/MiiBond))
-- Update README license to match LICENSE file [\#3](https://github.com/box/box-content-preview/pull/3) ([tonyjin](https://github.com/tonyjin))
-- Move documentation into viewer folders [\#2](https://github.com/box/box-content-preview/pull/2) ([tonyjin](https://github.com/tonyjin))
-- Setting up Travis [\#1](https://github.com/box/box-content-preview/pull/1) ([tonyjin](https://github.com/tonyjin))
-
-
-\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*
+
+
+<a name="1.1.1"></a>
+## 1.1.1 (2017-07-20)
+
+* Release: 1.1.1 ([9487634](https://github.com/box/box-content-preview/commit/9487634))
+* Fix: Don't swallow touch start event to prevent iOS inertia scrolling (#233) ([d628c14](https://github.com/box/box-content-preview/commit/d628c14))
+* Fix: Prevent MP3 from hiding (#230) ([2a236fe](https://github.com/box/box-content-preview/commit/2a236fe))
+
+
+
+<a name="1.1.0"></a>
+# 1.1.0 (2017-07-18)
+
+* Release: 1.1.0 ([a8e1216](https://github.com/box/box-content-preview/commit/a8e1216))
+* Docs: Add issue reporting template (#228) ([135e717](https://github.com/box/box-content-preview/commit/135e717))
+* Docs: More README updates ([00821c4](https://github.com/box/box-content-preview/commit/00821c4))
+* Docs: Update document viewer event name ([eae3c74](https://github.com/box/box-content-preview/commit/eae3c74))
+* Docs: Update project status badge (#212) ([f50be16](https://github.com/box/box-content-preview/commit/f50be16))
+* Docs: Update shield for UI Elements ([271cbbb](https://github.com/box/box-content-preview/commit/271cbbb))
+* Docs: Update support section in README ([94c17d4](https://github.com/box/box-content-preview/commit/94c17d4))
+* Fix: Limit iOS font fix to 10.3.1 (#225) ([b17054a](https://github.com/box/box-content-preview/commit/b17054a)), closes [#225](https://github.com/box/box-content-preview/issues/225)
+* Fix: Media controls and usability fixes for mobile (#217) ([38ecce7](https://github.com/box/box-content-preview/commit/38ecce7)), closes [#217](https://github.com/box/box-content-preview/issues/217)
+* Fix: Prevent double tap zoom in control bar (#227) ([14996a0](https://github.com/box/box-content-preview/commit/14996a0))
+* Fix: Restore crawler for buffering video (#218) ([800692d](https://github.com/box/box-content-preview/commit/800692d))
+* New: Add ts and flv formats to MediaLoader.js (#226) ([be35a75](https://github.com/box/box-content-preview/commit/be35a75))
+* Update: Render Vera-protected HTML files (#220) ([78423ac](https://github.com/box/box-content-preview/commit/78423ac))
+* Chore: Cleaning up annotation strings/classes (#215) ([0cfcaf7](https://github.com/box/box-content-preview/commit/0cfcaf7))
+* Chore: Fix webpack errors and upgrade some packages (#221) ([c309da1](https://github.com/box/box-content-preview/commit/c309da1)), closes [#221](https://github.com/box/box-content-preview/issues/221)
+* Chore: Full pass of prettier formatting (#223) ([814aa75](https://github.com/box/box-content-preview/commit/814aa75))
+* Chore: Update .travis.yml to only build master (#214) ([f10b14c](https://github.com/box/box-content-preview/commit/f10b14c))
+* Chore: Update Travis config (#219) ([a6fe4b6](https://github.com/box/box-content-preview/commit/a6fe4b6))
+* Fix settings pullup for model3D files on mobile (#222) ([f285ba8](https://github.com/box/box-content-preview/commit/f285ba8)), closes [#222](https://github.com/box/box-content-preview/issues/222)
+
+
+
+<a name="1.0.0"></a>
+# 1.0.0 (2017-07-12)
+
+* Release: 1.0.0 ([b599cd2](https://github.com/box/box-content-preview/commit/b599cd2))
+
+
+
+<a name="0.131.2"></a>
+## 0.131.2 (2017-07-11)
+
+* Release: 0.131.2 ([1021c8e](https://github.com/box/box-content-preview/commit/1021c8e))
+* Fix: Ensure that annotation scale is never being set to auto (#208) ([9899f94](https://github.com/box/box-content-preview/commit/9899f94))
+* Fix: Search preview container for mobile annotations dialog (#209) ([56e026a](https://github.com/box/box-content-preview/commit/56e026a))
+
+
+
+<a name="0.131.1"></a>
+## 0.131.1 (2017-07-11)
+
+* Release: 0.131.1 ([6eeb432](https://github.com/box/box-content-preview/commit/6eeb432))
+* Fix: Properly scope typography CSS (#207) ([816ed15](https://github.com/box/box-content-preview/commit/816ed15))
+* Chore: Cleaning up annotations code comments (#206) ([9e042c1](https://github.com/box/box-content-preview/commit/9e042c1))
+
+
+
+<a name="0.131.0"></a>
+# 0.131.0 (2017-07-07)
+
+* Release: 0.131.0 ([5b8539f](https://github.com/box/box-content-preview/commit/5b8539f))
+* Chore: Fix ESLint warnings (JSDoc cleanup) (#199) ([d4303aa](https://github.com/box/box-content-preview/commit/d4303aa)), closes [#199](https://github.com/box/box-content-preview/issues/199)
+* Chore: Page num input uses numeric keyboard on mobile devices (#200) ([6acf8fa](https://github.com/box/box-content-preview/commit/6acf8fa))
+* Chore: Preview Cleanup (#202) ([18e5969](https://github.com/box/box-content-preview/commit/18e5969))
+* Chore: Preview UI as instance (#204) ([5d06fb3](https://github.com/box/box-content-preview/commit/5d06fb3))
+* Chore: Remove padding for CSV files (#194) ([762896e](https://github.com/box/box-content-preview/commit/762896e))
+* Chore: Removing unused 'active' & 'active-hover' states for annotations (#189) ([3c46e05](https://github.com/box/box-content-preview/commit/3c46e05))
+* Chore: Scrubber/Media fixes for mobile (#185) ([884799c](https://github.com/box/box-content-preview/commit/884799c)), closes [#185](https://github.com/box/box-content-preview/issues/185)
+* Chore: Update README to include token scope information (#203) ([a26d600](https://github.com/box/box-content-preview/commit/a26d600))
+* Chore: Update to new 'Elements' branding (#193) ([4995798](https://github.com/box/box-content-preview/commit/4995798))
+* Cleanup for 1.0 for 3D (#205) ([78c11f2](https://github.com/box/box-content-preview/commit/78c11f2))
+* Fix/notification message timeout (#201) ([5d42af4](https://github.com/box/box-content-preview/commit/5d42af4))
+* Fix: Allow panning on mobile while zooming into ppt files (#192) ([68091e3](https://github.com/box/box-content-preview/commit/68091e3))
+* Fix: Ensures highlight buttons are hidden on mobile devices (#196) ([ef8db6e](https://github.com/box/box-content-preview/commit/ef8db6e))
+* Fix: Tree shaking bug workaround for csv bundle (#191) ([edd11e4](https://github.com/box/box-content-preview/commit/edd11e4))
+* Update: pdf.js 1.8.514 (#197) ([bf10569](https://github.com/box/box-content-preview/commit/bf10569))
+* Docs: Update contributing.md (#195) ([08eb9e9](https://github.com/box/box-content-preview/commit/08eb9e9))
+
+
+
+<a name="0.130.0"></a>
+# 0.130.0 (2017-06-28)
+
+* Release: 0.130.0 ([53527c0](https://github.com/box/box-content-preview/commit/53527c0))
+* Fix: Buttons fail to display when adding a comment to plain highlight (#183) ([a344153](https://github.com/box/box-content-preview/commit/a344153))
+* Fix: Fix focus for new page number input (#187) ([5f82f15](https://github.com/box/box-content-preview/commit/5f82f15)), closes [#187](https://github.com/box/box-content-preview/issues/187)
+* Fix: Fix hiding on Android Chrome (#190) ([897abcd](https://github.com/box/box-content-preview/commit/897abcd)), closes [#190](https://github.com/box/box-content-preview/issues/190)
+* Fix: Fixes issues with adding annotations on tablets (#186) ([e6e6c3b](https://github.com/box/box-content-preview/commit/e6e6c3b)), closes [#186](https://github.com/box/box-content-preview/issues/186)
+* Fix: Sets the pdf scale after page render rather than on resize (#178) ([8457621](https://github.com/box/box-content-preview/commit/8457621))
+* Create highlight dialog (#184) ([59c0bbb](https://github.com/box/box-content-preview/commit/59c0bbb))
+* Chore: Add Webpack bundle visualizer (#188) ([8fa744e](https://github.com/box/box-content-preview/commit/8fa744e))
+* Chore: Make page number input more visible (#179) ([3b585d8](https://github.com/box/box-content-preview/commit/3b585d8))
+* Chore: Refactor controls for mobile (#174) ([066a3d4](https://github.com/box/box-content-preview/commit/066a3d4))
+* New: Allowing users to add new mobile point annotations (#177) ([56bbbf9](https://github.com/box/box-content-preview/commit/56bbbf9))
+* Update: Readme with new badges (#180) ([fc51f75](https://github.com/box/box-content-preview/commit/fc51f75))
+* Update: Remove 0.25x playback on media files (#182) ([896c755](https://github.com/box/box-content-preview/commit/896c755))
+
+
+
+<a name="0.129.2"></a>
+## 0.129.2 (2017-06-20)
+
+* Release: 0.129.2 ([ef39c99](https://github.com/box/box-content-preview/commit/ef39c99))
+* Fix: Fix shared links previewed in other subdomains (#173) ([ab04be5](https://github.com/box/box-content-preview/commit/ab04be5)), closes [#173](https://github.com/box/box-content-preview/issues/173)
+* Chore: Tweak fade-in timing of file loading animation (#175) ([1e9cebe](https://github.com/box/box-content-preview/commit/1e9cebe))
+* Chore: Update ESLint rules and VSCode settings (#176) ([28ec823](https://github.com/box/box-content-preview/commit/28ec823))
+* Docs: Update README editor plugins ([b0be367](https://github.com/box/box-content-preview/commit/b0be367))
+
+
+
+<a name="0.129.1"></a>
+## 0.129.1 (2017-06-16)
+
+* Release: 0.129.1 ([d6f5878](https://github.com/box/box-content-preview/commit/d6f5878))
+* Fix: Box3D bug prevented loading video texture from video tag ([55d3ca2](https://github.com/box/box-content-preview/commit/55d3ca2))
+
+
+
+<a name="0.129.0"></a>
+# 0.129.0 (2017-06-14)
+
+* Release: 0.129.0 ([d38e6df](https://github.com/box/box-content-preview/commit/d38e6df))
+* Mojito: Update translations (#167) ([4210077](https://github.com/box/box-content-preview/commit/4210077))
+* New: File specific loading icons (#170) ([16af34d](https://github.com/box/box-content-preview/commit/16af34d))
+* Fix: Catch loss of WebGL context in Box3D and reload preview ([0de993e](https://github.com/box/box-content-preview/commit/0de993e))
+* Fix: Fix removeEventListener in MediaBaseViewer (#169) ([5760a12](https://github.com/box/box-content-preview/commit/5760a12)), closes [#169](https://github.com/box/box-content-preview/issues/169)
+* Chore: Refactoring Controls for mobile (#159) ([98ad9cc](https://github.com/box/box-content-preview/commit/98ad9cc))
+
+
+
+<a name="0.128.0"></a>
+# 0.128.0 (2017-06-06)
+
+* Release: 0.128.0 ([a0fc5ae](https://github.com/box/box-content-preview/commit/a0fc5ae))
+* Upgrade: Upgrade Shaka-player to fix infinite 401 issue (#164) ([5646a79](https://github.com/box/box-content-preview/commit/5646a79)), closes [#164](https://github.com/box/box-content-preview/issues/164)
+* Update: Add support for 'ly' Lilypond musical annotation files (#165) ([4212692](https://github.com/box/box-content-preview/commit/4212692))
+* Update: Change Preview loading message (#166) ([a8457f0](https://github.com/box/box-content-preview/commit/a8457f0))
+* Update: Displaying file type unsupported error (#163) ([59765e8](https://github.com/box/box-content-preview/commit/59765e8))
+* Chore: Optimizations for highlightMousemoveEvent (#121) ([4d31542](https://github.com/box/box-content-preview/commit/4d31542))
+* Chore: refactored and renamed getPageElAndPageNumber (#162) ([00dedab](https://github.com/box/box-content-preview/commit/00dedab))
+* Animate annotation dialog (#161) ([b7217c6](https://github.com/box/box-content-preview/commit/b7217c6))
+* Mojito: Update translations (#160) ([fbb3989](https://github.com/box/box-content-preview/commit/fbb3989))
+* Docs: Use ISO date format for LICENSE (#158) ([e856302](https://github.com/box/box-content-preview/commit/e856302))
+
+
+
+<a name="0.127.0"></a>
+# 0.127.0 (2017-05-30)
+
+* Release: 0.127.0 ([07d036f](https://github.com/box/box-content-preview/commit/07d036f))
+* Fix: Disables annotations after 'load' event on shared links (#150) ([77cf5bb](https://github.com/box/box-content-preview/commit/77cf5bb))
+* Fix: Ensure point annotation mode button is hidden on rotated images (#151) ([e322c6a](https://github.com/box/box-content-preview/commit/e322c6a))
+* Fix: Error content jumps on error if download button is absent (#152) ([2cd6fed](https://github.com/box/box-content-preview/commit/2cd6fed))
+* Fix: Image scaling/rotation is broken when an image has annotations (#156) ([c91e9f9](https://github.com/box/box-content-preview/commit/c91e9f9))
+* Fix: Support disabling DASH viewer in DASH-supported environment (#140) ([b292666](https://github.com/box/box-content-preview/commit/b292666))
+* Chore: Re-enabling controls for mobile viewers (#157) ([a9e1c52](https://github.com/box/box-content-preview/commit/a9e1c52))
+* Chore: Use whatwg-fetch instead of isomorphic-fetch (#155) ([5a8f4f2](https://github.com/box/box-content-preview/commit/5a8f4f2))
+* Mojito: Update translations (#154) ([2e512ed](https://github.com/box/box-content-preview/commit/2e512ed))
+* New: Initial mobile optimization of annotation dialogs (#146) ([d693991](https://github.com/box/box-content-preview/commit/d693991))
+
+
+
+<a name="0.126.1"></a>
+## 0.126.1 (2017-05-26)
+
+* Release: 0.126.1 ([e269605](https://github.com/box/box-content-preview/commit/e269605))
+* Fix: Fixing vanity urls for excel online on IE11 (#153) ([ff6ae22](https://github.com/box/box-content-preview/commit/ff6ae22))
+* Fix: Reinforcing release script (#148) ([c7137a0](https://github.com/box/box-content-preview/commit/c7137a0))
+* Update: Make media viewer settings menu larger so scrollbars don't show (#149) ([7da7efc](https://github.com/box/box-content-preview/commit/7da7efc))
+* Chore: Fix changelog (#144) ([be0d2b0](https://github.com/box/box-content-preview/commit/be0d2b0)), closes [#144](https://github.com/box/box-content-preview/issues/144)
+* Chore: Format all source code with prettier (#143) ([d2a6835](https://github.com/box/box-content-preview/commit/d2a6835))
+* Add toggle and metadata for box3d grid ([d139a15](https://github.com/box/box-content-preview/commit/d139a15))
+
+
+
+<a name="0.126.0"></a>
+# 0.126.0 (2017-05-24)
+
+* Release: 0.126.0 ([22cd9b1](https://github.com/box/box-content-preview/commit/22cd9b1))
+* Chore: Update translations (#142) ([b084505](https://github.com/box/box-content-preview/commit/b084505))
+
+
+
+<a name="0.125.0"></a>
+# 0.125.0 (2017-05-24)
+
+* Release: 0.125.0 ([b77af71](https://github.com/box/box-content-preview/commit/b77af71))
+* Build: Update build script to tag release commits (#141) ([15c0034](https://github.com/box/box-content-preview/commit/15c0034))
+* Chore: Add prettier code formatter (#133) ([c3cb7b6](https://github.com/box/box-content-preview/commit/c3cb7b6))
+* Chore: Deleting old third-party packages (#127) ([d45bb83](https://github.com/box/box-content-preview/commit/d45bb83))
+* Chore: Settings.js - Declare class properties at class-level (#134) ([2cacedd](https://github.com/box/box-content-preview/commit/2cacedd))
+* Chore: Update license formatting (#135) ([61b8bbd](https://github.com/box/box-content-preview/commit/61b8bbd))
+* Chore: Update prettier line width to 80 (#139) ([e7fb14b](https://github.com/box/box-content-preview/commit/e7fb14b))
+* Chore: Update translations (#132) ([f5fc6a5](https://github.com/box/box-content-preview/commit/f5fc6a5))
+* Update: Adding more languages for subtitles (#130) ([b55988c](https://github.com/box/box-content-preview/commit/b55988c))
+* Update: Improve subtitle selection algorithm (#129) ([561cb73](https://github.com/box/box-content-preview/commit/561cb73))
+* Update: Show rate limit specific error message when a 429 occurs (#137) ([67b589c](https://github.com/box/box-content-preview/commit/67b589c))
+* Update: Some UI changes for video player (#128) ([81802c1](https://github.com/box/box-content-preview/commit/81802c1))
+* Update: Update Box3D with new material default (#136) ([97fe7a1](https://github.com/box/box-content-preview/commit/97fe7a1))
+* Fix: fix excel setup when enabling the Office viewer via options (#126) ([e8145f5](https://github.com/box/box-content-preview/commit/e8145f5)), closes [#126](https://github.com/box/box-content-preview/issues/126)
+* Fix: Seek time doesn't match filmstrip timecode (#131) ([fb1fdd0](https://github.com/box/box-content-preview/commit/fb1fdd0))
+* Docs: Update changelog ([0a19275](https://github.com/box/box-content-preview/commit/0a19275))
+* Docs: Update Contributing.md (#125) ([d717883](https://github.com/box/box-content-preview/commit/d717883))
+* Docs: Update license to Box Software License Agreement (#124) ([b8c6080](https://github.com/box/box-content-preview/commit/b8c6080))
+* Docs: Update README to point to new CodePen demo ([5e20db3](https://github.com/box/box-content-preview/commit/5e20db3))
+* Mojito: Update translations (#123) ([86c8475](https://github.com/box/box-content-preview/commit/86c8475))
+
+
+
+<a name="0.124.0"></a>
+# 0.124.0 (2017-05-17)
+
+* 0.124.0 ([e7fd504](https://github.com/box/box-content-preview/commit/e7fd504))
+
+
+
+<a name="0.123.0"></a>
+# 0.123.0 (2017-05-17)
+
+* 0.123.0 ([cdd3799](https://github.com/box/box-content-preview/commit/cdd3799))
+* Update: Adding iso639 code translations (#122) ([b4de2a6](https://github.com/box/box-content-preview/commit/b4de2a6))
+* New: Multi image annotations post bundling refactor ([93a5ba2](https://github.com/box/box-content-preview/commit/93a5ba2))
+* New: platform excel online fork (#101) ([a247b9d](https://github.com/box/box-content-preview/commit/a247b9d))
+* New: Support closed-captions/subtitles (#117) ([4c56532](https://github.com/box/box-content-preview/commit/4c56532))
+* Chore: Bundling annotations.css separately from preview.css (#106) ([699ed56](https://github.com/box/box-content-preview/commit/699ed56))
+* Chore: Document viewer tweaks (#114) ([5d0f884](https://github.com/box/box-content-preview/commit/5d0f884))
+* Chore: Moving common annotation methods into Base classes (#111) ([27a908a](https://github.com/box/box-content-preview/commit/27a908a))
+* Chore: Remove unnecessary mobile check (#120) ([7268548](https://github.com/box/box-content-preview/commit/7268548))
+* Chore: Tweak readme on self-hosted vs Box-hosted ([104d03e](https://github.com/box/box-content-preview/commit/104d03e))
+* Chore: Update readme section on Promise polyfills ([7c90078](https://github.com/box/box-content-preview/commit/7c90078))
+* Fix: Dont rely on preview's script tag being present after execution (#105) ([3ae639a](https://github.com/box/box-content-preview/commit/3ae639a))
+* Fix: Issue when 'load' event is fired before BoxAnnotations is loaded (#108) ([b4c8d32](https://github.com/box/box-content-preview/commit/b4c8d32))
+* Fix: Older versions of webkit iOS incorrectly cache range requests (#118) ([0424e16](https://github.com/box/box-content-preview/commit/0424e16))
+* Fix: Set media viewers' settings menu dimensions with javascript (#116) ([3c36f0a](https://github.com/box/box-content-preview/commit/3c36f0a))
+* Docs: Remove unneeded file types from image360 docs (#119) ([0b7d8de](https://github.com/box/box-content-preview/commit/0b7d8de))
+* Mojito: Update translations (#113) ([7c12442](https://github.com/box/box-content-preview/commit/7c12442))
+* Upgrade: Upgrade Shaka-player to 2.1.1 (#110) ([4387245](https://github.com/box/box-content-preview/commit/4387245))
+
+
+
+<a name="0.122.0"></a>
+# 0.122.0 (2017-05-09)
+
+* 0.122.0 ([c735f38](https://github.com/box/box-content-preview/commit/c735f38))
+* Mojito: Update translations (#107) ([197945d](https://github.com/box/box-content-preview/commit/197945d))
+* Chore: Allow console logging to show in tests (#100) ([b0e15b1](https://github.com/box/box-content-preview/commit/b0e15b1))
+* Chore: cleaning up DocBaseViewer (#103) ([9d444b3](https://github.com/box/box-content-preview/commit/9d444b3))
+* Chore: Remove font-smoothing and update progress bar color (#104) ([2581b88](https://github.com/box/box-content-preview/commit/2581b88))
+* Chore: Remove unused 'parent' field from Box File object (#91) ([1f9a94b](https://github.com/box/box-content-preview/commit/1f9a94b))
+* Update: Make media player web-accessible according to WCAG2.0 spec (#97) ([687dba4](https://github.com/box/box-content-preview/commit/687dba4))
+* Update: Re-enable font loading API support check (#99) ([eca9e6d](https://github.com/box/box-content-preview/commit/eca9e6d))
+* Fix: Add Annotations bundling changes back  (#95) ([bbc6ea3](https://github.com/box/box-content-preview/commit/bbc6ea3))
+* Fix: Make all svgs not focusable (#98) ([edcf0e1](https://github.com/box/box-content-preview/commit/edcf0e1))
+
+
+
+<a name="0.121.1"></a>
+## 0.121.1 (2017-04-29)
+
+* 0.121.1 ([948fbf8](https://github.com/box/box-content-preview/commit/948fbf8))
+* Revert annotations bundling (#94) ([176ad13](https://github.com/box/box-content-preview/commit/176ad13))
+
+
+
+<a name="0.121.0"></a>
+# 0.121.0 (2017-04-25)
+
+* 0.121.0 ([3e1e045](https://github.com/box/box-content-preview/commit/3e1e045))
+* Chore: Add console logging to better debug hanging preview (#93) ([3e6299b](https://github.com/box/box-content-preview/commit/3e6299b))
+* Chore: Bundling Annotators separately in annotations.js (#75) ([efa8b2a](https://github.com/box/box-content-preview/commit/efa8b2a))
+* Chore: Do not load annotations on shared links (#88) ([8b959cd](https://github.com/box/box-content-preview/commit/8b959cd))
+* Chore: Removed underscored variables and getters from all annotation files (#83) ([ac838d2](https://github.com/box/box-content-preview/commit/ac838d2))
+* Chore: User agent refactor and Browser tests (#87) ([059f6ac](https://github.com/box/box-content-preview/commit/059f6ac))
+* Fix: Don't load preload if the rep has an error (#92) ([ab5c65a](https://github.com/box/box-content-preview/commit/ab5c65a))
+* Fix: Ensuring annotations are loaded when viewer has permissions (#90) ([b90cdde](https://github.com/box/box-content-preview/commit/b90cdde))
+* Update: Document viewer optimizations (#89) ([41560d6](https://github.com/box/box-content-preview/commit/41560d6))
+* Upgrade: Shaka Player 2.0.8 (#85) ([461070d](https://github.com/box/box-content-preview/commit/461070d))
+
+
+
+<a name="0.120.1"></a>
+## 0.120.1 (2017-04-19)
+
+* 0.120.1 ([35be0a5](https://github.com/box/box-content-preview/commit/35be0a5))
+* Update: Tweak pdf.js range requests for improved performance (#84) ([0e7f358](https://github.com/box/box-content-preview/commit/0e7f358))
+
+
+
+<a name="0.120.0"></a>
+# 0.120.0 (2017-04-18)
+
+* 0.120.0 ([85337bc](https://github.com/box/box-content-preview/commit/85337bc))
+* Fix: Handle text representation error (#72) ([81fc4e4](https://github.com/box/box-content-preview/commit/81fc4e4))
+* Fix: Only bind custom listeners when annotation threads exist (#74) ([1e2e9f7](https://github.com/box/box-content-preview/commit/1e2e9f7))
+* Fix: Prevent webGL error when prefetching Preview.js (#82) ([e0a420a](https://github.com/box/box-content-preview/commit/e0a420a))
+* Update: Add client information to performance logging (#80) ([f7bea68](https://github.com/box/box-content-preview/commit/f7bea68))
+* Update: Add disableTextLayer option for doc and text viewers (#71) ([a36f735](https://github.com/box/box-content-preview/commit/a36f735))
+* Update: Changing analytics client name to 'box-content-preview' (#79) ([983dda9](https://github.com/box/box-content-preview/commit/983dda9))
+* Update: Disabling font loading API for pdf.js to prevent glitches (#68) ([5b5807b](https://github.com/box/box-content-preview/commit/5b5807b))
+* Chore: Mock super.setup() in all Viewer unit tests (#81) ([fec384c](https://github.com/box/box-content-preview/commit/fec384c))
+* Chore: Rename test-html files and update fixture loading (#78) ([8285e39](https://github.com/box/box-content-preview/commit/8285e39))
+* Chore: Triggering point annotation mode by emitting a message (#77) ([cc3e283](https://github.com/box/box-content-preview/commit/cc3e283))
+* Chore: Updating annotations icons to the new Box blue (#76) ([979e129](https://github.com/box/box-content-preview/commit/979e129))
+* Mojito: Update translations (#70) ([5daa11e](https://github.com/box/box-content-preview/commit/5daa11e))
+
+
+
+<a name="0.119.1"></a>
+## 0.119.1 (2017-04-12)
+
+* 0.119.1 ([bc9b581](https://github.com/box/box-content-preview/commit/bc9b581))
+* Fix: adding patch to options check in release script (#69) ([86c3fef](https://github.com/box/box-content-preview/commit/86c3fef))
+* Fix: updating metadata from repStatus (#60) ([51143b0](https://github.com/box/box-content-preview/commit/51143b0))
+
+
+
+<a name="0.119.0"></a>
+# 0.119.0 (2017-04-11)
+
+* 0.119.0 ([762fad8](https://github.com/box/box-content-preview/commit/762fad8))
+* Fix: Hiding download button in all cases if browser cannot download (#61) ([3a5bb41](https://github.com/box/box-content-preview/commit/3a5bb41))
+* Fix: Temporary disableFontFaces on IOS 10.3 ([67de2d7](https://github.com/box/box-content-preview/commit/67de2d7))
+* Update: Decrease mobile web max pdf.js canvas size to 3MP (#66) ([88304c9](https://github.com/box/box-content-preview/commit/88304c9))
+* Update: Increase default doc chunk size to 384KB (#64) ([ebbaccd](https://github.com/box/box-content-preview/commit/ebbaccd))
+* Update: Upgrade pdf.js to v1.8.175 (#63) ([14ac6f9](https://github.com/box/box-content-preview/commit/14ac6f9))
+* Chore: Removing unneeded compatibility.js from pdf.js (#65) ([82d582e](https://github.com/box/box-content-preview/commit/82d582e))
+* Chore: Update changelog generator to ignore old pull requests (#59) ([7ad5088](https://github.com/box/box-content-preview/commit/7ad5088))
+
+
+
+<a name="0.118.0"></a>
+# 0.118.0 (2017-04-06)
+
+* 0.118.0 ([930c432](https://github.com/box/box-content-preview/commit/930c432))
+* Chore: Moving existing CHANGELOG.md to HISTORY.md ([126f78d](https://github.com/box/box-content-preview/commit/126f78d))
+* Chore: Updating README describing .conventional-changelog-lintrc (#57) ([897b858](https://github.com/box/box-content-preview/commit/897b858))
+* Update: New Box-branding for Oculus Touch models (#58) ([59880de](https://github.com/box/box-content-preview/commit/59880de))
+
+
+
+<a name="0.117.0"></a>
+# 0.117.0 (2017-04-06)
+
+* New: Initial push to GitHub ([448c477](https://github.com/box/box-content-preview/commit/448c477))
+
+
+

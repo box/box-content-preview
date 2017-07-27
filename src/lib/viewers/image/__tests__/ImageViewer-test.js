@@ -587,21 +587,21 @@ describe('lib/viewers/image/ImageViewer', () => {
     describe('getPointModeClickHandler()', () => {
         it('should do nothing if not annotatable', () => {
             sandbox.stub(image, 'isAnnotatable').returns(false);
-            const handler = image.getPointModeClickHandler();
+            const handler = image.getAnnotationModeClickHandler('point');
             expect(handler).to.be.null;
         });
 
         it('should return event listener', () => {
             const event = {};
             image.annotator = {
-                togglePointModeHandler: () => {}
+                togglePointAnnotationHandler: () => {}
             };
             sandbox.stub(image, 'emit');
             image.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
             image.imageEl.classList.add(CSS_CLASS_PANNABLE);
             sandbox.stub(image, 'isAnnotatable').returns(true);
 
-            const handler = image.getPointModeClickHandler();
+            const handler = image.getAnnotationModeClickHandler('point');
             expect(handler).to.be.a('function');
 
             handler(event);

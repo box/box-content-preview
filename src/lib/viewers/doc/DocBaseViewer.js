@@ -443,19 +443,6 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * @inheritdoc
-     */
-    getPointModeClickHandler() {
-        if (!this.isAnnotatable('point')) {
-            return null;
-        }
-
-        return () => {
-            this.emit('togglepointannotationmode');
-        };
-    }
-
-    /**
      * Handles keyboard events for document viewer.
      *
      * @param {string} key - keydown key

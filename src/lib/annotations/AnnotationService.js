@@ -81,11 +81,12 @@ class AnnotationService extends EventEmitter {
                     },
                     details: {
                         type: annotation.type,
+                        drawingPaths: annotation.drawingPaths,
                         location: annotation.location,
                         threadID: annotation.threadID
                     },
                     message: annotation.text,
-                    thread: annotation.thread
+                    threadNumber: annotation.threadNumber
                 })
             })
                 .then((response) => response.json())
@@ -226,7 +227,7 @@ class AnnotationService extends EventEmitter {
             fileVersionId: data.item.id,
             threadID: data.details.threadID,
             type: data.details.type,
-            thread: data.thread,
+            threadNumber: data.thread,
             text: data.message,
             location: data.details.location,
             user: {

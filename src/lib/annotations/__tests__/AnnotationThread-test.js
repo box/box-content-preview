@@ -6,7 +6,7 @@ import { CLASS_HIDDEN } from '../../constants';
 import {
     STATES,
     TYPES,
-    CLASS_ANNOTATION_POINT_BUTTON,
+    CLASS_ANNOTATION_POINT_MARKER,
     DATA_TYPE_ANNOTATION_INDICATOR
 } from '../annotationConstants';
 
@@ -30,7 +30,7 @@ describe('lib/annotations/AnnotationThread', () => {
             isMobile: false,
             location: {},
             threadID: '2',
-            thread: '1',
+            threadNumber: '1',
             type: 'point'
         });
 
@@ -137,7 +137,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 fileVersionId: '1',
                 location: {},
                 threadID: '2',
-                thread: '1',
+                threadNumber: '1',
                 type: 'point'
             });
 
@@ -154,7 +154,7 @@ describe('lib/annotations/AnnotationThread', () => {
                     type: 'point',
                     text: 'blah',
                     threadID: '2',
-                    thread: '1'
+                    threadNumber: '1'
                 })
             );
             expect(thread.state).to.equal(STATES.hover);
@@ -204,7 +204,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 isMobile: false,
                 location: {},
                 threadID: '2',
-                thread: '1',
+                threadNumber: '1',
                 type: 'point'
             });
 
@@ -356,7 +356,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 isMobile: false,
                 location: {},
                 threadID: '2',
-                thread: '1',
+                threadNumber: '1',
                 type: 'point'
             });
 
@@ -371,7 +371,7 @@ describe('lib/annotations/AnnotationThread', () => {
 
             thread.setupElement();
             expect(thread.element instanceof HTMLElement).to.be.true;
-            expect(thread.element).to.have.class(CLASS_ANNOTATION_POINT_BUTTON);
+            expect(thread.element).to.have.class(CLASS_ANNOTATION_POINT_MARKER);
             expect(stubs.bind).to.be.called;
         });
     });
@@ -489,7 +489,7 @@ describe('lib/annotations/AnnotationThread', () => {
     describe('createElement()', () => {
         it('should create an element with the right class and attribute', () => {
             const element = thread.createElement();
-            expect(element).to.have.class(CLASS_ANNOTATION_POINT_BUTTON);
+            expect(element).to.have.class(CLASS_ANNOTATION_POINT_MARKER);
             expect(element).to.have.attribute('data-type', DATA_TYPE_ANNOTATION_INDICATOR);
         });
     });
@@ -508,7 +508,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 threadID: '1',
                 type: 'point',
                 text: 'blah',
-                thread: '1',
+                threadNumber: '1',
                 location: { x: 0, y: 0 },
                 created: Date.now()
             });
@@ -528,7 +528,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 threadID: '1',
                 type: 'point',
                 text: 'blah',
-                thread: '1',
+                threadNumber: '1',
                 location: { x: 0, y: 0 },
                 created: Date.now()
             });
@@ -545,7 +545,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 threadID: '1',
                 type: 'point',
                 text: 'blah',
-                thread: '1',
+                threadNumber: '1',
                 location: { x: 0, y: 0 },
                 created: Date.now()
             });
