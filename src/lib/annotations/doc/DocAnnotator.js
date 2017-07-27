@@ -576,7 +576,13 @@ class DocAnnotator extends Annotator {
             return;
         }
 
+        // Determine if mouse is over any highlight dialog currently
+        // and ignore hover events of any highlights below
         const event = this.mouseMoveEvent;
+        if (docAnnotatorUtil.isDialogDataType(event.target)) {
+            return;
+        }
+
         this.mouseMoveEvent = null;
         this.throttleTimer = performance.now();
         // Only filter through highlight threads on the current page
