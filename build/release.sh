@@ -71,7 +71,7 @@ update_changelog() {
     echo "Updating CHANGELOG.md"
     echo "----------------------------------------------------------------------"
 
-    if github_changelog_generator box/box-content-preview --future-release v$VERSION --exclude-labels legacy-ignore; then
+    if ./node_modules/.bin/conventional-changelog -i CHANGELOG.md --same-file then
         echo "----------------------------------------------------------------------"
         echo "Updated CHANGELOG successfully"
         echo "----------------------------------------------------------------------"
