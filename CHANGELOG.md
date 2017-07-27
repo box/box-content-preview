@@ -1,3 +1,15 @@
+<a name="1.2.1"></a>
+## 1.2.1 (2017-07-27)
+
+* Fix: Add clickHandlers back for all enabled annotation modes (#248) ([71f33bc](https://github.com/box/box-content-preview/commit/71f33bc))
+* Fix: Fix release script ([3bf151a](https://github.com/box/box-content-preview/commit/3bf151a))
+* Fix: Typo in release script ([3ce0266](https://github.com/box/box-content-preview/commit/3ce0266))
+* Chore: Modify patch release script (#250) ([7f70a8f](https://github.com/box/box-content-preview/commit/7f70a8f))
+* Chore: Switch to git-based changelog generator (#252) ([1e4cbea](https://github.com/box/box-content-preview/commit/1e4cbea))
+* Chore: Update patch release script (#251) ([b050d87](https://github.com/box/box-content-preview/commit/b050d87))
+
+
+
 <a name="1.2.0"></a>
 # 1.2.0 (2017-07-25)
 
