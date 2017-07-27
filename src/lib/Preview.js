@@ -155,13 +155,7 @@ class Preview extends EventEmitter {
      */
     show(fileId, token, options = {}) {
         // Save a reference to the options to be used later
-        if (typeof token === 'string' || typeof token === 'function') {
-            this.previewOptions = Object.assign({}, options, { token });
-        } else if (token) {
-            this.previewOptions = Object.assign({}, token || {});
-        } else {
-            throw new Error('Missing access token!');
-        }
+        this.saveOptions(token, options);
 
         // load the preview
         this.load(fileId);
@@ -467,6 +461,33 @@ class Preview extends EventEmitter {
         });
     }
 
+    /**
+     * Fetch file info
+     * @param {string} fileId - Box File ID
+     * @param {string|Function} token - auth token string or generator function
+     * @param {Object} [options] - Optional preview options
+     * @return {Promise.<File>} Promise with file info
+     */
+    fetchFileInfo(fileId, token, options = {}) {
+        this.saveOptions(token, options);
+
+        this.file = { id: fileId };
+
+        return getTokens(this.file.id, this.previewOptions.token)
+            .then((tokenMap) => {
+                // Parse the preview options supplied by fetchFileInfo()
+                this.parseOptions(this.previewOptions, tokenMap);
+
+                return get(getURL(this.file.id, this.options.apiHost), this.getRequestHeaders());
+            })
+            .then((file) => {
+                // Nuke the file
+                this.file = undefined;
+
+                return file;
+            });
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -550,6 +571,12 @@ class Preview extends EventEmitter {
             this.collection = [this.file.id];
         }
 
+        // Perform load from offline when offline option is present
+        if (this.options.offline && this.options.offline.link) {
+            this.loadFromOffline();
+            return;
+        }
+
         if (checkFileValid(this.file)) {
             // Cache hit, use that.
             this.loadFromCache();
@@ -612,6 +639,9 @@ class Preview extends EventEmitter {
         // Save the reference to any additional custom options for viewers
         this.options.viewers = options.viewers || {};
 
+        // Save the reference to offline
+        this.options.offline = options.offline || {};
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
@@ -629,6 +659,23 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Save a reference to the options to be used later
+     *
+     * @param {string} token - Access token
+     * @param {Object} [options] - Optional preview options
+     * @return {void}
+     */
+    saveOptions(token, options) {
+        if (typeof token === 'string' || typeof token === 'function') {
+            this.previewOptions = Object.assign({}, options, { token });
+        } else if (token) {
+            this.previewOptions = Object.assign({}, token || {});
+        } else {
+            throw new Error('Missing access token!');
+        }
+    }
+
+    /**
      * Creates combined options to give to the viewer
      *
      * @private
@@ -639,6 +686,19 @@ class Preview extends EventEmitter {
         return cloneDeep(
             Object.assign({}, this.options, moreOptions, { location: this.location, cache: this.cache, ui: this.ui })
         );
+    }
+
+    /**
+     * Loads a preview by offline file.
+     *
+     * @private
+     * @return {void}
+     */
+    loadFromOffline() {
+        this.file = this.options.offline.file;
+        this.cache.unset(this.file.id);
+
+        this.handleLoadResponse(this.file);
     }
 
     /**
@@ -697,6 +757,12 @@ class Preview extends EventEmitter {
                 uncacheFile(this.cache, file);
             } else {
                 cacheFile(this.cache, file);
+            }
+
+            // If is offline then enrich entries with offline links
+            // We need to show file from the offline storage
+            if (this.options.offline && this.options.offline.link) {
+                this.enrichOfflineLinks();
             }
 
             // Should load/reload viewer if:
@@ -779,6 +845,23 @@ class Preview extends EventEmitter {
         // Once the viewer instance has been created, emit it so that clients can attach their events.
         // Viewer object will still be sent along the load event also.
         this.emit('viewer', this.viewer);
+    }
+
+    /**
+     * Enrich file entries with offline links.
+     *
+     * @private
+     * @return {void}
+     */
+    enrichOfflineLinks() {
+        const offlineLink = this.options.offline.link;
+
+        this.file.representations.entries.map((entire) => {
+            const newEntire = entire;
+
+            newEntire.content.url_template = offlineLink;
+            return newEntire;
+        });
     }
 
     /**
