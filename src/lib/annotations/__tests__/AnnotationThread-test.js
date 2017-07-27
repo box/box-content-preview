@@ -480,7 +480,7 @@ describe('lib/annotations/AnnotationThread', () => {
             expect(thread.destroy).to.be.called;
 
             // 'pending-active' state
-            thread.state = STATES.pending_ACTIVE;
+            thread.state = STATES.pending_active;
             thread.cancelUnsavedAnnotation();
             expect(thread.destroy).to.be.called;
         });

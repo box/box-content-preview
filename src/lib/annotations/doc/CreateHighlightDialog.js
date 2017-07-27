@@ -38,57 +38,32 @@ export const CreateEvents = {
 };
 
 class CreateHighlightDialog extends EventEmitter {
-    /**
-     * Container element for the dialog.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - Container element for the dialog. */
     containerEl;
 
-    /**
-     * The clickable element for creating plain highlights.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - The clickable element for creating plain highlights. */
     highlightCreateEl;
 
-    /**
-     * The clickable element got creating comment highlights.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - The clickable element got creating comment highlights. */
     commentCreateEl;
 
-    /**
-     * The parent container to nest the dialog element in.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - The parent container to nest the dialog element in. */
     parentEl;
 
-    /**
-     * The element containing the buttons that can creaet highlights.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - The element containing the buttons that can creaet highlights. */
     buttonsEl;
 
-    /**
-     * The comment box instance. Contains area for text input and post/cancel buttons.
-     *
-     * @property {CommentBox}
-     */
+    /** @property {CommentBox} - The comment box instance. Contains area for text input and post/cancel buttons. */
     commentBox;
 
-    /**
-     * Position, on the DOM, to align the dialog to the end of a highlight.
-     *
-     * @property {Object}
-     */
+    /** @property {Object} - Position, on the DOM, to align the dialog to the end of a highlight. */
     position = {
         x: 0,
         y: 0
     };
+
+    /** @property {boolean} - Whether or not we're on a mobile device. */
+    isMobile;
 
     /**
      * A dialog used to create plain and comment highlights.
@@ -96,12 +71,14 @@ class CreateHighlightDialog extends EventEmitter {
      * [constructor]
      *
      * @param {HTMLElement} parentEl - Parent element
+     * @param {boolean} isMobile - Whether or not this is running on a mobile device
      * @return {CreateHighlightDialog} CreateHighlightDialog instance
      */
-    constructor(parentEl) {
+    constructor(parentEl, isMobile = false) {
         super();
 
         this.parentEl = parentEl;
+        this.isMobile = isMobile;
 
         // Explicit scope binding for event listeners
         this.onHighlightClick = this.onHighlightClick.bind(this);
@@ -158,6 +135,7 @@ class CreateHighlightDialog extends EventEmitter {
         }
 
         this.setButtonVisibility(true);
+
         showElement(this.containerEl);
     }
 
@@ -172,6 +150,7 @@ class CreateHighlightDialog extends EventEmitter {
         }
 
         hideElement(this.containerEl);
+
         this.commentBox.hide();
         this.commentBox.clear();
     }
@@ -219,6 +198,10 @@ class CreateHighlightDialog extends EventEmitter {
      * @return {void}
      */
     updatePosition() {
+        if (this.isMobile) {
+            return;
+        }
+
         // Plus 1 pixel for caret
         this.containerEl.style.left = `${this.position.x - 1 - this.containerEl.clientWidth / 2}px`;
         // Plus 5 pixels for caret
@@ -309,6 +292,13 @@ class CreateHighlightDialog extends EventEmitter {
         highlightDialogEl.classList.add(CLASS_CREATE_DIALOG);
         highlightDialogEl.innerHTML = CREATE_HIGHLIGHT_DIALOG_TEMPLATE;
 
+        // Get rid of the caret
+        if (this.isMobile) {
+            highlightDialogEl.classList.add('bp-mobile-annotation-dialog');
+            highlightDialogEl.classList.add('bp-annotation-dialog');
+            highlightDialogEl.querySelector('.bp-annotation-caret').remove();
+        }
+
         const containerEl = highlightDialogEl.querySelector(constants.SELECTOR_ANNOTATION_HIGHLIGHT_DIALOG);
 
         // Reference HTML
@@ -323,6 +313,7 @@ class CreateHighlightDialog extends EventEmitter {
         highlightDialogEl.addEventListener('click', this.stopPropagation);
         highlightDialogEl.addEventListener('mouseup', this.stopPropagation);
         highlightDialogEl.addEventListener('touchend', this.stopPropagation);
+        highlightDialogEl.addEventListener('touchstart', this.stopPropagation);
         highlightDialogEl.addEventListener('dblclick', this.stopPropagation);
 
         // Event listeners

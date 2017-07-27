@@ -495,6 +495,17 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.elMock.expects('addEventListener').withArgs('mousemove', sinon.match.func);
             annotator.bindDOMListeners();
         });
+
+        it('should bind touch events and selectionchange, on the document, if on mobile and can annotate', () => {
+            annotator.annotationService.canAnnotate = true;
+            annotator.isMobile = true;
+            const docListen = sandbox.spy(document, 'addEventListener');
+
+            annotator.bindDOMListeners();
+
+            expect(docListen).to.be.calledWith('selectionchange', sinon.match.func);
+            expect(docListen).to.be.calledWith('touchstart', sinon.match.func);
+        });
     });
 
     describe('unbindDOMListeners()', () => {
@@ -538,6 +549,17 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
             expect(cancelRAFStub).to.be.calledWith(rafHandle);
             expect(annotator.highlightThrottleHandle).to.not.exist;
+        });
+
+        it('should unbind touch events and selectionchange, on the document, if on mobile and can annotate', () => {
+            annotator.annotationService.canAnnotate = true;
+            annotator.isMobile = true;
+            const docStopListen = sandbox.spy(document, 'removeEventListener');
+
+            annotator.unbindDOMListeners();
+
+            expect(docStopListen).to.be.calledWith('selectionchange', sinon.match.func);
+            expect(docStopListen).to.be.calledWith('touchstart', sinon.match.func);
         });
     });
 
@@ -831,6 +853,24 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             const removeAll = sandbox.stub(annotator.highlighter, 'removeAllHighlights');
             annotator.highlightMouseupHandler({ x: 0, y: 0 });
             expect(removeAll).to.be.called;
+        });
+    });
+
+    describe('onTouchStart()', () => {
+        it('should invoke highlighter.removeAllHighlights', () => {
+            annotator.highlighter = {
+                removeAllHighlights: sandbox.stub()
+            };
+            annotator.onTouchStart();
+
+            expect(annotator.highlighter.removeAllHighlights).to.be.called;
+        });
+
+        it('should hide the highlight create dialog', () => {
+            const hide = sandbox.stub(annotator.createHighlightDialog, 'hide');
+            annotator.onTouchStart();
+
+            expect(hide).to.be.called;
         });
     });
 
