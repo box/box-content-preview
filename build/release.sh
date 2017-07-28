@@ -176,7 +176,7 @@ push_new_release() {
     echo "----------------------------------------------------------------------"
     echo "Pushing new GitHub release"
     echo "----------------------------------------------------------------------"
-    ./node_modules/.bin/conventional-github-releaser || return 1
+    ./node_modules/.bin/conventional-github-releaser
 }
 
 
