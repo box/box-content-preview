@@ -96,6 +96,7 @@ describe('lib/annotations/Annotator', () => {
         beforeEach(() => {
             const annotatedEl = document.querySelector('.annotated-element');
             sandbox.stub(annotator, 'getAnnotatedEl').returns(annotatedEl);
+            annotator.annotatedElement = annotatedEl;
 
             stubs.scale = sandbox.stub(annotator, 'setScale');
             stubs.setup = sandbox.stub(annotator, 'setupAnnotations');
@@ -161,6 +162,7 @@ describe('lib/annotations/Annotator', () => {
     describe('once annotator is initialized', () => {
         beforeEach(() => {
             const annotatedEl = document.querySelector('.annotated-element');
+            annotator.annotatedElement = annotatedEl;
             sandbox.stub(annotator, 'getAnnotatedEl').returns(annotatedEl);
             sandbox.stub(annotator, 'setupAnnotations');
             sandbox.stub(annotator, 'showAnnotations');

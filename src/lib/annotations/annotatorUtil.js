@@ -41,7 +41,7 @@ export function findClosestElWithClass(element, className) {
 */
 export function getPageInfo(element) {
     const pageEl = findClosestElWithClass(element, 'page') || null;
-    let page = -1;
+    let page = 1;
 
     if (pageEl) {
         page = parseInt(pageEl.getAttribute('data-page-number'), 10);

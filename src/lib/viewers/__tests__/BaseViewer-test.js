@@ -744,10 +744,13 @@ describe('lib/viewers/BaseViewer', () => {
                 }
             };
             base.addListener = sandbox.stub();
+            base.scale = 1;
             base.annotator = {
                 init: sandbox.stub(),
-                addListener: sandbox.stub()
+                addListener: sandbox.stub(),
+                setScale: sandbox.stub()
             };
+            base.annotator.setScale.returns(base.annotator);
             base.annotatorConf = {
                 CONSTRUCTOR: sandbox.stub().returns(base.annotator)
             };
@@ -755,6 +758,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
         it('should initialize the annotator', () => {
             expect(base.annotator.init).to.be.called;
+            expect(base.annotator.setScale).to.be.called;
             expect(base.annotator.addListener).to.be.calledWith('annotationmodeenter', sinon.match.func);
             expect(base.annotator.addListener).to.be.calledWith('annotationmodeexit', sinon.match.func);
             expect(base.annotator.addListener).to.be.calledWith('annotationsfetched', sinon.match.func);
@@ -841,6 +845,33 @@ describe('lib/viewers/BaseViewer', () => {
             base.showDrawAnnotateButton(base.handler);
             expect(buttonEl.title).to.equal('Drawing annotation mode');
             expect(buttonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
+        });
+    });
+
+    describe('getAnnotationModeClickHandler()', () => {
+        beforeEach(() => {
+            stubs.isAnnotatable = sandbox.stub(base, 'isAnnotatable').returns(false);
+        });
+
+        it('should return null if you cannot annotate', () => {
+            const handler = base.getAnnotationModeClickHandler('point');
+            expect(stubs.isAnnotatable).to.be.called;
+            expect(handler).to.equal(null);
+        });
+
+        it('should return the toggle point mode handler', () => {
+            stubs.isAnnotatable.returns(true);
+            sandbox.stub(base, 'emit');
+            base.annotator = {
+                togglePointAnnotationHandler: () => {}
+            };
+
+            const handler = base.getAnnotationModeClickHandler('point');
+            expect(stubs.isAnnotatable).to.be.called;
+            expect(handler).to.be.a('function');
+
+            handler(event);
+            expect(base.emit).to.have.been.calledWith('togglepointannotationmode');
         });
     });
 });

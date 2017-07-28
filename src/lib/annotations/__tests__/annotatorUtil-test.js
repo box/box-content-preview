@@ -85,7 +85,7 @@ describe('lib/annotations/annotatorUtil', () => {
             const barEl = document.querySelector('.bar');
             const result = getPageInfo(barEl);
             assert.equal(result.pageEl, null, 'Page element should be null');
-            assert.equal(result.page, -1, 'Page number should be -1');
+            assert.equal(result.page, 1, 'Page number should be 1');
         });
     });
 

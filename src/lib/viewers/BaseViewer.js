@@ -345,9 +345,8 @@ class BaseViewer extends EventEmitter {
         document.defaultView.addEventListener('resize', this.debouncedResizeHandler);
 
         this.addListener('load', (event) => {
-            if (event && event.scale) {
-                this.scale = event.scale;
-            }
+            // this.scale set to 1 if event.scale does not exist
+            ({ scale: this.scale = 1 } = event);
 
             if (this.annotationsPromise) {
                 this.annotationsPromise.then(this.loadAnnotator);
@@ -657,7 +656,9 @@ class BaseViewer extends EventEmitter {
             locale: location.locale,
             previewUI: this.previewUI
         });
-        this.annotator.init(this.scale);
+
+        this.annotator.setScale(this.scale);
+        this.annotator.init();
 
         // Disables controls during point annotation mode
         this.annotator.addListener('annotationmodeenter', this.disableViewerControls);
@@ -771,9 +772,16 @@ class BaseViewer extends EventEmitter {
      * @param {string} mode - Target annotation mode
      * @return {Function|null} Click handler
      */
-    /* eslint-disable no-unused-vars */
-    getAnnotationModeClickHandler(mode) {}
-    /* eslint-enable no-unused-vars */
+    getAnnotationModeClickHandler(mode) {
+        if (!mode || !this.isAnnotatable(mode)) {
+            return null;
+        }
+
+        const eventName = `toggle${mode}annotationmode`;
+        return () => {
+            this.emit(eventName);
+        };
+    }
 
     /**
      * Disables viewer controls

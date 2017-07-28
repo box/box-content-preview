@@ -3,7 +3,6 @@ import AnnotationDialog from '../AnnotationDialog';
 import * as annotatorUtil from '../annotatorUtil';
 import * as imageAnnotatorUtil from './imageAnnotatorUtil';
 
-const IMAGE_NODE_NAME = 'img';
 const PAGE_PADDING_TOP = 15;
 const POINT_ANNOTATION_ICON_HEIGHT = 31;
 const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
@@ -33,9 +32,7 @@ class ImagePointDialog extends AnnotationDialog {
         const dialogWidth = dialogDimensions.width;
 
         // Get image tag inside viewer, based on page number. All images are page 1 by default.
-        const imageEl =
-            this.annotatedElement.querySelector(`[data-page-number="${this.location.page || 1}"]`) ||
-            this.annotatedElement.querySelector(IMAGE_NODE_NAME);
+        const imageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
 
         // Center middle of dialog with point - this coordinate is with respect to the page
         let dialogLeftX = browserX - dialogWidth / 2;
