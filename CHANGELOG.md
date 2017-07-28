@@ -1,3 +1,21 @@
+<a name="1.3.0"></a>
+# 1.3.0 (2017-07-28)
+
+* Chore: Add github release notes in release script (#255) ([a2d2985](https://github.com/box/box-content-preview/commit/a2d2985))
+* Chore: Default single page images to page 1 for annotations (#249) ([6080055](https://github.com/box/box-content-preview/commit/6080055))
+* Chore: Modify patch release script (#250) ([afc51d3](https://github.com/box/box-content-preview/commit/afc51d3))
+* Chore: Renaming AnnotationThread.thread to AnnotationThread.threadNumber (#241) ([66b1d7c](https://github.com/box/box-content-preview/commit/66b1d7c))
+* Chore: Switch to git-based changelog generator (#252) ([35994b6](https://github.com/box/box-content-preview/commit/35994b6))
+* Chore: Update patch release script (#251) ([f0fa0cf](https://github.com/box/box-content-preview/commit/f0fa0cf))
+* Fix: Add clickHandlers back for all enabled annotation modes (#248) ([b3dd251](https://github.com/box/box-content-preview/commit/b3dd251))
+* Fix: Don't trigger highlight dialogs while mouse is over another dialog (#242) ([af861cf](https://github.com/box/box-content-preview/commit/af861cf))
+* Fix: Fix media query so 3D settings pullup is never truncated (#253) ([1ee02fe](https://github.com/box/box-content-preview/commit/1ee02fe)), closes [#253](https://github.com/box/box-content-preview/issues/253)
+* Fix: Fix release script ([499c06b](https://github.com/box/box-content-preview/commit/499c06b))
+* Fix: Hide filmstrip when controls hide (#239) ([0ba7804](https://github.com/box/box-content-preview/commit/0ba7804))
+* Fix: Typo in release script ([01cdf3c](https://github.com/box/box-content-preview/commit/01cdf3c))
+
+
+
 <a name="1.2.0"></a>
 # 1.2.0 (2017-07-25)
 
