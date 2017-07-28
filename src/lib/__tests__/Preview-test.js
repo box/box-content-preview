@@ -22,7 +22,7 @@ let stubs = {};
 let preview;
 let containerEl;
 
-describe.only('lib/Preview', () => {
+describe('lib/Preview', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
