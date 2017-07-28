@@ -171,6 +171,12 @@ push_new_release() {
 
     # Push to GitHub
     push_to_github || return 1
+
+    # Push GitHub release
+    echo "----------------------------------------------------------------------"
+    echo "Pushing new GitHub release"
+    echo "----------------------------------------------------------------------"
+    ./node_modules/.bin/conventional-github-releaser || return 1
 }
 
 
