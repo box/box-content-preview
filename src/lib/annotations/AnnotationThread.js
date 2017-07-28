@@ -401,7 +401,7 @@ class AnnotationThread extends EventEmitter {
         if (this.dialog) {
             // Add thread number to associated dialog and thread
             if (this.dialog.element && this.dialog.element.dataset) {
-                this.dialog.element.dataset.threadNumber = this.thread;
+                this.dialog.element.dataset.threadNumber = this.threadNumber;
             }
 
             this.dialog.addAnnotation(serverAnnotation);
