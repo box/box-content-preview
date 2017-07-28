@@ -656,8 +656,7 @@ class BaseViewer extends EventEmitter {
             previewUI: this.previewUI
         });
 
-        this.annotator.setScale(this.scale);
-        this.annotator.init();
+        this.annotator.init(this.scale);
 
         // Disables controls during point annotation mode
         this.annotator.addListener('annotationmodeenter', this.disableViewerControls);

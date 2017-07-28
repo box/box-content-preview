@@ -106,8 +106,8 @@ describe('lib/annotations/Annotator', () => {
         });
 
         it('should set scale and setup annotations', () => {
-            annotator.init();
-            expect(stubs.scale).to.be.called;
+            annotator.init(5);
+            expect(stubs.scale).to.be.calledWith(5);
             expect(stubs.setup).to.be.called;
             expect(stubs.show).to.be.called;
             expect(annotator.annotationService).to.not.be.null;

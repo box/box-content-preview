@@ -61,11 +61,6 @@ class Annotator extends EventEmitter {
         this.isMobile = data.isMobile;
         this.previewUI = data.previewUI;
         this.annotationModeHandlers = [];
-        this.annotatedElement = this.getAnnotatedEl(this.container);
-
-        if (!this.annotatedElement) {
-            throw new Error('No annotatable element found.');
-        }
     }
 
     /**
@@ -91,9 +86,11 @@ class Annotator extends EventEmitter {
     /**
      * Initializes annotator.
      *
+     * @param {number} [initialScale] - The initial scale factor to render the annotations
      * @return {void}
      */
-    init() {
+    init(initialScale = 1) {
+        this.annotatedElement = this.getAnnotatedEl(this.container);
         this.notification = new Notification(this.annotatedElement);
 
         const { apiHost, fileId, token } = this.options;
@@ -110,7 +107,7 @@ class Annotator extends EventEmitter {
             this.setupMobileDialog();
         }
 
-        const scale = annotatorUtil.getScale(this.annotatedElement);
+        const scale = initialScale;
         this.setScale(scale);
         this.setupAnnotations();
         this.showAnnotations();
