@@ -61,6 +61,7 @@ class Annotator extends EventEmitter {
         this.isMobile = data.isMobile;
         this.previewUI = data.previewUI;
         this.annotationModeHandlers = [];
+        this.annotatedElement = this.getAnnotatedEl(this.container);
     }
 
     /**
@@ -89,7 +90,6 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     init() {
-        this.annotatedElement = this.getAnnotatedEl(this.container);
         this.notification = new Notification(this.annotatedElement);
 
         const { apiHost, fileId, token } = this.options;
@@ -106,7 +106,8 @@ class Annotator extends EventEmitter {
             this.setupMobileDialog();
         }
 
-        this.setScale(1);
+        const scale = annotatorUtil.getScale(this.annotatedElement);
+        this.setScale(scale);
         this.setupAnnotations();
         this.showAnnotations();
     }
@@ -236,10 +237,11 @@ class Annotator extends EventEmitter {
      * Sets the zoom scale.
      *
      * @param {number} scale - current zoom scale
-     * @return {void}
+     * @return {Annotator} Annotator instance returned for chaining
      */
     setScale(scale) {
         this.annotatedElement.setAttribute('data-scale', scale);
+        return this;
     }
 
     /**
