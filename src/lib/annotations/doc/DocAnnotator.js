@@ -223,11 +223,7 @@ class DocAnnotator extends Annotator {
             }
 
             // Get correct page
-            let { pageEl, page } = annotatorUtil.getPageInfo(event.target);
-            if (page === -1) {
-                // The ( .. ) around assignment is required syntax
-                ({ pageEl, page } = annotatorUtil.getPageInfo(window.getSelection().anchorNode));
-            }
+            const { pageEl, page } = annotatorUtil.getPageInfo(event.target);
 
             // Use highlight module to calculate quad points
             const { highlightEls } = docAnnotatorUtil.getHighlightAndHighlightEls(this.highlighter, pageEl);
@@ -580,7 +576,13 @@ class DocAnnotator extends Annotator {
             return;
         }
 
+        // Determine if mouse is over any highlight dialog
+        // and ignore hover events of any highlights below
         const event = this.mouseMoveEvent;
+        if (docAnnotatorUtil.isDialogDataType(event.target)) {
+            return;
+        }
+
         this.mouseMoveEvent = null;
         this.throttleTimer = performance.now();
         // Only filter through highlight threads on the current page

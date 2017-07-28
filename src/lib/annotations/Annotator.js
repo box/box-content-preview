@@ -238,7 +238,7 @@ class Annotator extends EventEmitter {
      * Sets the zoom scale.
      *
      * @param {number} scale - current zoom scale
-     * @return {Annotator} Annotator instance returned for chaining
+     * @return {void}
      */
     setScale(scale) {
         this.annotatedElement.setAttribute('data-scale', scale);
