@@ -443,20 +443,6 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * @inheritdoc
-     */
-    getAnnotationModeClickHandler(mode) {
-        if (!mode || !this.isAnnotatable(mode)) {
-            return null;
-        }
-
-        const eventName = `toggle${mode}annotationmode`;
-        return () => {
-            this.emit(eventName);
-        };
-    }
-
-    /**
      * Handles keyboard events for document viewer.
      *
      * @param {string} key - keydown key

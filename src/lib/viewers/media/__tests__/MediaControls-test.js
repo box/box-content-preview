@@ -625,6 +625,7 @@ describe('lib/viewers/media/MediaControls', () => {
     describe('hide()', () => {
         beforeEach(() => {
             stubs.isSettingsVisible = sandbox.stub(mediaControls, 'isSettingsVisible');
+            stubs.filmstripHideHandler = sandbox.stub(mediaControls, 'filmstripHideHandler');
             stubs.show = sandbox.stub(mediaControls, 'show');
         });
 
@@ -643,13 +644,14 @@ describe('lib/viewers/media/MediaControls', () => {
             expect(stubs.show).to.be.called;
         });
 
-        it('should remove the show controls class if the wrapper element and parent exist', () => {
+        it('should remove the show controls class and hide the filmstrip if the wrapper element and parent exist', () => {
             mediaControls.preventHiding = false;
             stubs.isSettingsVisible.returns(false);
 
             mediaControls.hide();
             expect(stubs.show).to.not.be.called;
             expect(mediaControls.wrapperEl.parentNode.classList.contains('bp-media-controls-is-visible')).to.be.false;
+            expect(stubs.filmstripHideHandler).to.be.called;
         });
     });
 
