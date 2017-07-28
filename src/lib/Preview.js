@@ -462,7 +462,8 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Fetch file info
+     * Fetch and return file info, which can then be cached or stored externally.
+     *
      * @param {string} fileId - Box File ID
      * @param {string|Function} token - auth token string or generator function
      * @param {Object} [options] - Optional preview options
@@ -571,8 +572,8 @@ class Preview extends EventEmitter {
             this.collection = [this.file.id];
         }
 
-        // Perform load from offline when offline option is present
-        if (this.options.offline && this.options.offline.link) {
+        // Perform load from offline config when offline config is present
+        if (this.options.offlineConfig && this.options.offlineConfig.file) {
             this.loadFromOffline();
             return;
         }
@@ -639,8 +640,8 @@ class Preview extends EventEmitter {
         // Save the reference to any additional custom options for viewers
         this.options.viewers = options.viewers || {};
 
-        // Save the reference to offline
-        this.options.offline = options.offline || {};
+        // Save the reference to offline config
+        this.options.offlineConfig = options.offlineConfig || {};
 
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
@@ -695,7 +696,7 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     loadFromOffline() {
-        this.file = this.options.offline.file;
+        this.file = this.options.offlineConfig.file;
         this.cache.unset(this.file.id);
 
         this.handleLoadResponse(this.file);
@@ -757,12 +758,6 @@ class Preview extends EventEmitter {
                 uncacheFile(this.cache, file);
             } else {
                 cacheFile(this.cache, file);
-            }
-
-            // If is offline then enrich entries with offline links
-            // We need to show file from the offline storage
-            if (this.options.offline && this.options.offline.link) {
-                this.enrichOfflineLinks();
             }
 
             // Should load/reload viewer if:
@@ -845,23 +840,6 @@ class Preview extends EventEmitter {
         // Once the viewer instance has been created, emit it so that clients can attach their events.
         // Viewer object will still be sent along the load event also.
         this.emit('viewer', this.viewer);
-    }
-
-    /**
-     * Enrich file entries with offline links.
-     *
-     * @private
-     * @return {void}
-     */
-    enrichOfflineLinks() {
-        const offlineLink = this.options.offline.link;
-
-        this.file.representations.entries.map((entire) => {
-            const newEntire = entire;
-
-            newEntire.content.url_template = offlineLink;
-            return newEntire;
-        });
     }
 
     /**

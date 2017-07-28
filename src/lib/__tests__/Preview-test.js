@@ -22,7 +22,7 @@ let stubs = {};
 let preview;
 let containerEl;
 
-describe('lib/Preview', () => {
+describe.only('lib/Preview', () => {
     before(() => {
         fixture.setBase('src/lib');
     });
@@ -100,23 +100,12 @@ describe('lib/Preview', () => {
     describe('show()', () => {
         beforeEach(() => {
             stubs.load = sandbox.stub(preview, 'load');
+            stubs.saveOptions = sandbox.stub(preview, 'saveOptions');
         });
 
-        it('should set the preview options with string token', () => {
+        it('should save options', () => {
             preview.show('file', 'token', { viewer: 'viewer' });
-            expect(preview.previewOptions).to.deep.equal({
-                token: 'token',
-                viewer: 'viewer'
-            });
-        });
-
-        it('should set the preview options with function token', () => {
-            const foo = () => {};
-            preview.show('file', foo, { viewer: 'viewer' });
-            expect(preview.previewOptions).to.deep.equal({
-                token: foo,
-                viewer: 'viewer'
-            });
+            expect(preview.saveOptions).to.calledWith('token', { viewer: 'viewer' });
         });
 
         it('should load the given file', () => {
@@ -454,6 +443,58 @@ describe('lib/Preview', () => {
         });
     });
 
+    describe('fetchFileInfo()', () => {
+        beforeEach(() => {
+            stubs.getTokensPromiseResolve = Promise.resolve({ 0: 'token' });
+            stubs.getTokens = sandbox.stub(tokens, 'default').returns(stubs.getTokensPromiseResolve);
+            stubs.saveOptions = sandbox.stub(preview, 'saveOptions');
+            stubs.parseOptions = sandbox.stub(preview, 'parseOptions');
+            stubs.getRequestHeaders = sandbox.stub(preview, 'getRequestHeaders');
+            stubs.fileInfo = { id: 'file'};
+            stubs.filePromise = Promise.resolve(stubs.fileInfo);
+            stubs.get = sandbox.stub(util, 'get').returns(stubs.filePromise);
+            stubs.getURL = sandbox.stub(file, 'getURL').returns('/get_url');
+        });
+
+        it('should save options', () => {
+            preview.fetchFileInfo('file', 'token', { viewer: 'viewer' });
+            expect(preview.saveOptions).to.calledWith('token', { viewer: 'viewer' });
+        });
+
+        it('should save file reference', () => {
+            preview.fetchFileInfo('file', 'token', { viewer: 'viewer' });
+            expect(preview.file).to.deep.equal({ id: 'file' });
+        });
+
+        it('should parse the preview options', () => {
+            preview.fetchFileInfo('file', 'token', { viewer: 'viewer' });
+            return stubs.getTokensPromiseResolve.then(() => {
+                expect(stubs.parseOptions).to.be.called;
+            });
+        });
+
+        it('should fetch file info', () => {
+            preview.fetchFileInfo('file', 'token', { viewer: 'viewer' });
+            return stubs.filePromise.then(() => {
+                expect(stubs.get).to.be.called;
+                expect(stubs.getURL).to.be.called;
+                expect(stubs.getRequestHeaders).to.be.called;
+            });
+        });
+
+        it('should release stored file info', () => {
+            return preview.fetchFileInfo('file', 'token', { viewer: 'viewer' }).then(() => {
+                expect(preview.file).to.be.undefined;
+            });
+        });
+
+        it('should return fetched file info', () => {
+            return preview.fetchFileInfo('file', 'token', { viewer: 'viewer' }).then((file) => {
+                expect(file).to.equal(stubs.fileInfo);
+            });
+        });
+    });
+
     describe('disableViewers()', () => {
         beforeEach(() => {
             preview.disabledViewers = {};
@@ -678,6 +719,7 @@ describe('lib/Preview', () => {
             stubs.showNavigation = sandbox.stub(preview.ui, 'showNavigation');
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
             stubs.loadFromCache = sandbox.stub(preview, 'loadFromCache');
+            stubs.loadFromOffline = sandbox.stub(preview, 'loadFromOffline');
         });
 
         it('should short circuit and load from server if it is a retry', () => {
@@ -707,10 +749,20 @@ describe('lib/Preview', () => {
             expect(stubs.showNavigation).to.be.called;
         });
 
+        it('should load from offline when offline config is present', () => {
+            preview.options.offlineConfig = { file: {} };
+            preview.loadPreviewWithTokens({});
+
+            expect(stubs.loadFromOffline).to.be.called;
+            expect(stubs.loadFromCache).to.not.be.called;
+            expect(stubs.loadFromServer).to.not.be.called;
+        });
+
         it('should load from cache if the file is valid', () => {
             stubs.checkFileValid.returns(true);
 
             preview.loadPreviewWithTokens({});
+            expect(stubs.loadFromOffline).to.not.be.called;
             expect(stubs.loadFromCache).to.be.called;
             expect(stubs.loadFromServer).to.not.be.called;
         });
@@ -719,6 +771,7 @@ describe('lib/Preview', () => {
             stubs.checkFileValid.returns(false);
 
             preview.loadPreviewWithTokens({});
+            expect(stubs.loadFromOffline).to.not.be.called;
             expect(stubs.loadFromCache).to.not.be.called;
             expect(stubs.loadFromServer).to.be.called;
         });
@@ -734,6 +787,9 @@ describe('lib/Preview', () => {
             stubs.logoUrl = 'www.app.box.com/logo';
             stubs.collection = ['file0', 'file1'];
             stubs.loaders = ['customloader'];
+            stubs.offlineConfig = {
+                file: { id: 'file' }
+            };
             preview.previewOptions = {
                 container: containerEl,
                 sharedLink: stubs.sharedLink,
@@ -745,7 +801,8 @@ describe('lib/Preview', () => {
                 showDownload: true,
                 showAnnotations: true,
                 collection: stubs.collection,
-                loaders: stubs.loaders
+                loaders: stubs.loaders,
+                offlineConfig: stubs.offlineConfig
             };
 
             stubs.assign = sandbox.spy(Object, 'assign');
@@ -801,6 +858,11 @@ describe('lib/Preview', () => {
             expect(preview.options.appHost).to.equal('https://app.box.com');
         });
 
+        it('should save a reference to the offline config', () => {
+            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            expect(preview.options.offlineConfig).to.equal(stubs.offlineConfig);
+        });
+
         it('should set whether to show the header or a custom logo', () => {
             preview.parseOptions(preview.previewOptions, stubs.tokens);
             expect(preview.options.header).to.equal(stubs.header);
@@ -850,6 +912,25 @@ describe('lib/Preview', () => {
         });
     });
 
+    describe('saveOptions()', () => {
+        it('should set the preview options with string token', () => {
+            preview.saveOptions('token', { viewer: 'viewer' });
+            expect(preview.previewOptions).to.deep.equal({
+                token: 'token',
+                viewer: 'viewer'
+            });
+        });
+
+        it('should set the preview options with function token', () => {
+            const foo = () => {};
+            preview.saveOptions(foo, { viewer: 'viewer' });
+            expect(preview.previewOptions).to.deep.equal({
+                token: foo,
+                viewer: 'viewer'
+            });
+        });
+    });
+
     describe('createViewerOptions()', () => {
         it('should create viewer options with location', () => {
             preview.location = 'someLocation';
@@ -885,6 +966,32 @@ describe('lib/Preview', () => {
         it('should refresh the file from the server to update the cache', () => {
             preview.loadFromCache();
             expect(preview.loadFromServer).to.be.called;
+        });
+    });
+
+    describe('loadFromOffline()', () => {
+        beforeEach(() => {
+            stubs.unset = sandbox.stub(preview.cache, 'unset');
+            stubs.handleLoadResponse = sandbox.stub(preview, 'handleLoadResponse');
+            stubs.offlineConfig = {
+                file: { id: 'fileId' }
+            };
+
+            preview.options = { offlineConfig: stubs.offlineConfig };
+
+            preview.loadFromOffline();
+        });
+
+        it('should save a reference to the file', () => {
+            expect(preview.file).to.equal(stubs.offlineConfig.file);
+        });
+
+        it('should clear the current file from the cache', () => {
+            expect(stubs.unset).to.be.calledWith('fileId');
+        });
+
+        it('should load file by offline file', () => {
+            expect(stubs.handleLoadResponse).to.be.calledWith(stubs.offlineConfig.file);
         });
     });
 
