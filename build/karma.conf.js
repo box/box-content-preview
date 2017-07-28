@@ -1,7 +1,7 @@
 /* eslint-disable */
 const webpackConfig = require('./webpack.karma.config');
 
-const DOC_STATIC_ASSETS_VERSION = '0.130.0';
+const DOC_STATIC_ASSETS_VERSION = '1.3.0';
 const MEDIA_STATIC_ASSETS_VERSION = '0.127.0';
 const MODEL3D_STATIC_ASSETS_VERSION = '1.1.1';
 const SWF_STATIC_ASSETS_VERSION = '0.112.0';
