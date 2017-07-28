@@ -146,32 +146,10 @@ class AnnotationThread extends EventEmitter {
 
         // Changing state from pending
         this.state = STATES.hover;
-
         // Save annotation on server
         this.annotationService
             .create(annotationData)
-            .then((savedAnnotation) => {
-                const tempIdx = this.annotations.indexOf(tempAnnotation);
-                if (tempIdx === -1) {
-                    // If no temporary annotation is found, save to thread normally
-                    this.saveAnnotationToThread(savedAnnotation);
-                } else {
-                    // Otherwise, replace temporary annotation with annotation saved to server
-                    this.annotations[tempIdx] = savedAnnotation;
-                }
-
-                this.threadNumber = this.threadNumber || savedAnnotation.threadNumber;
-
-                if (this.dialog) {
-                    // Add thread number to associated dialog and thread
-                    if (this.dialog.element && this.dialog.element.dataset) {
-                        this.dialog.element.dataset.threadNumber = this.thread;
-                    }
-
-                    this.dialog.addAnnotation(savedAnnotation);
-                    this.dialog.removeAnnotation(tempAnnotationID);
-                }
-            })
+            .then((savedAnnotation) => this.updateLocalAnnotationFromServer(savedAnnotation, tempAnnotation))
             .catch(() => {
                 // Remove temporary annotation
                 this.deleteAnnotation(tempAnnotationID, /* useServer */ false);
@@ -398,6 +376,38 @@ class AnnotationThread extends EventEmitter {
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
+
+    /**
+     * Update a temporary annotation with the annotation saved on the backend and set the threadNumber if it does
+     * not exist. Propogate the threadnumber to dialog if applicable.
+     *
+     * @private
+     * @param {Annotation} serverAnnotation - The annotation returned by the backend. Use this as the source of truth
+     * @param {Annotation} localAnnotation - The temporary annotation holding place of the server validated annotation
+     * @return {void}
+     */
+    updateLocalAnnotationFromServer(serverAnnotation, localAnnotation) {
+        const tempIdx = this.annotations.indexOf(localAnnotation);
+        if (tempIdx === -1) {
+            // If no temporary annotation is found, save to thread normally
+            this.saveAnnotationToThread(serverAnnotation);
+        } else {
+            // Otherwise, replace temporary annotation with annotation saved to server
+            this.annotations[tempIdx] = serverAnnotation;
+        }
+
+        this.threadNumber = this.threadNumber || serverAnnotation.threadNumber;
+
+        if (this.dialog) {
+            // Add thread number to associated dialog and thread
+            if (this.dialog.element && this.dialog.element.dataset) {
+                this.dialog.element.dataset.threadNumber = this.thread;
+            }
+
+            this.dialog.addAnnotation(serverAnnotation);
+            this.dialog.removeAnnotation(localAnnotation.annotationID);
+        }
+    }
 
     /**
      * Creates the HTML for the annotation indicator.
