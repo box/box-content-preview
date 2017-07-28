@@ -138,19 +138,10 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
             it('should infer page from selection if it cannot be inferred from event', () => {
                 annotator.highlighter.highlights = [{}, {}];
-                stubs.getPageInfo.onFirstCall().returns({ pageEl: null, page: -1 });
-                stubs.getPageInfo.onSecondCall().returns({
-                    pageEl: {
-                        getBoundingClientRect: sandbox.stub().returns({
-                            width: 100,
-                            height: 100
-                        })
-                    },
-                    page: 2
-                });
+                stubs.getPageInfo.returns({ pageEl: null, page: -1 });
 
                 annotator.getLocationFromEvent({}, TYPES.highlight);
-                expect(stubs.getPageInfo).to.be.called.twice;
+                expect(stubs.getPageInfo).to.be.called;
             });
 
             it('should not return a valid highlight location if no highlights exist', () => {
@@ -178,27 +169,15 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             });
 
             it('should not return a location if there is no selection present', () => {
-                annotator.highlighter.highlights = [];
-                const location = annotator.getLocationFromEvent({}, TYPES.highlight_comment);
-                expect(location).to.be.null;
+                expect(annotator.getLocationFromEvent({}, TYPES.highlight_comment)).to.be.null;
             });
 
             it('should infer page from selection if it cannot be inferred from event', () => {
-                annotator.highlighter.highlights = [{}];
-                const getPageStub = stubs.getPageInfo;
-                getPageStub.onFirstCall().returns({ pageEl: null, page: -1 });
-                getPageStub.onSecondCall().returns({
-                    pageEl: {
-                        getBoundingClientRect: sandbox.stub().returns({
-                            width: 100,
-                            height: 100
-                        })
-                    },
-                    page: 2
-                });
+                annotator.highlighter.highlights = [{}, {}];
+                stubs.getPageInfo.returns({ pageEl: null, page: -1 });
 
                 annotator.getLocationFromEvent({}, TYPES.highlight_comment);
-                expect(stubs.getSel).to.have.been.called;
+                expect(stubs.getPageInfo).to.be.called;
             });
 
             it('should not return a valid highlight location if no highlights exist', () => {

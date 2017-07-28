@@ -17,15 +17,6 @@ const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
 const CLASS_DELETE_CONFIRMATION = 'delete-confirmation';
 const CLASS_BUTTON_DELETE_CONFIRM = 'confirm-delete-btn';
 
-const DATA_TYPE_POST = 'post-annotation-btn';
-const DATA_TYPE_CANCEL = 'cancel-annotation-btn';
-const DATA_TYPE_REPLY_TEXTAREA = 'reply-textarea';
-const DATA_TYPE_CANCEL_REPLY = 'cancel-reply-btn';
-const DATA_TYPE_POST_REPLY = 'post-reply-btn';
-const DATA_TYPE_DELETE = 'delete-btn';
-const DATA_TYPE_CANCEL_DELETE = 'cancel-delete-btn';
-const DATA_TYPE_CONFIRM_DELETE = 'confirm-delete-btn';
-
 @autobind
 class AnnotationDialog extends EventEmitter {
     //--------------------------------------------------------------------------
@@ -409,11 +400,11 @@ class AnnotationDialog extends EventEmitter {
 
         switch (dataType) {
             // Clicking 'Post' button to create an annotation
-            case DATA_TYPE_POST:
+            case constants.DATA_TYPE_POST:
                 this.postAnnotation();
                 break;
             // Clicking 'Cancel' button to cancel the annotation
-            case DATA_TYPE_CANCEL:
+            case constants.DATA_TYPE_CANCEL:
                 if (this.isMobile) {
                     // Hide mobile dialog without destroying the thread
                     this.hideMobileDialog();
@@ -425,27 +416,27 @@ class AnnotationDialog extends EventEmitter {
                 this.deactivateReply(true);
                 break;
             // Clicking inside reply text area
-            case DATA_TYPE_REPLY_TEXTAREA:
+            case constants.DATA_TYPE_REPLY_TEXTAREA:
                 this.activateReply();
                 break;
             // Canceling a reply
-            case DATA_TYPE_CANCEL_REPLY:
+            case constants.DATA_TYPE_CANCEL_REPLY:
                 this.deactivateReply(true);
                 break;
             // Clicking 'Post' button to create a reply annotation
-            case DATA_TYPE_POST_REPLY:
+            case constants.DATA_TYPE_POST_REPLY:
                 this.postReply();
                 break;
             // Clicking trash icon to initiate deletion
-            case DATA_TYPE_DELETE:
+            case constants.DATA_TYPE_DELETE:
                 this.showDeleteConfirmation(annotationID);
                 break;
             // Clicking 'Cancel' button to cancel deletion
-            case DATA_TYPE_CANCEL_DELETE:
+            case constants.DATA_TYPE_CANCEL_DELETE:
                 this.hideDeleteConfirmation(annotationID);
                 break;
             // Clicking 'Delete' button to confirm deletion
-            case DATA_TYPE_CONFIRM_DELETE: {
+            case constants.DATA_TYPE_CONFIRM_DELETE: {
                 this.deleteAnnotation(annotationID);
                 break;
             }
@@ -500,7 +491,7 @@ class AnnotationDialog extends EventEmitter {
             <div class="comment-text">${text}</div>
             <button class="bp-btn-plain ${CLASS_BUTTON_DELETE_COMMENT} ${annotation.permissions.can_delete
             ? ''
-            : CLASS_HIDDEN}" data-type="${DATA_TYPE_DELETE}" title="${__('annotation_delete')}">
+            : CLASS_HIDDEN}" data-type="${constants.DATA_TYPE_DELETE}" title="${__('annotation_delete')}">
                 ${ICON_DELETE}
             </button>
             <div class="${CLASS_DELETE_CONFIRMATION} ${CLASS_HIDDEN}">
@@ -508,10 +499,10 @@ class AnnotationDialog extends EventEmitter {
                     ${__('annotation_delete_confirmation_message')}
                 </div>
                 <div class="${constants.CLASS_BUTTON_CONTAINER}">
-                    <button class="bp-btn ${CLASS_CANCEL_DELETE}" data-type="${DATA_TYPE_CANCEL_DELETE}">
+                    <button class="bp-btn ${CLASS_CANCEL_DELETE}" data-type="${constants.DATA_TYPE_CANCEL_DELETE}">
                         ${__('annotation_cancel')}
                     </button>
-                    <button class="bp-btn bp-btn-primary ${CLASS_BUTTON_DELETE_CONFIRM}" data-type="${DATA_TYPE_CONFIRM_DELETE}">
+                    <button class="bp-btn bp-btn-primary ${CLASS_BUTTON_DELETE_CONFIRM}" data-type="${constants.DATA_TYPE_CONFIRM_DELETE}">
                         ${__('annotation_delete')}
                     </button>
                 </div>
@@ -666,10 +657,10 @@ class AnnotationDialog extends EventEmitter {
                 <textarea class="${constants.CLASS_TEXTAREA} ${constants.CLASS_ANNOTATION_TEXTAREA}"
                     placeholder="${__('annotation_add_comment_placeholder')}"></textarea>
                 <div class="${constants.CLASS_BUTTON_CONTAINER}">
-                    <button class="bp-btn ${constants.CLASS_ANNOTATION_BUTTON_CANCEL}" data-type="${DATA_TYPE_CANCEL}">
+                    <button class="bp-btn ${constants.CLASS_ANNOTATION_BUTTON_CANCEL}" data-type="${constants.DATA_TYPE_CANCEL}">
                         ${__('annotation_cancel')}
                     </button>
-                    <button class="bp-btn bp-btn-primary ${constants.CLASS_ANNOTATION_BUTTON_POST}" data-type="${DATA_TYPE_POST}">
+                    <button class="bp-btn bp-btn-primary ${constants.CLASS_ANNOTATION_BUTTON_POST}" data-type="${constants.DATA_TYPE_POST}">
                         ${__('annotation_post')}
                     </button>
                 </div>
@@ -680,12 +671,12 @@ class AnnotationDialog extends EventEmitter {
                     <textarea class="${constants.CLASS_TEXTAREA} ${CLASS_REPLY_TEXTAREA}"
                         placeholder="${__(
                             'annotation_reply_placeholder'
-                        )}" data-type="${DATA_TYPE_REPLY_TEXTAREA}"></textarea>
+                        )}" data-type="${constants.DATA_TYPE_REPLY_TEXTAREA}"></textarea>
                     <div class="${constants.CLASS_BUTTON_CONTAINER} ${CLASS_HIDDEN}">
-                        <button class="bp-btn ${constants.CLASS_ANNOTATION_BUTTON_CANCEL}" data-type="${DATA_TYPE_CANCEL_REPLY}">
+                        <button class="bp-btn ${constants.CLASS_ANNOTATION_BUTTON_CANCEL}" data-type="${constants.DATA_TYPE_CANCEL_REPLY}">
                             ${__('annotation_cancel')}
                         </button>
-                        <button class="bp-btn bp-btn-primary ${constants.CLASS_ANNOTATION_BUTTON_POST}" data-type="${DATA_TYPE_POST_REPLY}">
+                        <button class="bp-btn bp-btn-primary ${constants.CLASS_ANNOTATION_BUTTON_POST}" data-type="${constants.DATA_TYPE_POST_REPLY}">
                             ${__('annotation_post')}
                         </button>
                     </div>

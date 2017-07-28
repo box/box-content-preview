@@ -5,7 +5,7 @@ import * as annotatorUtil from '../../annotatorUtil';
 import { STATES } from '../../annotationConstants';
 import * as imageAnnotatorUtil from '../imageAnnotatorUtil';
 
-let pointThread;
+let thread;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/annotations/image/ImagePointThread', () => {
@@ -16,7 +16,7 @@ describe('lib/annotations/image/ImagePointThread', () => {
     beforeEach(() => {
         fixture.load('annotations/image/__tests__/ImagePointThread-test.html');
 
-        pointThread = new ImagePointThread({
+        thread = new ImagePointThread({
             annotatedElement: document.querySelector('.annotated-element'),
             annotations: [],
             annotationService: {},
@@ -35,43 +35,44 @@ describe('lib/annotations/image/ImagePointThread', () => {
         it('should position and show the thread', () => {
             sandbox.stub(imageAnnotatorUtil, 'getBrowserCoordinatesFromLocation').returns([1, 2]);
             sandbox.stub(annotatorUtil, 'showElement');
+            sandbox.stub(thread, 'showDialog');
 
-            pointThread.show();
+            thread.show();
 
             expect(imageAnnotatorUtil.getBrowserCoordinatesFromLocation).to.have.been.calledWith(
-                pointThread.location,
-                pointThread.annotatedElement
+                thread.location,
+                thread.annotatedElement
             );
-            expect(annotatorUtil.showElement).to.have.been.calledWith(pointThread.element);
+            expect(annotatorUtil.showElement).to.have.been.calledWith(thread.element);
         });
 
         it('should show the dialog if the state is pending', () => {
             sandbox.stub(imageAnnotatorUtil, 'getBrowserCoordinatesFromLocation').returns([1, 2]);
             sandbox.stub(annotatorUtil, 'showElement');
-            sandbox.stub(pointThread, 'showDialog');
+            sandbox.stub(thread, 'showDialog');
 
-            pointThread.state = STATES.pending;
-            pointThread.show();
+            thread.state = STATES.pending;
+            thread.show();
 
-            expect(pointThread.showDialog).to.have.been.called;
+            expect(thread.showDialog).to.have.been.called;
         });
 
         it('should not show the dialog if the state is not pending', () => {
             sandbox.stub(imageAnnotatorUtil, 'getBrowserCoordinatesFromLocation').returns([1, 2]);
             sandbox.stub(annotatorUtil, 'showElement');
-            sandbox.stub(pointThread, 'showDialog');
+            sandbox.stub(thread, 'showDialog');
 
-            pointThread.state = STATES.inactive;
-            pointThread.show();
+            thread.state = STATES.inactive;
+            thread.show();
 
-            expect(pointThread.showDialog).to.not.have.been.called;
+            expect(thread.showDialog).to.not.have.been.called;
         });
     });
 
     describe('createDialog', () => {
         it('should initialize an appropriate dialog', () => {
-            pointThread.createDialog();
-            expect(pointThread.dialog instanceof ImagePointDialog).to.be.true;
+            thread.createDialog();
+            expect(thread.dialog instanceof ImagePointDialog).to.be.true;
         });
     });
 });

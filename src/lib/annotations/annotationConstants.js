@@ -25,6 +25,16 @@ export const CLASS_ANNOTATION_BUTTON_DRAW_ENTER = 'bp-btn-annotate-draw-enter';
 
 export const DATA_TYPE_ANNOTATION_DIALOG = 'annotation-dialog';
 export const DATA_TYPE_ANNOTATION_INDICATOR = 'annotation-indicator';
+export const DATA_TYPE_HIGHLIGHT = 'highlight-btn';
+export const DATA_TYPE_ADD_HIGHLIGHT_COMMENT = 'add-highlight-comment-btn';
+export const DATA_TYPE_POST = 'post-annotation-btn';
+export const DATA_TYPE_CANCEL = 'cancel-annotation-btn';
+export const DATA_TYPE_REPLY_TEXTAREA = 'reply-textarea';
+export const DATA_TYPE_CANCEL_REPLY = 'cancel-reply-btn';
+export const DATA_TYPE_POST_REPLY = 'post-reply-btn';
+export const DATA_TYPE_DELETE = 'delete-btn';
+export const DATA_TYPE_CANCEL_DELETE = 'cancel-delete-btn';
+export const DATA_TYPE_CONFIRM_DELETE = 'confirm-delete-btn';
 
 export const SECTION_CREATE = '[data-section="create"]';
 export const SECTION_SHOW = '[data-section="show"]';
