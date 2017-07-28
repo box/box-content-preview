@@ -62,6 +62,10 @@ class Annotator extends EventEmitter {
         this.previewUI = data.previewUI;
         this.annotationModeHandlers = [];
         this.annotatedElement = this.getAnnotatedEl(this.container);
+
+        if (!this.annotatedElement) {
+            throw new Error('No annotatable element found.');
+        }
     }
 
     /**
@@ -241,7 +245,6 @@ class Annotator extends EventEmitter {
      */
     setScale(scale) {
         this.annotatedElement.setAttribute('data-scale', scale);
-        return this;
     }
 
     /**

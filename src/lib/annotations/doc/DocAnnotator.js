@@ -223,7 +223,11 @@ class DocAnnotator extends Annotator {
             }
 
             // Get correct page
-            const { pageEl, page } = annotatorUtil.getPageInfo(event.target);
+            let { pageEl, page } = annotatorUtil.getPageInfo(event.target);
+            if (page === -1) {
+                // The ( .. ) around assignment is required syntax
+                ({ pageEl, page } = annotatorUtil.getPageInfo(window.getSelection().anchorNode));
+            }
 
             // Use highlight module to calculate quad points
             const { highlightEls } = docAnnotatorUtil.getHighlightAndHighlightEls(this.highlighter, pageEl);
@@ -296,7 +300,7 @@ class DocAnnotator extends Annotator {
         } else if (type === TYPES.point) {
             thread = new DocPointThread(threadParams);
         } else {
-            throw new Error(`DocAnnotator: Unknown Annotation Type: ${type}`);
+            throw new Error(`Unhandled document annotation type: ${type}`);
         }
 
         this.addThreadToMap(thread);
@@ -576,13 +580,7 @@ class DocAnnotator extends Annotator {
             return;
         }
 
-        // Determine if mouse is over any highlight dialog currently
-        // and ignore hover events of any highlights below
         const event = this.mouseMoveEvent;
-        if (docAnnotatorUtil.isDialogDataType(event.target)) {
-            return;
-        }
-
         this.mouseMoveEvent = null;
         this.throttleTimer = performance.now();
         // Only filter through highlight threads on the current page
