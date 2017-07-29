@@ -284,8 +284,9 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(document.defaultView, 'addEventListener');
             sandbox.stub(base, 'loadAnnotator');
             base.annotationsPromise = {
-                then: () => {
+                then: (arg) => {
                     expect(base.scale).to.equal(1.5);
+                    expect(arg).to.equal(base.loadAnnotator);
                     done();
                 }
             };
@@ -302,7 +303,8 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(document.defaultView, 'addEventListener');
             sandbox.stub(base, 'loadAnnotator');
             base.annotationsPromise = {
-                then: () => {
+                then: (arg) => {
+                    expect(arg).to.equal(base.loadAnnotator);
                     done();
                 }
             };
