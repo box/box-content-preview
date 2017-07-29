@@ -285,11 +285,13 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(base, 'loadAnnotator');
             base.annotationsPromise = {
                 then: () => {
+                    expect(base.scale).to.equal(1.5);
                     done();
                 }
             };
 
             base.addCommonListeners();
+            expect(base.scale).to.equal(1);
             base.emit('load', {
                 scale: 1.5
             });
