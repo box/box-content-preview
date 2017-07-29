@@ -30,6 +30,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     beforeEach(() => {
         fixture.load('annotations/doc/__tests__/DocAnnotator-test.html');
 
+        const previewUI = {
+            getAnnotateButton: sandbox.stub()
+        }
         sandbox.stub(Browser, 'isMobile').returns(false);
 
         annotator = new DocAnnotator({
@@ -38,7 +41,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotationService: {},
             fileVersionId: 1,
             isMobile: false,
-            options: {}
+            options: {},
+            previewUI
         });
         annotator.annotatedElement = annotator.getAnnotatedEl(document);
         annotator.annotationService = {};
@@ -205,6 +209,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.setupFunc = AnnotationThread.prototype.setup;
             stubs.validateThread = sandbox.stub(annotatorUtil, 'validateThreadParams').returns(true);
             sandbox.stub(annotator, 'handleValidationError');
+            annotator.notification = {
+                show: sandbox.stub()
+            };
         });
 
         afterEach(() => {
@@ -252,6 +259,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should create, add drawing thread to internal map, and return it', () => {
+            annotator.previewUI.getAnnotateButton.returns('commit drawing button');
             const thread = annotator.createAnnotationThread([], {}, TYPES.draw);
             expect(stubs.addThread).to.have.been.called;
             expect(thread instanceof DocDrawingThread).to.be.true;
@@ -260,10 +268,18 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         it('should emit error and return undefined if thread params are invalid', () => {
             stubs.validateThread.returns(false);
-            sandbox.stub(annotator, 'emit');
             const thread = annotator.createAnnotationThread([], {}, TYPES.highlight);
             expect(thread instanceof DocHighlightThread).to.be.false;
+            expect(thread).to.be.empty;
             expect(annotator.handleValidationError).to.be.called;
+        });
+
+        it('should emit error and return undefined if draw thread params are invalid', () => {
+            annotator.previewUI.getAnnotateButton.returns(undefined);
+            const thread = annotator.createAnnotationThread([], {}, TYPES.draw);
+            expect(thread instanceof DocDrawingThread).to.be.false;
+            expect(thread).to.be.empty;
+            expect(annotator.notification.show).to.be.called;
         });
     });
 

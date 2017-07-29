@@ -306,6 +306,7 @@ describe('lib/annotations/Annotator', () => {
                 sandbox.stub(annotator, 'bindDOMListeners');
                 sandbox.stub(annotator, 'bindDrawModeListeners');
                 sandbox.stub(annotator, 'unbindModeListeners');
+                sandbox.stub(annotator, 'bindCustomListenersOnThread');
                 sandbox.stub(annotator, 'createAnnotationThread');
             });
 

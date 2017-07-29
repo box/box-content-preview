@@ -71,20 +71,16 @@ describe('lib/annotations/drawing/DrawingPath', () => {
     });
 
     describe('drawPath()', () => {
-        it('should call context->quadraticCurveTo and stroke when there are coordinates', () => {
+        it('should call context->quadraticCurveTo when there are coordinates', () => {
             const context = {
                 quadraticCurveTo: sandbox.stub(),
-                beginPath: sandbox.stub(),
-                stroke: sandbox.stub(),
                 moveTo: sandbox.stub()
             };
 
-            drawingPath.addCoordinate(1,1);
+            drawingPath.addCoordinate(1,1, 1,1);
             drawingPath.drawPath(context);
 
             expect(context.quadraticCurveTo).to.be.called;
-            expect(context.beginPath).to.be.called;
-            expect(context.stroke).to.be.called;
             expect(context.moveTo).to.be.called;
         });
     })

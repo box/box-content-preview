@@ -26,7 +26,7 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     handleMove(location) {
-        if (this.drawingFlag !== STATES_DRAW.draw || this.location.page !== location.page) {
+        if (this.drawingFlag !== STATES_DRAW.draw || (this.location && this.location.page !== location.page)) {
             return;
         }
 
