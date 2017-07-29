@@ -651,18 +651,7 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Initializes annotations.
-     *
-     * @protected
-     * @return {void}
-     */
-    initAnnotations() {
-        super.initAnnotations();
-        this.setupPageIds();
-    }
-
-    /**
-     * Add page IDs to each page since annotations explicitly needs IDs per page (rangy).
+     * Add page IDs to each page
      *
      * @private
      * @return {void}
@@ -1001,6 +990,9 @@ class DocBaseViewer extends BaseViewer {
                 endProgress: false, // Indicate that viewer will end progress later
                 scale: this.pdfViewer.currentScale
             });
+
+            // Add page IDs to each page after page structure is available
+            this.setupPageIds();
         }
     }
 
