@@ -345,7 +345,9 @@ class BaseViewer extends EventEmitter {
         document.defaultView.addEventListener('resize', this.debouncedResizeHandler);
 
         this.addListener('load', (event) => {
-            ({ scale: this.scale = 1 } = event);
+            if (event && event.scale) {
+                this.scale = event.scale;
+            }
 
             if (this.annotationsPromise) {
                 this.annotationsPromise.then(this.loadAnnotator);
