@@ -278,6 +278,40 @@ describe('lib/viewers/BaseViewer', () => {
             expect(document.defaultView.addEventListener).to.be.calledWith('resize', base.debouncedResizeHandler);
             expect(base.addListener).to.be.calledWith('load', sinon.match.func);
         });
+
+        it('should load the annotator when load is emitted with scale', (done) => {
+            sandbox.stub(fullscreen, 'addListener');
+            sandbox.stub(document.defaultView, 'addEventListener');
+            sandbox.stub(base, 'loadAnnotator');
+            base.annotationsPromise = {
+                then: (arg) => {
+                    expect(base.scale).to.equal(1.5);
+                    expect(arg).to.equal(base.loadAnnotator);
+                    done();
+                }
+            };
+
+            base.addCommonListeners();
+            expect(base.scale).to.equal(1);
+            base.emit('load', {
+                scale: 1.5
+            });
+        });
+
+        it('should load the annotator when load is emitted without an event', (done) => {
+            sandbox.stub(fullscreen, 'addListener');
+            sandbox.stub(document.defaultView, 'addEventListener');
+            sandbox.stub(base, 'loadAnnotator');
+            base.annotationsPromise = {
+                then: (arg) => {
+                    expect(arg).to.equal(base.loadAnnotator);
+                    done();
+                }
+            };
+
+            base.addCommonListeners();
+            base.emit('load');
+        });
     });
 
     describe('toggleFullscreen()', () => {
