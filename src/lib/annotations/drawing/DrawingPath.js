@@ -58,21 +58,19 @@ class DrawingPath {
     /**
      * Add position to coordinates and update the bounding box
      *
-     * @param {number} xPos - xPosition to be part of the drawing
-     * @param {number} yPos - yPosition to be part of the drawing
-     * @param {number} [browserX] - Optional browserX position to be saved to browserPath
-     * @param {number} [browserY] - Optional browserX position to be saved to browserPath
+     * @param {Location} documentLocation - Original document location coordinate to be part of the drawing path
+     * @param {Location} [browserLocation] - Optional browser position to be saved to browserPath
      * @return {void}
      */
-    addCoordinate(xPos, yPos, browserX, browserY) {
-        if (!xPos || !yPos) {
+    addCoordinate(documentLocation, browserLocation) {
+        if (!documentLocation) {
             return;
         }
 
         // OPTIMIZE (@minhnguyen): We convert a number to a string using toFixed and then back a number.
         //           As a result, it might be better to truncate only on annotation save.
-        const x = Round(xPos, 2);
-        const y = Round(yPos, 2);
+        const x = Round(documentLocation.x, 2);
+        const y = Round(documentLocation.y, 2);
 
         if (x < this.minX) {
             this.minX = x;
@@ -91,8 +89,8 @@ class DrawingPath {
         }
 
         this.path.push(createLocation(x, y));
-        if ((browserX || browserX === 0) && (browserY || browserY === 0)) {
-            this.browserPath.push(createLocation(browserX, browserY));
+        if (browserLocation) {
+            this.browserPath.push(browserLocation);
         }
     }
 
@@ -151,6 +149,12 @@ class DrawingPath {
             );
             return createLocation(xNew, yNew);
         });
+    }
+
+    static extractDrawingInfo(drawingPath) {
+        return {
+            path: drawingPath.path
+        };
     }
 }
 

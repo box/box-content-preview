@@ -18,7 +18,8 @@ import {
     repositionCaret,
     isPending,
     validateThreadParams,
-    eventToLocationHandler
+    eventToLocationHandler,
+    createLocation
 } from '../annotatorUtil';
 import {
     STATES,
@@ -398,6 +399,26 @@ describe('lib/annotations/annotatorUtil', () => {
 
             locationHandler(event);
             expect(annotator.isChanged).to.be.true;
+        });
+    });
+
+    describe('createLocation()', () => {
+        it('should create a location object without dimensions', () => {
+            const location = createLocation(1,2, undefined);
+            expect(location).to.deep.equal({
+                x: 1,
+                y: 2
+            });
+        });
+
+        it('should create a location object with dimensions', () => {
+            const dimensionalObj = 'dimensional object';
+            const location = createLocation(1,2, dimensionalObj);
+            expect(location).to.deep.equal({
+                x: 1,
+                y: 2,
+                dimensions: dimensionalObj
+            });
         });
     });
 });

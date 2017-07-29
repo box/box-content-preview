@@ -73,7 +73,7 @@ class DrawingThread extends AnnotationThread {
         }
 
         this.reset();
-        this.emit('threaddeleted');
+        super.destroy();
         this.emit('threadcleanup');
     }
 
@@ -189,20 +189,9 @@ class DrawingThread extends AnnotationThread {
      */
     createAnnotationData(type, text) {
         const annotation = super.createAnnotationData(type, text);
-        // Can we disable require-jsdoc for arrow functions?
-        // Functional programming already allows for compositional self-documented code that is easy to read
-        // ie. for each drawing, extract the drawing info
-        /* eslint-disable require-jsdoc */
-        const extractDrawingInfo = (drawing) => {
-            return {
-                path: drawing.path
-            };
-        };
-        /* eslint-disable require-jsdoc */
-        const drawings = this.getDrawings().map(extractDrawingInfo);
+        const drawings = this.getDrawings();
 
-        annotation.location.drawingPaths = drawings;
-
+        annotation.location.drawingPaths = drawings.map(DrawingPath.extractDrawingInfo);
         return annotation;
     }
 }

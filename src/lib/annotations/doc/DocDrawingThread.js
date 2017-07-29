@@ -26,12 +26,14 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     handleMove(location) {
-        if (this.drawingFlag !== STATES_DRAW.draw || (this.location && this.location.page !== location.page)) {
+        const pageChanged = this.hasPageChanged(location);
+        if (this.drawingFlag !== STATES_DRAW.draw || pageChanged) {
             return;
         }
 
         const [x, y] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(location, this.pageEl);
-        this.pendingPath.addCoordinate(location.x, location.y, x, y);
+        const browserLocation = annotatorUtil.createLocation(x, y);
+        this.pendingPath.addCoordinate(location, browserLocation);
 
         // Cancel any pending animation to a new request.
         if (this.lastAnimationRequestId) {
@@ -49,15 +51,22 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     handleStart(location) {
-        const pageChanged = this.handlePageChange(location);
+        const pageChanged = this.hasPageChanged(location);
         if (pageChanged) {
+            this.handleStop(location);
+            if (this.postButtonEl) {
+                this.postButtonEl.click();
+            }
+
             return;
         }
 
         // Assign a location and dimension to the annotation thread
-        if (!this.location.page) {
-            this.location.page = location.page;
-            this.location.dimensions = location.dimensions;
+        if (!this.location || (this.location && !this.location.page)) {
+            this.location = {
+                page: location.page,
+                dimensions: location.dimensions
+            };
             this.pageEl = docAnnotatorUtil.getPageEl(this.annotatedElement, this.location.page);
             this.checkAndHandleScaleUpdate();
         }
@@ -88,16 +97,8 @@ class DocDrawingThread extends DrawingThread {
      * @param {Object} location - The current event location information
      * @return {boolean} Whether or not the page actually changed and was subsequently handled
      */
-    handlePageChange(location) {
-        if (this.location && this.location.page && this.location.page !== location.page) {
-            this.handleStop(location);
-            if (this.postButtonEl) {
-                this.postButtonEl.click();
-                return true;
-            }
-        }
-
-        return false;
+    hasPageChanged(location) {
+        return this.location && this.location.page && this.location.page !== location.page;
     }
 
     /**
@@ -131,7 +132,7 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     show() {
-        if (!this.annotatedElement || !this.location.page) {
+        if (!this.annotatedElement || !this.location) {
             return;
         }
 
@@ -142,9 +143,7 @@ class DocDrawingThread extends DrawingThread {
         }
 
         this.checkAndHandleScaleUpdate();
-        if (this.lastScaleFactor === 1) {
-            return;
-        }
+
         // Get the annotation layer context to draw with
         let context;
         if (this.state === STATES.pending) {
@@ -163,27 +162,30 @@ class DocDrawingThread extends DrawingThread {
 
         // Draw the paths to the annotation layer canvas
         /* eslint-disable require-jsdoc */
-        const drawDrawing = (drawing) => {
+        const scaleAndDraw = (drawing) => {
             drawing.generateBrowserPath(this.pageEl, this.location.dimensions);
             drawing.drawPath(context);
         };
         /* eslint-enable require-jsdoc */
         if (context) {
             context.beginPath();
-            drawings.forEach(drawDrawing.bind(this));
+            drawings.forEach(scaleAndDraw);
             context.stroke();
         }
     }
 
+    /**
+     * Prepare the pending drawing canvas if the scale factor has changed since the last render
+     *
+     * @return {void}
+     */
     checkAndHandleScaleUpdate() {
         const scale = annotatorUtil.getScale(this.annotatedElement);
         if (this.lastScaleFactor === scale) {
             return;
         }
 
-        const config = { scale };
         this.lastScaleFactor = scale;
-
         // Set the in-memory context for the pending thread
         if (this.drawingContext) {
             // Resetting the height clears the canvas
@@ -198,6 +200,7 @@ class DocDrawingThread extends DrawingThread {
             );
         }
 
+        const config = { scale };
         this.setContextStyles(config);
     }
 }
