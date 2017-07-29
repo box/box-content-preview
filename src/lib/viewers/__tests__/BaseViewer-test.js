@@ -283,6 +283,7 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(fullscreen, 'addListener');
             sandbox.stub(document.defaultView, 'addEventListener');
             sandbox.stub(base, 'loadAnnotator');
+            base.containerEl = containerEl;
             base.annotationsPromise = {
                 then: (arg) => {
                     expect(base.scale).to.equal(1.5);
@@ -302,6 +303,7 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(fullscreen, 'addListener');
             sandbox.stub(document.defaultView, 'addEventListener');
             sandbox.stub(base, 'loadAnnotator');
+            base.containerEl = containerEl;
             base.annotationsPromise = {
                 then: (arg) => {
                     expect(arg).to.equal(base.loadAnnotator);
@@ -666,6 +668,28 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('showNotification()', () => {
+        it('should show a notification message with the provided string', () => {
+            base.notification = {
+                show: sandbox.stub()
+            };
+
+            base.showNotification('message', 'some button text');
+            expect(base.notification.show).to.have.been.called;
+        });
+    });
+
+    describe('hideNotification()', () => {
+        it('should show a notification message with the provided string', () => {
+            base.notification = {
+                hide: sandbox.stub()
+            };
+
+            base.hideNotification();
+            expect(base.notification.hide).to.have.been.called;
+        });
+    });
+
     describe('loadAnnotator()', () => {
         beforeEach(() => {
             base.options.viewer = {
@@ -789,10 +813,13 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.initAnnotations();
         });
+
         it('should initialize the annotator', () => {
             expect(base.annotator.init).to.be.calledWith(1.5);
             expect(base.annotator.addListener).to.be.calledWith('annotationmodeenter', sinon.match.func);
             expect(base.annotator.addListener).to.be.calledWith('annotationmodeexit', sinon.match.func);
+            expect(base.annotator.addListener).to.be.calledWith('notificationshow', sinon.match.func);
+            expect(base.annotator.addListener).to.be.calledWith('notificationhide', sinon.match.func);
             expect(base.annotator.addListener).to.be.calledWith('annotationsfetched', sinon.match.func);
             expect(base.addListener).to.be.calledWith('togglepointannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);

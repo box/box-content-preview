@@ -258,8 +258,6 @@ describe('lib/annotations/Annotator', () => {
         describe('togglePointAnnotationHandler()', () => {
             beforeEach(() => {
                 stubs.pointMode = sandbox.stub(annotator, 'isInPointMode');
-                sandbox.stub(annotator.notification, 'show');
-                sandbox.stub(annotator.notification, 'hide');
                 sandbox.stub(annotator, 'unbindDOMListeners');
                 sandbox.stub(annotator, 'bindDOMListeners');
                 sandbox.stub(annotator, 'bindPointModeListeners');
@@ -274,7 +272,7 @@ describe('lib/annotations/Annotator', () => {
 
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
-                expect(annotator.notification.show).to.be.called;
+                expect(annotator.emit).to.be.calledWith('notificationshow');
                 expect(annotator.emit).to.be.calledWith('annotationmodeenter');
                 expect(annotatedEl).to.have.class(CLASS_ANNOTATION_POINT_MODE);
                 expect(annotator.unbindDOMListeners).to.be.called;
@@ -289,7 +287,7 @@ describe('lib/annotations/Annotator', () => {
 
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
-                expect(annotator.notification.hide).to.be.called;
+                expect(annotator.emit).to.be.calledWith('notificationhide');
                 expect(annotator.emit).to.be.calledWith('annotationmodeexit');
                 expect(annotatedEl).to.not.have.class(CLASS_ANNOTATION_POINT_MODE);
                 expect(annotator.unbindModeListeners).to.be.called;
@@ -300,8 +298,6 @@ describe('lib/annotations/Annotator', () => {
         describe('toggleDrawAnnotationHandler()', () => {
             beforeEach(() => {
                 stubs.drawMode = sandbox.stub(annotator, 'isInDrawMode');
-                sandbox.stub(annotator.notification, 'show');
-                sandbox.stub(annotator.notification, 'hide');
                 sandbox.stub(annotator, 'unbindDOMListeners');
                 sandbox.stub(annotator, 'bindDOMListeners');
                 sandbox.stub(annotator, 'bindDrawModeListeners');
@@ -317,7 +313,7 @@ describe('lib/annotations/Annotator', () => {
 
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
-                expect(annotator.notification.show).to.be.called;
+                expect(annotator.emit).to.be.calledWith('notificationshow');
                 expect(annotator.emit).to.be.calledWith('annotationmodeenter');
                 expect(annotatedEl).to.have.class(CLASS_ANNOTATION_DRAW_MODE);
                 expect(annotator.unbindDOMListeners).to.be.called;
@@ -333,7 +329,7 @@ describe('lib/annotations/Annotator', () => {
 
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
-                expect(annotator.notification.hide).to.be.called;
+                expect(annotator.emit).to.be.calledWith('notificationhide');
                 expect(annotator.emit).to.be.calledWith('annotationmodeexit');
                 expect(annotatedEl).to.not.have.class(CLASS_ANNOTATION_DRAW_MODE);
                 expect(annotator.unbindModeListeners).to.be.called;
@@ -734,17 +730,15 @@ describe('lib/annotations/Annotator', () => {
         describe('handleValidationError()', () => {
             it('should do nothing if a validation notification was already displayed', () => {
                 annotator.validationErrorDisplayed = true;
-                stubs.showNotification = sandbox.stub(annotator.notification, 'show');
                 annotator.handleValidationError();
-                expect(stubs.showNotification).to.not.be.called;
+                expect(annotator.emit).to.not.be.calledWith('notificationshow');
                 expect(annotator.validationErrorDisplayed).to.be.true;
             });
 
             it('should display validation error notification on first error', () => {
                 annotator.validationErrorDisplayed = false;
-                stubs.showNotification = sandbox.stub(annotator.notification, 'show');
                 annotator.handleValidationError();
-                expect(stubs.showNotification).to.be.called;
+                expect(annotator.emit).to.be.calledWith('notificationshow');
                 expect(annotator.validationErrorDisplayed).to.be.true;
             });
         });
