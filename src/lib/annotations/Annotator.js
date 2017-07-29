@@ -1,6 +1,5 @@
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
-import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
 import * as annotatorUtil from './annotatorUtil';
 import {
@@ -91,7 +90,6 @@ class Annotator extends EventEmitter {
      */
     init(initialScale = 1) {
         this.annotatedElement = this.getAnnotatedEl(this.container);
-        this.notification = new Notification(this.annotatedElement);
 
         const { apiHost, fileId, token } = this.options;
 
@@ -261,8 +259,7 @@ class Annotator extends EventEmitter {
 
         // If in annotation mode, turn it off
         if (this.isInPointMode()) {
-            this.notification.hide();
-
+            this.emit('notificationhide');
             this.emit('annotationmodeexit');
             this.annotatedElement.classList.remove(CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
@@ -274,7 +271,7 @@ class Annotator extends EventEmitter {
 
             // Otherwise, enable annotation mode
         } else {
-            this.notification.show(__('notification_annotation_point_mode'));
+            this.emit('notificationshow', __('notification_annotation_point_mode'));
             this.emit('annotationmodeenter');
             this.annotatedElement.classList.add(CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
@@ -304,7 +301,7 @@ class Annotator extends EventEmitter {
 
         // Exit if in draw mode
         if (this.isInDrawMode()) {
-            this.notification.hide();
+            this.emit('notificationhide');
             this.emit('annotationmodeexit');
             this.annotatedElement.classList.remove(CLASS_ANNOTATION_DRAW_MODE);
 
@@ -320,7 +317,7 @@ class Annotator extends EventEmitter {
 
             // Otherwise enter draw mode
         } else {
-            this.notification.show(__('notification_annotation_draw_mode'));
+            this.emit('notificationshow', __('notification_annotation_draw_mode'));
             this.emit('annotationmodeenter');
             this.annotatedElement.classList.add(CLASS_ANNOTATION_DRAW_MODE);
 
@@ -474,7 +471,7 @@ class Annotator extends EventEmitter {
             }
 
             if (errorMessage) {
-                this.notification.show(errorMessage);
+                this.emit('notificationshow', errorMessage);
             }
         });
     }
@@ -725,7 +722,7 @@ class Annotator extends EventEmitter {
             return;
         }
 
-        this.notification.show(__('annotations_load_error'));
+        this.emit('notificationshow', __('annotations_load_error'));
         this.validationErrorDisplayed = true;
     }
 }

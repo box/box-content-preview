@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import debounce from 'lodash.debounce';
 import fullscreen from '../Fullscreen';
 import RepStatus from '../RepStatus';
+import Notification from '../Notification';
 import {
     appendAuthParams,
     getHeaders,
@@ -349,6 +350,9 @@ class BaseViewer extends EventEmitter {
                 this.scale = event.scale;
             }
 
+            // Initialize notification
+            this.notification = new Notification(this.containerEl);
+
             if (this.annotationsPromise) {
                 this.annotationsPromise.then(this.loadAnnotator);
             }
@@ -588,6 +592,28 @@ class BaseViewer extends EventEmitter {
         return status === STATUS_SUCCESS || status === STATUS_VIEWABLE;
     }
 
+    /**
+     * Shows a notification message.
+     *
+     * @private
+     * @param {string} message - Notification message
+     * @param {string} [buttonText] - Optional text to show in button
+     * @return {void}
+     */
+    showNotification(message, buttonText) {
+        this.notification.show(message, buttonText);
+    }
+
+    /**
+     * Hides the notification message. Does nothing if the notification is already hidden.
+     *
+     * @private
+     * @return {void}
+     */
+    hideNotification() {
+        this.notification.hide();
+    }
+
     //--------------------------------------------------------------------------
     // Annotations
     //--------------------------------------------------------------------------
@@ -662,8 +688,10 @@ class BaseViewer extends EventEmitter {
 
         // Disables controls during point annotation mode
         this.annotator.addListener('annotationmodeenter', this.disableViewerControls);
-
         this.annotator.addListener('annotationmodeexit', this.enableViewerControls);
+
+        this.annotator.addListener('notificationshow', this.showNotification);
+        this.annotator.addListener('notificationhide', this.hideNotification);
 
         this.addListener('togglepointannotationmode', () => {
             this.annotator.togglePointAnnotationHandler();
