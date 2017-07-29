@@ -11,13 +11,19 @@
     bottom: 0;
     left: 0;
     margin: 0;
+    opacity: 1;
     overflow-y: scroll;
     position: absolute;
     right: 0;
     top: 0;
+    transition: opacity .5s;
 
     &.bp-is-invisible {
-        visibility: visible;
+        visibility: hidden;
+    }
+
+    &.bp-is-transparent {
+        opacity: 0;
     }
 
     .bp-preload {
@@ -30,8 +36,19 @@
 
     // Position preload content as if they were blank loading pages
     .bp-preload-content {
-        background: $white url('loadingIcon.gif') center no-repeat;
+        background-color: $white;
         display: block;
         margin: 15px auto 30px;
+        padding-left: 1px; // Slight padding to help image text align with real text
+        position: relative;
+
+        &.bp-preload-overlay {
+            background-color: rgba(255, 255, 255, .4);
+            bottom: 0;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
     }
 }

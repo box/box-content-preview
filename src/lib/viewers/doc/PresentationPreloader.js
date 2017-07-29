@@ -3,6 +3,15 @@ import { CLASS_INVISIBLE, CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION } from 
 import { setDimensions } from '../../util';
 
 class PresentationPreloader extends DocPreloader {
+    /** @property {HTMLElement} - Preload container element */
+    preloadEl;
+
+    /** @property {PreviewUI} - Preview's UI instance */
+    previewUI;
+
+    /** @property {string} - Class name for preload wrapper */
+    wrapperClassName;
+
     /**
      * [constructor]
      *
@@ -29,6 +38,7 @@ class PresentationPreloader extends DocPreloader {
         }
 
         setDimensions(this.imageEl, scaledWidth, scaledHeight);
+        setDimensions(this.overlayEl, scaledWidth, scaledHeight);
 
         // Hide the preview-level loading indicator
         this.previewUI.hideLoadingIndicator();

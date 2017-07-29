@@ -945,6 +945,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.setupPdfjs();
             expect(PDFJS.disableCreateObjectURL).to.equal(false);
         });
+
+        it('should override pdf.js PDFPageView reset with custom loading indicator logic', () => {
+            const resetFunc = PDFJS.PDFPageView.prototype.reset;
+            docBase.setupPdfjs();
+            expect(resetFunc).to.not.equal(PDFJS.PDFPageView.prototype.reset);
+        });
     });
 
     describe('initPrint()', () => {
