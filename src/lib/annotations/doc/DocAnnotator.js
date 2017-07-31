@@ -335,6 +335,7 @@ class DocAnnotator extends Annotator {
             return null;
         }
         this.createHighlightDialog.hide();
+        this.isCreatingHighlight = false;
 
         const location = this.getLocationFromEvent(this.lastHighlightEvent, TYPES.highlight);
         if (!location) {
@@ -583,6 +584,12 @@ class DocAnnotator extends Annotator {
             return;
         }
 
+        // Determine if user is in the middle of creating a highlight
+        // annotation and ignore hover events of any highlights below
+        if (this.isCreatingHighlight) {
+            return;
+        }
+
         // Determine if mouse is over any highlight dialog
         // and ignore hover events of any highlights below
         const event = this.mouseMoveEvent;
@@ -676,6 +683,8 @@ class DocAnnotator extends Annotator {
             this.highlighter.removeAllHighlights();
         }
         this.createHighlightDialog.hide();
+        this.isCreatingHighlight = false;
+
         // Creating highlights is disabled on mobile for now since the
         // event we would listen to, selectionchange, fires continuously and
         // is unreliable. If the mouse moved or we double clicked text,
@@ -685,7 +694,6 @@ class DocAnnotator extends Annotator {
         } else {
             this.highlightClickHandler(event);
         }
-        this.isCreatingHighlight = false;
     }
 
     /**
@@ -731,6 +739,7 @@ class DocAnnotator extends Annotator {
         if (!this.isMobile) {
             this.createHighlightDialog.setPosition(right - pageLeft, bottom - pageTop);
         }
+        this.isCreatingHighlight = true;
 
         this.lastHighlightEvent = event;
     }

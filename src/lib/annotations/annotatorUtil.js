@@ -1,5 +1,13 @@
+import 'whatwg-fetch';
 import { CLASS_ACTIVE, CLASS_HIDDEN, CLASS_INVISIBLE } from '../constants';
 import { TYPES, SELECTOR_ANNOTATION_CARET, PENDING_STATES } from './annotationConstants';
+
+const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
+const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
+/* eslint-disable no-undef */
+const CLIENT_NAME = __NAME__;
+const CLIENT_VERSION = __VERSION__;
+/* eslint-enable no-undef */
 
 const AVATAR_COLOR_COUNT = 9; // 9 colors defined in Box React UI avatar code
 const THREAD_PARAMS = [
@@ -395,4 +403,137 @@ export function createLocation(x, y, dimensions) {
     }
 
     return loc;
+}
+
+//------------------------------------------------------------------------------
+// General Util Methods
+//------------------------------------------------------------------------------
+
+/**
+ * Function to decode key down events into keys
+ *
+ * @param {Event} event - Keydown event
+ * @return {string} Decoded keydown key
+ */
+export function decodeKeydown(event) {
+    let modifier = '';
+
+    // KeyboardEvent.key is the new spec supported in Chrome, Firefox and IE.
+    // KeyboardEvent.keyIdentifier is the old spec supported in Safari.
+    // Priority is given to the new spec.
+    let key = event.key || event.keyIdentifier || '';
+
+    // Get the modifiers on their own
+    if (event.ctrlKey) {
+        modifier = 'Control';
+    } else if (event.shiftKey) {
+        modifier = 'Shift';
+    } else if (event.metaKey) {
+        modifier = 'Meta';
+    }
+
+    // The key and keyIdentifier specs also include modifiers.
+    // Since we are manually getting the modifiers above we do
+    // not want to trap them again here.
+    if (key === modifier) {
+        key = '';
+    }
+
+    // keyIdentifier spec returns UTF8 char codes
+    // Need to convert them back to ascii.
+    if (key.indexOf('U+') === 0) {
+        if (key === 'U+001B') {
+            key = 'Escape';
+        } else {
+            key = String.fromCharCode(key.replace('U+', '0x'));
+        }
+    }
+
+    // If nothing was pressed just return
+    if (!key) {
+        return '';
+    }
+
+    // Special casing for space bar
+    if (key === ' ') {
+        key = 'Space';
+    }
+
+    // Edge bug which outputs "Esc" instead of "Escape"
+    // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/5290772/
+    if (key === 'Esc') {
+        key = 'Escape';
+    }
+
+    // keyIdentifier spec does not prefix the word Arrow.
+    // Newer key spec does it automatically.
+    if (key === 'Right' || key === 'Left' || key === 'Down' || key === 'Up') {
+        key = `Arrow${key}`;
+    }
+
+    if (modifier) {
+        modifier += '+';
+    }
+
+    return modifier + key;
+}
+
+/**
+ * Builds a list of required XHR headers.
+ *
+ * @param {Object} [headers] - Optional headers
+ * @param {string} [token] - Optional auth token
+ * @param {string} [sharedLink] - Optional shared link
+ * @param {string} [password] - Optional shared link password
+ * @return {Object} Headers
+ */
+export function getHeaders(headers = {}, token = '', sharedLink = '', password = '') {
+    /* eslint-disable no-param-reassign */
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    }
+    if (sharedLink) {
+        headers.BoxApi = `shared_link=${sharedLink}`;
+
+        if (password) {
+            headers.BoxApi = `${headers.BoxApi}&shared_link_password=${password}`;
+        }
+    }
+
+    // Following headers are for API analytics
+    if (CLIENT_NAME) {
+        headers[HEADER_CLIENT_NAME] = CLIENT_NAME;
+    }
+
+    if (CLIENT_VERSION) {
+        headers[HEADER_CLIENT_VERSION] = CLIENT_VERSION;
+    }
+
+    /* eslint-enable no-param-reassign */
+    return headers;
+}
+
+/**
+ * Replaces variable place holders specified between {} in the string with
+ * specified custom value. Localizes strings that include variables.
+ *
+ * @param {string} string - String to be interpolated
+ * @param {string[]} placeholderValues - Custom values to replace into string
+ * @return {string} Properly translated string with replaced custom variable
+ */
+export function replacePlaceholders(string, placeholderValues) {
+    const regex = /\{\d+\}/g;
+
+    if (!string || !string.length) {
+        return string;
+    }
+
+    return string.replace(regex, (match) => {
+        // extracting the index that is supposed to replace the matched placeholder
+        const placeholderIndex = parseInt(match.replace(/^\D+/g, ''), 10) - 1;
+
+        /* eslint-disable no-plusplus */
+        return placeholderValues[placeholderIndex] ? placeholderValues[placeholderIndex] : match;
+        /* eslint-enable no-plusplus */
+    });
 }

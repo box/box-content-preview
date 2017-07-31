@@ -29,6 +29,7 @@ export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'bp-toggle-overlay';
 export const CLASS_BOX_PREVIEW_THEME_DARK = 'bp-theme-dark';
 export const CLASS_ELEM_KEYBOARD_FOCUS = 'bp-has-keyboard-focus';
 export const CLASS_FULLSCREEN = 'bp-is-fullscreen';
+export const CLASS_FULLSCREEN_UNSUPPORTED = 'bp-fullscreen-unsupported';
 export const CLASS_INVISIBLE = 'bp-is-invisible';
 export const CLASS_IS_VISIBLE = 'bp-is-visible';
 export const CLASS_IS_SCROLLABLE = 'bp-is-scrollable';

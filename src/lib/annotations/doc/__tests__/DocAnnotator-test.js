@@ -710,16 +710,30 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.getPageInfo = stubs.getPageInfo.returns({ pageEl: {}, page: 1 });
             stubs.getThreads = sandbox.stub(annotator, 'getHighlightThreadsOnPage');
             stubs.clock = sinon.useFakeTimers();
+            stubs.isDialog = sandbox.stub(docAnnotatorUtil, 'isDialogDataType');
 
             let timer = 0;
             window.performance = window.performance || { now: () => {} };
             sandbox.stub(window.performance, 'now', () => {
                 return (timer += 500);
             });
+
+            annotator.isCreatingHighlight = false;
         });
 
         afterEach(() => {
             stubs.clock.restore();
+        });
+
+        it('should not do anything if user is creating a highlight', () => {
+            stubs.threadMock.expects('onMousemove').returns(false).never();
+            stubs.delayMock.expects('onMousemove').returns(true).never();
+            stubs.getThreads.returns([stubs.thread, stubs.delayThread]);
+            annotator.isCreatingHighlight = true;
+
+            annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
+            annotator.onHighlightCheck();
+            expect(stubs.isDialog).to.not.be.called;
         });
 
         it('should not add any delayThreads if there are no threads on the current page', () => {

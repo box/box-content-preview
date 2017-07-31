@@ -3,7 +3,6 @@ import EventEmitter from 'events';
 import * as annotatorUtil from './annotatorUtil';
 import * as constants from './annotationConstants';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
-import { decodeKeydown } from '../util';
 import { ICON_CLOSE, ICON_DELETE } from '../icons/icons';
 
 const CLASS_ANNOTATION_PLAIN_HIGHLIGHT = 'bp-plain-highlight';
@@ -329,7 +328,7 @@ class AnnotationDialog extends EventEmitter {
     keydownHandler(event) {
         event.stopPropagation();
 
-        const key = decodeKeydown(event);
+        const key = annotatorUtil.decodeKeydown(event);
         if (key === 'Escape') {
             this.hide();
         } else {
