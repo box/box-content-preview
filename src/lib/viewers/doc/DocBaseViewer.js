@@ -585,6 +585,7 @@ class DocBaseViewer extends BaseViewer {
         const { size, extension, watermark_info: watermarkInfo } = file;
         const assetUrlCreator = createAssetUrlCreator(location);
         PDFJS.workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
+        PDFJS.imageResourcesPath = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/images/`);
         PDFJS.cMapUrl = `${location.staticBaseURI}third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/`;
         PDFJS.cMapPacked = true;
 
