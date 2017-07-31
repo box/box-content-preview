@@ -350,6 +350,7 @@ class BaseViewer extends EventEmitter {
 
     /**
      * Enters or exits fullscreen
+     *
      * @protected
      * @return {void}
      */
@@ -359,7 +360,7 @@ class BaseViewer extends EventEmitter {
 
     /**
      * Applies appropriate styles and resizes the document depending on fullscreen state
-     * @protected
+     *
      * @return {void}
      */
     onFullscreenToggled() {
