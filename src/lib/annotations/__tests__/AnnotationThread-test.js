@@ -174,7 +174,7 @@ describe('lib/annotations/AnnotationThread', () => {
         });
     });
 
-    describe('updateLocalAnnotationFromServerResponse()', () => {
+    describe('updateTemporaryAnnotation()', () => {
         let annotationService;
 
         beforeEach(() => {
@@ -194,30 +194,28 @@ describe('lib/annotations/AnnotationThread', () => {
             });
 
             stubs.create = sandbox.stub(annotationService, 'create');
+            stubs.saveAnnotationToThread = sandbox.stub(thread, 'saveAnnotationToThread');
         });
 
         it('should save annotation to thread if it does not exist in annotations array', () => {
-            const serverAnnotation = 'im a real annotation';
-            stubs.saveAnnotationToThread = sandbox.stub(thread, 'saveAnnotationToThread');
-            thread.updateLocalAnnotationFromServer(serverAnnotation, serverAnnotation);
-            thread.on('annotationcreateerror', () => {
-                Assert.fail('Annotation creation should not have failed');
-            });
+            const serverAnnotation = 'real annotation';
+            const tempAnnotation = serverAnnotation;
+
+            thread.updateTemporaryAnnotation(tempAnnotation, serverAnnotation);
+
             expect(stubs.saveAnnotationToThread).to.be.called;
         });
 
         it('should overwrite a local annotation to the thread if it does exist as an associated annotation', () => {
-            const serverAnnotation = 'im a real annotation';
-            const replacementAnnotation = 'im a replacement annotation';
-            const isReplacementAnnotation = (annotation) => annotation === replacementAnnotation;
-            stubs.saveAnnotationToThread = sandbox.stub(thread, 'saveAnnotationToThread');
-            thread.annotations.push(serverAnnotation)
-            thread.updateLocalAnnotationFromServer(replacementAnnotation, serverAnnotation);
-            thread.on('annotationcreateerror', () => {
-                Assert.fail('Annotation creation should not have failed');
-            });
+            const serverAnnotation = 'real annotation';
+            const tempAnnotation = 'placeholder annotation';
+            const isServerAnnotation = (annotation => (annotation === serverAnnotation));
+
+            thread.annotations.push(tempAnnotation)
+            expect(thread.annotations.find(isServerAnnotation)).to.be.undefined;
+            thread.updateTemporaryAnnotation(tempAnnotation, serverAnnotation);
             expect(stubs.saveAnnotationToThread).to.not.be.called;
-            expect(thread.annotations.find(isReplacementAnnotation)).to.not.be.undefined;
+            expect(thread.annotations.find(isServerAnnotation)).to.not.be.undefined;
         });
 
     })

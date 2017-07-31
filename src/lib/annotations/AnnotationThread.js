@@ -149,7 +149,7 @@ class AnnotationThread extends EventEmitter {
         // Save annotation on server
         this.annotationService
             .create(annotationData)
-            .then((savedAnnotation) => this.updateLocalAnnotationFromServer(savedAnnotation, tempAnnotation))
+            .then((savedAnnotation) => this.updateTemporaryAnnotation(tempAnnotation, savedAnnotation))
             .catch(() => {
                 // Remove temporary annotation
                 this.deleteAnnotation(tempAnnotationID, /* useServer */ false);
@@ -378,25 +378,28 @@ class AnnotationThread extends EventEmitter {
     //--------------------------------------------------------------------------
 
     /**
-     * Update a temporary annotation with the annotation saved on the backend and set the threadNumber if it does
-     * not exist. Propogate the threadnumber to dialog if applicable.
+     * Update a temporary annotation with the annotation saved on the backend. Set the threadNumber if it has not
+     * yet been set. Propogate the threadnumber to an attached dialog if applicable.
      *
      * @private
-     * @param {Annotation} serverAnnotation - The annotation returned by the backend. Use this as the source of truth
-     * @param {Annotation} localAnnotation - The temporary annotation holding place of the server validated annotation
+     * @param {Annotation} tempAnnotation - The locally stored placeholder for the server validated annotation
+     * @param {Annotation} savedAnnotation - The annotation determined by the backend to be used as the source of truth
      * @return {void}
      */
-    updateLocalAnnotationFromServer(serverAnnotation, localAnnotation) {
-        const tempIdx = this.annotations.indexOf(localAnnotation);
+    updateTemporaryAnnotation(tempAnnotation, savedAnnotation) {
+        const tempIdx = this.annotations.indexOf(tempAnnotation);
         if (tempIdx === -1) {
             // If no temporary annotation is found, save to thread normally
-            this.saveAnnotationToThread(serverAnnotation);
+            this.saveAnnotationToThread(savedAnnotation);
         } else {
             // Otherwise, replace temporary annotation with annotation saved to server
-            this.annotations[tempIdx] = serverAnnotation;
+            this.annotations[tempIdx] = savedAnnotation;
         }
 
-        this.threadNumber = this.threadNumber || serverAnnotation.threadNumber;
+        // Set threadNumber if the savedAnnotation is the first annotation of the thread
+        if (!this.threadNumber && savedAnnotation && savedAnnotation.threadNumber) {
+            this.threadNumber = savedAnnotation.threadNumber;
+        }
 
         if (this.dialog) {
             // Add thread number to associated dialog and thread
@@ -404,8 +407,9 @@ class AnnotationThread extends EventEmitter {
                 this.dialog.element.dataset.threadNumber = this.threadNumber;
             }
 
-            this.dialog.addAnnotation(serverAnnotation);
-            this.dialog.removeAnnotation(localAnnotation.annotationID);
+            // Remove temporary annotation and replace it with the saved annotation
+            this.dialog.addAnnotation(savedAnnotation);
+            this.dialog.removeAnnotation(tempAnnotation.annotationID);
         }
     }
 
