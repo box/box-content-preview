@@ -86,9 +86,10 @@ class Annotator extends EventEmitter {
     /**
      * Initializes annotator.
      *
+     * @param {number} [initialScale] - The initial scale factor to render the annotations
      * @return {void}
      */
-    init() {
+    init(initialScale = 1) {
         this.annotatedElement = this.getAnnotatedEl(this.container);
         this.notification = new Notification(this.annotatedElement);
 
@@ -106,7 +107,8 @@ class Annotator extends EventEmitter {
             this.setupMobileDialog();
         }
 
-        this.setScale(1);
+        const scale = initialScale;
+        this.setScale(scale);
         this.setupAnnotations();
         this.showAnnotations();
     }

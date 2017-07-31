@@ -296,7 +296,7 @@ class DocAnnotator extends Annotator {
         } else if (type === TYPES.point) {
             thread = new DocPointThread(threadParams);
         } else {
-            throw new Error(`DocAnnotator: Unknown Annotation Type: ${type}`);
+            throw new Error(`Unhandled document annotation type: ${type}`);
         }
 
         this.addThreadToMap(thread);
@@ -576,7 +576,7 @@ class DocAnnotator extends Annotator {
             return;
         }
 
-        // Determine if mouse is over any highlight dialog currently
+        // Determine if mouse is over any highlight dialog
         // and ignore hover events of any highlights below
         const event = this.mouseMoveEvent;
         if (docAnnotatorUtil.isDialogDataType(event.target)) {
