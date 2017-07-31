@@ -25,6 +25,8 @@ $header-height: 48px;
     overflow: hidden;
     padding: 0;
     position: relative;
+    // disables non-standard gestures such as double-tap to zoom
+    touch-action: manipulation;
     width: 100%;
 
     a {
@@ -130,6 +132,15 @@ $header-height: 48px;
     position: absolute;
     right: 0;
     top: 0;
+
+    // Pseudo fullscreen for iOS Safari which doesn't support the fullscreen API
+    &.bp-fullscreen-unsupported {
+        bottom: 0;
+        left: 0;
+        position: fixed;
+        right: 0;
+        top: 0;
+    }
 
     &.bp-dark {
         background-color: $black;

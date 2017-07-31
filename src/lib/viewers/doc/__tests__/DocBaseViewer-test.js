@@ -1083,25 +1083,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
     });
 
-    describe('initAnnotations()', () => {
-        const initFunc = BaseViewer.prototype.initAnnotations;
-
-        afterEach(() => {
-            Object.defineProperty(BaseViewer.prototype, 'initAnnotations', { value: initFunc });
-        });
-
-        it('should set up page IDs and initialize the annotator', () => {
-            docBase.pdfViewer = {
-                currentScale: 1
-            };
-            sandbox.stub(docBase, 'setupPageIds');
-            Object.defineProperty(BaseViewer.prototype, 'initAnnotations', { value: sandbox.mock() });
-
-            docBase.initAnnotations();
-            expect(docBase.setupPageIds).to.be.called;
-        });
-    });
-
     describe('setupPageIds()', () => {
         it('should add page IDs', () => {
             const pageEl = document.createElement('div');
@@ -1412,6 +1393,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             stubs.setPage = sandbox.stub(docBase, 'setPage');
             stubs.getCachedPage = sandbox.stub(docBase, 'getCachedPage');
             stubs.emit = sandbox.stub(docBase, 'emit');
+            stubs.setupPages = sandbox.stub(docBase, 'setupPageIds');
         });
 
         it('should load UI, check the pagination buttons, set the page, and make document scrollable', () => {
@@ -1424,6 +1406,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(stubs.checkPaginationButtons).to.be.called;
             expect(stubs.setPage).to.be.called;
             expect(docBase.docEl).to.have.class('bp-is-scrollable');
+            expect(stubs.setupPages).to.be.called;
         });
 
         it('should broadcast that the preview is loaded if it hasn\'t already', () => {
@@ -1436,7 +1419,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.pagesinitHandler();
             expect(stubs.emit).to.be.calledWith('load', {
                 endProgress: false,
-                numPages: 5
+                numPages: 5,
+                scale: sinon.match.any
             });
             expect(docBase.loaded).to.be.truthy;
         });

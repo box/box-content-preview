@@ -17,6 +17,7 @@ import Browser from '../Browser';
 import {
     PERMISSION_ANNOTATE,
     CLASS_FULLSCREEN,
+    CLASS_FULLSCREEN_UNSUPPORTED,
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
     SELECTOR_BOX_PREVIEW,
@@ -329,22 +330,18 @@ class BaseViewer extends EventEmitter {
      */
     addCommonListeners() {
         // Attach common full screen event listeners
-        /* istanbul ignore next */
-        fullscreen.addListener('enter', () => {
-            this.containerEl.classList.add(CLASS_FULLSCREEN);
-            this.resize();
-        });
+        fullscreen.addListener('enter', this.onFullscreenToggled);
 
-        /* istanbul ignore next */
-        fullscreen.addListener('exit', () => {
-            this.containerEl.classList.remove(CLASS_FULLSCREEN);
-            this.resize();
-        });
+        fullscreen.addListener('exit', this.onFullscreenToggled);
 
         // Add a resize handler for the window
         document.defaultView.addEventListener('resize', this.debouncedResizeHandler);
 
-        this.addListener('load', () => {
+        this.addListener('load', (event) => {
+            if (event && event.scale) {
+                this.scale = event.scale;
+            }
+
             if (this.annotationsPromise) {
                 this.annotationsPromise.then(this.loadAnnotator);
             }
@@ -353,11 +350,26 @@ class BaseViewer extends EventEmitter {
 
     /**
      * Enters or exits fullscreen
+     *
      * @protected
      * @return {void}
      */
     toggleFullscreen() {
         fullscreen.toggle(this.containerEl);
+    }
+
+    /**
+     * Applies appropriate styles and resizes the document depending on fullscreen state
+     *
+     * @return {void}
+     */
+    onFullscreenToggled() {
+        this.containerEl.classList.toggle(CLASS_FULLSCREEN);
+        if (!fullscreen.isSupported()) {
+            this.containerEl.classList.toggle(CLASS_FULLSCREEN_UNSUPPORTED);
+        }
+
+        this.resize();
     }
 
     /**
@@ -653,7 +665,8 @@ class BaseViewer extends EventEmitter {
             locale: location.locale,
             previewUI: this.previewUI
         });
-        this.annotator.init();
+
+        this.annotator.init(this.scale);
 
         // Disables controls during point annotation mode
         this.annotator.addListener('annotationmodeenter', this.disableViewerControls);

@@ -361,7 +361,7 @@ class DocBaseViewer extends BaseViewer {
         const previousPageButtonEl = this.containerEl.querySelector('.bp-previous-page');
         const nextPageButtonEl = this.containerEl.querySelector('.bp-next-page');
 
-        // Safari disables keyboard input in fullscreen
+        // Safari disables keyboard input in fullscreen before Safari 10.1
         const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen(this.containerEl);
 
         // Disable page number selector if there is only one page or less
@@ -652,18 +652,7 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Initializes annotations.
-     *
-     * @protected
-     * @return {void}
-     */
-    initAnnotations() {
-        super.initAnnotations();
-        this.setupPageIds();
-    }
-
-    /**
-     * Add page IDs to each page since annotations explicitly needs IDs per page (rangy).
+     * Add page IDs to each page
      *
      * @private
      * @return {void}
@@ -999,8 +988,12 @@ class DocBaseViewer extends BaseViewer {
             this.loaded = true;
             this.emit('load', {
                 numPages: this.pdfViewer.pagesCount,
-                endProgress: false // Indicate that viewer will end progress later
+                endProgress: false, // Indicate that viewer will end progress later
+                scale: this.pdfViewer.currentScale
             });
+
+            // Add page IDs to each page after page structure is available
+            this.setupPageIds();
         }
     }
 

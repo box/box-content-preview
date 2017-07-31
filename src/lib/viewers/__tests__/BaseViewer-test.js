@@ -278,6 +278,40 @@ describe('lib/viewers/BaseViewer', () => {
             expect(document.defaultView.addEventListener).to.be.calledWith('resize', base.debouncedResizeHandler);
             expect(base.addListener).to.be.calledWith('load', sinon.match.func);
         });
+
+        it('should load the annotator when load is emitted with scale', (done) => {
+            sandbox.stub(fullscreen, 'addListener');
+            sandbox.stub(document.defaultView, 'addEventListener');
+            sandbox.stub(base, 'loadAnnotator');
+            base.annotationsPromise = {
+                then: (arg) => {
+                    expect(base.scale).to.equal(1.5);
+                    expect(arg).to.equal(base.loadAnnotator);
+                    done();
+                }
+            };
+
+            base.addCommonListeners();
+            expect(base.scale).to.equal(1);
+            base.emit('load', {
+                scale: 1.5
+            });
+        });
+
+        it('should load the annotator when load is emitted without an event', (done) => {
+            sandbox.stub(fullscreen, 'addListener');
+            sandbox.stub(document.defaultView, 'addEventListener');
+            sandbox.stub(base, 'loadAnnotator');
+            base.annotationsPromise = {
+                then: (arg) => {
+                    expect(arg).to.equal(base.loadAnnotator);
+                    done();
+                }
+            };
+
+            base.addCommonListeners();
+            base.emit('load');
+        });
     });
 
     describe('toggleFullscreen()', () => {
@@ -285,6 +319,36 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(fullscreen, 'toggle');
             base.toggleFullscreen();
             expect(fullscreen.toggle).to.be.calledWith(base.containerEl);
+        });
+    });
+
+    describe('onFullscreenToggled()', () => {
+        beforeEach(() => {
+            base.containerEl = document.createElement('div');
+            sandbox.stub(fullscreen, 'isSupported').returns(false);
+            sandbox.stub(base, 'resize');
+
+        });
+
+        it('should toggle the fullscreen class', () => {
+            base.onFullscreenToggled();
+            expect(base.containerEl.classList.contains(constants.CLASS_FULLSCREEN)).to.be.true;
+
+            base.onFullscreenToggled();
+            expect(base.containerEl.classList.contains(constants.CLASS_FULLSCREEN)).to.be.false;
+        });
+
+        it('should toggle the unsupported class if the browser does not support the fullscreen API', () => {
+            base.onFullscreenToggled();
+            expect(base.containerEl.classList.contains(constants.CLASS_FULLSCREEN_UNSUPPORTED)).to.be.true;
+
+            base.onFullscreenToggled();
+            expect(base.containerEl.classList.contains(constants.CLASS_FULLSCREEN_UNSUPPORTED)).to.be.false;
+        });
+
+        it('should resize the viewer', () => {
+            base.onFullscreenToggled();
+            expect(base.resize).to.be.called;
         });
     });
 
@@ -744,9 +808,11 @@ describe('lib/viewers/BaseViewer', () => {
                 }
             };
             base.addListener = sandbox.stub();
+            base.scale = 1.5;
             base.annotator = {
                 init: sandbox.stub(),
-                addListener: sandbox.stub()
+                addListener: sandbox.stub(),
+                setScale: sandbox.stub()
             };
             base.annotatorConf = {
                 CONSTRUCTOR: sandbox.stub().returns(base.annotator)
@@ -754,7 +820,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.initAnnotations();
         });
         it('should initialize the annotator', () => {
-            expect(base.annotator.init).to.be.called;
+            expect(base.annotator.init).to.be.calledWith(1.5);
             expect(base.annotator.addListener).to.be.calledWith('annotationmodeenter', sinon.match.func);
             expect(base.annotator.addListener).to.be.calledWith('annotationmodeexit', sinon.match.func);
             expect(base.annotator.addListener).to.be.calledWith('annotationsfetched', sinon.match.func);
