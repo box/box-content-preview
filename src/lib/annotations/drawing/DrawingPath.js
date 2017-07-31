@@ -135,6 +135,15 @@ class DrawingPath {
         }
     }
 
+    /**
+     * Generate a browser location path that can be drawn on a canvas document from the stored path information
+     *
+     * @param {HTMLElement} annotatedElement - The annotated element
+     * @param {Object} dimensions - The dimension object
+     * @param {number} dimensions.x - The dimension width
+     * @param {number} dimensions.y - The dimension height
+     * @return {void}
+     */
     generateBrowserPath(annotatedElement, dimensions) {
         if (!this.path) {
             return;
@@ -151,6 +160,12 @@ class DrawingPath {
         });
     }
 
+    /**
+     * Extract path information from the drawing path
+     *
+     * @param {DrawingPath} drawingPath - The drawingPath to extract information from
+     * @return {void}
+     */
     static extractDrawingInfo(drawingPath) {
         return {
             path: drawingPath.path

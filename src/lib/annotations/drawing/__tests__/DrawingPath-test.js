@@ -20,8 +20,14 @@ describe('lib/annotations/drawing/DrawingPath', () => {
     describe('addCoordinate()', () => {
         it('should do nothing if x or y is empty', () => {
             const lengthBefore = drawingPath.path.length;
-            drawingPath.addCoordinate(null, 2);
-            drawingPath.addCoordinate(2, null);
+            drawingPath.addCoordinate({
+                x: null,
+                y: 2
+            });
+            drawingPath.addCoordinate({
+                x: 2,
+                y: null
+            });
             const lengthAfter = drawingPath.path.length;
 
             expect(lengthAfter).to.equal(lengthBefore);
@@ -29,7 +35,10 @@ describe('lib/annotations/drawing/DrawingPath', () => {
 
         it('should insert the new coordinate into its path container', () => {
             const lengthBefore = drawingPath.path.length;
-            drawingPath.addCoordinate(1,2);
+            drawingPath.addCoordinate({
+                x: 1,
+                y: 2
+            });
             const lengthAfter = drawingPath.path.length;
 
             expect(lengthAfter).to.equal(lengthBefore + 1);
@@ -47,8 +56,14 @@ describe('lib/annotations/drawing/DrawingPath', () => {
                 y2: 6
             };
 
-            drawingPath.addCoordinate(rectBounds.x1, rectBounds.y1);
-            drawingPath.addCoordinate(rectBounds.x2, rectBounds.y2);
+            drawingPath.addCoordinate({
+                x: rectBounds.x1,
+                y: rectBounds.y1
+            });
+            drawingPath.addCoordinate({
+                x: rectBounds.x2,
+                y: rectBounds.y2
+            });
 
             expect(drawingPath.minY).to.equal(rectBounds.y1);
             expect(drawingPath.minX).to.equal(rectBounds.x1);
@@ -64,7 +79,11 @@ describe('lib/annotations/drawing/DrawingPath', () => {
 
 
         it('should return false when a coordinate has been inserted', () => {
-            drawingPath.addCoordinate(1,1);
+            const coord = {
+                x: 1,
+                y: 1
+            }
+            drawingPath.addCoordinate(coord);
             expect(drawingPath.isEmpty()).to.be.false;
         });
 
@@ -76,12 +95,32 @@ describe('lib/annotations/drawing/DrawingPath', () => {
                 quadraticCurveTo: sandbox.stub(),
                 moveTo: sandbox.stub()
             };
+            const docCoord = {
+                x: 1,
+                y: 1
+            }
+            const browserCoord = {
+                x: 1,
+                y: 1
+            }
 
-            drawingPath.addCoordinate(1,1, 1,1);
+            drawingPath.addCoordinate(docCoord, browserCoord);
             drawingPath.drawPath(context);
 
             expect(context.quadraticCurveTo).to.be.called;
             expect(context.moveTo).to.be.called;
         });
-    })
+    });
+
+    describe('extractDrawingInfo()', () => {
+        it('should extract the path attribute from an object', () => {
+            const drawingObj = {
+                path: 'pathHere',
+                extra: 'extraAttribute'
+            }
+            const result = DrawingPath.extractDrawingInfo(drawingObj);
+            expect(result).to.not.deep.equal(drawingObj);
+            expect(result.path).to.equal(drawingObj.path);
+        });
+    });
 });

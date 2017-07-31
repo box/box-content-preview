@@ -189,8 +189,7 @@ class DocDrawingThread extends DrawingThread {
         // Set the in-memory context for the pending thread
         if (this.drawingContext) {
             // Resetting the height clears the canvas
-            const height = this.drawingContext.canvas.height;
-            this.drawingContext.canvas.height = height;
+            this.drawingContext.canvas.height = this.drawingContext.canvas.height;
         } else {
             this.drawingContext = docAnnotatorUtil.getContext(
                 this.pageEl,
