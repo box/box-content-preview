@@ -18,7 +18,10 @@ import {
     repositionCaret,
     isPending,
     validateThreadParams,
-    eventToLocationHandler
+    eventToLocationHandler,
+    decodeKeydown,
+    getHeaders,
+    replacePlaceholders
 } from '../annotatorUtil';
 import {
     STATES,
@@ -398,6 +401,155 @@ describe('lib/annotations/annotatorUtil', () => {
 
             locationHandler(event);
             expect(annotator.isChanged).to.be.true;
+        });
+    });
+
+    describe('decodeKeydown()', () => {
+        it('should return empty when no key', () => {
+            assert.equal(
+                decodeKeydown({
+                    key: ''
+                }),
+                ''
+            );
+        });
+        it('should return empty when modifier and key are same', () => {
+            assert.equal(
+                decodeKeydown({
+                    key: 'Control',
+                    ctrlKey: true
+                }),
+                ''
+            );
+        });
+        it('should return correct with ctrl modifier', () => {
+            assert.equal(
+                decodeKeydown({
+                    key: '1',
+                    ctrlKey: true
+                }),
+                'Control+1'
+            );
+        });
+        it('should return correct with shift modifier', () => {
+            assert.equal(
+                decodeKeydown({
+                    key: '1',
+                    shiftKey: true
+                }),
+                'Shift+1'
+            );
+        });
+        it('should return correct with meta modifier', () => {
+            assert.equal(
+                decodeKeydown({
+                    key: '1',
+                    metaKey: true
+                }),
+                'Meta+1'
+            );
+        });
+        it('should return space key', () => {
+            assert.equal(
+                decodeKeydown({
+                    key: ' '
+                }),
+                'Space'
+            );
+        });
+        it('should return right arrow key', () => {
+            assert.equal(
+                decodeKeydown({
+                    key: 'Right'
+                }),
+                'ArrowRight'
+            );
+        });
+        it('should return left arrow key', () => {
+            assert.equal(
+                decodeKeydown({
+                    key: 'Left'
+                }),
+                'ArrowLeft'
+            );
+        });
+        it('should return up arrow key', () => {
+            assert.equal(
+                decodeKeydown({
+                    key: 'Up'
+                }),
+                'ArrowUp'
+            );
+        });
+        it('should return down arrow key', () => {
+            assert.equal(
+                decodeKeydown({
+                    key: 'Down'
+                }),
+                'ArrowDown'
+            );
+        });
+        it('should return esc key', () => {
+            assert.equal(
+                decodeKeydown({
+                    key: 'U+001B'
+                }),
+                'Escape'
+            );
+        });
+        it('should decode correct UTF8 key', () => {
+            assert.equal(
+                decodeKeydown({
+                    key: 'U+0041'
+                }),
+                'A'
+            );
+        });
+    });
+
+    /* eslint-disable no-undef */
+    describe('getHeaders()', () => {
+        it('should return correct headers', () => {
+            const sharedLink = 'https://sharename';
+            const fooHeader = 'bar';
+            const token = 'someToken';
+            const headers = getHeaders({ foo: fooHeader }, token, sharedLink);
+            expect(headers.foo).to.equal(fooHeader);
+            expect(headers.Authorization).to.equal(`Bearer ${token}`);
+            expect(headers.BoxApi).to.equal(`shared_link=${sharedLink}`);
+            expect(headers['X-Box-Client-Name']).to.equal(__NAME__);
+            expect(headers['X-Box-Client-Version']).to.equal(__VERSION__);
+        });
+
+        it('should return correct headers with password', () => {
+            const headers = getHeaders({ foo: 'bar' }, 'token', 'https://sharename', 'password');
+            assert.equal(headers.foo, 'bar');
+            assert.equal(headers.Authorization, 'Bearer token');
+            assert.equal(headers.BoxApi, 'shared_link=https://sharename&shared_link_password=password');
+            assert.equal(headers['X-Box-Client-Name'], __NAME__);
+            assert.equal(headers['X-Box-Client-Version'], __VERSION__);
+        });
+    });
+
+    describe('replacePlaceholders()', () => {
+        it('should replace only the placeholder with the custom value in the given string', () => {
+            expect(replacePlaceholders('{1} highlighted', ['Bob'])).to.equal('Bob highlighted');
+        });
+
+        it('should replace all placeholders with the custom value in the given string', () => {
+            expect(replacePlaceholders('{1} highlighted {2}', ['Bob', 'Suzy'])).to.equal('Bob highlighted Suzy');
+        });
+
+        it('should replace only placeholders that have custom value in the given string', () => {
+            expect(replacePlaceholders('{1} highlighted {2}', ['Bob'])).to.equal('Bob highlighted {2}');
+        });
+
+        it('should respect the order of placeholders when given an arbitrary order', () => {
+            expect(replacePlaceholders('{2} highlighted {1}', ['Bob', 'Suzy'])).to.equal('Suzy highlighted Bob');
+        });
+
+        it('should replace with the same value if the placeholder is repeated', () => {
+            expect(replacePlaceholders('{2} highlighted {2}', ['Bob', 'Suzy'])).to.equal('Suzy highlighted Suzy');
         });
     });
 });
