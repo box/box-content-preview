@@ -174,6 +174,52 @@ describe('lib/annotations/AnnotationThread', () => {
         });
     });
 
+    describe('updateTemporaryAnnotation()', () => {
+        let annotationService;
+
+        beforeEach(() => {
+            annotationService = {
+                create: () => {}
+            };
+
+            thread = new AnnotationThread({
+                annotatedElement: document.querySelector('.annotated-element'),
+                annotations: [],
+                annotationService,
+                fileVersionId: '1',
+                location: {},
+                threadID: '2',
+                threadNumber: '1',
+                type: 'point'
+            });
+
+            stubs.create = sandbox.stub(annotationService, 'create');
+            stubs.saveAnnotationToThread = sandbox.stub(thread, 'saveAnnotationToThread');
+        });
+
+        it('should save annotation to thread if it does not exist in annotations array', () => {
+            const serverAnnotation = 'real annotation';
+            const tempAnnotation = serverAnnotation;
+
+            thread.updateTemporaryAnnotation(tempAnnotation, serverAnnotation);
+
+            expect(stubs.saveAnnotationToThread).to.be.called;
+        });
+
+        it('should overwrite a local annotation to the thread if it does exist as an associated annotation', () => {
+            const serverAnnotation = 'real annotation';
+            const tempAnnotation = 'placeholder annotation';
+            const isServerAnnotation = (annotation => (annotation === serverAnnotation));
+
+            thread.annotations.push(tempAnnotation)
+            expect(thread.annotations.find(isServerAnnotation)).to.be.undefined;
+            thread.updateTemporaryAnnotation(tempAnnotation, serverAnnotation);
+            expect(stubs.saveAnnotationToThread).to.not.be.called;
+            expect(thread.annotations.find(isServerAnnotation)).to.not.be.undefined;
+        });
+
+    })
+
     describe('deleteAnnotation()', () => {
         let annotationService;
 
