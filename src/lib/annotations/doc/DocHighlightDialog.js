@@ -3,7 +3,6 @@ import AnnotationDialog from '../AnnotationDialog';
 import * as annotatorUtil from '../annotatorUtil';
 import * as docAnnotatorUtil from './docAnnotatorUtil';
 import { CLASS_HIDDEN, CLASS_ACTIVE } from '../../constants';
-import { replacePlaceholders, decodeKeydown } from '../../util';
 import { ICON_HIGHLIGHT, ICON_HIGHLIGHT_COMMENT } from '../../icons/icons';
 import * as constants from '../annotationConstants';
 
@@ -36,7 +35,7 @@ class DocHighlightDialog extends AnnotationDialog {
         // Will be displayed as '{name} highlighted'
         if (annotation.text === '' && annotation.user.id !== '0') {
             const highlightLabelEl = this.highlightDialogEl.querySelector(`.${CLASS_HIGHLIGHT_LABEL}`);
-            highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [
+            highlightLabelEl.textContent = annotatorUtil.replacePlaceholders(__('annotation_who_highlighted'), [
                 annotation.user.name
             ]);
             annotatorUtil.showElement(highlightLabelEl);
@@ -242,7 +241,7 @@ class DocHighlightDialog extends AnnotationDialog {
         // be 'Some User'
         if (annotatorUtil.isPlainHighlight(annotations) && annotations[0].user.id !== '0') {
             const highlightLabelEl = this.highlightDialogEl.querySelector(`.${CLASS_HIGHLIGHT_LABEL}`);
-            highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [
+            highlightLabelEl.textContent = annotatorUtil.replacePlaceholders(__('annotation_who_highlighted'), [
                 annotations[0].user.name
             ]);
             annotatorUtil.showElement(highlightLabelEl);
@@ -309,7 +308,7 @@ class DocHighlightDialog extends AnnotationDialog {
      */
     keydownHandler(event) {
         event.stopPropagation();
-        if (decodeKeydown(event) === 'Enter') {
+        if (annotatorUtil.decodeKeydown(event) === 'Enter') {
             this.mousedownHandler(event);
         }
         super.keydownHandler(event);
