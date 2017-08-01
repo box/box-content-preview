@@ -19,7 +19,7 @@ describe('lib/annotations/drawing/DrawingPath', () => {
 
     describe('addCoordinate()', () => {
         it('should do nothing if x or y is empty', () => {
-            const lengthBefore = drawingPath.path.length;
+            let lengthBefore = drawingPath.path.length;
             drawingPath.addCoordinate({
                 x: null,
                 y: 2
@@ -28,8 +28,27 @@ describe('lib/annotations/drawing/DrawingPath', () => {
                 x: 2,
                 y: null
             });
-            const lengthAfter = drawingPath.path.length;
 
+            let lengthAfter = drawingPath.path.length;
+
+            expect(lengthAfter).to.equal(lengthBefore);
+
+            lengthBefore = drawingPath.browserPath.length;
+            drawingPath.addCoordinate({
+                x: 1,
+                y: 1
+            }, {
+                x: null,
+                y: 1
+            });
+            drawingPath.addCoordinate({
+                x: 1,
+                y: 1
+            }, {
+                x: 1,
+                y: null
+            });
+            lengthAfter = drawingPath.browserPath.length;
             expect(lengthAfter).to.equal(lengthBefore);
         });
 

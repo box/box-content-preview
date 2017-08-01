@@ -174,54 +174,6 @@ describe('lib/annotations/AnnotationThread', () => {
         });
     });
 
-    describe('updateLocalAnnotationFromServerResponse()', () => {
-        let annotationService;
-
-        beforeEach(() => {
-            annotationService = {
-                create: () => {}
-            };
-
-            thread = new AnnotationThread({
-                annotatedElement: document.querySelector('.annotated-element'),
-                annotations: [],
-                annotationService,
-                fileVersionId: '1',
-                location: {},
-                threadID: '2',
-                threadNumber: '1',
-                type: 'point'
-            });
-
-            stubs.create = sandbox.stub(annotationService, 'create');
-        });
-
-        it('should save annotation to thread if it does not exist in annotations array', () => {
-            const serverAnnotation = 'im a real annotation';
-            stubs.saveAnnotationToThread = sandbox.stub(thread, 'saveAnnotationToThread');
-            thread.updateLocalAnnotationFromServer(serverAnnotation, serverAnnotation);
-            thread.on('annotationcreateerror', () => {
-                Assert.fail('Annotation creation should not have failed');
-            });
-            expect(stubs.saveAnnotationToThread).to.be.called;
-        });
-
-        it('should overwrite a local annotation to the thread if it does exist as an associated annotation', () => {
-            const serverAnnotation = 'im a real annotation';
-            const replacementAnnotation = 'im a replacement annotation';
-            const isReplacementAnnotation = (annotation) => annotation === replacementAnnotation;
-            stubs.saveAnnotationToThread = sandbox.stub(thread, 'saveAnnotationToThread');
-            thread.annotations.push(serverAnnotation)
-            thread.updateLocalAnnotationFromServer(replacementAnnotation, serverAnnotation);
-            thread.on('annotationcreateerror', () => {
-                Assert.fail('Annotation creation should not have failed');
-            });
-            expect(stubs.saveAnnotationToThread).to.not.be.called;
-            expect(thread.annotations.find(isReplacementAnnotation)).to.not.be.undefined;
-        });
-
-    })
-
     describe('deleteAnnotation()', () => {
         let annotationService;
 

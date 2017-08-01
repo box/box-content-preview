@@ -63,7 +63,7 @@ class DrawingPath {
      * @return {void}
      */
     addCoordinate(documentLocation, browserLocation) {
-        if (!documentLocation) {
+        if (!documentLocation || !documentLocation.x || !documentLocation.y) {
             return;
         }
 
@@ -89,7 +89,7 @@ class DrawingPath {
         }
 
         this.path.push(createLocation(x, y));
-        if (browserLocation) {
+        if (browserLocation && browserLocation.x && browserLocation.y) {
             this.browserPath.push(browserLocation);
         }
     }

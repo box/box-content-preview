@@ -67,7 +67,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             const context = "I'm a real context";
 
             sandbox.stub(docDrawingThread, 'checkAndHandleScaleUpdate');
-            sandbox.stub(docDrawingThread, 'handlePageChange').returns(false);
+            sandbox.stub(docDrawingThread, 'hasPageChanged').returns(false);
             sandbox.stub(docAnnotatorUtil, 'getPageEl')
                    .returns(context);
 
@@ -76,12 +76,12 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             docDrawingThread.handleStart(docDrawingThread.location);
 
             expect(docDrawingThread.drawingFlag).to.equal(STATES_DRAW.draw);
-            expect(docDrawingThread.handlePageChange).to.be.called;
+            expect(docDrawingThread.hasPageChanged).to.be.called;
             expect(docDrawingThread.pendingPath).to.be.an.instanceof(DrawingPath);
         });
 
         it('should do nothing when the page changes', () => {
-            sandbox.stub(docDrawingThread, 'handlePageChange').returns(true);
+            sandbox.stub(docDrawingThread, 'hasPageChanged').returns(true);
             sandbox.stub(docDrawingThread, 'checkAndHandleScaleUpdate');
 
             docDrawingThread.drawingFlag = STATES_DRAW.idle;
@@ -89,7 +89,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             docDrawingThread.handleStart(docDrawingThread.location);
             docDrawingThread.location = {};
 
-            expect(docDrawingThread.handlePageChange).to.be.called;
+            expect(docDrawingThread.hasPageChanged).to.be.called;
             expect(docDrawingThread.checkAndHandleScaleUpdate).to.not.be.called;
             expect(docDrawingThread.drawingFlag).to.equal(STATES_DRAW.idle);
         });
