@@ -3,7 +3,6 @@ import EventEmitter from 'events';
 import debounce from 'lodash.debounce';
 import fullscreen from '../Fullscreen';
 import RepStatus from '../RepStatus';
-import Notification from '../Notification';
 import {
     appendAuthParams,
     getHeaders,
@@ -33,6 +32,8 @@ import { ICON_FILE_DEFAULT } from '../icons/icons';
 
 const ANNOTATIONS_JS = ['annotations.js'];
 const ANNOTATIONS_CSS = ['annotations.css'];
+const ANNOTATION_TYPE_DRAW = 'draw';
+const ANNOTATION_TYPE_POINT = 'point';
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
 
@@ -343,9 +344,6 @@ class BaseViewer extends EventEmitter {
                 this.scale = event.scale;
             }
 
-            // Initialize notification
-            this.notification = new Notification(this.containerEl);
-
             if (this.annotationsPromise) {
                 this.annotationsPromise.then(this.loadAnnotator);
             }
@@ -600,28 +598,6 @@ class BaseViewer extends EventEmitter {
         return status === STATUS_SUCCESS || status === STATUS_VIEWABLE;
     }
 
-    /**
-     * Shows a notification message.
-     *
-     * @private
-     * @param {string} message - Notification message
-     * @param {string} [buttonText] - Optional text to show in button
-     * @return {void}
-     */
-    showNotification(message, buttonText) {
-        this.notification.show(message, buttonText);
-    }
-
-    /**
-     * Hides the notification message. Does nothing if the notification is already hidden.
-     *
-     * @private
-     * @return {void}
-     */
-    hideNotification() {
-        this.notification.hide();
-    }
-
     //--------------------------------------------------------------------------
     // Annotations
     //--------------------------------------------------------------------------
@@ -682,6 +658,7 @@ class BaseViewer extends EventEmitter {
             canAnnotate: this.canAnnotate,
             container,
             options: {
+                annotator: this.annotatorConf,
                 apiHost,
                 fileId,
                 token
@@ -694,13 +671,7 @@ class BaseViewer extends EventEmitter {
 
         this.annotator.init(this.scale);
 
-        // Disables controls during point annotation mode
-        this.annotator.addListener('annotationmodeenter', this.disableViewerControls);
-        this.annotator.addListener('annotationmodeexit', this.enableViewerControls);
-
-        this.annotator.addListener('notificationshow', this.showNotification);
-        this.annotator.addListener('notificationhide', this.hideNotification);
-
+        // Disables controls during annotation mode
         this.addListener('togglepointannotationmode', () => {
             this.annotator.togglePointAnnotationHandler();
         });
@@ -712,12 +683,8 @@ class BaseViewer extends EventEmitter {
         // Add a custom listener for events related to scaling/orientation changes
         this.addListener('scale', this.scaleAnnotations.bind(this));
 
-        this.annotator.addListener('annotationsfetched', () => {
-            this.scaleAnnotations({
-                scale: this.scale,
-                rotationAngle: this.rotationAngle
-            });
-        });
+        // Add a custom listener for events emmited by the annotator
+        this.annotator.addListener('annotationevent', this.handleAnnotatorNotifications);
     }
 
     /**
@@ -844,6 +811,47 @@ class BaseViewer extends EventEmitter {
         }
     }
     /* eslint-enable no-unused-vars */
+
+    /**
+     * Handle events emitted by the annotator
+     *
+     * @private
+     * @param {Object} [data] - Annotator event data
+     * @param {string} [data.event] - Annotator event
+     * @param {string} [data.data] -
+     * @return {void}
+     */
+    handleAnnotatorNotifications(data) {
+        /* istanbul ignore next */
+        switch (data.event) {
+            case 'annotationmodeenter':
+                this.disableViewerControls();
+
+                if (data.data === ANNOTATION_TYPE_POINT) {
+                    this.emit('notificationshow', __('notification_annotation_point_mode'));
+                } else if (data.data === ANNOTATION_TYPE_DRAW) {
+                    this.emit('notificationshow', __('notification_annotation_draw_mode'));
+                }
+                break;
+            case 'annotationmodeexit':
+                this.enableViewerControls();
+                this.emit('notificationhide');
+                break;
+            case 'annotationerror':
+                this.emit('notificationshow', data.data);
+                break;
+            case 'annotationsfetched':
+                this.scaleAnnotations({
+                    scale: this.scale,
+                    rotationAngle: this.rotationAngle
+                });
+                break;
+            default:
+                this.emit(data.event, data.data);
+                this.emit('annotationevent', data);
+                break;
+        }
+    }
 }
 
 export default BaseViewer;

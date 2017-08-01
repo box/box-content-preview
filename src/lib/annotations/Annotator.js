@@ -259,7 +259,6 @@ class Annotator extends EventEmitter {
 
         // If in annotation mode, turn it off
         if (this.isInPointMode()) {
-            this.emit('notificationhide');
             this.emit('annotationmodeexit');
             this.annotatedElement.classList.remove(CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
@@ -271,8 +270,7 @@ class Annotator extends EventEmitter {
 
             // Otherwise, enable annotation mode
         } else {
-            this.emit('notificationshow', __('notification_annotation_point_mode'));
-            this.emit('annotationmodeenter');
+            this.emit('annotationmodeenter', TYPES.point);
             this.annotatedElement.classList.add(CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
                 buttonEl.classList.add(CLASS_ACTIVE);
@@ -301,7 +299,6 @@ class Annotator extends EventEmitter {
 
         // Exit if in draw mode
         if (this.isInDrawMode()) {
-            this.emit('notificationhide');
             this.emit('annotationmodeexit');
             this.annotatedElement.classList.remove(CLASS_ANNOTATION_DRAW_MODE);
 
@@ -317,8 +314,7 @@ class Annotator extends EventEmitter {
 
             // Otherwise enter draw mode
         } else {
-            this.emit('notificationshow', __('notification_annotation_draw_mode'));
-            this.emit('annotationmodeenter');
+            this.emit('annotationmodeenter', TYPES.draw);
             this.annotatedElement.classList.add(CLASS_ANNOTATION_DRAW_MODE);
 
             if (buttonEl) {
@@ -471,7 +467,7 @@ class Annotator extends EventEmitter {
             }
 
             if (errorMessage) {
-                this.emit('notificationshow', errorMessage);
+                this.emit('annotationerror', errorMessage);
             }
         });
     }
@@ -722,8 +718,28 @@ class Annotator extends EventEmitter {
             return;
         }
 
-        this.emit('notificationshow', __('annotations_load_error'));
+        this.emit('annotationerror', __('annotations_load_error'));
         this.validationErrorDisplayed = true;
+    }
+
+    /**
+     * Emits a generic viewer event
+     *
+     * @protected
+     * @emits viewerevent
+     * @param {string} event - Event name
+     * @param {Object} data - Event data
+     * @return {void}
+     */
+    emit(event, data) {
+        const { annotator, fileId } = this.options;
+        super.emit(event, data);
+        super.emit('annotationevent', {
+            event,
+            data,
+            annotatorName: annotator ? annotator.NAME : '',
+            fileId
+        });
     }
 }
 

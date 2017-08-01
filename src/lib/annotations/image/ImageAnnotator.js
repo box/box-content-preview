@@ -105,7 +105,7 @@ class ImageAnnotator extends Annotator {
             type
         };
 
-        if (!annotatorUtil.validateThreadParams(threadParams)) {
+        if (annotatorUtil.validateThreadParams(threadParams)) {
             this.handleValidationError();
             return thread;
         }

@@ -1,5 +1,6 @@
 import ProgressBar from './ProgressBar';
 import shellTemplate from './shell.html';
+import Notification from './Notification';
 import { insertTemplate } from './util';
 import {
     CLASS_HIDDEN,
@@ -115,6 +116,9 @@ class PreviewUI {
 
         // Setup loading indicator
         this.setupLoading();
+
+        // Setup notification
+        this.notification = new Notification(this.contentContainer);
 
         // Attach keyboard events
         document.addEventListener('keydown', this.keydownHandler);
@@ -283,6 +287,28 @@ class PreviewUI {
      */
     finishProgressBar() {
         this.progressBar.finish();
+    }
+
+    /**
+     * Shows a notification message.
+     *
+     * @private
+     * @param {string} message - Notification message
+     * @param {string} [buttonText] - Optional text to show in button
+     * @return {void}
+     */
+    showNotification(message, buttonText) {
+        this.notification.show(message, buttonText);
+    }
+
+    /**
+     * Hides the notification message. Does nothing if the notification is already hidden.
+     *
+     * @private
+     * @return {void}
+     */
+    hideNotification() {
+        this.notification.hide();
     }
 
     //--------------------------------------------------------------------------
