@@ -734,7 +734,7 @@ class Annotator extends EventEmitter {
     emit(event, data) {
         const { annotator, fileId } = this.options;
         super.emit(event, data);
-        super.emit('annotationevent', {
+        super.emit('annotatorevent', {
             event,
             data,
             annotatorName: annotator ? annotator.NAME : '',

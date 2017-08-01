@@ -684,7 +684,7 @@ class BaseViewer extends EventEmitter {
         this.addListener('scale', this.scaleAnnotations.bind(this));
 
         // Add a custom listener for events emmited by the annotator
-        this.annotator.addListener('annotationevent', this.handleAnnotatorNotifications);
+        this.annotator.addListener('annotatorevent', this.handleAnnotatorNotifications);
     }
 
     /**
@@ -848,7 +848,7 @@ class BaseViewer extends EventEmitter {
                 break;
             default:
                 this.emit(data.event, data.data);
-                this.emit('annotationevent', data);
+                this.emit('annotatorevent', data);
                 break;
         }
     }
