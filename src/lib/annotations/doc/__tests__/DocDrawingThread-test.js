@@ -119,18 +119,29 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
 
     describe('checkAndHandleScaleUpdate()', () => {
         it('should update the scale factor when the scale has changed', () => {
+            sandbox.stub(docDrawingThread, 'setContextStyles');
             sandbox.stub(annotatorUtil, 'getScale').returns(1.4);
+            sandbox.stub(docAnnotatorUtil, 'getPageEl');
+            sandbox.stub(docAnnotatorUtil, 'getContext');
             docDrawingThread.lastScaleFactor = 1.1;
+            docDrawingThread.location = {
+                page: 1
+            };
             docDrawingThread.checkAndHandleScaleUpdate();
             expect(docDrawingThread.lastScaleFactor).to.equal(1.4);
             expect(annotatorUtil.getScale).to.be.called;
+            expect(docAnnotatorUtil.getPageEl).to.be.called;
+            expect(docAnnotatorUtil.getContext).to.be.called;
+            expect(docDrawingThread.setContextStyles).to.be.called;
         });
 
         it('should do nothing when the scale has not changed', () => {
             sandbox.stub(annotatorUtil, 'getScale').returns(1.4);
+            sandbox.stub(docAnnotatorUtil, 'getPageEl');
             docDrawingThread.lastScaleFactor = 1.4;
             docDrawingThread.checkAndHandleScaleUpdate();
             expect(annotatorUtil.getScale).to.be.called;
+            expect(docAnnotatorUtil.getPageEl).to.not.be.called;
         });
     });
 

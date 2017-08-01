@@ -19,6 +19,13 @@ class DocDrawingThread extends DrawingThread {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
+    /**
+     * [constructor]
+     *
+     * @inheritdoc
+     * @param {AnnotationThreadData} data - Data for constructing thread
+     * @return {DocDrawingThread} Drawing annotation thread instance
+     */
     constructor(data) {
         super(data);
 

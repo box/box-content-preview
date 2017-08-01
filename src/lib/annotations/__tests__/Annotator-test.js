@@ -313,7 +313,8 @@ describe('lib/annotations/Annotator', () => {
             it('should turn draw annotation mode on if it is off', () => {
                 const destroyStub = sandbox.stub(annotator, 'destroyPendingThreads');
                 const annotationThread = {
-                    show: sandbox.stub()
+                    show: sandbox.stub(),
+                    addListener: sandbox.stub()
                 };
                 stubs.drawMode.returns(false);
                 stubs.createAnnotationThread.returns(annotationThread);
