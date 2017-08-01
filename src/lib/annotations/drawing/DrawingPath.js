@@ -1,21 +1,4 @@
-import * as docAnnotatorUtil from '../doc/docAnnotatorUtil';
-import { createLocation } from '../annotatorUtil';
-
-/* eslint-disable prefer-template */
-/**
- * Round a number to a certain decimal place by concatenating an exponential factor. Credits to lodash library.
- *
- * @param {number} number - The number to be rounded
- * @param {number} precision - The amount of decimal places to keep
- * @return {number} The rounded number
- */
-const Round = (number, precision) => {
-    let pair = (number + 'e').split('e');
-    const value = Math.round(pair[0] + 'e' + (+pair[1] + precision));
-    pair = (value + 'e').split('e');
-    return +(pair[0] + 'e' + (+pair[1] - precision));
-};
-/* eslint-enable prefer-template */
+import * as annotatorUtil from '../annotatorUtil';
 
 class DrawingPath {
     //--------------------------------------------------------------------------
@@ -47,7 +30,9 @@ class DrawingPath {
      */
     constructor(drawingPathData) {
         if (drawingPathData) {
-            this.path = drawingPathData.path.map((num) => createLocation(parseFloat(num.x), parseFloat(num.y)));
+            this.path = drawingPathData.path.map((num) =>
+                annotatorUtil.createLocation(parseFloat(num.x), parseFloat(num.y))
+            );
             this.maxX = drawingPathData.maxX;
             this.minX = drawingPathData.minX;
             this.maxY = drawingPathData.maxY;
@@ -69,8 +54,8 @@ class DrawingPath {
 
         // OPTIMIZE (@minhnguyen): We convert a number to a string using toFixed and then back a number.
         //           As a result, it might be better to truncate only on annotation save.
-        const x = Round(documentLocation.x, 2);
-        const y = Round(documentLocation.y, 2);
+        const x = annotatorUtil.round(documentLocation.x, 2);
+        const y = annotatorUtil.round(documentLocation.y, 2);
 
         if (x < this.minX) {
             this.minX = x;
@@ -88,7 +73,7 @@ class DrawingPath {
             this.maxX = x;
         }
 
-        this.path.push(createLocation(x, y));
+        this.path.push(annotatorUtil.createLocation(x, y));
         if (browserLocation && browserLocation.x && browserLocation.y) {
             this.browserPath.push(browserLocation);
         }
@@ -104,7 +89,7 @@ class DrawingPath {
     }
 
     /**
-     * Draw the recorded browser coordinates onto a CanvasContext. Requires a browser path to be generated.
+     * Draw the recorded browser coordinates onto a CanvasContext. Requires a browser path to have been generated.
      *
      * @param {CanvasContext} drawingContext - Context to draw the recorded path on
      * @return {void}
@@ -138,26 +123,17 @@ class DrawingPath {
     /**
      * Generate a browser location path that can be drawn on a canvas document from the stored path information
      *
-     * @param {HTMLElement} annotatedElement - The annotated element
-     * @param {Object} dimensions - The dimension object
-     * @param {number} dimensions.x - The dimension width
-     * @param {number} dimensions.y - The dimension height
+     * @param {Function} coordinateToBrowserCoordinate - A function that takes a document location and returns
+     *                                                   the corresponding browser location
      * @return {void}
      */
-    generateBrowserPath(annotatedElement, dimensions) {
+    generateBrowserPath(coordinateToBrowserCoordinate) {
         if (!this.path) {
             return;
         }
 
         // create a browser coordinate path from the document location path
-        this.browserPath = this.path.map((coord) => {
-            const reconstructedLocation = createLocation(coord.x, coord.y, dimensions);
-            const [xNew, yNew] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(
-                reconstructedLocation,
-                annotatedElement
-            );
-            return createLocation(xNew, yNew);
-        });
+        this.browserPath = this.path.map(coordinateToBrowserCoordinate);
     }
 
     /**

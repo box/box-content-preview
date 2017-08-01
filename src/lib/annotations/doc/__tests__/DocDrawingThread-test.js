@@ -39,25 +39,24 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
                 isEmpty: sandbox.stub()
             };
 
-            sandbox.stub(window, 'requestAnimationFrame');
             sandbox.stub(docAnnotatorUtil, 'getPageEl')
                    .returns(docDrawingThread.pageEl);
             sandbox.stub(docAnnotatorUtil, 'getBrowserCoordinatesFromLocation')
                    .returns([location.x, location.y]);
         });
 
-        it("should not request an animation frame when the state is not 'draw'", () => {
+        it("should not add a coordinate when the state is not 'draw'", () => {
             docDrawingThread.drawingFlag = STATES_DRAW.idle;
             docDrawingThread.handleMove(docDrawingThread.location);
 
-            expect(window.requestAnimationFrame).to.not.be.called;
+            expect(docDrawingThread.pendingPath.addCoordinate).to.not.be.called;
         });
 
-        it("should request an animation frame when the state is 'draw'", () => {
+        it("should add a coordinate frame when the state is 'draw'", () => {
             docDrawingThread.drawingFlag = STATES_DRAW.draw;
             docDrawingThread.handleMove(docDrawingThread.location);
 
-            expect(window.requestAnimationFrame).to.be.called;
+            expect(docDrawingThread.pendingPath.addCoordinate).to.be.called;
         });
     });
 
@@ -66,6 +65,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
         it('should set the drawingFlag, pendingPath, and context if they do not exist', () => {
             const context = "I'm a real context";
 
+            sandbox.stub(window, 'requestAnimationFrame');
             sandbox.stub(docDrawingThread, 'checkAndHandleScaleUpdate');
             sandbox.stub(docDrawingThread, 'hasPageChanged').returns(false);
             sandbox.stub(docAnnotatorUtil, 'getPageEl')
@@ -75,14 +75,17 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             docDrawingThread.pendingPath = undefined;
             docDrawingThread.handleStart(docDrawingThread.location);
 
+            expect(window.requestAnimationFrame).to.be.called;
             expect(docDrawingThread.drawingFlag).to.equal(STATES_DRAW.draw);
             expect(docDrawingThread.hasPageChanged).to.be.called;
             expect(docDrawingThread.pendingPath).to.be.an.instanceof(DrawingPath);
         });
 
-        it('should do nothing when the page changes', () => {
+        it('should commit the thread when the page changes', () => {
             sandbox.stub(docDrawingThread, 'hasPageChanged').returns(true);
             sandbox.stub(docDrawingThread, 'checkAndHandleScaleUpdate');
+            sandbox.stub(docDrawingThread, 'handleStop');
+            sandbox.stub(docDrawingThread, 'saveAnnotation');
 
             docDrawingThread.drawingFlag = STATES_DRAW.idle;
             docDrawingThread.pendingPath = undefined;
@@ -90,6 +93,8 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             docDrawingThread.location = {};
 
             expect(docDrawingThread.hasPageChanged).to.be.called;
+            expect(docDrawingThread.handleStop).to.be.called;
+            expect(docDrawingThread.saveAnnotation).to.be.called;
             expect(docDrawingThread.checkAndHandleScaleUpdate).to.not.be.called;
             expect(docDrawingThread.drawingFlag).to.equal(STATES_DRAW.idle);
         });
@@ -127,5 +132,26 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             docDrawingThread.checkAndHandleScaleUpdate();
             expect(annotatorUtil.getScale).to.be.called;
         });
+    });
+
+    describe('reconstructBrowserCoordFromLocation()', () => {
+        it('should return a browser coordinate when the DocDrawingThread has been assigned a page', () => {
+            docDrawingThread.pageEl = 'has been set';
+            docDrawingThread.location = {
+                dimensions: 'has been set'
+            };
+            const documentLocation = {
+                x: 1,
+                y: 2
+            };
+
+            sandbox.stub(docAnnotatorUtil, 'getBrowserCoordinatesFromLocation').returns([3,4]);
+            const returnValue = docDrawingThread.reconstructBrowserCoordFromLocation(documentLocation);
+
+            expect(returnValue).to.deep.equal({
+                x: 3,
+                y: 4
+            });
+        })
     });
 });

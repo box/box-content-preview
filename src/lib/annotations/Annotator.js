@@ -336,10 +336,19 @@ class Annotator extends EventEmitter {
                 postButtonEl.classList.remove(CLASS_HIDDEN);
             }
 
-            const thread = this.createAnnotationThread([], {}, TYPES.draw);
             this.unbindDOMListeners();
-            this.bindCustomListenersOnThread(thread);
-            this.bindDrawModeListeners(thread, postButtonEl);
+
+            const thread = this.createAnnotationThread([], {}, TYPES.draw);
+            if (thread) {
+                this.bindCustomListenersOnThread(thread);
+                this.bindDrawModeListeners(thread, postButtonEl);
+                // TODO: @minhnguyen deal with page changes in a better way
+                thread.addListener('drawthreadcommited', () => {
+                    this.toggleDrawAnnotationHandler();
+                    thread.removeAllListeners('drawthreadcommited');
+                });
+                thread.show();
+            }
         }
     }
 
@@ -408,6 +417,7 @@ class Annotator extends EventEmitter {
      */
     fetchAnnotations() {
         this.threads = {};
+        window.globalThreads = this.threads;
 
         return this.annotationService.getThreadMap(this.fileVersionId).then((threadMap) => {
             // Generate map of page to threads

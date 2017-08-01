@@ -109,7 +109,7 @@ describe('lib/annotations/drawing/DrawingPath', () => {
     });
 
     describe('drawPath()', () => {
-        it('should call context->quadraticCurveTo when there are coordinates', () => {
+        it('should draw when there are browser coordinates', () => {
             const context = {
                 quadraticCurveTo: sandbox.stub(),
                 moveTo: sandbox.stub()
@@ -128,6 +128,48 @@ describe('lib/annotations/drawing/DrawingPath', () => {
 
             expect(context.quadraticCurveTo).to.be.called;
             expect(context.moveTo).to.be.called;
+        });
+
+        it('should not draw when there are no browser coordinates', () => {
+            const context = {
+                quadraticCurveTo: sandbox.stub(),
+                moveTo: sandbox.stub()
+            };
+
+            drawingPath.path.push({
+                x: 1,
+                y: 1
+            });
+
+            expect(drawingPath.browserPath.length).to.equal(0);
+            drawingPath.drawPath(context);
+
+            expect(context.quadraticCurveTo).to.not.be.called;
+            expect(context.moveTo).to.not.be.called;
+        });
+    });
+
+    describe('generateBrowserPath()', () => {
+        it('should generate the browser path', () => {
+            const lengthBefore = drawingPath.browserPath.length;
+            const transform = (coord) => {
+                return {
+                    x: coord.x + 1,
+                    y: coord.y + 1
+                };
+            };
+            const documentCoord = {
+                x: 1,
+                y: 2
+            };
+
+            drawingPath.path = [documentCoord];
+            drawingPath.generateBrowserPath(transform);
+
+            const lengthAfter = drawingPath.browserPath.length;
+            const isBrowserCoord = (item => (item.x === documentCoord.x+1 && item.y === documentCoord.y+1));
+            expect(lengthBefore).to.be.lessThan(lengthAfter);
+            expect(drawingPath.browserPath.find(isBrowserCoord)).to.not.be.undefined;
         });
     });
 

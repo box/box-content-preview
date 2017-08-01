@@ -514,6 +514,22 @@ export function getHeaders(headers = {}, token = '', sharedLink = '', password =
 }
 
 /**
+ * Round a number to a certain decimal place by concatenating an exponential factor. Credits to lodash library.
+ *
+ * @param {number} number - The number to be rounded
+ * @param {number} precision - The amount of decimal places to keep
+ * @return {number} The rounded number
+ */
+export function round(number, precision) {
+    /* eslint-disable prefer-template */
+    let pair = (number + 'e').split('e');
+    const value = Math.round(pair[0] + 'e' + (+pair[1] + precision));
+    pair = (value + 'e').split('e');
+    return +(pair[0] + 'e' + (+pair[1] - precision));
+    /* eslint-enable prefer-template */
+}
+
+/**
  * Replaces variable place holders specified between {} in the string with
  * specified custom value. Localizes strings that include variables.
  *

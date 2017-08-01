@@ -307,18 +307,23 @@ describe('lib/annotations/Annotator', () => {
                 sandbox.stub(annotator, 'bindDrawModeListeners');
                 sandbox.stub(annotator, 'unbindModeListeners');
                 sandbox.stub(annotator, 'bindCustomListenersOnThread');
-                sandbox.stub(annotator, 'createAnnotationThread');
+                stubs.createAnnotationThread = sandbox.stub(annotator, 'createAnnotationThread');
             });
 
             it('should turn draw annotation mode on if it is off', () => {
                 const destroyStub = sandbox.stub(annotator, 'destroyPendingThreads');
+                const annotationThread = {
+                    show: sandbox.stub()
+                };
                 stubs.drawMode.returns(false);
+                stubs.createAnnotationThread.returns(annotationThread);
 
                 annotator.toggleDrawAnnotationHandler();
 
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
                 expect(annotator.notification.show).to.be.called;
+                expect(annotationThread.show).to.be.called;
                 expect(annotator.emit).to.be.calledWith('annotationmodeenter');
                 expect(annotatedEl).to.have.class(CLASS_ANNOTATION_DRAW_MODE);
                 expect(annotator.unbindDOMListeners).to.be.called;

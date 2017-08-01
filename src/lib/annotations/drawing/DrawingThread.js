@@ -31,20 +31,15 @@ class DrawingThread extends AnnotationThread {
     /** @property {number} - The scale factor that the drawing thread was last rendered at */
     lastScaleFactor;
 
-    /** @property {HTMLElement} - The button to complete and save the drawing */
-    postButtonEl;
-
     /**
      * [constructor]
      *
      * @inheritdoc
      * @param {AnnotationThreadData} data - Data for constructing thread
-     * @param {HTMLElement} postButtonEl - The button to complete the drawing
      * @return {DrawingThread} Drawing annotation thread instance
      */
     constructor(data) {
         super(data);
-        this.postButtonEl = data.postButtonEl;
         this.render = this.render.bind(this);
 
         if (data && data.location && data.location.drawingPaths instanceof Array) {
@@ -150,6 +145,10 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     render(timestamp) {
+        if (this.drawingFlag === STATES_DRAW.draw) {
+            this.lastAnimationRequestId = window.requestAnimationFrame(this.render);
+        }
+
         const elapsed = timestamp - (this.lastRenderTimestamp || 0);
         if (elapsed < DRAW_RENDER_THRESHOLD || !this.drawingContext) {
             return;

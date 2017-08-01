@@ -19,6 +19,15 @@ class DocDrawingThread extends DrawingThread {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
+    constructor(data) {
+        super(data);
+
+        this.handleStart = this.handleStart.bind(this);
+        this.handleMove = this.handleMove.bind(this);
+        this.handleStop = this.handleStop.bind(this);
+        this.checkAndHandleScaleUpdate = this.checkAndHandleScaleUpdate.bind(this);
+        this.reconstructBrowserCoordFromLocation = this.reconstructBrowserCoordFromLocation.bind(this);
+    }
     /**
      * Handle a pointer movement
      *
@@ -34,14 +43,6 @@ class DocDrawingThread extends DrawingThread {
         const [x, y] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(location, this.pageEl);
         const browserLocation = annotatorUtil.createLocation(x, y);
         this.pendingPath.addCoordinate(location, browserLocation);
-
-        // Cancel any pending animation to a new request.
-        if (this.lastAnimationRequestId) {
-            window.cancelAnimationFrame(this.lastAnimationRequestId);
-        }
-
-        // Keep animating while the drawing flag is down
-        this.lastAnimationRequestId = window.requestAnimationFrame(this.render);
     }
 
     /**
@@ -53,11 +54,9 @@ class DocDrawingThread extends DrawingThread {
     handleStart(location) {
         const pageChanged = this.hasPageChanged(location);
         if (pageChanged) {
-            this.handleStop(location);
-            if (this.postButtonEl) {
-                this.postButtonEl.click();
-            }
-
+            this.handleStop();
+            this.saveAnnotation();
+            this.emit('drawthreadcommited');
             return;
         }
 
@@ -67,7 +66,6 @@ class DocDrawingThread extends DrawingThread {
                 page: location.page,
                 dimensions: location.dimensions
             };
-            this.pageEl = docAnnotatorUtil.getPageEl(this.annotatedElement, this.location.page);
             this.checkAndHandleScaleUpdate();
         }
 
@@ -75,6 +73,9 @@ class DocDrawingThread extends DrawingThread {
         if (!this.pendingPath) {
             this.pendingPath = new DrawingPath();
         }
+
+        // Start drawing rendering
+        this.lastAnimationRequestId = window.requestAnimationFrame(this.render);
     }
 
     /**
@@ -143,7 +144,6 @@ class DocDrawingThread extends DrawingThread {
         }
 
         this.checkAndHandleScaleUpdate();
-
         // Get the annotation layer context to draw with
         let context;
         if (this.state === STATES.pending) {
@@ -163,7 +163,7 @@ class DocDrawingThread extends DrawingThread {
         // Draw the paths to the annotation layer canvas
         /* eslint-disable require-jsdoc */
         const scaleAndDraw = (drawing) => {
-            drawing.generateBrowserPath(this.pageEl, this.location.dimensions);
+            drawing.generateBrowserPath(this.reconstructBrowserCoordFromLocation);
             drawing.drawPath(context);
         };
         /* eslint-enable require-jsdoc */
@@ -181,26 +181,40 @@ class DocDrawingThread extends DrawingThread {
      */
     checkAndHandleScaleUpdate() {
         const scale = annotatorUtil.getScale(this.annotatedElement);
-        if (this.lastScaleFactor === scale) {
+        if (this.lastScaleFactor === scale || (!this.location || !this.location.page)) {
             return;
         }
 
+        // Set the scale and in-memory context for the pending thread
         this.lastScaleFactor = scale;
-        // Set the in-memory context for the pending thread
-        if (this.drawingContext) {
-            // Resetting the height clears the canvas
-            this.drawingContext.canvas.height = this.drawingContext.canvas.height;
-        } else {
-            this.drawingContext = docAnnotatorUtil.getContext(
-                this.pageEl,
-                CLASS_ANNOTATION_LAYER_DRAW_MEMORY,
-                PAGE_PADDING_TOP,
-                PAGE_PADDING_BOTTOM
-            );
-        }
+        this.pageEl = docAnnotatorUtil.getPageEl(this.annotatedElement, this.location.page);
+        this.drawingContext = docAnnotatorUtil.getContext(
+            this.pageEl,
+            CLASS_ANNOTATION_LAYER_DRAW_MEMORY,
+            PAGE_PADDING_TOP,
+            PAGE_PADDING_BOTTOM
+        );
 
         const config = { scale };
         this.setContextStyles(config);
+    }
+
+    /**
+     * Requires a DocDrawingThread to have been started with DocDrawingThread.start(). Reconstructs a browserCoordinate
+     * relative to the dimensions of the DocDrawingThread page element.
+     *
+     * @private
+     * @param {Location} documentLocation - The location coordinate relative to the document
+     * @return {Location} The location coordinate relative to the browser
+     */
+    reconstructBrowserCoordFromLocation(documentLocation) {
+        const reconstructedLocation = annotatorUtil.createLocation(
+            documentLocation.x,
+            documentLocation.y,
+            this.location.dimensions
+        );
+        const [xNew, yNew] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(reconstructedLocation, this.pageEl);
+        return annotatorUtil.createLocation(xNew, yNew);
     }
 }
 

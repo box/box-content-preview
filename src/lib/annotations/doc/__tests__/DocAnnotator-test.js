@@ -273,14 +273,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(thread).to.be.empty;
             expect(annotator.handleValidationError).to.be.called;
         });
-
-        it('should emit error and return undefined if draw thread params are invalid', () => {
-            annotator.previewUI.getAnnotateButton.returns(undefined);
-            const thread = annotator.createAnnotationThread([], {}, TYPES.draw);
-            expect(thread instanceof DocDrawingThread).to.be.false;
-            expect(thread).to.be.empty;
-            expect(annotator.notification.show).to.be.called;
-        });
     });
 
     describe('createPlainHighlight()', () => {
