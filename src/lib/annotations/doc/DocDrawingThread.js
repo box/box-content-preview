@@ -100,10 +100,10 @@ class DocDrawingThread extends DrawingThread {
     }
 
     /**
-     * Commit the drawing in progress if a drawing goes to a different page
+     * Determine if the drawing in progress if a drawing goes to a different page
      *
      * @param {Object} location - The current event location information
-     * @return {boolean} Whether or not the page actually changed and was subsequently handled
+     * @return {boolean} Whether or not the thread page has changed
      */
     hasPageChanged(location) {
         return this.location && this.location.page && this.location.page !== location.page;
@@ -135,7 +135,7 @@ class DocDrawingThread extends DrawingThread {
     }
 
     /**
-     * Display the doc drawing thread
+     * Display the document drawing thread. Will set the drawing context if the scale has changed since the last show.
      *
      * @return {void}
      */
@@ -182,7 +182,8 @@ class DocDrawingThread extends DrawingThread {
     }
 
     /**
-     * Prepare the pending drawing canvas if the scale factor has changed since the last render
+     * Prepare the pending drawing canvas if the scale factor has changed since the last render. Will do nothing if
+     * the thread has not been assigned a page.
      *
      * @return {void}
      */
