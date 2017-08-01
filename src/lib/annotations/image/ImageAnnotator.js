@@ -85,6 +85,8 @@ class ImageAnnotator extends Annotator {
      * @return {AnnotationThread} Created annotation thread
      */
     createAnnotationThread(annotations, location, type) {
+        this.emit('annotationmodeexit');
+
         let thread;
 
         // Corrects any image annotation page number to 1 instead of -1
