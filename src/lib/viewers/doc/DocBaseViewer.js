@@ -361,7 +361,7 @@ class DocBaseViewer extends BaseViewer {
         const previousPageButtonEl = this.containerEl.querySelector('.bp-previous-page');
         const nextPageButtonEl = this.containerEl.querySelector('.bp-next-page');
 
-        // Safari disables keyboard input in fullscreen
+        // Safari disables keyboard input in fullscreen before Safari 10.1
         const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen(this.containerEl);
 
         // Disable page number selector if there is only one page or less
@@ -585,6 +585,7 @@ class DocBaseViewer extends BaseViewer {
         const { size, extension, watermark_info: watermarkInfo } = file;
         const assetUrlCreator = createAssetUrlCreator(location);
         PDFJS.workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
+        PDFJS.imageResourcesPath = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/images/`);
         PDFJS.cMapUrl = `${location.staticBaseURI}third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/`;
         PDFJS.cMapPacked = true;
 
