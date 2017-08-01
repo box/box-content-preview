@@ -159,14 +159,12 @@ class AnnotationThread extends EventEmitter {
 
                 // Add thread number to associated dialog and thread
                 this.threadNumber = this.threadNumber || savedAnnotation.threadNumber;
+                this.dialog.element.dataset.threadNumber = this.threadNumber;
 
                 // Otherwise, replace temporary annotation with annotation saved to server
                 this.annotations[tempIdx] = savedAnnotation;
 
                 if (this.dialog) {
-                    if (this.dialog.element && this.dialog.element.dataset) {
-                        this.dialog.element.dataset.threadNumber = this.threadNumber;
-                    }
                     this.dialog.addAnnotation(savedAnnotation);
                     this.dialog.removeAnnotation(tempAnnotationID);
                 }
