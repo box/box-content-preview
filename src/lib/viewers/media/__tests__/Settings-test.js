@@ -633,6 +633,7 @@ describe('lib/viewers/media/Settings', () => {
 
             expect(settings.toggleToSubtitle).to.equal('3');
             expect(settings.areSubtitlesOn()).to.equal(false);
+            expect(settings.ccButtonEl.getAttribute('aria-pressed')).to.equal('false');
             expect(settings.containerEl).to.not.have.class('bp-media-settings-subtitles-on');
         });
 
@@ -642,12 +643,14 @@ describe('lib/viewers/media/Settings', () => {
 
             expect(settings.toggleToSubtitle).to.equal('2');
             expect(settings.areSubtitlesOn()).to.equal(false);
+            expect(settings.ccButtonEl.getAttribute('aria-pressed')).to.equal('false');
             expect(settings.containerEl).to.not.have.class('bp-media-settings-subtitles-on');
         });
 
         it('should set subtitles-on on container when subtitles are selected', () => {
             settings.handleSubtitleSelection('-1', '2');
 
+            expect(settings.ccButtonEl.getAttribute('aria-pressed')).to.equal('true');
             expect(settings.containerEl).to.have.class('bp-media-settings-subtitles-on');
         });
     });
