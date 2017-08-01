@@ -292,7 +292,7 @@ class PreviewUI {
     /**
      * Shows a notification message.
      *
-     * @private
+     * @public
      * @param {string} message - Notification message
      * @param {string} [buttonText] - Optional text to show in button
      * @return {void}
@@ -304,7 +304,7 @@ class PreviewUI {
     /**
      * Hides the notification message. Does nothing if the notification is already hidden.
      *
-     * @private
+     * @public
      * @return {void}
      */
     hideNotification() {
