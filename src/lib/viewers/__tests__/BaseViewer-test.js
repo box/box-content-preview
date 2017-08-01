@@ -698,28 +698,6 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('showNotification()', () => {
-        it('should show a notification message with the provided string', () => {
-            base.notification = {
-                show: sandbox.stub()
-            };
-
-            base.showNotification('message', 'some button text');
-            expect(base.notification.show).to.have.been.called;
-        });
-    });
-
-    describe('hideNotification()', () => {
-        it('should show a notification message with the provided string', () => {
-            base.notification = {
-                hide: sandbox.stub()
-            };
-
-            base.hideNotification();
-            expect(base.notification.hide).to.have.been.called;
-        });
-    });
-
     describe('loadAnnotator()', () => {
         beforeEach(() => {
             base.options.viewer = {
@@ -846,13 +824,10 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should initialize the annotator', () => {
             expect(base.annotator.init).to.be.calledWith(1.5);
-            expect(base.annotator.addListener).to.be.calledWith('annotationmodeenter', sinon.match.func);
-            expect(base.annotator.addListener).to.be.calledWith('annotationmodeexit', sinon.match.func);
-            expect(base.annotator.addListener).to.be.calledWith('notificationshow', sinon.match.func);
-            expect(base.annotator.addListener).to.be.calledWith('notificationhide', sinon.match.func);
-            expect(base.annotator.addListener).to.be.calledWith('annotationsfetched', sinon.match.func);
             expect(base.addListener).to.be.calledWith('togglepointannotationmode', sinon.match.func);
+            expect(base.addListener).to.be.calledWith('toggledrawannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
+            expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
         });
     });
 
@@ -961,6 +936,76 @@ describe('lib/viewers/BaseViewer', () => {
 
             handler(event);
             expect(base.emit).to.have.been.calledWith('togglepointannotationmode');
+        });
+    });
+
+    describe('handleAnnotatorNotifications()', () => {
+        const ANNOTATION_TYPE_DRAW = 'draw';
+        const ANNOTATION_TYPE_POINT = 'point';
+
+        beforeEach(() => {
+            sandbox.stub(base, 'emit');
+        });
+
+        it('should disable controls and show point mode notification on annotationmodeenter', () => {
+            sandbox.stub(base, 'disableViewerControls');
+            base.handleAnnotatorNotifications({
+                event: 'annotationmodeenter',
+                data: ANNOTATION_TYPE_POINT
+            });
+            expect(base.disableViewerControls).to.be.called;
+            expect(base.emit).to.be.calledWith('notificationshow', sinon.match.string);
+        });
+
+        it('should disable controls and show draw mode notification on annotationmodeenter', () => {
+            sandbox.stub(base, 'disableViewerControls');
+            base.handleAnnotatorNotifications({
+                event: 'annotationmodeenter',
+                data: ANNOTATION_TYPE_DRAW
+            });
+            expect(base.disableViewerControls).to.be.called;
+            expect(base.emit).to.be.calledWith('notificationshow', sinon.match.string);
+        });
+
+        it('should enable controls and hide notification on annotationmodeexit', () => {
+            sandbox.stub(base, 'enableViewerControls');
+            base.handleAnnotatorNotifications({
+                event: 'annotationmodeexit'
+            });
+            expect(base.enableViewerControls).to.be.called;
+            expect(base.emit).to.be.calledWith('notificationhide');
+        });
+
+        it('should show a notification on annotationerror', () => {
+            const data = {
+                event: 'annotationerror',
+                data: 'message'
+            };
+            base.handleAnnotatorNotifications(data);
+            expect(base.emit).to.be.calledWith('notificationshow', data.data);
+        });
+
+        it('should scale annotations on annotationsfetched', () => {
+            sandbox.stub(base, 'scaleAnnotations');
+            base.scale = 1;
+            base.rotationAngle = 90;
+            base.handleAnnotatorNotifications({
+                event: 'annotationsfetched'
+            });
+            expect(base.scaleAnnotations).to.be.calledWith({
+                scale: base.scale,
+                rotationAngle: base.rotationAngle
+            });
+        });
+
+        it('should emit annotatorevent when event does not match', () => {
+            const data = {
+                event: 'no match',
+                data: 'message'
+            };
+            base.handleAnnotatorNotifications(data);
+            expect(base.emit).to.be.calledWith(data.event, data.data);
+            expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
     });
 });

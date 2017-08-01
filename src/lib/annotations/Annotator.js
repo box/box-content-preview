@@ -56,7 +56,7 @@ class Annotator extends EventEmitter {
         this.options = data.options;
         this.fileVersionId = data.fileVersionId;
         this.locale = data.locale;
-        this.validationErrorDisplayed = false;
+        this.validationErrorEmitted = false;
         this.isMobile = data.isMobile;
         this.previewUI = data.previewUI;
         this.annotationModeHandlers = [];
@@ -446,30 +446,41 @@ class Annotator extends EventEmitter {
         }
 
         /* istanbul ignore next */
-        service.addListener('annotationerror', (data) => {
-            let errorMessage = '';
-            switch (data.reason) {
-                case 'read':
-                    errorMessage = __('annotations_load_error');
-                    break;
-                case 'create':
-                    errorMessage = __('annotations_create_error');
-                    this.showAnnotations();
-                    break;
-                case 'delete':
-                    errorMessage = __('annotations_delete_error');
-                    this.showAnnotations();
-                    break;
-                case 'authorization':
-                    errorMessage = __('annotations_authorization_error');
-                    break;
-                default:
-            }
+        service.addListener('annotatorerror', this.handleServiceEvents);
+    }
 
-            if (errorMessage) {
-                this.emit('annotationerror', errorMessage);
-            }
-        });
+    /**
+     * Handle events emitted by the annotaiton service
+     *
+     * @private
+     * @param {Object} [data] - Annotation service event data
+     * @param {string} [data.event] - Annotation service event
+     * @param {string} [data.data] -
+     * @return {void}
+     */
+    handleServiceEvents(data) {
+        let errorMessage = '';
+        switch (data.reason) {
+            case 'read':
+                errorMessage = __('annotations_load_error');
+                break;
+            case 'create':
+                errorMessage = __('annotations_create_error');
+                this.showAnnotations();
+                break;
+            case 'delete':
+                errorMessage = __('annotations_delete_error');
+                this.showAnnotations();
+                break;
+            case 'authorization':
+                errorMessage = __('annotations_authorization_error');
+                break;
+            default:
+        }
+
+        if (errorMessage) {
+            this.emit('annotatorerror', errorMessage);
+        }
     }
 
     /**
@@ -483,7 +494,7 @@ class Annotator extends EventEmitter {
         if (!service || !(service instanceof AnnotationService)) {
             return;
         }
-        service.removeAllListeners('annotationerror');
+        service.removeAllListeners('annotatorerror');
     }
 
     /**
@@ -714,18 +725,18 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     handleValidationError() {
-        if (this.validationErrorDisplayed) {
+        if (this.validationErrorEmitted) {
             return;
         }
 
-        this.emit('annotationerror', __('annotations_load_error'));
-        this.validationErrorDisplayed = true;
+        this.emit('annotatorerror', __('annotations_load_error'));
+        this.validationErrorEmitted = true;
     }
 
     /**
      * Emits a generic viewer event
      *
-     * @protected
+     * @private
      * @emits viewerevent
      * @param {string} event - Event name
      * @param {Object} data - Event data
