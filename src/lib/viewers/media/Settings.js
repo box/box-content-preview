@@ -108,6 +108,9 @@ class Settings extends EventEmitter {
     /** @property {HTMLElement} - Settings button element (gear icon) */
     settingsButtonEl;
 
+    /** @property {HTMLElement} - CC button element */
+    ccButtonEl;
+
     /** @property {boolean} - Whether settings menu is visible */
     visible = false;
 
@@ -140,6 +143,7 @@ class Settings extends EventEmitter {
         this.firstMenuItem = this.settingsEl.querySelectorAll('.bp-media-settings-item')[0];
 
         this.settingsButtonEl = this.containerEl.querySelector('.bp-media-gear-icon');
+        this.ccButtonEl = this.containerEl.querySelector('.bp-media-cc-icon');
 
         addActivationListener(this.settingsEl, this.menuEventHandler);
         this.containerEl.classList.add(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
@@ -450,8 +454,10 @@ class Settings extends EventEmitter {
             }
 
             this.containerEl.classList.remove(CLASS_SETTINGS_SUBTITLES_ON);
+            this.ccButtonEl.setAttribute('aria-pressed', 'false');
         } else {
             this.containerEl.classList.add(CLASS_SETTINGS_SUBTITLES_ON);
+            this.ccButtonEl.setAttribute('aria-pressed', 'true');
         }
     }
 
