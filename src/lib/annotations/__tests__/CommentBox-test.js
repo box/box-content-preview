@@ -108,6 +108,14 @@ describe('lib/annotations/CommentBox', () => {
         beforeEach(() => {
             // Kickstart creation of UI
             commentBox.show();
+
+            commentBox.cancelEl = {
+                removeEventListener: sandbox.stub()
+            };
+
+            commentBox.postEl = {
+                removeEventListener: sandbox.stub()
+            };
         });
 
         it('should do nothing if the comment box HTML doesn\'t exist', () => {
@@ -121,10 +129,22 @@ describe('lib/annotations/CommentBox', () => {
         it('should add the hidden class to the comment box element', () => {
             commentBox.hide();
             expect(commentBox.containerEl.classList.contains(CLASS_HIDDEN)).to.be.true;
+            expect(commentBox.cancelEl.removeEventListener).to.be.calledWith('click', sinon.match.func);
+            expect(commentBox.postEl.removeEventListener).to.be.calledWith('click', sinon.match.func);
         });
     });
 
     describe('show()', () => {
+        beforeEach(() => {
+            commentBox.cancelEl = {
+                addEventListener: sandbox.stub()
+            };
+
+            commentBox.postEl = {
+                addEventListener: sandbox.stub()
+            };
+        });
+
         it('should invoke createComment box, if UI has not been created', () => {
             const containerEl = document.createElement('div');
             const create = sandbox.stub(commentBox, 'createCommentBox').returns(containerEl);
@@ -133,6 +153,8 @@ describe('lib/annotations/CommentBox', () => {
             expect(create).to.be.called;
             // Nullify to prevent fail during destroy
             commentBox.containerEl = null;
+            expect(commentBox.cancelEl.addEventListener).to.be.calledWith('click', sinon.match.func);
+            expect(commentBox.postEl.addEventListener).to.be.calledWith('click', sinon.match.func);
         });
 
         it('should add the container element to the parent, if the UI has not been created', () => {
