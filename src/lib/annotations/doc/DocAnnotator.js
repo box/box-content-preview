@@ -265,6 +265,8 @@ class DocAnnotator extends Annotator {
      * @return {AnnotationThread} Created annotation thread
      */
     createAnnotationThread(annotations, location, type) {
+        this.emit('annotationmodeexit');
+
         let thread;
         const threadParams = {
             annotatedElement: this.annotatedElement,
@@ -684,8 +686,10 @@ class DocAnnotator extends Annotator {
         // we trigger the create handler instead of the click handler
         if (this.didMouseMove || event.type === 'dblclick') {
             this.highlightCreateHandler(event);
+            this.emit('annotationmodeenter');
         } else {
             this.highlightClickHandler(event);
+            this.emit('annotationmodeexit');
         }
     }
 

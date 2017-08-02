@@ -465,9 +465,22 @@ describe('lib/annotations/Annotator', () => {
 
         describe('bindCustomListenersOnThread', () => {
             it('should bind custom listeners on the thread', () => {
+                stubs.threadMock.expects('addListener').withArgs('threadsavedlocally', sinon.match.func);
                 stubs.threadMock.expects('addListener').withArgs('threaddeleted', sinon.match.func);
                 stubs.threadMock.expects('addListener').withArgs('threadcleanup', sinon.match.func);
                 annotator.bindCustomListenersOnThread(stubs.thread);
+            });
+        });
+
+        describe('threadDeletedHandler()', () => {
+            it('should exit annotation mode and remove thread from thread map', () => {
+                sandbox.stub(annotator, 'emit');
+                stubs.thread.location = { page: 2 };
+                annotator.addThreadToMap(stubs.thread);
+
+                annotator.threadDeletedHandler(stubs.thread);
+                expect(annotator.threads[2]).to.not.contain(stubs.thread);
+                expect(annotator.emit).to.be.calledWith('annotationmodeexit');
             });
         });
 
@@ -593,6 +606,7 @@ describe('lib/annotations/Annotator', () => {
                 stubs.destroy.returns(false);
                 stubs.getLocation.returns({});
                 stubs.create.returns(stubs.thread);
+                sandbox.stub(annotator, 'emit');
 
                 stubs.threadMock.expects('show');
                 annotator.pointClickHandler(event);
@@ -600,6 +614,7 @@ describe('lib/annotations/Annotator', () => {
                 expect(annotator.getLocationFromEvent).to.be.called;
                 expect(annotator.bindCustomListenersOnThread).to.be.called;
                 expect(annotator.togglePointAnnotationHandler).to.be.called;
+                expect(annotator.emit).to.be.calledWith('annotationmodeenter');
             });
         });
 

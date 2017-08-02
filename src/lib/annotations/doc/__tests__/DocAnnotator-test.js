@@ -205,9 +205,13 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.setupFunc = AnnotationThread.prototype.setup;
             stubs.validateThread = sandbox.stub(annotatorUtil, 'validateThreadParams').returns(true);
             sandbox.stub(annotator, 'handleValidationError');
+            sandbox.stub(annotator, 'emit');
         });
 
         afterEach(() => {
+            // Expect this call no matter the validity of the thread
+            expect(annotator.emit).to.be.calledWith('annotationmodeexit');
+
             Object.defineProperty(AnnotationThread.prototype, 'setup', { value: stubs.setupFunc });
         });
 
@@ -260,7 +264,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         it('should emit error and return undefined if thread params are invalid', () => {
             stubs.validateThread.returns(false);
-            sandbox.stub(annotator, 'emit');
             const thread = annotator.createAnnotationThread([], {}, TYPES.highlight);
             expect(thread instanceof DocHighlightThread).to.be.false;
             expect(annotator.handleValidationError).to.be.called;
@@ -803,20 +806,23 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         beforeEach(() => {
             stubs.create = sandbox.stub(annotator, 'highlightCreateHandler');
             stubs.click = sandbox.stub(annotator, 'highlightClickHandler');
+            sandbox.stub(annotator, 'emit');
         });
 
-        it('should call highlightCreateHandler if not on mobile, and the user double clicked', () => {
+        it('should call highlightCreateHandler if the user double clicked', () => {
             annotator.highlightMouseupHandler({ type: 'dblclick' });
             expect(stubs.create).to.be.called;
             expect(stubs.click).to.not.be.called;
             expect(annotator.isCreatingHighlight).to.be.false;
+            expect(annotator.emit).to.be.calledWith('annotationmodeenter');
         });
 
-        it('should call highlightClickHandler if not on mobile, and the mouse did not move', () => {
+        it('should call highlightClickHandler if the mouse did not move', () => {
             annotator.highlightMouseupHandler({ x: 0, y: 0 });
             expect(stubs.create).to.not.be.called;
             expect(stubs.click).to.be.called;
             expect(annotator.isCreatingHighlight).to.be.false;
+            expect(annotator.emit).to.be.calledWith('annotationmodeexit');
         });
 
         it('should call highlighter.removeAllHighlghts', () => {

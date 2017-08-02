@@ -143,6 +143,7 @@ class AnnotationThread extends EventEmitter {
         tempAnnotationData.modified = tempAnnotationData.created;
         const tempAnnotation = new Annotation(tempAnnotationData);
         this.saveAnnotationToThread(tempAnnotation);
+        this.emit('threadsavedlocally');
 
         // Changing state from pending
         this.state = STATES.hover;

@@ -505,24 +505,34 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     bindCustomListenersOnThread(thread) {
-        // Thread was deleted, remove from thread map
-        thread.addListener('threaddeleted', () => {
-            const page = thread.location.page || 1;
+        // Thread was saved, exit annotation mode
+        thread.addListener('threadsavedlocally', () => this.emit('annotationmodeexit'));
 
-            // Remove from map
-            if (this.threads[page] instanceof Array) {
-                this.threads[page] = this.threads[page].filter(
-                    (searchThread) => searchThread.threadID !== thread.threadID
-                );
-            }
-        });
+        // Thread was deleted, remove from thread map
+        thread.addListener('threaddeleted', () => this.threadDeletedHandler(thread));
 
         // Thread should be cleaned up, unbind listeners - we don't do this
         // in threaddeleted listener since thread may still need to respond
         // to error messages
-        thread.addListener('threadcleanup', () => {
-            this.unbindCustomListenersOnThread(thread);
-        });
+        thread.addListener('threadcleanup', () => this.unbindCustomListenersOnThread(thread));
+    }
+
+    /**
+     * Removes thread from thread map after deletion
+     *
+     * @private
+     * @param {AnnotationThread} thread - Thread to bind events to
+     * @return {void}
+     */
+    threadDeletedHandler(thread) {
+        this.emit('annotationmodeexit');
+
+        const page = thread.location.page || 1;
+
+        // Remove from map
+        if (this.threads[page] instanceof Array) {
+            this.threads[page] = this.threads[page].filter((searchThread) => searchThread.threadID !== thread.threadID);
+        }
     }
 
     /**
@@ -587,6 +597,7 @@ class Annotator extends EventEmitter {
 
         if (thread) {
             thread.show();
+            this.emit('annotationmodeenter');
 
             // Bind events on thread
             this.bindCustomListenersOnThread(thread);

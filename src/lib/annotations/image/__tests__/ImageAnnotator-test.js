@@ -79,6 +79,15 @@ describe('lib/annotations/image/ImageAnnotator', () => {
     });
 
     describe('createAnnotationThread()', () => {
+        beforeEach(() => {
+            sandbox.stub(annotator, 'emit');
+        });
+
+        afterEach(() => {
+            // Expect this call no matter the validity of the thread
+            expect(annotator.emit).to.be.calledWith('annotationmodeexit');
+        });
+
         it('should create, add point thread to internal map, and return it', () => {
             sandbox.stub(annotatorUtil, 'validateThreadParams').returns(true);
             sandbox.stub(annotator, 'addThreadToMap');
