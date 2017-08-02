@@ -1,6 +1,5 @@
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
-import Notification from '../Notification';
 import AnnotationService from './AnnotationService';
 import * as annotatorUtil from './annotatorUtil';
 import {
@@ -57,7 +56,7 @@ class Annotator extends EventEmitter {
         this.options = data.options;
         this.fileVersionId = data.fileVersionId;
         this.locale = data.locale;
-        this.validationErrorDisplayed = false;
+        this.validationErrorEmitted = false;
         this.isMobile = data.isMobile;
         this.previewUI = data.previewUI;
         this.annotationModeHandlers = [];
@@ -91,7 +90,6 @@ class Annotator extends EventEmitter {
      */
     init(initialScale = 1) {
         this.annotatedElement = this.getAnnotatedEl(this.container);
-        this.notification = new Notification(this.annotatedElement);
 
         const { apiHost, fileId, token } = this.options;
 
@@ -260,8 +258,6 @@ class Annotator extends EventEmitter {
 
         // If in annotation mode, turn it off
         if (this.isInPointMode()) {
-            this.notification.hide();
-
             this.emit('annotationmodeexit');
             this.annotatedElement.classList.remove(CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
@@ -273,8 +269,7 @@ class Annotator extends EventEmitter {
 
             // Otherwise, enable annotation mode
         } else {
-            this.notification.show(__('notification_annotation_point_mode'));
-            this.emit('annotationmodeenter');
+            this.emit('annotationmodeenter', TYPES.point);
             this.annotatedElement.classList.add(CLASS_ANNOTATION_POINT_MODE);
             if (buttonEl) {
                 buttonEl.classList.add(CLASS_ACTIVE);
@@ -303,7 +298,6 @@ class Annotator extends EventEmitter {
 
         // Exit if in draw mode
         if (this.isInDrawMode()) {
-            this.notification.hide();
             this.emit('annotationmodeexit');
             this.annotatedElement.classList.remove(CLASS_ANNOTATION_DRAW_MODE);
 
@@ -322,8 +316,7 @@ class Annotator extends EventEmitter {
 
             // Otherwise enter draw mode
         } else {
-            this.notification.show(__('notification_annotation_draw_mode'));
-            this.emit('annotationmodeenter');
+            this.emit('annotationmodeenter', TYPES.draw);
             this.annotatedElement.classList.add(CLASS_ANNOTATION_DRAW_MODE);
 
             if (buttonEl) {
@@ -468,30 +461,41 @@ class Annotator extends EventEmitter {
         }
 
         /* istanbul ignore next */
-        service.addListener('annotationerror', (data) => {
-            let errorMessage = '';
-            switch (data.reason) {
-                case 'read':
-                    errorMessage = __('annotations_load_error');
-                    break;
-                case 'create':
-                    errorMessage = __('annotations_create_error');
-                    this.showAnnotations();
-                    break;
-                case 'delete':
-                    errorMessage = __('annotations_delete_error');
-                    this.showAnnotations();
-                    break;
-                case 'authorization':
-                    errorMessage = __('annotations_authorization_error');
-                    break;
-                default:
-            }
+        service.addListener('annotatorerror', this.handleServiceEvents);
+    }
 
-            if (errorMessage) {
-                this.notification.show(errorMessage);
-            }
-        });
+    /**
+     * Handle events emitted by the annotaiton service
+     *
+     * @private
+     * @param {Object} [data] - Annotation service event data
+     * @param {string} [data.event] - Annotation service event
+     * @param {string} [data.data] -
+     * @return {void}
+     */
+    handleServiceEvents(data) {
+        let errorMessage = '';
+        switch (data.reason) {
+            case 'read':
+                errorMessage = __('annotations_load_error');
+                break;
+            case 'create':
+                errorMessage = __('annotations_create_error');
+                this.showAnnotations();
+                break;
+            case 'delete':
+                errorMessage = __('annotations_delete_error');
+                this.showAnnotations();
+                break;
+            case 'authorization':
+                errorMessage = __('annotations_authorization_error');
+                break;
+            default:
+        }
+
+        if (errorMessage) {
+            this.emit('annotatorerror', errorMessage);
+        }
     }
 
     /**
@@ -505,7 +509,7 @@ class Annotator extends EventEmitter {
         if (!service || !(service instanceof AnnotationService)) {
             return;
         }
-        service.removeAllListeners('annotationerror');
+        service.removeAllListeners('annotatorerror');
     }
 
     /**
@@ -736,12 +740,32 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     handleValidationError() {
-        if (this.validationErrorDisplayed) {
+        if (this.validationErrorEmitted) {
             return;
         }
 
-        this.notification.show(__('annotations_load_error'));
-        this.validationErrorDisplayed = true;
+        this.emit('annotatorerror', __('annotations_load_error'));
+        this.validationErrorEmitted = true;
+    }
+
+    /**
+     * Emits a generic viewer event
+     *
+     * @private
+     * @emits viewerevent
+     * @param {string} event - Event name
+     * @param {Object} data - Event data
+     * @return {void}
+     */
+    emit(event, data) {
+        const { annotator, fileId } = this.options;
+        super.emit(event, data);
+        super.emit('annotatorevent', {
+            event,
+            data,
+            annotatorName: annotator ? annotator.NAME : '',
+            fileId
+        });
     }
 }
 

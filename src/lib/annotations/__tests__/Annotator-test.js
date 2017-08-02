@@ -1,9 +1,11 @@
 /* eslint-disable no-unused-expressions */
+import EventEmitter from 'events';
 import Annotator from '../Annotator';
 import * as annotatorUtil from '../annotatorUtil';
 import AnnotationService from '../AnnotationService';
 import {
     STATES,
+    TYPES,
     CLASS_ANNOTATION_POINT_MODE,
     CLASS_ANNOTATION_DRAW_MODE
 } from '../annotationConstants';
@@ -20,13 +22,18 @@ describe('lib/annotations/Annotator', () => {
     beforeEach(() => {
         fixture.load('annotations/__tests__/Annotator-test.html');
 
+        const options = {
+            annotator: {
+                NAME: 'name'
+            }
+        };
         annotator = new Annotator({
             canAnnotate: true,
             container: document,
             annotationService: {},
             fileVersionId: 1,
             isMobile: false,
-            options: {},
+            options,
             previewUI: {
                 getAnnotateButton: () => {}
             }
@@ -61,7 +68,6 @@ describe('lib/annotations/Annotator', () => {
             type: 'type'
         };
         stubs.threadMock3 = sandbox.mock(stubs.thread3);
-        sandbox.stub(annotator, 'emit');
     });
 
     afterEach(() => {
@@ -258,12 +264,11 @@ describe('lib/annotations/Annotator', () => {
         describe('togglePointAnnotationHandler()', () => {
             beforeEach(() => {
                 stubs.pointMode = sandbox.stub(annotator, 'isInPointMode');
-                sandbox.stub(annotator.notification, 'show');
-                sandbox.stub(annotator.notification, 'hide');
                 sandbox.stub(annotator, 'unbindDOMListeners');
                 sandbox.stub(annotator, 'bindDOMListeners');
                 sandbox.stub(annotator, 'bindPointModeListeners');
                 sandbox.stub(annotator, 'unbindModeListeners');
+                sandbox.stub(annotator, 'emit');
             });
 
             it('should turn point annotation mode on if it is off', () => {
@@ -274,8 +279,7 @@ describe('lib/annotations/Annotator', () => {
 
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
-                expect(annotator.notification.show).to.be.called;
-                expect(annotator.emit).to.be.calledWith('annotationmodeenter');
+                expect(annotator.emit).to.be.calledWith('annotationmodeenter', TYPES.point);
                 expect(annotatedEl).to.have.class(CLASS_ANNOTATION_POINT_MODE);
                 expect(annotator.unbindDOMListeners).to.be.called;
                 expect(annotator.bindPointModeListeners).to.be.called;
@@ -289,7 +293,6 @@ describe('lib/annotations/Annotator', () => {
 
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
-                expect(annotator.notification.hide).to.be.called;
                 expect(annotator.emit).to.be.calledWith('annotationmodeexit');
                 expect(annotatedEl).to.not.have.class(CLASS_ANNOTATION_POINT_MODE);
                 expect(annotator.unbindModeListeners).to.be.called;
@@ -300,14 +303,12 @@ describe('lib/annotations/Annotator', () => {
         describe('toggleDrawAnnotationHandler()', () => {
             beforeEach(() => {
                 stubs.drawMode = sandbox.stub(annotator, 'isInDrawMode');
-                sandbox.stub(annotator.notification, 'show');
-                sandbox.stub(annotator.notification, 'hide');
+                stubs.createAnnotationThread = sandbox.stub(annotator, 'createAnnotationThread');
                 sandbox.stub(annotator, 'unbindDOMListeners');
                 sandbox.stub(annotator, 'bindDOMListeners');
                 sandbox.stub(annotator, 'bindDrawModeListeners');
                 sandbox.stub(annotator, 'unbindModeListeners');
-                sandbox.stub(annotator, 'bindCustomListenersOnThread');
-                stubs.createAnnotationThread = sandbox.stub(annotator, 'createAnnotationThread');
+                sandbox.stub(annotator, 'emit');
             });
 
             it('should turn draw annotation mode on if it is off', () => {
@@ -323,9 +324,7 @@ describe('lib/annotations/Annotator', () => {
 
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
-                expect(annotator.notification.show).to.be.called;
-                expect(annotationThread.show).to.be.called;
-                expect(annotator.emit).to.be.calledWith('annotationmodeenter');
+                expect(annotator.emit).to.be.calledWith('annotationmodeenter', TYPES.draw);
                 expect(annotatedEl).to.have.class(CLASS_ANNOTATION_DRAW_MODE);
                 expect(annotator.unbindDOMListeners).to.be.called;
                 expect(annotator.bindDrawModeListeners).to.be.called;
@@ -340,7 +339,6 @@ describe('lib/annotations/Annotator', () => {
 
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
-                expect(annotator.notification.hide).to.be.called;
                 expect(annotator.emit).to.be.calledWith('annotationmodeexit');
                 expect(annotatedEl).to.not.have.class(CLASS_ANNOTATION_DRAW_MODE);
                 expect(annotator.unbindModeListeners).to.be.called;
@@ -361,6 +359,7 @@ describe('lib/annotations/Annotator', () => {
                 };
                 stubs.threadPromise = Promise.resolve(threadMap);
                 stubs.serviceMock.expects('getThreadMap').returns(stubs.threadPromise);
+                sandbox.stub(annotator, 'emit');
             });
 
             it('should reset and create a new thread map by fetching annotation data from the server', () => {
@@ -407,7 +406,40 @@ describe('lib/annotations/Annotator', () => {
                 const addListenerStub = sandbox.stub(annotator.annotationService, 'addListener');
 
                 annotator.bindCustomListenersOnService();
-                expect(addListenerStub).to.be.calledWith('annotationerror', sinon.match.func);
+                expect(addListenerStub).to.be.calledWith('annotatorerror', sinon.match.func);
+            });
+        });
+
+        describe('handleServiceEvents()', () => {
+            beforeEach(() => {
+                sandbox.stub(annotator, 'emit');
+            });
+
+            it('should emit annotatorerror on read error event', () => {
+                annotator.handleServiceEvents({ reason: 'read' });
+                expect(annotator.emit).to.be.calledWith('annotatorerror', sinon.match.string);
+            });
+
+            it('should emit annotatorerror and show annotations on create error event', () => {
+                annotator.handleServiceEvents({ reason: 'create' });
+                expect(annotator.emit).to.be.calledWith('annotatorerror', sinon.match.string);
+                expect(annotator.showAnnotations).to.be.called;
+            });
+
+            it('should emit annotatorerror and show annotations on delete error event', () => {
+                annotator.handleServiceEvents({ reason: 'delete' });
+                expect(annotator.emit).to.be.calledWith('annotatorerror', sinon.match.string);
+                expect(annotator.showAnnotations).to.be.called;
+            });
+
+            it('should emit annotatorerror on authorization error event', () => {
+                annotator.handleServiceEvents({ reason: 'authorization' });
+                expect(annotator.emit).to.be.calledWith('annotatorerror', sinon.match.string);
+            });
+
+            it('should not emit annotatorerror when event does not match', () => {
+                annotator.handleServiceEvents({ reason: 'no match' });
+                expect(annotator.emit).to.not.be.called;
             });
         });
 
@@ -739,20 +771,63 @@ describe('lib/annotations/Annotator', () => {
         });
 
         describe('handleValidationError()', () => {
-            it('should do nothing if a validation notification was already displayed', () => {
-                annotator.validationErrorDisplayed = true;
-                stubs.showNotification = sandbox.stub(annotator.notification, 'show');
+            it('should do nothing if a annotatorerror was already emitted', () => {
+                sandbox.stub(annotator, 'emit');
+                annotator.validationErrorEmitted = true;
                 annotator.handleValidationError();
-                expect(stubs.showNotification).to.not.be.called;
-                expect(annotator.validationErrorDisplayed).to.be.true;
+                expect(annotator.emit).to.not.be.calledWith('annotatorerror');
+                expect(annotator.validationErrorEmitted).to.be.true;
             });
 
-            it('should display validation error notification on first error', () => {
-                annotator.validationErrorDisplayed = false;
-                stubs.showNotification = sandbox.stub(annotator.notification, 'show');
+            it('should emit annotatorerror on first error', () => {
+                sandbox.stub(annotator, 'emit');
+                annotator.validationErrorEmitted = false;
                 annotator.handleValidationError();
-                expect(stubs.showNotification).to.be.called;
-                expect(annotator.validationErrorDisplayed).to.be.true;
+                expect(annotator.emit).to.be.calledWith('annotatorerror', sinon.match.string);
+                expect(annotator.validationErrorEmitted).to.be.true;
+            });
+        });
+
+        describe('emit()', () => {
+            const emitFunc = EventEmitter.prototype.emit;
+
+            afterEach(() => {
+                Object.defineProperty(EventEmitter.prototype, 'emit', { value: emitFunc });
+            });
+
+            it('should pass through the event as well as broadcast it as a annotator event', () => {
+                const fileId = '1';
+                const event = 'someEvent';
+                const data = {};
+                const annotatorName = 'name';
+
+                annotator = new Annotator({
+                    canAnnotate: true,
+                    container: document,
+                    annotationService: {},
+                    fileVersionId: 1,
+                    isMobile: false,
+                    options: {
+                        annotator: { NAME: annotatorName },
+                        fileId
+                    },
+                    previewUI: {
+                        getAnnotateButton: () => {}
+                    }
+                });
+
+                const emitStub = sandbox.stub();
+                Object.defineProperty(EventEmitter.prototype, 'emit', { value: emitStub });
+
+                annotator.emit(event, data);
+
+                expect(emitStub).to.be.calledWith(event, data);
+                expect(emitStub).to.be.calledWithMatch('annotatorevent', {
+                    event,
+                    data,
+                    annotatorName,
+                    fileId
+                });
             });
         });
     });

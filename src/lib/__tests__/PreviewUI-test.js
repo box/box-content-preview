@@ -57,6 +57,9 @@ describe('lib/PreviewUI', () => {
             // Check progress bar
             expect(resultEl).to.contain(constants.SELECTOR_BOX_PREVIEW_PROGRESS_BAR);
 
+            // Check notification
+            expect(resultEl).to.contain('.bp-notification');
+
             // Check loading state
             const loadingWrapperEl = resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOADING_WRAPPER);
             expect(loadingWrapperEl).to.contain(constants.SELECTOR_BOX_PREVIEW_ICON);
@@ -228,6 +231,28 @@ describe('lib/PreviewUI', () => {
 
             ui.finishProgressBar();
             expect(ui.progressBar.finish).to.be.called;
+        });
+    });
+
+    describe('showNotification()', () => {
+        it('should show a notification message', () => {
+            ui.notification = {
+                show: sandbox.stub()
+            };
+
+            ui.showNotification('message');
+            expect(ui.notification.show).to.be.called;
+        });
+    });
+
+    describe('hideNotification()', () => {
+        it('should hide the notification message', () => {
+            ui.notification = {
+                hide: sandbox.stub()
+            };
+
+            ui.hideNotification('message');
+            expect(ui.notification.hide).to.be.called;
         });
     });
 });
