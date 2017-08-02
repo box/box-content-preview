@@ -151,7 +151,7 @@ describe('lib/annotations/Annotator', () => {
         });
     });
 
-    describe('setupAnnotations', () => {
+    describe('setupAnnotations()', () => {
         it('should initialize thread map and bind DOM listeners', () => {
             sandbox.stub(annotator, 'bindDOMListeners');
             sandbox.stub(annotator, 'bindCustomListenersOnService');
@@ -346,7 +346,7 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('fetchAnnotations', () => {
+        describe('fetchAnnotations()', () => {
             beforeEach(() => {
                 annotator.annotationService = {
                     getThreadMap: () => {}
@@ -385,7 +385,7 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('bindCustomListenersOnService', () => {
+        describe('bindCustomListenersOnService()', () => {
             it('should do nothing if the service does not exist', () => {
                 annotator.annotationService = {
                     addListener: sandbox.stub()
@@ -443,7 +443,7 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('unbindCustomListenersOnService', () => {
+        describe('unbindCustomListenersOnService()', () => {
             it('should do nothing if the service does not exist', () => {
                 annotator.annotationService = {
                     removeListener: sandbox.stub()
@@ -468,7 +468,7 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('bindCustomListenersOnThread', () => {
+        describe('bindCustomListenersOnThread()', () => {
             it('should bind custom listeners on the thread', () => {
                 stubs.threadMock.expects('addListener').withArgs('threaddeleted', sinon.match.func);
                 stubs.threadMock.expects('addListener').withArgs('threadcleanup', sinon.match.func);
@@ -476,7 +476,7 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('unbindCustomListenersOnThread', () => {
+        describe('unbindCustomListenersOnThread()', () => {
             it('should unbind custom listeners from the thread', () => {
                 stubs.threadMock.expects('removeAllListeners').withArgs('threaddeleted');
                 stubs.threadMock.expects('removeAllListeners').withArgs('threadcleanup');
@@ -484,7 +484,7 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('bindPointModeListeners', () => {
+        describe('bindPointModeListeners()', () => {
             it('should bind point mode click handler', () => {
                 sandbox.stub(annotator.annotatedElement, 'addEventListener');
                 sandbox.stub(annotator.annotatedElement, 'removeEventListener');
@@ -493,7 +493,11 @@ describe('lib/annotations/Annotator', () => {
                 annotator.bindPointModeListeners();
                 expect(annotator.pointClickHandler.bind).to.be.called;
                 expect(annotator.annotatedElement.addEventListener).to.be.calledWith(
-                    'click',
+                    'mousedown',
+                    annotator.pointClickHandler
+                );
+                expect(annotator.annotatedElement.addEventListener).to.be.calledWith(
+                    'touchstart',
                     annotator.pointClickHandler
                 );
             });
@@ -508,7 +512,11 @@ describe('lib/annotations/Annotator', () => {
                 annotator.unbindModeListeners();
                 expect(annotator.pointClickHandler.bind).to.be.called;
                 expect(annotator.annotatedElement.removeEventListener).to.be.calledWith(
-                    'click',
+                    'mousedown',
+                    annotator.pointClickHandler
+                );
+                expect(annotator.annotatedElement.removeEventListener).to.be.calledWith(
+                    'touchstart',
                     annotator.pointClickHandler
                 );
             });
@@ -547,7 +555,8 @@ describe('lib/annotations/Annotator', () => {
 
         describe('pointClickHandler()', () => {
             const event = {
-                stopPropagation: () => {}
+                stopPropagation: () => {},
+                preventDefault: () => {}
             };
 
             beforeEach(() => {
@@ -608,7 +617,7 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('bindDrawModeListeners', () => {
+        describe('bindDrawModeListeners()', () => {
             it('should do nothing if neither a thread nor a post button is not provided', () => {
                 const drawingThread = {
                     handleStart: () => {},
@@ -666,7 +675,7 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('addToThreadMap', () => {
+        describe('addToThreadMap()', () => {
             it('should add valid threads to the thread map', () => {
                 stubs.thread.location = { page: 2 };
                 stubs.thread2.location = { page: 3 };
@@ -689,7 +698,7 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('isInPointMode', () => {
+        describe('isInPointMode()', () => {
             it('should return whether the annotator is in point mode or not', () => {
                 annotator.annotatedElement.classList.add(CLASS_ANNOTATION_POINT_MODE);
                 expect(annotator.isInPointMode()).to.be.true;
@@ -699,7 +708,7 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('isInDrawMode', () => {
+        describe('isInDrawMode()', () => {
             it('should return whether the annotator is in draw mode or not', () => {
                 annotator.annotatedElement.classList.add(CLASS_ANNOTATION_DRAW_MODE);
                 expect(annotator.isInDrawMode()).to.be.true;
@@ -709,7 +718,7 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('destroyPendingThreads', () => {
+        describe('destroyPendingThreads()', () => {
             beforeEach(() => {
                 stubs.thread = {
                     location: { page: 2 },

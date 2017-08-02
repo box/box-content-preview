@@ -439,9 +439,6 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             stubs.nextPage = sandbox.stub(presentation, 'nextPage');
             stubs.previousPage = sandbox.stub(presentation, 'previousPage');
             stubs.checkOverflow = sandbox.stub(presentation, 'checkOverflow').returns(false);
-            presentation.annotator = {
-                isInDialogOnPage: sandbox.stub().returns(false)
-            };
             presentation.event = {
                 deltaY: 5,
                 deltaX: -0
