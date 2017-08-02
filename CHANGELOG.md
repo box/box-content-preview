@@ -1,3 +1,10 @@
+<a name="1.4.1"></a>
+## 1.4.1 (2017-08-02)
+
+* Fix: Only initialize PreviewUI.notification after viewer is loaded (#273) ([a34ce78](https://github.com/box/box-content-preview/commit/a34ce78))
+
+
+
 <a name="1.4.0"></a>
 # 1.4.0 (2017-08-01)
 
