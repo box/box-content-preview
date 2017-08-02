@@ -60,6 +60,8 @@ class Annotator extends EventEmitter {
         this.isMobile = data.isMobile;
         this.previewUI = data.previewUI;
         this.annotationModeHandlers = [];
+
+        this.init(data.scale);
     }
 
     /**
@@ -414,24 +416,27 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Binds DOM event listeners. No-op here, but can be overridden by any
-     * annotator that needs to bind event listeners to the DOM in the normal
-     * state (ie not in any annotation mode).
+     * Binds DOM event listeners. Can be overridden by any annotator that
+     * needs to bind event listeners to the DOM in the normal state (ie not
+     * in any annotation mode).
      *
-     * @protected
      * @return {void}
      */
-    bindDOMListeners() {}
+    bindDOMListeners() {
+        this.addListener('scaleAnnotations', this.scale);
+    }
 
     /**
-     * Unbinds DOM event listeners. No-op here, but can be overridden by any
-     * annotator that needs to bind event listeners to the DOM in the normal
-     * state (ie not in any annotation mode).
+     * Unbinds DOM event listeners. Can be overridden by any annotator that
+     * needs to bind event listeners to the DOM in the normal state (ie not
+     * in any annotation mode).
      *
      * @protected
      * @return {void}
      */
-    unbindDOMListeners() {}
+    unbindDOMListeners() {
+        this.removeListener('scaleAnnotations', this.scale);
+    }
 
     /**
      * Binds custom event listeners for the Annotation Service.
@@ -706,6 +711,18 @@ class Annotator extends EventEmitter {
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
+
+    /**
+     * Orient annotations to the correct scale and orientation of the annotated document.
+     *
+     * @protected
+     * @param {Object} data - Scale and orientation values needed to orient annotations.
+     * @return {void}
+     */
+    scale(data) {
+        this.setScale(data.scale);
+        this.rotateAnnotations(data.rotationAngle, data.pageNum);
+    }
 
     /**
      * Destroys pending threads.
