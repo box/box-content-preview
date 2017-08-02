@@ -545,14 +545,23 @@ class Annotator extends EventEmitter {
      */
     bindPointModeListeners() {
         const pointFunc = this.pointClickHandler.bind(this.annotatedElement);
-        const handler = {
-            type: 'click',
-            func: pointFunc,
-            eventObj: this.annotatedElement
-        };
+        const handlers = [
+            {
+                type: 'mousedown',
+                func: pointFunc,
+                eventObj: this.annotatedElement
+            },
+            {
+                type: 'touchstart',
+                func: pointFunc,
+                eventObj: this.annotatedElement
+            }
+        ];
 
-        handler.eventObj.addEventListener(handler.type, handler.func);
-        this.annotationModeHandlers.push(handler);
+        handlers.forEach((handler) => {
+            handler.eventObj.addEventListener(handler.type, handler.func);
+            this.annotationModeHandlers.push(handler);
+        });
     }
 
     /**
@@ -565,6 +574,7 @@ class Annotator extends EventEmitter {
      */
     pointClickHandler(event) {
         event.stopPropagation();
+        event.preventDefault();
 
         // Determine if a point annotation dialog is already open and close the
         // current open dialog

@@ -38,8 +38,16 @@ class ImageAnnotator extends Annotator {
     getLocationFromEvent(event) {
         let location = null;
 
+        let clientEvent = event;
+        if (this.isMobile) {
+            if (!event.targetTouches || event.targetTouches.length === 0) {
+                return location;
+            }
+            clientEvent = event.targetTouches[0];
+        }
+
         // Get image tag inside viewer
-        const imageEl = event.target;
+        const imageEl = clientEvent.target;
         if (imageEl.nodeName.toLowerCase() !== IMAGE_NODE_NAME) {
             return location;
         }
@@ -49,7 +57,13 @@ class ImageAnnotator extends Annotator {
 
         // Location based only on image position
         const imageDimensions = imageEl.getBoundingClientRect();
-        let [x, y] = [event.clientX - imageDimensions.left, event.clientY - imageDimensions.top];
+        let [x, y] = [clientEvent.clientX - imageDimensions.left, clientEvent.clientY - imageDimensions.top];
+
+        // Do not create annotation if event doesn't have coordinates
+        if (isNaN(x) || isNaN(y)) {
+            this.emit('annotationerror', __('annotations_create_error'));
+            return location;
+        }
 
         // Scale location coordinates according to natural image size
         const scale = annotatorUtil.getScale(this.annotatedElement);

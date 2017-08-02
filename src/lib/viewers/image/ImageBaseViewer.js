@@ -285,11 +285,6 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleMouseUp(event) {
-        // Ignore zoom/pan mouse events if in annotation mode
-        if (this.annotator && this.annotator.isInPointMode()) {
-            return;
-        }
-
         const { button, ctrlKey, metaKey } = event;
 
         // If this is not a left click, then ignore
@@ -342,22 +337,6 @@ class ImageBaseViewer extends BaseViewer {
         if (!this.isMobile) {
             this.updateCursor();
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    getAnnotationModeClickHandler(mode) {
-        if (!mode || !this.isAnnotatable(mode)) {
-            return null;
-        }
-
-        const eventName = `toggle${mode}annotationmode`;
-        return () => {
-            this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
-            this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
-            this.emit(eventName);
-        };
     }
 
     //--------------------------------------------------------------------------

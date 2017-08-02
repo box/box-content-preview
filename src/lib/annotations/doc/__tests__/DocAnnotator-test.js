@@ -69,13 +69,23 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         let page = 3;
 
         beforeEach(() => {
+            stubs.event = {
+                clientX: x,
+                clientY: y,
+                target: annotator.annotatedEl
+            };
+            annotator.isMobile = false;
+
             stubs.selection = sandbox.stub(docAnnotatorUtil, 'isSelectionPresent').returns(true);
             stubs.pageEl = {
                 getBoundingClientRect: sandbox.stub().returns({
                     width: dimensions.x,
-                    height: dimensions.y + 30 // 15px padding top and bottom
+                    height: dimensions.y + 30, // 15px padding top and bottom,
+                    top: 0,
+                    left: 0
                 })
             };
+            stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
 
             stubs.getHighlights = sandbox.stub(docAnnotatorUtil, 'getHighlightAndHighlightEls').returns({
                 highlight: {},
@@ -93,15 +103,45 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.restoreSel = sandbox.stub(rangy, 'restoreSelection');
         });
 
+        it('should not return a location if no touch event is available and user is on a mobile device', () => {
+            annotator.isMobile = true;
+            expect(annotator.getLocationFromEvent({ targetTouches: [] }, TYPES.point)).to.be.null;
+        });
+
+        it('should replace event with mobile touch event if user is on a mobile device', () => {
+            annotator.isMobile = true;
+            stubs.event = {
+                targetTouches: [{
+                    clientX: x,
+                    clientY: y,
+                    target: annotator.annotatedEl
+                }]
+            };
+            annotator.getLocationFromEvent(stubs.event, TYPES.point);
+        });
+
+        it('should not return a location if there are no touch event and the user is on a mobile device', () => {
+            annotator.isMobile = true;
+            expect(annotator.getLocationFromEvent(stubs.event, TYPES.point)).to.be.null;
+
+            stubs.event = {
+                targetTouches: [{
+                    target: annotator.annotatedEl
+                }]
+            };
+            annotator
+            expect(annotator.getLocationFromEvent(stubs.event, TYPES.point)).to.be.null;
+        });
+
+        it('should not return a location if click isn\'t on page', () => {
+            stubs.selection.returns(false);
+            stubs.getPageInfo.returns({ pageEl: null, page: -1 });
+            expect(annotator.getLocationFromEvent(stubs.event, TYPES.point)).to.be.null;
+        });
+
         describe(TYPES.point, () => {
             it('should not return a location if there is a selection present', () => {
-                expect(annotator.getLocationFromEvent({}, TYPES.point)).to.be.null;
-            });
-
-            it('should not return a location if click isn\'t on page', () => {
-                stubs.selection.returns(false);
-                stubs.getPageInfo.returns({ pageEl: null, page: -1 });
-                expect(annotator.getLocationFromEvent({}, TYPES.point)).to.be.null;
+                expect(annotator.getLocationFromEvent(stubs.event, TYPES.point)).to.be.null;
             });
 
             it('should not return a location if click is on dialog', () => {
@@ -110,18 +150,24 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                     pageEl: document.querySelector('.annotated-element'),
                     page: 1
                 });
+                expect(annotator.getLocationFromEvent(stubs.event, TYPES.point)).to.be.null;
+            });
+
+            it('should not return a location if click event does not have coordinates', () => {
+                stubs.selection.returns(false);
+                stubs.findClosest.returns('not-a-dialog');
+                sandbox.stub(docAnnotatorUtil, 'convertDOMSpaceToPDFSpace');
+
                 expect(annotator.getLocationFromEvent({}, TYPES.point)).to.be.null;
+                expect(docAnnotatorUtil.convertDOMSpaceToPDFSpace).to.not.be.called;
             });
 
             it('should return a valid point location if click is valid', () => {
-                page = 2;
-
                 stubs.selection.returns(false);
-                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 stubs.findClosest.returns('not-a-dialog');
                 sandbox.stub(docAnnotatorUtil, 'convertDOMSpaceToPDFSpace').returns([x, y]);
 
-                const location = annotator.getLocationFromEvent({}, TYPES.point);
+                const location = annotator.getLocationFromEvent(stubs.event, TYPES.point);
                 expect(location).to.deep.equal({ x, y, page, dimensions });
             });
         });
@@ -133,31 +179,29 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             });
 
             it('should not return a location if there is no selection present', () => {
-                expect(annotator.getLocationFromEvent({}, TYPES.highlight)).to.be.null;
+                expect(annotator.getLocationFromEvent(stubs.event, TYPES.highlight)).to.be.null;
             });
 
             it('should infer page from selection if it cannot be inferred from event', () => {
                 annotator.highlighter.highlights = [{}, {}];
                 stubs.getPageInfo.returns({ pageEl: null, page: -1 });
 
-                annotator.getLocationFromEvent({}, TYPES.highlight);
+                annotator.getLocationFromEvent(stubs.event, TYPES.highlight);
                 expect(stubs.getPageInfo).to.be.called;
             });
 
             it('should not return a valid highlight location if no highlights exist', () => {
-                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
-                expect(annotator.getLocationFromEvent({}, TYPES.highlight)).to.deep.equal(null);
+                expect(annotator.getLocationFromEvent(stubs.event, TYPES.highlight)).to.deep.equal(null);
             });
 
             it('should return a valid highlight location if selection is valid', () => {
                 annotator.highlighter.highlights = [{}];
-                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 stubs.points.onFirstCall().returns(quadPoints[0]);
                 stubs.points.onSecondCall().returns(quadPoints[1]);
 
                 stubs.getHighlights.returns({ highlight: {}, highlightEls: [{}, {}] });
 
-                const location = annotator.getLocationFromEvent({}, TYPES.highlight);
+                const location = annotator.getLocationFromEvent(stubs.event, TYPES.highlight);
                 expect(location).to.deep.equal({ page, quadPoints, dimensions });
             });
         });
@@ -169,31 +213,29 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             });
 
             it('should not return a location if there is no selection present', () => {
-                expect(annotator.getLocationFromEvent({}, TYPES.highlight_comment)).to.be.null;
+                expect(annotator.getLocationFromEvent(stubs.event, TYPES.highlight_comment)).to.be.null;
             });
 
             it('should infer page from selection if it cannot be inferred from event', () => {
                 annotator.highlighter.highlights = [{}, {}];
                 stubs.getPageInfo.returns({ pageEl: null, page: -1 });
 
-                annotator.getLocationFromEvent({}, TYPES.highlight_comment);
+                annotator.getLocationFromEvent(stubs.event, TYPES.highlight_comment);
                 expect(stubs.getPageInfo).to.be.called;
             });
 
             it('should not return a valid highlight location if no highlights exist', () => {
                 annotator.highlighter.highlights = [{}];
-                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
-                expect(annotator.getLocationFromEvent({}, TYPES.highlight_comment)).to.deep.equal(null);
+                expect(annotator.getLocationFromEvent(stubs.event, TYPES.highlight_comment)).to.deep.equal(null);
             });
 
             it('should return a valid highlight location if selection is valid', () => {
                 annotator.highlighter.highlights = [{}];
-                stubs.getPageInfo.returns({ pageEl: stubs.pageEl, page });
                 stubs.points.onFirstCall().returns(quadPoints[0]);
                 stubs.points.onSecondCall().returns(quadPoints[1]);
                 stubs.getHighlights.returns({ highlight: {}, highlightEls: [{}, {}] });
 
-                const location = annotator.getLocationFromEvent({}, TYPES.highlight_comment);
+                const location = annotator.getLocationFromEvent(stubs.event, TYPES.highlight_comment);
                 expect(location).to.deep.equal({ page, quadPoints, dimensions });
             });
         });

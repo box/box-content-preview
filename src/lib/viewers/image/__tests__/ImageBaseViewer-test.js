@@ -475,38 +475,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         });
     });
 
-    describe('getAnnotationModeClickHandler()', () => {
-        beforeEach(() => {
-            stubs.isAnnotatable = sandbox.stub(imageBase, 'isAnnotatable').returns(false);
-        });
-
-        it('should return null if you cannot annotate', () => {
-            const handler = imageBase.getAnnotationModeClickHandler('point');
-            expect(stubs.isAnnotatable).to.be.called;
-            expect(handler).to.equal(null);
-        });
-
-        it('should return the toggle point mode handler', () => {
-            stubs.isAnnotatable.returns(true);
-            stubs.emitter = sandbox.stub(imageBase, 'emit');
-            imageBase.annotator = {
-                togglePointAnnotationHandler: () => {}
-            };
-            imageBase.imageEl.classList.add(CSS_CLASS_PANNABLE);
-            imageBase.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
-
-            const handler = imageBase.getAnnotationModeClickHandler('point');
-            expect(stubs.isAnnotatable).to.be.called;
-            expect(handler).to.be.a('function');
-
-            handler(event);
-
-            expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_PANNABLE);
-            expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_ZOOMABLE);
-            expect(imageBase.emit).to.have.been.calledWith('togglepointannotationmode');
-        });
-    });
-
     describe('finishLoading()', () => {
         beforeEach(() => {
             imageBase.loaded = false;
