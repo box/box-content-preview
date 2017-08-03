@@ -3,7 +3,6 @@ import rangy from 'rangy';
 import Annotator from '../../Annotator';
 import Annotation from '../../Annotation';
 import AnnotationThread from '../../AnnotationThread';
-import Browser from '../../../Browser';
 import DocAnnotator from '../DocAnnotator';
 import DocHighlightThread from '../DocHighlightThread';
 import DocDrawingThread from '../DocDrawingThread';
@@ -29,8 +28,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
     beforeEach(() => {
         fixture.load('annotations/doc/__tests__/DocAnnotator-test.html');
-
-        sandbox.stub(Browser, 'isMobile').returns(false);
 
         annotator = new DocAnnotator({
             canAnnotate: true,

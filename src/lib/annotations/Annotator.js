@@ -2,15 +2,11 @@ import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import AnnotationService from './AnnotationService';
 import * as annotatorUtil from './annotatorUtil';
-import {
-    CLASS_ACTIVE,
-    CLASS_HIDDEN,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW
-} from '../constants';
 import { ICON_CLOSE } from '../icons/icons';
 import './Annotator.scss';
 import {
+    CLASS_ACTIVE,
+    CLASS_HIDDEN,
     DATA_TYPE_ANNOTATION_DIALOG,
     CLASS_MOBILE_ANNOTATION_DIALOG,
     CLASS_ANNOTATION_DIALOG,
@@ -21,6 +17,8 @@ import {
     SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL,
     SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER,
     SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
     TYPES
 } from './annotationConstants';
 
