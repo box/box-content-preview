@@ -14,38 +14,21 @@ import {
     GRID_SECTIONS,
     GRID_COLOR_METRE,
     GRID_COLOR_HALF_METRE,
-    QUALITY_LEVEL_FULL,
     RENDER_MODE_LIT,
     RENDER_MODE_UNLIT,
     RENDER_MODE_SHAPE,
     RENDER_MODE_NORMALS,
     RENDER_MODE_UV
 } from './model3DConstants';
-import { EVENT_SCENE_LOADED } from '../box3DConstants';
-import Browser from '../../../Browser';
+import { MODEL3D_STATIC_ASSETS_VERSION } from '../../../constants';
+import { createAssetUrlCreator } from '../../../util';
+
+const previewApplication = `third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/box3d-player.json`;
 
 const ORIGIN_VECTOR = { x: 0, y: 0, z: 0 };
-const FLOOR_VECTOR = { x: 0, y: -1, z: 0 };
 const IDENTITY_QUATERNION = { x: 0, y: 0, z: 0, w: 1 };
 
 const PREVIEW_CAMERA_ORBIT_DISTANCE_FACTOR = 1.5;
-const PREVIEW_CAMERA_POSITION = {
-    x: -0.559,
-    y: 0.197,
-    z: 0.712
-};
-const PREVIEW_CAMERA_QUATERNION = {
-    x: -0.101,
-    y: -0.325,
-    z: -0.035,
-    w: 0.94
-};
-
-const OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR = 30; // 20 FPS
-const OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE = 66.6; // 15 FPS
-const OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR_VR = 20.0; // 50 FPS
-const OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE_VR = 66.6; // 15 FPS
-const DEFAULT_MODEL_SIZE = 1;
 
 /**
  * This class handles rendering the preview of the 3D model using the Box3D
@@ -60,27 +43,6 @@ class Model3DRenderer extends Box3DRenderer {
 
     /** @property {THREE.AxisHelper} - Axis lines overlayed on the scene to help judge alignment */
     axisDisplay;
-
-    /** @property {boolean} - If true, the model is currently rotating to a new rotation. Throttles rotation events */
-    isRotating = false;
-
-    /** @property {Object} - X, Y, Z scale of the instance added to the scene */
-    modelSize = DEFAULT_MODEL_SIZE;
-
-    /** @property {Object} - X, Y, Z position of the instance added to the scene*/
-    modelAlignmentPosition = ORIGIN_VECTOR;
-
-    /** @property {Object} - X, Y, Z the origin point for the instance to align relative to */
-    modelAlignmentVector = FLOOR_VECTOR;
-
-    /** @property {boolean} - If true, the dynamic optimizer component is enabled. Will render lower res, etc. for better framerate */
-    dynamicOptimizerEnabled = true;
-
-    /** @property {Object} - X, Y, Z default position of the camera, in the 3D scene */
-    defaultCameraPosition = PREVIEW_CAMERA_POSITION;
-
-    /** @property {Object} - X, Y, Z default rotation of the camera, in the 3D scene */
-    defaultCameraQuaternion = PREVIEW_CAMERA_QUATERNION;
 
     /** A mapping of preview render mode names to Box3D render mode enum values */
     renderModeValues;
@@ -129,9 +91,16 @@ class Model3DRenderer extends Box3DRenderer {
         const { location } = opts;
         if (location) {
             opts.sceneEntities = sceneEntities(location.staticBaseURI);
+            if (!opts.box3dApplication) {
+                const assetUrlCreator = createAssetUrlCreator(location);
+                opts.box3dApplication = assetUrlCreator(previewApplication);
+            }
         }
 
-        return super.load(assetUrl, opts).then(this.loadBox3dFile.bind(this, assetUrl));
+        return super
+            .load(assetUrl, opts)
+            .then(this.loadBox3dFile.bind(this, options.file.id))
+            .catch(() => this.onUnsupportedRepresentation());
     }
 
     /**
@@ -149,19 +118,34 @@ class Model3DRenderer extends Box3DRenderer {
      * Load a box3d representation and initialize the scene.
      *
      * @private
-     * @param {string} assetUrl - The representation URL.
+     * @param {string} fileId - The ID of the Box file to load.
      * @return {void}
      */
-    loadBox3dFile(assetUrl) {
+    loadBox3dFile(fileId) {
         this.box3d.canvas.addEventListener('click', this.handleCanvasClick);
 
         // Set MatCap texture for the 'Shape' render mode
         const renderModes = this.box3d.getApplication().getComponentByScriptId('render_modes');
-        renderModes.setAttribute('shapeTexture', 'MAT_CAP_TEX');
+        if (renderModes) {
+            renderModes.setAttribute('shapeTexture', 'MAT_CAP_TEX');
+        }
+        return new Promise((resolve, reject) => {
+            const scene = this.getScene();
+            if (!scene) {
+                reject(new Error('Provided Box3D application data contains no scene'));
+            }
 
-        return this.box3d
-            .addRemoteEntities(assetUrl)
-            .then(() => this.setupScene(), () => this.onUnsupportedRepresentation());
+            this.instance = scene.getDescendantByName('Preview Model');
+            if (!this.instance) {
+                reject(new Error('Provided Box3D application must include node named "Preview Model"'));
+            }
+
+            this.instance.once('remoteInstanceCreated', () => {
+                this.setupScene();
+                resolve();
+            });
+            this.instance.trigger('createRemoteInstance', fileId);
+        });
     }
 
     /**
@@ -174,52 +158,20 @@ class Model3DRenderer extends Box3DRenderer {
     setupScene() {
         const scene = this.getScene();
         if (!scene) {
+            this.onSceneLoad();
             return;
         }
-
-        this.createPrefabInstances();
-        this.addHelpersToScene();
-        scene.when('load', () => this.onSceneLoad());
-    }
-
-    /**
-     * Create instances of prefabs and add them to the scene.
-     *
-     * @private
-     * @return {void}
-     */
-    createPrefabInstances() {
-        const prefabs = this.box3d.getAssetsByType('prefab');
-        if (prefabs.length === 0) {
-            return;
-        }
-
-        // Create a single parent for all instances.
-        const parent = this.box3d.createNode();
-        prefabs.forEach((prefab) => parent.addChild(prefab.createInstance()));
-        this.instance = parent;
-        this.getScene().addChild(parent);
-        this.adjustModelForScene(parent);
-
-        this.instance = parent;
-    }
-
-    /**
-     * Adjust model for a scene.
-     *
-     * @param {Object} instance - Instance to adjust
-     * @return {void}
-     */
-    adjustModelForScene(instance) {
-        // Scale the instance to 100 units in size.
-        instance.scaleToSize(this.modelSize);
-
-        // Center the instance.
-        instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
 
         // Add components to the instance.
-        instance.addComponent('preview_axis_rotation', {}, `axis_rotation_${instance.id}`);
-        instance.addComponent('animation', {}, `animation_${instance.id}`);
+        this.instance.addComponent('preview_axis_rotation', {}, `axis_rotation_${this.instance.id}`);
+        this.instance.addComponent('animation', {}, `animation_${this.instance.id}`);
+        const animations = this.box3d.getAssetsByClass(Box3D.AnimationAsset);
+        if (animations.length > 0) {
+            this.setAnimationAsset(animations[0]);
+        }
+
+        this.addHelpersToScene();
+        scene.when('load', () => this.onSceneLoad());
     }
 
     /**
@@ -250,7 +202,7 @@ class Model3DRenderer extends Box3DRenderer {
             return;
         }
 
-        // Reset the transforms of the instances under the root.
+        // Reset the transforms of the instances under the root (they can be modified in VR).
         this.instance.getChildren().forEach((instance) => {
             instance.setPosition(ORIGIN_VECTOR.x, ORIGIN_VECTOR.y, ORIGIN_VECTOR.z);
             instance.setQuaternion(
@@ -260,14 +212,6 @@ class Model3DRenderer extends Box3DRenderer {
                 IDENTITY_QUATERNION.w
             );
         });
-
-        this.instance.computeBounds();
-
-        // Scale the instance to the defined size.
-        this.instance.scaleToSize(this.modelSize);
-
-        // Align the instance.
-        this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
     }
 
     /** @inheritdoc */
@@ -283,8 +227,6 @@ class Model3DRenderer extends Box3DRenderer {
             return;
         }
 
-        this.instance.computeBounds();
-
         const bounds = this.instance.getBounds();
         this.instance.runtimeData.updateMatrixWorld();
         bounds.min.applyMatrix4(this.instance.runtimeData.matrixWorld);
@@ -297,8 +239,9 @@ class Model3DRenderer extends Box3DRenderer {
         center.applyMatrix4(this.instance.runtimeData.matrixWorld);
 
         // Set the origin point (so that we always point at the center of the model when the camera reloads)
-        orbitController.originPoint.copy(center);
+        orbitController.setPivotPosition(center);
         orbitController.reset();
+
         const distance =
             PREVIEW_CAMERA_ORBIT_DISTANCE_FACTOR * Math.max(Math.max(maxDimension.x, maxDimension.y), maxDimension.z);
         orbitController.setOrbitDistance(distance);
@@ -306,38 +249,13 @@ class Model3DRenderer extends Box3DRenderer {
 
     /** @inheritdoc */
     onSceneLoad() {
+        super.onSceneLoad();
+
         // Reset the skeleton visualization.
+        this.initVrGamepadControls();
         this.resetSkeletons();
-
-        this.emit(EVENT_SCENE_LOADED);
-
-        // Should wait until all textures are fully loaded before trying to measure performance.
-        // Once they're loaded, start the dynamic optimizer.
-        const animations = this.box3d.getEntitiesByType('animation');
-        const images = this.box3d.getEntitiesByType('image');
         const videos = this.box3d.getEntitiesByType('video');
-        const assets = animations.concat(images, videos).filter((asset) => asset.isLoading());
-        const assetPromises = assets.map(
-            (asset) =>
-                new Promise((resolve) => {
-                    asset.when('load', resolve);
-                })
-        );
-
-        Promise.all(assetPromises).then(() => {
-            if (!this.box3d) {
-                return;
-            }
-            this.startOptimizer();
-
-            if (animations.length > 0) {
-                this.setAnimationAsset(animations[0]);
-            }
-
-            videos.forEach((video) => video.play());
-        });
-
-        this.resize();
+        videos.forEach((video) => video.play());
     }
 
     /**
@@ -397,9 +315,6 @@ class Model3DRenderer extends Box3DRenderer {
             this.instance.when('load', () => {
                 if (play) {
                     component.play();
-                    component.onUpdate(0);
-                    this.instance.scaleToSize(this.modelSize);
-                    this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
                 } else {
                     component.pause();
                 }
@@ -419,36 +334,9 @@ class Model3DRenderer extends Box3DRenderer {
         }
 
         const component = this.instance.getComponentByScriptId('animation');
-        component.stop();
-    }
-
-    /**
-     * Start the component that measures performance and dynamically scales material and rendering
-     * quality to try to achieve a minimum framerate.
-     *
-     * @private
-     * @return {void}
-     */
-    startOptimizer() {
-        this.dynamicOptimizer = this.box3d.getApplication().getComponentByScriptId('dynamic_optimizer');
-
-        if (!this.dynamicOptimizer) {
-            return;
+        if (component) {
+            component.stop();
         }
-
-        this.createRegularQualityChangeLevels();
-        this.createVrQualityChangeLevels();
-
-        /* eslint-disable no-unused-expressions */
-        this.dynamicOptimizerEnabled ? this.dynamicOptimizer.enable() : this.dynamicOptimizer.disable();
-        /* eslint-enable no-unused-expressions */
-
-        this.dynamicOptimizer.setQualityChangeLevels(this.regularQualityChangeLevels);
-        const threshold = Browser.isMobile()
-            ? OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE
-            : OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR;
-
-        this.dynamicOptimizer.setFrameTimeThreshold(threshold);
     }
 
     /**
@@ -589,76 +477,6 @@ class Model3DRenderer extends Box3DRenderer {
     }
 
     /**
-     * Set the rendering quality being used. Called by UI event handlers.
-     *
-     * @private
-     * @param {string} level - Level name
-     * @return {void}
-     */
-    setQualityLevel(level) {
-        if (!this.box3d) {
-            return;
-        }
-
-        switch (level) {
-            case QUALITY_LEVEL_FULL:
-                this.dynamicOptimizerEnabled = false;
-                if (this.dynamicOptimizer) {
-                    this.dynamicOptimizer.disable();
-                }
-                break;
-
-            default:
-                this.dynamicOptimizerEnabled = true;
-                if (this.dynamicOptimizer) {
-                    this.dynamicOptimizer.enable();
-                }
-                break;
-        }
-    }
-
-    /**
-     * Setup listeners for the axis rotation events, to properly align a model over time.
-     *
-     * @param {Object} position {x, y, z} The - position to align the model to.
-     * @param {Object} alignment {x, y, z} The - alignment for setting rotation of the model.
-     * @return {void}
-     */
-    listenToRotateComplete(position, alignment) {
-        this.isRotating = true;
-
-        /**
-         * Alignment adjustment after update.
-         *
-         * @param {boolean} finalize - Whether or not this is final alignment
-         * @return {void}
-         */
-        const postUpdate = (finalize) => {
-            if (!this.instance) {
-                return;
-            }
-            // If this is the final alignment, make sure that it puts the model where the settings
-            // indicate it should be. This is necessary if a call to setModelAlignment is made during
-            // the rotation, for example.
-            if (finalize) {
-                this.instance.alignToPosition(this.modelAlignmentPosition, this.modelAlignmentVector);
-            } else {
-                this.instance.alignToPosition(position, alignment);
-            }
-        };
-
-        // Start listening to post update, to centre the object
-        this.box3d.on('postUpdate', postUpdate);
-
-        // Once transition complete, start updating and allow for another rotation
-        this.instance.once('axis_transition_complete', () => {
-            postUpdate(true);
-            this.box3d.off('postUpdate', postUpdate);
-            this.isRotating = false;
-        });
-    }
-
-    /**
      * Rotates the loaded model on the provided axis.
      *
      * @public
@@ -666,19 +484,11 @@ class Model3DRenderer extends Box3DRenderer {
      * @return {void}
      */
     rotateOnAxis(axis) {
-        if (!this.instance || !this.box3d || this.isRotating) {
+        if (!this.instance || !this.box3d) {
             return;
         }
 
         this.box3d.trigger('rotate_on_axis', axis, true);
-
-        // Calculate centre of model in world space so that we can rotate smoothly about it.
-        const alignPosition = this.instance.getCenter();
-        if (this.instance.runtimeData) {
-            alignPosition.applyMatrix4(this.instance.runtimeData.matrixWorld);
-        }
-
-        this.listenToRotateComplete(alignPosition, ORIGIN_VECTOR);
     }
 
     /**
@@ -694,10 +504,6 @@ class Model3DRenderer extends Box3DRenderer {
         if (!this.instance) {
             return;
         }
-
-        // Set up the rotation listener before triggering "set_axes". The order is important because
-        // when useTransition is false, the "axis_transition_complete" event is fired immediately.
-        this.listenToRotateComplete(this.modelAlignmentPosition, this.modelAlignmentVector);
 
         // Modify the axes.
         this.box3d.trigger('set_axes', upAxis, forwardAxis, useTransition);
@@ -750,15 +556,6 @@ class Model3DRenderer extends Box3DRenderer {
 
         super.enableVr();
 
-        if (this.dynamicOptimizer) {
-            this.dynamicOptimizer.setQualityChangeLevels(this.vrQualityChangeLevels);
-
-            const threshold = Browser.isMobile()
-                ? OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE_VR
-                : OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR_VR;
-            this.dynamicOptimizer.setFrameTimeThreshold(threshold);
-        }
-
         // Scale the instance for VR.
         const display = this.box3d.getVrDisplay();
         this.vrDeviceHasPosition = display ? display.capabilities.hasPosition : undefined;
@@ -766,36 +563,27 @@ class Model3DRenderer extends Box3DRenderer {
             this.grid.visible = true;
         } else {
             // Enable position-less camera controls
-            this.box3d.on('update', this.updateModel3dVrControls, this);
+            this.box3d.on('update', this.updateNonPositionalVrControls, this);
         }
     }
 
     /** @inheritdoc */
     onDisableVr() {
-        if (this.dynamicOptimizer) {
-            this.dynamicOptimizer.setQualityChangeLevels(this.regularQualityChangeLevels);
-
-            const threshold = Browser.isMobile()
-                ? OPTIMIZE_FRAMETIME_THRESHOLD_MOBILE
-                : OPTIMIZE_FRAMETIME_THRESHOLD_REGULAR;
-            this.dynamicOptimizer.setFrameTimeThreshold(threshold);
-        }
-
         if (!this.vrDeviceHasPosition) {
             // Disable position-less camera controls
-            this.box3d.off('update', this.updateModel3dVrControls, this);
+            this.box3d.off('update', this.updateNonPositionalVrControls, this);
         }
 
         super.onDisableVr();
     }
 
     /**
-     * Update the controls for VR when enabled.
+     * Update the controls for non-positional VR when enabled.
      *
      * @private
      * @return {void}
      */
-    updateModel3dVrControls() {
+    updateNonPositionalVrControls() {
         const cameraObject = this.getCamera();
         const orbitController = cameraObject.getComponentByScriptId('orbit_camera');
         if (!orbitController) {
@@ -816,41 +604,6 @@ class Model3DRenderer extends Box3DRenderer {
      */
     initVrGamepadControls() {
         this.vrControls = new Model3DVrControls(this.vrGamepads, this.box3d);
-    }
-
-    /**
-     * Set up quality change levels for the dynamic optimizer.
-     *
-     * @private
-     * @return {void}
-     */
-    createRegularQualityChangeLevels() {
-        this.regularQualityChangeLevels = [
-            new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 0.5),
-            new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 0.75),
-            new this.dynamicOptimizer.QualityChangeLevel('application', 'Renderer', 'devicePixelRatio', 1.0)
-        ];
-    }
-
-    /**
-     * Set up quality change levels for the dynamic optimizer when VR is enabled.
-     *
-     * @private
-     * @return {void}
-     */
-    createVrQualityChangeLevels() {
-        this.vrQualityChangeLevels = [
-            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'aoMap', null),
-            // TODO - Removing light environments means that we also need to bump up ambient lighting. We'll need
-            // to add the ability to set multiple params to the dynamic optimizer to make this work well.
-            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'envMapIrradiance', null),
-            new this.dynamicOptimizer.QualityChangeLevel('light', null, 'color', { r: 1, g: 1, b: 1 }),
-            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'normalMap', null),
-            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'envMapRadiance', null),
-            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'glossMap', null),
-            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'envMapGlossVariance', false),
-            new this.dynamicOptimizer.QualityChangeLevel('material', null, 'envMapRadianceHalfGloss', null)
-        ];
     }
 }
 
