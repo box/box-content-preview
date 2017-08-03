@@ -36,6 +36,16 @@ const ANNOTATION_TYPE_DRAW = 'draw';
 const ANNOTATION_TYPE_POINT = 'point';
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
+const ANNOTATION_BUTTONS = {
+    point: {
+        title: __('annotation_point_toggle'),
+        selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT
+    },
+    draw: {
+        title: __('annotation_draw_toggle'),
+        selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW
+    }
+};
 
 @autobind
 class BaseViewer extends EventEmitter {
@@ -647,21 +657,10 @@ class BaseViewer extends EventEmitter {
             // Users can currently only view annotations on mobile
             this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
             if (this.canAnnotate) {
-                const annotationButtons = {
-                    point: {
-                        title: __('annotation_point_toggle'),
-                        selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT
-                    },
-                    draw: {
-                        title: __('annotation_draw_toggle'),
-                        selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW
-                    }
-                };
-
                 // Show the annotate button for all enabled types for the
                 // current viewer
                 this.annotatorConf.TYPE.forEach((type) => {
-                    this.showModeAnnotateButton(type, annotationButtons);
+                    this.showModeAnnotateButton(type, ANNOTATION_BUTTONS);
                 });
             }
             this.initAnnotations();
