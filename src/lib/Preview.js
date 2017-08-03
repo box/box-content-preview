@@ -606,6 +606,9 @@ class Preview extends EventEmitter {
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;
 
+        // Custom Box3D application definition
+        this.options.box3dApplication = options.box3dApplication;
+
         // Save the files to iterate through
         this.collection = options.collection || [];
 
