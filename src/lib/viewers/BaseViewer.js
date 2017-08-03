@@ -647,10 +647,21 @@ class BaseViewer extends EventEmitter {
             // Users can currently only view annotations on mobile
             this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
             if (this.canAnnotate) {
+                const annotationButtons = {
+                    point: {
+                        title: __('annotation_point_toggle'),
+                        selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT
+                    },
+                    draw: {
+                        title: __('annotation_draw_toggle'),
+                        selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW
+                    }
+                };
+
                 // Show the annotate button for all enabled types for the
                 // current viewer
                 this.annotatorConf.TYPE.forEach((type) => {
-                    this.showModeAnnotationButton(type);
+                    this.showModeAnnotateButton(type, annotationButtons);
                 });
             }
             this.initAnnotations();
@@ -680,9 +691,9 @@ class BaseViewer extends EventEmitter {
             fileVersionId,
             isMobile: this.isMobile,
             locale: location.locale,
-            previewUI: this.previewUI,
-            scale: this.scale
+            previewUI: this.previewUI
         });
+        this.annotator.init(this.scale);
 
         // Disables controls during annotation mode
         this.addListener('togglepointannotationmode', () => {
@@ -742,21 +753,11 @@ class BaseViewer extends EventEmitter {
      * Shows the annotate button for the specified mode
      *
      * @param {string} currentMode - Annotation mode
+     * @param {Object[]} modeButtons - Annotation modes which require buttons
      * @return {void}
      */
-    showModeAnnotationButton(currentMode) {
-        const modes = {
-            point: {
-                title: __('annotation_point_toggle'),
-                selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT
-            },
-            draw: {
-                title: __('annotation_draw_toggle'),
-                selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW
-            }
-        };
-
-        const mode = modes[currentMode];
+    showModeAnnotateButton(currentMode, modeButtons) {
+        const mode = modeButtons[currentMode];
         if (!mode || !this.isAnnotatable(currentMode)) {
             return;
         }

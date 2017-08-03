@@ -60,8 +60,6 @@ class Annotator extends EventEmitter {
         this.isMobile = data.isMobile;
         this.previewUI = data.previewUI;
         this.annotationModeHandlers = [];
-
-        this.init(data.scale);
     }
 
     /**
@@ -423,7 +421,7 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     bindDOMListeners() {
-        this.addListener('scaleAnnotations', this.scale);
+        this.addListener('scaleAnnotations', this.scaleAnnotations);
     }
 
     /**
@@ -435,7 +433,7 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     unbindDOMListeners() {
-        this.removeListener('scaleAnnotations', this.scale);
+        this.removeListener('scaleAnnotations', this.scaleAnnotations);
     }
 
     /**
@@ -719,7 +717,7 @@ class Annotator extends EventEmitter {
      * @param {Object} data - Scale and orientation values needed to orient annotations.
      * @return {void}
      */
-    scale(data) {
+    scaleAnnotations(data) {
         this.setScale(data.scale);
         this.rotateAnnotations(data.rotationAngle, data.pageNum);
     }
