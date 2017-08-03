@@ -199,8 +199,9 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
-     *
-     * @param {string} url
+     * Load Box3D entities from a JSON file specified with the provided path.
+     * @param {string} url - A path to a JSON file containing Box3D entity descriptions.
+     * @return {Promise} - A promise that resolves on completion of the load.
      */
     getEntitiesFromUrl(url) {
         return new Promise((resolve, reject) => {
@@ -208,6 +209,10 @@ class Box3DRenderer extends EventEmitter {
 
             xhr.open('GET', url);
 
+            /**
+             * Callback for xhr completion.
+             * @return {void}
+            */
             const complete = () => {
                 resolve(JSON.parse(xhr.responseText));
             };
@@ -260,6 +265,7 @@ class Box3DRenderer extends EventEmitter {
      * @param {Object} resourceLoader - The resource loader used to load assets used by the box3d engine
      * @param {Array} [sceneEntities] - The descriptor of the default scene. See ./scene-entities.js
      * @param {Array} [applicationEntities] - Array of entities published from Box3D Studio project.
+     * @param {string} [apiBase] - Optional base path for Box API calls.
      * @return {Promise} A promise that resolves with the Box3D Engine.
      */
     createBox3d(resourceLoader, sceneEntities, applicationEntities, apiBase) {
