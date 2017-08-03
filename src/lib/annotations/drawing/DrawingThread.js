@@ -1,17 +1,17 @@
-/* global Rbush */
+/** global undo, redo */
 import AnnotationThread from '../AnnotationThread';
 import DrawingPath from './DrawingPath';
+import DrawingContainer from './DrawingContainer';
 import { STATES_DRAW, DRAW_RENDER_THRESHOLD } from '../annotationConstants';
 
-const RTREE_WIDTH = 5; // Lower number - faster search, higher - faster insert
 const BASE_LINE_WIDTH = 3;
 
 class DrawingThread extends AnnotationThread {
     /** @property {number} - Drawing state */
     drawingFlag = STATES_DRAW.idle;
 
-    /** @property {Rbush} - Rtree path container */
-    pathContainer = new Rbush(RTREE_WIDTH);
+    /** @property {DrawingContainer} - path container */
+    pathContainer = new DrawingContainer();
 
     /** @property {CanvasContext} - A canvas for drawing new strokes */
     memoryCanvas;
@@ -41,7 +41,15 @@ class DrawingThread extends AnnotationThread {
     constructor(data) {
         super(data);
         this.render = this.render.bind(this);
+        window.undo = () => {
+            this.pathContainer.undo.bind(this.pathContainer);
+            this.render(500000000000);
+        };
+        window.redo = () => {
+            this.pathContainer.redo.bind(this.pathContainer);
+        };
 
+        // Recreate stored paths
         if (data && data.location && data.location.drawingPaths instanceof Array) {
             data.location.drawingPaths.forEach((drawingPathData) => {
                 const pathInstance = new DrawingPath(drawingPathData);
@@ -78,7 +86,7 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     getDrawings() {
-        return this.pathContainer.all();
+        return this.pathContainer.getAll();
     }
 
     /* eslint-disable no-unused-vars */

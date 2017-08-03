@@ -625,7 +625,7 @@ class BaseViewer extends EventEmitter {
             if (this.canAnnotate) {
                 this.showPointAnnotateButton(this.getAnnotationModeClickHandler('point'));
                 // Note: Leave drawing annotation code entry disabled for now
-                // this.showDrawAnnotateButton(this.getAnnotationModeClickHandler('draw'));
+                this.showDrawAnnotateButton(this.getAnnotationModeClickHandler('draw'));
             }
             this.initAnnotations();
         }

@@ -156,8 +156,8 @@ class DocDrawingThread extends DrawingThread {
         if (this.state === STATES.pending) {
             context = this.drawingContext;
         } else {
-            this.pageEl = docAnnotatorUtil.getPageEl(this.annotatedElement, this.location.page);
             const config = { scale: this.lastScaleFactor };
+            this.pageEl = docAnnotatorUtil.getPageEl(this.annotatedElement, this.location.page);
             context = docAnnotatorUtil.getContext(
                 this.pageEl,
                 CLASS_ANNOTATION_LAYER_DRAW,
@@ -168,15 +168,12 @@ class DocDrawingThread extends DrawingThread {
         }
 
         // Draw the paths to the annotation layer canvas
-        /* eslint-disable require-jsdoc */
-        const scaleAndDraw = (drawing) => {
-            drawing.generateBrowserPath(this.reconstructBrowserCoordFromLocation);
-            drawing.drawPath(context);
-        };
-        /* eslint-enable require-jsdoc */
         if (context) {
             context.beginPath();
-            drawings.forEach(scaleAndDraw);
+            drawings.forEach((drawing) => {
+                drawing.generateBrowserPath(this.reconstructBrowserCoordFromLocation);
+                drawing.drawPath(context);
+            });
             context.stroke();
         }
     }
