@@ -148,8 +148,9 @@ class AnnotationDialog extends EventEmitter {
         }
 
         if (this.dialogEl) {
-            this.element.removeChild(this.dialogEl);
+            this.dialogEl.parentNode.removeChild(this.dialogEl);
         }
+
         this.element.classList.remove(constants.CLASS_ANIMATE_DIALOG);
 
         // Clear annotations from dialog

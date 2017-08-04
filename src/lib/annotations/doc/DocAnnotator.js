@@ -168,18 +168,17 @@ class DocAnnotator extends Annotator {
         let location = null;
         const zoomScale = annotatorUtil.getScale(this.annotatedElement);
 
-        let clientEvent = event;
-        if (this.isMobile) {
-            if (!event.targetTouches || event.targetTouches.length === 0) {
-                return location;
-            }
-            clientEvent = event.targetTouches[0];
-        }
-
-        // If click isn't on a page, ignore
-        const eventTarget = clientEvent.target;
-
         if (annotationType === TYPES.point) {
+            let clientEvent = event;
+            if (this.isMobile) {
+                if (!event.targetTouches || event.targetTouches.length === 0) {
+                    return location;
+                }
+                clientEvent = event.targetTouches[0];
+            }
+
+            // If click isn't on a page, ignore
+            const eventTarget = clientEvent.target;
             const { pageEl, page } = annotatorUtil.getPageInfo(eventTarget);
             if (!pageEl) {
                 return location;
