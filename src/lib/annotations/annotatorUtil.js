@@ -42,11 +42,11 @@ export function findClosestElWithClass(element, className) {
 }
 
 /**
-* Returns the page element and page number that the element is on.
-*
-* @param {HTMLElement} element - Element to find page and page number for
-* @return {Object} Page element/page number if found or null/-1 if not
-*/
+ * Returns the page element and page number that the element is on.
+ *
+ * @param {HTMLElement} element - Element to find page and page number for
+ * @return {Object} Page element/page number if found or null/-1 if not
+ */
 export function getPageInfo(element) {
     const pageEl = findClosestElWithClass(element, 'page') || null;
     let page = 1;
@@ -133,7 +133,7 @@ export function showInvisibleElement(elementOrSelector) {
 
 /**
  * Hides the specified element or element with specified selector. The element
- * will still take up DOM space but not be visible in the UI
+ * will still take up DOM space but not be visible in the UI.
  *
  * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
  * @return {void}
@@ -175,8 +175,8 @@ export function resetTextarea(element, clearText) {
 /**
  * Checks whether element is fully in viewport.
  *
- * @param {HTMLElement} element - Element to check
- * @return {boolean} Whether element is fully in viewport
+ * @param {HTMLElement} element - The element to check and see if it lies in the viewport
+ * @return {boolean} Whether the element is fully in viewport
  */
 export function isElementInViewport(element) {
     const dimensions = element.getBoundingClientRect();

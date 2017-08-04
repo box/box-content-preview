@@ -5,14 +5,13 @@ import * as constants from './annotationConstants';
 import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
 import { ICON_CLOSE, ICON_DELETE } from '../icons/icons';
 
-const CLASS_ANNOTATION_PLAIN_HIGHLIGHT = 'bp-plain-highlight';
 const CLASS_BUTTON_DELETE_COMMENT = 'delete-comment-btn';
 const CLASS_CANCEL_DELETE = 'cancel-delete-btn';
 const CLASS_CANNOT_ANNOTATE = 'cannot-annotate';
+const CLASS_COMMENT = 'annotation-comment';
 const CLASS_COMMENTS_CONTAINER = 'annotation-comments';
 const CLASS_REPLY_CONTAINER = 'reply-container';
 const CLASS_REPLY_TEXTAREA = 'reply-textarea';
-const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
 const CLASS_DELETE_CONFIRMATION = 'delete-confirmation';
 const CLASS_BUTTON_DELETE_CONFIRM = 'confirm-delete-btn';
 
@@ -24,6 +23,7 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * The data object for constructing a dialog.
+     *
      * @typedef {Object} AnnotationDialogData
      * @property {HTMLElement} annotatedElement HTML element being annotated on
      * @property {Annotation[]} annotations Annotations in dialog, can be an
@@ -82,8 +82,8 @@ class AnnotationDialog extends EventEmitter {
             annotatorUtil.showElement(this.element);
             this.element.appendChild(this.dialogEl);
 
-            if (this.highlightDialogEl && !this.hasComments) {
-                this.element.classList.add(CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
+            if (this.highlightDialogEl && !this.element.querySelectorAll(`.${CLASS_COMMENT}`).length) {
+                this.element.classList.add(constants.CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
 
                 const headerEl = this.element.querySelector(constants.SELECTOR_MOBILE_DIALOG_HEADER);
                 headerEl.classList.add(CLASS_HIDDEN);
@@ -92,7 +92,7 @@ class AnnotationDialog extends EventEmitter {
             const dialogCloseButtonEl = this.element.querySelector(constants.SELECTOR_DIALOG_CLOSE);
             dialogCloseButtonEl.addEventListener('click', this.hideMobileDialog);
 
-            this.element.classList.add(CLASS_ANIMATE_DIALOG);
+            this.element.classList.add(constants.CLASS_ANIMATE_DIALOG);
 
             this.bindDOMListeners();
         }
@@ -147,14 +147,17 @@ class AnnotationDialog extends EventEmitter {
             return;
         }
 
-        this.element.classList.remove(CLASS_ANIMATE_DIALOG);
+        if (this.dialogEl) {
+            this.element.removeChild(this.dialogEl);
+        }
+        this.element.classList.remove(constants.CLASS_ANIMATE_DIALOG);
 
         // Clear annotations from dialog
         this.element.innerHTML = `
             <div class="${constants.CLASS_MOBILE_DIALOG_HEADER}">
                 <button class="${constants.CLASS_DIALOG_CLOSE}">${ICON_CLOSE}</button>
             </div>`.trim();
-        this.element.classList.remove(CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
+        this.element.classList.remove(constants.CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
 
         const dialogCloseButtonEl = this.element.querySelector(constants.SELECTOR_DIALOG_CLOSE);
         dialogCloseButtonEl.removeEventListener('click', this.hideMobileDialog);
@@ -163,9 +166,7 @@ class AnnotationDialog extends EventEmitter {
         this.unbindDOMListeners();
 
         // Cancel any unsaved annotations
-        if (!this.hasAnnotations) {
-            this.cancelAnnotation();
-        }
+        this.cancelAnnotation();
     }
 
     /**
@@ -174,6 +175,10 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     hide() {
+        if (this.element && this.element.classList.contains(CLASS_HIDDEN)) {
+            return;
+        }
+
         if (this.isMobile) {
             this.hideMobileDialog();
         }
@@ -405,8 +410,7 @@ class AnnotationDialog extends EventEmitter {
             // Clicking 'Cancel' button to cancel the annotation
             case constants.DATA_TYPE_CANCEL:
                 if (this.isMobile) {
-                    // Hide mobile dialog without destroying the thread
-                    this.hideMobileDialog();
+                    this.hide();
                 } else {
                     // Cancels + destroys the annotation thread
                     this.cancelAnnotation();
@@ -479,7 +483,7 @@ class AnnotationDialog extends EventEmitter {
         const text = annotatorUtil.htmlEscape(annotation.text);
 
         const annotationEl = document.createElement('div');
-        annotationEl.classList.add('annotation-comment');
+        annotationEl.classList.add(CLASS_COMMENT);
         annotationEl.setAttribute('data-annotation-id', annotation.annotationID);
         annotationEl.innerHTML = `
             <div class="profile-image-container">${avatarHtml}</div>
