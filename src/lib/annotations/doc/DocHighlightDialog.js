@@ -2,7 +2,6 @@ import autobind from 'autobind-decorator';
 import AnnotationDialog from '../AnnotationDialog';
 import * as annotatorUtil from '../annotatorUtil';
 import * as docAnnotatorUtil from './docAnnotatorUtil';
-import { CLASS_HIDDEN, CLASS_ACTIVE } from '../../constants';
 import { ICON_HIGHLIGHT, ICON_HIGHLIGHT_COMMENT } from '../../icons/icons';
 import * as constants from '../annotationConstants';
 
@@ -121,7 +120,7 @@ class DocHighlightDialog extends AnnotationDialog {
      * @return {void}
      */
     toggleHighlightDialogs() {
-        const commentsDialogIsHidden = this.commentsDialogEl.classList.contains(CLASS_HIDDEN);
+        const commentsDialogIsHidden = this.commentsDialogEl.classList.contains(constants.CLASS_HIDDEN);
 
         // Displays comments dialog and hides highlight annotations button
         if (commentsDialogIsHidden) {
@@ -134,7 +133,7 @@ class DocHighlightDialog extends AnnotationDialog {
 
             // Activate comments textarea
             const textAreaEl = this.dialogEl.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
-            textAreaEl.classList.add(CLASS_ACTIVE);
+            textAreaEl.classList.add(constants.CLASS_ACTIVE);
         } else {
             // Displays the highlight and comment buttons dialog and
             // hides the comments dialog
@@ -214,9 +213,9 @@ class DocHighlightDialog extends AnnotationDialog {
         this.dialogEl.appendChild(this.highlightDialogEl);
         this.dialogEl.appendChild(this.commentsDialogEl);
         if (this.hasComments) {
-            this.highlightDialogEl.classList.add(CLASS_HIDDEN);
+            this.highlightDialogEl.classList.add(constants.CLASS_HIDDEN);
         } else {
-            this.commentsDialogEl.classList.add(CLASS_HIDDEN);
+            this.commentsDialogEl.classList.add(constants.CLASS_HIDDEN);
         }
 
         if (!this.isMobile) {
@@ -357,9 +356,9 @@ class DocHighlightDialog extends AnnotationDialog {
     toggleHighlightIcon(fillStyle) {
         const addHighlightBtn = this.dialogEl.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
         if (fillStyle === constants.HIGHLIGHT_FILL.active) {
-            addHighlightBtn.classList.add(CLASS_ACTIVE);
+            addHighlightBtn.classList.add(constants.CLASS_ACTIVE);
         } else {
-            addHighlightBtn.classList.remove(CLASS_ACTIVE);
+            addHighlightBtn.classList.remove(constants.CLASS_ACTIVE);
         }
     }
 
@@ -475,8 +474,8 @@ class DocHighlightDialog extends AnnotationDialog {
     generateHighlightDialogEl() {
         const highlightDialogEl = document.createElement('div');
         highlightDialogEl.innerHTML = `
-            <span class="${CLASS_HIGHLIGHT_LABEL} ${CLASS_HIDDEN}"></span>
-            <span class="${constants.CLASS_HIGHLIGHT_BTNS} ${this.isMobile ? CLASS_HIDDEN : ''}">
+            <span class="${CLASS_HIGHLIGHT_LABEL} ${constants.CLASS_HIDDEN}"></span>
+            <span class="${constants.CLASS_HIGHLIGHT_BTNS} ${this.isMobile ? constants.CLASS_HIDDEN : ''}">
                 <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_BTN}"
                     data-type="${constants.DATA_TYPE_HIGHLIGHT}"
                     title="${__('annotation_highlight_toggle')}">
