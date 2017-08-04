@@ -174,16 +174,24 @@ class DocAnnotator extends Annotator {
         let location = null;
         const zoomScale = annotatorUtil.getScale(this.annotatedElement);
 
+        let clientEvent = event;
+        if (this.isMobile) {
+            if (!event.targetTouches || event.targetTouches.length === 0) {
+                return location;
+            }
+            clientEvent = event.targetTouches[0];
+        }
+
+        // If click isn't on a page, ignore
+        const eventTarget = clientEvent.target;
+        const { pageEl, page } = annotatorUtil.getPageInfo(eventTarget);
+        if (!pageEl) {
+            return location;
+        }
+
         if (annotationType === TYPES.point) {
             // If there is a selection, ignore
             if (docAnnotatorUtil.isSelectionPresent()) {
-                return location;
-            }
-
-            // If click isn't on a page, ignore
-            const eventTarget = event.target;
-            const { pageEl, page } = annotatorUtil.getPageInfo(eventTarget);
-            if (!pageEl) {
                 return location;
             }
 
@@ -198,15 +206,23 @@ class DocAnnotator extends Annotator {
             const pageWidth = pageDimensions.width;
             const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
             const browserCoordinates = [
-                event.clientX - pageDimensions.left,
-                event.clientY - pageDimensions.top - PAGE_PADDING_TOP
+                clientEvent.clientX - pageDimensions.left,
+                clientEvent.clientY - pageDimensions.top - PAGE_PADDING_TOP
             ];
+            let [x, y] = browserCoordinates;
+
+            // Do not create annotation if event doesn't have coordinates
+            if (isNaN(x) || isNaN(y)) {
+                this.emit('annotationerror', __('annotations_create_error'));
+                return location;
+            }
+
             const pdfCoordinates = docAnnotatorUtil.convertDOMSpaceToPDFSpace(
                 browserCoordinates,
                 pageHeight,
                 zoomScale
             );
-            const [x, y] = pdfCoordinates;
+            [x, y] = pdfCoordinates;
 
             // We save the dimensions of the annotated element scaled to 100%
             // so we can compare to the annotated element during render time
@@ -221,9 +237,6 @@ class DocAnnotator extends Annotator {
             if (!this.highlighter || !this.highlighter.highlights.length) {
                 return location;
             }
-
-            // Get correct page
-            const { pageEl, page } = annotatorUtil.getPageInfo(event.target);
 
             // Use highlight module to calculate quad points
             const { highlightEls } = docAnnotatorUtil.getHighlightAndHighlightEls(this.highlighter, pageEl);
@@ -328,6 +341,7 @@ class DocAnnotator extends Annotator {
             return null;
         }
         this.createHighlightDialog.hide();
+        this.isCreatingHighlight = false;
 
         const location = this.getLocationFromEvent(this.lastHighlightEvent, TYPES.highlight);
         if (!location) {
@@ -407,6 +421,8 @@ class DocAnnotator extends Annotator {
      * @return {void}
      */
     bindDOMListeners() {
+        super.bindDOMListeners();
+
         this.annotatedElement.addEventListener('mouseup', this.highlightMouseupHandler);
 
         if (this.annotationService.canAnnotate) {
@@ -425,6 +441,8 @@ class DocAnnotator extends Annotator {
      * @return {void}
      */
     unbindDOMListeners() {
+        super.unbindDOMListeners();
+
         this.annotatedElement.removeEventListener('mouseup', this.highlightMouseupHandler);
 
         if (this.annotationService.canAnnotate) {
@@ -576,6 +594,12 @@ class DocAnnotator extends Annotator {
             return;
         }
 
+        // Determine if user is in the middle of creating a highlight
+        // annotation and ignore hover events of any highlights below
+        if (this.isCreatingHighlight) {
+            return;
+        }
+
         // Determine if mouse is over any highlight dialog
         // and ignore hover events of any highlights below
         const event = this.mouseMoveEvent;
@@ -669,6 +693,8 @@ class DocAnnotator extends Annotator {
             this.highlighter.removeAllHighlights();
         }
         this.createHighlightDialog.hide();
+        this.isCreatingHighlight = false;
+
         // Creating highlights is disabled on mobile for now since the
         // event we would listen to, selectionchange, fires continuously and
         // is unreliable. If the mouse moved or we double clicked text,
@@ -678,7 +704,6 @@ class DocAnnotator extends Annotator {
         } else {
             this.highlightClickHandler(event);
         }
-        this.isCreatingHighlight = false;
     }
 
     /**
@@ -724,6 +749,7 @@ class DocAnnotator extends Annotator {
         if (!this.isMobile) {
             this.createHighlightDialog.setPosition(right - pageLeft, bottom - pageTop);
         }
+        this.isCreatingHighlight = true;
 
         this.lastHighlightEvent = event;
     }

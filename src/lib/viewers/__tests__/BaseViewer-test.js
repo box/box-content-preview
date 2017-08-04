@@ -111,6 +111,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.finishLoadingSetup();
             expect(container.innerHTML).to.equal('icon');
             expect(container.classList.add).to.be.called;
+            base.options.container = null;
         });
     });
 
@@ -283,6 +284,7 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(fullscreen, 'addListener');
             sandbox.stub(document.defaultView, 'addEventListener');
             sandbox.stub(base, 'loadAnnotator');
+            base.containerEl = containerEl;
             base.annotationsPromise = {
                 then: (arg) => {
                     expect(base.scale).to.equal(1.5);
@@ -302,6 +304,7 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(fullscreen, 'addListener');
             sandbox.stub(document.defaultView, 'addEventListener');
             sandbox.stub(base, 'loadAnnotator');
+            base.containerEl = containerEl;
             base.annotationsPromise = {
                 then: (arg) => {
                     expect(arg).to.equal(base.loadAnnotator);
@@ -707,8 +710,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             stubs.isAnnotatable = sandbox.stub(base, 'isAnnotatable').returns(true);
             sandbox.stub(base, 'initAnnotations');
-            sandbox.stub(base, 'showPointAnnotateButton', () => base.getAnnotationModeClickHandler('point'));
-            sandbox.stub(base, 'showDrawAnnotateButton', () => base.getAnnotationModeClickHandler('draw'));
+            sandbox.stub(base, 'showModeAnnotateButton');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(false);
         });
 
@@ -723,9 +725,7 @@ describe('lib/viewers/BaseViewer', () => {
             window.BoxAnnotations = BoxAnnotations;
             base.loadAnnotator();
             expect(base.initAnnotations).to.be.called;
-            expect(base.showPointAnnotateButton).to.be.called;
-            // NOTE: Enable once drawing annotations are enabled
-            // expect(base.showDrawAnnotateButton).to.be.called;
+            expect(base.showModeAnnotateButton).to.be.called;
         });
 
         it('should not display the point or draw annotation button if the user does not have the appropriate permissions', () => {
@@ -736,9 +736,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.loadAnnotator();
             expect(base.initAnnotations).to.not.be.called;
-            expect(base.showPointAnnotateButton).to.not.be.called;
-            // NOTE: Enable once drawing annotations are enabled
-            // expect(base.showDrawAnnotateButton).to.not.be.called;
+            expect(base.showModeAnnotateButton).to.not.be.called;
         });
 
         it('should not load an annotator if no loader was found', () => {
@@ -748,8 +746,7 @@ describe('lib/viewers/BaseViewer', () => {
             window.BoxAnnotations = BoxAnnotations;
             base.loadAnnotator();
             expect(base.initAnnotations).to.not.be.called;
-            expect(base.showPointAnnotateButton).to.not.be.called;
-            expect(base.showDrawAnnotateButton).to.not.be.called;
+            expect(base.showModeAnnotateButton).to.not.be.called;
         });
 
         it('should not load an annotator if the viewer is not annotatable', () => {
@@ -762,35 +759,7 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.isAnnotatable.returns(false);
             base.loadAnnotator();
             expect(base.initAnnotations).to.not.be.called;
-            expect(base.showPointAnnotateButton).to.not.be.called;
-            expect(base.showDrawAnnotateButton).to.not.be.called;
-        });
-    });
-
-    describe('scaleAnnotations()', () => {
-        const scaleData = {
-            scale: 0.4321,
-            rotationAngle: 90,
-            pageNum: 2
-        };
-        beforeEach(() => {
-            base.annotator = {
-                setScale: sandbox.stub(),
-                rotateAnnotations: sandbox.stub()
-            };
-            base.annotator.threads = {
-                2: [{}]
-            };
-
-            base.scaleAnnotations(scaleData);
-        });
-
-        it('should invoke setScale() on annotator to scale annotations', () => {
-            expect(base.annotator.setScale).to.be.calledWith(scaleData.scale);
-        });
-
-        it('should invoke rotateAnnotations() on annotator to orient annotations', () => {
-            expect(base.annotator.rotateAnnotations).to.be.calledWith(scaleData.rotationAngle, scaleData.pageNum);
+            expect(base.showModeAnnotateButton).to.not.be.called;
         });
     });
 
@@ -819,13 +788,13 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.initAnnotations();
         });
+
         it('should initialize the annotator', () => {
             expect(base.annotator.init).to.be.calledWith(1.5);
-            expect(base.annotator.addListener).to.be.calledWith('annotationmodeenter', sinon.match.func);
-            expect(base.annotator.addListener).to.be.calledWith('annotationmodeexit', sinon.match.func);
-            expect(base.annotator.addListener).to.be.calledWith('annotationsfetched', sinon.match.func);
             expect(base.addListener).to.be.calledWith('togglepointannotationmode', sinon.match.func);
+            expect(base.addListener).to.be.calledWith('toggledrawannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
+            expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
         });
     });
 
@@ -867,8 +836,40 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('showPointAnnotateButton()', () => {
-        it('should set up and show point annotate button', () => {
+    describe('showModeAnnotateButton()', () => {
+        const modes = {
+            point: {
+                title: 'Point Annotation Mode',
+                selector: constants.SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT
+            },
+            draw: {
+                title: 'Draw Annotation Mode',
+                selector: constants.SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW
+            }
+        };
+
+        it('should do nothing if the mode does not require a button', () => {
+            sandbox.stub(base, 'getAnnotationModeClickHandler');
+            sandbox.stub(base, 'isAnnotatable').returns(true);
+            base.showModeAnnotateButton('highlight', modes);
+            expect(base.getAnnotationModeClickHandler).to.not.be.called;
+        });
+
+        it('should do nothing if the annotation type is not supported ', () => {
+            sandbox.stub(base, 'getAnnotationModeClickHandler');
+            sandbox.stub(base, 'isAnnotatable').returns(false);
+            base.showModeAnnotateButton('bleh', modes);
+            expect(base.getAnnotationModeClickHandler).to.not.be.called;
+        });
+
+        it('should do nothing if the button is not in the container', () => {
+            sandbox.stub(base, 'isAnnotatable').returns(true);
+            sandbox.stub(base, 'getAnnotationModeClickHandler');
+            base.showModeAnnotateButton('point', modes);
+            expect(base.getAnnotationModeClickHandler).to.not.be.called;
+        });
+
+        it('should set up and show an annotate button', () => {
             const buttonEl = document.createElement('div');
             buttonEl.classList.add('bp-btn-annotate-point');
             buttonEl.classList.add(constants.CLASS_HIDDEN);
@@ -880,33 +881,12 @@ describe('lib/viewers/BaseViewer', () => {
             };
             containerEl.appendChild(buttonEl);
             sandbox.stub(base, 'isAnnotatable').returns(true);
-            sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', base.handler);
+            sandbox.stub(base, 'getAnnotationModeClickHandler');
+            sandbox.mock(buttonEl).expects('addEventListener').withArgs('click');
 
-            base.showPointAnnotateButton(base.handler);
-            expect(buttonEl.title).to.equal('Point annotation mode');
-            expect(buttonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
-        });
-    });
-
-    describe('showDrawAnnotateButton()', () => {
-        it('should set up and show point annotate button', () => {
-            const buttonEl = document.createElement('div');
-            buttonEl.classList.add('bp-btn-annotate-draw');
-            buttonEl.classList.add(constants.CLASS_HIDDEN);
-            base.options = {
-                container: document,
-                file: {
-                    id: 123
-                }
-            };
-
-            containerEl.appendChild(buttonEl);
-            sandbox.stub(base, 'isAnnotatable').returns(true);
-            sandbox.mock(buttonEl).expects('addEventListener').withArgs('click', base.handler);
-
-            base.showDrawAnnotateButton(base.handler);
-            expect(buttonEl.title).to.equal('Drawing annotation mode');
-            expect(buttonEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
+            base.showModeAnnotateButton('point', modes);
+            expect(buttonEl.title).to.equal('Point Annotation Mode');
+            expect(base.getAnnotationModeClickHandler).to.be.called;
         });
     });
 
@@ -934,6 +914,75 @@ describe('lib/viewers/BaseViewer', () => {
 
             handler(event);
             expect(base.emit).to.have.been.calledWith('togglepointannotationmode');
+        });
+    });
+
+    describe('handleAnnotatorNotifications()', () => {
+        const ANNOTATION_TYPE_DRAW = 'draw';
+        const ANNOTATION_TYPE_POINT = 'point';
+
+        beforeEach(() => {
+            sandbox.stub(base, 'emit');
+        });
+
+        it('should disable controls and show point mode notification on annotationmodeenter', () => {
+            sandbox.stub(base, 'disableViewerControls');
+            base.handleAnnotatorNotifications({
+                event: 'annotationmodeenter',
+                data: ANNOTATION_TYPE_POINT
+            });
+            expect(base.disableViewerControls).to.be.called;
+            expect(base.emit).to.be.calledWith('notificationshow', sinon.match.string);
+        });
+
+        it('should disable controls and show draw mode notification on annotationmodeenter', () => {
+            sandbox.stub(base, 'disableViewerControls');
+            base.handleAnnotatorNotifications({
+                event: 'annotationmodeenter',
+                data: ANNOTATION_TYPE_DRAW
+            });
+            expect(base.disableViewerControls).to.be.called;
+            expect(base.emit).to.be.calledWith('notificationshow', sinon.match.string);
+        });
+
+        it('should enable controls and hide notification on annotationmodeexit', () => {
+            sandbox.stub(base, 'enableViewerControls');
+            base.handleAnnotatorNotifications({
+                event: 'annotationmodeexit'
+            });
+            expect(base.enableViewerControls).to.be.called;
+            expect(base.emit).to.be.calledWith('notificationhide');
+        });
+
+        it('should show a notification on annotationerror', () => {
+            const data = {
+                event: 'annotationerror',
+                data: 'message'
+            };
+            base.handleAnnotatorNotifications(data);
+            expect(base.emit).to.be.calledWith('notificationshow', data.data);
+        });
+
+        it('should scale annotations on annotationsfetched', () => {
+            base.scale = 1;
+            base.rotationAngle = 90;
+            base.handleAnnotatorNotifications({
+                event: 'annotationsfetched'
+            });
+            expect(base.emit).to.be.calledWith('scale', {
+                scale: base.scale,
+                rotationAngle: base.rotationAngle
+            });
+        });
+
+        it('should emit annotatorevent when event does not match', () => {
+            const data = {
+                event: 'no match',
+                data: 'message'
+            };
+            base.handleAnnotatorNotifications(data);
+            expect(base.emit).to.be.calledWith(data.event, data.data);
+            expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
     });
 });

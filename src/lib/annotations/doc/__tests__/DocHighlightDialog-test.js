@@ -5,7 +5,7 @@ import AnnotationDialog from '../../AnnotationDialog';
 import * as annotatorUtil from '../../annotatorUtil';
 import * as docAnnotatorUtil from '../docAnnotatorUtil';
 import { CLASS_HIDDEN, CLASS_ACTIVE } from '../../../constants';
-import * as util from '../../../util';
+import * as util from '../../annotatorUtil';
 import * as constants from '../../annotationConstants';
 
 let dialog;

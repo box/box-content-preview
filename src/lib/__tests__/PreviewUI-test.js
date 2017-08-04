@@ -187,10 +187,13 @@ describe('lib/PreviewUI', () => {
         });
 
         describe('hideLoadingIndicator()', () => {
-            it('should hide loading indicator', () => {
+            it('should hide loading indicator and intializes the notification', () => {
                 const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
                 ui.hideLoadingIndicator();
                 expect(contentContainerEl).to.have.class(constants.CLASS_PREVIEW_LOADED);
+
+                // Check that notification is initialized
+                expect(contentContainerEl).to.contain('.bp-notification');
             });
 
             it('should remove the hidden class from the crawler', () => {
@@ -228,6 +231,28 @@ describe('lib/PreviewUI', () => {
 
             ui.finishProgressBar();
             expect(ui.progressBar.finish).to.be.called;
+        });
+    });
+
+    describe('showNotification()', () => {
+        it('should show a notification message', () => {
+            ui.notification = {
+                show: sandbox.stub()
+            };
+
+            ui.showNotification('message');
+            expect(ui.notification.show).to.be.called;
+        });
+    });
+
+    describe('hideNotification()', () => {
+        it('should hide the notification message', () => {
+            ui.notification = {
+                hide: sandbox.stub()
+            };
+
+            ui.hideNotification('message');
+            expect(ui.notification.hide).to.be.called;
         });
     });
 });

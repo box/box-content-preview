@@ -793,30 +793,45 @@ class Preview extends EventEmitter {
     attachViewerListeners() {
         // Node requires listener attached to 'error'
         this.viewer.addListener('error', this.triggerError);
-        this.viewer.addListener('viewerevent', (data) => {
-            /* istanbul ignore next */
-            switch (data.event) {
-                case 'download':
-                    this.download();
-                    break;
-                case 'reload':
-                    this.show(this.file.id, this.previewOptions);
-                    break;
-                case 'load':
-                    this.finishLoading(data.data);
-                    break;
-                case 'progressstart':
-                    this.ui.startProgressBar();
-                    break;
-                case 'progressend':
-                    this.ui.finishProgressBar();
-                    break;
-                default:
-                    // This includes 'notification', 'preload' and others
-                    this.emit(data.event, data.data);
-                    this.emit('viewerevent', data);
-            }
-        });
+        this.viewer.addListener('viewerevent', this.handleViewerEvents);
+    }
+
+    /**
+     * Handle events emitted by the viewer
+     *
+     * @private
+     * @param {Object} [data] - Viewer event data
+     * @return {void}
+     */
+    handleViewerEvents(data) {
+        /* istanbul ignore next */
+        switch (data.event) {
+            case 'download':
+                this.download();
+                break;
+            case 'reload':
+                this.show(this.file.id, this.previewOptions);
+                break;
+            case 'load':
+                this.finishLoading(data.data);
+                break;
+            case 'progressstart':
+                this.ui.startProgressBar();
+                break;
+            case 'progressend':
+                this.ui.finishProgressBar();
+                break;
+            case 'notificationshow':
+                this.ui.showNotification(data.data);
+                break;
+            case 'notificationhide':
+                this.ui.hideNotification();
+                break;
+            default:
+                // This includes 'notification', 'preload' and others
+                this.emit(data.event, data.data);
+                this.emit('viewerevent', data);
+        }
     }
 
     /**

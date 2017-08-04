@@ -2,7 +2,7 @@ import 'whatwg-fetch';
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import Annotation from './Annotation';
-import { getHeaders } from '../util';
+import { getHeaders } from './annotatorUtil';
 
 const ANONYMOUS_USER = {
     id: '0',
