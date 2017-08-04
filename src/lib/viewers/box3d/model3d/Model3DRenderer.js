@@ -129,6 +129,7 @@ class Model3DRenderer extends Box3DRenderer {
         if (renderModes) {
             renderModes.setAttribute('shapeTexture', 'MAT_CAP_TEX');
         }
+
         return new Promise((resolve, reject) => {
             const scene = this.getScene();
             if (!scene) {

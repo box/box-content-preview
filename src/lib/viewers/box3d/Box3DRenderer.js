@@ -1,5 +1,6 @@
 /* global Box3D */
 /* eslint no-param-reassign:0 */
+import 'whatwg-fetch';
 import EventEmitter from 'events';
 import {
     EVENT_SHOW_VR_BUTTON,
@@ -204,24 +205,7 @@ class Box3DRenderer extends EventEmitter {
      * @return {Promise} - A promise that resolves on completion of the load.
      */
     getEntitiesFromUrl(url) {
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-
-            xhr.open('GET', url);
-
-            /**
-             * Callback for xhr completion.
-             * @return {void}
-            */
-            const complete = () => {
-                resolve(JSON.parse(xhr.responseText));
-            };
-
-            xhr.addEventListener('load', complete);
-            xhr.addEventListener('error', reject);
-
-            xhr.send();
-        });
+        return fetch(url).then((response) => response.json());
     }
 
     /**
@@ -284,11 +268,13 @@ class Box3DRenderer extends EventEmitter {
             if (applicationEntities) {
                 box3d.addEntities(applicationEntities);
             }
+
             let app = box3d.getAssetByClass(Box3D.ApplicationAsset);
             box3d.addEntities(sceneEntities);
             if (!app) {
                 app = box3d.getAssetByClass(Box3D.ApplicationAsset);
             }
+
             app.load();
             this.box3d = box3d;
             resolve(this.box3d);
@@ -460,6 +446,7 @@ class Box3DRenderer extends EventEmitter {
         if (!vrPresenter) {
             return;
         }
+
         vrPresenter.whenDisplaysAvailable((displays) => {
             if (displays.length) {
                 this.emit(EVENT_SHOW_VR_BUTTON);
