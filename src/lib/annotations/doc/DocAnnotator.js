@@ -424,6 +424,8 @@ class DocAnnotator extends Annotator {
      * @return {void}
      */
     bindDOMListeners() {
+        super.bindDOMListeners();
+
         this.annotatedElement.addEventListener('mouseup', this.highlightMouseupHandler);
 
         if (this.annotationService.canAnnotate) {
@@ -442,6 +444,8 @@ class DocAnnotator extends Annotator {
      * @return {void}
      */
     unbindDOMListeners() {
+        super.unbindDOMListeners();
+
         this.annotatedElement.removeEventListener('mouseup', this.highlightMouseupHandler);
 
         if (this.annotationService.canAnnotate) {

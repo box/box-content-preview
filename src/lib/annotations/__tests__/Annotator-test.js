@@ -385,6 +385,22 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
+        describe('bindDOMListeners()', () => {
+            it('should add a listener for scaling the annotator', () => {
+                sandbox.stub(annotator, 'addListener');
+                annotator.bindDOMListeners();
+                expect(annotator.addListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
+            });
+        });
+
+        describe('unbindDOMListeners()', () => {
+            it('should add a listener for scaling the annotator', () => {
+                sandbox.stub(annotator, 'removeListener');
+                annotator.unbindDOMListeners();
+                expect(annotator.removeListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
+            });
+        });
+
         describe('bindCustomListenersOnService()', () => {
             it('should do nothing if the service does not exist', () => {
                 annotator.annotationService = {
@@ -715,6 +731,22 @@ describe('lib/annotations/Annotator', () => {
 
                 annotator.annotatedElement.classList.remove(CLASS_ANNOTATION_DRAW_MODE);
                 expect(annotator.isInDrawMode()).to.be.false;
+            });
+        });
+
+        describe('scaleAnnotations()', () => {
+            it('should set scale and rotate annotations based on the annotated element', () => {
+                sandbox.stub(annotator, 'setScale');
+                sandbox.stub(annotator, 'rotateAnnotations');
+
+                const data = {
+                    scale: 5,
+                    rotationAngle: 90,
+                    pageNum: 2
+                };
+                annotator.scaleAnnotations(data);
+                expect(annotator.setScale).to.be.calledWith(data.scale);
+                expect(annotator.rotateAnnotations).to.be.calledWith(data.rotationAngle, data.pageNum);
             });
         });
 

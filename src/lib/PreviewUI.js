@@ -117,9 +117,6 @@ class PreviewUI {
         // Setup loading indicator
         this.setupLoading();
 
-        // Setup notification
-        this.notification = new Notification(this.contentContainer);
-
         // Attach keyboard events
         document.addEventListener('keydown', this.keydownHandler);
 
@@ -258,6 +255,9 @@ class PreviewUI {
                 // part of finishLoadingSetup in BaseViewer.js
                 crawler.classList.remove(CLASS_HIDDEN);
             }
+
+            // Setup viewer notification
+            this.notification = new Notification(this.contentContainer);
         }
     }
 
