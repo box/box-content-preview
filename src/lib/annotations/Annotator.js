@@ -17,8 +17,6 @@ import {
     SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL,
     SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER,
     SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
     TYPES
 } from './annotationConstants';
 
@@ -57,6 +55,7 @@ class Annotator extends EventEmitter {
         this.validationErrorEmitted = false;
         this.isMobile = data.isMobile;
         this.previewUI = data.previewUI;
+        this.modeButtons = data.modeButtons;
         this.annotationModeHandlers = [];
     }
 
@@ -221,7 +220,8 @@ class Annotator extends EventEmitter {
         }
 
         // Hide create annotations button if image is rotated
-        const pointAnnotateButton = this.previewUI.getAnnotateButton(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
+        const pointButtonSelector = this.modeButtons[TYPES.point].selector;
+        const pointAnnotateButton = this.previewUI.getAnnotateButton(pointButtonSelector);
 
         if (rotationAngle !== 0) {
             annotatorUtil.hideElement(pointAnnotateButton);
@@ -249,7 +249,8 @@ class Annotator extends EventEmitter {
      */
     togglePointAnnotationHandler(event = {}) {
         this.destroyPendingThreads();
-        const buttonEl = event.target || this.previewUI.getAnnotateButton(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
+        const pointButtonSelector = this.modeButtons[TYPES.point].selector;
+        const buttonEl = event.target || this.previewUI.getAnnotateButton(pointButtonSelector);
 
         if (this.isInDrawMode()) {
             this.toggleDrawAnnotationHandler();
@@ -292,7 +293,8 @@ class Annotator extends EventEmitter {
             this.togglePointAnnotationHandler();
         }
 
-        const buttonEl = event.target || this.previewUI.getAnnotateButton(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
+        const drawButtonSelector = this.modeButtons[TYPES.draw].selector;
+        const buttonEl = event.target || this.previewUI.getAnnotateButton(drawButtonSelector);
         const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
 
         // Exit if in draw mode

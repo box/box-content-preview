@@ -61,8 +61,6 @@ export const SELECTOR_MOBILE_DIALOG_HEADER = `.${CLASS_MOBILE_DIALOG_HEADER}`;
 export const SELECTOR_DIALOG_CLOSE = `.${CLASS_DIALOG_CLOSE}`;
 export const SELECTOR_HIGHLIGHT_BTNS = `.${CLASS_HIGHLIGHT_BTNS}`;
 export const SELECTOR_ADD_HIGHLIGHT_BTN = `.${CLASS_ADD_HIGHLIGHT_BTN}`;
-export const SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT = '.bp-btn-annotate-point';
-export const SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW = '.bp-btn-annotate-draw';
 
 export const STATES_DRAW = {
     draw: 'draw',
