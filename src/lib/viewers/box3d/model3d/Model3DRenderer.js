@@ -238,9 +238,8 @@ class Model3DRenderer extends Box3DRenderer {
         const center = this.instance.getCenter();
         center.applyMatrix4(this.instance.runtimeData.matrixWorld);
 
-        // Set the origin point (so that we always point at the center of the model when the camera reloads)
-        orbitController.setPivotPosition(center);
         orbitController.reset();
+        orbitController.setPivotPosition(center);
 
         const distance =
             PREVIEW_CAMERA_ORBIT_DISTANCE_FACTOR * Math.max(Math.max(maxDimension.x, maxDimension.y), maxDimension.z);
