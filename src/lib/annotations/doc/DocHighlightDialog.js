@@ -57,7 +57,7 @@ class DocHighlightDialog extends AnnotationDialog {
         }
 
         // Convert from plain highlight to comment
-        const headerEl = this.isMobile ? this.element.querySelector('.bp-annotation-mobile-header') : null;
+        const headerEl = this.element.querySelector('.bp-annotation-mobile-header');
         if (headerEl) {
             headerEl.classList.remove(CLASS_HIDDEN);
             this.element.classList.remove(constants.CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
@@ -77,9 +77,8 @@ class DocHighlightDialog extends AnnotationDialog {
             return;
         }
 
-        const commentsDialogIsHidden = this.commentsDialogEl.classList.contains(CLASS_HIDDEN);
-
         // Displays comments dialog and hides highlight annotations button
+        const commentsDialogIsHidden = this.commentsDialogEl.classList.contains(CLASS_HIDDEN);
         if (commentsDialogIsHidden) {
             return;
         }

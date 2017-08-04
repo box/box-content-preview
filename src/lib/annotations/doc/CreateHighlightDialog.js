@@ -15,7 +15,7 @@ const CREATE_HIGHLIGHT_DIALOG_TEMPLATE = `
         <div class="${constants.CLASS_ANNOTATION_HIGHLIGHT_DIALOG}">
             <span class="${constants.CLASS_HIGHLIGHT_BTNS}">
                 <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_BTN}"
-                    // data-type="${DATA_TYPE_HIGHLIGHT}""
+                    data-type="${DATA_TYPE_HIGHLIGHT}"
                     title="${TITLE_HIGHLIGHT_TOGGLE}">
                     ${ICON_HIGHLIGHT}
                 </button>
@@ -262,8 +262,10 @@ class CreateHighlightDialog extends EventEmitter {
      */
     onCommentPost(text) {
         this.emit(CreateEvents.commentPost, text);
-        this.commentBox.clear();
-        this.commentBox.blur();
+        if (text) {
+            this.commentBox.clear();
+            this.commentBox.blur();
+        }
     }
 
     /**

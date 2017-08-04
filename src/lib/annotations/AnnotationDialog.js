@@ -82,7 +82,8 @@ class AnnotationDialog extends EventEmitter {
             annotatorUtil.showElement(this.element);
             this.element.appendChild(this.dialogEl);
 
-            if (this.highlightDialogEl && !this.element.querySelectorAll(`.${CLASS_COMMENT}`).length) {
+            const commentEls = this.element.querySelectorAll(`.${CLASS_COMMENT}`);
+            if (this.highlightDialogEl && !commentEls.length) {
                 this.element.classList.add(constants.CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
 
                 const headerEl = this.element.querySelector(constants.SELECTOR_MOBILE_DIALOG_HEADER);
@@ -147,7 +148,7 @@ class AnnotationDialog extends EventEmitter {
             return;
         }
 
-        if (this.dialogEl) {
+        if (this.dialogEl && this.dialogEl.parentNode) {
             this.dialogEl.parentNode.removeChild(this.dialogEl);
         }
 

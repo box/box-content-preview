@@ -1,8 +1,9 @@
+@import '../_boxuiVariables';
+
 $tablet: "(min-width: 768px)";
-$three-c: #ccc;
 
 @mixin border-top-bottom {
-    border-color: $three-c;
+    border-color: $seesee;
     border-style: solid;
     border-width: 1px 0;
 }
@@ -25,7 +26,7 @@ $three-c: #ccc;
                 animation: show-dialog-tablet;
                 animation-duration: .2s;
                 animation-fill-mode: forwards;
-                border-left: solid 1px $three-c;
+                border-left: solid 1px $seesee;
                 width: 450px;
             }
         }
@@ -211,7 +212,7 @@ $three-c: #ccc;
                 height: 25px;
                 bottom: 17px;
                 left: 50%;
-                border-right: 1px solid #ccc;
+                border-right: 1px solid $seesee;
             }
         }
     }

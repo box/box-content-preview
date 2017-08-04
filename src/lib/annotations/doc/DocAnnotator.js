@@ -107,9 +107,7 @@ class DocAnnotator extends Annotator {
             hasTouch: this.hasTouch
         });
         this.createHighlightDialog.addListener(CreateEvents.plain, this.createPlainHighlight);
-
         this.createHighlightDialog.addListener(CreateEvents.comment, this.highlightCurrentSelection);
-
         this.createHighlightDialog.addListener(CreateEvents.commentPost, this.createHighlightThread);
     }
 
@@ -122,9 +120,7 @@ class DocAnnotator extends Annotator {
         super.destroy();
 
         this.createHighlightDialog.removeListener(CreateEvents.plain, this.createPlainHighlight);
-
         this.createHighlightDialog.removeListener(CreateEvents.comment, this.highlightCurrentSelection);
-
         this.createHighlightDialog.removeListener(CreateEvents.commentPost, this.createHighlightThread);
         this.createHighlightDialog.destroy();
         this.createHighlightDialog = null;
@@ -133,6 +129,7 @@ class DocAnnotator extends Annotator {
     /** @inheritdoc */
     init(initialScale) {
         super.init(initialScale);
+
         // Allow rangy to highlight this
         this.annotatedElement.id = ID_ANNOTATED_ELEMENT;
     }
@@ -430,15 +427,17 @@ class DocAnnotator extends Annotator {
 
         this.annotatedElement.addEventListener('mouseup', this.highlightMouseupHandler);
 
-        if (this.annotationService.canAnnotate) {
-            this.annotatedElement.addEventListener('dblclick', this.highlightMouseupHandler);
-            this.annotatedElement.addEventListener('mousedown', this.highlightMousedownHandler);
-            this.annotatedElement.addEventListener('contextmenu', this.highlightMousedownHandler);
-            if (this.hasTouch && this.isMobile) {
-                document.addEventListener('selectionchange', this.onSelectionChange);
-            } else {
-                this.annotatedElement.addEventListener('mousemove', this.getHighlightMouseMoveHandler());
-            }
+        if (!this.annotationService.canAnnotate) {
+            return;
+        }
+
+        this.annotatedElement.addEventListener('dblclick', this.highlightMouseupHandler);
+        this.annotatedElement.addEventListener('mousedown', this.highlightMousedownHandler);
+        this.annotatedElement.addEventListener('contextmenu', this.highlightMousedownHandler);
+        if (this.hasTouch && this.isMobile) {
+            document.addEventListener('selectionchange', this.onSelectionChange);
+        } else {
+            this.annotatedElement.addEventListener('mousemove', this.getHighlightMouseMoveHandler());
         }
     }
 
@@ -454,20 +453,22 @@ class DocAnnotator extends Annotator {
 
         this.annotatedElement.removeEventListener('mouseup', this.highlightMouseupHandler);
 
-        if (this.annotationService.canAnnotate) {
-            this.annotatedElement.removeEventListener('dblclick', this.highlightMouseupHandler);
-            this.annotatedElement.removeEventListener('mousedown', this.highlightMousedownHandler);
-            this.annotatedElement.removeEventListener('contextmenu', this.highlightMousedownHandler);
-            if (this.hasTouch && this.isMobile) {
-                document.removeEventListener('selectionchange', this.onSelectionChange);
-            } else {
-                this.annotatedElement.removeEventListener('mousemove', this.getHighlightMouseMoveHandler());
-            }
-        }
-
         if (this.highlightThrottleHandle) {
             cancelAnimationFrame(this.highlightThrottleHandle);
             this.highlightThrottleHandle = null;
+        }
+
+        if (!this.annotationService.canAnnotate) {
+            return;
+        }
+
+        this.annotatedElement.removeEventListener('dblclick', this.highlightMouseupHandler);
+        this.annotatedElement.removeEventListener('mousedown', this.highlightMousedownHandler);
+        this.annotatedElement.removeEventListener('contextmenu', this.highlightMousedownHandler);
+        if (this.hasTouch && this.isMobile) {
+            document.removeEventListener('selectionchange', this.onSelectionChange);
+        } else {
+            this.annotatedElement.removeEventListener('mousemove', this.getHighlightMouseMoveHandler());
         }
     }
 
@@ -537,6 +538,7 @@ class DocAnnotator extends Annotator {
             this.lastSelection = null;
             this.lastHighlightEvent = null;
             this.createHighlightDialog.hide();
+            this.highlighter.removeAllHighlights();
             return;
         }
 

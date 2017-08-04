@@ -104,11 +104,9 @@ class CommentBox extends EventEmitter {
      * @return {void}
      */
     focus() {
-        if (!this.containerEl) {
-            return;
+        if (this.textAreaEl) {
+            this.textAreaEl.focus();
         }
-
-        this.textAreaEl.focus();
     }
 
     /**
@@ -117,11 +115,9 @@ class CommentBox extends EventEmitter {
      * @return {void}
      */
     blur() {
-        if (!this.containerEl) {
-            return;
+        if (document.activeElement) {
+            document.activeElement.blur();
         }
-
-        document.activeElement.blur();
     }
 
     /**
@@ -130,11 +126,9 @@ class CommentBox extends EventEmitter {
      * @return {void}
      */
     clear() {
-        if (!this.containerEl) {
-            return;
+        if (this.textAreaEl) {
+            this.textAreaEl.value = '';
         }
-
-        this.textAreaEl.value = '';
     }
 
     /**
@@ -143,11 +137,9 @@ class CommentBox extends EventEmitter {
      * @return {void}
      */
     hide() {
-        if (!this.containerEl) {
-            return;
+        if (this.containerEl) {
+            hideElement(this.containerEl);
         }
-
-        hideElement(this.containerEl);
     }
 
     /**
@@ -214,6 +206,17 @@ class CommentBox extends EventEmitter {
     }
 
     /**
+     * Stop default behaviour of an element.
+     *
+     * @param {Event} event Event created by an input event.
+     * @return {void}
+     */
+    preventDefaultAndPropagation(event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    /**
      * Clear the current text in the textarea element and notify listeners.
      *
      * @private
@@ -222,7 +225,7 @@ class CommentBox extends EventEmitter {
      */
     onCancel(event) {
         // stops touch propogating to a click event
-        event.preventDefault();
+        this.preventDefaultAndPropagation(event);
         this.clear();
         this.emit(CommentBox.CommentEvents.cancel);
     }
@@ -236,7 +239,7 @@ class CommentBox extends EventEmitter {
      */
     onPost(event) {
         // stops touch propogating to a click event
-        event.preventDefault();
+        this.preventDefaultAndPropagation(event);
         this.emit(CommentBox.CommentEvents.post, this.textAreaEl.value);
         this.clear();
     }
@@ -260,8 +263,9 @@ class CommentBox extends EventEmitter {
         this.cancelEl.addEventListener('click', this.onCancel);
         this.postEl.addEventListener('click', this.onPost);
         if (this.hasTouch) {
-            this.cancelEl.addEventListener('touchstart', this.onCancel);
-            this.postEl.addEventListener('touchstart', this.onPost);
+            containerEl.addEventListener('touchend', this.preventDefaultAndPropagation.bind(this));
+            this.cancelEl.addEventListener('touchend', this.onCancel);
+            this.postEl.addEventListener('touchend', this.onPost);
         }
 
         return containerEl;
