@@ -8,7 +8,6 @@ import {
     EVENT_ROTATE_ON_AXIS,
     EVENT_SELECT_ANIMATION_CLIP,
     EVENT_SET_CAMERA_PROJECTION,
-    EVENT_SET_QUALITY_LEVEL,
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
@@ -80,13 +79,13 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             removeListener: () => {},
             removeAllListeners: () => {},
             reset: () => {},
+            resetView: () => {},
             rotateOnAxis: () => {},
             setAnimationClip: () => {},
             setAxisRotation: () => {},
             stopAnimation: () => {},
             setRenderMode: () => {},
             setSkeletonsVisible: () => {},
-            setQualityLevel: () => {},
             setCameraProjection: () => {},
             toggleHelpers: () => {},
             setWireframesVisible: () => {},
@@ -186,10 +185,6 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             {
                 event: EVENT_SET_CAMERA_PROJECTION,
                 callback: 'handleSetCameraProjection'
-            },
-            {
-                event: EVENT_SET_QUALITY_LEVEL,
-                callback: 'handleSetQualityLevel'
             },
             {
                 event: EVENT_SET_RENDER_MODE,
@@ -492,17 +487,6 @@ describe('lib/viewers/box3d/model3d/Model3DViewer', () => {
             const proj = 'Orthogonal';
             sandbox.mock(model3d.renderer).expects('setCameraProjection').withArgs(proj);
             model3d.handleSetCameraProjection(proj);
-        });
-
-        it('should invoke renderer.setQualityLevel() when calling handleSetQualityLevel()', () => {
-            sandbox.mock(model3d.renderer).expects('setQualityLevel');
-            model3d.handleSetQualityLevel();
-        });
-
-        it('should invoke renderer.setQualityLevel() when calling handleSetQualityLevel(), with parameter provided', () => {
-            const quality = 'super_duper';
-            sandbox.mock(model3d.renderer).expects('setQualityLevel').withArgs(quality);
-            model3d.handleSetQualityLevel(quality);
         });
 
         it('should invoke renderer.setSkeletonsVisible() when calling handleShowSkeletons()', () => {
