@@ -21,6 +21,8 @@ import {
     SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL,
     SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER,
     SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
+    SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO,
+    SELECTOR_ANNOTATION_BUTTON_DRAW_REDO,
     TYPES
 } from './annotationConstants';
 
@@ -295,6 +297,8 @@ class Annotator extends EventEmitter {
 
         const buttonEl = event.target || this.previewUI.getAnnotateButton(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
         const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
+        const undoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
+        const redoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
 
         // Exit if in draw mode
         if (this.isInDrawMode()) {
@@ -311,6 +315,14 @@ class Annotator extends EventEmitter {
                 postButtonEl.classList.add(CLASS_HIDDEN);
             }
 
+            if (undoButtonEl) {
+                undoButtonEl.classList.add(CLASS_HIDDEN);
+            }
+
+            if (redoButtonEl) {
+                redoButtonEl.classList.add(CLASS_HIDDEN);
+            }
+
             this.unbindModeListeners(); // Disable draw mode
             this.bindDOMListeners(); // Re-enable other annotations
 
@@ -323,6 +335,8 @@ class Annotator extends EventEmitter {
                 buttonEl.classList.add(CLASS_ACTIVE);
                 buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER).classList.add(CLASS_HIDDEN);
                 buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL).classList.remove(CLASS_HIDDEN);
+                buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO).classList.remove(CLASS_HIDDEN);
+                buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO).classList.remove(CLASS_HIDDEN);
             }
 
             if (postButtonEl) {

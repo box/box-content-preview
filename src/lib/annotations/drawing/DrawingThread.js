@@ -41,14 +41,18 @@ class DrawingThread extends AnnotationThread {
     constructor(data) {
         super(data);
         this.render = this.render.bind(this);
+        this.pathContainer.undo.bind(this.pathContainer);
+        this.pathContainer.redo.bind(this.pathContainer);
         window.undo = () => {
-            this.pathContainer.undo.bind(this.pathContainer);
-            this.render(500000000000);
+            this.pathContainer.undo();
+            this.render(this.lastRenderTimestamp + 20 || 20);
         };
         window.redo = () => {
-            this.pathContainer.redo.bind(this.pathContainer);
+            this.pathContainer.redo();
+            this.render(this.lastRenderTimestamp + 20 || 20);
         };
 
+        window.pc = this.pathContainer;
         // Recreate stored paths
         if (data && data.location && data.location.drawingPaths instanceof Array) {
             data.location.drawingPaths.forEach((drawingPathData) => {
@@ -158,27 +162,9 @@ class DrawingThread extends AnnotationThread {
         }
 
         const elapsed = timestamp - (this.lastRenderTimestamp || 0);
-        if (elapsed < DRAW_RENDER_THRESHOLD || !this.drawingContext) {
-            return;
+        if (elapsed >= DRAW_RENDER_THRESHOLD && this.draw()) {
+            this.lastRenderTimestamp = timestamp;
         }
-
-        this.lastRenderTimestamp = timestamp;
-
-        const canvas = this.drawingContext.canvas;
-        const drawings = this.getDrawings();
-        if (this.pendingPath && !this.pendingPath.isEmpty()) {
-            drawings.push(this.pendingPath);
-        }
-
-        /* OPTIMIZE (@minhnguyen): Render only what has been obstructed by the new drawing
-         *           rather than every single line in the thread. If we do end
-         *           up splitting saves into multiple requests, we can buffer
-         *           the amount of re-renders onto a temporary memory canvas.
-         */
-        this.drawingContext.clearRect(0, 0, canvas.width, canvas.height);
-        this.drawingContext.beginPath();
-        drawings.forEach((drawing) => drawing.drawPath(this.drawingContext));
-        this.drawingContext.stroke();
     }
 
     //--------------------------------------------------------------------------
@@ -200,6 +186,34 @@ class DrawingThread extends AnnotationThread {
 
         annotation.location.drawingPaths = drawings.map(DrawingPath.extractDrawingInfo);
         return annotation;
+    }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+    draw(context, clearCanvas = false) {
+        if (!context) {
+            return;
+        }
+
+        const drawings = this.getDrawings();
+        if (this.pendingPath && !this.pendingPath.isEmpty()) {
+            drawings.push(this.pendingPath);
+        }
+
+        /* OPTIMIZE (@minhnguyen): Render only what has been obstructed by the new drawing
+         *           rather than every single line in the thread. If we do end
+         *           up splitting saves into multiple requests, we can buffer
+         *           the amount of re-renders onto a temporary memory canvas.
+         */
+        if (clearCanvas) {
+            const canvas = context.canvas;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        context.beginPath();
+        drawings.forEach((drawing) => drawing.drawPath(context));
+        context.stroke();
     }
 }
 

@@ -19,6 +19,8 @@ export const CLASS_ADD_HIGHLIGHT_COMMENT_BTN = 'bp-highlight-comment-btn';
 export const CLASS_ANNOTATION_LAYER_HIGHLIGHT = 'bp-annotation-layer-highlight';
 export const CLASS_ANNOTATION_LAYER_DRAW = 'bp-annotation-layer-draw';
 export const CLASS_ANNOTATION_BUTTON_POINT = 'bp-btn-annotate-point';
+export const CLASS_ANNOTATION_BUTTON_DRAW_UNDO = 'bp-btn-annotate-draw-undo';
+export const CLASS_ANNOTATION_BUTTON_DRAW_REDO = 'bp-btn-annotate-draw-redo';
 export const CLASS_ANNOTATION_BUTTON_DRAW_POST = 'bp-btn-annotate-draw-post';
 export const CLASS_ANNOTATION_BUTTON_DRAW_CANCEL = 'bp-btn-annotate-draw-cancel';
 export const CLASS_ANNOTATION_BUTTON_DRAW_ENTER = 'bp-btn-annotate-draw-enter';
@@ -40,6 +42,8 @@ export const SECTION_CREATE = '[data-section="create"]';
 export const SECTION_SHOW = '[data-section="show"]';
 
 export const SELECTOR_ANNOTATION_BUTTON_POINT = `.${CLASS_ANNOTATION_BUTTON_POINT}`;
+export const SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO = `.${CLASS_ANNOTATION_BUTTON_DRAW_UNDO}`;
+export const SELECTOR_ANNOTATION_BUTTON_DRAW_REDO = `.${CLASS_ANNOTATION_BUTTON_DRAW_REDO}`;
 export const SELECTOR_ANNOTATION_BUTTON_DRAW_POST = `.${CLASS_ANNOTATION_BUTTON_DRAW_POST}`;
 export const SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL = `.${CLASS_ANNOTATION_BUTTON_DRAW_CANCEL}`;
 export const SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER = `.${CLASS_ANNOTATION_BUTTON_DRAW_ENTER}`;

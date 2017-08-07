@@ -144,12 +144,6 @@ class DocDrawingThread extends DrawingThread {
             return;
         }
 
-        // Get DrawingPath objects to be shown
-        const drawings = this.getDrawings();
-        if (this.pendingPath && !this.pendingPath.isEmpty()) {
-            drawings.push(this.pendingPath);
-        }
-
         this.checkAndHandleScaleUpdate();
         // Get the annotation layer context to draw with
         let context;
@@ -168,14 +162,8 @@ class DocDrawingThread extends DrawingThread {
         }
 
         // Draw the paths to the annotation layer canvas
-        if (context) {
-            context.beginPath();
-            drawings.forEach((drawing) => {
-                drawing.generateBrowserPath(this.reconstructBrowserCoordFromLocation);
-                drawing.drawPath(context);
-            });
-            context.stroke();
-        }
+        drawings.forEach((drawing) => drawing.generateBrowserPath(this.reconstructBrowserCoordFromLocation));
+        this.draw(context, false);
     }
 
     /**

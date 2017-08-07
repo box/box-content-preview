@@ -10,6 +10,7 @@ class DrawingContainer extends EventEmitter {
     insert(item) {
         this.undoStack.push(item);
         this.redoStack = [];
+        this.emit('redoempty');
     }
 
     undo() {
@@ -35,7 +36,7 @@ class DrawingContainer extends EventEmitter {
     }
 
     getAll() {
-        return this.undoStack;
+        return this.undoStack.slice();
     }
 }
 

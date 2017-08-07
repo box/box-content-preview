@@ -458,9 +458,11 @@ class DocAnnotator extends Annotator {
         // We need to redraw highlights on the page if a thread was deleted
         // since deleting 'cuts' out the highlight, which may have been
         // overlapping with another
-        thread.addListener('threaddeleted', () => {
-            this.showHighlightsOnPage(thread.location.page);
-        });
+        if (annotatorUtil.isHighlightAnnotation(thread.type)) {
+            thread.addListener('threaddeleted', () => {
+                this.showHighlightsOnPage(thread.location.page);
+            });
+        }
     }
 
     /**
