@@ -1,4 +1,4 @@
-/* global Rbush */
+import rbush from 'rbush';
 import AnnotationThread from '../AnnotationThread';
 import DrawingPath from './DrawingPath';
 import { STATES_DRAW, DRAW_RENDER_THRESHOLD } from '../annotationConstants';
@@ -10,8 +10,10 @@ class DrawingThread extends AnnotationThread {
     /** @property {number} - Drawing state */
     drawingFlag = STATES_DRAW.idle;
 
-    /** @property {Rbush} - Rtree path container */
-    pathContainer = new Rbush(RTREE_WIDTH);
+    /** @property {rbush} - Rtree path container */
+    /* eslint-disable new-cap */
+    pathContainer = new rbush(RTREE_WIDTH);
+    /* eslint-enable new-cap */
 
     /** @property {CanvasContext} - A canvas for drawing new strokes */
     memoryCanvas;

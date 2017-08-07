@@ -5,7 +5,6 @@ export const JS = [
     `${STATIC_URI}pdf.min.js`,
     `${STATIC_URI}pdf_viewer.min.js`,
     `${STATIC_URI}pdf.worker.min.js`,
-    `${STATIC_URI}exif.min.js`,
-    `${STATIC_URI}rbush.min.js`
+    `${STATIC_URI}exif.min.js`
 ];
 export const CSS = [`${STATIC_URI}pdf_viewer.min.css`];
