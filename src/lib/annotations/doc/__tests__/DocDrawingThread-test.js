@@ -3,7 +3,7 @@ import * as annotatorUtil from '../../annotatorUtil';
 import DocDrawingThread from '../DocDrawingThread';
 import DrawingPath from '../../drawing/DrawingPath';
 import {
-    STATES_DRAW
+    DRAW_STATES
 } from '../../annotationConstants';
 
 let docDrawingThread;
@@ -46,14 +46,14 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
         });
 
         it("should not add a coordinate when the state is not 'draw'", () => {
-            docDrawingThread.drawingFlag = STATES_DRAW.idle;
+            docDrawingThread.drawingFlag = DRAW_STATES.idle;
             docDrawingThread.handleMove(docDrawingThread.location);
 
             expect(docDrawingThread.pendingPath.addCoordinate).to.not.be.called;
         });
 
         it("should add a coordinate frame when the state is 'draw'", () => {
-            docDrawingThread.drawingFlag = STATES_DRAW.draw;
+            docDrawingThread.drawingFlag = DRAW_STATES.draw;
             docDrawingThread.handleMove(docDrawingThread.location);
 
             expect(docDrawingThread.pendingPath.addCoordinate).to.be.called;
@@ -71,12 +71,12 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             sandbox.stub(docAnnotatorUtil, 'getPageEl')
                    .returns(context);
 
-            docDrawingThread.drawingFlag = STATES_DRAW.idle;
+            docDrawingThread.drawingFlag = DRAW_STATES.idle;
             docDrawingThread.pendingPath = undefined;
             docDrawingThread.handleStart(docDrawingThread.location);
 
             expect(window.requestAnimationFrame).to.be.called;
-            expect(docDrawingThread.drawingFlag).to.equal(STATES_DRAW.draw);
+            expect(docDrawingThread.drawingFlag).to.equal(DRAW_STATES.draw);
             expect(docDrawingThread.hasPageChanged).to.be.called;
             expect(docDrawingThread.pendingPath).to.be.an.instanceof(DrawingPath);
         });
@@ -87,7 +87,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             sandbox.stub(docDrawingThread, 'handleStop');
             sandbox.stub(docDrawingThread, 'saveAnnotation');
 
-            docDrawingThread.drawingFlag = STATES_DRAW.idle;
+            docDrawingThread.drawingFlag = DRAW_STATES.idle;
             docDrawingThread.pendingPath = undefined;
             docDrawingThread.handleStart(docDrawingThread.location);
             docDrawingThread.location = {};
@@ -96,13 +96,13 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             expect(docDrawingThread.handleStop).to.be.called;
             expect(docDrawingThread.saveAnnotation).to.be.called;
             expect(docDrawingThread.checkAndHandleScaleUpdate).to.not.be.called;
-            expect(docDrawingThread.drawingFlag).to.equal(STATES_DRAW.idle);
+            expect(docDrawingThread.drawingFlag).to.equal(DRAW_STATES.idle);
         });
     });
 
     describe('handleStop()', () => {
         it("should set the state to 'idle' and clear the pendingPath", () => {
-            docDrawingThread.drawingFlag = STATES_DRAW.draw;
+            docDrawingThread.drawingFlag = DRAW_STATES.draw;
             docDrawingThread.pendingPath = {
                 isEmpty: () => false
             };
@@ -112,7 +112,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
 
             docDrawingThread.handleStop();
 
-            expect(docDrawingThread.drawingFlag).to.equal(STATES_DRAW.idle);
+            expect(docDrawingThread.drawingFlag).to.equal(DRAW_STATES.idle);
             expect(docDrawingThread.pendingPath).to.be.null;
         });
     });

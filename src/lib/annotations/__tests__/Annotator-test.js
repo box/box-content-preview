@@ -265,6 +265,23 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
+        describe('isTypeEnabled()', () => {
+            it('should return true when option.TYPE includes the type being checked', () => {
+                annotator.options.TYPE = [TYPES.point, TYPES.draw];
+                expect(annotator.isTypeEnabled(TYPES.draw)).to.be.truthy;
+            });
+
+            it('should return false when option.TYPE does not include the type being checked', () => {
+                annotator.options.TYPE = [TYPES.point, TYPES.highlight];
+                expect(annotator.isTypeEnabled(TYPES.draw)).to.be.falsy;
+            });
+
+            it('should return false when option.TYPE does not exist', () => {
+                annotator.options.TYPE = undefined;
+                expect(annotator.isTypeEnabled(TYPES.draw)).to.be.falsy;
+            });
+        });
+
         describe('togglePointAnnotationHandler()', () => {
             beforeEach(() => {
                 stubs.pointMode = sandbox.stub(annotator, 'isInPointMode');
@@ -273,6 +290,7 @@ describe('lib/annotations/Annotator', () => {
                 sandbox.stub(annotator, 'bindPointModeListeners');
                 sandbox.stub(annotator, 'unbindModeListeners');
                 sandbox.stub(annotator, 'emit');
+                sandbox.stub(annotator, 'isTypeEnabled').returns(true);
             });
 
             it('should turn point annotation mode on if it is off', () => {
@@ -313,6 +331,7 @@ describe('lib/annotations/Annotator', () => {
                 sandbox.stub(annotator, 'bindDrawModeListeners');
                 sandbox.stub(annotator, 'unbindModeListeners');
                 sandbox.stub(annotator, 'emit');
+                sandbox.stub(annotator, 'isTypeEnabled').returns(true);
             });
 
             it('should turn draw annotation mode on if it is off', () => {

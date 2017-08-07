@@ -129,6 +129,17 @@ class Annotator extends EventEmitter {
     }
 
     /**
+     * Returns true if the annotator has an annotation type enabled
+     *
+     * @param {string} type - Annotation type to check
+     * @return {boolean} Whether or not the annotation type is enabled
+     */
+    isTypeEnabled(type) {
+        const { annotator } = this.options || {};
+        return annotator.TYPE && annotator.TYPE.includes(type);
+    }
+
+    /**
      * Fetches and shows saved annotations.
      *
      * @return {void}
@@ -247,6 +258,10 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     togglePointAnnotationHandler(event = {}) {
+        if (!this.isTypeEnabled(TYPES.point)) {
+            return;
+        }
+
         this.destroyPendingThreads();
         const pointButtonSelector = this.modeButtons[TYPES.point].selector;
         const buttonEl = event.target || this.previewUI.getAnnotateButton(pointButtonSelector);
@@ -287,6 +302,10 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     toggleDrawAnnotationHandler(event = {}) {
+        if (!this.isTypeEnabled(TYPES.draw)) {
+            return;
+        }
+
         this.destroyPendingThreads();
         if (this.isInPointMode()) {
             this.togglePointAnnotationHandler();

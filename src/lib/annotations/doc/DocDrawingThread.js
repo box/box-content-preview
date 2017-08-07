@@ -1,16 +1,15 @@
 import {
     STATES,
-    STATES_DRAW,
+    DRAW_STATES,
     PAGE_PADDING_TOP,
     PAGE_PADDING_BOTTOM,
-    CLASS_ANNOTATION_LAYER_DRAW
+    CLASS_ANNOTATION_LAYER_DRAW,
+    CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS
 } from '../annotationConstants';
 import DrawingPath from '../drawing/DrawingPath';
 import DrawingThread from '../drawing/DrawingThread';
 import * as docAnnotatorUtil from './docAnnotatorUtil';
 import * as annotatorUtil from '../annotatorUtil';
-
-const CLASS_ANNOTATION_LAYER_DRAW_MEMORY = `${CLASS_ANNOTATION_LAYER_DRAW}-mem`;
 
 class DocDrawingThread extends DrawingThread {
     /** @property {HTMLElement} - Page element being observed */
@@ -43,7 +42,7 @@ class DocDrawingThread extends DrawingThread {
      */
     handleMove(location) {
         const pageChanged = this.hasPageChanged(location);
-        if (this.drawingFlag !== STATES_DRAW.draw || pageChanged) {
+        if (this.drawingFlag !== DRAW_STATES.draw || pageChanged) {
             return;
         }
 
@@ -76,7 +75,7 @@ class DocDrawingThread extends DrawingThread {
             this.checkAndHandleScaleUpdate();
         }
 
-        this.drawingFlag = STATES_DRAW.draw;
+        this.drawingFlag = DRAW_STATES.draw;
         if (!this.pendingPath) {
             this.pendingPath = new DrawingPath();
         }
@@ -91,7 +90,7 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     handleStop() {
-        this.drawingFlag = STATES_DRAW.idle;
+        this.drawingFlag = DRAW_STATES.idle;
 
         if (this.pendingPath && !this.pendingPath.isEmpty()) {
             this.pathContainer.insert(this.pendingPath);
@@ -128,9 +127,9 @@ class DocDrawingThread extends DrawingThread {
         );
 
         if (drawingAnnotationLayerContext) {
-            const memoryCanvas = this.drawingContext.canvas;
-            drawingAnnotationLayerContext.drawImage(memoryCanvas, 0, 0);
-            this.drawingContext.clearRect(0, 0, memoryCanvas.width, memoryCanvas.height);
+            const inProgressCanvas = this.drawingContext.canvas;
+            drawingAnnotationLayerContext.drawImage(inProgressCanvas, 0, 0);
+            this.drawingContext.clearRect(0, 0, inProgressCanvas.width, inProgressCanvas.height);
         }
     }
 
@@ -151,6 +150,7 @@ class DocDrawingThread extends DrawingThread {
         }
 
         this.checkAndHandleScaleUpdate();
+
         // Get the annotation layer context to draw with
         let context;
         if (this.state === STATES.pending) {
@@ -168,15 +168,12 @@ class DocDrawingThread extends DrawingThread {
         }
 
         // Draw the paths to the annotation layer canvas
-        /* eslint-disable require-jsdoc */
-        const scaleAndDraw = (drawing) => {
-            drawing.generateBrowserPath(this.reconstructBrowserCoordFromLocation);
-            drawing.drawPath(context);
-        };
-        /* eslint-enable require-jsdoc */
         if (context) {
             context.beginPath();
-            drawings.forEach(scaleAndDraw);
+            drawings.forEach((drawing) => {
+                drawing.generateBrowserPath(this.reconstructBrowserCoordFromLocation);
+                drawing.drawPath(context);
+            });
             context.stroke();
         }
     }
@@ -198,7 +195,7 @@ class DocDrawingThread extends DrawingThread {
         this.pageEl = docAnnotatorUtil.getPageEl(this.annotatedElement, this.location.page);
         this.drawingContext = docAnnotatorUtil.getContext(
             this.pageEl,
-            CLASS_ANNOTATION_LAYER_DRAW_MEMORY,
+            CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS,
             PAGE_PADDING_TOP,
             PAGE_PADDING_BOTTOM
         );
