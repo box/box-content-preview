@@ -1,3 +1,10 @@
+<a name="1.4.2"></a>
+## 1.4.2 (2017-08-07)
+
+* Fix: Disable font face for iOS 10.3.x (#283) ([9e78e2b](https://github.com/box/box-content-preview/commit/9e78e2b))
+
+
+
 <a name="1.4.1"></a>
 ## 1.4.1 (2017-08-02)
 
