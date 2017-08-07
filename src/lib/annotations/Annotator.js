@@ -354,7 +354,6 @@ class Annotator extends EventEmitter {
             if (thread) {
                 this.bindCustomListenersOnThread(thread);
                 this.bindDrawModeListeners(thread, postButtonEl);
-                // TODO: @minhnguyen deal with page changes in a better way
                 thread.addListener('drawthreadcommited', () => {
                     this.toggleDrawAnnotationHandler();
                     thread.removeAllListeners('drawthreadcommited');
