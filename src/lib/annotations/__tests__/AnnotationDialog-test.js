@@ -3,7 +3,6 @@ import Annotation from '../Annotation';
 import AnnotationDialog from '../AnnotationDialog';
 import * as annotatorUtil from '../annotatorUtil';
 import * as constants from '../annotationConstants';
-import { CLASS_ACTIVE, CLASS_HIDDEN } from '../../constants';
 
 const CLASS_CANCEL_DELETE = 'cancel-delete-btn';
 const CLASS_CANNOT_ANNOTATE = 'cannot-annotate';
@@ -129,7 +128,7 @@ describe('lib/annotations/AnnotationDialog', () => {
 
             dialog.show();
             const textArea = dialog.element.querySelector(`.${CLASS_REPLY_TEXTAREA}`);
-            expect(textArea).to.not.have.class(CLASS_ACTIVE);
+            expect(textArea).to.not.have.class(constants.CLASS_ACTIVE);
             expect(dialog.activateReply).to.be.called;
         });
 
@@ -141,7 +140,7 @@ describe('lib/annotations/AnnotationDialog', () => {
 
             dialog.show();
             const textArea = dialog.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
-            expect(textArea).to.have.class(CLASS_ACTIVE);
+            expect(textArea).to.have.class(constants.CLASS_ACTIVE);
             expect(dialog.activateReply).to.not.be.called;
         });
 
@@ -218,7 +217,7 @@ describe('lib/annotations/AnnotationDialog', () => {
     describe('hide()', () => {
         it('should hide dialog immediately', () => {
             dialog.hide();
-            expect(dialog.element).to.have.class(CLASS_HIDDEN);
+            expect(dialog.element).to.have.class(constants.CLASS_HIDDEN);
         });
 
         it('should hide the mobile dialog if using a mobile browser', () => {
@@ -248,8 +247,8 @@ describe('lib/annotations/AnnotationDialog', () => {
             dialog.addAnnotation(new Annotation({}));
             const createSectionEl = document.querySelector(constants.SECTION_CREATE);
             const showSectionEl = document.querySelector(constants.SECTION_SHOW);
-            expect(createSectionEl).to.have.class(CLASS_HIDDEN);
-            expect(showSectionEl).to.not.have.class(CLASS_HIDDEN);
+            expect(createSectionEl).to.have.class(constants.CLASS_HIDDEN);
+            expect(showSectionEl).to.not.have.class(constants.CLASS_HIDDEN);
         });
     });
 
@@ -419,7 +418,7 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should show the element only if the element is currently hidden', () => {
-            dialog.element.classList.add(CLASS_HIDDEN);
+            dialog.element.classList.add(constants.CLASS_HIDDEN);
 
             dialog.mouseenterHandler();
             expect(annotatorUtil.showElement).to.be.called;
@@ -431,7 +430,7 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should emit \'annotationcommentpending\' when user hovers back into a dialog that has a pending comment', () => {
-            dialog.element.classList.add(CLASS_HIDDEN);
+            dialog.element.classList.add(constants.CLASS_HIDDEN);
             const commentsTextArea = dialog.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
             commentsTextArea.textContent = 'bleh';
 
@@ -622,7 +621,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                 })
             );
             const deleteButton = document.querySelector(`.${CLASS_BUTTON_DELETE_COMMENT}`);
-            expect(deleteButton).to.have.class(CLASS_HIDDEN);
+            expect(deleteButton).to.have.class(constants.CLASS_HIDDEN);
         });
 
         it('should make the delete icon hidden if the delete permission is not specified', () => {
@@ -635,7 +634,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                 })
             );
             const deleteButton = document.querySelector(`.${CLASS_BUTTON_DELETE_COMMENT}`);
-            expect(deleteButton).to.have.class(CLASS_HIDDEN);
+            expect(deleteButton).to.have.class(constants.CLASS_HIDDEN);
         });
 
         it('should make delete icon visible if the user has delete permission', () => {
@@ -648,7 +647,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                 })
             );
             const deleteButton = document.querySelector(`.${CLASS_BUTTON_DELETE_COMMENT}`);
-            expect(deleteButton).to.not.have.class(CLASS_HIDDEN);
+            expect(deleteButton).to.not.have.class(constants.CLASS_HIDDEN);
         });
 
         it('should hide the delete confirmation UI by default', () => {
@@ -661,7 +660,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                 })
             );
             const deleteConfirmation = document.querySelector(SELECTOR_DELETE_CONFIRMATION);
-            expect(deleteConfirmation).to.have.class(CLASS_HIDDEN);
+            expect(deleteConfirmation).to.have.class(constants.CLASS_HIDDEN);
         });
 
         it('should correctly format the date and time in a different locale', () => {
@@ -740,8 +739,8 @@ describe('lib/annotations/AnnotationDialog', () => {
             const buttonContainer = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
 
             dialog.activateReply();
-            expect(replyTextEl).to.have.class(CLASS_ACTIVE);
-            expect(buttonContainer).to.not.have.class(CLASS_HIDDEN);
+            expect(replyTextEl).to.have.class(constants.CLASS_ACTIVE);
+            expect(buttonContainer).to.not.have.class(constants.CLASS_HIDDEN);
         });
     });
 
@@ -767,8 +766,8 @@ describe('lib/annotations/AnnotationDialog', () => {
             const buttonContainer = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
 
             dialog.deactivateReply();
-            expect(replyTextEl).to.not.have.class(CLASS_ACTIVE);
-            expect(buttonContainer).to.have.class(CLASS_HIDDEN);
+            expect(replyTextEl).to.not.have.class(constants.CLASS_ACTIVE);
+            expect(buttonContainer).to.have.class(constants.CLASS_HIDDEN);
         });
     });
 
@@ -879,16 +878,16 @@ describe('lib/annotations/AnnotationDialog', () => {
             const dialogEl = dialog.generateDialogEl(0);
             const createSectionEl = dialogEl.querySelector(constants.SECTION_CREATE);
             const showSectionEl = dialogEl.querySelector(constants.SECTION_SHOW);
-            expect(createSectionEl).to.not.have.class(CLASS_HIDDEN);
-            expect(showSectionEl).to.have.class(CLASS_HIDDEN);
+            expect(createSectionEl).to.not.have.class(constants.CLASS_HIDDEN);
+            expect(showSectionEl).to.have.class(constants.CLASS_HIDDEN);
         });
 
         it('should generate an annotations dialog element with annotations', () => {
             const dialogEl = dialog.generateDialogEl(1);
             const createSectionEl = dialogEl.querySelector(constants.SECTION_CREATE);
             const showSectionEl = dialogEl.querySelector(constants.SECTION_SHOW);
-            expect(createSectionEl).to.have.class(CLASS_HIDDEN);
-            expect(showSectionEl).to.not.have.class(CLASS_HIDDEN);
+            expect(createSectionEl).to.have.class(constants.CLASS_HIDDEN);
+            expect(showSectionEl).to.not.have.class(constants.CLASS_HIDDEN);
         });
     });
 });

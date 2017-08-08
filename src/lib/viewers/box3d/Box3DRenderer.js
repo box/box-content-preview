@@ -1,18 +1,16 @@
 /* global Box3D */
 /* eslint no-param-reassign:0 */
+import 'whatwg-fetch';
 import EventEmitter from 'events';
 import {
     EVENT_SHOW_VR_BUTTON,
     EVENT_SCENE_LOADED,
-    EVENT_TRIGGER_RENDER,
     EVENT_WEBGL_CONTEXT_RESTORED,
     EVENT_WEBGL_CONTEXT_LOST
 } from './box3DConstants';
 import { MODEL3D_STATIC_ASSETS_VERSION } from '../../constants';
 
 const PREVIEW_CAMERA_CONTROLLER_ID = 'orbit_camera';
-const PREVIEW_CAMERA_POSITION = { x: 0, y: 0, z: 0 };
-const PREVIEW_CAMERA_QUATERNION = { x: 0, y: 0, z: 0, w: 1 };
 const OCULUS_TOUCH_LEFT = 'oculusTouchLeft';
 const OCULUS_TOUCH_RIGHT = 'oculusTouchRight';
 const HTC_VIVE = 'viveController';
@@ -50,10 +48,10 @@ class Box3DRenderer extends EventEmitter {
     boxSdk;
 
     /** @property {Object} - Default X, Y, Z position for the scene camera in 3D space */
-    defaultCameraPosition = PREVIEW_CAMERA_POSITION;
+    savedCameraPosition;
 
     /** @property {Object} - Default X, Y, Z, W quaternion for the scene camera in 3D space */
-    defaultCameraQuaternion = PREVIEW_CAMERA_QUATERNION;
+    savedCameraQuaternion;
 
     /** @property {Object} - Mapping of promises that each resolve when it's controller model file is loaded */
     vrGamepadLoadPromises = {};
@@ -77,7 +75,6 @@ class Box3DRenderer extends EventEmitter {
 
         this.containerEl = containerEl;
         this.boxSdk = boxSdk;
-        this.on(EVENT_TRIGGER_RENDER, this.handleOnRender);
 
         this.handleContextLost = this.handleContextLost.bind(this);
         this.handleContextRestored = this.handleContextRestored.bind(this);
@@ -106,8 +103,6 @@ class Box3DRenderer extends EventEmitter {
      * @return {void}
      */
     destroy() {
-        this.removeListener(EVENT_TRIGGER_RENDER, this.handleOnRender);
-
         if (!this.box3d) {
             return;
         }
@@ -142,16 +137,12 @@ class Box3DRenderer extends EventEmitter {
 
         // Reset camera settings to default.
         if (camera) {
-            camera.setPosition(
-                this.defaultCameraPosition.x,
-                this.defaultCameraPosition.y,
-                this.defaultCameraPosition.z
-            );
+            camera.setPosition(this.savedCameraPosition.x, this.savedCameraPosition.y, this.savedCameraPosition.z);
             camera.setQuaternion(
-                this.defaultCameraQuaternion.x,
-                this.defaultCameraQuaternion.y,
-                this.defaultCameraQuaternion.z,
-                this.defaultCameraQuaternion.w
+                this.savedCameraQuaternion.x,
+                this.savedCameraQuaternion.y,
+                this.savedCameraQuaternion.z,
+                this.savedCameraQuaternion.w
             );
         }
     }
@@ -162,7 +153,7 @@ class Box3DRenderer extends EventEmitter {
      * @return {Box3DEntity} The camera instance
      */
     getCamera() {
-        return this.box3d ? this.box3d.getObjectById('CAMERA_ID') : null;
+        return this.box3d ? this.box3d.getObjectByClass(Box3D.CameraObject) : null;
     }
 
     /**
@@ -171,7 +162,7 @@ class Box3DRenderer extends EventEmitter {
      * @return {SceneObject} The scene object
      */
     getScene() {
-        return this.box3d ? this.box3d.getEntityById('SCENE_ID') : null;
+        return this.box3d ? this.box3d.getObjectByClass(Box3D.SceneObject) : null;
     }
 
     /**
@@ -209,6 +200,15 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
+     * Load Box3D entities from a JSON file specified with the provided path.
+     * @param {string} url - A path to a JSON file containing Box3D entity descriptions.
+     * @return {Promise} - A promise that resolves on completion of the load.
+     */
+    getEntitiesFromUrl(url) {
+        return fetch(url).then((response) => response.json());
+    }
+
+    /**
      * Initialize the Box3D engine.
      *
      * @param {Object} options - the preview options object
@@ -216,6 +216,7 @@ class Box3DRenderer extends EventEmitter {
      * @param {string} [options.apiHost] - API URL base to make requests to
      * @param {Object|null} [options.file] - Information about the current box file we're using.
      * Used to get the parent.id of the box file.
+     * @param {Object|string} [options.box3dApplication] - Path to a json file published from Box3D Studio (or the json itself).
      * @return {Promise} A promise that resolves with the created box3d
      */
     initBox3d(options = {}) {
@@ -229,8 +230,17 @@ class Box3DRenderer extends EventEmitter {
         }
 
         const resourceLoader = new Box3D.XhrResourceLoader(this.configureXHR.bind(this, options));
+        const json = options && options.box3dApplication ? options.box3dApplication : {};
+        let getApplication = Promise.resolve([]);
+        if (typeof json === 'object') {
+            getApplication = Promise.resolve(json);
+        } else if (typeof json === 'string') {
+            getApplication = this.getEntitiesFromUrl(json);
+        }
 
-        return this.createBox3d(resourceLoader, options.sceneEntities);
+        return getApplication.then((applicationEntities) =>
+            this.createBox3d(resourceLoader, options.sceneEntities, applicationEntities.entities, `${options.apiHost}`)
+        );
     }
 
     /**
@@ -238,14 +248,16 @@ class Box3DRenderer extends EventEmitter {
      *
      * @param {Object} resourceLoader - The resource loader used to load assets used by the box3d engine
      * @param {Array} [sceneEntities] - The descriptor of the default scene. See ./scene-entities.js
-     * @param {Object} [inputSettings] - Config for the input controller of the Box3D Engine
+     * @param {Array} [applicationEntities] - Array of entities published from Box3D Studio project.
+     * @param {string} [apiBase] - Optional base path for Box API calls.
      * @return {Promise} A promise that resolves with the Box3D Engine.
      */
-    createBox3d(resourceLoader, sceneEntities) {
+    createBox3d(resourceLoader, sceneEntities, applicationEntities, apiBase) {
         const box3d = new Box3D.Engine({
             container: this.containerEl,
             engineName: 'Default',
-            resourceLoader
+            resourceLoader,
+            apiBase
         });
         if (box3d.canvas) {
             box3d.canvas.addEventListener('webglcontextlost', this.handleContextLost);
@@ -253,8 +265,16 @@ class Box3DRenderer extends EventEmitter {
         }
 
         return new Promise((resolve) => {
+            if (applicationEntities) {
+                box3d.addEntities(applicationEntities);
+            }
+
+            let app = box3d.getAssetByClass(Box3D.ApplicationAsset);
             box3d.addEntities(sceneEntities);
-            const app = box3d.getAssetById('APP_ASSET_ID');
+            if (!app) {
+                app = box3d.getAssetByClass(Box3D.ApplicationAsset);
+            }
+
             app.load();
             this.box3d = box3d;
             resolve(this.box3d);
@@ -290,6 +310,11 @@ class Box3DRenderer extends EventEmitter {
      * @return {void}
      */
     onSceneLoad() {
+        const camera = this.getCamera();
+        if (camera) {
+            this.savedCameraPosition = camera.getPosition();
+            this.savedCameraQuaternion = camera.getQuaternion();
+        }
         // Reset the scene.
         this.reset();
         this.emit(EVENT_SCENE_LOADED);
@@ -367,18 +392,6 @@ class Box3DRenderer extends EventEmitter {
     }
 
     /**
-     * Trigger an update and render event on the runtime.
-     *
-     * @return {void}
-     */
-    handleOnRender() {
-        if (!this.box3d) {
-            return;
-        }
-        this.box3d.trigger('render');
-    }
-
-    /**
      * Call the onResize of the engine.
      *
      * @return {void}
@@ -430,6 +443,10 @@ class Box3DRenderer extends EventEmitter {
 
         const app = this.box3d.getApplication();
         const vrPresenter = app.getComponentByScriptId('vr_presenter');
+        if (!vrPresenter) {
+            return;
+        }
+
         vrPresenter.whenDisplaysAvailable((displays) => {
             if (displays.length) {
                 this.emit(EVENT_SHOW_VR_BUTTON);

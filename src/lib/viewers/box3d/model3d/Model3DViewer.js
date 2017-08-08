@@ -8,7 +8,6 @@ import {
     EVENT_ROTATE_ON_AXIS,
     EVENT_SELECT_ANIMATION_CLIP,
     EVENT_SET_CAMERA_PROJECTION,
-    EVENT_SET_QUALITY_LEVEL,
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
@@ -71,7 +70,6 @@ class Model3DViewer extends Box3DViewer {
             this.controls.on(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.on(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
             this.controls.on(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
-            this.controls.on(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
             this.controls.on(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
             this.controls.on(EVENT_SET_SKELETONS_VISIBLE, this.handleShowSkeletons);
             this.controls.on(EVENT_SET_WIREFRAMES_VISIBLE, this.handleShowWireframes);
@@ -95,7 +93,6 @@ class Model3DViewer extends Box3DViewer {
             this.controls.removeListener(EVENT_ROTATE_ON_AXIS, this.handleRotateOnAxis);
             this.controls.removeListener(EVENT_SELECT_ANIMATION_CLIP, this.handleSelectAnimationClip);
             this.controls.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
-            this.controls.removeListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
             this.controls.removeListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
             this.controls.removeListener(EVENT_SET_SKELETONS_VISIBLE, this.handleShowSkeletons);
             this.controls.removeListener(EVENT_SET_WIREFRAMES_VISIBLE, this.handleShowWireframes);
@@ -107,55 +104,6 @@ class Model3DViewer extends Box3DViewer {
         if (this.renderer) {
             this.renderer.removeListener(EVENT_CANVAS_CLICK, this.handleCanvasClick);
         }
-    }
-
-    /**
-     * Sets the scale used to render the model. This is the size of the largest dimension of
-     * the model in meters. Default is 1.
-     * @method setModelScale
-     * @public
-     * @param {Float} newSize - The size of the largest dimension of the model in metres.
-     * Default is 1 m.
-     * @return {void}
-     */
-    /* istanbul ignore next: @mbond has gotten rid of this in his incoming branch */
-    setModelScale(newSize) {
-        if (!this.renderer) {
-            return;
-        }
-
-        this.renderer.modelSize = newSize;
-        if (!this.renderer.instance || this.renderer.vrEnabled) {
-            return;
-        }
-        this.renderer.instance.scaleToSize(newSize);
-        this.renderer.reset();
-    }
-
-    /**
-     * Set the position of the model relative a point and the model's bounding box.
-     * @method setModelAlignment
-     * @public
-     * @param {Vector3} position        The position in world space to position the model
-     * relative to.
-     * @param {Vector3} alignmentVector - An object of the form { x: x, y: y, z: z} where - the
-     * values for x, y and z are between -1 and +1 and specify how the object is aligned to
-     * the edges of the model. e.g. { x: 0, y: -1, z: 0 } will align the bottom, centre of the
-     * object to the specified position.
-     * @return {void}
-     */
-    /* istanbul ignore next: @mbond has gotten rid of this in his incoming branch */
-    setModelAlignment(position, alignmentVector) {
-        if (!this.renderer) {
-            return;
-        }
-        this.renderer.modelAlignmentPosition = position;
-        this.renderer.modelAlignmentVector = alignmentVector;
-        if (!this.renderer.instance) {
-            return;
-        }
-        this.renderer.instance.alignToPosition(position, alignmentVector);
-        this.renderer.reset();
     }
 
     /**
@@ -235,8 +183,7 @@ class Model3DViewer extends Box3DViewer {
                 this.populateAnimationControls();
 
                 this.showWrapper();
-                this.renderer.initVr();
-                this.renderer.initVrGamepadControls();
+
                 this.emit(EVENT_LOAD);
 
                 return true;
@@ -332,8 +279,9 @@ class Model3DViewer extends Box3DViewer {
         }
 
         if (this.renderer) {
-            this.handleRotationAxisSet(this.axes.up, this.axes.forward, true);
+            this.handleRotationAxisSet(this.axes.up, this.axes.forward, false);
             this.renderer.stopAnimation();
+            this.renderer.resetView();
         }
     }
 
@@ -369,17 +317,6 @@ class Model3DViewer extends Box3DViewer {
      */
     handleSetCameraProjection(projection) {
         this.renderer.setCameraProjection(projection);
-    }
-
-    /**
-     * Handle setting quality level for rendering
-     *
-     * @private
-     * @param {string} level - Quality level
-     * @return {void}
-     */
-    handleSetQualityLevel(level) {
-        this.renderer.setQualityLevel(level);
     }
 
     /**

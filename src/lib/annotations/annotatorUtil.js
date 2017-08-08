@@ -1,6 +1,12 @@
 import 'whatwg-fetch';
-import { CLASS_ACTIVE, CLASS_HIDDEN, CLASS_INVISIBLE } from '../constants';
-import { TYPES, SELECTOR_ANNOTATION_CARET, PENDING_STATES } from './annotationConstants';
+import {
+    TYPES,
+    SELECTOR_ANNOTATION_CARET,
+    PENDING_STATES,
+    CLASS_ACTIVE,
+    CLASS_HIDDEN,
+    CLASS_INVISIBLE
+} from './annotationConstants';
 
 const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
 const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';

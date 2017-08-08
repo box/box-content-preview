@@ -7,7 +7,6 @@ import {
     EVENT_ROTATE_ON_AXIS,
     EVENT_SELECT_ANIMATION_CLIP,
     EVENT_SET_CAMERA_PROJECTION,
-    EVENT_SET_QUALITY_LEVEL,
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
@@ -139,10 +138,6 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
                         {
                             event: EVENT_SET_CAMERA_PROJECTION,
                             callback: 'handleSetCameraProjection'
-                        },
-                        {
-                            event: EVENT_SET_QUALITY_LEVEL,
-                            callback: 'handleSetQualityLevel'
                         },
                         {
                             event: EVENT_ROTATE_ON_AXIS,
@@ -305,19 +300,6 @@ describe('lib/viewers/box3d/model3d/Model3DControls', () => {
             const projection = 'orthographic';
             sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_CAMERA_PROJECTION, projection);
             controls.handleSetCameraProjection(projection);
-        });
-    });
-
-    describe('handleSetQualityLevel()', () => {
-        it('should fire a "set render quality" event', () => {
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_QUALITY_LEVEL);
-            controls.handleSetQualityLevel();
-        });
-
-        it('should fire a "set render quality" event with a level of quality', () => {
-            const level = 'high';
-            sandbox.mock(controls).expects('emit').withArgs(EVENT_SET_QUALITY_LEVEL, level);
-            controls.handleSetQualityLevel(level);
         });
     });
 

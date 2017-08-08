@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import CreateHighlightDialog, { CreateEvents } from '../CreateHighlightDialog';
-import { CLASS_HIDDEN } from '../../../constants';
+import { CLASS_HIDDEN } from '../../annotationConstants';
 import CommentBox from '../../CommentBox';
 import * as annotatorUtil from '../../annotatorUtil';
 

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import CommentBox from '../CommentBox';
-import { CLASS_HIDDEN } from '../../constants';
 import {
+    CLASS_HIDDEN,
     SELECTOR_ANNOTATION_BUTTON_CANCEL,
     SELECTOR_ANNOTATION_BUTTON_POST
 } from '../annotationConstants';

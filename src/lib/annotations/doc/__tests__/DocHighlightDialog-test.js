@@ -4,7 +4,6 @@ import Annotation from '../../Annotation';
 import AnnotationDialog from '../../AnnotationDialog';
 import * as annotatorUtil from '../../annotatorUtil';
 import * as docAnnotatorUtil from '../docAnnotatorUtil';
-import { CLASS_HIDDEN, CLASS_ACTIVE } from '../../../constants';
 import * as util from '../../annotatorUtil';
 import * as constants from '../../annotationConstants';
 
@@ -262,7 +261,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
     describe('toggleHighlightDialogs()', () => {
         it('should display comments dialog on toggle when comments dialog is currently hidden', () => {
             const commentsDialogEl = dialog.element.querySelector(constants.SELECTOR_ANNOTATION_CONTAINER);
-            commentsDialogEl.classList.add(CLASS_HIDDEN);
+            commentsDialogEl.classList.add(constants.CLASS_HIDDEN);
 
             sandbox.stub(annotatorUtil, 'hideElement');
             sandbox.stub(dialog, 'position');
@@ -275,7 +274,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
         it('should display highlight buttons dialog on toggle when comments dialog is currently shown', () => {
             const commentsDialogEl = dialog.element.querySelector(constants.SELECTOR_ANNOTATION_CONTAINER);
-            commentsDialogEl.classList.remove(CLASS_HIDDEN);
+            commentsDialogEl.classList.remove(constants.CLASS_HIDDEN);
 
             sandbox.stub(annotatorUtil, 'hideElement');
             sandbox.stub(dialog, 'position');
@@ -296,8 +295,8 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
             dialog.toggleHighlightCommentsReply(true);
 
-            expect(commentTextEl).to.not.have.class(CLASS_HIDDEN);
-            expect(replyTextEl).to.have.class(CLASS_HIDDEN);
+            expect(commentTextEl).to.not.have.class(constants.CLASS_HIDDEN);
+            expect(replyTextEl).to.have.class(constants.CLASS_HIDDEN);
         });
 
         it('should display "Add a comment here" text area in dialog when no comments exist', () => {
@@ -308,8 +307,8 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
             dialog.toggleHighlightCommentsReply(false);
 
-            expect(commentTextEl.classList.contains(CLASS_HIDDEN)).to.be.true;
-            expect(replyTextEl.classList.contains(CLASS_HIDDEN)).to.be.false;
+            expect(commentTextEl.classList.contains(constants.CLASS_HIDDEN)).to.be.true;
+            expect(replyTextEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
         });
 
         it('should reposition the dialog if using a desktop browser', () => {
@@ -360,7 +359,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         it('should hide the highlight dialog if thread has comments', () => {
             dialog.hasComments = true;
             dialog.setup([stubs.annotation]);
-            expect(dialog.highlightDialogEl).to.have.class(CLASS_HIDDEN);
+            expect(dialog.highlightDialogEl).to.have.class(constants.CLASS_HIDDEN);
         });
 
         it('should hide the comments dialog if thread does not have comments', () => {
@@ -375,7 +374,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
             });
 
             dialog.setup([annotation]);
-            expect(dialog.commentsDialogEl).to.have.class(CLASS_HIDDEN);
+            expect(dialog.commentsDialogEl).to.have.class(constants.CLASS_HIDDEN);
         });
 
         it('should setup the dialog element and add thread number to the dialog', () => {
@@ -539,13 +538,13 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         it('should display active highlight icon when highlight is active', () => {
             const addHighlightBtn = dialog.element.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
             dialog.toggleHighlightIcon(constants.HIGHLIGHT_FILL.active);
-            expect(addHighlightBtn).to.have.class(CLASS_ACTIVE);
+            expect(addHighlightBtn).to.have.class(constants.CLASS_ACTIVE);
         });
 
         it('should display normal \'text highlighted\' highlight icon when highlight is not active', () => {
             const addHighlightBtn = dialog.element.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
             dialog.toggleHighlightIcon(constants.HIGHLIGHT_FILL.normal);
-            expect(addHighlightBtn).to.not.have.class(CLASS_ACTIVE);
+            expect(addHighlightBtn).to.not.have.class(constants.CLASS_ACTIVE);
         });
     });
 

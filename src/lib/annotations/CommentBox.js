@@ -1,5 +1,4 @@
 import EventEmitter from 'events';
-import { CLASS_ACTIVE } from '../constants';
 import * as constants from './annotationConstants';
 import { hideElement, showElement } from './annotatorUtil';
 
@@ -191,7 +190,7 @@ class CommentBox extends EventEmitter {
         const containerEl = document.createElement('section');
         containerEl.classList.add('bp-create-highlight-comment');
         containerEl.innerHTML = `
-            <textarea class="${constants.CLASS_TEXTAREA} ${constants.CLASS_ANNOTATION_TEXTAREA} ${CLASS_ACTIVE}"
+            <textarea class="${constants.CLASS_TEXTAREA} ${constants.CLASS_ANNOTATION_TEXTAREA} ${constants.CLASS_ACTIVE}"
                 placeholder="${this.placeholderText}"></textarea>
             <div class="${constants.CLASS_BUTTON_CONTAINER}">
                 <button class="bp-btn ${constants.CLASS_ANNOTATION_BUTTON_CANCEL}">

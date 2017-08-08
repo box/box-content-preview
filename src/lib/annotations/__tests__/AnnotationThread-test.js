@@ -2,12 +2,12 @@
 import AnnotationThread from '../AnnotationThread';
 import Annotation from '../Annotation';
 import * as annotatorUtil from '../annotatorUtil';
-import { CLASS_HIDDEN } from '../../constants';
 import {
     STATES,
     TYPES,
     CLASS_ANNOTATION_POINT_MARKER,
-    DATA_TYPE_ANNOTATION_INDICATOR
+    DATA_TYPE_ANNOTATION_INDICATOR,
+    CLASS_HIDDEN
 } from '../annotationConstants';
 
 let thread;

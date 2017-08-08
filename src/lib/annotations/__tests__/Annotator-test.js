@@ -36,6 +36,10 @@ describe('lib/annotations/Annotator', () => {
             options,
             previewUI: {
                 getAnnotateButton: () => {}
+            },
+            modeButtons: {
+                point: { selector: 'point_btn' },
+                draw: { selector: 'draw_btn' }
             }
         });
 
