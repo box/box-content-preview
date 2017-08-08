@@ -549,9 +549,7 @@ class DocAnnotator extends Annotator {
         // Set all annotations that are in the 'hover' state to 'inactive'
         Object.keys(this.threads).forEach((threadPage) => {
             this.getHighlightThreadsOnPage(threadPage).filter(isThreadInHoverState).forEach((thread) => {
-                const th = thread;
-                th.state = STATES.inactive;
-                th.show();
+                thread.reset();
             });
         });
 
