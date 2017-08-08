@@ -77,7 +77,7 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     updatePannability() {
-        if (!this.imageEl || (this.annotator && this.annotator.isInPointMode())) {
+        if (!this.imageEl) {
             return;
         }
 

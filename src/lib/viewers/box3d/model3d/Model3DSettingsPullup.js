@@ -6,12 +6,9 @@ import {
     AXIS_Z,
     CAMERA_PROJECTION_PERSPECTIVE,
     CAMERA_PROJECTION_ORTHOGRAPHIC,
-    QUALITY_LEVEL_AUTO,
-    QUALITY_LEVEL_FULL,
     CSS_CLASS_HIDDEN,
     EVENT_ROTATE_ON_AXIS,
     EVENT_SET_CAMERA_PROJECTION,
-    EVENT_SET_QUALITY_LEVEL,
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
@@ -68,19 +65,6 @@ const PROJECTION_MODES = [
     }
 ];
 
-const QUALITY_LEVELS = [
-    {
-        text: 'Auto',
-        callback: 'onQualityLevelSelected',
-        args: [QUALITY_LEVEL_AUTO]
-    },
-    {
-        text: 'Full',
-        callback: 'onQualityLevelSelected',
-        args: [QUALITY_LEVEL_FULL]
-    }
-];
-
 /**
  * The UI and events system necessary to run the Settings Panel.
  */
@@ -105,12 +89,6 @@ class Model3DSettingsPullup extends EventEmitter {
 
     /** @property {HTMLElement} - Element containing list of projection modes */
     projectionListEl;
-
-    /** @property {HTMLElement} - Element that contains UI to interact with render quality */
-    qualityLevelEl;
-
-    /** @property {HTMLElement} - Element containing list of render quality levels */
-    qualityLevelListEl;
 
     /** @property {UIRegistry} - Used to track and cleanup UI pieces and event handlers */
     uiRegistry;
@@ -212,34 +190,15 @@ class Model3DSettingsPullup extends EventEmitter {
         this.projectionEl = projectionPanelRowEl.querySelector('button');
         this.pullupEl.appendChild(projectionPanelRowEl);
 
-        // Quality Level dropdown
-        const qualityPanelData = QUALITY_LEVELS.map((entry) => {
-            const entryCopy = Object.assign({}, entry);
-            this.convertToValidCallback(entryCopy);
-            return entryCopy;
-        });
-
-        const qualityPanelRowEl = createDropdown('Render Quality', 'Auto', qualityPanelData);
-        this.qualityLevelEl = qualityPanelRowEl.querySelector('button');
-        this.pullupEl.appendChild(qualityPanelRowEl);
-
         // Set up "click" handlers for the dropdown menus.
         this.renderModeListEl = renderModeDropdownEl.querySelector(`.${CLASS_BOX_PREVIEW_OVERLAY_WRAPPER}`);
         this.projectionListEl = projectionPanelRowEl.querySelector(`.${CLASS_BOX_PREVIEW_OVERLAY_WRAPPER}`);
-        this.qualityLevelListEl = qualityPanelRowEl.querySelector(`.${CLASS_BOX_PREVIEW_OVERLAY_WRAPPER}`);
 
         this.uiRegistry.registerItem('settings-render-mode-selector-label', this.renderModeEl, 'click', () => {
             this.projectionListEl.classList.remove(CLASS_IS_VISIBLE);
-            this.qualityLevelListEl.classList.remove(CLASS_IS_VISIBLE);
         });
 
         this.uiRegistry.registerItem('settings-projection-mode-selector-label', this.projectionEl, 'click', () => {
-            this.renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
-            this.qualityLevelListEl.classList.remove(CLASS_IS_VISIBLE);
-        });
-
-        this.uiRegistry.registerItem('settings-quality-level-selector-label', this.qualityLevelEl, 'click', () => {
-            this.projectionListEl.classList.remove(CLASS_IS_VISIBLE);
             this.renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
         });
 
@@ -354,17 +313,6 @@ class Model3DSettingsPullup extends EventEmitter {
      */
     onProjectionSelected(mode) {
         this.emit(EVENT_SET_CAMERA_PROJECTION, mode);
-    }
-
-    /**
-     * Set the current quality level used for rendering.
-     *
-     * @private
-     * @param {string} level - The quality level to use.
-     * @return {void}
-     */
-    onQualityLevelSelected(level) {
-        this.emit(EVENT_SET_QUALITY_LEVEL, level);
     }
 
     /**
@@ -495,7 +443,6 @@ class Model3DSettingsPullup extends EventEmitter {
         this.pullupEl.classList.add(CSS_CLASS_HIDDEN);
         this.projectionListEl.classList.remove(CLASS_IS_VISIBLE);
         this.renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
-        this.qualityLevelListEl.classList.remove(CLASS_IS_VISIBLE);
     }
 
     /**
@@ -508,7 +455,6 @@ class Model3DSettingsPullup extends EventEmitter {
         this.pullupEl.classList.toggle(CSS_CLASS_HIDDEN);
         this.projectionListEl.classList.remove(CLASS_IS_VISIBLE);
         this.renderModeListEl.classList.remove(CLASS_IS_VISIBLE);
-        this.qualityLevelListEl.classList.remove(CLASS_IS_VISIBLE);
     }
 
     /**
@@ -525,7 +471,6 @@ class Model3DSettingsPullup extends EventEmitter {
         this.showGridEl = null;
         this.showSkeletonsEl = null;
         this.projectionEl = null;
-        this.qualityLevelEl = null;
         this.pullupEl = null;
     }
 }

@@ -1236,17 +1236,74 @@ describe('lib/Preview', () => {
     });
 
     describe('attachViewerListeners()', () => {
-        beforeEach(() => {
+        it('should add listeners for error and viewer events', () => {
             stubs.download = sandbox.stub(preview, 'download');
             preview.viewer = {
                 addListener: sandbox.stub()
             };
+
+            preview.attachViewerListeners();
+            expect(preview.viewer.addListener).to.be.calledWith('error', sinon.match.func);
+            expect(preview.viewer.addListener).to.be.calledWith('viewerevent', sinon.match.func);
+        });
+    });
+
+    describe('handleViewerEvents()', () => {
+        it('should call download on download event', () => {
+            sandbox.stub(preview, 'download');
+            preview.handleViewerEvents({ event: 'download' });
+            expect(preview.download).to.be.called;
         });
 
-        it('should add listeners for error and viewer events', () => {
-            preview.attachViewerListeners();
-            expect(preview.viewer.addListener).to.be.calledWith('error');
-            expect(preview.viewer.addListener).to.be.calledWith('viewerevent');
+        it('should reload preview on reload event', () => {
+            sandbox.stub(preview, 'show');
+            preview.handleViewerEvents({ event: 'reload' });
+            expect(preview.show).to.be.called;
+        });
+
+        it('should finish loading preview on load event', () => {
+            sandbox.stub(preview, 'finishLoading');
+            preview.handleViewerEvents({ event: 'load' });
+            expect(preview.finishLoading).to.be.called;
+        });
+
+        it('should start progress bar on progressstart event', () => {
+            sandbox.stub(preview.ui, 'startProgressBar');
+            preview.handleViewerEvents({ event: 'progressstart' });
+            expect(preview.ui.startProgressBar).to.be.called;
+        });
+
+        it('should finish progress bar on progressend event', () => {
+            sandbox.stub(preview.ui, 'finishProgressBar');
+            preview.handleViewerEvents({ event: 'progressend' });
+            expect(preview.ui.finishProgressBar).to.be.called;
+        });
+
+        it('should show notification with message on notificationshow event', () => {
+            const message = 'notification_message';
+            sandbox.stub(preview.ui, 'showNotification');
+            preview.handleViewerEvents({
+                event: 'notificationshow',
+                data: message
+            });
+            expect(preview.ui.showNotification).to.be.calledWith(message);
+        });
+
+        it('should hide notification on notificationhide event', () => {
+            sandbox.stub(preview.ui, 'hideNotification');
+            preview.handleViewerEvents({ event: 'notificationhide' });
+            expect(preview.ui.hideNotification).to.be.called;
+        });
+
+        it('should emit viewerevent when event does not match', () => {
+            sandbox.stub(preview, 'emit');
+            const data = {
+                event: 'no match',
+                data: 'message'
+            };
+            preview.handleViewerEvents(data);
+            expect(preview.emit).to.be.calledWith(data.event, data.data);
+            expect(preview.emit).to.be.calledWith('viewerevent', data);
         });
     });
 

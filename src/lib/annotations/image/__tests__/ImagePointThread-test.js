@@ -25,6 +25,10 @@ describe('lib/annotations/image/ImagePointThread', () => {
             threadID: 2,
             type: 'point'
         });
+
+        thread.dialog = {
+            position: sandbox.stub()
+        };
     });
 
     afterEach(() => {
@@ -55,6 +59,7 @@ describe('lib/annotations/image/ImagePointThread', () => {
             thread.show();
 
             expect(thread.showDialog).to.have.been.called;
+            expect(thread.dialog.position).to.have.been.called;
         });
 
         it('should not show the dialog if the state is not pending', () => {

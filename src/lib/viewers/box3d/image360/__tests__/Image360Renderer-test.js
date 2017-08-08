@@ -122,12 +122,12 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             renderer.skybox = skybox;
 
             renderer.box3d = {
-                getEntityById: sandbox.stub()
+                getObjectByClass: sandbox.stub()
             };
 
             renderer.getSkyboxComponent();
 
-            expect(renderer.box3d.getEntityById).to.not.be.called;
+            expect(renderer.box3d.getObjectByClass).to.not.be.called;
             renderer.box3d = null;
             renderer.skybox = null;
         });
@@ -143,12 +143,12 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             };
 
             renderer.box3d = {
-                getEntityById: sandbox.stub().returns(scene)
+                getObjectByClass: sandbox.stub().returns(scene)
             };
 
             renderer.getSkyboxComponent();
 
-            expect(renderer.box3d.getEntityById).to.be.called;
+            expect(renderer.box3d.getObjectByClass).to.be.called;
             renderer.box3d = null;
             renderer.skybox = null;
         });

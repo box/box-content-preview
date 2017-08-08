@@ -1,5 +1,6 @@
 import ProgressBar from './ProgressBar';
 import shellTemplate from './shell.html';
+import Notification from './Notification';
 import { insertTemplate } from './util';
 import {
     CLASS_HIDDEN,
@@ -254,6 +255,9 @@ class PreviewUI {
                 // part of finishLoadingSetup in BaseViewer.js
                 crawler.classList.remove(CLASS_HIDDEN);
             }
+
+            // Setup viewer notification
+            this.notification = new Notification(this.contentContainer);
         }
     }
 
@@ -283,6 +287,28 @@ class PreviewUI {
      */
     finishProgressBar() {
         this.progressBar.finish();
+    }
+
+    /**
+     * Shows a notification message.
+     *
+     * @public
+     * @param {string} message - Notification message
+     * @param {string} [buttonText] - Optional text to show in button
+     * @return {void}
+     */
+    showNotification(message, buttonText) {
+        this.notification.show(message, buttonText);
+    }
+
+    /**
+     * Hides the notification message. Does nothing if the notification is already hidden.
+     *
+     * @public
+     * @return {void}
+     */
+    hideNotification() {
+        this.notification.hide();
     }
 
     //--------------------------------------------------------------------------
