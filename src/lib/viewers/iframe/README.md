@@ -13,6 +13,7 @@ Both Box Notes and Box DICOM have full-featured viewers within the main Box Web 
 `boxnote, boxdicom`
 
 ## Events
+
 The iframe viewer fires the following events
 
 | Event Name | Explanation | Event Data |
