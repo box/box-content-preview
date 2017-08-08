@@ -1,5 +1,13 @@
 language: node_js
 node_js:
-    - "6"
+- '6'
+before_script:
+- python -m SimpleHTTPServer &
+- sleep 2
 script: yarn run ci
 cache: yarn
+addons:
+  sauce_connect:
+    username: "box-content-preview"
+  jwt:
+    secure: "SPeECKU0TX2SNSzZ4GnzIvfQoylqBxzBTxKgO7zov6KrcM+c1oPBviXOFIUNs51dztMJlhz4l9F3Etu8NRAzoCi2b58kPPp8gEImCUCSMduDNiCZ6DkqjfTD9PmM44I2yRHt49cZQCG5O+PI4e9QSYaj9AIP2nsa/jRuULShAHV0TU0/ULilJfbCN8Y8jRoHbpqfURL+G7ftFJqkJwXesJyZkm9mn7xIYjWB1WcwkVP1n4lIpJkkmAfqquNGAoSA/IcKjOfKfsSiN3tZj3xpXk5709+0HkoGWSIAlSwpgRTzUUSZyho/Bcr6nTgnP5u6kgBQsLRTnjNX9l4LOBEbJl0pLQCkfCEowLFlCxFIfsjxx3IfddZ0xi+WDTaYehJdJQTbj2rMCT+6y9ueaXeIF+iIq0JpWPho+xu4LTlF62dxlR1NnJo20CjHfPg9PGo39RFLnmaeNsL6URIIDntnYOx4zotwVQWAwJtC8TYo6SX7MEQULolS46Mfgjv9MjYF4N8VSaeBrZabyxS3zYkHtn/4fmd5TTzerCCH6GJTf8ejexwtiNjUaQrklRDTNJUiUjDMkwTvEUT2XQol9x7Eawi1NtcWlwNeooyt781SmYOlQJCrJ8bb0HlRzeEFyeLRDJ/CUSZGiozm7C/O93x21QGrAYVpeA3sTGqZ8zANOnU="
