@@ -145,9 +145,7 @@ class BaseViewer extends EventEmitter {
     finishLoadingSetup() {
         const { container } = this.options;
         const crawler = container.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
-        if (crawler) {
-            crawler.classList.add(CLASS_HIDDEN);
-        }
+        this.PreviewUI.hideHTMLElement(crawler);
 
         const iconWrapperEl = container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
         iconWrapperEl.innerHTML = this.fileLoadingIcon || ICON_FILE_DEFAULT;
