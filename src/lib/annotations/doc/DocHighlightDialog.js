@@ -522,13 +522,8 @@ class DocHighlightDialog extends AnnotationDialog {
     generateHighlightDialogEl() {
         const highlightDialogEl = document.createElement('div');
         highlightDialogEl.innerHTML = `
-<<<<<<< HEAD
-            <span class="${CLASS_HIGHLIGHT_LABEL} ${CLASS_HIDDEN}"></span>
-            <span class="${constants.CLASS_HIGHLIGHT_BTNS}">
-=======
             <span class="${CLASS_HIGHLIGHT_LABEL} ${constants.CLASS_HIDDEN}"></span>
-            <span class="${constants.CLASS_HIGHLIGHT_BTNS} ${this.isMobile ? constants.CLASS_HIDDEN : ''}">
->>>>>>> 48f681de1e066700f71b6bcedf78b5b50f860ff6
+            <span class="${constants.CLASS_HIGHLIGHT_BTNS}">
                 <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_BTN}"
                     data-type="${constants.DATA_TYPE_HIGHLIGHT}"
                     title="${__('annotation_highlight_toggle')}">

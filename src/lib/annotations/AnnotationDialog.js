@@ -176,7 +176,7 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     hide() {
-        if (this.element && this.element.classList.contains(CLASS_HIDDEN)) {
+        if (this.element && this.element.classList.contains(constants.CLASS_HIDDEN)) {
             return;
         }
 
