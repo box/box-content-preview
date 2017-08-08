@@ -654,7 +654,6 @@ class BaseViewer extends EventEmitter {
         if (this.isAnnotatable()) {
             const { file } = this.options;
 
-            // Users can currently only view annotations on mobile
             this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
             if (this.canAnnotate) {
                 // Show the annotate button for all enabled types for the
@@ -696,12 +695,8 @@ class BaseViewer extends EventEmitter {
         this.annotator.init(this.scale);
 
         // Disables controls during annotation mode
-        this.addListener('togglepointannotationmode', () => {
-            this.annotator.togglePointAnnotationHandler();
-        });
-
-        this.addListener('toggledrawannotationmode', () => {
-            this.annotator.toggleDrawAnnotationHandler();
+        this.addListener('toggleannotationmode', (mode) => {
+            this.annotator.toggleAnnotationHandler(mode);
         });
 
         // Add a custom listener for events related to scaling/orientation changes
@@ -788,9 +783,8 @@ class BaseViewer extends EventEmitter {
             return null;
         }
 
-        const eventName = `toggle${mode}annotationmode`;
         return () => {
-            this.emit(eventName);
+            this.emit('toggleannotationmode', mode);
         };
     }
 

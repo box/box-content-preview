@@ -6,7 +6,7 @@ import AnnotationService from '../AnnotationService';
 import {
     STATES,
     TYPES,
-    CLASS_ANNOTATION_POINT_MODE,
+    ,
     CLASS_ANNOTATION_DRAW_MODE
 } from '../annotationConstants';
 
@@ -268,7 +268,7 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('togglePointAnnotationHandler()', () => {
+        describe('toggleAnnotationHandler()', () => {
             beforeEach(() => {
                 stubs.pointMode = sandbox.stub(annotator, 'isInPointMode');
                 sandbox.stub(annotator, 'unbindDOMListeners');
@@ -282,12 +282,12 @@ describe('lib/annotations/Annotator', () => {
                 const destroyStub = sandbox.stub(annotator, 'destroyPendingThreads');
                 stubs.pointMode.returns(false);
 
-                annotator.togglePointAnnotationHandler();
+                annotator.toggleAnnotationHandler();
 
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
                 expect(annotator.emit).to.be.calledWith('annotationmodeenter', TYPES.point);
-                expect(annotatedEl).to.have.class(CLASS_ANNOTATION_POINT_MODE);
+                expect(annotatedEl).to.have.class();
                 expect(annotator.unbindDOMListeners).to.be.called;
                 expect(annotator.bindPointModeListeners).to.be.called;
             });
@@ -296,12 +296,12 @@ describe('lib/annotations/Annotator', () => {
                 const destroyStub = sandbox.stub(annotator, 'destroyPendingThreads');
                 stubs.pointMode.returns(true);
 
-                annotator.togglePointAnnotationHandler();
+                annotator.toggleAnnotationHandler();
 
                 const annotatedEl = document.querySelector('.annotated-element');
                 expect(destroyStub).to.be.called;
                 expect(annotator.emit).to.be.calledWith('annotationmodeexit');
-                expect(annotatedEl).to.not.have.class(CLASS_ANNOTATION_POINT_MODE);
+                expect(annotatedEl).to.not.have.class();
                 expect(annotator.unbindModeListeners).to.be.called;
                 expect(annotator.bindDOMListeners).to.be.called;
             });
@@ -562,7 +562,7 @@ describe('lib/annotations/Annotator', () => {
                 stubs.create = sandbox.stub(annotator, 'createAnnotationThread');
                 stubs.getLocation = sandbox.stub(annotator, 'getLocationFromEvent');
                 sandbox.stub(annotator, 'bindCustomListenersOnThread');
-                sandbox.stub(annotator, 'togglePointAnnotationHandler');
+                sandbox.stub(annotator, 'toggleAnnotationHandler');
             });
 
             it('should not do anything if there are pending threads', () => {
@@ -574,7 +574,7 @@ describe('lib/annotations/Annotator', () => {
 
                 expect(annotator.getLocationFromEvent).to.not.be.called;
                 expect(annotator.bindCustomListenersOnThread).to.not.be.called;
-                expect(annotator.togglePointAnnotationHandler).to.not.be.called;
+                expect(annotator.toggleAnnotationHandler).to.not.be.called;
             });
 
             it('should not do anything if thread is invalid', () => {
@@ -584,7 +584,7 @@ describe('lib/annotations/Annotator', () => {
                 annotator.pointClickHandler(event);
 
                 expect(annotator.getLocationFromEvent).to.be.called;
-                expect(annotator.togglePointAnnotationHandler).to.be.called;
+                expect(annotator.toggleAnnotationHandler).to.be.called;
                 expect(annotator.bindCustomListenersOnThread).to.not.be.called;
             });
 
@@ -598,7 +598,7 @@ describe('lib/annotations/Annotator', () => {
 
                 expect(annotator.getLocationFromEvent).to.be.called;
                 expect(annotator.bindCustomListenersOnThread).to.not.be.called;
-                expect(annotator.togglePointAnnotationHandler).to.be.called;
+                expect(annotator.toggleAnnotationHandler).to.be.called;
             });
 
             it('should create, show, and bind listeners to a thread', () => {
@@ -611,7 +611,7 @@ describe('lib/annotations/Annotator', () => {
 
                 expect(annotator.getLocationFromEvent).to.be.called;
                 expect(annotator.bindCustomListenersOnThread).to.be.called;
-                expect(annotator.togglePointAnnotationHandler).to.be.called;
+                expect(annotator.toggleAnnotationHandler).to.be.called;
             });
         });
 
@@ -690,23 +690,23 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('isInPointMode()', () => {
+        describe('isInAnnotationMode(TYPES.point)', () => {
             it('should return whether the annotator is in point mode or not', () => {
-                annotator.annotatedElement.classList.add(CLASS_ANNOTATION_POINT_MODE);
-                expect(annotator.isInPointMode()).to.be.true;
+                annotator.annotatedElement.classList.add();
+                expect(annotator.isInAnnotationMode(TYPES.point)).to.be.true;
 
-                annotator.annotatedElement.classList.remove(CLASS_ANNOTATION_POINT_MODE);
-                expect(annotator.isInPointMode()).to.be.false;
+                annotator.annotatedElement.classList.remove();
+                expect(annotator.isInAnnotationMode(TYPES.point)).to.be.false;
             });
         });
 
-        describe('isInDrawMode()', () => {
+        describe('isInAnnotationMode(TYPES.draw)', () => {
             it('should return whether the annotator is in draw mode or not', () => {
                 annotator.annotatedElement.classList.add(CLASS_ANNOTATION_DRAW_MODE);
-                expect(annotator.isInDrawMode()).to.be.true;
+                expect(annotator.isInAnnotationMode(TYPES.draw)).to.be.true;
 
                 annotator.annotatedElement.classList.remove(CLASS_ANNOTATION_DRAW_MODE);
-                expect(annotator.isInDrawMode()).to.be.false;
+                expect(annotator.isInAnnotationMode(TYPES.draw)).to.be.false;
             });
         });
 

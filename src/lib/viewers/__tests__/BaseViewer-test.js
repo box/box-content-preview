@@ -910,7 +910,7 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.isAnnotatable.returns(true);
             sandbox.stub(base, 'emit');
             base.annotator = {
-                togglePointAnnotationHandler: () => {}
+                toggleAnnotationHandler: () => {}
             };
 
             const handler = base.getAnnotationModeClickHandler('point');
