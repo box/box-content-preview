@@ -23,6 +23,7 @@ This viewer does not support printing.
 `csv, tsv`
 
 ## Events
+
 The CSV viewer fires the following events
 
 | Event Name | Explanation | Event Data |
@@ -34,6 +35,17 @@ The CSV viewer fires the following events
 | reload | The preview reloads ||
 | resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
 | zoom | The preview zooms in or out | 1. {number} **zoom**: new zoom value 2. {boolean} **canZoomIn**: true if the viewer can zoom in more 3. {boolean} **canZoomOut**: true if the viewer can zoom out more |
+
+## Methods
+
+The following methods are available for the CSV viewer.
+
+| Method Name | Explanation | Method Parameters |
+| --- | --- | --- |
+| zoom | Zooms in or out based on the given value | {string} 'in' or 'out' |
+| zoomIn | Zooms in ||
+| zoomOut | Zooms out ||
+| toggleFullscreen | Toggles fullscreen mode ||
 
 
 # Markdown Viewer
@@ -61,6 +73,7 @@ Re-sizing the viewer window will reflow the markdown to fit the available space.
 `md`
 
 ## Events
+
 The Markdown viewer fires the following events
 
 | Event Name | Explanation | Event Data |
@@ -72,6 +85,15 @@ The Markdown viewer fires the following events
 | reload | The preview reloads ||
 | resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
 | printsuccess | An attempt to print triggered successfully ||
+
+## Methods
+
+The following methods are available for the Markdown viewer.
+
+| Method Name | Explanation | Method Parameters |
+| --- | --- | --- |
+| print | Prints text using Github Markdown styling ||
+| toggleFullscreen | Toggles fullscreen mode ||
 
 
 # Text Viewer
@@ -91,6 +113,7 @@ Re-sizing the viewer window will reflow the text to fit the available space and 
 This viewer supports printing and will attempt to print with appropriate syntax highlighting when either `print()` is invoked or the print button is pressed. Note that printing large files may cause some browsers to hang for a few seconds.
 
 ### Controls:
+
 * Zoom In
 * Zoom Out
 * Fullscreen: can be exited with the escape key
@@ -101,6 +124,7 @@ This viewer supports printing and will attempt to print with appropriate syntax 
 
 
 ## Events
+
 The text viewer fires the following events
 
 | Event Name | Explanation | Event Data |
@@ -113,3 +137,14 @@ The text viewer fires the following events
 | resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
 | zoom | The preview zooms in or out | 1. {number} **zoom**: new zoom value 2. {boolean} **canZoomIn**: true if the viewer can zoom in more 3. {boolean} **canZoomOut**: true if the viewer can zoom out more |
 | printsuccess | An attempt to print triggered successfully ||
+
+## Methods
+
+The following methods are available for the text viewer.
+| Method Name | Explanation | Method Parameters |
+| --- | --- | --- |
+| zoom | Zooms in or out based on the given value | {string} 'in' or 'out' |
+| zoomIn | Zooms in ||
+| zoomOut | Zooms out ||
+| print | Prints text ||
+| toggleFullscreen | Toggles fullscreen mode ||
