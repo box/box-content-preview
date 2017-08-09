@@ -66,7 +66,8 @@ export const SELECTOR_ADD_HIGHLIGHT_BTN = `.${CLASS_ADD_HIGHLIGHT_BTN}`;
 export const DRAW_STATES = {
     draw: 'draw',
     idle: 'idle',
-    erase: 'erase'
+    drawing: 'drawing',
+    erasing: 'erasing'
 };
 
 export const STATES = {
