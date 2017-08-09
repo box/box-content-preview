@@ -20,6 +20,7 @@ There are several limitations at the moment:
 `xlsx`
 
 ## Events
+
 The Office viewer fires the following events
 
 | Event Name | Explanation | Event Data |
@@ -30,3 +31,11 @@ The Office viewer fires the following events
 | navigate | The preview is shown for a given index | {object} file |
 | reload | The preview reloads ||
 | resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
+
+## Methods
+
+The following methods are available for the office viewer.
+
+| Method Name | Explanation | Method Parameters |
+| --- | --- | --- |
+| print | Prints the image ||

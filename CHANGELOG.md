@@ -1,3 +1,19 @@
+<a name="1.5.0"></a>
+# 1.5.0 (2017-08-09)
+
+* New: 3D preview logic now loads from generated JSON file. ([4216b70](https://github.com/box/box-content-preview/commit/4216b70))
+* New: Documentation for viewer methods (#263) ([48f681d](https://github.com/box/box-content-preview/commit/48f681d))
+* Fix: Disable font face for iOS 10.3.x (#283) ([4d97d99](https://github.com/box/box-content-preview/commit/4d97d99))
+* Fix: Only initialize PreviewUI.notification after viewer is loaded (#273) ([060687b](https://github.com/box/box-content-preview/commit/060687b))
+* Chore: Cleaning up annotations methods in BaseViewer (#272) ([6f319f6](https://github.com/box/box-content-preview/commit/6f319f6))
+* Chore: Force image point dialogs to re-position on re-render (#280) ([baf9b70](https://github.com/box/box-content-preview/commit/baf9b70))
+* Chore: Removing references to annotations from individual viewers (#271) ([2a1e6cd](https://github.com/box/box-content-preview/commit/2a1e6cd))
+* Chore: Removing references to constants.js and Browser.js in Annotations code (#277) ([8d37f37](https://github.com/box/box-content-preview/commit/8d37f37))
+* Mojito: Update translations (#278) ([a02f3fe](https://github.com/box/box-content-preview/commit/a02f3fe))
+* Update: move rbush from static to npm module (#275) ([cec5410](https://github.com/box/box-content-preview/commit/cec5410))
+
+
+
 <a name="1.4.0"></a>
 # 1.4.0 (2017-08-01)
 
