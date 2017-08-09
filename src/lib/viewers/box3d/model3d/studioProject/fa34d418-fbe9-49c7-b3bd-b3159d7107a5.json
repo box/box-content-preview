@@ -1,0 +1,86 @@
+{
+  "createdDate": "2017-08-01T21:32:06.201Z",
+  "updatedDate": "2017-08-01T21:32:06.201Z",
+  "entities": [
+    {
+      "id": "fa34d418-fbe9-49c7-b3bd-b3159d7107a5",
+      "sid": "fa34d418-fbe9-49c7-b3bd-b3159d7107a5",
+      "type": "application",
+      "properties": {
+        "name": "Application",
+        "startupSceneId": "bc230b76-eb07-4700-ae66-bf78699cfab2"
+      },
+      "previousProperties": {},
+      "components": [
+        {
+          "scriptId": "box3d_renderer",
+          "attributes": {
+            "renderOnDemand": true,
+            "clearAlpha": 1,
+            "clearColor": {
+              "r": 0.9490196078431372,
+              "g": 0.9490196078431372,
+              "b": 0.9490196078431372
+            }
+          },
+          "enabled": true,
+          "name": "unnamed component",
+          "id": "76add60f-9843-41e9-964d-cd56e0049a8a"
+        },
+        {
+          "scriptId": "input",
+          "attributes": {},
+          "enabled": true,
+          "name": "unnamed component",
+          "id": "be9272c0-0399-42f7-872a-02ee89220ea8"
+        },
+        {
+          "scriptId": "render_modes",
+          "attributes": {},
+          "enabled": true,
+          "name": "unnamed component",
+          "id": "8f323e1e-698c-4f66-bf5b-1815698ac4ac"
+        },
+        {
+          "scriptId": "vr_presenter",
+          "attributes": {},
+          "enabled": true,
+          "name": "unnamed component",
+          "id": "78893c41-5e2f-452d-a94e-41094d9f32b3"
+        }
+      ],
+      "previousComponents": [
+        {
+          "scriptId": "box3d_renderer",
+          "attributes": {
+            "renderOnDemand": true,
+            "clearAlpha": 1,
+            "clearColor": {
+              "r": 0.9490196078431372,
+              "g": 0.9490196078431372,
+              "b": 0.9490196078431372
+            }
+          },
+          "enabled": true,
+          "name": "unnamed component",
+          "id": "76add60f-9843-41e9-964d-cd56e0049a8a"
+        },
+        {
+          "scriptId": "input",
+          "attributes": {},
+          "enabled": true,
+          "name": "unnamed component",
+          "id": "be9272c0-0399-42f7-872a-02ee89220ea8"
+        },
+        {
+          "scriptId": "render_modes",
+          "attributes": {},
+          "enabled": true,
+          "name": "unnamed component",
+          "id": "8f323e1e-698c-4f66-bf5b-1815698ac4ac"
+        }
+      ],
+      "representations": []
+    }
+  ]
+}

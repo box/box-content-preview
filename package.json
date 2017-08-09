@@ -1,6 +1,6 @@
 {
   "name": "box-content-preview",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Box Content Preview UI Element",
   "author": "Box (https://www.box.com/)",
   "license": "SEE LICENSE IN LICENSE",
@@ -79,6 +79,7 @@
     "prettier-eslint-cli": "^4.1.1",
     "rangy": "^1.3.0",
     "raw-loader": "^0.5.1",
+    "rbush": "^2.0.1",
     "react": "^15.6.1",
     "react-addons-shallow-compare": "^15.6.0",
     "react-dom": "^15.6.1",

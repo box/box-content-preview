@@ -36,6 +36,9 @@ class ImagePointThread extends AnnotationThread {
 
         if (this.state === STATES.pending) {
             this.showDialog();
+
+            // Force dialogs to reposition on re-render
+            this.dialog.position();
         }
     }
 

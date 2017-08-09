@@ -40,7 +40,6 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             expect(renderer.containerEl).to.equal(containerEl);
             expect(renderer.boxSdk).to.exist;
             expect(renderer._events).to.exist;
-            expect(renderer._events.triggerRender).to.exist;
         });
     });
 
@@ -62,10 +61,9 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
         });
 
         it('should not call Box3D cleanup path if no Box3D engine', () => {
+            sandbox.mock(renderer).expects('disableVr').never();
             renderer.box3d = null;
             renderer.destroy();
-
-            expect(renderer._events.triggerRender).to.not.exist;
         });
 
         it('should remove the reference to box3d', () => {
@@ -93,8 +91,10 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                 trigger: () => {}
             };
             renderer.box3d = {
-                getObjectById: sandbox.stub().returns(camera)
+                getObjectByClass: sandbox.stub().returns(camera)
             };
+            renderer.savedCameraPosition = { x: 0, y: 0, z: 0 };
+            renderer.savedCameraQuaternion = { x: 0, y: 0, z: 0, w: 1 };
             cameraMock = sandbox.mock(camera);
         });
 
@@ -109,7 +109,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
     describe('getCamera()', () => {
         it('should return a camera object if one exists in the scene', () => {
             renderer.box3d = {
-                getObjectById: sandbox.stub().returns({})
+                getObjectByClass: sandbox.stub().returns({})
             };
 
             const camera = renderer.getCamera();
@@ -125,7 +125,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
     describe('getScene()', () => {
         it('should return the scene prefab that exists in the Box3D runtime', () => {
             renderer.box3d = {
-                getEntityById: sandbox.stub().returns({})
+                getObjectByClass: sandbox.stub().returns({})
             };
 
             const scene = renderer.getScene();
@@ -261,7 +261,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                 });
             });
 
-            it('should create a new box3d instance', () => {
+            it('should create a new box3d instance', (done) => {
                 const expectedEntities = {
                     one: 'a',
                     two: 'b'
@@ -269,14 +269,13 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
                 const creatBox3DStub = sandbox.stub(renderer, 'createBox3d', (loader, entities) => {
                     expect(entities).to.deep.equal(expectedEntities);
+                    done();
                 });
 
                 renderer.initBox3d({
                     file: { file_version: 'abcdef' },
                     sceneEntities: expectedEntities
                 });
-
-                expect(creatBox3DStub).to.be.called;
             });
 
             it('should produce an XhrResourceLoader which supports token, sharedLink and sharedLinkPassword', (done) => {
@@ -319,6 +318,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             const loader = { name: 'loader' };
             const entities = { name: 'entities' };
             const expectedInitProps = {
+                apiBase: 'dummyBase',
                 container: containerEl,
                 engineName: 'Default',
                 resourceLoader: loader
@@ -328,14 +328,14 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                 Engine: function contructor(props) {
                     initProps = props;
                     this.addEntities = sandbox.stub();
-                    this.getAssetById = sandbox.stub().returns({
+                    this.getAssetByClass = sandbox.stub().returns({
                         load: function load() {}
                     });
                 }
             };
             window.Box3D = Box3DFake;
 
-            const callPromise = renderer.createBox3d(loader, entities).then((b3d) => {
+            const callPromise = renderer.createBox3d(loader, entities, [], 'dummyBase').then((b3d) => {
                 expect(b3d).to.be.an.instanceof(window.Box3D.Engine);
                 expect(initProps).to.deep.equal(expectedInitProps);
                 expect(callPromise).to.be.a('promise');
@@ -364,7 +364,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             const Box3DFake = {
                 Engine: function constructor() {
                     this.addEntities = sandbox.stub();
-                    this.getAssetById = sandbox.stub().returns({
+                    this.getAssetByClass = sandbox.stub().returns({
                         load: function load() {}
                     });
                     this.canvas = { addEventListener: () => {}};
@@ -573,29 +573,6 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             renderer.vrEnabled = true;
             b3dMock.expects('trigger').withArgs('disableVrRendering');
             renderer.disableVr();
-        });
-    });
-
-    describe('handleOnRender()', () => {
-        let b3dMock;
-
-        beforeEach(() => {
-            renderer.box3d = {
-                trigger: () => {}
-            };
-
-            b3dMock = sandbox.mock(renderer.box3d);
-        });
-
-        it('should do nothing if the runtime has been shutdown', () => {
-            renderer.box3d = undefined;
-            b3dMock.expects('trigger').never();
-            renderer.handleOnRender();
-        });
-
-        it('should trigger the "render" event on the Box3DRuntime instance', () => {
-            b3dMock.expects('trigger').withArgs('render');
-            renderer.handleOnRender();
         });
     });
 

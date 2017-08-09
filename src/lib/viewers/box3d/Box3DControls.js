@@ -22,6 +22,9 @@ class Box3DControls extends EventEmitter {
     /** @property {HTMLElement} - Button used to enable/disable VR mode */
     vrButtonEl;
 
+    /** @property {boolean} - State used to show and hide the VR button */
+    vrButtonVisible = false;
+
     /**
      * Base class for building 3D previews on. Contains events for VR, Fullscreen,
      * Scene Reset, and Scene Loaded. Also, used for programmatic building of control
@@ -78,6 +81,11 @@ class Box3DControls extends EventEmitter {
      */
     addVrButton() {
         this.vrButtonEl = this.controls.add(__('box3d_toggle_vr'), this.handleToggleVr, '', ICON_3D_VR);
+        if (this.vrButtonVisible) {
+            this.showVrButton();
+        } else {
+            this.hideVrButton();
+        }
     }
 
     /**
@@ -122,6 +130,7 @@ class Box3DControls extends EventEmitter {
      * @return {void}
      */
     showVrButton() {
+        this.vrButtonVisible = true;
         if (this.vrButtonEl) {
             this.vrButtonEl.classList.remove(CLASS_HIDDEN);
         }
@@ -133,6 +142,7 @@ class Box3DControls extends EventEmitter {
      * @return {void}
      */
     hideVrButton() {
+        this.vrButtonVisible = false;
         if (this.vrButtonEl) {
             this.vrButtonEl.classList.add(CLASS_HIDDEN);
         }

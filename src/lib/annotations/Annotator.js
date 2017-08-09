@@ -2,15 +2,11 @@ import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import AnnotationService from './AnnotationService';
 import * as annotatorUtil from './annotatorUtil';
-import {
-    CLASS_ACTIVE,
-    CLASS_HIDDEN,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
-    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW
-} from '../constants';
 import { ICON_CLOSE } from '../icons/icons';
 import './Annotator.scss';
 import {
+    CLASS_ACTIVE,
+    CLASS_HIDDEN,
     DATA_TYPE_ANNOTATION_DIALOG,
     CLASS_MOBILE_ANNOTATION_DIALOG,
     CLASS_ANNOTATION_DIALOG,
@@ -61,6 +57,7 @@ class Annotator extends EventEmitter {
         this.validationErrorEmitted = false;
         this.isMobile = data.isMobile;
         this.previewUI = data.previewUI;
+        this.modeButtons = data.modeButtons;
         this.annotationModeHandlers = [];
     }
 
@@ -224,7 +221,8 @@ class Annotator extends EventEmitter {
         }
 
         // Hide create annotations button if image is rotated
-        const pointAnnotateButton = this.previewUI.getAnnotateButton(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
+        const pointButtonSelector = this.modeButtons[TYPES.point].selector;
+        const pointAnnotateButton = this.previewUI.getAnnotateButton(pointButtonSelector);
 
         if (rotationAngle !== 0) {
             annotatorUtil.hideElement(pointAnnotateButton);
@@ -252,7 +250,8 @@ class Annotator extends EventEmitter {
      */
     togglePointAnnotationHandler(event = {}) {
         this.destroyPendingThreads();
-        const buttonEl = event.target || this.previewUI.getAnnotateButton(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
+        const pointButtonSelector = this.modeButtons[TYPES.point].selector;
+        const buttonEl = event.target || this.previewUI.getAnnotateButton(pointButtonSelector);
 
         if (this.isInDrawMode()) {
             this.toggleDrawAnnotationHandler();
@@ -295,7 +294,8 @@ class Annotator extends EventEmitter {
             this.togglePointAnnotationHandler();
         }
 
-        const buttonEl = event.target || this.previewUI.getAnnotateButton(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
+        const drawButtonSelector = this.modeButtons[TYPES.draw].selector;
+        const buttonEl = event.target || this.previewUI.getAnnotateButton(drawButtonSelector);
         const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
         const undoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
         const redoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
@@ -434,24 +434,27 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Binds DOM event listeners. No-op here, but can be overridden by any
-     * annotator that needs to bind event listeners to the DOM in the normal
-     * state (ie not in any annotation mode).
+     * Binds DOM event listeners. Can be overridden by any annotator that
+     * needs to bind event listeners to the DOM in the normal state (ie not
+     * in any annotation mode).
      *
-     * @protected
      * @return {void}
      */
-    bindDOMListeners() {}
+    bindDOMListeners() {
+        this.addListener('scaleAnnotations', this.scaleAnnotations);
+    }
 
     /**
-     * Unbinds DOM event listeners. No-op here, but can be overridden by any
-     * annotator that needs to bind event listeners to the DOM in the normal
-     * state (ie not in any annotation mode).
+     * Unbinds DOM event listeners. Can be overridden by any annotator that
+     * needs to bind event listeners to the DOM in the normal state (ie not
+     * in any annotation mode).
      *
      * @protected
      * @return {void}
      */
-    unbindDOMListeners() {}
+    unbindDOMListeners() {
+        this.removeListener('scaleAnnotations', this.scaleAnnotations);
+    }
 
     /**
      * Binds custom event listeners for the Annotation Service.
@@ -566,14 +569,23 @@ class Annotator extends EventEmitter {
      */
     bindPointModeListeners() {
         const pointFunc = this.pointClickHandler.bind(this.annotatedElement);
-        const handler = {
-            type: 'click',
-            func: pointFunc,
-            eventObj: this.annotatedElement
-        };
+        const handlers = [
+            {
+                type: 'mousedown',
+                func: pointFunc,
+                eventObj: this.annotatedElement
+            },
+            {
+                type: 'touchstart',
+                func: pointFunc,
+                eventObj: this.annotatedElement
+            }
+        ];
 
-        handler.eventObj.addEventListener(handler.type, handler.func);
-        this.annotationModeHandlers.push(handler);
+        handlers.forEach((handler) => {
+            handler.eventObj.addEventListener(handler.type, handler.func);
+            this.annotationModeHandlers.push(handler);
+        });
     }
 
     /**
@@ -586,6 +598,7 @@ class Annotator extends EventEmitter {
      */
     pointClickHandler(event) {
         event.stopPropagation();
+        event.preventDefault();
 
         // Determine if a point annotation dialog is already open and close the
         // current open dialog
@@ -766,6 +779,18 @@ class Annotator extends EventEmitter {
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
+
+    /**
+     * Orient annotations to the correct scale and orientation of the annotated document.
+     *
+     * @protected
+     * @param {Object} data - Scale and orientation values needed to orient annotations.
+     * @return {void}
+     */
+    scaleAnnotations(data) {
+        this.setScale(data.scale);
+        this.rotateAnnotations(data.rotationAngle, data.pageNum);
+    }
 
     /**
      * Destroys pending threads.

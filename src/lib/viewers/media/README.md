@@ -28,6 +28,7 @@ The DASH viewer uses a black background to create a more native viewing experien
 `3g2, 3gp, avi, m2v, m2ts, m4v, mkv, mov, mp4, mpeg, mpg, ogg, mts, qt, wmv`
 
 ## Events
+
 The DASH viewer fires the following events
 
 | Event Name | Explanation | Event Data |
@@ -47,6 +48,21 @@ The DASH viewer fires the following events
 | play | The video plays ||
 | pause | The video pauses ||
 | seeked | The video skips to a time | {number} time |
+
+## Methods
+
+The following methods are available for the DASH viewer.
+
+| Method Name | Explanation | Method Parameters |
+| --- | --- | --- |
+| setMediaTime | Updates the media element's time | {number} time in seconds |
+| setVolume | Updates the media element's volume | {number} value between 0 and 1
+| togglePlay | Toggles playback ||
+| toggleMute | Toggles between mute and current volume value ||
+| quickSeek | Seeks forward/backward from current point | {number} increment in seconds ||
+| increaseVolume | Increases volume by a small increment ||
+| decreaseVolume | Decreases volume by a small increment ||
+| toggleFullscreen | Toggles fullscreen mode ||
 
 
 # MP3 Viewer
@@ -90,6 +106,20 @@ The MP3 viewer fires the following events
 | pause | The audio pauses ||
 | seeked | The audio skips to a time | {number} time |
 
+## Methods
+
+The following methods are available for the MP3 viewer.
+
+| Method Name | Explanation | Method Parameters |
+| --- | --- | --- |
+| setMediaTime | Updates the media element's time | {number} time in seconds |
+| setVolume | Updates the media element's volume | {number} value between 0 and 1
+| togglePlay | Toggles playback ||
+| toggleMute | Toggles between mute and current volume value ||
+| quickSeek | Seeks forward/backward from current point | {number} increment in seconds ||
+| increaseVolume | Increases volume by a small increment ||
+| decreaseVolume | Decreases volume by a small increment ||
+
 
 # MP4 Viewer
 
@@ -119,6 +149,7 @@ The mp4 viewer uses a black background to create a better viewing experience. Vo
 `3g2, 3gp, avi, m2v, m2ts, m4v, mkv, mov, mp4, mpeg, mpg, ogg, mts, qt, wmv`
 
 ## Events
+
 The MP4 viewer fires the following events
 
 | Event Name | Explanation | Event Data |
@@ -134,3 +165,7 @@ The MP4 viewer fires the following events
 | play | The video plays ||
 | pause | The video pauses ||
 | seeked | The video skips to a time | {number} time |
+
+## Methods
+
+See DASH viewer methods

@@ -32,9 +32,6 @@ describe('lib/viewers/image/ImageViewer', () => {
                 id: '1',
                 file_version: {
                     id: '1'
-                },
-                permissions: {
-                    can_annotate: true
                 }
             },
             viewer: {
@@ -139,22 +136,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.imageEl = stubs.imageEl;
         });
 
-        it('should ignore if in point annotation mode', () => {
-            image.annotator = {
-                isInPointMode: sandbox.stub().returns(true)
-            };
-
-            image.updatePannability();
-
-            expect(image.annotator.isInPointMode).to.be.called;
-            expect(image.didPan).to.have.been.true;
-            expect(stubs.cursor).to.not.be.called;
-        });
-
         it('should set pannability to true if rotated image is pannable', () => {
-            image.annotator = {
-                isInPointMode: sandbox.stub().returns(false)
-            };
             sandbox.stub(image, 'isRotated').returns(true);
 
             image.imageEl.style.height = '50px';
@@ -163,15 +145,11 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.wrapperEl.style.width = '50px';
 
             image.updatePannability();
-            expect(image.annotator.isInPointMode).to.be.called;
             expect(image.didPan).to.have.been.false;
             expect(stubs.cursor).to.be.called;
         });
 
         it('should set pannability to false if rotated image is not pannable', () => {
-            image.annotator = {
-                isInPointMode: sandbox.stub().returns(false)
-            };
             sandbox.stub(image, 'isRotated').returns(true);
 
             image.imageEl.style.height = '10px';
@@ -181,15 +159,11 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             image.updatePannability();
 
-            expect(image.annotator.isInPointMode).to.be.called;
             expect(image.didPan).to.have.been.false;
             expect(stubs.cursor).to.be.called;
         });
 
         it('should set pannability to true if non-rotated image is pannable', () => {
-            image.annotator = {
-                isInPointMode: sandbox.stub().returns(false)
-            };
             sandbox.stub(image, 'isRotated').returns(false);
 
             image.imageEl.style.height = '50px';
@@ -199,15 +173,11 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             image.updatePannability();
 
-            expect(image.annotator.isInPointMode).to.be.called;
             expect(image.didPan).to.have.been.false;
             expect(stubs.cursor).to.be.called;
         });
 
         it('should set pannability to false if non-rotated image is not pannable', () => {
-            image.annotator = {
-                isInPointMode: sandbox.stub().returns(false)
-            };
             sandbox.stub(image, 'isRotated').returns(false);
 
             image.imageEl.style.height = '10px';
@@ -217,7 +187,6 @@ describe('lib/viewers/image/ImageViewer', () => {
 
             image.updatePannability();
 
-            expect(image.annotator.isInPointMode).to.be.called;
             expect(image.didPan).to.have.been.false;
             expect(stubs.cursor).to.be.called;
         });
@@ -227,7 +196,6 @@ describe('lib/viewers/image/ImageViewer', () => {
         beforeEach(() => {
             stubs.emit = sandbox.stub(image, 'emit');
             stubs.orientChange = sandbox.stub(image, 'handleOrientationChange');
-            image.annotator = {};
             stubs.scale = sandbox.stub(image, 'setScale');
             image.currentRotationAngle = 0;
         });
@@ -240,12 +208,6 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(image.imageEl.style.transform).to.equal('rotate(-90deg)');
             expect(stubs.emit).to.be.calledWith('rotate');
             expect(stubs.orientChange).to.be.called;
-        });
-
-        it('should re-render annotations if annotator is initialized', () => {
-            image.rotateLeft();
-
-            expect(stubs.scale).to.be.called;
         });
     });
 
@@ -324,16 +286,6 @@ describe('lib/viewers/image/ImageViewer', () => {
             expect(stubs.adjustZoom).to.be.called;
         });
 
-        it('should scale annotations if annotator exists', () => {
-            image.annotator = {};
-            sandbox.stub(image, 'setScale');
-
-            image.load(imageUrl).catch(() => {});
-
-            image.zoomIn();
-            expect(image.setScale).to.be.called;
-        });
-
         it('should reset dimensions and adjust padding when called with reset', () => {
             image.imageEl.style.width = '10px';
             image.imageEl.style.height = '20px';
@@ -364,14 +316,10 @@ describe('lib/viewers/image/ImageViewer', () => {
 
     describe('loadUI()', () => {
         it('should load UI & controls for zoom', () => {
-            image.boxAnnotationsLoaded = false;
-            image.annotator = null;
-
             image.loadUI();
 
             expect(image.controls).to.not.be.undefined;
             expect(image.controls.buttonRefs.length).to.equal(5);
-            expect(image.boxAnnotationsLoaded).to.be.false;
         });
     });
 
@@ -493,18 +441,8 @@ describe('lib/viewers/image/ImageViewer', () => {
     describe('handleMouseUp()', () => {
         beforeEach(() => {
             stubs.pan = sandbox.stub(image, 'stopPanning');
-            image.annotator = {
-                isInPointMode: sandbox.stub().returns(false)
-            };
-            stubs.point = image.annotator.isInPointMode;
             stubs.zoom = sandbox.stub(image, 'zoom');
             image.isPanning = false;
-        });
-
-        it('should do nothing if in point annotation mode', () => {
-            stubs.point.returns(true);
-            image.handleMouseUp();
-            expect(stubs.zoom).to.not.be.called;
         });
 
         it('should do nothing if incorrect click type', () => {
@@ -581,33 +519,6 @@ describe('lib/viewers/image/ImageViewer', () => {
                 scale: sinon.match.any,
                 rotationAngle: sinon.match.number
             });
-        });
-    });
-
-    describe('getPointModeClickHandler()', () => {
-        it('should do nothing if not annotatable', () => {
-            sandbox.stub(image, 'isAnnotatable').returns(false);
-            const handler = image.getAnnotationModeClickHandler('point');
-            expect(handler).to.be.null;
-        });
-
-        it('should return event listener', () => {
-            const event = {};
-            image.annotator = {
-                togglePointAnnotationHandler: () => {}
-            };
-            sandbox.stub(image, 'emit');
-            image.imageEl.classList.add(CSS_CLASS_ZOOMABLE);
-            image.imageEl.classList.add(CSS_CLASS_PANNABLE);
-            sandbox.stub(image, 'isAnnotatable').returns(true);
-
-            const handler = image.getAnnotationModeClickHandler('point');
-            expect(handler).to.be.a('function');
-
-            handler(event);
-            expect(image.imageEl).to.not.have.class(CSS_CLASS_ZOOMABLE);
-            expect(image.imageEl).to.not.have.class(CSS_CLASS_PANNABLE);
-            expect(image.emit).to.have.been.calledWith('togglepointannotationmode');
         });
     });
 });

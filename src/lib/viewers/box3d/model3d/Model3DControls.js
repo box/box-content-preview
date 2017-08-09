@@ -7,7 +7,6 @@ import {
     EVENT_ROTATE_ON_AXIS,
     EVENT_SELECT_ANIMATION_CLIP,
     EVENT_SET_CAMERA_PROJECTION,
-    EVENT_SET_QUALITY_LEVEL,
     EVENT_SET_RENDER_MODE,
     EVENT_SET_SKELETONS_VISIBLE,
     EVENT_SET_WIREFRAMES_VISIBLE,
@@ -87,7 +86,6 @@ class Model3DControls extends Box3DControls {
 
         // VR button
         this.addVrButton();
-        this.hideVrButton();
 
         // Settings panel
         this.settingsPullup.addListener(EVENT_SET_RENDER_MODE, this.handleSetRenderMode);
@@ -95,7 +93,6 @@ class Model3DControls extends Box3DControls {
         this.settingsPullup.addListener(EVENT_SET_WIREFRAMES_VISIBLE, this.handleSetWireframesVisible);
         this.settingsPullup.addListener(EVENT_SET_GRID_VISIBLE, this.handleSetGridVisible);
         this.settingsPullup.addListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
-        this.settingsPullup.addListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.addListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
         this.settingsButtonEl = this.controls.add(__('box3d_settings'), this.handleToggleSettings, '', ICON_GEAR);
         this.settingsButtonEl.parentNode.appendChild(this.settingsPullup.pullupEl);
@@ -182,18 +179,8 @@ class Model3DControls extends Box3DControls {
     }
 
     /**
-     * Handle change of render quality.
-     *
-     * @param {string} level - The quality level to use
-     * @return {void}
-     */
-    handleSetQualityLevel(level) {
-        this.emit(EVENT_SET_QUALITY_LEVEL, level);
-    }
-
-    /**
      * Handle rotation on axis.
-     * 
+     *
      * @param {Object} rotation - Rotation axis description with axis and amount (in degrees)
      * @return {void}
      */
@@ -267,7 +254,7 @@ class Model3DControls extends Box3DControls {
 
     /**
      * Set the animation playback state, firing event EVENT_TOGGLE_ANIMATION.
-     * 
+     *
      * @private
      * @param {boolean} playing - Whether or not the animation is playing.
      * @return {void}
@@ -342,7 +329,6 @@ class Model3DControls extends Box3DControls {
         this.settingsPullup.removeListener(EVENT_SET_WIREFRAMES_VISIBLE, this.handleSetWireframesVisible);
         this.settingsPullup.removeListener(EVENT_SET_GRID_VISIBLE, this.handleSetGridVisible);
         this.settingsPullup.removeListener(EVENT_SET_CAMERA_PROJECTION, this.handleSetCameraProjection);
-        this.settingsPullup.removeListener(EVENT_SET_QUALITY_LEVEL, this.handleSetQualityLevel);
         this.settingsPullup.removeListener(EVENT_ROTATE_ON_AXIS, this.handleAxisRotation);
         this.settingsPullup.destroy();
         this.settingsPullup = null;

@@ -44,6 +44,27 @@ describe('lib/annotations/image/ImageAnnotator', () => {
     });
 
     describe('getLocationFromEvent()', () => {
+        let event = {};
+        let imageEl = {};
+        const x = 100;
+        const y = 200;
+        const dimensions = {
+            x: 100,
+            y: 200
+        };
+
+        beforeEach(() => {
+            annotator.isMobile = false;
+            imageEl = annotator.annotatedElement.querySelector('img');
+            event = {
+                targetTouches: [{
+                    clientX: x,
+                    clientY: y,
+                    target: imageEl
+                }]
+            };
+        });
+
         it('should not return a location if image isn\'t inside viewer', () => {
             annotator.annotatedElement = document.createElement('div');
             const location = annotator.getLocationFromEvent({
@@ -54,18 +75,45 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             expect(location).to.be.null;
         });
 
-        it('should return a valid point location if click is valid', () => {
-            const x = 100;
-            const y = 200;
-            const dimensions = {
-                x: 100,
-                y: 200
+        it('should not return a location if no touch event is available and user is on a mobile device', () => {
+            annotator.isMobile = true;
+            expect(annotator.getLocationFromEvent({ targetTouches: [] })).to.be.null;
+        });
+
+        it('should replace event with mobile touch event if user is on a mobile device', () => {
+            annotator.isMobile = true;
+            annotator.getLocationFromEvent(event);
+        });
+
+        it('should not return a location if there are no touch event and the user is on a mobile device', () => {
+            annotator.isMobile = true;
+            const location = annotator.getLocationFromEvent({
+                target: {
+                    nodeName: 'not-annotated'
+                }
+            });
+            expect(location).to.be.null;
+
+            event = {
+                targetTouches: [{
+                    target: imageEl
+                }]
             };
-            const imageEl = annotator.annotatedElement.querySelector('img');
+            expect(annotator.getLocationFromEvent(event)).to.be.null;
+        });
+
+        it('should not return a location if click event does not have coordinates', () => {
+            event = { target: imageEl };
+            expect(annotator.getLocationFromEvent(event)).to.be.null;
+        });
+
+        it('should return a valid point location if click is valid', () => {
             sandbox.stub(annotatorUtil, 'getScale').returns(1);
             sandbox.stub(imageAnnotatorUtil, 'getLocationWithoutRotation').returns([x, y]);
 
             const location = annotator.getLocationFromEvent({
+                clientX: x,
+                clientY: y,
                 target: imageEl
             });
             expect(location).to.deep.equal({
