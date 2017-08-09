@@ -144,7 +144,7 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     render(timestamp) {
-        if (this.drawingFlag === DRAW_STATES.draw) {
+        if (this.drawingFlag === DRAW_STATES.drawing) {
             this.lastAnimationRequestId = window.requestAnimationFrame(this.render);
         }
 

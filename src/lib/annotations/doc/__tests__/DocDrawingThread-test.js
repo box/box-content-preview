@@ -53,7 +53,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
         });
 
         it("should add a coordinate frame when the state is 'draw'", () => {
-            docDrawingThread.drawingFlag = DRAW_STATES.draw;
+            docDrawingThread.drawingFlag = DRAW_STATES.drawing;
             docDrawingThread.handleMove(docDrawingThread.location);
 
             expect(docDrawingThread.pendingPath.addCoordinate).to.be.called;
@@ -76,7 +76,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             docDrawingThread.handleStart(docDrawingThread.location);
 
             expect(window.requestAnimationFrame).to.be.called;
-            expect(docDrawingThread.drawingFlag).to.equal(DRAW_STATES.draw);
+            expect(docDrawingThread.drawingFlag).to.equal(DRAW_STATES.drawing);
             expect(docDrawingThread.hasPageChanged).to.be.called;
             expect(docDrawingThread.pendingPath).to.be.an.instanceof(DrawingPath);
         });
@@ -102,7 +102,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
 
     describe('handleStop()', () => {
         it("should set the state to 'idle' and clear the pendingPath", () => {
-            docDrawingThread.drawingFlag = DRAW_STATES.draw;
+            docDrawingThread.drawingFlag = DRAW_STATES.drawing;
             docDrawingThread.pendingPath = {
                 isEmpty: () => false
             };

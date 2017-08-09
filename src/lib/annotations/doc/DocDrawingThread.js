@@ -42,7 +42,7 @@ class DocDrawingThread extends DrawingThread {
      */
     handleMove(location) {
         const pageChanged = this.hasPageChanged(location);
-        if (this.drawingFlag !== DRAW_STATES.draw || pageChanged) {
+        if (this.drawingFlag !== DRAW_STATES.drawing || pageChanged) {
             return;
         }
 
@@ -75,7 +75,7 @@ class DocDrawingThread extends DrawingThread {
             this.checkAndHandleScaleUpdate();
         }
 
-        this.drawingFlag = DRAW_STATES.draw;
+        this.drawingFlag = DRAW_STATES.drawing;
         if (!this.pendingPath) {
             this.pendingPath = new DrawingPath();
         }
