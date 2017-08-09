@@ -63,7 +63,9 @@ class DocDrawingThread extends DrawingThread {
         if (pageChanged) {
             this.handleStop();
             this.saveAnnotation();
-            this.emit('drawthreadcommited');
+            this.emit('annotationevent', {
+                type: 'pagechanged'
+            });
             return;
         }
 
@@ -95,6 +97,7 @@ class DocDrawingThread extends DrawingThread {
 
         if (this.pendingPath && !this.pendingPath.isEmpty()) {
             this.pathContainer.insert(this.pendingPath);
+            this.emitAvailableActions();
             this.pendingPath = null;
         }
     }
@@ -117,7 +120,15 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     saveAnnotation(type, text) {
+        const availableActions = this.pathContainer.getNumberOfAvailableActions();
+        if (availableActions.undo === 0) {
+            return;
+        }
+
         super.saveAnnotation(type, text);
+        this.emit('annotationevent', {
+            type: 'unbind'
+        });
         this.reset();
 
         const drawingAnnotationLayerContext = docAnnotatorUtil.getContext(
@@ -159,6 +170,11 @@ class DocDrawingThread extends DrawingThread {
                 PAGE_PADDING_BOTTOM
             );
             this.setContextStyles(config, context);
+        }
+
+        const drawings = this.pathContainer.getAll();
+        if (this.pendingPath && !this.pendingPath.isEmpty()) {
+            drawings.push(this.pendingPath);
         }
 
         // Draw the paths to the annotation layer canvas

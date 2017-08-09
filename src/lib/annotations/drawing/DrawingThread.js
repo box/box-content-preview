@@ -1,4 +1,3 @@
-/** global undo, redo */
 import AnnotationThread from '../AnnotationThread';
 import DrawingPath from './DrawingPath';
 import DrawingContainer from './DrawingContainer';
@@ -12,9 +11,6 @@ class DrawingThread extends AnnotationThread {
 
     /** @property {DrawingContainer} - path container */
     pathContainer = new DrawingContainer();
-
-    /** @property {CanvasContext} - A canvas for drawing new strokes */
-    memoryCanvas;
 
     /** @property {DrawingPath} - The path being drawn but not yet finalized */
     pendingPath;
@@ -40,19 +36,13 @@ class DrawingThread extends AnnotationThread {
      */
     constructor(data) {
         super(data);
-        this.render = this.render.bind(this);
-        this.pathContainer.undo.bind(this.pathContainer);
-        this.pathContainer.redo.bind(this.pathContainer);
-        window.undo = () => {
-            this.pathContainer.undo();
-            this.render(this.lastRenderTimestamp + 20 || 20);
-        };
-        window.redo = () => {
-            this.pathContainer.redo();
-            this.render(this.lastRenderTimestamp + 20 || 20);
-        };
 
-        window.pc = this.pathContainer;
+        this.render = this.render.bind(this);
+        this.draw = this.draw.bind(this);
+        this.undo = this.undo.bind(this);
+        this.redo = this.redo.bind(this);
+        this.emitAvailableActions = this.emitAvailableActions.bind(this);
+
         // Recreate stored paths
         if (data && data.location && data.location.drawingPaths instanceof Array) {
             data.location.drawingPaths.forEach((drawingPathData) => {
@@ -162,9 +152,27 @@ class DrawingThread extends AnnotationThread {
         }
 
         const elapsed = timestamp - (this.lastRenderTimestamp || 0);
-        if (elapsed >= DRAW_RENDER_THRESHOLD && this.draw()) {
+        if (elapsed >= DRAW_RENDER_THRESHOLD && this.draw(this.drawingContext, true)) {
             this.lastRenderTimestamp = timestamp;
         }
+    }
+
+    undo() {
+        const executedUndo = this.pathContainer.undo();
+        if (executedUndo) {
+            this.draw(this.drawingContext, true);
+        }
+
+        this.emitAvailableActions();
+    }
+
+    redo() {
+        const executedRedo = this.pathContainer.redo();
+        if (executedRedo) {
+            this.draw(this.drawingContext, true);
+        }
+
+        this.emitAvailableActions();
     }
 
     //--------------------------------------------------------------------------
@@ -214,6 +222,15 @@ class DrawingThread extends AnnotationThread {
         context.beginPath();
         drawings.forEach((drawing) => drawing.drawPath(context));
         context.stroke();
+    }
+
+    emitAvailableActions() {
+        const availableActions = this.pathContainer ? this.pathContainer.getNumberOfAvailableActions() : {};
+        this.emit('annotationevent', {
+            type: 'availableactions',
+            undo: availableActions.undo,
+            redo: availableActions.redo
+        });
     }
 }
 

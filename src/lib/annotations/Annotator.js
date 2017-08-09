@@ -307,21 +307,15 @@ class Annotator extends EventEmitter {
 
             if (buttonEl) {
                 buttonEl.classList.remove(CLASS_ACTIVE);
-                buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER).classList.remove(CLASS_HIDDEN);
-                buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL).classList.add(CLASS_HIDDEN);
+                const enterButtonEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER);
+                const cancelButtonEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
+                annotatorUtil.showElement(enterButtonEl);
+                annotatorUtil.hideElement(cancelButtonEl);
             }
 
-            if (postButtonEl) {
-                postButtonEl.classList.add(CLASS_HIDDEN);
-            }
-
-            if (undoButtonEl) {
-                undoButtonEl.classList.add(CLASS_HIDDEN);
-            }
-
-            if (redoButtonEl) {
-                redoButtonEl.classList.add(CLASS_HIDDEN);
-            }
+            annotatorUtil.hideElement(postButtonEl);
+            annotatorUtil.hideElement(undoButtonEl);
+            annotatorUtil.hideElement(redoButtonEl);
 
             this.unbindModeListeners(); // Disable draw mode
             this.bindDOMListeners(); // Re-enable other annotations
@@ -333,27 +327,22 @@ class Annotator extends EventEmitter {
 
             if (buttonEl) {
                 buttonEl.classList.add(CLASS_ACTIVE);
-                buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER).classList.add(CLASS_HIDDEN);
-                buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL).classList.remove(CLASS_HIDDEN);
-                buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO).classList.remove(CLASS_HIDDEN);
-                buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO).classList.remove(CLASS_HIDDEN);
+                const enterButtonEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER);
+                const cancelButtonEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
+                annotatorUtil.hideElement(enterButtonEl);
+                annotatorUtil.showElement(cancelButtonEl);
             }
 
-            if (postButtonEl) {
-                postButtonEl.classList.remove(CLASS_HIDDEN);
-            }
+            annotatorUtil.showElement(postButtonEl);
+            annotatorUtil.showElement(undoButtonEl);
+            annotatorUtil.showElement(redoButtonEl);
 
             this.unbindDOMListeners();
 
             const thread = this.createAnnotationThread([], {}, TYPES.draw);
             if (thread) {
                 this.bindCustomListenersOnThread(thread);
-                this.bindDrawModeListeners(thread, postButtonEl);
-                // TODO: @minhnguyen deal with page changes in a better way
-                thread.addListener('drawthreadcommited', () => {
-                    this.toggleDrawAnnotationHandler();
-                    thread.removeAllListeners('drawthreadcommited');
-                });
+                this.bindDrawModeListeners(thread, postButtonEl, undoButtonEl, redoButtonEl);
                 thread.show();
             }
         }
@@ -564,6 +553,7 @@ class Annotator extends EventEmitter {
     unbindCustomListenersOnThread(thread) {
         thread.removeAllListeners('threaddeleted');
         thread.removeAllListeners('threadcleanup');
+        thread.removeAllListeners('annotationevent');
     }
 
     /**
@@ -627,9 +617,11 @@ class Annotator extends EventEmitter {
      *
      * @param {DrawingThread} drawingThread - The drawing thread to bind event listeners to.
      * @param {HTMLElement} postButtonEl - The HTML element that will save the DrawingThread on click.
+     * @param {HTMLElement} undoButtonEl - The HTML element that will undo the last stroke on click.
+     * @param {HTMLElement} redoButtonEl - The HTML element that will redo the last undone stroke on click.
      * @return {void}
      */
-    bindDrawModeListeners(drawingThread, postButtonEl) {
+    bindDrawModeListeners(drawingThread, postButtonEl, undoButtonEl, redoButtonEl) {
         if (!drawingThread || !postButtonEl) {
             return;
         }
@@ -668,6 +660,53 @@ class Annotator extends EventEmitter {
                 eventObj: postButtonEl
             });
         }
+
+        if (undoButtonEl) {
+            handlers.push({
+                type: 'click',
+                func: () => {
+                    drawingThread.undo();
+                },
+                eventObj: undoButtonEl
+            });
+        }
+
+        if (redoButtonEl) {
+            handlers.push({
+                type: 'click',
+                func: () => {
+                    drawingThread.redo();
+                },
+                eventObj: redoButtonEl
+            });
+        }
+
+        drawingThread.addListener('annotationevent', (data = {}) => {
+            switch (data.type) {
+                case 'pagechanged':
+                    drawingThread.saveAnnotation(TYPES.draw);
+                    this.toggleDrawAnnotationHandler();
+                    break;
+                case 'availableactions':
+                    if (data.undo === 1) {
+                        annotatorUtil.enableElement(undoButtonEl);
+                    } else if (data.undo === 0) {
+                        annotatorUtil.disableElement(undoButtonEl);
+                    }
+
+                    if (data.redo === 1) {
+                        annotatorUtil.enableElement(redoButtonEl);
+                    } else if (data.redo === 0) {
+                        annotatorUtil.disableElement(redoButtonEl);
+                    }
+
+                    break;
+                case 'unbind':
+                    drawingThread.removeAllListeners('annotationevent');
+                    break;
+                default:
+            }
+        });
 
         handlers.forEach((handler) => {
             handler.eventObj.addEventListener(handler.type, handler.func);
