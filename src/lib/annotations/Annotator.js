@@ -267,12 +267,12 @@ class Annotator extends EventEmitter {
             this.disableAnnotationMode(mode, buttonEl);
 
             // Remove annotation mode
-            this.annotationMode = null;
+            this.currentAnnotatonMode = null;
         } else {
             this.enableAnnotationMode(mode, buttonEl);
 
             // Update annotation mode
-            this.annotationMode = mode;
+            this.currentAnnotatonMode = mode;
         }
     }
 
@@ -290,14 +290,13 @@ class Annotator extends EventEmitter {
             buttonEl.classList.remove(CLASS_ACTIVE);
 
             const drawEnterEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER);
+            annotatorUtil.hideElement(drawEnterEl);
+
             const drawCancelEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
+            annotatorUtil.hideElement(drawCancelEl);
+
             const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
-            if (postButtonEl && drawEnterEl && drawCancelEl) {
-                buttonEl.classList.remove(CLASS_ACTIVE);
-                drawEnterEl.classList.remove(CLASS_HIDDEN);
-                drawCancelEl.classList.add(CLASS_HIDDEN);
-                postButtonEl.classList.add(CLASS_HIDDEN);
-            }
+            annotatorUtil.hideElement(postButtonEl);
         }
 
         this.unbindModeListeners(mode); // Disable mode
@@ -699,8 +698,7 @@ class Annotator extends EventEmitter {
      * @return {boolean} Whether or not in the specified annotation mode
      */
     isInAnnotationMode(mode) {
-        return this.annotationMode === mode;
-        // return this.annotatedElement.classList.contains(this[`CLASS_ANNOTATION_${mode.toUpperCase()}_MODE`]);
+        return this.currentAnnotatonMode === mode;
     }
 
     //--------------------------------------------------------------------------
