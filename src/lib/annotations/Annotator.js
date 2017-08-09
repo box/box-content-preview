@@ -6,7 +6,6 @@ import { ICON_CLOSE } from '../icons/icons';
 import './Annotator.scss';
 import {
     CLASS_ACTIVE,
-    CLASS_HIDDEN,
     DATA_TYPE_ANNOTATION_DIALOG,
     CLASS_MOBILE_ANNOTATION_DIALOG,
     CLASS_ANNOTATION_DIALOG,
@@ -119,7 +118,7 @@ class Annotator extends EventEmitter {
         mobileDialogEl.setAttribute('data-type', DATA_TYPE_ANNOTATION_DIALOG);
         mobileDialogEl.classList.add(CLASS_MOBILE_ANNOTATION_DIALOG);
         mobileDialogEl.classList.add(CLASS_ANNOTATION_DIALOG);
-        mobileDialogEl.classList.add(CLASS_HIDDEN);
+        annotatorUtil.hideElement(mobileDialogEl);
 
         mobileDialogEl.innerHTML = `
             <div class="${CLASS_MOBILE_DIALOG_HEADER}">
@@ -304,10 +303,13 @@ class Annotator extends EventEmitter {
 
             if (buttonEl) {
                 buttonEl.classList.remove(CLASS_ACTIVE);
-                buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER).classList.remove(CLASS_HIDDEN);
-                buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL).classList.add(CLASS_HIDDEN);
-                postButtonEl.classList.add(CLASS_HIDDEN);
+                const enterButtonEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER);
+                const cancelButtonEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
+                annotatorUtil.showElement(enterButtonEl);
+                annotatorUtil.hideElement(cancelButtonEl);
             }
+
+            annotatorUtil.hideElement(postButtonEl);
 
             this.unbindModeListeners(); // Disable draw mode
             this.bindDOMListeners(); // Re-enable other annotations
@@ -319,10 +321,13 @@ class Annotator extends EventEmitter {
 
             if (buttonEl) {
                 buttonEl.classList.add(CLASS_ACTIVE);
-                buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER).classList.add(CLASS_HIDDEN);
-                buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL).classList.remove(CLASS_HIDDEN);
-                postButtonEl.classList.remove(CLASS_HIDDEN);
+                const enterButtonEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER);
+                const cancelButtonEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
+                annotatorUtil.hideElement(enterButtonEl);
+                annotatorUtil.showElement(cancelButtonEl);
             }
+
+            annotatorUtil.showElement(postButtonEl);
 
             const thread = this.createAnnotationThread([], {}, TYPES.draw);
             this.unbindDOMListeners();

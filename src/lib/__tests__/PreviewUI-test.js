@@ -255,4 +255,46 @@ describe('lib/PreviewUI', () => {
             expect(ui.notification.hide).to.be.called;
         });
     });
+
+    describe('showHTMLElement()', () => {
+        let obj;
+        beforeEach(() => {
+            obj = {
+                classList: {
+                    remove: sandbox.stub()
+                }
+            };
+        });
+
+        it('should remove a hidden class from the element', () => {
+            PreviewUI.showHTMLElement(obj);
+            expect(obj.classList.remove).to.be.called;
+        });
+
+        it('should not error when the object classList does not exist', () => {
+            obj.classList = undefined;
+            expect(PreviewUI.showHTMLElement).to.not.throw(obj);
+        });
+    });
+
+    describe('hideHTMLElement()', () => {
+        let obj;
+        beforeEach(() => {
+            obj = {
+                classList: {
+                    add: sandbox.stub()
+                }
+            };
+        });
+
+        it('should add a hidden class from the element', () => {
+            PreviewUI.hideHTMLElement(obj);
+            expect(obj.classList.add).to.be.called;
+        });
+
+        it('should not error when the object classList does not exist', () => {
+            obj.classList = undefined;
+            expect(PreviewUI.hideHTMLElement).to.not.throw(obj);
+        });
+    });
 });

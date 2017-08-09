@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import debounce from 'lodash.debounce';
 import fullscreen from '../Fullscreen';
 import RepStatus from '../RepStatus';
+import PreviewUI from '../PreviewUI';
 import {
     appendAuthParams,
     getHeaders,
@@ -145,9 +146,7 @@ class BaseViewer extends EventEmitter {
     finishLoadingSetup() {
         const { container } = this.options;
         const crawler = container.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
-        if (crawler) {
-            crawler.classList.add(CLASS_HIDDEN);
-        }
+        PreviewUI.hideHTMLElement(crawler);
 
         const iconWrapperEl = container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
         iconWrapperEl.innerHTML = this.fileLoadingIcon || ICON_FILE_DEFAULT;

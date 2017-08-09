@@ -151,8 +151,8 @@ class PreviewUI {
         rightNavEl.title = __('next_file');
 
         // Hide the arrows by default
-        leftNavEl.classList.add(CLASS_HIDDEN);
-        rightNavEl.classList.add(CLASS_HIDDEN);
+        PreviewUI.hideHTMLElement(leftNavEl);
+        PreviewUI.hideHTMLElement(rightNavEl);
 
         leftNavEl.removeEventListener('click', this.leftHandler);
         rightNavEl.removeEventListener('click', this.rightHandler);
@@ -170,12 +170,12 @@ class PreviewUI {
 
         if (index > 0) {
             leftNavEl.addEventListener('click', this.leftHandler);
-            leftNavEl.classList.remove(CLASS_HIDDEN);
+            PreviewUI.showHTMLElement(leftNavEl);
         }
 
         if (index < collection.length - 1) {
             rightNavEl.addEventListener('click', this.rightHandler);
-            rightNavEl.classList.remove(CLASS_HIDDEN);
+            PreviewUI.showHTMLElement(rightNavEl);
         }
     }
 
@@ -192,7 +192,7 @@ class PreviewUI {
         }
 
         printButtonEl.title = __('print');
-        printButtonEl.classList.remove(CLASS_HIDDEN);
+        PreviewUI.showHTMLElement(printButtonEl);
         printButtonEl.addEventListener('click', handler);
     }
 
@@ -209,7 +209,7 @@ class PreviewUI {
         }
 
         downloadButtonEl.title = __('download');
-        downloadButtonEl.classList.remove(CLASS_HIDDEN);
+        PreviewUI.showHTMLElement(downloadButtonEl);
         downloadButtonEl.addEventListener('click', handler);
     }
 
@@ -250,11 +250,10 @@ class PreviewUI {
         if (this.contentContainer) {
             this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
             const crawler = this.contentContainer.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
-            if (crawler) {
-                // We need to remove this since it was hidden specially as a
-                // part of finishLoadingSetup in BaseViewer.js
-                crawler.classList.remove(CLASS_HIDDEN);
-            }
+
+            // We need to remove this since it was hidden specially as a
+            // part of finishLoadingSetup in BaseViewer.js
+            PreviewUI.showHTMLElement(crawler);
 
             // Setup viewer notification
             this.notification = new Notification(this.contentContainer);
@@ -311,6 +310,34 @@ class PreviewUI {
         this.notification.hide();
     }
 
+    /**
+     * Show a hidden HTMLElement using CSS
+     *
+     * @static
+     * @public
+     * @param {HTMLElement} element - The element to remove the hidden class from.
+     * @return {void}
+     */
+    static showHTMLElement(element) {
+        if (element && element.classList) {
+            element.classList.remove(CLASS_HIDDEN);
+        }
+    }
+
+    /**
+     * Hide a HTMLElement using CSS
+     *
+     * @static
+     * @public
+     * @param {HTMLElement} element - The element to add the hidden class to.
+     * @return {void}
+     */
+    static hideHTMLElement(element) {
+        if (element && element.classList) {
+            element.classList.add(CLASS_HIDDEN);
+        }
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -335,11 +362,11 @@ class PreviewUI {
         // Set custom logo
         if (logoUrl) {
             const defaultLogoEl = headerEl.querySelector(SELECTOR_BOX_PREVIEW_LOGO_DEFAULT);
-            defaultLogoEl.classList.add(CLASS_HIDDEN);
+            PreviewUI.hideHTMLElement(defaultLogoEl);
 
             const customLogoEl = headerEl.querySelector(SELECTOR_BOX_PREVIEW_LOGO_CUSTOM);
             customLogoEl.src = logoUrl;
-            customLogoEl.classList.remove(CLASS_HIDDEN);
+            PreviewUI.showHTMLElement(customLogoEl);
         }
     }
 
