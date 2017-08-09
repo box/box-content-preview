@@ -480,6 +480,7 @@ describe('lib/annotations/Annotator', () => {
             it('should unbind custom listeners from the thread', () => {
                 stubs.threadMock.expects('removeAllListeners').withArgs('threaddeleted');
                 stubs.threadMock.expects('removeAllListeners').withArgs('threadcleanup');
+                stubs.threadMock.expects('removeAllListeners').withArgs('annotationevent');
                 annotator.unbindCustomListenersOnThread(stubs.thread);
             });
         });
@@ -523,7 +524,8 @@ describe('lib/annotations/Annotator', () => {
                     },
                     handleMove: () => {
                         bind: handleMove
-                    }
+                    },
+                    addListener: sandbox.stub()
                 };
                 const postButtonEl = {
                     addEventListener: sandbox.stub(),
@@ -537,6 +539,7 @@ describe('lib/annotations/Annotator', () => {
                 annotator.unbindModeListeners();
                 expect(annotator.annotatedElement.addEventListener).to.be.called.thrice;
                 expect(postButtonEl.addEventListener).to.be.called;
+                expect(drawingThread.addListener).to.be.called;
                 expect(annotator.annotatedElement.removeEventListener).to.be.calledWith(
                     sinon.match.string,
                     sinon.match.func
@@ -634,7 +637,8 @@ describe('lib/annotations/Annotator', () => {
                 const drawingThread = {
                     handleStart: () => {},
                     handleStop: () => {},
-                    handleMove: () => {}
+                    handleMove: () => {},
+                    addListener: sandbox.stub()
                 };
                 const postButtonEl = {
                     addEventListener: sandbox.stub(),
@@ -652,6 +656,7 @@ describe('lib/annotations/Annotator', () => {
 
                 annotator.bindDrawModeListeners(drawingThread, postButtonEl);
 
+                expect(drawingThread.addListener).to.be.called;
                 expect(drawingThread.handleStart.bind).to.be.called;
                 expect(drawingThread.handleStop.bind).to.be.called;
                 expect(drawingThread.handleMove.bind).to.be.called;

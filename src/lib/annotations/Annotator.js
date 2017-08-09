@@ -313,6 +313,8 @@ class Annotator extends EventEmitter {
                 annotatorUtil.hideElement(cancelButtonEl);
             }
 
+            annotatorUtil.disableElement(undoButtonEl);
+            annotatorUtil.disableElement(redoButtonEl);
             annotatorUtil.hideElement(postButtonEl);
             annotatorUtil.hideElement(undoButtonEl);
             annotatorUtil.hideElement(redoButtonEl);

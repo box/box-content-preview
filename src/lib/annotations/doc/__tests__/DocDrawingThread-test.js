@@ -102,6 +102,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
 
     describe('handleStop()', () => {
         it("should set the state to 'idle' and clear the pendingPath", () => {
+            sandbox.stub(docDrawingThread, 'emitAvailableActions');
             docDrawingThread.drawingFlag = STATES_DRAW.draw;
             docDrawingThread.pendingPath = {
                 isEmpty: () => false
@@ -112,6 +113,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
 
             docDrawingThread.handleStop();
 
+            expect(docDrawingThread.emitAvailableActions).to.be.called;
             expect(docDrawingThread.drawingFlag).to.equal(STATES_DRAW.idle);
             expect(docDrawingThread.pendingPath).to.be.null;
         });
