@@ -370,12 +370,15 @@ export function getContext(pageEl, annotationLayerClass, paddingTop, paddingBott
         const width = pageDimensions.width;
         const height = pageDimensions.height - pagePaddingTop - pagePaddingBottom;
 
-        annotationLayerEl.style.width = `${width}px`;
-        annotationLayerEl.style.height = `${height}px`;
         annotationLayerEl.width = pxRatio * width;
         annotationLayerEl.height = pxRatio * height;
         context = annotationLayerEl.getContext('2d');
-        context.scale(pxRatio, pxRatio);
+
+        if (pxRatio !== 1) {
+            annotationLayerEl.style.width = `${width}px`;
+            annotationLayerEl.style.height = `${height}px`;
+            context.scale(pxRatio, pxRatio);
+        }
 
         const textLayerEl = pageEl.querySelector('.textLayer');
         pageEl.insertBefore(annotationLayerEl, textLayerEl);
