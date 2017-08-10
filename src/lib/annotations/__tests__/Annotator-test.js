@@ -6,7 +6,6 @@ import AnnotationService from '../AnnotationService';
 import {
     STATES,
     TYPES,
-    ,
     CLASS_ANNOTATION_DRAW_MODE
 } from '../annotationConstants';
 
