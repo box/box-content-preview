@@ -807,6 +807,11 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
         });
 
+        it('should return false if annotations are not allowed on the current viewer', () => {
+            base.annotatorConf = undefined;
+            expect(base.isAnnotatable('point')).to.equal(false);
+        })
+
         it('should return true if the type is supported by the viewer', () => {
             expect(base.isAnnotatable('point')).to.equal(true);
         });
