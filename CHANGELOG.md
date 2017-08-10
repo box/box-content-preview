@@ -1,3 +1,13 @@
+<a name="1.5.1"></a>
+## 1.5.1 (2017-08-10)
+
+* Chore: Only remove annotation listeners if enabled on viewer (#293) ([9b97fd7](https://github.com/box/box-content-preview/commit/9b97fd7))
+* Chore: Updating docs.box.com links to developer.box.com in README (#282) ([b63eab2](https://github.com/box/box-content-preview/commit/b63eab2))
+* Mojito: Update translations (#290) ([deaf8f2](https://github.com/box/box-content-preview/commit/deaf8f2))
+* Mojito: Update translations (#291) ([63a7201](https://github.com/box/box-content-preview/commit/63a7201))
+
+
+
 <a name="1.5.0"></a>
 # 1.5.0 (2017-08-09)
 
