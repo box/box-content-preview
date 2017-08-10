@@ -722,6 +722,10 @@ class BaseViewer extends EventEmitter {
      * @return {boolean} Whether or not viewer is annotatable
      */
     isAnnotatable(type) {
+        if (!this.annotatorConf) {
+            return false;
+        }
+
         const { TYPE: annotationTypes } = this.annotatorConf;
         if (type && annotationTypes) {
             if (!annotationTypes.some((annotationType) => type === annotationType)) {
