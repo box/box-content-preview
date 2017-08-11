@@ -93,12 +93,14 @@ describe('lib/annotations/Annotator', () => {
             const unbindCustomStub = sandbox.stub(annotator, 'unbindCustomListenersOnThread');
             const unbindDOMStub = sandbox.stub(annotator, 'unbindDOMListeners');
             const unbindCustomListenersOnService = sandbox.stub(annotator, 'unbindCustomListenersOnService');
+            const unbindScaleListener = sandbox.stub(annotator, 'removeListener');
 
             annotator.destroy();
 
             expect(unbindCustomStub).to.be.calledWith(stubs.thread);
             expect(unbindDOMStub).to.be.called;
             expect(unbindCustomListenersOnService).to.be.called;
+            expect(unbindScaleListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
         });
     });
 
@@ -166,6 +168,7 @@ describe('lib/annotations/Annotator', () => {
             expect(Object.keys(annotator.threads).length === 0).to.be.true;
             expect(annotator.bindDOMListeners).to.be.called;
             expect(annotator.bindCustomListenersOnService).to.be.called;
+            expect(annotator.addListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
         });
     });
 
@@ -408,22 +411,6 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('bindDOMListeners()', () => {
-            it('should add a listener for scaling the annotator', () => {
-                sandbox.stub(annotator, 'addListener');
-                annotator.bindDOMListeners();
-                expect(annotator.addListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
-            });
-        });
-
-        describe('unbindDOMListeners()', () => {
-            it('should add a listener for scaling the annotator', () => {
-                sandbox.stub(annotator, 'removeListener');
-                annotator.unbindDOMListeners();
-                expect(annotator.removeListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
-            });
-        });
-
         describe('bindCustomListenersOnService()', () => {
             it('should do nothing if the service does not exist', () => {
                 annotator.annotationService = {
@@ -527,10 +514,8 @@ describe('lib/annotations/Annotator', () => {
             it('should bind point mode click handler', () => {
                 sandbox.stub(annotator.annotatedElement, 'addEventListener');
                 sandbox.stub(annotator.annotatedElement, 'removeEventListener');
-                sandbox.stub(annotator.pointClickHandler, 'bind', () => annotator.pointClickHandler);
 
                 annotator.bindPointModeListeners();
-                expect(annotator.pointClickHandler.bind).to.be.called;
                 expect(annotator.annotatedElement.addEventListener).to.be.calledWith(
                     'mousedown',
                     annotator.pointClickHandler
@@ -545,11 +530,9 @@ describe('lib/annotations/Annotator', () => {
         describe('unbindModeListeners()', () => {
             it('should unbind point mode click handler', () => {
                 sandbox.stub(annotator.annotatedElement, 'removeEventListener');
-                sandbox.stub(annotator.pointClickHandler, 'bind', () => annotator.pointClickHandler);
 
                 annotator.bindPointModeListeners();
                 annotator.unbindModeListeners();
-                expect(annotator.pointClickHandler.bind).to.be.called;
                 expect(annotator.annotatedElement.removeEventListener).to.be.calledWith(
                     'mousedown',
                     annotator.pointClickHandler
@@ -693,16 +676,10 @@ describe('lib/annotations/Annotator', () => {
                 sandbox.stub(annotator.annotatedElement, 'addEventListener');
                 sandbox.stub(annotator.annotatedElement, 'removeEventListener');
                 sandbox.stub(annotator, 'isInDrawMode').returns(true);
-                sandbox.stub(drawingThread.handleStart, 'bind', () => drawingThread.pointClickHandler);
-                sandbox.stub(drawingThread.handleStop, 'bind', () => drawingThread.pointClickHandler);
-                sandbox.stub(drawingThread.handleMove, 'bind', () => drawingThread.pointClickHandler);
                 sandbox.stub(annotatorUtil, 'eventToLocationHandler').returns(locationHandler);
 
                 annotator.bindDrawModeListeners(drawingThread, postButtonEl);
 
-                expect(drawingThread.handleStart.bind).to.be.called;
-                expect(drawingThread.handleStop.bind).to.be.called;
-                expect(drawingThread.handleMove.bind).to.be.called;
                 expect(annotator.annotatedElement.addEventListener).to.be.calledWith(
                     sinon.match.string,
                     locationHandler
