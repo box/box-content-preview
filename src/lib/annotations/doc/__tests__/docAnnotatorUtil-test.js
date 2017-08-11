@@ -211,10 +211,13 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
             const annotationLayer = {
                 width: 0,
                 height: 0,
-                getContext: sandbox.stub().returns('2d context'),
+                getContext: sandbox.stub().returns({
+                    scale: sandbox.stub()
+                }),
                 classList: {
                     add: sandbox.stub()
-                }
+                },
+                style: {}
             };
             const pageEl = {
                 querySelector: sandbox.stub().returns(undefined),
