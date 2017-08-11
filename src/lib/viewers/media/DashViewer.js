@@ -216,10 +216,10 @@ class DashViewer extends VideoBaseViewer {
      * Enables or disables automatic adaptation
      *
      * @private
-     * @param {boolean} [adapt] - Enable or disable adaptation
+     * @param {boolean} adapt - Enable or disable adaptation
      * @return {void}
      */
-    enableAdaptation(adapt = true) {
+    enableAdaptation(adapt) {
         this.adapting = adapt;
         this.player.configure({ abr: { enabled: adapt } });
     }
@@ -256,14 +256,16 @@ class DashViewer extends VideoBaseViewer {
 
         switch (quality) {
             case 'hd':
+                this.enableAdaptation(false);
                 this.enableHD();
                 break;
             case 'sd':
+                this.enableAdaptation(false);
                 this.enableSD();
                 break;
             case 'auto':
             default:
-                this.enableAdaptation();
+                this.enableAdaptation(true);
                 break;
         }
 

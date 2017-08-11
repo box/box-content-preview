@@ -264,7 +264,7 @@ describe('lib/viewers/media/DashViewer', () => {
     describe('enableAdaptation()', () => {
         it('should configure player to enable adaptation by default', () => {
             stubs.mockPlayer.expects('configure').withArgs({ abr: { enabled: true } });
-            dash.enableAdaptation();
+            dash.enableAdaptation(true);
         });
 
         it('should configure player to disable adaptation', () => {
@@ -277,12 +277,13 @@ describe('lib/viewers/media/DashViewer', () => {
         beforeEach(() => {
             stubs.hd = sandbox.stub(dash, 'enableHD');
             stubs.sd = sandbox.stub(dash, 'enableSD');
-            stubs.auto = sandbox.stub(dash, 'enableAdaptation');
+            stubs.adapt = sandbox.stub(dash, 'enableAdaptation');
         });
 
         it('should enable HD video', () => {
             sandbox.stub(dash.cache, 'get').returns('hd');
             dash.handleQuality();
+            expect(stubs.adapt).to.be.calledWith(false);
             expect(stubs.hd).to.be.called;
             expect(dash.emit).to.be.calledWith('qualitychange', 'hd');
         });
@@ -290,6 +291,7 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should enable SD video', () => {
             sandbox.stub(dash.cache, 'get').returns('sd');
             dash.handleQuality();
+            expect(stubs.adapt).to.be.calledWith(false);
             expect(stubs.sd).to.be.called;
             expect(dash.emit).to.be.calledWith('qualitychange', 'sd');
         });
@@ -297,14 +299,14 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should enable auto video', () => {
             sandbox.stub(dash.cache, 'get').returns('auto');
             dash.handleQuality();
-            expect(stubs.auto).to.be.called;
+            expect(stubs.adapt).to.be.calledWith(true);
             expect(dash.emit).to.be.calledWith('qualitychange', 'auto');
         });
 
         it('should not emit "qualitychange" event if no quality was cached', () => {
             sandbox.stub(dash.cache, 'get');
             dash.handleQuality();
-            expect(stubs.auto).to.be.called;
+            expect(stubs.adapt).to.be.calledWith(true); // default to adapt=true
             expect(dash.emit).to.not.be.called;
         });
     });
