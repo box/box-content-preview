@@ -696,11 +696,13 @@ class Annotator extends EventEmitter {
             });
         }
 
+        const that = this;
         drawingThread.addListener('annotationevent', (data = {}) => {
             switch (data.type) {
                 case 'pagechanged':
                     drawingThread.saveAnnotation(TYPES.draw);
-                    this.toggleDrawAnnotationHandler();
+                    that.toggleDrawAnnotationHandler();
+                    that.toggleDrawAnnotationHandler();
                     break;
                 case 'availableactions':
                     if (data.undo === 1) {
@@ -714,7 +716,6 @@ class Annotator extends EventEmitter {
                     } else if (data.redo === 0) {
                         annotatorUtil.disableElement(redoButtonEl);
                     }
-
                     break;
                 case 'unbind':
                     drawingThread.removeAllListeners('annotationevent');

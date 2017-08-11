@@ -42,8 +42,10 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     handleMove(location) {
-        const pageChanged = this.hasPageChanged(location);
-        if (this.drawingFlag !== STATES_DRAW.draw || pageChanged) {
+        if (this.drawingFlag !== STATES_DRAW.draw) {
+            return;
+        } else if (this.hasPageChanged(location)) {
+            this.handlePageChange();
             return;
         }
 
@@ -61,11 +63,7 @@ class DocDrawingThread extends DrawingThread {
     handleStart(location) {
         const pageChanged = this.hasPageChanged(location);
         if (pageChanged) {
-            this.handleStop();
-            this.saveAnnotation();
-            this.emit('annotationevent', {
-                type: 'pagechanged'
-            });
+            this.handlePageChange();
             return;
         }
 
@@ -109,7 +107,7 @@ class DocDrawingThread extends DrawingThread {
      * @return {boolean} Whether or not the thread page has changed
      */
     hasPageChanged(location) {
-        return this.location && this.location.page && this.location.page !== location.page;
+        return !!this.location && !!this.location.page && this.location.page !== location.page;
     }
 
     /**
@@ -206,6 +204,13 @@ class DocDrawingThread extends DrawingThread {
 
         const config = { scale };
         this.setContextStyles(config);
+    }
+
+    handlePageChange() {
+        this.handleStop();
+        this.emit('annotationevent', {
+            type: 'pagechanged'
+        });
     }
 
     /**
