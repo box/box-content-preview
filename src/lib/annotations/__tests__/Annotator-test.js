@@ -93,12 +93,14 @@ describe('lib/annotations/Annotator', () => {
             const unbindCustomStub = sandbox.stub(annotator, 'unbindCustomListenersOnThread');
             const unbindDOMStub = sandbox.stub(annotator, 'unbindDOMListeners');
             const unbindCustomListenersOnService = sandbox.stub(annotator, 'unbindCustomListenersOnService');
+            const unbindScaleListener = sandbox.stub(annotator, 'removeListener');
 
             annotator.destroy();
 
             expect(unbindCustomStub).to.be.calledWith(stubs.thread);
             expect(unbindDOMStub).to.be.called;
             expect(unbindCustomListenersOnService).to.be.called;
+            expect(unbindScaleListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
         });
     });
 
@@ -166,6 +168,7 @@ describe('lib/annotations/Annotator', () => {
             expect(Object.keys(annotator.threads).length === 0).to.be.true;
             expect(annotator.bindDOMListeners).to.be.called;
             expect(annotator.bindCustomListenersOnService).to.be.called;
+            expect(annotator.addListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
         });
     });
 
@@ -381,22 +384,6 @@ describe('lib/annotations/Annotator', () => {
                 return stubs.threadPromise.then(() => {
                     expect(annotator.emit).to.be.calledWith('annotationsfetched');
                 });
-            });
-        });
-
-        describe('bindDOMListeners()', () => {
-            it('should add a listener for scaling the annotator', () => {
-                sandbox.stub(annotator, 'addListener');
-                annotator.bindDOMListeners();
-                expect(annotator.addListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
-            });
-        });
-
-        describe('unbindDOMListeners()', () => {
-            it('should add a listener for scaling the annotator', () => {
-                sandbox.stub(annotator, 'removeListener');
-                annotator.unbindDOMListeners();
-                expect(annotator.removeListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
             });
         });
 
