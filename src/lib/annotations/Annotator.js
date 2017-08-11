@@ -19,6 +19,9 @@ import {
     TYPES
 } from './annotationConstants';
 
+const MODE_ENTER = 'annotationmodeenter';
+const MODE_EXIT = 'annotationmodeexit';
+
 @autobind
 class Annotator extends EventEmitter {
     //--------------------------------------------------------------------------
@@ -353,7 +356,7 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     disableAnnotationMode(mode, buttonEl) {
-        this.emit('annotationmodeexit');
+        this.emit(MODE_EXIT);
         this.annotatedElement.classList.remove(CLASS_ANNOTATION_MODE);
         if (buttonEl) {
             buttonEl.classList.remove(CLASS_ACTIVE);
@@ -382,7 +385,7 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     enableAnnotationMode(mode, buttonEl) {
-        this.emit('annotationmodeenter', mode);
+        this.emit(MODE_ENTER, mode);
         this.annotatedElement.classList.add(CLASS_ANNOTATION_MODE);
         if (buttonEl) {
             buttonEl.classList.add(CLASS_ACTIVE);

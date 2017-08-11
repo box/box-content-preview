@@ -36,6 +36,8 @@ const ANNOTATION_TYPE_DRAW = 'draw';
 const ANNOTATION_TYPE_POINT = 'point';
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
+const ANNOTATION_MODE_ENTER = 'annotationmodeenter';
+const ANNOTATION_MODE_EXIT = 'annotationmodeexit';
 const ANNOTATION_BUTTONS = {
     point: {
         title: __('annotation_point_toggle'),
@@ -711,7 +713,7 @@ class BaseViewer extends EventEmitter {
     handleAnnotatorNotifications(data) {
         /* istanbul ignore next */
         switch (data.event) {
-            case 'annotationmodeenter':
+            case ANNOTATION_MODE_ENTER:
                 this.disableViewerControls();
 
                 if (data.data === ANNOTATION_TYPE_POINT) {
@@ -720,7 +722,7 @@ class BaseViewer extends EventEmitter {
                     this.emit('notificationshow', __('notification_annotation_draw_mode'));
                 }
                 break;
-            case 'annotationmodeexit':
+            case ANNOTATION_MODE_EXIT:
                 this.enableViewerControls();
                 this.emit('notificationhide');
                 break;
