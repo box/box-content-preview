@@ -311,7 +311,7 @@ class DocAnnotator extends Annotator {
         }
 
         if (!thread && this.notification) {
-            this.notification.show(__('annotations_create_error'));
+            this.emit('annotationerror', __('annotations_create_error'));
         } else if (thread) {
             this.addThreadToMap(thread);
         }

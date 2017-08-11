@@ -1,4 +1,4 @@
-import * as annotatorUtil from '../annotatorUtil';
+import { createLocation, round } from '../annotatorUtil';
 
 class DrawingPath {
     //--------------------------------------------------------------------------
@@ -30,9 +30,7 @@ class DrawingPath {
      */
     constructor(drawingPathData) {
         if (drawingPathData) {
-            this.path = drawingPathData.path.map((num) =>
-                annotatorUtil.createLocation(parseFloat(num.x), parseFloat(num.y))
-            );
+            this.path = drawingPathData.path.map((num) => createLocation(parseFloat(num.x), parseFloat(num.y)));
             this.maxX = drawingPathData.maxX;
             this.minX = drawingPathData.minX;
             this.maxY = drawingPathData.maxY;
@@ -54,8 +52,8 @@ class DrawingPath {
 
         // OPTIMIZE (@minhnguyen): We convert a number to a string using toFixed and then back a number.
         //           As a result, it might be better to truncate only on annotation save.
-        const x = annotatorUtil.round(documentLocation.x, 2);
-        const y = annotatorUtil.round(documentLocation.y, 2);
+        const x = round(documentLocation.x, 2);
+        const y = round(documentLocation.y, 2);
 
         if (x < this.minX) {
             this.minX = x;
@@ -73,7 +71,7 @@ class DrawingPath {
             this.maxX = x;
         }
 
-        this.path.push(annotatorUtil.createLocation(x, y));
+        this.path.push(createLocation(x, y));
         if (browserLocation && browserLocation.x && browserLocation.y) {
             this.browserPath.push(browserLocation);
         }

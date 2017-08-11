@@ -31,7 +31,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         const previewUI = {
             getAnnotateButton: sandbox.stub()
-        }
+        };
 
         annotator = new DocAnnotator({
             canAnnotate: true,

@@ -4,7 +4,7 @@
 [![version](https://img.shields.io/badge/version-v1.5.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
 [![npm version](https://img.shields.io/npm/v/box-ui-elements.svg?style=flat-square)](https://www.npmjs.com/package/box-ui-elements)
 
-[Box Content Preview](https://docs.box.com/docs/box-content-preview)
+[Box Content Preview](https://developer.box.com/docs/box-content-preview)
 ====================================================================
 The Box Content Preview UI Element allows developers to easily embed high quality and interactive previews of Box files in their desktop or mobile web application. The JavaScript library fetches information about the file and its converted representations through the Box API, chooses the appropriate viewer for the file type, dynamically loads the necessary static assets and file representations, and finally renders the file. Box Content Preview also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
 
@@ -124,7 +124,7 @@ preview.show(fileId, accessToken, {
 
 Access Token
 ------------
-Box Content Preview needs an access token to make Box API calls. You can either get an access token from the token endpoint (https://docs.box.com/reference#token) or generate a developer token on your application management page (https://blog.box.com/blog/introducing-developer-tokens/).
+Box Content Preview needs an access token to make Box API calls. You can either get an access token from the token endpoint (https://developer.box.com/reference#token) or generate a developer token on your application management page (https://blog.box.com/blog/introducing-developer-tokens/).
 
 If your application requires the end user to only be able to access a subset of the Content Preview functionality, you can use [Token Exchange](https://developer.box.com/reference#token-exchange) to appropriately downscope your App/Managed or Service Account token to a resulting token that has the desired set of permissions, and can thus, be securely passed to the end user client initializing the Content Preview.
 
@@ -166,7 +166,7 @@ Additional Methods
 
 `preview.getCurrentCollection()` returns the current collection if any.
 
-`preview.getCurrentFile()` returns the current file being previewed if any. The file object structure is the same as returned by the [Box API](https://docs.box.com/reference#files).
+`preview.getCurrentFile()` returns the current file being previewed if any. The file object structure is the same as returned by the [Box API](https://developer.box.com/reference#files).
 
 `preview.getCurrentViewer()` returns the current viewer instance. May be undefined if the viewer isn't ready yet and waiting on conversion to happen.
 

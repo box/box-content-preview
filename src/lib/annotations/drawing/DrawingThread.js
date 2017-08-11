@@ -1,13 +1,13 @@
 import AnnotationThread from '../AnnotationThread';
 import DrawingPath from './DrawingPath';
 import DrawingContainer from './DrawingContainer';
-import { STATES_DRAW, DRAW_RENDER_THRESHOLD } from '../annotationConstants';
+import { DRAW_STATES, DRAW_RENDER_THRESHOLD } from '../annotationConstants';
 
 const BASE_LINE_WIDTH = 3;
 
 class DrawingThread extends AnnotationThread {
     /** @property {number} - Drawing state */
-    drawingFlag = STATES_DRAW.idle;
+    drawingFlag = DRAW_STATES.idle;
 
     /** @property {DrawingContainer} - path container */
     pathContainer = new DrawingContainer();
@@ -38,6 +38,9 @@ class DrawingThread extends AnnotationThread {
         super(data);
 
         this.render = this.render.bind(this);
+        this.handleStart = this.handleStart.bind(this);
+        this.handleMove = this.handleMove.bind(this);
+        this.handleStop = this.handleStop.bind(this);
         this.draw = this.draw.bind(this);
         this.undo = this.undo.bind(this);
         this.redo = this.redo.bind(this);
@@ -114,23 +117,23 @@ class DrawingThread extends AnnotationThread {
     //--------------------------------------------------------------------------
 
     /**
-     * Set the drawing styles for a provided context. Sets the context of the memory context if
+     * Set the drawing styles for a provided context. Sets the context of the in-progress context if
      * no other context is provided.
      *
      * @protected
      * @param {Object} config - The configuration Object
      * @param {number} config.scale - The document scale
      * @param {string} config.color - The brush color
-     * @param {CanvasContext} [otherContext] - Optional context to be set
+     * @param {CanvasContext} [context] - Optional context provided to be styled
      * @return {void}
      */
-    setContextStyles(config, otherContext) {
-        if (!this.drawingContext && !otherContext) {
+    setContextStyles(config, context) {
+        if (!this.drawingContext && !context) {
             return;
         }
 
         const { scale, color } = config;
-        const contextToSet = otherContext || this.drawingContext;
+        const contextToSet = context || this.drawingContext;
 
         contextToSet.lineCap = 'round';
         contextToSet.lineJoin = 'round';
@@ -147,7 +150,7 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     render(timestamp) {
-        if (this.drawingFlag === STATES_DRAW.draw) {
+        if (this.drawingFlag === DRAW_STATES.drawing) {
             this.lastAnimationRequestId = window.requestAnimationFrame(this.render);
         }
 
