@@ -40,6 +40,7 @@ const languages = isRelease
         'en-CA',
         'en-GB',
         'en-US',
+        'en-x-pseudo',
         'da-DK',
         'de-DE',
         'es-ES',
@@ -59,7 +60,10 @@ const languages = isRelease
         'zh-CN',
         'zh-TW'
     ]
-    : ['en-US']; // Only 1 language needed for dev
+    : [
+        'en-US',
+        'en-x-pseudo'
+    ]; // Only 2 languages needed for dev
 
 /* eslint-disable key-spacing, require-jsdoc */
 function updateConfig(conf, language, index) {
