@@ -332,6 +332,11 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.bindCustomListenersOnThread = sandbox.stub(annotator, 'bindCustomListenersOnThread');
             stubs.renderAnnotationsOnPage = sandbox.stub(annotator, 'renderAnnotationsOnPage');
 
+            annotator.highlighter = {
+                removeAllHighlights: () => {}
+            };
+            stubs.removeAllHighlights = sandbox.stub(annotator.highlighter, 'removeAllHighlights');
+
             dialog = {
                 hasComments: false,
                 drawAnnotation: sandbox.stub(),
@@ -514,15 +519,15 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.bindDOMListeners();
         });
 
-        it('should bind touch events and selectionchange, on the document, if on mobile and can annotate', () => {
+        it('should bind selectionchange event, on the document, if on mobile and can annotate', () => {
             annotator.annotationService.canAnnotate = true;
             annotator.isMobile = true;
+            annotator.hasTouch = true;
             const docListen = sandbox.spy(document, 'addEventListener');
 
             annotator.bindDOMListeners();
 
             expect(docListen).to.be.calledWith('selectionchange', sinon.match.func);
-            expect(docListen).to.be.calledWith('touchstart', sinon.match.func);
         });
     });
 
@@ -569,15 +574,15 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(annotator.highlightThrottleHandle).to.not.exist;
         });
 
-        it('should unbind touch events and selectionchange, on the document, if on mobile and can annotate', () => {
+        it('should unbind selectionchange event, on the document, if on mobile, has touch and can annotate', () => {
             annotator.annotationService.canAnnotate = true;
             annotator.isMobile = true;
+            annotator.hasTouch = true;
             const docStopListen = sandbox.spy(document, 'removeEventListener');
 
             annotator.unbindDOMListeners();
 
             expect(docStopListen).to.be.calledWith('selectionchange', sinon.match.func);
-            expect(docStopListen).to.be.calledWith('touchstart', sinon.match.func);
         });
     });
 
@@ -888,21 +893,112 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
     });
 
-    describe('onTouchStart()', () => {
-        it('should invoke highlighter.removeAllHighlights', () => {
-            annotator.highlighter = {
-                removeAllHighlights: sandbox.stub()
-            };
-            annotator.onTouchStart();
-
-            expect(annotator.highlighter.removeAllHighlights).to.be.called;
+    describe('onSelectionChange()', () => {
+        beforeEach(() => {
+            annotator.setupAnnotations();
         });
 
-        it('should hide the highlight create dialog', () => {
-            const hide = sandbox.stub(annotator.createHighlightDialog, 'hide');
-            annotator.onTouchStart();
+        it('should do nothing if focus is on a text input element', () => {
+            const textAreaEl = document.createElement('textarea');
+            annotator.annotatedElement.appendChild(textAreaEl);
+            textAreaEl.focus();
+            const getSelStub = sandbox.stub(window, 'getSelection');
 
-            expect(hide).to.be.called;
+            annotator.onSelectionChange({
+                nodeName: 'textarea'
+            });
+
+            expect(getSelStub).to.not.be.called;
+        });
+
+        it('should clear out previous highlights if a new highlight range is being created', () => {
+            const selection = {
+                anchorNode: 'derp',
+                toString: () => '' // Causes invalid selection
+            };
+            const lastSelection = {
+                anchorNode: 'not_derp'
+            };
+            annotator.lastSelection = lastSelection;
+            sandbox.stub(window, 'getSelection').returns(selection);
+            const removeHighlights = sandbox.stub(annotator.highlighter, 'removeAllHighlights');
+
+            annotator.onSelectionChange({});
+
+            expect(removeHighlights).to.be.called;
+        });
+
+        it('should clear out highlights and exit "annotation creation" mode if an invalid selection', () => {
+            const selection = {
+                toString: () => '' // Causes invalid selection
+            };
+            sandbox.stub(window, 'getSelection').returns(selection);
+            annotator.lastSelection = selection;
+            annotator.lastHighlightEvent = {};
+            const dialogHide = sandbox.stub(annotator.createHighlightDialog, 'hide');
+            const removeAllHighlights = sandbox.stub(annotator.highlighter, 'removeAllHighlights');
+
+            annotator.onSelectionChange({});
+
+            expect(annotator.lastSelection).to.be.null;
+            expect(annotator.lastHighlightEvent).to.be.null;
+            expect(dialogHide).to.be.called;
+            expect(removeAllHighlights).to.be.called;
+        });
+
+        it('should show the createHighlightDialog if it isn\'t already shown', () => {
+            const selection = {
+                rangeCount: 10,
+                isCollapsed: false,
+                toString: () => 'asdf'
+            };
+            sandbox.stub(window, 'getSelection').returns(selection);
+            annotator.lastSelection = selection;
+            annotator.lastHighlightEvent = {};
+            const dialogShow = sandbox.stub(annotator.createHighlightDialog, 'show');
+            annotator.createHighlightDialog.isVisible = false;
+            const removeAllHighlights = sandbox.stub(annotator.highlighter, 'removeAllHighlights');
+
+            annotator.onSelectionChange({});
+
+            expect(dialogShow).to.be.calledWith(annotator.container);
+        });
+
+        it('should set all of the highlight annotations on the page to "inactive" state', () => {
+            const selection = {
+                rangeCount: 10,
+                isCollapsed: false,
+                toString: () => 'asdf'
+            };
+            const threads = [
+                {
+                    state: STATES.hover,
+                    reset: sandbox.stub()
+                },
+                {
+                    state: STATES.hover,
+                    reset: sandbox.stub()
+                },
+                {
+                    state: STATES.hover,
+                    reset: sandbox.stub()
+                }
+            ];
+            annotator.lastHighlightEvent = {};
+            annotator.threads = {
+                test: []
+            }; // Just fudging it, for now
+
+            sandbox.stub(window, 'getSelection').returns(selection);
+            sandbox.stub(annotator.createHighlightDialog, 'show');
+            sandbox.stub(annotator.highlighter, 'removeAllHighlights');
+            sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns(threads);
+
+            annotator.onSelectionChange({});
+
+            threads.forEach((thread) => {
+                expect(thread.reset).to.be.called;
+            });
         });
     });
 

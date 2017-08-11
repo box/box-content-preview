@@ -517,6 +517,7 @@ class DocAnnotator extends Annotator {
     /**
      * Handles changes in text selection. Used for mobile highlight creation.
      *
+     * @param {Event} event - The DOM event coming from interacting with the element.
      * @return {void}
      */
     onSelectionChange(event) {

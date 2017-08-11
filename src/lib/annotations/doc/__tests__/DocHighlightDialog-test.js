@@ -158,7 +158,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         it('should do nothing if the comment dialog is already hidden', () => {
             const classAdd = sandbox.stub(dialog.element.classList, 'add');
             dialog.highlightDialogEl = {};
-            sandbox.stub(dialog.commentsDialogEl.classList, 'contains').withArgs(CLASS_HIDDEN).returns(true);
+            sandbox.stub(dialog.commentsDialogEl.classList, 'contains').withArgs(constants.CLASS_HIDDEN).returns(true);
             dialog.hideCommentsDialog();
 
             expect(classAdd).to.not.be.called;
@@ -172,11 +172,11 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
             };
             dialog.hideCommentsDialog();
 
-            expect(dialog.commentsDialogEl.classList.contains(CLASS_HIDDEN)).to.be.true;
+            expect(dialog.commentsDialogEl.classList.contains(constants.CLASS_HIDDEN)).to.be.true;
         });
 
         it('should add Highlight Dialog class to the dialog.element', () => {
-            dialog.commentsDialogEl.classList.remove(CLASS_HIDDEN);
+            dialog.commentsDialogEl.classList.remove(constants.CLASS_HIDDEN);
             dialog.highlightDialogEl = {
                 classList: {
                     remove: () => {}
@@ -188,7 +188,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         });
 
         it('should show the highlight dialog', () => {
-            dialog.commentsDialogEl.classList.remove(CLASS_HIDDEN);
+            dialog.commentsDialogEl.classList.remove(constants.CLASS_HIDDEN);
             dialog.highlightDialogEl = {
                 classList: {
                     remove: sandbox.stub()
@@ -196,7 +196,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
             };
             dialog.hideCommentsDialog();
 
-            expect(dialog.highlightDialogEl.classList.remove).to.be.calledWith(CLASS_HIDDEN);
+            expect(dialog.highlightDialogEl.classList.remove).to.be.calledWith(constants.CLASS_HIDDEN);
         });
 
         it('should set hasComments to false');

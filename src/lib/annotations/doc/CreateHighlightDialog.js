@@ -77,7 +77,6 @@ class CreateHighlightDialog extends EventEmitter {
      * [constructor]
      *
      * @param {HTMLElement} parentEl - Parent element
-     * @param {boolean} isMobile - Whether or not this is running on a mobile device
      * @param {Object} [config] - For configuring the dialog.
      * @param {boolean} [config.hasTouch] - True to add touch events.
      * @param {boolean} [config.isMobile] - True if on a mobile device.
@@ -191,9 +190,11 @@ class CreateHighlightDialog extends EventEmitter {
         this.commentBox.removeListener(CommentBox.CommentEvents.cancel, this.onCommentCancel);
 
         if (this.hasTouch) {
+            this.highlightCreateEl.removeEventListener('touchstart', this.stopPropagation);
+            this.commentCreateEl.removeEventListener('touchstart', this.stopPropagation);
+            this.highlightCreateEl.removeEventListener('touchend', this.onHighlightClick);
+            this.commentCreateEl.removeEventListener('touchend', this.onCommentClick);
             this.containerEl.removeEventListener('touchend', this.stopPropagation);
-            this.highlightCreateEl.removeEventListener('touchstart', this.onHighlightClick);
-            this.commentCreateEl.removeEventListener('touchstart', this.onCommentClick);
         }
 
         this.containerEl.remove();
@@ -228,6 +229,7 @@ class CreateHighlightDialog extends EventEmitter {
     /**
      * Fire an event notifying that the plain highlight button has been clicked.
      *
+     * @param {Event} event - The DOM event coming from interacting with the element.
      * @return {void}
      */
     onHighlightClick(event) {
@@ -240,6 +242,7 @@ class CreateHighlightDialog extends EventEmitter {
      * Fire an event notifying that the comment button has been clicked. Also
      * show the comment box, and give focus to the text area conatined by it.
      *
+     * @param {Event} event - The DOM event coming from interacting with the element.
      * @return {void}
      */
     onCommentClick(event) {
