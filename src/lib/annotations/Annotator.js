@@ -545,16 +545,15 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     bindPointModeListeners() {
-        const pointFunc = this.pointClickHandler.bind(this.annotatedElement);
         const handlers = [
             {
                 type: 'mousedown',
-                func: pointFunc,
+                func: this.pointClickHandler,
                 eventObj: this.annotatedElement
             },
             {
                 type: 'touchstart',
-                func: pointFunc,
+                func: this.pointClickHandler,
                 eventObj: this.annotatedElement
             }
         ];
@@ -616,26 +615,23 @@ class Annotator extends EventEmitter {
             return;
         }
 
-        const startCallback = drawingThread.handleStart.bind(drawingThread);
-        const stopCallback = drawingThread.handleStop.bind(drawingThread);
-        const moveCallback = drawingThread.handleMove.bind(drawingThread);
         /* eslint-disable require-jsdoc */
         const locationFunction = (event) => this.getLocationFromEvent(event, TYPES.point);
         /* eslint-enable require-jsdoc */
         const handlers = [
             {
                 type: 'mousemove',
-                func: annotatorUtil.eventToLocationHandler(locationFunction, moveCallback),
+                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleMove),
                 eventObj: this.annotatedElement
             },
             {
                 type: 'mousedown',
-                func: annotatorUtil.eventToLocationHandler(locationFunction, startCallback),
+                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStart),
                 eventObj: this.annotatedElement
             },
             {
                 type: 'mouseup',
-                func: annotatorUtil.eventToLocationHandler(locationFunction, stopCallback),
+                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStop),
                 eventObj: this.annotatedElement
             }
         ];
