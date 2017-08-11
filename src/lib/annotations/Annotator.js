@@ -77,6 +77,7 @@ class Annotator extends EventEmitter {
 
         this.unbindDOMListeners();
         this.unbindCustomListenersOnService();
+        this.removeListener('scaleAnnotations', this.scaleAnnotations);
     }
 
     /**
@@ -384,6 +385,7 @@ class Annotator extends EventEmitter {
         this.threads = {};
         this.bindDOMListeners();
         this.bindCustomListenersOnService(this.annotationService);
+        this.addListener('scaleAnnotations', this.scaleAnnotations);
     }
 
     /**
@@ -420,9 +422,7 @@ class Annotator extends EventEmitter {
      *
      * @return {void}
      */
-    bindDOMListeners() {
-        this.addListener('scaleAnnotations', this.scaleAnnotations);
-    }
+    bindDOMListeners() {}
 
     /**
      * Unbinds DOM event listeners. Can be overridden by any annotator that
@@ -432,9 +432,7 @@ class Annotator extends EventEmitter {
      * @protected
      * @return {void}
      */
-    unbindDOMListeners() {
-        this.removeListener('scaleAnnotations', this.scaleAnnotations);
-    }
+    unbindDOMListeners() {}
 
     /**
      * Binds custom event listeners for the Annotation Service.
