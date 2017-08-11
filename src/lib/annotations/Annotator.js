@@ -113,8 +113,8 @@ class Annotator extends EventEmitter {
 
         // Show the annotate button for all enabled types for the
         // current viewer
-        this.options.annotator.TYPE.forEach((type) => {
-            this.showModeAnnotateButton(type, this.modeButtons);
+        Object.keys(this.modeButtons).forEach((type) => {
+            this.showModeAnnotateButton(type);
         });
 
         const scale = initialScale;
@@ -131,6 +131,10 @@ class Annotator extends EventEmitter {
      * @return {boolean} Whether or not the annotation mode is enabled
      */
     isModeAnnotatable(type) {
+        if (!this.options.annotator) {
+            return false;
+        }
+
         const { TYPE: annotationTypes } = this.options.annotator;
         if (type && annotationTypes) {
             if (!annotationTypes.some((annotationType) => type === annotationType)) {
@@ -145,7 +149,6 @@ class Annotator extends EventEmitter {
      * Shows the annotate button for the specified mode
      *
      * @param {string} currentMode - Annotation mode
-     * @param {Object[]} modeButtons - Annotation modes which require buttons
      * @return {void}
      */
     showModeAnnotateButton(currentMode) {
@@ -287,7 +290,7 @@ class Annotator extends EventEmitter {
 
         // Only show/hide point annotation button if user has the
         // appropriate permissions
-        if (!this.annotationService.canAnnotate) {
+        if (!this.canAnnotate) {
             return;
         }
 
@@ -641,16 +644,16 @@ class Annotator extends EventEmitter {
      */
     bindModeListeners(mode) {
         const handlers = [];
+
         if (mode === TYPES.point) {
-            const pointFunc = this.pointClickHandler.bind();
             handlers.push({
                 type: 'mousedown',
-                func: pointFunc,
+                func: this.pointClickHandler,
                 eventObj: this.annotatedElement
             });
             handlers.push({
                 type: 'touchstart',
-                func: pointFunc,
+                func: this.pointClickHandler,
                 eventObj: this.annotatedElement
             });
         } else if (mode === TYPES.draw) {
@@ -659,7 +662,9 @@ class Annotator extends EventEmitter {
             /* eslint-disable require-jsdoc */
             const locationFunction = (event) => this.getLocationFromEvent(event, TYPES.point);
             /* eslint-enable require-jsdoc */
+
             const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
+
             handlers.push({
                 type: 'mousemove',
                 func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleMove),
@@ -714,7 +719,9 @@ class Annotator extends EventEmitter {
         }
 
         // Exits point annotation mode on first click
-        this.disableAnnotationMode(TYPES.point);
+        const buttonSelector = this.modeButtons[TYPES.point].selector;
+        const buttonEl = this.previewUI.getAnnotateButton(buttonSelector);
+        this.disableAnnotationMode(TYPES.point, buttonEl);
 
         // Get annotation location from click event, ignore click if location is invalid
         const location = this.getLocationFromEvent(event, TYPES.point);
