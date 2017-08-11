@@ -74,6 +74,13 @@ class Annotator extends EventEmitter {
             });
         }
 
+        // Destroy all annotate buttons
+        Object.keys(this.modeButtons).forEach((type) => {
+            const handler = this.getAnnotationModeClickHandler(type);
+            const buttonEl = this.container.querySelector(this.modeButtons[type].selector);
+            buttonEl.removeEventListener('click', handler);
+        });
+
         this.unbindDOMListeners();
         this.unbindCustomListenersOnService();
         this.removeListener('scaleAnnotations', this.scaleAnnotations);
@@ -89,7 +96,6 @@ class Annotator extends EventEmitter {
         this.annotatedElement = this.getAnnotatedEl(this.container);
 
         const { apiHost, fileId, token } = this.options;
-
         this.annotationService = new AnnotationService({
             apiHost,
             fileId,
@@ -102,10 +108,73 @@ class Annotator extends EventEmitter {
             this.setupMobileDialog();
         }
 
+        // Show the annotate button for all enabled types for the
+        // current viewer
+        this.options.annotator.TYPE.forEach((type) => {
+            this.showModeAnnotateButton(type, this.modeButtons);
+        });
+
         const scale = initialScale;
         this.setScale(scale);
         this.setupAnnotations();
         this.showAnnotations();
+    }
+
+    /**
+     * Returns whether or not the current annotation mode is enabled for
+     * the current viewer/anntotor.
+     *
+     * @param {string} type - Type of annotation
+     * @return {boolean} Whether or not the annotation mode is enabled
+     */
+    isModeAnnotatable(type) {
+        const { TYPE: annotationTypes } = this.options.annotator;
+        if (type && annotationTypes) {
+            if (!annotationTypes.some((annotationType) => type === annotationType)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Shows the annotate button for the specified mode
+     *
+     * @param {string} currentMode - Annotation mode
+     * @param {Object[]} modeButtons - Annotation modes which require buttons
+     * @return {void}
+     */
+    showModeAnnotateButton(currentMode) {
+        const mode = this.modeButtons[currentMode];
+        if (!mode || !this.isModeAnnotatable(currentMode)) {
+            return;
+        }
+
+        const annotateButtonEl = this.container.querySelector(mode.selector);
+        if (annotateButtonEl) {
+            annotateButtonEl.title = mode.title;
+            annotateButtonEl.classList.remove(CLASS_HIDDEN);
+
+            const handler = this.getAnnotationModeClickHandler(currentMode);
+            annotateButtonEl.addEventListener('click', handler);
+        }
+    }
+
+    /**
+     * Returns click handler for toggling annotation mode.
+     *
+     * @param {string} mode - Target annotation mode
+     * @return {Function|null} Click handler
+     */
+    getAnnotationModeClickHandler(mode) {
+        if (!mode || !this.isModeAnnotatable(mode)) {
+            return null;
+        }
+
+        return () => {
+            this.toggleAnnotationHandler(mode);
+        };
     }
 
     /**
@@ -570,19 +639,17 @@ class Annotator extends EventEmitter {
     bindModeListeners(mode) {
         const handlers = [];
         if (mode === TYPES.point) {
-            const pointFunc = this.pointClickHandler.bind(this.annotatedElement);
-            handlers.extend([
-                {
-                    type: 'mousedown',
-                    func: pointFunc,
-                    eventObj: this.annotatedElement
-                },
-                {
-                    type: 'touchstart',
-                    func: pointFunc,
-                    eventObj: this.annotatedElement
-                }
-            ]);
+            const pointFunc = this.pointClickHandler.bind();
+            handlers.push({
+                type: 'mousedown',
+                func: pointFunc,
+                eventObj: this.annotatedElement
+            });
+            handlers.push({
+                type: 'touchstart',
+                func: pointFunc,
+                eventObj: this.annotatedElement
+            });
         } else if (mode === TYPES.draw) {
             const drawingThread = this.createAnnotationThread([], {}, TYPES.draw);
 
@@ -590,23 +657,21 @@ class Annotator extends EventEmitter {
             const locationFunction = (event) => this.getLocationFromEvent(event, TYPES.point);
             /* eslint-enable require-jsdoc */
             const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
-            handlers.extend([
-                {
-                    type: 'mousemove',
-                    func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleMove),
-                    eventObj: this.annotatedElement
-                },
-                {
-                    type: 'mousedown',
-                    func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStart),
-                    eventObj: this.annotatedElement
-                },
-                {
-                    type: 'mouseup',
-                    func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStop),
-                    eventObj: this.annotatedElement
-                }
-            ]);
+            handlers.push({
+                type: 'mousemove',
+                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleMove),
+                eventObj: this.annotatedElement
+            });
+            handlers.push({
+                type: 'mousedown',
+                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStart),
+                eventObj: this.annotatedElement
+            });
+            handlers.push({
+                type: 'mouseup',
+                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStop),
+                eventObj: this.annotatedElement
+            });
 
             if (postButtonEl) {
                 handlers.push({
