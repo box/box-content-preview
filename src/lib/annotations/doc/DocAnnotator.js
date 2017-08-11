@@ -450,6 +450,7 @@ class DocAnnotator extends Annotator {
             this.annotatedElement.removeEventListener('mousedown', this.highlightMousedownHandler);
             this.annotatedElement.removeEventListener('contextmenu', this.highlightMousedownHandler);
             this.annotatedElement.removeEventListener('mousemove', this.highlightMousemoveHandler);
+            this.highlightMousemoveHandler = null;
 
             if (this.highlightThrottleHandle) {
                 cancelAnimationFrame(this.highlightThrottleHandle);

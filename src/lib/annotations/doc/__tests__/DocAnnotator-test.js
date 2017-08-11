@@ -525,6 +525,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 removeEventListener: () => {}
             };
             stubs.elMock = sandbox.mock(annotator.annotatedElement);
+            annotator.highlightMousemoveHandler = () => {};
         });
 
         it('should not unbind DOM listeners if user cannot annotate except mouseup', () => {
