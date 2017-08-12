@@ -10,8 +10,7 @@ import {
     DATA_TYPE_ANNOTATION_DIALOG,
     CLASS_MOBILE_ANNOTATION_DIALOG,
     CLASS_ANNOTATION_DIALOG,
-    CLASS_ANNOTATION_DRAW_MODE,
-    CLASS_ANNOTATION_POINT_MODE,
+    CLASS_ANNOTATION_MODE,
     CLASS_MOBILE_DIALOG_HEADER,
     CLASS_DIALOG_CLOSE,
     SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL,
@@ -21,6 +20,9 @@ import {
     SELECTOR_ANNOTATION_BUTTON_DRAW_REDO,
     TYPES
 } from './annotationConstants';
+
+const MODE_ENTER = 'annotationmodeenter';
+const MODE_EXIT = 'annotationmodeexit';
 
 @autobind
 class Annotator extends EventEmitter {
@@ -77,6 +79,13 @@ class Annotator extends EventEmitter {
             });
         }
 
+        // Destroy all annotate buttons
+        Object.keys(this.modeButtons).forEach((type) => {
+            const handler = this.getAnnotationModeClickHandler(type);
+            const buttonEl = this.container.querySelector(this.modeButtons[type].selector);
+            buttonEl.removeEventListener('click', handler);
+        });
+
         this.unbindDOMListeners();
         this.unbindCustomListenersOnService();
         this.removeListener('scaleAnnotations', this.scaleAnnotations);
@@ -92,7 +101,6 @@ class Annotator extends EventEmitter {
         this.annotatedElement = this.getAnnotatedEl(this.container);
 
         const { apiHost, fileId, token } = this.options;
-
         this.annotationService = new AnnotationService({
             apiHost,
             fileId,
@@ -105,9 +113,75 @@ class Annotator extends EventEmitter {
             this.setupMobileDialog();
         }
 
+        // Show the annotate button for all enabled types for the
+        // current viewer
+        Object.keys(this.modeButtons).forEach((type) => {
+            this.showModeAnnotateButton(type);
+        });
+
         this.setScale(initialScale);
         this.setupAnnotations();
         this.showAnnotations();
+    }
+
+    /**
+     * Returns whether or not the current annotation mode is enabled for
+     * the current viewer/anntotor.
+     *
+     * @param {string} type - Type of annotation
+     * @return {boolean} Whether or not the annotation mode is enabled
+     */
+    isModeAnnotatable(type) {
+        if (!this.options.annotator) {
+            return false;
+        }
+
+        const { TYPE: annotationTypes } = this.options.annotator;
+        if (type && annotationTypes) {
+            if (!annotationTypes.some((annotationType) => type === annotationType)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Shows the annotate button for the specified mode
+     *
+     * @param {string} currentMode - Annotation mode
+     * @return {void}
+     */
+    showModeAnnotateButton(currentMode) {
+        const mode = this.modeButtons[currentMode];
+        if (!mode || !this.isModeAnnotatable(currentMode)) {
+            return;
+        }
+
+        const annotateButtonEl = this.container.querySelector(mode.selector);
+        if (annotateButtonEl) {
+            annotateButtonEl.title = mode.title;
+            annotateButtonEl.classList.remove(CLASS_HIDDEN);
+
+            const handler = this.getAnnotationModeClickHandler(currentMode);
+            annotateButtonEl.addEventListener('click', handler);
+        }
+    }
+
+    /**
+     * Returns click handler for toggling annotation mode.
+     *
+     * @param {string} mode - Target annotation mode
+     * @return {Function|null} Click handler
+     */
+    getAnnotationModeClickHandler(mode) {
+        if (!mode || !this.isModeAnnotatable(mode)) {
+            return null;
+        }
+
+        return () => {
+            this.toggleAnnotationHandler(mode);
+        };
     }
 
     /**
@@ -228,7 +302,7 @@ class Annotator extends EventEmitter {
 
         // Only show/hide point annotation button if user has the
         // appropriate permissions
-        if (!this.annotationService.canAnnotate) {
+        if (!this.canAnnotate) {
             return;
         }
 
@@ -254,120 +328,124 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Toggles point annotation mode on and off. When point annotation mode is
-     * on, clicking an area will create a point annotation at that location.
+     * Toggles annotation modes on and off. When an annotation mode is
+     * on, annotation threads will be created at that location.
      *
+     * @param {string} mode - Current annotation mode
      * @param {HTMLEvent} event - DOM event
      * @return {void}
      */
-    togglePointAnnotationHandler(event = {}) {
-        if (!this.isTypeEnabled(TYPES.point)) {
+    toggleAnnotationHandler(mode, event = {}) {
+        this.destroyPendingThreads();
+
+        // No specific mode available for annotation type
+        if (!(mode in this.modeButtons)) {
             return;
         }
 
-        this.destroyPendingThreads();
-        const pointButtonSelector = this.modeButtons[TYPES.point].selector;
-        const buttonEl = event.target || this.previewUI.getAnnotateButton(pointButtonSelector);
+        const buttonSelector = this.modeButtons[mode].selector;
+        const buttonEl = event.target || this.previewUI.getAnnotateButton(buttonSelector);
 
-        if (this.isInDrawMode()) {
-            this.toggleDrawAnnotationHandler();
-        }
+        // Exit any other annotation mode
+        this.exitAnnotationModes(mode, buttonEl);
 
         // If in annotation mode, turn it off
-        if (this.isInPointMode()) {
-            this.emit('annotationmodeexit');
-            this.annotatedElement.classList.remove(CLASS_ANNOTATION_POINT_MODE);
-            if (buttonEl) {
-                buttonEl.classList.remove(CLASS_ACTIVE);
-            }
+        if (this.isInAnnotationMode(mode)) {
+            this.disableAnnotationMode(mode, buttonEl);
 
-            this.unbindModeListeners(); // Disable point mode
-            this.bindDOMListeners(); // Re-enable other annotations
-
-            // Otherwise, enable annotation mode
+            // Remove annotation mode
+            this.currentAnnotationMode = null;
         } else {
-            this.emit('annotationmodeenter', TYPES.point);
-            this.annotatedElement.classList.add(CLASS_ANNOTATION_POINT_MODE);
-            if (buttonEl) {
-                buttonEl.classList.add(CLASS_ACTIVE);
-            }
+            this.enableAnnotationMode(mode, buttonEl);
 
-            this.unbindDOMListeners(); // Disable other annotations
-            this.bindPointModeListeners(); // Enable point mode
+            // Update annotation mode
+            this.currentAnnotationMode = mode;
         }
     }
 
     /**
-     * Toggles draw annotation mode on and off. When draw annotation mode is
-     * on, a click and draw
+     * Disables the specified annotation mode
      *
-     * @param {HTMLEvent} event - DOM event
+     * @param {string} mode - Current annotation mode
+     * @param {HTMLElement} buttonEl - Annotation button element
      * @return {void}
      */
-    toggleDrawAnnotationHandler(event = {}) {
-        if (!this.isTypeEnabled(TYPES.draw)) {
-            return;
-        }
+    disableAnnotationMode(mode, buttonEl) {
+        this.emit(MODE_EXIT);
+        this.annotatedElement.classList.remove(CLASS_ANNOTATION_MODE);
+        if (buttonEl) {
+            buttonEl.classList.remove(CLASS_ACTIVE);
 
-        this.destroyPendingThreads();
-        if (this.isInPointMode()) {
-            this.togglePointAnnotationHandler();
-        }
+            if (mode === TYPES.draw) {
+                const drawEnterEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER);
+                const drawCancelEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
+                const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
+                const undoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
+                const redoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
 
-        const drawButtonSelector = this.modeButtons[TYPES.draw].selector;
-        const buttonEl = event.target || this.previewUI.getAnnotateButton(drawButtonSelector);
-        const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
-        const undoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
-        const redoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
-
-        // Exit if in draw mode
-        if (this.isInDrawMode()) {
-            this.emit('annotationmodeexit');
-            this.annotatedElement.classList.remove(CLASS_ANNOTATION_DRAW_MODE);
-
-            if (buttonEl) {
-                buttonEl.classList.remove(CLASS_ACTIVE);
-                const enterButtonEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER);
-                const cancelButtonEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
-                annotatorUtil.showElement(enterButtonEl);
-                annotatorUtil.hideElement(cancelButtonEl);
-            }
-
-            annotatorUtil.disableElement(undoButtonEl);
-            annotatorUtil.disableElement(redoButtonEl);
-            annotatorUtil.hideElement(postButtonEl);
-            annotatorUtil.hideElement(undoButtonEl);
-            annotatorUtil.hideElement(redoButtonEl);
-
-            this.unbindModeListeners(); // Disable draw mode
-            this.bindDOMListeners(); // Re-enable other annotations
-
-            // Otherwise enter draw mode
-        } else {
-            this.emit('annotationmodeenter', TYPES.draw);
-            this.annotatedElement.classList.add(CLASS_ANNOTATION_DRAW_MODE);
-
-            if (buttonEl) {
-                buttonEl.classList.add(CLASS_ACTIVE);
-                const enterButtonEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER);
-                const cancelButtonEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
-                annotatorUtil.hideElement(enterButtonEl);
-                annotatorUtil.showElement(cancelButtonEl);
-            }
-
-            annotatorUtil.showElement(postButtonEl);
-            annotatorUtil.showElement(undoButtonEl);
-            annotatorUtil.showElement(redoButtonEl);
-
-            this.unbindDOMListeners();
-
-            const thread = this.createAnnotationThread([], {}, TYPES.draw);
-            if (thread) {
-                this.bindCustomListenersOnThread(thread);
-                this.bindDrawModeListeners(thread, postButtonEl, undoButtonEl, redoButtonEl);
-                thread.show();
+                annotatorUtil.showElement(drawEnterEl);
+                annotatorUtil.hideElement(drawCancelEl);
+                annotatorUtil.hideElement(postButtonEl);
+                annotatorUtil.hideElement(undoButtonEl);
+                annotatorUtil.hideElement(redoButtonEl);
+                annotatorUtil.disableElement(undoButtonEl);
+                annotatorUtil.disableElement(redoButtonEl);
             }
         }
+
+        this.unbindModeListeners(mode); // Disable mode
+        this.bindDOMListeners(); // Re-enable other annotations
+    }
+
+    /**
+     * Enables the specified annotation mode
+     *
+     * @param {string} mode - Current annotation mode
+     * @param {HTMLElement} buttonEl - Annotation button element
+     * @return {void}
+     */
+    enableAnnotationMode(mode, buttonEl) {
+        this.emit(MODE_ENTER, mode);
+        this.annotatedElement.classList.add(CLASS_ANNOTATION_MODE);
+        if (buttonEl) {
+            buttonEl.classList.add(CLASS_ACTIVE);
+
+            if (mode === TYPES.draw) {
+                const drawEnterEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER);
+                const drawCancelEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
+                const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
+                const undoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
+                const redoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
+
+                annotatorUtil.hideElement(drawEnterEl);
+                annotatorUtil.showElement(drawCancelEl);
+                annotatorUtil.showElement(postButtonEl);
+                annotatorUtil.showElement(undoButtonEl);
+                annotatorUtil.showElement(redoButtonEl);
+            }
+        }
+
+        this.unbindDOMListeners(); // Disable other annotations
+        this.bindModeListeners(mode); // Enable mode
+    }
+
+    /**
+     * Exits all annotation modes except the specified mode
+     *
+     * @param {string} mode - Current annotation mode
+     * @param {HTMLElement} buttonEl - Annotation mode button DOM element
+     * @return {void}
+     */
+    exitAnnotationModes(mode, buttonEl) {
+        Object.keys(this.modeButtons).forEach((type) => {
+            if (mode === type) {
+                return;
+            }
+
+            const buttonSelector = this.modeButtons[type].selector;
+            const modeButtonEl = buttonEl || this.previewUI.getAnnotateButton(buttonSelector);
+            this.disableAnnotationMode(type, modeButtonEl);
+        });
     }
 
     //--------------------------------------------------------------------------
@@ -579,24 +657,62 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Binds event listeners for point annotation mode.
+     * Binds event listeners for annotation modes.
      *
      * @protected
+     * @param {string} mode - Current annotation mode
      * @return {void}
      */
-    bindPointModeListeners() {
-        const handlers = [
-            {
+    bindModeListeners(mode) {
+        const handlers = [];
+
+        if (mode === TYPES.point) {
+            handlers.push({
                 type: 'mousedown',
                 func: this.pointClickHandler,
                 eventObj: this.annotatedElement
-            },
-            {
+            });
+            handlers.push({
                 type: 'touchstart',
                 func: this.pointClickHandler,
                 eventObj: this.annotatedElement
+            });
+        } else if (mode === TYPES.draw) {
+            const drawingThread = this.createAnnotationThread([], {}, TYPES.draw);
+
+            /* eslint-disable require-jsdoc */
+            const locationFunction = (event) => this.getLocationFromEvent(event, TYPES.point);
+            /* eslint-enable require-jsdoc */
+
+            const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
+
+            handlers.push({
+                type: 'mousemove',
+                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleMove),
+                eventObj: this.annotatedElement
+            });
+            handlers.push({
+                type: 'mousedown',
+                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStart),
+                eventObj: this.annotatedElement
+            });
+            handlers.push({
+                type: 'mouseup',
+                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStop),
+                eventObj: this.annotatedElement
+            });
+
+            if (postButtonEl) {
+                handlers.push({
+                    type: 'click',
+                    func: () => {
+                        drawingThread.saveAnnotation(TYPES.draw);
+                        this.toggleAnnotationHandler(TYPES.draw);
+                    },
+                    eventObj: postButtonEl
+                });
             }
-        ];
+        }
 
         handlers.forEach((handler) => {
             handler.eventObj.addEventListener(handler.type, handler.func);
@@ -624,7 +740,9 @@ class Annotator extends EventEmitter {
         }
 
         // Exits point annotation mode on first click
-        this.togglePointAnnotationHandler();
+        const buttonSelector = this.modeButtons[TYPES.point].selector;
+        const buttonEl = this.previewUI.getAnnotateButton(buttonSelector);
+        this.disableAnnotationMode(TYPES.point, buttonEl);
 
         // Get annotation location from click event, ignore click if location is invalid
         const location = this.getLocationFromEvent(event, TYPES.point);
@@ -641,106 +759,6 @@ class Annotator extends EventEmitter {
             // Bind events on thread
             this.bindCustomListenersOnThread(thread);
         }
-    }
-
-    /**
-     * Binds event listeners for draw annotation mode.
-     *
-     * @param {DrawingThread} drawingThread - The drawing thread to bind event listeners to.
-     * @param {HTMLElement} postButtonEl - The HTML element that will save the DrawingThread on click.
-     * @param {HTMLElement} undoButtonEl - The HTML element that will undo the last stroke on click.
-     * @param {HTMLElement} redoButtonEl - The HTML element that will redo the last undone stroke on click.
-     * @return {void}
-     */
-    bindDrawModeListeners(drawingThread, postButtonEl, undoButtonEl, redoButtonEl) {
-        if (!drawingThread || !postButtonEl) {
-            return;
-        }
-
-        /* eslint-disable require-jsdoc */
-        const locationFunction = (event) => this.getLocationFromEvent(event, TYPES.point);
-        /* eslint-enable require-jsdoc */
-        const handlers = [
-            {
-                type: 'mousemove',
-                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleMove),
-                eventObj: this.annotatedElement
-            },
-            {
-                type: 'mousedown',
-                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStart),
-                eventObj: this.annotatedElement
-            },
-            {
-                type: 'mouseup',
-                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStop),
-                eventObj: this.annotatedElement
-            }
-        ];
-
-        if (postButtonEl) {
-            handlers.push({
-                type: 'click',
-                func: () => {
-                    drawingThread.saveAnnotation(TYPES.draw);
-                    this.toggleDrawAnnotationHandler();
-                },
-                eventObj: postButtonEl
-            });
-        }
-
-        if (undoButtonEl) {
-            handlers.push({
-                type: 'click',
-                func: () => {
-                    drawingThread.undo();
-                },
-                eventObj: undoButtonEl
-            });
-        }
-
-        if (redoButtonEl) {
-            handlers.push({
-                type: 'click',
-                func: () => {
-                    drawingThread.redo();
-                },
-                eventObj: redoButtonEl
-            });
-        }
-
-        const that = this;
-        drawingThread.addListener('annotationevent', (data = {}) => {
-            switch (data.type) {
-                case 'pagechanged':
-                    drawingThread.saveAnnotation(TYPES.draw);
-                    that.toggleDrawAnnotationHandler();
-                    that.toggleDrawAnnotationHandler();
-                    break;
-                case 'availableactions':
-                    if (data.undo === 1) {
-                        annotatorUtil.enableElement(undoButtonEl);
-                    } else if (data.undo === 0) {
-                        annotatorUtil.disableElement(undoButtonEl);
-                    }
-
-                    if (data.redo === 1) {
-                        annotatorUtil.enableElement(redoButtonEl);
-                    } else if (data.redo === 0) {
-                        annotatorUtil.disableElement(redoButtonEl);
-                    }
-                    break;
-                case 'unbind':
-                    drawingThread.removeAllListeners('annotationevent');
-                    break;
-                default:
-            }
-        });
-
-        handlers.forEach((handler) => {
-            handler.eventObj.addEventListener(handler.type, handler.func);
-            this.annotationModeHandlers.push(handler);
-        });
     }
 
     /**
@@ -771,23 +789,14 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Returns whether or not annotator is in point mode.
+     * Returns whether or not annotator is in the specified annotation mode.
      *
      * @protected
-     * @return {boolean} Whether or not in point mode
+     * @param {string} mode - Current annotation mode
+     * @return {boolean} Whether or not in the specified annotation mode
      */
-    isInPointMode() {
-        return this.annotatedElement.classList.contains(CLASS_ANNOTATION_POINT_MODE);
-    }
-
-    /**
-     * Returns whether or not annotator is in drawing mode.
-     *
-     * @protected
-     * @return {boolean} True if drawing mode is on, otherwise returns false.
-     */
-    isInDrawMode() {
-        return this.annotatedElement.classList.contains(CLASS_ANNOTATION_DRAW_MODE);
+    isInAnnotationMode(mode) {
+        return this.currentAnnotationMode === mode;
     }
 
     //--------------------------------------------------------------------------
