@@ -504,7 +504,6 @@ class Annotator extends EventEmitter {
      */
     fetchAnnotations() {
         this.threads = {};
-        window.globalThreads = this.threads;
 
         return this.annotationService.getThreadMap(this.fileVersionId).then((threadMap) => {
             // Generate map of page to threads
