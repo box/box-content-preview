@@ -167,15 +167,12 @@ class DocDrawingThread extends DrawingThread {
             this.setContextStyles(config, context);
         }
 
-        // Flatten all possible drawingPaths into one array
-        let drawings = Object.values(this.pathContainer.getItems());
-        drawings = drawings.reduce((a, b) => a.concat(b), []);
+        // Generate the paths and draw to the annotation layer canvas
+        this.pathContainer.applyToAll((drawing) => drawing.generateBrowserPath(this.reconstructBrowserCoordFromLocation));
         if (this.pendingPath && !this.pendingPath.isEmpty()) {
-            drawings.undo.push(this.pendingPath);
+            this.pendingPath.generateBrowserPath(this.reconstructBrowserCoordFromLocation);
         }
 
-        // Generate the paths and draw to the annotation layer canvas
-        drawings.forEach((drawing) => drawing.generateBrowserPath(this.reconstructBrowserCoordFromLocation));
         this.draw(context, false);
     }
 

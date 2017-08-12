@@ -2,7 +2,7 @@ class DrawingContainer {
     /** @property {Array} - The item history stack for undo operations */
     undoStack = [];
 
-    /** @property {Array} - The item history stack for redo operations*/
+    /** @property {Array} - The item history stack for redo operations */
     redoStack = [];
 
     constructor() {
@@ -43,10 +43,16 @@ class DrawingContainer {
     }
 
     getItems() {
-        return {
-            undo: this.undoStack.slice(),
-            redo: this.redoStack.slice()
-        };
+        return this.undoStack.slice();
+    }
+
+    mapAll(fn) {
+        const items = this.undoStack.concat(this.redoStack);
+        items.map(fn);
+    }
+
+    mapVisibleItems(fn) {
+        this.undoStack.map(fn);
     }
 }
 

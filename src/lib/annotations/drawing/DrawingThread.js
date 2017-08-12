@@ -74,15 +74,6 @@ class DrawingThread extends AnnotationThread {
         this.emit('threadcleanup');
     }
 
-    /**
-     * Get all of the DrawingPaths in the current thread.
-     *
-     * @return {void}
-     */
-    getDrawings() {
-        return this.pathContainer.getItems();
-    }
-
     /* eslint-disable no-unused-vars */
     /**
      * Handle a pointer movement
@@ -190,9 +181,9 @@ class DrawingThread extends AnnotationThread {
      */
     createAnnotationData(type, text) {
         const annotation = super.createAnnotationData(type, text);
-        const { undo: drawings } = this.getDrawings();
+        const path = this.pathContainer.mapVisibleItems(DrawingPath.extractDrawingInfo);
 
-        annotation.location.drawingPaths = drawings.map(DrawingPath.extractDrawingInfo);
+        annotation.location.drawingPaths = path;
         return annotation;
     }
 
@@ -202,11 +193,6 @@ class DrawingThread extends AnnotationThread {
     draw(context, clearCanvas = false) {
         if (!context) {
             return;
-        }
-
-        const { undo: drawings } = this.getDrawings();
-        if (this.pendingPath && !this.pendingPath.isEmpty()) {
-            drawings.push(this.pendingPath);
         }
 
         /* OPTIMIZE (@minhnguyen): Render only what has been obstructed by the new drawing
@@ -220,7 +206,11 @@ class DrawingThread extends AnnotationThread {
         }
 
         context.beginPath();
-        drawings.forEach((drawing) => drawing.drawPath(context));
+        this.pathContainer.mapVisibleItems((drawing) => drawing.drawPath(context));
+        if (this.pendingPath && !this.pendingPath.isEmpty()) {
+            this.pendingPath.drawPath(context);
+        }
+
         context.stroke();
     }
 

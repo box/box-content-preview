@@ -680,7 +680,6 @@ class Annotator extends EventEmitter {
                 }
             );
         } else if (mode === TYPES.draw) {
-            const that = this;
             const drawingThread = this.createAnnotationThread([], {}, TYPES.draw);
             this.bindCustomListenersOnThread(drawingThread);
 
@@ -692,6 +691,8 @@ class Annotator extends EventEmitter {
             const undoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
             const redoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
 
+            // NOTE (@minhnguyen): Move this logic to a new controller class
+            const that = this;
             drawingThread.addListener('annotationevent', (data = {}) => {
                 switch (data.type) {
                     case 'pagechanged':
