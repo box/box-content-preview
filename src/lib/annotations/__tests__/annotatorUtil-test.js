@@ -5,6 +5,8 @@ import {
     getPageInfo,
     showElement,
     hideElement,
+    enableElement,
+    disableElement,
     showInvisibleElement,
     hideElementVisibility,
     resetTextarea,
@@ -119,6 +121,34 @@ describe('lib/annotations/annotatorUtil', () => {
         it('should add hidden class to provided element', () => {
             hideElement(childEl);
             assert.ok(childEl.classList.contains('bp-is-hidden'));
+        });
+    });
+
+    describe('enableElement()', () => {
+        it('should remove disabled class from element with matching selector', () => {
+            // Hide element before testing show function
+            childEl.classList.add('is-disabled');
+            enableElement('.child');
+            assert.ok(!childEl.classList.contains('is-disabled'));
+        });
+
+        it('should remove hidden class from provided element', () => {
+            // Hide element before testing show function
+            childEl.classList.add('is-disabled');
+            enableElement(childEl);
+            assert.ok(!childEl.classList.contains('is-disabled'));
+        });
+    });
+
+    describe('disableElement()', () => {
+        it('should add hidden class to matching element', () => {
+            disableElement('.child');
+            assert.ok(childEl.classList.contains('is-disabled'));
+        });
+
+        it('should add hidden class to provided element', () => {
+            disableElement(childEl);
+            assert.ok(childEl.classList.contains('is-disabled'));
         });
     });
 
