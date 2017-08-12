@@ -425,7 +425,7 @@ class DocAnnotator extends Annotator {
 
         this.annotatedElement.addEventListener('mouseup', this.highlightMouseupHandler);
 
-        if (this.annotationService.canAnnotate) {
+        if (this.canAnnotate) {
             this.annotatedElement.addEventListener('dblclick', this.highlightMouseupHandler);
             this.annotatedElement.addEventListener('mousedown', this.highlightMousedownHandler);
             this.annotatedElement.addEventListener('contextmenu', this.highlightMousedownHandler);
@@ -445,11 +445,12 @@ class DocAnnotator extends Annotator {
 
         this.annotatedElement.removeEventListener('mouseup', this.highlightMouseupHandler);
 
-        if (this.annotationService.canAnnotate) {
+        if (this.canAnnotate) {
             this.annotatedElement.removeEventListener('dblclick', this.highlightMouseupHandler);
             this.annotatedElement.removeEventListener('mousedown', this.highlightMousedownHandler);
             this.annotatedElement.removeEventListener('contextmenu', this.highlightMousedownHandler);
-            this.annotatedElement.removeEventListener('mousemove', this.getHighlightMouseMoveHandler());
+            this.annotatedElement.removeEventListener('mousemove', this.highlightMousemoveHandler);
+            this.highlightMousemoveHandler = null;
 
             if (this.highlightThrottleHandle) {
                 cancelAnimationFrame(this.highlightThrottleHandle);
