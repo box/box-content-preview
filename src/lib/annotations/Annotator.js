@@ -679,6 +679,7 @@ class Annotator extends EventEmitter {
             });
         } else if (mode === TYPES.draw) {
             const drawingThread = this.createAnnotationThread([], {}, TYPES.draw);
+            this.bindCustomListenersOnThread(drawingThread);
 
             /* eslint-disable require-jsdoc */
             const locationFunction = (event) => this.getLocationFromEvent(event, TYPES.point);

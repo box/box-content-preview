@@ -137,7 +137,9 @@ class DocDrawingThread extends DrawingThread {
 
         if (drawingAnnotationLayerContext) {
             const inProgressCanvas = this.drawingContext.canvas;
-            drawingAnnotationLayerContext.drawImage(inProgressCanvas, 0, 0);
+            const width = parseInt(inProgressCanvas.style.width, 10);
+            const height = parseInt(inProgressCanvas.style.height, 10);
+            drawingAnnotationLayerContext.drawImage(inProgressCanvas, 0, 0, width, height);
             this.drawingContext.clearRect(0, 0, inProgressCanvas.width, inProgressCanvas.height);
         }
     }
