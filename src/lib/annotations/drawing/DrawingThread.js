@@ -42,9 +42,6 @@ class DrawingThread extends AnnotationThread {
         this.handleMove = this.handleMove.bind(this);
         this.handleStop = this.handleStop.bind(this);
         this.draw = this.draw.bind(this);
-        this.undo = this.undo.bind(this);
-        this.redo = this.redo.bind(this);
-        this.emitAvailableActions = this.emitAvailableActions.bind(this);
 
         // Recreate stored paths
         if (data && data.location && data.location.drawingPaths instanceof Array) {
@@ -72,8 +69,8 @@ class DrawingThread extends AnnotationThread {
             this.drawingContext.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-        this.reset();
         super.destroy();
+        this.reset();
         this.emit('threadcleanup');
     }
 
@@ -83,7 +80,7 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     getDrawings() {
-        return this.pathContainer.getAll();
+        return this.pathContainer.getItems();
     }
 
     /* eslint-disable no-unused-vars */
@@ -193,7 +190,7 @@ class DrawingThread extends AnnotationThread {
      */
     createAnnotationData(type, text) {
         const annotation = super.createAnnotationData(type, text);
-        const drawings = this.getDrawings();
+        const { undo: drawings } = this.getDrawings();
 
         annotation.location.drawingPaths = drawings.map(DrawingPath.extractDrawingInfo);
         return annotation;
@@ -207,7 +204,7 @@ class DrawingThread extends AnnotationThread {
             return;
         }
 
-        const drawings = this.getDrawings();
+        const { undo: drawings } = this.getDrawings();
         if (this.pendingPath && !this.pendingPath.isEmpty()) {
             drawings.push(this.pendingPath);
         }
@@ -228,7 +225,7 @@ class DrawingThread extends AnnotationThread {
     }
 
     emitAvailableActions() {
-        const availableActions = this.pathContainer ? this.pathContainer.getNumberOfAvailableActions() : {};
+        const availableActions = this.pathContainer.getNumberOfItems();
         this.emit('annotationevent', {
             type: 'availableactions',
             undo: availableActions.undo,

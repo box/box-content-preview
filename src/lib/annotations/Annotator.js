@@ -667,17 +667,20 @@ class Annotator extends EventEmitter {
         const handlers = [];
 
         if (mode === TYPES.point) {
-            handlers.push({
-                type: 'mousedown',
-                func: this.pointClickHandler,
-                eventObj: this.annotatedElement
-            });
-            handlers.push({
-                type: 'touchstart',
-                func: this.pointClickHandler,
-                eventObj: this.annotatedElement
-            });
+            handlers.push(
+                {
+                    type: 'mousedown',
+                    func: this.pointClickHandler,
+                    eventObj: this.annotatedElement
+                },
+                {
+                    type: 'touchstart',
+                    func: this.pointClickHandler,
+                    eventObj: this.annotatedElement
+                }
+            );
         } else if (mode === TYPES.draw) {
+            const that = this;
             const drawingThread = this.createAnnotationThread([], {}, TYPES.draw);
             this.bindCustomListenersOnThread(drawingThread);
 
@@ -686,22 +689,50 @@ class Annotator extends EventEmitter {
             /* eslint-enable require-jsdoc */
 
             const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
+            const undoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
+            const redoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
 
-            handlers.push({
-                type: 'mousemove',
-                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleMove),
-                eventObj: this.annotatedElement
+            drawingThread.addListener('annotationevent', (data = {}) => {
+                switch (data.type) {
+                    case 'pagechanged':
+                        drawingThread.saveAnnotation(TYPES.draw);
+                        that.unbindModeListeners();
+                        that.bindModeListeners(TYPES.draw);
+                        break;
+                    case 'availableactions':
+                        if (data.undo === 1) {
+                            annotatorUtil.enableElement(undoButtonEl);
+                        } else if (data.undo === 0) {
+                            annotatorUtil.disableElement(undoButtonEl);
+                        }
+
+                        if (data.redo === 1) {
+                            annotatorUtil.enableElement(redoButtonEl);
+                        } else if (data.redo === 0) {
+                            annotatorUtil.disableElement(redoButtonEl);
+                        }
+                        break;
+                    default:
+                }
             });
-            handlers.push({
-                type: 'mousedown',
-                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStart),
-                eventObj: this.annotatedElement
-            });
-            handlers.push({
-                type: 'mouseup',
-                func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStop),
-                eventObj: this.annotatedElement
-            });
+
+            handlers.push(
+                {
+                    type: 'mousemove',
+                    func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleMove),
+                    eventObj: this.annotatedElement
+                },
+                {
+                    type: 'mousedown',
+                    func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStart),
+                    eventObj: this.annotatedElement
+                },
+                {
+                    type: 'mouseup',
+                    func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStop),
+                    eventObj: this.annotatedElement
+                }
+            );
 
             if (postButtonEl) {
                 handlers.push({
@@ -711,6 +742,26 @@ class Annotator extends EventEmitter {
                         this.toggleAnnotationHandler(TYPES.draw);
                     },
                     eventObj: postButtonEl
+                });
+            }
+
+            if (undoButtonEl) {
+                handlers.push({
+                    type: 'click',
+                    func: () => {
+                        drawingThread.undo();
+                    },
+                    eventObj: undoButtonEl
+                });
+            }
+
+            if (redoButtonEl) {
+                handlers.push({
+                    type: 'click',
+                    func: () => {
+                        drawingThread.redo();
+                    },
+                    eventObj: redoButtonEl
                 });
             }
         }

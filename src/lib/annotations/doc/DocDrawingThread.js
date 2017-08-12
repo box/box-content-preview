@@ -28,10 +28,6 @@ class DocDrawingThread extends DrawingThread {
     constructor(data) {
         super(data);
 
-        this.handleStart = this.handleStart.bind(this);
-        this.handleMove = this.handleMove.bind(this);
-        this.handleStop = this.handleStop.bind(this);
-        this.checkAndHandleScaleUpdate = this.checkAndHandleScaleUpdate.bind(this);
         this.reconstructBrowserCoordFromLocation = this.reconstructBrowserCoordFromLocation.bind(this);
     }
     /**
@@ -117,16 +113,16 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     saveAnnotation(type, text) {
-        const availableActions = this.pathContainer.getNumberOfAvailableActions();
-        if (availableActions.undo === 0) {
+        this.emit('threadcleanup');
+        this.reset();
+
+        // Only make save request to server if there exist paths to save
+        const { undo: availableUndos } = this.pathContainer.getNumberOfItems();
+        if (availableUndos === 0) {
             return;
         }
 
         super.saveAnnotation(type, text);
-        this.emit('annotationevent', {
-            type: 'unbind'
-        });
-        this.reset();
 
         const drawingAnnotationLayerContext = docAnnotatorUtil.getContext(
             this.pageEl,
@@ -134,7 +130,6 @@ class DocDrawingThread extends DrawingThread {
             PAGE_PADDING_TOP,
             PAGE_PADDING_BOTTOM
         );
-
         if (drawingAnnotationLayerContext) {
             const inProgressCanvas = this.drawingContext.canvas;
             const width = parseInt(inProgressCanvas.style.width, 10);
@@ -172,12 +167,14 @@ class DocDrawingThread extends DrawingThread {
             this.setContextStyles(config, context);
         }
 
-        const drawings = this.pathContainer.getAll();
+        // Flatten all possible drawingPaths into one array
+        let drawings = Object.values(this.pathContainer.getItems());
+        drawings = drawings.reduce((a, b) => a.concat(b), []);
         if (this.pendingPath && !this.pendingPath.isEmpty()) {
-            drawings.push(this.pendingPath);
+            drawings.undo.push(this.pendingPath);
         }
 
-        // Draw the paths to the annotation layer canvas
+        // Generate the paths and draw to the annotation layer canvas
         drawings.forEach((drawing) => drawing.generateBrowserPath(this.reconstructBrowserCoordFromLocation));
         this.draw(context, false);
     }

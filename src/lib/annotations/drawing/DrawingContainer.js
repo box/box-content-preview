@@ -35,15 +35,18 @@ class DrawingContainer {
         return true;
     }
 
-    getNumberOfAvailableActions() {
+    getNumberOfItems() {
         return {
             undo: this.undoStack.length,
             redo: this.redoStack.length
         };
     }
 
-    getAll() {
-        return this.undoStack.slice();
+    getItems() {
+        return {
+            undo: this.undoStack.slice(),
+            redo: this.redoStack.slice()
+        };
     }
 }
 
