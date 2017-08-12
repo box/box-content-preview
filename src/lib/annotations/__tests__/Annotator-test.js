@@ -487,10 +487,19 @@ describe('lib/annotations/Annotator', () => {
         });
 
         describe('bindModeListeners()', () => {
+            let drawingThread;
+
             beforeEach(() => {
                 annotator.annotatedElement = {
                     addEventListener: sandbox.stub(),
                     removeEventListener: sandbox.stub()
+                };
+
+                drawingThread = {
+                    handleStart: () => {},
+                    handleStop: () => {},
+                    handleMove: () => {},
+                    addListener: sandbox.stub()
                 };
             });
 
@@ -508,11 +517,6 @@ describe('lib/annotations/Annotator', () => {
             });
 
             it('should bind draw mode handlers', () => {
-                const drawingThread = {
-                    handleStart: () => {},
-                    handleStop: () => {},
-                    handleMove: () => {}
-                };
                 sandbox.stub(annotator, 'createAnnotationThread').returns(drawingThread);
 
                 const postButtonEl = {
@@ -538,11 +542,6 @@ describe('lib/annotations/Annotator', () => {
             });
 
             it('should bind draw mode click handlers if post button exists', () => {
-                const drawingThread = {
-                    handleStart: () => {},
-                    handleStop: () => {},
-                    handleMove: () => {}
-                };
                 sandbox.stub(annotator, 'createAnnotationThread').returns(drawingThread);
 
                 const postButtonEl = {
