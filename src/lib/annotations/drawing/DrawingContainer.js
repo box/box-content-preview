@@ -1,30 +1,55 @@
 class DrawingContainer {
+    //--------------------------------------------------------------------------
+    // Typedef
+    //--------------------------------------------------------------------------
+
+    /**
+     * @typedef {Object} AvailableItemData
+     * @property {number} undo Number of undoable items
+     * @property {number} redo Number of redoable items
+     */
+
+    //--------------------------------------------------------------------------
+    // Public
+    //--------------------------------------------------------------------------
+
     /** @property {Array} - The item history stack for undo operations */
     undoStack = [];
 
     /** @property {Array} - The item history stack for redo operations */
     redoStack = [];
 
-    constructor() {
-        this.undo = this.undo.bind(this);
-        this.redo = this.redo.bind(this);
-    }
-
+    /**
+     * Insert an item into the drawing container. Clears any redoable items.
+     *
+     * @param {Object} item - An object to be contained in the data structure.
+     * @return {void}
+     */
     insert(item) {
         this.undoStack.push(item);
         this.redoStack = [];
     }
 
+    /**
+     * Move an item from the undo stack into the redo stack if an item exists.
+     *
+     * @return {boolean} Whether or not an undo was done.
+     */
     undo() {
         if (this.undoStack.length === 0) {
             return false;
         }
 
-        const latestDone = this.undoStack.pop();
-        this.redoStack.push(latestDone);
+        const latestUndone = this.undoStack.pop();
+        this.redoStack.push(latestUndone);
         return true;
     }
 
+    /**
+     * Move an item from the redo stack into the undo stack if an item exists.
+     *
+     * @return {boolean} Whether or not a redo was done.
+     */
     redo() {
         if (this.redoStack.length === 0) {
             return false;
@@ -35,6 +60,11 @@ class DrawingContainer {
         return true;
     }
 
+    /**
+     * Retrieve a JSON blob containing the number of undo and redo in each stack.
+     *
+     * @return {AvailableItemData} The number of undo and redo items available.
+     */
     getNumberOfItems() {
         return {
             undo: this.undoStack.length,
@@ -42,17 +72,29 @@ class DrawingContainer {
         };
     }
 
+    /**
+     * Retrieve the visible items on the undo stack.
+     *
+     * @return {Array} An copy of the undoStack as an array.
+     */
     getItems() {
         return this.undoStack.slice();
     }
 
-    mapAll(fn) {
-        const items = this.undoStack.concat(this.redoStack);
-        items.map(fn);
-    }
+    /**
+     * Apply a function to the items in the container.
+     *
+     * @param {Function} fn - The function to apply to the items.
+     * @param {boolean} [includeHiddenItems] - Whether or not to apply the function to items hidden on the redo stack.
+     * @return {void}
+     */
+    applyToItems(fn, includeHiddenItems = false) {
+        let items = this.undoStack;
+        if (includeHiddenItems) {
+            items = items.concat(this.redoStack);
+        }
 
-    mapVisibleItems(fn) {
-        this.undoStack.map(fn);
+        items.forEach(fn);
     }
 }
 

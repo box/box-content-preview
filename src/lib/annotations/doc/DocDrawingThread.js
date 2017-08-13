@@ -28,6 +28,7 @@ class DocDrawingThread extends DrawingThread {
     constructor(data) {
         super(data);
 
+        this.onPageChange = this.onPageChange.bind(this);
         this.reconstructBrowserCoordFromLocation = this.reconstructBrowserCoordFromLocation.bind(this);
     }
     /**
@@ -40,7 +41,7 @@ class DocDrawingThread extends DrawingThread {
         if (this.drawingFlag !== DRAW_STATES.drawing) {
             return;
         } else if (this.hasPageChanged(location)) {
-            this.handlePageChange();
+            this.onPageChange();
             return;
         }
 
@@ -58,7 +59,7 @@ class DocDrawingThread extends DrawingThread {
     handleStart(location) {
         const pageChanged = this.hasPageChanged(location);
         if (pageChanged) {
-            this.handlePageChange();
+            this.onPageChange();
             return;
         }
 
@@ -168,7 +169,9 @@ class DocDrawingThread extends DrawingThread {
         }
 
         // Generate the paths and draw to the annotation layer canvas
-        this.pathContainer.applyToAll((drawing) => drawing.generateBrowserPath(this.reconstructBrowserCoordFromLocation));
+        this.pathContainer.applyToItems((drawing) =>
+            drawing.generateBrowserPath(this.reconstructBrowserCoordFromLocation)
+        );
         if (this.pendingPath && !this.pendingPath.isEmpty()) {
             this.pendingPath.generateBrowserPath(this.reconstructBrowserCoordFromLocation);
         }
@@ -202,7 +205,12 @@ class DocDrawingThread extends DrawingThread {
         this.setContextStyles(config);
     }
 
-    handlePageChange() {
+    /**
+     * End the current drawing and emit a page changed event
+     *
+     * @return {void}
+     */
+    onPageChange() {
         this.handleStop();
         this.emit('annotationevent', {
             type: 'pagechanged'

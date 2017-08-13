@@ -5,6 +5,7 @@ import {
 } from '../../annotationConstants'
 
 let drawingThread;
+let stubs;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/annotations/drawing/DrawingThread', () => {
@@ -13,6 +14,7 @@ describe('lib/annotations/drawing/DrawingThread', () => {
     });
 
     beforeEach(() => {
+        stubs = {};
         drawingThread = new DrawingThread({
             annotatedElement: document.querySelector('.annotated-element'),
             annotations: [],
@@ -60,25 +62,6 @@ describe('lib/annotations/drawing/DrawingThread', () => {
         })
     });
 
-    describe('getDrawings()', () => {
-        it('should return all items inserted into the container', () => {
-            drawingThread.pathContainer.insert('not a test');
-            drawingThread.pathContainer.insert('not a secondary test');
-
-            const allDrawings = drawingThread.getDrawings();
-
-            assert.ok(allDrawings instanceof Array);
-            assert.equal(allDrawings.length, 2);
-        });
-
-        it('should return an empty array when no items are inserted into the container', () => {
-            const allDrawings = drawingThread.getDrawings();
-
-            assert.ok(allDrawings instanceof Array);
-            assert.equal(allDrawings.length, 0);
-        })
-    });
-
     describe('setContextStyles()', () => {
         it('should set configurable context properties', () => {
             drawingThread.drawingContext = {
@@ -107,49 +90,31 @@ describe('lib/annotations/drawing/DrawingThread', () => {
     });
 
     describe('render()', () => {
-        it('should draw the pending path when the context is not empty', () => {
-            const timeElapsed = 20000;
-            const drawingArray = [];
-
-            sandbox.stub(drawingThread, 'getDrawings')
-                   .returns(drawingArray);
-
-            drawingThread.pendingPath = {
-                drawPath: sandbox.stub(),
-                isEmpty: sandbox.stub().returns(false)
-            };
-            drawingThread.drawingContext = {
-                beginPath: sandbox.stub(),
-                stroke: sandbox.stub(),
-                clearRect: sandbox.stub(),
-                canvas: {
-                    width: 2,
-                    height: 2
-                }
-            };
-            drawingThread.render(timeElapsed);
-
-            expect(drawingThread.getDrawings).to.be.called;
-            expect(drawingThread.drawingContext.clearRect).to.be.called;
-            expect(drawingThread.drawingContext.beginPath).to.be.called;
-            expect(drawingThread.drawingContext.stroke).to.be.called;
-            expect(drawingThread.pendingPath.drawPath).to.be.called;
-            expect(drawingThread.pendingPath.isEmpty).to.be.called;
+        beforeEach(() => {
+            sandbox.stub(drawingThread, 'draw');
         });
 
-        it('should do nothing when the context is empty', () => {
-            const timeElapsed = 20000;
+        it('should draw the pending path when the context is not empty', () => {
+            const timeStamp = 20000;
+            drawingThread.render(timeStamp);
+            expect(drawingThread.draw).to.be.called;
+        });
 
-            sandbox.stub(drawingThread, 'getDrawings');
-            drawingThread.context = null;
-            drawingThread.render(timeElapsed);
-
-            expect(drawingThread.getDrawings).to.not.be.called;
+        it('should do nothing when the timeElapsed is less than the refresh rate', () => {
+            const timeStamp = 100;
+            drawingThread.lastRenderTimestamp = 100;
+            drawingThread.render(timeStamp);
+            expect(drawingThread.draw).to.not.be.called;
         });
     });
 
     describe('createAnnotationData()', () => {
         it('should create a valid annotation data object', () => {
+            const pathStr = 'path';
+            const path = {
+                map: sandbox.stub().returns(pathStr)
+            };
+            sandbox.stub(drawingThread.pathContainer, 'getItems').returns(path);
             drawingThread.annotationService = {
                 user: { id: '1' }
             };
@@ -157,9 +122,133 @@ describe('lib/annotations/drawing/DrawingThread', () => {
             const placeholder = "String here so string doesn't get fined";
             const annotationData = drawingThread.createAnnotationData('draw', placeholder);
 
+            expect(drawingThread.pathContainer.getItems).to.be.called;
+            expect(path.map).to.be.called;
             expect(annotationData.fileVersionId).to.equal(drawingThread.fileVersionId);
             expect(annotationData.threadID).to.equal(drawingThread.threadID);
             expect(annotationData.user.id).to.equal('1');
+            expect(annotationData.location.drawingPaths).to.equal(pathStr);
+        });
+    });
+
+    describe('undo()', () => {
+        beforeEach(() => {
+            stubs.draw = sandbox.stub(drawingThread, 'draw');
+            stubs.emitAvailableActions = sandbox.stub(drawingThread, 'emitAvailableActions');
+            stubs.containerUndo = sandbox.stub(drawingThread.pathContainer, 'undo');
+        });
+
+        it('should do nothing when the path container fails to undo', () => {
+            stubs.containerUndo.returns(false);
+            drawingThread.undo();
+            expect(stubs.containerUndo).to.be.called;
+            expect(stubs.draw).to.not.be.called;
+            expect(stubs.emitAvailableActions).to.not.be.called;
+        });
+
+        it('should draw when the path container indicates a successful undo', () => {
+            stubs.containerUndo.returns(true);
+            drawingThread.undo();
+            expect(stubs.containerUndo).to.be.called;
+            expect(stubs.draw).to.be.called;
+            expect(stubs.emitAvailableActions).to.be.called;
+        });
+    });
+
+    describe('undo()', () => {
+        beforeEach(() => {
+            stubs.draw = sandbox.stub(drawingThread, 'draw');
+            stubs.emitAvailableActions = sandbox.stub(drawingThread, 'emitAvailableActions');
+            stubs.containerRedo = sandbox.stub(drawingThread.pathContainer, 'redo');
+        });
+
+        it('should do nothing when the path container fails to redo', () => {
+            stubs.containerRedo.returns(false);
+            drawingThread.redo();
+            expect(stubs.containerRedo).to.be.called;
+            expect(stubs.draw).to.not.be.called;
+            expect(stubs.emitAvailableActions).to.not.be.called;
+        });
+
+        it('should draw when the path container indicates a successful redo', () => {
+            stubs.containerRedo.returns(true);
+            drawingThread.redo();
+            expect(stubs.containerRedo).to.be.called;
+            expect(stubs.draw).to.be.called;
+            expect(stubs.emitAvailableActions).to.be.called;
+        });
+    });
+
+    describe('draw()', () => {
+        let context;
+
+        beforeEach(() => {
+            drawingThread.pendingPath = {
+                isEmpty: sandbox.stub(),
+                drawPath: sandbox.stub()
+            };
+            stubs.applyToItems = sandbox.stub(drawingThread.pathContainer, 'applyToItems');
+            stubs.pendingEmpty = drawingThread.pendingPath.isEmpty;
+            stubs.pendingDraw = drawingThread.pendingPath.drawPath;
+            context = {
+                clearRect: sandbox.stub(),
+                beginPath: sandbox.stub(),
+                stroke: sandbox.stub(),
+                canvas: {
+                    width: 1,
+                    height: 2
+                }
+            };
+        });
+
+        it('should do nothing when context is null or undefined', () => {
+            context = undefined;
+            drawingThread.draw(context);
+            context = null;
+            drawingThread.draw(context);
+            expect(stubs.applyToItems).to.not.be.called;
+        });
+
+        it('should draw the items in the path container when given a valid context', () => {
+            stubs.pendingEmpty.returns(false);
+            drawingThread.draw(context);
+            expect(context.beginPath).to.be.called;
+            expect(stubs.applyToItems).to.be.called;
+            expect(stubs.pendingEmpty).to.be.called;
+            expect(stubs.pendingDraw).to.be.called;
+            expect(context.stroke).to.be.called;
+        });
+
+        it('should clear the canvas when the flag is true', () => {
+            drawingThread.draw(context, true);
+            expect(context.clearRect).to.be.called;
+        });
+
+        it('should not clear the canvas when the flag is true', () => {
+            drawingThread.draw(context, false);
+            expect(context.clearRect).to.not.be.called;
+        });
+    });
+
+    describe('emitAvailableActions()', () => {
+        afterEach(() => {
+            drawingThread.removeAllListeners('annotationevent');
+        });
+
+        it('should trigger an annotationevent with the number of available undo and redo actions', (done) => {
+            const numItems = {
+                undo: 3,
+                redo: 2
+            };
+            sandbox.stub(drawingThread.pathContainer, 'getNumberOfItems').returns(numItems);
+            drawingThread.addListener('annotationevent', (data) => {
+                expect(data.type).to.equal('availableactions');
+                expect(data.undo).to.equal(numItems.undo);
+                expect(data.redo).to.equal(numItems.redo);
+                done();
+            });
+
+            drawingThread.emitAvailableActions();
         });
     });
 });

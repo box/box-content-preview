@@ -1,12 +1,14 @@
 import * as docAnnotatorUtil from '../docAnnotatorUtil';
 import * as annotatorUtil from '../../annotatorUtil';
 import DocDrawingThread from '../DocDrawingThread';
+import AnnotationThread from '../../AnnotationThread';
 import DrawingPath from '../../drawing/DrawingPath';
 import {
     DRAW_STATES
 } from '../../annotationConstants';
 
 let docDrawingThread;
+let stubs;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/annotations/doc/DocDrawingThread', () => {
@@ -22,6 +24,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             y: 0,
             page: docDrawingThread.page
         };
+        stubs = {};
     });
 
     afterEach(() => {
@@ -84,7 +87,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
         it('should commit the thread when the page changes', () => {
             sandbox.stub(docDrawingThread, 'hasPageChanged').returns(true);
             sandbox.stub(docDrawingThread, 'checkAndHandleScaleUpdate');
-            sandbox.stub(docDrawingThread, 'handlePageChange');
+            sandbox.stub(docDrawingThread, 'onPageChange');
             sandbox.stub(docDrawingThread, 'saveAnnotation');
 
             docDrawingThread.pendingPath = undefined;
@@ -92,7 +95,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             docDrawingThread.location = {};
 
             expect(docDrawingThread.hasPageChanged).to.be.called;
-            expect(docDrawingThread.handlePageChange).to.be.called;
+            expect(docDrawingThread.onPageChange).to.be.called;
             expect(docDrawingThread.checkAndHandleScaleUpdate).to.not.be.called;
         });
     });
@@ -116,8 +119,21 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
         });
     });
 
+    describe('onPageChange()', () => {
+        it('should emit an annotationevent of type pagechanged and stop a pending drawing', (done) =>{
+            sandbox.stub(docDrawingThread, 'handleStop');
+            docDrawingThread.addListener('annotationevent', (data) => {
+                expect(docDrawingThread.handleStop).to.be.called;
+                expect(data.type).to.equal('pagechanged');
+                done();
+            });
+
+            docDrawingThread.onPageChange();
+        });
+    });
+
     describe('checkAndHandleScaleUpdate()', () => {
-        it('should update the scale factor when the scale has changed', () => {
+        it('should update the drawing information when the scale has changed', () => {
             sandbox.stub(docDrawingThread, 'setContextStyles');
             sandbox.stub(annotatorUtil, 'getScale').returns(1.4);
             sandbox.stub(docAnnotatorUtil, 'getPageEl');
@@ -163,5 +179,99 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
                 y: 4
             });
         })
+    });
+
+    describe('saveAnnotation()', () => {
+        const resetValue = AnnotationThread.prototype.saveAnnotation;
+
+        beforeEach(() => {
+            Object.defineProperty(AnnotationThread.prototype, 'saveAnnotation', { value: sandbox.stub() });
+        });
+
+        afterEach(() => {
+            Object.defineProperty(AnnotationThread.prototype, 'saveAnnotation', { value: resetValue });
+        });
+
+        it('should clean up without committing when there are no paths to be saved', () => {
+            sandbox.stub(docDrawingThread.pathContainer, 'getNumberOfItems').returns({
+                undo: 0,
+                redo: 1
+            });
+
+            docDrawingThread.saveAnnotation('draw');
+            expect(docDrawingThread.pathContainer.getNumberOfItems).to.be.called;
+            expect(AnnotationThread.prototype.saveAnnotation).to.not.be.called;
+        });
+
+        it('should clean up and commit in-progress drawings when there are paths to be saved', () => {
+            docDrawingThread.drawingContext = {
+                canvas: {
+                    style: {
+                        width: 10,
+                        height: 15
+                    }
+                },
+                width: 20,
+                height: 30,
+                clearRect: sandbox.stub()
+            };
+            const context = {
+                drawImage: sandbox.stub()
+            };
+
+            sandbox.stub(docAnnotatorUtil, 'getContext').returns(context);
+            sandbox.stub(docDrawingThread.pathContainer, 'getNumberOfItems').returns({
+                undo: 1,
+                redo: 0
+            });
+
+            docDrawingThread.saveAnnotation('draw');
+            expect(docAnnotatorUtil.getContext).to.be.called;
+            expect(docDrawingThread.pathContainer.getNumberOfItems).to.be.called;
+            expect(docDrawingThread.drawingContext.clearRect).to.be.called;
+            expect(context.drawImage).to.be.called;
+            expect(AnnotationThread.prototype.saveAnnotation).to.be.called;
+        });
+    });
+
+    describe('hasPageChanged()', () => {
+        it('should return false when there is no location', () => {
+            const value = docDrawingThread.hasPageChanged(undefined);
+            expect(value).to.be.falsy;
+        });
+
+        it('should return false when there is a location but no page', () => {
+            const location = {
+                page: undefined
+            };
+            const value = docDrawingThread.hasPageChanged(location);
+            expect(value).to.be.falsy;
+        });
+
+        it('should return false when the given location page is the same as the thread location', () => {
+            docDrawingThread.location = {
+                page: 2
+            };
+            const location = {
+                page: docDrawingThread.location.page
+            };
+            const value = docDrawingThread.hasPageChanged(location);
+            expect(value).to.be.falsy;
+        });
+
+        it('should return true when the given location page is different from the thread location', () => {
+            docDrawingThread.location = {
+                page: 2
+            };
+            const location = {
+                page: (docDrawingThread.location.page + 1)
+            };
+            const value = docDrawingThread.hasPageChanged(location);
+            expect(value).to.be.true;
+        });
+    });
+
+    describe('show()', () => {
+
     });
 });

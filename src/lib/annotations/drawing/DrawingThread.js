@@ -9,7 +9,7 @@ class DrawingThread extends AnnotationThread {
     /** @property {number} - Drawing state */
     drawingFlag = DRAW_STATES.idle;
 
-    /** @property {DrawingContainer} - path container */
+    /** @property {DrawingContainer} - The path container supporting undo and redo */
     pathContainer = new DrawingContainer();
 
     /** @property {DrawingPath} - The path being drawn but not yet finalized */
@@ -41,7 +41,6 @@ class DrawingThread extends AnnotationThread {
         this.handleStart = this.handleStart.bind(this);
         this.handleMove = this.handleMove.bind(this);
         this.handleStop = this.handleStop.bind(this);
-        this.draw = this.draw.bind(this);
 
         // Recreate stored paths
         if (data && data.location && data.location.drawingPaths instanceof Array) {
@@ -148,22 +147,33 @@ class DrawingThread extends AnnotationThread {
         }
     }
 
+    /**
+     * Overturns the last drawing stroke if it exists. Emits the number of undo and redo
+     * actions available if an undo was executed.
+     *
+     * @return {void}
+     */
     undo() {
         const executedUndo = this.pathContainer.undo();
         if (executedUndo) {
             this.draw(this.drawingContext, true);
+            this.emitAvailableActions();
         }
-
-        this.emitAvailableActions();
     }
 
+    /**
+     * Replays the last undone drawing stroke if it exists. Emits the number of undo and redo
+     * actions available if a redraw was executed.
+     *
+     * @return {void}
+     *
+     */
     redo() {
         const executedRedo = this.pathContainer.redo();
         if (executedRedo) {
             this.draw(this.drawingContext, true);
+            this.emitAvailableActions();
         }
-
-        this.emitAvailableActions();
     }
 
     //--------------------------------------------------------------------------
@@ -181,15 +191,20 @@ class DrawingThread extends AnnotationThread {
      */
     createAnnotationData(type, text) {
         const annotation = super.createAnnotationData(type, text);
-        const path = this.pathContainer.mapVisibleItems(DrawingPath.extractDrawingInfo);
+        const paths = this.pathContainer.getItems();
 
-        annotation.location.drawingPaths = path;
+        annotation.location.drawingPaths = paths.map(DrawingPath.extractDrawingInfo);
         return annotation;
     }
 
-    //--------------------------------------------------------------------------
-    // Private
-    //--------------------------------------------------------------------------
+    /**
+     * Draws the paths in the thread onto the given context.
+     *
+     * @protected
+     * @param {CanvasContext} context - The context to draw on
+     * @param {boolean} [clearCanvas] - A flag to clear the canvas before drawing.
+     * @return {void}
+     */
     draw(context, clearCanvas = false) {
         if (!context) {
             return;
@@ -206,7 +221,7 @@ class DrawingThread extends AnnotationThread {
         }
 
         context.beginPath();
-        this.pathContainer.mapVisibleItems((drawing) => drawing.drawPath(context));
+        this.pathContainer.applyToItems((drawing) => drawing.drawPath(context));
         if (this.pendingPath && !this.pendingPath.isEmpty()) {
             this.pendingPath.drawPath(context);
         }
@@ -214,6 +229,12 @@ class DrawingThread extends AnnotationThread {
         context.stroke();
     }
 
+    /**
+     * Emit an event containing the number of undo and redo actions that can be done.
+     *
+     * @protected
+     * @return {void}
+     */
     emitAvailableActions() {
         const availableActions = this.pathContainer.getNumberOfItems();
         this.emit('annotationevent', {

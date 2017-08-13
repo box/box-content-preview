@@ -517,31 +517,6 @@ describe('lib/annotations/Annotator', () => {
                 expect(annotator.annotationModeHandlers.length).equals(2);
             });
 
-            it('should bind draw mode handlers', () => {
-                sandbox.stub(annotator, 'createAnnotationThread').returns(drawingThread);
-
-                const postButtonEl = {
-                    addEventListener: sandbox.stub(),
-                    removeEventListener: sandbox.stub()
-                };
-                sandbox.stub(annotator.previewUI, 'getAnnotateButton').returns(null);
-                const locationHandler = (() => {});
-
-                sandbox.stub(annotatorUtil, 'eventToLocationHandler').returns(locationHandler);
-
-                annotator.bindModeListeners(TYPES.draw);
-
-                expect(annotator.annotatedElement.addEventListener).to.be.calledWith(
-                    sinon.match.string,
-                    locationHandler
-                ).thrice;
-                expect(postButtonEl.addEventListener).to.not.be.calledWith(
-                    'click',
-                    sinon.match.func
-                );
-                expect(annotator.annotationModeHandlers.length).equals(3);
-            });
-
             it('should bind draw mode click handlers if post button exists', () => {
                 sandbox.stub(annotator, 'createAnnotationThread').returns(drawingThread);
 
@@ -564,7 +539,7 @@ describe('lib/annotations/Annotator', () => {
                     'click',
                     sinon.match.func
                 );
-                expect(annotator.annotationModeHandlers.length).equals(4);
+                expect(annotator.annotationModeHandlers.length).equals(6);
             });
         });
 
