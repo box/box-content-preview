@@ -504,7 +504,7 @@ class Annotator extends EventEmitter {
                     return;
                 }
 
-                // Bind events on   valid annotation thread
+                // Bind events on valid annotation thread
                 const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
                 this.bindCustomListenersOnThread(thread);
             });
