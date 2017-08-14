@@ -345,6 +345,7 @@ describe('lib/annotations/Annotator', () => {
                 stubs.threadPromise = Promise.resolve(threadMap);
                 stubs.serviceMock.expects('getThreadMap').returns(stubs.threadPromise);
                 sandbox.stub(annotator, 'emit');
+                sandbox.stub(annotator, 'isModeAnnotatable').returns(true);
             });
 
             it('should reset and create a new thread map by fetching annotation data from the server', () => {
@@ -357,7 +358,7 @@ describe('lib/annotations/Annotator', () => {
                 return stubs.threadPromise.then(() => {
                     expect(Object.keys(annotator.threads).length === 0).to.be.true;
                     expect(annotator.createAnnotationThread).to.be.calledTwice;
-                    expect(annotator.bindCustomListenersOnThread).to.be.calledOnce;
+                    expect(annotator.bindCustomListenersOnThread).to.be.calledTwice;
                     expect(result).to.be.an.object;
                 });
             });
@@ -459,6 +460,11 @@ describe('lib/annotations/Annotator', () => {
                 stubs.threadMock.expects('addListener').withArgs('threadcleanup', sinon.match.func);
                 annotator.bindCustomListenersOnThread(stubs.thread);
             });
+
+            it('should do nothing when given thread is empty', () => {
+                expect(annotator.bindCustomListenersOnThread).to.not.throw(undefined);
+                expect(annotator.bindCustomListenersOnThread).to.not.throw(null);
+            })
         });
 
         describe('unbindCustomListenersOnThread()', () => {
