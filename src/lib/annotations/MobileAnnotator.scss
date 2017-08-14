@@ -209,8 +209,8 @@ $tablet: "(min-width: 768px)";
 
             &:first-child::after {
                 border-right: 1px solid $seesee;
-                content: "";
                 bottom: 17px;
+                content: "";
                 height: 25px;
                 left: 50%;
                 position: absolute;
