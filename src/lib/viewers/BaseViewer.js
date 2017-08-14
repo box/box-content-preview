@@ -677,6 +677,11 @@ class BaseViewer extends EventEmitter {
         });
         this.annotator.init(this.scale);
 
+        // Add a custom listener for entering/exit annotations mode using the app's custom annotations buttons
+        this.addListener('toggleannotationmode', (data) => {
+            this.annotator.toggleAnnotationHandler(data);
+        });
+
         // Add a custom listener for events related to scaling/orientation changes
         this.addListener('scale', (data) => {
             this.annotator.emit('scaleAnnotations', data);

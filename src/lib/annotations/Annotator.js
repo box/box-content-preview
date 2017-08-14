@@ -327,6 +327,10 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     toggleAnnotationHandler(mode, event = {}) {
+        if (!this.isModeAnnotatable(mode)) {
+            return;
+        }
+
         this.destroyPendingThreads();
 
         // No specific mode available for annotation type

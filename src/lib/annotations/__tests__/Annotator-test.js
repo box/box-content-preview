@@ -293,6 +293,7 @@ describe('lib/annotations/Annotator', () => {
                 stubs.disable = sandbox.stub(annotator, 'disableAnnotationMode');
                 stubs.enable = sandbox.stub(annotator, 'enableAnnotationMode');
                 sandbox.stub(annotator.previewUI, 'getAnnotateButton');
+                stubs.isAnnotatable = sandbox.stub(annotator, 'isModeAnnotatable').returns(true);
 
                 annotator.modeButtons = {
                     point: { selector: 'point_btn' },
@@ -304,11 +305,17 @@ describe('lib/annotations/Annotator', () => {
                 annotator.modeButtons = {};
             });
 
+            it('should do nothing if specified annotation type is not annotatable', () => {
+                stubs.isAnnotatable.returns(false);
+                annotator.toggleAnnotationHandler('bleh');
+                expect(stubs.destroyStub).to.not.be.called;
+            });
+
             it('should do nothing if specified annotation type does not have a mode button', () => {
                 annotator.toggleAnnotationHandler(TYPES.highlight);
                 expect(stubs.destroyStub).to.be.called;
-                expect(stubs.exitAnnotationModes)
-            })
+                expect(stubs.exitModes).to.not.be.called;
+            });
 
             it('should turn annotation mode on if it is off', () => {
                 stubs.annotationMode.returns(false);
