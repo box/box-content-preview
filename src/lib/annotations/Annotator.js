@@ -520,12 +520,13 @@ class Annotator extends EventEmitter {
             Object.keys(threadMap).forEach((threadID) => {
                 const annotations = threadMap[threadID];
                 const firstAnnotation = annotations[0];
+                if (!firstAnnotation || !this.isModeAnnotatable(firstAnnotation.type)) {
+                    return;
+                }
 
                 // Bind events on valid annotation thread
                 const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
-                if (thread) {
-                    this.bindCustomListenersOnThread(thread);
-                }
+                this.bindCustomListenersOnThread(thread);
             });
 
             this.emit('annotationsfetched');
@@ -623,6 +624,10 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     bindCustomListenersOnThread(thread) {
+        if (!thread) {
+            return;
+        }
+
         // Thread was deleted, remove from thread map
         thread.addListener('threaddeleted', () => {
             const page = thread.location.page || 1;

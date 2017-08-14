@@ -40,6 +40,7 @@ const languages = isRelease
         'en-CA',
         'en-GB',
         'en-US',
+        'en-x-pseudo',
         'da-DK',
         'de-DE',
         'es-ES',
