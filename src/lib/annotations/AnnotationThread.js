@@ -251,15 +251,10 @@ class AnnotationThread extends EventEmitter {
      */
     createDialog() {}
 
-    //--------------------------------------------------------------------------
-    // Protected
-    //--------------------------------------------------------------------------
-
     /**
      * Sets up the thread. Creates HTML for annotation indicator, sets
      * appropriate dialog, and binds event listeners.
      *
-     * @protected
      * @return {void}
      */
     setup() {
@@ -282,7 +277,6 @@ class AnnotationThread extends EventEmitter {
     /**
      * Sets up indicator element.
      *
-     * @protected
      * @return {void}
      */
     setupElement() {
@@ -293,7 +287,6 @@ class AnnotationThread extends EventEmitter {
     /**
      * Binds DOM event listeners for the thread.
      *
-     * @protected
      * @return {void}
      */
     bindDOMListeners() {
@@ -312,7 +305,6 @@ class AnnotationThread extends EventEmitter {
     /**
      * Unbinds DOM event listeners for the thread.
      *
-     * @protected
      * @return {void}
      */
     unbindDOMListeners() {
@@ -331,7 +323,6 @@ class AnnotationThread extends EventEmitter {
     /**
      * Binds custom event listeners for the dialog.
      *
-     * @protected
      * @return {void}
      */
     bindCustomListenersOnDialog() {
@@ -347,7 +338,6 @@ class AnnotationThread extends EventEmitter {
     /**
      * Unbinds custom event listeners for the dialog.
      *
-     * @protected
      * @return {void}
      */
     unbindCustomListenersOnDialog() {
@@ -363,7 +353,6 @@ class AnnotationThread extends EventEmitter {
     /**
      * Destroys mobile and pending/pending-active annotation threads
      *
-     * @protected
      * @return {void}
      */
     cancelUnsavedAnnotation() {

@@ -243,16 +243,11 @@ class AnnotationDialog extends EventEmitter {
      */
     position() {}
 
-    //--------------------------------------------------------------------------
-    // Protected
-    //--------------------------------------------------------------------------
-
     /**
      * Sets up the dialog element.
      *
      * @param {Annotation[]} annotations - to show in the dialog
      * @return {void}
-     * @protected
      */
     setup(annotations) {
         // Generate HTML of dialog
@@ -284,7 +279,6 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Binds DOM event listeners.
      *
-     * @protected
      * @return {void}
      */
     bindDOMListeners() {
@@ -302,7 +296,6 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Unbinds DOM event listeners.
      *
-     * @protected
      * @return {void}
      */
     unbindDOMListeners() {
@@ -320,7 +313,6 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Keydown handler for dialog.
      *
-     * @protected
      * @param {Event} event - DOM event
      * @return {void}
      */
@@ -341,7 +333,6 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Stops propagation of DOM event.
      *
-     * @protected
      * @param {Event} event - DOM event
      * @return {void}
      */
@@ -352,7 +343,6 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Mouseenter handler. Clears hide timeout.
      *
-     * @protected
      * @return {void}
      */
     mouseenterHandler() {
@@ -373,7 +363,6 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Mouseleave handler. Hides dialog if we aren't creating the first one.
      *
-     * @protected
      * @return {void}
      */
     mouseleaveHandler() {
@@ -385,7 +374,6 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Click handler on dialog.
      *
-     * @protected
      * @param {Event} event - DOM event
      * @return {void}
      */

@@ -158,7 +158,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Destroys the viewer
      *
-     * @protected
      * @return {void}
      */
     destroy() {
@@ -200,7 +199,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Loads content.
      *
-     * @protected
      * @return {void}
      */
     load() {
@@ -210,7 +208,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Sets a timeout for loading.
      *
-     * @protected
      * @emits Error
      * @return {void}
      */
@@ -242,7 +239,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Emits error event with refresh message.
      *
-     * @protected
      * @emits error
      * @param {Error} [err] - Optional error with message
      * @return {void}
@@ -254,7 +250,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Tells if the content is loaded or not
      *
-     * @protected
      * @return {boolean} true if loaded
      */
     isLoaded() {
@@ -264,7 +259,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Tells if preview destroyed
      *
-     * @protected
      * @return {boolean} true if destroyed
      */
     isDestroyed() {
@@ -274,7 +268,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Appends auth params to the content url
      *
-     * @protected
      * @param {string} url - url to attach param to
      * @return {string} url with appended auth params
      */
@@ -288,7 +281,6 @@ class BaseViewer extends EventEmitter {
      * Prioritizes using the provided asset over
      * using the asset name provided from preview
      *
-     * @protected
      * @param {string} template - url template to attach param to
      * @param {string|void} [asset] - optional asset name needed to access file
      * @return {string} content url
@@ -302,7 +294,6 @@ class BaseViewer extends EventEmitter {
      * Prioritizes using the provided asset over
      * using the asset name provided from preview
      *
-     * @protected
      * @param {string} template - url template to attach param to
      * @param {string|void} [asset] - optional asset name needed to access file
      * @return {string} content url
@@ -314,7 +305,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Adds headers needed for an XHR fetch
      *
-     * @protected
      * @param {Object} [headers] - optional existing headers
      * @return {Object} fetch headers
      */
@@ -352,7 +342,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Enters or exits fullscreen
      *
-     * @protected
      * @return {void}
      */
     toggleFullscreen() {
@@ -376,7 +365,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Resizing logic
      *
-     * @protected
      * @emits resize
      * @return {void}
      */
@@ -391,7 +379,6 @@ class BaseViewer extends EventEmitter {
      * Function to tell preview if navigation arrows
      * should be shown and won't intefere with viewer
      *
-     * @protected
      * @return {boolean} true
      */
     allowNavigationArrows() {
@@ -401,7 +388,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Emits a generic viewer event
      *
-     * @protected
      * @emits viewerevent
      * @param {string} event - Event name
      * @param {Object} data - Event data
@@ -424,7 +410,6 @@ class BaseViewer extends EventEmitter {
      * Although W3 strongly discourages the prevention of pinch to zoom,
      * we still meet the WCAG's requirement of a 200% zoom on text.
      *
-     * @protected
      * @param {Event} event - object
      * @return {void}
      */
@@ -454,7 +439,6 @@ class BaseViewer extends EventEmitter {
      * Handles updates to the pinch in order to determine whether the user
      * was pinching in or out. Used only by non iOS browsers
      *
-     * @protected
      * @param {Event} event - object
      * @return {void}
      */
@@ -471,7 +455,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Zooms the document in or out depending on the scale of the pinch
      *
-     * @protected
      * @param {Event} event - object
      * @return {void}
      */
@@ -511,7 +494,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Retrieves the value of a viewer option.
      *
-     * @protected
      * @param {string} option - to get
      * @return {Object} Value of a viewer option
      */
@@ -526,7 +508,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Loads assets needed for a viewer
      *
-     * @protected
      * @param {Array} [js] - js assets
      * @param {Array} [css] - css assets
      * @return {Promise} Promise to load scripts
@@ -546,7 +527,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Prefetches assets needed for a viewer
      *
-     * @protected
      * @param {Array} [js] - js assets
      * @param {Array} [css] - css assets
      * @return {void}
@@ -626,7 +606,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Loads the appropriate annotator and loads the file's annotations
      *
-     * @protected
      * @return {void}
      */
     loadAnnotator() {
@@ -651,7 +630,6 @@ class BaseViewer extends EventEmitter {
     /**
      * Initializes annotations.
      *
-     * @protected
      * @return {void}
      */
     initAnnotations() {

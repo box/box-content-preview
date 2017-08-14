@@ -184,7 +184,6 @@ class VideoBaseViewer extends MediaBaseViewer {
      * Function to tell preview if navigation arrows
      * should be shown and won't intefere with viewer
      *
-     * @protected
      * @return {boolean} true if arrows should be shown
      */
     allowNavigationArrows() {
@@ -195,7 +194,6 @@ class VideoBaseViewer extends MediaBaseViewer {
      * Darkens the background of preview.
      * Good for having high contrast videos.
      *
-     * @protected
      * @return {void}
      */
     lowerLights() {

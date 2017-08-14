@@ -111,7 +111,6 @@ class TextBaseViewer extends BaseViewer {
      * Loads controls for zooming and fullscreen.
      *
      * @return {void}
-     * @protected
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
@@ -131,7 +130,6 @@ class TextBaseViewer extends BaseViewer {
      *
      * @override
      * @return {void}
-     * @protected
      */
     resize() {
         super.resize();
@@ -142,7 +140,6 @@ class TextBaseViewer extends BaseViewer {
      *
      * @param {string} key - keydown key
      * @return {boolean} consumed or not
-     * @protected
      */
     onKeydown(key) {
         // Return false when media controls are not ready or are focused

@@ -467,14 +467,9 @@ class Annotator extends EventEmitter {
     getAnnotatedEl(containerEl) {}
     /* eslint-enable no-unused-vars */
 
-    //--------------------------------------------------------------------------
-    // Protected
-    //--------------------------------------------------------------------------
-
     /**
      * Annotations setup.
      *
-     * @protected
      * @return {void}
      */
     setupAnnotations() {
@@ -489,7 +484,6 @@ class Annotator extends EventEmitter {
      * Fetches persisted annotations, creates threads as needed, and generates
      * an in-memory map of page to threads.
      *
-     * @protected
      * @return {Promise} Promise for fetching saved annotations
      */
     fetchAnnotations() {
@@ -527,7 +521,6 @@ class Annotator extends EventEmitter {
      * needs to bind event listeners to the DOM in the normal state (ie not
      * in any annotation mode).
      *
-     * @protected
      * @return {void}
      */
     unbindDOMListeners() {}
@@ -535,7 +528,6 @@ class Annotator extends EventEmitter {
     /**
      * Binds custom event listeners for the Annotation Service.
      *
-     * @protected
      * @return {void}
      */
     bindCustomListenersOnService() {
@@ -585,7 +577,6 @@ class Annotator extends EventEmitter {
     /**
      * Unbinds custom event listeners for the Annotation Service.
      *
-     * @protected
      * @return {void}
      */
     unbindCustomListenersOnService() {
@@ -599,7 +590,6 @@ class Annotator extends EventEmitter {
     /**
      * Binds custom event listeners for a thread.
      *
-     * @protected
      * @param {AnnotationThread} thread - Thread to bind events to
      * @return {void}
      */
@@ -631,7 +621,6 @@ class Annotator extends EventEmitter {
     /**
      * Unbinds custom event listeners for the thread.
      *
-     * @protected
      * @param {AnnotationThread} thread - Thread to bind events to
      * @return {void}
      */
@@ -643,7 +632,6 @@ class Annotator extends EventEmitter {
     /**
      * Binds event listeners for annotation modes.
      *
-     * @protected
      * @param {string} mode - Current annotation mode
      * @return {void}
      */
@@ -708,7 +696,6 @@ class Annotator extends EventEmitter {
      * Event handler for adding a point annotation. Creates a point annotation
      * thread at the clicked location.
      *
-     * @protected
      * @param {Event} event - DOM event
      * @return {void}
      */
@@ -748,7 +735,6 @@ class Annotator extends EventEmitter {
     /**
      * Unbinds event listeners for annotation modes.
      *
-     * @protected
      * @return {void}
      */
     unbindModeListeners() {
@@ -761,7 +747,6 @@ class Annotator extends EventEmitter {
     /**
      * Adds thread to in-memory map.
      *
-     * @protected
      * @param {AnnotationThread} thread - Thread to add
      * @return {void}
      */
@@ -775,7 +760,6 @@ class Annotator extends EventEmitter {
     /**
      * Returns whether or not annotator is in the specified annotation mode.
      *
-     * @protected
      * @param {string} mode - Current annotation mode
      * @return {boolean} Whether or not in the specified annotation mode
      */
@@ -790,7 +774,6 @@ class Annotator extends EventEmitter {
     /**
      * Orient annotations to the correct scale and orientation of the annotated document.
      *
-     * @protected
      * @param {Object} data - Scale and orientation values needed to orient annotations.
      * @return {void}
      */
