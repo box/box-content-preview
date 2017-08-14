@@ -36,6 +36,8 @@ const ANNOTATION_TYPE_DRAW = 'draw';
 const ANNOTATION_TYPE_POINT = 'point';
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
+const ANNOTATION_MODE_ENTER = 'annotationmodeenter';
+const ANNOTATION_MODE_EXIT = 'annotationmodeexit';
 const ANNOTATION_BUTTONS = {
     point: {
         title: __('annotation_point_toggle'),
@@ -165,21 +167,6 @@ class BaseViewer extends EventEmitter {
                 repStatus.removeListener('conversionpending', this.resetLoadTimeout);
                 repStatus.destroy();
             });
-        }
-
-        const { container } = this.options;
-        if (container) {
-            const pointAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
-            const drawAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
-            if (pointAnnotateButtonEl) {
-                const handler = this.getAnnotationModeClickHandler('point');
-                pointAnnotateButtonEl.removeEventListener('click', handler);
-            }
-
-            if (drawAnnotateButtonEl) {
-                const handler = this.getAnnotationModeClickHandler('draw');
-                drawAnnotateButtonEl.removeEventListener('click', handler);
-            }
         }
 
         fullscreen.removeAllListeners();
@@ -651,19 +638,13 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        if (this.isAnnotatable()) {
+        if (this.areAnnotationsEnabled()) {
             const { file } = this.options;
-
-            // Users can currently only view annotations on mobile
             this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
+
             if (this.canAnnotate) {
-                // Show the annotate button for all enabled types for the
-                // current viewer
-                this.annotatorConf.TYPE.forEach((type) => {
-                    this.showModeAnnotateButton(type, ANNOTATION_BUTTONS);
-                });
+                this.initAnnotations();
             }
-            this.initAnnotations();
         }
     }
 
@@ -696,15 +677,6 @@ class BaseViewer extends EventEmitter {
         });
         this.annotator.init(this.scale);
 
-        // Disables controls during annotation mode
-        this.addListener('togglepointannotationmode', () => {
-            this.annotator.togglePointAnnotationHandler();
-        });
-
-        this.addListener('toggledrawannotationmode', () => {
-            this.annotator.toggleDrawAnnotationHandler();
-        });
-
         // Add a custom listener for events related to scaling/orientation changes
         this.addListener('scale', (data) => {
             this.annotator.emit('scaleAnnotations', data);
@@ -712,26 +684,6 @@ class BaseViewer extends EventEmitter {
 
         // Add a custom listener for events emmited by the annotator
         this.annotator.addListener('annotatorevent', this.handleAnnotatorNotifications);
-    }
-
-    /**
-     * Returns whether or not viewer both supports annotations and has
-     * annotations enabled. If an optional type is passed in, we check if that
-     * type of annotation is allowed.
-     *
-     * @param {string} [type] - Type of annotation
-     * @return {boolean} Whether or not viewer is annotatable
-     */
-    isAnnotatable(type) {
-        const { TYPE: annotationTypes } = this.annotatorConf;
-        if (type && annotationTypes) {
-            if (!annotationTypes.some((annotationType) => type === annotationType)) {
-                return false;
-            }
-        }
-
-        // Return whether or not annotations are enabled for this viewer
-        return this.areAnnotationsEnabled();
     }
 
     /**
@@ -751,47 +703,6 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Shows the annotate button for the specified mode
-     *
-     * @param {string} currentMode - Annotation mode
-     * @param {Object[]} modeButtons - Annotation modes which require buttons
-     * @return {void}
-     */
-    showModeAnnotateButton(currentMode, modeButtons) {
-        const mode = modeButtons[currentMode];
-        if (!mode || !this.isAnnotatable(currentMode)) {
-            return;
-        }
-
-        const { container } = this.options;
-        const annotateButtonEl = container.querySelector(mode.selector);
-        if (annotateButtonEl) {
-            annotateButtonEl.title = mode.title;
-            annotateButtonEl.classList.remove(CLASS_HIDDEN);
-
-            const handler = this.getAnnotationModeClickHandler(currentMode);
-            annotateButtonEl.addEventListener('click', handler);
-        }
-    }
-
-    /**
-     * Returns click handler for toggling annotation mode.
-     *
-     * @param {string} mode - Target annotation mode
-     * @return {Function|null} Click handler
-     */
-    getAnnotationModeClickHandler(mode) {
-        if (!mode || !this.isAnnotatable(mode)) {
-            return null;
-        }
-
-        const eventName = `toggle${mode}annotationmode`;
-        return () => {
-            this.emit(eventName);
-        };
-    }
-
-    /**
      * Handle events emitted by the annotator
      *
      * @private
@@ -803,7 +714,7 @@ class BaseViewer extends EventEmitter {
     handleAnnotatorNotifications(data) {
         /* istanbul ignore next */
         switch (data.event) {
-            case 'annotationmodeenter':
+            case ANNOTATION_MODE_ENTER:
                 this.disableViewerControls();
 
                 if (data.data === ANNOTATION_TYPE_POINT) {
@@ -812,7 +723,7 @@ class BaseViewer extends EventEmitter {
                     this.emit('notificationshow', __('notification_annotation_draw_mode'));
                 }
                 break;
-            case 'annotationmodeexit':
+            case ANNOTATION_MODE_EXIT:
                 this.enableViewerControls();
                 this.emit('notificationhide');
                 break;

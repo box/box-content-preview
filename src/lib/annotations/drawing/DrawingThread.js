@@ -38,7 +38,11 @@ class DrawingThread extends AnnotationThread {
      */
     constructor(data) {
         super(data);
+
         this.render = this.render.bind(this);
+        this.handleStart = this.handleStart.bind(this);
+        this.handleMove = this.handleMove.bind(this);
+        this.handleStop = this.handleStop.bind(this);
     }
 
     /**

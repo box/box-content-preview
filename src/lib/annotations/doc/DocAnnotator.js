@@ -427,16 +427,16 @@ class DocAnnotator extends Annotator {
 
         this.annotatedElement.addEventListener('mouseup', this.highlightMouseupHandler);
 
-        if (!this.annotationService.canAnnotate) {
+        if (!this.canAnnotate) {
             return;
         }
 
-        this.annotatedElement.addEventListener('dblclick', this.highlightMouseupHandler);
-        this.annotatedElement.addEventListener('mousedown', this.highlightMousedownHandler);
-        this.annotatedElement.addEventListener('contextmenu', this.highlightMousedownHandler);
         if (this.hasTouch && this.isMobile) {
             document.addEventListener('selectionchange', this.onSelectionChange);
         } else {
+            this.annotatedElement.addEventListener('dblclick', this.highlightMouseupHandler);
+            this.annotatedElement.addEventListener('mousedown', this.highlightMousedownHandler);
+            this.annotatedElement.addEventListener('contextmenu', this.highlightMousedownHandler);
             this.annotatedElement.addEventListener('mousemove', this.getHighlightMouseMoveHandler());
         }
     }
@@ -458,17 +458,18 @@ class DocAnnotator extends Annotator {
             this.highlightThrottleHandle = null;
         }
 
-        if (!this.annotationService.canAnnotate) {
+        if (!this.canAnnotate) {
             return;
         }
 
-        this.annotatedElement.removeEventListener('dblclick', this.highlightMouseupHandler);
-        this.annotatedElement.removeEventListener('mousedown', this.highlightMousedownHandler);
-        this.annotatedElement.removeEventListener('contextmenu', this.highlightMousedownHandler);
         if (this.hasTouch && this.isMobile) {
             document.removeEventListener('selectionchange', this.onSelectionChange);
         } else {
-            this.annotatedElement.removeEventListener('mousemove', this.getHighlightMouseMoveHandler());
+            this.annotatedElement.removeEventListener('dblclick', this.highlightMouseupHandler);
+            this.annotatedElement.removeEventListener('mousedown', this.highlightMousedownHandler);
+            this.annotatedElement.removeEventListener('contextmenu', this.highlightMousedownHandler);
+            this.annotatedElement.removeEventListener('mousemove', this.highlightMousemoveHandler);
+            this.highlightMousemoveHandler = null;
         }
     }
 
