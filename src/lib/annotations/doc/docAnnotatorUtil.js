@@ -157,9 +157,7 @@ export function isPointInPolyOpt(poly, x, y) {
  */
 export function getHighlightAndHighlightEls(highlighter, pageEl) {
     const highlight = highlighter.highlights[0];
-    // // Only grab highlights on the text layer
-    const textLayer = pageEl.querySelector('.textLayer');
-    const highlightEls = [].slice.call(textLayer.querySelectorAll('.rangy-highlight'), 0).filter((element) => {
+    const highlightEls = [].slice.call(pageEl.querySelectorAll('.rangy-highlight'), 0).filter((element) => {
         return element.tagName && element.tagName === 'SPAN' && element.textContent.trim() !== '';
     });
 
@@ -341,6 +339,21 @@ export function getQuadPoints(element, pageEl, scale) {
 export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
     const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints[quadPoints.length - 1];
     return [Math.max(x1, x2, x3, x4), Math.min(y1, y2, y3, y4)];
+}
+
+/**
+ * Check whether a selection is valid for creating a highlight from.
+ *
+ * @param {Selection} selection The selection object to test
+ * @return {boolean} True if the selection is valid for creating a highlight from
+ */
+export function isValidSelection(selection) {
+    const isInvalid =
+        selection.rangeCount <= 0 || // Check for an invalid range triggering selection
+        selection.isCollapsed || // Make sure the text is non-collapsed(or hidden)
+        selection.toString() === ''; // Empty can occur if there is conflict with element layout
+
+    return !isInvalid;
 }
 
 /**
