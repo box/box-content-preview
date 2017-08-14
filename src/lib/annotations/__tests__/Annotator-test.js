@@ -285,23 +285,6 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('isTypeEnabled()', () => {
-            it('should return true when option.TYPE includes the type being checked', () => {
-                annotator.options.TYPE = [TYPES.point, TYPES.draw];
-                expect(annotator.isTypeEnabled(TYPES.draw)).to.be.truthy;
-            });
-
-            it('should return false when option.TYPE does not include the type being checked', () => {
-                annotator.options.TYPE = [TYPES.point, TYPES.highlight];
-                expect(annotator.isTypeEnabled(TYPES.draw)).to.be.falsy;
-            });
-
-            it('should return false when option.TYPE does not exist', () => {
-                annotator.options.TYPE = undefined;
-                expect(annotator.isTypeEnabled(TYPES.draw)).to.be.falsy;
-            });
-        });
-
         describe('toggleAnnotationHandler()', () => {
             beforeEach(() => {
                 stubs.destroyStub = sandbox.stub(annotator, 'destroyPendingThreads');

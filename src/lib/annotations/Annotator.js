@@ -207,17 +207,6 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Returns true if the annotator has an annotation type enabled
-     *
-     * @param {string} type - Annotation type to check
-     * @return {boolean} Whether or not the annotation type is enabled
-     */
-    isTypeEnabled(type) {
-        const { annotator } = this.options || {};
-        return annotator.TYPE && annotator.TYPE.includes(type);
-    }
-
-    /**
      * Fetches and shows saved annotations.
      *
      * @return {void}
