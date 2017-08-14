@@ -649,6 +649,17 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
+     * Returns click handler for toggling annotation mode.
+     * TODO(@spramod): Remove this method after refactor
+     *
+     * @param {string} mode - Target annotation mode
+     * @return {Function|null} Click handler
+     */
+    getAnnotationModeClickHandler(mode) {
+        return this.annotator.getAnnotationModeClickHandler(mode);
+    }
+
+    /**
      * Initializes annotations.
      *
      * @protected
