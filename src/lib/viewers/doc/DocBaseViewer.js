@@ -470,14 +470,9 @@ class DocBaseViewer extends BaseViewer {
         return true;
     }
 
-    //--------------------------------------------------------------------------
-    // Protected
-    //--------------------------------------------------------------------------
-
     /**
      * Loads PDF.js with provided PDF.
      *
-     * @protected
      * @param {string} pdfUrl - The URL of the PDF to load
      * @return {Promise} Promise to initialize Viewer
      */
@@ -548,7 +543,6 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Re-sizing logic.
      *
-     * @protected
      * @override
      * @return {void}
      */
@@ -831,7 +825,6 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Binds DOM listeners for document viewer.
      *
-     * @protected
      * @return {void}
      */
     bindDOMListeners() {
@@ -867,7 +860,6 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Unbinds DOM listeners for document viewer.
      *
-     * @protected
      * @return {void}
      */
     unbindDOMListeners() {
@@ -896,7 +888,6 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Binds listeners for document controls. Overridden.
      *
-     * @protected
      * @return {void}
      */
     bindControlListeners() {}

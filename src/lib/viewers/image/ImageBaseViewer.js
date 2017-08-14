@@ -171,7 +171,6 @@ class ImageBaseViewer extends BaseViewer {
     /**
      * Binds DOM listeners for image viewers.
      *
-     * @protected
      * @return {void}
      */
     bindDOMListeners() {
@@ -194,7 +193,6 @@ class ImageBaseViewer extends BaseViewer {
     /**
      * Unbinds DOM listeners for image viewers.
      *
-     * @protected
      * @return {void}
      */
     unbindDOMListeners() {

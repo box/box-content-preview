@@ -108,7 +108,6 @@ class DashViewer extends VideoBaseViewer {
      * Returns shaka player assets.
      * Overriden by Video360.js
      *
-     * @protected
      * @return {void}
      */
     getJSAssets() {

@@ -123,17 +123,12 @@ class PresentationViewer extends DocBaseViewer {
         return hasXOverflow || hasYOverflow;
     }
 
-    //--------------------------------------------------------------------------
-    // Protected
-    //--------------------------------------------------------------------------
-
     /**
      * Loads PDF.js with provided PDF.
      *
      * @override
      * @param {string} pdfUrl The URL of the PDF to load
      * @return {void}
-     * @protected
      */
     initViewer(pdfUrl) {
         super.initViewer(pdfUrl);
@@ -149,7 +144,6 @@ class PresentationViewer extends DocBaseViewer {
     *
     * @override
     * @return {void}
-    * @protected
     */
     bindDOMListeners() {
         super.bindDOMListeners();
@@ -167,7 +161,6 @@ class PresentationViewer extends DocBaseViewer {
     *
     * @override
     * @return {void}
-    * @protected
     */
     unbindDOMListeners() {
         super.unbindDOMListeners();
@@ -185,7 +178,6 @@ class PresentationViewer extends DocBaseViewer {
      *
      * @override
      * @return {void}
-     * @protected
      */
     bindControlListeners() {
         super.bindControlListeners();

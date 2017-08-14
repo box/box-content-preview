@@ -122,7 +122,6 @@ class MediaBaseViewer extends BaseViewer {
     /**
      * Handler for meta data load for the media element.
      *
-     * @protected
      * @emits load
      * @return {void}
      */
@@ -145,7 +144,6 @@ class MediaBaseViewer extends BaseViewer {
     /**
      * Makes media wrapper (and contents) visible.
      *
-     * @protected
      * @return {void}
      */
     showMedia() {
@@ -239,7 +237,6 @@ class MediaBaseViewer extends BaseViewer {
      * Adds event listeners to the media controls.
      * Makes changes to the media element.
      *
-     * @protected
      * @return {void}
      */
     addEventListenersForMediaControls() {
@@ -428,7 +425,6 @@ class MediaBaseViewer extends BaseViewer {
     /**
      * Shows the loading indicator
      *
-     * @protected
      * @return {void}
      */
     showLoadingIcon() {
@@ -442,7 +438,6 @@ class MediaBaseViewer extends BaseViewer {
      * Adds event listeners to the media element.
      * Makes changes to the media controls.
      *
-     * @protected
      * @return {void}
      */
     addEventListenersForMediaElement() {
@@ -496,7 +491,6 @@ class MediaBaseViewer extends BaseViewer {
     /**
      * Handles keyboard events for media
      *
-     * @protected
      * @param {string} key - keydown key
      * @return {boolean} consumed or not
      */

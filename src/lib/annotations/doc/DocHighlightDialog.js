@@ -179,16 +179,11 @@ class DocHighlightDialog extends AnnotationDialog {
         }
     }
 
-    //--------------------------------------------------------------------------
-    // Protected
-    //--------------------------------------------------------------------------
-
     /**
      * Sets up the dialog element.
      *
      * @override
      * @return {void}
-     * @protected
      */
     setup(annotations) {
         // Only create an dialog element, if one doesn't already exist
@@ -268,7 +263,6 @@ class DocHighlightDialog extends AnnotationDialog {
      *
      * @override
      * @return {void}
-     * @protected
      */
     bindDOMListeners() {
         this.element.addEventListener('mousedown', this.mousedownHandler);
@@ -285,7 +279,6 @@ class DocHighlightDialog extends AnnotationDialog {
      *
      * @override
      * @return {void}
-     * @protected
      */
     unbindDOMListeners() {
         this.element.removeEventListener('mousedown', this.mousedownHandler);
@@ -303,7 +296,6 @@ class DocHighlightDialog extends AnnotationDialog {
      *
      * @override
      * @return {void}
-     * @protected
      */
     keydownHandler(event) {
         event.stopPropagation();
@@ -318,7 +310,6 @@ class DocHighlightDialog extends AnnotationDialog {
      *
      * @param {Event} event - DOM event
      * @return {void}
-     * @protected
      */
     mousedownHandler(event) {
         event.stopPropagation();

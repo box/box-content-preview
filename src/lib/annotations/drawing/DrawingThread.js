@@ -97,14 +97,9 @@ class DrawingThread extends AnnotationThread {
     handleStop(location) {}
     /* eslint-disable no-unused-vars */
 
-    //--------------------------------------------------------------------------
-    // Protected
-    //--------------------------------------------------------------------------
-
     /**
      * Set the drawing styles
      *
-     * @protected
      * @param {Object} config - The configuration Object
      * @param {number} config.scale - The document scale
      * @param {string} config.color - The brush color
@@ -126,7 +121,6 @@ class DrawingThread extends AnnotationThread {
      * Draw the pending path onto the DrawingThread CanvasContext. Should be used
      * in conjunction with requestAnimationFrame.
      *
-     * @protected
      * @param {number} timestamp - The time when the function was called;
      * @return {void}
      */
@@ -152,10 +146,6 @@ class DrawingThread extends AnnotationThread {
             this.pendingPath.drawPath(this.drawingContext);
         }
     }
-
-    //--------------------------------------------------------------------------
-    // Protected
-    //--------------------------------------------------------------------------
 
     /**
      * Create an annotation data object to pass to annotation service.

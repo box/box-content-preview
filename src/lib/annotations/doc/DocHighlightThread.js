@@ -279,15 +279,10 @@ class DocHighlightThread extends AnnotationThread {
         }
     }
 
-    //--------------------------------------------------------------------------
-    // Protected
-    //--------------------------------------------------------------------------
-
     /**
      * No-op setup element. Highlight threads have no HTML indicator since
      * they are drawn onto the canvas.
      *
-     * @protected
      * @override
      * @return {void}
      */
@@ -296,7 +291,6 @@ class DocHighlightThread extends AnnotationThread {
     /**
      * Binds custom event listeners for the dialog.
      *
-     * @protected
      * @override
      * @return {void}
      */
@@ -344,7 +338,6 @@ class DocHighlightThread extends AnnotationThread {
     /**
      * Unbinds custom event listeners for the dialog.
      *
-     * @protected
      * @override
      * @return {void}
      */

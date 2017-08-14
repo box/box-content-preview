@@ -389,14 +389,9 @@ class DocAnnotator extends Annotator {
         });
     }
 
-    //--------------------------------------------------------------------------
-    // Protected
-    //--------------------------------------------------------------------------
-
     /**
      * Annotations setup.
      *
-     * @protected
      * @override
      * @return {void}
      */
@@ -416,7 +411,6 @@ class DocAnnotator extends Annotator {
     /**
      * Binds DOM event listeners.
      *
-     * @protected
      * @override
      * @return {void}
      */
@@ -436,7 +430,6 @@ class DocAnnotator extends Annotator {
     /**
      * Unbinds DOM event listeners.
      *
-     * @protected
      * @override
      * @return {void}
      */
@@ -462,7 +455,6 @@ class DocAnnotator extends Annotator {
     /**
      * Binds custom event listeners for a thread.
      *
-     * @protected
      * @override
      * @param {AnnotationThread} thread - Thread to bind events to
      * @return {void}
@@ -481,7 +473,6 @@ class DocAnnotator extends Annotator {
     /**
      * Checks whether mouse is inside any dialog on the current page
      *
-     * @protected
      * @param {Event} event - Mouse event
      * @param {number} page - Current page number
      * @return {boolean} Whether or not mouse is inside a dialog on the page

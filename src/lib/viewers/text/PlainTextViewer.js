@@ -96,10 +96,6 @@ class PlainTextViewer extends TextBaseViewer {
         this.emit('printsuccess');
     }
 
-    //--------------------------------------------------------------------------
-    // Protected
-    //--------------------------------------------------------------------------
-
     /**
      * @inheritdoc
      */
@@ -143,7 +139,6 @@ class PlainTextViewer extends TextBaseViewer {
     /**
      * Finishes loading after text is highlighted.
      *
-     * @protected
      * @param {string} content - Text
      * @param {boolean} isHighlighted - Whether or not text is highlighted
      * @return {void}

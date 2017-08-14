@@ -68,7 +68,6 @@ class MarkdownViewer extends PlainTextViewer {
      * Finishes loading by parsing Markdown and highlighting any necessary code.
      *
      * @override
-     * @protected
      * @param {string} content - Markdown text
      * @return {void}
      */
@@ -91,7 +90,6 @@ class MarkdownViewer extends PlainTextViewer {
      * Loads controls for fullscreen. Markdown viewer doesn't have zoom in or out.
      *
      * @override
-     * @protected
      * @return {void}
      */
     loadUI() {
