@@ -4,7 +4,6 @@ import AnnotationDialog from '../AnnotationDialog';
 import * as annotatorUtil from '../annotatorUtil';
 import * as constants from '../annotationConstants';
 
-const CLASS_ANNOTATION_PLAIN_HIGHLIGHT = 'bp-plain-highlight';
 const CLASS_CANCEL_DELETE = 'cancel-delete-btn';
 const CLASS_CANNOT_ANNOTATE = 'cannot-annotate';
 const CLASS_REPLY_TEXTAREA = 'reply-textarea';
@@ -165,15 +164,15 @@ describe('lib/annotations/AnnotationDialog', () => {
             expect(dialog.element.classList.contains(CLASS_ANIMATE_DIALOG)).to.be.true;
         });
 
-        it('should hide the mobile header if a plain highlight', () => {
+        it('should reset the annotation dialog to be a plain highlight if no comments are present', () => {
             dialog.isMobile = true;
             dialog.highlightDialogEl = {};
-            dialog.hasComments = false;
+            sandbox.stub(dialog.element, 'querySelectorAll').withArgs('.annotation-comment').returns([]);
             stubs.show = sandbox.stub(annotatorUtil, 'showElement');
             stubs.bind = sandbox.stub(dialog, 'bindDOMListeners');
-
             dialog.show();
-            expect(dialog.element).to.have.class(CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
+
+            expect(dialog.element.classList.contains(constants.CLASS_ANNOTATION_PLAIN_HIGHLIGHT)).to.be.true;
         });
     });
 
@@ -195,7 +194,7 @@ describe('lib/annotations/AnnotationDialog', () => {
             dialog.hideMobileDialog();
             expect(stubs.hide).to.be.called;
             expect(stubs.unbind).to.be.called;
-            expect(stubs.cancel).to.not.be.called;
+            expect(stubs.cancel).to.be.called;
             expect(dialog.element.classList.contains(CLASS_ANIMATE_DIALOG)).to.be.false;
         });
 

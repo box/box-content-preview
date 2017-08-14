@@ -670,6 +670,7 @@ class BaseViewer extends EventEmitter {
             },
             fileVersionId,
             isMobile: this.isMobile,
+            hasTouch: this.hasTouch,
             locale: location.locale,
             previewUI: this.previewUI,
             modeButtons: ANNOTATION_BUTTONS

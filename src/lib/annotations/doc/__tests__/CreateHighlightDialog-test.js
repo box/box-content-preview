@@ -87,6 +87,7 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
         beforeEach(() => {
             dialog.show();
         });
+
         it('should do nothing if there is no UI element', () => {
             dialog.containerEl = null;
             const hideComment = sandbox.stub(dialog.commentBox, 'hide');
@@ -124,12 +125,11 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
             expect(hide).to.not.be.called;
         });
 
-        it('should remove events that stopPropagation() from occurring outside the dialog', () => {
+        it('should remove events that are bound to stopPropagation()', () => {
             const remove = sandbox.stub(dialog.containerEl, 'removeEventListener');
             dialog.destroy();
             expect(remove).to.be.calledWith('click');
             expect(remove).to.be.calledWith('mouseup');
-            expect(remove).to.be.calledWith('touchend');
             expect(remove).to.be.calledWith('dblclick');
         });
 
@@ -168,6 +168,45 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
             dialog.destroy();
             expect(destroy).to.be.called;
         });
+
+        it('should remove out all touch events, if touch enabled', () => {
+            dialog.destroy();
+
+            dialog.hasTouch = true;
+            dialog.isMobile = true;
+            dialog.show(document.createElement('div'));
+            const highlightCreateStub = sandbox.stub(dialog.highlightCreateEl, 'removeEventListener');
+            const commentCreateStub = sandbox.stub(dialog.commentCreateEl, 'removeEventListener');
+
+            const stubs = [
+                {
+                    stub: highlightCreateStub,
+                    args: ['touchstart', dialog.stopPropagation]
+                },
+                {
+                    stub: highlightCreateStub,
+                    args: ['touchend', dialog.onHighlightClick]
+                },
+                {
+                    stub: commentCreateStub,
+                    args: ['touchstart', dialog.stopPropagation]
+                },
+                {
+                    stub: commentCreateStub,
+                    args: ['touchend', dialog.onCommentClick]
+                },
+                {
+                    stub: sandbox.stub(dialog.containerEl, 'removeEventListener'),
+                    args: ['touchend', dialog.stopPropagation]
+                }
+            ];
+
+            dialog.destroy();
+
+            stubs.forEach((stub) => {
+                expect(stub.stub).to.be.calledWith(...stub.args);
+            });
+        });
     });
 
     describe('updatePosition()', () => {
@@ -194,7 +233,7 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
     describe('onHighlightClick()', () => {
         it('should invoke the "plain" highlight event', () => {
             const emit = sandbox.stub(dialog, 'emit');
-            dialog.onHighlightClick();
+            dialog.onHighlightClick({ preventDefault: () => {}, stopPropagation: () => {} });
             expect(emit).to.be.calledWith(CreateEvents.plain);
         });
     });
@@ -206,31 +245,31 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
 
         it('should invoke the "comment" highlight event', () => {
             const emit = sandbox.stub(dialog, 'emit');
-            dialog.onCommentClick();
+            dialog.onCommentClick({ preventDefault: () => {}, stopPropagation: () => {} });
             expect(emit).to.be.calledWith(CreateEvents.comment);
         });
 
         it('should show the comment box', () => {
             const show = sandbox.stub(dialog.commentBox, 'show');
-            dialog.onCommentClick();
+            dialog.onCommentClick({ preventDefault: () => {}, stopPropagation: () => {} });
             expect(show).to.be.called;
         });
 
         it('should focus on the comment box', () => {
             const focus = sandbox.stub(dialog.commentBox, 'focus');
-            dialog.onCommentClick();
+            dialog.onCommentClick({ preventDefault: () => {}, stopPropagation: () => {} });
             expect(focus).to.be.called;
         });
 
         it('should hide the highlight buttons', () => {
             const setVis = sandbox.stub(dialog, 'setButtonVisibility');
-            dialog.onCommentClick();
+            dialog.onCommentClick({ preventDefault: () => {}, stopPropagation: () => {} });
             expect(setVis).to.be.called;
         });
 
         it('should invoke update position', () => {
             const update = sandbox.stub(dialog, 'updatePosition');
-            dialog.onCommentClick();
+            dialog.onCommentClick({ preventDefault: () => {}, stopPropagation: () => {} });
             expect(update).to.be.called;
         });
     });
@@ -247,10 +286,16 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
             expect(emit).to.be.calledWith(CreateEvents.commentPost, text);
         });
 
-        it('should clear the comment box', () => {
+        it('should invoke clear() on the comment box', () => {
             const clear = sandbox.stub(dialog.commentBox, 'clear');
-            dialog.onCommentPost();
+            dialog.onCommentPost('A message');
             expect(clear).to.be.called;
+        });
+
+        it('should invoke blur() on the comment box', () => {
+            const blur = sandbox.stub(dialog.commentBox, 'blur');
+            dialog.onCommentPost('A message');
+            expect(blur).to.be.called;
         });
     });
 
