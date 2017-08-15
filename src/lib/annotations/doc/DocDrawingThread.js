@@ -114,7 +114,9 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     saveAnnotation(type, text) {
-        this.emit('threadcleanup');
+        this.emit('annotationevent', {
+            type: 'drawingcommit'
+        });
         this.reset();
 
         // Only make save request to server if there exist paths to save
