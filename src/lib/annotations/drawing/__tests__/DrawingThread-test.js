@@ -155,7 +155,7 @@ describe('lib/annotations/drawing/DrawingThread', () => {
         });
     });
 
-    describe('undo()', () => {
+    describe('redo()', () => {
         beforeEach(() => {
             stubs.draw = sandbox.stub(drawingThread, 'draw');
             stubs.emitAvailableActions = sandbox.stub(drawingThread, 'emitAvailableActions');

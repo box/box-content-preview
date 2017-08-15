@@ -75,7 +75,7 @@ class DrawingContainer {
     /**
      * Retrieve the visible items on the undo stack.
      *
-     * @return {Array} An copy of the undoStack as an array.
+     * @return {Array} A copy of the undoStack as an array.
      */
     getItems() {
         return this.undoStack.slice();

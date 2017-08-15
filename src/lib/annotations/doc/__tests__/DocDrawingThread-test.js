@@ -270,6 +270,42 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
     });
 
     describe('show()', () => {
+        beforeEach(() => {
+            sandbox.stub(docAnnotatorUtil, 'getPageEl');
+            sandbox.stub(docAnnotatorUtil, 'getContext');
+            sandbox.stub(docDrawingThread, 'checkAndHandleScaleUpdate');
+            sandbox.stub(docDrawingThread, 'setContextStyles');
+            sandbox.stub(docDrawingThread, 'draw');
+            docDrawingThread.pathContainer = {
+                applyToItems: sandbox.stub()
+            };
+        });
 
+        it('should do nothing when no element is assigned to the DocDrawingThread', () => {
+            docDrawingThread.annotatedElement = undefined;
+            docDrawingThread.location = 'loc';
+            docDrawingThread.show();
+            expect(docDrawingThread.checkAndHandleScaleUpdate).to.not.be.called;
+        });
+
+        it('should do nothing when no location is assigned to the DocDrawingThread', () => {
+            docDrawingThread.annotatedElement = 'annotatedEl';
+            docDrawingThread.location = undefined;
+            docDrawingThread.show();
+            expect(docDrawingThread.checkAndHandleScaleUpdate).to.not.be.called;
+        });
+
+        it('should draw the paths in the thread', () => {
+            docDrawingThread.annotatedElement = 'annotatedEl';
+            docDrawingThread.location = 'loc';
+            docDrawingThread.state = 'not pending';
+
+            docDrawingThread.show()
+            expect(docAnnotatorUtil.getPageEl).to.be.called;
+            expect(docAnnotatorUtil.getContext).to.be.called;
+            expect(docDrawingThread.checkAndHandleScaleUpdate).to.be.called;
+            expect(docDrawingThread.setContextStyles).to.be.called;
+            expect(docDrawingThread.draw).to.be.called;
+        });
     });
 });
