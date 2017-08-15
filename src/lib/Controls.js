@@ -24,9 +24,6 @@ class Controls {
     /** @property {boolean} - Whether browser supports touch */
     hasTouch = Browser.hasTouch();
 
-    /** @property {HTMLElement} - Page num input element */
-    pageNumInputEl;
-
     /**
      * [constructor]
      *

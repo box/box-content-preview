@@ -3,6 +3,7 @@ import throttle from 'lodash.throttle';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
+import PageControls from '../../PageControls';
 import DocFindBar from './DocFindBar';
 import fullscreen from '../../Fullscreen';
 import Popup from '../../Popup';
@@ -695,8 +696,8 @@ class DocBaseViewer extends BaseViewer {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
+        this.pageControls = new PageControls(this.controls, this.prevPage, this.nextPage);
         this.bindControlListeners();
-        this.pageControls.addListener('setpage', this.setPage);
     }
 
     //--------------------------------------------------------------------------

@@ -153,6 +153,18 @@ describe('lib/viewers/doc/DocumentViewer', () => {
     });
 
     describe('bindControlListeners()', () => {
+        beforeEach(() => {
+            doc.pdfViewer = {
+                pagesCount: 4,
+                cleanup: sandbox.stub()
+            };
+
+            doc.pageControls = {
+                init: sandbox.stub(),
+                addListener: sandbox.stub()
+            };
+        });
+
         it('should add the correct controls', () => {
             doc.bindControlListeners();
             expect(doc.controls.add).to.be.calledWith(
@@ -162,20 +174,10 @@ describe('lib/viewers/doc/DocumentViewer', () => {
                 ICON_ZOOM_OUT
             );
             expect(doc.controls.add).to.be.calledWith(__('zoom_in'), doc.zoomIn, 'bp-doc-zoom-in-icon', ICON_ZOOM_IN);
-            expect(doc.controls.add).to.be.calledWith(
-                __('previous_page'),
-                doc.previousPage,
-                'bp-doc-previous-page-icon bp-previous-page',
-                ICON_DROP_UP
-            );
 
-            expect(doc.controls.add).to.be.calledWith(__('enter_page_num'), doc.showPageNumInput, 'bp-doc-page-num');
-            expect(doc.controls.add).to.be.calledWith(
-                __('next_page'),
-                doc.nextPage,
-                'bp-doc-next-page-icon bp-next-page',
-                ICON_DROP_DOWN
-            );
+            expect(doc.pageControls.init).to.be.called;
+            expect(doc.pageControls.addListener).to.be.calledWith('setpage', sinon.match.func);
+
             expect(doc.controls.add).to.be.calledWith(
                 __('enter_fullscreen'),
                 doc.toggleFullscreen,
