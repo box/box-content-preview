@@ -157,9 +157,7 @@ export function isPointInPolyOpt(poly, x, y) {
  */
 export function getHighlightAndHighlightEls(highlighter, pageEl) {
     const highlight = highlighter.highlights[0];
-    // // Only grab highlights on the text layer
-    const textLayer = pageEl.querySelector('.textLayer');
-    const highlightEls = [].slice.call(textLayer.querySelectorAll('.rangy-highlight'), 0).filter((element) => {
+    const highlightEls = [].slice.call(pageEl.querySelectorAll('.rangy-highlight'), 0).filter((element) => {
         return element.tagName && element.tagName === 'SPAN' && element.textContent.trim() !== '';
     });
 
@@ -344,6 +342,21 @@ export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
 }
 
 /**
+ * Check whether a selection is valid for creating a highlight from.
+ *
+ * @param {Selection} selection The selection object to test
+ * @return {boolean} True if the selection is valid for creating a highlight from
+ */
+export function isValidSelection(selection) {
+    const isInvalid =
+        selection.rangeCount <= 0 || // Check for an invalid range triggering selection
+        selection.isCollapsed || // Make sure the text is non-collapsed(or hidden)
+        selection.toString() === ''; // Empty can occur if there is conflict with element layout
+
+    return !isInvalid;
+}
+
+/**
  * Gets the context an annotation should be drawn on.
  *
  * @param {HTMLElement} pageEl - The DOM element for the current page
@@ -393,8 +406,8 @@ export function getContext(pageEl, annotationLayerClass, paddingTop, paddingBott
  * Gets the current page element.
  *
  * @private
- * @param {HTMLElement} annotatedEl HTML Element being annotated on
- * @param {number} pageNum Page number
+ * @param {HTMLElement} annotatedEl - HTML Element being annotated on
+ * @param {number} pageNum - Page number
  * @return {HTMLElement|null} Page element if it exists, otherwise null
  */
 export function getPageEl(annotatedEl, pageNum) {

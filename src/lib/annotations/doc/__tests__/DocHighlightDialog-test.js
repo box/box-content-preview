@@ -11,6 +11,7 @@ let dialog;
 const sandbox = sinon.sandbox.create();
 let stubs = {};
 
+const CLASS_HIGHLIGHT_DIALOG = 'bp-highlight-dialog';
 const CLASS_TEXT_HIGHLIGHTED = 'bp-is-text-highlighted';
 const CLASS_HIGHLIGHT_LABEL = 'bp-annotation-highlight-label';
 const DATA_TYPE_HIGHLIGHT_BTN = 'highlight-btn';
@@ -84,6 +85,121 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
             expect(highlightLabelEl).to.contain.html('Bob highlighted');
             expect(dialog.position).to.be.called;
         });
+    });
+
+    describe('postAnnotation()', () => {
+        beforeEach(() => {
+            stubs.postFunc = AnnotationDialog.prototype.postAnnotation;
+            Object.defineProperty(AnnotationDialog.prototype, 'postAnnotation', { value: sandbox.stub() });
+        });
+
+        afterEach(() => {
+            Object.defineProperty(AnnotationDialog.prototype, 'postAnnotation', { value: stubs.postFunc });
+        });
+        it('should do nothing if not text is present', () => {
+            const headerQuery = sandbox.stub(dialog.element, 'querySelector').withArgs('.bp-annotation-mobile-header');
+            dialog.postAnnotation(' ');
+
+            expect(headerQuery).to.not.be.called;
+        });
+
+        it('should not modify mobile ui there is no mobile header present', () => {
+            const headerQuery = sandbox.stub(dialog.element, 'querySelector').withArgs('.bp-annotation-mobile-header').returns(null);
+            const elRemove = sandbox.stub(dialog.element.classList, 'remove');
+            dialog.postAnnotation('This is the water and this is the well.');
+
+            expect(elRemove).to.not.be.called;
+        });
+
+        it('should show the mobile header', () => {
+            dialog.isMobile = true;
+            const headerEl = {
+                classList: {
+                    remove: sandbox.stub()
+                }
+            };
+            const headerQuery = sandbox.stub(dialog.element, 'querySelector').withArgs('.bp-annotation-mobile-header');
+            dialog.postAnnotation('Drink full and descend.');
+        });
+
+        it('should remove the plain highlight class from the dialog', () => {
+            dialog.isMobile = true;
+            const headerEl = {
+                classList: {
+                    remove: sandbox.stub()
+                }
+            };
+            const headerQuery = sandbox.stub(dialog.element, 'querySelector')
+                .withArgs('.bp-annotation-mobile-header').returns(headerEl);
+            const elRemove = sandbox.stub(dialog.element.classList, 'remove');
+            dialog.postAnnotation('The horse is the white of the eyes, dark within.');
+
+            expect(elRemove).to.be.calledWith(constants.CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
+        });
+    });
+
+    describe('hideCommentsDialog()', () => {
+        it('should do nothing if no comment dialog is present', () => {
+            const classAdd = sandbox.stub(dialog.element.classList, 'add');
+            dialog.commentsDialogEl = null;
+            dialog.hideCommentsDialog();
+
+            expect(classAdd).to.not.be.called;
+        });
+
+        it('should do nothing if no highlight dialog present', () => {
+            const classAdd = sandbox.stub(dialog.element.classList, 'add');
+            dialog.highlightDialogEl = null;
+            dialog.hideCommentsDialog();
+
+            expect(classAdd).to.not.be.called;
+        });
+
+        it('should do nothing if the comment dialog is already hidden', () => {
+            const classAdd = sandbox.stub(dialog.element.classList, 'add');
+            dialog.highlightDialogEl = {};
+            sandbox.stub(dialog.commentsDialogEl.classList, 'contains').withArgs(constants.CLASS_HIDDEN).returns(true);
+            dialog.hideCommentsDialog();
+
+            expect(classAdd).to.not.be.called;
+        });
+
+        it('should hide the comment dialog', () => {
+            dialog.highlightDialogEl = {
+                classList: {
+                    remove: () => {}
+                }
+            };
+            dialog.hideCommentsDialog();
+
+            expect(dialog.commentsDialogEl.classList.contains(constants.CLASS_HIDDEN)).to.be.true;
+        });
+
+        it('should add Highlight Dialog class to the dialog.element', () => {
+            dialog.commentsDialogEl.classList.remove(constants.CLASS_HIDDEN);
+            dialog.highlightDialogEl = {
+                classList: {
+                    remove: () => {}
+                }
+            };
+            dialog.hideCommentsDialog();
+
+            expect(dialog.element.classList.contains(CLASS_HIGHLIGHT_DIALOG)).to.be.true;
+        });
+
+        it('should show the highlight dialog', () => {
+            dialog.commentsDialogEl.classList.remove(constants.CLASS_HIDDEN);
+            dialog.highlightDialogEl = {
+                classList: {
+                    remove: sandbox.stub()
+                }
+            };
+            dialog.hideCommentsDialog();
+
+            expect(dialog.highlightDialogEl.classList.remove).to.be.calledWith(constants.CLASS_HIDDEN);
+        });
+
+        it('should set hasComments to false');
     });
 
     describe('position()', () => {

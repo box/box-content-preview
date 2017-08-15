@@ -7,7 +7,7 @@ import * as constants from '../annotationConstants';
 const CLASS_CREATE_DIALOG = 'bp-create-annotation-dialog';
 const TITLE_HIGHLIGHT_TOGGLE = __('annotation_highlight_toggle');
 const TITLE_HIGHLIGHT_COMMENT = __('annotation_highlight_comment');
-const DATA_TYPE_HIGHLIGHT = 'highlight-btn';
+const DATA_TYPE_HIGHLIGHT = 'add-highlight-btn';
 const DATA_TYPE_ADD_HIGHLIGHT_COMMENT = 'add-highlight-comment-btn';
 const CREATE_HIGHLIGHT_DIALOG_TEMPLATE = `
     <div class="${constants.CLASS_ANNOTATION_CARET}" style="left: 50%;"></div>
@@ -15,7 +15,7 @@ const CREATE_HIGHLIGHT_DIALOG_TEMPLATE = `
         <div class="${constants.CLASS_ANNOTATION_HIGHLIGHT_DIALOG}">
             <span class="${constants.CLASS_HIGHLIGHT_BTNS}">
                 <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_BTN}"
-                    data-type="${DATA_TYPE_HIGHLIGHT}""
+                    data-type="${DATA_TYPE_HIGHLIGHT}"
                     title="${TITLE_HIGHLIGHT_TOGGLE}">
                     ${ICON_HIGHLIGHT}
                 </button>
@@ -38,57 +38,38 @@ export const CreateEvents = {
 };
 
 class CreateHighlightDialog extends EventEmitter {
-    /**
-     * Container element for the dialog.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - Container element for the dialog. */
     containerEl;
 
-    /**
-     * The clickable element for creating plain highlights.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - The clickable element for creating plain highlights. */
     highlightCreateEl;
 
-    /**
-     * The clickable element got creating comment highlights.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - The clickable element got creating comment highlights. */
     commentCreateEl;
 
-    /**
-     * The parent container to nest the dialog element in.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - The parent container to nest the dialog element in. */
     parentEl;
 
-    /**
-     * The element containing the buttons that can creaet highlights.
-     *
-     * @property {HTMLElement}
-     */
+    /** @property {HTMLElement} - The element containing the buttons that can creaet highlights. */
     buttonsEl;
 
-    /**
-     * The comment box instance. Contains area for text input and post/cancel buttons.
-     *
-     * @property {CommentBox}
-     */
+    /** @property {CommentBox} - The comment box instance. Contains area for text input and post/cancel buttons. */
     commentBox;
 
-    /**
-     * Position, on the DOM, to align the dialog to the end of a highlight.
-     *
-     * @property {Object}
-     */
+    /** @property {Object} - Position, on the DOM, to align the dialog to the end of a highlight. */
     position = {
         x: 0,
         y: 0
     };
+
+    /** @property {boolean} - Whether or not we're on a mobile device. */
+    isMobile;
+
+    /** @property {boolean} - Whether or not we support touch. */
+    hasTouch;
+
+    /** @property {boolean} - Whether or not this is visible. */
+    isVisible;
 
     /**
      * A dialog used to create plain and comment highlights.
@@ -96,12 +77,17 @@ class CreateHighlightDialog extends EventEmitter {
      * [constructor]
      *
      * @param {HTMLElement} parentEl - Parent element
+     * @param {Object} [config] - For configuring the dialog.
+     * @param {boolean} [config.hasTouch] - True to add touch events.
+     * @param {boolean} [config.isMobile] - True if on a mobile device.
      * @return {CreateHighlightDialog} CreateHighlightDialog instance
      */
-    constructor(parentEl) {
+    constructor(parentEl, config = {}) {
         super();
 
         this.parentEl = parentEl;
+        this.isMobile = config.isMobile || false;
+        this.hasTouch = config.hasTouch || false;
 
         // Explicit scope binding for event listeners
         this.onHighlightClick = this.onHighlightClick.bind(this);
@@ -143,6 +129,7 @@ class CreateHighlightDialog extends EventEmitter {
      * @return {void}
      */
     show(newParentEl) {
+        this.isVisible = true;
         if (!this.containerEl) {
             this.containerEl = this.createElement();
         }
@@ -158,6 +145,7 @@ class CreateHighlightDialog extends EventEmitter {
         }
 
         this.setButtonVisibility(true);
+
         showElement(this.containerEl);
     }
 
@@ -167,11 +155,13 @@ class CreateHighlightDialog extends EventEmitter {
      * @return {void}
      */
     hide() {
+        this.isVisible = false;
         if (!this.containerEl) {
             return;
         }
 
         hideElement(this.containerEl);
+
         this.commentBox.hide();
         this.commentBox.clear();
     }
@@ -191,7 +181,6 @@ class CreateHighlightDialog extends EventEmitter {
         // Stop interacting with this element from triggering outside actions
         this.containerEl.removeEventListener('click', this.stopPropagation);
         this.containerEl.removeEventListener('mouseup', this.stopPropagation);
-        this.containerEl.removeEventListener('touchend', this.stopPropagation);
         this.containerEl.removeEventListener('dblclick', this.stopPropagation);
 
         // Event listeners
@@ -199,6 +188,14 @@ class CreateHighlightDialog extends EventEmitter {
         this.commentCreateEl.removeEventListener('click', this.onCommentClick);
         this.commentBox.removeListener(CommentBox.CommentEvents.post, this.onCommentPost);
         this.commentBox.removeListener(CommentBox.CommentEvents.cancel, this.onCommentCancel);
+
+        if (this.hasTouch) {
+            this.highlightCreateEl.removeEventListener('touchstart', this.stopPropagation);
+            this.commentCreateEl.removeEventListener('touchstart', this.stopPropagation);
+            this.highlightCreateEl.removeEventListener('touchend', this.onHighlightClick);
+            this.commentCreateEl.removeEventListener('touchend', this.onCommentClick);
+            this.containerEl.removeEventListener('touchend', this.stopPropagation);
+        }
 
         this.containerEl.remove();
         this.containerEl = null;
@@ -219,6 +216,10 @@ class CreateHighlightDialog extends EventEmitter {
      * @return {void}
      */
     updatePosition() {
+        if (this.isMobile) {
+            return;
+        }
+
         // Plus 1 pixel for caret
         this.containerEl.style.left = `${this.position.x - 1 - this.containerEl.clientWidth / 2}px`;
         // Plus 5 pixels for caret
@@ -228,9 +229,12 @@ class CreateHighlightDialog extends EventEmitter {
     /**
      * Fire an event notifying that the plain highlight button has been clicked.
      *
+     * @param {Event} event - The DOM event coming from interacting with the element.
      * @return {void}
      */
-    onHighlightClick() {
+    onHighlightClick(event) {
+        event.preventDefault();
+        event.stopPropagation();
         this.emit(CreateEvents.plain);
     }
 
@@ -238,9 +242,12 @@ class CreateHighlightDialog extends EventEmitter {
      * Fire an event notifying that the comment button has been clicked. Also
      * show the comment box, and give focus to the text area conatined by it.
      *
+     * @param {Event} event - The DOM event coming from interacting with the element.
      * @return {void}
      */
-    onCommentClick() {
+    onCommentClick(event) {
+        event.preventDefault();
+        event.stopPropagation();
         this.emit(CreateEvents.comment);
 
         this.commentBox.show();
@@ -258,7 +265,10 @@ class CreateHighlightDialog extends EventEmitter {
      */
     onCommentPost(text) {
         this.emit(CreateEvents.commentPost, text);
-        this.commentBox.clear();
+        if (text) {
+            this.commentBox.clear();
+            this.commentBox.blur();
+        }
     }
 
     /**
@@ -309,6 +319,13 @@ class CreateHighlightDialog extends EventEmitter {
         highlightDialogEl.classList.add(CLASS_CREATE_DIALOG);
         highlightDialogEl.innerHTML = CREATE_HIGHLIGHT_DIALOG_TEMPLATE;
 
+        // Get rid of the caret
+        if (this.isMobile) {
+            highlightDialogEl.classList.add('bp-mobile-annotation-dialog');
+            highlightDialogEl.classList.add('bp-annotation-dialog');
+            highlightDialogEl.querySelector('.bp-annotation-caret').remove();
+        }
+
         const containerEl = highlightDialogEl.querySelector(constants.SELECTOR_ANNOTATION_HIGHLIGHT_DIALOG);
 
         // Reference HTML
@@ -322,7 +339,6 @@ class CreateHighlightDialog extends EventEmitter {
         // Stop interacting with this element from triggering outside actions
         highlightDialogEl.addEventListener('click', this.stopPropagation);
         highlightDialogEl.addEventListener('mouseup', this.stopPropagation);
-        highlightDialogEl.addEventListener('touchend', this.stopPropagation);
         highlightDialogEl.addEventListener('dblclick', this.stopPropagation);
 
         // Event listeners
@@ -330,6 +346,15 @@ class CreateHighlightDialog extends EventEmitter {
         this.commentCreateEl.addEventListener('click', this.onCommentClick);
         this.commentBox.addListener(CommentBox.CommentEvents.post, this.onCommentPost);
         this.commentBox.addListener(CommentBox.CommentEvents.cancel, this.onCommentCancel);
+
+        // touch events
+        if (this.hasTouch) {
+            this.highlightCreateEl.addEventListener('touchstart', this.stopPropagation);
+            this.commentCreateEl.addEventListener('touchstart', this.stopPropagation);
+            this.highlightCreateEl.addEventListener('touchend', this.onHighlightClick);
+            this.commentCreateEl.addEventListener('touchend', this.onCommentClick);
+            highlightDialogEl.addEventListener('touchend', this.stopPropagation);
+        }
 
         // Hide comment box, by default
         this.commentBox.hide();

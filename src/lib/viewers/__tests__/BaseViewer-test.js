@@ -768,8 +768,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.scale = 1.5;
             base.annotator = {
                 init: sandbox.stub(),
-                addListener: sandbox.stub(),
-                setScale: sandbox.stub()
+                addListener: sandbox.stub()
             };
             base.annotatorConf = {
                 CONSTRUCTOR: sandbox.stub().returns(base.annotator)
@@ -779,6 +778,7 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should initialize the annotator', () => {
             expect(base.annotator.init).to.be.calledWith(1.5);
+            expect(base.addListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
             expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
         });

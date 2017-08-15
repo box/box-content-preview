@@ -332,7 +332,6 @@ class BaseViewer extends EventEmitter {
     addCommonListeners() {
         // Attach common full screen event listeners
         fullscreen.addListener('enter', this.onFullscreenToggled);
-
         fullscreen.addListener('exit', this.onFullscreenToggled);
 
         // Add a resize handler for the window
@@ -670,11 +669,17 @@ class BaseViewer extends EventEmitter {
             },
             fileVersionId,
             isMobile: this.isMobile,
+            hasTouch: this.hasTouch,
             locale: location.locale,
             previewUI: this.previewUI,
             modeButtons: ANNOTATION_BUTTONS
         });
         this.annotator.init(this.scale);
+
+        // Add a custom listener for entering/exit annotations mode using the app's custom annotations buttons
+        this.addListener('toggleannotationmode', (data) => {
+            this.annotator.toggleAnnotationHandler(data);
+        });
 
         // Add a custom listener for events related to scaling/orientation changes
         this.addListener('scale', (data) => {

@@ -13,6 +13,7 @@ import {
     CLASS_ANNOTATION_MODE,
     CLASS_MOBILE_DIALOG_HEADER,
     CLASS_DIALOG_CLOSE,
+    ID_MOBILE_ANNOTATION_DIALOG,
     SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL,
     SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER,
     SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
@@ -56,6 +57,7 @@ class Annotator extends EventEmitter {
         this.locale = data.locale;
         this.validationErrorEmitted = false;
         this.isMobile = data.isMobile;
+        this.hasTouch = data.hasTouch;
         this.previewUI = data.previewUI;
         this.modeButtons = data.modeButtons;
         this.annotationModeHandlers = [];
@@ -87,6 +89,7 @@ class Annotator extends EventEmitter {
         this.unbindDOMListeners();
         this.unbindCustomListenersOnService();
         this.removeListener('scaleAnnotations', this.scaleAnnotations);
+        this.removeListener('toggleannotationmode', this.toggleAnnotationHandler);
     }
 
     /**
@@ -117,8 +120,7 @@ class Annotator extends EventEmitter {
             this.showModeAnnotateButton(type);
         });
 
-        const scale = initialScale;
-        this.setScale(scale);
+        this.setScale(initialScale);
         this.setupAnnotations();
         this.showAnnotations();
     }
@@ -195,6 +197,7 @@ class Annotator extends EventEmitter {
         mobileDialogEl.classList.add(CLASS_MOBILE_ANNOTATION_DIALOG);
         mobileDialogEl.classList.add(CLASS_ANNOTATION_DIALOG);
         mobileDialogEl.classList.add(CLASS_HIDDEN);
+        mobileDialogEl.id = ID_MOBILE_ANNOTATION_DIALOG;
 
         mobileDialogEl.innerHTML = `
             <div class="${CLASS_MOBILE_DIALOG_HEADER}">
@@ -324,6 +327,10 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     toggleAnnotationHandler(mode, event = {}) {
+        if (!this.isModeAnnotatable(mode)) {
+            return;
+        }
+
         this.destroyPendingThreads();
 
         // No specific mode available for annotation type
@@ -663,6 +670,7 @@ class Annotator extends EventEmitter {
             });
         } else if (mode === TYPES.draw) {
             const drawingThread = this.createAnnotationThread([], {}, TYPES.draw);
+            this.bindCustomListenersOnThread(drawingThread);
 
             /* eslint-disable require-jsdoc */
             const locationFunction = (event) => this.getLocationFromEvent(event, TYPES.point);
@@ -690,8 +698,8 @@ class Annotator extends EventEmitter {
                 handlers.push({
                     type: 'click',
                     func: () => {
-                        drawingThread.saveAnnotation(TYPES.draw);
-                        this.toggleAnnotationHandler(TYPES.draw);
+                        drawingThread.saveAnnotation(mode);
+                        this.toggleAnnotationHandler(mode);
                     },
                     eventObj: postButtonEl
                 });

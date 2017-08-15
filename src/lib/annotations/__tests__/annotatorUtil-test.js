@@ -21,7 +21,9 @@ import {
     eventToLocationHandler,
     decodeKeydown,
     getHeaders,
-    replacePlaceholders
+    replacePlaceholders,
+    createLocation,
+    round
 } from '../annotatorUtil';
 import {
     STATES,
@@ -404,6 +406,26 @@ describe('lib/annotations/annotatorUtil', () => {
         });
     });
 
+    describe('createLocation()', () => {
+        it('should create a location object without dimensions', () => {
+            const location = createLocation(1,2, undefined);
+            expect(location).to.deep.equal({
+                x: 1,
+                y: 2
+            });
+        });
+
+        it('should create a location object with dimensions', () => {
+            const dimensionalObj = 'dimensional object';
+            const location = createLocation(1,2, dimensionalObj);
+            expect(location).to.deep.equal({
+                x: 1,
+                y: 2,
+                dimensions: dimensionalObj
+            });
+        });
+    });
+
     describe('decodeKeydown()', () => {
         it('should return empty when no key', () => {
             assert.equal(
@@ -531,6 +553,16 @@ describe('lib/annotations/annotatorUtil', () => {
         });
     });
 
+    describe('round()', () => {
+        it('should round to the correct decimal precision', () => {
+            const floatNum = 123456789.887654321;
+            expect(round(floatNum, 0)).to.equal(Math.ceil(floatNum));
+            expect(round(floatNum, 1)).to.equal(123456789.9);
+            expect(round(floatNum, 2)).to.equal(123456789.89);
+            expect(round(floatNum, 3)).to.equal(123456789.888);
+            expect(round(floatNum, 4)).to.equal(123456789.8877);
+        });
+    });
     describe('replacePlaceholders()', () => {
         it('should replace only the placeholder with the custom value in the given string', () => {
             expect(replacePlaceholders('{1} highlighted', ['Bob'])).to.equal('Bob highlighted');

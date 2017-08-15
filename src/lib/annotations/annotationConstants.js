@@ -5,12 +5,15 @@ export const CLASS_ANNOTATION_BUTTON_CANCEL = 'cancel-annotation-btn';
 export const CLASS_ANNOTATION_BUTTON_POST = 'post-annotation-btn';
 export const CLASS_ANNOTATION_DIALOG = 'bp-annotation-dialog';
 export const CLASS_ANNOTATION_HIGHLIGHT_DIALOG = 'bp-annotation-highlight-dialog';
+export const CLASS_ANNOTATION_PLAIN_HIGHLIGHT = 'bp-plain-highlight';
+export const CLASS_ANNOTATION_POINT_BUTTON = 'bp-point-annotation-btn';
 export const CLASS_ANNOTATION_POINT_MARKER = 'bp-point-annotation-marker';
 export const CLASS_ANNOTATION_MODE = 'bp-annotation-mode';
 export const CLASS_ANNOTATION_CARET = 'bp-annotation-caret';
 export const CLASS_ANNOTATION_TEXTAREA = 'annotation-textarea';
 export const CLASS_BUTTON_CONTAINER = 'button-container';
 export const CLASS_ANNOTATION_CONTAINER = 'annotation-container';
+export const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
 export const CLASS_MOBILE_ANNOTATION_DIALOG = 'bp-mobile-annotation-dialog';
 export const CLASS_MOBILE_DIALOG_HEADER = 'bp-annotation-mobile-header';
 export const CLASS_DIALOG_CLOSE = 'bp-annotation-dialog-close';
@@ -20,6 +23,7 @@ export const CLASS_ADD_HIGHLIGHT_BTN = 'bp-add-highlight-btn';
 export const CLASS_ADD_HIGHLIGHT_COMMENT_BTN = 'bp-highlight-comment-btn';
 export const CLASS_ANNOTATION_LAYER_HIGHLIGHT = 'bp-annotation-layer-highlight';
 export const CLASS_ANNOTATION_LAYER_DRAW = 'bp-annotation-layer-draw';
+export const CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS = 'bp-annotation-layer-draw-in-progress';
 export const CLASS_ANNOTATION_BUTTON_POINT = 'bp-btn-annotate-point';
 export const CLASS_ANNOTATION_BUTTON_DRAW_POST = 'bp-btn-annotate-draw-post';
 export const CLASS_ANNOTATION_BUTTON_DRAW_CANCEL = 'bp-btn-annotate-draw-cancel';
@@ -61,10 +65,10 @@ export const SELECTOR_DIALOG_CLOSE = `.${CLASS_DIALOG_CLOSE}`;
 export const SELECTOR_HIGHLIGHT_BTNS = `.${CLASS_HIGHLIGHT_BTNS}`;
 export const SELECTOR_ADD_HIGHLIGHT_BTN = `.${CLASS_ADD_HIGHLIGHT_BTN}`;
 
-export const STATES_DRAW = {
-    draw: 'draw',
+export const DRAW_STATES = {
     idle: 'idle',
-    erase: 'erase'
+    drawing: 'drawing',
+    erasing: 'erasing'
 };
 
 export const STATES = {
@@ -91,4 +95,5 @@ export const HIGHLIGHT_FILL = {
 export const PAGE_PADDING_TOP = 15;
 export const PAGE_PADDING_BOTTOM = 15;
 
+export const ID_MOBILE_ANNOTATION_DIALOG = 'mobile-annotation-dialog';
 export const DRAW_RENDER_THRESHOLD = 16.67; // 60 FPS target using 16.667ms/frame
