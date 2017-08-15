@@ -305,7 +305,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     setPage(pageNum) {
-        if (pageNum <= 0 || pageNum > this.pdfViewer.pagesCount) {
+        if (pageNum < 1 || pageNum > this.pdfViewer.pagesCount) {
             return;
         }
 

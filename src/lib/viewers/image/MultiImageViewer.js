@@ -72,7 +72,7 @@ class MultiImageViewer extends ImageBaseViewer {
 
                 this.imageUrls.forEach((imageUrl, index) => this.setupImageEls(imageUrl, index));
 
-                this.wrapperEl.addEventListener('scroll', this.onScrollHandler, true);
+                this.wrapperEl.addEventListener('scroll', this.scrollHandler, true);
             })
             .catch(this.handleAssetError);
     }
@@ -173,7 +173,7 @@ class MultiImageViewer extends ImageBaseViewer {
         setTimeout(this.updatePannability, ZOOM_UPDATE_PAN_DELAY);
 
         // Set current page to previously opened page or first page
-        this.setPage(this.currentPageNumber - 1);
+        this.setPage(this.currentPageNumber);
     }
 
     /**
@@ -248,13 +248,31 @@ class MultiImageViewer extends ImageBaseViewer {
     }
 
     /**
+     * Go to previous page
+     *
+     * @return {void}
+     */
+    previousPage() {
+        this.setPage(this.currentPageNumber - 1);
+    }
+
+    /**
+     * Go to next page
+     *
+     * @return {void}
+     */
+    nextPage() {
+        this.setPage(this.currentPageNumber + 1);
+    }
+
+    /**
      * Go to specified page
      *
      * @param {number} pageNum - Page to navigate to
      * @return {void}
      */
     setPage(pageNum) {
-        if (pageNum <= 0 || pageNum > this.pagesCount) {
+        if (pageNum < 1 || pageNum > this.pagesCount) {
             return;
         }
 
@@ -268,7 +286,7 @@ class MultiImageViewer extends ImageBaseViewer {
      * @private
      * @return {void}
      */
-    onScrollHandler() {
+    scrollHandler() {
         if (this.scrollCheckHandler) {
             return;
         }
@@ -297,7 +315,7 @@ class MultiImageViewer extends ImageBaseViewer {
         const lastY = this.scrollState.lastY;
 
         if (currentY !== lastY) {
-            this.scrollState.down = currentY > lastY;
+            this.scrollState.isScrollingDown = currentY > lastY;
         }
         this.scrollState.lastY = currentY;
         this.updatePageChange();
@@ -333,14 +351,14 @@ class MultiImageViewer extends ImageBaseViewer {
         const isScrolledToBottom = wrapperScrollOffset + this.wrapperEl.clientHeight >= this.wrapperEl.scrollHeight;
 
         if (
-            this.scrollState.down &&
+            this.scrollState.isScrollingDown &&
             currentPageEl.nextSibling &&
             (wrapperScrollOffset > currentPageMiddleY || isScrolledToBottom)
         ) {
             // Increment page
             const nextPage = currentPageEl.nextSibling;
             pageNum = parseInt(nextPage.dataset.pageNumber, 10);
-        } else if (!this.scrollState.down && currentPageEl.previousSibling) {
+        } else if (!this.scrollState.isScrollingDown && currentPageEl.previousSibling) {
             const prevPage = currentPageEl.previousSibling;
             const prevPageMiddleY = prevPage.offsetTop + prevPage.clientHeight / 2;
 
@@ -351,24 +369,6 @@ class MultiImageViewer extends ImageBaseViewer {
         }
 
         this.pagechangeHandler(pageNum);
-    }
-
-    /**
-     * Go to previous page
-     *
-     * @return {void}
-     */
-    previousPage() {
-        this.setPage(this.currentPageNumber - 1);
-    }
-
-    /**
-     * Go to next page
-     *
-     * @return {void}
-     */
-    nextPage() {
-        this.setPage(this.currentPageNumber + 1);
     }
 }
 
