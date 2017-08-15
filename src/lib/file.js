@@ -19,6 +19,7 @@ const FILE_FIELDS = [
 /**
  * Returns the Box file Content API URL with relevant fields
  *
+ * @public
  * @param {string} id - Box file ID
  * @param {string} apiHost - Box API base url
  * @return {string} API url
@@ -30,6 +31,7 @@ export function getURL(id, apiHost) {
 /**
  * Returns the Box file Content API URL
  *
+ * @public
  * @param {string} id - Box file ID
  * @param {string} apiHost - Box API base URL
  * @return {string} API url
@@ -41,6 +43,7 @@ export function getDownloadURL(id, apiHost) {
 /**
  * Returns the matching representation if file has it.
  *
+ * @public
  * @param {Object} file - Box file
  * @param {string} repName - Name of representation
  * @return {Object|null} Maching representation object or null
@@ -52,6 +55,7 @@ export function getRepresentation(file, repName) {
 /**
  * Is Watermarked
  *
+ * @public
  * @param {Object} file - Box file
  * @return {boolean} Whether or not file is watermarked
  */
@@ -62,6 +66,7 @@ export function isWatermarked(file) {
 /**
  * Checks permission
  *
+ * @public
  * @param {Object} file - Box file
  * @param {string} operation - Action to check permission for
  * @return {boolean} Whether or not action is permitted
@@ -73,6 +78,7 @@ export function checkPermission(file, operation) {
 /**
  * Checks feature
  *
+ * @public
  * @param {Object} viewer - Viewer instance
  * @param {string} primary - Primary feature to check
  * @param {string} [secondary] - Secondary feature to check
@@ -87,6 +93,7 @@ export function checkFeature(viewer, primary, secondary) {
  * Checks whether file metadata is valid by checking whether each property
  * in FIELDS on the specified file object is defined.
  *
+ * @public
  * @param {Object} file - Box file metadata to check
  * @return {boolean} Whether or not file metadata structure is valid
  */
@@ -129,6 +136,7 @@ function addOriginalRepresentation(file) {
  * Wrapper for caching a file object. Adds the faked 'ORIGINAL' representation
  * when appropraite before caching.
  *
+ * @public
  * @param {Cache} cache - Cache instance
  * @param {Object} file - Box file or simple { id: fileId } object
  * @return {void}
@@ -144,6 +152,7 @@ export function cacheFile(cache, file) {
 /**
  * Wrapper for uncaching a file object.
  *
+ * @public
  * @param {Cache} cache - Cache instance
  * @param {Object} file - Box file or simple { id: fileId } object
  * @return {void}

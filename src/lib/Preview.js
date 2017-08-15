@@ -148,6 +148,7 @@ class Preview extends EventEmitter {
     /**
      * Primary function for showing a preview of a file.
      *
+     * @public
      * @param {string} fileId - Box File ID
      * @param {string|Function} token - Access token string or generator function
      * @param {Object} [options] - Optional preview options
@@ -168,6 +169,7 @@ class Preview extends EventEmitter {
     /**
      * Destroys and hides the preview.
      *
+     * @public
      * @return {void}
      */
     hide() {
@@ -187,6 +189,7 @@ class Preview extends EventEmitter {
     /**
      * Updates files to navigate between.
      *
+     * @public
      * @param {string[]} [collection] - Updated collection of file IDs
      * @return {void}
      */
@@ -205,6 +208,7 @@ class Preview extends EventEmitter {
      * a file is previewed. Note that we only do simple validation that the
      * expected properties exist before caching.
      *
+     * @public
      * @param {Object[]|Object} [fileMetadata] - Array or single file metadata to cache
      * @return {void}
      */
@@ -232,6 +236,7 @@ class Preview extends EventEmitter {
     /**
      * Returns the current viewer.
      *
+     * @public
      * @return {Object|undefined} Current viewer
      */
     getCurrentViewer() {
@@ -241,6 +246,7 @@ class Preview extends EventEmitter {
     /**
      * Returns the current file being previewed.
      *
+     * @public
      * @return {Object|null} Current file
      */
     getCurrentFile() {
@@ -250,6 +256,7 @@ class Preview extends EventEmitter {
     /**
      * Returns the current file being previewed.
      *
+     * @public
      * @return {Object|null} Current collection
      */
     getCurrentCollection() {
@@ -259,6 +266,7 @@ class Preview extends EventEmitter {
     /**
      * Returns the list of viewers that Preview supports.
      *
+     * @public
      * @return {string[]} List of supported viewers
      */
     getViewers() {
@@ -272,6 +280,7 @@ class Preview extends EventEmitter {
     /**
      * Disables one or more viewers.
      *
+     * @public
      * @param {string|string[]} viewers - destroys the container contents
      * @return {void}
      */
@@ -288,6 +297,7 @@ class Preview extends EventEmitter {
     /**
      * Enables one or more viewers.
      *
+     * @public
      * @param {string|string[]} viewers - destroys the container contents
      * @return {void}
      */
@@ -304,6 +314,7 @@ class Preview extends EventEmitter {
     /**
      * Disables keyboard shortcuts / hotkeys for Preview.
      *
+     * @public
      * @return {void}
      */
     disableHotkeys() {
@@ -313,6 +324,7 @@ class Preview extends EventEmitter {
     /**
      * Enables keyboard shortcuts / hotkeys for Preview.
      *
+     * @public
      * @return {void}
      */
     enableHotkeys() {
@@ -322,6 +334,7 @@ class Preview extends EventEmitter {
     /**
      * Resizes the preview.
      *
+     * @public
      * @return {void}
      */
     resize() {
@@ -333,6 +346,7 @@ class Preview extends EventEmitter {
     /**
      * Prints the file being previewed if the viewer supports printing.
      *
+     * @public
      * @return {void}
      */
     print() {
@@ -344,6 +358,7 @@ class Preview extends EventEmitter {
     /**
      * Downloads the file being previewed.
      *
+     * @public
      * @return {void}
      */
     download() {
@@ -358,6 +373,7 @@ class Preview extends EventEmitter {
      * Updates the token Preview uses. Passed in parameter can either be a
      * string token or token generation function. See tokens.js.
      *
+     * @public
      * @param {string|Function} tokenOrTokenFunc - Either an access token or token
      * generator function
      * @param {boolean} [reloadPreview] - Whether or not to reload the current
@@ -384,6 +400,7 @@ class Preview extends EventEmitter {
      * shared link, shared link password) must be used when prefetching and
      * when the actual view happens.
      *
+     * @public
      * @param {Object} options - Prefetch options
      * @param {string} options.fileId - Box File ID
      * @param {string} options.token - Access token
@@ -444,6 +461,7 @@ class Preview extends EventEmitter {
     /**
      * Prefetches static viewer assets for the specified viewers.
      *
+     * @public
      * @param {string[]} [viewerNames] - Names of viewers to prefetch, defaults to none
      * @return {void}
      */
@@ -909,10 +927,10 @@ class Preview extends EventEmitter {
      * preview happened for access stats, unlike the Logger, which logs preview
      * errors and performance metrics.
      *
+     * @private
      * @param {string} fileId - File ID to log preview event for
      * @param {Object} options - File options, e.g. token, shared link
      * @return {void}
-     * @private
      */
     logPreviewEvent(fileId, options) {
         this.logRetryCount = this.logRetryCount || 0;
@@ -1117,8 +1135,8 @@ class Preview extends EventEmitter {
     /**
      * Mousemove handler for navigation.
      *
-     * @return {Function} Throttled mousemove handler
      * @private
+     * @return {Function} Throttled mousemove handler
      */
     getGlobalMousemoveHandler() {
         if (this.throttledMousemoveHandler) {

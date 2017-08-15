@@ -81,7 +81,7 @@ class Fullscreen extends EventEmitter {
     /**
      * Toggles fullscreen mode
      *
-     * @private
+     * @public
      * @param {HTMLElement} el - fullscreen element
      * @return {void}
      */

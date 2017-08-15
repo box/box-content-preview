@@ -142,6 +142,7 @@ class Controls {
     /**
      * Handles all focusin events for the module.
      *
+     * @private
      * @param {Event} event - A DOM-normalized event object.
      * @return {void}
      */
@@ -156,6 +157,7 @@ class Controls {
     /**
      * Handles all focusout events for the module.
      *
+     * @private
      * @param {Event} event - A DOM-normalized event object.
      * @return {void}
      */
@@ -169,6 +171,7 @@ class Controls {
     /**
      * Handles click events for the control bar.
      *
+     * @private
      * @param {Event} event - A DOM-normalized event object.
      * @return {void}
      */
@@ -180,7 +183,7 @@ class Controls {
     /**
      * Adds buttons to controls
      *
-     * @private
+     * @public
      * @param {string} text - button text
      * @param {Function} handler - button handler
      * @param {string} [classList] - optional class list
@@ -216,6 +219,7 @@ class Controls {
     /**
      * Enables the controls.
      *
+     * @public
      * @return {void}
      */
     enable() {
@@ -225,6 +229,7 @@ class Controls {
     /**
      * Disables the controls.
      *
+     * @public
      * @return {void}
      */
     disable() {
@@ -234,6 +239,7 @@ class Controls {
     /**
      * Determines if the page number input is focused.
      *
+     * @public
      * @return {boolean} Is the input focused
      */
     isPageNumFocused() {

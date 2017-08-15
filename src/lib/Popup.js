@@ -74,6 +74,7 @@ class Popup {
     /**
      * Shows a popup with a message.
      *
+     * @public
      * @param {string} message - Popup message
      * @param {string} [buttonText] - Optional text to show in button
      * @param {Function} [buttonHandler] - Optional onclick function for the button
@@ -99,6 +100,7 @@ class Popup {
     /**
      * Hides the popup message.
      *
+     * @public
      * @return {void}
      */
     hide() {
@@ -108,6 +110,7 @@ class Popup {
     /**
      * Adds custom content to the modal.
      *
+     * @public
      * @param {string} element - DOM element
      * @param {boolean} prepend - prepends or appends the content to the content element
      *
@@ -125,6 +128,7 @@ class Popup {
     /**
      * Returns whether or not the popup is visible.
      *
+     * @public
      * @return {boolean} Whether or not popup is visible.
      */
     isVisible() {
@@ -134,6 +138,7 @@ class Popup {
     /**
      * Gets whether or not the button is disabled.
      *
+     * @public
      * @return {boolean} Whether or not button is diabled
      */
     isButtonDisabled() {
@@ -143,6 +148,7 @@ class Popup {
     /**
      * Disbles the button element.
      *
+     * @public
      * @return {void}
      */
     disableButton() {
@@ -153,6 +159,7 @@ class Popup {
     /**
      * Enables the button element.
      *
+     * @public
      * @return {void}
      */
     enableButton() {
@@ -163,6 +170,7 @@ class Popup {
     /**
      * Click handler for popup.
      *
+     * @private
      * @param {Event} event - DOM event
      * @return {void}
      */
@@ -184,6 +192,7 @@ class Popup {
     /**
      * Keydown handler for popup
      *
+     * @private
      * @param {Event} event - Keydown event
      * @return {boolean} Consumed or not
      */
