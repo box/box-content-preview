@@ -1,13 +1,21 @@
 import autobind from 'autobind-decorator';
 import ImageBaseViewer from './ImageBaseViewer';
+import Browser from '../../Browser';
 import './MultiImage.scss';
-
-import { ICON_FILE_IMAGE, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
+import {
+    ICON_FILE_IMAGE,
+    ICON_FULLSCREEN_IN,
+    ICON_FULLSCREEN_OUT,
+    ICON_DROP_DOWN,
+    ICON_DROP_UP
+} from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
+import { decodeKeydown } from '../../util';
 
 const PADDING_BUFFER = 100;
 const CSS_CLASS_IMAGE = 'bp-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
+const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const ZOOM_UPDATE_PAN_DELAY = 50;
 
 @autobind
@@ -85,11 +93,11 @@ class MultiImageViewer extends ImageBaseViewer {
         const { viewer, representation } = this.options;
         const metadata = representation.metadata;
         const asset = viewer.ASSET;
+        this.pagesCount = metadata.pages;
 
         const urlBase = this.createContentUrlWithAuthParams(template, asset);
-
         const urls = [];
-        for (let pageNum = 1; pageNum <= metadata.pages; pageNum++) {
+        for (let pageNum = 1; pageNum <= this.pagesCount; pageNum++) {
             urls.push(urlBase.replace('{page}', pageNum));
         }
 
@@ -192,6 +200,28 @@ class MultiImageViewer extends ImageBaseViewer {
      */
     loadUI() {
         super.loadUI();
+        this.controls.initPageNumEl(this.pagesCount);
+        this.controls.checkPaginationButtons(this.currentPageNumber, this.pagesCount);
+    }
+
+    /**
+     * Binds listeners for document controls. Overridden.
+     *
+     * @protected
+     * @return {void}
+     */
+    bindControlListeners() {
+        super.bindControlListeners();
+
+        this.controls.add(
+            __('previous_page'),
+            this.previousPage,
+            'bp-image-previous-page-icon bp-previous-page',
+            ICON_DROP_UP
+        );
+        this.controls.add(__('enter_page_num'), this.showPageNumInput, 'bp-page-num', this.controls.pageNumTemplate);
+        this.controls.add(__('next_page'), this.nextPage, 'bp-image-next-page-icon bp-next-page', ICON_DROP_DOWN);
+
         this.controls.add(
             __('enter_fullscreen'),
             this.toggleFullscreen,
@@ -236,12 +266,155 @@ class MultiImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     setPage(pageNum) {
-        if (pageNum <= 0 || pageNum > this.singleImageEls.length) {
+        if (pageNum <= 0 || pageNum > this.pagesCount) {
             return;
         }
 
         this.currentPageNumber = pageNum;
         this.singleImageEls[pageNum].scrollIntoView();
+        this.updateCurrentPage(pageNum);
+
+        this.emit('pagefocus', pageNum);
+    }
+
+    /**
+     * Update page number in page control widget.
+     *
+     * @private
+     * @param {number} pageNum - Number of page to update to
+     * @return {void}
+     */
+    updateCurrentPage(pageNum) {
+        let truePageNum = pageNum;
+        const pagesCount = this.pagesCount;
+
+        // refine the page number to fall within bounds
+        if (pageNum > pagesCount) {
+            truePageNum = pagesCount;
+        } else if (pageNum < 1) {
+            truePageNum = 1;
+        }
+
+        if (!this.controls) {
+            return;
+        }
+
+        if (this.controls.pageNumInputEl) {
+            this.controls.pageNumInputEl.value = truePageNum;
+        }
+
+        if (this.controls.currentPageEl) {
+            this.controls.currentPageEl.textContent = truePageNum;
+        }
+
+        this.controls.checkPaginationButtons(this.currentPageNumber, this.pagesCount);
+    }
+
+    /**
+     * Replaces the page number display with an input box that allows the user to type in a page number
+     *
+     * @private
+     * @return {void}
+     */
+    showPageNumInput() {
+        // show the input box with the current page number selected within it
+        this.controls.controlsEl.classList.add(SHOW_PAGE_NUM_INPUT_CLASS);
+
+        this.controls.pageNumInputEl.value = this.controls.currentPageEl.textContent;
+        this.controls.pageNumInputEl.focus();
+        this.controls.pageNumInputEl.select();
+
+        // finish input when input is blurred or enter key is pressed
+        this.controls.pageNumInputEl.addEventListener('blur', this.pageNumInputBlurHandler);
+        this.controls.pageNumInputEl.addEventListener('keydown', this.pageNumInputKeydownHandler);
+    }
+
+    /**
+     * Hide the page number input
+     *
+     * @private
+     * @return {void}
+     */
+    hidePageNumInput() {
+        this.controls.controlsEl.classList.remove(SHOW_PAGE_NUM_INPUT_CLASS);
+        this.controls.pageNumInputEl.removeEventListener('blur', this.pageNumInputBlurHandler);
+        this.controls.pageNumInputEl.removeEventListener('keydown', this.pageNumInputKeydownHandler);
+    }
+
+    /**
+     * Blur handler for page number input.
+     *
+     * @param  {Event} event Blur event
+     * @return {void}
+     * @private
+     */
+    pageNumInputBlurHandler(event) {
+        const target = event.target;
+        const pageNum = parseInt(target.value, 10);
+
+        if (!isNaN(pageNum)) {
+            this.setPage(pageNum);
+        }
+
+        this.hidePageNumInput();
+    }
+
+    /**
+     * Keydown handler for page number input.
+     *
+     * @private
+     * @param {Event} event - Keydown event
+     * @return {void}
+     */
+    pageNumInputKeydownHandler(event) {
+        const key = decodeKeydown(event);
+
+        switch (key) {
+            case 'Enter':
+            case 'Tab':
+                // The keycode of the 'next' key on Android Chrome is 9, which maps to 'Tab'.
+                this.singleImageEls[this.currentPageNumber].focus();
+                // We normally trigger the blur handler by blurring the input
+                // field, but this doesn't work for IE in fullscreen. For IE,
+                // we blur the page behind the controls - this unfortunately
+                // is an IE-only solution that doesn't work with other browsers
+                if (Browser.getName() !== 'Explorer') {
+                    event.target.blur();
+                }
+
+                event.stopPropagation();
+                event.preventDefault();
+                break;
+
+            case 'Escape':
+                this.hidePageNumInput();
+                this.singleImageEls[this.currentPageNumber].focus();
+
+                event.stopPropagation();
+                event.preventDefault();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Go to previous page
+     *
+     * @return {void}
+     */
+    previousPage() {
+        this.setPage(this.currentPageNumber - 1);
+    }
+
+    /**
+     * Go to next page
+     *
+     * @return {void}
+     */
+    nextPage() {
+        this.setPage(this.currentPageNumber + 1);
     }
 }
 

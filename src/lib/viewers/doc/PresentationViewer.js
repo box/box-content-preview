@@ -1,6 +1,5 @@
 import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
-import pageNumTemplate from './pageNumButtonContent.html';
 import DocBaseViewer from './DocBaseViewer';
 import PresentationPreloader from './PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../constants';
@@ -199,9 +198,7 @@ class PresentationViewer extends DocBaseViewer {
             'bp-presentation-previous-page-icon bp-previous-page',
             ICON_DROP_UP
         );
-
-        const buttonContent = pageNumTemplate.replace(/>\s*</g, '><'); // removing new lines
-        this.controls.add(__('enter_page_num'), this.showPageNumInput, 'bp-doc-page-num', buttonContent);
+        this.controls.add(__('enter_page_num'), this.showPageNumInput, 'bp-page-num', this.controls.pageNumTemplate);
 
         this.controls.add(
             __('next_page'),

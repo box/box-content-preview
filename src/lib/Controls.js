@@ -1,6 +1,7 @@
 import throttle from 'lodash.throttle';
 import Browser from './Browser';
 import { CLASS_HIDDEN } from './constants';
+import fullscreen from './Fullscreen';
 
 const SHOW_PREVIEW_CONTROLS_CLASS = 'box-show-preview-controls';
 const CONTROLS_BUTTON_CLASS = 'bp-controls-btn';
@@ -23,6 +24,18 @@ class Controls {
 
     /** @property {boolean} - Whether browser supports touch */
     hasTouch = Browser.hasTouch();
+
+    /** @property {HTMLElement} - Page num input element */
+    pageNumInputEl;
+
+    /** @property {String} - HTML template for page num element */
+    pageNumTemplate = `
+        <div class='bp-page-num-wrapper'>
+            <span class='bp-current-page'>1</span>
+            <input type='number' pattern='[0-9]*' min='1'  value='' size='3' class='bp-page-num-input' />
+            <span class='bp-page-num-divider'>&nbsp;/&nbsp;</span>
+            <span class='bp-total-pages'>1</span>
+        </div>`.replace(/>\s*</g, '><');
 
     /**
      * [constructor]
@@ -238,6 +251,69 @@ class Controls {
      */
     isPageNumFocused() {
         return document.activeElement.classList.contains(CONTROLS_PAGE_NUM_INPUT_CLASS);
+    }
+
+    /**
+     * Initializes page number selector.
+     *
+     * @private
+     * @param {number} pagesCount - Total number of page
+     * @return {void}
+     */
+    initPageNumEl(pagesCount) {
+        const pageNumEl = this.controlsEl.querySelector('.bp-page-num');
+
+        // Update total page number
+        const totalPageEl = pageNumEl.querySelector('.bp-total-pages');
+        totalPageEl.textContent = pagesCount;
+
+        // Keep reference to page number input and current page elements
+        this.pageNumInputEl = pageNumEl.querySelector('.bp-page-num-input');
+        this.pageNumInputEl.setAttribute('max', pagesCount);
+
+        this.currentPageEl = pageNumEl.querySelector('.bp-current-page');
+    }
+
+    /**
+     * Disables or enables previous/next pagination buttons depending on
+     * current page number.
+     *
+     * @return {void}
+     */
+    checkPaginationButtons(currentPageNum, pagesCount) {
+        const pageNumButtonEl = this.containerEl.querySelector('.bp-page-num');
+        const previousPageButtonEl = this.containerEl.querySelector('.bp-previous-page');
+        const nextPageButtonEl = this.containerEl.querySelector('.bp-next-page');
+
+        // Safari disables keyboard input in fullscreen before Safari 10.1
+        const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen(this.containerEl);
+
+        // Disable page number selector if there is only one page or less
+        if (pageNumButtonEl) {
+            if (pagesCount <= 1 || isSafariFullscreen) {
+                pageNumButtonEl.disabled = true;
+            } else {
+                pageNumButtonEl.disabled = false;
+            }
+        }
+
+        // Disable previous page if on first page, otherwise enable
+        if (previousPageButtonEl) {
+            if (currentPageNum === 1) {
+                previousPageButtonEl.disabled = true;
+            } else {
+                previousPageButtonEl.disabled = false;
+            }
+        }
+
+        // Disable next page if on last page, otherwise enable
+        if (nextPageButtonEl) {
+            if (currentPageNum === pagesCount) {
+                nextPageButtonEl.disabled = true;
+            } else {
+                nextPageButtonEl.disabled = false;
+            }
+        }
     }
 }
 

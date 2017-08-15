@@ -1,5 +1,4 @@
 import autobind from 'autobind-decorator';
-import pageNumTemplate from './pageNumButtonContent.html';
 import DocBaseViewer from './DocBaseViewer';
 import DocPreloader from './DocPreloader';
 import fullscreen from '../../Fullscreen';
@@ -109,9 +108,7 @@ class DocumentViewer extends DocBaseViewer {
             'bp-doc-previous-page-icon bp-previous-page',
             ICON_DROP_UP
         );
-
-        const buttonContent = pageNumTemplate.replace(/>\s*</g, '><'); // removing new lines
-        this.controls.add(__('enter_page_num'), this.showPageNumInput, 'bp-doc-page-num', buttonContent);
+        this.controls.add(__('enter_page_num'), this.showPageNumInput, 'bp-page-num', this.controls.pageNumTemplate);
         this.controls.add(__('next_page'), this.nextPage, 'bp-doc-next-page-icon bp-next-page', ICON_DROP_DOWN);
 
         this.controls.add(
