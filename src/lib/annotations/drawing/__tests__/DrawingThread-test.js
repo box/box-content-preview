@@ -237,14 +237,14 @@ describe('lib/annotations/drawing/DrawingThread', () => {
 
         it('should trigger an annotationevent with the number of available undo and redo actions', (done) => {
             const numItems = {
-                undo: 3,
-                redo: 2
+                undoCount: 3,
+                redoCount: 2
             };
             sandbox.stub(drawingThread.pathContainer, 'getNumberOfItems').returns(numItems);
             drawingThread.addListener('annotationevent', (data) => {
                 expect(data.type).to.equal('availableactions');
-                expect(data.undo).to.equal(numItems.undo);
-                expect(data.redo).to.equal(numItems.redo);
+                expect(data.undo).to.equal(numItems.undoCount);
+                expect(data.redo).to.equal(numItems.redoCount);
                 done();
             });
 

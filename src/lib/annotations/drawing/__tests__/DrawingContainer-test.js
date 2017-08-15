@@ -75,8 +75,8 @@ describe('lib/annotations/drawing/DrawingContainer', () => {
             drawingContainer.redoStack = [1,2];
             const val = drawingContainer.getNumberOfItems();
 
-            expect(val.undo).to.equal(drawingContainer.undoStack.length);
-            expect(val.redo).to.equal(drawingContainer.redoStack.length);
+            expect(val.undoCount).to.equal(drawingContainer.undoStack.length);
+            expect(val.redoCount).to.equal(drawingContainer.redoStack.length);
         });
     });
 

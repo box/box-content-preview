@@ -67,8 +67,8 @@ class DrawingContainer {
      */
     getNumberOfItems() {
         return {
-            undo: this.undoStack.length,
-            redo: this.redoStack.length
+            undoCount: this.undoStack.length,
+            redoCount: this.redoStack.length
         };
     }
 

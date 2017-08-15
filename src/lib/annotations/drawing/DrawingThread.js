@@ -239,8 +239,8 @@ class DrawingThread extends AnnotationThread {
         const availableActions = this.pathContainer.getNumberOfItems();
         this.emit('annotationevent', {
             type: 'availableactions',
-            undo: availableActions.undo,
-            redo: availableActions.redo
+            undo: availableActions.undoCount,
+            redo: availableActions.redoCount
         });
     }
 }

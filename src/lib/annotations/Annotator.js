@@ -635,6 +635,8 @@ class Annotator extends EventEmitter {
                     (searchThread) => searchThread.threadID !== thread.threadID
                 );
             }
+
+            thread.removeAllListeners('threaddeleted');
         });
 
         // Thread should be cleaned up, unbind listeners - we don't do this
@@ -653,7 +655,6 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     unbindCustomListenersOnThread(thread) {
-        thread.removeAllListeners('threaddeleted');
         thread.removeAllListeners('threadcleanup');
         thread.removeAllListeners('annotationevent');
     }

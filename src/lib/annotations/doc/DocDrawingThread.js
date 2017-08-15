@@ -118,8 +118,8 @@ class DocDrawingThread extends DrawingThread {
         this.reset();
 
         // Only make save request to server if there exist paths to save
-        const { undo: availableUndos } = this.pathContainer.getNumberOfItems();
-        if (availableUndos === 0) {
+        const { undoCount } = this.pathContainer.getNumberOfItems();
+        if (undoCount === 0) {
             return;
         }
 

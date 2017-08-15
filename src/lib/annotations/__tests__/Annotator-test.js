@@ -7,7 +7,10 @@ import {
     STATES,
     TYPES,
     CLASS_ANNOTATION_DRAW_MODE,
-    CLASS_HIDDEN
+    CLASS_HIDDEN,
+    SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
+    SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO,
+    SELECTOR_ANNOTATION_BUTTON_DRAW_REDO
 } from '../annotationConstants';
 
 let annotator;
@@ -537,6 +540,59 @@ describe('lib/annotations/Annotator', () => {
                     sinon.match.func
                 );
                 expect(annotator.annotationModeHandlers.length).equals(6);
+            });
+
+            it('should successfully bind draw mode handlers if undo and redo buttons do not exist', () => {
+                sandbox.stub(annotator, 'createAnnotationThread').returns(drawingThread);
+
+                const postButtonEl = {
+                    addEventListener: sandbox.stub(),
+                    removeEventListener: sandbox.stub()
+                };
+                const getAnnotateButton = sandbox.stub(annotator.previewUI, 'getAnnotateButton')
+                getAnnotateButton.withArgs(SELECTOR_ANNOTATION_BUTTON_DRAW_POST).returns(postButtonEl);
+                const locationHandler = (() => {});
+
+                sandbox.stub(annotatorUtil, 'eventToLocationHandler').returns(locationHandler);
+
+                annotator.bindModeListeners(TYPES.draw);
+
+                expect(annotator.annotatedElement.addEventListener).to.be.calledWith(
+                    sinon.match.string,
+                    locationHandler
+                ).thrice;
+                expect(postButtonEl.addEventListener).to.be.calledWith(
+                    'click',
+                    sinon.match.func
+                );
+                expect(annotator.annotationModeHandlers.length).equals(4);
+            });
+
+            it('should successfully bind draw mode handlers if post button does not exist', () => {
+                sandbox.stub(annotator, 'createAnnotationThread').returns(drawingThread);
+
+                const doButtonEl = {
+                    addEventListener: sandbox.stub(),
+                    removeEventListener: sandbox.stub()
+                };
+                const getAnnotateButton = sandbox.stub(annotator.previewUI, 'getAnnotateButton')
+                getAnnotateButton.withArgs(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO).returns(doButtonEl);
+                getAnnotateButton.withArgs(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO).returns(doButtonEl);
+                const locationHandler = (() => {});
+
+                sandbox.stub(annotatorUtil, 'eventToLocationHandler').returns(locationHandler);
+
+                annotator.bindModeListeners(TYPES.draw);
+
+                expect(annotator.annotatedElement.addEventListener).to.be.calledWith(
+                    sinon.match.string,
+                    locationHandler
+                ).thrice;
+                expect(doButtonEl.addEventListener).to.be.calledWith(
+                    'click',
+                    sinon.match.func
+                );
+                expect(annotator.annotationModeHandlers.length).equals(5);
             });
         });
 
