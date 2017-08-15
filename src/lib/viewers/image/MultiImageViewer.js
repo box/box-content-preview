@@ -1,21 +1,13 @@
 import autobind from 'autobind-decorator';
 import ImageBaseViewer from './ImageBaseViewer';
-import Browser from '../../Browser';
+import PageControls from '../../PageControls';
 import './MultiImage.scss';
-import {
-    ICON_FILE_IMAGE,
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT,
-    ICON_DROP_DOWN,
-    ICON_DROP_UP
-} from '../../icons/icons';
+import { ICON_FILE_IMAGE, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
-import { decodeKeydown } from '../../util';
 
 const PADDING_BUFFER = 100;
 const CSS_CLASS_IMAGE = 'bp-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
-const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const ZOOM_UPDATE_PAN_DELAY = 50;
 
 @autobind
@@ -79,6 +71,8 @@ class MultiImageViewer extends ImageBaseViewer {
                 this.imageUrls = this.constructImageUrls(template);
 
                 this.imageUrls.forEach((imageUrl, index) => this.setupImageEls(imageUrl, index));
+
+                this.wrapperEl.addEventListener('scroll', this.onScrollHandler, true);
             })
             .catch(this.handleAssetError);
     }
@@ -179,7 +173,7 @@ class MultiImageViewer extends ImageBaseViewer {
         setTimeout(this.updatePannability, ZOOM_UPDATE_PAN_DELAY);
 
         // Set current page to previously opened page or first page
-        this.setPage(this.currentPageNumber);
+        this.setPage(this.currentPageNumber - 1);
     }
 
     /**
@@ -200,8 +194,7 @@ class MultiImageViewer extends ImageBaseViewer {
      */
     loadUI() {
         super.loadUI();
-        this.controls.initPageNumEl(this.pagesCount);
-        this.controls.checkPaginationButtons(this.currentPageNumber, this.pagesCount);
+        this.pageControls.checkPaginationButtons(this.currentPageNumber, this.pagesCount);
     }
 
     /**
@@ -213,14 +206,9 @@ class MultiImageViewer extends ImageBaseViewer {
     bindControlListeners() {
         super.bindControlListeners();
 
-        this.controls.add(
-            __('previous_page'),
-            this.previousPage,
-            'bp-image-previous-page-icon bp-previous-page',
-            ICON_DROP_UP
-        );
-        this.controls.add(__('enter_page_num'), this.showPageNumInput, 'bp-page-num', this.controls.pageNumTemplate);
-        this.controls.add(__('next_page'), this.nextPage, 'bp-image-next-page-icon bp-next-page', ICON_DROP_DOWN);
+        this.pageControls = new PageControls(this.controls, this.prevPage, this.nextPage);
+        this.pageControls.init(this.pagesCount);
+        this.pageControls.addListener('setpage', this.setPage);
 
         this.controls.add(
             __('enter_fullscreen'),
@@ -270,133 +258,95 @@ class MultiImageViewer extends ImageBaseViewer {
             return;
         }
 
-        this.currentPageNumber = pageNum;
-        this.singleImageEls[pageNum].scrollIntoView();
-        this.updateCurrentPage(pageNum);
-
-        this.emit('pagefocus', pageNum);
+        this.currentPageNumber = pageNum - 1;
+        this.singleImageEls[this.currentPageNumber].scrollIntoView();
     }
 
     /**
-     * Update page number in page control widget.
+     * Handles scroll event in the wrapper element
      *
      * @private
-     * @param {number} pageNum - Number of page to update to
      * @return {void}
      */
-    updateCurrentPage(pageNum) {
-        let truePageNum = pageNum;
-        const pagesCount = this.pagesCount;
-
-        // refine the page number to fall within bounds
-        if (pageNum > pagesCount) {
-            truePageNum = pagesCount;
-        } else if (pageNum < 1) {
-            truePageNum = 1;
-        }
-
-        if (!this.controls) {
+    onScrollHandler() {
+        if (this.scrollCheckHandler) {
             return;
         }
 
-        if (this.controls.pageNumInputEl) {
-            this.controls.pageNumInputEl.value = truePageNum;
+        if (!this.scrollState) {
+            const currentPageEl = this.singleImageEls[this.currentPageNumber - 1];
+            this.scrollState = {
+                down: false,
+                lastY: currentPageEl.scrollTop
+            };
         }
 
-        if (this.controls.currentPageEl) {
-            this.controls.currentPageEl.textContent = truePageNum;
-        }
-
-        this.controls.checkPaginationButtons(this.currentPageNumber, this.pagesCount);
+        const imageScrollHandler = this.isSingleImageElScrolled.bind(this);
+        this.scrollCheckHandler = window.requestAnimationFrame(imageScrollHandler);
     }
 
     /**
-     * Replaces the page number display with an input box that allows the user to type in a page number
+     * Updates page number if the single image has been scrolled past
      *
      * @private
      * @return {void}
      */
-    showPageNumInput() {
-        // show the input box with the current page number selected within it
-        this.controls.controlsEl.classList.add(SHOW_PAGE_NUM_INPUT_CLASS);
+    isSingleImageElScrolled() {
+        this.scrollCheckHandler = null;
+        const currentY = this.wrapperEl.scrollTop;
+        const lastY = this.scrollState.lastY;
 
-        this.controls.pageNumInputEl.value = this.controls.currentPageEl.textContent;
-        this.controls.pageNumInputEl.focus();
-        this.controls.pageNumInputEl.select();
-
-        // finish input when input is blurred or enter key is pressed
-        this.controls.pageNumInputEl.addEventListener('blur', this.pageNumInputBlurHandler);
-        this.controls.pageNumInputEl.addEventListener('keydown', this.pageNumInputKeydownHandler);
+        if (currentY !== lastY) {
+            this.scrollState.down = currentY > lastY;
+        }
+        this.scrollState.lastY = currentY;
+        this.updatePageChange();
     }
 
     /**
-     * Hide the page number input
+     * Updates page number in the page controls
+     *
+     * @private
+     * @param {number} pageNum - Page just navigated to
+     * @return {void}
+     */
+    pagechangeHandler(pageNum) {
+        this.currentPageNumber = pageNum;
+        this.pageControls.updateCurrentPage(pageNum);
+        this.emit('pagefocus', this.currentPageNumber);
+    }
+
+    /**
+     * Update the page number based on scroll direction. Only increment if
+     * wrapper is scrolled down past at least half of the current page element.
+     * Only decrement page if wrapper is scrolled up past at least half of the
+     * previous page element
      *
      * @private
      * @return {void}
      */
-    hidePageNumInput() {
-        this.controls.controlsEl.classList.remove(SHOW_PAGE_NUM_INPUT_CLASS);
-        this.controls.pageNumInputEl.removeEventListener('blur', this.pageNumInputBlurHandler);
-        this.controls.pageNumInputEl.removeEventListener('keydown', this.pageNumInputKeydownHandler);
-    }
+    updatePageChange() {
+        let pageNum = this.currentPageNumber;
+        const currentPageEl = this.singleImageEls[this.currentPageNumber - 1];
+        const wrapperScrollOffset = this.scrollState.lastY;
+        const currentPageMiddleY = currentPageEl.offsetTop + currentPageEl.clientHeight / 2;
+        const isScrolledToBottom = wrapperScrollOffset + this.wrapperEl.clientHeight >= this.wrapperEl.scrollHeight;
 
-    /**
-     * Blur handler for page number input.
-     *
-     * @param  {Event} event Blur event
-     * @return {void}
-     * @private
-     */
-    pageNumInputBlurHandler(event) {
-        const target = event.target;
-        const pageNum = parseInt(target.value, 10);
+        if (this.scrollState.down && (wrapperScrollOffset > currentPageMiddleY || isScrolledToBottom)) {
+            // Increment page
+            const nextPage = currentPageEl.nextSibling;
+            pageNum = parseInt(nextPage.dataset.pageNumber, 10);
+        } else if (!this.scrollState.down && currentPageEl.previousSibling) {
+            const prevPage = currentPageEl.previousSibling;
+            const prevPageMiddleY = prevPage.offsetTop + prevPage.clientHeight / 2;
 
-        if (!isNaN(pageNum)) {
-            this.setPage(pageNum);
+            // Decrement page
+            if (prevPageMiddleY > wrapperScrollOffset) {
+                pageNum = parseInt(prevPage.dataset.pageNumber, 10);
+            }
         }
 
-        this.hidePageNumInput();
-    }
-
-    /**
-     * Keydown handler for page number input.
-     *
-     * @private
-     * @param {Event} event - Keydown event
-     * @return {void}
-     */
-    pageNumInputKeydownHandler(event) {
-        const key = decodeKeydown(event);
-
-        switch (key) {
-            case 'Enter':
-            case 'Tab':
-                // The keycode of the 'next' key on Android Chrome is 9, which maps to 'Tab'.
-                this.singleImageEls[this.currentPageNumber].focus();
-                // We normally trigger the blur handler by blurring the input
-                // field, but this doesn't work for IE in fullscreen. For IE,
-                // we blur the page behind the controls - this unfortunately
-                // is an IE-only solution that doesn't work with other browsers
-                if (Browser.getName() !== 'Explorer') {
-                    event.target.blur();
-                }
-
-                event.stopPropagation();
-                event.preventDefault();
-                break;
-
-            case 'Escape':
-                this.hidePageNumInput();
-                this.singleImageEls[this.currentPageNumber].focus();
-
-                event.stopPropagation();
-                event.preventDefault();
-                break;
-
-            default:
-                break;
-        }
+        this.pagechangeHandler(pageNum);
     }
 
     /**

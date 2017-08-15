@@ -2,9 +2,8 @@ import autobind from 'autobind-decorator';
 import DocBaseViewer from './DocBaseViewer';
 import DocPreloader from './DocPreloader';
 import fullscreen from '../../Fullscreen';
+import PageControls from '../../PageControls';
 import {
-    ICON_DROP_DOWN,
-    ICON_DROP_UP,
     ICON_FILE_DOCUMENT,
     ICON_FILE_PDF,
     ICON_FILE_SPREADSHEET,
@@ -102,14 +101,8 @@ class DocumentViewer extends DocBaseViewer {
         this.controls.add(__('zoom_out'), this.zoomOut, 'bp-doc-zoom-out-icon', ICON_ZOOM_OUT);
         this.controls.add(__('zoom_in'), this.zoomIn, 'bp-doc-zoom-in-icon', ICON_ZOOM_IN);
 
-        this.controls.add(
-            __('previous_page'),
-            this.previousPage,
-            'bp-doc-previous-page-icon bp-previous-page',
-            ICON_DROP_UP
-        );
-        this.controls.add(__('enter_page_num'), this.showPageNumInput, 'bp-page-num', this.controls.pageNumTemplate);
-        this.controls.add(__('next_page'), this.nextPage, 'bp-doc-next-page-icon bp-next-page', ICON_DROP_DOWN);
+        this.pageControls = new PageControls(this.controls, this.prevPage, this.nextPage);
+        this.pageControls.init(this.pdfViewer.pagesCount);
 
         this.controls.add(
             __('enter_fullscreen'),

@@ -17,7 +17,7 @@ import {
     STATUS_ERROR
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
-import { get, createAssetUrlCreator, decodeKeydown } from '../../util';
+import { get, createAssetUrlCreator } from '../../util';
 import { ICON_PRINT_CHECKMARK, ICON_FILE_DOCUMENT } from '../../icons/icons';
 import { JS, CSS } from './docAssets';
 
@@ -28,7 +28,6 @@ const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
-const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const IS_SAFARI_CLASS = 'is-safari';
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
@@ -697,67 +696,7 @@ class DocBaseViewer extends BaseViewer {
     loadUI() {
         this.controls = new Controls(this.containerEl);
         this.bindControlListeners();
-        this.controls.initPageNumEl(this.pdfViewer.pagesCount);
-    }
-
-    /**
-     * Replaces the page number display with an input box that allows the user to type in a page number
-     *
-     * @private
-     * @return {void}
-     */
-    showPageNumInput() {
-        // show the input box with the current page number selected within it
-        this.controls.controlsEl.classList.add(SHOW_PAGE_NUM_INPUT_CLASS);
-
-        this.controls.pageNumInputEl.value = this.controls.currentPageEl.textContent;
-        this.controls.pageNumInputEl.focus();
-        this.controls.pageNumInputEl.select();
-
-        // finish input when input is blurred or enter key is pressed
-        this.controls.pageNumInputEl.addEventListener('blur', this.pageNumInputBlurHandler);
-        this.controls.pageNumInputEl.addEventListener('keydown', this.pageNumInputKeydownHandler);
-    }
-
-    /**
-     * Hide the page number input
-     *
-     * @private
-     * @return {void}
-     */
-    hidePageNumInput() {
-        this.controls.controlsEl.classList.remove(SHOW_PAGE_NUM_INPUT_CLASS);
-        this.controls.pageNumInputEl.removeEventListener('blur', this.pageNumInputBlurHandler);
-        this.controls.pageNumInputEl.removeEventListener('keydown', this.pageNumInputKeydownHandler);
-    }
-
-    /**
-     * Update page number in page control widget.
-     *
-     * @private
-     * @param {number} pageNum - Number of page to update to
-     * @return {void}
-     */
-    updateCurrentPage(pageNum) {
-        let truePageNum = pageNum;
-        const pagesCount = this.pdfViewer.pagesCount;
-
-        // refine the page number to fall within bounds
-        if (pageNum > pagesCount) {
-            truePageNum = pagesCount;
-        } else if (pageNum < 1) {
-            truePageNum = 1;
-        }
-
-        if (this.controls.pageNumInputEl) {
-            this.controls.pageNumInputEl.value = truePageNum;
-        }
-
-        if (this.controls.currentPageEl) {
-            this.controls.currentPageEl.textContent = truePageNum;
-        }
-
-        this.controls.checkPaginationButtons(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
+        this.pageControls.addListener('setpage', this.setPage);
     }
 
     //--------------------------------------------------------------------------
@@ -838,64 +777,6 @@ class DocBaseViewer extends BaseViewer {
     bindControlListeners() {}
 
     /**
-     * Blur handler for page number input.
-     *
-     * @param  {Event} event Blur event
-     * @return {void}
-     * @private
-     */
-    pageNumInputBlurHandler(event) {
-        const target = event.target;
-        const pageNum = parseInt(target.value, 10);
-
-        if (!isNaN(pageNum)) {
-            this.setPage(pageNum);
-        }
-
-        this.hidePageNumInput();
-    }
-
-    /**
-     * Keydown handler for page number input.
-     *
-     * @private
-     * @param {Event} event - Keydown event
-     * @return {void}
-     */
-    pageNumInputKeydownHandler(event) {
-        const key = decodeKeydown(event);
-
-        switch (key) {
-            case 'Enter':
-            case 'Tab':
-                // The keycode of the 'next' key on Android Chrome is 9, which maps to 'Tab'.
-                this.docEl.focus();
-                // We normally trigger the blur handler by blurring the input
-                // field, but this doesn't work for IE in fullscreen. For IE,
-                // we blur the page behind the controls - this unfortunately
-                // is an IE-only solution that doesn't work with other browsers
-                if (Browser.getName() !== 'Explorer') {
-                    event.target.blur();
-                }
-
-                event.stopPropagation();
-                event.preventDefault();
-                break;
-
-            case 'Escape':
-                this.hidePageNumInput();
-                this.docEl.focus();
-
-                event.stopPropagation();
-                event.preventDefault();
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    /**
      * Handler for 'pagesinit' event.
      *
      * @private
@@ -905,7 +786,7 @@ class DocBaseViewer extends BaseViewer {
         this.pdfViewer.currentScaleValue = 'auto';
 
         this.loadUI();
-        this.controls.checkPaginationButtons(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
+        this.pageControls.checkPaginationButtons(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
 
         // Set current page to previously opened page or first page
         this.setPage(this.getCachedPage());
@@ -965,7 +846,7 @@ class DocBaseViewer extends BaseViewer {
      */
     pagechangeHandler(event) {
         const pageNum = event.pageNumber;
-        this.updateCurrentPage(pageNum);
+        this.pageControls.updateCurrentPage(pageNum);
 
         // We only set cache the current page if 'pagechange' was fired after
         // preview is loaded - this filters out pagechange events fired by

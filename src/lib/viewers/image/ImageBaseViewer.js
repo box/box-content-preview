@@ -43,8 +43,8 @@ class ImageBaseViewer extends BaseViewer {
             return;
         }
 
-        this.zoom();
         this.loadUI();
+        this.zoom();
 
         this.imageEl.classList.remove(CLASS_INVISIBLE);
         this.loaded = true;
