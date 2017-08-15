@@ -644,13 +644,21 @@ describe('lib/viewers/media/MediaControls', () => {
             expect(stubs.show).to.be.called;
         });
 
-        it('should remove the show controls class and hide the filmstrip if the wrapper element and parent exist', () => {
+        it('should remove the show controls class if the wrapper element and parent exist', () => {
             mediaControls.preventHiding = false;
             stubs.isSettingsVisible.returns(false);
 
             mediaControls.hide();
             expect(stubs.show).to.not.be.called;
             expect(mediaControls.wrapperEl.parentNode.classList.contains('bp-media-controls-is-visible')).to.be.false;
+        });
+
+        it('should hide the filmstrip', () => {
+            mediaControls.preventHiding = false;
+            stubs.isSettingsVisible.returns(false);
+            mediaControls.filmstripEl = document.createElement('div');
+
+            mediaControls.hide();
             expect(stubs.filmstripHideHandler).to.be.called;
         });
     });
@@ -991,6 +999,14 @@ describe('lib/viewers/media/MediaControls', () => {
 
         it('should do nothing if scrubbing', () => {
             mediaControls.isScrubbing = true;
+
+            mediaControls.filmstripHideHandler();
+            expect(mediaControls.filmstripContainerEl.style.display).to.equal('');
+        });
+
+        it('should do nothing if there is no filmstrip', () => {
+            mediaControls.isScrubbing = false;
+            mediaControls.filmstripEl = null;
 
             mediaControls.filmstripHideHandler();
             expect(mediaControls.filmstripContainerEl.style.display).to.equal('');
