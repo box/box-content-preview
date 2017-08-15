@@ -8,7 +8,6 @@ import {
 } from '../../annotationConstants';
 
 let docDrawingThread;
-let stubs;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/annotations/doc/DocDrawingThread', () => {
@@ -24,7 +23,6 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             y: 0,
             page: docDrawingThread.page
         };
-        stubs = {};
     });
 
     afterEach(() => {
