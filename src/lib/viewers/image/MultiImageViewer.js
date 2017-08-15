@@ -29,6 +29,9 @@ class MultiImageViewer extends ImageBaseViewer {
 
         this.singleImageEls = [this.imageEl.appendChild(document.createElement('img'))];
         this.loadTimeout = 60000;
+
+        // Defaults the current page number to 1
+        this.currentPageNumber = 1;
     }
 
     /**
@@ -166,6 +169,9 @@ class MultiImageViewer extends ImageBaseViewer {
 
         // Give the browser some time to render before updating pannability
         setTimeout(this.updatePannability, ZOOM_UPDATE_PAN_DELAY);
+
+        // Set current page to previously opened page or first page
+        this.setPage(this.currentPageNumber);
     }
 
     /**
@@ -221,6 +227,21 @@ class MultiImageViewer extends ImageBaseViewer {
         }
 
         this.singleImageEls[index].removeEventListener('error', this.errorHandler);
+    }
+
+    /**
+     * Go to specified page
+     *
+     * @param {number} pageNum - Page to navigate to
+     * @return {void}
+     */
+    setPage(pageNum) {
+        if (pageNum <= 0 || pageNum > this.singleImageEls.length) {
+            return;
+        }
+
+        this.currentPageNumber = pageNum;
+        this.singleImageEls[pageNum].scrollIntoView();
     }
 }
 
