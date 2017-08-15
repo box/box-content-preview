@@ -258,8 +258,8 @@ class MultiImageViewer extends ImageBaseViewer {
             return;
         }
 
-        this.currentPageNumber = pageNum - 1;
-        this.singleImageEls[this.currentPageNumber].scrollIntoView();
+        this.currentPageNumber = pageNum;
+        this.singleImageEls[pageNum - 1].scrollIntoView();
     }
 
     /**
@@ -332,7 +332,11 @@ class MultiImageViewer extends ImageBaseViewer {
         const currentPageMiddleY = currentPageEl.offsetTop + currentPageEl.clientHeight / 2;
         const isScrolledToBottom = wrapperScrollOffset + this.wrapperEl.clientHeight >= this.wrapperEl.scrollHeight;
 
-        if (this.scrollState.down && (wrapperScrollOffset > currentPageMiddleY || isScrolledToBottom)) {
+        if (
+            this.scrollState.down &&
+            currentPageEl.nextSibling &&
+            (wrapperScrollOffset > currentPageMiddleY || isScrolledToBottom)
+        ) {
             // Increment page
             const nextPage = currentPageEl.nextSibling;
             pageNum = parseInt(nextPage.dataset.pageNumber, 10);
