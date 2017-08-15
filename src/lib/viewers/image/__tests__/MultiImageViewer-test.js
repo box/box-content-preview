@@ -46,6 +46,15 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             }
         };
 
+        stubs.singleImageEl = {
+            src: undefined,
+            setAttribute: sandbox.stub(),
+            classList: {
+                add: sandbox.stub()
+            },
+            scrollIntoView: sandbox.stub()
+        };
+
         multiImage = new MultiImageViewer(options);
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
@@ -138,13 +147,6 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         beforeEach(() => {
             multiImage.setup();
             stubs.bindImageListeners = sandbox.stub(multiImage, 'bindImageListeners');
-            stubs.singleImageEl = {
-                src: undefined,
-                setAttribute: sandbox.stub(),
-                classList: {
-                    add: sandbox.stub()
-                }
-            };
         });
 
         it('should set the single image el and error handler if it is not the first image', () => {
@@ -252,6 +254,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         beforeEach(() => {
             stubs.zoomEmit = sandbox.stub(multiImage, 'emit');
             stubs.setScale = sandbox.stub(multiImage, 'setScale');
+            stubs.scroll = sandbox.stub(multiImage, 'setPage');
             stubs.updatePannability = sandbox.stub(multiImage, 'updatePannability');
             multiImage.setup();
         });
@@ -354,6 +357,25 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
             multiImage.setScale(512, 512);
             expect(multiImage.emit).to.be.calledWith('scale', { scale: 0.5 });
+        });
+    });
+
+    describe('setPage()', () => {
+        it('should scroll to the current page', () => {
+            multiImage.singleImageEls = {
+                1: stubs.singleImageEl,
+                2: stubs.singleImageEl,
+                3: stubs.singleImageEl
+            };
+            sandbox.stub(multiImage, 'emit');
+
+            multiImage.setPage(2);
+            expect(multiImage.currentPageNumber).equals(2);
+        });
+
+        it('should not do anything if setting an invalid page', () => {
+            multiImage.setPage(-1);
+            expect(multiImage.currentPageNumber).to.be.undefined;
         });
     });
 });
