@@ -308,11 +308,14 @@ class DocAnnotator extends Annotator {
             thread = new DocDrawingThread(threadParams);
         } else if (type === TYPES.point) {
             thread = new DocPointThread(threadParams);
-        } else {
-            throw new Error(`Unhandled document annotation type: ${type}`);
         }
 
-        this.addThreadToMap(thread);
+        if (!thread && this.notification) {
+            this.emit('annotationerror', __('annotations_create_error'));
+        } else if (thread) {
+            this.addThreadToMap(thread);
+        }
+
         return thread;
     }
 

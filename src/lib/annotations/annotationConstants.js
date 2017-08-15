@@ -23,6 +23,7 @@ export const CLASS_ADD_HIGHLIGHT_BTN = 'bp-add-highlight-btn';
 export const CLASS_ADD_HIGHLIGHT_COMMENT_BTN = 'bp-highlight-comment-btn';
 export const CLASS_ANNOTATION_LAYER_HIGHLIGHT = 'bp-annotation-layer-highlight';
 export const CLASS_ANNOTATION_LAYER_DRAW = 'bp-annotation-layer-draw';
+export const CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS = 'bp-annotation-layer-draw-in-progress';
 export const CLASS_ANNOTATION_BUTTON_POINT = 'bp-btn-annotate-point';
 export const CLASS_ANNOTATION_BUTTON_DRAW_POST = 'bp-btn-annotate-draw-post';
 export const CLASS_ANNOTATION_BUTTON_DRAW_CANCEL = 'bp-btn-annotate-draw-cancel';
@@ -64,10 +65,10 @@ export const SELECTOR_DIALOG_CLOSE = `.${CLASS_DIALOG_CLOSE}`;
 export const SELECTOR_HIGHLIGHT_BTNS = `.${CLASS_HIGHLIGHT_BTNS}`;
 export const SELECTOR_ADD_HIGHLIGHT_BTN = `.${CLASS_ADD_HIGHLIGHT_BTN}`;
 
-export const STATES_DRAW = {
-    draw: 'draw',
+export const DRAW_STATES = {
     idle: 'idle',
-    erase: 'erase'
+    drawing: 'drawing',
+    erasing: 'erasing'
 };
 
 export const STATES = {

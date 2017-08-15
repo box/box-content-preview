@@ -768,7 +768,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.scale = 1.5;
             base.annotator = {
                 init: sandbox.stub(),
-                addListener: sandbox.stub(),
+                addListener: sandbox.stub()
             };
             base.annotatorConf = {
                 CONSTRUCTOR: sandbox.stub().returns(base.annotator)

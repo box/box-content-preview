@@ -406,8 +406,8 @@ export function getContext(pageEl, annotationLayerClass, paddingTop, paddingBott
  * Gets the current page element.
  *
  * @private
- * @param {HTMLElement} annotatedEl HTML Element being annotated on
- * @param {number} pageNum Page number
+ * @param {HTMLElement} annotatedEl - HTML Element being annotated on
+ * @param {number} pageNum - Page number
  * @return {HTMLElement|null} Page element if it exists, otherwise null
  */
 export function getPageEl(annotatedEl, pageNum) {

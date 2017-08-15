@@ -394,6 +394,23 @@ export function eventToLocationHandler(locationFunction, callback) {
     };
 }
 
+/**
+ * Create a JSON object containing x/y coordinates and optionally dimensional information
+ *
+ * @param {number} x - The x position of the location object
+ * @param {number} y - The y position of the location object
+ * @param {Object} [dimensions] - The dimensional information of the location object
+ * @return {Object} - A location object with x/y position information as well as provided dimensional information
+ */
+export function createLocation(x, y, dimensions) {
+    const loc = { x, y };
+    if (dimensions) {
+        loc.dimensions = dimensions;
+    }
+
+    return loc;
+}
+
 //------------------------------------------------------------------------------
 // General Util Methods
 //------------------------------------------------------------------------------
@@ -500,6 +517,22 @@ export function getHeaders(headers = {}, token = '', sharedLink = '', password =
 
     /* eslint-enable no-param-reassign */
     return headers;
+}
+
+/**
+ * Round a number to a certain decimal place by concatenating an exponential factor. Credits to lodash library.
+ *
+ * @param {number} number - The number to be rounded
+ * @param {number} precision - The amount of decimal places to keep
+ * @return {number} The rounded number
+ */
+export function round(number, precision) {
+    /* eslint-disable prefer-template */
+    let pair = (number + 'e').split('e');
+    const value = Math.round(pair[0] + 'e' + (+pair[1] + precision));
+    pair = (value + 'e').split('e');
+    return +(pair[0] + 'e' + (+pair[1] - precision));
+    /* eslint-enable prefer-template */
 }
 
 /**

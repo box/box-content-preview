@@ -37,7 +37,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             isMobile: false,
             options: {},
             previewUI: {
-                getAnnotateButton: () => {}
+                getAnnotateButton: sandbox.stub()
             },
             modeButtons: {}
         });
@@ -248,6 +248,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.setupFunc = AnnotationThread.prototype.setup;
             stubs.validateThread = sandbox.stub(annotatorUtil, 'validateThreadParams').returns(true);
             sandbox.stub(annotator, 'handleValidationError');
+            annotator.notification = {
+                show: sandbox.stub()
+            };
         });
 
         afterEach(() => {
@@ -295,6 +298,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should create, add drawing thread to internal map, and return it', () => {
+            annotator.previewUI.getAnnotateButton.returns('commit drawing button');
             const thread = annotator.createAnnotationThread([], {}, TYPES.draw);
             expect(stubs.addThread).to.have.been.called;
             expect(thread instanceof DocDrawingThread).to.be.true;
@@ -303,9 +307,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         it('should emit error and return undefined if thread params are invalid', () => {
             stubs.validateThread.returns(false);
-            sandbox.stub(annotator, 'emit');
             const thread = annotator.createAnnotationThread([], {}, TYPES.highlight);
             expect(thread instanceof DocHighlightThread).to.be.false;
+            expect(thread).to.be.empty;
             expect(annotator.handleValidationError).to.be.called;
         });
     });
