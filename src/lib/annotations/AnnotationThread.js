@@ -367,7 +367,7 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     cancelUnsavedAnnotation() {
-        if (!this.isMobile && !annotatorUtil.isPending(this.state)) {
+        if (!annotatorUtil.isPending(this.state)) {
             return;
         }
         this.destroy();

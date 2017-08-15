@@ -93,14 +93,15 @@ describe('lib/annotations/Annotator', () => {
             const unbindCustomStub = sandbox.stub(annotator, 'unbindCustomListenersOnThread');
             const unbindDOMStub = sandbox.stub(annotator, 'unbindDOMListeners');
             const unbindCustomListenersOnService = sandbox.stub(annotator, 'unbindCustomListenersOnService');
-            const unbindScaleListener = sandbox.stub(annotator, 'removeListener');
+            const unbindListener = sandbox.stub(annotator, 'removeListener');
 
             annotator.destroy();
 
             expect(unbindCustomStub).to.be.calledWith(stubs.thread);
             expect(unbindDOMStub).to.be.called;
             expect(unbindCustomListenersOnService).to.be.called;
-            expect(unbindScaleListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
+            expect(unbindListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
+            expect(unbindListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
         });
     });
 
@@ -285,23 +286,6 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('isTypeEnabled()', () => {
-            it('should return true when option.TYPE includes the type being checked', () => {
-                annotator.options.TYPE = [TYPES.point, TYPES.draw];
-                expect(annotator.isTypeEnabled(TYPES.draw)).to.be.truthy;
-            });
-
-            it('should return false when option.TYPE does not include the type being checked', () => {
-                annotator.options.TYPE = [TYPES.point, TYPES.highlight];
-                expect(annotator.isTypeEnabled(TYPES.draw)).to.be.falsy;
-            });
-
-            it('should return false when option.TYPE does not exist', () => {
-                annotator.options.TYPE = undefined;
-                expect(annotator.isTypeEnabled(TYPES.draw)).to.be.falsy;
-            });
-        });
-
         describe('toggleAnnotationHandler()', () => {
             beforeEach(() => {
                 stubs.destroyStub = sandbox.stub(annotator, 'destroyPendingThreads');
@@ -310,6 +294,7 @@ describe('lib/annotations/Annotator', () => {
                 stubs.disable = sandbox.stub(annotator, 'disableAnnotationMode');
                 stubs.enable = sandbox.stub(annotator, 'enableAnnotationMode');
                 sandbox.stub(annotator.previewUI, 'getAnnotateButton');
+                stubs.isAnnotatable = sandbox.stub(annotator, 'isModeAnnotatable').returns(true);
 
                 annotator.modeButtons = {
                     point: { selector: 'point_btn' },
@@ -321,10 +306,16 @@ describe('lib/annotations/Annotator', () => {
                 annotator.modeButtons = {};
             });
 
+            it('should do nothing if specified annotation type is not annotatable', () => {
+                stubs.isAnnotatable.returns(false);
+                annotator.toggleAnnotationHandler('bleh');
+                expect(stubs.destroyStub).to.not.be.called;
+            });
+
             it('should do nothing if specified annotation type does not have a mode button', () => {
                 annotator.toggleAnnotationHandler(TYPES.highlight);
                 expect(stubs.destroyStub).to.be.called;
-                expect(stubs.exitAnnotationModes)
+                expect(stubs.exitModes).to.not.be.called;
             });
 
             it('should turn annotation mode on if it is off', () => {

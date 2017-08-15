@@ -13,6 +13,7 @@ import {
     CLASS_ANNOTATION_MODE,
     CLASS_MOBILE_DIALOG_HEADER,
     CLASS_DIALOG_CLOSE,
+    ID_MOBILE_ANNOTATION_DIALOG,
     SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL,
     SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER,
     SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
@@ -58,6 +59,7 @@ class Annotator extends EventEmitter {
         this.locale = data.locale;
         this.validationErrorEmitted = false;
         this.isMobile = data.isMobile;
+        this.hasTouch = data.hasTouch;
         this.previewUI = data.previewUI;
         this.modeButtons = data.modeButtons;
         this.annotationModeHandlers = [];
@@ -89,6 +91,7 @@ class Annotator extends EventEmitter {
         this.unbindDOMListeners();
         this.unbindCustomListenersOnService();
         this.removeListener('scaleAnnotations', this.scaleAnnotations);
+        this.removeListener('toggleannotationmode', this.toggleAnnotationHandler);
     }
 
     /**
@@ -196,6 +199,7 @@ class Annotator extends EventEmitter {
         mobileDialogEl.classList.add(CLASS_MOBILE_ANNOTATION_DIALOG);
         mobileDialogEl.classList.add(CLASS_ANNOTATION_DIALOG);
         mobileDialogEl.classList.add(CLASS_HIDDEN);
+        mobileDialogEl.id = ID_MOBILE_ANNOTATION_DIALOG;
 
         mobileDialogEl.innerHTML = `
             <div class="${CLASS_MOBILE_DIALOG_HEADER}">
@@ -203,17 +207,6 @@ class Annotator extends EventEmitter {
             </div>`.trim();
 
         this.container.appendChild(mobileDialogEl);
-    }
-
-    /**
-     * Returns true if the annotator has an annotation type enabled
-     *
-     * @param {string} type - Annotation type to check
-     * @return {boolean} Whether or not the annotation type is enabled
-     */
-    isTypeEnabled(type) {
-        const { annotator } = this.options || {};
-        return annotator.TYPE && annotator.TYPE.includes(type);
     }
 
     /**
@@ -336,6 +329,10 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     toggleAnnotationHandler(mode, event = {}) {
+        if (!this.isModeAnnotatable(mode)) {
+            return;
+        }
+
         this.destroyPendingThreads();
 
         // No specific mode available for annotation type
@@ -744,8 +741,8 @@ class Annotator extends EventEmitter {
                 handlers.push({
                     type: 'click',
                     func: () => {
-                        drawingThread.saveAnnotation(TYPES.draw);
-                        this.toggleAnnotationHandler(TYPES.draw);
+                        drawingThread.saveAnnotation(mode);
+                        this.toggleAnnotationHandler(mode);
                     },
                     eventObj: postButtonEl
                 });
