@@ -128,7 +128,7 @@ describe('lib/Preview', () => {
             const spy = sandbox.spy(preview, 'show');
 
             try {
-                preview.show('file');
+                preview.show('file', {});
             } catch (e) {
                 expect(spy.threw());
                 expect(e.message).to.equal('Missing access token!');
