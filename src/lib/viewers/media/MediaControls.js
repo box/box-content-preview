@@ -843,7 +843,7 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     filmstripHideHandler() {
-        if (!this.isScrubbing) {
+        if (!this.isScrubbing && this.filmstripEl) {
             this.filmstripContainerEl.style.display = 'none';
         }
     }
