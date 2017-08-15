@@ -93,14 +93,15 @@ describe('lib/annotations/Annotator', () => {
             const unbindCustomStub = sandbox.stub(annotator, 'unbindCustomListenersOnThread');
             const unbindDOMStub = sandbox.stub(annotator, 'unbindDOMListeners');
             const unbindCustomListenersOnService = sandbox.stub(annotator, 'unbindCustomListenersOnService');
-            const unbindScaleListener = sandbox.stub(annotator, 'removeListener');
+            const unbindListener = sandbox.stub(annotator, 'removeListener');
 
             annotator.destroy();
 
             expect(unbindCustomStub).to.be.calledWith(stubs.thread);
             expect(unbindDOMStub).to.be.called;
             expect(unbindCustomListenersOnService).to.be.called;
-            expect(unbindScaleListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
+            expect(unbindListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
+            expect(unbindListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
         });
     });
 

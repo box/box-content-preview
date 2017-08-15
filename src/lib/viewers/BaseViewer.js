@@ -332,7 +332,6 @@ class BaseViewer extends EventEmitter {
     addCommonListeners() {
         // Attach common full screen event listeners
         fullscreen.addListener('enter', this.onFullscreenToggled);
-
         fullscreen.addListener('exit', this.onFullscreenToggled);
 
         // Add a resize handler for the window

@@ -89,6 +89,7 @@ class Annotator extends EventEmitter {
         this.unbindDOMListeners();
         this.unbindCustomListenersOnService();
         this.removeListener('scaleAnnotations', this.scaleAnnotations);
+        this.removeListener('toggleannotationmode', this.toggleAnnotationHandler);
     }
 
     /**
@@ -697,8 +698,8 @@ class Annotator extends EventEmitter {
                 handlers.push({
                     type: 'click',
                     func: () => {
-                        drawingThread.saveAnnotation(TYPES.draw);
-                        this.toggleAnnotationHandler(TYPES.draw);
+                        drawingThread.saveAnnotation(mode);
+                        this.toggleAnnotationHandler(mode);
                     },
                     eventObj: postButtonEl
                 });
