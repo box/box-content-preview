@@ -93,7 +93,7 @@ describe('lib/Controls', () => {
             element.className = '';
             expect(controls.isPreviewControlButton(element)).to.be.false;
 
-            parent.className = 'bp-doc-page-num-wrapper';
+            parent.className = 'bp-page-num-wrapper';
             expect(controls.isPreviewControlButton(element)).to.be.true;
         });
     });
