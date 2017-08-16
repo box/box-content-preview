@@ -1,12 +1,9 @@
 import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
-import pageNumTemplate from './pageNumButtonContent.html';
 import DocBaseViewer from './DocBaseViewer';
 import PresentationPreloader from './PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../constants';
 import {
-    ICON_DROP_DOWN,
-    ICON_DROP_UP,
     ICON_FILE_PRESENTATION,
     ICON_FULLSCREEN_IN,
     ICON_FULLSCREEN_OUT,
@@ -193,22 +190,8 @@ class PresentationViewer extends DocBaseViewer {
         this.controls.add(__('zoom_out'), this.zoomOut, 'bp-exit-zoom-out-icon', ICON_ZOOM_OUT);
         this.controls.add(__('zoom_in'), this.zoomIn, 'bp-enter-zoom-in-icon', ICON_ZOOM_IN);
 
-        this.controls.add(
-            __('previous_page'),
-            this.previousPage,
-            'bp-presentation-previous-page-icon bp-previous-page',
-            ICON_DROP_UP
-        );
-
-        const buttonContent = pageNumTemplate.replace(/>\s*</g, '><'); // removing new lines
-        this.controls.add(__('enter_page_num'), this.showPageNumInput, 'bp-doc-page-num', buttonContent);
-
-        this.controls.add(
-            __('next_page'),
-            this.nextPage,
-            'bp-presentation-next-page-icon bp-next-page',
-            ICON_DROP_DOWN
-        );
+        this.pageControls.init(this.pdfViewer.pagesCount);
+        this.pageControls.addListener('setpage', this.setPage);
 
         this.controls.add(
             __('enter_fullscreen'),

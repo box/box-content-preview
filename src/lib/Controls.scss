@@ -16,6 +16,71 @@
     position: relative;
     table-layout: fixed;
     transition: opacity .5s;
+
+    // Page num input CSS
+    .bp-page-num {
+        min-width: 48px;
+        width: auto; // Let page num expand as needed
+
+        span {
+            display: inline;
+            font-size: 14px;
+        }
+    }
+
+    .bp-page-num-wrapper {
+        background-color: #444;
+        border-radius: 3px;
+        margin: 5px;
+        padding: 7px 5px;
+    }
+
+    /* stylelint-disable property-no-vendor-prefix */
+    // Removes the spinner for number type inputs in Webkit browsers
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+    }
+
+    // Removes the spinner for number type inputs in Firefox
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+
+    /* stylelint-enable property-no-vendor-prefix */
+
+    .bp-page-num-input {
+        font-size: 14px;
+        margin: 0 auto;
+        position: absolute;
+        text-align: center;
+        visibility: hidden;
+        width: 44px; // hard-coded to solve layout issues
+    }
+
+    &.show-page-number-input {
+        .bp-page-num-wrapper {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+        }
+
+        .bp-page-num {
+            opacity: 1;
+        }
+
+        .bp-current-page,
+        .bp-page-num-divider,
+        .bp-total-pages {
+            display: none;
+        }
+
+        .bp-page-num-input {
+            display: inline-block;
+            position: static;
+            visibility: visible;
+        }
+    }
 }
 
 .box-show-preview-controls .bp-controls {
