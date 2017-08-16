@@ -7,7 +7,8 @@ import {
     STATES,
     TYPES,
     CLASS_ANNOTATION_DRAW_MODE,
-    CLASS_HIDDEN
+    CLASS_HIDDEN,
+    SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT
 } from '../annotationConstants';
 
 let annotator;
@@ -37,9 +38,6 @@ describe('lib/annotations/Annotator', () => {
             fileVersionId: 1,
             isMobile: false,
             options,
-            previewUI: {
-                getAnnotateButton: () => {}
-            },
             modeButtons: {}
         });
 
@@ -293,7 +291,7 @@ describe('lib/annotations/Annotator', () => {
                 stubs.exitModes = sandbox.stub(annotator, 'exitAnnotationModes');
                 stubs.disable = sandbox.stub(annotator, 'disableAnnotationMode');
                 stubs.enable = sandbox.stub(annotator, 'enableAnnotationMode');
-                sandbox.stub(annotator.previewUI, 'getAnnotateButton');
+                sandbox.stub(annotator, 'getAnnotateButton');
                 stubs.isAnnotatable = sandbox.stub(annotator, 'isModeAnnotatable').returns(true);
 
                 annotator.modeButtons = {
@@ -520,7 +518,7 @@ describe('lib/annotations/Annotator', () => {
                     addEventListener: sandbox.stub(),
                     removeEventListener: sandbox.stub()
                 };
-                sandbox.stub(annotator.previewUI, 'getAnnotateButton').returns(null);
+                sandbox.stub(annotator, 'getAnnotateButton').returns(null);
                 const locationHandler = (() => {});
 
                 sandbox.stub(annotatorUtil, 'eventToLocationHandler').returns(locationHandler);
@@ -545,7 +543,7 @@ describe('lib/annotations/Annotator', () => {
                     addEventListener: sandbox.stub(),
                     removeEventListener: sandbox.stub()
                 };
-                sandbox.stub(annotator.previewUI, 'getAnnotateButton').returns(postButtonEl);
+                sandbox.stub(annotator, 'getAnnotateButton').returns(postButtonEl);
                 const locationHandler = (() => {});
 
                 sandbox.stub(annotatorUtil, 'eventToLocationHandler').returns(locationHandler);
@@ -818,9 +816,6 @@ describe('lib/annotations/Annotator', () => {
                         annotator: { NAME: annotatorName },
                         fileId
                     },
-                    previewUI: {
-                        getAnnotateButton: sandbox.stub()
-                    },
                     modeButtons: {}
                 });
 
@@ -914,6 +909,14 @@ describe('lib/annotations/Annotator', () => {
                 annotator.showModeAnnotateButton(TYPES.point);
                 expect(buttonEl.title).to.equal('Point Annotation Mode');
                 expect(annotator.getAnnotationModeClickHandler).to.be.called;
+            });
+        });
+
+        describe('getAnnotateButton()', () => {
+            it('should return the annotate button', () => {
+                const selector = 'bp-btn-annotate';
+                const buttonEl = annotator.getAnnotateButton(`.${selector}`);
+                expect(buttonEl).to.have.class(selector);
             });
         });
 
