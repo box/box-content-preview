@@ -206,7 +206,7 @@ class MultiImageViewer extends ImageBaseViewer {
     bindControlListeners() {
         super.bindControlListeners();
 
-        this.pageControls = new PageControls(this.controls, this.prevPage, this.nextPage);
+        this.pageControls = new PageControls(this.controls, this.previousPage, this.nextPage);
         this.pageControls.init(this.pagesCount);
         this.pageControls.addListener('setpage', this.setPage);
 
