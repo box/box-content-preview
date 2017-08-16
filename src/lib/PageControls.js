@@ -106,7 +106,7 @@ class PageControls extends EventEmitter {
      */
     checkPaginationButtons(currentPageNum, pagesCount) {
         const pageNumButtonEl = this.controlsEl.querySelector(`.${PAGE_NUM}`);
-        const previousPageButtonEl = this.controlsEl.querySelector(`${PREV_PAGE}`);
+        const previousPageButtonEl = this.controlsEl.querySelector(`.${PREV_PAGE}`);
         const nextPageButtonEl = this.controlsEl.querySelector(`.${NEXT_PAGE}`);
 
         // Safari disables keyboard input in fullscreen before Safari 10.1

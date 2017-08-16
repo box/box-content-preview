@@ -1,13 +1,15 @@
 /* eslint-disable no-unused-expressions */
 import PageControls from '../PageControls';
+import Controls from '../Controls';
 import { CLASS_HIDDEN } from './../constants';
 import fullscreen from '../Fullscreen';
 import Browser from '../Browser';
 import { decodeKeydown } from '../util';
 import { ICON_DROP_DOWN, ICON_DROP_UP } from '../icons/icons';
 
-let controls;
+let pageControls;
 let clock;
+let stubs = {};
 
 const sandbox = sinon.sandbox.create();
 
@@ -30,227 +32,166 @@ describe('lib/PageControls', () => {
 
     beforeEach(() => {
         fixture.load('__tests__/PageControls-test.html');
-        controls = new PageControls(document.getElementById('test-page-controls-container'));
+        const controls = new Controls(document.getElementById('test-page-controls-container'));
+        pageControls = new PageControls(controls, sandbox.stub, sandbox.stub);
     });
 
     afterEach(() => {
         fixture.cleanup();
         sandbox.verifyAndRestore();
 
-        if (controls && typeof controls.destroy === 'function') {
-            controls.destroy();
+        if (pageControls && typeof pageControls.destroy === 'function') {
+            pageControls.destroy();
         }
 
-        controls = null;
+        pageControls = null;
+        stubs = {};
     });
 
     describe('constructor()', () => {
         it('should create the correct DOM structure', () => {
+            expect(pageControls.controlsEl).to.not.be.undefined;
+            expect(pageControls.controls.buttonRefs.length).equals(3);
         });
     });
 
-    describe('checkPaginationButtons()', () => {
-        beforeEach(() => {
-            const pageNumButtonEl = document.createElement('div');
-            pageNumButtonEl.className = 'bp-doc-page-num';
-            pageNumButtonEl.disabled = undefined;
-            docBase.containerEl.appendChild(pageNumButtonEl);
-
-            const previousPageButtonEl = document.createElement('div');
-            previousPageButtonEl.className = 'bp-previous-page';
-            previousPageButtonEl.disabled = undefined;
-            docBase.containerEl.appendChild(previousPageButtonEl);
-
-            const nextPageButtonEl = document.createElement('div');
-            nextPageButtonEl.className = 'bp-next-page';
-            nextPageButtonEl.disabled = undefined;
-            docBase.containerEl.appendChild(nextPageButtonEl);
-
-            docBase.pdfViewer = {
-                pagesCount: 0,
-                currentPageNumber: 1
-            };
-
-            stubs.pageNumButtonEl = pageNumButtonEl;
-            stubs.previousPageButtonEl = previousPageButtonEl;
-            stubs.nextPageButtonEl = nextPageButtonEl;
-            stubs.browser = sandbox.stub(Browser, 'getName').returns('Safari');
-            stubs.fullscreen = sandbox.stub(fullscreen, 'isFullscreen').returns(true);
-        });
-
-        afterEach(() => {
-            docBase.containerEl.innerHTML = '';
-            docBase.pdfViewer = undefined;
-        });
-
-        it('should disable/enable page number button el based on current page and browser type', () => {
-            docBase.checkPaginationButtons();
-            expect(stubs.pageNumButtonEl.disabled).to.equal(true);
-
-            docBase.pdfViewer.pagesCount = 6;
-            docBase.checkPaginationButtons();
-            expect(stubs.pageNumButtonEl.disabled).to.equal(true);
-
-            stubs.fullscreen.returns('false');
-            stubs.browser.returns('Chrome');
-            docBase.checkPaginationButtons();
-            expect(stubs.pageNumButtonEl.disabled).to.equal(false);
-        });
-
-        it('should disable/enable previous page button el based on current page', () => {
-            docBase.checkPaginationButtons();
-            expect(stubs.previousPageButtonEl.disabled).to.equal(true);
-
-            docBase.pdfViewer.currentPageNumber = 20;
-            docBase.checkPaginationButtons();
-            expect(stubs.previousPageButtonEl.disabled).to.equal(false);
-        });
-
-        it('should disable/enable next page button el based on current page', () => {
-            docBase.pdfViewer.currentPageNumber = 20;
-            docBase.pdfViewer.pagesCount = 20;
-
-            docBase.checkPaginationButtons();
-            expect(stubs.nextPageButtonEl.disabled).to.equal(true);
-
-            docBase.pdfViewer.currentPageNumber = 1;
-            docBase.checkPaginationButtons();
-            expect(stubs.nextPageButtonEl.disabled).to.equal(false);
-        });
-    });
-
-    describe('initPageNumEl()', () => {
-        beforeEach(() => {
-            docBase.pdfViewer = {
-                pagesCount: 5
-            };
-            stubs.totalPageEl = {
-                textContent: 0,
-                setAttribute: sandbox.stub()
-            };
-            stubs.querySelector = {
-                querySelector: sandbox.stub().returns(stubs.totalPageEl)
-            };
-            docBase.controls = {
-                controlsEl: {
-                    querySelector: sandbox.stub().returns(stubs.querySelector)
-                }
-            };
-        });
-
-        it('should set the text content on the total page element', () => {
-            docBase.initPageNumEl();
-
-            expect(docBase.controls.controlsEl.querySelector).to.be.called;
-            expect(stubs.querySelector.querySelector).to.be.called;
-            expect(stubs.totalPageEl.textContent).to.equal(5);
-        });
-
-        it('should keep track of the page number input and current page elements', () => {
-            docBase.initPageNumEl();
-
-            expect(docBase.pageNumInputEl).to.equal(stubs.totalPageEl);
-            expect(docBase.currentPageEl).to.equal(stubs.totalPageEl);
+    describe('init()', () => {
+        it('should initialize the page number selector', () => {
+            const pagesCount = '5';
+            pageControls.init(pagesCount);
+            const totalPageEl = pageControls.controlsEl.querySelector(`.${CONTROLS_TOTAL_PAGES}`);
+            const pageNumInputEl = pageControls.controlsEl.querySelector(`.${CONTROLS_PAGE_NUM_INPUT_CLASS}`);
+            expect(pageControls.pagesCount).equals(pagesCount);
+            expect(totalPageEl).to.have.text(pagesCount);
+            expect(pageNumInputEl).to.have.attr('max', pagesCount);
+            expect(pageControls.currentPageEl).to.not.be.undefined;
         });
     });
 
     describe('showPageNumInput()', () => {
         it('should set the page number input value, focus, select, and add listeners', () => {
-            docBase.controls = {
-                controlsEl: {
-                    classList: {
-                        add: sandbox.stub()
-                    }
-                }
-            };
-            docBase.currentPageEl = 0;
-            docBase.pageNumInputEl = {
+            pageControls.currentPageEl = 0;
+            pageControls.pageNumInputEl = {
                 value: 0,
                 focus: sandbox.stub(),
                 select: sandbox.stub(),
                 addEventListener: sandbox.stub()
             };
 
-            docBase.showPageNumInput();
-            expect(docBase.pageNumInputEl.focus).to.be.called;
-            expect(docBase.pageNumInputEl.select).to.be.called;
-            expect(docBase.pageNumInputEl.addEventListener).to.be.called.twice;
+            pageControls.showPageNumInput();
+            expect(pageControls.controlsEl).to.have.class(SHOW_PAGE_NUM_INPUT_CLASS);
+            expect(pageControls.pageNumInputEl.focus).to.be.called;
+            expect(pageControls.pageNumInputEl.select).to.be.called;
+            expect(pageControls.pageNumInputEl.addEventListener).to.be.calledWith('blur', sinon.match.func);
+            expect(pageControls.pageNumInputEl.addEventListener).to.be.calledWith('keydown', sinon.match.func);
         });
     });
 
     describe('hidePageNumInput()', () => {
         it('should hide the input class and remove event listeners', () => {
-            docBase.controls = {
-                controlsEl: {
-                    classList: {
-                        remove: sandbox.stub()
-                    }
-                }
-            };
-            docBase.pageNumInputEl = {
+            pageControls.pageNumInputEl = {
                 removeEventListener: sandbox.stub()
             };
 
-            docBase.hidePageNumInput();
-            expect(docBase.controls.controlsEl.classList.remove).to.be.called;
-            expect(docBase.pageNumInputEl.removeEventListener).to.be.called;
+            pageControls.hidePageNumInput();
+            expect(pageControls.controlsEl).to.not.have.class(SHOW_PAGE_NUM_INPUT_CLASS);
+            expect(pageControls.pageNumInputEl.removeEventListener).to.be.calledWith('blur', sinon.match.func);
+            expect(pageControls.pageNumInputEl.removeEventListener).to.be.calledWith('keydown', sinon.match.func);
+        });
+    });
+
+    describe('checkPaginationButtons()', () => {
+        beforeEach(() => {
+            stubs.pageNumButtonEl = pageControls.controlsEl.querySelector(`.${PAGE_NUM}`);
+            stubs.previousPageButtonEl = pageControls.controlsEl.querySelector(`.${PREV_PAGE}`);
+            stubs.nextPageButtonEl = pageControls.controlsEl.querySelector(`.${NEXT_PAGE}`);
+
+            stubs.browser = sandbox.stub(Browser, 'getName').returns('Safari');
+            stubs.fullscreen = sandbox.stub(fullscreen, 'isFullscreen').returns(true);
+        });
+
+        it('should disable/enable page number button el based on current page and browser type', () => {
+            pageControls.checkPaginationButtons();
+            expect(stubs.pageNumButtonEl.disabled).to.equal(true);
+
+            pageControls.checkPaginationButtons(1, 6);
+            expect(stubs.pageNumButtonEl.disabled).to.equal(true);
+
+            stubs.fullscreen.returns('false');
+            stubs.browser.returns('Chrome');
+            pageControls.checkPaginationButtons(1, 6);
+            expect(stubs.pageNumButtonEl.disabled).to.equal(false);
+        });
+
+        it('should disable/enable previous page button el based on current page', () => {
+            pageControls.checkPaginationButtons(1, 5);
+            expect(stubs.previousPageButtonEl.disabled).to.equal(true);
+
+            pageControls.checkPaginationButtons(20, 20);
+            expect(stubs.previousPageButtonEl.disabled).to.equal(false);
+        });
+
+        it('should disable/enable next page button el based on current page', () => {
+            pageControls.checkPaginationButtons(20, 20);
+            expect(stubs.nextPageButtonEl.disabled).to.equal(true);
+
+            pageControls.checkPaginationButtons(1, 20);
+            expect(stubs.nextPageButtonEl.disabled).to.equal(false);
         });
     });
 
     describe('updateCurrentPage()', () => {
         it('should only update the page to a valid value', () => {
-            docBase.pdfViewer = {
-                pagesCount: 10
-            };
-            docBase.pageNumInputEl = {
+            pageControls.pagesCount = 10;
+            pageControls.pageNumInputEl = {
                 value: 1,
                 textContent: 1
             };
-            const checkPaginationButtonsStub = sandbox.stub(docBase, 'checkPaginationButtons');
+            const checkPaginationButtonsStub = sandbox.stub(pageControls, 'checkPaginationButtons');
 
-            docBase.updateCurrentPage(-5);
+            pageControls.updateCurrentPage(-5);
             expect(checkPaginationButtonsStub).to.be.called;
-            expect(docBase.pageNumInputEl.value).to.equal(1);
+            expect(pageControls.pageNumInputEl.value).to.equal(1);
 
-            docBase.updateCurrentPage(25);
+            pageControls.updateCurrentPage(25);
             expect(checkPaginationButtonsStub).to.be.called;
-            expect(docBase.pageNumInputEl.value).to.equal(10);
+            expect(pageControls.pageNumInputEl.value).to.equal(10);
 
-            docBase.updateCurrentPage(7);
+            pageControls.updateCurrentPage(7);
             expect(checkPaginationButtonsStub).to.be.called;
-            expect(docBase.pageNumInputEl.value).to.equal(7);
+            expect(pageControls.pageNumInputEl.value).to.equal(7);
         });
     });
 
     describe('pageNumInputBlurHandler()', () => {
         beforeEach(() => {
-            docBase.event = {
+            stubs.event = {
                 target: {
                     value: 5
                 }
             };
-            stubs.setPageStub = sandbox.stub(docBase, 'setPage');
-            stubs.hidePageNumInputStub = sandbox.stub(docBase, 'hidePageNumInput');
+            stubs.emit = sandbox.stub(pageControls, 'emit');
+            stubs.hidePageNumInputStub = sandbox.stub(pageControls, 'hidePageNumInput');
         });
 
         it('should hide the page number input and set the page if given valid input', () => {
-            docBase.pageNumInputBlurHandler(docBase.event);
-            expect(stubs.setPageStub).to.be.calledWith(docBase.event.target.value);
+            pageControls.pageNumInputBlurHandler(stubs.event);
+            expect(stubs.emit).to.be.calledWith('setpage', stubs.event.target.value);
             expect(stubs.hidePageNumInputStub).to.be.called;
         });
 
         it('should hide the page number input but not set the page if given invalid input', () => {
-            docBase.event.target.value = 'not a number';
+            stubs.event.target.value = 'not a number';
 
-            docBase.pageNumInputBlurHandler(docBase.event);
-            expect(stubs.setPageStub).to.not.be.called;
+            pageControls.pageNumInputBlurHandler(stubs.event);
+            expect(stubs.emit).to.be.not.be.called;
             expect(stubs.hidePageNumInputStub).to.be.called;
         });
     });
 
     describe('pageNumInputKeydownHandler()', () => {
         beforeEach(() => {
-            docBase.event = {
+            stubs.event = {
                 key: 'Enter',
                 stopPropagation: sandbox.stub(),
                 preventDefault: sandbox.stub(),
@@ -259,36 +200,33 @@ describe('lib/PageControls', () => {
                 }
             };
             stubs.browser = sandbox.stub(Browser, 'getName').returns('Explorer');
-            stubs.focus = sandbox.stub(docBase.docEl, 'focus');
-            stubs.hidePageNumInput = sandbox.stub(docBase, 'hidePageNumInput');
+            stubs.hidePageNumInput = sandbox.stub(pageControls, 'hidePageNumInput');
         });
 
         it('should focus the doc element if IE and stop default actions on \'enter\'', () => {
-            docBase.pageNumInputKeydownHandler(docBase.event);
+            pageControls.pageNumInputKeydownHandler(stubs.event);
             expect(stubs.browser).to.be.called;
-            expect(stubs.focus).to.be.called;
-            expect(docBase.event.stopPropagation).to.be.called;
-            expect(docBase.event.preventDefault).to.be.called;
+            expect(stubs.event.stopPropagation).to.be.called;
+            expect(stubs.event.preventDefault).to.be.called;
         });
 
         it('should blur if not IE and stop default actions on \'enter\'', () => {
             stubs.browser.returns('Chrome');
 
-            docBase.pageNumInputKeydownHandler(docBase.event);
+            pageControls.pageNumInputKeydownHandler(stubs.event);
             expect(stubs.browser).to.be.called;
-            expect(docBase.event.target.blur).to.be.called;
-            expect(docBase.event.stopPropagation).to.be.called;
-            expect(docBase.event.preventDefault).to.be.called;
+            expect(stubs.event.target.blur).to.be.called;
+            expect(stubs.event.stopPropagation).to.be.called;
+            expect(stubs.event.preventDefault).to.be.called;
         });
 
         it('should hide the page number input, focus the document, and stop default actions on \'Esc\'', () => {
-            docBase.event.key = 'Esc';
+            stubs.event.key = 'Esc';
 
-            docBase.pageNumInputKeydownHandler(docBase.event);
+            pageControls.pageNumInputKeydownHandler(stubs.event);
             expect(stubs.hidePageNumInput).to.be.called;
-            expect(stubs.focus).to.be.called;
-            expect(docBase.event.stopPropagation).to.be.called;
-            expect(docBase.event.preventDefault).to.be.called;
+            expect(stubs.event.stopPropagation).to.be.called;
+            expect(stubs.event.preventDefault).to.be.called;
         });
     });
 });

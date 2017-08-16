@@ -111,6 +111,10 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             stubs.bindDOMListeners = sandbox.stub(multiImage, 'bindDOMListeners');
             stubs.bindImageListeners = sandbox.stub(multiImage, 'bindImageListeners');
             stubs.setupImageEls = sandbox.stub(multiImage, 'setupImageEls');
+            multiImage.wrapperEl = {
+                addEventListener: sandbox.stub()
+            };
+            stubs.addWrapperListener = multiImage.wrapperEl.addEventListener;
         });
 
         it('should create the image urls', () => {
@@ -129,6 +133,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
                     expect(stubs.bindImageListeners).to.be.called;
                     expect(stubs.bindDOMListeners).to.be.called;
                     expect(stubs.constructImageUrls).to.be.called;
+                    expect(stubs.addWrapperListener).to.be.calledWith('scroll', sinon.match.func, 'true');
                 })
                 .catch(() => {});
         });
@@ -292,7 +297,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             multiImage.loadUI();
 
             expect(multiImage.controls).to.not.be.undefined;
-            expect(multiImage.controls.buttonRefs.length).to.equal(4);
+            expect(multiImage.controls.buttonRefs.length).to.equal(7);
         });
     });
 
