@@ -41,12 +41,29 @@ class BoxAnnotations {
      *
      * @param {Object} viewer - Current preview viewer
      * @param {Array} [disabledAnnotators] - List of disabled annotators
-     * @return {Object} The annotator to use
+     * @param {Array} [disabledTypes] - List of disabled annotation types
+     * @return {Object} A copy of the annotator to use
      */
-    determineAnnotator(viewer, disabledAnnotators = []) {
-        return this.annotators.find(
-            (annotator) => !disabledAnnotators.includes(annotator.NAME) && annotator.VIEWER.includes(viewer)
+    determineAnnotator(viewer, disabledAnnotators = [], annotationConfig = {}) {
+        let annotator;
+        const annotatorToCopy = this.annotators.find(
+            (annotatorToCheck) =>
+                !disabledAnnotators.includes(annotatorToCheck.NAME) && annotatorToCheck.VIEWER.includes(viewer)
         );
+
+        // Remove annotation types that have been disabled
+        if (annotatorToCopy) {
+            annotator = Object.assign({}, annotatorToCopy);
+
+            // Filter out annotation types
+            if (annotationConfig.disabledTypes) {
+                annotator.TYPE = annotator.TYPE.filter((type) => {
+                    return !annotationConfig.disabledTypes.includes(type);
+                });
+            }
+        }
+
+        return annotator;
     }
 }
 

@@ -631,8 +631,17 @@ class BaseViewer extends EventEmitter {
     loadAnnotator() {
         /* global BoxAnnotations */
         const boxAnnotations = new BoxAnnotations();
+        // #TODO(@spramod|@jholdstock): swap this out for annotator config, after further separation
+        const viewerName = this.options.viewer.NAME;
+        const viewerConfig = this.options.viewers[viewerName];
 
-        this.annotatorConf = boxAnnotations.determineAnnotator(this.options.viewer.NAME);
+        // let disabledAnnotationTyes;
+        // if (viewerConfig) {
+        //     const annotationConfig = viewerConfig
+        // }
+
+        this.annotatorConf = boxAnnotations.determineAnnotator(viewerName);
+        console.log(this.annotatorConf);
         if (!this.annotatorConf) {
             return;
         }
