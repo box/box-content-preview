@@ -295,7 +295,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should create, add drawing thread to internal map, and return it', () => {
-            annotator.getAnnotateButton.returns('commit drawing button');
             const thread = annotator.createAnnotationThread([], {}, TYPES.draw);
             expect(stubs.addThread).to.have.been.called;
             expect(thread instanceof DocDrawingThread).to.be.true;
