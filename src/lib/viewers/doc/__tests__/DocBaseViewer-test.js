@@ -927,19 +927,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(PDFJS.disableRange).to.be.false;
         });
 
-        it('should disable range requests if the file is smaller than 5MB and is not an Excel file', () => {
-            docBase.options.file.size = 5242870;
+        it('should disable range requests if locale is not en-US, the file is smaller than 25MB and is not an Excel file', () => {
+            docBase.options.file.size = 26000000;
             docBase.options.extension = 'pdf';
             docBase.options.location.locale = 'ja-JP';
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.true;
-        });
-
-        it('should not disable range requests if the file is an Excel file', () => {
-            docBase.options.location.locale = 'ja-JP';
-            docBase.options.extension = 'xlsx';
-            docBase.setupPdfjs();
-            expect(PDFJS.disableRange).to.be.false;
         });
 
         it('should disable range requests if the file is watermarked', () => {
@@ -949,9 +942,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(PDFJS.disableRange).to.be.true;
         });
 
-        it('should enable range requests if the file is greater than 5MB, is not Excel, and is not watermarked', () => {
+        it('should enable range requests if locale is not en-US, the file is greater than 25MB and is not watermarked', () => {
             docBase.options.location.locale = 'ja-JP';
-            docBase.options.size = 5242890;
+            docBase.options.file.size = 26500000;
             docBase.options.extension = 'pdf';
             docBase.options.file.watermark_info.is_watermarked = false;
             docBase.setupPdfjs();
@@ -1080,25 +1073,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.printPopup.messageEl.textContent).to.equal(__('print_ready'));
             expect(docBase.printPopup.loadingIndicator.classList.contains(CLASS_HIDDEN)).to.be.true;
             expect(docBase.printPopup.printCheckmark.classList.contains(CLASS_HIDDEN)).to.be.false;
-        });
-    });
-
-    describe('initAnnotations()', () => {
-        const initFunc = BaseViewer.prototype.initAnnotations;
-
-        afterEach(() => {
-            Object.defineProperty(BaseViewer.prototype, 'initAnnotations', { value: initFunc });
-        });
-
-        it('should set up page IDs and initialize the annotator', () => {
-            docBase.pdfViewer = {
-                currentScale: 1
-            };
-            sandbox.stub(docBase, 'setupPageIds');
-            Object.defineProperty(BaseViewer.prototype, 'initAnnotations', { value: sandbox.mock() });
-
-            docBase.initAnnotations();
-            expect(docBase.setupPageIds).to.be.called;
         });
     });
 
@@ -1412,6 +1386,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             stubs.setPage = sandbox.stub(docBase, 'setPage');
             stubs.getCachedPage = sandbox.stub(docBase, 'getCachedPage');
             stubs.emit = sandbox.stub(docBase, 'emit');
+            stubs.setupPages = sandbox.stub(docBase, 'setupPageIds');
         });
 
         it('should load UI, check the pagination buttons, set the page, and make document scrollable', () => {
@@ -1424,6 +1399,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(stubs.checkPaginationButtons).to.be.called;
             expect(stubs.setPage).to.be.called;
             expect(docBase.docEl).to.have.class('bp-is-scrollable');
+            expect(stubs.setupPages).to.be.called;
         });
 
         it('should broadcast that the preview is loaded if it hasn\'t already', () => {
@@ -1436,7 +1412,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.pagesinitHandler();
             expect(stubs.emit).to.be.calledWith('load', {
                 endProgress: false,
-                numPages: 5
+                numPages: 5,
+                scale: sinon.match.any
             });
             expect(docBase.loaded).to.be.truthy;
         });

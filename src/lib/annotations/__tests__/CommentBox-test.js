@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import CommentBox from '../CommentBox';
-import { CLASS_HIDDEN } from '../../constants';
 import {
+    CLASS_HIDDEN,
     SELECTOR_ANNOTATION_BUTTON_CANCEL,
     SELECTOR_ANNOTATION_BUTTON_POST
 } from '../annotationConstants';
@@ -62,11 +62,11 @@ describe('lib/annotations/CommentBox', () => {
             commentBox.show();
         });
 
-        it('should do nothing if the comment box HTML doesn\'t exist', () => {
-            commentBox.containerEl.remove();
-            commentBox.containerEl = null;
-
+        it('should do nothing if the textarea HTML doesn\'t exist', () => {
             const focus = sandbox.stub(commentBox.textAreaEl, 'focus');
+
+            commentBox.textAreaEl.remove();
+            commentBox.textAreaEl = null;
 
             commentBox.focus();
             expect(focus).to.not.be.called;
@@ -84,16 +84,7 @@ describe('lib/annotations/CommentBox', () => {
         beforeEach(() => {
             // Kickstart creation of UI
             commentBox.show();
-        });
-
-        it('should do nothing if the comment box HTML doesn\'t exist', () => {
-            commentBox.containerEl.remove();
-            commentBox.containerEl = null;
-            const text = 'yay';
-            commentBox.textAreaEl.value = text;
-
-            commentBox.clear();
-            expect(commentBox.textAreaEl.value).to.equal(text);
+            sandbox.stub(commentBox, 'preventDefaultAndPropagation');
         });
 
         it('should overwrite the text area\'s value with an empty string', () => {
@@ -108,6 +99,7 @@ describe('lib/annotations/CommentBox', () => {
         beforeEach(() => {
             // Kickstart creation of UI
             commentBox.show();
+            sandbox.stub(commentBox, 'preventDefaultAndPropagation');
         });
 
         it('should do nothing if the comment box HTML doesn\'t exist', () => {
@@ -203,33 +195,41 @@ describe('lib/annotations/CommentBox', () => {
     });
 
     describe('onCancel()', () => {
+        beforeEach(() => {
+            sandbox.stub(commentBox, 'preventDefaultAndPropagation');
+        });
+
         it('should invoke clear()', () => {
             const clear = sandbox.stub(commentBox, 'clear');
-            commentBox.onCancel();
+            commentBox.onCancel({ preventDefault: () => {} });
             expect(clear).to.be.called;
         });
 
         it('should emit a cancel event', () => {
             const emit = sandbox.stub(commentBox, 'emit');
-            commentBox.onCancel();
+            commentBox.onCancel({ preventDefault: () => {} });
             expect(emit).to.be.calledWith(CommentBox.CommentEvents.cancel);
         });
     });
 
     describe('onPost()', () => {
+        beforeEach(() => {
+            sandbox.stub(commentBox, 'preventDefaultAndPropagation');
+        });
+
         it('should emit a post event with the value of the text box', () => {
             const emit = sandbox.stub(commentBox, 'emit');
             const text = 'a comment';
             commentBox.textAreaEl = {
                 value: text
             };
-            commentBox.onPost();
+            commentBox.onPost({ preventDefault: () => {} });
             expect(emit).to.be.calledWith(CommentBox.CommentEvents.post, text);
         });
 
         it('should invoke clear()', () => {
             const clear = sandbox.stub(commentBox, 'clear');
-            commentBox.onCancel();
+            commentBox.onCancel({ preventDefault: () => {} });
             expect(clear).to.be.called;
         });
     });

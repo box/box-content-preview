@@ -2,18 +2,15 @@ import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import * as annotatorUtil from './annotatorUtil';
 import * as constants from './annotationConstants';
-import { CLASS_ACTIVE, CLASS_HIDDEN } from '../constants';
-import { decodeKeydown } from '../util';
 import { ICON_CLOSE, ICON_DELETE } from '../icons/icons';
 
-const CLASS_ANNOTATION_PLAIN_HIGHLIGHT = 'bp-plain-highlight';
 const CLASS_BUTTON_DELETE_COMMENT = 'delete-comment-btn';
 const CLASS_CANCEL_DELETE = 'cancel-delete-btn';
 const CLASS_CANNOT_ANNOTATE = 'cannot-annotate';
+const CLASS_COMMENT = 'annotation-comment';
 const CLASS_COMMENTS_CONTAINER = 'annotation-comments';
 const CLASS_REPLY_CONTAINER = 'reply-container';
 const CLASS_REPLY_TEXTAREA = 'reply-textarea';
-const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
 const CLASS_DELETE_CONFIRMATION = 'delete-confirmation';
 const CLASS_BUTTON_DELETE_CONFIRM = 'confirm-delete-btn';
 
@@ -25,6 +22,7 @@ class AnnotationDialog extends EventEmitter {
 
     /**
      * The data object for constructing a dialog.
+     *
      * @typedef {Object} AnnotationDialogData
      * @property {HTMLElement} annotatedElement HTML element being annotated on
      * @property {Annotation[]} annotations Annotations in dialog, can be an
@@ -83,17 +81,18 @@ class AnnotationDialog extends EventEmitter {
             annotatorUtil.showElement(this.element);
             this.element.appendChild(this.dialogEl);
 
-            if (this.highlightDialogEl && !this.hasComments) {
-                this.element.classList.add(CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
+            const commentEls = this.element.querySelectorAll(`.${CLASS_COMMENT}`);
+            if (this.highlightDialogEl && !commentEls.length) {
+                this.element.classList.add(constants.CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
 
                 const headerEl = this.element.querySelector(constants.SELECTOR_MOBILE_DIALOG_HEADER);
-                headerEl.classList.add(CLASS_HIDDEN);
+                headerEl.classList.add(constants.CLASS_HIDDEN);
             }
 
             const dialogCloseButtonEl = this.element.querySelector(constants.SELECTOR_DIALOG_CLOSE);
             dialogCloseButtonEl.addEventListener('click', this.hideMobileDialog);
 
-            this.element.classList.add(CLASS_ANIMATE_DIALOG);
+            this.element.classList.add(constants.CLASS_ANIMATE_DIALOG);
 
             this.bindDOMListeners();
         }
@@ -103,7 +102,7 @@ class AnnotationDialog extends EventEmitter {
             : this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
 
         // Don't re-position if reply textarea is already active
-        const textareaIsActive = textAreaEl.classList.contains(CLASS_ACTIVE);
+        const textareaIsActive = textAreaEl.classList.contains(constants.CLASS_ACTIVE);
         if (textareaIsActive && this.element.parentNode) {
             return;
         }
@@ -118,7 +117,7 @@ class AnnotationDialog extends EventEmitter {
         if (this.hasAnnotations) {
             this.activateReply();
         } else {
-            textAreaEl.classList.add(CLASS_ACTIVE);
+            textAreaEl.classList.add(constants.CLASS_ACTIVE);
         }
 
         // Move cursor to end of text area
@@ -148,14 +147,18 @@ class AnnotationDialog extends EventEmitter {
             return;
         }
 
-        this.element.classList.remove(CLASS_ANIMATE_DIALOG);
+        if (this.dialogEl && this.dialogEl.parentNode) {
+            this.dialogEl.parentNode.removeChild(this.dialogEl);
+        }
+
+        this.element.classList.remove(constants.CLASS_ANIMATE_DIALOG);
 
         // Clear annotations from dialog
         this.element.innerHTML = `
             <div class="${constants.CLASS_MOBILE_DIALOG_HEADER}">
                 <button class="${constants.CLASS_DIALOG_CLOSE}">${ICON_CLOSE}</button>
             </div>`.trim();
-        this.element.classList.remove(CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
+        this.element.classList.remove(constants.CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
 
         const dialogCloseButtonEl = this.element.querySelector(constants.SELECTOR_DIALOG_CLOSE);
         dialogCloseButtonEl.removeEventListener('click', this.hideMobileDialog);
@@ -164,9 +167,7 @@ class AnnotationDialog extends EventEmitter {
         this.unbindDOMListeners();
 
         // Cancel any unsaved annotations
-        if (!this.hasAnnotations) {
-            this.cancelAnnotation();
-        }
+        this.cancelAnnotation();
     }
 
     /**
@@ -175,6 +176,10 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     hide() {
+        if (this.element && this.element.classList.contains(constants.CLASS_HIDDEN)) {
+            return;
+        }
+
         if (this.isMobile) {
             this.hideMobileDialog();
         }
@@ -329,7 +334,7 @@ class AnnotationDialog extends EventEmitter {
     keydownHandler(event) {
         event.stopPropagation();
 
-        const key = decodeKeydown(event);
+        const key = annotatorUtil.decodeKeydown(event);
         if (key === 'Escape') {
             this.hide();
         } else {
@@ -358,7 +363,7 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     mouseenterHandler() {
-        if (this.element.classList.contains(CLASS_HIDDEN)) {
+        if (this.element.classList.contains(constants.CLASS_HIDDEN)) {
             annotatorUtil.showElement(this.element);
 
             const replyTextArea = this.element.querySelector(`.${CLASS_REPLY_TEXTAREA}`);
@@ -406,8 +411,7 @@ class AnnotationDialog extends EventEmitter {
             // Clicking 'Cancel' button to cancel the annotation
             case constants.DATA_TYPE_CANCEL:
                 if (this.isMobile) {
-                    // Hide mobile dialog without destroying the thread
-                    this.hideMobileDialog();
+                    this.hide();
                 } else {
                     // Cancels + destroys the annotation thread
                     this.cancelAnnotation();
@@ -480,7 +484,7 @@ class AnnotationDialog extends EventEmitter {
         const text = annotatorUtil.htmlEscape(annotation.text);
 
         const annotationEl = document.createElement('div');
-        annotationEl.classList.add('annotation-comment');
+        annotationEl.classList.add(CLASS_COMMENT);
         annotationEl.setAttribute('data-annotation-id', annotation.annotationID);
         annotationEl.innerHTML = `
             <div class="profile-image-container">${avatarHtml}</div>
@@ -491,10 +495,10 @@ class AnnotationDialog extends EventEmitter {
             <div class="comment-text">${text}</div>
             <button class="bp-btn-plain ${CLASS_BUTTON_DELETE_COMMENT} ${annotation.permissions.can_delete
             ? ''
-            : CLASS_HIDDEN}" data-type="${constants.DATA_TYPE_DELETE}" title="${__('annotation_delete')}">
+            : constants.CLASS_HIDDEN}" data-type="${constants.DATA_TYPE_DELETE}" title="${__('annotation_delete')}">
                 ${ICON_DELETE}
             </button>
-            <div class="${CLASS_DELETE_CONFIRMATION} ${CLASS_HIDDEN}">
+            <div class="${CLASS_DELETE_CONFIRMATION} ${constants.CLASS_HIDDEN}">
                 <div class="delete-confirmation-message">
                     ${__('annotation_delete_confirmation_message')}
                 </div>
@@ -536,13 +540,13 @@ class AnnotationDialog extends EventEmitter {
         const replyTextEl = this.dialogEl.querySelector(`.${CLASS_REPLY_TEXTAREA}`);
 
         // Don't activate if reply textarea is already active
-        const isActive = replyTextEl.classList.contains(CLASS_ACTIVE);
+        const isActive = replyTextEl.classList.contains(constants.CLASS_ACTIVE);
         if (isActive) {
             return;
         }
 
         const replyButtonEls = replyTextEl.parentNode.querySelector(constants.SELECTOR_BUTTON_CONTAINER);
-        replyTextEl.classList.add(CLASS_ACTIVE);
+        replyTextEl.classList.add(constants.CLASS_ACTIVE);
         annotatorUtil.showElement(replyButtonEls);
 
         // Auto scroll annotations dialog to bottom where new comment was added
@@ -653,7 +657,7 @@ class AnnotationDialog extends EventEmitter {
     generateDialogEl(numAnnotations) {
         const dialogEl = document.createElement('div');
         dialogEl.innerHTML = `
-            <section class="${numAnnotations ? CLASS_HIDDEN : ''}" data-section="create">
+            <section class="${numAnnotations ? constants.CLASS_HIDDEN : ''}" data-section="create">
                 <textarea class="${constants.CLASS_TEXTAREA} ${constants.CLASS_ANNOTATION_TEXTAREA}"
                     placeholder="${__('annotation_add_comment_placeholder')}"></textarea>
                 <div class="${constants.CLASS_BUTTON_CONTAINER}">
@@ -665,14 +669,14 @@ class AnnotationDialog extends EventEmitter {
                     </button>
                 </div>
             </section>
-            <section class="${numAnnotations ? '' : CLASS_HIDDEN}" data-section="show">
+            <section class="${numAnnotations ? '' : constants.CLASS_HIDDEN}" data-section="show">
                 <div class="${CLASS_COMMENTS_CONTAINER}"></div>
                 <div class="${CLASS_REPLY_CONTAINER}">
                     <textarea class="${constants.CLASS_TEXTAREA} ${CLASS_REPLY_TEXTAREA}"
                         placeholder="${__(
                             'annotation_reply_placeholder'
                         )}" data-type="${constants.DATA_TYPE_REPLY_TEXTAREA}"></textarea>
-                    <div class="${constants.CLASS_BUTTON_CONTAINER} ${CLASS_HIDDEN}">
+                    <div class="${constants.CLASS_BUTTON_CONTAINER} ${constants.CLASS_HIDDEN}">
                         <button class="bp-btn ${constants.CLASS_ANNOTATION_BUTTON_CANCEL}" data-type="${constants.DATA_TYPE_CANCEL_REPLY}">
                             ${__('annotation_cancel')}
                         </button>

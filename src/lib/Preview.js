@@ -149,13 +149,17 @@ class Preview extends EventEmitter {
      * Primary function for showing a preview of a file.
      *
      * @param {string} fileId - Box File ID
-     * @param {string|Function} token - auth token string or generator function
+     * @param {string|Function} token - Access token string or generator function
      * @param {Object} [options] - Optional preview options
      * @return {void}
      */
     show(fileId, token, options = {}) {
         // Save a reference to the options to be used later
-        this.saveOptions(token, options);
+        if (typeof token === 'string' || typeof token === 'function') {
+            this.previewOptions = Object.assign({}, options, { token });
+        } else {
+            throw new Error('Missing access token!');
+        }
 
         // load the preview
         this.load(fileId);
@@ -461,34 +465,6 @@ class Preview extends EventEmitter {
         });
     }
 
-    /**
-     * Fetch and return file info, which can then be cached or stored externally.
-     *
-     * @param {string} fileId - Box File ID
-     * @param {string|Function} token - auth token string or generator function
-     * @param {Object} [options] - Optional preview options
-     * @return {Promise.<File>} Promise with file info
-     */
-    fetchFileInfo(fileId, token, options = {}) {
-        this.saveOptions(token, options);
-
-        this.file = { id: fileId };
-
-        return getTokens(this.file.id, this.previewOptions.token)
-            .then((tokenMap) => {
-                // Parse the preview options supplied by fetchFileInfo()
-                this.parseOptions(this.previewOptions, tokenMap);
-
-                return get(getURL(this.file.id, this.options.apiHost), this.getRequestHeaders());
-            })
-            .then((file) => {
-                // Nuke the file
-                this.file = undefined;
-
-                return file;
-            });
-    }
-
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -634,6 +610,9 @@ class Preview extends EventEmitter {
         // Enable or disable hotkeys
         this.options.useHotkeys = options.useHotkeys !== false;
 
+        // Custom Box3D application definition
+        this.options.box3dApplication = options.box3dApplication;
+
         // Save the files to iterate through
         this.collection = options.collection || [];
 
@@ -657,23 +636,6 @@ class Preview extends EventEmitter {
                 this.enableViewers(viewerName);
             }
         });
-    }
-
-    /**
-     * Save a reference to the options to be used later
-     *
-     * @param {string} token - Access token
-     * @param {Object} [options] - Optional preview options
-     * @return {void}
-     */
-    saveOptions(token, options) {
-        if (typeof token === 'string' || typeof token === 'function') {
-            this.previewOptions = Object.assign({}, options, { token });
-        } else if (token) {
-            this.previewOptions = Object.assign({}, token || {});
-        } else {
-            throw new Error('Missing access token!');
-        }
     }
 
     /**
@@ -851,30 +813,45 @@ class Preview extends EventEmitter {
     attachViewerListeners() {
         // Node requires listener attached to 'error'
         this.viewer.addListener('error', this.triggerError);
-        this.viewer.addListener('viewerevent', (data) => {
-            /* istanbul ignore next */
-            switch (data.event) {
-                case 'download':
-                    this.download();
-                    break;
-                case 'reload':
-                    this.show(this.file.id, this.previewOptions);
-                    break;
-                case 'load':
-                    this.finishLoading(data.data);
-                    break;
-                case 'progressstart':
-                    this.ui.startProgressBar();
-                    break;
-                case 'progressend':
-                    this.ui.finishProgressBar();
-                    break;
-                default:
-                    // This includes 'notification', 'preload' and others
-                    this.emit(data.event, data.data);
-                    this.emit('viewerevent', data);
-            }
-        });
+        this.viewer.addListener('viewerevent', this.handleViewerEvents);
+    }
+
+    /**
+     * Handle events emitted by the viewer
+     *
+     * @private
+     * @param {Object} [data] - Viewer event data
+     * @return {void}
+     */
+    handleViewerEvents(data) {
+        /* istanbul ignore next */
+        switch (data.event) {
+            case 'download':
+                this.download();
+                break;
+            case 'reload':
+                this.show(this.file.id, this.previewOptions);
+                break;
+            case 'load':
+                this.finishLoading(data.data);
+                break;
+            case 'progressstart':
+                this.ui.startProgressBar();
+                break;
+            case 'progressend':
+                this.ui.finishProgressBar();
+                break;
+            case 'notificationshow':
+                this.ui.showNotification(data.data);
+                break;
+            case 'notificationhide':
+                this.ui.hideNotification();
+                break;
+            default:
+                // This includes 'notification', 'preload' and others
+                this.emit(data.event, data.data);
+                this.emit('viewerevent', data);
+        }
     }
 
     /**

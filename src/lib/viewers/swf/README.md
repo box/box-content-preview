@@ -13,6 +13,7 @@ Note that all network requests made by the flash content will be blocked due to 
 `swf`
 
 ## Events
+
 The SWF viewer fires the following events
 
 | Event Name | Explanation | Event Data |

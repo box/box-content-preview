@@ -95,7 +95,7 @@ $avatar-color-9: #f22c44;
     }
 }
 
-.bp-btn-plain.bp-btn-annotate.bp-is-active svg {
+.bp-btn-plain.bp-btn-annotate-point.bp-is-active svg {
     fill: $box-blue;
 }
 
@@ -325,6 +325,7 @@ $avatar-color-9: #f22c44;
 // CSS for highlights
 //------------------------------------------------------------------------------
 .bp-annotation-layer-draw,
+.bp-annotation-layer-draw-in-progress,
 .bp-annotation-layer-highlight {
     cursor: text;
     left: 0;
@@ -425,22 +426,18 @@ $avatar-color-9: #f22c44;
 //------------------------------------------------------------------------------
 // Annotation mode
 //------------------------------------------------------------------------------
-.bp-draw-annotation-mode .page,
-.bp-draw-annotation-mode .bp-annotation-layer-highlight,
-.bp-draw-annotation-mode .textLayer > div,
-.bp-draw-annotation-mode > img,
-.bp-point-annotation-mode .page,
-.bp-point-annotation-mode .bp-annotation-layer-highlight,
-.bp-point-annotation-mode .textLayer > div,
-.bp-point-annotation-mode > img {
+.bp-annotation-mode .page,
+.bp-annotation-mode .bp-annotation-layer-highlight,
+.bp-annotation-mode .textLayer > div,
+.bp-annotation-mode > img {
     cursor: crosshair;
 }
 
 // Needed to allow point annotations since PDF.js adds a funky mousedown handler
 // that helps with text selection - we need to disable this since it interacts
 // badly with point annotations on non-text divs in non-Chrome browsers
-.bp-point-annotation-mode .textLayer > div,
-.bp-point-annotation-mode .textLayer .endOfContent {
+.bp-annotation-mode .textLayer > div,
+.bp-annotation-mode .textLayer .endOfContent {
     pointer-events: none;
 }
 

@@ -462,20 +462,20 @@ describe('lib/Browser', () => {
     });
 
     describe('isIOSWithFontIssue()', () => {
-        it('should return true if device is on ios and is OS 10.3.1', () => {
-            Browser.overrideUserAgent('iPhone OS 10_3_1 safari/2');
+        it('should return true if device is on ios and is OS 10.3.XX', () => {
+            Browser.overrideUserAgent('iPhone OS 10_3_90 safari/2');
             const hasIssue = Browser.isIOSWithFontIssue();
             expect(hasIssue).to.be.true;
         });
 
-        it('should return false if device is on ios and is not OS 10.3.1', () => {
-            Browser.overrideUserAgent('iPhone OS 10_3_2 safari/2');
+        it('should return false if device is on ios and is not OS 10.3.XX', () => {
+            Browser.overrideUserAgent('iPhone OS 10_5_90 safari/2');
             const hasIssue = Browser.isIOSWithFontIssue();
             expect(hasIssue).to.be.false;
         });
 
         it('should return false if device is on ios and is not mobile', () => {
-            Browser.overrideUserAgent('DesktopDevice OS 10_3_1 safari/18902374701347589235');
+            Browser.overrideUserAgent('DesktopDevice OS 10_3_90 safari/18902374701347589235');
             const hasIssue = Browser.isAndroid();
             expect(hasIssue).to.be.false;
         });

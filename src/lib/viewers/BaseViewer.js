@@ -17,6 +17,7 @@ import Browser from '../Browser';
 import {
     PERMISSION_ANNOTATE,
     CLASS_FULLSCREEN,
+    CLASS_FULLSCREEN_UNSUPPORTED,
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
     SELECTOR_BOX_PREVIEW,
@@ -31,8 +32,22 @@ import { ICON_FILE_DEFAULT } from '../icons/icons';
 
 const ANNOTATIONS_JS = ['annotations.js'];
 const ANNOTATIONS_CSS = ['annotations.css'];
+const ANNOTATION_TYPE_DRAW = 'draw';
+const ANNOTATION_TYPE_POINT = 'point';
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
+const ANNOTATION_MODE_ENTER = 'annotationmodeenter';
+const ANNOTATION_MODE_EXIT = 'annotationmodeexit';
+const ANNOTATION_BUTTONS = {
+    point: {
+        title: __('annotation_point_toggle'),
+        selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT
+    },
+    draw: {
+        title: __('annotation_draw_toggle'),
+        selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW
+    }
+};
 
 @autobind
 class BaseViewer extends EventEmitter {
@@ -152,19 +167,6 @@ class BaseViewer extends EventEmitter {
                 repStatus.removeListener('conversionpending', this.resetLoadTimeout);
                 repStatus.destroy();
             });
-        }
-
-        const { container } = this.options;
-        if (container) {
-            const pointAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
-            const drawAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
-            if (pointAnnotateButtonEl) {
-                pointAnnotateButtonEl.removeEventListener('click', this.getPointModeClickHandler);
-            }
-
-            if (drawAnnotateButtonEl) {
-                drawAnnotateButtonEl.removeEventListener('click', this.drawAnnotateClickHandler);
-            }
         }
 
         fullscreen.removeAllListeners();
@@ -329,22 +331,17 @@ class BaseViewer extends EventEmitter {
      */
     addCommonListeners() {
         // Attach common full screen event listeners
-        /* istanbul ignore next */
-        fullscreen.addListener('enter', () => {
-            this.containerEl.classList.add(CLASS_FULLSCREEN);
-            this.resize();
-        });
-
-        /* istanbul ignore next */
-        fullscreen.addListener('exit', () => {
-            this.containerEl.classList.remove(CLASS_FULLSCREEN);
-            this.resize();
-        });
+        fullscreen.addListener('enter', this.onFullscreenToggled);
+        fullscreen.addListener('exit', this.onFullscreenToggled);
 
         // Add a resize handler for the window
         document.defaultView.addEventListener('resize', this.debouncedResizeHandler);
 
-        this.addListener('load', () => {
+        this.addListener('load', (event) => {
+            if (event && event.scale) {
+                this.scale = event.scale;
+            }
+
             if (this.annotationsPromise) {
                 this.annotationsPromise.then(this.loadAnnotator);
             }
@@ -353,11 +350,26 @@ class BaseViewer extends EventEmitter {
 
     /**
      * Enters or exits fullscreen
+     *
      * @protected
      * @return {void}
      */
     toggleFullscreen() {
         fullscreen.toggle(this.containerEl);
+    }
+
+    /**
+     * Applies appropriate styles and resizes the document depending on fullscreen state
+     *
+     * @return {void}
+     */
+    onFullscreenToggled() {
+        this.containerEl.classList.toggle(CLASS_FULLSCREEN);
+        if (!fullscreen.isSupported()) {
+            this.containerEl.classList.toggle(CLASS_FULLSCREEN_UNSUPPORTED);
+        }
+
+        this.resize();
     }
 
     /**
@@ -584,6 +596,28 @@ class BaseViewer extends EventEmitter {
         return status === STATUS_SUCCESS || status === STATUS_VIEWABLE;
     }
 
+    /**
+     * Disables viewer controls
+     *
+     * @return {void}
+     */
+    disableViewerControls() {
+        if (this.controls) {
+            this.controls.disable();
+        }
+    }
+
+    /**
+     * Enables viewer controls
+     *
+     * @return {void}
+     */
+    enableViewerControls() {
+        if (this.controls) {
+            this.controls.enable();
+        }
+    }
+
     //--------------------------------------------------------------------------
     // Annotations
     //--------------------------------------------------------------------------
@@ -603,30 +637,14 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        if (this.isAnnotatable()) {
+        if (this.areAnnotationsEnabled()) {
             const { file } = this.options;
-
-            // Users can currently only view annotations on mobile
             this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
-            if (this.canAnnotate) {
-                this.showPointAnnotateButton(this.getAnnotationModeClickHandler('point'));
-                // Note: Leave drawing annotation code entry disabled for now
-                // this.showDrawAnnotateButton(this.getAnnotationModeClickHandler('draw'));
-            }
-            this.initAnnotations();
-        }
-    }
 
-    /**
-     * Orient annotations to the correct scale and orientation of the annotated document.
-     *
-     * @protected
-     * @param {Object} data - Scale and orientation values needed to orient annotations.
-     * @return {void}
-     */
-    scaleAnnotations(data) {
-        this.annotator.setScale(data.scale);
-        this.annotator.rotateAnnotations(data.rotationAngle, data.pageNum);
+            if (this.canAnnotate) {
+                this.initAnnotations();
+            }
+        }
     }
 
     /**
@@ -644,59 +662,32 @@ class BaseViewer extends EventEmitter {
             canAnnotate: this.canAnnotate,
             container,
             options: {
+                annotator: this.annotatorConf,
                 apiHost,
                 fileId,
                 token
             },
             fileVersionId,
             isMobile: this.isMobile,
+            hasTouch: this.hasTouch,
             locale: location.locale,
-            previewUI: this.previewUI
+            previewUI: this.previewUI,
+            modeButtons: ANNOTATION_BUTTONS
         });
-        this.annotator.init();
+        this.annotator.init(this.scale);
 
-        // Disables controls during point annotation mode
-        this.annotator.addListener('annotationmodeenter', this.disableViewerControls);
-
-        this.annotator.addListener('annotationmodeexit', this.enableViewerControls);
-
-        this.addListener('togglepointannotationmode', () => {
-            this.annotator.togglePointAnnotationHandler();
-        });
-
-        this.addListener('toggledrawannotationmode', () => {
-            this.annotator.toggleDrawAnnotationHandler();
+        // Add a custom listener for entering/exit annotations mode using the app's custom annotations buttons
+        this.addListener('toggleannotationmode', (data) => {
+            this.annotator.toggleAnnotationHandler(data);
         });
 
         // Add a custom listener for events related to scaling/orientation changes
-        this.addListener('scale', this.scaleAnnotations.bind(this));
-
-        this.annotator.addListener('annotationsfetched', () => {
-            this.scaleAnnotations({
-                scale: this.scale,
-                rotationAngle: this.rotationAngle
-            });
+        this.addListener('scale', (data) => {
+            this.annotator.emit('scaleAnnotations', data);
         });
-    }
 
-    /**
-     * Returns whether or not viewer both supports annotations and has
-     * annotations enabled. If an optional type is passed in, we check if that
-     * type of annotation is allowed.
-     *
-     * @param {string} [type] - Type of annotation
-     * @return {boolean} Whether or not viewer is annotatable
-     */
-    isAnnotatable(type) {
-        const { TYPE: annotationTypes } = this.annotatorConf;
-        if (type && annotationTypes) {
-            if (!annotationTypes.some((annotationType) => type === annotationType)) {
-                return false;
-            }
-        }
-
-        // Return whether or not annotations are enabled for this viewer
-        return this.areAnnotationsEnabled();
+        // Add a custom listener for events emmited by the annotator
+        this.annotator.addListener('annotatorevent', this.handleAnnotatorNotifications);
     }
 
     /**
@@ -716,93 +707,45 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Shows the point annotate button.
+     * Handle events emitted by the annotator
      *
-     * @param {Function} handler - Point annotation button handler
+     * @private
+     * @param {Object} [data] - Annotator event data
+     * @param {string} [data.event] - Annotator event
+     * @param {string} [data.data] -
      * @return {void}
      */
-    showPointAnnotateButton(handler) {
-        if (!this.isAnnotatable('point')) {
-            return;
-        }
+    handleAnnotatorNotifications(data) {
+        /* istanbul ignore next */
+        switch (data.event) {
+            case ANNOTATION_MODE_ENTER:
+                this.disableViewerControls();
 
-        if (!this.getPointModeClickHandler) {
-            this.getPointModeClickHandler = () => handler;
-        }
-
-        const { container } = this.options;
-        const annotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
-
-        if (annotateButtonEl) {
-            annotateButtonEl.title = __('annotation_point_toggle');
-            annotateButtonEl.classList.remove(CLASS_HIDDEN);
-            annotateButtonEl.addEventListener('click', handler);
-        }
-    }
-    /**
-     * Shows the draw annotate button.
-     *
-     * @param {Function} handler - Drawing annotation button handler
-     * @return {void}
-     */
-    showDrawAnnotateButton(handler) {
-        if (!this.isAnnotatable('draw')) {
-            return;
-        }
-
-        this.drawAnnotateClickHandler = handler;
-
-        const { container } = this.options;
-        const drawAnnotateButtonEl = container.querySelector(SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW);
-        if (drawAnnotateButtonEl) {
-            drawAnnotateButtonEl.title = __('annotation_draw_toggle');
-            drawAnnotateButtonEl.classList.remove(CLASS_HIDDEN);
-            drawAnnotateButtonEl.addEventListener('click', handler);
+                if (data.data === ANNOTATION_TYPE_POINT) {
+                    this.emit('notificationshow', __('notification_annotation_point_mode'));
+                } else if (data.data === ANNOTATION_TYPE_DRAW) {
+                    this.emit('notificationshow', __('notification_annotation_draw_mode'));
+                }
+                break;
+            case ANNOTATION_MODE_EXIT:
+                this.enableViewerControls();
+                this.emit('notificationhide');
+                break;
+            case 'annotationerror':
+                this.emit('notificationshow', data.data);
+                break;
+            case 'annotationsfetched':
+                this.emit('scale', {
+                    scale: this.scale,
+                    rotationAngle: this.rotationAngle
+                });
+                break;
+            default:
+                this.emit(data.event, data.data);
+                this.emit('annotatorevent', data);
+                break;
         }
     }
-
-    /**
-     * Returns click handler for toggling annotation mode.
-     *
-     * @param {string} mode - Target annotation mode
-     * @return {Function|null} Click handler
-     */
-    getAnnotationModeClickHandler(mode) {
-        if (!mode || !this.isAnnotatable(mode)) {
-            return null;
-        }
-
-        const eventName = `toggle${mode}annotationmode`;
-        return () => {
-            this.emit(eventName);
-        };
-    }
-
-    /**
-     * Disables viewer controls
-     *
-     * @return {void}
-     */
-    /* eslint-disable no-unused-vars */
-    disableViewerControls() {
-        if (this.controls) {
-            this.controls.disable();
-        }
-    }
-    /* eslint-enable no-unused-vars */
-
-    /**
-     * Enables viewer controls
-     *
-     * @return {void}
-     */
-    /* eslint-disable no-unused-vars */
-    enableViewerControls() {
-        if (this.controls) {
-            this.controls.enable();
-        }
-    }
-    /* eslint-enable no-unused-vars */
 }
 
 export default BaseViewer;

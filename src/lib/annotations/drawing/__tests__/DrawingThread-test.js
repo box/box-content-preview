@@ -36,20 +36,27 @@ describe('lib/annotations/drawing/DrawingThread', () => {
     });
 
     describe('destroy()', () => {
-        it('should destroy the thread', () => {
+        beforeEach(() => {
             drawingThread.state = STATES.pending;
-            assert.notEqual(drawingThread.element, null);
+        });
 
-            // This stubs out a parent method by forcing the method we care about
-            // in the prototype of the prototype of DrawingThread (ie
-            // AnnotationThread's prototype) to be a stub
-            Object.defineProperty(Object.getPrototypeOf(DrawingThread.prototype), 'destroy', {
-                value: (() => drawingThread.element = null)
-            });
+        it('should clean up drawings', () => {
+            sandbox.stub(window, 'cancelAnimationFrame');
+            sandbox.stub(drawingThread, 'reset');
 
+            drawingThread.lastAnimationRequestId = 1;
+            drawingThread.drawingContext = {
+                clearRect: sandbox.stub(),
+                canvas: {
+                    width: 100,
+                    height: 100
+                }
+            };
             drawingThread.destroy();
 
-            assert.equal(drawingThread.element, null);
+            expect(window.cancelAnimationFrame).to.be.calledWith(1);
+            expect(drawingThread.reset).to.be.called;
+            expect(drawingThread.drawingContext.clearRect).to.be.called;
         })
     });
 
@@ -102,16 +109,18 @@ describe('lib/annotations/drawing/DrawingThread', () => {
     describe('render()', () => {
         it('should draw the pending path when the context is not empty', () => {
             const timeElapsed = 20000;
-            const drawingArray = {
-                forEach: sandbox.stub()
-            };
+            const drawingArray = [];
 
             sandbox.stub(drawingThread, 'getDrawings')
                    .returns(drawingArray);
+
             drawingThread.pendingPath = {
-                drawPath: sandbox.stub()
+                drawPath: sandbox.stub(),
+                isEmpty: sandbox.stub().returns(false)
             };
             drawingThread.drawingContext = {
+                beginPath: sandbox.stub(),
+                stroke: sandbox.stub(),
                 clearRect: sandbox.stub(),
                 canvas: {
                     width: 2,
@@ -121,9 +130,11 @@ describe('lib/annotations/drawing/DrawingThread', () => {
             drawingThread.render(timeElapsed);
 
             expect(drawingThread.getDrawings).to.be.called;
-            expect(drawingArray.forEach).to.be.called;
             expect(drawingThread.drawingContext.clearRect).to.be.called;
+            expect(drawingThread.drawingContext.beginPath).to.be.called;
+            expect(drawingThread.drawingContext.stroke).to.be.called;
             expect(drawingThread.pendingPath.drawPath).to.be.called;
+            expect(drawingThread.pendingPath.isEmpty).to.be.called;
         });
 
         it('should do nothing when the context is empty', () => {

@@ -1,5 +1,19 @@
-import { CLASS_ACTIVE, CLASS_HIDDEN, CLASS_INVISIBLE } from '../constants';
-import { TYPES, SELECTOR_ANNOTATION_CARET, PENDING_STATES } from './annotationConstants';
+import 'whatwg-fetch';
+import {
+    TYPES,
+    SELECTOR_ANNOTATION_CARET,
+    PENDING_STATES,
+    CLASS_ACTIVE,
+    CLASS_HIDDEN,
+    CLASS_INVISIBLE
+} from './annotationConstants';
+
+const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
+const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
+/* eslint-disable no-undef */
+const CLIENT_NAME = __NAME__;
+const CLIENT_VERSION = __VERSION__;
+/* eslint-enable no-undef */
 
 const AVATAR_COLOR_COUNT = 9; // 9 colors defined in Box React UI avatar code
 const THREAD_PARAMS = [
@@ -34,11 +48,11 @@ export function findClosestElWithClass(element, className) {
 }
 
 /**
-* Returns the page element and page number that the element is on.
-*
-* @param {HTMLElement} element - Element to find page and page number for
-* @return {Object} Page element/page number if found or null/-1 if not
-*/
+ * Returns the page element and page number that the element is on.
+ *
+ * @param {HTMLElement} element - Element to find page and page number for
+ * @return {Object} Page element/page number if found or null/-1 if not
+ */
 export function getPageInfo(element) {
     const pageEl = findClosestElWithClass(element, 'page') || null;
     let page = 1;
@@ -125,7 +139,7 @@ export function showInvisibleElement(elementOrSelector) {
 
 /**
  * Hides the specified element or element with specified selector. The element
- * will still take up DOM space but not be visible in the UI
+ * will still take up DOM space but not be visible in the UI.
  *
  * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
  * @return {void}
@@ -167,8 +181,8 @@ export function resetTextarea(element, clearText) {
 /**
  * Checks whether element is fully in viewport.
  *
- * @param {HTMLElement} element - Element to check
- * @return {boolean} Whether element is fully in viewport
+ * @param {HTMLElement} element - The element to check and see if it lies in the viewport
+ * @return {boolean} Whether the element is fully in viewport
  */
 export function isElementInViewport(element) {
     const dimensions = element.getBoundingClientRect();
@@ -378,4 +392,170 @@ export function eventToLocationHandler(locationFunction, callback) {
             callback(location);
         }
     };
+}
+
+/**
+ * Create a JSON object containing x/y coordinates and optionally dimensional information
+ *
+ * @param {number} x - The x position of the location object
+ * @param {number} y - The y position of the location object
+ * @param {Object} [dimensions] - The dimensional information of the location object
+ * @return {Object} - A location object with x/y position information as well as provided dimensional information
+ */
+export function createLocation(x, y, dimensions) {
+    const loc = { x, y };
+    if (dimensions) {
+        loc.dimensions = dimensions;
+    }
+
+    return loc;
+}
+
+//------------------------------------------------------------------------------
+// General Util Methods
+//------------------------------------------------------------------------------
+
+/**
+ * Function to decode key down events into keys
+ *
+ * @param {Event} event - Keydown event
+ * @return {string} Decoded keydown key
+ */
+export function decodeKeydown(event) {
+    let modifier = '';
+
+    // KeyboardEvent.key is the new spec supported in Chrome, Firefox and IE.
+    // KeyboardEvent.keyIdentifier is the old spec supported in Safari.
+    // Priority is given to the new spec.
+    let key = event.key || event.keyIdentifier || '';
+
+    // Get the modifiers on their own
+    if (event.ctrlKey) {
+        modifier = 'Control';
+    } else if (event.shiftKey) {
+        modifier = 'Shift';
+    } else if (event.metaKey) {
+        modifier = 'Meta';
+    }
+
+    // The key and keyIdentifier specs also include modifiers.
+    // Since we are manually getting the modifiers above we do
+    // not want to trap them again here.
+    if (key === modifier) {
+        key = '';
+    }
+
+    // keyIdentifier spec returns UTF8 char codes
+    // Need to convert them back to ascii.
+    if (key.indexOf('U+') === 0) {
+        if (key === 'U+001B') {
+            key = 'Escape';
+        } else {
+            key = String.fromCharCode(key.replace('U+', '0x'));
+        }
+    }
+
+    // If nothing was pressed just return
+    if (!key) {
+        return '';
+    }
+
+    // Special casing for space bar
+    if (key === ' ') {
+        key = 'Space';
+    }
+
+    // Edge bug which outputs "Esc" instead of "Escape"
+    // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/5290772/
+    if (key === 'Esc') {
+        key = 'Escape';
+    }
+
+    // keyIdentifier spec does not prefix the word Arrow.
+    // Newer key spec does it automatically.
+    if (key === 'Right' || key === 'Left' || key === 'Down' || key === 'Up') {
+        key = `Arrow${key}`;
+    }
+
+    if (modifier) {
+        modifier += '+';
+    }
+
+    return modifier + key;
+}
+
+/**
+ * Builds a list of required XHR headers.
+ *
+ * @param {Object} [headers] - Optional headers
+ * @param {string} [token] - Optional auth token
+ * @param {string} [sharedLink] - Optional shared link
+ * @param {string} [password] - Optional shared link password
+ * @return {Object} Headers
+ */
+export function getHeaders(headers = {}, token = '', sharedLink = '', password = '') {
+    /* eslint-disable no-param-reassign */
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    }
+    if (sharedLink) {
+        headers.BoxApi = `shared_link=${sharedLink}`;
+
+        if (password) {
+            headers.BoxApi = `${headers.BoxApi}&shared_link_password=${password}`;
+        }
+    }
+
+    // Following headers are for API analytics
+    if (CLIENT_NAME) {
+        headers[HEADER_CLIENT_NAME] = CLIENT_NAME;
+    }
+
+    if (CLIENT_VERSION) {
+        headers[HEADER_CLIENT_VERSION] = CLIENT_VERSION;
+    }
+
+    /* eslint-enable no-param-reassign */
+    return headers;
+}
+
+/**
+ * Round a number to a certain decimal place by concatenating an exponential factor. Credits to lodash library.
+ *
+ * @param {number} number - The number to be rounded
+ * @param {number} precision - The amount of decimal places to keep
+ * @return {number} The rounded number
+ */
+export function round(number, precision) {
+    /* eslint-disable prefer-template */
+    let pair = (number + 'e').split('e');
+    const value = Math.round(pair[0] + 'e' + (+pair[1] + precision));
+    pair = (value + 'e').split('e');
+    return +(pair[0] + 'e' + (+pair[1] - precision));
+    /* eslint-enable prefer-template */
+}
+
+/**
+ * Replaces variable place holders specified between {} in the string with
+ * specified custom value. Localizes strings that include variables.
+ *
+ * @param {string} string - String to be interpolated
+ * @param {string[]} placeholderValues - Custom values to replace into string
+ * @return {string} Properly translated string with replaced custom variable
+ */
+export function replacePlaceholders(string, placeholderValues) {
+    const regex = /\{\d+\}/g;
+
+    if (!string || !string.length) {
+        return string;
+    }
+
+    return string.replace(regex, (match) => {
+        // extracting the index that is supposed to replace the matched placeholder
+        const placeholderIndex = parseInt(match.replace(/^\D+/g, ''), 10) - 1;
+
+        /* eslint-disable no-plusplus */
+        return placeholderValues[placeholderIndex] ? placeholderValues[placeholderIndex] : match;
+        /* eslint-enable no-plusplus */
+    });
 }

@@ -10,6 +10,7 @@ import {
     convertDOMSpaceToPDFSpace,
     getBrowserCoordinatesFromLocation,
     getLowerRightCornerOfLastQuadPoint,
+    isValidSelection,
     getContext,
     getPageEl,
     isDialogDataType
@@ -183,6 +184,43 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
         assert.equal(getLowerRightCornerOfLastQuadPoint(quadPoints).toString(), [10, 0].toString());
     });
 
+    describe('isValidSelection', () => {
+        it('should return false if there are no ranges present in the selection', () => {
+            const selection = {
+                rangeCount: 0,
+                isCollapsed: false,
+                toString: () => 'I am valid!'
+            };
+            expect(isValidSelection(selection)).to.be.false;
+        });
+
+        it('should return false if the selection isn\'t collapsed', () => {
+            const selection = {
+                rangeCount: 1,
+                isCollapsed: true,
+                toString: () => 'I am valid!'
+            };
+            expect(isValidSelection(selection)).to.be.false;
+        });
+
+        it('should return false if the selection is empty', () => {
+            const selection = {
+                rangeCount: 1,
+                isCollapsed: false,
+                toString: () => ''
+            };
+            expect(isValidSelection(selection)).to.be.false;
+        });
+
+        it('should return true if the selection is valid', () => {
+            const selection = {
+                rangeCount: 1,
+                isCollapsed: false,
+                toString: () => 'I am valid!'
+            };
+            expect(isValidSelection(selection)).to.be.true;
+        });
+    });
 
     describe('getContext()', () => {
         it('should return null if there is no pageEl', () => {
@@ -211,10 +249,13 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
             const annotationLayer = {
                 width: 0,
                 height: 0,
-                getContext: sandbox.stub().returns('2d context'),
+                getContext: sandbox.stub().returns({
+                    scale: sandbox.stub()
+                }),
                 classList: {
                     add: sandbox.stub()
-                }
+                },
+                style: {}
             };
             const pageEl = {
                 querySelector: sandbox.stub().returns(undefined),

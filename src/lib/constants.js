@@ -29,6 +29,7 @@ export const CLASS_BOX_PREVIEW_TOGGLE_OVERLAY = 'bp-toggle-overlay';
 export const CLASS_BOX_PREVIEW_THEME_DARK = 'bp-theme-dark';
 export const CLASS_ELEM_KEYBOARD_FOCUS = 'bp-has-keyboard-focus';
 export const CLASS_FULLSCREEN = 'bp-is-fullscreen';
+export const CLASS_FULLSCREEN_UNSUPPORTED = 'bp-fullscreen-unsupported';
 export const CLASS_INVISIBLE = 'bp-is-invisible';
 export const CLASS_IS_VISIBLE = 'bp-is-visible';
 export const CLASS_IS_SCROLLABLE = 'bp-is-scrollable';
@@ -80,7 +81,7 @@ export const X_REP_HINT_VIDEO_MP4 = '[mp4]';
 // whenever a file in that third party directory is updated
 export const DOC_STATIC_ASSETS_VERSION = '0.130.0';
 export const MEDIA_STATIC_ASSETS_VERSION = '0.127.0';
-export const MODEL3D_STATIC_ASSETS_VERSION = '1.1.1';
+export const MODEL3D_STATIC_ASSETS_VERSION = '1.4.1';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';
 export const TEXT_STATIC_ASSETS_VERSION = '0.114.0';
 

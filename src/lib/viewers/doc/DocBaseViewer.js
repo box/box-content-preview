@@ -35,8 +35,7 @@ const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
 
 const RANGE_REQUEST_CHUNK_SIZE_US = 1048576; // 1MB
 const RANGE_REQUEST_CHUNK_SIZE_NON_US = 524288; // 512KB
-const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 5242880; // 5MB
-const DISABLE_RANGE_REQUEST_EXENSIONS = ['xls', 'xlsm', 'xlsx'];
+const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 26214400; // 25MB
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 
 @autobind
@@ -361,7 +360,7 @@ class DocBaseViewer extends BaseViewer {
         const previousPageButtonEl = this.containerEl.querySelector('.bp-previous-page');
         const nextPageButtonEl = this.containerEl.querySelector('.bp-next-page');
 
-        // Safari disables keyboard input in fullscreen
+        // Safari disables keyboard input in fullscreen before Safari 10.1
         const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen(this.containerEl);
 
         // Disable page number selector if there is only one page or less
@@ -582,9 +581,10 @@ class DocBaseViewer extends BaseViewer {
     setupPdfjs() {
         // Set PDFJS worker & character maps
         const { file, location } = this.options;
-        const { size, extension, watermark_info: watermarkInfo } = file;
+        const { size, watermark_info: watermarkInfo } = file;
         const assetUrlCreator = createAssetUrlCreator(location);
         PDFJS.workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
+        PDFJS.imageResourcesPath = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/images/`);
         PDFJS.cMapUrl = `${location.staticBaseURI}third-party/doc/${DOC_STATIC_ASSETS_VERSION}/cmaps/`;
         PDFJS.cMapPacked = true;
 
@@ -595,17 +595,12 @@ class DocBaseViewer extends BaseViewer {
         // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
         PDFJS.disableFontFace = PDFJS.disableFontFace || Browser.isIOSWithFontIssue();
 
-        // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (5MB) for
+        // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (25MB) for
         // previews outside of the US since the additional latency overhead per range request can be
-        // more than the additional time for a continuous request. We don't do this for Excel files
-        // since their representations can be many times larger than the original file. Remove
-        // the Excel check once WinExcel starts generating appropriately-sized representations. This
-        // also overrides any range request disabling that may be set by pdf.js's compatibility checking
-        // since the browsers we support should all be able to properly handle range requests.
-        PDFJS.disableRange =
-            location.locale !== 'en-US' &&
-            size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US &&
-            !DISABLE_RANGE_REQUEST_EXENSIONS.includes(extension);
+        // more than the additional time for a continuous request. This also overrides any range request
+        // disabling that may be set by pdf.js's compatibility checking since the browsers we support
+        // should all be able to properly handle range requests.
+        PDFJS.disableRange = location.locale !== 'en-US' && size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US;
 
         // Disable range requests for watermarked files since they are streamed
         PDFJS.disableRange = PDFJS.disableRange || (watermarkInfo && watermarkInfo.is_watermarked);
@@ -651,18 +646,7 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Initializes annotations.
-     *
-     * @protected
-     * @return {void}
-     */
-    initAnnotations() {
-        super.initAnnotations();
-        this.setupPageIds();
-    }
-
-    /**
-     * Add page IDs to each page since annotations explicitly needs IDs per page (rangy).
+     * Add page IDs to each page
      *
      * @private
      * @return {void}
@@ -998,8 +982,12 @@ class DocBaseViewer extends BaseViewer {
             this.loaded = true;
             this.emit('load', {
                 numPages: this.pdfViewer.pagesCount,
-                endProgress: false // Indicate that viewer will end progress later
+                endProgress: false, // Indicate that viewer will end progress later
+                scale: this.pdfViewer.currentScale
             });
+
+            // Add page IDs to each page after page structure is available
+            this.setupPageIds();
         }
     }
 

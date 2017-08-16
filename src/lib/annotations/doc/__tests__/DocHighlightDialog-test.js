@@ -4,14 +4,14 @@ import Annotation from '../../Annotation';
 import AnnotationDialog from '../../AnnotationDialog';
 import * as annotatorUtil from '../../annotatorUtil';
 import * as docAnnotatorUtil from '../docAnnotatorUtil';
-import { CLASS_HIDDEN, CLASS_ACTIVE } from '../../../constants';
-import * as util from '../../../util';
+import * as util from '../../annotatorUtil';
 import * as constants from '../../annotationConstants';
 
 let dialog;
 const sandbox = sinon.sandbox.create();
 let stubs = {};
 
+const CLASS_HIGHLIGHT_DIALOG = 'bp-highlight-dialog';
 const CLASS_TEXT_HIGHLIGHTED = 'bp-is-text-highlighted';
 const CLASS_HIGHLIGHT_LABEL = 'bp-annotation-highlight-label';
 const DATA_TYPE_HIGHLIGHT_BTN = 'highlight-btn';
@@ -87,6 +87,121 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         });
     });
 
+    describe('postAnnotation()', () => {
+        beforeEach(() => {
+            stubs.postFunc = AnnotationDialog.prototype.postAnnotation;
+            Object.defineProperty(AnnotationDialog.prototype, 'postAnnotation', { value: sandbox.stub() });
+        });
+
+        afterEach(() => {
+            Object.defineProperty(AnnotationDialog.prototype, 'postAnnotation', { value: stubs.postFunc });
+        });
+        it('should do nothing if not text is present', () => {
+            const headerQuery = sandbox.stub(dialog.element, 'querySelector').withArgs('.bp-annotation-mobile-header');
+            dialog.postAnnotation(' ');
+
+            expect(headerQuery).to.not.be.called;
+        });
+
+        it('should not modify mobile ui there is no mobile header present', () => {
+            const headerQuery = sandbox.stub(dialog.element, 'querySelector').withArgs('.bp-annotation-mobile-header').returns(null);
+            const elRemove = sandbox.stub(dialog.element.classList, 'remove');
+            dialog.postAnnotation('This is the water and this is the well.');
+
+            expect(elRemove).to.not.be.called;
+        });
+
+        it('should show the mobile header', () => {
+            dialog.isMobile = true;
+            const headerEl = {
+                classList: {
+                    remove: sandbox.stub()
+                }
+            };
+            const headerQuery = sandbox.stub(dialog.element, 'querySelector').withArgs('.bp-annotation-mobile-header');
+            dialog.postAnnotation('Drink full and descend.');
+        });
+
+        it('should remove the plain highlight class from the dialog', () => {
+            dialog.isMobile = true;
+            const headerEl = {
+                classList: {
+                    remove: sandbox.stub()
+                }
+            };
+            const headerQuery = sandbox.stub(dialog.element, 'querySelector')
+                .withArgs('.bp-annotation-mobile-header').returns(headerEl);
+            const elRemove = sandbox.stub(dialog.element.classList, 'remove');
+            dialog.postAnnotation('The horse is the white of the eyes, dark within.');
+
+            expect(elRemove).to.be.calledWith(constants.CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
+        });
+    });
+
+    describe('hideCommentsDialog()', () => {
+        it('should do nothing if no comment dialog is present', () => {
+            const classAdd = sandbox.stub(dialog.element.classList, 'add');
+            dialog.commentsDialogEl = null;
+            dialog.hideCommentsDialog();
+
+            expect(classAdd).to.not.be.called;
+        });
+
+        it('should do nothing if no highlight dialog present', () => {
+            const classAdd = sandbox.stub(dialog.element.classList, 'add');
+            dialog.highlightDialogEl = null;
+            dialog.hideCommentsDialog();
+
+            expect(classAdd).to.not.be.called;
+        });
+
+        it('should do nothing if the comment dialog is already hidden', () => {
+            const classAdd = sandbox.stub(dialog.element.classList, 'add');
+            dialog.highlightDialogEl = {};
+            sandbox.stub(dialog.commentsDialogEl.classList, 'contains').withArgs(constants.CLASS_HIDDEN).returns(true);
+            dialog.hideCommentsDialog();
+
+            expect(classAdd).to.not.be.called;
+        });
+
+        it('should hide the comment dialog', () => {
+            dialog.highlightDialogEl = {
+                classList: {
+                    remove: () => {}
+                }
+            };
+            dialog.hideCommentsDialog();
+
+            expect(dialog.commentsDialogEl.classList.contains(constants.CLASS_HIDDEN)).to.be.true;
+        });
+
+        it('should add Highlight Dialog class to the dialog.element', () => {
+            dialog.commentsDialogEl.classList.remove(constants.CLASS_HIDDEN);
+            dialog.highlightDialogEl = {
+                classList: {
+                    remove: () => {}
+                }
+            };
+            dialog.hideCommentsDialog();
+
+            expect(dialog.element.classList.contains(CLASS_HIGHLIGHT_DIALOG)).to.be.true;
+        });
+
+        it('should show the highlight dialog', () => {
+            dialog.commentsDialogEl.classList.remove(constants.CLASS_HIDDEN);
+            dialog.highlightDialogEl = {
+                classList: {
+                    remove: sandbox.stub()
+                }
+            };
+            dialog.hideCommentsDialog();
+
+            expect(dialog.highlightDialogEl.classList.remove).to.be.calledWith(constants.CLASS_HIDDEN);
+        });
+
+        it('should set hasComments to false');
+    });
+
     describe('position()', () => {
         beforeEach(() => {
             stubs.scaled = sandbox.stub(dialog, 'getScaledPDFCoordinates').returns([150, 2]);
@@ -146,7 +261,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
     describe('toggleHighlightDialogs()', () => {
         it('should display comments dialog on toggle when comments dialog is currently hidden', () => {
             const commentsDialogEl = dialog.element.querySelector(constants.SELECTOR_ANNOTATION_CONTAINER);
-            commentsDialogEl.classList.add(CLASS_HIDDEN);
+            commentsDialogEl.classList.add(constants.CLASS_HIDDEN);
 
             sandbox.stub(annotatorUtil, 'hideElement');
             sandbox.stub(dialog, 'position');
@@ -159,7 +274,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
         it('should display highlight buttons dialog on toggle when comments dialog is currently shown', () => {
             const commentsDialogEl = dialog.element.querySelector(constants.SELECTOR_ANNOTATION_CONTAINER);
-            commentsDialogEl.classList.remove(CLASS_HIDDEN);
+            commentsDialogEl.classList.remove(constants.CLASS_HIDDEN);
 
             sandbox.stub(annotatorUtil, 'hideElement');
             sandbox.stub(dialog, 'position');
@@ -180,8 +295,8 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
             dialog.toggleHighlightCommentsReply(true);
 
-            expect(commentTextEl).to.not.have.class(CLASS_HIDDEN);
-            expect(replyTextEl).to.have.class(CLASS_HIDDEN);
+            expect(commentTextEl).to.not.have.class(constants.CLASS_HIDDEN);
+            expect(replyTextEl).to.have.class(constants.CLASS_HIDDEN);
         });
 
         it('should display "Add a comment here" text area in dialog when no comments exist', () => {
@@ -192,8 +307,8 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
             dialog.toggleHighlightCommentsReply(false);
 
-            expect(commentTextEl.classList.contains(CLASS_HIDDEN)).to.be.true;
-            expect(replyTextEl.classList.contains(CLASS_HIDDEN)).to.be.false;
+            expect(commentTextEl.classList.contains(constants.CLASS_HIDDEN)).to.be.true;
+            expect(replyTextEl.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
         });
 
         it('should reposition the dialog if using a desktop browser', () => {
@@ -244,7 +359,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         it('should hide the highlight dialog if thread has comments', () => {
             dialog.hasComments = true;
             dialog.setup([stubs.annotation]);
-            expect(dialog.highlightDialogEl).to.have.class(CLASS_HIDDEN);
+            expect(dialog.highlightDialogEl).to.have.class(constants.CLASS_HIDDEN);
         });
 
         it('should hide the comments dialog if thread does not have comments', () => {
@@ -259,7 +374,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
             });
 
             dialog.setup([annotation]);
-            expect(dialog.commentsDialogEl).to.have.class(CLASS_HIDDEN);
+            expect(dialog.commentsDialogEl).to.have.class(constants.CLASS_HIDDEN);
         });
 
         it('should setup the dialog element and add thread number to the dialog', () => {
@@ -423,13 +538,13 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         it('should display active highlight icon when highlight is active', () => {
             const addHighlightBtn = dialog.element.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
             dialog.toggleHighlightIcon(constants.HIGHLIGHT_FILL.active);
-            expect(addHighlightBtn).to.have.class(CLASS_ACTIVE);
+            expect(addHighlightBtn).to.have.class(constants.CLASS_ACTIVE);
         });
 
         it('should display normal \'text highlighted\' highlight icon when highlight is not active', () => {
             const addHighlightBtn = dialog.element.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
             dialog.toggleHighlightIcon(constants.HIGHLIGHT_FILL.normal);
-            expect(addHighlightBtn).to.not.have.class(CLASS_ACTIVE);
+            expect(addHighlightBtn).to.not.have.class(constants.CLASS_ACTIVE);
         });
     });
 

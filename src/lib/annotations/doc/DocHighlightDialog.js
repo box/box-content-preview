@@ -2,13 +2,10 @@ import autobind from 'autobind-decorator';
 import AnnotationDialog from '../AnnotationDialog';
 import * as annotatorUtil from '../annotatorUtil';
 import * as docAnnotatorUtil from './docAnnotatorUtil';
-import { CLASS_HIDDEN, CLASS_ACTIVE } from '../../constants';
-import { replacePlaceholders, decodeKeydown } from '../../util';
 import { ICON_HIGHLIGHT, ICON_HIGHLIGHT_COMMENT } from '../../icons/icons';
 import * as constants from '../annotationConstants';
 
 const CLASS_HIGHLIGHT_DIALOG = 'bp-highlight-dialog';
-const CLASS_ANNOTATION_HIGHLIGHT_DIALOG = 'bp-annotation-highlight-dialog';
 const CLASS_TEXT_HIGHLIGHTED = 'bp-is-text-highlighted';
 const CLASS_HIGHLIGHT_LABEL = 'bp-annotation-highlight-label';
 
@@ -22,7 +19,7 @@ class DocHighlightDialog extends AnnotationDialog {
     // Public
     //--------------------------------------------------------------------------
 
-    /** D
+    /** 
      * Saves an annotation with the associated text or blank if only
      * highlighting. Only adds an annotation to the dialog if it contains text.
      * The annotation is still added to the thread on the server side.
@@ -36,16 +33,60 @@ class DocHighlightDialog extends AnnotationDialog {
         // Will be displayed as '{name} highlighted'
         if (annotation.text === '' && annotation.user.id !== '0') {
             const highlightLabelEl = this.highlightDialogEl.querySelector(`.${CLASS_HIGHLIGHT_LABEL}`);
-            highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [
+            highlightLabelEl.textContent = annotatorUtil.replacePlaceholders(__('annotation_who_highlighted'), [
                 annotation.user.name
             ]);
             annotatorUtil.showElement(highlightLabelEl);
 
-            // Only reposition if mouse is still hovering over the dialog
-            this.position();
+            // Only reposition if mouse is still hovering over the dialog and not mobile
+            if (!this.isMobile) {
+                this.position();
+            }
         }
 
         super.addAnnotation(annotation);
+    }
+
+    /** @inheritdoc */
+    postAnnotation(textInput) {
+        const annotationTextEl = this.element.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
+        const text = textInput || annotationTextEl.value;
+        if (text.trim() === '') {
+            return;
+        }
+
+        // Convert from plain highlight to comment
+        const headerEl = this.element.querySelector('.bp-annotation-mobile-header');
+        if (headerEl) {
+            headerEl.classList.remove(constants.CLASS_HIDDEN);
+            this.element.classList.remove(constants.CLASS_ANNOTATION_PLAIN_HIGHLIGHT);
+        }
+
+        super.postAnnotation(textInput);
+    }
+
+    /**
+     * Set the state of the dialog so comments are hidden, if they're currently shown.
+     * 
+     * @public
+     * @return {void}
+     */
+    hideCommentsDialog() {
+        if (!this.commentsDialogEl || !this.highlightDialogEl) {
+            return;
+        }
+
+        // Displays comments dialog and hides highlight annotations button
+        const commentsDialogIsHidden = this.commentsDialogEl.classList.contains(constants.CLASS_HIDDEN);
+        if (commentsDialogIsHidden) {
+            return;
+        }
+
+        annotatorUtil.hideElement(this.commentsDialogEl);
+
+        this.element.classList.add(CLASS_HIGHLIGHT_DIALOG);
+        annotatorUtil.showElement(this.highlightDialogEl);
+        this.hasComments = false;
     }
 
     /**
@@ -78,7 +119,6 @@ class DocHighlightDialog extends AnnotationDialog {
         const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
 
         const [browserX, browserY] = this.getScaledPDFCoordinates(pageDimensions, pageHeight);
-
         pageEl.appendChild(this.element);
 
         const highlightDialogWidth = this.getDialogWidth();
@@ -119,10 +159,15 @@ class DocHighlightDialog extends AnnotationDialog {
      * highlight comments dialog. Dialogs are toggled based on whether the
      * highlight annotation has text comments or not.
      *
+     * @override
      * @return {void}
      */
     toggleHighlightDialogs() {
-        const commentsDialogIsHidden = this.commentsDialogEl.classList.contains(CLASS_HIDDEN);
+        if (!this.commentsDialogEl || !this.highlightDialogEl) {
+            return;
+        }
+
+        const commentsDialogIsHidden = this.commentsDialogEl.classList.contains(constants.CLASS_HIDDEN);
 
         // Displays comments dialog and hides highlight annotations button
         if (commentsDialogIsHidden) {
@@ -132,10 +177,9 @@ class DocHighlightDialog extends AnnotationDialog {
             this.element.classList.add(constants.CLASS_ANNOTATION_DIALOG);
             annotatorUtil.showElement(this.commentsDialogEl);
             this.hasComments = true;
-
             // Activate comments textarea
             const textAreaEl = this.dialogEl.querySelector(constants.SELECTOR_ANNOTATION_TEXTAREA);
-            textAreaEl.classList.add(CLASS_ACTIVE);
+            textAreaEl.classList.add(constants.CLASS_ACTIVE);
         } else {
             // Displays the highlight and comment buttons dialog and
             // hides the comments dialog
@@ -148,7 +192,9 @@ class DocHighlightDialog extends AnnotationDialog {
         }
 
         // Reposition dialog
-        this.position();
+        if (!this.isMobile) {
+            this.position();
+        }
     }
 
     /**
@@ -205,7 +251,7 @@ class DocHighlightDialog extends AnnotationDialog {
 
         // Generate HTML of highlight dialog
         this.highlightDialogEl = this.generateHighlightDialogEl();
-        this.highlightDialogEl.classList.add(CLASS_ANNOTATION_HIGHLIGHT_DIALOG);
+        this.highlightDialogEl.classList.add(constants.CLASS_ANNOTATION_HIGHLIGHT_DIALOG);
 
         // Generate HTML of comments dialog
         this.commentsDialogEl = this.generateDialogEl(annotations.length);
@@ -215,9 +261,9 @@ class DocHighlightDialog extends AnnotationDialog {
         this.dialogEl.appendChild(this.highlightDialogEl);
         this.dialogEl.appendChild(this.commentsDialogEl);
         if (this.hasComments) {
-            this.highlightDialogEl.classList.add(CLASS_HIDDEN);
+            this.highlightDialogEl.classList.add(constants.CLASS_HIDDEN);
         } else {
-            this.commentsDialogEl.classList.add(CLASS_HIDDEN);
+            this.commentsDialogEl.classList.add(constants.CLASS_HIDDEN);
         }
 
         if (!this.isMobile) {
@@ -242,7 +288,7 @@ class DocHighlightDialog extends AnnotationDialog {
         // be 'Some User'
         if (annotatorUtil.isPlainHighlight(annotations) && annotations[0].user.id !== '0') {
             const highlightLabelEl = this.highlightDialogEl.querySelector(`.${CLASS_HIGHLIGHT_LABEL}`);
-            highlightLabelEl.textContent = replacePlaceholders(__('annotation_who_highlighted'), [
+            highlightLabelEl.textContent = annotatorUtil.replacePlaceholders(__('annotation_who_highlighted'), [
                 annotations[0].user.name
             ]);
             annotatorUtil.showElement(highlightLabelEl);
@@ -309,7 +355,7 @@ class DocHighlightDialog extends AnnotationDialog {
      */
     keydownHandler(event) {
         event.stopPropagation();
-        if (decodeKeydown(event) === 'Enter') {
+        if (annotatorUtil.decodeKeydown(event) === 'Enter') {
             this.mousedownHandler(event);
         }
         super.keydownHandler(event);
@@ -358,9 +404,9 @@ class DocHighlightDialog extends AnnotationDialog {
     toggleHighlightIcon(fillStyle) {
         const addHighlightBtn = this.dialogEl.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
         if (fillStyle === constants.HIGHLIGHT_FILL.active) {
-            addHighlightBtn.classList.add(CLASS_ACTIVE);
+            addHighlightBtn.classList.add(constants.CLASS_ACTIVE);
         } else {
-            addHighlightBtn.classList.remove(CLASS_ACTIVE);
+            addHighlightBtn.classList.remove(constants.CLASS_ACTIVE);
         }
     }
 
@@ -476,8 +522,8 @@ class DocHighlightDialog extends AnnotationDialog {
     generateHighlightDialogEl() {
         const highlightDialogEl = document.createElement('div');
         highlightDialogEl.innerHTML = `
-            <span class="${CLASS_HIGHLIGHT_LABEL} ${CLASS_HIDDEN}"></span>
-            <span class="${constants.CLASS_HIGHLIGHT_BTNS} ${this.isMobile ? CLASS_HIDDEN : ''}">
+            <span class="${CLASS_HIGHLIGHT_LABEL} ${constants.CLASS_HIDDEN}"></span>
+            <span class="${constants.CLASS_HIGHLIGHT_BTNS}">
                 <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_BTN}"
                     data-type="${constants.DATA_TYPE_HIGHLIGHT}"
                     title="${__('annotation_highlight_toggle')}">

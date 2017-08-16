@@ -1,3 +1,37 @@
+<a name="1.5.0"></a>
+# 1.5.0 (2017-08-09)
+
+* New: 3D preview logic now loads from generated JSON file. ([4216b70](https://github.com/box/box-content-preview/commit/4216b70))
+* New: Documentation for viewer methods (#263) ([48f681d](https://github.com/box/box-content-preview/commit/48f681d))
+* Fix: Disable font face for iOS 10.3.x (#283) ([4d97d99](https://github.com/box/box-content-preview/commit/4d97d99))
+* Fix: Only initialize PreviewUI.notification after viewer is loaded (#273) ([060687b](https://github.com/box/box-content-preview/commit/060687b))
+* Chore: Cleaning up annotations methods in BaseViewer (#272) ([6f319f6](https://github.com/box/box-content-preview/commit/6f319f6))
+* Chore: Force image point dialogs to re-position on re-render (#280) ([baf9b70](https://github.com/box/box-content-preview/commit/baf9b70))
+* Chore: Removing references to annotations from individual viewers (#271) ([2a1e6cd](https://github.com/box/box-content-preview/commit/2a1e6cd))
+* Chore: Removing references to constants.js and Browser.js in Annotations code (#277) ([8d37f37](https://github.com/box/box-content-preview/commit/8d37f37))
+* Mojito: Update translations (#278) ([a02f3fe](https://github.com/box/box-content-preview/commit/a02f3fe))
+* Update: move rbush from static to npm module (#275) ([cec5410](https://github.com/box/box-content-preview/commit/cec5410))
+
+
+
+<a name="1.4.0"></a>
+# 1.4.0 (2017-08-01)
+
+* Chore: Duplicating any util.js methods used into annotatorUtil.js (#260) ([249e9f1](https://github.com/box/box-content-preview/commit/249e9f1))
+* Chore: Initializing notifications in PreviewUI once rather than in each Annotator (#262) ([721ef4e](https://github.com/box/box-content-preview/commit/721ef4e))
+* Chore: Removing initAnnotations() from DocBaseViewer (#259) ([b7cde84](https://github.com/box/box-content-preview/commit/b7cde84))
+* Update: Add aria-pressed setting for CC button (#264) ([4c52531](https://github.com/box/box-content-preview/commit/4c52531))
+* Fix: Don't trigger highlight if a new highlight is being created (#265) ([9ab6db4](https://github.com/box/box-content-preview/commit/9ab6db4))
+* Fix: Emit scale does not always pass events (#261) ([41b1af0](https://github.com/box/box-content-preview/commit/41b1af0))
+* Fix: Load annotator with the correct initial scale (#256) ([fc25534](https://github.com/box/box-content-preview/commit/fc25534))
+* Fix: thread save incorrectly rejects when no dialogue exists (#247) ([6b361ed](https://github.com/box/box-content-preview/commit/6b361ed))
+* Fix: Tweak release script ([d115c1c](https://github.com/box/box-content-preview/commit/d115c1c))
+* Mojito: Update translations (#266) ([2ee12a3](https://github.com/box/box-content-preview/commit/2ee12a3))
+* New: add annotation-noicon to allow native PDF annotations to be shown (#258) ([4de1259](https://github.com/box/box-content-preview/commit/4de1259))
+* New: Add pseudo fullscreen to mobile Safari (#246) ([b8c776d](https://github.com/box/box-content-preview/commit/b8c776d))
+
+
+
 <a name="1.3.0"></a>
 # 1.3.0 (2017-07-28)
 
