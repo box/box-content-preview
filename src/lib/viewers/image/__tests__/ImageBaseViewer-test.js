@@ -522,4 +522,42 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.loadUI).to.have.been.called;
         });
     });
+
+    describe('disableViewerControls()', () => {
+        it('should disable viewer controls', () => {
+            imageBase.controls = {
+                disable: sandbox.stub()
+            };
+            sandbox.stub(imageBase, 'unbindDOMListeners');
+            imageBase.disableViewerControls();
+            expect(imageBase.controls.disable).to.be.called;
+            expect(imageBase.unbindDOMListeners).to.be.called;
+        });
+    });
+
+    describe('enableViewerControls()', () => {
+        it('should enable viewer controls', () => {
+            imageBase.controls = {
+                enable: sandbox.stub()
+            };
+            imageBase.isMobile = true;
+            sandbox.stub(imageBase, 'bindDOMListeners');
+            sandbox.stub(imageBase, 'updateCursor');
+            imageBase.enableViewerControls();
+            expect(imageBase.controls.enable).to.be.called;
+            expect(imageBase.bindDOMListeners).to.be.called;
+            expect(imageBase.updateCursor).to.not.be.called;
+        });
+
+        it('should update cursor if not on mobile', () => {
+            imageBase.controls = {
+                enable: sandbox.stub()
+            };
+            imageBase.isMobile = false;
+            sandbox.stub(imageBase, 'bindDOMListeners');
+            sandbox.stub(imageBase, 'updateCursor');
+            imageBase.enableViewerControls();
+            expect(imageBase.updateCursor).to.be.called;
+        });
+    });
 });
