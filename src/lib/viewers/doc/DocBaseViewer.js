@@ -715,7 +715,7 @@ class DocBaseViewer extends BaseViewer {
         // and broadcast that preview has loaded
         this.docEl.addEventListener('pagesinit', this.pagesinitHandler);
 
-        // When a page is rendered, rerender annotations if needed
+        // When a page is rendered, update scale
         this.docEl.addEventListener('pagerendered', this.pagerenderedHandler);
 
         // Update page number when page changes
@@ -868,8 +868,6 @@ class DocBaseViewer extends BaseViewer {
      */
     enterfullscreenHandler() {
         this.pdfViewer.currentScaleValue = 'page-fit';
-
-        // Force resize for annotations
         this.resize();
     }
 
@@ -882,8 +880,6 @@ class DocBaseViewer extends BaseViewer {
      */
     exitfullscreenHandler() {
         this.pdfViewer.currentScaleValue = 'auto';
-
-        // Force resize for annotations
         this.resize();
     }
 
