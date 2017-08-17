@@ -1,3 +1,13 @@
+<a name="1.6.1"></a>
+## 1.6.1 (2017-08-17)
+
+* Fix: Add page controls between zoom and fullscreen controls (#320) ([a945458](https://github.com/box/box-content-preview/commit/a945458))
+* Fix: Create annotation in API using thread rather than threadNumber (#315) ([82f386d](https://github.com/box/box-content-preview/commit/82f386d))
+* Fix: Ensure that image.handleMouseDown() is unbound in annotation mode (#319) ([c479f9b](https://github.com/box/box-content-preview/commit/c479f9b))
+* Fix: Pass in the correct previousPage() for DocBaseViewer.pageControls (#318) ([e44b73e](https://github.com/box/box-content-preview/commit/e44b73e))
+
+
+
 <a name="1.6.0"></a>
 # 1.6.0 (2017-08-17)
 
