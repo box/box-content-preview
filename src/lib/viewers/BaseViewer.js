@@ -671,7 +671,6 @@ class BaseViewer extends EventEmitter {
             isMobile: this.isMobile,
             hasTouch: this.hasTouch,
             locale: location.locale,
-            previewUI: this.previewUI,
             modeButtons: ANNOTATION_BUTTONS
         });
         this.annotator.init(this.scale);

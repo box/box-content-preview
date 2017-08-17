@@ -58,7 +58,6 @@ class Annotator extends EventEmitter {
         this.validationErrorEmitted = false;
         this.isMobile = data.isMobile;
         this.hasTouch = data.hasTouch;
-        this.previewUI = data.previewUI;
         this.modeButtons = data.modeButtons;
         this.annotationModeHandlers = [];
     }
@@ -167,6 +166,16 @@ class Annotator extends EventEmitter {
             const handler = this.getAnnotationModeClickHandler(currentMode);
             annotateButtonEl.addEventListener('click', handler);
         }
+    }
+
+    /**
+     * Gets the annotation button element.
+     *
+     * @param {string} annotatorSelector - Class selector for a custom annotation button.
+     * @return {HTMLElement|null} Annotate button element or null if the selector did not find an element.
+     */
+    getAnnotateButton(annotatorSelector) {
+        return this.container.querySelector(annotatorSelector);
     }
 
     /**
@@ -299,7 +308,7 @@ class Annotator extends EventEmitter {
 
         // Hide create annotations button if image is rotated
         const pointButtonSelector = this.modeButtons[TYPES.point].selector;
-        const pointAnnotateButton = this.previewUI.getAnnotateButton(pointButtonSelector);
+        const pointAnnotateButton = this.getAnnotateButton(pointButtonSelector);
 
         if (rotationAngle !== 0) {
             annotatorUtil.hideElement(pointAnnotateButton);
@@ -339,7 +348,7 @@ class Annotator extends EventEmitter {
         }
 
         const buttonSelector = this.modeButtons[mode].selector;
-        const buttonEl = event.target || this.previewUI.getAnnotateButton(buttonSelector);
+        const buttonEl = event.target || this.getAnnotateButton(buttonSelector);
 
         // Exit any other annotation mode
         this.exitAnnotationModes(mode, buttonEl);
@@ -378,7 +387,7 @@ class Annotator extends EventEmitter {
                 const drawCancelEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
                 annotatorUtil.hideElement(drawCancelEl);
 
-                const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
+                const postButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
                 annotatorUtil.hideElement(postButtonEl);
             }
         }
@@ -407,7 +416,7 @@ class Annotator extends EventEmitter {
                 const drawCancelEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
                 annotatorUtil.showElement(drawCancelEl);
 
-                const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
+                const postButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
                 annotatorUtil.showElement(postButtonEl);
             }
         }
@@ -430,7 +439,7 @@ class Annotator extends EventEmitter {
             }
 
             const buttonSelector = this.modeButtons[type].selector;
-            const modeButtonEl = buttonEl || this.previewUI.getAnnotateButton(buttonSelector);
+            const modeButtonEl = buttonEl || this.getAnnotateButton(buttonSelector);
             this.disableAnnotationMode(type, modeButtonEl);
         });
     }
@@ -676,7 +685,7 @@ class Annotator extends EventEmitter {
             const locationFunction = (event) => this.getLocationFromEvent(event, TYPES.point);
             /* eslint-enable require-jsdoc */
 
-            const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
+            const postButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
 
             handlers.push({
                 type: 'mousemove',
@@ -733,7 +742,7 @@ class Annotator extends EventEmitter {
 
         // Exits point annotation mode on first click
         const buttonSelector = this.modeButtons[TYPES.point].selector;
-        const buttonEl = this.previewUI.getAnnotateButton(buttonSelector);
+        const buttonEl = this.getAnnotateButton(buttonSelector);
         this.disableAnnotationMode(TYPES.point, buttonEl);
 
         // Get annotation location from click event, ignore click if location is invalid
