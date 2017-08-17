@@ -511,8 +511,12 @@ describe('lib/util', () => {
     });
 
     describe('requires360Viewer()', () => {
-        it('should return true for file name with 360 before extension', () => {
-            expect(util.requires360Viewer({ name: '360.foo' })).to.be.true;
+        it('should return true for file name with .360 before extension', () => {
+            expect(util.requires360Viewer({ name: 'name.360.foo' })).to.be.true;
+        });
+
+        it('should return false for file name ending with 360 (e.g. IMG_0360.jpg)', () => {
+            expect(util.requires360Viewer({ name: 'IMG_0360.foo' })).to.be.false;
         });
 
         it('should return false for file name with no 360 before extension', () => {
@@ -555,16 +559,6 @@ describe('lib/util', () => {
 
             expect(element.style.width).to.equal(`${width}px`);
             expect(element.style.height).to.equal(`${height}px`);
-        });
-    });
-
-    describe('requires360Viewer()', () => {
-        it('should return true for file name with 360 before extension', () => {
-            expect(util.requires360Viewer({ name: '360.foo' })).to.be.true;
-        });
-
-        it('should return false for file name with no 360 before extension', () => {
-            expect(util.requires360Viewer({ name: 'foo' })).to.be.false;
         });
     });
 });

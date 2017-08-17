@@ -65,7 +65,7 @@ describe('lib/viewers/image/ImageViewer', () => {
     });
 
     describe('setup()', () => {
-        it('should set up layout and init annotations', () => {
+        it('should set up layout', () => {
             expect(image.wrapperEl).to.have.class('bp-image');
             expect(image.imageEl).to.have.class('bp-is-invisible');
         });
@@ -301,7 +301,7 @@ describe('lib/viewers/image/ImageViewer', () => {
     });
 
     describe('setScale()', () => {
-        it('should scale and rotate annotations accordingly', () => {
+        it('should emit a scale event with current scale and rotationAngle', () => {
             sandbox.stub(image, 'emit');
             image.currentRotationAngle = -90;
             const [width, height] = [100, 100];

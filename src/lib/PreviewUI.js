@@ -262,16 +262,6 @@ class PreviewUI {
     }
 
     /**
-     * Gets the annotation button element.
-     *
-     * @param {string} annotatorSelector - Class selector for a custom annotation button.
-     * @return {HTMLElement|null} Annotate button element or null if the selector did not find an element.
-     */
-    getAnnotateButton(annotatorSelector) {
-        return this.container.querySelector(annotatorSelector);
-    }
-
-    /**
      * Shows and starts a progress bar at the top of the preview.
      *
      * @return {void}
