@@ -37,33 +37,48 @@ class BoxAnnotations {
     }
 
     /**
+     * Get all annotators for a given viewer.
+     *
+     * @param {string} viewerName - Name of the viewer to get annotators for
+     * @return {Object} Annotator for the viewer
+     */
+    getAnnotatorsForViewer(viewerName, disabledAnnotators = []) {
+        const annotators = this.getAnnotators();
+
+        return annotators.find(
+            (annotator) => !disabledAnnotators.includes(annotator.NAME) && annotator.VIEWER.includes(viewerName)
+        );
+    }
+
+    /**
      * Chooses a annotator based on viewer.
      *
-     * @param {Object} viewer - Current preview viewer
+     * @param {Object} viewerName - Current preview viewer name
      * @param {Array} [disabledAnnotators] - List of disabled annotators
-     * @param {Array} [disabledTypes] - List of disabled annotation types
-     * @return {Object} A copy of the annotator to use
+     * @param {Array} [viewerConfig] - Annotation configuration for a specific viewer
+     * @return {Object|null} A copy of the annotator to use, if available
      */
-    determineAnnotator(viewer, disabledAnnotators = [], annotationConfig = {}) {
-        let annotator;
-        const annotatorToCopy = this.annotators.find(
-            (annotatorToCheck) =>
-                !disabledAnnotators.includes(annotatorToCheck.NAME) && annotatorToCheck.VIEWER.includes(viewer)
-        );
+    determineAnnotator(viewerName, disabledAnnotators = [], viewerConfig = {}) {
+        const originalAnnotator = this.getAnnotatorsForViewer(viewerName, disabledAnnotators);
 
-        // Remove annotation types that have been disabled
-        if (annotatorToCopy) {
-            annotator = Object.assign({}, annotatorToCopy);
+        if (originalAnnotator) {
+            const annotator = Object.assign({}, originalAnnotator);
+            // If explicitly disabled via config, do nothing
+            if (viewerConfig.enabled === false) {
+                return null;
+            }
 
-            // Filter out annotation types
-            if (annotationConfig.disabledTypes) {
+            // Filter out disabled annotation types
+            if (Array.isArray(viewerConfig.disabledTypes)) {
                 annotator.TYPE = annotator.TYPE.filter((type) => {
-                    return !annotationConfig.disabledTypes.includes(type);
+                    return !viewerConfig.disabledTypes.includes(type);
                 });
             }
+
+            return annotator;
         }
 
-        return annotator;
+        return null;
     }
 }
 
