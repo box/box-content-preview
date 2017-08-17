@@ -74,8 +74,9 @@ class Annotator extends EventEmitter {
 
         if (this.threads) {
             Object.keys(this.threads).forEach((page) => {
-                this.threads[page].forEach((thread) => {
-                    this.unbindCustomListenersOnThread(thread);
+                const pageThreads = this.threads[page];
+                Object.keys(pageThreads).forEach((threadID) => {
+                    this.unbindCustomListenersOnThread(pageThreads[threadID]);
                 });
             });
         }
@@ -235,8 +236,9 @@ class Annotator extends EventEmitter {
      */
     hideAnnotations() {
         Object.keys(this.threads).forEach((page) => {
-            this.threads[page].forEach((thread) => {
-                thread.hide();
+            const pageThreads = this.threads[page];
+            Object.keys(pageThreads).forEach((threadID) => {
+                pageThreads[threadID].hide();
             });
         });
     }
@@ -249,8 +251,9 @@ class Annotator extends EventEmitter {
      */
     hideAnnotationsOnPage(pageNum) {
         if (this.threads[pageNum]) {
-            this.threads[pageNum].forEach((thread) => {
-                thread.hide();
+            const pageThreads = this.threads[pageNum];
+            Object.keys(pageThreads).forEach((threadID) => {
+                pageThreads[threadID].hide();
             });
         }
     }
@@ -263,8 +266,9 @@ class Annotator extends EventEmitter {
      */
     renderAnnotations() {
         Object.keys(this.threads).forEach((page) => {
-            this.threads[page].forEach((thread) => {
-                thread.show();
+            const pageThreads = this.threads[page];
+            Object.keys(pageThreads).forEach((threadID) => {
+                pageThreads[threadID].show();
             });
         });
     }
@@ -278,8 +282,9 @@ class Annotator extends EventEmitter {
      */
     renderAnnotationsOnPage(pageNum) {
         if (this.threads && this.threads[pageNum]) {
-            this.threads[pageNum].forEach((thread) => {
-                thread.show();
+            const pageThreads = this.threads[pageNum];
+            Object.keys(pageThreads).forEach((threadID) => {
+                pageThreads[threadID].show();
             });
         }
     }
@@ -639,14 +644,7 @@ class Annotator extends EventEmitter {
 
         // Thread was deleted, remove from thread map
         thread.addListener('threaddeleted', () => {
-            const page = thread.location.page || 1;
-
-            // Remove from map
-            if (this.threads[page] instanceof Array) {
-                this.threads[page] = this.threads[page].filter(
-                    (searchThread) => searchThread.threadID !== thread.threadID
-                );
-            }
+            this.removeThreadFromMap(thread);
         });
 
         // Thread should be cleaned up, unbind listeners - we don't do this
@@ -855,8 +853,24 @@ class Annotator extends EventEmitter {
     addThreadToMap(thread) {
         // Add thread to in-memory map
         const page = thread.location.page || 1; // Defaults to page 1 if thread has no page
-        this.threads[page] = this.threads[page] || [];
-        this.threads[page].push(thread);
+        this.threads[page] = this.threads[page] || {};
+        this.threads[page][thread.threadID] = thread;
+    }
+
+    /**
+     * Removes thread to in-memory map.
+     *
+     * @protected
+     * @param {AnnotationThread} thread - Thread to bind events to
+     * @return {void}
+     */
+    removeThreadFromMap(thread) {
+        const page = thread.location.page || 1;
+
+        // Remove from map
+        if (this.threads[page] instanceof Object) {
+            delete this.threads[page][thread.threadID];
+        }
     }
 
     /**
@@ -896,7 +910,8 @@ class Annotator extends EventEmitter {
     destroyPendingThreads() {
         let hasPendingThreads = false;
         Object.keys(this.threads).forEach((page) => {
-            this.threads[page].forEach((pendingThread) => {
+            const pageThreads = this.threads[page];
+            Object.keys(pageThreads).forEach((pendingThread) => {
                 if (annotatorUtil.isPending(pendingThread.state)) {
                     hasPendingThreads = true;
                     pendingThread.destroy();

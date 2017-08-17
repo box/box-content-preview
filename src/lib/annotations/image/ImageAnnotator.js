@@ -127,6 +127,7 @@ class ImageAnnotator extends Annotator {
         // Set existing thread ID if created with annotations
         if (annotations.length > 0) {
             threadParams.threadID = annotations[0].threadID;
+            threadParams.threadNumber = annotations[0].threadNumber;
         }
 
         thread = new ImagePointThread(threadParams);
