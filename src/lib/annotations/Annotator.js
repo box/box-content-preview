@@ -1,6 +1,7 @@
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import AnnotationService from './AnnotationService';
+import DrawingController from './drawing/DrawingController';
 import * as annotatorUtil from './annotatorUtil';
 import { ICON_CLOSE } from '../icons/icons';
 import './Annotator.scss';
@@ -168,6 +169,11 @@ class Annotator extends EventEmitter {
 
             const handler = this.getAnnotationModeClickHandler(currentMode);
             annotateButtonEl.addEventListener('click', handler);
+
+            // TODO (@minhnguyen): Implement controller for point mode annotation and remove this check
+            if (mode.controller && mode.controller.constructor.name === DrawingController.name) {
+                mode.controller.registerAnnotator(this);
+            }
         }
     }
 
@@ -524,6 +530,15 @@ class Annotator extends EventEmitter {
                 // Bind events on valid annotation thread
                 const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
                 this.bindCustomListenersOnThread(thread);
+
+                const modeData = this.modeButtons[firstAnnotation.type];
+                if (
+                    modeData &&
+                    modeData.controller &&
+                    modeData.controller.constructor.name === DrawingController.name
+                ) {
+                    modeData.controller.registerThread(thread);
+                }
             });
 
             this.emit('annotationsfetched');
@@ -655,6 +670,7 @@ class Annotator extends EventEmitter {
     unbindCustomListenersOnThread(thread) {
         thread.removeAllListeners('threaddeleted');
         thread.removeAllListeners('threadcleanup');
+        thread.removeAllListeners('threadsaved');
         thread.removeAllListeners('annotationevent');
     }
 
@@ -682,95 +698,15 @@ class Annotator extends EventEmitter {
                 }
             );
         } else if (mode === TYPES.draw) {
-            const drawingThread = this.createAnnotationThread([], {}, TYPES.draw);
-            this.bindCustomListenersOnThread(drawingThread);
-
-            /* eslint-disable require-jsdoc */
-            const locationFunction = (event) => this.getLocationFromEvent(event, TYPES.point);
-            /* eslint-enable require-jsdoc */
-
-            const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
-            const undoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
-            const redoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
-
-            // NOTE (@minhnguyen): Move this logic to a new controller class
-            const that = this;
-            drawingThread.addListener('annotationevent', (data = {}) => {
-                switch (data.type) {
-                    case 'pagechanged':
-                        drawingThread.saveAnnotation(TYPES.draw);
-                        that.unbindModeListeners();
-                        that.bindModeListeners(TYPES.draw);
-                        break;
-                    case 'availableactions':
-                        if (data.undo === 1) {
-                            annotatorUtil.enableElement(undoButtonEl);
-                        } else if (data.undo === 0) {
-                            annotatorUtil.disableElement(undoButtonEl);
-                        }
-
-                        if (data.redo === 1) {
-                            annotatorUtil.enableElement(redoButtonEl);
-                        } else if (data.redo === 0) {
-                            annotatorUtil.disableElement(redoButtonEl);
-                        }
-                        break;
-                    default:
-                }
-            });
-
-            handlers.push(
-                {
-                    type: 'mousemove',
-                    func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleMove),
-                    eventObj: this.annotatedElement
-                },
-                {
-                    type: 'mousedown',
-                    func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStart),
-                    eventObj: this.annotatedElement
-                },
-                {
-                    type: 'mouseup',
-                    func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStop),
-                    eventObj: this.annotatedElement
-                }
-            );
-
-            if (postButtonEl) {
-                handlers.push({
-                    type: 'click',
-                    func: () => {
-                        drawingThread.saveAnnotation(mode);
-                        this.toggleAnnotationHandler(mode);
-                    },
-                    eventObj: postButtonEl
-                });
-            }
-
-            if (undoButtonEl) {
-                handlers.push({
-                    type: 'click',
-                    func: () => {
-                        drawingThread.undo();
-                    },
-                    eventObj: undoButtonEl
-                });
-            }
-
-            if (redoButtonEl) {
-                handlers.push({
-                    type: 'click',
-                    func: () => {
-                        drawingThread.redo();
-                    },
-                    eventObj: redoButtonEl
-                });
-            }
+            const controller = this.modeButtons[TYPES.draw].controller;
+            handlers.push(...controller.setupAndGetHandlers());
         }
 
         handlers.forEach((handler) => {
-            handler.eventObj.addEventListener(handler.type, handler.func);
+            const eventNames = handler.type.split(' ');
+            eventNames.forEach((eventName) => {
+                handler.eventObj.addEventListener(eventName, handler.func, false);
+            });
             this.annotationModeHandlers.push(handler);
         });
     }
@@ -825,7 +761,10 @@ class Annotator extends EventEmitter {
     unbindModeListeners() {
         while (this.annotationModeHandlers.length > 0) {
             const handler = this.annotationModeHandlers.pop();
-            handler.eventObj.removeEventListener(handler.type, handler.func);
+            const eventNames = handler.type.split(' ');
+            eventNames.forEach((eventName) => {
+                handler.eventObj.removeEventListener(eventName, handler.func);
+            });
         }
     }
 

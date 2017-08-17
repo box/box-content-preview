@@ -41,7 +41,7 @@ class DocDrawingThread extends DrawingThread {
         if (this.drawingFlag !== DRAW_STATES.drawing) {
             return;
         } else if (this.hasPageChanged(location)) {
-            this.onPageChange();
+            this.onPageChange(location);
             return;
         }
 
@@ -59,7 +59,7 @@ class DocDrawingThread extends DrawingThread {
     handleStart(location) {
         const pageChanged = this.hasPageChanged(location);
         if (pageChanged) {
-            this.onPageChange();
+            this.onPageChange(location);
             return;
         }
 
@@ -103,7 +103,7 @@ class DocDrawingThread extends DrawingThread {
      * @return {boolean} Whether or not the thread page has changed
      */
     hasPageChanged(location) {
-        return !!this.location && !!this.location.page && this.location.page !== location.page;
+        return location && !!this.location && !!this.location.page && this.location.page !== location.page;
     }
 
     /**
@@ -136,6 +136,7 @@ class DocDrawingThread extends DrawingThread {
             const width = parseInt(inProgressCanvas.style.width, 10);
             const height = parseInt(inProgressCanvas.style.height, 10);
             drawingAnnotationLayerContext.drawImage(inProgressCanvas, 0, 0, width, height);
+            this.concreteContext = drawingAnnotationLayerContext;
             this.drawingContext.clearRect(0, 0, inProgressCanvas.width, inProgressCanvas.height);
         }
     }
@@ -165,6 +166,7 @@ class DocDrawingThread extends DrawingThread {
                 PAGE_PADDING_TOP,
                 PAGE_PADDING_BOTTOM
             );
+            this.concreteContext = context;
             this.setContextStyles(config, context);
         }
 
@@ -208,12 +210,14 @@ class DocDrawingThread extends DrawingThread {
     /**
      * End the current drawing and emit a page changed event
      *
+     * @param {Object} location - The location information indicating the page has changed.
      * @return {void}
      */
-    onPageChange() {
+    onPageChange(location) {
         this.handleStop();
         this.emit('annotationevent', {
-            type: 'pagechanged'
+            type: 'pagechanged',
+            location
         });
     }
 

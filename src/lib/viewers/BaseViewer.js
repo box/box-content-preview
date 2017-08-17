@@ -3,6 +3,8 @@ import EventEmitter from 'events';
 import debounce from 'lodash.debounce';
 import fullscreen from '../Fullscreen';
 import RepStatus from '../RepStatus';
+// TODO (@minhnguyen): Import controller from annotations npm module once the library is separate
+import DrawingController from '../annotations/drawing/DrawingController';
 import {
     appendAuthParams,
     getHeaders,
@@ -45,7 +47,8 @@ const ANNOTATION_BUTTONS = {
     },
     draw: {
         title: __('annotation_draw_toggle'),
-        selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW
+        selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
+        controller: new DrawingController()
     }
 };
 

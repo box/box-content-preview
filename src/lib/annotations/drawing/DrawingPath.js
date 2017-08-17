@@ -30,11 +30,17 @@ class DrawingPath {
      */
     constructor(drawingPathData) {
         if (drawingPathData) {
-            this.path = drawingPathData.path.map((num) => createLocation(parseFloat(num.x), parseFloat(num.y)));
-            this.maxX = drawingPathData.maxX;
-            this.minX = drawingPathData.minX;
-            this.maxY = drawingPathData.maxY;
-            this.minY = drawingPathData.minY;
+            this.path = drawingPathData.path.map((num) => {
+                const x = parseFloat(num.x);
+                const y = parseFloat(num.y);
+
+                this.minX = Math.min(this.minX, x);
+                this.maxX = Math.max(this.maxX, x);
+                this.minY = Math.min(this.minY, y);
+                this.maxY = Math.max(this.maxY, y);
+
+                return createLocation(x, y);
+            });
         }
     }
 
@@ -135,14 +141,26 @@ class DrawingPath {
     }
 
     /**
-     * Extract path information from the drawing path
+     * Extract the path information from two paths by merging their paths and getting the bounding rectangle
      *
-     * @param {DrawingPath} drawingPath - The drawingPath to extract information from
-     * @return {void}
+     * @param {Object} accumulator - A drawingPath or accumulator to extract information from
+     * @param {DrawingPath} pathB - Another drawingPath to extract information from
+     * @return {Object} A bounding rectangle and the stroke paths it contains
      */
-    static extractDrawingInfo(drawingPath) {
+    static extractDrawingInfo(accumulator, pathB) {
+        let paths = accumulator.paths;
+        if (paths) {
+            paths.push(pathB.path);
+        } else {
+            paths = [accumulator.path, pathB.path];
+        }
+
         return {
-            path: drawingPath.path
+            minX: Math.min(accumulator.minX, pathB.minX),
+            maxX: Math.max(accumulator.maxX, pathB.maxX),
+            minY: Math.min(accumulator.minY, pathB.minY),
+            maxY: Math.max(accumulator.maxY, pathB.maxY),
+            paths
         };
     }
 }

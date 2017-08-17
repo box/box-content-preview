@@ -82,6 +82,33 @@ class DrawingContainer {
     }
 
     /**
+     * Get the axis-aligned bounding box for all of the drawing items in the container
+     *
+     * @return {Object} The object with the boundaries and the path
+     */
+    getAABB() {
+        const items = this.getItems();
+        const boundary = {
+            minX: Infinity,
+            maxX: -Infinity,
+            minY: Infinity,
+            maxY: -Infinity,
+            paths: []
+        };
+
+        items.forEach((drawingPath) => {
+            boundary.minX = Math.min(boundary.minX, drawingPath.minX);
+            boundary.maxX = Math.max(boundary.maxX, drawingPath.maxX);
+            boundary.minY = Math.min(boundary.minY, drawingPath.minY);
+            boundary.maxY = Math.max(boundary.maxY, drawingPath.maxY);
+            boundary.paths.push({
+                path: drawingPath.path
+            });
+        });
+        return boundary;
+    }
+
+    /**
      * Apply a function to the items in the container.
      *
      * @param {Function} fn - The function to apply to the items.

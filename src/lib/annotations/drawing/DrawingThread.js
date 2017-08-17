@@ -2,6 +2,8 @@ import AnnotationThread from '../AnnotationThread';
 import DrawingPath from './DrawingPath';
 import DrawingContainer from './DrawingContainer';
 import { DRAW_STATES, DRAW_RENDER_THRESHOLD } from '../annotationConstants';
+import * as docAnnotatorUtil from '../doc/docAnnotatorUtil';
+import * as annotatorUtil from '../annotatorUtil';
 
 const BASE_LINE_WIDTH = 3;
 
@@ -43,8 +45,13 @@ class DrawingThread extends AnnotationThread {
         this.handleStop = this.handleStop.bind(this);
 
         // Recreate stored paths
-        if (data && data.location && data.location.drawingPaths instanceof Array) {
-            data.location.drawingPaths.forEach((drawingPathData) => {
+        if (data && data.location && data.location.drawingPaths) {
+            const boundaryData = data.location.drawingPaths;
+            this.minX = boundaryData.minX;
+            this.maxX = boundaryData.maxX;
+            this.minY = boundaryData.minY;
+            this.maxY = boundaryData.maxY;
+            boundaryData.paths.forEach((drawingPathData) => {
                 const pathInstance = new DrawingPath(drawingPathData);
                 this.pathContainer.insert(pathInstance);
             });
@@ -99,6 +106,21 @@ class DrawingThread extends AnnotationThread {
     handleStop(location) {}
     /* eslint-disable no-unused-vars */
 
+    deleteThread() {
+        this.annotations.forEach(this.deleteAnnotationWithID);
+
+        const l1 = annotatorUtil.createLocation(this.minX, this.minY, this.location.dimensions);
+        const l2 = annotatorUtil.createLocation(this.maxX, this.maxY, this.location.dimensions);
+        const [x1, y1] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(l1, this.pageEl);
+        const [x2, y2] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(l2, this.pageEl);
+        const width = x2 - x1;
+        const height = y2 - y1;
+        console.log(`w:${width}, h:${height}`);
+        this.concreteContext.rect(x1 - 5, y1 + 5, width + 10, height - 10);
+        this.concreteContext.fill();
+        this.destroy();
+    }
+
     //--------------------------------------------------------------------------
     // Protected
     //--------------------------------------------------------------------------
@@ -126,6 +148,7 @@ class DrawingThread extends AnnotationThread {
         contextToSet.lineJoin = 'round';
         contextToSet.strokeStyle = color || 'black';
         contextToSet.lineWidth = BASE_LINE_WIDTH * (scale || 1);
+        contextToSet.save();
     }
 
     /**
@@ -136,13 +159,14 @@ class DrawingThread extends AnnotationThread {
      * @param {number} timestamp - The time when the function was called;
      * @return {void}
      */
-    render(timestamp) {
+    render(timestamp = window.performance.now()) {
         if (this.drawingFlag === DRAW_STATES.drawing) {
             this.lastAnimationRequestId = window.requestAnimationFrame(this.render);
         }
 
         const elapsed = timestamp - (this.lastRenderTimestamp || 0);
-        if (elapsed >= DRAW_RENDER_THRESHOLD && this.draw(this.drawingContext, true)) {
+        if (elapsed >= DRAW_RENDER_THRESHOLD) {
+            this.draw(this.drawingContext, true);
             this.lastRenderTimestamp = timestamp;
         }
     }
@@ -191,9 +215,13 @@ class DrawingThread extends AnnotationThread {
      */
     createAnnotationData(type, text) {
         const annotation = super.createAnnotationData(type, text);
-        const paths = this.pathContainer.getItems();
+        const boundaryData = this.pathContainer.getAABB();
+        this.minX = boundaryData.minX;
+        this.maxX = boundaryData.maxX;
+        this.minY = boundaryData.minY;
+        this.maxY = boundaryData.maxY;
 
-        annotation.location.drawingPaths = paths.map(DrawingPath.extractDrawingInfo);
+        annotation.location.drawingPaths = boundaryData;
         return annotation;
     }
 
@@ -242,6 +270,32 @@ class DrawingThread extends AnnotationThread {
             undo: availableActions.undo,
             redo: availableActions.redo
         });
+    }
+
+    /**
+     *
+     */
+    drawBoundary() {
+        const l1 = annotatorUtil.createLocation(this.minX, this.minY, this.location.dimensions);
+        const l2 = annotatorUtil.createLocation(this.maxX, this.maxY, this.location.dimensions);
+
+        const [x1, y1] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(l1, this.pageEl);
+        const [x2, y2] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(l2, this.pageEl);
+        const canvas = this.drawingContext.canvas;
+        this.drawingContext.clearRect(0, 0, canvas.width, canvas.height);
+        this.drawingContext.beginPath();
+        this.drawingContext.rect(x1, y1, x2 - x1, y2 - y1);
+        const lineWidth = this.drawingContext.lineWidth;
+        this.drawingContext.lineWidth = lineWidth / 2;
+        this.drawingContext.setLineDash([5, 10]);
+        this.drawingContext.stroke();
+        this.drawingContext.restore();
+        this.drawingContext.save();
+
+        return {
+            topLeft: l1,
+            bottomRight: l2
+        };
     }
 }
 
