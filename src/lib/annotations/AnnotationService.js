@@ -86,8 +86,12 @@ class AnnotationService extends EventEmitter {
                         threadID: annotation.threadID
                     },
                     message: annotation.text,
-                    threadNumber: annotation.threadNumber
+                    thread: annotation.threadNumber
                 })
+                // NOTE: Ensure that threadNumbers are sent to the API as
+                // thread, else the API created annotation will have an
+                // incremented threadNumber. This is due to the naming system
+                // in the annotations API
             })
                 .then((response) => response.json())
                 .then((data) => {
