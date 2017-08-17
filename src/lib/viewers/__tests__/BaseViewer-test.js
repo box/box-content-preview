@@ -702,6 +702,26 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('disableViewerControls()', () => {
+        it('should disable viewer controls', () => {
+            base.controls = {
+                disable: sandbox.stub()
+            };
+            base.disableViewerControls();
+            expect(base.controls.disable).to.be.called;
+        });
+    });
+
+    describe('enableViewerControls()', () => {
+        it('should enable viewer controls', () => {
+            base.controls = {
+                enable: sandbox.stub()
+            };
+            base.enableViewerControls();
+            expect(base.controls.enable).to.be.called;
+        });
+    });
+
     describe('loadAnnotator()', () => {
         beforeEach(() => {
             base.options.viewer = {
@@ -811,6 +831,10 @@ describe('lib/viewers/BaseViewer', () => {
 
         beforeEach(() => {
             sandbox.stub(base, 'emit');
+            base.annotator = {
+                isInAnnotationMode: sandbox.stub()
+            };
+            stubs.isInAnnotationMode = base.annotator.isInAnnotationMode;
         });
 
         it('should disable controls and show point mode notification on annotationmodeenter', () => {
@@ -833,8 +857,19 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.emit).to.be.calledWith('notificationshow', sinon.match.string);
         });
 
-        it('should enable controls and hide notification on annotationmodeexit', () => {
+        it('should hide notification on annotationmodeexit', () => {
             sandbox.stub(base, 'enableViewerControls');
+            stubs.isInAnnotationMode.returns(true);
+            base.handleAnnotatorNotifications({
+                event: ANNOTATION_MODE_EXIT
+            });
+            expect(base.enableViewerControls).to.not.be.called;
+            expect(base.emit).to.be.calledWith('notificationhide');
+        });
+
+        it('should enable controls if not in point annotation mode on annotationmodeexit', () => {
+            sandbox.stub(base, 'enableViewerControls');
+            stubs.isInAnnotationMode.returns(false);
             base.handleAnnotatorNotifications({
                 event: ANNOTATION_MODE_EXIT
             });
