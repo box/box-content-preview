@@ -696,7 +696,7 @@ class DocBaseViewer extends BaseViewer {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
-        this.pageControls = new PageControls(this.controls, this.prevPage, this.nextPage);
+        this.pageControls = new PageControls(this.controls, this.previousPage, this.nextPage);
         this.bindControlListeners();
     }
 
