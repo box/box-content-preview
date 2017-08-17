@@ -727,7 +727,10 @@ class BaseViewer extends EventEmitter {
                 }
                 break;
             case ANNOTATION_MODE_EXIT:
-                this.enableViewerControls();
+                if (!this.annotator.isInAnnotationMode(ANNOTATION_TYPE_POINT)) {
+                    this.enableViewerControls();
+                }
+
                 this.emit('notificationhide');
                 break;
             case 'annotationerror':
