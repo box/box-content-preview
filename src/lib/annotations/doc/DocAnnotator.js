@@ -388,7 +388,8 @@ class DocAnnotator extends Annotator {
 
         // Destroy current pending highlight annotation
         const pageThreads = this.getHighlightThreadsOnPage(pageNum);
-        Object.keys(pageThreads).forEach((thread) => {
+        Object.keys(pageThreads).forEach((threadID) => {
+            const thread = pageThreads[threadID];
             if (annotatorUtil.isPending(thread.state)) {
                 thread.destroy();
             }
@@ -879,11 +880,12 @@ class DocAnnotator extends Annotator {
 
         Object.keys(this.threads).forEach((page) => {
             // Concat threads with a matching state to array we're returning
-            [].push.apply(threads, () => {
-                const pageThreads = this.threads[page];
-                Object.keys(pageThreads).forEach((threadID) => {
-                    return states.indexOf(pageThreads[threadID].state) > -1;
-                });
+            const pageThreads = this.threads[page];
+            Object.keys(pageThreads).forEach((threadID) => {
+                const thread = pageThreads[threadID];
+                if (states.indexOf(thread.state) > -1) {
+                    threads.push(thread);
+                }
             });
         });
 

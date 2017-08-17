@@ -46,6 +46,7 @@ describe('lib/annotations/Annotator', () => {
         });
 
         stubs.thread = {
+            threadID: '123abc',
             show: () => {},
             hide: () => {},
             addListener: () => {},
@@ -56,6 +57,7 @@ describe('lib/annotations/Annotator', () => {
         stubs.threadMock = sandbox.mock(stubs.thread);
 
         stubs.thread2 = {
+            threadID: '456def',
             show: () => {},
             hide: () => {},
             addListener: () => {},
@@ -66,6 +68,7 @@ describe('lib/annotations/Annotator', () => {
         stubs.threadMock2 = sandbox.mock(stubs.thread2);
 
         stubs.thread3 = {
+            threadID: '789ghi',
             show: () => {},
             hide: () => {},
             addListener: () => {},
@@ -89,7 +92,9 @@ describe('lib/annotations/Annotator', () => {
     describe('destroy()', () => {
         it('should unbind custom listeners on thread and unbind DOM listeners', () => {
             annotator.threads = {
-                1: [stubs.thread]
+                1: {
+                    '123abc': stubs.thread
+                }
             };
 
             const unbindCustomStub = sandbox.stub(annotator, 'unbindCustomListenersOnThread');
@@ -194,8 +199,13 @@ describe('lib/annotations/Annotator', () => {
             sandbox.stub(annotator, 'showAnnotations');
 
             annotator.threads = {
-                1: [stubs.thread],
-                2: [stubs.thread2, stubs.thread3]
+                1: {
+                    '123abc': stubs.thread
+                },
+                2: {
+                    '456def': stubs.thread2,
+                    '789ghi': stubs.thread3
+                }
             };
 
             annotator.init();
@@ -764,25 +774,44 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
-        describe('addToThreadMap()', () => {
+        describe('addThreadToMap()', () => {
             it('should add valid threads to the thread map', () => {
-                stubs.thread.location = { page: 2 };
-                stubs.thread2.location = { page: 3 };
-                stubs.thread3.location = { page: 2 };
+                stubs.thread.location = { page: 1 };
+                stubs.thread2.location = { page: 1 };
 
-                annotator.threads = {};
+                annotator.threads = {
+                    1: {
+                        '456def': stubs.thread2
+                    }
+                };
                 annotator.addThreadToMap(stubs.thread);
-
                 expect(annotator.threads).to.deep.equal({
-                    2: [stubs.thread]
+                    1: {
+                        '123abc': stubs.thread,
+                        '456def': stubs.thread2
+                    },
                 });
 
-                annotator.addThreadToMap(stubs.thread2);
-                annotator.addThreadToMap(stubs.thread3);
+                // Reset threads to empty
+                annotator.threads = {};
+            });
+        });
 
+        describe('removeThreadFromMap()', () => {
+            it('should remove a valid thread from the thread map', () => {
+                stubs.thread.location = { page: 1 };
+                annotator.threads = {
+                    1: {
+                        '123abc': stubs.thread,
+                        '456def': stubs.thread2
+                    },
+                };
+
+                annotator.removeThreadFromMap(stubs.thread);
                 expect(annotator.threads).to.deep.equal({
-                    2: [stubs.thread, stubs.thread3],
-                    3: [stubs.thread2]
+                    1: {
+                        '456def': stubs.thread2
+                    }
                 });
             });
         });
@@ -816,6 +845,7 @@ describe('lib/annotations/Annotator', () => {
         describe('destroyPendingThreads()', () => {
             beforeEach(() => {
                 stubs.thread = {
+                    threadID: '123abc',
                     location: { page: 2 },
                     type: 'type',
                     state: STATES.pending,
@@ -824,27 +854,34 @@ describe('lib/annotations/Annotator', () => {
                     removeAllListeners: () => {}
                 };
                 stubs.threadMock = sandbox.mock(stubs.thread);
+                stubs.isPending = sandbox.stub(annotatorUtil, 'isPending').returns(false);
+                stubs.isPending.withArgs(STATES.pending).returns(true);
+
+                annotator.threads = {
+                    1: {
+                        '123abc': stubs.thread
+                    }
+                };
+
+                annotator.init();
             });
 
             it('should destroy and return true if there are any pending threads', () => {
-                annotator.init();
-                annotator.addThreadToMap(stubs.thread);
                 stubs.threadMock.expects('destroy');
                 const destroyed = annotator.destroyPendingThreads();
                 expect(destroyed).to.equal(true);
             });
 
             it('should not destroy and return false if there are no threads', () => {
-                annotator.init();
+                annotator.threads = {};
                 stubs.threadMock.expects('destroy').never();
+                stubs.isPending.returns(false);
                 const destroyed = annotator.destroyPendingThreads();
                 expect(destroyed).to.equal(false);
             });
 
             it('should not destroy and return false if the threads are not pending', () => {
                 stubs.thread.state = 'NOT_PENDING';
-                annotator.init();
-                annotator.addThreadToMap(stubs.thread);
                 stubs.threadMock.expects('destroy').never();
                 const destroyed = annotator.destroyPendingThreads();
                 expect(destroyed).to.equal(false);
@@ -853,7 +890,8 @@ describe('lib/annotations/Annotator', () => {
             it('should destroy only pending threads, and return true', () => {
                 stubs.thread.state = 'NOT_PENDING';
                 const pendingThread = {
-                    location: { page: 2 },
+                    threadID: '456def',
+                    location: { page: 1 },
                     type: 'type',
                     state: STATES.pending,
                     destroy: () => {},
@@ -862,9 +900,7 @@ describe('lib/annotations/Annotator', () => {
                 };
                 stubs.pendingMock = sandbox.mock(pendingThread);
 
-                annotator.init();
-                annotator.addThreadToMap(stubs.thread);
-                annotator.addThreadToMap(pendingThread);
+                annotator.threads[1]['546def'] = pendingThread;
 
                 stubs.threadMock.expects('destroy').never();
                 stubs.pendingMock.expects('destroy');

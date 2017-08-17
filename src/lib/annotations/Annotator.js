@@ -911,10 +911,11 @@ class Annotator extends EventEmitter {
         let hasPendingThreads = false;
         Object.keys(this.threads).forEach((page) => {
             const pageThreads = this.threads[page];
-            Object.keys(pageThreads).forEach((pendingThread) => {
-                if (annotatorUtil.isPending(pendingThread.state)) {
+            Object.keys(pageThreads).forEach((threadID) => {
+                const thread = pageThreads[threadID];
+                if (annotatorUtil.isPending(thread.state)) {
                     hasPendingThreads = true;
-                    pendingThread.destroy();
+                    thread.destroy();
                 }
             });
         });

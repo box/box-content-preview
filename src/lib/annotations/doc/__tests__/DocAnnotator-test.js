@@ -460,6 +460,11 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     describe('renderAnnotationsOnPage()', () => {
         const renderFunc = Annotator.prototype.renderAnnotationsOnPage;
 
+        beforeEach(() => {
+            stubs.isPending = sandbox.stub(annotatorUtil, 'isPending').returns(false);
+            stubs.isPending.withArgs(STATES.pending).returns(true);
+        });
+
         afterEach(() => {
             Object.defineProperty(Annotator.prototype, 'renderAnnotationsOnPage', { value: renderFunc });
         });
@@ -473,7 +478,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.inactiveMock = sandbox.mock(inactiveThread);
             stubs.inactiveMock.expects('destroy').never();
 
-            const threads = [pendingThread, inactiveThread];
+            const threads = { '123abc': pendingThread };
             sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns(threads);
             Object.defineProperty(Annotator.prototype, 'renderAnnotationsOnPage', { value: sandbox.mock() });
             annotator.renderAnnotationsOnPage(1);
@@ -662,7 +667,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     describe('getThreadsOnPage()', () => {
         it('should return empty array if no page number provided', () => {
             const threads = annotator.getThreadsOnPage(-1);
-            expect(threads.length).to.equal(0);
+            expect(threads).to.deep.equal({});
         });
     });
 
@@ -1155,24 +1160,38 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     describe('getThreadsWithStates()', () => {
         it('return all of the threads in the specified state', () => {
             const thread1 = {
+                threadID: '123abc',
+                location: { page: 1 },
                 type: TYPES.highlight,
                 state: STATES.hover,
                 unbindCustomListenersOnThread: sandbox.stub(),
                 removeAllListeners: sandbox.stub()
             };
             const thread2 = {
+                threadID: '456def',
+                location: { page: 2 },
                 type: TYPES.point,
                 state: STATES.hover,
                 unbindCustomListenersOnThread: sandbox.stub(),
                 removeAllListeners: sandbox.stub()
             };
             const thread3 = {
+                threadID: '789ghi',
+                location: { page: 1 },
                 type: TYPES.highlight,
                 state: STATES.pending,
                 unbindCustomListenersOnThread: sandbox.stub(),
                 removeAllListeners: sandbox.stub()
             };
-            annotator.threads = { 0: [thread1, thread2], 1: [thread3] };
+            annotator.threads = {
+                1: {
+                    '123abc': thread1,
+                    '789ghi': thread3
+                },
+                2: {
+                    '456def': thread2
+                }
+            };
 
             const threads = annotator.getThreadsWithStates(STATES.hover);
             expect(threads).to.deep.equal([thread1, thread2]);
