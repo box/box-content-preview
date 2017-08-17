@@ -443,58 +443,6 @@ describe('lib/Preview', () => {
         });
     });
 
-    describe('fetchFileInfo()', () => {
-        beforeEach(() => {
-            stubs.getTokensPromiseResolve = Promise.resolve({ 0: 'token' });
-            stubs.getTokens = sandbox.stub(tokens, 'default').returns(stubs.getTokensPromiseResolve);
-            stubs.saveOptions = sandbox.stub(preview, 'saveOptions');
-            stubs.parseOptions = sandbox.stub(preview, 'parseOptions');
-            stubs.getRequestHeaders = sandbox.stub(preview, 'getRequestHeaders');
-            stubs.fileInfo = { id: 'file'};
-            stubs.filePromise = Promise.resolve(stubs.fileInfo);
-            stubs.get = sandbox.stub(util, 'get').returns(stubs.filePromise);
-            stubs.getURL = sandbox.stub(file, 'getURL').returns('/get_url');
-        });
-
-        it('should save options', () => {
-            preview.fetchFileInfo('file', 'token', { viewer: 'viewer' });
-            expect(preview.saveOptions).to.calledWith('token', { viewer: 'viewer' });
-        });
-
-        it('should save file reference', () => {
-            preview.fetchFileInfo('file', 'token', { viewer: 'viewer' });
-            expect(preview.file).to.deep.equal({ id: 'file' });
-        });
-
-        it('should parse the preview options', () => {
-            preview.fetchFileInfo('file', 'token', { viewer: 'viewer' });
-            return stubs.getTokensPromiseResolve.then(() => {
-                expect(stubs.parseOptions).to.be.called;
-            });
-        });
-
-        it('should fetch file info', () => {
-            preview.fetchFileInfo('file', 'token', { viewer: 'viewer' });
-            return stubs.filePromise.then(() => {
-                expect(stubs.get).to.be.called;
-                expect(stubs.getURL).to.be.called;
-                expect(stubs.getRequestHeaders).to.be.called;
-            });
-        });
-
-        it('should release stored file info', () => {
-            return preview.fetchFileInfo('file', 'token', { viewer: 'viewer' }).then(() => {
-                expect(preview.file).to.be.undefined;
-            });
-        });
-
-        it('should return fetched file info', () => {
-            return preview.fetchFileInfo('file', 'token', { viewer: 'viewer' }).then((file) => {
-                expect(file).to.equal(stubs.fileInfo);
-            });
-        });
-    });
-
     describe('disableViewers()', () => {
         beforeEach(() => {
             preview.disabledViewers = {};
@@ -663,7 +611,7 @@ describe('lib/Preview', () => {
             });
 
             stubs.getTokens = sandbox.stub(tokens, 'default').returns(stubs.promise);
-            stubs.loadPreviewWithTokens = sandbox.stub(preview, 'loadPreviewWithTokens');
+            stubs.loadPreviewWithTokens = sandbox.stub(preview, 'loadPreview');
             stubs.get = sandbox.stub(preview.cache, 'get');
             stubs.destroy = sandbox.stub(preview, 'destroy');
         });
@@ -708,7 +656,7 @@ describe('lib/Preview', () => {
         });
     });
 
-    describe('loadPreviewWithTokens()', () => {
+    describe('loadPreview()', () => {
         beforeEach(() => {
             stubs.loadFromServer = sandbox.stub(preview, 'loadFromServer');
             stubs.parseOptions = sandbox.stub(preview, 'parseOptions');
@@ -725,7 +673,7 @@ describe('lib/Preview', () => {
         it('should short circuit and load from server if it is a retry', () => {
             preview.retryCount = 1;
 
-            preview.loadPreviewWithTokens({});
+            preview.loadPreview({});
             expect(stubs.loadFromServer).to.be.called;
             expect(stubs.parseOptions).to.not.be.called;
         });
@@ -733,25 +681,25 @@ describe('lib/Preview', () => {
         it('should parse the preview options', () => {
             preview.retryCount = 0;
 
-            preview.loadPreviewWithTokens({});
+            preview.loadPreview({});
             expect(stubs.parseOptions).to.be.called;
         });
 
         it('should setup the container and show the loading indicator and progress bar', () => {
-            preview.loadPreviewWithTokens({});
+            preview.loadPreview({});
             expect(stubs.setup).to.be.called;
             expect(stubs.showLoadingIndicator).to.be.called;
             expect(stubs.startProgressBar).to.be.called;
         });
 
         it('should show navigation', () => {
-            preview.loadPreviewWithTokens({});
+            preview.loadPreview({});
             expect(stubs.showNavigation).to.be.called;
         });
 
         it('should load from offline when offline config is present', () => {
             preview.options.offlineConfig = { file: {} };
-            preview.loadPreviewWithTokens({});
+            preview.loadPreview({});
 
             expect(stubs.loadFromOffline).to.be.called;
             expect(stubs.loadFromCache).to.not.be.called;
@@ -761,7 +709,7 @@ describe('lib/Preview', () => {
         it('should load from cache if the file is valid', () => {
             stubs.checkFileValid.returns(true);
 
-            preview.loadPreviewWithTokens({});
+            preview.loadPreview({});
             expect(stubs.loadFromOffline).to.not.be.called;
             expect(stubs.loadFromCache).to.be.called;
             expect(stubs.loadFromServer).to.not.be.called;
@@ -770,7 +718,7 @@ describe('lib/Preview', () => {
         it('should load from the server on a cache miss', () => {
             stubs.checkFileValid.returns(false);
 
-            preview.loadPreviewWithTokens({});
+            preview.loadPreview({});
             expect(stubs.loadFromOffline).to.not.be.called;
             expect(stubs.loadFromCache).to.not.be.called;
             expect(stubs.loadFromServer).to.be.called;
@@ -966,32 +914,6 @@ describe('lib/Preview', () => {
         it('should refresh the file from the server to update the cache', () => {
             preview.loadFromCache();
             expect(preview.loadFromServer).to.be.called;
-        });
-    });
-
-    describe('loadFromOffline()', () => {
-        beforeEach(() => {
-            stubs.unset = sandbox.stub(preview.cache, 'unset');
-            stubs.handleLoadResponse = sandbox.stub(preview, 'handleLoadResponse');
-            stubs.offlineConfig = {
-                file: { id: 'fileId' }
-            };
-
-            preview.options = { offlineConfig: stubs.offlineConfig };
-
-            preview.loadFromOffline();
-        });
-
-        it('should save a reference to the file', () => {
-            expect(preview.file).to.equal(stubs.offlineConfig.file);
-        });
-
-        it('should clear the current file from the cache', () => {
-            expect(stubs.unset).to.be.calledWith('fileId');
-        });
-
-        it('should load file by offline file', () => {
-            expect(stubs.handleLoadResponse).to.be.calledWith(stubs.offlineConfig.file);
         });
     });
 
