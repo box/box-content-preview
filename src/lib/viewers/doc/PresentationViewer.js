@@ -190,8 +190,8 @@ class PresentationViewer extends DocBaseViewer {
         this.controls.add(__('zoom_out'), this.zoomOut, 'bp-exit-zoom-out-icon', ICON_ZOOM_OUT);
         this.controls.add(__('zoom_in'), this.zoomIn, 'bp-enter-zoom-in-icon', ICON_ZOOM_IN);
 
-        this.pageControls.init(this.pdfViewer.pagesCount);
-        this.pageControls.addListener('setpage', this.setPage);
+        this.pageControls.add(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
+        this.pageControls.addListener('pagechange', this.setPage);
 
         this.controls.add(
             __('enter_fullscreen'),

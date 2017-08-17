@@ -22,51 +22,64 @@ const pageNumTemplate = `
     </div>`.replace(/>\s*</g, '><');
 
 class PageControls extends EventEmitter {
+    /** @property {Controls} - Controls object */
+    controls;
+
+    /** @property {HTMLElement} - Controls element */
+    controlsEl;
+
+    /** @property {HTMLElement} - Total pages element */
+    totalPagesEl;
+
+    /** @property {HTMLElement} - Current page element */
+    currentPageEl;
+
+    /** @property {HTMLElement} - Page number input element */
+    pageNumInputEl;
     /**
      * [constructor]
      *
      * @param {HTMLElement} controls - Viewer controls
-     * @param {Function} previousPage - Previous page handler
-     * @param {Function} nextPage - Next page handler
+     * @param {number} currentPageNumber - Current page number
+     * @param {number} pagesCount - Number of total pages
      * @return {Controls} Instance of controls
      */
-    constructor(controls, previousPage, nextPage) {
+    constructor(controls) {
         super();
 
         this.controls = controls;
         this.controlsEl = controls.controlsEl;
-        this.currentPageEl = controls.currentPageEl;
-        this.pageNumInputEl = controls.pageNumInputEl;
-        this.previousPage = previousPage;
-        this.nextPage = nextPage;
     }
 
     /**
-     * Adds controls and initializes page number selector.
+     * Add the page controls
      *
-     * @private
-     * @param {number} pagesCount - Total number of page
+     * @param {number} currentPageNumber - Current page number
+     * @param {number} pagesCount - Number of total pages
      * @return {void}
      */
-    init(pagesCount) {
-        // Add controls
-        this.controls.add(__('previous_page'), this.previousPage, `bp-previous-page-icon ${PREV_PAGE}`, ICON_DROP_UP);
+    add(currentPageNumber, pagesCount) {
+        this.controls.add(
+            __('previous_page'),
+            this.setPreviousPage.bind(this),
+            `bp-previous-page-icon ${PREV_PAGE}`,
+            ICON_DROP_UP
+        );
         this.controls.add(__('enter_page_num'), this.showPageNumInput.bind(this), PAGE_NUM, pageNumTemplate);
-        this.controls.add(__('next_page'), this.nextPage, `bp-next-page-icon ${NEXT_PAGE}`, ICON_DROP_DOWN);
+        this.controls.add(
+            __('next_page'),
+            this.setNextPage.bind(this),
+            `bp-next-page-icon ${NEXT_PAGE}`,
+            ICON_DROP_DOWN
+        );
 
-        // Initialize page number selector
         const pageNumEl = this.controlsEl.querySelector(`.${PAGE_NUM}`);
-        this.pagesCount = pagesCount;
-
-        // Update total page number
-        const totalPageEl = pageNumEl.querySelector(`.${CONTROLS_TOTAL_PAGES}`);
-        totalPageEl.textContent = pagesCount;
-
-        // Keep reference to page number input and current page elements
-        this.pageNumInputEl = pageNumEl.querySelector(`.${CONTROLS_PAGE_NUM_INPUT_CLASS}`);
-        this.pageNumInputEl.setAttribute('max', pagesCount);
-
+        this.totalPagesEl = pageNumEl.querySelector(`.${CONTROLS_TOTAL_PAGES}`);
+        this.totalPagesEl.textContent = pagesCount;
         this.currentPageEl = pageNumEl.querySelector(`.${CONTROLS_CURRENT_PAGE}`);
+        this.pageNumInputEl = pageNumEl.querySelector(`.${CONTROLS_PAGE_NUM_INPUT_CLASS}`);
+
+        this.checkPaginationButtons();
     }
 
     /**
@@ -79,7 +92,7 @@ class PageControls extends EventEmitter {
         // show the input box with the current page number selected within it
         this.controlsEl.classList.add(SHOW_PAGE_NUM_INPUT_CLASS);
 
-        this.pageNumInputEl.value = this.currentPageEl.textContent;
+        this.pageNumInputEl.value = this.getCurrentPageNumber();
         this.pageNumInputEl.focus();
         this.pageNumInputEl.select();
 
@@ -104,11 +117,9 @@ class PageControls extends EventEmitter {
      * Disables or enables previous/next pagination buttons depending on
      * current page number.
      *
-     * @param {number} currentPageNum - Current page number
-     * @param {number} pagesCount - Total number of page
      * @return {void}
      */
-    checkPaginationButtons(currentPageNum, pagesCount) {
+    checkPaginationButtons() {
         const pageNumButtonEl = this.controlsEl.querySelector(`.${PAGE_NUM}`);
         const previousPageButtonEl = this.controlsEl.querySelector(`.${PREV_PAGE}`);
         const nextPageButtonEl = this.controlsEl.querySelector(`.${NEXT_PAGE}`);
@@ -118,7 +129,7 @@ class PageControls extends EventEmitter {
 
         // Disable page number selector if there is only one page or less
         if (pageNumButtonEl) {
-            if (pagesCount <= 1 || isSafariFullscreen) {
+            if (this.getTotalPages() <= 1 || isSafariFullscreen) {
                 pageNumButtonEl.disabled = true;
             } else {
                 pageNumButtonEl.disabled = false;
@@ -127,7 +138,7 @@ class PageControls extends EventEmitter {
 
         // Disable previous page if on first page, otherwise enable
         if (previousPageButtonEl) {
-            if (currentPageNum === 1) {
+            if (this.getCurrentPageNumber() === 1) {
                 previousPageButtonEl.disabled = true;
             } else {
                 previousPageButtonEl.disabled = false;
@@ -136,7 +147,7 @@ class PageControls extends EventEmitter {
 
         // Disable next page if on last page, otherwise enable
         if (nextPageButtonEl) {
-            if (currentPageNum === pagesCount) {
+            if (this.getCurrentPageNumber() === this.getTotalPages()) {
                 nextPageButtonEl.disabled = true;
             } else {
                 nextPageButtonEl.disabled = false;
@@ -148,29 +159,70 @@ class PageControls extends EventEmitter {
      * Update page number in page control widget.
      *
      * @private
-     * @param {number} pageNum - Number of page to update to
+     * @param {number} pageNumber - Number of page to update to
      * @return {void}
      */
-    updateCurrentPage(pageNum) {
-        let truePageNum = pageNum;
-
-        // refine the page number to fall within bounds
-        if (pageNum > this.pagesCount) {
-            truePageNum = this.pagesCount;
-        } else if (pageNum < 1) {
-            truePageNum = 1;
-        }
-
+    updateCurrentPage(pageNumber) {
         if (this.pageNumInputEl) {
-            this.pageNumInputEl.value = truePageNum;
+            this.pageNumInputEl.value = pageNumber;
         }
 
         if (this.currentPageEl) {
-            this.currentPageEl.textContent = truePageNum;
+            this.setCurrentPageNumber(pageNumber);
         }
 
-        this.currentPageNumber = truePageNum;
-        this.checkPaginationButtons(this.currentPageNumber, this.pagesCount);
+        this.checkPaginationButtons();
+    }
+
+    /**
+     * Emits a message to the viewer to decrement the current page.
+     *
+     * @private
+     * @return {void}
+     */
+    setPreviousPage() {
+        super.emit('pagechange', this.getCurrentPageNumber() - 1);
+    }
+
+    /**
+     * Emits a message to the viewer to increment the current page.
+     *
+     * @private
+     * @return {void}
+     */
+    setNextPage() {
+        super.emit('pagechange', this.getCurrentPageNumber() + 1);
+    }
+
+    /**
+     * Gets the page number for the file.
+     *
+     * @private
+     * @return {number} Number of pages
+     */
+    getCurrentPageNumber() {
+        return parseInt(this.currentPageEl.textContent, 10);
+    }
+
+    /**
+     * Sets the number of pages for the file.
+     *
+     * @private
+     * @param {number} pageNumber - Number to set
+     * @return {number} Number of pages
+     */
+    setCurrentPageNumber(pageNumber) {
+        this.currentPageEl.textContent = pageNumber;
+    }
+
+    /**
+     * Gets the number of pages for the file.
+     *
+     * @private
+     * @return {number} Number of pages
+     */
+    getTotalPages() {
+        return parseInt(this.totalPagesEl.textContent, 10);
     }
 
     /**
@@ -182,10 +234,10 @@ class PageControls extends EventEmitter {
      */
     pageNumInputBlurHandler(event) {
         const target = event.target;
-        const pageNum = parseInt(target.value, 10);
+        const pageNumber = parseInt(target.value, 10);
 
-        if (!isNaN(pageNum)) {
-            this.emit('setpage', pageNum);
+        if (!isNaN(pageNumber)) {
+            super.emit('pagechange', pageNumber);
         }
 
         this.hidePageNumInput();
