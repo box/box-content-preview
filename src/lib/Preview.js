@@ -149,7 +149,7 @@ class Preview extends EventEmitter {
      * Primary function for showing a preview of a file.
      *
      * @param {string} fileId - Box File ID
-     * @param {string|Function} token - auth token string or generator function
+     * @param {string|Function} token - Access token string or generator function
      * @param {Object} [options] - Optional preview options
      * @return {void}
      */
@@ -157,8 +157,6 @@ class Preview extends EventEmitter {
         // Save a reference to the options to be used later
         if (typeof token === 'string' || typeof token === 'function') {
             this.previewOptions = Object.assign({}, options, { token });
-        } else if (token) {
-            this.previewOptions = Object.assign({}, token || {});
         } else {
             throw new Error('Missing access token!');
         }

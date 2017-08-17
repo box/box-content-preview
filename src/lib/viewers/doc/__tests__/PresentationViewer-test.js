@@ -299,7 +299,19 @@ describe('lib/viewers/doc/PresentationViewer', () => {
     });
 
     describe('bindControlListeners()', () => {
-        it('should ', () => {
+        beforeEach(() => {
+            presentation.pdfViewer = {
+                pagesCount: 4,
+                cleanup: sandbox.stub()
+            };
+
+            presentation.pageControls = {
+                init: sandbox.stub(),
+                addListener: sandbox.stub()
+            };
+        });
+
+        it('should add the correct controls', () => {
             presentation.bindControlListeners();
             expect(presentation.controls.add).to.be.calledWith(
                 __('zoom_out'),
@@ -313,23 +325,10 @@ describe('lib/viewers/doc/PresentationViewer', () => {
                 'bp-enter-zoom-in-icon',
                 ICON_ZOOM_IN
             );
-            expect(presentation.controls.add).to.be.calledWith(
-                __('previous_page'),
-                presentation.previousPage,
-                'bp-presentation-previous-page-icon bp-previous-page',
-                ICON_DROP_UP
-            );
-            expect(presentation.controls.add).to.be.calledWith(
-                __('enter_page_num'),
-                presentation.showPageNumInput,
-                'bp-doc-page-num'
-            );
-            expect(presentation.controls.add).to.be.calledWith(
-                __('next_page'),
-                presentation.nextPage,
-                'bp-presentation-next-page-icon bp-next-page',
-                ICON_DROP_DOWN
-            );
+
+            expect(presentation.pageControls.init).to.be.called;
+            expect(presentation.pageControls.addListener).to.be.calledWith('setpage', sinon.match.func);
+
             expect(presentation.controls.add).to.be.calledWith(
                 __('enter_fullscreen'),
                 presentation.toggleFullscreen,

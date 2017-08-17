@@ -23,9 +23,6 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             fileVersionId: 1,
             isMobile: false,
             options: {},
-            previewUI: {
-                getAnnotateButton: () => {}
-            },
             modeButtons: {}
         });
         annotator.annotatedElement = annotator.getAnnotatedEl(document);

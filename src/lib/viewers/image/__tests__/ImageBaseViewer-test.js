@@ -3,6 +3,7 @@ import ImageBaseViewer from '../ImageBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import fullscreen from '../../../Fullscreen';
+import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../../icons/icons';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -209,10 +210,28 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
     describe('loadUI()', () => {
         it('should create controls and add control buttons for zoom', () => {
+            sandbox.stub(imageBase, 'bindControlListeners');
             imageBase.loadUI();
 
             expect(imageBase.controls).to.not.be.undefined;
-            expect(imageBase.controls.buttonRefs.length).to.equal(2);
+            expect(imageBase.bindControlListeners).to.be.called;
+        });
+    });
+
+    describe('bindControlListeners()', () => {
+        it('should add the correct controls', () => {
+            imageBase.controls = {
+                add: sandbox.stub()
+            };
+
+            imageBase.bindControlListeners();
+            expect(imageBase.controls.add).to.be.calledWith(
+                __('zoom_out'),
+                imageBase.zoomOut,
+                'bp-image-zoom-out-icon',
+                ICON_ZOOM_OUT
+            );
+            expect(imageBase.controls.add).to.be.calledWith(__('zoom_in'), imageBase.zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
         });
     });
 
@@ -501,6 +520,44 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.emit).to.have.been.calledWith('load');
             expect(stubs.zoom).to.have.been.called;
             expect(stubs.loadUI).to.have.been.called;
+        });
+    });
+
+    describe('disableViewerControls()', () => {
+        it('should disable viewer controls', () => {
+            imageBase.controls = {
+                disable: sandbox.stub()
+            };
+            sandbox.stub(imageBase, 'unbindDOMListeners');
+            imageBase.disableViewerControls();
+            expect(imageBase.controls.disable).to.be.called;
+            expect(imageBase.unbindDOMListeners).to.be.called;
+        });
+    });
+
+    describe('enableViewerControls()', () => {
+        it('should enable viewer controls', () => {
+            imageBase.controls = {
+                enable: sandbox.stub()
+            };
+            imageBase.isMobile = true;
+            sandbox.stub(imageBase, 'bindDOMListeners');
+            sandbox.stub(imageBase, 'updateCursor');
+            imageBase.enableViewerControls();
+            expect(imageBase.controls.enable).to.be.called;
+            expect(imageBase.bindDOMListeners).to.be.called;
+            expect(imageBase.updateCursor).to.not.be.called;
+        });
+
+        it('should update cursor if not on mobile', () => {
+            imageBase.controls = {
+                enable: sandbox.stub()
+            };
+            imageBase.isMobile = false;
+            sandbox.stub(imageBase, 'bindDOMListeners');
+            sandbox.stub(imageBase, 'updateCursor');
+            imageBase.enableViewerControls();
+            expect(imageBase.updateCursor).to.be.called;
         });
     });
 });

@@ -43,8 +43,8 @@ class ImageBaseViewer extends BaseViewer {
             return;
         }
 
-        this.zoom();
         this.loadUI();
+        this.zoom();
 
         this.imageEl.classList.remove(CLASS_INVISIBLE);
         this.loaded = true;
@@ -164,6 +164,20 @@ class ImageBaseViewer extends BaseViewer {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
+        this.bindControlListeners();
+    }
+
+    //--------------------------------------------------------------------------
+    // Event Listeners
+    //--------------------------------------------------------------------------
+
+    /**
+     * Bind event listeners for document controls
+     *
+     * @private
+     * @return {void}
+     */
+    bindControlListeners() {
         this.controls.add(__('zoom_out'), this.zoomOut, 'bp-image-zoom-out-icon', ICON_ZOOM_OUT);
         this.controls.add(__('zoom_in'), this.zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
     }
@@ -321,8 +335,7 @@ class ImageBaseViewer extends BaseViewer {
      */
     disableViewerControls() {
         super.disableViewerControls();
-        this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
-        this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+        this.unbindDOMListeners();
     }
 
     /**
@@ -333,6 +346,7 @@ class ImageBaseViewer extends BaseViewer {
      */
     enableViewerControls() {
         super.enableViewerControls();
+        this.bindDOMListeners();
 
         if (!this.isMobile) {
             this.updateCursor();

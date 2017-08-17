@@ -141,7 +141,7 @@ class ImageAnnotator extends Annotator {
      * @return {void}
      */
     hideAllAnnotations() {
-        const annotateButton = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_POINT);
+        const annotateButton = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_POINT);
         const annotations = this.annotatedElement.getElementsByClassName(CLASS_ANNOTATION_POINT_MARKER);
         for (let i = 0; i < annotations.length; i++) {
             annotatorUtil.hideElement(annotations[i]);
@@ -156,7 +156,7 @@ class ImageAnnotator extends Annotator {
      * @return {void}
      */
     showAllAnnotations() {
-        const annotateButton = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_POINT);
+        const annotateButton = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_POINT);
         const annotations = this.annotatedElement.getElementsByClassName(CLASS_ANNOTATION_POINT_MARKER);
         for (let i = 0; i < annotations.length; i++) {
             annotatorUtil.showElement(annotations[i]);

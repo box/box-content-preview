@@ -695,7 +695,6 @@ class BaseViewer extends EventEmitter {
             isMobile: this.isMobile,
             hasTouch: this.hasTouch,
             locale: location.locale,
-            previewUI: this.previewUI,
             modeButtons: ANNOTATION_BUTTONS
         });
         this.annotator.init(this.scale);
@@ -753,7 +752,10 @@ class BaseViewer extends EventEmitter {
                 }
                 break;
             case ANNOTATION_MODE_EXIT:
-                this.enableViewerControls();
+                if (!this.annotator.isInAnnotationMode(ANNOTATION_TYPE_POINT)) {
+                    this.enableViewerControls();
+                }
+
                 this.emit('notificationhide');
                 break;
             case 'annotationerror':

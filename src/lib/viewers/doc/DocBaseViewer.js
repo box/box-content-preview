@@ -3,6 +3,7 @@ import throttle from 'lodash.throttle';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import Controls from '../../Controls';
+import PageControls from '../../PageControls';
 import DocFindBar from './DocFindBar';
 import fullscreen from '../../Fullscreen';
 import Popup from '../../Popup';
@@ -17,7 +18,7 @@ import {
     STATUS_ERROR
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
-import { get, createAssetUrlCreator, decodeKeydown } from '../../util';
+import { get, createAssetUrlCreator } from '../../util';
 import { ICON_PRINT_CHECKMARK, ICON_FILE_DOCUMENT } from '../../icons/icons';
 import { JS, CSS } from './docAssets';
 
@@ -28,7 +29,6 @@ const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
-const SHOW_PAGE_NUM_INPUT_CLASS = 'show-page-number-input';
 const IS_SAFARI_CLASS = 'is-safari';
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
@@ -306,7 +306,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     setPage(pageNum) {
-        if (pageNum <= 0 || pageNum > this.pdfViewer.pagesCount) {
+        if (pageNum < 1 || pageNum > this.pdfViewer.pagesCount) {
             return;
         }
 
@@ -345,50 +345,6 @@ class DocBaseViewer extends BaseViewer {
 
         currentPageMap[this.options.file.id] = page;
         this.cache.set(CURRENT_PAGE_MAP_KEY, currentPageMap, true /* useLocalStorage */);
-    }
-
-    /**
-     * Disables or enables previous/next pagination buttons depending on
-     * current page number.
-     *
-     * @return {void}
-     */
-    checkPaginationButtons() {
-        const pagesCount = this.pdfViewer.pagesCount;
-        const currentPageNum = this.pdfViewer.currentPageNumber;
-        const pageNumButtonEl = this.containerEl.querySelector('.bp-doc-page-num');
-        const previousPageButtonEl = this.containerEl.querySelector('.bp-previous-page');
-        const nextPageButtonEl = this.containerEl.querySelector('.bp-next-page');
-
-        // Safari disables keyboard input in fullscreen before Safari 10.1
-        const isSafariFullscreen = Browser.getName() === 'Safari' && fullscreen.isFullscreen(this.containerEl);
-
-        // Disable page number selector if there is only one page or less
-        if (pageNumButtonEl) {
-            if (pagesCount <= 1 || isSafariFullscreen) {
-                pageNumButtonEl.disabled = true;
-            } else {
-                pageNumButtonEl.disabled = false;
-            }
-        }
-
-        // Disable previous page if on first page, otherwise enable
-        if (previousPageButtonEl) {
-            if (currentPageNum === 1) {
-                previousPageButtonEl.disabled = true;
-            } else {
-                previousPageButtonEl.disabled = false;
-            }
-        }
-
-        // Disable next page if on last page, otherwise enable
-        if (nextPageButtonEl) {
-            if (currentPageNum === this.pdfViewer.pagesCount) {
-                nextPageButtonEl.disabled = true;
-            } else {
-                nextPageButtonEl.disabled = false;
-            }
-        }
     }
 
     /**
@@ -664,26 +620,6 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Initializes page number selector.
-     *
-     * @private
-     * @return {void}
-     */
-    initPageNumEl() {
-        const pageNumEl = this.controls.controlsEl.querySelector('.bp-doc-page-num');
-
-        // Update total page number
-        const totalPageEl = pageNumEl.querySelector('.bp-doc-total-pages');
-        totalPageEl.textContent = this.pdfViewer.pagesCount;
-
-        // Keep reference to page number input and current page elements
-        this.pageNumInputEl = pageNumEl.querySelector('.bp-doc-page-num-input');
-        this.pageNumInputEl.setAttribute('max', this.pdfViewer.pagesCount);
-
-        this.currentPageEl = pageNumEl.querySelector('.bp-doc-current-page');
-    }
-
-    /**
      * Fetches PDF and converts to blob for printing.
      *
      * @private
@@ -760,68 +696,8 @@ class DocBaseViewer extends BaseViewer {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
+        this.pageControls = new PageControls(this.controls, this.previousPage, this.nextPage);
         this.bindControlListeners();
-        this.initPageNumEl();
-    }
-
-    /**
-     * Replaces the page number display with an input box that allows the user to type in a page number
-     *
-     * @private
-     * @return {void}
-     */
-    showPageNumInput() {
-        // show the input box with the current page number selected within it
-        this.controls.controlsEl.classList.add(SHOW_PAGE_NUM_INPUT_CLASS);
-
-        this.pageNumInputEl.value = this.currentPageEl.textContent;
-        this.pageNumInputEl.focus();
-        this.pageNumInputEl.select();
-
-        // finish input when input is blurred or enter key is pressed
-        this.pageNumInputEl.addEventListener('blur', this.pageNumInputBlurHandler);
-        this.pageNumInputEl.addEventListener('keydown', this.pageNumInputKeydownHandler);
-    }
-
-    /**
-     * Hide the page number input
-     *
-     * @private
-     * @return {void}
-     */
-    hidePageNumInput() {
-        this.controls.controlsEl.classList.remove(SHOW_PAGE_NUM_INPUT_CLASS);
-        this.pageNumInputEl.removeEventListener('blur', this.pageNumInputBlurHandler);
-        this.pageNumInputEl.removeEventListener('keydown', this.pageNumInputKeydownHandler);
-    }
-
-    /**
-     * Update page number in page control widget.
-     *
-     * @private
-     * @param {number} pageNum - Number of page to update to
-     * @return {void}
-     */
-    updateCurrentPage(pageNum) {
-        let truePageNum = pageNum;
-        const pagesCount = this.pdfViewer.pagesCount;
-
-        // refine the page number to fall within bounds
-        if (pageNum > pagesCount) {
-            truePageNum = pagesCount;
-        } else if (pageNum < 1) {
-            truePageNum = 1;
-        }
-
-        if (this.pageNumInputEl) {
-            this.pageNumInputEl.value = truePageNum;
-        }
-
-        if (this.currentPageEl) {
-            this.currentPageEl.textContent = truePageNum;
-        }
-
-        this.checkPaginationButtons();
     }
 
     //--------------------------------------------------------------------------
@@ -839,7 +715,7 @@ class DocBaseViewer extends BaseViewer {
         // and broadcast that preview has loaded
         this.docEl.addEventListener('pagesinit', this.pagesinitHandler);
 
-        // When a page is rendered, rerender annotations if needed
+        // When a page is rendered, update scale
         this.docEl.addEventListener('pagerendered', this.pagerenderedHandler);
 
         // Update page number when page changes
@@ -902,64 +778,6 @@ class DocBaseViewer extends BaseViewer {
     bindControlListeners() {}
 
     /**
-     * Blur handler for page number input.
-     *
-     * @param  {Event} event Blur event
-     * @return {void}
-     * @private
-     */
-    pageNumInputBlurHandler(event) {
-        const target = event.target;
-        const pageNum = parseInt(target.value, 10);
-
-        if (!isNaN(pageNum)) {
-            this.setPage(pageNum);
-        }
-
-        this.hidePageNumInput();
-    }
-
-    /**
-     * Keydown handler for page number input.
-     *
-     * @private
-     * @param {Event} event - Keydown event
-     * @return {void}
-     */
-    pageNumInputKeydownHandler(event) {
-        const key = decodeKeydown(event);
-
-        switch (key) {
-            case 'Enter':
-            case 'Tab':
-                // The keycode of the 'next' key on Android Chrome is 9, which maps to 'Tab'.
-                this.docEl.focus();
-                // We normally trigger the blur handler by blurring the input
-                // field, but this doesn't work for IE in fullscreen. For IE,
-                // we blur the page behind the controls - this unfortunately
-                // is an IE-only solution that doesn't work with other browsers
-                if (Browser.getName() !== 'Explorer') {
-                    event.target.blur();
-                }
-
-                event.stopPropagation();
-                event.preventDefault();
-                break;
-
-            case 'Escape':
-                this.hidePageNumInput();
-                this.docEl.focus();
-
-                event.stopPropagation();
-                event.preventDefault();
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    /**
      * Handler for 'pagesinit' event.
      *
      * @private
@@ -969,7 +787,7 @@ class DocBaseViewer extends BaseViewer {
         this.pdfViewer.currentScaleValue = 'auto';
 
         this.loadUI();
-        this.checkPaginationButtons();
+        this.pageControls.checkPaginationButtons(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
 
         // Set current page to previously opened page or first page
         this.setPage(this.getCachedPage());
@@ -1029,7 +847,7 @@ class DocBaseViewer extends BaseViewer {
      */
     pagechangeHandler(event) {
         const pageNum = event.pageNumber;
-        this.updateCurrentPage(pageNum);
+        this.pageControls.updateCurrentPage(pageNum);
 
         // We only set cache the current page if 'pagechange' was fired after
         // preview is loaded - this filters out pagechange events fired by
@@ -1050,8 +868,6 @@ class DocBaseViewer extends BaseViewer {
      */
     enterfullscreenHandler() {
         this.pdfViewer.currentScaleValue = 'page-fit';
-
-        // Force resize for annotations
         this.resize();
     }
 
@@ -1064,8 +880,6 @@ class DocBaseViewer extends BaseViewer {
      */
     exitfullscreenHandler() {
         this.pdfViewer.currentScaleValue = 'auto';
-
-        // Force resize for annotations
         this.resize();
     }
 
