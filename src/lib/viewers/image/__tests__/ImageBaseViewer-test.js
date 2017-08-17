@@ -3,6 +3,7 @@ import ImageBaseViewer from '../ImageBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import fullscreen from '../../../Fullscreen';
+import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../../icons/icons';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -209,10 +210,28 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
     describe('loadUI()', () => {
         it('should create controls and add control buttons for zoom', () => {
+            sandbox.stub(imageBase, 'bindControlListeners');
             imageBase.loadUI();
 
             expect(imageBase.controls).to.not.be.undefined;
-            expect(imageBase.controls.buttonRefs.length).to.equal(2);
+            expect(imageBase.bindControlListeners).to.be.called;
+        });
+    });
+
+    describe('bindControlListeners()', () => {
+        it('should add the correct controls', () => {
+            imageBase.controls = {
+                add: sandbox.stub()
+            };
+
+            imageBase.bindControlListeners();
+            expect(imageBase.controls.add).to.be.calledWith(
+                __('zoom_out'),
+                imageBase.zoomOut,
+                'bp-image-zoom-out-icon',
+                ICON_ZOOM_OUT
+            );
+            expect(imageBase.controls.add).to.be.calledWith(__('zoom_in'), imageBase.zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
         });
     });
 

@@ -204,14 +204,6 @@ describe('lib/PreviewUI', () => {
         });
     });
 
-    describe('getAnnotateButton()', () => {
-        it('should return the annotate button', () => {
-            containerEl = ui.setup(options);
-            const buttonEl = ui.getAnnotateButton(constants.SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT);
-            expect(buttonEl).to.equal(containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT));
-        });
-    });
-
     describe('startProgressBar()', () => {
         it('should start the progress bar', () => {
             ui.progressBar = {

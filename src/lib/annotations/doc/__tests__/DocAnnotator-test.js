@@ -36,9 +36,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             fileVersionId: 1,
             isMobile: false,
             options: {},
-            previewUI: {
-                getAnnotateButton: sandbox.stub()
-            },
             modeButtons: {}
         });
         annotator.annotatedElement = annotator.getAnnotatedEl(document);
@@ -298,7 +295,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should create, add drawing thread to internal map, and return it', () => {
-            annotator.previewUI.getAnnotateButton.returns('commit drawing button');
             const thread = annotator.createAnnotationThread([], {}, TYPES.draw);
             expect(stubs.addThread).to.have.been.called;
             expect(thread instanceof DocDrawingThread).to.be.true;

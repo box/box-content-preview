@@ -89,12 +89,11 @@ class DrawingContainer {
      * @return {void}
      */
     applyToItems(fn, includeHiddenItems = false) {
-        let items = this.undoStack;
-        if (includeHiddenItems) {
-            items = items.concat(this.redoStack);
-        }
+        this.undoStack.forEach(fn);
 
-        items.forEach(fn);
+        if (includeHiddenItems) {
+            this.redoStack.forEach(fn);
+        }
     }
 }
 

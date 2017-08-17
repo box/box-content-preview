@@ -67,6 +67,7 @@ At the default zoom level, clicking on the image will zoom in once. When zoomed 
 ### Controls:
 * Zoom In
 * Zoom Out
+* Set Page: either with the up and down arrows, or by clicking the page number and entering text
 * Fullscreen: can be exited with the escape key
 
 ## Supported File Extensions
@@ -85,6 +86,7 @@ The image viewer fires the following events
 | reload | The preview reloads ||
 | resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
 | zoom | The preview zooms in or out | 1. {number} **zoom**: new zoom value 2. {boolean} **canZoomIn**: true if the viewer can zoom in more 3. {boolean} **canZoomOut**: true if the viewer can zoom out more |
+| pagefocus | A page is visible | {number} page number of focused page |
 | pan | The preview is panning ||
 | panstart | Panning starts ||
 | panend | Panning ends ||
@@ -97,5 +99,8 @@ The following methods are available for the multi-page image viewer.
 | Method Name | Explanation | Method Parameters |
 | --- | --- | --- |
 | zoom | Zooms the image | {string} 'in', 'out', or 'reset' |
+| previousPage | Navigates to the previous page ||
+| nextPage | Navigates to the next page ||
+| setPage | Navigates to a given page | {number} page number |
 | print | Prints the image ||
 | toggleFullscreen | Toggles fullscreen mode ||
