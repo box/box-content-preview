@@ -40,6 +40,7 @@ class BoxAnnotations {
      * Get all annotators for a given viewer.
      *
      * @param {string} viewerName - Name of the viewer to get annotators for
+     * @param {Array} [disabledAnnotators] - List of disabled annotators
      * @return {Object} Annotator for the viewer
      */
     getAnnotatorsForViewer(viewerName, disabledAnnotators = []) {
