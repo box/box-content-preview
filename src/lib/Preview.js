@@ -489,6 +489,11 @@ class Preview extends EventEmitter {
         // Clear any existing retry timeouts
         clearTimeout(this.retryTimeout);
 
+        // Save reference to the file when a well-formed file object is present in options
+        if (this.previewOptions.file) {
+            this.updateFileCache(this.previewOptions.file);
+        }
+
         // Save reference to the currently shown file, if any
         const currentFileId = this.file ? this.file.id : undefined;
 
@@ -502,10 +507,13 @@ class Preview extends EventEmitter {
             this.retryCount = 0;
         }
 
+        if (this.previewOptions.file) {
+            this.loadPreview({});
+            return;
+        }
+
         // Fetch access tokens before proceeding
-        getTokens(this.file.id, this.previewOptions.token)
-            .then(this.loadPreviewWithTokens)
-            .catch(this.triggerFetchError);
+        getTokens(this.file.id, this.previewOptions.token).then(this.loadPreview).catch(this.triggerFetchError);
     }
 
     /**
@@ -515,9 +523,9 @@ class Preview extends EventEmitter {
      * @param {Object} tokenMap - Map of file ID to access token
      * @return {void}
      */
-    loadPreviewWithTokens(tokenMap) {
+    loadPreview(tokenMap) {
         // If this is a retry, short-circuit and load from server
-        if (this.retryCount > 0) {
+        if (this.retryCount > 0 && !this.options.skipServerUpdate) {
             this.loadFromServer();
             return;
         }
@@ -613,6 +621,12 @@ class Preview extends EventEmitter {
         // Save the reference to any additional custom options for viewers
         this.options.viewers = options.viewers || {};
 
+        // Save the reference to file object
+        this.options.file = options.file || null;
+
+        // Skip load from server and any server updates
+        this.options.skipServerUpdate = !!options.skipServerUpdate;
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
@@ -656,7 +670,9 @@ class Preview extends EventEmitter {
         this.loadViewer();
 
         // Also refresh from server to update cache
-        this.loadFromServer();
+        if (!this.options.skipServerUpdate) {
+            this.loadFromServer();
+        }
     }
 
     /**
@@ -879,7 +895,9 @@ class Preview extends EventEmitter {
             });
 
             // If there wasn't an error, use Events API to log a preview
-            this.logPreviewEvent(this.file.id, this.options);
+            if (!this.options.skipServerUpdate) {
+                this.logPreviewEvent(this.file.id, this.options);
+            }
 
             // Hookup for phantom JS health check
             if (typeof window.callPhantom === 'function') {
