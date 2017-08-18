@@ -628,7 +628,8 @@ class BaseViewer extends EventEmitter {
      * @return {Object} An object containing configuration properties.
      */
     getViewerAnnotationsConfig() {
-        const config = this.getViewerOption('annotations') || {};
+        const option = this.getViewerOption('annotations');
+        const config = option !== null && option !== undefined ? option : {};
 
         // Backwards compatability for old boolean flag usage
         if (typeof config === 'boolean') {
@@ -658,7 +659,7 @@ class BaseViewer extends EventEmitter {
         const viewerName = this.options.viewer.NAME;
         const annotationsConfig = this.getViewerAnnotationsConfig();
 
-        this.annotatorConf = boxAnnotations.determineAnnotator(viewerName, undefined, annotationsConfig);
+        this.annotatorConf = boxAnnotations.determineAnnotator(viewerName, annotationsConfig);
         if (!this.annotatorConf) {
             return;
         }
@@ -727,7 +728,7 @@ class BaseViewer extends EventEmitter {
         }
 
         // Otherwise, use global preview annotation option
-        return this.options.showAnnotations;
+        return !!this.options.showAnnotations;
     }
 
     /**

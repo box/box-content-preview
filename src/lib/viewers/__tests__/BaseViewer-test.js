@@ -722,6 +722,32 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('getViewerAnnotationsConfig()', () => {
+        it('should return an empty object if none options available', () => {
+            sandbox.stub(base, 'getViewerOption').returns(undefined);
+            const config = base.getViewerAnnotationsConfig();
+            expect(config).to.deep.equal({});
+        });
+
+        it('should create an object with an "enabled" flag if using legacy boolean value', () => {
+            sandbox.stub(base, 'getViewerOption').returns(false);
+            const config = base.getViewerAnnotationsConfig();
+            expect(config).to.deep.equal({ enabled: false });
+
+        });
+
+        it('should pass through the annotations object if an object', () => {
+            const annConfig = {
+                enabled: true,
+                disabledTypes: ['drawing']
+            };
+            sandbox.stub(base, 'getViewerOption').returns(annConfig);
+            const config = base.getViewerAnnotationsConfig();
+            expect(config).to.deep.equal(annConfig);
+            
+        });
+    });
+
     describe('loadAnnotator()', () => {
         beforeEach(() => {
             base.options.viewer = {

@@ -55,31 +55,32 @@ class BoxAnnotations {
      * Chooses a annotator based on viewer.
      *
      * @param {Object} viewerName - Current preview viewer name
-     * @param {Array} [disabledAnnotators] - List of disabled annotators
      * @param {Array} [viewerConfig] - Annotation configuration for a specific viewer
+     * @param {Array} [disabledAnnotators] - List of disabled annotators
      * @return {Object|null} A copy of the annotator to use, if available
      */
-    determineAnnotator(viewerName, disabledAnnotators = [], viewerConfig = {}) {
-        const originalAnnotator = this.getAnnotatorsForViewer(viewerName, disabledAnnotators);
+    determineAnnotator(viewerName, viewerConfig = {}, disabledAnnotators = []) {
+        const annotator = this.getAnnotatorsForViewer(viewerName, disabledAnnotators);
+        let modifiedAnnotator = null;
 
-        if (originalAnnotator) {
-            const annotator = Object.assign({}, originalAnnotator);
-            // If explicitly disabled via config, do nothing
-            if (viewerConfig.enabled === false) {
-                return null;
-            }
-
-            // Filter out disabled annotation types
-            if (Array.isArray(viewerConfig.disabledTypes)) {
-                annotator.TYPE = annotator.TYPE.filter((type) => {
-                    return !viewerConfig.disabledTypes.includes(type);
-                });
-            }
-
-            return annotator;
+        if (!annotator) {
+            return modifiedAnnotator;
         }
 
-        return null;
+        modifiedAnnotator = Object.assign({}, annotator);
+        // If explicitly disabled via config, do nothing
+        if (viewerConfig.enabled === false) {
+            return null;
+        }
+
+        // Filter out disabled annotation types
+        if (Array.isArray(viewerConfig.disabledTypes)) {
+            modifiedAnnotator.TYPE = modifiedAnnotator.TYPE.filter((type) => {
+                return !viewerConfig.disabledTypes.includes(type);
+            });
+        }
+
+        return modifiedAnnotator;
     }
 }
 
