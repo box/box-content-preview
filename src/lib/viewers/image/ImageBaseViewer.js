@@ -43,6 +43,7 @@ class ImageBaseViewer extends BaseViewer {
             return;
         }
 
+        ImageBaseViewer.setOriginalImageSize(this.imageEl);
         this.loadUI();
         this.zoom();
 
@@ -165,6 +166,33 @@ class ImageBaseViewer extends BaseViewer {
     loadUI() {
         this.controls = new Controls(this.containerEl);
         this.bindControlListeners();
+    }
+
+    /**
+     * Sets the original image width and height on the img element. Can be removed when
+     * naturalHeight and naturalWidth attributes work correctly in IE 11.
+     *
+     * @param {Image} imageEl - The image to set the original size attributes on
+     * @return {void}
+     */
+    static setOriginalImageSize(imageEl) {
+        const image = imageEl;
+
+        // Do not bother loading a new image when the natural size attributes exist
+        if (imageEl.naturalWidth > 0 && imageEl.naturalHeight > 0) {
+            image.originalWidth = imageEl.naturalWidth;
+            image.originalHeight = imageEl.naturalHeight;
+        } else {
+            const originalImg = new Image();
+            image.originalWidth = 1;
+            image.originalHeight = 1;
+
+            originalImg.onload = () => {
+                image.originalWidth = originalImg.width || 1;
+                image.originalHeight = originalImg.height || 1;
+            };
+            originalImg.src = imageEl.src;
+        }
     }
 
     //--------------------------------------------------------------------------
