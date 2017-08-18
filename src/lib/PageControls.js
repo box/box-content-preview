@@ -37,20 +37,24 @@ class PageControls extends EventEmitter {
         this.controlsEl = controls.controlsEl;
         this.currentPageEl = controls.currentPageEl;
         this.pageNumInputEl = controls.pageNumInputEl;
-
-        this.controls.add(__('previous_page'), previousPage, `bp-previous-page-icon ${PREV_PAGE}`, ICON_DROP_UP);
-        this.controls.add(__('enter_page_num'), this.showPageNumInput.bind(this), PAGE_NUM, pageNumTemplate);
-        this.controls.add(__('next_page'), nextPage, `bp-next-page-icon ${NEXT_PAGE}`, ICON_DROP_DOWN);
+        this.previousPage = previousPage;
+        this.nextPage = nextPage;
     }
 
     /**
-     * Initializes page number selector.
+     * Adds controls and initializes page number selector.
      *
      * @private
      * @param {number} pagesCount - Total number of page
      * @return {void}
      */
     init(pagesCount) {
+        // Add controls
+        this.controls.add(__('previous_page'), this.previousPage, `bp-previous-page-icon ${PREV_PAGE}`, ICON_DROP_UP);
+        this.controls.add(__('enter_page_num'), this.showPageNumInput.bind(this), PAGE_NUM, pageNumTemplate);
+        this.controls.add(__('next_page'), this.nextPage, `bp-next-page-icon ${NEXT_PAGE}`, ICON_DROP_DOWN);
+
+        // Initialize page number selector
         const pageNumEl = this.controlsEl.querySelector(`.${PAGE_NUM}`);
         this.pagesCount = pagesCount;
 
