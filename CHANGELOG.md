@@ -1,3 +1,10 @@
+<a name="1.6.2"></a>
+## 1.6.2 (2017-08-18)
+
+* Fix: Re-showing viewer controls on 'annotationmodeexit' (#323) ([bb0d657](https://github.com/box/box-content-preview/commit/bb0d657))
+
+
+
 <a name="1.6.1"></a>
 ## 1.6.1 (2017-08-17)
 
