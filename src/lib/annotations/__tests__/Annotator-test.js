@@ -7,7 +7,10 @@ import {
     STATES,
     TYPES,
     CLASS_ANNOTATION_DRAW_MODE,
-    CLASS_HIDDEN
+    CLASS_HIDDEN,
+    SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
+    SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO,
+    SELECTOR_ANNOTATION_BUTTON_DRAW_REDO
 } from '../annotationConstants';
 
 let annotator;
@@ -37,9 +40,6 @@ describe('lib/annotations/Annotator', () => {
             fileVersionId: 1,
             isMobile: false,
             options,
-            previewUI: {
-                getAnnotateButton: () => {}
-            },
             modeButtons: {}
         });
 
@@ -293,7 +293,7 @@ describe('lib/annotations/Annotator', () => {
                 stubs.exitModes = sandbox.stub(annotator, 'exitAnnotationModes');
                 stubs.disable = sandbox.stub(annotator, 'disableAnnotationMode');
                 stubs.enable = sandbox.stub(annotator, 'enableAnnotationMode');
-                sandbox.stub(annotator.previewUI, 'getAnnotateButton');
+                sandbox.stub(annotator, 'getAnnotateButton');
                 stubs.isAnnotatable = sandbox.stub(annotator, 'isModeAnnotatable').returns(true);
 
                 annotator.modeButtons = {
@@ -521,7 +521,7 @@ describe('lib/annotations/Annotator', () => {
                     addEventListener: sandbox.stub(),
                     removeEventListener: sandbox.stub()
                 };
-                sandbox.stub(annotator.previewUI, 'getAnnotateButton').returns(postButtonEl);
+                sandbox.stub(annotator, 'getAnnotateButton').returns(postButtonEl);
                 const locationHandler = (() => {});
 
                 sandbox.stub(annotatorUtil, 'eventToLocationHandler').returns(locationHandler);
@@ -537,6 +537,59 @@ describe('lib/annotations/Annotator', () => {
                     sinon.match.func
                 );
                 expect(annotator.annotationModeHandlers.length).equals(6);
+            });
+
+            it('should successfully bind draw mode handlers if undo and redo buttons do not exist', () => {
+                sandbox.stub(annotator, 'createAnnotationThread').returns(drawingThread);
+
+                const postButtonEl = {
+                    addEventListener: sandbox.stub(),
+                    removeEventListener: sandbox.stub()
+                };
+                const locationHandler = (() => {});
+                const getAnnotateButton = sandbox.stub(annotator, 'getAnnotateButton');
+                getAnnotateButton.withArgs(SELECTOR_ANNOTATION_BUTTON_DRAW_POST).returns(postButtonEl);
+
+                sandbox.stub(annotatorUtil, 'eventToLocationHandler').returns(locationHandler);
+
+                annotator.bindModeListeners(TYPES.draw);
+
+                expect(annotator.annotatedElement.addEventListener).to.be.calledWith(
+                    sinon.match.string,
+                    locationHandler
+                ).thrice;
+                expect(postButtonEl.addEventListener).to.be.calledWith(
+                    'click',
+                    sinon.match.func
+                );
+                expect(annotator.annotationModeHandlers.length).equals(4);
+            });
+
+            it('should successfully bind draw mode handlers if post button does not exist', () => {
+                sandbox.stub(annotator, 'createAnnotationThread').returns(drawingThread);
+
+                const doButtonEl = {
+                    addEventListener: sandbox.stub(),
+                    removeEventListener: sandbox.stub()
+                };
+                const locationHandler = (() => {});
+                const getAnnotateButton = sandbox.stub(annotator, 'getAnnotateButton');
+                getAnnotateButton.withArgs(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO).returns(doButtonEl);
+                getAnnotateButton.withArgs(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO).returns(doButtonEl);
+
+                sandbox.stub(annotatorUtil, 'eventToLocationHandler').returns(locationHandler);
+
+                annotator.bindModeListeners(TYPES.draw);
+
+                expect(annotator.annotatedElement.addEventListener).to.be.calledWith(
+                    sinon.match.string,
+                    locationHandler
+                ).thrice;
+                expect(doButtonEl.addEventListener).to.be.calledWith(
+                    'click',
+                    sinon.match.func
+                );
+                expect(annotator.annotationModeHandlers.length).equals(5);
             });
         });
 
@@ -794,9 +847,6 @@ describe('lib/annotations/Annotator', () => {
                         annotator: { NAME: annotatorName },
                         fileId
                     },
-                    previewUI: {
-                        getAnnotateButton: sandbox.stub()
-                    },
                     modeButtons: {}
                 });
 
@@ -890,6 +940,14 @@ describe('lib/annotations/Annotator', () => {
                 annotator.showModeAnnotateButton(TYPES.point);
                 expect(buttonEl.title).to.equal('Point Annotation Mode');
                 expect(annotator.getAnnotationModeClickHandler).to.be.called;
+            });
+        });
+
+        describe('getAnnotateButton()', () => {
+            it('should return the annotate button', () => {
+                const selector = 'bp-btn-annotate';
+                const buttonEl = annotator.getAnnotateButton(`.${selector}`);
+                expect(buttonEl).to.have.class(selector);
             });
         });
 

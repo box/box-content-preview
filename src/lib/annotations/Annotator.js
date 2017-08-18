@@ -61,7 +61,6 @@ class Annotator extends EventEmitter {
         this.validationErrorEmitted = false;
         this.isMobile = data.isMobile;
         this.hasTouch = data.hasTouch;
-        this.previewUI = data.previewUI;
         this.modeButtons = data.modeButtons;
         this.annotationModeHandlers = [];
     }
@@ -175,6 +174,16 @@ class Annotator extends EventEmitter {
                 mode.controller.registerAnnotator(this);
             }
         }
+    }
+
+    /**
+     * Gets the annotation button element.
+     *
+     * @param {string} annotatorSelector - Class selector for a custom annotation button.
+     * @return {HTMLElement|null} Annotate button element or null if the selector did not find an element.
+     */
+    getAnnotateButton(annotatorSelector) {
+        return this.container.querySelector(annotatorSelector);
     }
 
     /**
@@ -307,7 +316,7 @@ class Annotator extends EventEmitter {
 
         // Hide create annotations button if image is rotated
         const pointButtonSelector = this.modeButtons[TYPES.point].selector;
-        const pointAnnotateButton = this.previewUI.getAnnotateButton(pointButtonSelector);
+        const pointAnnotateButton = this.getAnnotateButton(pointButtonSelector);
 
         if (rotationAngle !== 0) {
             annotatorUtil.hideElement(pointAnnotateButton);
@@ -347,7 +356,7 @@ class Annotator extends EventEmitter {
         }
 
         const buttonSelector = this.modeButtons[mode].selector;
-        const buttonEl = event.target || this.previewUI.getAnnotateButton(buttonSelector);
+        const buttonEl = event.target || this.getAnnotateButton(buttonSelector);
 
         // Exit any other annotation mode
         this.exitAnnotationModes(mode, buttonEl);
@@ -382,9 +391,9 @@ class Annotator extends EventEmitter {
             if (mode === TYPES.draw) {
                 const drawEnterEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER);
                 const drawCancelEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
-                const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
-                const undoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
-                const redoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
+                const postButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
+                const undoButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
+                const redoButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
 
                 annotatorUtil.showElement(drawEnterEl);
                 annotatorUtil.hideElement(drawCancelEl);
@@ -416,9 +425,9 @@ class Annotator extends EventEmitter {
             if (mode === TYPES.draw) {
                 const drawEnterEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER);
                 const drawCancelEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
-                const postButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
-                const undoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
-                const redoButtonEl = this.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
+                const postButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
+                const undoButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
+                const redoButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
 
                 annotatorUtil.hideElement(drawEnterEl);
                 annotatorUtil.showElement(drawCancelEl);
@@ -446,7 +455,7 @@ class Annotator extends EventEmitter {
             }
 
             const buttonSelector = this.modeButtons[type].selector;
-            const modeButtonEl = buttonEl || this.previewUI.getAnnotateButton(buttonSelector);
+            const modeButtonEl = buttonEl || this.getAnnotateButton(buttonSelector);
             this.disableAnnotationMode(type, modeButtonEl);
         });
     }
@@ -699,14 +708,11 @@ class Annotator extends EventEmitter {
             );
         } else if (mode === TYPES.draw) {
             const controller = this.modeButtons[TYPES.draw].controller;
-            handlers.push(...controller.setupAndGetHandlers());
+            controller.bindModeListeners();
         }
 
         handlers.forEach((handler) => {
-            const eventNames = handler.type.split(' ');
-            eventNames.forEach((eventName) => {
-                handler.eventObj.addEventListener(eventName, handler.func, false);
-            });
+            handler.eventObj.addEventListener(handler.type, handler.func, false);
             this.annotationModeHandlers.push(handler);
         });
     }
@@ -732,7 +738,7 @@ class Annotator extends EventEmitter {
 
         // Exits point annotation mode on first click
         const buttonSelector = this.modeButtons[TYPES.point].selector;
-        const buttonEl = this.previewUI.getAnnotateButton(buttonSelector);
+        const buttonEl = this.getAnnotateButton(buttonSelector);
         this.disableAnnotationMode(TYPES.point, buttonEl);
 
         // Get annotation location from click event, ignore click if location is invalid
@@ -758,13 +764,23 @@ class Annotator extends EventEmitter {
      * @protected
      * @return {void}
      */
-    unbindModeListeners() {
+    unbindModeListeners(mode) {
         while (this.annotationModeHandlers.length > 0) {
             const handler = this.annotationModeHandlers.pop();
             const eventNames = handler.type.split(' ');
             eventNames.forEach((eventName) => {
                 handler.eventObj.removeEventListener(eventName, handler.func);
             });
+        }
+
+        if (
+            mode &&
+            this.modeButtons &&
+            this.modeButtons[mode] &&
+            this.modeButtons[mode].controller &&
+            this.modeButtons[mode].controller.constructor.name === DrawingController.name
+        ) {
+            this.modeButtons[mode].controller.unbindModeListeners();
         }
     }
 

@@ -1,3 +1,31 @@
+<a name="1.6.0"></a>
+# 1.6.0 (2017-08-17)
+
+* Chore: Cleaning up and consolidating annotation methods (#288) ([6542b5d](https://github.com/box/box-content-preview/commit/6542b5d))
+* Chore: Fixed warning (#306) ([18daaf9](https://github.com/box/box-content-preview/commit/18daaf9)), closes [#306](https://github.com/box/box-content-preview/issues/306)
+* Chore: Move getAnnotateButton() out of PreviewUI into Annotator (#312) ([715b026](https://github.com/box/box-content-preview/commit/715b026))
+* Chore: Only remove annotation listeners if enabled on viewer (#293) ([9b97fd7](https://github.com/box/box-content-preview/commit/9b97fd7))
+* Chore: Remove code supporting token in options object (#268) ([ba1ac34](https://github.com/box/box-content-preview/commit/ba1ac34))
+* Chore: Toggling annotation mode handlers using emitted messages (#307) ([8e7d49a](https://github.com/box/box-content-preview/commit/8e7d49a))
+* Chore: Updating docs.box.com links to developer.box.com in README (#282) ([b63eab2](https://github.com/box/box-content-preview/commit/b63eab2))
+* Fix: annotation handler rebinding (#294) ([2dc0200](https://github.com/box/box-content-preview/commit/2dc0200))
+* Fix: Do not display disabled annotation types on fetch (#301) ([c669375](https://github.com/box/box-content-preview/commit/c669375))
+* Fix: Files must have .360 before extension to launch in 360 viewers. (#313) ([1659c4d](https://github.com/box/box-content-preview/commit/1659c4d))
+* Fix: Fix release script after GitHub release (#295) ([00dff52](https://github.com/box/box-content-preview/commit/00dff52)), closes [#295](https://github.com/box/box-content-preview/issues/295)
+* Fix: Forcing HD/SD should disable adaptation (#292) ([8cd67c1](https://github.com/box/box-content-preview/commit/8cd67c1))
+* Fix: only hide the filmstrip if it exists (#309) ([1c70dd4](https://github.com/box/box-content-preview/commit/1c70dd4))
+* Fix: scale being unbound when annotating (#297) ([289c645](https://github.com/box/box-content-preview/commit/289c645))
+* New: Allow scrolling for multi-page image files (#308) ([37dfd4a](https://github.com/box/box-content-preview/commit/37dfd4a))
+* New: Plain and Comment highlight annotations on mobile (#276) ([5b66c82](https://github.com/box/box-content-preview/commit/5b66c82))
+* Feature: drawing annotation scaling (#267) ([2fd0655](https://github.com/box/box-content-preview/commit/2fd0655))
+* Add en-x-pseudo language to support pseudolocalization in WebApp (#300) ([4d1be4a](https://github.com/box/box-content-preview/commit/4d1be4a))
+* Update: Increase file size limit for range requests (#296) ([21f490f](https://github.com/box/box-content-preview/commit/21f490f))
+* Update: use pixelDeviceRatio to choose canvas pixel size (#286) ([9e5489d](https://github.com/box/box-content-preview/commit/9e5489d))
+* Mojito: Update translations (#290) ([deaf8f2](https://github.com/box/box-content-preview/commit/deaf8f2))
+* Mojito: Update translations (#291) ([63a7201](https://github.com/box/box-content-preview/commit/63a7201))
+
+
+
 <a name="1.5.0"></a>
 # 1.5.0 (2017-08-09)
 

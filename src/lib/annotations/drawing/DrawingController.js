@@ -27,9 +27,9 @@ class DrawingController extends AnnotationController {
         super.registerAnnotator(annotator);
         window.threads = this.threads;
 
-        this.postButtonEl = annotator.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
-        this.undoButtonEl = annotator.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
-        this.redoButtonEl = annotator.previewUI.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
+        this.postButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
+        this.undoButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
+        this.redoButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
     }
 
     registerThread(thread) {
@@ -41,7 +41,7 @@ class DrawingController extends AnnotationController {
     }
 
     unregisterThread(thread) {
-        if (!thread) {
+        if (!thread || !thread.location) {
             return;
         }
 
@@ -54,15 +54,7 @@ class DrawingController extends AnnotationController {
         }
 
         thread.addListener('annotationsaved', () => this.registerThread(thread));
-        thread.addListener('threaddeleted', () => this.threads.remove(thread.location.drawingPaths));
-        thread.addListener('annotationevent', (data) => {
-            const eventData = data || {};
-            eventData.thread = thread;
-            this.handleAnnotationEvent(eventData);
-        });
-
-        // Move annotator.bindCustomListenersOnThread logic to AnnotationController
-        this.annotator.bindCustomListenersOnThread(thread);
+        thread.addListener('threaddeleted', () => this.unregisterThread(thread));
     }
 
     setupAndGetHandlers() {
@@ -129,10 +121,13 @@ class DrawingController extends AnnotationController {
         return handlers;
     }
 
-    handleAnnotationEvent(data = {}) {
+    handleAnnotationEvent(thread, data = {}) {
         switch (data.type) {
+            case 'drawcommit':
+                thread.removeAllListeners('annotationevent');
+                break;
             case 'pagechanged':
-                this.currentThread.saveAnnotation(TYPES.draw);
+                thread.saveAnnotation(TYPES.draw);
                 this.currentThread = undefined;
 
                 // NOTE(@minhnguyen): Questionable function call! Currently we save the thread and create a new thread
@@ -154,9 +149,6 @@ class DrawingController extends AnnotationController {
                 } else if (data.redo === 0) {
                     annotatorUtil.disableElement(this.redoButtonEl);
                 }
-                break;
-            case 'drawingdeleted':
-                this.onDelete(data.boundary);
                 break;
             default:
         }
@@ -209,6 +201,7 @@ class DrawingController extends AnnotationController {
         if (selected && !(selected instanceof Array)) {
             selected.drawBoundary();
             this.selected = selected;
+            console.log('selected');
 
             /*
             const svg = document.createElement('svg');
@@ -219,11 +212,6 @@ class DrawingController extends AnnotationController {
             selected.pageEl.appendChild(svg);
             */
         }
-    }
-
-    onDelete(boundary) {
-        const toRedraw = this.threads.search(boundary);
-        toRedraw.forEach((drawingThread) => drawingThread.show());
     }
 }
 

@@ -116,8 +116,7 @@ class DrawingThread extends AnnotationThread {
         const width = x2 - x1;
         const height = y2 - y1;
         console.log(`w:${width}, h:${height}`);
-        this.concreteContext.rect(x1 - 5, y1 + 5, width + 10, height - 10);
-        this.concreteContext.fill();
+        this.concreteContext.clearRect(x1 - 5, y1 + 5, width + 10, height - 10);
         this.destroy();
     }
 
@@ -267,8 +266,8 @@ class DrawingThread extends AnnotationThread {
         const availableActions = this.pathContainer.getNumberOfItems();
         this.emit('annotationevent', {
             type: 'availableactions',
-            undo: availableActions.undo,
-            redo: availableActions.redo
+            undo: availableActions.undoCount,
+            redo: availableActions.redoCount
         });
     }
 

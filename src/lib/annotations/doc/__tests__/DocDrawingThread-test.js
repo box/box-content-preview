@@ -192,8 +192,8 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
 
         it('should clean up without committing when there are no paths to be saved', () => {
             sandbox.stub(docDrawingThread.pathContainer, 'getNumberOfItems').returns({
-                undo: 0,
-                redo: 1
+                undoCount: 0,
+                redoCount: 1
             });
 
             docDrawingThread.saveAnnotation('draw');
@@ -219,8 +219,8 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
 
             sandbox.stub(docAnnotatorUtil, 'getContext').returns(context);
             sandbox.stub(docDrawingThread.pathContainer, 'getNumberOfItems').returns({
-                undo: 1,
-                redo: 0
+                undoCount: 1,
+                redoCount: 0
             });
 
             docDrawingThread.saveAnnotation('draw');
