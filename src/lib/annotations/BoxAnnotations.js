@@ -55,7 +55,7 @@ class BoxAnnotations {
      * Chooses a annotator based on viewer.
      *
      * @param {Object} viewerName - Current preview viewer name
-     * @param {Array} [viewerConfig] - Annotation configuration for a specific viewer
+     * @param {Object} [viewerConfig] - Annotation configuration for a specific viewer
      * @param {Array} [disabledAnnotators] - List of disabled annotators
      * @return {Object|null} A copy of the annotator to use, if available
      */
@@ -63,15 +63,11 @@ class BoxAnnotations {
         const annotator = this.getAnnotatorsForViewer(viewerName, disabledAnnotators);
         let modifiedAnnotator = null;
 
-        if (!annotator) {
+        if (!annotator || viewerConfig.enabled === false) {
             return modifiedAnnotator;
         }
 
         modifiedAnnotator = Object.assign({}, annotator);
-        // If explicitly disabled via config, do nothing
-        if (viewerConfig.enabled === false) {
-            return null;
-        }
 
         // Filter out disabled annotation types
         if (Array.isArray(viewerConfig.disabledTypes)) {
