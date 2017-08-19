@@ -28,6 +28,9 @@ class PageControls extends EventEmitter {
     /** @property {HTMLElement} - Controls element */
     controlsEl;
 
+    /** @property {HTMLElement} - File content element */
+    contentEl;
+
     /** @property {HTMLElement} - Total pages element */
     totalPagesEl;
 
@@ -40,15 +43,23 @@ class PageControls extends EventEmitter {
      * [constructor]
      *
      * @param {HTMLElement} controls - Viewer controls
-     * @param {number} currentPageNumber - Current page number
-     * @param {number} pagesCount - Number of total pages
+     * @param {HTMLElement} contentEl - The content element of the file
+
      * @return {Controls} Instance of controls
      */
-    constructor(controls) {
+    constructor(controls, contentEl) {
         super();
 
         this.controls = controls;
         this.controlsEl = controls.controlsEl;
+
+        this.contentEl = contentEl;
+
+        this.pageNumInputBlurHandler = this.pageNumInputBlurHandler.bind(this);
+        this.pageNumInputKeydownHandler = this.pageNumInputKeydownHandler.bind(this);
+        this.setPreviousPage = this.setPreviousPage.bind(this);
+        this.showPageNumInput = this.showPageNumInput.bind(this);
+        this.setNextPage = this.setNextPage.bind(this);
     }
 
     /**
@@ -61,22 +72,18 @@ class PageControls extends EventEmitter {
     add(currentPageNumber, pagesCount) {
         this.controls.add(
             __('previous_page'),
-            this.setPreviousPage.bind(this),
+            this.setPreviousPage,
             `bp-previous-page-icon ${PREV_PAGE}`,
             ICON_DROP_UP
         );
-        this.controls.add(__('enter_page_num'), this.showPageNumInput.bind(this), PAGE_NUM, pageNumTemplate);
-        this.controls.add(
-            __('next_page'),
-            this.setNextPage.bind(this),
-            `bp-next-page-icon ${NEXT_PAGE}`,
-            ICON_DROP_DOWN
-        );
+        this.controls.add(__('enter_page_num'), this.showPageNumInput, PAGE_NUM, pageNumTemplate);
+        this.controls.add(__('next_page'), this.setNextPage, `bp-next-page-icon ${NEXT_PAGE}`, ICON_DROP_DOWN);
 
         const pageNumEl = this.controlsEl.querySelector(`.${PAGE_NUM}`);
         this.totalPagesEl = pageNumEl.querySelector(`.${CONTROLS_TOTAL_PAGES}`);
         this.totalPagesEl.textContent = pagesCount;
         this.currentPageEl = pageNumEl.querySelector(`.${CONTROLS_CURRENT_PAGE}`);
+        this.currentPageEl.textContent = currentPageNumber;
         this.pageNumInputEl = pageNumEl.querySelector(`.${CONTROLS_PAGE_NUM_INPUT_CLASS}`);
 
         this.checkPaginationButtons();
@@ -97,8 +104,8 @@ class PageControls extends EventEmitter {
         this.pageNumInputEl.select();
 
         // finish input when input is blurred or enter key is pressed
-        this.pageNumInputEl.addEventListener('blur', this.pageNumInputBlurHandler.bind(this));
-        this.pageNumInputEl.addEventListener('keydown', this.pageNumInputKeydownHandler.bind(this));
+        this.pageNumInputEl.addEventListener('blur', this.pageNumInputBlurHandler);
+        this.pageNumInputEl.addEventListener('keydown', this.pageNumInputKeydownHandler);
     }
 
     /**
@@ -158,7 +165,7 @@ class PageControls extends EventEmitter {
     /**
      * Update page number in page control widget.
      *
-     * @private
+     * @public
      * @param {number} pageNumber - Number of page to update to
      * @return {void}
      */
@@ -181,7 +188,7 @@ class PageControls extends EventEmitter {
      * @return {void}
      */
     setPreviousPage() {
-        super.emit('pagechange', this.getCurrentPageNumber() - 1);
+        this.emit('pagechange', this.getCurrentPageNumber() - 1);
     }
 
     /**
@@ -191,7 +198,7 @@ class PageControls extends EventEmitter {
      * @return {void}
      */
     setNextPage() {
-        super.emit('pagechange', this.getCurrentPageNumber() + 1);
+        this.emit('pagechange', this.getCurrentPageNumber() + 1);
     }
 
     /**
@@ -237,7 +244,7 @@ class PageControls extends EventEmitter {
         const pageNumber = parseInt(target.value, 10);
 
         if (!isNaN(pageNumber)) {
-            super.emit('pagechange', pageNumber);
+            this.emit('pagechange', pageNumber);
         }
 
         this.hidePageNumInput();
@@ -256,12 +263,13 @@ class PageControls extends EventEmitter {
         switch (key) {
             case 'Enter':
             case 'Tab':
+                this.contentEl.focus();
                 // The keycode of the 'next' key on Android Chrome is 9, which maps to 'Tab'.
-                // this.docEl.focus();
                 // We normally trigger the blur handler by blurring the input
                 // field, but this doesn't work for IE in fullscreen. For IE,
                 // we blur the page behind the controls - this unfortunately
                 // is an IE-only solution that doesn't work with other browsers
+
                 if (Browser.getName() !== 'Explorer') {
                     event.target.blur();
                 }
@@ -272,7 +280,7 @@ class PageControls extends EventEmitter {
 
             case 'Escape':
                 this.hidePageNumInput();
-                // this.docEl.focus();
+                this.contentEl.focus();
 
                 event.stopPropagation();
                 event.preventDefault();

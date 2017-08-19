@@ -199,19 +199,17 @@ class MultiImageViewer extends ImageBaseViewer {
      */
     loadUI() {
         super.loadUI();
-        this.pageControls.checkPaginationButtons(this.currentPageNumber, this.pagesCount);
+        this.pageControls = new PageControls(this.controls, this.wrapperEl);
+        this.bindPageControlListeners();
     }
 
     /**
-     * Binds listeners for document controls. Overridden.
+     * Binds listeners for the page and the rest of the document controls.
      *
      * @protected
      * @return {void}
      */
-    bindControlListeners() {
-        super.bindControlListeners();
-
-        this.pageControls = new PageControls(this.controls);
+    bindPageControlListeners() {
         this.pageControls.add(this.currentPageNumber, this.pagesCount);
         this.pageControls.addListener('pagechange', this.setPage);
 
