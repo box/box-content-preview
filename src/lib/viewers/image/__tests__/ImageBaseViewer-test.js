@@ -221,15 +221,18 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
     });
 
     describe('setOriginalImageSize()', () => {
-        it('should use the naturalHeight and naturalWidth when available', () => {
+        it('should use the naturalHeight and naturalWidth when available', (done) => {
             const imageEl = {
                 naturalWidth: 100,
                 naturalHeight: 100
             };
 
-            ImageBaseViewer.setOriginalImageSize(imageEl);
-            expect(imageEl.originalWidth).to.equal(imageEl.naturalWidth);
-            expect(imageEl.originalHeight).to.equal(imageEl.naturalHeight);
+            const promise = ImageBaseViewer.setOriginalImageSize(imageEl);
+            promise.should.be.fulfilled.then(() => {
+                expect(imageEl.originalWidth).to.equal(imageEl.naturalWidth);
+                expect(imageEl.originalHeight).to.equal(imageEl.naturalHeight);
+                done()
+            });
         });
 
         it('should work when naturalHeight and naturalWidth are undefined', (done) => {
@@ -241,13 +244,12 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             const imageUrlWidth = 12;
             const imageUrlHeight = 12;
-            ImageBaseViewer.setOriginalImageSize(imageEl);
-            // Caution: event loop dependent
-            setTimeout(() => {
+            const promise = ImageBaseViewer.setOriginalImageSize(imageEl);
+            promise.should.be.fulfilled.then(() => {
                 expect(imageEl.originalWidth).to.equal(imageUrlWidth);
                 expect(imageEl.originalHeight).to.equal(imageUrlHeight);
                 done();
-            }, 0);
+            });
         });
     });
 
