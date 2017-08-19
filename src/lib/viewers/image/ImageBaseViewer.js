@@ -335,8 +335,7 @@ class ImageBaseViewer extends BaseViewer {
      */
     disableViewerControls() {
         super.disableViewerControls();
-        this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
-        this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
+        this.unbindDOMListeners();
     }
 
     /**
@@ -347,6 +346,7 @@ class ImageBaseViewer extends BaseViewer {
      */
     enableViewerControls() {
         super.enableViewerControls();
+        this.bindDOMListeners();
 
         if (!this.isMobile) {
             this.updateCursor();
