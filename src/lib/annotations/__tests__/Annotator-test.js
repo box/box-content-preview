@@ -371,7 +371,7 @@ describe('lib/annotations/Annotator', () => {
                 annotator.disableAnnotationMode(TYPES.draw, btn);
                 expect(btn).to.not.have.class(CLASS_ACTIVE);
                 expect(stubs.show).to.be.called;
-                expect(stubs.hide).to.be.calledTwice;
+                expect(stubs.hide).to.have.callCount(4);
             });
         });
 
@@ -403,7 +403,7 @@ describe('lib/annotations/Annotator', () => {
                 annotator.enableAnnotationMode(TYPES.draw, btn);
                 expect(btn).to.have.class(CLASS_ACTIVE);
                 expect(stubs.hide).to.be.called;
-                expect(stubs.show).to.be.calledTwice;
+                expect(stubs.show).to.have.callCount(4);
             });
         });
 
