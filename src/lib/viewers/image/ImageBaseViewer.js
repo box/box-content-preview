@@ -336,6 +336,10 @@ class ImageBaseViewer extends BaseViewer {
     disableViewerControls() {
         super.disableViewerControls();
         this.unbindDOMListeners();
+
+        // Ensure zoom/pan classes are removed when controls are disabled
+        this.imageEl.classList.remove(CSS_CLASS_ZOOMABLE);
+        this.imageEl.classList.remove(CSS_CLASS_PANNABLE);
     }
 
     /**
