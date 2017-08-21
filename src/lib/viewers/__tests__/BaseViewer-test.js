@@ -883,19 +883,8 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.emit).to.be.calledWith('notificationshow', sinon.match.string);
         });
 
-        it('should hide notification on annotationmodeexit', () => {
+        it('should enable controls and hide notification on annotationmodeexit', () => {
             sandbox.stub(base, 'enableViewerControls');
-            stubs.isInAnnotationMode.returns(true);
-            base.handleAnnotatorNotifications({
-                event: ANNOTATION_MODE_EXIT
-            });
-            expect(base.enableViewerControls).to.not.be.called;
-            expect(base.emit).to.be.calledWith('notificationhide');
-        });
-
-        it('should enable controls if not in point annotation mode on annotationmodeexit', () => {
-            sandbox.stub(base, 'enableViewerControls');
-            stubs.isInAnnotationMode.returns(false);
             base.handleAnnotatorNotifications({
                 event: ANNOTATION_MODE_EXIT
             });
