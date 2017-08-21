@@ -186,6 +186,12 @@ $tablet: "(min-width: 768px)";
     width: 100%;
 
     @include border-top-bottom;
+
+    @media #{$tablet} {
+        left: auto;
+        padding: 15px 0;
+        width: 415px;
+    }
 }
 
 .bp-mobile-annotation-dialog .bp-annotation-highlight-dialog {
