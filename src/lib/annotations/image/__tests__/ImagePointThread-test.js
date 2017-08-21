@@ -29,6 +29,7 @@ describe('lib/annotations/image/ImagePointThread', () => {
         thread.dialog = {
             position: sandbox.stub()
         };
+        thread.isMobile = false;
     });
 
     afterEach(() => {
@@ -71,6 +72,26 @@ describe('lib/annotations/image/ImagePointThread', () => {
             thread.show();
 
             expect(thread.showDialog).to.not.have.been.called;
+        });
+
+        it('should not re-position the dialog if pending but on a mobile device', () => {
+            thread.isMobile = true;
+            thread.state = STATES.pending;
+
+            sandbox.stub(imageAnnotatorUtil, 'getBrowserCoordinatesFromLocation').returns([1, 2]);
+            sandbox.stub(annotatorUtil, 'showElement');
+            sandbox.stub(thread, 'showDialog');
+
+            thread.show();
+
+            expect(imageAnnotatorUtil.getBrowserCoordinatesFromLocation).to.have.been.calledWith(
+                thread.location,
+                thread.annotatedElement
+            );
+
+            expect(thread.dialog.position).to.not.have.been.called;
+            expect(annotatorUtil.showElement).to.have.been.calledWith(thread.element);
+            expect()
         });
     });
 
