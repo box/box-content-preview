@@ -165,6 +165,14 @@ $tablet: "(min-width: 768px)";
             width: 24px;
         }
     }
+
+    .reply-container {
+        padding-bottom: 15px;
+
+        @media #{$tablet} {
+            padding-bottom: 45px;
+        }
+    }
 }
 
 /* Highlight dialog */
