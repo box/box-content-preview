@@ -1,6 +1,7 @@
 import * as docAnnotatorUtil from '../docAnnotatorUtil';
 import * as annotatorUtil from '../../annotatorUtil';
 import DocDrawingThread from '../DocDrawingThread';
+import AnnotationThread from '../../AnnotationThread';
 import DrawingPath from '../../drawing/DrawingPath';
 import {
     DRAW_STATES
@@ -84,24 +85,22 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
         it('should commit the thread when the page changes', () => {
             sandbox.stub(docDrawingThread, 'hasPageChanged').returns(true);
             sandbox.stub(docDrawingThread, 'checkAndHandleScaleUpdate');
-            sandbox.stub(docDrawingThread, 'handleStop');
+            sandbox.stub(docDrawingThread, 'onPageChange');
             sandbox.stub(docDrawingThread, 'saveAnnotation');
 
-            docDrawingThread.drawingFlag = DRAW_STATES.idle;
             docDrawingThread.pendingPath = undefined;
             docDrawingThread.handleStart(docDrawingThread.location);
             docDrawingThread.location = {};
 
             expect(docDrawingThread.hasPageChanged).to.be.called;
-            expect(docDrawingThread.handleStop).to.be.called;
-            expect(docDrawingThread.saveAnnotation).to.be.called;
+            expect(docDrawingThread.onPageChange).to.be.called;
             expect(docDrawingThread.checkAndHandleScaleUpdate).to.not.be.called;
-            expect(docDrawingThread.drawingFlag).to.equal(DRAW_STATES.idle);
         });
     });
 
     describe('handleStop()', () => {
         it("should set the state to 'idle' and clear the pendingPath", () => {
+            sandbox.stub(docDrawingThread, 'emitAvailableActions');
             docDrawingThread.drawingFlag = DRAW_STATES.drawing;
             docDrawingThread.pendingPath = {
                 isEmpty: () => false
@@ -112,13 +111,27 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
 
             docDrawingThread.handleStop();
 
+            expect(docDrawingThread.emitAvailableActions).to.be.called;
             expect(docDrawingThread.drawingFlag).to.equal(DRAW_STATES.idle);
             expect(docDrawingThread.pendingPath).to.be.null;
         });
     });
 
+    describe('onPageChange()', () => {
+        it('should emit an annotationevent of type pagechanged and stop a pending drawing', (done) =>{
+            sandbox.stub(docDrawingThread, 'handleStop');
+            docDrawingThread.addListener('annotationevent', (data) => {
+                expect(docDrawingThread.handleStop).to.be.called;
+                expect(data.type).to.equal('pagechanged');
+                done();
+            });
+
+            docDrawingThread.onPageChange();
+        });
+    });
+
     describe('checkAndHandleScaleUpdate()', () => {
-        it('should update the scale factor when the scale has changed', () => {
+        it('should update the drawing information when the scale has changed', () => {
             sandbox.stub(docDrawingThread, 'setContextStyles');
             sandbox.stub(annotatorUtil, 'getScale').returns(1.4);
             sandbox.stub(docAnnotatorUtil, 'getPageEl');
@@ -164,5 +177,135 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
                 y: 4
             });
         })
+    });
+
+    describe('saveAnnotation()', () => {
+        const resetValue = AnnotationThread.prototype.saveAnnotation;
+
+        beforeEach(() => {
+            Object.defineProperty(AnnotationThread.prototype, 'saveAnnotation', { value: sandbox.stub() });
+        });
+
+        afterEach(() => {
+            Object.defineProperty(AnnotationThread.prototype, 'saveAnnotation', { value: resetValue });
+        });
+
+        it('should clean up without committing when there are no paths to be saved', () => {
+            sandbox.stub(docDrawingThread.pathContainer, 'getNumberOfItems').returns({
+                undoCount: 0,
+                redoCount: 1
+            });
+
+            docDrawingThread.saveAnnotation('draw');
+            expect(docDrawingThread.pathContainer.getNumberOfItems).to.be.called;
+            expect(AnnotationThread.prototype.saveAnnotation).to.not.be.called;
+        });
+
+        it('should clean up and commit in-progress drawings when there are paths to be saved', () => {
+            docDrawingThread.drawingContext = {
+                canvas: {
+                    style: {
+                        width: 10,
+                        height: 15
+                    }
+                },
+                width: 20,
+                height: 30,
+                clearRect: sandbox.stub()
+            };
+            const context = {
+                drawImage: sandbox.stub()
+            };
+
+            sandbox.stub(docAnnotatorUtil, 'getContext').returns(context);
+            sandbox.stub(docDrawingThread.pathContainer, 'getNumberOfItems').returns({
+                undoCount: 1,
+                redoCount: 0
+            });
+
+            docDrawingThread.saveAnnotation('draw');
+            expect(docAnnotatorUtil.getContext).to.be.called;
+            expect(docDrawingThread.pathContainer.getNumberOfItems).to.be.called;
+            expect(docDrawingThread.drawingContext.clearRect).to.be.called;
+            expect(context.drawImage).to.be.called;
+            expect(AnnotationThread.prototype.saveAnnotation).to.be.called;
+        });
+    });
+
+    describe('hasPageChanged()', () => {
+        it('should return false when there is no location', () => {
+            const value = docDrawingThread.hasPageChanged(undefined);
+            expect(value).to.be.falsy;
+        });
+
+        it('should return false when there is a location but no page', () => {
+            const location = {
+                page: undefined
+            };
+            const value = docDrawingThread.hasPageChanged(location);
+            expect(value).to.be.falsy;
+        });
+
+        it('should return false when the given location page is the same as the thread location', () => {
+            docDrawingThread.location = {
+                page: 2
+            };
+            const location = {
+                page: docDrawingThread.location.page
+            };
+            const value = docDrawingThread.hasPageChanged(location);
+            expect(value).to.be.falsy;
+        });
+
+        it('should return true when the given location page is different from the thread location', () => {
+            docDrawingThread.location = {
+                page: 2
+            };
+            const location = {
+                page: (docDrawingThread.location.page + 1)
+            };
+            const value = docDrawingThread.hasPageChanged(location);
+            expect(value).to.be.true;
+        });
+    });
+
+    describe('show()', () => {
+        beforeEach(() => {
+            sandbox.stub(docAnnotatorUtil, 'getPageEl');
+            sandbox.stub(docAnnotatorUtil, 'getContext');
+            sandbox.stub(docDrawingThread, 'checkAndHandleScaleUpdate');
+            sandbox.stub(docDrawingThread, 'setContextStyles');
+            sandbox.stub(docDrawingThread, 'draw');
+            docDrawingThread.pathContainer = {
+                applyToItems: sandbox.stub()
+            };
+        });
+
+        it('should do nothing when no element is assigned to the DocDrawingThread', () => {
+            docDrawingThread.annotatedElement = undefined;
+            docDrawingThread.location = 'loc';
+            docDrawingThread.show();
+            expect(docDrawingThread.checkAndHandleScaleUpdate).to.not.be.called;
+        });
+
+        it('should do nothing when no location is assigned to the DocDrawingThread', () => {
+            docDrawingThread.annotatedElement = 'annotatedEl';
+            docDrawingThread.location = undefined;
+            docDrawingThread.show();
+            expect(docDrawingThread.checkAndHandleScaleUpdate).to.not.be.called;
+        });
+
+        it('should draw the paths in the thread', () => {
+            docDrawingThread.annotatedElement = 'annotatedEl';
+            docDrawingThread.location = 'loc';
+            docDrawingThread.state = 'not pending';
+
+            docDrawingThread.show()
+            expect(docAnnotatorUtil.getPageEl).to.be.called;
+            expect(docAnnotatorUtil.getContext).to.be.called;
+            expect(docDrawingThread.checkAndHandleScaleUpdate).to.be.called;
+            expect(docDrawingThread.setContextStyles).to.be.called;
+            expect(docDrawingThread.draw).to.be.called;
+        });
     });
 });

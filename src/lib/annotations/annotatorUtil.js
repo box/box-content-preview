@@ -5,7 +5,8 @@ import {
     PENDING_STATES,
     CLASS_ACTIVE,
     CLASS_HIDDEN,
-    CLASS_INVISIBLE
+    CLASS_INVISIBLE,
+    CLASS_DISABLED
 } from './annotationConstants';
 
 const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
@@ -117,6 +118,40 @@ export function hideElement(elementOrSelector) {
 
     if (element) {
         element.classList.add(CLASS_HIDDEN);
+    }
+}
+
+/**
+ * Disables the specified element or element with specified selector.
+ *
+ * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
+ * @return {void}
+ */
+export function disableElement(elementOrSelector) {
+    let element = elementOrSelector;
+    if (typeof elementOrSelector === 'string' || elementOrSelector instanceof String) {
+        element = document.querySelector(elementOrSelector);
+    }
+
+    if (element) {
+        element.classList.add(CLASS_DISABLED);
+    }
+}
+
+/**
+ * Enables the specified element or element with specified selector.
+ *
+ * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
+ * @return {void}
+ */
+export function enableElement(elementOrSelector) {
+    let element = elementOrSelector;
+    if (typeof elementOrSelector === 'string' || elementOrSelector instanceof String) {
+        element = document.querySelector(elementOrSelector);
+    }
+
+    if (element) {
+        element.classList.remove(CLASS_DISABLED);
     }
 }
 
