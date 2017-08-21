@@ -83,6 +83,19 @@
     }
 }
 
+.bp-btn-plain {
+    background: transparent;
+    box-shadow: none;
+    outline: none;
+
+    &.is-disabled {
+        pointer-events: none;
+        color: #666;
+        opacity: .4;
+        background-color: $haze;
+    }
+}
+
 .bp-btn {
     -webkit-appearance: none;
     background-color: $white;
@@ -150,14 +163,6 @@
     }
 }
 
-.bp-btn-plain,
-.bp-btn-plain:hover,
-.bp-btn-plain:active,
-.bp-btn-plain:focus {
-    background: transparent;
-    box-shadow: none;
-    outline: none;
-}
 
 //------------------------------------------------------------------------------
 // Forms

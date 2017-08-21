@@ -598,8 +598,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             Object.defineProperty(Annotator.prototype, 'bindCustomListenersOnThread', { value: bindFunc });
         });
 
-        it('should call parent to bind custom listeners and also bind on threaddeleted', () => {
+        it('should call parent to bind custom listeners and also bind highlights on threaddeleted', () => {
             const thread = { addListener: () => {} };
+            sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(true);
             stubs.threadMock = sandbox.mock(thread);
             stubs.threadMock.expects('addListener').withArgs('threaddeleted', sinon.match.func);
 
