@@ -570,6 +570,8 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.disableViewerControls();
             expect(imageBase.controls.disable).to.be.called;
             expect(imageBase.unbindDOMListeners).to.be.called;
+            expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_ZOOMABLE);
+            expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_PANNABLE);
         });
     });
 
