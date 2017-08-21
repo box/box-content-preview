@@ -616,6 +616,7 @@ describe('lib/Preview', () => {
             stubs.tokens = {
                 0: 'file0'
             };
+            stubs.file = { id: 99999 };
 
             stubs.promise = Promise.resolve({
                 token: 'token'
@@ -625,6 +626,7 @@ describe('lib/Preview', () => {
             stubs.loadPreviewWithTokens = sandbox.stub(preview, 'loadPreviewWithTokens');
             stubs.get = sandbox.stub(preview.cache, 'get');
             stubs.destroy = sandbox.stub(preview, 'destroy');
+            stubs.updateFileCache = sandbox.stub(preview, 'updateFileCache');
         });
 
         it('should cleanup any existing viewer', () => {
@@ -638,9 +640,22 @@ describe('lib/Preview', () => {
             expect(preview.logger instanceof Logger);
         });
 
+        it('should cache file when a well-formed file object is present in options', () => {
+            preview.previewOptions.file = stubs.file;
+            preview.load('0');
+            expect(preview.updateFileCache).to.be.calledWith(stubs.file);
+        });
+
         it('should clear the retry timeout', () => {
             preview.load('0');
             expect(preview.retryTimeout).to.equal(undefined);
+        });
+
+        it('should load preview when a well-formed file object is present in options', () => {
+            preview.previewOptions.file = stubs.file;
+            preview.load('0');
+            expect(stubs.loadPreviewWithTokens).to.be.calledWith({});
+            expect(stubs.getTokens).to.not.be.called;
         });
 
         it('should set the retry count', () => {
@@ -734,6 +749,7 @@ describe('lib/Preview', () => {
             stubs.logoUrl = 'www.app.box.com/logo';
             stubs.collection = ['file0', 'file1'];
             stubs.loaders = ['customloader'];
+            stubs.file = { id: 890 };
             preview.previewOptions = {
                 container: containerEl,
                 sharedLink: stubs.sharedLink,
@@ -745,7 +761,8 @@ describe('lib/Preview', () => {
                 showDownload: true,
                 showAnnotations: true,
                 collection: stubs.collection,
-                loaders: stubs.loaders
+                loaders: stubs.loaders,
+                file: stubs.file
             };
 
             stubs.assign = sandbox.spy(Object, 'assign');
@@ -820,6 +837,24 @@ describe('lib/Preview', () => {
             expect(preview.options.showAnnotations).to.be.true;
         });
 
+        it('should save the reference to file object', () => {
+            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            expect(preview.options.file).to.equal(stubs.file);
+
+            preview.previewOptions.file = undefined;
+            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            expect(preview.options.file).to.be.null;
+        });
+
+        it('should set whether to skip load from the server and any server updates', () => {
+            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            expect(preview.options.skipServerUpdate).to.be.false;
+
+            preview.previewOptions.skipServerUpdate = true;
+            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            expect(preview.options.skipServerUpdate).to.be.true;
+        });
+
         it('should save the files to iterate through and any options for custom viewers', () => {
             preview.parseOptions(preview.previewOptions, stubs.tokens);
             expect(preview.collection).to.equal(stubs.collection);
@@ -880,6 +915,12 @@ describe('lib/Preview', () => {
         it('should load the viewer', () => {
             preview.loadFromCache();
             expect(stubs.loadViewer).to.be.called;
+        });
+
+        it('should not refresh the file from the server when need to skip server update', () => {
+            preview.options.skipServerUpdate = true;
+            preview.loadFromCache();
+            expect(preview.loadFromServer).to.not.be.called;
         });
 
         it('should refresh the file from the server to update the cache', () => {
@@ -1405,6 +1446,12 @@ describe('lib/Preview', () => {
             preview.finishLoading();
             expect(stubs.emit).to.be.called;
             expect(preview.logger.done).to.be.called;
+        });
+
+        it('should log a preview event when need to skip server update', () => {
+            preview.options.skipServerUpdate = true;
+            preview.finishLoading({ error: undefined });
+            expect(preview.logPreviewEvent).to.not.be.called;
         });
 
         it('should log a preview event via the Events API if there was not an error', () => {

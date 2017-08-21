@@ -486,6 +486,11 @@ class Preview extends EventEmitter {
         // Init performance logging
         this.logger = new Logger(this.location.locale);
 
+        // Save reference to the file when a well-formed file object is present in options
+        if (this.previewOptions.file) {
+            this.updateFileCache(this.previewOptions.file);
+        }
+
         // Clear any existing retry timeouts
         clearTimeout(this.retryTimeout);
 
@@ -500,6 +505,11 @@ class Preview extends EventEmitter {
             this.retryCount += 1;
         } else {
             this.retryCount = 0;
+        }
+
+        if (this.previewOptions.file) {
+            this.loadPreviewWithTokens({});
+            return;
         }
 
         // Fetch access tokens before proceeding
@@ -613,6 +623,12 @@ class Preview extends EventEmitter {
         // Save the reference to any additional custom options for viewers
         this.options.viewers = options.viewers || {};
 
+        // Save the reference to file object
+        this.options.file = options.file || null;
+
+        // Skip load from server and any server updates
+        this.options.skipServerUpdate = !!options.skipServerUpdate;
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
@@ -656,7 +672,9 @@ class Preview extends EventEmitter {
         this.loadViewer();
 
         // Also refresh from server to update cache
-        this.loadFromServer();
+        if (!this.options.skipServerUpdate) {
+            this.loadFromServer();
+        }
     }
 
     /**
@@ -879,7 +897,9 @@ class Preview extends EventEmitter {
             });
 
             // If there wasn't an error, use Events API to log a preview
-            this.logPreviewEvent(this.file.id, this.options);
+            if (!this.options.skipServerUpdate) {
+                this.logPreviewEvent(this.file.id, this.options);
+            }
 
             // Hookup for phantom JS health check
             if (typeof window.callPhantom === 'function') {
