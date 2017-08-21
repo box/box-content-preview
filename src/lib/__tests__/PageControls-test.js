@@ -51,20 +51,23 @@ describe('lib/PageControls', () => {
     describe('constructor()', () => {
         it('should create the correct DOM structure', () => {
             expect(pageControls.controlsEl).to.not.be.undefined;
-            expect(pageControls.controls.buttonRefs.length).equals(3);
         });
     });
 
     describe('init()', () => {
         it('should initialize the page number selector', () => {
             const pagesCount = '5';
+
             pageControls.init(pagesCount);
-            const totalPageEl = pageControls.controlsEl.querySelector(`.${CONTROLS_TOTAL_PAGES}`);
-            const pageNumInputEl = pageControls.controlsEl.querySelector(`.${CONTROLS_PAGE_NUM_INPUT_CLASS}`);
+            expect(pageControls.controls.buttonRefs.length).equals(3);
             expect(pageControls.pagesCount).equals(pagesCount);
-            expect(totalPageEl).to.have.text(pagesCount);
-            expect(pageNumInputEl).to.have.attr('max', pagesCount);
             expect(pageControls.currentPageEl).to.not.be.undefined;
+
+            const totalPageEl = pageControls.controlsEl.querySelector(`.${CONTROLS_TOTAL_PAGES}`);
+            expect(totalPageEl).to.have.text(pagesCount);
+
+            const pageNumInputEl = pageControls.controlsEl.querySelector(`.${CONTROLS_PAGE_NUM_INPUT_CLASS}`);
+            expect(pageNumInputEl).to.have.attr('max', pagesCount);
         });
     });
 
@@ -102,6 +105,7 @@ describe('lib/PageControls', () => {
 
     describe('checkPaginationButtons()', () => {
         beforeEach(() => {
+            pageControls.init();
             stubs.pageNumButtonEl = pageControls.controlsEl.querySelector(`.${PAGE_NUM}`);
             stubs.previousPageButtonEl = pageControls.controlsEl.querySelector(`.${PREV_PAGE}`);
             stubs.nextPageButtonEl = pageControls.controlsEl.querySelector(`.${NEXT_PAGE}`);

@@ -183,10 +183,10 @@ class ImageViewer extends ImageBaseViewer {
                     // If the image is smaller than the new viewport, zoom up to a
                     // max of the original file size
                 } else if (modifyWidthInsteadOfHeight) {
-                    const originalWidth = this.isRotated() ? this.imageEl.naturalHeight : this.imageEl.naturalWidth;
+                    const originalWidth = this.isRotated() ? this.imageEl.originalHeight : this.imageEl.originalWidth;
                     newWidth = Math.min(viewport.width, originalWidth);
                 } else {
-                    const originalHeight = this.isRotated() ? this.imageEl.naturalWidth : this.imageEl.naturalHeight;
+                    const originalHeight = this.isRotated() ? this.imageEl.originalWidth : this.imageEl.originalHeight;
                     newHeight = Math.min(viewport.height, originalHeight);
                 }
         }
@@ -231,7 +231,7 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     setScale(width, height) {
-        this.scale = width ? width / this.imageEl.naturalWidth : height / this.imageEl.naturalHeight;
+        this.scale = width ? width / this.imageEl.originalWidth : height / this.imageEl.originalHeight;
         this.rotationAngle = this.currentRotationAngle % 3600 % 360;
         this.emit('scale', {
             scale: this.scale,
@@ -390,7 +390,7 @@ class ImageViewer extends ImageBaseViewer {
     handleOrientationChange() {
         this.adjustImageZoomPadding();
 
-        this.scale = this.imageEl.clientWidth / this.imageEl.naturalWidth;
+        this.scale = this.imageEl.clientWidth / this.imageEl.originalWidth;
         this.rotationAngle = this.currentRotationAngle % 3600 % 360;
         this.emit('scale', {
             scale: this.scale,

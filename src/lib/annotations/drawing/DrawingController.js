@@ -201,7 +201,6 @@ class DrawingController extends AnnotationController {
         if (selected && !(selected instanceof Array)) {
             selected.drawBoundary();
             this.selected = selected;
-            console.log('selected');
 
             /*
             const svg = document.createElement('svg');

@@ -115,7 +115,6 @@ class DrawingThread extends AnnotationThread {
         const [x2, y2] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(l2, this.pageEl);
         const width = x2 - x1;
         const height = y2 - y1;
-        console.log(`w:${width}, h:${height}`);
         this.concreteContext.clearRect(x1 - 5, y1 + 5, width + 10, height - 10);
         this.destroy();
     }
@@ -272,7 +271,9 @@ class DrawingThread extends AnnotationThread {
     }
 
     /**
+     * Draw the boundary on a drawing thread
      *
+     * @return {void}
      */
     drawBoundary() {
         const l1 = annotatorUtil.createLocation(this.minX, this.minY, this.location.dimensions);

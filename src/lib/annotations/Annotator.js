@@ -383,7 +383,10 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     disableAnnotationMode(mode, buttonEl) {
-        this.emit(MODE_EXIT);
+        if (this.isInAnnotationMode(mode)) {
+            this.emit(MODE_EXIT);
+        }
+
         this.annotatedElement.classList.remove(CLASS_ANNOTATION_MODE);
         if (buttonEl) {
             buttonEl.classList.remove(CLASS_ACTIVE);
@@ -728,6 +731,7 @@ class Annotator extends EventEmitter {
     pointClickHandler(event) {
         event.stopPropagation();
         event.preventDefault();
+        this.emit(MODE_EXIT);
 
         // Determine if a point annotation dialog is already open and close the
         // current open dialog
@@ -762,6 +766,7 @@ class Annotator extends EventEmitter {
      * Unbinds event listeners for annotation modes.
      *
      * @protected
+     * @param {string} mode - Annotation mode to be unbound
      * @return {void}
      */
     unbindModeListeners(mode) {

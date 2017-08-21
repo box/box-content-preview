@@ -702,6 +702,26 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('disableViewerControls()', () => {
+        it('should disable viewer controls', () => {
+            base.controls = {
+                disable: sandbox.stub()
+            };
+            base.disableViewerControls();
+            expect(base.controls.disable).to.be.called;
+        });
+    });
+
+    describe('enableViewerControls()', () => {
+        it('should enable viewer controls', () => {
+            base.controls = {
+                enable: sandbox.stub()
+            };
+            base.enableViewerControls();
+            expect(base.controls.enable).to.be.called;
+        });
+    });
+
     describe('loadAnnotator()', () => {
         beforeEach(() => {
             base.options.viewer = {
@@ -811,6 +831,10 @@ describe('lib/viewers/BaseViewer', () => {
 
         beforeEach(() => {
             sandbox.stub(base, 'emit');
+            base.annotator = {
+                isInAnnotationMode: sandbox.stub()
+            };
+            stubs.isInAnnotationMode = base.annotator.isInAnnotationMode;
         });
 
         it('should disable controls and show point mode notification on annotationmodeenter', () => {

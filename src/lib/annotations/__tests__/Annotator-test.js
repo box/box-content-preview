@@ -7,6 +7,8 @@ import {
     STATES,
     TYPES,
     CLASS_ANNOTATION_DRAW_MODE,
+    CLASS_ANNOTATION_MODE,
+    CLASS_ACTIVE,
     CLASS_HIDDEN,
     SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
     SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO,
@@ -336,6 +338,72 @@ describe('lib/annotations/Annotator', () => {
                 expect(stubs.destroyStub).to.be.called;
                 expect(stubs.exitModes).to.be.called;
                 expect(stubs.disable).to.be.called;
+            });
+        });
+
+        describe('disableAnnotationMode()', () => {
+            beforeEach(() => {
+                stubs.isInMode = sandbox.stub(annotator, 'isInAnnotationMode').returns(false);
+                stubs.emit = sandbox.stub(annotator, 'emit');
+                stubs.unbindMode = sandbox.stub(annotator, 'unbindModeListeners');
+                stubs.bindDOM = sandbox.stub(annotator, 'bindDOMListeners');
+                stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
+                stubs.show = sandbox.stub(annotatorUtil, 'showElement');
+            });
+
+            it('should exit annotation mode if currently in the specified mode', () => {
+                stubs.isInMode.returns(true);
+                annotator.disableAnnotationMode(TYPES.point);
+                expect(stubs.emit).to.be.calledWith(MODE_EXIT);
+                expect(stubs.unbindMode).to.be.calledWith(TYPES.point);
+                expect(stubs.bindDOM).to.be.called;
+                expect(annotator.annotatedElement).to.not.have.class(CLASS_ANNOTATION_MODE);
+            });
+
+            it('should deactivate point annotation mode button', () => {
+                const btn = document.querySelector('.bp-btn-annotate');
+                annotator.disableAnnotationMode(TYPES.point, btn);
+                expect(btn).to.not.have.class(CLASS_ACTIVE);
+            });
+
+            it('should deactivate draw annotation mode button', () => {
+                const btn = document.querySelector('.bp-btn-annotate');
+                annotator.disableAnnotationMode(TYPES.draw, btn);
+                expect(btn).to.not.have.class(CLASS_ACTIVE);
+                expect(stubs.show).to.be.called;
+                expect(stubs.hide).to.have.callCount(4);
+            });
+        });
+
+        describe('enableAnnotationMode()', () => {
+            beforeEach(() => {
+                stubs.emit = sandbox.stub(annotator, 'emit');
+                stubs.unbindDOM = sandbox.stub(annotator, 'unbindDOMListeners');
+                stubs.bindMode = sandbox.stub(annotator, 'bindModeListeners');
+                stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
+                stubs.show = sandbox.stub(annotatorUtil, 'showElement');
+            });
+
+            it('should enter annotation mode', () => {
+                annotator.enableAnnotationMode(TYPES.point);
+                expect(stubs.emit).to.be.calledWith(MODE_ENTER, TYPES.point);
+                expect(stubs.unbindDOM).to.be.called;
+                expect(stubs.bindMode).to.be.calledWith(TYPES.point);
+                expect(annotator.annotatedElement).to.have.class(CLASS_ANNOTATION_MODE);
+            });
+
+            it('should deactivate point annotation mode button', () => {
+                const btn = document.querySelector('.bp-btn-annotate');
+                annotator.enableAnnotationMode(TYPES.point, btn);
+                expect(btn).to.have.class(CLASS_ACTIVE);
+            });
+
+            it('should deactivate draw annotation mode button', () => {
+                const btn = document.querySelector('.bp-btn-annotate');
+                annotator.enableAnnotationMode(TYPES.draw, btn);
+                expect(btn).to.have.class(CLASS_ACTIVE);
+                expect(stubs.hide).to.be.called;
+                expect(stubs.show).to.have.callCount(4);
             });
         });
 
