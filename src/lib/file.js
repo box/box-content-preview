@@ -1,9 +1,10 @@
 import { ORIGINAL_REP_NAME } from './constants';
 
-// List of Box Content API fields that the Preview SDK requires for every file. Updating this list is most likely
+// List of Box Content API fields that the Preview library requires for every file. Updating this list is most likely
 // a breaking change and should be done with care. Clients that leverage functionality dependent on this format
 // (e.g. Box.Preview.updateFileCache()) will need to be updated if this list is modified.
 const FILE_FIELDS = [
+    'id',
     'permissions',
     'shared_link',
     'sha1',
@@ -84,14 +85,14 @@ export function checkFeature(viewer, primary, secondary) {
 }
 
 /**
- * Checks whether file metadata is valid by checking whether each property
+ * Checks whether Box File object is valid by checking whether each property
  * in FIELDS on the specified file object is defined.
  *
- * @param {Object} file - Box file metadata to check
- * @return {boolean} Whether or not file metadata structure is valid
+ * @param {Object} file - Box File object to check
+ * @return {boolean} Whether or not file object structure is valid
  */
 export function checkFileValid(file) {
-    if (!file) {
+    if (!file || typeof file !== 'object') {
         return false;
     }
 
