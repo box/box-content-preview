@@ -28,10 +28,7 @@ class DocDrawingThread extends DrawingThread {
     constructor(data) {
         super(data);
 
-        this.handleStart = this.handleStart.bind(this);
-        this.handleMove = this.handleMove.bind(this);
-        this.handleStop = this.handleStop.bind(this);
-        this.checkAndHandleScaleUpdate = this.checkAndHandleScaleUpdate.bind(this);
+        this.onPageChange = this.onPageChange.bind(this);
         this.reconstructBrowserCoordFromLocation = this.reconstructBrowserCoordFromLocation.bind(this);
     }
     /**
@@ -41,8 +38,10 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     handleMove(location) {
-        const pageChanged = this.hasPageChanged(location);
-        if (this.drawingFlag !== DRAW_STATES.drawing || pageChanged) {
+        if (this.drawingFlag !== DRAW_STATES.drawing) {
+            return;
+        } else if (this.hasPageChanged(location)) {
+            this.onPageChange();
             return;
         }
 
@@ -60,9 +59,7 @@ class DocDrawingThread extends DrawingThread {
     handleStart(location) {
         const pageChanged = this.hasPageChanged(location);
         if (pageChanged) {
-            this.handleStop();
-            this.saveAnnotation();
-            this.emit('drawthreadcommited');
+            this.onPageChange();
             return;
         }
 
@@ -94,6 +91,7 @@ class DocDrawingThread extends DrawingThread {
 
         if (this.pendingPath && !this.pendingPath.isEmpty()) {
             this.pathContainer.insert(this.pendingPath);
+            this.emitAvailableActions();
             this.pendingPath = null;
         }
     }
@@ -105,7 +103,7 @@ class DocDrawingThread extends DrawingThread {
      * @return {boolean} Whether or not the thread page has changed
      */
     hasPageChanged(location) {
-        return this.location && this.location.page && this.location.page !== location.page;
+        return !!this.location && !!this.location.page && this.location.page !== location.page;
     }
 
     /**
@@ -116,8 +114,18 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     saveAnnotation(type, text) {
-        super.saveAnnotation(type, text);
+        this.emit('annotationevent', {
+            type: 'drawingcommit'
+        });
         this.reset();
+
+        // Only make save request to server if there exist paths to save
+        const { undoCount } = this.pathContainer.getNumberOfItems();
+        if (undoCount === 0) {
+            return;
+        }
+
+        super.saveAnnotation(type, text);
 
         const drawingAnnotationLayerContext = docAnnotatorUtil.getContext(
             this.pageEl,
@@ -125,7 +133,6 @@ class DocDrawingThread extends DrawingThread {
             PAGE_PADDING_TOP,
             PAGE_PADDING_BOTTOM
         );
-
         if (drawingAnnotationLayerContext) {
             const inProgressCanvas = this.drawingContext.canvas;
             const width = parseInt(inProgressCanvas.style.width, 10);
@@ -145,12 +152,6 @@ class DocDrawingThread extends DrawingThread {
             return;
         }
 
-        // Get DrawingPath objects to be shown
-        const drawings = this.getDrawings();
-        if (this.pendingPath && !this.pendingPath.isEmpty()) {
-            drawings.push(this.pendingPath);
-        }
-
         this.checkAndHandleScaleUpdate();
 
         // Get the annotation layer context to draw with
@@ -158,8 +159,8 @@ class DocDrawingThread extends DrawingThread {
         if (this.state === STATES.pending) {
             context = this.drawingContext;
         } else {
-            this.pageEl = docAnnotatorUtil.getPageEl(this.annotatedElement, this.location.page);
             const config = { scale: this.lastScaleFactor };
+            this.pageEl = docAnnotatorUtil.getPageEl(this.annotatedElement, this.location.page);
             context = docAnnotatorUtil.getContext(
                 this.pageEl,
                 CLASS_ANNOTATION_LAYER_DRAW,
@@ -169,15 +170,15 @@ class DocDrawingThread extends DrawingThread {
             this.setContextStyles(config, context);
         }
 
-        // Draw the paths to the annotation layer canvas
-        if (context) {
-            context.beginPath();
-            drawings.forEach((drawing) => {
-                drawing.generateBrowserPath(this.reconstructBrowserCoordFromLocation);
-                drawing.drawPath(context);
-            });
-            context.stroke();
+        // Generate the paths and draw to the annotation layer canvas
+        this.pathContainer.applyToItems((drawing) =>
+            drawing.generateBrowserPath(this.reconstructBrowserCoordFromLocation)
+        );
+        if (this.pendingPath && !this.pendingPath.isEmpty()) {
+            this.pendingPath.generateBrowserPath(this.reconstructBrowserCoordFromLocation);
         }
+
+        this.draw(context, false);
     }
 
     /**
@@ -204,6 +205,18 @@ class DocDrawingThread extends DrawingThread {
 
         const config = { scale };
         this.setContextStyles(config);
+    }
+
+    /**
+     * End the current drawing and emit a page changed event
+     *
+     * @return {void}
+     */
+    onPageChange() {
+        this.handleStop();
+        this.emit('annotationevent', {
+            type: 'pagechanged'
+        });
     }
 
     /**
