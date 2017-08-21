@@ -227,11 +227,11 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 naturalHeight: 100
             };
 
-            const promise = ImageBaseViewer.setOriginalImageSize(imageEl);
+            const promise = imageBase.setOriginalImageSize(imageEl);
             promise.should.be.fulfilled.then(() => {
                 expect(imageEl.originalWidth).to.equal(imageEl.naturalWidth);
                 expect(imageEl.originalHeight).to.equal(imageEl.naturalHeight);
-                done()
+                done();
             });
         });
 
@@ -244,7 +244,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             const imageUrlWidth = 12;
             const imageUrlHeight = 12;
-            const promise = ImageBaseViewer.setOriginalImageSize(imageEl);
+            const promise = imageBase.setOriginalImageSize(imageEl);
             promise.should.be.fulfilled.then(() => {
                 expect(imageEl.originalWidth).to.equal(imageUrlWidth);
                 expect(imageEl.originalHeight).to.equal(imageUrlHeight);
@@ -535,7 +535,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             stubs.emit = sandbox.stub(imageBase, 'emit');
             stubs.zoom = sandbox.stub(imageBase, 'zoom');
             stubs.loadUI = sandbox.stub(imageBase, 'loadUI');
-            stubs.setOriginalImageSize = sandbox.stub(ImageBaseViewer, 'setOriginalImageSize');
+            stubs.setOriginalImageSize = sandbox.stub(imageBase, 'setOriginalImageSize');
         });
 
         it('should do nothing if already destroyed', () => {

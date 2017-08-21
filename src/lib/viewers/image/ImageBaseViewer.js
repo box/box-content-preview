@@ -43,7 +43,7 @@ class ImageBaseViewer extends BaseViewer {
             return;
         }
 
-        ImageBaseViewer.setOriginalImageSize(this.imageEl);
+        this.setOriginalImageSize(this.imageEl);
         this.loadUI();
         this.zoom();
 
@@ -172,10 +172,11 @@ class ImageBaseViewer extends BaseViewer {
      * Sets the original image width and height on the img element. Can be removed when
      * naturalHeight and naturalWidth attributes work correctly in IE 11.
      *
+     * @private
      * @param {Image} imageEl - The image to set the original size attributes on
      * @return {Promise} A promise that is resolved if the original image dimensions were set.
      */
-    static setOriginalImageSize(imageEl) {
+    setOriginalImageSize(imageEl) {
         const image = imageEl;
         const promise = new Promise((resolve, reject) => {
             // Do not bother loading a new image when the natural size attributes exist
