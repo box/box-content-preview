@@ -486,11 +486,6 @@ class Preview extends EventEmitter {
         // Init performance logging
         this.logger = new Logger(this.location.locale);
 
-        // Save reference to the file when a well-formed file object is present in options
-        if (this.previewOptions.file) {
-            this.updateFileCache(this.previewOptions.file);
-        }
-
         // Clear any existing retry timeouts
         clearTimeout(this.retryTimeout);
 
@@ -507,7 +502,7 @@ class Preview extends EventEmitter {
             this.retryCount = 0;
         }
 
-        if (this.previewOptions.file) {
+        if (typeof fileId === 'object') {
             this.loadPreviewWithTokens({});
             return;
         }
@@ -622,9 +617,6 @@ class Preview extends EventEmitter {
 
         // Save the reference to any additional custom options for viewers
         this.options.viewers = options.viewers || {};
-
-        // Save the reference to file object
-        this.options.file = options.file || null;
 
         // Skip load from server and any server updates
         this.options.skipServerUpdate = !!options.skipServerUpdate;
@@ -897,9 +889,7 @@ class Preview extends EventEmitter {
             });
 
             // If there wasn't an error, use Events API to log a preview
-            if (!this.options.skipServerUpdate) {
-                this.logPreviewEvent(this.file.id, this.options);
-            }
+            this.logPreviewEvent(this.file.id, this.options);
 
             // Hookup for phantom JS health check
             if (typeof window.callPhantom === 'function') {
@@ -1082,8 +1072,8 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     prefetchNextFiles() {
-        // Don't bother prefetching when there aren't more files
-        if (this.collection.length < 2) {
+        // Don't bother prefetching when there aren't more files or we need to skip server update
+        if (this.collection.length < 2 || this.options.skipServerUpdate) {
             return;
         }
 
