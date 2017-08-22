@@ -148,12 +148,12 @@ class Preview extends EventEmitter {
     /**
      * Primary function for showing a preview of a file.
      *
-     * @param {string} fileId - Box File ID
+     * @param {string|Object} fileIdOrFile - Box File ID or well-formed Box File object
      * @param {string|Function} token - Access token string or generator function
      * @param {Object} [options] - Optional preview options
      * @return {void}
      */
-    show(fileId, token, options = {}) {
+    show(fileIdOrFile, token, options = {}) {
         // Save a reference to the options to be used later
         if (typeof token === 'string' || typeof token === 'function') {
             this.previewOptions = Object.assign({}, options, { token });
@@ -161,8 +161,8 @@ class Preview extends EventEmitter {
             throw new Error('Missing access token!');
         }
 
-        // load the preview
-        this.load(fileId);
+        // Load the preview
+        this.load(fileIdOrFile);
     }
 
     /**
@@ -473,10 +473,10 @@ class Preview extends EventEmitter {
      * Initial method for loading a preview.
      *
      * @private
-     * @param {string} fileId - Box File ID
+     * @param {string|Object} fileIdOrFile - Box File ID or well-formed Box File object
      * @return {void}
      */
-    load(fileId) {
+    load(fileIdOrFile) {
         // Clean up any existing previews before loading
         this.destroy();
 
@@ -492,8 +492,18 @@ class Preview extends EventEmitter {
         // Save reference to the currently shown file, if any
         const currentFileId = this.file ? this.file.id : undefined;
 
-        // Use cached file data if available, otherwise create empty file object
-        this.file = this.cache.get(fileId) || { id: fileId };
+        // Check if file ID or well-formed file object was passed in
+        if (typeof fileIdOrFile === 'string') {
+            // Use cached file data if available, otherwise create empty file object
+            this.file = this.cache.get(fileIdOrFile) || { id: fileIdOrFile };
+        } else if (checkFileValid(fileIdOrFile)) {
+            // Use well-formed file object if available
+            this.file = fileIdOrFile;
+        } else {
+            throw new Error(
+                'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.'
+            );
+        }
 
         // Retry up to RETRY_COUNT if we are reloading same file
         if (this.file.id === currentFileId) {
