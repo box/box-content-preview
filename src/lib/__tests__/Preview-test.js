@@ -635,7 +635,19 @@ describe('lib/Preview', () => {
             stubs.tokens = {
                 0: 'file0'
             };
-            stubs.file = { id: 99999 };
+            stubs.file = {
+                id: '123',
+                permissions: {},
+                shared_link: null,
+                sha1: 'sha1',
+                file_version: {},
+                name: 'blah',
+                size: 123,
+                extension: 'pdf',
+                representations: {},
+                watermark_info: {},
+                authenticated_download_url: 'url'
+            };
 
             stubs.promise = Promise.resolve({
                 token: 'token'
@@ -663,8 +675,8 @@ describe('lib/Preview', () => {
             expect(preview.retryTimeout).to.equal(undefined);
         });
 
-        it('should load preview when a well-formed file object is present in options', () => {
-            preview.load({});
+        it('should load preview when a well-formed file object is passed', () => {
+            preview.load(stubs.file);
             expect(stubs.loadPreviewWithTokens).to.be.calledWith({});
             expect(stubs.getTokens).to.not.be.called;
         });
@@ -707,31 +719,6 @@ describe('lib/Preview', () => {
                 expect(stubs.loadPreviewWithTokens).to.be.called;
             });
         });
-
-        it('should accept a well-formed file object', () => {
-            const token = 'token';
-            const file = {
-                id: '123',
-                permissions: {},
-                shared_link: null,
-                sha1: 'sha1',
-                file_version: {},
-                name: 'blah',
-                size: 123,
-                extension: 'pdf',
-                representations: {},
-                watermark_info: {},
-                authenticated_download_url: 'url'
-            }
-            preview.previewOptions.token = token;
-
-            preview.load(file);
-
-            return stubs.promise.then(() => {
-                expect(stubs.getTokens).to.be.calledWith(file.id, token);
-                expect(stubs.loadPreviewWithTokens).to.be.called;
-            });
-        });
     });
 
     describe('loadPreviewWithTokens()', () => {
@@ -745,6 +732,7 @@ describe('lib/Preview', () => {
             stubs.showNavigation = sandbox.stub(preview.ui, 'showNavigation');
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
             stubs.loadFromCache = sandbox.stub(preview, 'loadFromCache');
+            stubs.cacheFile = sandbox.stub(file, 'cacheFile');
         });
 
         it('should short circuit and load from server if it is a retry', () => {
@@ -778,6 +766,7 @@ describe('lib/Preview', () => {
             stubs.checkFileValid.returns(true);
 
             preview.loadPreviewWithTokens({});
+            expect(stubs.cacheFile).to.be.calledWith(preview.cache, preview.file);
             expect(stubs.loadFromCache).to.be.called;
             expect(stubs.loadFromServer).to.not.be.called;
         });

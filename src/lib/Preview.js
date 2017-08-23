@@ -512,15 +512,14 @@ class Preview extends EventEmitter {
             this.retryCount = 0;
         }
 
-        if (typeof fileId === 'object') {
+        if (typeof fileIdOrFile === 'object') {
             this.loadPreviewWithTokens({});
-            return;
+        } else {
+            // Fetch access tokens before proceeding
+            getTokens(this.file.id, this.previewOptions.token)
+                .then(this.loadPreviewWithTokens)
+                .catch(this.triggerFetchError);
         }
-
-        // Fetch access tokens before proceeding
-        getTokens(this.file.id, this.previewOptions.token)
-            .then(this.loadPreviewWithTokens)
-            .catch(this.triggerFetchError);
     }
 
     /**
@@ -564,7 +563,8 @@ class Preview extends EventEmitter {
         }
 
         if (checkFileValid(this.file)) {
-            // Cache hit, use that.
+            // Save file in cache. This also adds the 'ORIGINAL' representation.
+            cacheFile(this.cache, this.file);
             this.loadFromCache();
         } else {
             // Cache miss, fetch from the server.
