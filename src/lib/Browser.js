@@ -61,7 +61,7 @@ class Browser {
      * @public
      * @param {string} type - The mime type to check.
      * @param {string} probability - Should either be 'maybe' or 'probably'
-     * @return {boolean} true if browser supports a particular type
+     * @return {boolean} True if browser supports a particular type
      */
     static canPlayType(type, probability) {
         let elem;
@@ -84,7 +84,7 @@ class Browser {
      *
      * @public
      * @param {string} mime - information about the AVC profile codec
-     * @return {boolean} true if browser supports HTML5 H264 main video playback
+     * @return {boolean} True if browser supports HTML5 H264 main video playback
      */
     static canPlayH264(mime) {
         return Browser.canPlayType(mime, 'maybe') || Browser.canPlayType(mime, 'probably');
@@ -97,7 +97,7 @@ class Browser {
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
      *
      * @public
-     * @return {boolean} true if browser supports HTML5 H264 baseline video playback
+     * @return {boolean} True if browser supports HTML5 H264 baseline video playback
      */
     static canPlayH264Baseline() {
         return Browser.canPlayH264(MIME_H264_BASELINE);
@@ -110,7 +110,7 @@ class Browser {
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
      *
      * @public
-     * @return {boolean} true if browser supports HTML5 H264 main video playback
+     * @return {boolean} True if browser supports HTML5 H264 main video playback
      */
     static canPlayH264Main() {
         return Browser.canPlayH264(MIME_H264_MAIN);
@@ -123,7 +123,7 @@ class Browser {
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
      *
      * @public
-     * @return {boolean} true if browser supports HTML5 H264 high video playback
+     * @return {boolean} True if browser supports HTML5 H264 high video playback
      */
     static canPlayH264High() {
         return Browser.canPlayH264(MIME_H264_HIGH);
@@ -137,7 +137,7 @@ class Browser {
      * Also see {@link https://developer.mozilla.org/en-US/docs/HTML/Supported_media_formats|MDN}
      *
      * @public
-     * @return {boolean} true if browser supports HTML5 MP3 audio playback
+     * @return {boolean} True if browser supports HTML5 MP3 audio playback
      */
     static canPlayMP3() {
         return Browser.canPlayType('audio/mpeg', 'maybe') || Browser.canPlayType('audio/mpeg', 'probably');
@@ -149,7 +149,7 @@ class Browser {
      * to the H264 container (since we use H264 and not webm)
      *
      * @public
-     * @return {boolean} true if dash is usable
+     * @return {boolean} True if dash is usable
      */
     static canPlayDash() {
         const mse = global.MediaSource;
@@ -168,7 +168,7 @@ class Browser {
      * Checks the browser for Media Source Extensions support
      *
      * @public
-     * @return {boolean} true if MediaSource extensions are enabled
+     * @return {boolean} True if MediaSource extensions are enabled
      */
     static hasMSE() {
         return !!global.MediaSource;
@@ -178,7 +178,7 @@ class Browser {
      * Returns true if the browser supports webgl or experimental webgl
      *
      * @public
-     * @return {boolean} - returns true if the browser supports WebGL
+     * @return {boolean} True if the browser supports WebGL
      */
     static hasWebGL() {
         if (!gl) {
@@ -226,7 +226,7 @@ class Browser {
      * the Box3DRuntime for displaying Model Preview
      *
      * @public
-     * @return {boolean} true if browser fully supports Model Previewing
+     * @return {boolean} True if browser fully supports Model Previewing
      */
     static supportsModel3D() {
         if (!Browser.hasWebGL()) {
@@ -242,7 +242,7 @@ class Browser {
      * Determines if flash is installed.
      *
      * @public
-     * @return {boolean} true if browser has flash
+     * @return {boolean} True if browser has flash
      */
     static hasFlash() {
         let hasFlash = false;
@@ -258,7 +258,7 @@ class Browser {
      * Returns true if the browser supports SVG
      *
      * @public
-     * @return {boolean} is svg supported
+     * @return {boolean} True if svg supported
      */
     static hasSVG() {
         return document.implementation.hasFeature('http://www.w3.org/TR/SVG11/feature#BasicStructure', '1.1');
@@ -278,7 +278,7 @@ class Browser {
     /**
      * Returns whether the browser is a mobile browser.
      *
-     * @return {boolean} true if browser supports download
+     * @return {boolean} True if browser supports download
      */
     static isMobile() {
         // Relying on the user agent to avoid desktop browsers on machines with touch screens.
@@ -289,7 +289,7 @@ class Browser {
      * Returns whether the browser can download via HTML5. taken from Modernizr:
      * https://github.com/Modernizr/Modernizr/blob/master/feature-detects/a/download.js
      * Currently not supported by IE11 or Safari 10.0 http://caniuse.com/#feat=download
-     * @return {boolean} true if browser supports download
+     * @return {boolean} True if browser supports download
      */
     static canDownload() {
         return !Browser.isMobile() || (!window.externalHost && 'download' in document.createElement('a'));
@@ -298,7 +298,7 @@ class Browser {
     /**
      * Returns whether or not the device is running IOS
      *
-     * @return {boolean} true if the device is running IOS
+     * @return {boolean} True if the device is running IOS
      */
     static isIOS() {
         return /(iPad|iPhone|iPod)/g.test(userAgent);
@@ -307,19 +307,31 @@ class Browser {
     /**
      * Returns whether or not the device is running Android
      *
-     * @return {boolean} true if the device is running Android
+     * @return {boolean} True if the device is running Android
      */
     static isAndroid() {
         return /Android/g.test(userAgent);
     }
 
     /**
-     * Returns whether or not the device is running IOS 10.3.x that has Font Ligature rendering issue.
+     * Returns whether or not the device is a laptop/desktop Mac
      *
-     * @return {boolean} Whether device is running 10.3.x
+     * @return {boolean} True if the device is a Mac
      */
-    static isIOSWithFontIssue() {
-        return Browser.isIOS() && /(?:OS\s)10_3/i.test(userAgent);
+    static isMac() {
+        return /Macintosh; Intel Mac OS X/g.test(userAgent);
+    }
+
+    /**
+     * Returns whether or not the device is running IOS 10.3.x or browser is desktop Safari, both of which have Font
+     * Ligature rendering issues due to the font loading API.
+     *
+     * @return {boolean} Whether device or browser have font ligature issues
+     */
+    static hasFontIssue() {
+        return (
+            (Browser.isIOS() && /(?:OS\s)10_3/i.test(userAgent)) || (Browser.isMac() && Browser.getName() === 'Safari')
+        );
     }
 }
 
