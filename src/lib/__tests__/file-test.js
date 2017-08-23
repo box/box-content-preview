@@ -23,7 +23,7 @@ describe('lib/file', () => {
         it('should return the correct api url', () => {
             assert.equal(
                 getURL('id', 'api'),
-                'api/2.0/files/id?fields=permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url'
+                'api/2.0/files/id?fields=id,permissions,shared_link,sha1,file_version,name,size,extension,representations,watermark_info,authenticated_download_url'
             );
         });
     });
@@ -89,18 +89,20 @@ describe('lib/file', () => {
     });
 
     describe('checkFileValid()', () => {
-        it('should return false if file is null', () => {
-            const file = null;
+        it('should return false if file is null or undefined or not an object', () => {
+            let file = null;
             assert.notOk(checkFileValid(file));
-        });
 
-        it('should return false if file is null', () => {
-            const file = undefined;
+            file = undefined;
+            assert.notOk(checkFileValid(file));
+
+            file = 'string';
             assert.notOk(checkFileValid(file));
         });
 
         it('should return true if file has all the appropratie properties', () => {
             const file = {
+                id: '123',
                 permissions: {},
                 shared_link: 'blah',
                 sha1: 'blah',
