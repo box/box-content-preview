@@ -1,19 +1,16 @@
-import rbush from 'rbush';
 import AnnotationThread from '../AnnotationThread';
 import DrawingPath from './DrawingPath';
+import DrawingContainer from './DrawingContainer';
 import { DRAW_STATES, DRAW_RENDER_THRESHOLD } from '../annotationConstants';
 
-const RTREE_WIDTH = 5; // Lower number - faster search, higher - faster insert
 const BASE_LINE_WIDTH = 3;
 
 class DrawingThread extends AnnotationThread {
     /** @property {number} - Drawing state */
     drawingFlag = DRAW_STATES.idle;
 
-    /** @property {rbush} - Rtree path container */
-    /* eslint-disable new-cap */
-    pathContainer = new rbush(RTREE_WIDTH);
-    /* eslint-enable new-cap */
+    /** @property {DrawingContainer} - The path container supporting undo and redo */
+    pathContainer = new DrawingContainer();
 
     /** @property {DrawingPath} - The path being drawn but not yet finalized */
     pendingPath;
@@ -45,6 +42,7 @@ class DrawingThread extends AnnotationThread {
         this.handleMove = this.handleMove.bind(this);
         this.handleStop = this.handleStop.bind(this);
 
+        // Recreate stored paths
         if (data && data.location && data.location.drawingPaths instanceof Array) {
             data.location.drawingPaths.forEach((drawingPathData) => {
                 const pathInstance = new DrawingPath(drawingPathData);
@@ -70,18 +68,9 @@ class DrawingThread extends AnnotationThread {
             this.drawingContext.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-        this.reset();
         super.destroy();
+        this.reset();
         this.emit('threadcleanup');
-    }
-
-    /**
-     * Get all of the DrawingPaths in the current thread.
-     *
-     * @return {void}
-     */
-    getDrawings() {
-        return this.pathContainer.all();
     }
 
     /* eslint-disable no-unused-vars */
@@ -153,27 +142,38 @@ class DrawingThread extends AnnotationThread {
         }
 
         const elapsed = timestamp - (this.lastRenderTimestamp || 0);
-        if (elapsed < DRAW_RENDER_THRESHOLD || !this.drawingContext) {
-            return;
+        if (elapsed >= DRAW_RENDER_THRESHOLD && this.draw(this.drawingContext, true)) {
+            this.lastRenderTimestamp = timestamp;
         }
+    }
 
-        this.lastRenderTimestamp = timestamp;
-
-        const canvas = this.drawingContext.canvas;
-        const drawings = this.getDrawings();
-        if (this.pendingPath && !this.pendingPath.isEmpty()) {
-            drawings.push(this.pendingPath);
+    /**
+     * Overturns the last drawing stroke if it exists. Emits the number of undo and redo
+     * actions available if an undo was executed.
+     *
+     * @return {void}
+     */
+    undo() {
+        const executedUndo = this.pathContainer.undo();
+        if (executedUndo) {
+            this.draw(this.drawingContext, true);
+            this.emitAvailableActions();
         }
+    }
 
-        /* OPTIMIZE (@minhnguyen): Render only what has been obstructed by the new drawing
-         *           rather than every single line in the thread. If we do end
-         *           up splitting saves into multiple requests, we can buffer
-         *           the amount of re-renders onto a temporary in-progress canvas.
-         */
-        this.drawingContext.clearRect(0, 0, canvas.width, canvas.height);
-        this.drawingContext.beginPath();
-        drawings.forEach((drawing) => drawing.drawPath(this.drawingContext));
-        this.drawingContext.stroke();
+    /**
+     * Replays the last undone drawing stroke if it exists. Emits the number of undo and redo
+     * actions available if a redraw was executed.
+     *
+     * @return {void}
+     *
+     */
+    redo() {
+        const executedRedo = this.pathContainer.redo();
+        if (executedRedo) {
+            this.draw(this.drawingContext, true);
+            this.emitAvailableActions();
+        }
     }
 
     //--------------------------------------------------------------------------
@@ -191,10 +191,57 @@ class DrawingThread extends AnnotationThread {
      */
     createAnnotationData(type, text) {
         const annotation = super.createAnnotationData(type, text);
-        const drawings = this.getDrawings();
+        const paths = this.pathContainer.getItems();
 
-        annotation.location.drawingPaths = drawings.map(DrawingPath.extractDrawingInfo);
+        annotation.location.drawingPaths = paths.map(DrawingPath.extractDrawingInfo);
         return annotation;
+    }
+
+    /**
+     * Draws the paths in the thread onto the given context.
+     *
+     * @protected
+     * @param {CanvasContext} context - The context to draw on
+     * @param {boolean} [clearCanvas] - A flag to clear the canvas before drawing.
+     * @return {void}
+     */
+    draw(context, clearCanvas = false) {
+        if (!context) {
+            return;
+        }
+
+        /* OPTIMIZE (@minhnguyen): Render only what has been obstructed by the new drawing
+         *           rather than every single line in the thread. If we do end
+         *           up splitting saves into multiple requests, we can buffer
+         *           the amount of re-renders onto a temporary memory canvas.
+         */
+        if (clearCanvas) {
+            const canvas = context.canvas;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        context.beginPath();
+        this.pathContainer.applyToItems((drawing) => drawing.drawPath(context));
+        if (this.pendingPath && !this.pendingPath.isEmpty()) {
+            this.pendingPath.drawPath(context);
+        }
+
+        context.stroke();
+    }
+
+    /**
+     * Emit an event containing the number of undo and redo actions that can be done.
+     *
+     * @protected
+     * @return {void}
+     */
+    emitAvailableActions() {
+        const availableActions = this.pathContainer.getNumberOfItems();
+        this.emit('annotationevent', {
+            type: 'availableactions',
+            undo: availableActions.undoCount,
+            redo: availableActions.redoCount
+        });
     }
 }
 

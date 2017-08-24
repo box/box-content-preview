@@ -48,6 +48,7 @@ class ProgressBar {
     /**
      * Start progress bar loading.
      *
+     * @public
      * @return {void}
      */
     start() {
@@ -72,6 +73,7 @@ class ProgressBar {
     /**
      * Finish progress bar loading and reset.
      *
+     * @public
      * @return {void}
      */
     finish() {

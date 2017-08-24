@@ -429,7 +429,8 @@ $avatar-color-9: #f22c44;
 .bp-annotation-mode .page,
 .bp-annotation-mode .bp-annotation-layer-highlight,
 .bp-annotation-mode .textLayer > div,
-.bp-annotation-mode > img {
+.bp-annotation-mode > img,
+.bp-annotation-mode img {
     cursor: crosshair;
 }
 

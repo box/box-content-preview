@@ -1,3 +1,20 @@
+<a name="1.7.0"></a>
+# 1.7.0 (2017-08-23)
+
+* New: Adding functional test base (#305) ([5dc3247](https://github.com/box/box-content-preview/commit/5dc3247))
+* New: Support well-formed file object in show() (#328) ([540a011](https://github.com/box/box-content-preview/commit/540a011))
+* Fix: Add page controls between zoom and fullscreen controls (#320) ([0441920](https://github.com/box/box-content-preview/commit/0441920))
+* Fix: Create annotation in API using thread rather than threadNumber (#315) ([783adbc](https://github.com/box/box-content-preview/commit/783adbc))
+* Fix: Ensure that image.handleMouseDown() is unbound in annotation mode (#319) ([fd477c7](https://github.com/box/box-content-preview/commit/fd477c7))
+* Fix: Inconsistent natural image dimensions in IE (#324) ([2889b0d](https://github.com/box/box-content-preview/commit/2889b0d))
+* Fix: Pass in the correct previousPage() for DocBaseViewer.pageControls (#318) ([27b118d](https://github.com/box/box-content-preview/commit/27b118d))
+* Fix: Point annotation cleanup (#325) ([e27c18a](https://github.com/box/box-content-preview/commit/e27c18a))
+* Fix: Re-showing viewer controls on 'annotationmodeexit' (#323) ([5900ece](https://github.com/box/box-content-preview/commit/5900ece))
+* Feature: Drawing Annotations Undo Redo (#287) ([4b5421c](https://github.com/box/box-content-preview/commit/4b5421c))
+* Chore: Cleaning up remaining annotations references outside BaseViewer (#314) ([efaa385](https://github.com/box/box-content-preview/commit/efaa385))
+
+
+
 <a name="1.6.0"></a>
 # 1.6.0 (2017-08-17)
 
