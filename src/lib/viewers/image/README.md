@@ -74,6 +74,12 @@ At the default zoom level, clicking on the image will zoom in once. When zoomed 
 
 `tif, tiff`
 
+## Options
+
+| Option | Type | Description |
+| --- | --- | --- |
+| annotations | boolean | Optional. Whether annotations on content are shown. Defaults  to false |
+
 ## Events
 The image viewer fires the following events
 
@@ -90,7 +96,6 @@ The image viewer fires the following events
 | pan | The preview is panning ||
 | panstart | Panning starts ||
 | panend | Panning ends ||
-| printsuccess | An attempt to print triggered successfully ||
 
 ## Methods
 
@@ -102,5 +107,4 @@ The following methods are available for the multi-page image viewer.
 | previousPage | Navigates to the previous page ||
 | nextPage | Navigates to the next page ||
 | setPage | Navigates to a given page | {number} page number |
-| print | Prints the image ||
 | toggleFullscreen | Toggles fullscreen mode ||
