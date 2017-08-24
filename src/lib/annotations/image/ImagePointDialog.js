@@ -2,10 +2,8 @@ import autobind from 'autobind-decorator';
 import AnnotationDialog from '../AnnotationDialog';
 import * as annotatorUtil from '../annotatorUtil';
 
-const PAGE_PADDING_TOP = 15;
 const POINT_ANNOTATION_ICON_HEIGHT = 31;
 const POINT_ANNOTATION_ICON_WIDTH = 24;
-const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
 
 @autobind
 class ImagePointDialog extends AnnotationDialog {
@@ -47,10 +45,10 @@ class ImagePointDialog extends AnnotationDialog {
 
         // Position the dialog
         this.element.style.left = `${dialogLeftX}px`;
-        this.element.style.top = `${dialogTopY +
-            PAGE_PADDING_TOP -
-            POINT_ANNOTATION_ICON_HEIGHT +
-            POINT_ANNOTATION_ICON_DOT_HEIGHT}px`;
+
+        const dialogPos = this.flipDialog(dialogTopY, this.container.clientHeight);
+        this.element.style.top = dialogPos.top;
+        this.element.style.bottom = dialogPos.bottom;
     }
 }
 

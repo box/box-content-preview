@@ -2,7 +2,6 @@ import * as annotatorUtil from '../annotatorUtil';
 import {
     CLASS_ANNOTATION_DIALOG,
     CLASS_ANNOTATION_HIGHLIGHT_DIALOG,
-    SELECTOR_ANNOTATION_CONTAINER,
     PAGE_PADDING_TOP,
     PAGE_PADDING_BOTTOM,
     DATA_TYPE_ANNOTATION_DIALOG,
@@ -24,7 +23,6 @@ const HEIGHT_PADDING = 30;
 // PDF unit = 1/72 inch, CSS pixel = 1/92 inch
 const PDF_UNIT_TO_CSS_PIXEL = 4 / 3;
 const CSS_PIXEL_TO_PDF_UNIT = 3 / 4;
-const HIGHLIGHT_DIALOG_HEIGHT = 48;
 
 const DIALOG_DATATYPES = [
     DATA_TYPE_ANNOTATION_DIALOG,
@@ -98,29 +96,6 @@ export function hasActiveDialog(annotatedEl) {
     const highlightDialogEl = annotatedEl.querySelector(`.${CLASS_ANNOTATION_HIGHLIGHT_DIALOG}:not(.bp-is-hidden)`);
 
     return !!(commentsDialogEl || highlightDialogEl);
-}
-
-/**
- * Set max height for dialog on powerpoint previews to prevent the
- * dialog from being cut off since the presentation viewer doesn't allow
- * the annotations dialog to overflow below the file
- *
- * @private
- * @param {HTMLElement} annotatedElement - Annotated element
- * @param {HTMLElement} dialogEl - Annotations dialog element
- * @param {number} pageHeight - Page height
- * @param {number} dialogY - Dialog y position
- * @return {void}
- */
-export function fitDialogHeightInPage(annotatedElement, dialogEl, pageHeight, dialogY) {
-    if (isPresentation(annotatedElement)) {
-        const wrapperHeight = annotatedElement.clientHeight;
-        const topPadding = (wrapperHeight - pageHeight) / 2;
-        const maxHeight = wrapperHeight - dialogY - topPadding - HIGHLIGHT_DIALOG_HEIGHT;
-
-        const annotationsEl = dialogEl.querySelector(SELECTOR_ANNOTATION_CONTAINER);
-        annotationsEl.style.maxHeight = `${maxHeight}px`;
-    }
 }
 
 //------------------------------------------------------------------------------
