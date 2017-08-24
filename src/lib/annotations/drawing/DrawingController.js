@@ -5,7 +5,8 @@ import {
     TYPES,
     SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
     SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO,
-    SELECTOR_ANNOTATION_BUTTON_DRAW_REDO
+    SELECTOR_ANNOTATION_BUTTON_DRAW_REDO,
+    DRAW_BORDER_OFFSET
 } from '../annotationConstants';
 
 class DrawingController extends AnnotationController {
@@ -25,7 +26,7 @@ class DrawingController extends AnnotationController {
 
     registerAnnotator(annotator) {
         super.registerAnnotator(annotator);
-        window.threads = this.threads;
+        global.threads = this.threads;
 
         this.postButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
         this.undoButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
@@ -33,7 +34,7 @@ class DrawingController extends AnnotationController {
     }
 
     registerThread(thread) {
-        if (!thread) {
+        if (!thread || !thread.location) {
             return;
         }
 
@@ -53,6 +54,9 @@ class DrawingController extends AnnotationController {
             return;
         }
 
+        super.bindCustomListenersOnThread(thread);
+
+        // On save, add the thread to the Rbush, on delete, remove it from the Rbush
         thread.addListener('annotationsaved', () => this.registerThread(thread));
         thread.addListener('threaddeleted', () => this.unregisterThread(thread));
     }
@@ -123,38 +127,36 @@ class DrawingController extends AnnotationController {
 
     handleAnnotationEvent(thread, data = {}) {
         switch (data.type) {
+            case 'locationassigned':
+                // Register the thread to the threadmap when a starting location is assigned. Should only occur once.
+                this.annotator.addThreadToMap(thread);
+                break;
             case 'drawcommit':
+                // Upon a commit, remove the listeners on the thread.
+                // Adding the thread to the Rbush only happens upon a successful save
                 thread.removeAllListeners('annotationevent');
                 break;
             case 'pagechanged':
+                // On page change, save the original thread, create a new thread and
+                // start drawing at the location indicating the page change
                 thread.saveAnnotation(TYPES.draw);
                 this.currentThread = undefined;
 
-                // NOTE(@minhnguyen): Questionable function call! Currently we save the thread and create a new thread
+                // NOTE(@minhnguyen): Currently we save the thread and create a new thread
                 // using annotator.bindModeListeners(TYPES.draw). Ideally, the controller shouldn't have to depend on
                 // bindModeListeners since the controller should only need to worry about its own logic.
                 this.annotator.unbindModeListeners();
                 this.annotator.bindModeListeners(TYPES.draw);
-                this.currentThread.start(data.location);
+                this.currentThread.handleStart(data.location);
                 break;
             case 'availableactions':
-                if (data.undo === 1) {
-                    annotatorUtil.enableElement(this.undoButtonEl);
-                } else if (data.undo === 0) {
-                    annotatorUtil.disableElement(this.undoButtonEl);
-                }
-
-                if (data.redo === 1) {
-                    annotatorUtil.enableElement(this.redoButtonEl);
-                } else if (data.redo === 0) {
-                    annotatorUtil.disableElement(this.redoButtonEl);
-                }
+                this.updateUndoRedoButtonEls(data.undo, data.redo);
                 break;
             default:
         }
     }
 
-    select(event) {
+    getSelection(event) {
         if (!event) {
             return;
         }
@@ -164,52 +166,65 @@ class DrawingController extends AnnotationController {
             return;
         }
 
-        const boundary = {
-            minX: location.x - 5,
-            minY: location.y - 5,
-            maxX: location.x + 5,
-            maxY: location.y + 5
+        const eventBoundary = {
+            minX: +location.x - DRAW_BORDER_OFFSET,
+            minY: +location.y - DRAW_BORDER_OFFSET,
+            maxX: +location.x + DRAW_BORDER_OFFSET,
+            maxY: +location.y + DRAW_BORDER_OFFSET
         };
-        let selected = this.threads
-            .search(boundary)
+
+        // Get the threads that correspond to the point that was clicked on
+        const intersectingThreads = this.threads
+            .search(eventBoundary)
             .filter((drawingThread) => drawingThread.location.page === location.page);
 
-        if (selected.length > 0) {
-            const index = Math.floor(Math.random() * selected.length);
-            selected = selected[index];
-        }
-
+        // Clear boundary on previously selected thread
         if (this.selected) {
-            if (this.selected !== selected) {
-                const canvas = this.selected.drawingContext.canvas;
-                this.selected.drawingContext.clearRect(0, 0, canvas.width, canvas.height);
-                this.selected = undefined;
-            } else {
-                const toDelete = this.selected;
-                this.selected = undefined;
-
-                this.unregisterThread(toDelete);
-                toDelete.deleteThread();
-
-                const toRedraw = this.threads.search(toDelete);
-                toRedraw.forEach((drawingThread) => drawingThread.show());
-
-                return;
-            }
+            const canvas = this.selected.drawingContext.canvas;
+            this.selected.drawingContext.clearRect(0, 0, canvas.width, canvas.height);
         }
 
-        if (selected && !(selected instanceof Array)) {
-            selected.drawBoundary();
-            this.selected = selected;
+        // Selected a region with no drawing threads, remove the reference to the previously selected thread
+        if (intersectingThreads.length === 0) {
+            this.selected = undefined;
+            return;
+        }
 
-            /*
-            const svg = document.createElement('svg');
-            svg.setAttribute('width', '400');
-            svg.setAttribute('height', '200');
-            svg.setAttribute('viewBox', '0 0 400 200');
-            svg.innerHTML = '<rect class="bp-annotation-draw-boundary" stroke="#000000" stroke-miterlimit="1" width="400" height="200"/>';
-            selected.pageEl.appendChild(svg);
-            */
+        // Randomly select a thread in case there are multiple
+        const index = Math.floor(Math.random() * intersectingThreads.length);
+        const selected = intersectingThreads[index];
+        this.select(selected);
+    }
+
+    select(selectedDrawingThread) {
+        if (this.selected && this.selected === selectedDrawingThread) {
+            // Selected the same thread twice, delete the thread
+            const toDelete = this.selected;
+
+            toDelete.deleteThread();
+
+            // Redraw any threads that the deleted thread could have been covering
+            const toRedraw = this.threads.search(toDelete);
+            toRedraw.forEach((drawingThread) => drawingThread.show());
+            this.selected = undefined;
+        } else {
+            // Selected the thread for the first time, select the thread (TODO @minhnguyen: show UI on select)
+            selectedDrawingThread.drawBoundary();
+            this.selected = selectedDrawingThread;
+        }
+    }
+
+    updateUndoRedoButtonEls(undoCount, redoCount) {
+        if (undoCount === 1) {
+            annotatorUtil.enableElement(this.undoButtonEl);
+        } else if (undoCount === 0) {
+            annotatorUtil.disableElement(this.undoButtonEl);
+        }
+
+        if (redoCount === 1) {
+            annotatorUtil.enableElement(this.redoButtonEl);
+        } else if (redoCount === 0) {
+            annotatorUtil.disableElement(this.redoButtonEl);
         }
     }
 }

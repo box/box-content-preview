@@ -549,7 +549,9 @@ class Annotator extends EventEmitter {
                     modeData.controller &&
                     modeData.controller.constructor.name === DrawingController.name
                 ) {
+                    modeData.controller.bindCustomListenersOnThread(thread);
                     modeData.controller.registerThread(thread);
+                    this.addThreadToMap(thread);
                 }
             });
 
@@ -682,7 +684,7 @@ class Annotator extends EventEmitter {
     unbindCustomListenersOnThread(thread) {
         thread.removeAllListeners('threaddeleted');
         thread.removeAllListeners('threadcleanup');
-        thread.removeAllListeners('threadsaved');
+        thread.removeAllListeners('annotationsaved');
         thread.removeAllListeners('annotationevent');
     }
 

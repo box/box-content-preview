@@ -65,7 +65,7 @@ class AnnotationController {
 
         thread.removeAllListeners('threaddeleted');
         thread.removeAllListeners('threadcleanup');
-        thread.removeAllListeners('threadsaved');
+        thread.removeAllListeners('annotationsaved');
         thread.removeAllListeners('annotationevent');
     }
 }

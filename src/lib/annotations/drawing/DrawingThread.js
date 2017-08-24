@@ -1,11 +1,9 @@
 import AnnotationThread from '../AnnotationThread';
 import DrawingPath from './DrawingPath';
 import DrawingContainer from './DrawingContainer';
-import { DRAW_STATES, DRAW_RENDER_THRESHOLD } from '../annotationConstants';
+import { DRAW_STATES, DRAW_RENDER_THRESHOLD, DRAW_BASE_LINE_WIDTH, DRAW_BORDER_OFFSET } from '../annotationConstants';
 import * as docAnnotatorUtil from '../doc/docAnnotatorUtil';
 import * as annotatorUtil from '../annotatorUtil';
-
-const BASE_LINE_WIDTH = 3;
 
 class DrawingThread extends AnnotationThread {
     /** @property {number} - Drawing state */
@@ -45,12 +43,13 @@ class DrawingThread extends AnnotationThread {
         this.handleStop = this.handleStop.bind(this);
 
         // Recreate stored paths
-        if (data && data.location && data.location.drawingPaths) {
-            const boundaryData = data.location.drawingPaths;
-            this.minX = boundaryData.minX;
-            this.maxX = boundaryData.maxX;
-            this.minY = boundaryData.minY;
-            this.maxY = boundaryData.maxY;
+        if (this.location && this.location.drawingPaths) {
+            const boundaryData = this.location.drawingPaths;
+            this.setBoundary();
+            this.emit('annotationevent', {
+                type: 'locationassigned'
+            });
+
             boundaryData.paths.forEach((drawingPathData) => {
                 const pathInstance = new DrawingPath(drawingPathData);
                 this.pathContainer.insert(pathInstance);
@@ -106,16 +105,25 @@ class DrawingThread extends AnnotationThread {
     handleStop(location) {}
     /* eslint-disable no-unused-vars */
 
+    /**
+     * Delete a saved drawing thread
+     *
+     * @return {void}
+     */
     deleteThread() {
         this.annotations.forEach(this.deleteAnnotationWithID);
 
-        const l1 = annotatorUtil.createLocation(this.minX, this.minY, this.location.dimensions);
-        const l2 = annotatorUtil.createLocation(this.maxX, this.maxY, this.location.dimensions);
-        const [x1, y1] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(l1, this.pageEl);
-        const [x2, y2] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(l2, this.pageEl);
-        const width = x2 - x1;
-        const height = y2 - y1;
-        this.concreteContext.clearRect(x1 - 5, y1 + 5, width + 10, height - 10);
+        // Calculate the bounding rectangle
+        const [x, y, width, height] = this.getRectangularBoundary();
+        // Clear the drawn thread and destroy it
+        this.concreteContext.clearRect(
+            x - DRAW_BORDER_OFFSET,
+            y + DRAW_BORDER_OFFSET,
+            width + DRAW_BORDER_OFFSET * 2,
+            height - DRAW_BORDER_OFFSET * 2
+        );
+
+        // Notifies that the thread was destroyed so that observers can react accordingly
         this.destroy();
     }
 
@@ -145,8 +153,7 @@ class DrawingThread extends AnnotationThread {
         contextToSet.lineCap = 'round';
         contextToSet.lineJoin = 'round';
         contextToSet.strokeStyle = color || 'black';
-        contextToSet.lineWidth = BASE_LINE_WIDTH * (scale || 1);
-        contextToSet.save();
+        contextToSet.lineWidth = DRAW_BASE_LINE_WIDTH * (scale || 1);
     }
 
     /**
@@ -203,7 +210,7 @@ class DrawingThread extends AnnotationThread {
     //--------------------------------------------------------------------------
 
     /**
-     * Create an annotation data object to pass to annotation service.
+     * Create an annotation data object to pass to annotation service. Sets the bounding boundary for the thread.
      *
      * @inheritdoc
      * @private
@@ -214,10 +221,6 @@ class DrawingThread extends AnnotationThread {
     createAnnotationData(type, text) {
         const annotation = super.createAnnotationData(type, text);
         const boundaryData = this.pathContainer.getAABB();
-        this.minX = boundaryData.minX;
-        this.maxX = boundaryData.maxX;
-        this.minY = boundaryData.minY;
-        this.maxY = boundaryData.maxY;
 
         annotation.location.drawingPaths = boundaryData;
         return annotation;
@@ -276,26 +279,46 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     drawBoundary() {
-        const l1 = annotatorUtil.createLocation(this.minX, this.minY, this.location.dimensions);
-        const l2 = annotatorUtil.createLocation(this.maxX, this.maxY, this.location.dimensions);
+        const [x, y, width, height] = this.getRectangularBoundary();
 
-        const [x1, y1] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(l1, this.pageEl);
-        const [x2, y2] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(l2, this.pageEl);
-        const canvas = this.drawingContext.canvas;
-        this.drawingContext.clearRect(0, 0, canvas.width, canvas.height);
-        this.drawingContext.beginPath();
-        this.drawingContext.rect(x1, y1, x2 - x1, y2 - y1);
-        const lineWidth = this.drawingContext.lineWidth;
-        this.drawingContext.lineWidth = lineWidth / 2;
-        this.drawingContext.setLineDash([5, 10]);
-        this.drawingContext.stroke();
-        this.drawingContext.restore();
+        // Save context style
         this.drawingContext.save();
 
-        return {
-            topLeft: l1,
-            bottomRight: l2
-        };
+        this.drawingContext.beginPath();
+        this.drawingContext.lineWidth = this.drawingContext.lineWidth / 2;
+        this.drawingContext.setLineDash([5, 10]);
+        this.drawingContext.rect(x, y, width, height);
+        this.drawingContext.stroke();
+
+        // Restore context style
+        this.drawingContext.restore();
+    }
+
+    setBoundary() {
+        if (!this.location || !this.location.drawingPaths) {
+            return;
+        }
+
+        const boundaryData = this.location.drawingPaths;
+        this.minX = boundaryData.minX;
+        this.maxX = boundaryData.maxX;
+        this.minY = boundaryData.minY;
+        this.maxY = boundaryData.maxY;
+    }
+
+    getRectangularBoundary() {
+        if (!this.location || !this.location.dimensions || !this.pageEl) {
+            return null;
+        }
+
+        const l1 = annotatorUtil.createLocation(this.minX, this.minY, this.location.dimensions);
+        const l2 = annotatorUtil.createLocation(this.maxX, this.maxY, this.location.dimensions);
+        const [x1, y1] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(l1, this.pageEl);
+        const [x2, y2] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(l2, this.pageEl);
+        const width = x2 - x1;
+        const height = y2 - y1;
+
+        return [x1, y1, width, height];
     }
 }
 

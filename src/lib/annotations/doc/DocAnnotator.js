@@ -313,7 +313,7 @@ class DocAnnotator extends Annotator {
 
         if (!thread && this.notification) {
             this.emit('annotationerror', __('annotations_create_error'));
-        } else if (thread) {
+        } else if (thread && type !== TYPES.draw) {
             this.addThreadToMap(thread);
         }
 
@@ -752,7 +752,7 @@ class DocAnnotator extends Annotator {
 
     drawingSelectionHandler(event) {
         const controller = this.modeButtons[TYPES.draw].controller;
-        controller.select(event);
+        controller.getSelection(event);
     }
 
     /**
