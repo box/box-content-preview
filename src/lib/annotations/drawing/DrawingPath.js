@@ -47,6 +47,7 @@ class DrawingPath {
     /**
      * Add position to coordinates and update the bounding box
      *
+     * @public
      * @param {Location} documentLocation - Original document location coordinate to be part of the drawing path
      * @param {Location} [browserLocation] - Optional browser position to be saved to browserPath
      * @return {void}
@@ -86,6 +87,7 @@ class DrawingPath {
     /**
      * Determine if any coordinates are contained in the DrawingPath
      *
+     * @public
      * @return {boolean} Whether or not any coordinates have been recorded
      */
     isEmpty() {
@@ -95,6 +97,7 @@ class DrawingPath {
     /**
      * Draw the recorded browser coordinates onto a CanvasContext. Requires a browser path to have been generated.
      *
+     * @public
      * @param {CanvasContext} drawingContext - Context to draw the recorded path on
      * @return {void}
      */
@@ -127,6 +130,7 @@ class DrawingPath {
     /**
      * Generate a browser location path that can be drawn on a canvas document from the stored path information
      *
+     * @public
      * @param {Function} coordinateToBrowserCoordinate - A function that takes a document location and returns
      *                                                   the corresponding browser location
      * @return {void}
@@ -143,6 +147,7 @@ class DrawingPath {
     /**
      * Extract the path information from two paths by merging their paths and getting the bounding rectangle
      *
+     * @public
      * @param {Object} accumulator - A drawingPath or accumulator to extract information from
      * @param {DrawingPath} pathB - Another drawingPath to extract information from
      * @return {Object} A bounding rectangle and the stroke paths it contains

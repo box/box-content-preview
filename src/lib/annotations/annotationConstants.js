@@ -106,3 +106,4 @@ export const ID_MOBILE_ANNOTATION_DIALOG = 'mobile-annotation-dialog';
 export const DRAW_RENDER_THRESHOLD = 16.67; // 60 FPS target using 16.667ms/frame
 export const DRAW_BASE_LINE_WIDTH = 3;
 export const DRAW_BORDER_OFFSET = 5;
+export const DRAW_DASHED_SPACING = 5;

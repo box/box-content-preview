@@ -294,9 +294,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(annotator.handleValidationError).to.not.be.called;
         });
 
-        it('should create, add drawing thread to internal map, and return it', () => {
+        it('should create drawing thread and return it without adding it to the internal thread map', () => {
             const thread = annotator.createAnnotationThread([], {}, TYPES.draw);
-            expect(stubs.addThread).to.have.been.called;
+            expect(stubs.addThread).to.not.have.been.called;
             expect(thread instanceof DocDrawingThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
         });
@@ -509,6 +509,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.elMock.expects('addEventListener').withArgs('mousedown', sinon.match.func).never();
             stubs.elMock.expects('addEventListener').withArgs('contextmenu', sinon.match.func).never();
             stubs.elMock.expects('addEventListener').withArgs('mousemove', sinon.match.func).never();
+            stubs.elMock.expects('addEventListener').withArgs('touchstart', sinon.match.func).never();
+            stubs.elMock.expects('addEventListener').withArgs('click', sinon.match.func).never();
             annotator.bindDOMListeners();
         });
 
@@ -520,6 +522,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.elMock.expects('addEventListener').withArgs('mousedown', sinon.match.func);
             stubs.elMock.expects('addEventListener').withArgs('contextmenu', sinon.match.func);
             stubs.elMock.expects('addEventListener').withArgs('mousemove', sinon.match.func);
+            stubs.elMock.expects('addEventListener').withArgs('click', sinon.match.func)
             annotator.bindDOMListeners();
         });
 
@@ -532,6 +535,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.bindDOMListeners();
 
             expect(docListen).to.be.calledWith('selectionchange', sinon.match.func);
+            expect(docListen).to.be.calledWith('touchstart', sinon.match.func);
         });
     });
 
@@ -552,6 +556,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.elMock.expects('removeEventListener').withArgs('contextmenu', sinon.match.func).never();
             stubs.elMock.expects('removeEventListener').withArgs('mousemove', sinon.match.func).never();
             stubs.elMock.expects('removeEventListener').withArgs('dblclick', sinon.match.func).never();
+            stubs.elMock.expects('removeEventListener').withArgs('click', sinon.match.func).never();
             annotator.unbindDOMListeners();
         });
 
@@ -563,6 +568,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.elMock.expects('removeEventListener').withArgs('contextmenu', sinon.match.func);
             stubs.elMock.expects('removeEventListener').withArgs('mousemove', sinon.match.func);
             stubs.elMock.expects('removeEventListener').withArgs('dblclick', sinon.match.func);
+            stubs.elMock.expects('removeEventListener').withArgs('click', sinon.match.func);
             annotator.unbindDOMListeners();
         });
 
@@ -1309,6 +1315,26 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             sandbox.stub(Array, 'isArray').returns(true);
 
             annotator.removeRangyHighlight({ id: 1 });
+        });
+    });
+
+    describe('drawingSelectionHandler()', () => {
+        it('should use the controller to select with the event', () => {
+            annotator.modeButtons = {};
+            annotator.modeButtons[TYPES.draw] = {
+                controller: {
+                    getSelection: sandbox.stub()
+                }
+            };
+
+            const evt = 'event';
+            annotator.drawingSelectionHandler(evt);
+            expect(annotator.modeButtons[TYPES.draw].controller.getSelection).to.be.calledWith(evt);
+        });
+
+        it('should not error when no modeButtons exist for draw', () => {
+            annotator.modeButtons = {};
+            expect(() => annotator.drawingSelectionHandler('irrelevant')).to.not.throw();
         });
     });
 });

@@ -750,9 +750,18 @@ class DocAnnotator extends Annotator {
         this.mouseMoveEvent = event;
     }
 
+    /**
+     * Drawing selection handler. Delegates to the drawing controller
+     *
+     * @private
+     * @param {Event} event - DOM event
+     * @return {void}
+     */
     drawingSelectionHandler(event) {
-        const controller = this.modeButtons[TYPES.draw].controller;
-        controller.getSelection(event);
+        if (this.modeButtons && this.modeButtons[TYPES.draw] && this.modeButtons[TYPES.draw].controller) {
+            const controller = this.modeButtons[TYPES.draw].controller;
+            controller.getSelection(event);
+        }
     }
 
     /**

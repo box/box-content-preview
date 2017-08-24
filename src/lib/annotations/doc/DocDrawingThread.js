@@ -1,3 +1,5 @@
+import DrawingPath from '../drawing/DrawingPath';
+import DrawingThread from '../drawing/DrawingThread';
 import {
     STATES,
     DRAW_STATES,
@@ -6,10 +8,8 @@ import {
     CLASS_ANNOTATION_LAYER_DRAW,
     CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS
 } from '../annotationConstants';
-import DrawingPath from '../drawing/DrawingPath';
-import DrawingThread from '../drawing/DrawingThread';
-import * as docAnnotatorUtil from './docAnnotatorUtil';
-import * as annotatorUtil from '../annotatorUtil';
+import { getBrowserCoordinatesFromLocation, getContext, getPageEl } from './docAnnotatorUtil';
+import { createLocation, getScale } from '../annotatorUtil';
 
 class DocDrawingThread extends DrawingThread {
     /** @property {HTMLElement} - Page element being observed */
@@ -34,6 +34,7 @@ class DocDrawingThread extends DrawingThread {
     /**
      * Handle a pointer movement
      *
+     * @public
      * @param {Object} location - The location information of the pointer
      * @return {void}
      */
@@ -42,10 +43,11 @@ class DocDrawingThread extends DrawingThread {
             return;
         } else if (this.hasPageChanged(location)) {
             this.onPageChange(location);
+            return;
         }
 
-        const [x, y] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(location, this.pageEl);
-        const browserLocation = annotatorUtil.createLocation(x, y);
+        const [x, y] = getBrowserCoordinatesFromLocation(location, this.pageEl);
+        const browserLocation = createLocation(x, y);
 
         if (this.pendingPath) {
             this.pendingPath.addCoordinate(location, browserLocation);
@@ -55,6 +57,7 @@ class DocDrawingThread extends DrawingThread {
     /**
      * Start a drawing stroke
      *
+     * @public
      * @param {Object} location - The location information of the pointer
      * @return {void}
      */
@@ -89,6 +92,7 @@ class DocDrawingThread extends DrawingThread {
     /**
      * End a drawing stroke
      *
+     * @public
      * @return {void}
      */
     handleStop() {
@@ -104,6 +108,7 @@ class DocDrawingThread extends DrawingThread {
     /**
      * Determine if the drawing in progress if a drawing goes to a different page
      *
+     * @public
      * @param {Object} location - The current event location information
      * @return {boolean} Whether or not the thread page has changed
      */
@@ -114,6 +119,7 @@ class DocDrawingThread extends DrawingThread {
     /**
      * Saves a drawing annotation to the drawing annotation layer canvas.
      *
+     * @public
      * @param {string} type - Type of annotation
      * @param {string} text - Text of annotation to save
      * @return {void}
@@ -133,7 +139,7 @@ class DocDrawingThread extends DrawingThread {
         super.saveAnnotation(type, text);
         this.setBoundary();
 
-        this.concreteContext = docAnnotatorUtil.getContext(
+        this.concreteContext = getContext(
             this.pageEl,
             CLASS_ANNOTATION_LAYER_DRAW,
             PAGE_PADDING_TOP,
@@ -153,6 +159,7 @@ class DocDrawingThread extends DrawingThread {
     /**
      * Display the document drawing thread. Will set the drawing context if the scale has changed since the last show.
      *
+     * @public
      * @return {void}
      */
     show() {
@@ -179,18 +186,19 @@ class DocDrawingThread extends DrawingThread {
      * Prepare the pending drawing canvas if the scale factor has changed since the last render. Will do nothing if
      * the thread has not been assigned a page.
      *
+     * @private
      * @return {void}
      */
     checkAndHandleScaleUpdate() {
-        const scale = annotatorUtil.getScale(this.annotatedElement);
+        const scale = getScale(this.annotatedElement);
         if (this.lastScaleFactor === scale || (!this.location || !this.location.page)) {
             return;
         }
 
         // Set the scale and in-memory context for the pending thread
         this.lastScaleFactor = scale;
-        this.pageEl = docAnnotatorUtil.getPageEl(this.annotatedElement, this.location.page);
-        this.drawingContext = docAnnotatorUtil.getContext(
+        this.pageEl = getPageEl(this.annotatedElement, this.location.page);
+        this.drawingContext = getContext(
             this.pageEl,
             CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS,
             PAGE_PADDING_TOP,
@@ -204,6 +212,7 @@ class DocDrawingThread extends DrawingThread {
     /**
      * End the current drawing and emit a page changed event
      *
+     * @private
      * @param {Object} location - The location information indicating the page has changed.
      * @return {void}
      */
@@ -224,19 +233,16 @@ class DocDrawingThread extends DrawingThread {
      * @return {Location} The location coordinate relative to the browser
      */
     reconstructBrowserCoordFromLocation(documentLocation) {
-        const reconstructedLocation = annotatorUtil.createLocation(
-            documentLocation.x,
-            documentLocation.y,
-            this.location.dimensions
-        );
-        const [xNew, yNew] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(reconstructedLocation, this.pageEl);
-        return annotatorUtil.createLocation(xNew, yNew);
+        const reconstructedLocation = createLocation(documentLocation.x, documentLocation.y, this.location.dimensions);
+        const [xNew, yNew] = getBrowserCoordinatesFromLocation(reconstructedLocation, this.pageEl);
+        return createLocation(xNew, yNew);
     }
 
     /**
      * Choose the context to draw on. If the state of the thread is pending, select the in-progress context,
      * otherwise select the concrete context.
      *
+     * @private
      * @return {void}
      */
     selectContext() {
@@ -247,7 +253,7 @@ class DocDrawingThread extends DrawingThread {
         }
 
         const config = { scale: this.lastScaleFactor };
-        this.concreteContext = docAnnotatorUtil.getContext(
+        this.concreteContext = getContext(
             this.pageEl,
             CLASS_ANNOTATION_LAYER_DRAW,
             PAGE_PADDING_TOP,
@@ -257,6 +263,28 @@ class DocDrawingThread extends DrawingThread {
         this.setContextStyles(config, this.concreteContext);
 
         return this.concreteContext;
+    }
+
+    /**
+     * Retrieve the rectangle upper left coordinate along with its width and height
+     *
+     * @private
+     * @return {Array|null} The an array of length 4 with the first item being the x coordinate, the second item
+     *                      being the y coordinate, and the 3rd/4th items respectively being the width and height
+     */
+    getRectangularBoundary() {
+        if (!this.location || !this.location.dimensions || !this.pageEl) {
+            return null;
+        }
+
+        const l1 = createLocation(this.minX, this.minY, this.location.dimensions);
+        const l2 = createLocation(this.maxX, this.maxY, this.location.dimensions);
+        const [x1, y1] = getBrowserCoordinatesFromLocation(l1, this.pageEl);
+        const [x2, y2] = getBrowserCoordinatesFromLocation(l2, this.pageEl);
+        const width = x2 - x1;
+        const height = y2 - y1;
+
+        return [x1, y1, width, height];
     }
 }
 

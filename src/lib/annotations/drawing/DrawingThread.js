@@ -1,9 +1,13 @@
 import AnnotationThread from '../AnnotationThread';
 import DrawingPath from './DrawingPath';
 import DrawingContainer from './DrawingContainer';
-import { DRAW_STATES, DRAW_RENDER_THRESHOLD, DRAW_BASE_LINE_WIDTH, DRAW_BORDER_OFFSET } from '../annotationConstants';
-import * as docAnnotatorUtil from '../doc/docAnnotatorUtil';
-import * as annotatorUtil from '../annotatorUtil';
+import {
+    DRAW_STATES,
+    DRAW_RENDER_THRESHOLD,
+    DRAW_BASE_LINE_WIDTH,
+    DRAW_BORDER_OFFSET,
+    DRAW_DASHED_SPACING
+} from '../annotationConstants';
 
 class DrawingThread extends AnnotationThread {
     /** @property {number} - Drawing state */
@@ -15,8 +19,11 @@ class DrawingThread extends AnnotationThread {
     /** @property {DrawingPath} - The path being drawn but not yet finalized */
     pendingPath;
 
-    /** @property {CanvasContext} - The context to be drawn on */
+    /** @property {CanvasContext} - The context to draw in-progress drawings on */
     drawingContext;
+
+    /** @property {CanvasContext} - The context to draw saved drawings on on */
+    concreteContext;
 
     /** @property {number} - Timestamp of the last render */
     lastRenderTimestamp;
@@ -26,6 +33,18 @@ class DrawingThread extends AnnotationThread {
 
     /** @property {number} - The scale factor that the drawing thread was last rendered at */
     lastScaleFactor;
+
+    /** @property {number} - The minimum X coordinate occupied by the contained drawing paths */
+    minX;
+
+    /** @property {number} - The minimum Y coordinate occupied by the contained drawing paths */
+    minY;
+
+    /** @property {number} - The maximum X coordinate occupied by the contained drawing paths */
+    maxX;
+
+    /** @property {number} - The maximum Y coordinate occupied by the contained drawing paths */
+    maxY;
 
     /**
      * [constructor]
@@ -83,6 +102,7 @@ class DrawingThread extends AnnotationThread {
     /**
      * Handle a pointer movement
      *
+     * @public
      * @param {Object} location - The location information of the pointer
      * @return {void}
      */
@@ -91,6 +111,7 @@ class DrawingThread extends AnnotationThread {
     /**
      * Start a drawing stroke *
      *
+     * @public
      * @param {Object} location - The location information of the pointer
      * @return {void}
      */
@@ -99,6 +120,7 @@ class DrawingThread extends AnnotationThread {
     /**
      * End a drawing stroke
      *
+     * @public
      * @param {Object} location - The location information of the pointer
      * @return {void}
      */
@@ -108,6 +130,7 @@ class DrawingThread extends AnnotationThread {
     /**
      * Delete a saved drawing thread
      *
+     * @public
      * @return {void}
      */
     deleteThread() {
@@ -127,15 +150,11 @@ class DrawingThread extends AnnotationThread {
         this.destroy();
     }
 
-    //--------------------------------------------------------------------------
-    // Protected
-    //--------------------------------------------------------------------------
-
     /**
      * Set the drawing styles for a provided context. Sets the context of the in-progress context if
      * no other context is provided.
      *
-     * @protected
+     * @public
      * @param {Object} config - The configuration Object
      * @param {number} config.scale - The document scale
      * @param {string} config.color - The brush color
@@ -157,29 +176,10 @@ class DrawingThread extends AnnotationThread {
     }
 
     /**
-     * Draw the pending path onto the DrawingThread CanvasContext. Should be used
-     * in conjunction with requestAnimationFrame. Does nothing when there is drawingContext set.
-     *
-     * @protected
-     * @param {number} timestamp - The time when the function was called;
-     * @return {void}
-     */
-    render(timestamp = window.performance.now()) {
-        if (this.drawingFlag === DRAW_STATES.drawing) {
-            this.lastAnimationRequestId = window.requestAnimationFrame(this.render);
-        }
-
-        const elapsed = timestamp - (this.lastRenderTimestamp || 0);
-        if (elapsed >= DRAW_RENDER_THRESHOLD) {
-            this.draw(this.drawingContext, true);
-            this.lastRenderTimestamp = timestamp;
-        }
-    }
-
-    /**
      * Overturns the last drawing stroke if it exists. Emits the number of undo and redo
      * actions available if an undo was executed.
      *
+     * @public
      * @return {void}
      */
     undo() {
@@ -194,6 +194,7 @@ class DrawingThread extends AnnotationThread {
      * Replays the last undone drawing stroke if it exists. Emits the number of undo and redo
      * actions available if a redraw was executed.
      *
+     * @public
      * @return {void}
      *
      */
@@ -208,23 +209,6 @@ class DrawingThread extends AnnotationThread {
     //--------------------------------------------------------------------------
     // Protected
     //--------------------------------------------------------------------------
-
-    /**
-     * Create an annotation data object to pass to annotation service. Sets the bounding boundary for the thread.
-     *
-     * @inheritdoc
-     * @private
-     * @param {string} type - Type of annotation
-     * @param {string} text - Annotation text
-     * @return {Object} Annotation data
-     */
-    createAnnotationData(type, text) {
-        const annotation = super.createAnnotationData(type, text);
-        const boundaryData = this.pathContainer.getAABB();
-
-        annotation.location.drawingPaths = boundaryData;
-        return annotation;
-    }
 
     /**
      * Draws the paths in the thread onto the given context.
@@ -274,8 +258,9 @@ class DrawingThread extends AnnotationThread {
     }
 
     /**
-     * Draw the boundary on a drawing thread
+     * Draw the boundary on a drawing thread that has been saved
      *
+     * @protected
      * @return {void}
      */
     drawBoundary() {
@@ -286,7 +271,7 @@ class DrawingThread extends AnnotationThread {
 
         this.drawingContext.beginPath();
         this.drawingContext.lineWidth = this.drawingContext.lineWidth / 2;
-        this.drawingContext.setLineDash([5, 10]);
+        this.drawingContext.setLineDash([DRAW_DASHED_SPACING, DRAW_DASHED_SPACING * 2]);
         this.drawingContext.rect(x, y, width, height);
         this.drawingContext.stroke();
 
@@ -294,6 +279,52 @@ class DrawingThread extends AnnotationThread {
         this.drawingContext.restore();
     }
 
+    /**
+     * Draw the pending path onto the DrawingThread CanvasContext. Should be used
+     * in conjunction with requestAnimationFrame. Does nothing when there is drawingContext set.
+     *
+     * @protected
+     * @param {number} timestamp - The time when the function was called;
+     * @return {void}
+     */
+    render(timestamp = window.performance.now()) {
+        if (this.drawingFlag === DRAW_STATES.drawing) {
+            this.lastAnimationRequestId = window.requestAnimationFrame(this.render);
+        }
+
+        const elapsed = timestamp - (this.lastRenderTimestamp || 0);
+        if (elapsed >= DRAW_RENDER_THRESHOLD) {
+            this.draw(this.drawingContext, true);
+            this.lastRenderTimestamp = timestamp;
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
+    /**
+     * Create an annotation data object to pass to annotation service. Sets the bounding boundary for the thread.
+     *
+     * @inheritdoc
+     * @private
+     * @param {string} type - Type of annotation
+     * @param {string} text - Annotation text
+     * @return {Object} Annotation data
+     */
+    createAnnotationData(type, text) {
+        const annotation = super.createAnnotationData(type, text);
+        const boundaryData = this.pathContainer.getAABB();
+
+        annotation.location.drawingPaths = boundaryData;
+        return annotation;
+    }
+    /**
+     * Set the coordinates of the rectangular boundary on the saved thread
+     *
+     * @private
+     * @return {void}
+     */
     setBoundary() {
         if (!this.location || !this.location.drawingPaths) {
             return;
@@ -306,20 +337,14 @@ class DrawingThread extends AnnotationThread {
         this.maxY = boundaryData.maxY;
     }
 
-    getRectangularBoundary() {
-        if (!this.location || !this.location.dimensions || !this.pageEl) {
-            return null;
-        }
-
-        const l1 = annotatorUtil.createLocation(this.minX, this.minY, this.location.dimensions);
-        const l2 = annotatorUtil.createLocation(this.maxX, this.maxY, this.location.dimensions);
-        const [x1, y1] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(l1, this.pageEl);
-        const [x2, y2] = docAnnotatorUtil.getBrowserCoordinatesFromLocation(l2, this.pageEl);
-        const width = x2 - x1;
-        const height = y2 - y1;
-
-        return [x1, y1, width, height];
-    }
+    /**
+     * Get the rectangular boundary in the form of [x, y, width, height] where the coordinate indicates the upper left
+     * point of the rectangular boundary
+     *
+     * @private
+     * @return {void}
+     */
+    getRectangularBoundary() {}
 }
 
 export default DrawingThread;

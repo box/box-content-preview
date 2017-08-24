@@ -85,7 +85,10 @@ class Annotator extends EventEmitter {
         Object.keys(this.modeButtons).forEach((type) => {
             const handler = this.getAnnotationModeClickHandler(type);
             const buttonEl = this.container.querySelector(this.modeButtons[type].selector);
-            buttonEl.removeEventListener('click', handler);
+
+            if (buttonEl) {
+                buttonEl.removeEventListener('click', handler);
+            }
         });
 
         this.unbindDOMListeners();
