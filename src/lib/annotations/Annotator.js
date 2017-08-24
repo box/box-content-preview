@@ -522,7 +522,7 @@ class Annotator extends EventEmitter {
      */
     setupAnnotations() {
         // Map of page => [threads on page]
-        this.threads = {};
+        this.threads = new Map();
         this.bindDOMListeners();
         this.bindCustomListenersOnService(this.annotationService);
         this.addListener('scaleAnnotations', this.scaleAnnotations);

@@ -44,6 +44,7 @@ describe('lib/annotations/Annotator', () => {
             options,
             modeButtons: {}
         });
+        annotator.threads = new Map();
 
         stubs.thread = {
             threadID: '123abc',
@@ -91,11 +92,8 @@ describe('lib/annotations/Annotator', () => {
 
     describe('destroy()', () => {
         it('should unbind custom listeners on thread and unbind DOM listeners', () => {
-            annotator.threads = {
-                1: {
-                    '123abc': stubs.thread
-                }
-            };
+            stubs.thread.location = { page: 1 };
+            annotator.addThreadToMap(stubs.thread);
 
             const unbindCustomStub = sandbox.stub(annotator, 'unbindCustomListenersOnThread');
             const unbindDOMStub = sandbox.stub(annotator, 'unbindDOMListeners');
@@ -183,7 +181,7 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.setupAnnotations();
 
-            expect(Object.keys(annotator.threads).length === 0).to.be.true;
+            expect(annotator.threads.size).equals(0);
             expect(annotator.bindDOMListeners).to.be.called;
             expect(annotator.bindCustomListenersOnService).to.be.called;
             expect(annotator.addListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
@@ -198,15 +196,12 @@ describe('lib/annotations/Annotator', () => {
             sandbox.stub(annotator, 'setupAnnotations');
             sandbox.stub(annotator, 'showAnnotations');
 
-            annotator.threads = {
-                1: {
-                    '123abc': stubs.thread
-                },
-                2: {
-                    '456def': stubs.thread2,
-                    '789ghi': stubs.thread3
-                }
-            };
+            stubs.thread.location = { page: 1 };
+            stubs.thread2.location = { page: 2 };
+            stubs.thread3.location = { page: 2 };
+            annotator.addThreadToMap(stubs.thread);
+            annotator.addThreadToMap(stubs.thread2);
+            annotator.addThreadToMap(stubs.thread3);
 
             annotator.init();
         });
@@ -225,7 +220,7 @@ describe('lib/annotations/Annotator', () => {
                 stubs.threadMock.expects('hide');
                 stubs.threadMock2.expects('hide').never();
                 stubs.threadMock3.expects('hide').never();
-                annotator.hideAnnotationsOnPage('1');
+                annotator.hideAnnotationsOnPage(1);
             });
         });
 
@@ -240,13 +235,10 @@ describe('lib/annotations/Annotator', () => {
 
         describe('renderAnnotationsOnPage()', () => {
             it('should call show on each thread', () => {
-                stubs.thread2.location = { page: 2 };
-                stubs.thread3.location = { page: 2 };
-
                 stubs.threadMock.expects('show');
                 stubs.threadMock2.expects('show').never();
                 stubs.threadMock3.expects('show').never();
-                annotator.renderAnnotationsOnPage('1');
+                annotator.renderAnnotationsOnPage(1);
             });
         });
 
@@ -442,7 +434,7 @@ describe('lib/annotations/Annotator', () => {
 
                 const result = annotator.fetchAnnotations();
                 return stubs.threadPromise.then(() => {
-                    expect(Object.keys(annotator.threads).length === 0).to.be.true;
+                    expect(annotator.threads.size).equals(0);
                     expect(annotator.createAnnotationThread).to.be.calledTwice;
                     expect(annotator.bindCustomListenersOnThread).to.be.calledTwice;
                     expect(result).to.be.an.object;
@@ -779,40 +771,27 @@ describe('lib/annotations/Annotator', () => {
                 stubs.thread.location = { page: 1 };
                 stubs.thread2.location = { page: 1 };
 
-                annotator.threads = {
-                    1: {
-                        '456def': stubs.thread2
-                    }
-                };
-                annotator.addThreadToMap(stubs.thread);
-                expect(annotator.threads).to.deep.equal({
-                    1: {
-                        '123abc': stubs.thread,
-                        '456def': stubs.thread2
-                    },
-                });
+                const threadMap = new Map([['456def', stubs.thread2]]);
+                annotator.threads = new Map([[1, threadMap]]);
 
-                // Reset threads to empty
-                annotator.threads = {};
+                annotator.addThreadToMap(stubs.thread);
+
+                const pageThreads = annotator.threads.get(1);
+                expect(pageThreads.has(stubs.thread.threadID)).to.be.true;
             });
         });
 
         describe('removeThreadFromMap()', () => {
             it('should remove a valid thread from the thread map', () => {
                 stubs.thread.location = { page: 1 };
-                annotator.threads = {
-                    1: {
-                        '123abc': stubs.thread,
-                        '456def': stubs.thread2
-                    },
-                };
+                stubs.thread2.location = { page: 1 };
+                annotator.addThreadToMap(stubs.thread);
+                annotator.addThreadToMap(stubs.thread2);
 
                 annotator.removeThreadFromMap(stubs.thread);
-                expect(annotator.threads).to.deep.equal({
-                    1: {
-                        '456def': stubs.thread2
-                    }
-                });
+                const pageThreads = annotator.threads.get(1);
+                expect(pageThreads.has(stubs.thread.threadID)).to.be.false;
+                expect(pageThreads.has(stubs.thread2.threadID)).to.be.true;
             });
         });
 
@@ -857,12 +836,7 @@ describe('lib/annotations/Annotator', () => {
                 stubs.isPending = sandbox.stub(annotatorUtil, 'isPending').returns(false);
                 stubs.isPending.withArgs(STATES.pending).returns(true);
 
-                annotator.threads = {
-                    1: {
-                        '123abc': stubs.thread
-                    }
-                };
-
+                annotator.addThreadToMap(stubs.thread);
                 annotator.init();
             });
 
@@ -873,7 +847,7 @@ describe('lib/annotations/Annotator', () => {
             });
 
             it('should not destroy and return false if there are no threads', () => {
-                annotator.threads = {};
+                annotator.threads = new Map();
                 stubs.threadMock.expects('destroy').never();
                 stubs.isPending.returns(false);
                 const destroyed = annotator.destroyPendingThreads();
@@ -899,8 +873,7 @@ describe('lib/annotations/Annotator', () => {
                     removeAllListeners: () => {}
                 };
                 stubs.pendingMock = sandbox.mock(pendingThread);
-
-                annotator.threads[1]['546def'] = pendingThread;
+                annotator.addThreadToMap(pendingThread);
 
                 stubs.threadMock.expects('destroy').never();
                 stubs.pendingMock.expects('destroy');

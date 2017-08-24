@@ -404,8 +404,6 @@ class DocBaseViewer extends BaseViewer {
      * @return {boolean} consumed or not
      */
     onKeydown(key) {
-        // test
-
         switch (key) {
             case 'ArrowLeft':
                 this.previousPage();
