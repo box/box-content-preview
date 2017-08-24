@@ -39,6 +39,7 @@ class Notification {
     /**
      * Shows a notification message.
      *
+     * @public
      * @param {string} message - Notification message
      * @param {string} [buttonText] - Optional text to show in button
      * @return {void}
@@ -62,6 +63,7 @@ class Notification {
     /**
      * Hides the notification message. Does nothing if the notification is already hidden.
      *
+     * @public
      * @return {void}
      */
     hide() {
@@ -77,6 +79,7 @@ class Notification {
     /**
      * Click handler for notification.
      *
+     * @private
      * @param {Event} event - DOM event
      * @return {void}
      */
