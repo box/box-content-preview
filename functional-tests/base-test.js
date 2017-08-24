@@ -11,12 +11,18 @@ describe('Base Test', () => {
                     build: process.env.TRAVIS_BUILD_NUMBER,
                     username: process.env.SAUCE_USERNAME,
                     accessKey: process.env.SAUCE_ACCESS_KEY,
-                    browserName: 'chrome'
+                    browserName: 'chrome',
+                    chromeOptions: {
+                        args: ['--disable-web-security']
+                    }
                 }).build();
         } else {
             this.browser = new webdriver.Builder()
                 .withCapabilities({
-                    browserName: 'chrome'
+                    browserName: 'chrome',
+                    chromeOptions: {
+                        args: ['--disable-web-security']
+                    }
                 }).build();
         }
     });
