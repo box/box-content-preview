@@ -649,16 +649,14 @@ class DocAnnotator extends Annotator {
         this.throttleTimer = performance.now();
         // Only filter through highlight threads on the current page
         const { page } = annotatorUtil.getPageInfo(event.target);
-        const highlightThreads = this.getHighlightThreadsOnPage(page);
         const delayThreads = [];
         let hoverActive = false;
 
-        const threadLength = highlightThreads.length;
-        for (let i = 0; i < threadLength; ++i) {
-            const thread = highlightThreads[i];
+        const pageThreads = this.getThreadsOnPage(page);
+        pageThreads.forEach((thread) => {
             // Determine if any highlight threads on page are pending or active
             // and ignore hover events of any highlights below
-            if (thread.state === STATES.pending) {
+            if (!annotatorUtil.isHighlightAnnotation(thread) || thread.state === STATES.pending) {
                 return;
             }
 
@@ -671,7 +669,7 @@ class DocAnnotator extends Annotator {
                     hoverActive = isThreadInHoverState(thread);
                 }
             }
-        }
+        });
 
         // If we are hovering over a highlight, we should use a hand cursor
         if (hoverActive) {
@@ -807,10 +805,7 @@ class DocAnnotator extends Annotator {
         let activeThread = null;
 
         const page = annotatorUtil.getPageInfo(event.target).page;
-        const pageThreads = this.threads.get(page);
-        if (!pageThreads) {
-            return;
-        }
+        const pageThreads = this.getThreadsOnPage(page);
 
         pageThreads.forEach((thread) => {
             if (PENDING_STATES.indexOf(thread.state) > 0) {
@@ -869,15 +864,14 @@ class DocAnnotator extends Annotator {
      */
     getHighlightThreadsOnPage(page) {
         const threads = [];
-        const pageThreads = this.threads.get(page);
+        const pageThreads = this.getThreadsOnPage(page);
 
-        if (pageThreads) {
-            pageThreads.forEach((thread) => {
-                if (annotatorUtil.isHighlightAnnotation(thread.type)) {
-                    threads.push(thread);
-                }
-            });
-        }
+        pageThreads.forEach((thread) => {
+            if (annotatorUtil.isHighlightAnnotation(thread.type)) {
+                threads.push(thread);
+            }
+        });
+
         return threads;
     }
 

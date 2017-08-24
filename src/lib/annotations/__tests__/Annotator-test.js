@@ -821,6 +821,13 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
+        describe('getThreadsOnPage()', () => {
+            it('should return empty array if no page number provided', () => {
+                const threads = annotator.getThreadsOnPage(-1);
+                expect(threads.length).to.equal(0);
+            });
+        });
+
         describe('destroyPendingThreads()', () => {
             beforeEach(() => {
                 stubs.thread = {

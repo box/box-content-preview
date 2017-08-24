@@ -252,7 +252,7 @@ class Annotator extends EventEmitter {
             return;
         }
 
-        const pageThreads = this.threads.get(pageNum);
+        const pageThreads = this.getThreadsOnPage(pageNum);
         if (!pageThreads) {
             return;
         }
@@ -288,11 +288,7 @@ class Annotator extends EventEmitter {
             return;
         }
 
-        const pageThreads = this.threads.get(pageNum);
-        if (!pageThreads) {
-            return;
-        }
-
+        const pageThreads = this.getThreadsOnPage(pageNum);
         pageThreads.forEach((thread) => {
             thread.show();
         });
@@ -912,6 +908,16 @@ class Annotator extends EventEmitter {
     scaleAnnotations(data) {
         this.setScale(data.scale);
         this.rotateAnnotations(data.rotationAngle, data.pageNum);
+    }
+    /**
+     * Gets threads on page
+     *
+     * @private
+     * @param {number} page - Current page number
+     * @return {Map|[]} Threads on page
+     */
+    getThreadsOnPage(page) {
+        return this.threads.get(page) || [];
     }
 
     /**
