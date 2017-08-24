@@ -118,6 +118,15 @@ class DocHighlightThread extends AnnotationThread {
         }
     }
 
+    scrollIntoView() {
+        this.scrollToPage();
+
+        const [yPos] = docAnnotatorUtil.getLowerRightCornerOfLastQuadPoint(this.location.quadPoints);
+
+        // Adjust scroll to highlight position
+        this.adjustScroll(this.annotatedElement.scrollTop + yPos);
+    }
+
     /**
      * Mousedown handler for thread. Deletes this thread if it is still pending.
      *

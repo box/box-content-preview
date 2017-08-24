@@ -226,6 +226,45 @@ class AnnotationThread extends EventEmitter {
         }
     }
 
+    /**
+     * Scroll annotation into the center of the viewport, if possible
+     *
+     * @private
+     * @return {void}
+     */
+    scrollIntoView() {
+        const yPos = parseInt(this.location.y, 10);
+        this.scrollToPage();
+        this.centerAnnotation(this.annotatedElement.scrollTop + yPos);
+    }
+
+    /**
+     * Scroll to the annotation's page
+     *
+     * @private
+     * @return {void}
+     */
+    scrollToPage() {
+        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
+        pageEl.scrollIntoView();
+    }
+
+    /**
+     * Adjust page scroll position so annotation is centered in viewport
+     *
+     * @private
+     * @param {number} scrollVal - scroll value to adjust so annotation is
+     centered in the viewport
+     * @return {void}
+     */
+    centerAnnotation(scrollVal) {
+        if (scrollVal < this.annotatedElement.scrollHeight) {
+            this.annotatedElement.scrollTop = scrollVal;
+        } else {
+            this.annotatedElement.scrollTop = this.annotatedElement.scrollBottom;
+        }
+    }
+
     //--------------------------------------------------------------------------
     // Abstract
     //--------------------------------------------------------------------------

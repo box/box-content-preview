@@ -103,7 +103,6 @@ class Annotator extends EventEmitter {
         this.unbindDOMListeners();
         this.unbindCustomListenersOnService();
         this.removeListener('scaleAnnotations', this.scaleAnnotations);
-        this.removeListener('toggleannotationmode', this.toggleAnnotationHandler);
     }
 
     /**
@@ -830,6 +829,28 @@ class Annotator extends EventEmitter {
      */
     isInAnnotationMode(mode) {
         return this.currentAnnotationMode === mode;
+    }
+
+    /**
+     * Scrolls specified annotation into view
+     *
+     * @private
+     * @param {Object} data - annotation data for thread that should scroll into view
+     * @param {string} data.threadID - annotation thread id
+     * @param {string} data.page - annotation page number
+     * @return {void}
+     */
+    scrollToAnnotation(data) {
+        const { threadID, page } = data;
+        if (!threadID || !page) {
+            return;
+        }
+
+        const pageThreads = this.getThreadsOnPage(page);
+        const thread = pageThreads[threadID];
+        if (thread) {
+            thread.scrollIntoView();
+        }
     }
 
     //--------------------------------------------------------------------------
