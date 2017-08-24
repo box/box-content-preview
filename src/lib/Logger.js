@@ -38,6 +38,7 @@ class Logger {
     /**
      * Gets browser capability information.
      *
+     * @private
      * @return {Object} Browser capability information
      */
     getBrowserInfo() {
@@ -61,6 +62,7 @@ class Logger {
     /**
      * Marks file as cached.
      *
+     * @public
      * @return {void}
      */
     setCached() {
@@ -70,6 +72,7 @@ class Logger {
     /**
      * Marks file as stale cache.
      *
+     * @public
      * @return {void}
      */
     setCacheStale() {
@@ -79,6 +82,7 @@ class Logger {
     /**
      * Marks file as converted.
      *
+     * @public
      * @return {void}
      */
     setUnConverted() {
@@ -89,6 +93,7 @@ class Logger {
     /**
      * Marks file as preloaded.
      *
+     * @public
      * @return {void}
      */
     setPreloaded() {
@@ -98,6 +103,7 @@ class Logger {
     /**
      * Sets the file object.
      *
+     * @public
      * @param {Object} file - file object
      * @return {void}
      */
@@ -108,6 +114,7 @@ class Logger {
     /**
      * Sets the file type.
      *
+     * @public
      * @param {string} type - content type
      * @return {void}
      */
@@ -118,6 +125,7 @@ class Logger {
     /**
      * Finishes logging.
      *
+     * @public
      * @param {Object} count - Preview count
      * @return {Object} Metrics object
      */

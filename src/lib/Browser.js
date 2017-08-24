@@ -278,6 +278,7 @@ class Browser {
     /**
      * Returns whether the browser is a mobile browser.
      *
+     * @public
      * @return {boolean} True if browser supports download
      */
     static isMobile() {
@@ -289,6 +290,8 @@ class Browser {
      * Returns whether the browser can download via HTML5. taken from Modernizr:
      * https://github.com/Modernizr/Modernizr/blob/master/feature-detects/a/download.js
      * Currently not supported by IE11 or Safari 10.0 http://caniuse.com/#feat=download
+     *
+     * @public
      * @return {boolean} True if browser supports download
      */
     static canDownload() {
@@ -298,6 +301,7 @@ class Browser {
     /**
      * Returns whether or not the device is running IOS
      *
+     * @public
      * @return {boolean} True if the device is running IOS
      */
     static isIOS() {
@@ -307,6 +311,7 @@ class Browser {
     /**
      * Returns whether or not the device is running Android
      *
+     * @public
      * @return {boolean} True if the device is running Android
      */
     static isAndroid() {
@@ -316,7 +321,8 @@ class Browser {
     /**
      * Returns whether or not the device is a laptop/desktop Mac
      *
-     * @return {boolean} True if the device is a Mac
+     * @public
+     * @return {boolean} Whether device is a Mac
      */
     static isMac() {
         return /Macintosh; Intel Mac OS X/g.test(userAgent);
@@ -326,6 +332,7 @@ class Browser {
      * Returns whether or not the device is running IOS 10.3.x or browser is desktop Safari, both of which have Font
      * Ligature rendering issues due to the font loading API.
      *
+     * @public
      * @return {boolean} Whether device or browser have font ligature issues
      */
     static hasFontIssue() {
