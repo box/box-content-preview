@@ -16,6 +16,7 @@ class Cache {
      * Caches a simple object in memory and in localStorage if specified.
      * Note that objects cached in localStorage will be stringified.
      *
+     * @public
      * @param {string} key - The cache key
      * @param {*} value - The cache value
      * @param {boolean} useLocalStorage - Whether or not to use localStorage
@@ -32,6 +33,7 @@ class Cache {
     /**
      * Deletes object from in-memory cache and localStorage.
      *
+     * @public
      * @param {string} key - The cache key
      * @return {void}
      */
@@ -46,6 +48,7 @@ class Cache {
     /**
      * Checks if cache has provided key.
      *
+     * @public
      * @param {string} key - The cache key
      * @return {boolean} Whether the cache has key
      */
@@ -58,8 +61,9 @@ class Cache {
      * tries to fetch from localStorage. If fetched from localStorage, object
      * will be a JSON parsed object.
      *
+     * @public
      * @param {string} key - Key of cached object
-     * @return {*} Cached object
+     * @return {Object} Cached object
      */
     get(key) {
         if (this.inCache(key)) {
@@ -87,6 +91,7 @@ class Cache {
     /**
      * Checks if memory cache has provided key.
      *
+     * @private
      * @param {string} key - The cache key
      * @return {boolean} Whether the cache has key
      */
@@ -97,6 +102,7 @@ class Cache {
     /**
      * Checks if memory cache has provided key.
      *
+     * @private
      * @param {string} key - The cache key
      * @return {boolean} Whether the cache has key
      */
@@ -117,8 +123,8 @@ class Cache {
      * localStorage was available the first time this is called, but becomes
      * unavailable at a later time.
      *
-     * @return {boolean} Whether or not localStorage is available or not.
      * @private
+     * @return {boolean} Whether or not localStorage is available or not.
      */
     localStorageAvailable() {
         if (this.available === undefined) {
@@ -139,9 +145,9 @@ class Cache {
      * Generates a key to use for localStorage from the provided key. This
      * should prevent name collisions.
      *
+     * @private
      * @param {string} key - Generate key from this key
      * @return {string} Generated key for localStorage
-     * @private
      */
     generateKey(key) {
         return `bp-${key}`;

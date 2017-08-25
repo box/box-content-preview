@@ -8,6 +8,7 @@ class RepStatus extends EventEmitter {
     /**
      * Gets the status out of represenation
      *
+     * @public
      * @param {Object} representation - representation object
      * @return {string} rep status instance
      */

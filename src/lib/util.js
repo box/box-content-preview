@@ -12,6 +12,7 @@ const CLIENT_VERSION = __VERSION__;
 /**
  * Retrieves JSON from response.
  *
+ * @private
  * @param {Response} response - Response to parse
  * @return {Promise|Response} Response if 204, otherwise promise that resolves with JSON
  */
@@ -26,6 +27,7 @@ const parseJSON = (response) => {
 /**
  * Extract response body as text.
  *
+ * @private
  * @param {Response} response - Response to parse
  * @return {Promise} Promise that resolves with text
  */
@@ -34,6 +36,7 @@ const parseText = (response) => response.text();
 /**
  * Extract response body as blob.
  *
+ * @private
  * @param {Response} response - Response to parse
  * @return {Promise} Promise that resolves with blob
  */
@@ -42,6 +45,7 @@ const parseBlob = (response) => response.blob();
 /**
  * Pass through response.
  *
+ * @private
  * @param {Response} response - Response to pass through
  * @return {Response} Unextracted response
  */
@@ -114,6 +118,7 @@ function createDownloadIframe() {
  *     get(url, type)
  *     get(url)
  *
+ * @public
  * @param {string} url - The URL to fetch
  * @param {Object} [headers] - Key-value map of headers
  * @param {string} [type] - response type json (default), text, blob or any
@@ -156,6 +161,7 @@ export function get(url, ...rest) {
 /**
  * HTTP POSTs a URL with JSON data
  *
+ * @public
  * @param {string} url - The URL to fetch
  * @param {Object} headers - Key-value map of headers
  * @param {Object} data - JS Object representation of JSON data to send
@@ -168,6 +174,7 @@ export function post(...rest) {
 /**
  * HTTP PUTs a URL with JSON data
  *
+ * @public
  * @param {string} url - The URL to fetch
  * @param {Object} headers - Key-value map of headers
  * @param {Object} data - JS Object representation of JSON data to send
@@ -180,6 +187,7 @@ export function del(...rest) {
 /**
  * HTTP PUTs a url with JSON data
  *
+ * @public
  * @param {string} url - The url to fetch
  * @param {Object} headers - Key-value map of headers
  * @param {Object} data - JS Object representation of JSON data to send
@@ -193,6 +201,7 @@ export function put(...rest) {
  * Opens url in an iframe
  * Used for downloads
  *
+ * @public
  * @param {string} url - URL to open
  * @return {HTMLElement} IFrame element
  */
@@ -206,6 +215,7 @@ export function openUrlInsideIframe(url) {
  * Opens content in an iframe
  * Used for printing
  *
+ * @public
  * @param {string} content - HTML content
  * @return {HTMLElement} Iframe element
  */
@@ -219,6 +229,7 @@ export function openContentInsideIframe(content) {
 /**
  * Creates contextual fragment
  *
+ * @public
  * @param {Element} node - DOM node
  * @param {string} template - HTML template
  * @return {DocumentFragment} Document fragment
@@ -232,6 +243,7 @@ export function createFragment(node, template) {
 /**
  * Inserts template string into DOM node, before beforeNode. If beforeNode is null, inserts at end of child nodes
  *
+ * @public
  * @param {Element} node - DOM node
  * @param {string} template  html template
  * @param {Element|void} beforeNode - DOM node
@@ -244,6 +256,7 @@ export function insertTemplate(node, template, beforeNode = null) {
 /**
  * Create <script> element to load external script
  *
+ * @public
  * @param {string} url - Asset url
  * @return {HTMLElement} Script element
  */
@@ -259,6 +272,7 @@ export function createScript(url) {
 /**
  * Create <link> element to prefetch external resource
  *
+ * @public
  * @param {string} url - Asset urls
  * @return {HTMLElement} Prefetch link element
  */
@@ -272,6 +286,7 @@ export function createPrefetch(url) {
 /**
  * Create <link> element to load external stylesheet
  *
+ * @public
  * @param {string} url - Asset urls
  * @return {HTMLElement} CSS link element
  */
@@ -286,6 +301,7 @@ export function createStylesheet(url) {
 /**
  * Builds a list of required XHR headers.
  *
+ * @public
  * @param {Object} [headers] - Optional headers
  * @param {string} [token] - Optional auth token
  * @param {string} [sharedLink] - Optional shared link
@@ -321,6 +337,7 @@ export function getHeaders(headers = {}, token = '', sharedLink = '', password =
 /**
  * Appends auth params to a url
  *
+ * @public
  * @param {string} url - Content url
  * @param {string} [token] - Optional auth token
  * @param {string} [sharedLink] - Optional shared link
@@ -368,6 +385,7 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
 /**
  * Create a content url from template
  *
+ * @public
  * @param {string} template - URL template to attach param to
  * @param {string|void} [asset] - Optional asset name needed to access file
  * @return {string} Content url
@@ -384,6 +402,7 @@ export function createContentUrl(template, asset) {
 /**
  * Factory to create asset URLs
  *
+ * @public
  * @param {Object} location - Location object
  * @return {Function} Factory for creating asset url
  */
@@ -412,6 +431,7 @@ export function createAssetUrlCreator(location) {
 /**
  * Prefetches external stylsheets or js by appending a <link rel="prefetch"> element
  *
+ * @public
  * @param {Array} urls - Asset urls
  * @return {void}
  */
@@ -428,6 +448,7 @@ export function prefetchAssets(urls) {
 /**
  * Loads external stylsheets by appending a <link> element
  *
+ * @public
  * @param {Array} urls - Asset urls
  * @return {void}
  */
@@ -444,6 +465,7 @@ export function loadStylesheets(urls) {
 /**
  * Loads external scripts by appending a <script> element
  *
+ * @public
  * @param {Array} urls - Asset urls
  * @return {Promise} Promise to load scripts
  */
@@ -470,6 +492,7 @@ export function loadScripts(urls) {
 /**
  * Function to decode key down events into keys
  *
+ * @public
  * @param {Event} event - Keydown event
  * @return {string} Decoded keydown key
  */
@@ -539,6 +562,7 @@ export function decodeKeydown(event) {
 /**
  * Find location information about a script include
  *
+ * @public
  * @param {string} name - Script name
  * @param {HTMLScriptElement} [script] - optional script element
  * @return {Object} Script location object
@@ -585,6 +609,7 @@ export function findScriptLocation(name, script) {
  * Replaces variable place holders specified between {} in the string with
  * specified custom value. Localizes strings that include variables.
  *
+ * @public
  * @param {string} string - String to be interpolated
  * @param {string[]} placeholderValues - Custom values to replace into string
  * @return {string} Properly translated string with replaced custom variable
@@ -609,6 +634,7 @@ export function replacePlaceholders(string, placeholderValues) {
 /**
  * Check to see if a file requires a Box3D viewer to be viewed.
  *
+ * @public
  * @param {Object} file - The file to check
  * @return {boolean} True if the file needs a Box3D 360 degree viewer to be viewed
  */
@@ -622,6 +648,7 @@ export function requires360Viewer(file) {
 /**
  * Check to see if file is a Vera-protected file.
  *
+ * @public
  * @param {Object} file - File to check
  * @return {boolean} Whether file is a Vera-protected HTML file
  */
@@ -633,6 +660,7 @@ export function isVeraProtectedFile(file) {
 /**
  * Set width/height for an element.
  *
+ * @public
  * @param {HTMLElement} element - HTML element
  * @param {number} width - Width in pixels
  * @param {number} height - Height in pixels
@@ -649,6 +677,7 @@ export function setDimensions(element, width, height) {
  * Wrapper around an event-handler that returns another event-handler which first checks that
  * the event is a click, space-key, or enter-key before invoking the handler
  *
+ * @public
  * @param {Function} handler - Key activation handler
  * @return {void}
  */
@@ -670,6 +699,7 @@ export function activationHandler(handler) {
 /**
  * Adds event listeners for click, space, and enter keys
  *
+ * @public
  * @param {HTMLElement} element - HTMLElement
  * @param {Function} handler - Function to be invoked on click/space/enter
  * @return {void}
@@ -682,6 +712,7 @@ export function addActivationListener(element, handler) {
 /**
  * Removes event listeners added by addActivationListener
  *
+ * @public
  * @param {HTMLElement} element - HTMLElement
  * @param {Function} handler - Function to be removed on click/space/enter
  * @return {void}

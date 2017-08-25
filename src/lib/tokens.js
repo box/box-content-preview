@@ -5,6 +5,7 @@ const error = new Error('Missing Auth Token!');
  * Helper function to create token map used below.
  * Maps the same token to multiple files.
  *
+ * @private
  * @param {Array} ids - Box file IDs
  * @param {string} token - Token to use for map
  * @return {Object} ID to token map
@@ -24,6 +25,7 @@ function createIdTokenMap(ids, token) {
  * id and value is the token. The function accepts either a simple id
  * or an array of file ids
  *
+ * @public
  * @param {string|Array} id - box file id(s)
  * @param {string|Function} token - Token to use or token generation function
  * @return {Promise} Promise that resolves with ID to token map
