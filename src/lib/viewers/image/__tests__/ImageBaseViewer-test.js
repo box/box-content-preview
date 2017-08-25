@@ -260,6 +260,17 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 Assert.fail();
             });
         });
+
+        it('should resolve when the get call fails', (done) => {
+            const imageEl = {};
+            const getStub = sandbox.stub(util, 'get').returns(Promise.reject());
+            const promise = imageBase.setOriginalImageSize(imageEl);
+            promise.should.be.fulfilled.then(() => {
+                done();
+            }).catch(() => {
+                Assert.fail();
+            });
+        });
     });
 
     describe('bindControlListeners()', () => {
