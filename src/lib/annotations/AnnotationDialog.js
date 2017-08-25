@@ -257,11 +257,14 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Sets up the dialog element.
      *
-     * @param {Annotation[]} annotations - to show in the dialog
+     * @param {Annotation[]} annotations - Annotations to show in the dialog
+     * @param {HTMLElement} threadEl - Annotation icon element
      * @return {void}
      * @protected
      */
-    setup(annotations) {
+    setup(annotations, threadEl) {
+        this.threadEl = threadEl;
+
         // Generate HTML of dialog
         this.dialogEl = this.generateDialogEl(annotations.length);
         this.dialogEl.classList.add(constants.CLASS_ANNOTATION_CONTAINER);

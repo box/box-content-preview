@@ -304,20 +304,21 @@ describe('lib/annotations/AnnotationDialog', () => {
         });
 
         it('should set up HTML element, add annotations to the dialog, and bind DOM listeners', () => {
-            dialog.setup([stubs.annotation]);
+            dialog.setup([stubs.annotation], {});
             expect(dialog.element).to.not.be.null;
             expect(dialog.element.dataset.threadNumber).to.equal('1');
             expect(stubs.bind).to.be.called;
+            expect(dialog.threadEl).not.be.null;
         });
 
         it('should not set thread number if there are no annotations in the thread', () => {
-            dialog.setup([]);
+            dialog.setup([], {});
             expect(dialog.element.dataset.threadNumber).to.be.undefined;
         });
 
         it('should not create dialog element if using a mobile browser', () => {
             dialog.isMobile = true;
-            dialog.setup([stubs.annotation, stubs.annotation]);
+            dialog.setup([stubs.annotation, stubs.annotation], {});
             expect(stubs.bind).to.not.be.called;
             expect(stubs.add).to.be.calledTwice;
         });
