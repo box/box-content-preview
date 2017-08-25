@@ -760,7 +760,7 @@ class DocAnnotator extends Annotator {
     drawingSelectionHandler(event) {
         if (this.modeButtons && this.modeButtons[TYPES.draw] && this.modeButtons[TYPES.draw].controller) {
             const controller = this.modeButtons[TYPES.draw].controller;
-            controller.getSelection(event);
+            controller.handleSelection(event);
         }
     }
 

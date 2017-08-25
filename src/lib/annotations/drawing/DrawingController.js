@@ -15,6 +15,9 @@ class DrawingController extends AnnotationController {
     threads = new rbush();
     /* eslint-enable new-cap */
 
+    /** @property {DrawingThread} - The selected DrawingThread */
+    selected;
+
     /** @property {HTMLElement} - The button to commit the pending drawing thread */
     postButtonEl;
 
@@ -24,15 +27,30 @@ class DrawingController extends AnnotationController {
     /** @property {HTMLElement} - The button to redo a stroke on the pending drawing thread */
     redoButtonEl;
 
+    /**
+     * Register the annotator and any information associated with the annotator
+     *
+     * @inheritdoc
+     * @public
+     * @param {Annotator} annotator - The annotator to be associated with the controller
+     * @return {void}
+     */
     registerAnnotator(annotator) {
         super.registerAnnotator(annotator);
-        global.threads = this.threads;
 
         this.postButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
         this.undoButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
         this.redoButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
     }
 
+    /**
+     * Register a thread that has been assigned a location with the controller
+     *
+     * @inheritdoc
+     * @public
+     * @param {AnnotationThread} thread - The thread to register with the controller
+     * @return {void}
+     */
     registerThread(thread) {
         if (!thread || !thread.location) {
             return;
@@ -41,6 +59,14 @@ class DrawingController extends AnnotationController {
         this.threads.insert(thread);
     }
 
+    /**
+     * Unregister a previously registered thread that has been assigned a location
+     *
+     * @inheritdoc
+     * @public
+     * @param {AnnotationThread} thread - The thread to unregister with the controller
+     * @return {void}
+     */
     unregisterThread(thread) {
         if (!thread || !thread.location) {
             return;
@@ -49,6 +75,14 @@ class DrawingController extends AnnotationController {
         this.threads.remove(thread);
     }
 
+    /**
+     * Binds custom event listeners for a thread.
+     *
+     * @inheritdoc
+     * @protected
+     * @param {AnnotationThread} thread - Thread to bind events to
+     * @return {void}
+     */
     bindCustomListenersOnThread(thread) {
         if (!thread) {
             return;
@@ -61,6 +95,14 @@ class DrawingController extends AnnotationController {
         thread.addListener('threaddeleted', () => this.unregisterThread(thread));
     }
 
+    /**
+     * Set up and return the necessary handlers for the annotation mode
+     *
+     * @inheritdoc
+     * @protected
+     * @return {Array} An array where each element is an object containing the object that will emit the event,
+     *                 the type of events to listen for, and the callback
+     */
     setupAndGetHandlers() {
         const handlers = [];
         /* eslint-disable require-jsdoc */
@@ -68,7 +110,6 @@ class DrawingController extends AnnotationController {
         /* eslint-enable require-jsdoc */
 
         // Setup
-        // Possibly move thread creation to a thread factory
         this.currentThread = this.annotator.createAnnotationThread([], {}, TYPES.draw);
         this.bindCustomListenersOnThread(this.currentThread);
 
@@ -125,6 +166,15 @@ class DrawingController extends AnnotationController {
         return handlers;
     }
 
+    /**
+     * Handle an annotation event.
+     *
+     * @inheritdoc
+     * @protected
+     * @param {AnnotationThread} thread - The thread that emitted the event
+     * @param {Object} data - Extra data related to the annotation event
+     * @return {void}
+     */
     handleAnnotationEvent(thread, data = {}) {
         switch (data.type) {
             case 'locationassigned':
@@ -139,14 +189,10 @@ class DrawingController extends AnnotationController {
             case 'pagechanged':
                 // On page change, save the original thread, create a new thread and
                 // start drawing at the location indicating the page change
-                thread.saveAnnotation(TYPES.draw);
                 this.currentThread = undefined;
-
-                // NOTE(@minhnguyen): Currently we save the thread and create a new thread
-                // using annotator.bindModeListeners(TYPES.draw). Ideally, the controller shouldn't have to depend on
-                // bindModeListeners since the controller should only need to worry about its own logic.
-                this.annotator.unbindModeListeners();
-                this.annotator.bindModeListeners(TYPES.draw);
+                thread.saveAnnotation(TYPES.draw);
+                this.unbindModeListeners();
+                this.bindModeListeners(TYPES.draw);
                 this.currentThread.handleStart(data.location);
                 break;
             case 'availableactions':
@@ -156,7 +202,14 @@ class DrawingController extends AnnotationController {
         }
     }
 
-    getSelection(event) {
+    /**
+     * Find the selected drawing threads given a pointer event. Randomly picks one if multiple drawings overlap
+     *
+     * @protected
+     * @param {Event} event - The event object containing the pointer information
+     * @return {void}
+     */
+    handleSelection(event) {
         if (!event) {
             return;
         }
@@ -196,11 +249,17 @@ class DrawingController extends AnnotationController {
         this.select(selected);
     }
 
+    /**
+     * Select the indicated drawing thread. Deletes a drawing thread upon the second consecutive selection
+     *
+     * @private
+     * @param {DrawingThread} selectedDrawingThread - The drawing thread to select
+     * @return {void}
+     */
     select(selectedDrawingThread) {
         if (this.selected && this.selected === selectedDrawingThread) {
             // Selected the same thread twice, delete the thread
             const toDelete = this.selected;
-
             toDelete.deleteThread();
 
             // Redraw any threads that the deleted thread could have been covering
@@ -214,17 +273,29 @@ class DrawingController extends AnnotationController {
         }
     }
 
+    /**
+     * Toggle the undo and redo buttons based on the number of actions available
+     *
+     * @private
+     * @param {number} undoCount - The number of objects that can be undone
+     * @param {number} redoCount - The number of objects that can be redone
+     * @return {void}
+     */
     updateUndoRedoButtonEls(undoCount, redoCount) {
-        if (undoCount === 1) {
-            annotatorUtil.enableElement(this.undoButtonEl);
-        } else if (undoCount === 0) {
-            annotatorUtil.disableElement(this.undoButtonEl);
+        if (this.undoButtonEl) {
+            if (undoCount === 1) {
+                annotatorUtil.enableElement(this.undoButtonEl);
+            } else if (undoCount === 0) {
+                annotatorUtil.disableElement(this.undoButtonEl);
+            }
         }
 
-        if (redoCount === 1) {
-            annotatorUtil.enableElement(this.redoButtonEl);
-        } else if (redoCount === 0) {
-            annotatorUtil.disableElement(this.redoButtonEl);
+        if (this.redoButtonEl) {
+            if (redoCount === 1) {
+                annotatorUtil.enableElement(this.redoButtonEl);
+            } else if (redoCount === 0) {
+                annotatorUtil.disableElement(this.redoButtonEl);
+            }
         }
     }
 }

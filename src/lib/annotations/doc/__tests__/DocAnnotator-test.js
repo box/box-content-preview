@@ -1323,13 +1323,13 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.modeButtons = {};
             annotator.modeButtons[TYPES.draw] = {
                 controller: {
-                    getSelection: sandbox.stub()
+                    handleSelection: sandbox.stub()
                 }
             };
 
             const evt = 'event';
             annotator.drawingSelectionHandler(evt);
-            expect(annotator.modeButtons[TYPES.draw].controller.getSelection).to.be.calledWith(evt);
+            expect(annotator.modeButtons[TYPES.draw].controller.handleSelection).to.be.calledWith(evt);
         });
 
         it('should not error when no modeButtons exist for draw', () => {
