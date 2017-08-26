@@ -52,15 +52,17 @@ class PreviewErrorViewer extends BaseViewer {
     /**
      * Shows an error message to the user.
      *
-     * @param {string} reason - Error reason
+     * @param {Error} err - Error
      * @return {void}
      */
-    load(reason) {
+    load(err) {
+        // Figure out what error message to log and what error message to display
+        const displayMessage = err instanceof Error && err.displayMessage ? err.displayMessage : __('error_default');
+
         this.setup();
 
         const { file, showDownload } = this.options;
         let icon = ICON_FILE_DEFAULT;
-        const message = reason || __('error_default');
 
         // Generic errors will not have the file object
         if (file) {
@@ -78,7 +80,7 @@ class PreviewErrorViewer extends BaseViewer {
         }
 
         this.iconEl.innerHTML = icon;
-        this.messageEl.textContent = message;
+        this.messageEl.textContent = displayMessage;
 
         // Add optional download button
         if (checkPermission(file, PERMISSION_DOWNLOAD) && showDownload && Browser.canDownload()) {
@@ -87,7 +89,7 @@ class PreviewErrorViewer extends BaseViewer {
 
         this.loaded = true;
         this.emit('load', {
-            error: message
+            error: err.message || displayMessage
         });
     }
 

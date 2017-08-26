@@ -492,11 +492,12 @@ class DocBaseViewer extends BaseViewer {
                 console.error(err);
                 /* eslint-enable no-console */
 
-                // Display a generic error message but log the real one
+                // Ensure a generic display message but log the real one
                 const error = err;
                 if (err instanceof Error) {
                     error.displayMessage = __('error_document');
                 }
+
                 this.triggerError(err);
             });
     }

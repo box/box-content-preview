@@ -1046,10 +1046,6 @@ class Preview extends EventEmitter {
         // Destroy anything still showing
         this.destroy();
 
-        // Figure out what error message to log and what error message to display
-        const logMessage = err instanceof Error ? err.message : __('error_default');
-        const displayMessage = err && err.displayMessage ? err.displayMessage : logMessage;
-
         // Instantiate the error viewer
         this.viewer = this.getErrorViewer();
 
@@ -1057,7 +1053,7 @@ class Preview extends EventEmitter {
         this.attachViewerListeners();
 
         // Load the error viewer
-        this.viewer.load(displayMessage);
+        this.viewer.load(err);
     }
 
     /**

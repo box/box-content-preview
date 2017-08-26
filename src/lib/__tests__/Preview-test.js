@@ -1685,11 +1685,12 @@ describe('lib/Preview', () => {
         });
 
         it('should get the error viewer, attach viewer listeners, and load the error viewer', () => {
-            preview.triggerError();
+            const err = new Error();
+            preview.triggerError(err);
 
             expect(stubs.getErrorViewer).to.be.called;
             expect(stubs.attachViewerListeners).to.be.called;
-            expect(ErrorViewer.load).to.be.called;
+            expect(ErrorViewer.load).to.be.calledWith(err);
         });
     });
 

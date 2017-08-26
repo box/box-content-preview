@@ -64,12 +64,13 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
                 const extension = testCase[0];
                 const expectedIcon = testCase[1];
 
-                const message = 'reason';
+                const err = new Error()
+                err.displayMessage = 'reason'
                 error.options.file.extension = extension;
-                error.load(message);
+                error.load(err);
 
                 expect(error.iconEl).to.contain.html(expectedIcon);
-                expect(error.messageEl.textContent).to.equal(message);
+                expect(error.messageEl.textContent).to.equal(err.displayMessage);
             });
         });
 
@@ -112,17 +113,36 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             expect(error.addDownloadButton).to.not.be.called;
         });
 
-        it('should broadcast load', () => {
+        it('should broadcast the log message', () => {
             sandbox.stub(error, 'emit');
 
-            const message = 'reason';
-            error.load(message);
+            const err = new Error();
+            err.displayMessage = 'reason';
+            err.message = 'this is bad';
+
+            error.load(err);
 
             expect(error.emit).to.be.calledWith(
-                'load',
-                sinon.match({
-                    error: message
-                })
+                'load', {
+                    error: 'this is bad'
+                }
+            );
+        });
+
+        it('should broadcast the display message if there is no log message', () => {
+            sandbox.stub(error, 'emit');
+
+            const err = new Error();
+            err.displayMessage = 'reason';
+            err.message = undefined;
+
+            error.load(err);
+
+
+            expect(error.emit).to.be.calledWith(
+                'load', {
+                    error: 'reason'
+                }
             );
         });
     });
