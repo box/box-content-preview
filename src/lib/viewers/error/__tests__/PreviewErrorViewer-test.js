@@ -64,8 +64,8 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
                 const extension = testCase[0];
                 const expectedIcon = testCase[1];
 
-                const err = new Error()
-                err.displayMessage = 'reason'
+                const err = new Error();
+                err.displayMessage = 'reason';
                 error.options.file.extension = extension;
                 error.load(err);
 

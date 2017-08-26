@@ -56,9 +56,6 @@ class PreviewErrorViewer extends BaseViewer {
      * @return {void}
      */
     load(err) {
-        // Figure out what error message to log and what error message to display
-        const displayMessage = err instanceof Error && err.displayMessage ? err.displayMessage : __('error_default');
-
         this.setup();
 
         const { file, showDownload } = this.options;
@@ -78,6 +75,9 @@ class PreviewErrorViewer extends BaseViewer {
                 // no-op
             }
         }
+
+        // Figure out what error message to log and what error message to display
+        const displayMessage = err instanceof Error && err.displayMessage ? err.displayMessage : __('error_default');
 
         this.iconEl.innerHTML = icon;
         this.messageEl.textContent = displayMessage;
