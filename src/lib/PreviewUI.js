@@ -48,6 +48,7 @@ class PreviewUI {
     /**
      * Destroy preview container content.
      *
+     * @public
      * @return {void}
      */
     cleanup() {
@@ -70,6 +71,7 @@ class PreviewUI {
     /**
      * Initializes the container for preview.
      *
+     * @public
      * @param {Object} options - Setup options
      * @param {Function} keydown - Keydown handler
      * @param {Function} navigateLeft - Left navigation handler
@@ -126,6 +128,7 @@ class PreviewUI {
     /**
      * Shows navigation arrows if there is a need
      *
+     * @public
      * @param {number} id - File ID of current preview
      * @param {number[]} collection - Array of File IDs being previewed
      * @return {void}
@@ -182,6 +185,7 @@ class PreviewUI {
     /**
      * Shows the print button if the viewers implement print
      *
+     * @public
      * @param {Function} handler - Print click handler
      * @return {void}
      */
@@ -199,6 +203,7 @@ class PreviewUI {
     /**
      * Shows the download button if the viewers implement download
      *
+     * @public
      * @param {Function} handler - Download click handler
      * @return {void}
      */
@@ -216,6 +221,7 @@ class PreviewUI {
     /**
      * Shows the loading download button if the viewers implement download
      *
+     * @public
      * @param {Function} handler - Download click handler
      * @return {void}
      */
@@ -233,6 +239,7 @@ class PreviewUI {
     /**
      * Shows the loading indicator
      *
+     * @public
      * @return {void}
      */
     showLoadingIndicator() {
@@ -244,6 +251,7 @@ class PreviewUI {
     /**
      * Hides the loading indicator.
      *
+     * @public
      * @return {void}
      */
     hideLoadingIndicator() {
@@ -264,6 +272,7 @@ class PreviewUI {
     /**
      * Shows and starts a progress bar at the top of the preview.
      *
+     * @public
      * @return {void}
      */
     startProgressBar() {
@@ -273,6 +282,7 @@ class PreviewUI {
     /**
      * Finishes and hides the top progress bar if present.
      *
+     * @public
      * @return {void}
      */
     finishProgressBar() {

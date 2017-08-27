@@ -842,14 +842,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(PDFJS.externalLinkRel).to.equal('noopener noreferrer nofollow');
         });
 
-        // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
-        it('should test user agent if on Safari Mobile for IOS 10.3', () => {
-            const getStub = sandbox.stub(Browser, 'isIOSWithFontIssue').returns(true);
+        // @NOTE(JustinHoldstock) 2017-04-11: Check to remove or modify this after next IOS release after 10.3.1 or
+        // Safari version
+        it('should test if browser has font rendering issue', () => {
+            PDFJS.disableFontFace = false;
+            sandbox.mock(Browser).expects('hasFontIssue').returns(true);
+
             docBase.setupPdfjs();
 
-            // Mobile stub cannot be called if get stub is never called.
-            // See note for this test, for more info.
-            expect(getStub).to.be.called;
             expect(PDFJS.disableFontFace).to.be.true;
         });
 
