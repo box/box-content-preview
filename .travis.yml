@@ -1,6 +1,26 @@
 language: node_js
 node_js:
 - '6'
+matrix:
+    include:
+    - env:
+        - TEST_SUITE=functional-tests-ci
+        - BROWSER=chrome
+    - env:
+        - TEST_SUITE=functional-tests-ci
+        - BROWSER=safari
+    - env:
+        - TEST_SUITE=functional-tests-ci
+        - BROWSER=firefox
+    - env:
+        - TEST_SUITE=functional-tests-ci
+        - BROWSER=ie
+    - env:
+        - TEST_SUITE=functional-tests-ci
+        - BROWSER=edge
+    - env:
+        - TEST_SUITE=test
+
 addons:
   sauce_connect:
     username: box-content-preview
@@ -9,5 +29,5 @@ addons:
 before_script:
 - python -m SimpleHTTPServer &
 - sleep 2
-script: yarn run ci
+script: yarn run ci && yarn run $TEST_SUITE
 cache: yarn
