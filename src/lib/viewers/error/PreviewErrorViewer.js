@@ -76,8 +76,12 @@ class PreviewErrorViewer extends BaseViewer {
             }
         }
 
-        // Figure out what error message to log and what error message to display
-        const displayMessage = err instanceof Error && err.displayMessage ? err.displayMessage : __('error_default');
+        /* eslint-disable no-param-reassign */
+        err = err instanceof Error ? err : new Error(__('error_default'));
+        /* eslint-enable no-param-reassign */
+
+        // If there is no display message fallback to the message from above
+        const displayMessage = err.displayMessage || err.message;
 
         this.iconEl.innerHTML = icon;
         this.messageEl.textContent = displayMessage;
@@ -88,6 +92,9 @@ class PreviewErrorViewer extends BaseViewer {
         }
 
         this.loaded = true;
+
+        // The error will either be the message from the original error, the displayMessage from the orignal error,
+        // or the default message from the locally created error
         this.emit('load', {
             error: err.message || displayMessage
         });

@@ -492,7 +492,7 @@ class DocBaseViewer extends BaseViewer {
                 console.error(err);
                 /* eslint-enable no-console */
 
-                // Ensure a generic display message but log the real one
+                // Display a generic error message but log the real one
                 const error = err;
                 if (err instanceof Error) {
                     error.displayMessage = __('error_document');
