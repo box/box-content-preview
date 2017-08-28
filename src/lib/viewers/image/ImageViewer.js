@@ -183,10 +183,14 @@ class ImageViewer extends ImageBaseViewer {
                     // If the image is smaller than the new viewport, zoom up to a
                     // max of the original file size
                 } else if (modifyWidthInsteadOfHeight) {
-                    const originalWidth = this.isRotated() ? this.imageEl.originalHeight : this.imageEl.originalWidth;
+                    const originalWidth = this.isRotated()
+                        ? this.imageEl.getAttribute('originalHeight')
+                        : this.imageEl.getAttribute('originalWidth');
                     newWidth = Math.min(viewport.width, originalWidth);
                 } else {
-                    const originalHeight = this.isRotated() ? this.imageEl.originalWidth : this.imageEl.originalHeight;
+                    const originalHeight = this.isRotated()
+                        ? this.imageEl.getAttribute('originalWidth')
+                        : this.imageEl.getAttribute('originalHeight');
                     newHeight = Math.min(viewport.height, originalHeight);
                 }
         }
@@ -231,7 +235,9 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     setScale(width, height) {
-        this.scale = width ? width / this.imageEl.originalWidth : height / this.imageEl.originalHeight;
+        this.scale = width
+            ? width / this.imageEl.getAttribute('originalWidth')
+            : height / this.imageEl.getAttribute('originalHeight');
         this.rotationAngle = this.currentRotationAngle % 3600 % 360;
         this.emit('scale', {
             scale: this.scale,
@@ -390,7 +396,7 @@ class ImageViewer extends ImageBaseViewer {
     handleOrientationChange() {
         this.adjustImageZoomPadding();
 
-        this.scale = this.imageEl.clientWidth / this.imageEl.originalWidth;
+        this.scale = this.imageEl.clientWidth / this.imageEl.getAttribute('originalWidth');
         this.rotationAngle = this.currentRotationAngle % 3600 % 360;
         this.emit('scale', {
             scale: this.scale,
