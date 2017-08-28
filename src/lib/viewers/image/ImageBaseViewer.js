@@ -178,11 +178,11 @@ class ImageBaseViewer extends BaseViewer {
      * naturalHeight and naturalWidth attributes work correctly in IE 11.
      *
      * @private
-     * @param {Image} imageEl - The image to set the original size attributes on
+     * @param {HTMLElement} imageEl - The image to set the original size attributes on
      * @return {Promise} A promise that is resolved if the original image dimensions were set.
      */
     setOriginalImageSize(imageEl) {
-        const promise = new Promise((resolve, reject) => {
+        const promise = new Promise((resolve) => {
             // Do not bother loading a new image when the natural size attributes exist
             if (imageEl.naturalWidth && imageEl.naturalHeight) {
                 imageEl.setAttribute('originalWidth', imageEl.naturalWidth);
@@ -205,15 +205,15 @@ class ImageBaseViewer extends BaseViewer {
                             const aspectRatio = h ? w / h : w;
                             imageEl.setAttribute('originalWidth', Math.round(aspectRatio * 150));
                             imageEl.setAttribute('originalHeight', 150);
-                            resolve();
                         } catch (e) {
                             // Assume 300x150 that chrome does by default
                             imageEl.setAttribute('originalWidth', 300);
                             imageEl.setAttribute('originalHeight', 150);
-                            resolve(e);
+                        } finally {
+                            resolve();
                         }
                     })
-                    .catch(reject);
+                    .catch(resolve);
             }
         });
 
