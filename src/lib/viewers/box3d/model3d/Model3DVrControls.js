@@ -21,7 +21,7 @@ class Model3DVrControls {
     /** @property {Box3D.NodeObject[]} - List of vr gamepads that exist in the 3D scene */
     vrGamepads;
 
-    /** @property {Box3D} - Instance of the Box3D runtime*/
+    /** @property {Box3D} - Instance of the Box3D runtime */
     box3d;
 
     /** @property {Object} - Tracks the state of controller interaction */
