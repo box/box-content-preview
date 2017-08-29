@@ -100,6 +100,32 @@ class DocHighlightDialog extends AnnotationDialog {
         this.toggleHighlight();
     }
 
+    /**
+     * 
+     * @param {boolean} [showPlain] - Whether or not show plain highlight UI
+     * @param {boolean} [showComment] - Whether or not show comment highlight UI
+     */
+    show(showPlain = true, showComment = true) {
+        const plainButtonEl = this.highlightDialogEl.querySelector(`button.${constants.CLASS_ADD_HIGHLIGHT_BTN}`);
+        const commentButtonEl = this.highlightDialogEl.querySelector(
+            `button.${constants.CLASS_ADD_HIGHLIGHT_COMMENT_BTN}`
+        );
+
+        if (showPlain) {
+            annotatorUtil.showElement(plainButtonEl);
+        } else {
+            annotatorUtil.hideElement(plainButtonEl);
+        }
+
+        if (showComment) {
+            annotatorUtil.showElement(commentButtonEl);
+        } else {
+            annotatorUtil.hideElement(commentButtonEl);
+        }
+
+        super.show();
+    }
+
     //--------------------------------------------------------------------------
     // Abstract Implementations
     //--------------------------------------------------------------------------

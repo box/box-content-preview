@@ -7,7 +7,7 @@ const ANNOTATORS = [
         NAME: 'Document',
         CONSTRUCTOR: DocAnnotator,
         VIEWER: ['Document', 'Presentation'],
-        TYPE: [TYPES.point, TYPES.highlight]
+        TYPE: [TYPES.point, TYPES.highlight, TYPES.highlight_comment]
     },
     {
         NAME: 'Image',
