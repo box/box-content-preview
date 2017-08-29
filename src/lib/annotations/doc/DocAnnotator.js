@@ -47,7 +47,7 @@ const ANNOTATION_LAYER_CLASSES = [CLASS_ANNOTATION_LAYER_HIGHLIGHT, CLASS_ANNOTA
  */
 function showFirstDialogFilter(thread, index) {
     if (index === 0) {
-        thread.show();
+        thread.show(this.plainHighlightEnabled, this.commentHighlightEnabled);
     } else {
         thread.hideDialog();
     }
@@ -87,6 +87,12 @@ class DocAnnotator extends Annotator {
     /** @property {Selection} - For tracking diffs in text selection, for mobile highlights creation. */
     lastSelection;
 
+    /** @property {boolean} - True if regular highlights are allowed to be read/written */
+    plainHighlightEnabled;
+
+    /** @property {boolean} - True if comment highlights are allowed to be read/written */
+    commentHighlightEnabled;
+
     /**
      * Creates and mananges plain highlight and comment highlight and point annotations
      * on document files.
@@ -99,20 +105,36 @@ class DocAnnotator extends Annotator {
     constructor(data) {
         super(data);
 
+        this.plainHighlightEnabled = this.isModeAnnotatable(TYPES.highlight);
+        this.commentHighlightEnabled = this.isModeAnnotatable(TYPES.highlight_comment);
+
+        // Don't bind to highlight specific handlers if we cannot highlight
+        if (!this.plainHighlightEnabled && !this.commentHighlightEnabled) {
+            return;
+        }
+
         // Explicit scoping
-        this.highlightCurrentSelection = this.highlightCurrentSelection.bind(this);
-        this.createHighlightThread = this.createHighlightThread.bind(this);
-        this.createPlainHighlight = this.createPlainHighlight.bind(this);
         this.highlightCreateHandler = this.highlightCreateHandler.bind(this);
         this.drawingSelectionHandler = this.drawingSelectionHandler.bind(this);
 
         this.createHighlightDialog = new CreateHighlightDialog(this.container, {
             isMobile: this.isMobile,
-            hasTouch: this.hasTouch
+            hasTouch: this.hasTouch,
+            allowComment: this.commentHighlightEnabled,
+            allowHighlight: this.plainHighlightEnabled
         });
-        this.createHighlightDialog.addListener(CreateEvents.plain, this.createPlainHighlight);
-        this.createHighlightDialog.addListener(CreateEvents.comment, this.highlightCurrentSelection);
-        this.createHighlightDialog.addListener(CreateEvents.commentPost, this.createHighlightThread);
+
+        if (this.commentHighlightEnabled) {
+            this.highlightCurrentSelection = this.highlightCurrentSelection.bind(this);
+            this.createHighlightDialog.addListener(CreateEvents.comment, this.highlightCurrentSelection);
+            this.createHighlightThread = this.createHighlightThread.bind(this);
+            this.createHighlightDialog.addListener(CreateEvents.commentPost, this.createHighlightThread);
+        }
+
+        if (this.plainHighlightEnabled) {
+            this.createPlainHighlight = this.createPlainHighlight.bind(this);
+            this.createHighlightDialog.addListener(CreateEvents.plain, this.createPlainHighlight);
+        }
     }
 
     /**
@@ -122,12 +144,19 @@ class DocAnnotator extends Annotator {
      */
     destroy() {
         super.destroy();
+        if (this.createHighlightDialog) {
+            if (this.commentHighlightEnabled) {
+                this.createHighlightDialog.removeListener(CreateEvents.comment, this.highlightCurrentSelection);
+                this.createHighlightDialog.removeListener(CreateEvents.commentPost, this.createHighlightThread);
+            }
 
-        this.createHighlightDialog.removeListener(CreateEvents.plain, this.createPlainHighlight);
-        this.createHighlightDialog.removeListener(CreateEvents.comment, this.highlightCurrentSelection);
-        this.createHighlightDialog.removeListener(CreateEvents.commentPost, this.createHighlightThread);
-        this.createHighlightDialog.destroy();
-        this.createHighlightDialog = null;
+            if (this.plainHighlightEnabled) {
+                this.createHighlightDialog.removeListener(CreateEvents.plain, this.createPlainHighlight);
+            }
+
+            this.createHighlightDialog.destroy();
+            this.createHighlightDialog = null;
+        }
     }
 
     /** @inheritdoc */
@@ -348,17 +377,21 @@ class DocAnnotator extends Annotator {
         if (commentText === '' || !this.lastHighlightEvent) {
             return null;
         }
-        this.createHighlightDialog.hide();
+
+        if (this.createHighlightDialog) {
+            this.createHighlightDialog.hide();
+        }
         this.isCreatingHighlight = false;
 
-        const location = this.getLocationFromEvent(this.lastHighlightEvent, TYPES.highlight);
+        const highlightType = commentText ? TYPES.highlight_comment : TYPES.highlight;
+        const location = this.getLocationFromEvent(this.lastHighlightEvent, highlightType);
         this.highlighter.removeAllHighlights();
         if (!location) {
             return null;
         }
 
         const annotations = [];
-        const thread = this.createAnnotationThread(annotations, location, TYPES.highlight);
+        const thread = this.createAnnotationThread(annotations, location, highlightType);
         this.lastHighlightEvent = null;
         this.lastSelection = null;
 
@@ -373,7 +406,7 @@ class DocAnnotator extends Annotator {
         }
 
         thread.state = STATES.hover;
-        thread.show();
+        thread.show(this.plainHighlightEnabled, this.commentHighlightEnabled);
         thread.dialog.postAnnotation(commentText);
 
         this.bindCustomListenersOnThread(thread);
@@ -382,7 +415,7 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Renders annotations from memory for a specified page.
+     * Override to factor in highlight types being filtered out, if disabled
      *
      * @override
      * @param {number} pageNum - Page number
@@ -392,7 +425,17 @@ class DocAnnotator extends Annotator {
         // Scale existing canvases on re-render
         this.scaleAnnotationCanvases(pageNum);
 
-        super.renderAnnotationsOnPage(pageNum);
+        if (this.threads && this.threads[pageNum]) {
+            this.threads[pageNum].forEach((thread) => {
+                if (
+                    (!this.plainHighlightEnabled && thread.type === TYPES.highlight) ||
+                    (!this.commentHighlightEnabled && thread.type === TYPES.highlight_comment)
+                ) {
+                    return;
+                }
+                thread.show(this.plainHighlightEnabled, this.commentHighlightEnabled);
+            });
+        }
 
         // Destroy current pending highlight annotation
         this.getHighlightThreadsOnPage(pageNum).forEach((thread) => {
@@ -434,6 +477,10 @@ class DocAnnotator extends Annotator {
     setupAnnotations() {
         super.setupAnnotations();
 
+        if (!this.plainHighlightEnabled && !this.commentHighlightEnabled) {
+            return;
+        }
+
         // Init rangy and rangy highlight
         this.highlighter = rangy.createHighlighter();
         this.highlighter.addClassApplier(
@@ -456,7 +503,12 @@ class DocAnnotator extends Annotator {
 
         this.annotatedElement.addEventListener('mouseup', this.highlightMouseupHandler);
 
-        if (this.hasTouch && this.isMobile) {
+        // Prevent all forms of highlight annotations if annotating (or plain AND comment highlights) is disabled
+        if (!this.canAnnotate || (!this.plainHighlightEnabled && !this.commentHighlightEnabled)) {
+            return;
+        }
+
+        if (this.hasTouch && this.isMobile && this.createHighlightDialog) {
             document.addEventListener('selectionchange', this.onSelectionChange);
             this.annotatedElement.addEventListener('touchstart', this.drawingSelectionHandler);
         } else {
@@ -485,7 +537,11 @@ class DocAnnotator extends Annotator {
             this.highlightThrottleHandle = null;
         }
 
-        if (this.hasTouch && this.isMobile) {
+        if (!this.canAnnotate) {
+            return;
+        }
+
+        if (this.hasTouch && this.isMobile && this.createHighlightDialog) {
             document.removeEventListener('selectionchange', this.onSelectionChange);
             this.annotatedElement.removeEventListener('touchstart', this.drawingSelectionHandler);
         } else {
@@ -744,7 +800,7 @@ class DocAnnotator extends Annotator {
         // hovered over at the same time, only the top-most highlight
         // dialog will be displayed and the others will be hidden
         // without delay
-        delayThreads.forEach(showFirstDialogFilter);
+        delayThreads.forEach(showFirstDialogFilter.bind(this));
     }
 
     /**
@@ -798,14 +854,17 @@ class DocAnnotator extends Annotator {
             this.highlighter.removeAllHighlights();
         }
 
-        this.createHighlightDialog.hide();
+        if (this.createHighlightDialog) {
+            this.createHighlightDialog.hide();
+        }
+
         this.isCreatingHighlight = false;
 
         // Creating highlights is disabled on mobile for now since the
         // event we would listen to, selectionchange, fires continuously and
         // is unreliable. If the mouse moved or we double clicked text,
         // we trigger the create handler instead of the click handler
-        if (this.didMouseMove || event.type === 'dblclick') {
+        if (this.createHighlightDialog && (this.didMouseMove || event.type === 'dblclick')) {
             this.highlightCreateHandler(event);
         } else {
             this.highlightClickHandler(event);
@@ -901,7 +960,7 @@ class DocAnnotator extends Annotator {
 
         // Show active thread last
         if (activeThread) {
-            activeThread.show();
+            activeThread.show(this.plainHighlightEnabled, this.commentHighlightEnabled);
         }
     }
     /**
@@ -977,7 +1036,7 @@ class DocAnnotator extends Annotator {
         }
 
         this.getHighlightThreadsOnPage(page).forEach((thread) => {
-            thread.show();
+            thread.show(this.plainHighlightEnabled, this.commentHighlightEnabled);
         });
     }
 
