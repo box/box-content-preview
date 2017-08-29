@@ -52,15 +52,14 @@ class PreviewErrorViewer extends BaseViewer {
     /**
      * Shows an error message to the user.
      *
-     * @param {string} reason - Error reason
+     * @param {Error} err - Error
      * @return {void}
      */
-    load(reason) {
+    load(err) {
         this.setup();
 
         const { file, showDownload } = this.options;
         let icon = ICON_FILE_DEFAULT;
-        const message = reason || __('error_default');
 
         // Generic errors will not have the file object
         if (file) {
@@ -77,8 +76,15 @@ class PreviewErrorViewer extends BaseViewer {
             }
         }
 
+        /* eslint-disable no-param-reassign */
+        err = err instanceof Error ? err : new Error(__('error_default'));
+        /* eslint-enable no-param-reassign */
+
+        // If there is no display message fallback to the message from above
+        const displayMessage = err.displayMessage || err.message;
+
         this.iconEl.innerHTML = icon;
-        this.messageEl.textContent = message;
+        this.messageEl.textContent = displayMessage;
 
         // Add optional download button
         if (checkPermission(file, PERMISSION_DOWNLOAD) && showDownload && Browser.canDownload()) {
@@ -86,8 +92,11 @@ class PreviewErrorViewer extends BaseViewer {
         }
 
         this.loaded = true;
+
+        // The error will either be the message from the original error, the displayMessage from the orignal error,
+        // or the default message from the locally created error
         this.emit('load', {
-            error: message
+            error: err.message || displayMessage
         });
     }
 

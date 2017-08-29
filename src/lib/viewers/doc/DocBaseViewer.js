@@ -87,6 +87,10 @@ class DocBaseViewer extends BaseViewer {
         // Clean up print blob
         this.printBlob = null;
 
+        if (this.pageControls) {
+            this.pageControls.removeListener('pagechange', this.setPage);
+        }
+
         if (this.controls && typeof this.controls.destroy === 'function') {
             this.controls.destroy();
         }
@@ -302,15 +306,15 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Go to specified page
      *
-     * @param {number} pageNum - Page to navigate to
+     * @param {number} pageNumber - Page to navigate to
      * @return {void}
      */
-    setPage(pageNum) {
-        if (pageNum < 1 || pageNum > this.pdfViewer.pagesCount) {
+    setPage(pageNumber) {
+        if (pageNumber < 1 || pageNumber > this.pdfViewer.pagesCount) {
             return;
         }
 
-        this.pdfViewer.currentPageNumber = pageNum;
+        this.pdfViewer.currentPageNumber = pageNumber;
         this.cachePage(this.pdfViewer.currentPageNumber);
     }
 
@@ -497,6 +501,7 @@ class DocBaseViewer extends BaseViewer {
                 if (err instanceof Error) {
                     error.displayMessage = __('error_document');
                 }
+
                 this.triggerError(err);
             });
     }
@@ -696,7 +701,8 @@ class DocBaseViewer extends BaseViewer {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
-        this.pageControls = new PageControls(this.controls, this.previousPage, this.nextPage);
+        this.pageControls = new PageControls(this.controls, this.docEl);
+        this.pageControls.addListener('pagechange', this.setPage);
         this.bindControlListeners();
     }
 
@@ -787,7 +793,6 @@ class DocBaseViewer extends BaseViewer {
         this.pdfViewer.currentScaleValue = 'auto';
 
         this.loadUI();
-        this.pageControls.checkPaginationButtons(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
 
         // Set current page to previously opened page or first page
         this.setPage(this.getCachedPage());
@@ -846,17 +851,17 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     pagechangeHandler(event) {
-        const pageNum = event.pageNumber;
-        this.pageControls.updateCurrentPage(pageNum);
+        const pageNumber = event.pageNumber;
+        this.pageControls.updateCurrentPage(pageNumber);
 
         // We only set cache the current page if 'pagechange' was fired after
         // preview is loaded - this filters out pagechange events fired by
         // the viewer's initialization
         if (this.loaded) {
-            this.cachePage(pageNum);
+            this.cachePage(pageNumber);
         }
 
-        this.emit('pagefocus', pageNum);
+        this.emit('pagefocus', pageNumber);
     }
 
     /**

@@ -21,6 +21,7 @@ import {
     PAGE_PADDING_TOP,
     PAGE_PADDING_BOTTOM,
     CLASS_ANNOTATION_LAYER_HIGHLIGHT,
+    CLASS_ANNOTATION_LAYER_DRAW,
     PENDING_STATES
 } from '../annotationConstants';
 
@@ -34,6 +35,8 @@ const CLASS_DEFAULT_CURSOR = 'bp-use-default-cursor';
 
 // Required by rangy highlighter
 const ID_ANNOTATED_ELEMENT = 'bp-rangy-annotated-element';
+
+const ANNOTATION_LAYER_CLASSES = [CLASS_ANNOTATION_LAYER_HIGHLIGHT, CLASS_ANNOTATION_LAYER_DRAW];
 
 /**
  * For filtering out and only showing the first thread in a list of threads.
@@ -384,12 +387,33 @@ class DocAnnotator extends Annotator {
      * @return {void}
      */
     renderAnnotationsOnPage(pageNum) {
+        // Scale existing canvases on re-render
+        this.scaleAnnotationCanvases(pageNum);
+
         super.renderAnnotationsOnPage(pageNum);
 
         // Destroy current pending highlight annotation
         this.getHighlightThreadsOnPage(pageNum).forEach((thread) => {
             if (annotatorUtil.isPending(thread.state)) {
                 thread.destroy();
+            }
+        });
+    }
+
+    /**
+     * Scales all annotation canvases for a specified page.
+     *
+     * @override
+     * @param {number} pageNum - Page number
+     * @return {void}
+     */
+    scaleAnnotationCanvases(pageNum) {
+        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${pageNum}"]`);
+
+        ANNOTATION_LAYER_CLASSES.forEach((annotationLayerClass) => {
+            const annotationLayerEl = pageEl.querySelector(`.${annotationLayerClass}`);
+            if (annotationLayerEl) {
+                docAnnotatorUtil.scaleCanvas(pageEl, annotationLayerEl);
             }
         });
     }
@@ -485,6 +509,10 @@ class DocAnnotator extends Annotator {
      * @return {void}
      */
     bindCustomListenersOnThread(thread) {
+        if (!thread) {
+            return;
+        }
+
         super.bindCustomListenersOnThread(thread);
 
         // We need to redraw highlights on the page if a thread was deleted
