@@ -12,6 +12,7 @@ import * as docAnnotatorUtil from '../docAnnotatorUtil';
 import {
     STATES,
     TYPES,
+    CLASS_ANNOTATION_LAYER_HIGHLIGHT,
     DATA_TYPE_ANNOTATION_DIALOG
 } from '../../annotationConstants';
 
@@ -476,7 +477,35 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             const threads = [pendingThread, inactiveThread];
             sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns(threads);
             Object.defineProperty(Annotator.prototype, 'renderAnnotationsOnPage', { value: sandbox.mock() });
+            sandbox.stub(annotator, 'scaleAnnotationCanvases');
+
             annotator.renderAnnotationsOnPage(1);
+            expect(annotator.scaleAnnotationCanvases).to.be.called;
+        });
+    });
+
+    describe('scaleAnnotationCanvases()', () => {
+        beforeEach(() => {
+            stubs.scaleCanvas = sandbox.stub(docAnnotatorUtil, 'scaleCanvas');
+
+            // Add pageEl
+            stubs.pageEl = document.createElement('div');
+            stubs.pageEl.setAttribute('data-page-number', 1);
+            annotator.annotatedElement.appendChild(stubs.pageEl);
+        });
+
+        it('should do nothing if annotation layer is not present', () => {
+            annotator.scaleAnnotationCanvases(1);
+            expect(stubs.scaleCanvas).to.not.be.called;
+        });
+
+        it('should scale canvas if annotation layer is present', () => {
+            const annotationLayerEl = document.createElement('canvas');
+            annotationLayerEl.classList.add(CLASS_ANNOTATION_LAYER_HIGHLIGHT);
+            stubs.pageEl.appendChild(annotationLayerEl);
+
+            annotator.scaleAnnotationCanvases(1);
+            expect(stubs.scaleCanvas).to.be.calledOnce;
         });
     });
 
@@ -594,13 +623,21 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     describe('bindCustomListenersOnThread()', () => {
         const bindFunc = Annotator.prototype.bindCustomListenersOnThread;
 
+        beforeEach(() => {
+            sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(true);
+        });
+
         afterEach(() => {
             Object.defineProperty(Annotator.prototype, 'bindCustomListenersOnThread', { value: bindFunc });
         });
 
+        it('should do nothing if thread does not exist', () => {
+            annotator.bindCustomListenersOnThread(null);
+            expect(annotatorUtil.isHighlightAnnotation).to.not.be.called;
+        });
+
         it('should call parent to bind custom listeners and also bind highlights on threaddeleted', () => {
             const thread = { addListener: () => {} };
-            sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(true);
             stubs.threadMock = sandbox.mock(thread);
             stubs.threadMock.expects('addListener').withArgs('threaddeleted', sinon.match.func);
 

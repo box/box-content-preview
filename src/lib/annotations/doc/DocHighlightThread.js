@@ -375,12 +375,7 @@ class DocHighlightThread extends AnnotationThread {
     /* istanbul ignore next */
     draw(fillStyle) {
         const pageEl = this.getPageEl();
-        const context = docAnnotatorUtil.getContext(
-            pageEl,
-            CLASS_ANNOTATION_LAYER_HIGHLIGHT,
-            PAGE_PADDING_TOP,
-            PAGE_PADDING_BOTTOM
-        );
+        const context = docAnnotatorUtil.getContext(pageEl, CLASS_ANNOTATION_LAYER_HIGHLIGHT);
         if (!context) {
             return;
         }

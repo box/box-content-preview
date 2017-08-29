@@ -1,8 +1,6 @@
 import {
     STATES,
     DRAW_STATES,
-    PAGE_PADDING_TOP,
-    PAGE_PADDING_BOTTOM,
     CLASS_ANNOTATION_LAYER_DRAW,
     CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS
 } from '../annotationConstants';
@@ -127,12 +125,7 @@ class DocDrawingThread extends DrawingThread {
 
         super.saveAnnotation(type, text);
 
-        const drawingAnnotationLayerContext = docAnnotatorUtil.getContext(
-            this.pageEl,
-            CLASS_ANNOTATION_LAYER_DRAW,
-            PAGE_PADDING_TOP,
-            PAGE_PADDING_BOTTOM
-        );
+        const drawingAnnotationLayerContext = docAnnotatorUtil.getContext(this.pageEl, CLASS_ANNOTATION_LAYER_DRAW);
         if (drawingAnnotationLayerContext) {
             const inProgressCanvas = this.drawingContext.canvas;
             const width = parseInt(inProgressCanvas.style.width, 10);
@@ -161,12 +154,7 @@ class DocDrawingThread extends DrawingThread {
         } else {
             const config = { scale: this.lastScaleFactor };
             this.pageEl = docAnnotatorUtil.getPageEl(this.annotatedElement, this.location.page);
-            context = docAnnotatorUtil.getContext(
-                this.pageEl,
-                CLASS_ANNOTATION_LAYER_DRAW,
-                PAGE_PADDING_TOP,
-                PAGE_PADDING_BOTTOM
-            );
+            context = docAnnotatorUtil.getContext(this.pageEl, CLASS_ANNOTATION_LAYER_DRAW);
             this.setContextStyles(config, context);
         }
 
@@ -196,12 +184,7 @@ class DocDrawingThread extends DrawingThread {
         // Set the scale and in-memory context for the pending thread
         this.lastScaleFactor = scale;
         this.pageEl = docAnnotatorUtil.getPageEl(this.annotatedElement, this.location.page);
-        this.drawingContext = docAnnotatorUtil.getContext(
-            this.pageEl,
-            CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS,
-            PAGE_PADDING_TOP,
-            PAGE_PADDING_BOTTOM
-        );
+        this.drawingContext = docAnnotatorUtil.getContext(this.pageEl, CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS);
 
         const config = { scale };
         this.setContextStyles(config);

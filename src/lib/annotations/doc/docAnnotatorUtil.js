@@ -369,6 +369,31 @@ export function isValidSelection(selection) {
 }
 
 /**
+ * Scales the canvas an annotation should be drawn on
+ *
+ * @param {HTMLElement} pageEl - The DOM element for the current page
+ * @param {HTMLElement} annotationLayerEl - The annotation canvas layer
+ * @return {HTMLElement} The scaled annotation canvas layer
+ */
+export function scaleCanvas(pageEl, annotationLayerEl) {
+    const pageDimensions = pageEl.getBoundingClientRect();
+    const pxRatio = window.devicePixelRatio || 1;
+    const width = pageDimensions.width;
+    const height = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+
+    const scaledCanvas = annotationLayerEl;
+    scaledCanvas.width = pxRatio * width;
+    scaledCanvas.height = pxRatio * height;
+
+    if (pxRatio !== 1) {
+        scaledCanvas.style.width = `${width}px`;
+        scaledCanvas.style.height = `${height}px`;
+    }
+
+    return scaledCanvas;
+}
+
+/**
  * Gets the context an annotation should be drawn on.
  *
  * @param {HTMLElement} pageEl - The DOM element for the current page
@@ -377,41 +402,23 @@ export function isValidSelection(selection) {
  * @param {number} [paddingBottom] - The bottom padding of each page element
  * @return {RenderingContext|null} Context or null if no page element was given
  */
-export function getContext(pageEl, annotationLayerClass, paddingTop, paddingBottom) {
+export function getContext(pageEl, annotationLayerClass) {
     if (!pageEl) {
         return null;
     }
 
-    let annotationLayerEl = pageEl.querySelector(`.${annotationLayerClass}`);
-    let context;
     // Create annotation layer if one does not exist (e.g. first load or page resize)
+    let annotationLayerEl = pageEl.querySelector(`.${annotationLayerClass}`);
     if (!annotationLayerEl) {
         annotationLayerEl = document.createElement('canvas');
         annotationLayerEl.classList.add(annotationLayerClass);
-        const pageDimensions = pageEl.getBoundingClientRect();
-        const pagePaddingTop = paddingTop || 0;
-        const pagePaddingBottom = paddingBottom || 0;
-        const pxRatio = window.devicePixelRatio || 1;
-        const width = pageDimensions.width;
-        const height = pageDimensions.height - pagePaddingTop - pagePaddingBottom;
-
-        annotationLayerEl.width = pxRatio * width;
-        annotationLayerEl.height = pxRatio * height;
-        context = annotationLayerEl.getContext('2d');
-
-        if (pxRatio !== 1) {
-            annotationLayerEl.style.width = `${width}px`;
-            annotationLayerEl.style.height = `${height}px`;
-            context.scale(pxRatio, pxRatio);
-        }
+        annotationLayerEl = scaleCanvas(pageEl, annotationLayerEl);
 
         const textLayerEl = pageEl.querySelector('.textLayer');
         pageEl.insertBefore(annotationLayerEl, textLayerEl);
-    } else {
-        context = annotationLayerEl.getContext('2d');
     }
 
-    return context;
+    return annotationLayerEl.getContext('2d');
 }
 
 /**
