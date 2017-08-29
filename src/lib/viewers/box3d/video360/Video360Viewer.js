@@ -53,22 +53,6 @@ class Video360Viewer extends DashViewer {
         this.wrapperEl.classList.add(CSS_CLASS_VIDEO_360);
     }
 
-    /**
-     * Adds event listeners to the canvas element.
-     * Makes changes to the media controls.
-     *
-     * @override
-     * @return {void}
-     */
-    addEventListenersForMediaElement() {
-        super.addEventListenersForMediaElement();
-
-        this.wrapperEl.addEventListener('mousemove', this.mousemoveHandler);
-        if (this.hasTouch) {
-            this.wrapperEl.addEventListener('touchstart', this.pointerHandler);
-        }
-    }
-
     /** @inheritdoc */
     destroy() {
         super.destroy();
@@ -148,6 +132,17 @@ class Video360Viewer extends DashViewer {
     createControls() {
         this.controls = new Video360Controls(this.mediaContainerEl);
         this.controls.on(EVENT_TOGGLE_VR, this.handleToggleVr);
+
+        // Add listener to hide and show controls
+        const canvas = this.renderer.getBox3D().canvas;
+        if (!canvas) {
+            return;
+        }
+
+        canvas.addEventListener('mousemove', this.mousemoveHandler);
+        if (this.hasTouch) {
+            canvas.addEventListener('touchstart', this.pointerHandler);
+        }
     }
 
     /**
@@ -159,6 +154,19 @@ class Video360Viewer extends DashViewer {
     destroyControls() {
         this.controls.removeListener(EVENT_TOGGLE_VR, this.handleToggleVr);
         this.controls.destroy();
+
+        // Add listener to hide and show controls
+        if (!this.renderer) {
+            return;
+        }
+
+        const canvas = this.renderer.getBox3D().canvas;
+        if (!canvas) {
+            return;
+        }
+
+        canvas.removeEventListener('mousemove', this.mousemoveHandler);
+        canvas.removeEventListener('touchstart', this.pointerHandler);
     }
 
     /**
