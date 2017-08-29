@@ -100,10 +100,11 @@ class DocHighlightDialog extends AnnotationDialog {
         this.toggleHighlight();
     }
 
-    /**
-     * 
+    /** TEMPORARY override to hide or show UI based on enabled annotation types.
+     *
      * @param {boolean} [showPlain] - Whether or not show plain highlight UI
      * @param {boolean} [showComment] - Whether or not show comment highlight UI
+     * @return {void}
      */
     show(showPlain = true, showComment = true) {
         const plainButtonEl = this.highlightDialogEl.querySelector(`button.${constants.CLASS_ADD_HIGHLIGHT_BTN}`);
