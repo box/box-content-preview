@@ -721,3 +721,29 @@ export function removeActivationListener(element, handler) {
     element.removeEventListener('click', handler);
     element.removeEventListener('keydown', handler);
 }
+
+/**
+ * Update the page number based on scroll position. Only increment if
+ * wrapper is scrolled down past at least half of the current page element.
+ * Only decrement page if wrapper is scrolled up past at least half of the
+ * previous page element
+ *
+ * @public
+ * @param {number} currentPageNum - The current page
+ * @param {HTMLElement} currentPageEl - The current page element
+ * @param {HTMLElement} wrapperEl - the content wrapper element
+ * @return {number} the resulting page number
+ */
+export function pageNumberFromScroll(currentPageNum, currentPageEl, wrapperEl) {
+    const currentScrollTop = wrapperEl.scrollTop;
+    const currentScrollBottom = wrapperEl.scrollTop + wrapperEl.offsetHeight;
+    const currentPageMiddleY = currentPageEl.offsetTop + currentPageEl.clientHeight / 2;
+
+    if (currentScrollTop > currentPageMiddleY) {
+        return currentPageNum + 1;
+    } else if (currentScrollBottom < currentPageMiddleY) {
+        return currentPageNum - 1;
+    }
+
+    return currentPageNum;
+}
