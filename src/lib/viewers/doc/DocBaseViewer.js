@@ -501,6 +501,7 @@ class DocBaseViewer extends BaseViewer {
                 if (err instanceof Error) {
                     error.displayMessage = __('error_document');
                 }
+
                 this.triggerError(err);
             });
     }
