@@ -302,12 +302,13 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         beforeEach(() => {
             presentation.pdfViewer = {
                 pagesCount: 4,
+                currentPageNumber: 1,
                 cleanup: sandbox.stub()
             };
 
             presentation.pageControls = {
-                init: sandbox.stub(),
-                addListener: sandbox.stub()
+                add: sandbox.stub(),
+                removeListener: sandbox.stub()
             };
         });
 
@@ -326,8 +327,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
                 ICON_ZOOM_IN
             );
 
-            expect(presentation.pageControls.init).to.be.called;
-            expect(presentation.pageControls.addListener).to.be.calledWith('setpage', sinon.match.func);
+            expect(presentation.pageControls.add).to.be.calledWith(1, 4);
 
             expect(presentation.controls.add).to.be.calledWith(
                 __('enter_fullscreen'),

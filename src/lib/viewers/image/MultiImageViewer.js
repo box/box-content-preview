@@ -4,6 +4,7 @@ import PageControls from '../../PageControls';
 import './MultiImage.scss';
 import { ICON_FILE_IMAGE, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
+import { pageNumberFromScroll } from '../../util';
 
 const PADDING_BUFFER = 100;
 const CSS_CLASS_IMAGE = 'bp-images';
@@ -44,6 +45,10 @@ class MultiImageViewer extends ImageBaseViewer {
             this.singleImageEls.forEach((el, index) => {
                 this.unbindImageListeners(index);
             });
+        }
+
+        if (this.pageControls) {
+            this.pageControls.removeListener('pagechange', this.setPage);
         }
 
         super.destroy();
@@ -194,21 +199,19 @@ class MultiImageViewer extends ImageBaseViewer {
      */
     loadUI() {
         super.loadUI();
-        this.pageControls.checkPaginationButtons(this.currentPageNumber, this.pagesCount);
+        this.pageControls = new PageControls(this.controls, this.wrapperEl);
+        this.bindPageControlListeners();
     }
 
     /**
-     * Binds listeners for document controls. Overridden.
+     * Binds listeners for the page and the rest of the document controls.
      *
      * @protected
      * @return {void}
      */
-    bindControlListeners() {
-        super.bindControlListeners();
-
-        this.pageControls = new PageControls(this.controls, this.previousPage, this.nextPage);
-        this.pageControls.init(this.pagesCount);
-        this.pageControls.addListener('setpage', this.setPage);
+    bindPageControlListeners() {
+        this.pageControls.add(this.currentPageNumber, this.pagesCount);
+        this.pageControls.addListener('pagechange', this.setPage);
 
         this.controls.add(
             __('enter_fullscreen'),
@@ -268,16 +271,47 @@ class MultiImageViewer extends ImageBaseViewer {
     /**
      * Go to specified page
      *
-     * @param {number} pageNum - Page to navigate to
+     * @param {number} pageNumber - Page to navigate to
      * @return {void}
      */
-    setPage(pageNum) {
-        if (pageNum < 1 || pageNum > this.pagesCount) {
+    setPage(pageNumber) {
+        if (!this.isValidPageChange(pageNumber)) {
             return;
         }
 
-        this.currentPageNumber = pageNum;
-        this.singleImageEls[pageNum - 1].scrollIntoView();
+        this.singleImageEls[pageNumber - 1].scrollIntoView();
+        this.updateCurrentPage(pageNumber);
+    }
+
+    /**
+     * Updates the current page
+     *
+     * @param {number} pageNumber - Page to set
+     * @return {void}
+     */
+
+    updateCurrentPage(pageNumber) {
+        if (!this.isValidPageChange(pageNumber)) {
+            return;
+        }
+
+        this.currentPageNumber = pageNumber;
+        this.pageControls.updateCurrentPage(pageNumber);
+
+        this.emit('pagefocus', {
+            pageNumber
+        });
+    }
+
+    /**
+     * Determines if the requested page change is valid
+     *
+     * @private
+     * @param {number} pageNumber - Requested page number
+     * @return {void}
+     */
+    isValidPageChange(pageNumber) {
+        return pageNumber >= 1 && pageNumber <= this.pagesCount && pageNumber !== this.currentPageNumber;
     }
 
     /**
@@ -291,84 +325,25 @@ class MultiImageViewer extends ImageBaseViewer {
             return;
         }
 
-        if (!this.scrollState) {
-            const currentPageEl = this.singleImageEls[this.currentPageNumber - 1];
-            this.scrollState = {
-                down: false,
-                lastY: currentPageEl.scrollTop
-            };
-        }
-
-        const imageScrollHandler = this.isSingleImageElScrolled.bind(this);
+        const imageScrollHandler = this.handlePageChangeFromScroll;
         this.scrollCheckHandler = window.requestAnimationFrame(imageScrollHandler);
     }
 
     /**
-     * Updates page number if the single image has been scrolled past
+     * Handles page changes due to scrolling
      *
      * @private
      * @return {void}
      */
-    isSingleImageElScrolled() {
+    handlePageChangeFromScroll() {
+        const pageChange = pageNumberFromScroll(
+            this.currentPageNumber,
+            this.singleImageEls[this.currentPageNumber - 1],
+            this.wrapperEl
+        );
+
+        this.updateCurrentPage(pageChange);
         this.scrollCheckHandler = null;
-        const currentY = this.wrapperEl.scrollTop;
-        const lastY = this.scrollState.lastY;
-
-        if (currentY !== lastY) {
-            this.scrollState.isScrollingDown = currentY > lastY;
-        }
-        this.scrollState.lastY = currentY;
-        this.updatePageChange();
-    }
-
-    /**
-     * Updates page number in the page controls
-     *
-     * @private
-     * @param {number} pageNum - Page just navigated to
-     * @return {void}
-     */
-    pagechangeHandler(pageNum) {
-        this.currentPageNumber = pageNum;
-        this.pageControls.updateCurrentPage(pageNum);
-        this.emit('pagefocus', this.currentPageNumber);
-    }
-
-    /**
-     * Update the page number based on scroll direction. Only increment if
-     * wrapper is scrolled down past at least half of the current page element.
-     * Only decrement page if wrapper is scrolled up past at least half of the
-     * previous page element
-     *
-     * @private
-     * @return {void}
-     */
-    updatePageChange() {
-        let pageNum = this.currentPageNumber;
-        const currentPageEl = this.singleImageEls[this.currentPageNumber - 1];
-        const wrapperScrollOffset = this.scrollState.lastY;
-        const currentPageMiddleY = currentPageEl.offsetTop + currentPageEl.clientHeight / 2;
-        const isScrolledToBottom = wrapperScrollOffset + this.wrapperEl.clientHeight >= this.wrapperEl.scrollHeight;
-
-        if (
-            this.scrollState.isScrollingDown &&
-            currentPageEl.nextSibling &&
-            (wrapperScrollOffset > currentPageMiddleY || isScrolledToBottom)
-        ) {
-            // Increment page
-            const nextPage = currentPageEl.nextSibling;
-            pageNum = parseInt(nextPage.dataset.pageNumber, 10);
-        } else if (!this.scrollState.isScrollingDown && currentPageEl.previousSibling) {
-            const prevPage = currentPageEl.previousSibling;
-            const prevPageMiddleY = prevPage.offsetTop + prevPage.clientHeight / 2;
-
-            // Decrement page
-            if (prevPageMiddleY > wrapperScrollOffset) {
-                pageNum = parseInt(prevPage.dataset.pageNumber, 10);
-            }
-        }
-
-        this.pagechangeHandler(pageNum);
     }
 }
 

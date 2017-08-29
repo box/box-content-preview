@@ -342,6 +342,18 @@ export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
 }
 
 /**
+ * Returns the top right corner of the last quad point. This should provide
+ * the same location the add highlight button is shown at given that the
+ * quad points are stored in the correct order, ie left to right, top to bottom.
+ * @param {number[]} quadPoints - Quad points in PDF space in PDF units
+ * @return {number[]} [x,y] of lower right corner of last quad point
+ */
+export function getTopRightCornerOfLastQuadPoint(quadPoints) {
+    const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints[quadPoints.length - 1];
+    return [Math.min(x1, x2, x3, x4), Math.min(y1, y2, y3, y4)];
+}
+
+/**
  * Check whether a selection is valid for creating a highlight from.
  *
  * @param {Selection} selection The selection object to test
