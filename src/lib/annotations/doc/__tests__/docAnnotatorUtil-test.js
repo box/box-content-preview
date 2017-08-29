@@ -224,6 +224,11 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
 
         beforeEach(() => {
             stubs.annotationLayer = document.createElement('canvas');
+            stubs.context = {
+                scale: sandbox.stub()
+            };
+            sandbox.stub(stubs.annotationLayer, 'getContext').returns(stubs.context);
+
             stubs.pageEl = {
                 getBoundingClientRect: sandbox.stub().returns({
                     width,
@@ -252,6 +257,7 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
             expect(scaledCanvas.height).equals(stubs.canvasHeight * pxRatio);
             expect(scaledCanvas.style.width).equals(`${width}px`);
             expect(scaledCanvas.style.height).equals(`${stubs.canvasHeight}px`);
+            expect(stubs.annotationLayer.getContext).to.be.called;
         });
     });
 
