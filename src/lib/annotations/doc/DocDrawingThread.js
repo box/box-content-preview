@@ -3,8 +3,6 @@ import DrawingThread from '../drawing/DrawingThread';
 import {
     STATES,
     DRAW_STATES,
-    PAGE_PADDING_TOP,
-    PAGE_PADDING_BOTTOM,
     CLASS_ANNOTATION_LAYER_DRAW,
     CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS
 } from '../annotationConstants';
@@ -139,13 +137,7 @@ class DocDrawingThread extends DrawingThread {
         super.saveAnnotation(type, text);
         this.setBoundary();
 
-        this.concreteContext = getContext(
-            this.pageEl,
-            CLASS_ANNOTATION_LAYER_DRAW,
-            PAGE_PADDING_TOP,
-            PAGE_PADDING_BOTTOM
-        );
-
+        this.concreteContext = getContext(this.pageEl, CLASS_ANNOTATION_LAYER_DRAW);
         if (this.concreteContext) {
             // Move the in-progress drawing to the concrete context
             const inProgressCanvas = this.drawingContext.canvas;
@@ -198,12 +190,7 @@ class DocDrawingThread extends DrawingThread {
         // Set the scale and in-memory context for the pending thread
         this.lastScaleFactor = scale;
         this.pageEl = getPageEl(this.annotatedElement, this.location.page);
-        this.drawingContext = getContext(
-            this.pageEl,
-            CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS,
-            PAGE_PADDING_TOP,
-            PAGE_PADDING_BOTTOM
-        );
+        this.drawingContext = getContext(this.pageEl, CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS);
 
         const config = { scale };
         this.setContextStyles(config);
@@ -253,12 +240,7 @@ class DocDrawingThread extends DrawingThread {
         }
 
         const config = { scale: this.lastScaleFactor };
-        this.concreteContext = getContext(
-            this.pageEl,
-            CLASS_ANNOTATION_LAYER_DRAW,
-            PAGE_PADDING_TOP,
-            PAGE_PADDING_BOTTOM
-        );
+        this.concreteContext = getContext(this.pageEl, CLASS_ANNOTATION_LAYER_DRAW);
 
         this.setContextStyles(config, this.concreteContext);
 
