@@ -128,7 +128,11 @@ class Video360Viewer extends DashViewer {
         this.controls = new Video360Controls(this.mediaContainerEl);
         this.controls.on(EVENT_TOGGLE_VR, this.handleToggleVr);
 
-        // Add listener to hide and show controls
+        // Add listeners to hide and show controls
+        if (!this.renderer || !this.renderer.getBox3D()) {
+            return;
+        }
+
         const canvas = this.renderer.getBox3D().canvas;
         if (!canvas) {
             return;
@@ -150,8 +154,8 @@ class Video360Viewer extends DashViewer {
         this.controls.removeListener(EVENT_TOGGLE_VR, this.handleToggleVr);
         this.controls.destroy();
 
-        // Add listener to hide and show controls
-        if (!this.renderer) {
+        // Remove listeners to hide and show controls
+        if (!this.renderer || !this.renderer.getBox3D()) {
             return;
         }
 
