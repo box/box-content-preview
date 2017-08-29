@@ -388,6 +388,9 @@ export function scaleCanvas(pageEl, annotationLayerEl) {
     if (pxRatio !== 1) {
         scaledCanvas.style.width = `${width}px`;
         scaledCanvas.style.height = `${height}px`;
+
+        const context = annotationLayerEl.getContext('2d');
+        context.scale(pxRatio, pxRatio);
     }
 
     return scaledCanvas;
