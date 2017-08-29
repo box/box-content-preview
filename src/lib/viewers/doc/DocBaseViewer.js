@@ -549,7 +549,7 @@ class DocBaseViewer extends BaseViewer {
 
         // Disable font faces on IOS 10.3.X
         // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
-        PDFJS.disableFontFace = PDFJS.disableFontFace || Browser.isIOSWithFontIssue();
+        PDFJS.disableFontFace = PDFJS.disableFontFace || Browser.hasFontIssue();
 
         // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (25MB) for
         // previews outside of the US since the additional latency overhead per range request can be
