@@ -31,7 +31,8 @@ class DocPointDialog extends AnnotationDialog {
         const pageDimensions = pageEl.getBoundingClientRect();
 
         // Center middle of dialog with point - this coordinate is with respect to the page
-        let dialogLeftX = this.threadEl.offsetLeft + (POINT_ANNOTATION_ICON_WIDTH - dialogWidth) / 2;
+        const threadIconLeftX = this.threadEl.offsetLeft + POINT_ANNOTATION_ICON_WIDTH / 2;
+        let dialogLeftX = threadIconLeftX - dialogWidth / 2;
 
         // Adjusts Y position for transparent top border
         const dialogTopY = this.threadEl.offsetTop + POINT_ANNOTATION_ICON_DOT_HEIGHT;
@@ -43,12 +44,12 @@ class DocPointDialog extends AnnotationDialog {
             this.element,
             dialogLeftX,
             dialogWidth,
-            this.threadEl.offsetLeft,
+            threadIconLeftX,
             pageDimensions.width
         );
 
         // Position the dialog
-        this.element.style.left = `${dialogLeftX - 1}px`;
+        this.element.style.left = `${dialogLeftX}px`;
         this.element.style.top = `${dialogTopY + PAGE_PADDING_TOP}px`;
         docAnnotatorUtil.fitDialogHeightInPage(this.annotatedElement, this.element, pageDimensions.height, dialogTopY);
     }

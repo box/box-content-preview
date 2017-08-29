@@ -30,7 +30,8 @@ class ImagePointDialog extends AnnotationDialog {
         const imageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
 
         // Center middle of dialog with point - this coordinate is with respect to the page
-        let dialogLeftX = this.threadEl.offsetLeft + (POINT_ANNOTATION_ICON_WIDTH - dialogWidth) / 2;
+        const threadIconLeftX = this.threadEl.offsetLeft + POINT_ANNOTATION_ICON_WIDTH / 2;
+        let dialogLeftX = threadIconLeftX - dialogWidth / 2;
 
         // Adjusts Y position for transparent top border
         const dialogTopY = this.threadEl.offsetTop + POINT_ANNOTATION_ICON_HEIGHT;
@@ -42,13 +43,7 @@ class ImagePointDialog extends AnnotationDialog {
             imageEl.clientWidth > this.annotatedElement.clientWidth
                 ? imageEl.clientWidth
                 : this.annotatedElement.clientWidth;
-        dialogLeftX = annotatorUtil.repositionCaret(
-            this.element,
-            dialogLeftX,
-            dialogWidth,
-            this.threadEl.offsetLeft,
-            pageWidth
-        );
+        dialogLeftX = annotatorUtil.repositionCaret(this.element, dialogLeftX, dialogWidth, threadIconLeftX, pageWidth);
 
         // Position the dialog
         this.element.style.left = `${dialogLeftX}px`;
