@@ -36,7 +36,7 @@ const CLASS_DEFAULT_CURSOR = 'bp-use-default-cursor';
 // Required by rangy highlighter
 const ID_ANNOTATED_ELEMENT = 'bp-rangy-annotated-element';
 
-const annotationLayers = [CLASS_ANNOTATION_LAYER_HIGHLIGHT, CLASS_ANNOTATION_LAYER_DRAW];
+const ANNOTATION_LAYER_CLASSES = [CLASS_ANNOTATION_LAYER_HIGHLIGHT, CLASS_ANNOTATION_LAYER_DRAW];
 
 /**
  * For filtering out and only showing the first thread in a list of threads.
@@ -388,7 +388,7 @@ class DocAnnotator extends Annotator {
      */
     renderAnnotationsOnPage(pageNum) {
         // Scale existing canvases on re-render
-        this.scaleAnnotationCanvases(pageNum, annotationLayers);
+        this.scaleAnnotationCanvases(pageNum);
 
         super.renderAnnotationsOnPage(pageNum);
 
@@ -400,10 +400,17 @@ class DocAnnotator extends Annotator {
         });
     }
 
-    scaleAnnotationCanvases(pageNum, layerClasses) {
+    /**
+     * Scales all annotation canvases for a specified page.
+     *
+     * @override
+     * @param {number} pageNum - Page number
+     * @return {void}
+     */
+    scaleAnnotationCanvases(pageNum) {
         const pageEl = this.annotatedElement.querySelector(`[data-page-number="${pageNum}"]`);
 
-        layerClasses.forEach((annotationLayerClass) => {
+        ANNOTATION_LAYER_CLASSES.forEach((annotationLayerClass) => {
             const annotationLayerEl = pageEl.querySelector(`.${annotationLayerClass}`);
             if (annotationLayerEl) {
                 docAnnotatorUtil.scaleCanvas(pageEl, annotationLayerEl);
