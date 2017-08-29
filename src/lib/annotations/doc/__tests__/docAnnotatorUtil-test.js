@@ -10,6 +10,7 @@ import {
     convertDOMSpaceToPDFSpace,
     getBrowserCoordinatesFromLocation,
     getLowerRightCornerOfLastQuadPoint,
+    getTopRightCornerOfLastQuadPoint,
     isValidSelection,
     getContext,
     getPageEl,
@@ -182,6 +183,12 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
         const quadPoints = [[0, 10, 10, 10, 10, 20, 0, 20], [0, 0, 10, 0, 10, 10, 0, 10]];
 
         assert.equal(getLowerRightCornerOfLastQuadPoint(quadPoints).toString(), [10, 0].toString());
+    });
+
+    describe('getTopRightCornerOfLastQuadPoint()', () => {
+        const quadPoints = [[0, 10, 10, 10, 10, 20, 0, 20], [0, 0, 10, 0, 10, 10, 0, 10]];
+
+        assert.equal(getTopRightCornerOfLastQuadPoint(quadPoints).toString(), [0, 0].toString());
     });
 
     describe('isValidSelection', () => {
