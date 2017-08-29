@@ -530,10 +530,14 @@ class Preview extends EventEmitter {
             this.retryCount = 0;
         }
 
-        // Fetch access tokens before proceeding
-        getTokens(this.file.id, this.previewOptions.token)
-            .then(this.loadPreviewWithTokens)
-            .catch(this.triggerFetchError);
+        if (typeof fileIdOrFile === 'object') {
+            this.loadPreviewWithTokens({});
+        } else {
+            // Fetch access tokens before proceeding
+            getTokens(this.file.id, this.previewOptions.token)
+                .then(this.loadPreviewWithTokens)
+                .catch(this.triggerFetchError);
+        }
     }
 
     /**
@@ -577,7 +581,8 @@ class Preview extends EventEmitter {
         }
 
         if (checkFileValid(this.file)) {
-            // Cache hit, use that.
+            // Save file in cache. This also adds the 'ORIGINAL' representation.
+            cacheFile(this.cache, this.file);
             this.loadFromCache();
         } else {
             // Cache miss, fetch from the server.
@@ -641,6 +646,9 @@ class Preview extends EventEmitter {
         // Save the reference to any additional custom options for viewers
         this.options.viewers = options.viewers || {};
 
+        // Skip load from server and any server updates
+        this.options.skipServerUpdate = !!options.skipServerUpdate;
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
@@ -684,7 +692,9 @@ class Preview extends EventEmitter {
         this.loadViewer();
 
         // Also refresh from server to update cache
-        this.loadFromServer();
+        if (!this.options.skipServerUpdate) {
+            this.loadFromServer();
+        }
     }
 
     /**
@@ -1086,8 +1096,8 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     prefetchNextFiles() {
-        // Don't bother prefetching when there aren't more files
-        if (this.collection.length < 2) {
+        // Don't bother prefetching when there aren't more files or we need to skip server update
+        if (this.collection.length < 2 || this.options.skipServerUpdate) {
             return;
         }
 
