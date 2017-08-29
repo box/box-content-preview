@@ -103,8 +103,10 @@ class Video360Viewer extends DashViewer {
             this.renderer = null;
         }
 
-        this.wrapperEl.removeEventListener('mousemove', this.mousemoveHandler);
-        this.wrapperEl.removeEventListener('touchstart', this.pointerHandler);
+        if (this.wrapperEl) {
+            this.wrapperEl.removeEventListener('mousemove', this.mousemoveHandler);
+            this.wrapperEl.removeEventListener('touchstart', this.pointerHandler);
+        }
     }
 
     /**

@@ -83,6 +83,34 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
         });
     });
 
+    describe('addEventListenersForMediaElement()', () => {
+        before(() => {
+            Object.defineProperty(Object.getPrototypeOf(Video360Viewer.prototype), 'addEventListenersForMediaElement', {
+                value: sandbox.stub()
+            });
+        });
+
+        beforeEach(() => {
+            sandbox.stub(viewer, 'finishLoadingSetup');
+            viewer.setup();
+        });
+
+        it('should bind mousemove listener to display video player UI', () => {
+            const addStub = sandbox.stub(viewer.wrapperEl, 'addEventListener');
+            viewer.addEventListenersForMediaElement();
+
+            expect(addStub).to.be.calledWith('mousemove');
+        });
+
+        it('should bind touchstart listener to display video player UI, if touch enabled', () => {
+            const addStub = sandbox.stub(viewer.wrapperEl, 'addEventListener');
+            viewer.hasTouch = true;
+            viewer.addEventListenersForMediaElement();
+
+            expect(addStub).to.be.calledWith('touchstart');
+        });
+    });
+
     describe('destroy()', () => {
         it('should invoke skybox.setAttribute() with params "skyboxTexture" and null, if .skybox exists', () => {
             const spy = sandbox.spy();
