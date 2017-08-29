@@ -194,7 +194,9 @@ $tablet: "(min-width: 768px)";
     width: 100%;
 
     @include border-top-bottom;
+}
 
+.bp-mobile-annotation-dialog .annotation-container {
     @media #{$tablet} {
         left: auto;
         padding: 15px 0;
