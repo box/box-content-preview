@@ -160,8 +160,8 @@ describe('lib/viewers/doc/DocumentViewer', () => {
             };
 
             doc.pageControls = {
-                init: sandbox.stub(),
-                addListener: sandbox.stub()
+                add: sandbox.stub(),
+                removeListener: sandbox.stub()
             };
         });
 
@@ -175,8 +175,7 @@ describe('lib/viewers/doc/DocumentViewer', () => {
             );
             expect(doc.controls.add).to.be.calledWith(__('zoom_in'), doc.zoomIn, 'bp-doc-zoom-in-icon', ICON_ZOOM_IN);
 
-            expect(doc.pageControls.init).to.be.called;
-            expect(doc.pageControls.addListener).to.be.calledWith('setpage', sinon.match.func);
+            expect(doc.pageControls.add).to.be.called;
 
             expect(doc.controls.add).to.be.calledWith(
                 __('enter_fullscreen'),
