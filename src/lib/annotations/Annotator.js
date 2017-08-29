@@ -1,7 +1,6 @@
 import EventEmitter from 'events';
 import autobind from 'autobind-decorator';
 import AnnotationService from './AnnotationService';
-import DrawingController from './drawing/DrawingController';
 import * as annotatorUtil from './annotatorUtil';
 import { ICON_CLOSE } from '../icons/icons';
 import './Annotator.scss';
@@ -172,9 +171,9 @@ class Annotator extends EventEmitter {
             const handler = this.getAnnotationModeClickHandler(currentMode);
             annotateButtonEl.addEventListener('click', handler);
 
-            // TODO (@minhnguyen): Implement controller for point mode annotation and remove this check
-            if (mode.controller && mode.controller.constructor.name === DrawingController.name) {
-                mode.controller.registerAnnotator(this);
+            const { CONTROLLERS } = this.options.annotator;
+            if (CONTROLLERS && CONTROLLERS[currentMode]) {
+                CONTROLLERS[currentMode].registerAnnotator(this);
             }
         }
     }
@@ -546,15 +545,16 @@ class Annotator extends EventEmitter {
                 const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
                 this.bindCustomListenersOnThread(thread);
 
-                const modeData = this.modeButtons[firstAnnotation.type];
-                if (
-                    modeData &&
-                    modeData.controller &&
-                    modeData.controller.constructor.name === DrawingController.name
-                ) {
-                    modeData.controller.bindCustomListenersOnThread(thread);
-                    modeData.controller.registerThread(thread);
-                    this.addThreadToMap(thread);
+                const { annotator } = this.options;
+                if (!annotator) {
+                    return;
+                }
+
+                const { CONTROLLERS } = annotator;
+                if (CONTROLLERS && CONTROLLERS[firstAnnotation.type]) {
+                    const controller = CONTROLLERS[firstAnnotation.type];
+                    controller.bindCustomListenersOnThread(thread);
+                    controller.registerThread(thread);
                 }
             });
 
@@ -715,8 +715,8 @@ class Annotator extends EventEmitter {
                 }
             );
         } else if (mode === TYPES.draw) {
-            const controller = this.modeButtons[TYPES.draw].controller;
-            controller.bindModeListeners();
+            const { CONTROLLERS } = this.options.annotator;
+            CONTROLLERS[TYPES.draw].bindModeListeners();
         }
 
         handlers.forEach((handler) => {
@@ -777,20 +777,16 @@ class Annotator extends EventEmitter {
     unbindModeListeners(mode) {
         while (this.annotationModeHandlers.length > 0) {
             const handler = this.annotationModeHandlers.pop();
-            const eventNames = handler.type.split(' ');
-            eventNames.forEach((eventName) => {
-                handler.eventObj.removeEventListener(eventName, handler.func);
-            });
+            handler.eventObj.removeEventListener(handler.type, handler.func);
         }
 
-        if (
-            mode &&
-            this.modeButtons &&
-            this.modeButtons[mode] &&
-            this.modeButtons[mode].controller &&
-            this.modeButtons[mode].controller.constructor.name === DrawingController.name
-        ) {
-            this.modeButtons[mode].controller.unbindModeListeners();
+        const { annotator } = this.options;
+        if (!annotator) {
+            return;
+        }
+        const { CONTROLLERS } = annotator;
+        if (CONTROLLERS && CONTROLLERS[mode]) {
+            CONTROLLERS[mode].unbindModeListeners();
         }
     }
 

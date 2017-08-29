@@ -562,11 +562,14 @@ describe('lib/annotations/Annotator', () => {
                     removeEventListener: sandbox.stub()
                 };
 
-                annotator.modeButtons = {};
-                annotator.modeButtons[TYPES.draw] = {
-                    controller: {
+                stubs.controllers = {
+                    [TYPES.draw]: {
                         bindModeListeners: sandbox.stub()
                     }
+                };
+
+                annotator.options.annotator = {
+                    CONTROLLERS: stubs.controllers
                 };
 
                 drawingThread = {
@@ -594,7 +597,7 @@ describe('lib/annotations/Annotator', () => {
                 annotator.bindModeListeners(TYPES.draw);
 
                 expect(annotator.annotatedElement.addEventListener).to.not.be.called;
-                expect(annotator.modeButtons[TYPES.draw].controller.bindModeListeners).to.be.called;
+                expect(stubs.controllers[TYPES.draw].bindModeListeners).to.be.called;
             });
         });
 
@@ -629,7 +632,7 @@ describe('lib/annotations/Annotator', () => {
                 annotator.modeButtons = {};
                 annotator.modeButtons[TYPES.draw] = {
                     controller: {
-                        name: 'DrawingController',
+                        name: 'drawingModeController',
                         unbindModeListeners: sandbox.stub()
                     }
                 };

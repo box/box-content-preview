@@ -313,7 +313,7 @@ class DocAnnotator extends Annotator {
 
         if (!thread && this.notification) {
             this.emit('annotationerror', __('annotations_create_error'));
-        } else if (thread && type !== TYPES.draw) {
+        } else if (thread && (type !== TYPES.draw || location.page)) {
             this.addThreadToMap(thread);
         }
 
@@ -758,9 +758,14 @@ class DocAnnotator extends Annotator {
      * @return {void}
      */
     drawingSelectionHandler(event) {
-        if (this.modeButtons && this.modeButtons[TYPES.draw] && this.modeButtons[TYPES.draw].controller) {
-            const controller = this.modeButtons[TYPES.draw].controller;
-            controller.handleSelection(event);
+        const { annotator } = this.options;
+        if (!annotator) {
+            return;
+        }
+
+        const { CONTROLLERS } = annotator;
+        if (CONTROLLERS && CONTROLLERS[TYPES.draw]) {
+            CONTROLLERS[TYPES.draw].handleSelection(event);
         }
     }
 

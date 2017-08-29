@@ -1,21 +1,21 @@
-import AnnotationController from '../../AnnotationController';
-import DrawingController from '../DrawingController';
+import AnnotationModeController from '../../AnnotationModeController';
+import DrawingModeController from '../DrawingModeController';
 import * as annotatorUtil from '../../annotatorUtil';
 
-let drawingController;
+let drawingModeController;
 let stubs;
 const sandbox = sinon.sandbox.create();
 
-describe('lib/annotations/drawing/DrawingController', () => {
+describe('lib/annotations/drawing/DrawingModeController', () => {
     beforeEach(() => {
-        drawingController = new DrawingController();
+        drawingModeController = new DrawingModeController();
         stubs = {};
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         stubs = null;
-        drawingController = null;
+        drawingModeController = null;
     });
 
     describe('registerAnnotator()', () => {
@@ -27,14 +27,14 @@ describe('lib/annotations/drawing/DrawingController', () => {
             annotator.getAnnotateButton.onCall(1).returns('undoButton');
             annotator.getAnnotateButton.onCall(2).returns('redoButton');
 
-            expect(drawingController.postButtonEl).to.be.undefined;
-            expect(drawingController.undoButtonEl).to.be.undefined;
-            expect(drawingController.redoButtonEl).to.be.undefined;
+            expect(drawingModeController.postButtonEl).to.be.undefined;
+            expect(drawingModeController.undoButtonEl).to.be.undefined;
+            expect(drawingModeController.redoButtonEl).to.be.undefined;
 
-            drawingController.registerAnnotator(annotator);
-            expect(drawingController.postButtonEl).to.equal('postButton');
-            expect(drawingController.redoButtonEl).to.equal('redoButton');
-            expect(drawingController.undoButtonEl).to.equal('undoButton');
+            drawingModeController.registerAnnotator(annotator);
+            expect(drawingModeController.postButtonEl).to.equal('postButton');
+            expect(drawingModeController.redoButtonEl).to.equal('redoButton');
+            expect(drawingModeController.undoButtonEl).to.equal('undoButton');
         });
     });
 
@@ -51,10 +51,10 @@ describe('lib/annotations/drawing/DrawingController', () => {
                 info: 'I am a thread'
             }
 
-            expect(drawingController.threads.search(thread)).to.deep.equal([]);
+            expect(drawingModeController.threads.search(thread)).to.deep.equal([]);
 
-            drawingController.registerThread(thread);
-            expect(drawingController.threads.search(thread).includes(thread)).to.be.truthy;
+            drawingModeController.registerThread(thread);
+            expect(drawingModeController.threads.search(thread).includes(thread)).to.be.truthy;
         });
     });
 
@@ -71,23 +71,23 @@ describe('lib/annotations/drawing/DrawingController', () => {
                 info: 'I am a thread'
             }
 
-            drawingController.threads.insert(thread);
-            expect(drawingController.threads.search(thread).includes(thread)).to.be.truthy;
+            drawingModeController.threads.insert(thread);
+            expect(drawingModeController.threads.search(thread).includes(thread)).to.be.truthy;
 
-            drawingController.unregisterThread(thread);
-            expect(drawingController.threads.search(thread)).to.deep.equal([]);
+            drawingModeController.unregisterThread(thread);
+            expect(drawingModeController.threads.search(thread)).to.deep.equal([]);
         });
     });
 
 
     describe('bindCustomListenersOnThread()', () => {
         beforeEach(() => {
-            Object.defineProperty(AnnotationController.prototype, 'bindCustomListenersOnThread', { value: sandbox.stub() })
-            stubs.super = AnnotationController.prototype.bindCustomListenersOnThread;
+            Object.defineProperty(AnnotationModeController.prototype, 'bindCustomListenersOnThread', { value: sandbox.stub() })
+            stubs.super = AnnotationModeController.prototype.bindCustomListenersOnThread;
         });
 
         it('should do nothing when the input is empty', () => {
-            drawingController.bindCustomListenersOnThread(undefined);
+            drawingModeController.bindCustomListenersOnThread(undefined);
             expect(stubs.super).to.not.be.called;
         });
 
@@ -96,7 +96,7 @@ describe('lib/annotations/drawing/DrawingController', () => {
                 addListener: sandbox.stub()
             };
 
-            drawingController.bindCustomListenersOnThread(thread);
+            drawingModeController.bindCustomListenersOnThread(thread);
             expect(stubs.super).to.be.called;
             expect(thread.addListener).to.be.called.twice;
         });
@@ -104,14 +104,14 @@ describe('lib/annotations/drawing/DrawingController', () => {
 
     describe('setupAndGetHandlers()', () => {
         beforeEach(() => {
-            drawingController.annotator = {
+            drawingModeController.annotator = {
                 createAnnotationThread: sandbox.stub(),
                 getLocationFromEvent: sandbox.stub(),
                 annotatedElement: {}
             };
-            stubs.createThread = drawingController.annotator.createAnnotationThread;
-            stubs.getLocation = drawingController.annotator.getLocationFromEvent;
-            stubs.bindCustomListenersOnThread = sandbox.stub(drawingController, 'bindCustomListenersOnThread');
+            stubs.createThread = drawingModeController.annotator.createAnnotationThread;
+            stubs.getLocation = drawingModeController.annotator.getLocationFromEvent;
+            stubs.bindCustomListenersOnThread = sandbox.stub(drawingModeController, 'bindCustomListenersOnThread');
 
             stubs.createThread.returns({
                 saveAnnotation: () => {},
@@ -124,22 +124,22 @@ describe('lib/annotations/drawing/DrawingController', () => {
         });
 
         it('should successfully return draw mode handlers if undo and redo buttons do not exist', () => {
-            drawingController.postButtonEl = 'not undefined';
-            drawingController.undoButtonEl = undefined;
-            drawingController.redoButtonEl = undefined;
+            drawingModeController.postButtonEl = 'not undefined';
+            drawingModeController.undoButtonEl = undefined;
+            drawingModeController.redoButtonEl = undefined;
 
-            const handlers = drawingController.setupAndGetHandlers();
+            const handlers = drawingModeController.setupAndGetHandlers();
             expect(stubs.createThread).to.be.called;
             expect(stubs.bindCustomListenersOnThread).to.be.called;
             expect(handlers.length).to.equal(4);
         });
 
         it('should successfully return draw mode handlers if undo and redo buttons exist', () => {
-            drawingController.postButtonEl = 'not undefined';
-            drawingController.undoButtonEl = 'also not undefined';
-            drawingController.redoButtonEl = 'additionally not undefined';
+            drawingModeController.postButtonEl = 'not undefined';
+            drawingModeController.undoButtonEl = 'also not undefined';
+            drawingModeController.redoButtonEl = 'additionally not undefined';
 
-            const handlers = drawingController.setupAndGetHandlers();
+            const handlers = drawingModeController.setupAndGetHandlers();
             expect(stubs.createThread).to.be.called;
             expect(stubs.bindCustomListenersOnThread).to.be.called;
             expect(handlers.length).to.equal(6);
@@ -149,14 +149,14 @@ describe('lib/annotations/drawing/DrawingController', () => {
     describe('handleAnnotationEvent()', () => {
         it('should add thread to map on locationassigned', () => {
             const thread = 'obj';
-            drawingController.annotator = {
+            drawingModeController.annotator = {
                 addThreadToMap: sandbox.stub()
             };
 
-            drawingController.handleAnnotationEvent(thread, {
+            drawingModeController.handleAnnotationEvent(thread, {
                 type: 'locationassigned'
             });
-            expect(drawingController.annotator.addThreadToMap).to.be.called;
+            expect(drawingModeController.annotator.addThreadToMap).to.be.called;
         });
 
         it('should remove annotationevent listeners from the thread on drawcommit', () => {
@@ -164,7 +164,7 @@ describe('lib/annotations/drawing/DrawingController', () => {
                 removeAllListeners: sandbox.stub()
             };
 
-            drawingController.handleAnnotationEvent(thread, {
+            drawingModeController.handleAnnotationEvent(thread, {
                 type: 'drawcommit'
             });
             expect(thread.removeAllListeners).to.be.calledWith('annotationevent');
@@ -181,46 +181,46 @@ describe('lib/annotations/drawing/DrawingController', () => {
                 type: 'pagechanged',
                 location: 'not empty'
             };
-            sandbox.stub(drawingController, 'unbindModeListeners');
-            sandbox.stub(drawingController, 'bindModeListeners', () => {
-                drawingController.currentThread = thread2;
+            sandbox.stub(drawingModeController, 'unbindModeListeners');
+            sandbox.stub(drawingModeController, 'bindModeListeners', () => {
+                drawingModeController.currentThread = thread2;
             });
 
-            drawingController.handleAnnotationEvent(thread1, data);
+            drawingModeController.handleAnnotationEvent(thread1, data);
             expect(thread1.saveAnnotation).to.be.called;
-            expect(drawingController.unbindModeListeners).to.be.called;
-            expect(drawingController.bindModeListeners).to.be.called;
+            expect(drawingModeController.unbindModeListeners).to.be.called;
+            expect(drawingModeController.bindModeListeners).to.be.called;
             expect(thread2.handleStart).to.be.calledWith(data.location);
         });
 
         it('should update undo and redo buttons on availableactions', () => {
             const thread = 'thread';
-            sandbox.stub(drawingController, 'updateUndoRedoButtonEls');
+            sandbox.stub(drawingModeController, 'updateUndoRedoButtonEls');
 
-            drawingController.handleAnnotationEvent(thread, {
+            drawingModeController.handleAnnotationEvent(thread, {
                 type: 'availableactions',
                 undo: 1,
                 redo: 2
             });
-            expect(drawingController.updateUndoRedoButtonEls).to.be.calledWith(1, 2);
+            expect(drawingModeController.updateUndoRedoButtonEls).to.be.calledWith(1, 2);
         });
     });
 
     describe('handleSelection()', () => {
         beforeEach(() => {
-            drawingController.annotator = {
+            drawingModeController.annotator = {
                 getLocationFromEvent: sandbox.stub()
             }
-            stubs.getLoc = drawingController.annotator.getLocationFromEvent;
+            stubs.getLoc = drawingModeController.annotator.getLocationFromEvent;
         });
 
         it('should do nothing with an empty event', () => {
-            drawingController.handleSelection();
+            drawingModeController.handleSelection();
             expect(stubs.getLoc).to.not.be.called;
         })
 
         it('should call select on an thread found in the data store', () => {
-            stubs.select = sandbox.stub(drawingController, 'select');
+            stubs.select = sandbox.stub(drawingModeController, 'select');
             stubs.getLoc.returns({
                 x: 5,
                 y: 5
@@ -230,12 +230,12 @@ describe('lib/annotations/drawing/DrawingController', () => {
             const filterObjects = {
                 filter: sandbox.stub().returns([filteredObject])
             };
-            drawingController.threads = {
+            drawingModeController.threads = {
                 search: sandbox.stub().returns(filterObjects)
             };
 
-            drawingController.handleSelection('event');
-            expect(drawingController.threads.search).to.be.called;
+            drawingModeController.handleSelection('event');
+            expect(drawingModeController.threads.search).to.be.called;
             expect(filterObjects.filter).to.be.called;
             expect(stubs.select).to.be.calledWith(filteredObject);
         });
@@ -247,38 +247,38 @@ describe('lib/annotations/drawing/DrawingController', () => {
                 drawBoundary: sandbox.stub()
             }
 
-            expect(drawingController.selected).to.not.deep.equal(thread);
-            drawingController.select(thread);
+            expect(drawingModeController.selectedThread).to.not.deep.equal(thread);
+            drawingModeController.select(thread);
             expect(thread.drawBoundary).to.be.called;
-            expect(drawingController.selected).to.deep.equal(thread);
+            expect(drawingModeController.selectedThread).to.deep.equal(thread);
         });
     });
 
     describe('updateUndoRedoButtonEls()', () => {
         beforeEach(() => {
-            drawingController.undoButtonEl = 'undo';
-            drawingController.redoButtonEl = 'redo';
+            drawingModeController.undoButtonEl = 'undo';
+            drawingModeController.redoButtonEl = 'redo';
             stubs.enable = sandbox.stub(annotatorUtil, 'enableElement');
             stubs.disable = sandbox.stub(annotatorUtil, 'disableElement');
         });
 
         it('should disable both when the counts are 0', () => {
-            drawingController.updateUndoRedoButtonEls(0, 0);
-            expect(stubs.disable).be.calledWith(drawingController.undoButtonEl);
-            expect(stubs.disable).be.calledWith(drawingController.redoButtonEl);
+            drawingModeController.updateUndoRedoButtonEls(0, 0);
+            expect(stubs.disable).be.calledWith(drawingModeController.undoButtonEl);
+            expect(stubs.disable).be.calledWith(drawingModeController.redoButtonEl);
             expect(stubs.enable).to.not.be.called;
         });
 
         it('should enable both when the counts are 1', () => {
-            drawingController.updateUndoRedoButtonEls(1, 1);
-            expect(stubs.enable).be.calledWith(drawingController.undoButtonEl);
-            expect(stubs.enable).be.calledWith(drawingController.redoButtonEl);
+            drawingModeController.updateUndoRedoButtonEls(1, 1);
+            expect(stubs.enable).be.calledWith(drawingModeController.undoButtonEl);
+            expect(stubs.enable).be.calledWith(drawingModeController.redoButtonEl);
             expect(stubs.disable).to.not.be.called;
         });
 
         it('should enable undo and do nothing for redo', () => {
-            drawingController.updateUndoRedoButtonEls(1, 2);
-            expect(stubs.enable).be.calledWith(drawingController.undoButtonEl).once;
+            drawingModeController.updateUndoRedoButtonEls(1, 2);
+            expect(stubs.enable).be.calledWith(drawingModeController.undoButtonEl).once;
             expect(stubs.disable).to.not.be.called;
         });
     });

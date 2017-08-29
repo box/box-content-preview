@@ -31,8 +31,8 @@ class DrawingPath {
     constructor(drawingPathData) {
         if (drawingPathData) {
             this.path = drawingPathData.path.map((num) => {
-                const x = parseFloat(num.x);
-                const y = parseFloat(num.y);
+                const x = +num.x;
+                const y = +num.y;
 
                 this.minX = Math.min(this.minX, x);
                 this.maxX = Math.max(this.maxX, x);

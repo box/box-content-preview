@@ -1320,16 +1320,18 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
     describe('drawingSelectionHandler()', () => {
         it('should use the controller to select with the event', () => {
-            annotator.modeButtons = {};
-            annotator.modeButtons[TYPES.draw] = {
-                controller: {
-                    handleSelection: sandbox.stub()
+            const drawController = {
+                handleSelection: sandbox.stub()
+            };
+            annotator.options.annotator = {
+                CONTROLLERS: {
+                    [TYPES.draw]: drawController
                 }
             };
 
             const evt = 'event';
             annotator.drawingSelectionHandler(evt);
-            expect(annotator.modeButtons[TYPES.draw].controller.handleSelection).to.be.calledWith(evt);
+            expect(drawController.handleSelection).to.be.calledWith(evt);
         });
 
         it('should not error when no modeButtons exist for draw', () => {

@@ -1,28 +1,28 @@
-import AnnotationController from '../AnnotationController';
+import AnnotationModeController from '../AnnotationModeController';
 
-let annotationController;
+let annotationModeController;
 let stubs;
 const sandbox = sinon.sandbox.create();
 
-describe('lib/annotations/AnnotationController', () => {
+describe('lib/annotations/AnnotationModeController', () => {
     beforeEach(() => {
-        annotationController = new AnnotationController();
+        annotationModeController = new AnnotationModeController();
         stubs = {};
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         stubs = null;
-        annotationController = null;
+        annotationModeController = null;
     });
 
     describe('registerAnnotator()', () => {
         it('should internally keep track of the registered annotator', () => {
             const annotator = 'I am an annotator';
-            expect(annotationController.annotator).to.be.undefined;
+            expect(annotationModeController.annotator).to.be.undefined;
 
-            annotationController.registerAnnotator(annotator);
-            expect(annotationController.annotator).to.equal(annotator);
+            annotationModeController.registerAnnotator(annotator);
+            expect(annotationModeController.annotator).to.equal(annotator);
         });
     });
 
@@ -35,12 +35,12 @@ describe('lib/annotations/AnnotationController', () => {
                     addEventListener: sandbox.stub()
                 }
             };
-            sandbox.stub(annotationController, 'setupAndGetHandlers').returns([handlerObj]);
-            expect(annotationController.handlers.length).to.equal(0);
+            sandbox.stub(annotationModeController, 'setupAndGetHandlers').returns([handlerObj]);
+            expect(annotationModeController.handlers.length).to.equal(0);
 
-            annotationController.bindModeListeners();
+            annotationModeController.bindModeListeners();
             expect(handlerObj.eventObj.addEventListener).to.be.calledWith(handlerObj.type, handlerObj.func);
-            expect(annotationController.handlers.length).to.equal(1);
+            expect(annotationModeController.handlers.length).to.equal(1);
         });
     });
 
@@ -54,56 +54,56 @@ describe('lib/annotations/AnnotationController', () => {
                 }
             };
 
-            annotationController.handlers = [handlerObj];
-            expect(annotationController.handlers.length).to.equal(1);
+            annotationModeController.handlers = [handlerObj];
+            expect(annotationModeController.handlers.length).to.equal(1);
 
-            annotationController.unbindModeListeners();
+            annotationModeController.unbindModeListeners();
             expect(handlerObj.eventObj.removeEventListener).to.be.calledWith(handlerObj.type, handlerObj.func);
-            expect(annotationController.handlers.length).to.equal(0);
+            expect(annotationModeController.handlers.length).to.equal(0);
         });
     });
 
     describe('registerThread()', () => {
         it('should internally keep track of the registered thread', () => {
             const thread = 'I am a thread';
-            expect(annotationController.threads.includes(thread)).to.be.falsy;
+            expect(annotationModeController.threads.includes(thread)).to.be.falsy;
 
-            annotationController.registerThread(thread);
-            expect(annotationController.threads.includes(thread)).to.be.truthy;
+            annotationModeController.registerThread(thread);
+            expect(annotationModeController.threads.includes(thread)).to.be.truthy;
         });
     });
 
     describe('unregisterThread()', () => {
         it('should internally keep track of the registered thread', () => {
             const thread = 'I am a thread';
-            annotationController.threads = [thread, 'other'];
-            expect(annotationController.threads.includes(thread)).to.be.truthy;
+            annotationModeController.threads = [thread, 'other'];
+            expect(annotationModeController.threads.includes(thread)).to.be.truthy;
 
-            annotationController.unregisterThread(thread);
-            expect(annotationController.threads.includes(thread)).to.be.falsy;
+            annotationModeController.unregisterThread(thread);
+            expect(annotationModeController.threads.includes(thread)).to.be.falsy;
         });
     });
 
     describe('bindCustomListenersOnThread()', () => {
         it('should do nothing when the input is empty', () => {
-            annotationController.annotator = {
+            annotationModeController.annotator = {
                 bindCustomListenersOnThread: sandbox.stub()
             };
 
-            annotationController.bindCustomListenersOnThread(undefined);
-            expect(annotationController.annotator.bindCustomListenersOnThread).to.not.be.called;
+            annotationModeController.bindCustomListenersOnThread(undefined);
+            expect(annotationModeController.annotator.bindCustomListenersOnThread).to.not.be.called;
         });
 
         it('should bind custom listeners on thread', () => {
             const thread = {
                 addListener: sandbox.stub()
             };
-            annotationController.annotator = {
+            annotationModeController.annotator = {
                 bindCustomListenersOnThread: sandbox.stub()
             };
 
-            annotationController.bindCustomListenersOnThread(thread);
-            expect(annotationController.annotator.bindCustomListenersOnThread).to.be.called;
+            annotationModeController.bindCustomListenersOnThread(thread);
+            expect(annotationModeController.annotator.bindCustomListenersOnThread).to.be.called;
             expect(thread.addListener).to.be.called;
         });
     });
@@ -114,7 +114,7 @@ describe('lib/annotations/AnnotationController', () => {
                 removeAllListeners: sandbox.stub()
             };
 
-            annotationController.unbindCustomListenersOnThread(undefined);
+            annotationModeController.unbindCustomListenersOnThread(undefined);
             expect(thread.removeAllListeners).to.not.be.called;
         });
 
@@ -123,7 +123,7 @@ describe('lib/annotations/AnnotationController', () => {
                 removeAllListeners: sandbox.stub()
             };
 
-            annotationController.unbindCustomListenersOnThread(thread);
+            annotationModeController.unbindCustomListenersOnThread(thread);
             expect(thread.removeAllListeners).to.have.callCount(4);
         });
     });

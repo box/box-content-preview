@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 
-class AnnotationController extends EventEmitter {
+class AnnotationModeController extends EventEmitter {
     /** @property {Array} - The array of annotation threads */
     threads = [];
 
@@ -10,7 +10,7 @@ class AnnotationController extends EventEmitter {
     /**
      * [constructor]
      *
-     * @return {AnnotationController} Annotation controller instance
+     * @return {AnnotationModeController} Annotation controller instance
      */
     constructor() {
         super();
@@ -40,8 +40,8 @@ class AnnotationController extends EventEmitter {
     bindModeListeners() {
         const handlers = this.setupAndGetHandlers();
         handlers.forEach((handler) => {
-            const eventNames = handler.type.split(' ');
-            eventNames.forEach((eventName) => handler.eventObj.addEventListener(eventName, handler.func));
+            const types = handler.type instanceof Array ? handler.type : [handler.type];
+            types.forEach((eventName) => handler.eventObj.addEventListener(eventName, handler.func));
             this.handlers.push(handler);
         });
     }
@@ -55,8 +55,8 @@ class AnnotationController extends EventEmitter {
     unbindModeListeners() {
         while (this.handlers.length > 0) {
             const handler = this.handlers.pop();
-            const eventNames = handler.type.split(' ');
-            eventNames.forEach((eventName) => {
+            const types = handler.type instanceof Array ? handler.type : [handler.type];
+            types.forEach((eventName) => {
                 handler.eventObj.removeEventListener(eventName, handler.func);
             });
         }
@@ -96,7 +96,7 @@ class AnnotationController extends EventEmitter {
             return;
         }
 
-        // TODO (@minhnguyen): Move annotator.bindCustomListenersOnThread logic to AnnotationController
+        // TODO (@minhnguyen): Move annotator.bindCustomListenersOnThread logic to AnnotationModeController
         this.annotator.bindCustomListenersOnThread(thread);
         thread.addListener('annotationevent', (data) => {
             this.handleAnnotationEvent(thread, data);
@@ -143,4 +143,4 @@ class AnnotationController extends EventEmitter {
     /* eslint-enable no-unused-vars */
 }
 
-export default AnnotationController;
+export default AnnotationModeController;

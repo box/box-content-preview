@@ -1,5 +1,5 @@
 import rbush from 'rbush';
-import AnnotationController from '../AnnotationController';
+import AnnotationModeController from '../AnnotationModeController';
 import * as annotatorUtil from '../annotatorUtil';
 import {
     TYPES,
@@ -9,14 +9,14 @@ import {
     DRAW_BORDER_OFFSET
 } from '../annotationConstants';
 
-class DrawingController extends AnnotationController {
+class DrawingModeController extends AnnotationModeController {
     /* eslint-disable new-cap */
     /** @property {Array} - The array of annotation threads */
     threads = new rbush();
     /* eslint-enable new-cap */
 
-    /** @property {DrawingThread} - The selected DrawingThread */
-    selected;
+    /** @property {DrawingThread} - The currently selected DrawingThread */
+    selectedThread;
 
     /** @property {HTMLElement} - The button to commit the pending drawing thread */
     postButtonEl;
@@ -116,17 +116,17 @@ class DrawingController extends AnnotationController {
         // Get handlers
         handlers.push(
             {
-                type: 'mousemove touchmove',
+                type: ['mousemove', 'touchmove'],
                 func: annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleMove),
                 eventObj: this.annotator.annotatedElement
             },
             {
-                type: 'mousedown touchstart',
+                type: ['mousedown', 'touchstart'],
                 func: annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleStart),
                 eventObj: this.annotator.annotatedElement
             },
             {
-                type: 'mouseup touchcancel touchend',
+                type: ['mouseup', 'touchcancel', 'touchend'],
                 func: annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleStop),
                 eventObj: this.annotator.annotatedElement
             }
@@ -232,14 +232,14 @@ class DrawingController extends AnnotationController {
             .filter((drawingThread) => drawingThread.location.page === location.page);
 
         // Clear boundary on previously selected thread
-        if (this.selected) {
-            const canvas = this.selected.drawingContext.canvas;
-            this.selected.drawingContext.clearRect(0, 0, canvas.width, canvas.height);
+        if (this.selectedThread) {
+            const canvas = this.selectedThread.drawingContext.canvas;
+            this.selectedThread.drawingContext.clearRect(0, 0, canvas.width, canvas.height);
         }
 
         // Selected a region with no drawing threads, remove the reference to the previously selected thread
         if (intersectingThreads.length === 0) {
-            this.selected = undefined;
+            this.selectedThread = undefined;
             return;
         }
 
@@ -257,19 +257,19 @@ class DrawingController extends AnnotationController {
      * @return {void}
      */
     select(selectedDrawingThread) {
-        if (this.selected && this.selected === selectedDrawingThread) {
+        if (this.selectedThread && this.selectedThread === selectedDrawingThread) {
             // Selected the same thread twice, delete the thread
-            const toDelete = this.selected;
+            const toDelete = this.selectedThread;
             toDelete.deleteThread();
 
             // Redraw any threads that the deleted thread could have been covering
             const toRedraw = this.threads.search(toDelete);
             toRedraw.forEach((drawingThread) => drawingThread.show());
-            this.selected = undefined;
+            this.selectedThread = undefined;
         } else {
             // Selected the thread for the first time, select the thread (TODO @minhnguyen: show UI on select)
             selectedDrawingThread.drawBoundary();
-            this.selected = selectedDrawingThread;
+            this.selectedThread = selectedDrawingThread;
         }
     }
 
@@ -300,4 +300,4 @@ class DrawingController extends AnnotationController {
     }
 }
 
-export default DrawingController;
+export default DrawingModeController;
