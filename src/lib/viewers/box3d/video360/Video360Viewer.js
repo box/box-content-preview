@@ -53,9 +53,26 @@ class Video360Viewer extends DashViewer {
         this.wrapperEl.classList.add(CSS_CLASS_VIDEO_360);
     }
 
+    /**
+     * Adds event listeners to the canvas element.
+     * Makes changes to the media controls.
+     *
+     * @override
+     * @return {void}
+     */
+    addEventListenersForMediaElement() {
+        super.addEventListenersForMediaElement();
+
+        this.wrapperEl.addEventListener('mousemove', this.mousemoveHandler);
+        if (this.hasTouch) {
+            this.wrapperEl.addEventListener('touchstart', this.pointerHandler);
+        }
+    }
+
     /** @inheritdoc */
     destroy() {
         super.destroy();
+
         if (this.skybox) {
             this.skybox.setAttribute('skyboxTexture', null);
             this.skybox = null;
@@ -85,6 +102,9 @@ class Video360Viewer extends DashViewer {
             this.renderer.destroy();
             this.renderer = null;
         }
+
+        this.wrapperEl.removeEventListener('mousemove', this.mousemoveHandler);
+        this.wrapperEl.removeEventListener('touchstart', this.pointerHandler);
     }
 
     /**
