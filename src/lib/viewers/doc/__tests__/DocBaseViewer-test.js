@@ -1039,6 +1039,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.loadUI();
             expect(bindControlListenersStub).to.be.called;
             expect(docBase.controls instanceof Controls).to.be.true;
+            expect(docBase.pageControls instanceof PageControls).to.be.true;
+            expect(docBase.pageControls.contentEl).to.equal(docBase.docEl);
         });
     });
 
@@ -1142,11 +1144,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             stubs.getCachedPage = sandbox.stub(docBase, 'getCachedPage');
             stubs.emit = sandbox.stub(docBase, 'emit');
             stubs.setupPages = sandbox.stub(docBase, 'setupPageIds');
-
-            docBase.pageControls = {
-                checkPaginationButtons: sandbox.stub()
-            };
-            stubs.checkPaginationButtons = docBase.pageControls.checkPaginationButtons;
         });
 
         it('should load UI, check the pagination buttons, set the page, and make document scrollable', () => {
@@ -1156,11 +1153,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             docBase.pagesinitHandler();
             expect(stubs.loadUI).to.be.called;
-            expect(stubs.checkPaginationButtons).to.be.called;
             expect(stubs.setPage).to.be.called;
             expect(docBase.docEl).to.have.class('bp-is-scrollable');
             expect(stubs.setupPages).to.be.called;
-            expect(stubs.checkPaginationButtons).to.be.called;
         });
 
         it('should broadcast that the preview is loaded if it hasn\'t already', () => {
@@ -1217,7 +1212,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 pageCount: 1
             };
             docBase.pageControls = {
-                updateCurrentPage: sandbox.stub()
+                updateCurrentPage: sandbox.stub(),
+                removeListener: sandbox.stub()
             };
             stubs.updateCurrentPage = docBase.pageControls.updateCurrentPage;
         });
