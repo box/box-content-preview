@@ -437,7 +437,7 @@ class DocAnnotator extends Annotator {
 
         if (this.hasTouch && this.isMobile) {
             document.addEventListener('selectionchange', this.onSelectionChange);
-            document.addEventListener('touchstart', this.drawingSelectionHandler);
+            this.annotatedElement.addEventListener('touchstart', this.drawingSelectionHandler);
         } else {
             this.annotatedElement.addEventListener('click', this.drawingSelectionHandler);
             this.annotatedElement.addEventListener('dblclick', this.highlightMouseupHandler);
@@ -470,7 +470,7 @@ class DocAnnotator extends Annotator {
 
         if (this.hasTouch && this.isMobile) {
             document.removeEventListener('selectionchange', this.onSelectionChange);
-            document.removeEventListener('touchstart', this.drawingSelectionHandler);
+            this.annotatedElement.removeEventListener('touchstart', this.drawingSelectionHandler);
         } else {
             this.annotatedElement.removeEventListener('click', this.drawingSelectionHandler);
             this.annotatedElement.removeEventListener('dblclick', this.highlightMouseupHandler);

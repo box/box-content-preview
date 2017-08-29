@@ -531,11 +531,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.isMobile = true;
             annotator.hasTouch = true;
             const docListen = sandbox.spy(document, 'addEventListener');
+            const annotatedElementListen = sandbox.spy(annotator.annotatedElement, 'addEventListener');
 
             annotator.bindDOMListeners();
 
             expect(docListen).to.be.calledWith('selectionchange', sinon.match.func);
-            expect(docListen).to.be.calledWith('touchstart', sinon.match.func);
+            expect(annotatedElementListen).to.be.calledWith('touchstart', sinon.match.func);
         });
     });
 
@@ -590,10 +591,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.isMobile = true;
             annotator.hasTouch = true;
             const docStopListen = sandbox.spy(document, 'removeEventListener');
+            const annotatedElementStopListen = sandbox.spy(annotator.annotatedElement, 'removeEventListener');
 
             annotator.unbindDOMListeners();
 
             expect(docStopListen).to.be.calledWith('selectionchange', sinon.match.func);
+            expect(annotatedElementStopListen).to.be.calledWith('touchstart', sinon.match.func);
         });
     });
 
