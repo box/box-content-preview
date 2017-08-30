@@ -127,6 +127,7 @@ class DocAnnotator extends Annotator {
         if (this.commentHighlightEnabled) {
             this.highlightCurrentSelection = this.highlightCurrentSelection.bind(this);
             this.createHighlightDialog.addListener(CreateEvents.comment, this.highlightCurrentSelection);
+
             this.createHighlightThread = this.createHighlightThread.bind(this);
             this.createHighlightDialog.addListener(CreateEvents.commentPost, this.createHighlightThread);
         }
@@ -415,7 +416,7 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Override to factor in highlight types being filtered out, if disabled
+     * Override to factor in highlight types being filtered out, if disabled. Also scales annotation canvases.
      *
      * @override
      * @param {number} pageNum - Page number
@@ -425,14 +426,13 @@ class DocAnnotator extends Annotator {
         // Scale existing canvases on re-render
         this.scaleAnnotationCanvases(pageNum);
 
+        // TODO (@jholdstock|@spramod) remove this if statement, and make super call, upon refactor.
         if (this.threads && this.threads[pageNum]) {
             this.threads[pageNum].forEach((thread) => {
-                if (
-                    (!this.plainHighlightEnabled && thread.type === TYPES.highlight) ||
-                    (!this.commentHighlightEnabled && thread.type === TYPES.highlight_comment)
-                ) {
+                if (!this.isModeAnnotatable(thread.type)) {
                     return;
                 }
+
                 thread.show(this.plainHighlightEnabled, this.commentHighlightEnabled);
             });
         }
