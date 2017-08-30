@@ -1,5 +1,6 @@
 import DrawingPath from '../drawing/DrawingPath';
 import DrawingThread from '../drawing/DrawingThread';
+import DocDrawingDialog from '../doc/DocDrawingDialog';
 import {
     STATES,
     DRAW_STATES,
@@ -98,8 +99,14 @@ class DocDrawingThread extends DrawingThread {
 
         if (this.pendingPath && !this.pendingPath.isEmpty()) {
             this.pathContainer.insert(this.pendingPath);
+            this.updateBoundary(this.pendingPath);
+            this.setBoundary();
             this.emitAvailableActions();
             this.pendingPath = null;
+
+            if (!this.dialog) {
+                this.createDialog();
+            }
         }
     }
 
@@ -134,18 +141,13 @@ class DocDrawingThread extends DrawingThread {
             return;
         }
 
-        super.saveAnnotation(type, text);
         this.setBoundary();
+        super.saveAnnotation(type, text);
 
-        this.concreteContext = getContext(this.pageEl, CLASS_ANNOTATION_LAYER_DRAW);
-        if (this.concreteContext) {
-            // Move the in-progress drawing to the concrete context
-            const inProgressCanvas = this.drawingContext.canvas;
-            const width = parseInt(inProgressCanvas.style.width, 10);
-            const height = parseInt(inProgressCanvas.style.height, 10);
-            this.concreteContext.drawImage(inProgressCanvas, 0, 0, width, height);
-            this.drawingContext.clearRect(0, 0, inProgressCanvas.width, inProgressCanvas.height);
-        }
+        // Move the in-progress drawing to the concrete context
+        const inProgressCanvas = this.drawingContext.canvas;
+        this.drawingContext.clearRect(0, 0, inProgressCanvas.width, inProgressCanvas.height);
+        this.show();
     }
 
     /**
@@ -254,7 +256,7 @@ class DocDrawingThread extends DrawingThread {
      * @return {Array|null} The an array of length 4 with the first item being the x coordinate, the second item
      *                      being the y coordinate, and the 3rd/4th items respectively being the width and height
      */
-    getRectangularBoundary() {
+    getBrowserRectangularBoundary() {
         if (!this.location || !this.location.dimensions || !this.pageEl) {
             return null;
         }
@@ -267,6 +269,23 @@ class DocDrawingThread extends DrawingThread {
         const height = y2 - y1;
 
         return [x1, y1, width, height];
+    }
+
+    /**
+     * Creates the document drawing annotation dialog for the thread.
+     *
+     * @override
+     * @return {void}
+     */
+    createDialog() {
+        this.dialog = new DocDrawingDialog({
+            annotatedElement: this.annotatedElement,
+            container: this.container,
+            annotations: this.annotations,
+            locale: this.locale,
+            location: this.location,
+            canAnnotate: this.annotationService.canAnnotate
+        });
     }
 }
 
