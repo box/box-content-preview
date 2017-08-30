@@ -1,11 +1,15 @@
 /* eslint-disable no-unused-expressions */
 import BoxAnnotations from '../BoxAnnotations';
+import { TYPES } from '../annotationConstants';
+import DrawingModeController from '../drawing/DrawingModeController';
 
 let loader;
+let stubs;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/annotators/BoxAnnotations', () => {
     beforeEach(() => {
+        stubs = {};
         loader = new BoxAnnotations();
     });
 
@@ -17,6 +21,7 @@ describe('lib/annotators/BoxAnnotations', () => {
         }
 
         loader = null;
+        stubs = null;
     });
 
     describe('getAnnotators()', () => {
@@ -31,28 +36,39 @@ describe('lib/annotators/BoxAnnotations', () => {
     });
 
     describe('getAnnotatorsForViewer()', () => {
+        beforeEach(() => {
+            stubs.instantiateControllers = sandbox.stub(loader, 'instantiateControllers');
+        });
         it('should return undefined if the annotator does not exist', () => {
             const annotator = loader.getAnnotatorsForViewer('not_supported_type');
             expect(annotator).to.be.undefined;
+            expect(stubs.instantiateControllers).to.be.called;
         });
 
         it('should return the correct annotator for the viewer name', () => {
             const name = 'Document';
             const annotator = loader.getAnnotatorsForViewer(name);
             expect(annotator.NAME).to.equal(name); // First entry is Document annotator
+            expect(stubs.instantiateControllers).to.be.called;
         });
 
         it('should return nothing if the viewer requested is disabled', () => {
             const annotator = loader.getAnnotatorsForViewer('Document', ['Document']);
             expect(annotator).to.be.undefined;
+            expect(stubs.instantiateControllers).to.be.called;
         });
     });
 
     describe('determineAnnotator()', () => {
+        beforeEach(() => {
+            stubs.instantiateControllers = sandbox.stub(loader, 'instantiateControllers');
+        });
+
         it('should choose the first annotator that matches the viewer', () => {
             const viewer = 'Document';
             const annotator = loader.determineAnnotator(viewer);
             expect(annotator.NAME).to.equal(viewer);
+            expect(stubs.instantiateControllers).to.be.called;
         });
 
         it('should not choose a disabled annotator', () => {
@@ -100,6 +116,50 @@ describe('lib/annotators/BoxAnnotations', () => {
             const annotator = loader.determineAnnotator('Document', config);
             expect(annotator.TYPE.includes('point')).to.be.false;
             expect(annotator.TYPE.includes('highlight')).to.be.true;
+            expect(annotator).to.deep.equal({
+                NAME: 'Document',
+                VIEWER: ['Document'],
+                TYPE: ['highlight']
+            });
+            expect(stubs.instantiateControllers).to.be.called;
+        });
+    });
+
+    describe('instantiateControllers()', () => {
+        it('Should do nothing when a controller exists', () => {
+            const config = {
+                CONTROLLERS: {
+                    [TYPES.draw]: {
+                        CONSTRUCTOR: sandbox.stub()
+                    }
+                }
+            };
+
+            expect(() => loader.instantiateControllers(config)).to.not.throw();
+        });
+
+        it('Should do nothing when given an undefined object', () => {
+            const config = undefined;
+            expect(() => loader.instantiateControllers(config)).to.not.throw();
+        });
+
+        it('Should do nothing when config has no types', () => {
+            const config = {
+                TYPE: undefined
+            };
+            expect(() => loader.instantiateControllers(config)).to.not.throw();
+        });
+
+        it('Should instantiate controllers and assign them to the CONTROLLERS attribute', () => {
+            const config = {
+                TYPE: [TYPES.draw, 'typeWithoutController']
+            };
+
+            loader.instantiateControllers(config);
+            expect(config.CONTROLLERS).to.not.equal(undefined);
+            expect(config.CONTROLLERS[TYPES.draw] instanceof DrawingModeController).to.be.truthy;
+            const assignedControllers = Object.keys(config.CONTROLLERS);
+            expect(assignedControllers.length).to.equal(1);
         });
     });
 });

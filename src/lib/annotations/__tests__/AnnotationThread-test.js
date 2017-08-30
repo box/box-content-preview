@@ -218,6 +218,16 @@ describe('lib/annotations/AnnotationThread', () => {
             expect(thread.annotations.find(isServerAnnotation)).to.not.be.undefined;
         });
 
+        it('should emit an annotationsaved event on success', (done) => {
+            const serverAnnotation = 'real annotation';
+            const tempAnnotation = serverAnnotation;
+            thread.addListener('annotationsaved', () => {
+                expect(stubs.saveAnnotationToThread).to.be.called;
+                done();
+            });
+
+            thread.updateTemporaryAnnotation(tempAnnotation, serverAnnotation);
+        });
     })
 
     describe('deleteAnnotation()', () => {

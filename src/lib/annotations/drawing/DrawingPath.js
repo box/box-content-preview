@@ -30,17 +30,24 @@ class DrawingPath {
      */
     constructor(drawingPathData) {
         if (drawingPathData) {
-            this.path = drawingPathData.path.map((num) => createLocation(parseFloat(num.x), parseFloat(num.y)));
-            this.maxX = drawingPathData.maxX;
-            this.minX = drawingPathData.minX;
-            this.maxY = drawingPathData.maxY;
-            this.minY = drawingPathData.minY;
+            this.path = drawingPathData.path.map((num) => {
+                const x = +num.x;
+                const y = +num.y;
+
+                this.minX = Math.min(this.minX, x);
+                this.maxX = Math.max(this.maxX, x);
+                this.minY = Math.min(this.minY, y);
+                this.maxY = Math.max(this.maxY, y);
+
+                return createLocation(x, y);
+            });
         }
     }
 
     /**
      * Add position to coordinates and update the bounding box
      *
+     * @public
      * @param {Location} documentLocation - Original document location coordinate to be part of the drawing path
      * @param {Location} [browserLocation] - Optional browser position to be saved to browserPath
      * @return {void}
@@ -80,6 +87,7 @@ class DrawingPath {
     /**
      * Determine if any coordinates are contained in the DrawingPath
      *
+     * @public
      * @return {boolean} Whether or not any coordinates have been recorded
      */
     isEmpty() {
@@ -89,6 +97,7 @@ class DrawingPath {
     /**
      * Draw the recorded browser coordinates onto a CanvasContext. Requires a browser path to have been generated.
      *
+     * @public
      * @param {CanvasContext} drawingContext - Context to draw the recorded path on
      * @return {void}
      */
@@ -121,6 +130,7 @@ class DrawingPath {
     /**
      * Generate a browser location path that can be drawn on a canvas document from the stored path information
      *
+     * @public
      * @param {Function} coordinateToBrowserCoordinate - A function that takes a document location and returns
      *                                                   the corresponding browser location
      * @return {void}
@@ -135,14 +145,27 @@ class DrawingPath {
     }
 
     /**
-     * Extract path information from the drawing path
+     * Extract the path information from two paths by merging their paths and getting the bounding rectangle
      *
-     * @param {DrawingPath} drawingPath - The drawingPath to extract information from
-     * @return {void}
+     * @public
+     * @param {Object} accumulator - A drawingPath or accumulator to extract information from
+     * @param {DrawingPath} pathB - Another drawingPath to extract information from
+     * @return {Object} A bounding rectangle and the stroke paths it contains
      */
-    static extractDrawingInfo(drawingPath) {
+    static extractDrawingInfo(accumulator, pathB) {
+        let paths = accumulator.paths;
+        if (paths) {
+            paths.push(pathB.path);
+        } else {
+            paths = [accumulator.path, pathB.path];
+        }
+
         return {
-            path: drawingPath.path
+            minX: Math.min(accumulator.minX, pathB.minX),
+            maxX: Math.max(accumulator.maxX, pathB.maxX),
+            minY: Math.min(accumulator.minY, pathB.minY),
+            maxY: Math.max(accumulator.maxY, pathB.maxY),
+            paths
         };
     }
 }
