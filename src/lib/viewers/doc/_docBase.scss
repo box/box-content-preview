@@ -32,24 +32,24 @@
 
     //---------- Override CSS from generic PDFJS viewer build ----------//
     .pdfViewer .page {
+        align-items: center;
         border: 0;
         border-image: none;
         /* stylelint-disable declaration-no-important */
         box-sizing: content-box !important;
         /* stylelint-enable declaration-no-important */
+        display: flex;
+        justify-content: center;
         margin: 0 auto;
         // We use padding instead of margin to push down since we want to
         // include this padding when PDF.js jumps to pages
         padding: 15px 0;
         position: relative;
 
+        // Override loading icon styles from pdf.js - we use a CSS spinner absolutely centered
         .loadingIcon {
             background: none;
-        }
-
-        // Only show page loading indicator when viewer has loaded
-        .bp-loaded & .loadingIcon {
-            background: url('loadingIcon.gif') center no-repeat;
+            margin: auto;
         }
 
         // Fixes annotation icon broken src

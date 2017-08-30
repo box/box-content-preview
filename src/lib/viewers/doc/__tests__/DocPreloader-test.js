@@ -1,7 +1,14 @@
 /* eslint-disable no-unused-expressions */
 import DocPreloader from '../DocPreloader';
 import * as util from '../../../util';
-import { CLASS_BOX_PREVIEW_PRELOAD, CLASS_INVISIBLE, CLASS_PREVIEW_LOADED } from '../../../constants';
+import {
+    CLASS_BOX_PREVIEW_PRELOAD,
+    CLASS_BOX_PREVIEW_PRELOAD_CONTENT,
+    CLASS_BOX_PREVIEW_PRELOAD_OVERLAY,
+    CLASS_INVISIBLE,
+    CLASS_PREVIEW_LOADED,
+    CLASS_SPINNER
+} from '../../../constants';
 
 const PDFJS_CSS_UNITS = 96.0 / 72.0;
 
@@ -49,6 +56,9 @@ describe('lib/viewers/doc/DocPreloader', () => {
 
             return docPreloader.showPreload('someUrl', containerEl).then(() => {
                 expect(docPreloader.wrapperEl).to.contain(`.${CLASS_BOX_PREVIEW_PRELOAD}`);
+                expect(docPreloader.preloadEl).to.contain(`.${CLASS_BOX_PREVIEW_PRELOAD_CONTENT}`);
+                expect(docPreloader.preloadEl).to.contain(`.${CLASS_BOX_PREVIEW_PRELOAD_OVERLAY}`);
+                expect(docPreloader.overlayEl).to.contain(`.${CLASS_SPINNER}`);
                 expect(docPreloader.imageEl.src).to.equal(imgSrc);
                 expect(containerEl).to.contain(docPreloader.wrapperEl);
                 expect(docPreloader.bindDOMListeners).to.be.called;
@@ -60,6 +70,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
         beforeEach(() => {
             stubs.restoreScrollPosition = sandbox.stub(docPreloader, 'restoreScrollPosition');
             stubs.unbindDOMListeners = sandbox.stub(docPreloader, 'unbindDOMListeners');
+            stubs.cleanupPreload = sandbox.stub(docPreloader, 'cleanupPreload');
         });
 
         it('should not do anything if preload wrapper element is not present', () => {
@@ -70,17 +81,52 @@ describe('lib/viewers/doc/DocPreloader', () => {
             expect(stubs.unbindDOMListeners).to.not.be.called;
         });
 
-        it('should restore scroll position, unbind DOM listeners, remove the wrapper element, and revoke the object URL', () => {
+        it('should restore scroll position, unbind DOM listeners, and add a transparent class to the wrapper', () => {
             docPreloader.wrapperEl = document.createElement('div');
+            docPreloader.srcUrl = 'blah';
+
+            docPreloader.hidePreload();
+
+            expect(docPreloader.wrapperEl).to.have.class('bp-is-transparent');
+            expect(stubs.restoreScrollPosition).to.be.called;
+            expect(stubs.unbindDOMListeners).to.be.called;
+        });
+
+        it('should clean up preload after transition ends', () => {
+            docPreloader.wrapperEl = document.createElement('div');
+            sandbox.stub()
+
+            docPreloader.hidePreload();
+            docPreloader.wrapperEl.dispatchEvent(new Event('transitionend'));
+
+            expect(stubs.cleanupPreload).to.be.called;
+        });
+
+        it('should clean up preload after scroll event', () => {
+            docPreloader.wrapperEl = document.createElement('div');
+            sandbox.stub()
+
+            docPreloader.hidePreload();
+            docPreloader.wrapperEl.dispatchEvent(new Event('scroll'));
+
+            expect(stubs.cleanupPreload).to.be.called;
+        });
+    });
+
+    describe('cleanupPreload()', () => {
+        it('should remove wrapper, clear out preload and image element, and revoke object URL', () => {
+            docPreloader.wrapperEl = document.createElement('div');
+            docPreloader.preloadEl = document.createElement('div');
+            docPreloader.imageEl = document.createElement('img');
             docPreloader.srcUrl = 'blah';
             containerEl.appendChild(docPreloader.wrapperEl);
 
             sandbox.mock(URL).expects('revokeObjectURL').withArgs(docPreloader.srcUrl);
 
-            docPreloader.hidePreload();
+            docPreloader.cleanupPreload();
 
-            expect(stubs.restoreScrollPosition).to.be.called;
-            expect(stubs.unbindDOMListeners).to.be.called;
+            expect(docPreloader.preloadEl).to.be.undefined;
+            expect(docPreloader.imageEl).to.be.undefined;
             expect(containerEl).to.not.contain(docPreloader.wrapperEl);
         });
     });
@@ -113,6 +159,7 @@ describe('lib/viewers/doc/DocPreloader', () => {
             docPreloader.scaleAndShowPreload(width, height, 1);
 
             expect(stubs.setDimensions).to.be.calledWith(docPreloader.imageEl, width, height);
+            expect(stubs.setDimensions).to.be.calledWith(docPreloader.overlayEl, width, height);
             expect(stubs.hideLoadingIndicator).to.be.called;
             expect(stubs.emit).to.be.calledWith('preload');
             expect(docPreloader.preloadEl).to.not.have.class(CLASS_INVISIBLE);
@@ -122,8 +169,8 @@ describe('lib/viewers/doc/DocPreloader', () => {
             it('should create and set dimensions for numPages - 1 placeholders', () => {
                 docPreloader.scaleAndShowPreload(100, 100, numPages);
 
-                // Should scale 1 preload image and numPages - 1 placeholders
-                expect(stubs.setDimensions).to.have.callCount(numPages);
+                // Should scale 1 preload image, one overlay, and numPages - 1 placeholders
+                expect(stubs.setDimensions).to.have.callCount(numPages + 1);
 
                 // Should have numPages - 1 placeholder elements
                 expect(docPreloader.preloadEl).to.have.length(numPages - 1);

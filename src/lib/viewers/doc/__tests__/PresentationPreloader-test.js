@@ -53,6 +53,7 @@ describe('lib/viewers/doc/PresentationPreloader', () => {
             preloader.scaleAndShowPreload(width, height, 1);
 
             expect(stubs.setDimensions).to.be.calledWith(preloader.imageEl, width, height);
+            expect(stubs.setDimensions).to.be.calledWith(preloader.overlayEl, width, height);
             expect(stubs.hideLoadingIndicator).to.be.called;
             expect(stubs.emit).to.be.calledWith('preload');
             expect(preloader.preloadEl).to.not.have.class(CLASS_INVISIBLE);

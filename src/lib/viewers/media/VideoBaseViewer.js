@@ -142,7 +142,7 @@ class VideoBaseViewer extends MediaBaseViewer {
 
     /**
      * Adds event listeners to the media element.
-     * Makes changes to the meida controls.
+     * Makes changes to the media controls.
      *
      * @override
      * @return {void}
