@@ -765,6 +765,51 @@ describe('lib/viewers/media/Settings', () => {
         });
     });
 
+    describe('loadAlternateAudio()', () => {
+        it('Should load all audio tracks and make them available', () => {
+            const audioMenu = settings.settingsEl.querySelector('.bp-media-settings-menu-audiotracks');
+            sandbox.stub(settings, 'chooseOption');
+
+            settings.loadAlternateAudio(['English', 'Russian', 'Spanish']);
+
+            expect(settings.chooseOption).to.be.calledWith('audiotracks', '0');
+            expect(audioMenu.children.length).to.equal(4); // Three languages, and back to main menu
+            expect(settings.containerEl).to.not.have.class('bp-media-settings-audiotracks-unavailable');
+        });
+
+        it('Should reset menu dimensions after loading', () => {
+            sandbox.stub(settings, 'setMenuContainerDimensions');
+
+            settings.loadAlternateAudio(['English', 'Russian', 'Spanish']);
+
+            expect(settings.setMenuContainerDimensions).to.be.calledWith(settings.settingsEl.firstChild);
+        });
+
+        it('Should not list language for "und" language code', () => {
+            const audioMenu = settings.settingsEl.querySelector('.bp-media-settings-menu-audiotracks');
+
+            settings.loadAlternateAudio(['English', 'und']);
+
+            const audio0 = audioMenu.querySelector('[data-value="0"]').querySelector('.bp-media-settings-value');
+            const audio1 = audioMenu.querySelector('[data-value="1"]').querySelector('.bp-media-settings-value');
+            expect(audio0.innerHTML).to.equal('Track 1 (English)');
+            expect(audio1.innerHTML).to.equal('Track 2');
+        });
+
+        it('Should escape audio languages and roles', () => {
+            const audioMenu = settings.settingsEl.querySelector('.bp-media-settings-menu-audiotracks');
+
+            // There shouldn't be a way to get such inputs into this method in normal use case anyway
+            // because it goes through multiple levels of sanitization, but just in case...
+            settings.loadAlternateAudio(['English', '<badboy>']);
+
+            const audio0 = audioMenu.querySelector('[data-value="0"]').querySelector('.bp-media-settings-value');
+            const audio1 = audioMenu.querySelector('[data-value="1"]').querySelector('.bp-media-settings-value');
+            expect(audio0.innerHTML).to.equal('Track 1 (English)');
+            expect(audio1.innerHTML).to.equal('Track 2 (&lt;badboy&gt;)');
+        });
+    });
+
     describe('hasSubtitles()', () => {
         it('Should be false before loading subtitles', () => {
             expect(settings.hasSubtitles()).to.be.false;

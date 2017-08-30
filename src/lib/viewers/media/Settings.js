@@ -10,6 +10,7 @@ const CLASS_SETTINGS = 'bp-media-settings';
 const CLASS_SETTINGS_SELECTED = 'bp-media-settings-selected';
 const CLASS_SETTINGS_OPEN = 'bp-media-settings-is-open';
 const CLASS_SETTINGS_SUBTITLES_UNAVAILABLE = 'bp-media-settings-subtitles-unavailable';
+const CLASS_SETTINGS_AUDIOTRACKS_UNAVAILABLE = 'bp-media-settings-audiotracks-unavailable';
 const CLASS_SETTINGS_SUBTITLES_ON = 'bp-media-settings-subtitles-on';
 const SELECTOR_SETTINGS_SUB_ITEM = '.bp-media-settings-sub-item';
 const SELECTOR_SETTINGS_VALUE = '.bp-media-settings-value';
@@ -30,6 +31,11 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
         <div class="bp-media-settings-item bp-media-settings-item-subtitles bp-media-settings-is-hidden" data-type="subtitles" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-label" aria-label="${__('subtitles')}/CC">${__('subtitles')}/CC</div>
             <div class="bp-media-settings-value">${__('off')}</div>
+            <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
+        </div>
+        <div class="bp-media-settings-item bp-media-settings-item-audiotracks bp-media-settings-is-hidden" data-type="audiotracks" tabindex="0" role="menuitem" aria-haspopup="true">
+            <div class="bp-media-settings-label" aria-label="${__('media_audio')}">${__('media_audio')}</div>
+            <div class="bp-media-settings-value"></div>
             <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
         </div>
     </div>
@@ -87,9 +93,15 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
             <div class="bp-media-settings-value">${__('off')}</div>
         </div>
     </div>
+    <div class="bp-media-settings-menu-audiotracks bp-media-settings-menu bp-media-settings-is-hidden" role="menu">
+        <div class="bp-media-settings-sub-item bp-media-settings-sub-item-audiotracks" data-type="menu" tabindex="0" role="menuitem" aria-haspopup="true">
+            <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
+            <div class="bp-media-settings-label" aria-label="${__('media_audio')}">${__('media_audio')}</div>
+        </div>
+    </div>
 </div>`;
 
-const SUBTITLES_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data-type="subtitles" data-value="{{dataValue}}" tabindex="0" role="menuitemradio">
+const SUBMENU_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data-type="{{dataType}}" data-value="{{dataValue}}" tabindex="0" role="menuitemradio">
     <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
     <div class="bp-media-settings-value"></div>
 </div>`;
@@ -147,6 +159,7 @@ class Settings extends EventEmitter {
 
         addActivationListener(this.settingsEl, this.menuEventHandler);
         this.containerEl.classList.add(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
+        this.containerEl.classList.add(CLASS_SETTINGS_AUDIOTRACKS_UNAVAILABLE);
         this.init();
     }
 
@@ -319,7 +332,8 @@ class Settings extends EventEmitter {
         } else if (event.type === 'keydown') {
             const key = decodeKeydown(event).toLowerCase();
             const menuEl = menuItem.parentElement;
-            const itemIdx = [].findIndex.call(menuEl.children, (e) => {
+            const visibleOptions = [].filter.call(menuEl.children, (option) => option.offsetParent !== null);
+            const itemIdx = [].findIndex.call(visibleOptions, (e) => {
                 return e.contains(menuItem);
             });
 
@@ -333,21 +347,21 @@ class Settings extends EventEmitter {
                 case 'arrowup': {
                     this.containerEl.classList.add(CLASS_ELEM_KEYBOARD_FOCUS);
                     if (itemIdx > 0) {
-                        const newNode = menuEl.children[itemIdx - 1];
+                        const newNode = visibleOptions[itemIdx - 1];
                         newNode.focus();
                     }
                     break;
                 }
                 case 'arrowdown': {
                     this.containerEl.classList.add(CLASS_ELEM_KEYBOARD_FOCUS);
-                    if (itemIdx >= 0 && itemIdx < menuEl.children.length - 1) {
-                        const newNode = menuEl.children[itemIdx + 1];
+                    if (itemIdx >= 0 && itemIdx < visibleOptions.length - 1) {
+                        const newNode = visibleOptions[itemIdx + 1];
                         newNode.focus();
                     }
                     break;
                 }
                 case 'arrowleft': {
-                    if (itemIdx >= 0 && !menuEl.children[itemIdx].classList.contains('bp-media-settings-item')) {
+                    if (itemIdx >= 0 && !visibleOptions[itemIdx].classList.contains('bp-media-settings-item')) {
                         // Go back to the main menu
                         this.reset();
                         this.firstMenuItem.focus();
@@ -356,7 +370,7 @@ class Settings extends EventEmitter {
                 }
                 case 'arrowright': {
                     if (itemIdx >= 0) {
-                        const curNode = menuEl.children[itemIdx];
+                        const curNode = visibleOptions[itemIdx];
                         const dataType = curNode.getAttribute('data-type');
                         if (curNode.classList.contains('bp-media-settings-item') && dataType !== 'menu') {
                             this.showSubMenu(dataType);
@@ -422,8 +436,11 @@ class Settings extends EventEmitter {
 
         // Remove the checkmark from the prior selected option in the sub menu
         const prevSelected = this.getSelectedOption(type);
-        prevSelected.classList.remove(CLASS_SETTINGS_SELECTED);
-        prevSelected.removeAttribute('aria-checked');
+        if (prevSelected) {
+            // this may not exist, for instance, when first initializing audio tracks
+            prevSelected.classList.remove(CLASS_SETTINGS_SELECTED);
+            prevSelected.removeAttribute('aria-checked');
+        }
 
         // Add a checkmark to the new selected option in the sub menu
         option.classList.add(CLASS_SETTINGS_SELECTED);
@@ -588,7 +605,10 @@ class Settings extends EventEmitter {
         this.subtitles = subtitles;
         this.language = language;
         this.subtitles.forEach((subtitle, idx) => {
-            insertTemplate(subtitlesSubMenu, SUBTITLES_SUBITEM_TEMPLATE.replace(/{{dataValue}}/g, idx));
+            insertTemplate(
+                subtitlesSubMenu,
+                SUBMENU_SUBITEM_TEMPLATE.replace(/{{dataType}}/g, 'subtitles').replace(/{{dataValue}}/g, idx)
+            );
             const languageNode = subtitlesSubMenu.lastChild.querySelector('.bp-media-settings-value');
             languageNode.textContent = subtitle;
         });
@@ -600,6 +620,34 @@ class Settings extends EventEmitter {
             this.toggleSubtitles();
         }
 
+        this.reset();
+    }
+
+    /**
+     * Takes an ordered list of audio languages and populates the settings menu
+     *
+     * @param {Array} audioLanguages - An ordered list of languages of the audio tracks
+     * @return {void}
+     */
+    loadAlternateAudio(audioLanguages) {
+        const audioTracksSubMenu = this.settingsEl.querySelector('.bp-media-settings-menu-audiotracks');
+        audioLanguages.forEach((language, idx) => {
+            insertTemplate(
+                audioTracksSubMenu,
+                SUBMENU_SUBITEM_TEMPLATE.replace(/{{dataType}}/g, 'audiotracks').replace(/{{dataValue}}/g, idx)
+            );
+            const trackNode = audioTracksSubMenu.lastChild.querySelector('.bp-media-settings-value');
+            // It's common for the language to be unknown and show up as "und" language code. Just omit
+            // the language in this case, otherwise display the language too
+            let textContent = `${__('track')} ${idx + 1}`;
+            if (language !== 'und') {
+                textContent = `${textContent} (${language})`;
+            }
+            trackNode.textContent = textContent;
+        });
+        this.chooseOption('audiotracks', '0');
+
+        this.containerEl.classList.remove(CLASS_SETTINGS_AUDIOTRACKS_UNAVAILABLE);
         this.reset();
     }
 }

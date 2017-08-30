@@ -180,6 +180,16 @@ class MediaControls extends EventEmitter {
     }
 
     /**
+     * Audio-track handler
+     *
+     * @private
+     * @return {void}
+     */
+    handleAudioTrack() {
+        this.emit('audiochange');
+    }
+
+    /**
      * Attaches settings menu
      *
      * @private
@@ -876,6 +886,17 @@ class MediaControls extends EventEmitter {
     initSubtitles(subtitles, language) {
         this.settings.addListener('subtitles', this.handleSubtitle);
         this.settings.loadSubtitles(subtitles, language);
+    }
+
+    /**
+     * Takes a list of audio tracks and populates the settings menu
+     *
+     * @param {Array} audioLanguages - An ordered list of languages of the audio tracks
+     * @return {void}
+     */
+    initAlternateAudio(audioLanguages) {
+        this.settings.addListener('audiotracks', this.handleAudioTrack);
+        this.settings.loadAlternateAudio(audioLanguages);
     }
 }
 
