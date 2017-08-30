@@ -60,7 +60,7 @@
     font-size: 12px;
 }
 
-// This crawler wrapper is used duing preview loading
+// This crawler wrapper is used during preview loading
 .bp-crawler-wrapper {
     position: absolute;
     top: 72px;
@@ -98,4 +98,50 @@
         left: 8px;
         margin-left: 2px;
     }
+}
+
+@keyframes bp-spinner {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+// Center spinner horizontally and vertically within container
+.bp-spinner {
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.bp-spinner div,
+.bp-spinner div::after {
+    border: 25px solid #0061d5;
+    border-radius: 50%;
+    border-top-color: transparent;
+    height: 170px;
+    position: absolute;
+    width: 170px;
+}
+
+.bp-spinner div {
+    animation: bp-spinner 1s linear infinite;
+    left: 100px;
+    top: 100px;
+}
+
+.bp-spinner div::after {
+    transform: rotate(90deg);
+}
+
+.bp-spinner {
+    height: 30px;
+    transform: translate(-15px, -15px) scale(.15) translate(15px, 15px);
+    width: 30px;
 }
