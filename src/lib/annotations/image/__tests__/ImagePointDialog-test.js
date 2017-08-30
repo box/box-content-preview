@@ -24,6 +24,10 @@ describe('lib/annotations/image/ImagePointDialog', () => {
         });
         dialog.setup([]);
         dialog.element.style.width = '282px';
+        dialog.threadEl = {
+            offsetLeft: 1,
+            offsetTop: 2
+        };
     });
 
     afterEach(() => {
@@ -36,13 +40,11 @@ describe('lib/annotations/image/ImagePointDialog', () => {
 
     describe('position()', () => {
         it('should position the dialog at the right place and show it', () => {
-            sandbox.stub(imageAnnotatorUtil, 'getBrowserCoordinatesFromLocation').returns([141, 2]);
             sandbox.stub(annotatorUtil, 'repositionCaret');
             sandbox.stub(annotatorUtil, 'showElement');
 
             dialog.position();
 
-            expect(imageAnnotatorUtil.getBrowserCoordinatesFromLocation).to.have.been.called;
             expect(annotatorUtil.repositionCaret).to.have.been.called;
             expect(annotatorUtil.showElement).to.have.been.called;
         });

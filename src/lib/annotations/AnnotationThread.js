@@ -104,7 +104,7 @@ class AnnotationThread extends EventEmitter {
     showDialog() {
         // Prevents the annotations dialog from being created each mousemove
         if (!this.dialog.element) {
-            this.dialog.setup(this.annotations);
+            this.dialog.setup(this.annotations, this.element);
         }
 
         this.dialog.show();
