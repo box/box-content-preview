@@ -444,12 +444,13 @@ class DocBaseViewer extends BaseViewer {
     initViewer(pdfUrl) {
         this.bindDOMListeners();
 
-        // Initialize PDF.js in container
+        // Initialize pdf.js in container
         this.pdfViewer = new PDFJS.PDFViewer({
             container: this.docEl,
             linkService: new PDFJS.PDFLinkService(),
             // Enhanced text selection uses more memory, so disable on mobile
-            enhanceTextSelection: !this.isMobile
+            enhanceTextSelection: !this.isMobile,
+            renderInteractiveForms: true
         });
 
         // Use chunk size set in viewer options if available
