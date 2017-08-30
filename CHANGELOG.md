@@ -1,3 +1,28 @@
+<a name="1.8.0"></a>
+# 1.8.0 (2017-08-30)
+
+* Update: Add Instant Preview loading overlay (#350) ([c361317](https://github.com/box/box-content-preview/commit/c361317))
+* Update: Update Box3D to 12.2.1 (#336) ([5a45177](https://github.com/box/box-content-preview/commit/5a45177))
+* New: Add method to get top right corner of a highlight annotation (#340) ([75b183d](https://github.com/box/box-content-preview/commit/75b183d))
+* New: Preview file from offline passed file (#326) ([8547bc8](https://github.com/box/box-content-preview/commit/8547bc8))
+* New: Turn on rendering of interactive forms (#349) ([77a38a0](https://github.com/box/box-content-preview/commit/77a38a0))
+* Selectively disable annotations (#322) ([c6dac8a](https://github.com/box/box-content-preview/commit/c6dac8a))
+* Update README.md (#335) ([886bd33](https://github.com/box/box-content-preview/commit/886bd33))
+* Video player ui disappears in 360 video (#346) ([53fa9f5](https://github.com/box/box-content-preview/commit/53fa9f5))
+* Fix: IE11 image size default (#333) ([bebdcec](https://github.com/box/box-content-preview/commit/bebdcec))
+* Fix: Minor ESLint errors (#342) ([2318581](https://github.com/box/box-content-preview/commit/2318581))
+* Fix: pass get failure through in case imageEl is a div of images (#338) ([1de741e](https://github.com/box/box-content-preview/commit/1de741e))
+* Fix: Re-scale annotation canvases on zoom (#345) ([cd8b1af](https://github.com/box/box-content-preview/commit/cd8b1af))
+* Fix: Safari font rendering issue (#332) ([847cd8c](https://github.com/box/box-content-preview/commit/847cd8c))
+* Fix: Scaling canvas context when the canvas re-scales (#347) ([1bfa954](https://github.com/box/box-content-preview/commit/1bfa954))
+* Chore: Automate simple server to make running functional tests easier (#334) ([69a585f](https://github.com/box/box-content-preview/commit/69a585f))
+* Chore: log actual error message (#343) ([f1bc217](https://github.com/box/box-content-preview/commit/f1bc217))
+* Chore: Refactor pageControls and scroll handling for multi page images (#321) ([f9f511e](https://github.com/box/box-content-preview/commit/f9f511e))
+* Chore: Updating method decorators (#311) ([9ae3853](https://github.com/box/box-content-preview/commit/9ae3853))
+* Upgrade: pdf.js 1.9.450 (#329) ([987a417](https://github.com/box/box-content-preview/commit/987a417))
+
+
+
 <a name="1.7.0"></a>
 # 1.7.0 (2017-08-23)
 
