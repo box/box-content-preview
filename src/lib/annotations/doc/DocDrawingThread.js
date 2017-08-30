@@ -102,8 +102,16 @@ class DocDrawingThread extends DrawingThread {
     handleStop() {
         this.drawingFlag = DRAW_STATES.idle;
 
-        if (!this.pendingPath || this.pendingPath.isEmpty()) {
-            return;
+        if (this.pendingPath && !this.pendingPath.isEmpty()) {
+            this.pathContainer.insert(this.pendingPath);
+            this.updateBoundary(this.pendingPath);
+            this.setBoundary();
+            this.emitAvailableActions();
+            this.pendingPath = null;
+
+            if (!this.dialog) {
+                this.createDialog();
+            }
         }
 
         this.pathContainer.insert(this.pendingPath);
