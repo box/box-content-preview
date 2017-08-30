@@ -217,18 +217,19 @@ $tablet: "(min-width: 768px)";
 
     .bp-annotation-highlight-btns {
         padding: 0;
+        display: flex;
+        justify-content: flex-start;
 
         button {
-            float: left;
             padding: 15px 0;
-            width: 50%;
+            flex-grow: 1;
 
-            &:first-child::after {
+            &:nth-child(2)::before {
                 border-right: 1px solid $seesee;
                 bottom: 17px;
                 content: "";
                 height: 25px;
-                left: 50%;
+                right: 50%;
                 position: absolute;
             }
         }
