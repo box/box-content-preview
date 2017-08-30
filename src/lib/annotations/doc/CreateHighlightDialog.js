@@ -10,6 +10,20 @@ const TITLE_HIGHLIGHT_COMMENT = __('annotation_highlight_comment');
 const DATA_TYPE_HIGHLIGHT = 'add-highlight-btn';
 const DATA_TYPE_ADD_HIGHLIGHT_COMMENT = 'add-highlight-comment-btn';
 
+const CARAT_TEMPLATE = `<div class="${constants.CLASS_ANNOTATION_CARET}" style="left: 50%;"></div>`;
+const HIGHLIGHT_BUTTON_TEMPLATE = `
+    <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_BTN}"
+        data-type="${DATA_TYPE_HIGHLIGHT}"
+        title="${TITLE_HIGHLIGHT_TOGGLE}">
+        ${ICON_HIGHLIGHT}
+    </button>`.trim();
+const COMMENT_BUTTON_TEMPLATE = `
+    <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_COMMENT_BTN}"
+        data-type="${DATA_TYPE_ADD_HIGHLIGHT_COMMENT}""
+        title="${TITLE_HIGHLIGHT_COMMENT}">
+        ${ICON_HIGHLIGHT_COMMENT}
+    </button>`.trim();
+
 /**
  * Events emitted by this component.
  */
@@ -312,29 +326,11 @@ class CreateHighlightDialog extends EventEmitter {
      * @return {HTMLElement} The element containing Highlight creation UI
      */
     createElement() {
-        const caretTemplate = this.isMobile
-            ? ''
-            : `<div class="${constants.CLASS_ANNOTATION_CARET}" style="left: 50%;"></div>`;
+        const caretTemplate = this.isMobile ? '' : CARAT_TEMPLATE;
+        const highlightTemplate = this.allowHighlight ? HIGHLIGHT_BUTTON_TEMPLATE : '';
+        const commentTemplate = this.allowComment ? COMMENT_BUTTON_TEMPLATE : '';
 
-        const highlightTemplate = this.allowHighlight
-            ? `
-            <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_BTN}"
-                data-type="${DATA_TYPE_HIGHLIGHT}"
-                title="${TITLE_HIGHLIGHT_TOGGLE}">
-                ${ICON_HIGHLIGHT}
-            </button>`
-            : '';
-
-        const commentTemplate = this.allowComment
-            ? `
-            <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_COMMENT_BTN}"
-                data-type="${DATA_TYPE_ADD_HIGHLIGHT_COMMENT}""
-                title="${TITLE_HIGHLIGHT_COMMENT}">
-                ${ICON_HIGHLIGHT_COMMENT}
-            </button>`
-            : '';
-
-        const CREATE_HIGHLIGHT_DIALOG_TEMPLATE = `
+        const createHighlightDialogTemplate = `
             ${caretTemplate}
             <div>
                 <div class="${constants.CLASS_ANNOTATION_HIGHLIGHT_DIALOG}">
@@ -347,7 +343,7 @@ class CreateHighlightDialog extends EventEmitter {
 
         const highlightDialogEl = document.createElement('div');
         highlightDialogEl.classList.add(CLASS_CREATE_DIALOG);
-        highlightDialogEl.innerHTML = CREATE_HIGHLIGHT_DIALOG_TEMPLATE;
+        highlightDialogEl.innerHTML = createHighlightDialogTemplate;
 
         // Get rid of the caret
         if (this.isMobile) {
