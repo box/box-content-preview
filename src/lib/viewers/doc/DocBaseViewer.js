@@ -437,6 +437,30 @@ class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
 
     /**
+     * Emits a generic viewer event
+     *
+     * @override
+     * @protected
+     * @emits viewerevent
+     * @param {string} event - Event name
+     * @param {Object} data - Event data
+     * @return {void}
+     */
+    emit(event, data) {
+        const { file, viewer } = this.options;
+
+        super.emit(event, data);
+        super.emit('viewerevent', {
+            event,
+            data,
+            viewerName: viewer ? viewer.NAME : '',
+            fileId: file,
+            fileVersionId: file.file_version.id,
+            currentPage: this.getCachedPage()
+        });
+    }
+
+    /**
      * Loads PDF.js with provided PDF.
      *
      * @protected
