@@ -115,4 +115,56 @@ describe('lib/annotations/drawing/DrawingContainer', () => {
             expect(counter.count).to.equal(drawingContainer.undoStack.length + drawingContainer.redoStack.length);
         });
     });
+
+    describe('getAxisAlignedBoundingBox()', () => {
+        let getItems;
+        beforeEach(() => {
+            getItems = sandbox.stub(drawingContainer, 'getItems');
+        });
+
+        it('should return a boundary of infinity when no items are stored', () => {
+            getItems.returns([]);
+
+            const returnValue = drawingContainer.getAxisAlignedBoundingBox();
+            expect(getItems).to.be.called;
+            expect(returnValue).to.deep.equal({
+                minX: Infinity,
+                maxX: -Infinity,
+                minY: Infinity,
+                maxY: -Infinity,
+                paths: []
+            });
+        });
+
+        it('should get the correct boundary based on the items contained', () => {
+            const path1 = {
+                minX: 5,
+                minY: 6,
+                maxX: 8,
+                maxY: 9,
+                path: [1,2,3,4]
+            };
+            const path2 = {
+                minX: 3,
+                minY: 7,
+                maxX: 14,
+                maxY: 8,
+                path: [1,2,3]
+            };
+            getItems.returns([path1, path2]);
+
+            const returnValue = drawingContainer.getAxisAlignedBoundingBox();
+            expect(getItems).to.be.called;
+            expect(returnValue).to.deep.equal({
+                minX: path2.minX,
+                maxX: path2.maxX,
+                minY: path1.minY,
+                maxY: path1.maxY,
+                paths: [
+                    { path: path1.path },
+                    { path: path2.path }
+                ]
+            });
+        });
+    });
 });

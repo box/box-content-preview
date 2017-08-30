@@ -452,12 +452,10 @@ export function eventToLocationHandler(locationFunction, callback) {
             return;
         }
 
-        evt.stopPropagation();
         evt.preventDefault();
+        evt.stopPropagation();
         const location = locationFunction(evt);
-        if (location) {
-            callback(location);
-        }
+        callback(location);
     };
 }
 

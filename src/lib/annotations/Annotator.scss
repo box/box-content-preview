@@ -424,6 +424,27 @@ $avatar-color-9: #f22c44;
 }
 
 //------------------------------------------------------------------------------
+// Draw annotation mode
+//------------------------------------------------------------------------------
+.bp-annotation-draw-boundary {
+    animation: dash 1s linear infinite;
+    fill: none;
+    stroke: rgb(0, 0, 0);
+    stroke-dasharray: 5;
+    stroke-width: 3px;
+}
+
+@keyframes dash {
+    from {
+        stroke-dashoffset: 10;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+//------------------------------------------------------------------------------
 // Annotation mode
 //------------------------------------------------------------------------------
 .bp-annotation-mode .page,
