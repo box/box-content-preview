@@ -130,7 +130,7 @@ describe('lib/annotations/drawing/DrawingThread', () => {
     describe('createAnnotationData()', () => {
         it('should create a valid annotation data object', () => {
             const pathStr = 'path';
-            sandbox.stub(drawingThread.pathContainer, 'getAABB').returns(pathStr);
+            sandbox.stub(drawingThread.pathContainer, 'getAxisAlignedBoundingBox').returns(pathStr);
             drawingThread.annotationService = {
                 user: { id: '1' }
             };
@@ -138,7 +138,7 @@ describe('lib/annotations/drawing/DrawingThread', () => {
             const placeholder = "String here so string doesn't get fined";
             const annotationData = drawingThread.createAnnotationData('draw', placeholder);
 
-            expect(drawingThread.pathContainer.getAABB).to.be.called;
+            expect(drawingThread.pathContainer.getAxisAlignedBoundingBox).to.be.called;
             expect(annotationData.fileVersionId).to.equal(drawingThread.fileVersionId);
             expect(annotationData.threadID).to.equal(drawingThread.threadID);
             expect(annotationData.user.id).to.equal('1');

@@ -60,6 +60,8 @@ class DrawingThread extends AnnotationThread {
         this.handleStart = this.handleStart.bind(this);
         this.handleMove = this.handleMove.bind(this);
         this.handleStop = this.handleStop.bind(this);
+        this.undo = this.undo.bind(this);
+        this.redo = this.redo.bind(this);
 
         // Recreate stored paths
         if (this.location && this.location.drawingPaths) {
@@ -138,6 +140,7 @@ class DrawingThread extends AnnotationThread {
 
         // Calculate the bounding rectangle
         const [x, y, width, height] = this.getRectangularBoundary();
+
         // Clear the drawn thread and destroy it
         this.concreteContext.clearRect(
             x - DRAW_BORDER_OFFSET,
@@ -314,7 +317,7 @@ class DrawingThread extends AnnotationThread {
      */
     createAnnotationData(type, text) {
         const annotation = super.createAnnotationData(type, text);
-        const boundaryData = this.pathContainer.getAABB();
+        const boundaryData = this.pathContainer.getAxisAlignedBoundingBox();
 
         annotation.location.drawingPaths = boundaryData;
         return annotation;

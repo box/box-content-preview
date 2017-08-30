@@ -103,8 +103,7 @@ class DrawingModeController extends AnnotationModeController {
      * @return {Array} An array where each element is an object containing the object that will emit the event,
      *                 the type of events to listen for, and the callback
      */
-    setupAndGetHandlers() {
-        const handlers = [];
+    setupHandlers() {
         /* eslint-disable require-jsdoc */
         const locationFunction = (event) => this.annotator.getLocationFromEvent(event, TYPES.point);
         /* eslint-enable require-jsdoc */
@@ -114,56 +113,27 @@ class DrawingModeController extends AnnotationModeController {
         this.bindCustomListenersOnThread(this.currentThread);
 
         // Get handlers
-        handlers.push(
-            {
-                type: ['mousemove', 'touchmove'],
-                func: annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleMove),
-                eventObj: this.annotator.annotatedElement
-            },
-            {
-                type: ['mousedown', 'touchstart'],
-                func: annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleStart),
-                eventObj: this.annotator.annotatedElement
-            },
-            {
-                type: ['mouseup', 'touchcancel', 'touchend'],
-                func: annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleStop),
-                eventObj: this.annotator.annotatedElement
-            }
+        this.pushElementHandler(
+            this.annotator.annotatedElement,
+            ['mousemove', 'touchmove'],
+            annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleMove)
         );
-
-        if (this.postButtonEl) {
-            handlers.push({
-                type: 'click',
-                func: () => {
-                    this.currentThread.saveAnnotation(TYPES.draw);
-                    this.annotator.toggleAnnotationHandler(TYPES.draw);
-                },
-                eventObj: this.postButtonEl
-            });
-        }
-
-        if (this.undoButtonEl) {
-            handlers.push({
-                type: 'click',
-                func: () => {
-                    this.currentThread.undo();
-                },
-                eventObj: this.undoButtonEl
-            });
-        }
-
-        if (this.redoButtonEl) {
-            handlers.push({
-                type: 'click',
-                func: () => {
-                    this.currentThread.redo();
-                },
-                eventObj: this.redoButtonEl
-            });
-        }
-
-        return handlers;
+        this.pushElementHandler(
+            this.annotator.annotatedElement,
+            ['mousedown', 'touchstart'],
+            annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleStart)
+        );
+        this.pushElementHandler(
+            this.annotator.annotatedElement,
+            ['mouseup', 'touchcancel', 'touchend'],
+            annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleStop)
+        );
+        this.pushElementHandler(this.postButtonEl, 'click', () => {
+            this.currentThread.saveAnnotation(TYPES.draw);
+            this.annotator.toggleAnnotationHandler(TYPES.draw);
+        });
+        this.pushElementHandler(this.undoButtonEl, 'click', this.currentThread.undo);
+        this.pushElementHandler(this.redoButtonEl, 'click', this.currentThread.redo);
     }
 
     /**

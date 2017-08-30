@@ -786,14 +786,8 @@ class DocAnnotator extends Annotator {
      * @return {void}
      */
     drawingSelectionHandler(event) {
-        const { annotator } = this.options;
-        if (!annotator) {
-            return;
-        }
-
-        const { CONTROLLERS } = annotator;
-        if (CONTROLLERS && CONTROLLERS[TYPES.draw]) {
-            CONTROLLERS[TYPES.draw].handleSelection(event);
+        if (this.modeControllers[TYPES.draw]) {
+            this.modeControllers[TYPES.draw].handleSelection(event);
         }
     }
 

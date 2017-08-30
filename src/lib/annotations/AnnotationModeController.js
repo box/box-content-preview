@@ -38,12 +38,15 @@ class AnnotationModeController extends EventEmitter {
      * @return {void}
      */
     bindModeListeners() {
-        const handlers = this.setupAndGetHandlers();
-        handlers.forEach((handler) => {
+        const currentHandlerIndex = this.handlers.length;
+        this.setupHandlers();
+
+        for (let index = currentHandlerIndex; index < this.handlers.length; index++) {
+            const handler = this.handlers[index];
             const types = handler.type instanceof Array ? handler.type : [handler.type];
+
             types.forEach((eventName) => handler.eventObj.addEventListener(eventName, handler.func));
-            this.handlers.push(handler);
-        });
+        }
     }
 
     /**
@@ -56,6 +59,7 @@ class AnnotationModeController extends EventEmitter {
         while (this.handlers.length > 0) {
             const handler = this.handlers.pop();
             const types = handler.type instanceof Array ? handler.type : [handler.type];
+
             types.forEach((eventName) => {
                 handler.eventObj.removeEventListener(eventName, handler.func);
             });
@@ -128,7 +132,7 @@ class AnnotationModeController extends EventEmitter {
      * @return {Array} An array where each element is an object containing the object that will emit the event,
      *                 the type of events to listen for, and the callback
      */
-    setupAndGetHandlers() {}
+    setupHandlers() {}
 
     /**
      * Handle an annotation event.
@@ -141,6 +145,28 @@ class AnnotationModeController extends EventEmitter {
     /* eslint-disable no-unused-vars */
     handleAnnotationEvent(thread, data = {}) {}
     /* eslint-enable no-unused-vars */
+
+    /**
+     * Creates a handler description object and adds its to the internal handler container.
+     * Useful for setupAndGetHandlers.
+     *
+     * @protected
+     * @param {HTMLElement} element - The element to bind the listener to
+     * @param {Array|string} type - An array of event types to listen for or the event name to listen for
+     * @param {Function} handlerFn - The callback to be invoked when the element emits a specified eventname
+     * @return {void}
+     */
+    pushElementHandler(element, type, handlerFn) {
+        if (!element) {
+            return;
+        }
+
+        this.handlers.push({
+            eventObj: element,
+            func: handlerFn,
+            type
+        });
+    }
 }
 
 export default AnnotationModeController;

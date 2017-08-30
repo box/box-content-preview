@@ -86,7 +86,7 @@ class DrawingContainer {
      *
      * @return {Object} The object with the boundaries and the path
      */
-    getAABB() {
+    getAxisAlignedBoundingBox() {
         const items = this.getItems();
         const boundary = {
             minX: Infinity,

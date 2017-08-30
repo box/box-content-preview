@@ -1363,10 +1363,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             const drawController = {
                 handleSelection: sandbox.stub()
             };
-            annotator.options.annotator = {
-                CONTROLLERS: {
-                    [TYPES.draw]: drawController
-                }
+            annotator.modeControllers = {
+                [TYPES.draw]: drawController
             };
 
             const evt = 'event';

@@ -102,7 +102,7 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
         });
     });
 
-    describe('setupAndGetHandlers()', () => {
+    describe('setupHandlers()', () => {
         beforeEach(() => {
             drawingModeController.annotator = {
                 createAnnotationThread: sandbox.stub(),
@@ -123,26 +123,26 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
             });
         });
 
-        it('should successfully return draw mode handlers if undo and redo buttons do not exist', () => {
+        it('should successfully contain draw mode handlers if undo and redo buttons do not exist', () => {
             drawingModeController.postButtonEl = 'not undefined';
             drawingModeController.undoButtonEl = undefined;
             drawingModeController.redoButtonEl = undefined;
 
-            const handlers = drawingModeController.setupAndGetHandlers();
+            drawingModeController.setupHandlers();
             expect(stubs.createThread).to.be.called;
             expect(stubs.bindCustomListenersOnThread).to.be.called;
-            expect(handlers.length).to.equal(4);
+            expect(drawingModeController.handlers.length).to.equal(4);
         });
 
-        it('should successfully return draw mode handlers if undo and redo buttons exist', () => {
+        it('should successfully contain draw mode handlers if undo and redo buttons exist', () => {
             drawingModeController.postButtonEl = 'not undefined';
             drawingModeController.undoButtonEl = 'also not undefined';
             drawingModeController.redoButtonEl = 'additionally not undefined';
 
-            const handlers = drawingModeController.setupAndGetHandlers();
+            drawingModeController.setupHandlers();
             expect(stubs.createThread).to.be.called;
             expect(stubs.bindCustomListenersOnThread).to.be.called;
-            expect(handlers.length).to.equal(6);
+            expect(drawingModeController.handlers.length).to.equal(6);
         });
     });
 

@@ -19,7 +19,9 @@ const ANNOTATORS = [
 ];
 
 const ANNOTATOR_TYPE_CONTROLLERS = {
-    [TYPES.draw]: DrawingModeController
+    [TYPES.draw]: {
+        CONSTRUCTOR: DrawingModeController
+    }
 };
 
 class BoxAnnotations {
@@ -75,7 +77,7 @@ class BoxAnnotations {
         annotatorConfig.CONTROLLERS = {};
         annotatorConfig.TYPE.forEach((type) => {
             if (type in ANNOTATOR_TYPE_CONTROLLERS) {
-                annotatorConfig.CONTROLLERS[type] = new ANNOTATOR_TYPE_CONTROLLERS[type]();
+                annotatorConfig.CONTROLLERS[type] = new ANNOTATOR_TYPE_CONTROLLERS[type].CONSTRUCTOR();
             }
         });
         /* eslint-enable no-param-reassign */

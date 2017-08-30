@@ -62,6 +62,9 @@ class Annotator extends EventEmitter {
         this.hasTouch = data.hasTouch;
         this.modeButtons = data.modeButtons;
         this.annotationModeHandlers = [];
+
+        const { CONTROLLERS } = this.options.annotator || {};
+        this.modeControllers = CONTROLLERS || {};
     }
 
     /**
@@ -171,9 +174,8 @@ class Annotator extends EventEmitter {
             const handler = this.getAnnotationModeClickHandler(currentMode);
             annotateButtonEl.addEventListener('click', handler);
 
-            const { CONTROLLERS } = this.options.annotator;
-            if (CONTROLLERS && CONTROLLERS[currentMode]) {
-                CONTROLLERS[currentMode].registerAnnotator(this);
+            if (this.modeControllers[currentMode]) {
+                this.modeControllers[currentMode].registerAnnotator(this);
             }
         }
     }
@@ -550,9 +552,8 @@ class Annotator extends EventEmitter {
                     return;
                 }
 
-                const { CONTROLLERS } = annotator;
-                if (CONTROLLERS && CONTROLLERS[firstAnnotation.type]) {
-                    const controller = CONTROLLERS[firstAnnotation.type];
+                if (this.modeControllers[firstAnnotation.type]) {
+                    const controller = this.modeControllers[firstAnnotation.type];
                     controller.bindCustomListenersOnThread(thread);
                     controller.registerThread(thread);
                 }
@@ -714,9 +715,8 @@ class Annotator extends EventEmitter {
                     eventObj: this.annotatedElement
                 }
             );
-        } else if (mode === TYPES.draw) {
-            const { CONTROLLERS } = this.options.annotator;
-            CONTROLLERS[TYPES.draw].bindModeListeners();
+        } else if (mode === TYPES.draw && this.modeControllers[mode]) {
+            this.modeControllers[mode].bindModeListeners();
         }
 
         handlers.forEach((handler) => {
@@ -780,13 +780,8 @@ class Annotator extends EventEmitter {
             handler.eventObj.removeEventListener(handler.type, handler.func);
         }
 
-        const { annotator } = this.options;
-        if (!annotator) {
-            return;
-        }
-        const { CONTROLLERS } = annotator;
-        if (CONTROLLERS && CONTROLLERS[mode]) {
-            CONTROLLERS[mode].unbindModeListeners();
+        if (this.modeControllers[mode]) {
+            this.modeControllers[mode].unbindModeListeners();
         }
     }
 

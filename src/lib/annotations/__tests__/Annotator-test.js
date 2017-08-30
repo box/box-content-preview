@@ -568,10 +568,7 @@ describe('lib/annotations/Annotator', () => {
                     }
                 };
 
-                annotator.options.annotator = {
-                    CONTROLLERS: stubs.controllers
-                };
-
+                annotator.modeControllers = stubs.controllers;
                 drawingThread = {
                     handleStart: () => {},
                     handleStop: () => {},
@@ -629,16 +626,15 @@ describe('lib/annotations/Annotator', () => {
             });
 
             it('should delegate to the controller', () => {
-                annotator.modeButtons = {};
-                annotator.modeButtons[TYPES.draw] = {
-                    controller: {
+                annotator.modeControllers = {
+                    [TYPES.draw]: {
                         name: 'drawingModeController',
                         unbindModeListeners: sandbox.stub()
                     }
                 };
-                annotator.unbindModeListeners(TYPES.draw);
 
-                expect(annotator.modeButtons[TYPES.draw].controller.unbindModeListeners);
+                annotator.unbindModeListeners(TYPES.draw);
+                expect(annotator.modeControllers[TYPES.draw].unbindModeListeners).to.be.called;
             });
         });
 

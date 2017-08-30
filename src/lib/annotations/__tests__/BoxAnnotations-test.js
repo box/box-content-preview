@@ -128,7 +128,11 @@ describe('lib/annotators/BoxAnnotations', () => {
     describe('instantiateControllers()', () => {
         it('Should do nothing when a controller exists', () => {
             const config = {
-                CONTROLLERS: 'not empty'
+                CONTROLLERS: {
+                    [TYPES.draw]: {
+                        CONSTRUCTOR: sandbox.stub()
+                    }
+                }
             };
 
             expect(() => loader.instantiateControllers(config)).to.not.throw();
