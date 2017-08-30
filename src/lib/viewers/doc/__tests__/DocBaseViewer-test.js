@@ -674,6 +674,40 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             stubs.emit = sandbox.stub(docBase, 'emit');
         });
 
+        it('should turn on enhanced text selection if not on mobile and turn on rendering of interactive forms', () => {
+            docBase.options.location = {
+                locale: 'en-US'
+            };
+            docBase.isMobile = false;
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+
+            docBase.initViewer('');
+
+            expect(stubs.pdfViewerStub).to.be.calledWith({
+                container: sinon.match.any,
+                linkService: sinon.match.any,
+                enhanceTextSelection: true,
+                renderInteractiveForms: true
+            });
+        });
+
+        it('should turn off enhanced text selection if on mobile', () => {
+            docBase.options.location = {
+                locale: 'en-US'
+            };
+            docBase.isMobile = true;
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+
+            docBase.initViewer('');
+
+            expect(stubs.pdfViewerStub).to.be.calledWith({
+                container: sinon.match.any,
+                linkService: sinon.match.any,
+                enhanceTextSelection: false,
+                renderInteractiveForms: true
+            });
+        });
+
         it('should set a chunk size based on viewer options if available', () => {
             const url = 'url';
             const rangeChunkSize = 100;
@@ -910,6 +944,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should set disableCreateObjectURL to false', () => {
             docBase.setupPdfjs();
             expect(PDFJS.disableCreateObjectURL).to.equal(false);
+        });
+
+        it('should override pdf.js PDFPageView reset with custom loading indicator logic', () => {
+            const resetFunc = PDFJS.PDFPageView.prototype.reset;
+            docBase.setupPdfjs();
+            expect(resetFunc).to.not.equal(PDFJS.PDFPageView.prototype.reset);
         });
     });
 

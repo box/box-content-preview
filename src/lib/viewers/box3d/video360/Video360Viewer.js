@@ -56,6 +56,7 @@ class Video360Viewer extends DashViewer {
     /** @inheritdoc */
     destroy() {
         super.destroy();
+
         if (this.skybox) {
             this.skybox.setAttribute('skyboxTexture', null);
             this.skybox = null;
@@ -126,6 +127,21 @@ class Video360Viewer extends DashViewer {
     createControls() {
         this.controls = new Video360Controls(this.mediaContainerEl);
         this.controls.on(EVENT_TOGGLE_VR, this.handleToggleVr);
+
+        // Add listeners to hide and show controls
+        if (!this.renderer || !this.renderer.getBox3D()) {
+            return;
+        }
+
+        const canvas = this.renderer.getBox3D().canvas;
+        if (!canvas) {
+            return;
+        }
+
+        canvas.addEventListener('mousemove', this.mousemoveHandler);
+        if (this.hasTouch) {
+            canvas.addEventListener('touchstart', this.pointerHandler);
+        }
     }
 
     /**
@@ -137,6 +153,19 @@ class Video360Viewer extends DashViewer {
     destroyControls() {
         this.controls.removeListener(EVENT_TOGGLE_VR, this.handleToggleVr);
         this.controls.destroy();
+
+        // Remove listeners to hide and show controls
+        if (!this.renderer || !this.renderer.getBox3D()) {
+            return;
+        }
+
+        const canvas = this.renderer.getBox3D().canvas;
+        if (!canvas) {
+            return;
+        }
+
+        canvas.removeEventListener('mousemove', this.mousemoveHandler);
+        canvas.removeEventListener('touchstart', this.pointerHandler);
     }
 
     /**

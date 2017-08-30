@@ -185,9 +185,9 @@ class Browser {
             const canvas = document.createElement('canvas');
             // Should stop 'Rats! WebGL hit a snag' error when checking WebGL support
             canvas.addEventListener(EVENT_WEBGL_CONEXT_LOST, (e) => {
-                /* istanbul ignore next*/
+                /* istanbul ignore next */
                 e.preventDefault();
-                /* istanbul ignore next*/
+                /* istanbul ignore next */
                 e.stopPropagation();
             });
 
