@@ -216,21 +216,21 @@ $tablet: "(min-width: 768px)";
     z-index: 9999;
 
     .bp-annotation-highlight-btns {
-        padding: 0;
         display: flex;
         justify-content: flex-start;
+        padding: 0;
 
         button {
-            padding: 15px 0;
             flex-grow: 1;
+            padding: 15px 0;
 
             &:nth-child(2)::before {
                 border-right: 1px solid $seesee;
                 bottom: 17px;
                 content: "";
                 height: 25px;
-                right: 50%;
                 position: absolute;
+                right: 50%;
             }
         }
     }
