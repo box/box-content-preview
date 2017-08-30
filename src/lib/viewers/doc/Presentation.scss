@@ -35,9 +35,14 @@
     position: absolute;
     right: 0;
     top: 0;
+    transition: opacity .5s;
 
     &.bp-is-invisible {
-        visibility: visible;
+        visibility: hidden;
+    }
+
+    &.bp-is-transparent {
+        opacity: 0;
     }
 
     .bp-preload {
@@ -50,13 +55,17 @@
 
     // Absolutely center preload content
     .bp-preload-content {
-        background: $white url('loadingIcon.gif') center no-repeat;
+        background-color: $white;
         bottom: 0;
         display: block;
-        left: 0;
+        left: 1px; // Slight padding to help image text align with real text
         margin: auto;
         position: absolute;
         right: 0;
         top: 0;
+
+        &.bp-preload-overlay {
+            background-color: rgba(255, 255, 255, .4);
+        }
     }
 }
