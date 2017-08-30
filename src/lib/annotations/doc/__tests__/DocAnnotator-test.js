@@ -651,7 +651,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         beforeEach(() => {
             const threads = [{ dialog: { element: {} } }];
             sandbox.stub(annotator, 'getThreadsOnPage').returns(threads);
-            stubs.inDialog = sandbox.stub(docAnnotatorUtil, 'isInDialog');
+            stubs.inDialog = sandbox.stub(annotatorUtil, 'isInDialog');
         });
 
         it('should return true if mouse is hovering over an open dialog', () => {
