@@ -380,6 +380,7 @@ class DocAnnotator extends Annotator {
         if (this.createHighlightDialog) {
             this.createHighlightDialog.hide();
         }
+
         this.isCreatingHighlight = false;
 
         const highlightType = commentText ? TYPES.highlight_comment : TYPES.highlight;
