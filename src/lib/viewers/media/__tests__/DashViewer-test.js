@@ -65,9 +65,11 @@ describe('lib/viewers/media/DashViewer', () => {
             getStats: () => {},
             getTextTracks: () => {},
             getVariantTracks: () => {},
+            isAudioOnly: () => {},
             load: () => {},
             selectTextTrack: () => {},
             selectVariantTrack: () => {},
+            selectAudioLanguage: () => {},
             setTextTrackVisibility: () => {}
         };
         stubs.mockPlayer = sandbox.mock(dash.player);
@@ -77,6 +79,7 @@ describe('lib/viewers/media/DashViewer', () => {
             destroy: () => {},
             initFilmstrip: () => {},
             initSubtitles: () => {},
+            initAlternateAudio: () => {},
             removeAllListeners: () => {},
             removeListener: () => {},
             show: sandbox.stub()
@@ -105,8 +108,8 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should set up dash element', () => {
             expect(dash.bandwidthHistory).to.deep.equal([]);
             expect(dash.switchHistory).to.deep.equal([]);
-            expect(dash.hdRepresentation).to.deep.equal({});
-            expect(dash.sdRepresentation).to.deep.equal({});
+            expect(dash.hdVideoId).to.equal(-1);
+            expect(dash.sdVideoId).to.equal(-1);
             expect(dash.wrapperEl).to.have.class(CSS_CLASS_MEDIA);
         });
     });
@@ -241,23 +244,54 @@ describe('lib/viewers/media/DashViewer', () => {
         });
     });
 
-    describe('enableHD()', () => {
-        it('should enable HD video for the file', () => {
-            dash.hdRepresentation = { id: '1' };
+    describe('enableVideoId()', () => {
+        it('should enable videoId while maintaining the same audio', () => {
+            const variant1 = { id: 1, videoId: 1, audioId: 5, active: false };
+            const variant2 = { id: 2, videoId: 2, audioId: 5, active: false };
+            const variant3 = { id: 3, videoId: 1, audioId: 6, active: false };
+            const variant4 = { id: 4, videoId: 2, audioId: 6, active: true };
+            const variant5 = { id: 5, videoId: 1, audioId: 7, active: false };
+            const variant6 = { id: 6, videoId: 2, audioId: 7, active: false };
+            stubs.mockPlayer.expects('getVariantTracks').returns([
+                variant1, variant2, variant3, variant4, variant5, variant6
+            ]);
+            sandbox.stub(dash, 'getActiveTrack').returns(variant4);
             sandbox.stub(dash, 'showLoadingIcon');
-            stubs.mockPlayer.expects('selectVariantTrack').withArgs(dash.hdRepresentation, true);
-            dash.enableHD();
-            expect(dash.showLoadingIcon).to.be.calledWith('1');
-        });
-    });
+            stubs.mockPlayer.expects('selectVariantTrack').withArgs(variant3, true);
 
-    describe('enableSD()', () => {
-        it('should enable SD video for the file', () => {
-            dash.sdRepresentation = { id: '1' };
+            dash.enableVideoId(1);
+
+            expect(dash.showLoadingIcon).to.be.calledWith(3);
+        });
+
+        it('should do nothing if enabling a videoId which is already active', () => {
+            const variant1 = { id: 1, videoId: 1, audioId: 5, active: false };
+            const variant2 = { id: 2, videoId: 2, audioId: 5, active: true };
+            stubs.mockPlayer.expects('getVariantTracks').returns([
+                variant1, variant2
+            ]);
+            sandbox.stub(dash, 'getActiveTrack').returns(variant2);
             sandbox.stub(dash, 'showLoadingIcon');
-            stubs.mockPlayer.expects('selectVariantTrack').withArgs(dash.sdRepresentation, true);
-            dash.enableSD();
-            expect(dash.showLoadingIcon).to.be.calledWith('1');
+            stubs.mockPlayer.expects('selectVariantTrack').never();
+
+            dash.enableVideoId(2);
+
+            expect(dash.showLoadingIcon).to.not.be.called;
+        });
+
+        it('should do nothing if enabling an invalid videoId', () => {
+            const variant1 = { id: 1, videoId: 1, audioId: 5, active: false };
+            const variant2 = { id: 2, videoId: 2, audioId: 5, active: true };
+            stubs.mockPlayer.expects('getVariantTracks').returns([
+                variant1, variant2
+            ]);
+            sandbox.stub(dash, 'getActiveTrack').returns(variant2);
+            sandbox.stub(dash, 'showLoadingIcon');
+            stubs.mockPlayer.expects('selectVariantTrack').never();
+
+            dash.enableVideoId(-1);
+
+            expect(dash.showLoadingIcon).to.not.be.called;
         });
     });
 
@@ -275,8 +309,9 @@ describe('lib/viewers/media/DashViewer', () => {
 
     describe('handleQuality()', () => {
         beforeEach(() => {
-            stubs.hd = sandbox.stub(dash, 'enableHD');
-            stubs.sd = sandbox.stub(dash, 'enableSD');
+            dash.hdVideoId = 1;
+            dash.sdVideoId = 2;
+            stubs.enableVideoId = sandbox.stub(dash, 'enableVideoId');
             stubs.adapt = sandbox.stub(dash, 'enableAdaptation');
         });
 
@@ -284,7 +319,7 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash.cache, 'get').returns('hd');
             dash.handleQuality();
             expect(stubs.adapt).to.be.calledWith(false);
-            expect(stubs.hd).to.be.called;
+            expect(stubs.enableVideoId).to.be.calledWith(dash.hdVideoId);
             expect(dash.emit).to.be.calledWith('qualitychange', 'hd');
         });
 
@@ -292,7 +327,7 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash.cache, 'get').returns('sd');
             dash.handleQuality();
             expect(stubs.adapt).to.be.calledWith(false);
-            expect(stubs.sd).to.be.called;
+            expect(stubs.enableVideoId).to.be.calledWith(dash.sdVideoId);
             expect(dash.emit).to.be.calledWith('qualitychange', 'sd');
         });
 
@@ -313,11 +348,11 @@ describe('lib/viewers/media/DashViewer', () => {
 
     describe('adaptationHandler()', () => {
         beforeEach(() => {
-            stubs.active = { id: 1, bandwidth: 'bandwidth' };
+            stubs.active = { id: 1, bandwidth: 'bandwidth', videoId: 1 };
             stubs.getActive = sandbox.stub(dash, 'getActiveTrack').returns(stubs.active);
             stubs.loaded = sandbox.stub(dash, 'isLoaded').returns(true);
             stubs.hide = sandbox.stub(dash, 'hideLoadingIcon');
-            dash.hdRepresentation = { id: 1 };
+            dash.hdVideoId = 1;
             dash.adapting = false;
         });
 
@@ -328,7 +363,7 @@ describe('lib/viewers/media/DashViewer', () => {
         });
 
         it('should handle change from HD resolution', () => {
-            stubs.getActive.returns({ id: 2 });
+            stubs.getActive.returns({ id: 2, videoId: 2 });
             dash.wrapperEl.classList.add(CSS_CLASS_HD);
             dash.adaptationHandler();
             expect(dash.wrapperEl).to.not.have.class(CSS_CLASS_HD);
@@ -401,6 +436,7 @@ describe('lib/viewers/media/DashViewer', () => {
             });
             stubs.mockControls.expects('addListener').withArgs('qualitychange', sinon.match.func);
             stubs.mockControls.expects('addListener').withArgs('subtitlechange', sinon.match.func);
+            stubs.mockControls.expects('addListener').withArgs('audiochange', sinon.match.func);
             dash.addEventListenersForMediaControls();
         });
     });
@@ -419,6 +455,7 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash, 'calculateVideoDimensions');
             sandbox.stub(dash, 'loadUI');
             sandbox.stub(dash, 'loadFilmStrip');
+            sandbox.stub(dash, 'loadAlternateAudio');
             sandbox.stub(dash, 'resize');
             sandbox.stub(dash, 'handleVolume');
             sandbox.stub(dash, 'startBandwidthTracking');
@@ -430,6 +467,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.showMedia).to.be.called;
             expect(dash.showPlayButton).to.be.called;
             expect(dash.loadSubtitles).to.be.called;
+            expect(dash.loadAlternateAudio).to.be.called;
             expect(dash.emit).to.be.calledWith('load');
             expect(dash.loaded).to.be.true;
             expect(document.activeElement).to.equal(dash.mediaContainerEl);
@@ -558,6 +596,55 @@ describe('lib/viewers/media/DashViewer', () => {
         });
     });
 
+    describe('loadAlternateAudio()', () => {
+        it('should select unique audio tracks', () => {
+            const variant1 = { videoId: 0, audioId: 0, language: 'eng', roles: ['audio0']};
+            const variant2 = { videoId: 1, audioId: 0, language: 'eng', roles: ['audio0']};
+            const variant3 = { videoId: 0, audioId: 1, language: 'rus', roles: ['audio1']};
+            const variant4 = { videoId: 1, audioId: 1, language: 'rus', roles: ['audio1']};
+            const variant5 = { videoId: 2, audioId: 1, language: 'rus', roles: ['audio1']};
+            const allVariants = [variant1, variant2, variant3, variant4, variant5];
+            stubs.mockPlayer.expects('getVariantTracks').returns(allVariants);
+            stubs.mockControls.expects('initAlternateAudio');
+
+            dash.loadAlternateAudio();
+
+            expect(dash.audioTracks).to.deep.equal([
+                { language: 'eng', role: 'audio0' },
+                { language: 'rus', role: 'audio1' }
+            ]);
+        });
+
+        it('should translate and initialize audio in sorted order', () => {
+            const variant1 = { videoId: 0, audioId: 0, language: 'eng', roles: ['audio0']};
+            const variant2 = { videoId: 0, audioId: 1, language: 'rus', roles: ['audio0']};
+            const variant3 = { videoId: 0, audioId: 2, language: 'spa', roles: ['audio0']};
+            const variant4 = { videoId: 0, audioId: 3, language: 'kor', roles: ['audio0']};
+            const variant5 = { videoId: 0, audioId: 4, language: 'fra', roles: ['audio0']};
+            const allVariants = [variant3, variant1, variant4, variant2, variant5];
+            stubs.mockPlayer.expects('getVariantTracks').returns(allVariants);
+            stubs.mockControls
+                .expects('initAlternateAudio')
+                .withArgs(['English', 'Russian', 'Spanish', 'Korean', 'French']);
+
+            dash.loadAlternateAudio();
+        });
+
+        it('should not initialize alternate audio if there is none', () => {
+            const variant1 = { videoId: 0, audioId: 0, language: 'eng', roles: ['audio0']};
+            const variant2 = { videoId: 1, audioId: 0, language: 'eng', roles: ['audio0']};
+            const allVariants = [variant1, variant2];
+            stubs.mockPlayer.expects('getVariantTracks').returns(allVariants);
+            stubs.mockControls.expects('initAlternateAudio').never();
+
+            dash.loadAlternateAudio();
+
+            expect(dash.audioTracks).to.deep.equal([
+                { language: 'eng', role: 'audio0' }
+            ]);
+        });
+    });
+
     describe('handleSubtitle()', () => {
         it('should select track from front of text track list', () => {
             const english = { language: 'eng', id: 3 };
@@ -620,12 +707,67 @@ describe('lib/viewers/media/DashViewer', () => {
         });
     });
 
+    describe('handleAudioTrack()', () => {
+        it('should select correct audio', () => {
+            dash.audioTracks = [
+                { language: 'eng', role: 'audio0' },
+                { language: 'eng', role: 'audio1' },
+                { language: 'eng', role: 'audio2' }
+            ];
+            sandbox.stub(dash.cache, 'get').returns('1');
+            stubs.mockPlayer.expects('selectAudioLanguage').withArgs('eng', 'audio1');
+
+            dash.handleAudioTrack();
+        });
+
+        it('should not select audio if index out of bounds', () => {
+            dash.audioTracks = [
+                { language: 'eng', role: 'audio0' },
+                { language: 'eng', role: 'audio1' },
+                { language: 'eng', role: 'audio2' }
+            ];
+            sandbox.stub(dash.cache, 'get').returns('3');
+            stubs.mockPlayer.expects('selectAudioLanguage').never();
+
+            dash.handleAudioTrack();
+        });
+    });
+
     describe('calculateVideoDimensions()', () => {
         it('should calculate the video dimensions based on the reps', () => {
-            stubs.mockPlayer.expects('getVariantTracks').returns([{ width: 200 }, { width: 100 }]);
+            stubs.mockPlayer.expects('isAudioOnly').returns(false);
+            stubs.mockPlayer.expects('getVariantTracks').returns([
+                { width: 200, videoId: 1 },
+                { width: 100, videoId: 2 }
+            ]);
             dash.calculateVideoDimensions();
-            expect(dash.hdRepresentation.width).to.equal(200);
-            expect(dash.sdRepresentation.width).to.equal(100);
+            expect(dash.hdVideoId).to.equal(1);
+            expect(dash.sdVideoId).to.equal(2);
+            expect(dash.videoWidth).to.equal(200);
+        });
+
+        it('should use SD video dimensions if no HD', () => {
+            stubs.mockPlayer.expects('isAudioOnly').returns(false);
+            stubs.mockPlayer.expects('getVariantTracks').returns([
+                { width: 640, videoId: 1, audioId: 2 },
+                { width: 640, videoId: 1, audioId: 3 }
+            ]);
+            dash.calculateVideoDimensions();
+            expect(dash.hdVideoId).to.equal(-1);
+            expect(dash.sdVideoId).to.equal(1);
+            expect(dash.videoWidth).to.equal(640);
+        });
+
+        it('should default video dimensions when video is audio-only', () => {
+            stubs.mockPlayer.expects('isAudioOnly').returns(true);
+            stubs.mockPlayer.expects('getVariantTracks').returns([
+                { width: null, videoId: null, audioId: 1 },
+                { width: null, videoId: null, audioId: 2 }
+            ]);
+            dash.calculateVideoDimensions();
+            expect(dash.hdVideoId).to.equal(-1);
+            expect(dash.sdVideoId).to.equal(-1);
+            expect(dash.videoWidth).to.equal(854); // default to width of 854 (480p)
         });
     });
 

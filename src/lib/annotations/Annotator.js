@@ -62,6 +62,9 @@ class Annotator extends EventEmitter {
         this.hasTouch = data.hasTouch;
         this.modeButtons = data.modeButtons;
         this.annotationModeHandlers = [];
+
+        const { CONTROLLERS } = this.options.annotator || {};
+        this.modeControllers = CONTROLLERS || {};
     }
 
     /**
@@ -84,7 +87,10 @@ class Annotator extends EventEmitter {
         Object.keys(this.modeButtons).forEach((type) => {
             const handler = this.getAnnotationModeClickHandler(type);
             const buttonEl = this.container.querySelector(this.modeButtons[type].selector);
-            buttonEl.removeEventListener('click', handler);
+
+            if (buttonEl) {
+                buttonEl.removeEventListener('click', handler);
+            }
         });
 
         this.unbindDOMListeners();
@@ -167,6 +173,10 @@ class Annotator extends EventEmitter {
 
             const handler = this.getAnnotationModeClickHandler(currentMode);
             annotateButtonEl.addEventListener('click', handler);
+
+            if (this.modeControllers[currentMode]) {
+                this.modeControllers[currentMode].registerAnnotator(this);
+            }
         }
     }
 
@@ -540,6 +550,17 @@ class Annotator extends EventEmitter {
                 // Bind events on valid annotation thread
                 const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
                 this.bindCustomListenersOnThread(thread);
+
+                const { annotator } = this.options;
+                if (!annotator) {
+                    return;
+                }
+
+                if (this.modeControllers[firstAnnotation.type]) {
+                    const controller = this.modeControllers[firstAnnotation.type];
+                    controller.bindCustomListenersOnThread(thread);
+                    controller.registerThread(thread);
+                }
             });
 
             this.emit('annotationsfetched');
@@ -671,6 +692,7 @@ class Annotator extends EventEmitter {
     unbindCustomListenersOnThread(thread) {
         thread.removeAllListeners('threaddeleted');
         thread.removeAllListeners('threadcleanup');
+        thread.removeAllListeners('annotationsaved');
         thread.removeAllListeners('annotationevent');
     }
 
@@ -697,99 +719,12 @@ class Annotator extends EventEmitter {
                     eventObj: this.annotatedElement
                 }
             );
-        } else if (mode === TYPES.draw) {
-            const drawingThread = this.createAnnotationThread([], {}, TYPES.draw);
-            this.bindCustomListenersOnThread(drawingThread);
-
-            /* eslint-disable require-jsdoc */
-            const locationFunction = (event) => this.getLocationFromEvent(event, TYPES.point);
-            /* eslint-enable require-jsdoc */
-
-            const postButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
-            const undoButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
-            const redoButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
-
-            // NOTE (@minhnguyen): Move this logic to a new controller class
-            const that = this;
-            drawingThread.addListener('annotationevent', (data = {}) => {
-                switch (data.type) {
-                    case 'drawcommit':
-                        drawingThread.removeAllListeners('annotationevent');
-                        break;
-                    case 'pagechanged':
-                        drawingThread.saveAnnotation(TYPES.draw);
-                        that.unbindModeListeners();
-                        that.bindModeListeners(TYPES.draw);
-                        break;
-                    case 'availableactions':
-                        if (data.undo === 1) {
-                            annotatorUtil.enableElement(undoButtonEl);
-                        } else if (data.undo === 0) {
-                            annotatorUtil.disableElement(undoButtonEl);
-                        }
-
-                        if (data.redo === 1) {
-                            annotatorUtil.enableElement(redoButtonEl);
-                        } else if (data.redo === 0) {
-                            annotatorUtil.disableElement(redoButtonEl);
-                        }
-                        break;
-                    default:
-                }
-            });
-
-            handlers.push(
-                {
-                    type: 'mousemove',
-                    func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleMove),
-                    eventObj: this.annotatedElement
-                },
-                {
-                    type: 'mousedown',
-                    func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStart),
-                    eventObj: this.annotatedElement
-                },
-                {
-                    type: 'mouseup',
-                    func: annotatorUtil.eventToLocationHandler(locationFunction, drawingThread.handleStop),
-                    eventObj: this.annotatedElement
-                }
-            );
-
-            if (postButtonEl) {
-                handlers.push({
-                    type: 'click',
-                    func: () => {
-                        drawingThread.saveAnnotation(mode);
-                        this.toggleAnnotationHandler(mode);
-                    },
-                    eventObj: postButtonEl
-                });
-            }
-
-            if (undoButtonEl) {
-                handlers.push({
-                    type: 'click',
-                    func: () => {
-                        drawingThread.undo();
-                    },
-                    eventObj: undoButtonEl
-                });
-            }
-
-            if (redoButtonEl) {
-                handlers.push({
-                    type: 'click',
-                    func: () => {
-                        drawingThread.redo();
-                    },
-                    eventObj: redoButtonEl
-                });
-            }
+        } else if (mode === TYPES.draw && this.modeControllers[mode]) {
+            this.modeControllers[mode].bindModeListeners();
         }
 
         handlers.forEach((handler) => {
-            handler.eventObj.addEventListener(handler.type, handler.func);
+            handler.eventObj.addEventListener(handler.type, handler.func, false);
             this.annotationModeHandlers.push(handler);
         });
     }
@@ -840,12 +775,17 @@ class Annotator extends EventEmitter {
      * Unbinds event listeners for annotation modes.
      *
      * @protected
+     * @param {string} mode - Annotation mode to be unbound
      * @return {void}
      */
-    unbindModeListeners() {
+    unbindModeListeners(mode) {
         while (this.annotationModeHandlers.length > 0) {
             const handler = this.annotationModeHandlers.pop();
             handler.eventObj.removeEventListener(handler.type, handler.func);
+        }
+
+        if (this.modeControllers[mode]) {
+            this.modeControllers[mode].unbindModeListeners();
         }
     }
 

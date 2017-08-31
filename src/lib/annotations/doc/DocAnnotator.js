@@ -115,6 +115,7 @@ class DocAnnotator extends Annotator {
 
         // Explicit scoping
         this.highlightCreateHandler = this.highlightCreateHandler.bind(this);
+        this.drawingSelectionHandler = this.drawingSelectionHandler.bind(this);
 
         this.createHighlightDialog = new CreateHighlightDialog(this.container, {
             isMobile: this.isMobile,
@@ -345,7 +346,7 @@ class DocAnnotator extends Annotator {
 
         if (!thread && this.notification) {
             this.emit('annotationerror', __('annotations_create_error'));
-        } else if (thread) {
+        } else if (thread && (type !== TYPES.draw || location.page)) {
             this.addThreadToMap(thread);
         }
 
@@ -509,7 +510,9 @@ class DocAnnotator extends Annotator {
 
         if (this.hasTouch && this.isMobile && this.createHighlightDialog) {
             document.addEventListener('selectionchange', this.onSelectionChange);
+            this.annotatedElement.addEventListener('touchstart', this.drawingSelectionHandler);
         } else {
+            this.annotatedElement.addEventListener('click', this.drawingSelectionHandler);
             this.annotatedElement.addEventListener('dblclick', this.highlightMouseupHandler);
             this.annotatedElement.addEventListener('mousedown', this.highlightMousedownHandler);
             this.annotatedElement.addEventListener('contextmenu', this.highlightMousedownHandler);
@@ -540,7 +543,9 @@ class DocAnnotator extends Annotator {
 
         if (this.hasTouch && this.isMobile && this.createHighlightDialog) {
             document.removeEventListener('selectionchange', this.onSelectionChange);
+            this.annotatedElement.removeEventListener('touchstart', this.drawingSelectionHandler);
         } else {
+            this.annotatedElement.removeEventListener('click', this.drawingSelectionHandler);
             this.annotatedElement.removeEventListener('dblclick', this.highlightMouseupHandler);
             this.annotatedElement.removeEventListener('mousedown', this.highlightMousedownHandler);
             this.annotatedElement.removeEventListener('contextmenu', this.highlightMousedownHandler);
@@ -589,7 +594,7 @@ class DocAnnotator extends Annotator {
         let mouseInDialog = false;
 
         threads.some((thread) => {
-            mouseInDialog = docAnnotatorUtil.isInDialog(event, thread.dialog.element);
+            mouseInDialog = annotatorUtil.isInDialog(event, thread.dialog.element);
             return mouseInDialog;
         });
         return mouseInDialog;
@@ -820,6 +825,19 @@ class DocAnnotator extends Annotator {
         }
 
         this.mouseMoveEvent = event;
+    }
+
+    /**
+     * Drawing selection handler. Delegates to the drawing controller
+     *
+     * @private
+     * @param {Event} event - DOM event
+     * @return {void}
+     */
+    drawingSelectionHandler(event) {
+        if (this.modeControllers[TYPES.draw]) {
+            this.modeControllers[TYPES.draw].handleSelection(event);
+        }
     }
 
     /**

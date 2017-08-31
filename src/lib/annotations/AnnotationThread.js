@@ -187,7 +187,7 @@ class AnnotationThread extends EventEmitter {
 
             // If this annotation was the last one in the thread, destroy the thread
         } else if (this.annotations.length === 0 || annotatorUtil.isPlainHighlight(this.annotations)) {
-            if (this.isMobile) {
+            if (this.isMobile && this.dialog) {
                 this.dialog.removeAnnotation(annotationID);
                 this.dialog.hideMobileDialog();
             }
@@ -411,6 +411,8 @@ class AnnotationThread extends EventEmitter {
             this.dialog.addAnnotation(savedAnnotation);
             this.dialog.removeAnnotation(tempAnnotation.annotationID);
         }
+
+        this.emit('annotationsaved');
     }
 
     /**
@@ -434,7 +436,9 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     mouseoutHandler() {
-        if (this.annotations.length !== 0) {
+        const mouseInDialog = annotatorUtil.isInDialog(event, this.dialog.element);
+
+        if (this.annotations.length !== 0 && !mouseInDialog) {
             this.hideDialog();
         }
     }

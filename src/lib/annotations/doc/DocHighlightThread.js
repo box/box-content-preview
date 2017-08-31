@@ -168,7 +168,7 @@ class DocHighlightThread extends AnnotationThread {
      * the annotations dialog
      */
     isOnHighlight(event) {
-        return docAnnotatorUtil.isInDialog(event, this.dialog.element) || this.isInHighlight(event);
+        return annotatorUtil.isInDialog(event, this.dialog.element) || this.isInHighlight(event);
     }
 
     /**
@@ -199,7 +199,7 @@ class DocHighlightThread extends AnnotationThread {
      */
     onMousemove(event) {
         // If mouse is in dialog, change state to hover or active-hover
-        if (docAnnotatorUtil.isInDialog(event, this.dialog.element)) {
+        if (annotatorUtil.isInDialog(event, this.dialog.element)) {
             // Keeps dialog open if comment is pending
             if (this.state === STATES.pending_active) {
                 return false;

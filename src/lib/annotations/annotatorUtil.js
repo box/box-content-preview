@@ -209,6 +209,37 @@ export function resetTextarea(element, clearText) {
     }
 }
 
+/**
+ * Checks whether mouse is inside the dialog represented by this thread.
+ *
+ * @private
+ * @param {Event} event - Mouse event
+ * @param {HTMLElement} dialogEl - Dialog element
+ * @return {boolean} Whether or not mouse is inside dialog
+ */
+export function isInDialog(event, dialogEl) {
+    if (!dialogEl) {
+        return false;
+    }
+
+    // DOM coordinates with respect to the page
+    const x = event.clientX;
+    const y = event.clientY;
+
+    // Get dialog dimensions
+    const dialogDimensions = dialogEl.getBoundingClientRect();
+
+    if (
+        y >= dialogDimensions.top &&
+        y <= dialogDimensions.bottom &&
+        x >= dialogDimensions.left &&
+        x <= dialogDimensions.right
+    ) {
+        return true;
+    }
+    return false;
+}
+
 //------------------------------------------------------------------------------
 // Point Utils
 //------------------------------------------------------------------------------
@@ -379,6 +410,7 @@ export function repositionCaret(dialogEl, dialogX, highlightDialogWidth, browser
 
     // Reset caret to center
     annotationCaretEl.style.left = '50%';
+
     return dialogX;
 }
 
@@ -420,12 +452,10 @@ export function eventToLocationHandler(locationFunction, callback) {
             return;
         }
 
-        evt.stopPropagation();
         evt.preventDefault();
+        evt.stopPropagation();
         const location = locationFunction(evt);
-        if (location) {
-            callback(location);
-        }
+        callback(location);
     };
 }
 
