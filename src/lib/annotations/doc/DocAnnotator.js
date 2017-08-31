@@ -538,7 +538,7 @@ class DocAnnotator extends Annotator {
         }
 
         // Set all annotations that are in the 'hover' state to 'inactive'
-        this.threads.forEach((pageThreads) => {
+        Object.values(this.threads).forEach((pageThreads) => {
             const highlightThreads = this.getHighlightThreadsOnPage(pageThreads);
             highlightThreads.filter(isThreadInHoverState).forEach((thread) => {
                 thread.reset();
@@ -582,7 +582,7 @@ class DocAnnotator extends Annotator {
         this.mouseX = event.clientX;
         this.mouseY = event.clientY;
 
-        this.threads.forEach((pageThreads) => {
+        Object.values(this.threads).forEach((pageThreads) => {
             const highlightThreads = this.getHighlightThreadsOnPage(pageThreads);
             highlightThreads.forEach((thread) => {
                 thread.onMousedown();
@@ -653,10 +653,10 @@ class DocAnnotator extends Annotator {
         let hoverActive = false;
 
         const pageThreads = this.getThreadsOnPage(page);
-        pageThreads.forEach((thread) => {
+        Object.values(pageThreads).forEach((thread) => {
             // Determine if any highlight threads on page are pending or active
             // and ignore hover events of any highlights below
-            if (!annotatorUtil.isHighlightAnnotation(thread) || thread.state === STATES.pending) {
+            if (!annotatorUtil.isHighlightAnnotation(thread.type) || thread.state === STATES.pending) {
                 return;
             }
 
@@ -807,7 +807,7 @@ class DocAnnotator extends Annotator {
         const page = annotatorUtil.getPageInfo(event.target).page;
         const pageThreads = this.getThreadsOnPage(page);
 
-        pageThreads.forEach((thread) => {
+        Object.values(pageThreads).forEach((thread) => {
             if (PENDING_STATES.indexOf(thread.state) > 0) {
                 // Destroy any pending highlights on click outside the highlight
                 if (thread.type === TYPES.point) {
@@ -866,7 +866,7 @@ class DocAnnotator extends Annotator {
         const threads = [];
         const pageThreads = this.getThreadsOnPage(page);
 
-        pageThreads.forEach((thread) => {
+        Object.values(pageThreads).forEach((thread) => {
             if (annotatorUtil.isHighlightAnnotation(thread.type)) {
                 threads.push(thread);
             }

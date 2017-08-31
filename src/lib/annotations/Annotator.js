@@ -73,8 +73,8 @@ class Annotator extends EventEmitter {
         this.unbindModeListeners();
 
         if (this.threads) {
-            this.threads.forEach((pageThreads) => {
-                pageThreads.forEach((thread) => {
+            Object.values(this.threads).forEach((pageThreads) => {
+                Object.values(pageThreads).forEach((thread) => {
                     this.unbindCustomListenersOnThread(thread);
                 });
             });
@@ -234,8 +234,8 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     hideAnnotations() {
-        this.threads.forEach((pageThreads) => {
-            pageThreads.forEach((thread) => {
+        Object.values(this.threads).forEach((pageThreads) => {
+            Object.values(pageThreads).forEach((thread) => {
                 thread.hide();
             });
         });
@@ -253,11 +253,7 @@ class Annotator extends EventEmitter {
         }
 
         const pageThreads = this.getThreadsOnPage(pageNum);
-        if (!pageThreads) {
-            return;
-        }
-
-        pageThreads.forEach((thread) => {
+        Object.values(pageThreads).forEach((thread) => {
             thread.hide();
         });
     }
@@ -269,8 +265,8 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     renderAnnotations() {
-        this.threads.forEach((pageThreads) => {
-            pageThreads.forEach((thread) => {
+        Object.values(this.threads).forEach((pageThreads) => {
+            Object.values(pageThreads).forEach((thread) => {
                 thread.show();
             });
         });
@@ -289,7 +285,7 @@ class Annotator extends EventEmitter {
         }
 
         const pageThreads = this.getThreadsOnPage(pageNum);
-        pageThreads.forEach((thread) => {
+        Object.values(pageThreads).forEach((thread) => {
             thread.show();
         });
     }
@@ -517,8 +513,8 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     setupAnnotations() {
-        // Map of page => [threads on page]
-        this.threads = new Map();
+        // Map of page => {threads on page}
+        this.threads = {};
         this.bindDOMListeners();
         this.bindCustomListenersOnService(this.annotationService);
         this.addListener('scaleAnnotations', this.scaleAnnotations);
@@ -532,7 +528,7 @@ class Annotator extends EventEmitter {
      * @return {Promise} Promise for fetching saved annotations
      */
     fetchAnnotations() {
-        this.threads = new Map();
+        this.threads = {};
 
         return this.annotationService.getThreadMap(this.fileVersionId).then((threadMap) => {
             // Generate map of page to threads
@@ -857,13 +853,9 @@ class Annotator extends EventEmitter {
      */
     addThreadToMap(thread) {
         // Add thread to in-memory map
-        const page = thread.location.page || 1; // Defaults to page 1 if thread has no page
-        let pageThreads = this.threads.get(page);
-        if (!pageThreads) {
-            this.threads.set(page, new Map());
-            pageThreads = this.threads.get(page);
-        }
-        pageThreads.set(thread.threadID, thread);
+        const page = thread.location.page || 1; // Defaults to page 1 if thread has no page'
+        const pageThreads = this.getThreadsOnPage(page);
+        pageThreads[thread.threadID] = thread;
     }
 
     /**
@@ -875,12 +867,7 @@ class Annotator extends EventEmitter {
      */
     removeThreadFromMap(thread) {
         const page = thread.location.page || 1;
-
-        // Remove from map
-        const pageThreads = this.threads.get(page);
-        if (pageThreads) {
-            pageThreads.delete(thread.threadID);
-        }
+        delete this.threads[page][thread.threadID];
     }
 
     /**
@@ -917,7 +904,10 @@ class Annotator extends EventEmitter {
      * @return {Map|[]} Threads on page
      */
     getThreadsOnPage(page) {
-        return this.threads.get(page) || [];
+        if (!(page in this.threads)) {
+            this.threads[page] = {};
+        }
+        return this.threads[page];
     }
 
     /**
@@ -929,8 +919,9 @@ class Annotator extends EventEmitter {
      */
     destroyPendingThreads() {
         let hasPendingThreads = false;
-        this.threads.forEach((pageThreads) => {
-            pageThreads.forEach((thread) => {
+
+        Object.values(this.threads).forEach((pageThreads) => {
+            Object.values(pageThreads).forEach((thread) => {
                 if (annotatorUtil.isPending(thread.state)) {
                     hasPendingThreads = true;
                     thread.destroy();

@@ -44,7 +44,7 @@ describe('lib/annotations/Annotator', () => {
             options,
             modeButtons: {}
         });
-        annotator.threads = new Map();
+        annotator.threads = {};
 
         stubs.thread = {
             threadID: '123abc',
@@ -854,7 +854,7 @@ describe('lib/annotations/Annotator', () => {
             });
 
             it('should not destroy and return false if there are no threads', () => {
-                annotator.threads = new Map();
+                annotator.threads = {};
                 stubs.threadMock.expects('destroy').never();
                 stubs.isPending.returns(false);
                 const destroyed = annotator.destroyPendingThreads();
