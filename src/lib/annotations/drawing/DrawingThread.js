@@ -290,6 +290,10 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     drawBoundary() {
+        if (!this.location.page) {
+            return;
+        }
+
         const [x, y, width, height] = this.getBrowserRectangularBoundary();
 
         // Save context style
@@ -314,19 +318,22 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     render(timestamp = window.performance.now()) {
-        if (this.drawingFlag === DRAW_STATES.drawing) {
-            this.lastAnimationRequestId = window.requestAnimationFrame(this.render);
-        }
+        let renderAgain = true;
 
         const elapsed = timestamp - (this.lastRenderTimestamp || 0);
         if (elapsed >= DRAW_RENDER_THRESHOLD) {
             this.draw(this.drawingContext, true);
-            if (this.location.page) {
-                this.drawBoundary();
-            }
+            this.drawBoundary();
 
             this.lastRenderTimestamp = timestamp;
+            renderAgain = this.drawingFlag === DRAW_STATES.drawing;
         }
+
+        if (!renderAgain) {
+            return;
+        }
+
+        this.lastAnimationRequestId = window.requestAnimationFrame(this.render);
     }
 
     //--------------------------------------------------------------------------
@@ -342,7 +349,9 @@ class DrawingThread extends AnnotationThread {
      */
     updateBoundary(item) {
         // Recompute the entire AABB when no item is provided, check a new item if it is provided
-        const boundaryData = !item ? this.pathContainer.getAABB() : DrawingPath.extractDrawingInfo(item, this.location);
+        const boundaryData = !item
+            ? this.pathContainer.getAxisAlignedBoundingBox()
+            : DrawingPath.extractDrawingInfo(item, this.location);
 
         Object.assign(this.location, boundaryData);
     }

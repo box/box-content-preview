@@ -163,6 +163,9 @@ class DocDrawingThread extends DrawingThread {
 
         // Get the annotation layer context to draw with
         const context = this.selectContext();
+        if (this.state === STATES.pending) {
+            this.drawBoundary();
+        }
 
         // Generate the paths and draw to the annotation layer canvas
         this.pathContainer.applyToItems((drawing) =>

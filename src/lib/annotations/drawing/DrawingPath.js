@@ -154,10 +154,11 @@ class DrawingPath {
      */
     static extractDrawingInfo(pathA, accumulator) {
         let paths = accumulator.paths;
-        if (paths) {
-            paths.push(pathA.path);
+        const apath = { path: pathA.path };
+        if (!paths) {
+            paths = [apath];
         } else {
-            paths = [pathA.path];
+            paths.push(apath);
         }
 
         return {
