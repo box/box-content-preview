@@ -22,6 +22,9 @@ describe('lib/viewers/SWFViewer', () => {
                 id: 0,
                 permissions: {
                     can_download: true
+                },
+                file_version: {
+                    id: 123
                 }
             },
             container: containerEl,

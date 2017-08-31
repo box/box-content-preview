@@ -58,7 +58,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 }
             },
             file: {
-                id: '0'
+                id: 0,
+                file_version: {
+                    id: 123
+                }
             }
         });
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
@@ -240,6 +243,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.options.file = {
                 watermark_info: {
                     is_watermarked: true
+                },
+                file_version: {
+                    id: 123
                 }
             };
             sandbox.stub(docBase, 'getCachedPage').returns(1);
@@ -251,7 +257,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should not do anything if no preload rep is found', () => {
-            docBase.options.file = {};
+            docBase.options.file = {
+                file_version: {
+                    id: 123
+                }
+            };
             sandbox.stub(docBase, 'getCachedPage').returns(1);
             sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
             sandbox.stub(file, 'getRepresentation').returns(null);
@@ -261,7 +271,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should not do anything if preload option is not set', () => {
-            docBase.options.file = {};
+            docBase.options.file = {
+                file_version: {
+                    id: 123
+                }
+            };
             sandbox.stub(docBase, 'getCachedPage').returns(1);
             sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(false);
             sandbox.stub(file, 'getRepresentation').returns(null);
@@ -285,7 +299,11 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should show preload with correct authed URL', () => {
             const preloadUrl = 'someUrl';
-            docBase.options.file = {};
+            docBase.options.file = {
+                file_version: {
+                    id: 123
+                }
+            };
             sandbox.stub(docBase, 'getCachedPage').returns(1);
             sandbox.stub(file, 'getRepresentation').returns({
                 content: {
@@ -521,7 +539,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should return the cached current page if present', () => {
             docBase.options = {
                 file: {
-                    id: 0
+                    id: 0,
+                    file_version: {
+                        id: 123
+                    }
                 }
             };
 
@@ -544,7 +565,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         beforeEach(() => {
             docBase.options = {
                 file: {
-                    id: 0
+                    id: 0,
+                    file_version: {
+                        id: 123
+                    }
                 }
             };
             stubs.has = sandbox.stub(docBase.cache, 'has').returns(true);
@@ -858,6 +882,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                     },
                     permissions: {
                         can_download: undefined
+                    },
+                    file_version: {
+                        id: 123
                     }
                 }
             };

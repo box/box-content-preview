@@ -26,6 +26,9 @@ describe('lib/viewers/text/PlainTextViewer', () => {
                 id: 0,
                 permissions: {
                     can_download: true
+                },
+                file_version: {
+                    id: 123
                 }
             },
             container: containerEl,
@@ -48,6 +51,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (typeof text.destroy === 'function') {
+            sandbox.stub(text, 'emit');
             text.destroy();
         }
         text = null;

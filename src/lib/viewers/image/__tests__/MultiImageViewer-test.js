@@ -32,7 +32,10 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         stubs.emit = sandbox.stub(fullscreen, 'addListener');
         options = {
             file: {
-                id: 100
+                id: 100,
+                file_version: {
+                    id: 123
+                }
             },
             viewerAsset: '{page}.png',
             viewer: {

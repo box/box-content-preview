@@ -36,6 +36,9 @@ describe('lib/viewers/media/DashViewer', () => {
                 id: 0,
                 permissions: {
                     can_download: true
+                },
+                file_version: {
+                    id: 123
                 }
             },
             container: containerEl,
@@ -488,6 +491,9 @@ describe('lib/viewers/media/DashViewer', () => {
                                 metadata: { interval: 1 }
                             }
                         ]
+                    },
+                    file_version: {
+                        id: 123
                     }
                 }
             };

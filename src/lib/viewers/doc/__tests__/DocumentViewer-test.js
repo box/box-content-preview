@@ -33,13 +33,19 @@ describe('lib/viewers/doc/DocumentViewer', () => {
         doc = new DocumentViewer({
             container: containerEl,
             file: {
-                id: '0'
+                id: '0',
+                file_version: {
+                    id: 123
+                }
             }
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
         doc.containerEl = containerEl;
         doc.setup();
+
+        sandbox.stub(doc, 'emit');
+        sandbox.stub(doc, 'getCachedPage');
 
         doc.pdfViewer = {
             currentPageNumber: 0,
@@ -57,6 +63,8 @@ describe('lib/viewers/doc/DocumentViewer', () => {
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (doc && typeof doc.destroy === 'function') {
+            sandbox.stub(doc, 'emit');
+            sandbox.stub(doc, 'getCachedPage');
             doc.destroy();
         }
 

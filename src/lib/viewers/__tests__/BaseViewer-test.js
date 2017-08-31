@@ -29,7 +29,10 @@ describe('lib/viewers/BaseViewer', () => {
         base = new BaseViewer({
             container: containerEl,
             file: {
-                id: '0'
+                id: 0,
+                file_version: {
+                    id: 123
+                }
             }
         });
     });
@@ -54,7 +57,10 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.options).to.deep.equal({
                 container: containerEl,
                 file: {
-                    id: '0'
+                    id: 0,
+                    file_version: {
+                        id: 123
+                    }
                 },
                 showAnnotations: true
             });
@@ -195,7 +201,10 @@ describe('lib/viewers/BaseViewer', () => {
                 sharedLinkPassword,
                 container: containerEl,
                 file: {
-                    id: '0'
+                    id: 0,
+                    file_version: {
+                        id: 123
+                    }
                 }
             });
             sandbox.stub(util, 'appendAuthParams').returns(url);
@@ -223,7 +232,10 @@ describe('lib/viewers/BaseViewer', () => {
                 viewer: { ASSET: 'foo' },
                 container: containerEl,
                 file: {
-                    id: '0'
+                    id: 0,
+                    file_version: {
+                        id: 123
+                    }
                 }
             });
 
@@ -258,7 +270,10 @@ describe('lib/viewers/BaseViewer', () => {
                 sharedLinkPassword,
                 container: containerEl,
                 file: {
-                    id: '0'
+                    id: 0,
+                    file_version: {
+                        id: 123
+                    }
                 }
             });
             sandbox.stub(util, 'getHeaders').returns(headers);
@@ -427,7 +442,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should pass through the event as well as broadcast it as a viewer event', () => {
-            const fileId = '1';
+            const fileId = 1;
             const event = 'someEvent';
             const data = {};
             const viewerName = 'name';
@@ -435,7 +450,10 @@ describe('lib/viewers/BaseViewer', () => {
             base = new BaseViewer({
                 viewer: { NAME: viewerName },
                 file: {
-                    id: fileId
+                    id: fileId,
+                    file_version: {
+                        id: 123
+                    }
                 },
                 container: containerEl
             });
@@ -462,7 +480,10 @@ describe('lib/viewers/BaseViewer', () => {
             base = new BaseViewer({
                 container: containerEl,
                 file: {
-                    id: '123'
+                    id: 123,
+                    file_version: {
+                        id: 123
+                    }
                 }
             });
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
@@ -744,7 +765,7 @@ describe('lib/viewers/BaseViewer', () => {
             sandbox.stub(base, 'getViewerOption').returns(annConfig);
             const config = base.getViewerAnnotationsConfig();
             expect(config).to.deep.equal(annConfig);
-            
+
         });
     });
 
