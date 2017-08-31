@@ -40,7 +40,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
         annotator.annotatedElement = annotator.getAnnotatedEl(document);
         annotator.annotationService = {};
-        annotator.threads = new Map();
+        annotator.threads = {};
 
         stubs.getPageInfo = sandbox.stub(annotatorUtil, 'getPageInfo');
     });
@@ -735,12 +735,18 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     describe('onHighlightCheck()', () => {
         beforeEach(() => {
             stubs.thread = {
+                threadID: '123abc',
+                location: { page : 1 },
+                type: TYPES.highlight,
                 onMousemove: () => {},
                 show: () => {}
             };
             stubs.threadMock = sandbox.mock(stubs.thread);
 
             stubs.delayThread = {
+                threadID: '456def',
+                location: { page : 1 },
+                type: TYPES.highlight,
                 onMousemove: () => {},
                 hideDialog: () => {},
                 show: () => {},
@@ -748,8 +754,18 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             };
             stubs.delayMock = sandbox.mock(stubs.delayThread);
 
+            stubs.delayThread2 = {
+                threadID: '789ghi',
+                location: { page : 1 },
+                type: TYPES.highlight,
+                onMousemove: () => {},
+                hideDialog: () => {},
+                show: () => {},
+                state: STATES.hover
+            };
+            stubs.delay2Mock = sandbox.mock(stubs.delayThread2);
+
             stubs.getPageInfo = stubs.getPageInfo.returns({ pageEl: {}, page: 1 });
-            stubs.getThreads = sandbox.stub(annotator, 'getHighlightThreadsOnPage');
             stubs.clock = sinon.useFakeTimers();
             stubs.isDialog = sandbox.stub(docAnnotatorUtil, 'isDialogDataType');
 
@@ -764,12 +780,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         afterEach(() => {
             stubs.clock.restore();
+            annotator.threads = {};
         });
 
         it('should not do anything if user is creating a highlight', () => {
             stubs.threadMock.expects('onMousemove').returns(false).never();
             stubs.delayMock.expects('onMousemove').returns(true).never();
-            stubs.getThreads.returns([stubs.thread, stubs.delayThread]);
             annotator.isCreatingHighlight = true;
 
             annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
@@ -780,14 +796,14 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         it('should not add any delayThreads if there are no threads on the current page', () => {
             stubs.threadMock.expects('onMousemove').returns(false).never();
             stubs.delayMock.expects('onMousemove').returns(true).never();
-            stubs.getThreads.returns([]);
 
             annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
             annotator.onHighlightCheck();
         });
 
         it('should add delayThreads and hide innactive threads if the page is found', () => {
-            stubs.getThreads.returns([stubs.thread, stubs.delayThread]);
+            annotator.addThreadToMap(stubs.thread);
+            annotator.addThreadToMap(stubs.delayThread);
             stubs.threadMock.expects('onMousemove').returns(false);
             stubs.delayMock.expects('onMousemove').returns(true);
             stubs.threadMock.expects('show').never();
@@ -798,7 +814,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should not trigger other highlights if user is creating a new highlight', () => {
-            stubs.getThreads.returns([]);
             annotator.isCreatingHighlight = true;
             stubs.delayMock.expects('show').never();
             stubs.delayMock.expects('hideDialog').never();
@@ -809,7 +824,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         it('should switch to the text cursor if mouse is no longer hovering over a highlight', () => {
             stubs.delayMock.expects('onMousemove').returns(false);
-            stubs.getThreads.returns([stubs.delayThread]);
+            annotator.addThreadToMap(stubs.delayThread);
             sandbox.stub(annotator, 'removeDefaultCursor');
 
             annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
@@ -823,10 +838,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         it('should switch to the hand cursor if mouse is hovering over a highlight', () => {
             stubs.delayMock.expects('onMousemove').returns(true);
-            stubs.getThreads.returns([stubs.delayThread]);
             sandbox.stub(annotator, 'useDefaultCursor');
-
-            stubs.delayThread.state = STATES.hover;
+            annotator.addThreadToMap(stubs.delayThread);
 
             annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
             annotator.onHighlightCheck();
@@ -835,10 +848,14 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should show the top-most delayed thread, and hide all others', () => {
-            stubs.getThreads.returns([stubs.delayThread, stubs.delayThread]);
-            stubs.delayMock.expects('onMousemove').returns(true).twice();
+            annotator.addThreadToMap(stubs.delayThread);
+            annotator.addThreadToMap(stubs.delayThread2);
+
+            stubs.delayMock.expects('onMousemove').returns(true);
             stubs.delayMock.expects('show');
-            stubs.delayMock.expects('hideDialog');
+
+            stubs.delay2Mock.expects('onMousemove').returns(true);
+            stubs.delay2Mock.expects('hideDialog');
 
             annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
             annotator.onHighlightCheck();
@@ -846,13 +863,11 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         it('should do nothing if there are pending, pending-active, active, or active hover highlight threads', () => {
             stubs.thread.state = STATES.pending;
+            annotator.addThreadToMap(stubs.thread);
             stubs.threadMock.expects('onMousemove').returns(false).never();
-            stubs.getThreads.returns([stubs.thread]);
 
             annotator.mouseMoveEvent = { clientX: 3, clientY: 3 };
             annotator.onHighlightCheck();
-
-            expect(stubs.getThreads).to.be.called;
         });
     });
 
@@ -1079,37 +1094,39 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         beforeEach(() => {
             stubs.event = { x: 1, y: 1 };
             stubs.thread = {
+                threadID: '123abc',
+                location: { page: 1 },
+                state: STATES.pending,
+                type: TYPES.highlight,
                 cancelFirstComment: () => {},
                 onClick: () => {},
                 show: () => {},
                 destroy: () => {}
             };
             stubs.threadMock = sandbox.mock(stubs.thread);
+            annotator.addThreadToMap(stubs.thread);
 
             stubs.getPageInfo = stubs.getPageInfo.returns({ pageEl: {}, page: 1 });
-            stubs.getThreads = sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns([stubs.thread]);
         });
 
         afterEach(() => {
             stubs.thread.state = 'invalid';
+            annotator.threads = {};
         });
 
-        it('should cancel the first comment of pending threads', () => {
-            stubs.thread.state = STATES.pending;
-            stubs.getAllThreads.returns([stubs.thread]);
-
-            // Point annotation
+        it('should cancel the first comment of pending point thread', () => {
             stubs.thread.type = TYPES.point;
             stubs.threadMock.expects('destroy');
             annotator.highlightClickHandler(stubs.event);
+        });
 
-            // Highlight annotation
-            stubs.thread.type = TYPES.highlight;
+        it('should cancel the first comment of pending highlight thread', () => {
             stubs.threadMock.expects('cancelFirstComment');
             annotator.highlightClickHandler(stubs.event);
         });
 
         it('should not show a thread if it is not active', () => {
+            stubs.thread.state = STATES.inactive;
             stubs.threadMock.expects('onClick').withArgs(stubs.event, false).returns(false);
             stubs.threadMock.expects('cancelFirstComment').never();
             stubs.threadMock.expects('show').never();
@@ -1117,6 +1134,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should show an active thread on the page', () => {
+            stubs.thread.state = STATES.inactive;
             stubs.threadMock.expects('onClick').withArgs(stubs.event, false).returns(true);
             stubs.threadMock.expects('cancelFirstComment').never();
             stubs.threadMock.expects('show');

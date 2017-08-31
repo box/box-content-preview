@@ -808,7 +808,7 @@ class DocAnnotator extends Annotator {
         const pageThreads = this.getThreadsOnPage(page);
 
         Object.values(pageThreads).forEach((thread) => {
-            if (PENDING_STATES.indexOf(thread.state) > 0) {
+            if (PENDING_STATES.indexOf(thread.state) >= 0) {
                 // Destroy any pending highlights on click outside the highlight
                 if (thread.type === TYPES.point) {
                     thread.destroy();

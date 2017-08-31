@@ -181,7 +181,7 @@ describe('lib/annotations/Annotator', () => {
 
             annotator.setupAnnotations();
 
-            expect(annotator.threads.size).equals(0);
+            expect(annotator.threads).to.not.be.undefined;
             expect(annotator.bindDOMListeners).to.be.called;
             expect(annotator.bindCustomListenersOnService).to.be.called;
             expect(annotator.addListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
@@ -434,7 +434,7 @@ describe('lib/annotations/Annotator', () => {
 
                 const result = annotator.fetchAnnotations();
                 return stubs.threadPromise.then(() => {
-                    expect(annotator.threads.size).equals(0);
+                    expect(annotator.threads).to.not.be.undefined;
                     expect(annotator.createAnnotationThread).to.be.calledTwice;
                     expect(annotator.bindCustomListenersOnThread).to.be.calledTwice;
                     expect(result).to.be.an.object;
@@ -771,13 +771,12 @@ describe('lib/annotations/Annotator', () => {
                 stubs.thread.location = { page: 1 };
                 stubs.thread2.location = { page: 1 };
 
-                const threadMap = new Map([['456def', stubs.thread2]]);
-                annotator.threads = new Map([[1, threadMap]]);
-
+                const threadMap = { '456def': stubs.thread2 };
+                annotator.threads = { 1: threadMap };
                 annotator.addThreadToMap(stubs.thread);
 
-                const pageThreads = annotator.threads.get(1);
-                expect(pageThreads.has(stubs.thread.threadID)).to.be.true;
+                const pageThreads = annotator.getThreadsOnPage(1);
+                expect(pageThreads).to.have.any.keys(stubs.thread.threadID);
             });
         });
 
@@ -789,9 +788,9 @@ describe('lib/annotations/Annotator', () => {
                 annotator.addThreadToMap(stubs.thread2);
 
                 annotator.removeThreadFromMap(stubs.thread);
-                const pageThreads = annotator.threads.get(1);
-                expect(pageThreads.has(stubs.thread.threadID)).to.be.false;
-                expect(pageThreads.has(stubs.thread2.threadID)).to.be.true;
+                const pageThreads = annotator.getThreadsOnPage(1);
+                expect(pageThreads).to.not.have.any.keys(stubs.thread.threadID);
+                expect(pageThreads).to.have.any.keys(stubs.thread2.threadID);
             });
         });
 
@@ -822,9 +821,22 @@ describe('lib/annotations/Annotator', () => {
         });
 
         describe('getThreadsOnPage()', () => {
-            it('should return empty array if no page number provided', () => {
-                const threads = annotator.getThreadsOnPage(-1);
-                expect(threads.length).to.equal(0);
+            it('should add page to threadMap if it does not already exist', () => {
+                annotator.threads = {
+                    1: 'not empty'
+                };
+                const threads = annotator.getThreadsOnPage(2);
+                expect(threads).to.not.be.undefined;
+                annotator.threads = {};
+            });
+
+            it('should return an existing page in the threadMap', () => {
+                annotator.threads = {
+                    1: 'not empty'
+                };
+                const threads = annotator.getThreadsOnPage(1);
+                expect(threads).equals('not empty');
+                annotator.threads = {};
             });
         });
 
