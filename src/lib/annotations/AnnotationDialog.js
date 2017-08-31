@@ -715,8 +715,8 @@ class AnnotationDialog extends EventEmitter {
         const iconPadding = POINT_ANNOTATION_ICON_HEIGHT - POINT_ANNOTATION_ICON_DOT_HEIGHT / 2;
         const annotationCaretEl = this.element.querySelector(constants.SELECTOR_ANNOTATION_CARET);
 
-        // Flip dialog to above the icon if in the lower half of the image
         if (yPos <= containerHeight / 2) {
+            // Keep dialog below the icon if in the top half of the viewport
             top = `${yPos - POINT_ANNOTATION_ICON_DOT_HEIGHT}px`;
             bottom = '';
 
@@ -724,6 +724,7 @@ class AnnotationDialog extends EventEmitter {
 
             annotationCaretEl.style.bottom = '';
         } else {
+            // Flip dialog to above the icon if in the lower half of the viewport
             const flippedY = containerHeight - yPos - iconPadding;
             top = '';
             bottom = `${flippedY}px`;
