@@ -10,8 +10,10 @@ import Popup from '../../Popup';
 import RepStatus from '../../RepStatus';
 import {
     CLASS_BOX_PREVIEW_FIND_BAR,
+    CLASS_CRAWLER,
     CLASS_HIDDEN,
     CLASS_IS_SCROLLABLE,
+    CLASS_SPINNER,
     DOC_STATIC_ASSETS_VERSION,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
@@ -86,6 +88,10 @@ class DocBaseViewer extends BaseViewer {
 
         // Clean up print blob
         this.printBlob = null;
+
+        if (this.pageControls) {
+            this.pageControls.removeListener('pagechange', this.setPage);
+        }
 
         if (this.controls && typeof this.controls.destroy === 'function') {
             this.controls.destroy();
@@ -302,15 +308,15 @@ class DocBaseViewer extends BaseViewer {
     /**
      * Go to specified page
      *
-     * @param {number} pageNum - Page to navigate to
+     * @param {number} pageNumber - Page to navigate to
      * @return {void}
      */
-    setPage(pageNum) {
-        if (pageNum < 1 || pageNum > this.pdfViewer.pagesCount) {
+    setPage(pageNumber) {
+        if (pageNumber < 1 || pageNumber > this.pdfViewer.pagesCount) {
             return;
         }
 
-        this.pdfViewer.currentPageNumber = pageNum;
+        this.pdfViewer.currentPageNumber = pageNumber;
         this.cachePage(this.pdfViewer.currentPageNumber);
     }
 
@@ -438,12 +444,13 @@ class DocBaseViewer extends BaseViewer {
     initViewer(pdfUrl) {
         this.bindDOMListeners();
 
-        // Initialize PDF.js in container
+        // Initialize pdf.js in container
         this.pdfViewer = new PDFJS.PDFViewer({
             container: this.docEl,
             linkService: new PDFJS.PDFLinkService(),
             // Enhanced text selection uses more memory, so disable on mobile
-            enhanceTextSelection: !this.isMobile
+            enhanceTextSelection: !this.isMobile,
+            renderInteractiveForms: true
         });
 
         // Use chunk size set in viewer options if available
@@ -495,6 +502,7 @@ class DocBaseViewer extends BaseViewer {
                 if (err instanceof Error) {
                     error.displayMessage = __('error_document');
                 }
+
                 this.triggerError(err);
             });
     }
@@ -547,7 +555,7 @@ class DocBaseViewer extends BaseViewer {
 
         // Disable font faces on IOS 10.3.X
         // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
-        PDFJS.disableFontFace = PDFJS.disableFontFace || Browser.isIOSWithFontIssue();
+        PDFJS.disableFontFace = PDFJS.disableFontFace || Browser.hasFontIssue();
 
         // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (25MB) for
         // previews outside of the US since the additional latency overhead per range request can be
@@ -569,6 +577,15 @@ class DocBaseViewer extends BaseViewer {
         // Do not disable create object URL in IE11 or iOS Chrome - pdf.js issues #3977 and #8081 are
         // not applicable to Box's use case and disabling causes performance issues
         PDFJS.disableCreateObjectURL = false;
+
+        // Customize pdf.js loading icon. We modify the prototype of PDFPageView to get around directly modifying
+        // pdf_viewer.js
+        const resetFunc = PDFJS.PDFPageView.prototype.reset;
+        PDFJS.PDFPageView.prototype.reset = function reset(...args) {
+            resetFunc.bind(this)(args);
+            this.loadingIconDiv.classList.add(CLASS_SPINNER);
+            this.loadingIconDiv.innerHTML = '<div></div>';
+        };
     }
 
     /**
@@ -585,7 +602,7 @@ class DocBaseViewer extends BaseViewer {
         printCheckmark.innerHTML = ICON_PRINT_CHECKMARK.trim();
 
         const loadingIndicator = document.createElement('div');
-        loadingIndicator.classList.add('bp-crawler');
+        loadingIndicator.classList.add(CLASS_CRAWLER);
         loadingIndicator.innerHTML = `
             <div></div>
             <div></div>
@@ -694,7 +711,8 @@ class DocBaseViewer extends BaseViewer {
      */
     loadUI() {
         this.controls = new Controls(this.containerEl);
-        this.pageControls = new PageControls(this.controls, this.previousPage, this.nextPage);
+        this.pageControls = new PageControls(this.controls, this.docEl);
+        this.pageControls.addListener('pagechange', this.setPage);
         this.bindControlListeners();
     }
 
@@ -785,7 +803,6 @@ class DocBaseViewer extends BaseViewer {
         this.pdfViewer.currentScaleValue = 'auto';
 
         this.loadUI();
-        this.pageControls.checkPaginationButtons(this.pdfViewer.currentPageNumber, this.pdfViewer.pagesCount);
 
         // Set current page to previously opened page or first page
         this.setPage(this.getCachedPage());
@@ -844,17 +861,17 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     pagechangeHandler(event) {
-        const pageNum = event.pageNumber;
-        this.pageControls.updateCurrentPage(pageNum);
+        const pageNumber = event.pageNumber;
+        this.pageControls.updateCurrentPage(pageNumber);
 
         // We only set cache the current page if 'pagechange' was fired after
         // preview is loaded - this filters out pagechange events fired by
         // the viewer's initialization
         if (this.loaded) {
-            this.cachePage(pageNum);
+            this.cachePage(pageNumber);
         }
 
-        this.emit('pagefocus', pageNum);
+        this.emit('pagefocus', pageNumber);
     }
 
     /**

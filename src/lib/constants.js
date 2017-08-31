@@ -21,6 +21,7 @@ export const CLASS_BOX_PREVIEW_OVERLAY = 'bp-overlay';
 export const CLASS_BOX_PREVIEW_OVERLAY_WRAPPER = 'bp-overlay-wrapper';
 export const CLASS_BOX_PREVIEW_PRELOAD = 'bp-preload';
 export const CLASS_BOX_PREVIEW_PRELOAD_CONTENT = 'bp-preload-content';
+export const CLASS_BOX_PREVIEW_PRELOAD_OVERLAY = 'bp-preload-overlay';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT = 'bp-document-preload-wrapper';
 export const CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_PRESENTATION = 'bp-presentation-preload-wrapper';
 export const CLASS_BOX_PREVIEW_PROGRESS_BAR = 'bp-progress-bar';
@@ -31,11 +32,14 @@ export const CLASS_ELEM_KEYBOARD_FOCUS = 'bp-has-keyboard-focus';
 export const CLASS_FULLSCREEN = 'bp-is-fullscreen';
 export const CLASS_FULLSCREEN_UNSUPPORTED = 'bp-fullscreen-unsupported';
 export const CLASS_INVISIBLE = 'bp-is-invisible';
+export const CLASS_IS_TRANSPARENT = 'bp-is-transparent';
 export const CLASS_IS_VISIBLE = 'bp-is-visible';
 export const CLASS_IS_SCROLLABLE = 'bp-is-scrollable';
 export const CLASS_IS_SELECTABLE = 'bp-is-selectable';
 export const CLASS_IS_BUFFERING = 'bp-is-buffering';
 export const CLASS_DARK = 'bp-dark';
+export const CLASS_CRAWLER = 'bp-crawler';
+export const CLASS_SPINNER = 'bp-spinner';
 
 export const SELECTOR_BOX_PREVIEW_CONTAINER = `.${CLASS_BOX_PREVIEW_CONTAINER}`;
 export const SELECTOR_BOX_PREVIEW = `.${CLASS_BOX_PREVIEW}`;
@@ -80,7 +84,7 @@ export const X_REP_HINT_VIDEO_MP4 = '[mp4]';
 // These should be updated to match the Preview version in package.json
 // whenever a file in that third party directory is updated
 export const DOC_STATIC_ASSETS_VERSION = '1.7.0';
-export const MEDIA_STATIC_ASSETS_VERSION = '0.127.0';
+export const MEDIA_STATIC_ASSETS_VERSION = '1.8.0';
 export const MODEL3D_STATIC_ASSETS_VERSION = '1.4.1';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';
 export const TEXT_STATIC_ASSETS_VERSION = '0.114.0';

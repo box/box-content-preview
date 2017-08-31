@@ -21,6 +21,7 @@ import {
     PAGE_PADDING_TOP,
     PAGE_PADDING_BOTTOM,
     CLASS_ANNOTATION_LAYER_HIGHLIGHT,
+    CLASS_ANNOTATION_LAYER_DRAW,
     PENDING_STATES
 } from '../annotationConstants';
 
@@ -34,6 +35,8 @@ const CLASS_DEFAULT_CURSOR = 'bp-use-default-cursor';
 
 // Required by rangy highlighter
 const ID_ANNOTATED_ELEMENT = 'bp-rangy-annotated-element';
+
+const ANNOTATION_LAYER_CLASSES = [CLASS_ANNOTATION_LAYER_HIGHLIGHT, CLASS_ANNOTATION_LAYER_DRAW];
 
 /**
  * For filtering out and only showing the first thread in a list of threads.
@@ -101,6 +104,7 @@ class DocAnnotator extends Annotator {
         this.createHighlightThread = this.createHighlightThread.bind(this);
         this.createPlainHighlight = this.createPlainHighlight.bind(this);
         this.highlightCreateHandler = this.highlightCreateHandler.bind(this);
+        this.drawingSelectionHandler = this.drawingSelectionHandler.bind(this);
 
         this.createHighlightDialog = new CreateHighlightDialog(this.container, {
             isMobile: this.isMobile,
@@ -312,7 +316,7 @@ class DocAnnotator extends Annotator {
 
         if (!thread && this.notification) {
             this.emit('annotationerror', __('annotations_create_error'));
-        } else if (thread) {
+        } else if (thread && (type !== TYPES.draw || location.page)) {
             this.addThreadToMap(thread);
         }
 
@@ -384,6 +388,9 @@ class DocAnnotator extends Annotator {
      * @return {void}
      */
     renderAnnotationsOnPage(pageNum) {
+        // Scale existing canvases on re-render
+        this.scaleAnnotationCanvases(pageNum);
+
         super.renderAnnotationsOnPage(pageNum);
 
         // Destroy current pending highlight annotation
@@ -391,6 +398,24 @@ class DocAnnotator extends Annotator {
         highlightThreads.forEach((thread) => {
             if (annotatorUtil.isPending(thread.state)) {
                 thread.destroy();
+            }
+        });
+    }
+
+    /**
+     * Scales all annotation canvases for a specified page.
+     *
+     * @override
+     * @param {number} pageNum - Page number
+     * @return {void}
+     */
+    scaleAnnotationCanvases(pageNum) {
+        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${pageNum}"]`);
+
+        ANNOTATION_LAYER_CLASSES.forEach((annotationLayerClass) => {
+            const annotationLayerEl = pageEl.querySelector(`.${annotationLayerClass}`);
+            if (annotationLayerEl) {
+                docAnnotatorUtil.scaleCanvas(pageEl, annotationLayerEl);
             }
         });
     }
@@ -437,7 +462,9 @@ class DocAnnotator extends Annotator {
 
         if (this.hasTouch && this.isMobile) {
             document.addEventListener('selectionchange', this.onSelectionChange);
+            this.annotatedElement.addEventListener('touchstart', this.drawingSelectionHandler);
         } else {
+            this.annotatedElement.addEventListener('click', this.drawingSelectionHandler);
             this.annotatedElement.addEventListener('dblclick', this.highlightMouseupHandler);
             this.annotatedElement.addEventListener('mousedown', this.highlightMousedownHandler);
             this.annotatedElement.addEventListener('contextmenu', this.highlightMousedownHandler);
@@ -468,7 +495,9 @@ class DocAnnotator extends Annotator {
 
         if (this.hasTouch && this.isMobile) {
             document.removeEventListener('selectionchange', this.onSelectionChange);
+            this.annotatedElement.removeEventListener('touchstart', this.drawingSelectionHandler);
         } else {
+            this.annotatedElement.removeEventListener('click', this.drawingSelectionHandler);
             this.annotatedElement.removeEventListener('dblclick', this.highlightMouseupHandler);
             this.annotatedElement.removeEventListener('mousedown', this.highlightMousedownHandler);
             this.annotatedElement.removeEventListener('contextmenu', this.highlightMousedownHandler);
@@ -486,6 +515,10 @@ class DocAnnotator extends Annotator {
      * @return {void}
      */
     bindCustomListenersOnThread(thread) {
+        if (!thread) {
+            return;
+        }
+
         super.bindCustomListenersOnThread(thread);
 
         // We need to redraw highlights on the page if a thread was deleted
@@ -713,6 +746,19 @@ class DocAnnotator extends Annotator {
         }
 
         this.mouseMoveEvent = event;
+    }
+
+    /**
+     * Drawing selection handler. Delegates to the drawing controller
+     *
+     * @private
+     * @param {Event} event - DOM event
+     * @return {void}
+     */
+    drawingSelectionHandler(event) {
+        if (this.modeControllers[TYPES.draw]) {
+            this.modeControllers[TYPES.draw].handleSelection(event);
+        }
     }
 
     /**

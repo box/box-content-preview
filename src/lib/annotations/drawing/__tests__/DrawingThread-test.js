@@ -62,6 +62,25 @@ describe('lib/annotations/drawing/DrawingThread', () => {
         })
     });
 
+    describe('deleteThread()', () => {
+        it('should delete all attached annotations, clear the drawn rectangle, and call destroy', () => {
+            sandbox.stub(drawingThread, 'getRectangularBoundary').returns(['a', 'b', 'c', 'd']);
+            sandbox.stub(drawingThread, 'destroy');
+            drawingThread.concreteContext = {
+                clearRect: sandbox.stub()
+            };
+            drawingThread.annotations = {
+                forEach: sandbox.stub()
+            };
+
+            drawingThread.deleteThread();
+            expect(drawingThread.getRectangularBoundary).to.be.called;
+            expect(drawingThread.concreteContext.clearRect).to.be.called;
+            expect(drawingThread.annotations.forEach).to.be.called;
+            expect(drawingThread.destroy).to.be.called;
+        });
+    });
+
     describe('setContextStyles()', () => {
         it('should set configurable context properties', () => {
             drawingThread.drawingContext = {
@@ -111,10 +130,7 @@ describe('lib/annotations/drawing/DrawingThread', () => {
     describe('createAnnotationData()', () => {
         it('should create a valid annotation data object', () => {
             const pathStr = 'path';
-            const path = {
-                map: sandbox.stub().returns(pathStr)
-            };
-            sandbox.stub(drawingThread.pathContainer, 'getItems').returns(path);
+            sandbox.stub(drawingThread.pathContainer, 'getAxisAlignedBoundingBox').returns(pathStr);
             drawingThread.annotationService = {
                 user: { id: '1' }
             };
@@ -122,8 +138,7 @@ describe('lib/annotations/drawing/DrawingThread', () => {
             const placeholder = "String here so string doesn't get fined";
             const annotationData = drawingThread.createAnnotationData('draw', placeholder);
 
-            expect(drawingThread.pathContainer.getItems).to.be.called;
-            expect(path.map).to.be.called;
+            expect(drawingThread.pathContainer.getAxisAlignedBoundingBox).to.be.called;
             expect(annotationData.fileVersionId).to.equal(drawingThread.fileVersionId);
             expect(annotationData.threadID).to.equal(drawingThread.threadID);
             expect(annotationData.user.id).to.equal('1');
@@ -249,6 +264,59 @@ describe('lib/annotations/drawing/DrawingThread', () => {
             });
 
             drawingThread.emitAvailableActions();
+        });
+    });
+
+    describe('drawBoundary()', () => {
+        it('should draw the boundary of the saved path', () => {
+            sandbox.stub(drawingThread, 'getRectangularBoundary');
+            drawingThread.drawingContext = {
+                save: sandbox.stub(),
+                beginPath: sandbox.stub(),
+                setLineDash: sandbox.stub(),
+                rect: sandbox.stub(),
+                stroke: sandbox.stub(),
+                restore: sandbox.stub()
+            };
+            drawingThread.getRectangularBoundary.returns([1,2,5,6]);
+
+            drawingThread.drawBoundary();
+            expect(drawingThread.getRectangularBoundary).to.be.called;
+            expect(drawingThread.drawingContext.save).to.be.called;
+            expect(drawingThread.drawingContext.beginPath).to.be.called;
+            expect(drawingThread.drawingContext.setLineDash).to.be.called;
+            expect(drawingThread.drawingContext.rect).to.be.called;
+            expect(drawingThread.drawingContext.stroke).to.be.called;
+            expect(drawingThread.drawingContext.restore).to.be.called;
+        })
+    });
+
+    describe('setBoundary()', () => {
+        it('should do nothing when no drawingPaths have been saved', () => {
+            drawingThread.location = {};
+
+            drawingThread.setBoundary();
+            expect(drawingThread.minX).to.be.undefined;
+            expect(drawingThread.maxX).to.be.undefined;
+            expect(drawingThread.minY).to.be.undefined;
+            expect(drawingThread.maxY).to.be.undefined;
+        });
+
+        it('should set the boundary when the location has been assigned', () => {
+            drawingThread.location = {
+                drawingPaths: {
+                    minX: 5,
+                    minY: 6,
+                    maxX: 7,
+                    maxY: 8
+                }
+            };
+
+            drawingThread.setBoundary();
+            expect(drawingThread.minX).to.equal(drawingThread.location.drawingPaths.minX);
+            expect(drawingThread.maxX).to.equal(drawingThread.location.drawingPaths.maxX);
+            expect(drawingThread.minY).to.equal(drawingThread.location.drawingPaths.minY);
+            expect(drawingThread.maxY).to.equal(drawingThread.location.drawingPaths.maxY);
         });
     });
 });

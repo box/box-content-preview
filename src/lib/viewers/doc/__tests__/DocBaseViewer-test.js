@@ -674,6 +674,40 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             stubs.emit = sandbox.stub(docBase, 'emit');
         });
 
+        it('should turn on enhanced text selection if not on mobile and turn on rendering of interactive forms', () => {
+            docBase.options.location = {
+                locale: 'en-US'
+            };
+            docBase.isMobile = false;
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+
+            docBase.initViewer('');
+
+            expect(stubs.pdfViewerStub).to.be.calledWith({
+                container: sinon.match.any,
+                linkService: sinon.match.any,
+                enhanceTextSelection: true,
+                renderInteractiveForms: true
+            });
+        });
+
+        it('should turn off enhanced text selection if on mobile', () => {
+            docBase.options.location = {
+                locale: 'en-US'
+            };
+            docBase.isMobile = true;
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+
+            docBase.initViewer('');
+
+            expect(stubs.pdfViewerStub).to.be.calledWith({
+                container: sinon.match.any,
+                linkService: sinon.match.any,
+                enhanceTextSelection: false,
+                renderInteractiveForms: true
+            });
+        });
+
         it('should set a chunk size based on viewer options if available', () => {
             const url = 'url';
             const rangeChunkSize = 100;
@@ -842,14 +876,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(PDFJS.externalLinkRel).to.equal('noopener noreferrer nofollow');
         });
 
-        // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
-        it('should test user agent if on Safari Mobile for IOS 10.3', () => {
-            const getStub = sandbox.stub(Browser, 'isIOSWithFontIssue').returns(true);
+        // @NOTE(JustinHoldstock) 2017-04-11: Check to remove or modify this after next IOS release after 10.3.1 or
+        // Safari version
+        it('should test if browser has font rendering issue', () => {
+            PDFJS.disableFontFace = false;
+            sandbox.mock(Browser).expects('hasFontIssue').returns(true);
+
             docBase.setupPdfjs();
 
-            // Mobile stub cannot be called if get stub is never called.
-            // See note for this test, for more info.
-            expect(getStub).to.be.called;
             expect(PDFJS.disableFontFace).to.be.true;
         });
 
@@ -910,6 +944,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         it('should set disableCreateObjectURL to false', () => {
             docBase.setupPdfjs();
             expect(PDFJS.disableCreateObjectURL).to.equal(false);
+        });
+
+        it('should override pdf.js PDFPageView reset with custom loading indicator logic', () => {
+            const resetFunc = PDFJS.PDFPageView.prototype.reset;
+            docBase.setupPdfjs();
+            expect(resetFunc).to.not.equal(PDFJS.PDFPageView.prototype.reset);
         });
     });
 
@@ -1039,6 +1079,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.loadUI();
             expect(bindControlListenersStub).to.be.called;
             expect(docBase.controls instanceof Controls).to.be.true;
+            expect(docBase.pageControls instanceof PageControls).to.be.true;
+            expect(docBase.pageControls.contentEl).to.equal(docBase.docEl);
         });
     });
 
@@ -1142,11 +1184,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             stubs.getCachedPage = sandbox.stub(docBase, 'getCachedPage');
             stubs.emit = sandbox.stub(docBase, 'emit');
             stubs.setupPages = sandbox.stub(docBase, 'setupPageIds');
-
-            docBase.pageControls = {
-                checkPaginationButtons: sandbox.stub()
-            };
-            stubs.checkPaginationButtons = docBase.pageControls.checkPaginationButtons;
         });
 
         it('should load UI, check the pagination buttons, set the page, and make document scrollable', () => {
@@ -1156,11 +1193,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             docBase.pagesinitHandler();
             expect(stubs.loadUI).to.be.called;
-            expect(stubs.checkPaginationButtons).to.be.called;
             expect(stubs.setPage).to.be.called;
             expect(docBase.docEl).to.have.class('bp-is-scrollable');
             expect(stubs.setupPages).to.be.called;
-            expect(stubs.checkPaginationButtons).to.be.called;
         });
 
         it('should broadcast that the preview is loaded if it hasn\'t already', () => {
@@ -1217,7 +1252,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 pageCount: 1
             };
             docBase.pageControls = {
-                updateCurrentPage: sandbox.stub()
+                updateCurrentPage: sandbox.stub(),
+                removeListener: sandbox.stub()
             };
             stubs.updateCurrentPage = docBase.pageControls.updateCurrentPage;
         });

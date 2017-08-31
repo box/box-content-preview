@@ -461,22 +461,42 @@ describe('lib/Browser', () => {
         });
     });
 
-    describe('isIOSWithFontIssue()', () => {
+    describe('isMac()', () => {
+        it('should return true if device is a Mac', () => {
+            Browser.overrideUserAgent('(Macintosh; Intel Mac OS X 10_10_4)');
+            const mac = Browser.isMac();
+            expect(mac).to.be.true;
+        });
+
+        it('should return false if device is not a Mac', () => {
+            Browser.overrideUserAgent('(Windows NT 6.1; Win64; x64; rv:47.0)');
+            const mac = Browser.isMac();
+            expect(mac).to.be.false;
+        });
+    });
+
+    describe('hasFontIssue()', () => {
         it('should return true if device is on ios and is OS 10.3.XX', () => {
             Browser.overrideUserAgent('iPhone OS 10_3_90 safari/2');
-            const hasIssue = Browser.isIOSWithFontIssue();
+            const hasIssue = Browser.hasFontIssue();
             expect(hasIssue).to.be.true;
         });
 
         it('should return false if device is on ios and is not OS 10.3.XX', () => {
             Browser.overrideUserAgent('iPhone OS 10_5_90 safari/2');
-            const hasIssue = Browser.isIOSWithFontIssue();
+            const hasIssue = Browser.hasFontIssue();
             expect(hasIssue).to.be.false;
         });
 
-        it('should return false if device is on ios and is not mobile', () => {
-            Browser.overrideUserAgent('DesktopDevice OS 10_3_90 safari/18902374701347589235');
-            const hasIssue = Browser.isAndroid();
+        it('should return true if device is a Mac running Safari', () => {
+            Browser.overrideUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12');
+            const hasIssue = Browser.hasFontIssue();
+            expect(hasIssue).to.be.true;
+        });
+
+        it('should return false if device is a Mac and not on Safari', () => {
+            Browser.overrideUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36');
+            const hasIssue = Browser.hasFontIssue();
             expect(hasIssue).to.be.false;
         });
     });

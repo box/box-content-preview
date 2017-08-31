@@ -12,6 +12,7 @@ import * as docAnnotatorUtil from '../docAnnotatorUtil';
 import {
     STATES,
     TYPES,
+    CLASS_ANNOTATION_LAYER_HIGHLIGHT,
     DATA_TYPE_ANNOTATION_DIALOG
 } from '../../annotationConstants';
 
@@ -295,9 +296,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(annotator.handleValidationError).to.not.be.called;
         });
 
-        it('should create, add drawing thread to internal map, and return it', () => {
+        it('should create drawing thread and return it without adding it to the internal thread map', () => {
             const thread = annotator.createAnnotationThread([], {}, TYPES.draw);
-            expect(stubs.addThread).to.have.been.called;
+            expect(stubs.addThread).to.not.have.been.called;
             expect(thread instanceof DocDrawingThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
         });
@@ -485,6 +486,32 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns(threads);
 
             annotator.renderAnnotationsOnPage(1);
+            expect(annotator.scaleAnnotationCanvases).to.be.called;
+        });
+    });
+
+    describe('scaleAnnotationCanvases()', () => {
+        beforeEach(() => {
+            stubs.scaleCanvas = sandbox.stub(docAnnotatorUtil, 'scaleCanvas');
+
+            // Add pageEl
+            stubs.pageEl = document.createElement('div');
+            stubs.pageEl.setAttribute('data-page-number', 1);
+            annotator.annotatedElement.appendChild(stubs.pageEl);
+        });
+
+        it('should do nothing if annotation layer is not present', () => {
+            annotator.scaleAnnotationCanvases(1);
+            expect(stubs.scaleCanvas).to.not.be.called;
+        });
+
+        it('should scale canvas if annotation layer is present', () => {
+            const annotationLayerEl = document.createElement('canvas');
+            annotationLayerEl.classList.add(CLASS_ANNOTATION_LAYER_HIGHLIGHT);
+            stubs.pageEl.appendChild(annotationLayerEl);
+
+            annotator.scaleAnnotationCanvases(1);
+            expect(stubs.scaleCanvas).to.be.calledOnce;
         });
     });
 
@@ -517,6 +544,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.elMock.expects('addEventListener').withArgs('mousedown', sinon.match.func).never();
             stubs.elMock.expects('addEventListener').withArgs('contextmenu', sinon.match.func).never();
             stubs.elMock.expects('addEventListener').withArgs('mousemove', sinon.match.func).never();
+            stubs.elMock.expects('addEventListener').withArgs('touchstart', sinon.match.func).never();
+            stubs.elMock.expects('addEventListener').withArgs('click', sinon.match.func).never();
             annotator.bindDOMListeners();
         });
 
@@ -528,6 +557,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.elMock.expects('addEventListener').withArgs('mousedown', sinon.match.func);
             stubs.elMock.expects('addEventListener').withArgs('contextmenu', sinon.match.func);
             stubs.elMock.expects('addEventListener').withArgs('mousemove', sinon.match.func);
+            stubs.elMock.expects('addEventListener').withArgs('click', sinon.match.func)
             annotator.bindDOMListeners();
         });
 
@@ -536,10 +566,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.isMobile = true;
             annotator.hasTouch = true;
             const docListen = sandbox.spy(document, 'addEventListener');
+            const annotatedElementListen = sandbox.spy(annotator.annotatedElement, 'addEventListener');
 
             annotator.bindDOMListeners();
 
             expect(docListen).to.be.calledWith('selectionchange', sinon.match.func);
+            expect(annotatedElementListen).to.be.calledWith('touchstart', sinon.match.func);
         });
     });
 
@@ -560,6 +592,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.elMock.expects('removeEventListener').withArgs('contextmenu', sinon.match.func).never();
             stubs.elMock.expects('removeEventListener').withArgs('mousemove', sinon.match.func).never();
             stubs.elMock.expects('removeEventListener').withArgs('dblclick', sinon.match.func).never();
+            stubs.elMock.expects('removeEventListener').withArgs('click', sinon.match.func).never();
             annotator.unbindDOMListeners();
         });
 
@@ -571,6 +604,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.elMock.expects('removeEventListener').withArgs('contextmenu', sinon.match.func);
             stubs.elMock.expects('removeEventListener').withArgs('mousemove', sinon.match.func);
             stubs.elMock.expects('removeEventListener').withArgs('dblclick', sinon.match.func);
+            stubs.elMock.expects('removeEventListener').withArgs('click', sinon.match.func);
             annotator.unbindDOMListeners();
         });
 
@@ -592,23 +626,33 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.isMobile = true;
             annotator.hasTouch = true;
             const docStopListen = sandbox.spy(document, 'removeEventListener');
+            const annotatedElementStopListen = sandbox.spy(annotator.annotatedElement, 'removeEventListener');
 
             annotator.unbindDOMListeners();
 
             expect(docStopListen).to.be.calledWith('selectionchange', sinon.match.func);
+            expect(annotatedElementStopListen).to.be.calledWith('touchstart', sinon.match.func);
         });
     });
 
     describe('bindCustomListenersOnThread()', () => {
         const bindFunc = Annotator.prototype.bindCustomListenersOnThread;
 
+        beforeEach(() => {
+            sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(true);
+        });
+
         afterEach(() => {
             Object.defineProperty(Annotator.prototype, 'bindCustomListenersOnThread', { value: bindFunc });
         });
 
+        it('should do nothing if thread does not exist', () => {
+            annotator.bindCustomListenersOnThread(null);
+            expect(annotatorUtil.isHighlightAnnotation).to.not.be.called;
+        });
+
         it('should call parent to bind custom listeners and also bind highlights on threaddeleted', () => {
             const thread = { addListener: () => {} };
-            sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(true);
             stubs.threadMock = sandbox.mock(thread);
             stubs.threadMock.expects('addListener').withArgs('threaddeleted', sinon.match.func);
 
@@ -1273,6 +1317,26 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             sandbox.stub(Array, 'isArray').returns(true);
 
             annotator.removeRangyHighlight({ id: 1 });
+        });
+    });
+
+    describe('drawingSelectionHandler()', () => {
+        it('should use the controller to select with the event', () => {
+            const drawController = {
+                handleSelection: sandbox.stub()
+            };
+            annotator.modeControllers = {
+                [TYPES.draw]: drawController
+            };
+
+            const evt = 'event';
+            annotator.drawingSelectionHandler(evt);
+            expect(drawController.handleSelection).to.be.calledWith(evt);
+        });
+
+        it('should not error when no modeButtons exist for draw', () => {
+            annotator.modeButtons = {};
+            expect(() => annotator.drawingSelectionHandler('irrelevant')).to.not.throw();
         });
     });
 });

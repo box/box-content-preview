@@ -623,27 +623,52 @@ class BaseViewer extends EventEmitter {
     //--------------------------------------------------------------------------
 
     /**
+     * Get the configuration for viewer annotations and transform if legacy format.
+     *
+     * @return {Object} An object containing configuration properties.
+     */
+    getViewerAnnotationsConfig() {
+        const option = this.getViewerOption('annotations');
+        const config = option !== null && option !== undefined ? option : {};
+
+        // Backwards compatability for old boolean flag usage
+        if (typeof config === 'boolean') {
+            return {
+                enabled: config
+            };
+        }
+
+        return config;
+    }
+
+    /**
      * Loads the appropriate annotator and loads the file's annotations
      *
      * @protected
      * @return {void}
      */
     loadAnnotator() {
+        // Do nothing if annotations are disabled for the viewer
+        if (!this.areAnnotationsEnabled()) {
+            return;
+        }
+
         /* global BoxAnnotations */
         const boxAnnotations = new BoxAnnotations();
+        // #TODO(@spramod|@jholdstock): remove this after we have annotation instancing
+        const viewerName = this.options.viewer.NAME;
+        const annotationsConfig = this.getViewerAnnotationsConfig();
 
-        this.annotatorConf = boxAnnotations.determineAnnotator(this.options.viewer.NAME);
+        this.annotatorConf = boxAnnotations.determineAnnotator(viewerName, annotationsConfig);
         if (!this.annotatorConf) {
             return;
         }
 
-        if (this.areAnnotationsEnabled()) {
-            const { file } = this.options;
-            this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
+        const { file } = this.options;
+        this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
 
-            if (this.canAnnotate) {
-                this.initAnnotations();
-            }
+        if (this.canAnnotate) {
+            this.initAnnotations();
         }
     }
 
@@ -696,13 +721,14 @@ class BaseViewer extends EventEmitter {
      */
     areAnnotationsEnabled() {
         // Respect viewer-specific annotation option if it is set
-        const viewerAnnotations = this.getViewerOption('annotations');
-        if (typeof viewerAnnotations === 'boolean') {
-            return viewerAnnotations;
+        const viewerAnnotations = this.getViewerAnnotationsConfig();
+
+        if (viewerAnnotations && viewerAnnotations.enabled !== undefined) {
+            return viewerAnnotations.enabled;
         }
 
         // Otherwise, use global preview annotation option
-        return this.options.showAnnotations;
+        return !!this.options.showAnnotations;
     }
 
     /**

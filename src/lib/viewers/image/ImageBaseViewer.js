@@ -3,6 +3,7 @@ import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
+import { get } from '../../util';
 
 import { CLASS_INVISIBLE } from '../../constants';
 
@@ -43,13 +44,17 @@ class ImageBaseViewer extends BaseViewer {
             return;
         }
 
-        this.setOriginalImageSize(this.imageEl);
-        this.loadUI();
-        this.zoom();
+        const loadOriginalDimensions = this.setOriginalImageSize(this.imageEl);
+        loadOriginalDimensions
+            .then(() => {
+                this.loadUI();
+                this.zoom();
 
-        this.imageEl.classList.remove(CLASS_INVISIBLE);
-        this.loaded = true;
-        this.emit('load');
+                this.imageEl.classList.remove(CLASS_INVISIBLE);
+                this.loaded = true;
+                this.emit('load');
+            })
+            .catch(this.errorHandler);
     }
 
     /**
@@ -173,31 +178,42 @@ class ImageBaseViewer extends BaseViewer {
      * naturalHeight and naturalWidth attributes work correctly in IE 11.
      *
      * @private
-     * @param {Image} imageEl - The image to set the original size attributes on
+     * @param {HTMLElement} imageEl - The image to set the original size attributes on
      * @return {Promise} A promise that is resolved if the original image dimensions were set.
      */
     setOriginalImageSize(imageEl) {
-        const image = imageEl;
-        const promise = new Promise((resolve, reject) => {
+        const promise = new Promise((resolve) => {
             // Do not bother loading a new image when the natural size attributes exist
-            if (imageEl.naturalWidth > 0 && imageEl.naturalHeight > 0) {
-                image.originalWidth = imageEl.naturalWidth;
-                image.originalHeight = imageEl.naturalHeight;
+            if (imageEl.naturalWidth && imageEl.naturalHeight) {
+                imageEl.setAttribute('originalWidth', imageEl.naturalWidth);
+                imageEl.setAttribute('originalHeight', imageEl.naturalHeight);
                 resolve();
             } else {
-                const originalImg = new Image();
-                image.originalWidth = 1;
-                image.originalHeight = 1;
+                // Case when natural dimensions are not assigned
+                // By default, assigned width and height in Chrome/Safari/Firefox will be 300x150.
+                // IE11 workaround. Dimensions only displayed if the image is attached to the document.
+                get(imageEl.src, {}, 'text')
+                    .then((imageAsText) => {
+                        const parser = new DOMParser();
+                        const svgEl = parser.parseFromString(imageAsText, 'image/svg+xml');
 
-                originalImg.error = () => {
-                    reject();
-                };
-                originalImg.onload = () => {
-                    image.originalWidth = originalImg.width || 1;
-                    image.originalHeight = originalImg.height || 1;
-                    resolve();
-                };
-                originalImg.src = imageEl.src;
+                        try {
+                            // Assume svgEl is an instanceof an SVG with a viewBox and preserveAspectRatio of meet
+                            // where the height is the limiting axis
+                            const viewBox = svgEl.documentElement.getAttribute('viewBox');
+                            const [, , w, h] = viewBox.split(' ');
+                            const aspectRatio = h ? w / h : w;
+                            imageEl.setAttribute('originalWidth', Math.round(aspectRatio * 150));
+                            imageEl.setAttribute('originalHeight', 150);
+                        } catch (e) {
+                            // Assume 300x150 that chrome does by default
+                            imageEl.setAttribute('originalWidth', 300);
+                            imageEl.setAttribute('originalHeight', 150);
+                        } finally {
+                            resolve();
+                        }
+                    })
+                    .catch(resolve);
             }
         });
 

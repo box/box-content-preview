@@ -1,20 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import {
-    isPresentation,
-    isInDialog,
-    hasActiveDialog,
-    fitDialogHeightInPage,
-    isPointInPolyOpt,
-    isSelectionPresent,
-    convertPDFSpaceToDOMSpace,
-    convertDOMSpaceToPDFSpace,
-    getBrowserCoordinatesFromLocation,
-    getLowerRightCornerOfLastQuadPoint,
-    isValidSelection,
-    getContext,
-    getPageEl,
-    isDialogDataType
-} from '../docAnnotatorUtil';
+import * as docAnnotatorUtil from '../docAnnotatorUtil';
 import {
     SELECTOR_ANNOTATION_DIALOG,
     SELECTOR_ANNOTATION_CONTAINER,
@@ -24,6 +9,7 @@ import {
 import * as annotatorUtil from '../../annotatorUtil';
 
 const sandbox = sinon.sandbox.create();
+let stubs = {};
 
 describe('lib/annotations/doc/docAnnotatorUtil', () => {
     before(() => {
@@ -37,38 +23,39 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
+        stubs = {};
     });
 
     describe('isPresentation()', () => {
         it('should return false if annotatedElement is a document', () => {
             const docEl = document.querySelector('.annotatedElement');
-            const result = isPresentation(docEl);
+            const result = docAnnotatorUtil.isPresentation(docEl);
             expect(result).to.be.false;
         });
 
         it('should return true if annotatedElement is a presentation', () => {
             const docEl = document.querySelector('.annotatedElement');
             docEl.classList.add('bp-doc-presentation');
-            const result = isPresentation(docEl);
+            const result = docAnnotatorUtil.isPresentation(docEl);
             expect(result).to.be.true;
         });
     });
 
     describe('isInDialog()', () => {
         it('should return false if no dialog element exists', () => {
-            const result = isInDialog({ clientX: 8, clientY: 8 });
+            const result = docAnnotatorUtil.isInDialog({ clientX: 8, clientY: 8 });
             expect(result).to.be.false;
         });
 
         it('should return true if the event is in the given dialog', () => {
             const dialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
-            const result = isInDialog({ clientX: 8, clientY: 8 }, dialogEl);
+            const result = docAnnotatorUtil.isInDialog({ clientX: 8, clientY: 8 }, dialogEl);
             expect(result).to.be.true;
         });
 
         it('should return false if the event is in the given dialog', () => {
             const dialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
-            const result = isInDialog({ clientX: 100, clientY: 100 }, dialogEl);
+            const result = docAnnotatorUtil.isInDialog({ clientX: 100, clientY: 100 }, dialogEl);
             expect(result).to.be.false;
         });
     });
@@ -77,7 +64,7 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
         it('should return false if no annotation dialog is open', () => {
             const currDialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
             currDialogEl.classList.add('bp-is-hidden');
-            const result = hasActiveDialog(document);
+            const result = docAnnotatorUtil.hasActiveDialog(document);
             expect(result).to.be.false;
         });
 
@@ -90,7 +77,7 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
             openDialogEl.classList.add(CLASS_ANNOTATION_DIALOG);
             docEl.appendChild(openDialogEl);
 
-            const result = hasActiveDialog(document);
+            const result = docAnnotatorUtil.hasActiveDialog(document);
             expect(result).to.be.true;
         });
     });
@@ -105,7 +92,7 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
             const pageHeight = 20;
             const yPos = 5;
 
-            fitDialogHeightInPage(docEl, dialogEl, pageHeight, yPos);
+            docAnnotatorUtil.fitDialogHeightInPage(docEl, dialogEl, pageHeight, yPos);
 
             const annotationsEl = dialogEl.querySelector(SELECTOR_ANNOTATION_CONTAINER);
             expect(annotationsEl.style.maxHeight).to.not.be.undefined;
@@ -115,12 +102,12 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
     describe('isPointInPolyOpt()', () => {
         it('should return true if point is inside polygon', () => {
             const polygon = [[0, 0], [100, 0], [100, 100], [0, 100]];
-            assert.ok(isPointInPolyOpt(polygon, 50, 50));
+            expect(docAnnotatorUtil.isPointInPolyOpt(polygon, 50, 50)).to.be.true;
         });
 
         it('should return false if point is outside polygon', () => {
             const polygon = [[0, 0], [100, 0], [100, 100], [0, 100]];
-            assert.ok(!isPointInPolyOpt(polygon, 120, 50));
+            expect(docAnnotatorUtil.isPointInPolyOpt(polygon, 120, 50)).to.be.false;
         });
     });
 
@@ -131,11 +118,11 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
             range.selectNode(barEl.childNodes[0]);
             const selection = window.getSelection();
             selection.addRange(range);
-            assert.ok(isSelectionPresent());
+            expect(docAnnotatorUtil.isSelectionPresent()).to.be.true;
         });
 
         it('should return false if there is no non-empty selection on the page', () => {
-            assert.ok(!isSelectionPresent());
+            expect(docAnnotatorUtil.isSelectionPresent()).to.be.false;
         });
     });
 
@@ -145,7 +132,7 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
 
             // 300 * 4/3 * 0.5, 1000 - 300 * 4/3 * 0.5
             const expected = [200, 800];
-            assert.equal(convertPDFSpaceToDOMSpace(coordinates, 1000, 0.5).toString(), expected.toString());
+            expect(docAnnotatorUtil.convertPDFSpaceToDOMSpace(coordinates, 1000, 0.5)).to.deep.equals(expected);
         });
     });
 
@@ -155,7 +142,7 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
 
             // 400 * 3/4 / 0.5 to fixed 4, (1000 - 400) * 3/4 / 0.5 to fixed 4
             const expected = [Number(600).toFixed(4), Number(900).toFixed(4)];
-            assert.equal(convertDOMSpaceToPDFSpace(coordinates, 1000, 0.5).toString(), expected.toString());
+            expect(docAnnotatorUtil.convertDOMSpaceToPDFSpace(coordinates, 1000, 0.5)).to.deep.equals(expected);
         });
     });
 
@@ -174,14 +161,20 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
             annotatedEl.style.height = '1030px';
             annotatedEl.style.width = '600px';
 
-            assert.equal(getBrowserCoordinatesFromLocation(location, annotatedEl).toString(), [400, 600].toString());
+            expect(docAnnotatorUtil.getBrowserCoordinatesFromLocation(location, annotatedEl)).to.deep.equals([400, 600]);
         });
     });
 
     describe('getLowerRightCornerOfLastQuadPoint()', () => {
         const quadPoints = [[0, 10, 10, 10, 10, 20, 0, 20], [0, 0, 10, 0, 10, 10, 0, 10]];
 
-        assert.equal(getLowerRightCornerOfLastQuadPoint(quadPoints).toString(), [10, 0].toString());
+        expect(docAnnotatorUtil.getLowerRightCornerOfLastQuadPoint(quadPoints)).to.deep.equals([10, 0]);
+    });
+
+    describe('getTopRightCornerOfLastQuadPoint()', () => {
+        const quadPoints = [[0, 10, 10, 10, 10, 20, 0, 20], [0, 0, 10, 0, 10, 10, 0, 10]];
+
+        expect(docAnnotatorUtil.getTopRightCornerOfLastQuadPoint(quadPoints)).to.deep.equals([0, 0]);
     });
 
     describe('isValidSelection', () => {
@@ -191,7 +184,7 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
                 isCollapsed: false,
                 toString: () => 'I am valid!'
             };
-            expect(isValidSelection(selection)).to.be.false;
+            expect(docAnnotatorUtil.isValidSelection(selection)).to.be.false;
         });
 
         it('should return false if the selection isn\'t collapsed', () => {
@@ -200,7 +193,7 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
                 isCollapsed: true,
                 toString: () => 'I am valid!'
             };
-            expect(isValidSelection(selection)).to.be.false;
+            expect(docAnnotatorUtil.isValidSelection(selection)).to.be.false;
         });
 
         it('should return false if the selection is empty', () => {
@@ -209,7 +202,7 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
                 isCollapsed: false,
                 toString: () => ''
             };
-            expect(isValidSelection(selection)).to.be.false;
+            expect(docAnnotatorUtil.isValidSelection(selection)).to.be.false;
         });
 
         it('should return true if the selection is valid', () => {
@@ -218,57 +211,101 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
                 isCollapsed: false,
                 toString: () => 'I am valid!'
             };
-            expect(isValidSelection(selection)).to.be.true;
+            expect(docAnnotatorUtil.isValidSelection(selection)).to.be.true;
+        });
+    });
+
+    describe('scaleCanvas()', () => {
+        const width = 100;
+        const height = 200;
+
+        // PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM
+        const pagePadding = 30;
+
+        beforeEach(() => {
+            stubs.annotationLayer = document.createElement('canvas');
+            stubs.context = {
+                scale: sandbox.stub()
+            };
+            sandbox.stub(stubs.annotationLayer, 'getContext').returns(stubs.context);
+
+            stubs.pageEl = {
+                getBoundingClientRect: sandbox.stub().returns({
+                    width,
+                    height
+                })
+            };
+
+            stubs.canvasHeight = height - pagePadding;
+        });
+
+        it('should adjust canvas height and width and return the scaled canvas', () => {
+            const scaledCanvas = docAnnotatorUtil.scaleCanvas(stubs.pageEl, stubs.annotationLayer);
+            expect(scaledCanvas.width).equals(width);
+            expect(scaledCanvas.height).equals(stubs.canvasHeight);
+            expect(scaledCanvas.style.width).not.equals(`${width}px`);
+            expect(scaledCanvas.style.height).not.equals(`${height}px`);
+        });
+
+        it('should add style height & width if device pixel ratio is not 1', () => {
+            const pxRatio = 2;
+            window.devicePixelRatio = pxRatio;
+
+            const scaledCanvas = docAnnotatorUtil.scaleCanvas(stubs.pageEl, stubs.annotationLayer);
+
+            expect(scaledCanvas.width).equals(width * pxRatio);
+            expect(scaledCanvas.height).equals(stubs.canvasHeight * pxRatio);
+            expect(scaledCanvas.style.width).equals(`${width}px`);
+            expect(scaledCanvas.style.height).equals(`${stubs.canvasHeight}px`);
+            expect(stubs.annotationLayer.getContext).to.be.called;
         });
     });
 
     describe('getContext()', () => {
-        it('should return null if there is no pageEl', () => {
-            const result = getContext(null, 'random-class-name', 0, 0);
-            expect(result).to.equal(null);
-        });
-
-        it('should not insert into the pageEl if the annotationLayerEl already exists', () => {
-            const annotationLayer = {
+        beforeEach(() => {
+            stubs.annotationLayer = {
                 width: 0,
                 height: 0,
-                getContext: sandbox.stub().returns('2d context')
-            };
-            const pageEl = {
-                querySelector: sandbox.stub().returns(annotationLayer),
-                getBoundingClientRect: sandbox.stub(),
-                insertBefore: sandbox.stub()
-            };
-
-            getContext(pageEl, 'random-class-name');
-            expect(annotationLayer.getContext).to.be.called;
-            expect(pageEl.insertBefore).to.not.be.called;
-        });
-
-        it('should insert into the pageEl if the annotationLayerEl does not exist', () => {
-            const annotationLayer = {
-                width: 0,
-                height: 0,
-                getContext: sandbox.stub().returns({
-                    scale: sandbox.stub()
-                }),
+                getContext: sandbox.stub().returns('2d context'),
                 classList: {
                     add: sandbox.stub()
                 },
                 style: {}
             };
-            const pageEl = {
-                querySelector: sandbox.stub().returns(undefined),
-                getBoundingClientRect: sandbox.stub().returns({ width: 0, height: 0 }),
+
+            stubs.pageEl = {
+                querySelector: sandbox.stub(),
+                getBoundingClientRect: sandbox.stub(),
                 insertBefore: sandbox.stub()
             };
-            const docStub = sandbox.stub(document, 'createElement').returns(annotationLayer);
 
-            getContext(pageEl, 'random-class-name', 0, 0);
+            sandbox.stub(docAnnotatorUtil, 'scaleCanvas').returns(stubs.annotationLayer);
+        });
+
+        it('should return null if there is no pageEl', () => {
+            const result = docAnnotatorUtil.getContext(null, 'random-class-name', 0, 0);
+            expect(result).to.equal(null);
+        });
+
+        it('should not insert into the pageEl if the annotationLayerEl already exists', () => {
+            stubs.pageEl.querySelector.returns(stubs.annotationLayer);
+            docAnnotatorUtil.getContext(stubs.pageEl, 'random-class-name');
+            expect(stubs.annotationLayer.getContext).to.be.called;
+            expect(stubs.pageEl.insertBefore).to.not.be.called;
+        });
+
+        it('should insert into the pageEl if the annotationLayerEl does not exist', () => {
+            stubs.annotationLayer.getContext.returns({
+                scale: sandbox.stub()
+            });
+            stubs.pageEl.getBoundingClientRect.returns({ width: 0, height: 0 });
+            const docStub = sandbox.stub(document, 'createElement').returns(stubs.annotationLayer);
+
+            docAnnotatorUtil.getContext(stubs.pageEl, 'random-class-name', 0, 0);
             expect(docStub).to.be.called;
-            expect(annotationLayer.getContext).to.be.called;
-            expect(annotationLayer.classList.add).to.be.called;
-            expect(pageEl.insertBefore).to.be.called;
+            expect(stubs.annotationLayer.getContext).to.be.called;
+            expect(stubs.annotationLayer.classList.add).to.be.called;
+            expect(stubs.pageEl.insertBefore).to.be.called;
         });
     });
 
@@ -279,20 +316,20 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
             const truePageEl = document.querySelector(`.page[data-page-number="${page}"]`);
             docEl.appendChild(truePageEl);
 
-            const pageEl = getPageEl(docEl, page);
-            assert.equal(pageEl, truePageEl);
+            const pageEl = docAnnotatorUtil.getPageEl(docEl, page);
+            expect(pageEl).equals(truePageEl);
         });
     });
 
     describe('isDialogDataType()', () => {
         it('should return true if the mouse event occured in a highlight dialog', () => {
             sandbox.stub(annotatorUtil, 'findClosestDataType').returns(DATA_TYPE_ANNOTATION_DIALOG);
-            expect(isDialogDataType({})).to.be.true;
+            expect(docAnnotatorUtil.isDialogDataType({})).to.be.true;
         });
 
         it('should return false if the mouse event occured outside a highlight dialog', () => {
             sandbox.stub(annotatorUtil, 'findClosestDataType').returns('something');
-            expect(isDialogDataType({})).to.be.false;
+            expect(docAnnotatorUtil.isDialogDataType({})).to.be.false;
         });
     });
 });

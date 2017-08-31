@@ -635,6 +635,19 @@ describe('lib/Preview', () => {
             stubs.tokens = {
                 0: 'file0'
             };
+            stubs.file = {
+                id: '123',
+                permissions: {},
+                shared_link: null,
+                sha1: 'sha1',
+                file_version: {},
+                name: 'blah',
+                size: 123,
+                extension: 'pdf',
+                representations: {},
+                watermark_info: {},
+                authenticated_download_url: 'url'
+            };
 
             stubs.promise = Promise.resolve({
                 token: 'token'
@@ -660,6 +673,12 @@ describe('lib/Preview', () => {
         it('should clear the retry timeout', () => {
             preview.load('0');
             expect(preview.retryTimeout).to.equal(undefined);
+        });
+
+        it('should load preview when a well-formed file object is passed', () => {
+            preview.load(stubs.file);
+            expect(stubs.loadPreviewWithTokens).to.be.calledWith({});
+            expect(stubs.getTokens).to.not.be.called;
         });
 
         it('should set the retry count', () => {
@@ -700,31 +719,6 @@ describe('lib/Preview', () => {
                 expect(stubs.loadPreviewWithTokens).to.be.called;
             });
         });
-
-        it('should accept a well-formed file object', () => {
-            const token = 'token';
-            const file = {
-                id: '123',
-                permissions: {},
-                shared_link: null,
-                sha1: 'sha1',
-                file_version: {},
-                name: 'blah',
-                size: 123,
-                extension: 'pdf',
-                representations: {},
-                watermark_info: {},
-                authenticated_download_url: 'url'
-            }
-            preview.previewOptions.token = token;
-
-            preview.load(file);
-
-            return stubs.promise.then(() => {
-                expect(stubs.getTokens).to.be.calledWith(file.id, token);
-                expect(stubs.loadPreviewWithTokens).to.be.called;
-            });
-        });
     });
 
     describe('loadPreviewWithTokens()', () => {
@@ -738,6 +732,7 @@ describe('lib/Preview', () => {
             stubs.showNavigation = sandbox.stub(preview.ui, 'showNavigation');
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
             stubs.loadFromCache = sandbox.stub(preview, 'loadFromCache');
+            stubs.cacheFile = sandbox.stub(file, 'cacheFile');
         });
 
         it('should short circuit and load from server if it is a retry', () => {
@@ -771,6 +766,7 @@ describe('lib/Preview', () => {
             stubs.checkFileValid.returns(true);
 
             preview.loadPreviewWithTokens({});
+            expect(stubs.cacheFile).to.be.calledWith(preview.cache, preview.file);
             expect(stubs.loadFromCache).to.be.called;
             expect(stubs.loadFromServer).to.not.be.called;
         });
@@ -880,6 +876,15 @@ describe('lib/Preview', () => {
             expect(preview.options.showAnnotations).to.be.true;
         });
 
+        it('should set whether to skip load from the server and any server updates', () => {
+            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            expect(preview.options.skipServerUpdate).to.be.false;
+
+            preview.previewOptions.skipServerUpdate = true;
+            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            expect(preview.options.skipServerUpdate).to.be.true;
+        });
+
         it('should save the files to iterate through and any options for custom viewers', () => {
             preview.parseOptions(preview.previewOptions, stubs.tokens);
             expect(preview.collection).to.equal(stubs.collection);
@@ -940,6 +945,12 @@ describe('lib/Preview', () => {
         it('should load the viewer', () => {
             preview.loadFromCache();
             expect(stubs.loadViewer).to.be.called;
+        });
+
+        it('should not refresh the file from the server when need to skip server update', () => {
+            preview.options.skipServerUpdate = true;
+            preview.loadFromCache();
+            expect(preview.loadFromServer).to.not.be.called;
         });
 
         it('should refresh the file from the server to update the cache', () => {
@@ -1685,11 +1696,12 @@ describe('lib/Preview', () => {
         });
 
         it('should get the error viewer, attach viewer listeners, and load the error viewer', () => {
-            preview.triggerError();
+            const err = new Error();
+            preview.triggerError(err);
 
             expect(stubs.getErrorViewer).to.be.called;
             expect(stubs.attachViewerListeners).to.be.called;
-            expect(ErrorViewer.load).to.be.called;
+            expect(ErrorViewer.load).to.be.calledWith(err);
         });
     });
 
@@ -1765,6 +1777,13 @@ describe('lib/Preview', () => {
 
         it('should not prefetch if there are less than 2 files to prefetch', () => {
             preview.collection = [1];
+
+            preview.prefetchNextFiles();
+            expect(stubs.getTokens).to.not.be.called;
+        });
+
+        it('should not prefetch when skipServerUpdate option is present', () => {
+            preview.options.skipServerUpdate = true;
 
             preview.prefetchNextFiles();
             expect(stubs.getTokens).to.not.be.called;

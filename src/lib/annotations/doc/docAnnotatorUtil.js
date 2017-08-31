@@ -342,6 +342,18 @@ export function getLowerRightCornerOfLastQuadPoint(quadPoints) {
 }
 
 /**
+ * Returns the top right corner of the last quad point. This should provide
+ * the same location the add highlight button is shown at given that the
+ * quad points are stored in the correct order, ie left to right, top to bottom.
+ * @param {number[]} quadPoints - Quad points in PDF space in PDF units
+ * @return {number[]} [x,y] of lower right corner of last quad point
+ */
+export function getTopRightCornerOfLastQuadPoint(quadPoints) {
+    const [x1, y1, x2, y2, x3, y3, x4, y4] = quadPoints[quadPoints.length - 1];
+    return [Math.min(x1, x2, x3, x4), Math.min(y1, y2, y3, y4)];
+}
+
+/**
  * Check whether a selection is valid for creating a highlight from.
  *
  * @param {Selection} selection The selection object to test
@@ -357,6 +369,34 @@ export function isValidSelection(selection) {
 }
 
 /**
+ * Scales the canvas an annotation should be drawn on
+ *
+ * @param {HTMLElement} pageEl - The DOM element for the current page
+ * @param {HTMLElement} annotationLayerEl - The annotation canvas layer
+ * @return {HTMLElement} The scaled annotation canvas layer
+ */
+export function scaleCanvas(pageEl, annotationLayerEl) {
+    const pageDimensions = pageEl.getBoundingClientRect();
+    const pxRatio = window.devicePixelRatio || 1;
+    const width = pageDimensions.width;
+    const height = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+
+    const scaledCanvas = annotationLayerEl;
+    scaledCanvas.width = pxRatio * width;
+    scaledCanvas.height = pxRatio * height;
+
+    if (pxRatio !== 1) {
+        scaledCanvas.style.width = `${width}px`;
+        scaledCanvas.style.height = `${height}px`;
+
+        const context = annotationLayerEl.getContext('2d');
+        context.scale(pxRatio, pxRatio);
+    }
+
+    return scaledCanvas;
+}
+
+/**
  * Gets the context an annotation should be drawn on.
  *
  * @param {HTMLElement} pageEl - The DOM element for the current page
@@ -365,41 +405,23 @@ export function isValidSelection(selection) {
  * @param {number} [paddingBottom] - The bottom padding of each page element
  * @return {RenderingContext|null} Context or null if no page element was given
  */
-export function getContext(pageEl, annotationLayerClass, paddingTop, paddingBottom) {
+export function getContext(pageEl, annotationLayerClass) {
     if (!pageEl) {
         return null;
     }
 
-    let annotationLayerEl = pageEl.querySelector(`.${annotationLayerClass}`);
-    let context;
     // Create annotation layer if one does not exist (e.g. first load or page resize)
+    let annotationLayerEl = pageEl.querySelector(`.${annotationLayerClass}`);
     if (!annotationLayerEl) {
         annotationLayerEl = document.createElement('canvas');
         annotationLayerEl.classList.add(annotationLayerClass);
-        const pageDimensions = pageEl.getBoundingClientRect();
-        const pagePaddingTop = paddingTop || 0;
-        const pagePaddingBottom = paddingBottom || 0;
-        const pxRatio = window.devicePixelRatio || 1;
-        const width = pageDimensions.width;
-        const height = pageDimensions.height - pagePaddingTop - pagePaddingBottom;
-
-        annotationLayerEl.width = pxRatio * width;
-        annotationLayerEl.height = pxRatio * height;
-        context = annotationLayerEl.getContext('2d');
-
-        if (pxRatio !== 1) {
-            annotationLayerEl.style.width = `${width}px`;
-            annotationLayerEl.style.height = `${height}px`;
-            context.scale(pxRatio, pxRatio);
-        }
+        annotationLayerEl = scaleCanvas(pageEl, annotationLayerEl);
 
         const textLayerEl = pageEl.querySelector('.textLayer');
         pageEl.insertBefore(annotationLayerEl, textLayerEl);
-    } else {
-        context = annotationLayerEl.getContext('2d');
     }
 
-    return context;
+    return annotationLayerEl.getContext('2d');
 }
 
 /**

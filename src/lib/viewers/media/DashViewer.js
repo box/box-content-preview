@@ -12,6 +12,8 @@ const CSS_CLASS_HD = 'bp-media-controls-is-hd';
 const SEGMENT_SIZE = 5;
 const MAX_BUFFER = SEGMENT_SIZE * 12; // 60 sec
 const MANIFEST = 'manifest.mpd';
+const DEFAULT_VIDEO_WIDTH_PX = 854;
+const DEFAULT_VIDEO_HEIGHT_PX = 480;
 
 @autobind
 class DashViewer extends VideoBaseViewer {
@@ -27,9 +29,10 @@ class DashViewer extends VideoBaseViewer {
         this.switchHistory = [];
 
         // tracks
-        this.hdRepresentation = {};
-        this.sdRepresentation = {};
+        this.hdVideoId = -1;
+        this.sdVideoId = -1;
         this.textTracks = []; // Must be sorted by representation id
+        this.audioTracks = [];
 
         // dash specific class
         this.wrapperEl.classList.add(CSS_CLASS_DASH);
@@ -191,25 +194,21 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
-     * Handler for hd video
+     * Given a videoId (e.g. hd video id), enables the track with that video ID
+     * while maintaining the SAME AUDIO as the active track.
      *
      * @private
+     * @param {number} videoId - The id of the video used in the variant (provided by Shaka)
      * @return {void}
      */
-    enableHD() {
-        this.showLoadingIcon(this.hdRepresentation.id);
-        this.player.selectVariantTrack(this.hdRepresentation, true);
-    }
-
-    /**
-     * Handler for sd video
-     *
-     * @private
-     * @return {void}
-     */
-    enableSD() {
-        this.showLoadingIcon(this.sdRepresentation.id);
-        this.player.selectVariantTrack(this.sdRepresentation, true);
+    enableVideoId(videoId) {
+        const tracks = this.player.getVariantTracks();
+        const activeTrack = this.getActiveTrack();
+        const newTrack = tracks.find((track) => track.videoId === videoId && track.audioId === activeTrack.audioId);
+        if (newTrack && newTrack.id !== activeTrack.id) {
+            this.showLoadingIcon(newTrack.id);
+            this.player.selectVariantTrack(newTrack, true);
+        }
     }
 
     /**
@@ -245,6 +244,21 @@ class DashViewer extends VideoBaseViewer {
     }
 
     /**
+     * Handler for audio track
+     *
+     * @private
+     * @emits audiochange
+     * @return {void}
+     */
+    handleAudioTrack() {
+        const audioIdx = parseInt(this.cache.get('media-audiotracks'), 10);
+        if (this.audioTracks[audioIdx] !== undefined) {
+            const track = this.audioTracks[audioIdx];
+            this.player.selectAudioLanguage(track.language, track.role);
+        }
+    }
+
+    /**
      * Handler for hd/sd/auto video
      *
      * @private
@@ -257,11 +271,11 @@ class DashViewer extends VideoBaseViewer {
         switch (quality) {
             case 'hd':
                 this.enableAdaptation(false);
-                this.enableHD();
+                this.enableVideoId(this.hdVideoId);
                 break;
             case 'sd':
                 this.enableAdaptation(false);
-                this.enableSD();
+                this.enableVideoId(this.sdVideoId);
                 break;
             case 'auto':
             default:
@@ -283,7 +297,7 @@ class DashViewer extends VideoBaseViewer {
      */
     adaptationHandler() {
         const activeTrack = this.getActiveTrack();
-        if (activeTrack.id === this.hdRepresentation.id) {
+        if (activeTrack.videoId === this.hdVideoId) {
             this.wrapperEl.classList.add(CSS_CLASS_HD);
         } else {
             this.wrapperEl.classList.remove(CSS_CLASS_HD);
@@ -329,6 +343,7 @@ class DashViewer extends VideoBaseViewer {
         super.addEventListenersForMediaControls();
         this.mediaControls.addListener('qualitychange', this.handleQuality);
         this.mediaControls.addListener('subtitlechange', this.handleSubtitle);
+        this.mediaControls.addListener('audiochange', this.handleAudioTrack);
     }
 
     /**
@@ -345,6 +360,38 @@ class DashViewer extends VideoBaseViewer {
             );
         }
     }
+
+    /**
+     * Loads alternate audio streams
+     *
+     * @return {void}
+     */
+    loadAlternateAudio() {
+        const variants = this.player.getVariantTracks().sort((track1, track2) => track1.audioId - track2.audioId);
+        const audioIds = [];
+        const uniqueAudioVariants = [];
+
+        let i = 0;
+        for (i = 0; i < variants.length; i++) {
+            const audioTrack = variants[i];
+            if (audioIds.indexOf(audioTrack.audioId) < 0) {
+                audioIds.push(audioTrack.audioId);
+                uniqueAudioVariants.push(audioTrack);
+            }
+        }
+
+        this.audioTracks = uniqueAudioVariants.map((track) => ({
+            language: track.language,
+            role: track.roles[0]
+        }));
+
+        if (this.audioTracks.length > 1) {
+            // translate the language first
+            const languages = this.audioTracks.map((track) => getLanguageName(track.language) || track.language);
+            this.mediaControls.initAlternateAudio(languages);
+        }
+    }
+
     /**
      * Handler for meta data load for the media element.
      *
@@ -365,6 +412,7 @@ class DashViewer extends VideoBaseViewer {
         this.startBandwidthTracking();
         this.handleQuality(); // should come after gettings rep ids
         this.loadSubtitles();
+        this.loadAlternateAudio();
         this.showPlayButton();
 
         this.loaded = true;
@@ -402,14 +450,24 @@ class DashViewer extends VideoBaseViewer {
 
         // Iterate over all available video representations and find the one that
         // seems the biggest so that the video player is set to the max size
-        const hdRepresentation = tracks.reduce((a, b) => (a.width > b.width ? a : b));
-        const sdRepresentation = tracks.reduce((a, b) => (a.width < b.width ? a : b));
+        const hdRep = tracks.reduce((a, b) => (a.width > b.width ? a : b));
+        const sdRep = tracks.reduce((a, b) => (a.width < b.width ? a : b));
+        if (this.player.isAudioOnly()) {
+            // There is only audio, no video
+            this.videoWidth = DEFAULT_VIDEO_WIDTH_PX;
+            this.videoHeight = DEFAULT_VIDEO_HEIGHT_PX;
+        } else {
+            this.videoWidth = hdRep.width;
+            this.videoHeight = hdRep.height;
+            this.sdVideoId = sdRep.videoId;
 
-        this.videoWidth = hdRepresentation.width;
-        this.videoHeight = hdRepresentation.height;
+            // If there is an HD representation separate from the SD
+            if (hdRep.videoId !== sdRep.videoId) {
+                this.hdVideoId = hdRep.videoId;
+            }
+        }
+
         this.aspect = this.videoWidth / this.videoHeight;
-        this.hdRepresentation = hdRepresentation;
-        this.sdRepresentation = sdRepresentation;
     }
 
     /**

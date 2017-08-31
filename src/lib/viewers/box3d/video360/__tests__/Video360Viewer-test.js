@@ -267,6 +267,15 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             onStub = sandbox.stub(Video360Controls.prototype, 'on');
             sandbox.stub(Video360Controls.prototype, 'addUi');
             sandbox.stub(Video360Controls.prototype, 'attachEventHandlers');
+            viewer.renderer = {
+                addListener: sandbox.stub(),
+                removeListener: sandbox.stub(),
+                destroy: sandbox.stub(),
+                getBox3D: sandbox.stub().returns({
+                    canvas: document.createElement('canvas'),
+                    off: sandbox.stub()
+                })
+            };
         });
 
         afterEach(() => {
@@ -282,10 +291,26 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             viewer.createControls();
             expect(onStub).to.be.calledWith(EVENT_TOGGLE_VR, viewer.handleToggleVr);
         });
+
+        it('should bind mousemove listener to display video player UI', () => {
+            const addStub = sandbox.stub(viewer.renderer.getBox3D().canvas, 'addEventListener');
+            viewer.createControls();
+
+            expect(addStub).to.be.calledWith('mousemove');
+        });
+
+        it('should bind touchstart listener to display video player UI, if touch enabled', () => {
+            const addStub = sandbox.stub(viewer.renderer.getBox3D().canvas, 'addEventListener');
+            viewer.hasTouch = true;
+            viewer.createControls();
+
+            expect(addStub).to.be.calledWith('touchstart');
+        });
     });
 
     describe('destroyControls()', () => {
         let controls;
+        let canvas;
         beforeEach(() => {
             controls = {
                 removeListener: sandbox.stub(),
@@ -293,6 +318,18 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             };
             viewer.controls = controls;
             viewer.destroyControls();
+            canvas = {
+                removeEventListener: sandbox.stub()
+            };
+            viewer.renderer = {
+                addListener: sandbox.stub(),
+                removeListener: sandbox.stub(),
+                destroy: sandbox.stub(),
+                getBox3D: sandbox.stub().returns({
+                    canvas,
+                    off: sandbox.stub()
+                })
+            };
         });
 
         afterEach(() => {
@@ -306,6 +343,21 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
         it('should invoke .controls.destroy()', () => {
             expect(controls.destroy).to.be.called;
         });
+
+
+        it('should bind mousemove listener to display video player UI', () => {
+            viewer.destroyControls();
+
+            expect(canvas.removeEventListener).to.be.calledWith('mousemove');
+        });
+
+        it('should bind touchstart listener to display video player UI, if touch enabled', () => {
+            viewer.hasTouch = true;
+            viewer.destroyControls();
+
+            expect(canvas.removeEventListener).to.be.calledWith('touchstart');
+        });
+
     });
 
     describe('resize()', () => {
