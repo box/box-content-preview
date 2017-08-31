@@ -129,11 +129,12 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             sandbox.stub(annotatorUtil, 'validateThreadParams').returns(true);
             sandbox.stub(annotator, 'addThreadToMap');
             sandbox.stub(annotator, 'handleValidationError');
-            const thread = annotator.createAnnotationThread([], {}, 'point');
+            const thread = annotator.createAnnotationThread([], { page: 2 }, 'point');
 
             expect(annotator.addThreadToMap).to.have.been.called;
             expect(thread instanceof ImagePointThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
+            expect(thread.location.page).equals(2);
         });
 
         it('should emit error and return undefined if thread params are invalid', () => {
@@ -142,6 +143,30 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             const thread = annotator.createAnnotationThread([], {}, 'point');
             expect(thread instanceof ImagePointThread).to.be.false;
             expect(annotator.handleValidationError).to.be.called;
+        });
+
+        it('should force page number 1 if the annotation was created without one', () => {
+            sandbox.stub(annotatorUtil, 'validateThreadParams').returns(true);
+            sandbox.stub(annotator, 'addThreadToMap');
+            sandbox.stub(annotator, 'handleValidationError');
+            const thread = annotator.createAnnotationThread([], {}, 'point');
+
+            expect(annotator.addThreadToMap).to.have.been.called;
+            expect(thread instanceof ImagePointThread).to.be.true;
+            expect(annotator.handleValidationError).to.not.be.called;
+            expect(thread.location.page).equals(1);
+        });
+
+        it('should force page number 1 if the annotation was created wit page number -1', () => {
+            sandbox.stub(annotatorUtil, 'validateThreadParams').returns(true);
+            sandbox.stub(annotator, 'addThreadToMap');
+            sandbox.stub(annotator, 'handleValidationError');
+            const thread = annotator.createAnnotationThread([], { page: -1 }, 'point');
+
+            expect(annotator.addThreadToMap).to.have.been.called;
+            expect(thread instanceof ImagePointThread).to.be.true;
+            expect(annotator.handleValidationError).to.not.be.called;
+            expect(thread.location.page).equals(1);
         });
     });
 
