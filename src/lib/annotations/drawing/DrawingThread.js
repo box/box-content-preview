@@ -196,9 +196,6 @@ class DrawingThread extends AnnotationThread {
             this.setBoundary();
             this.drawBoundary();
             this.emitAvailableActions();
-            this.updateBoundary();
-            this.setBoundary();
-            this.drawBoundary();
         }
     }
 
@@ -218,9 +215,6 @@ class DrawingThread extends AnnotationThread {
             this.setBoundary();
             this.drawBoundary();
             this.emitAvailableActions();
-            this.updateBoundary();
-            this.setBoundary();
-            this.drawBoundary();
         }
     }
 
