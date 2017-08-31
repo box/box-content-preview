@@ -464,6 +464,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         beforeEach(() => {
             Object.defineProperty(Annotator.prototype, 'renderAnnotationsOnPage', { value: sandbox.mock() });
+            sandbox.stub(annotator, 'scaleAnnotationCanvases');
         });
 
         afterEach(() => {
