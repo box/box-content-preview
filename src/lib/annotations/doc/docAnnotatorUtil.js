@@ -56,37 +56,6 @@ export function isPresentation(annotatedElement) {
 //------------------------------------------------------------------------------
 
 /**
- * Checks whether mouse is inside the dialog represented by this thread.
- *
- * @private
- * @param {Event} event - Mouse event
- * @param {HTMLElement} dialogEl - Dialog element
- * @return {boolean} Whether or not mouse is inside dialog
- */
-export function isInDialog(event, dialogEl) {
-    if (!dialogEl) {
-        return false;
-    }
-
-    // DOM coordinates with respect to the page
-    const x = event.clientX;
-    const y = event.clientY;
-
-    // Get dialog dimensions
-    const dialogDimensions = dialogEl.getBoundingClientRect();
-
-    if (
-        y >= dialogDimensions.top &&
-        y <= dialogDimensions.bottom &&
-        x >= dialogDimensions.left &&
-        x <= dialogDimensions.right
-    ) {
-        return true;
-    }
-    return false;
-}
-
-/**
  * Checks if there is an active annotation in the annotated document
  *
  * @private
