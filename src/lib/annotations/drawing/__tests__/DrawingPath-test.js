@@ -174,7 +174,7 @@ describe('lib/annotations/drawing/DrawingPath', () => {
     });
 
     describe('extractDrawingInfo()', () => {
-        it('should start an accumulator if both objects are drawingPaths', () => {
+        it('should start an accumulator if objectA is a drawing path', () => {
             const drawingObjA = {
                 path: 'pathHereA',
                 minX: 5,
@@ -182,44 +182,46 @@ describe('lib/annotations/drawing/DrawingPath', () => {
                 minY: 7,
                 maxY: 8,
             };
-            const drawingObjB = {
-                path: 'pathHereB',
-                minX: 9,
-                maxX: 10,
-                minY: 11,
-                maxY: 12,
-            };
 
-            const result = DrawingPath.extractDrawingInfo(drawingObjA, drawingObjB);
+            const result = DrawingPath.extractDrawingInfo(drawingObjA, {});
             expect(result.minX).to.equal(drawingObjA.minX);
             expect(result.minY).to.equal(drawingObjA.minY);
-            expect(result.maxX).to.equal(drawingObjB.maxX);
-            expect(result.maxY).to.equal(drawingObjB.maxY);
-            expect(result.paths).to.deep.equal([drawingObjA.path, drawingObjB.path]);
+            expect(result.maxX).to.equal(drawingObjA.maxX);
+            expect(result.maxY).to.equal(drawingObjA.maxY);
+            expect(result.paths).to.deep.equal([
+                { path: drawingObjA.path }
+            ]);
         });
-    });
 
-    it('should add a path to the accumulator', () => {
-        const acc = {
-            paths: ['pathA', 'pathB'],
-            minX: 5,
-            maxX: 11,
-            minY: 6,
-            maxY: 12
-        };
-        const drawingObjC = {
-            path: 'pathC',
-            minX: 3,
-            maxX: 10,
-            minY: 5,
-            maxY: 11
-        };
+        it('should add a path to the accumulator', () => {
+            const acc = {
+                paths: [
+                    { path: 'pathA' },
+                    { path: 'pathB' }
+                ],
+                minX: 5,
+                maxX: 11,
+                minY: 6,
+                maxY: 12
+            };
+            const drawingObjC = {
+                path: 'pathC',
+                minX: 3,
+                maxX: 10,
+                minY: 5,
+                maxY: 11
+            };
 
-        const result = DrawingPath.extractDrawingInfo(acc, drawingObjC);
-        expect(result.minX).to.equal(drawingObjC.minX);
-        expect(result.minY).to.equal(drawingObjC.minY);
-        expect(result.maxX).to.equal(acc.maxX);
-        expect(result.maxY).to.equal(acc.maxY);
-        expect(result.paths).to.deep.equal(['pathA', 'pathB', 'pathC']);
+            const result = DrawingPath.extractDrawingInfo(drawingObjC, acc);
+            expect(result.minX).to.equal(drawingObjC.minX);
+            expect(result.minY).to.equal(drawingObjC.minY);
+            expect(result.maxX).to.equal(acc.maxX);
+            expect(result.maxY).to.equal(acc.maxY);
+            expect(result.paths).to.deep.equal([
+                { path: 'pathA' },
+                { path: 'pathB' },
+                { path: 'pathC' }
+            ]);
+        });
     });
 });

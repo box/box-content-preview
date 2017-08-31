@@ -188,10 +188,10 @@ class DrawingThread extends AnnotationThread {
         const executedUndo = this.pathContainer.undo();
         if (executedUndo) {
             this.draw(this.drawingContext, true);
-            this.emitAvailableActions();
             this.updateBoundary();
             this.setBoundary();
             this.drawBoundary();
+            this.emitAvailableActions();
         }
     }
 
@@ -207,10 +207,10 @@ class DrawingThread extends AnnotationThread {
         const executedRedo = this.pathContainer.redo();
         if (executedRedo) {
             this.draw(this.drawingContext, true);
-            this.emitAvailableActions();
             this.updateBoundary();
             this.setBoundary();
             this.drawBoundary();
+            this.emitAvailableActions();
         }
     }
 
