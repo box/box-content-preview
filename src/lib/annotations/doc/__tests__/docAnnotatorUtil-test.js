@@ -43,19 +43,19 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
 
     describe('isInDialog()', () => {
         it('should return false if no dialog element exists', () => {
-            const result = docAnnotatorUtil.isInDialog({ clientX: 8, clientY: 8 });
+            const result = annotatorUtil.isInDialog({ clientX: 8, clientY: 8 });
             expect(result).to.be.false;
         });
 
         it('should return true if the event is in the given dialog', () => {
             const dialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
-            const result = docAnnotatorUtil.isInDialog({ clientX: 8, clientY: 8 }, dialogEl);
+            const result = annotatorUtil.isInDialog({ clientX: 8, clientY: 8 }, dialogEl);
             expect(result).to.be.true;
         });
 
         it('should return false if the event is in the given dialog', () => {
             const dialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
-            const result = docAnnotatorUtil.isInDialog({ clientX: 100, clientY: 100 }, dialogEl);
+            const result = annotatorUtil.isInDialog({ clientX: 100, clientY: 100 }, dialogEl);
             expect(result).to.be.false;
         });
     });
