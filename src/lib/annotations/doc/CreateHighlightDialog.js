@@ -90,8 +90,8 @@ class CreateHighlightDialog extends EventEmitter {
         this.parentEl = parentEl;
         this.isMobile = config.isMobile || false;
         this.hasTouch = config.hasTouch || false;
-        this.allowHighlight = config.allowHighlight !== undefined ? config.allowHighlight : true;
-        this.allowComment = config.allowComment !== undefined ? config.allowComment : true;
+        this.allowHighlight = config.allowHighlight !== undefined ? !!config.allowHighlight : true;
+        this.allowComment = config.allowComment !== undefined ? !!config.allowComment : true;
 
         // Explicit scope binding for event listeners
         if (this.allowHighlight) {
@@ -197,8 +197,6 @@ class CreateHighlightDialog extends EventEmitter {
         // Event listeners
         this.highlightCreateEl.removeEventListener('click', this.onHighlightClick);
         this.commentCreateEl.removeEventListener('click', this.onCommentClick);
-        this.commentBox.removeListener(CommentBox.CommentEvents.post, this.onCommentPost);
-        this.commentBox.removeListener(CommentBox.CommentEvents.cancel, this.onCommentCancel);
 
         if (this.hasTouch) {
             this.highlightCreateEl.removeEventListener('touchstart', this.stopPropagation);
@@ -212,8 +210,12 @@ class CreateHighlightDialog extends EventEmitter {
         this.containerEl = null;
         this.parentEl = null;
 
-        this.commentBox.destroy();
-        this.commentBox = null;
+        if (this.commentBox) {
+            this.commentBox.removeListener(CommentBox.CommentEvents.post, this.onCommentPost);
+            this.commentBox.removeListener(CommentBox.CommentEvents.cancel, this.onCommentCancel);
+            this.commentBox.destroy();
+            this.commentBox = null;
+        }
     }
 
     //--------------------------------------------------------------------------
