@@ -24,7 +24,7 @@ class DocPointThread extends AnnotationThread {
      */
     showDialog() {
         // Don't show dialog if user can annotate and there is a current selection
-        if (this.annotationService.canAnnotate && docAnnotatorUtil.isSelectionPresent()) {
+        if (this.permissions.canAnnotate && docAnnotatorUtil.isSelectionPresent()) {
             return;
         }
 
@@ -78,7 +78,7 @@ class DocPointThread extends AnnotationThread {
             annotations: this.annotations,
             locale: this.locale,
             location: this.location,
-            canAnnotate: this.annotationService.canAnnotate
+            canAnnotate: this.permissions.canAnnotate
         });
     }
 }

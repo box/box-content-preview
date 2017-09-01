@@ -273,7 +273,7 @@ class DocHighlightThread extends AnnotationThread {
             annotations: this.annotations,
             locale: this.locale,
             location: this.location,
-            canAnnotate: this.annotationService.canAnnotate
+            canAnnotate: this.permissions.canAnnotate
         });
 
         // Ensures that previously created annotations have the right type
