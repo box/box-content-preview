@@ -52,7 +52,6 @@ class Annotator extends EventEmitter {
     constructor(data) {
         super();
 
-        this.canAnnotate = data.canAnnotate;
         this.container = data.container;
         this.options = data.options;
         this.fileVersionId = data.fileVersionId;
@@ -65,6 +64,14 @@ class Annotator extends EventEmitter {
 
         const { CONTROLLERS } = this.options.annotator || {};
         this.modeControllers = CONTROLLERS || {};
+
+        // Get annotation permissions
+        const permissions = data.options.permissions || {};
+        this.permissions = {
+            canAnnotate: permissions.can_annotate || false,
+            canViewAllAnnotations: permissions.can_view_annotations_all || false,
+            canViewOwnAnnotations: permissions.can_view_annotations_self || false
+        };
     }
 
     /**
@@ -112,8 +119,7 @@ class Annotator extends EventEmitter {
         this.annotationService = new AnnotationService({
             apiHost,
             fileId,
-            token,
-            canAnnotate: this.canAnnotate
+            token
         });
 
         // Set up mobile annotations dialog
@@ -162,7 +168,7 @@ class Annotator extends EventEmitter {
      */
     showModeAnnotateButton(currentMode) {
         const mode = this.modeButtons[currentMode];
-        if (!mode || !this.isModeAnnotatable(currentMode)) {
+        if (!mode || !this.permissions.canAnnotate || !this.isModeAnnotatable(currentMode)) {
             return;
         }
 
@@ -314,7 +320,7 @@ class Annotator extends EventEmitter {
 
         // Only show/hide point annotation button if user has the
         // appropriate permissions
-        if (!this.canAnnotate) {
+        if (!this.permissions.canAnnotate) {
             return;
         }
 
@@ -534,12 +540,20 @@ class Annotator extends EventEmitter {
     fetchAnnotations() {
         this.threads = {};
 
+        // Do not load any pre-existing annotations if the user does not have
+        // the correct permissions
+        if (!this.permissions.canViewAllAnnotations || !this.permissions.canViewOwnAnnotations) {
+            return this.threads;
+        }
+
         return this.annotationService.getThreadMap(this.fileVersionId).then((threadMap) => {
             // Generate map of page to threads
             Object.keys(threadMap).forEach((threadID) => {
                 const annotations = threadMap[threadID];
                 const firstAnnotation = annotations[0];
-                if (!firstAnnotation || !this.isModeAnnotatable(firstAnnotation.type)) {
+
+                const isModeEnabled = this.isModeAnnotatable(firstAnnotation.type);
+                if (!firstAnnotation || !isModeEnabled) {
                     return;
                 }
 

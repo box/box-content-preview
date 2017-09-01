@@ -116,7 +116,8 @@ class ImageAnnotator extends Annotator {
             isMobile: this.isMobile,
             locale: this.locale,
             location: fixedLocation,
-            type
+            type,
+            permissions: this.permissions
         };
 
         if (!annotatorUtil.validateThreadParams(threadParams)) {

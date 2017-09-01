@@ -680,17 +680,17 @@ class BaseViewer extends EventEmitter {
      */
     initAnnotations() {
         const { apiHost, container, file, location, token } = this.options;
-        const { id: fileId, file_version: { id: fileVersionId } } = file;
+        const { id: fileId, file_version: { id: fileVersionId }, permissions } = file;
 
         // Construct and init annotator
         this.annotator = new this.annotatorConf.CONSTRUCTOR({
-            canAnnotate: this.canAnnotate,
             container,
             options: {
                 annotator: this.annotatorConf,
                 apiHost,
                 fileId,
-                token
+                token,
+                permissions
             },
             fileVersionId,
             isMobile: this.isMobile,

@@ -292,7 +292,8 @@ class DocAnnotator extends Annotator {
             isMobile: this.isMobile,
             locale: this.locale,
             location,
-            type
+            type,
+            permissions: this.permissions
         };
 
         // Set existing thread ID if created with annotations
@@ -455,10 +456,6 @@ class DocAnnotator extends Annotator {
 
         this.annotatedElement.addEventListener('mouseup', this.highlightMouseupHandler);
 
-        if (!this.canAnnotate) {
-            return;
-        }
-
         if (this.hasTouch && this.isMobile) {
             document.addEventListener('selectionchange', this.onSelectionChange);
             this.annotatedElement.addEventListener('touchstart', this.drawingSelectionHandler);
@@ -488,7 +485,7 @@ class DocAnnotator extends Annotator {
             this.highlightThrottleHandle = null;
         }
 
-        if (!this.canAnnotate) {
+        if (!this.permissions.canAnnotate) {
             return;
         }
 

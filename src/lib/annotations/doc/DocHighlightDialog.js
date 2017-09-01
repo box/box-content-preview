@@ -19,7 +19,7 @@ class DocHighlightDialog extends AnnotationDialog {
     // Public
     //--------------------------------------------------------------------------
 
-    /** 
+    /**
      * Saves an annotation with the associated text or blank if only
      * highlighting. Only adds an annotation to the dialog if it contains text.
      * The annotation is still added to the thread on the server side.
@@ -67,7 +67,7 @@ class DocHighlightDialog extends AnnotationDialog {
 
     /**
      * Set the state of the dialog so comments are hidden, if they're currently shown.
-     * 
+     *
      * @public
      * @return {void}
      */
@@ -293,9 +293,12 @@ class DocHighlightDialog extends AnnotationDialog {
             ]);
             annotatorUtil.showElement(highlightLabelEl);
 
-            // Hide delete button on plain highlights if user doesn't have
-            // permissions
-            if (annotations[0].permissions && !annotations[0].permissions.can_delete) {
+            if (!this.canAnnotate) {
+                // Hide all action buttons if user cannot annotate
+                const highlightButtons = this.highlightDialogEl.querySelector(`.${constants.CLASS_HIGHLIGHT_BTNS}`);
+                annotatorUtil.hideElement(highlightButtons);
+            } else if (annotations[0].permissions && !annotations[0].permissions.can_delete) {
+                // Hide delete button on plain highlights if user doesn't have permissions
                 const addHighlightBtn = this.highlightDialogEl.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
                 annotatorUtil.hideElement(addHighlightBtn);
             }
@@ -306,7 +309,7 @@ class DocHighlightDialog extends AnnotationDialog {
             this.addAnnotationElement(annotation);
         });
 
-        if (!this.isMobile) {
+        if (!this.isMobile && this.canAnnotate) {
             this.bindDOMListeners();
         }
     }

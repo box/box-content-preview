@@ -556,7 +556,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should bind selectionchange event, on the document, if on mobile and can annotate', () => {
-            annotator.annotationService.canAnnotate = true;
+            annotator.permissions.canAnnotate = true;
             annotator.isMobile = true;
             annotator.hasTouch = true;
             const docListen = sandbox.spy(document, 'addEventListener');
@@ -616,7 +616,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should unbind selectionchange event, on the document, if on mobile, has touch and can annotate', () => {
-            annotator.annotationService.canAnnotate = true;
+            annotator.permissions.canAnnotate = true;
             annotator.isMobile = true;
             annotator.hasTouch = true;
             const docStopListen = sandbox.spy(document, 'removeEventListener');

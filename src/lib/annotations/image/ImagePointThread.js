@@ -57,7 +57,7 @@ class ImagePointThread extends AnnotationThread {
             annotations: this.annotations,
             location: this.location,
             locale: this.locale,
-            canAnnotate: this.annotationService.canAnnotate
+            canAnnotate: this.permissions.canAnnotate
         });
     }
 }
