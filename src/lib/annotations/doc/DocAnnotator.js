@@ -47,7 +47,7 @@ const ANNOTATION_LAYER_CLASSES = [CLASS_ANNOTATION_LAYER_HIGHLIGHT, CLASS_ANNOTA
  */
 function showFirstDialogFilter(thread, index) {
     if (index === 0) {
-        thread.show(this.plainHighlightEnabled, this.commentHighlightEnabled);
+        thread.show(this.plainHighlightEnabled, this.commentHighlightEnabled); // TODO(@jholdstock): remove flags on refactor.
     } else {
         thread.hideDialog();
     }
@@ -93,6 +93,9 @@ class DocAnnotator extends Annotator {
     /** @property {boolean} - True if comment highlights are allowed to be read/written */
     commentHighlightEnabled;
 
+    /** @property {Function} - Reference to filter function that has been bound TODO(@jholdstock): remove on refactor. */
+    showFirstDialogFilter;
+
     /**
      * Creates and mananges plain highlight and comment highlight and point annotations
      * on document files.
@@ -116,6 +119,7 @@ class DocAnnotator extends Annotator {
         // Explicit scoping
         this.highlightCreateHandler = this.highlightCreateHandler.bind(this);
         this.drawingSelectionHandler = this.drawingSelectionHandler.bind(this);
+        this.showFirstDialogFilter = showFirstDialogFilter.bind(this);
 
         this.createHighlightDialog = new CreateHighlightDialog(this.container, {
             isMobile: this.isMobile,
@@ -801,7 +805,7 @@ class DocAnnotator extends Annotator {
         // hovered over at the same time, only the top-most highlight
         // dialog will be displayed and the others will be hidden
         // without delay
-        delayThreads.forEach(showFirstDialogFilter.bind(this));
+        delayThreads.forEach(this.showFirstDialogFilter);
     }
 
     /**
