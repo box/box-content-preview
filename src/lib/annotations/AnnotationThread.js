@@ -22,7 +22,7 @@ class AnnotationThread extends EventEmitter {
      * The data object for constructing a thread.
      * @typedef {Object} AnnotationThreadData
      * @property {HTMLElement} annotatedElement HTML element being annotated on
-     * @property {Annotation[]} [annotations] Annotations in thread - none if
+     * @property {Object} [annotations] Annotations in thread - none if
      * this is a new thread
      * @property {AnnotationService} annotationService Annotations CRUD service
      * @property {string} fileVersionId File version ID
@@ -46,7 +46,7 @@ class AnnotationThread extends EventEmitter {
         super();
 
         this.annotatedElement = data.annotatedElement;
-        this.annotations = data.annotations || [];
+        this.annotations = data.annotations || {};
         this.annotationService = data.annotationService;
         this.container = data.container;
         this.fileVersionId = data.fileVersionId;
@@ -115,6 +115,7 @@ class AnnotationThread extends EventEmitter {
             this.dialog.setup(this.annotations, this.element);
         }
 
+        this.dialog.showAnnotationDelete(this.annotations);
         this.dialog.show();
     }
 
@@ -200,10 +201,9 @@ class AnnotationThread extends EventEmitter {
 
         // If the user doesn't have permission to delete the entire highlight
         // annotation, display the annotation as a plain highlight
+        const firstAnnotation = annotatorUtil.getFirstAnnotation(this.annotations);
         let canDeleteAnnotation =
-            this.annotations.length > 0 &&
-            this.annotations[0].permissions &&
-            this.annotations[0].permissions.can_delete;
+            this.annotations.length > 0 && firstAnnotation.permissions && firstAnnotation.permissions.can_delete;
         if (annotatorUtil.isPlainHighlight(this.annotations) && !canDeleteAnnotation) {
             this.cancelFirstComment();
 
@@ -238,19 +238,16 @@ class AnnotationThread extends EventEmitter {
                 // the last comment on a highlight
                 canDeleteAnnotation =
                     this.annotations.length > 0 &&
-                    this.annotations[0].permissions &&
-                    this.annotations[0].permissions.can_delete;
+                    firstAnnotation.permissions &&
+                    firstAnnotation.permissions.can_delete;
                 if (annotatorUtil.isPlainHighlight(this.annotations) && canDeleteAnnotation) {
-                    this.annotationService.delete(this.annotations[0].annotationID);
+                    this.annotationService.delete(firstAnnotation.annotationID);
                 }
 
                 // Broadcast thread cleanup if needed
                 if (this.annotations.length === 0) {
-                    this.emit(THREAD_EVENT.threadCleanup);
+                    this.emit('threadcleanup');
                 }
-
-                // Broadcast annotation deletion event
-                this.emit(THREAD_EVENT.delete);
             })
             .catch((error) => {
                 // Broadcast error

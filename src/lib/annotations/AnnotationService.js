@@ -136,7 +136,7 @@ class AnnotationService extends EventEmitter {
      * @return {Promise} Promise that resolves with fetched annotations
      */
     read(fileVersionId) {
-        this.annotations = [];
+        this.annotations = {};
         let resolve;
         let reject;
         const promise = new Promise((success, failure) => {
@@ -145,6 +145,25 @@ class AnnotationService extends EventEmitter {
         });
 
         this.readFromMarker(resolve, reject, fileVersionId);
+        return promise;
+    }
+
+    /**
+     * Reads annotations permissions from file version ID.
+     *
+     * @param {string} fileVersionId - File version ID to fetch annotations for
+     * @return {Promise} Promise that resolves with fetched annotations
+     */
+    readPermissions(fileVersionId) {
+        this.annotations = {};
+        let resolve;
+        let reject;
+        const promise = new Promise((success, failure) => {
+            resolve = success;
+            reject = failure;
+        });
+
+        this.readPermissionsFromMarker(resolve, reject, fileVersionId);
         return promise;
     }
 
@@ -193,6 +212,18 @@ class AnnotationService extends EventEmitter {
         return this.read(fileVersionId).then(this.createThreadMap);
     }
 
+    /**
+     * Gets a map of thread ID to annotations in that thread.
+     *
+     * @param {string} fileVersionId - File version ID to fetch annotations for
+     * @return {Promise} Promise that resolves with thread map
+     */
+    getAnnotationsPermissions(fileVersionId) {
+        return this.readPermissions(fileVersionId).then((annotations) => {
+            return annotations;
+        });
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -201,24 +232,20 @@ class AnnotationService extends EventEmitter {
      * Generates a map of thread ID to annotations in thread.
      *
      * @private
-     * @param {Annotation[]} annotations - Annotations to generate map from
+     * @param {Object} annotations - Annotations to generate map from
      * @return {Object} Map of thread ID to annotations in that thread
      */
     createThreadMap(annotations) {
         const threadMap = {};
+        this.annotations = annotations;
 
         // Construct map of thread ID to annotations
-        annotations.forEach((annotation) => {
+        Object.keys(annotations).forEach((annotationID) => {
+            const annotation = annotations[annotationID];
             const threadID = annotation.threadID;
-            threadMap[threadID] = threadMap[threadID] || [];
-            threadMap[threadID].push(annotation);
-        });
-
-        // Sort annotations by date created
-        Object.keys(threadMap).forEach((threadID) => {
-            threadMap[threadID].sort((a, b) => {
-                return new Date(a.created) - new Date(b.created);
-            });
+            const thread = threadMap[threadID] || [];
+            threadMap[threadID] = thread;
+            thread[annotation.annotationID] = annotation;
         });
 
         return threadMap;
@@ -262,7 +289,29 @@ class AnnotationService extends EventEmitter {
      */
     getReadUrl(fileVersionId, marker = null, limit = null) {
         let apiUrl = `${this.api}/2.0/files/${this
-            .fileId}/annotations?version=${fileVersionId}&fields=item,thread,details,message,created_by,created_at,modified_at,permissions`;
+            .fileId}/annotations?version=${fileVersionId}&fields=item,thread,details,message,created_by,created_at,modified_at`;
+        if (marker) {
+            apiUrl += `&marker=${marker}`;
+        }
+
+        if (limit) {
+            apiUrl += `&limit=${limit}`;
+        }
+
+        return apiUrl;
+    }
+
+    /**
+     * Construct the URL to read annotations permissions with a marker or limit added
+     *
+     * @private
+     * @param {string} fileVersionId - File version ID to fetch annotations for
+     * @param {string} marker - Marker to use if there are more than limit annotations
+     * @param {int} limit - The amout of annotations the API will return per call
+     * @return {Promise} Promise that resolves with fetched annotations permissions
+     */
+    getPermissionsUrl(fileVersionId, marker = null, limit = null) {
+        let apiUrl = `${this.api}/2.0/files/${this.fileId}/annotations?version=${fileVersionId}&fields=permissions`;
         if (marker) {
             apiUrl += `&marker=${marker}`;
         }
@@ -301,7 +350,8 @@ class AnnotationService extends EventEmitter {
                     });
                 } else {
                     data.entries.forEach((annotationData) => {
-                        this.annotations.push(this.createAnnotation(annotationData));
+                        const annotation = this.createAnnotation(annotationData);
+                        this.annotations[annotation.annotationID] = annotation;
                     });
 
                     if (data.next_marker) {
@@ -313,6 +363,54 @@ class AnnotationService extends EventEmitter {
             })
             .catch((error) => {
                 reject(new Error('Could not read annotations from file due to invalid or expired token'));
+                this.emit('annotationerror', {
+                    reason: 'authorization',
+                    error: error.toString()
+                });
+            });
+    }
+
+    /**
+     * Reads annotations permissions from file version ID starting at a
+     * marker. The default limit is 100 annotations per API call.
+     *
+     * @private
+     * @param {Function} resolve - Promise resolution handler
+     * @param {Function} reject - Promise rejection handler
+     * @param {string} fileVersionId - File version ID to fetch annotations for
+     * @param {string} marker - Marker to use if there are more than limit annotations
+     * @param {int} limit - The amout of annotations the API will return per call
+     * @return {void}
+     */
+    readPermissionsFromMarker(resolve, reject, fileVersionId, marker = null, limit = null) {
+        fetch(this.getPermissionsUrl(fileVersionId, marker, limit), {
+            headers: this.headers
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.type === 'error' || !Array.isArray(data.entries)) {
+                    const error = new Error(
+                        `Could not read annotations permissions from file version with ID ${fileVersionId}`
+                    );
+                    reject(error);
+                    this.emit('annotationerror', {
+                        reason: 'read',
+                        error: error.toString()
+                    });
+                } else {
+                    data.entries.forEach((permission) => {
+                        this.annotations[permission.id] = permission;
+                    });
+
+                    if (data.next_marker) {
+                        this.readFromMarker(resolve, reject, fileVersionId, data.next_marker, limit);
+                    } else {
+                        resolve(this.annotations);
+                    }
+                }
+            })
+            .catch((error) => {
+                reject(new Error('Could not read annotations permissions from file due to invalid or expired token'));
                 this.emit('annotationerror', {
                     reason: 'authorization',
                     error: error.toString()

@@ -6,6 +6,7 @@ import * as docAnnotatorUtil from './docAnnotatorUtil';
 import {
     STATES,
     TYPES,
+    SELECTOR_HIGHLIGHT_BTNS,
     SELECTOR_ADD_HIGHLIGHT_BTN,
     HIGHLIGHT_FILL,
     CLASS_ANNOTATION_LAYER_HIGHLIGHT,
@@ -112,7 +113,8 @@ class DocHighlightThread extends AnnotationThread {
 
         // Hide delete button on plain highlights if user doesn't have
         // permissions
-        if (this.annotations.length && this.annotations[0].permissions && !this.annotations[0].permissions.can_delete) {
+        const firstAnnotation = annotatorUtil.getFirstAnnotation(this.annotations);
+        if (this.annotations.length && firstAnnotation.permissions && !firstAnnotation.permissions.can_delete) {
             const addHighlightBtn = this.dialog.element.querySelector(SELECTOR_ADD_HIGHLIGHT_BTN);
             annotatorUtil.hideElement(addHighlightBtn);
         }
@@ -292,6 +294,23 @@ class DocHighlightThread extends AnnotationThread {
             this.dialog.setup(this.annotations);
         }
 
+        // Show/hide delete button once permissions are updated
+        const firstAnnotation = annotatorUtil.getFirstAnnotation(this.annotations);
+        if (!annotatorUtil.isPlainHighlight(firstAnnotation.type)) {
+            // Hide all action buttons if user cannot annotate
+            if (this.permissions.canAnnotate) {
+                const highlightButtons = this.dialog.element.querySelector(SELECTOR_HIGHLIGHT_BTNS);
+                annotatorUtil.showElement(highlightButtons);
+            }
+
+            if (firstAnnotation.permissions && firstAnnotation.permissions.can_delete) {
+                const addHighlightBtn = this.dialog.element.querySelector(SELECTOR_ADD_HIGHLIGHT_BTN);
+                annotatorUtil.showElement(addHighlightBtn);
+            }
+        } else {
+            this.dialog.showAnnotationDelete(this.annotations);
+        }
+
         this.dialog.show(showPlain, showComment);
     }
 
@@ -313,7 +332,8 @@ class DocHighlightThread extends AnnotationThread {
 
         // Ensures that previously created annotations have the right type
         if (this.annotations.length) {
-            if ((this.annotations[0].text !== '' || this.annotations.length > 1) && this.type === TYPES.highlight) {
+            const firstAnnotation = annotatorUtil.getFirstAnnotation(this.annotations);
+            if ((firstAnnotation.text !== '' || this.annotations.length > 1) && this.type === TYPES.highlight) {
                 this.type = TYPES.highlight_comment;
             }
         }
@@ -376,7 +396,8 @@ class DocHighlightThread extends AnnotationThread {
             if (data) {
                 this.deleteAnnotation(data.annotationID);
             } else {
-                this.deleteAnnotation(this.annotations[0].annotationID);
+                const firstAnnotation = annotatorUtil.getFirstAnnotation(this.annotations);
+                this.deleteAnnotation(firstAnnotation.annotationID);
             }
         });
     }
