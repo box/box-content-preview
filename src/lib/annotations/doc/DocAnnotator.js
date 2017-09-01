@@ -545,7 +545,7 @@ class DocAnnotator extends Annotator {
         let mouseInDialog = false;
 
         threads.some((thread) => {
-            mouseInDialog = docAnnotatorUtil.isInDialog(event, thread.dialog.element);
+            mouseInDialog = annotatorUtil.isInDialog(event, thread.dialog.element);
             return mouseInDialog;
         });
         return mouseInDialog;

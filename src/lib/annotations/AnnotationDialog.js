@@ -4,6 +4,10 @@ import * as annotatorUtil from './annotatorUtil';
 import * as constants from './annotationConstants';
 import { ICON_CLOSE, ICON_DELETE } from '../icons/icons';
 
+const POINT_ANNOTATION_ICON_HEIGHT = 31;
+const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
+const CLASS_FLIPPED_DIALOG = 'bp-annotation-dialog-flipped';
+
 const CLASS_BUTTON_DELETE_COMMENT = 'delete-comment-btn';
 const CLASS_CANCEL_DELETE = 'cancel-delete-btn';
 const CLASS_CANNOT_ANNOTATE = 'cannot-annotate';
@@ -186,6 +190,9 @@ class AnnotationDialog extends EventEmitter {
 
         annotatorUtil.hideElement(this.element);
         this.deactivateReply();
+
+        // Make sure entire thread icon displays for flipped dialogs
+        this.toggleFlippedThreadEl();
     }
 
     /**
@@ -690,6 +697,82 @@ class AnnotationDialog extends EventEmitter {
                 </div>
             </section>`.trim();
         return dialogEl;
+    }
+
+    /**
+     * Flip the annotations dialog if the dialog would appear in the lower
+     * half of the viewer
+     *
+     * @private
+     * @param {number} yPos - y coordinate for the top of the dialog
+     * @param {number} containerHeight - height of the current annotation
+     * container/page
+     * @return {void}
+     */
+    flipDialog(yPos, containerHeight) {
+        let top = '';
+        let bottom = '';
+        const iconPadding = POINT_ANNOTATION_ICON_HEIGHT - POINT_ANNOTATION_ICON_DOT_HEIGHT / 2;
+        const annotationCaretEl = this.element.querySelector(constants.SELECTOR_ANNOTATION_CARET);
+
+        if (yPos <= containerHeight / 2) {
+            // Keep dialog below the icon if in the top half of the viewport
+            top = `${yPos - POINT_ANNOTATION_ICON_DOT_HEIGHT}px`;
+            bottom = '';
+
+            this.element.classList.remove(CLASS_FLIPPED_DIALOG);
+
+            annotationCaretEl.style.bottom = '';
+        } else {
+            // Flip dialog to above the icon if in the lower half of the viewport
+            const flippedY = containerHeight - yPos - iconPadding;
+            top = '';
+            bottom = `${flippedY}px`;
+
+            this.element.classList.add(CLASS_FLIPPED_DIALOG);
+
+            // Adjust dialog caret
+            annotationCaretEl.style.top = '';
+            annotationCaretEl.style.bottom = '0px';
+        }
+
+        this.fitDialogHeightInPage();
+        this.toggleFlippedThreadEl();
+        return { top, bottom };
+    }
+
+    /**
+     * Show/hide the top portion of the annotations icon based on if the
+     * entire dialog is flipped
+     *
+     * @private
+     * @return {void}
+     */
+    toggleFlippedThreadEl() {
+        if (!this.element || !this.threadEl) {
+            return;
+        }
+
+        const isDialogFlipped = this.element.classList.contains(CLASS_FLIPPED_DIALOG);
+        if (!isDialogFlipped) {
+            return;
+        }
+
+        if (this.element.classList.contains(constants.CLASS_HIDDEN)) {
+            this.threadEl.classList.remove(CLASS_FLIPPED_DIALOG);
+        } else {
+            this.threadEl.classList.add(CLASS_FLIPPED_DIALOG);
+        }
+    }
+
+    /**
+     * Set max height for dialog to prevent the dialog from being cut off
+     *
+     * @private
+     * @return {void}
+     */
+    fitDialogHeightInPage() {
+        this.dialogEl.style.maxHeight = `${this.container.clientHeight / 2}px`;
     }
 }
 

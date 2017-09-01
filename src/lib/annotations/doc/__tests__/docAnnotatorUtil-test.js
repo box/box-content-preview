@@ -43,19 +43,19 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
 
     describe('isInDialog()', () => {
         it('should return false if no dialog element exists', () => {
-            const result = docAnnotatorUtil.isInDialog({ clientX: 8, clientY: 8 });
+            const result = annotatorUtil.isInDialog({ clientX: 8, clientY: 8 });
             expect(result).to.be.false;
         });
 
         it('should return true if the event is in the given dialog', () => {
             const dialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
-            const result = docAnnotatorUtil.isInDialog({ clientX: 8, clientY: 8 }, dialogEl);
+            const result = annotatorUtil.isInDialog({ clientX: 8, clientY: 8 }, dialogEl);
             expect(result).to.be.true;
         });
 
         it('should return false if the event is in the given dialog', () => {
             const dialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
-            const result = docAnnotatorUtil.isInDialog({ clientX: 100, clientY: 100 }, dialogEl);
+            const result = annotatorUtil.isInDialog({ clientX: 100, clientY: 100 }, dialogEl);
             expect(result).to.be.false;
         });
     });
@@ -79,23 +79,6 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
 
             const result = docAnnotatorUtil.hasActiveDialog(document);
             expect(result).to.be.true;
-        });
-    });
-
-    describe('fitDialogHeightInPage()', () => {
-        it('should allow scrolling on annotations dialog if file is a powerpoint', () => {
-            const docEl = document.querySelector('.annotatedElement');
-            docEl.classList.add('bp-doc-presentation');
-            docEl.style.height = 100;
-
-            const dialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
-            const pageHeight = 20;
-            const yPos = 5;
-
-            docAnnotatorUtil.fitDialogHeightInPage(docEl, dialogEl, pageHeight, yPos);
-
-            const annotationsEl = dialogEl.querySelector(SELECTOR_ANNOTATION_CONTAINER);
-            expect(annotationsEl.style.maxHeight).to.not.be.undefined;
         });
     });
 
