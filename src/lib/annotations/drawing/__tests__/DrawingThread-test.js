@@ -64,7 +64,7 @@ describe('lib/annotations/drawing/DrawingThread', () => {
 
     describe('deleteThread()', () => {
         it('should delete all attached annotations, clear the drawn rectangle, and call destroy', () => {
-            sandbox.stub(drawingThread, 'getRectangularBoundary').returns(['a', 'b', 'c', 'd']);
+            sandbox.stub(drawingThread, 'getBrowserRectangularBoundary').returns(['a', 'b', 'c', 'd']);
             sandbox.stub(drawingThread, 'destroy');
             drawingThread.concreteContext = {
                 clearRect: sandbox.stub()
@@ -74,7 +74,7 @@ describe('lib/annotations/drawing/DrawingThread', () => {
             };
 
             drawingThread.deleteThread();
-            expect(drawingThread.getRectangularBoundary).to.be.called;
+            expect(drawingThread.getBrowserRectangularBoundary).to.be.called;
             expect(drawingThread.concreteContext.clearRect).to.be.called;
             expect(drawingThread.annotations.forEach).to.be.called;
             expect(drawingThread.destroy).to.be.called;
@@ -127,28 +127,32 @@ describe('lib/annotations/drawing/DrawingThread', () => {
         });
     });
 
-    describe('createAnnotationData()', () => {
-        it('should create a valid annotation data object', () => {
-            const pathStr = 'path';
-            sandbox.stub(drawingThread.pathContainer, 'getAxisAlignedBoundingBox').returns(pathStr);
-            drawingThread.annotationService = {
-                user: { id: '1' }
-            };
+    describe('setup()', () => {
+        beforeEach(() => {
+            stubs.createDialog = sandbox.stub(drawingThread, 'createDialog');
+        });
 
-            const placeholder = "String here so string doesn't get fined";
-            const annotationData = drawingThread.createAnnotationData('draw', placeholder);
+        it('should set the state to be pending when there are no saved annotations', () => {
+            drawingThread.annotations = [];
+            drawingThread.setup();
+            expect(drawingThread.state).to.equal(STATES.pending);
+            expect(stubs.createDialog).to.not.be.called;
+        });
 
-            expect(drawingThread.pathContainer.getAxisAlignedBoundingBox).to.be.called;
-            expect(annotationData.fileVersionId).to.equal(drawingThread.fileVersionId);
-            expect(annotationData.threadID).to.equal(drawingThread.threadID);
-            expect(annotationData.user.id).to.equal('1');
-            expect(annotationData.location.drawingPaths).to.equal(pathStr);
+        it('should set the state to be inactive and create a dialog when there are saved annotations', () => {
+            drawingThread.annotations = ['not empty'];
+            drawingThread.setup();
+            expect(drawingThread.state).to.equal(STATES.inactive);
+            expect(stubs.createDialog).to.be.called;
         });
     });
 
     describe('undo()', () => {
         beforeEach(() => {
             stubs.draw = sandbox.stub(drawingThread, 'draw');
+            stubs.updateBoundary = sandbox.stub(drawingThread, 'updateBoundary');
+            stubs.setBoundary = sandbox.stub(drawingThread, 'setBoundary');
+            stubs.drawBoundary = sandbox.stub(drawingThread, 'drawBoundary');
             stubs.emitAvailableActions = sandbox.stub(drawingThread, 'emitAvailableActions');
             stubs.containerUndo = sandbox.stub(drawingThread.pathContainer, 'undo');
         });
@@ -159,6 +163,9 @@ describe('lib/annotations/drawing/DrawingThread', () => {
             expect(stubs.containerUndo).to.be.called;
             expect(stubs.draw).to.not.be.called;
             expect(stubs.emitAvailableActions).to.not.be.called;
+            expect(stubs.updateBoundary).to.not.be.called;
+            expect(stubs.setBoundary).to.not.be.called;
+            expect(stubs.drawBoundary).to.not.be.called;
         });
 
         it('should draw when the path container indicates a successful undo', () => {
@@ -167,6 +174,9 @@ describe('lib/annotations/drawing/DrawingThread', () => {
             expect(stubs.containerUndo).to.be.called;
             expect(stubs.draw).to.be.called;
             expect(stubs.emitAvailableActions).to.be.called;
+            expect(stubs.updateBoundary).to.be.called;
+            expect(stubs.setBoundary).to.be.called;
+            expect(stubs.drawBoundary).to.be.called;
         });
     });
 
@@ -268,8 +278,20 @@ describe('lib/annotations/drawing/DrawingThread', () => {
     });
 
     describe('drawBoundary()', () => {
+        beforeEach(() => {
+            stubs.getBrowserRectangularBoundary = sandbox.stub(drawingThread, 'getBrowserRectangularBoundary');
+        });
+
+        it('should do nothing when the location has no page', () => {
+            drawingThread.location = {
+                page: undefined
+            };
+
+            drawingThread.drawBoundary();
+            expect(stubs.getBrowserRectangularBoundary).to.not.be.called;
+        });
+
         it('should draw the boundary of the saved path', () => {
-            sandbox.stub(drawingThread, 'getRectangularBoundary');
             drawingThread.drawingContext = {
                 save: sandbox.stub(),
                 beginPath: sandbox.stub(),
@@ -278,10 +300,11 @@ describe('lib/annotations/drawing/DrawingThread', () => {
                 stroke: sandbox.stub(),
                 restore: sandbox.stub()
             };
-            drawingThread.getRectangularBoundary.returns([1,2,5,6]);
+            stubs.getBrowserRectangularBoundary.returns([1,2,5,6]);
+            drawingThread.location = { page: 1 };
 
             drawingThread.drawBoundary();
-            expect(drawingThread.getRectangularBoundary).to.be.called;
+            expect(stubs.getBrowserRectangularBoundary).to.be.called;
             expect(drawingThread.drawingContext.save).to.be.called;
             expect(drawingThread.drawingContext.beginPath).to.be.called;
             expect(drawingThread.drawingContext.setLineDash).to.be.called;
@@ -304,19 +327,17 @@ describe('lib/annotations/drawing/DrawingThread', () => {
 
         it('should set the boundary when the location has been assigned', () => {
             drawingThread.location = {
-                drawingPaths: {
-                    minX: 5,
-                    minY: 6,
-                    maxX: 7,
-                    maxY: 8
-                }
+                minX: 5,
+                minY: 6,
+                maxX: 7,
+                maxY: 8
             };
 
             drawingThread.setBoundary();
-            expect(drawingThread.minX).to.equal(drawingThread.location.drawingPaths.minX);
-            expect(drawingThread.maxX).to.equal(drawingThread.location.drawingPaths.maxX);
-            expect(drawingThread.minY).to.equal(drawingThread.location.drawingPaths.minY);
-            expect(drawingThread.maxY).to.equal(drawingThread.location.drawingPaths.maxY);
+            expect(drawingThread.minX).to.equal(drawingThread.location.minX);
+            expect(drawingThread.maxX).to.equal(drawingThread.location.maxX);
+            expect(drawingThread.minY).to.equal(drawingThread.location.minY);
+            expect(drawingThread.maxY).to.equal(drawingThread.location.maxY);
         });
     });
 });
