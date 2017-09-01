@@ -274,6 +274,17 @@ $avatar-color-9: #f22c44;
     }
 }
 
+.bp-annotation-dialog-flipped {
+    path,
+    rect {
+        display: none;
+    }
+
+    .bp-annotation-caret {
+        transform: rotate(180deg);
+    }
+}
+
 .bp-annotation-profile {
     background-color: $tendemob-grey;
     border-radius: 16px; // Circle
