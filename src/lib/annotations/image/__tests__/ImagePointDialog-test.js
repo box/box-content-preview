@@ -40,13 +40,16 @@ describe('lib/annotations/image/ImagePointDialog', () => {
 
     describe('position()', () => {
         it('should position the dialog at the right place and show it', () => {
+            dialog.container = { clientHeight: 1 };
             sandbox.stub(annotatorUtil, 'repositionCaret');
             sandbox.stub(annotatorUtil, 'showElement');
+            sandbox.stub(dialog, 'flipDialog').returns([]);
 
             dialog.position();
 
             expect(annotatorUtil.repositionCaret).to.have.been.called;
             expect(annotatorUtil.showElement).to.have.been.called;
+            expect(dialog.flipDialog).to.have.been.called;
         });
     });
 });

@@ -39,13 +39,13 @@ describe('lib/annotations/doc/DocPointDialog', () => {
         it('should position the dialog at the right place and show it', () => {
             sandbox.stub(annotatorUtil, 'showElement');
             sandbox.stub(annotatorUtil, 'repositionCaret');
-            sandbox.stub(docAnnotatorUtil, 'fitDialogHeightInPage');
+            sandbox.stub(dialog, 'flipDialog').returns([]);
 
             dialog.position();
 
             expect(annotatorUtil.repositionCaret).to.have.been.called;
             expect(annotatorUtil.showElement).to.have.been.called;
-            expect(docAnnotatorUtil.fitDialogHeightInPage).to.have.been.called;
+            expect(dialog.flipDialog).to.have.been.called;
         });
     });
 });
