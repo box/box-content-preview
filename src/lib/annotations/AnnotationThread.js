@@ -436,7 +436,9 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     mouseoutHandler() {
-        if (this.annotations.length !== 0) {
+        const mouseInDialog = annotatorUtil.isInDialog(event, this.dialog.element);
+
+        if (this.annotations.length !== 0 && !mouseInDialog) {
             this.hideDialog();
         }
     }
