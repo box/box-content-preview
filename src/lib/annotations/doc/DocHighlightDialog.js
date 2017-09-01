@@ -19,7 +19,7 @@ class DocHighlightDialog extends AnnotationDialog {
     // Public
     //--------------------------------------------------------------------------
 
-    /** 
+    /**
      * Saves an annotation with the associated text or blank if only
      * highlighting. Only adds an annotation to the dialog if it contains text.
      * The annotation is still added to the thread on the server side.
@@ -67,7 +67,7 @@ class DocHighlightDialog extends AnnotationDialog {
 
     /**
      * Set the state of the dialog so comments are hidden, if they're currently shown.
-     * 
+     *
      * @public
      * @return {void}
      */
@@ -150,7 +150,7 @@ class DocHighlightDialog extends AnnotationDialog {
 
         this.element.style.left = `${dialogX}px`;
         this.element.style.top = `${dialogY + PAGE_PADDING_TOP}px`;
-        docAnnotatorUtil.fitDialogHeightInPage(this.annotatedElement, this.element, pageDimensions.height, dialogY);
+        this.fitDialogHeightInPage();
         annotatorUtil.showElement(this.element);
     }
 
