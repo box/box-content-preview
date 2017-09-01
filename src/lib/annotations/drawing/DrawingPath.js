@@ -148,23 +148,24 @@ class DrawingPath {
      * Extract the path information from two paths by merging their paths and getting the bounding rectangle
      *
      * @public
-     * @param {Object} accumulator - A drawingPath or accumulator to extract information from
-     * @param {DrawingPath} pathB - Another drawingPath to extract information from
+     * @param {DrawingPath} pathA - Another drawingPath to extract information from
+     * @param {Object} accumulator - A drawingPath accumulator to retain boundary and path information
      * @return {Object} A bounding rectangle and the stroke paths it contains
      */
-    static extractDrawingInfo(accumulator, pathB) {
+    static extractDrawingInfo(pathA, accumulator) {
         let paths = accumulator.paths;
-        if (paths) {
-            paths.push(pathB.path);
+        const apath = { path: pathA.path };
+        if (!paths) {
+            paths = [apath];
         } else {
-            paths = [accumulator.path, pathB.path];
+            paths.push(apath);
         }
 
         return {
-            minX: Math.min(accumulator.minX, pathB.minX),
-            maxX: Math.max(accumulator.maxX, pathB.maxX),
-            minY: Math.min(accumulator.minY, pathB.minY),
-            maxY: Math.max(accumulator.maxY, pathB.maxY),
+            minX: accumulator.minX ? Math.min(accumulator.minX, pathA.minX) : pathA.minX,
+            maxX: accumulator.maxX ? Math.max(accumulator.maxX, pathA.maxX) : pathA.maxX,
+            minY: accumulator.minY ? Math.min(accumulator.minY, pathA.minY) : pathA.minY,
+            maxY: accumulator.maxY ? Math.max(accumulator.maxY, pathA.maxY) : pathA.maxY,
             paths
         };
     }

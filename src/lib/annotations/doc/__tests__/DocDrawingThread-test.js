@@ -116,21 +116,40 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
     });
 
     describe('handleStop()', () => {
-        it("should set the state to 'idle' and clear the pendingPath", () => {
-            sandbox.stub(docDrawingThread, 'emitAvailableActions');
+        beforeEach(() => {
+            stubs.emitAvailableActions = sandbox.stub(docDrawingThread, 'emitAvailableActions');
+            stubs.updateBoundary = sandbox.stub(docDrawingThread, 'updateBoundary');
+            stubs.setBoundary = sandbox.stub(docDrawingThread, 'setBoundary');
+            stubs.createDialog = sandbox.stub(docDrawingThread, 'createDialog');
             docDrawingThread.drawingFlag = DRAW_STATES.drawing;
             docDrawingThread.pendingPath = {
                 isEmpty: () => false
             };
             docDrawingThread.pathContainer = {
                 insert: sandbox.stub()
+            };
+        })
+        it("should set the state to 'idle' and clear the pendingPath", () => {
+            docDrawingThread.handleStop();
+
+            expect(stubs.emitAvailableActions).to.be.called;
+            expect(stubs.updateBoundary).to.be.called;
+            expect(stubs.setBoundary).to.be.called;
+            expect(stubs.createDialog).to.be.called;
+            expect(docDrawingThread.pathContainer.insert).to.be.called;
+            expect(docDrawingThread.drawingFlag).to.equal(DRAW_STATES.idle);
+            expect(docDrawingThread.pendingPath).to.be.null;
+        });
+
+        it('should not create a dialog if one already exists', () => {
+            docDrawingThread.dialog = {
+                value: 'non-empty',
+                removeAllListeners: () => {},
+                destroy: () => {}
             }
 
             docDrawingThread.handleStop();
-
-            expect(docDrawingThread.emitAvailableActions).to.be.called;
-            expect(docDrawingThread.drawingFlag).to.equal(DRAW_STATES.idle);
-            expect(docDrawingThread.pendingPath).to.be.null;
+            expect(stubs.createDialog).to.not.be.called;
         });
     });
 
@@ -200,6 +219,8 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
         const resetValue = AnnotationThread.prototype.saveAnnotation;
 
         beforeEach(() => {
+            stubs.setBoundary = sandbox.stub(docDrawingThread, 'setBoundary');
+            stubs.show = sandbox.stub(docDrawingThread, 'show');
             Object.defineProperty(AnnotationThread.prototype, 'saveAnnotation', { value: sandbox.stub() });
         });
 
@@ -222,6 +243,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             expect(docDrawingThread.emit).to.be.calledWith('annotationevent', {
                 type: 'drawcommit'
             });
+            expect(stubs.show).to.not.be.called;
         });
 
         it('should clean up and commit in-progress drawings when there are paths to be saved', () => {
@@ -236,21 +258,17 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
                 height: 30,
                 clearRect: sandbox.stub()
             };
-            const context = {
-                drawImage: sandbox.stub()
-            };
 
-            sandbox.stub(docAnnotatorUtil, 'getContext').returns(context);
             sandbox.stub(docDrawingThread.pathContainer, 'getNumberOfItems').returns({
                 undoCount: 1,
                 redoCount: 0
             });
 
             docDrawingThread.saveAnnotation('draw');
-            expect(docAnnotatorUtil.getContext).to.be.called;
+            expect(stubs.show).to.be.called;
+            expect(stubs.setBoundary).to.be.called;
             expect(docDrawingThread.pathContainer.getNumberOfItems).to.be.called;
             expect(docDrawingThread.drawingContext.clearRect).to.be.called;
-            expect(context.drawImage).to.be.called;
             expect(AnnotationThread.prototype.saveAnnotation).to.be.called;
         });
     });
@@ -369,11 +387,11 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
         });
     });
 
-    describe('getRectangularBoundary()', () => {
+    describe('getBrowserRectangularBoundary()', () => {
         it('should return null when no thread has not been assigned a location', () => {
             docDrawingThread.location = undefined;
 
-            const value = docDrawingThread.getRectangularBoundary();
+            const value = docDrawingThread.getBrowserRectangularBoundary();
             expect(value).to.be.null;
         });
 
@@ -388,7 +406,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             stubs.getBrowserCoordinates.onCall(0).returns([5, 5]);
             stubs.getBrowserCoordinates.onCall(1).returns([50, 45]);
 
-            const value = docDrawingThread.getRectangularBoundary();
+            const value = docDrawingThread.getBrowserRectangularBoundary();
             expect(stubs.createLocation).to.be.called.twice;
             expect(stubs.getBrowserCoordinates).to.be.called.twice;
             expect(value).to.deep.equal([5, 5, 45, 40]);

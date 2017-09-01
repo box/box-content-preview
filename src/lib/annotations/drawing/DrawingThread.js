@@ -2,6 +2,7 @@ import AnnotationThread from '../AnnotationThread';
 import DrawingPath from './DrawingPath';
 import DrawingContainer from './DrawingContainer';
 import {
+    STATES,
     DRAW_STATES,
     DRAW_RENDER_THRESHOLD,
     DRAW_BASE_LINE_WIDTH,
@@ -64,14 +65,13 @@ class DrawingThread extends AnnotationThread {
         this.redo = this.redo.bind(this);
 
         // Recreate stored paths
-        if (this.location && this.location.drawingPaths) {
-            const boundaryData = this.location.drawingPaths;
+        if (this.location && this.location.paths) {
             this.setBoundary();
             this.emit('annotationevent', {
                 type: 'locationassigned'
             });
 
-            boundaryData.paths.forEach((drawingPathData) => {
+            this.location.paths.forEach((drawingPathData) => {
                 const pathInstance = new DrawingPath(drawingPathData);
                 this.pathContainer.insert(pathInstance);
             });
@@ -139,8 +139,7 @@ class DrawingThread extends AnnotationThread {
         this.annotations.forEach(this.deleteAnnotationWithID);
 
         // Calculate the bounding rectangle
-        const [x, y, width, height] = this.getRectangularBoundary();
-
+        const [x, y, width, height] = this.getBrowserRectangularBoundary();
         // Clear the drawn thread and destroy it
         this.concreteContext.clearRect(
             x - DRAW_BORDER_OFFSET,
@@ -189,6 +188,9 @@ class DrawingThread extends AnnotationThread {
         const executedUndo = this.pathContainer.undo();
         if (executedUndo) {
             this.draw(this.drawingContext, true);
+            this.updateBoundary();
+            this.setBoundary();
+            this.drawBoundary();
             this.emitAvailableActions();
         }
     }
@@ -205,6 +207,9 @@ class DrawingThread extends AnnotationThread {
         const executedRedo = this.pathContainer.redo();
         if (executedRedo) {
             this.draw(this.drawingContext, true);
+            this.updateBoundary();
+            this.setBoundary();
+            this.drawBoundary();
             this.emitAvailableActions();
         }
     }
@@ -212,6 +217,24 @@ class DrawingThread extends AnnotationThread {
     //--------------------------------------------------------------------------
     // Protected
     //--------------------------------------------------------------------------
+
+    /**
+     * Sets up the thread state.
+     *
+     * @override
+     * @protected
+     * @return {void}
+     */
+    setup() {
+        if (this.annotations.length === 0) {
+            // Newly created thread
+            this.state = STATES.pending;
+        } else {
+            // Saved thread, load boundary dialog
+            this.state = STATES.inactive;
+            this.createDialog();
+        }
+    }
 
     /**
      * Draws the paths in the thread onto the given context.
@@ -267,7 +290,11 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     drawBoundary() {
-        const [x, y, width, height] = this.getRectangularBoundary();
+        if (!this.location.page) {
+            return;
+        }
+
+        const [x, y, width, height] = this.getBrowserRectangularBoundary();
 
         // Save context style
         this.drawingContext.save();
@@ -291,15 +318,22 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     render(timestamp = window.performance.now()) {
-        if (this.drawingFlag === DRAW_STATES.drawing) {
-            this.lastAnimationRequestId = window.requestAnimationFrame(this.render);
-        }
+        let renderAgain = true;
 
         const elapsed = timestamp - (this.lastRenderTimestamp || 0);
         if (elapsed >= DRAW_RENDER_THRESHOLD) {
             this.draw(this.drawingContext, true);
+            this.drawBoundary();
+
             this.lastRenderTimestamp = timestamp;
+            renderAgain = this.drawingFlag === DRAW_STATES.drawing;
         }
+
+        if (!renderAgain) {
+            return;
+        }
+
+        this.lastAnimationRequestId = window.requestAnimationFrame(this.render);
     }
 
     //--------------------------------------------------------------------------
@@ -307,33 +341,33 @@ class DrawingThread extends AnnotationThread {
     //--------------------------------------------------------------------------
 
     /**
-     * Create an annotation data object to pass to annotation service. Sets the bounding boundary for the thread.
+     * Update the boundary information
      *
      * @inheritdoc
      * @private
-     * @param {string} type - Type of annotation
-     * @param {string} text - Annotation text
-     * @return {Object} Annotation data
+     * @return {void}
      */
-    createAnnotationData(type, text) {
-        const annotation = super.createAnnotationData(type, text);
-        const boundaryData = this.pathContainer.getAxisAlignedBoundingBox();
+    updateBoundary(item) {
+        // Recompute the entire AABB when no item is provided, check a new item if it is provided
+        const boundaryData = !item
+            ? this.pathContainer.getAxisAlignedBoundingBox()
+            : DrawingPath.extractDrawingInfo(item, this.location);
 
-        annotation.location.drawingPaths = boundaryData;
-        return annotation;
+        Object.assign(this.location, boundaryData);
     }
+
     /**
-     * Set the coordinates of the rectangular boundary on the saved thread
+     * Set the coordinates of the rectangular boundary on the saved thread for inserting into the rtree
      *
      * @private
      * @return {void}
      */
     setBoundary() {
-        if (!this.location || !this.location.drawingPaths) {
+        if (!this.location) {
             return;
         }
 
-        const boundaryData = this.location.drawingPaths;
+        const boundaryData = this.location;
         this.minX = boundaryData.minX;
         this.maxX = boundaryData.maxX;
         this.minY = boundaryData.minY;
@@ -342,12 +376,12 @@ class DrawingThread extends AnnotationThread {
 
     /**
      * Get the rectangular boundary in the form of [x, y, width, height] where the coordinate indicates the upper left
-     * point of the rectangular boundary
+     * point of the rectangular boundary in browser space
      *
      * @private
      * @return {void}
      */
-    getRectangularBoundary() {}
+    getBrowserRectangularBoundary() {}
 }
 
 export default DrawingThread;
