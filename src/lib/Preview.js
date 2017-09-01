@@ -155,12 +155,19 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     show(fileIdOrFile, token, options = {}) {
-        // Save a reference to the options to be used later
-        if (typeof token === 'string' || typeof token === 'function') {
+        // Save a reference to the options to be re-used later.
+        // Token should either be a function or a string.
+        // Token can also be null or undefined for offline use case.
+        // But it cannot be a random object.
+        if (token === null || typeof token !== 'object') {
             this.previewOptions = Object.assign({}, options, { token });
         } else {
-            throw new Error('Missing access token!');
+            throw new Error('Bad access token!');
         }
+
+        // Update the optional file navigation collection and caches
+        // if proper valid file objects were passed in.
+        this.updateCollection(options.collection);
 
         // Load the preview
         this.load(fileIdOrFile);
@@ -187,16 +194,41 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Updates files to navigate between.
+     * Updates files to navigate between. Collection can be of files
+     * or file ids or a mix. We normalize here to file ids for easier
+     * indexing and cache only the well-formed file objects if provided.
      *
      * @public
-     * @param {string[]} [collection] - Updated collection of file IDs
+     * @param {string[]} [collection] - Updated collection of file or file IDs
      * @return {void}
      */
-    updateCollection(collection = []) {
-        this.collection = Array.isArray(collection) ? collection : [];
-        // Also update the original collection that was saved from the initial show
-        this.previewOptions.collection = this.collection;
+    updateCollection(collection) {
+        const fileOrIds = Array.isArray(collection) ? collection : [];
+        const files = [];
+        const fileIds = [];
+
+        fileOrIds.forEach((fileOrId) => {
+            if (fileOrId && typeof fileOrId === 'string') {
+                // String id found in the collection
+                fileIds.push(fileOrId);
+            } else if (fileOrId && typeof fileOrId === 'object' && typeof fileOrId.id === 'string') {
+                // Possible well-formed file object found in the collection
+                fileIds.push(fileOrId.id);
+                files.push(fileOrId);
+            } else {
+                throw new Error('Bad collection provided!');
+            }
+        });
+
+        // Update the cache with possibly well-formed file objects.
+        this.updateFileCache(files);
+
+        // Collection always uses string ids for easier indexing.
+        this.collection = fileIds;
+
+        // Since update collection is a public method, it can be
+        // called anytime to update navigation. If we are showing
+        // a preview already show or hide the navigation arrows.
         if (this.file) {
             this.ui.showNavigation(this.file.id, this.collection);
         }
@@ -254,7 +286,7 @@ class Preview extends EventEmitter {
     }
 
     /**
-     * Returns the current file being previewed.
+     * Returns the current collection of files that preview is aware of.
      *
      * @public
      * @return {Object|null} Current collection
@@ -466,21 +498,23 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     prefetchViewers(viewerNames = []) {
-        this.getViewers().filter((viewer) => viewerNames.indexOf(viewer.NAME) !== -1).forEach((viewer) => {
-            const viewerInstance = new viewer.CONSTRUCTOR(
-                this.createViewerOptions({
-                    viewer
-                })
-            );
+        this.getViewers()
+            .filter((viewer) => viewerNames.indexOf(viewer.NAME) !== -1)
+            .forEach((viewer) => {
+                const viewerInstance = new viewer.CONSTRUCTOR(
+                    this.createViewerOptions({
+                        viewer
+                    })
+                );
 
-            if (typeof viewerInstance.prefetch === 'function') {
-                viewerInstance.prefetch({
-                    assets: true,
-                    preload: false,
-                    content: false
-                });
-            }
-        });
+                if (typeof viewerInstance.prefetch === 'function') {
+                    viewerInstance.prefetch({
+                        assets: true,
+                        preload: false,
+                        content: false
+                    });
+                }
+            });
     }
 
     //--------------------------------------------------------------------------
@@ -517,6 +551,9 @@ class Preview extends EventEmitter {
         } else if (checkFileValid(fileIdOrFile)) {
             // Use well-formed file object if available
             this.file = fileIdOrFile;
+        } else if (!!fileIdOrFile && typeof fileIdOrFile.id === 'string') {
+            // File is not a well-formed file object but has an id
+            this.file = { id: fileIdOrFile.id };
         } else {
             throw new Error(
                 'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.'
@@ -530,14 +567,10 @@ class Preview extends EventEmitter {
             this.retryCount = 0;
         }
 
-        if (typeof fileIdOrFile === 'object') {
-            this.loadPreviewWithTokens({});
-        } else {
-            // Fetch access tokens before proceeding
-            getTokens(this.file.id, this.previewOptions.token)
-                .then(this.loadPreviewWithTokens)
-                .catch(this.triggerFetchError);
-        }
+        // Fetch access tokens before proceeding
+        getTokens(this.file.id, this.previewOptions.token)
+            .then(this.loadPreviewWithTokens)
+            .catch(this.triggerFetchError);
     }
 
     /**
@@ -572,13 +605,6 @@ class Preview extends EventEmitter {
 
         // Update navigation
         this.ui.showNavigation(this.file.id, this.collection);
-
-        // If preview collection is empty, create a collection of one with the
-        // current file ID. Otherwise, assume the current file ID is already in
-        // the collection.
-        if (this.collection.length === 0) {
-            this.collection = [this.file.id];
-        }
 
         if (checkFileValid(this.file)) {
             // Save file in cache. This also adds the 'ORIGINAL' representation.
@@ -639,9 +665,6 @@ class Preview extends EventEmitter {
 
         // Custom Box3D application definition
         this.options.box3dApplication = options.box3dApplication;
-
-        // Save the files to iterate through
-        this.collection = options.collection || [];
 
         // Save the reference to any additional custom options for viewers
         this.options.viewers = options.viewers || {};
