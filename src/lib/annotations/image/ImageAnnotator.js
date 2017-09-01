@@ -103,7 +103,7 @@ class ImageAnnotator extends Annotator {
 
         // Corrects any image annotation page number to 1 instead of -1
         const fixedLocation = location;
-        if (fixedLocation.page < 0) {
+        if (!fixedLocation.page || fixedLocation.page < 0) {
             fixedLocation.page = 1;
         }
 
