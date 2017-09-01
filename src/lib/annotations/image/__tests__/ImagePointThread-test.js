@@ -23,7 +23,10 @@ describe('lib/annotations/image/ImagePointThread', () => {
             fileVersionId: 1,
             location: {},
             threadID: 2,
-            type: 'point'
+            type: 'point',
+            permissions: {
+                canAnnotate: true
+            }
         });
 
         thread.dialog = {

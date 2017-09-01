@@ -24,7 +24,10 @@ describe('lib/annotations/doc/DocPointThread', () => {
             fileVersionId: 1,
             location: {},
             threadID: 2,
-            type: 'point'
+            type: 'point',
+            permissions: {
+                canAnnotate: true
+            }
         });
     });
 
@@ -35,7 +38,6 @@ describe('lib/annotations/doc/DocPointThread', () => {
 
     describe('showDialog', () => {
         it('should not call parent showDialog if user can annotate and there is a selection present', () => {
-            pointThread.permissions.canAnnotate = true;
             sandbox.stub(docAnnotatorUtil, 'isSelectionPresent').returns(true);
 
             // This stubs out a parent method by forcing the method we care about
@@ -62,7 +64,6 @@ describe('lib/annotations/doc/DocPointThread', () => {
         });
 
         it('should call parent showDialog if there isn\'t a selection present', () => {
-            pointThread.permissions.canAnnotate = true;
             sandbox.stub(docAnnotatorUtil, 'isSelectionPresent').returns(false);
             Object.defineProperty(Object.getPrototypeOf(DocPointThread.prototype), 'showDialog', {
                 value: sandbox.stub()

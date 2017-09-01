@@ -530,19 +530,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.elMock = sandbox.mock(annotator.annotatedElement);
         });
 
-        it('shouldn\'t bind DOM listeners if user cannot annotate except mouseup', () => {
-            annotator.canAnnotate = false;
-
-            stubs.elMock.expects('addEventListener').withArgs('mouseup', sinon.match.func);
-            stubs.elMock.expects('addEventListener').withArgs('dblclick', sinon.match.func).never();
-            stubs.elMock.expects('addEventListener').withArgs('mousedown', sinon.match.func).never();
-            stubs.elMock.expects('addEventListener').withArgs('contextmenu', sinon.match.func).never();
-            stubs.elMock.expects('addEventListener').withArgs('mousemove', sinon.match.func).never();
-            stubs.elMock.expects('addEventListener').withArgs('touchstart', sinon.match.func).never();
-            stubs.elMock.expects('addEventListener').withArgs('click', sinon.match.func).never();
-            annotator.bindDOMListeners();
-        });
-
         it('should bind DOM listeners if user can annotate', () => {
             annotator.canAnnotate = true;
 
@@ -576,18 +563,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             };
             stubs.elMock = sandbox.mock(annotator.annotatedElement);
             annotator.highlightMousemoveHandler = () => {};
-        });
-
-        it('should not unbind DOM listeners if user cannot annotate except mouseup', () => {
-            annotator.canAnnotate = false;
-
-            stubs.elMock.expects('removeEventListener').withArgs('mouseup', sinon.match.func);
-            stubs.elMock.expects('removeEventListener').withArgs('mousedown', sinon.match.func).never();
-            stubs.elMock.expects('removeEventListener').withArgs('contextmenu', sinon.match.func).never();
-            stubs.elMock.expects('removeEventListener').withArgs('mousemove', sinon.match.func).never();
-            stubs.elMock.expects('removeEventListener').withArgs('dblclick', sinon.match.func).never();
-            stubs.elMock.expects('removeEventListener').withArgs('click', sinon.match.func).never();
-            annotator.unbindDOMListeners();
         });
 
         it('should unbind DOM listeners if user can annotate', () => {

@@ -119,7 +119,7 @@ describe('lib/annotations/Annotator', () => {
             stubs.setupMobileDialog = sandbox.stub(annotator, 'setupMobileDialog');
             stubs.showButton = sandbox.stub(annotator, 'showModeAnnotateButton');
 
-            annotator.canAnnotate = true;
+            annotator.permissions.canAnnotate = true;
             annotator.modeButtons = {
                 point: { selector: 'point_btn' },
                 draw: { selector: 'draw_btn' }
@@ -242,7 +242,7 @@ describe('lib/annotations/Annotator', () => {
 
         describe('rotateAnnotations()', () => {
             beforeEach(() => {
-                annotator.canAnnotate = true;
+                annotator.permissions.canAnnotate = true;
                 stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
                 stubs.show = sandbox.stub(annotatorUtil, 'showElement');
                 stubs.render = sandbox.stub(annotator, 'renderAnnotations');
@@ -258,7 +258,7 @@ describe('lib/annotations/Annotator', () => {
             });
 
             it('should only render annotations if user cannot annotate', () => {
-                annotator.canAnnotate = false;
+                annotator.permissions.canAnnotate = false;
                 annotator.rotateAnnotations();
                 expect(stubs.hide).to.not.be.called;
                 expect(stubs.show).to.not.be.called;
@@ -419,12 +419,32 @@ describe('lib/annotations/Annotator', () => {
                     someID2: [{}]
                 };
                 stubs.threadPromise = Promise.resolve(threadMap);
-                stubs.serviceMock.expects('getThreadMap').returns(stubs.threadPromise);
                 sandbox.stub(annotator, 'emit');
                 sandbox.stub(annotator, 'isModeAnnotatable').returns(true);
+
+                annotator.permissions = {
+                    canViewAllAnnotations: true,
+                    canViewOwnAnnotations: true
+                };
+            });
+
+            it('should not fetch existing annotations if the user does not have correct permissions', () => {
+                stubs.serviceMock.expects('getThreadMap').never();
+                annotator.permissions = {
+                    canViewAllAnnotations: false,
+                    canViewOwnAnnotations: true
+                };
+                annotator.fetchAnnotations();
+
+                annotator.permissions = {
+                    canViewAllAnnotations: true,
+                    canViewOwnAnnotations: false
+                };
+                annotator.fetchAnnotations();
             });
 
             it('should reset and create a new thread map by fetching annotation data from the server', () => {
+                stubs.serviceMock.expects('getThreadMap').returns(stubs.threadPromise);
                 stubs.createThread = sandbox.stub(annotator, 'createAnnotationThread');
                 stubs.createThread.onFirstCall();
                 stubs.createThread.onSecondCall().returns(stubs.thread);
@@ -440,6 +460,7 @@ describe('lib/annotations/Annotator', () => {
             });
 
             it('should emit a message to indicate that all annotations have been fetched', () => {
+                stubs.serviceMock.expects('getThreadMap').returns(stubs.threadPromise);
                 annotator.fetchAnnotations();
                 return stubs.threadPromise.then(() => {
                     expect(annotator.emit).to.be.calledWith('annotationsfetched');
@@ -911,11 +932,20 @@ describe('lib/annotations/Annotator', () => {
                         selector: '.bp-btn-annotate'
                     }
                 };
+                annotator.permissions.canAnnotate = true;
             });
 
             afterEach(() => {
                 annotator.modeButtons = {};
                 annotator.container = document;
+            });
+
+            it('should do nothing if user cannot annotate', () => {
+                annotator.permissions.canAnnotate = false;
+                sandbox.stub(annotator, 'isModeAnnotatable').returns(true);
+                sandbox.stub(annotator, 'getAnnotationModeClickHandler');
+                annotator.showModeAnnotateButton(TYPES.point);
+                expect(annotator.getAnnotationModeClickHandler).to.not.be.called;
             });
 
             it('should do nothing if the mode does not require a button', () => {

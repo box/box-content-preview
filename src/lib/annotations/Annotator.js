@@ -552,8 +552,7 @@ class Annotator extends EventEmitter {
                 const annotations = threadMap[threadID];
                 const firstAnnotation = annotations[0];
 
-                const isModeEnabled = this.isModeAnnotatable(firstAnnotation.type);
-                if (!firstAnnotation || !isModeEnabled) {
+                if (!firstAnnotation || !this.isModeAnnotatable(firstAnnotation.type)) {
                     return;
                 }
 

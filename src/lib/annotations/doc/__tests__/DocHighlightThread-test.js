@@ -33,7 +33,11 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
             fileVersionId: 1,
             location: {},
             threadID: 2,
-            type: 'highlight'
+            type: 'highlight',
+            permissions: {
+                canAnnotate: true,
+                canViewAllAnnotations: true
+            }
         });
         highlightThread.dialog.setup([]);
     });
@@ -151,7 +155,11 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                 fileVersionId: 1,
                 location: {},
                 threadID: 2,
-                type: 'highlight'
+                type: 'highlight',
+                permissions: {
+                    canAnnotate: true,
+                    canViewAllAnnotations: true
+                }
             });
             plainHighlightThread.dialog.setup([]);
 
@@ -178,7 +186,11 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                 fileVersionId: 1,
                 location: {},
                 threadID: 2,
-                type: 'highlight'
+                type: 'highlight',
+                permissions: {
+                    canAnnotate: true,
+                    canViewAllAnnotations: true
+                }
             });
 
             Object.defineProperty(Object.getPrototypeOf(DocHighlightThread.prototype), 'deleteAnnotation', {

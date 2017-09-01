@@ -485,10 +485,6 @@ class DocAnnotator extends Annotator {
             this.highlightThrottleHandle = null;
         }
 
-        if (!this.permissions.canAnnotate) {
-            return;
-        }
-
         if (this.hasTouch && this.isMobile) {
             document.removeEventListener('selectionchange', this.onSelectionChange);
             this.annotatedElement.removeEventListener('touchstart', this.drawingSelectionHandler);
