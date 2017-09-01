@@ -236,7 +236,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
             stubs.width = sandbox.stub(dialog, 'getDialogWidth');
             stubs.caret = sandbox.stub(annotatorUtil, 'repositionCaret');
             stubs.show = sandbox.stub(annotatorUtil, 'showElement');
-            stubs.fit = sandbox.stub(docAnnotatorUtil, 'fitDialogHeightInPage');
+            stubs.fit = sandbox.stub(dialog, 'fitDialogHeightInPage');
         });
 
         it('should position the plain highlight dialog at the right place and show it', () => {

@@ -4,6 +4,7 @@ import AnnotationDialog from '../AnnotationDialog';
 import * as annotatorUtil from '../annotatorUtil';
 import * as constants from '../annotationConstants';
 
+const CLASS_FLIPPED_DIALOG = 'bp-annotation-dialog-flipped';
 const CLASS_CANCEL_DELETE = 'cancel-delete-btn';
 const CLASS_CANNOT_ANNOTATE = 'cannot-annotate';
 const CLASS_REPLY_TEXTAREA = 'reply-textarea';
@@ -215,9 +216,18 @@ describe('lib/annotations/AnnotationDialog', () => {
     });
 
     describe('hide()', () => {
+        it('should do nothing if element is already hidden', () => {
+            dialog.element.classList.add(constants.CLASS_HIDDEN);
+            sandbox.stub(annotatorUtil, 'hideElement');
+            dialog.hide();
+            expect(annotatorUtil.hideElement).to.not.have.called;
+        });
+
         it('should hide dialog immediately', () => {
+            sandbox.stub(dialog, 'toggleFlippedThreadEl');
             dialog.hide();
             expect(dialog.element).to.have.class(constants.CLASS_HIDDEN);
+            expect(dialog.toggleFlippedThreadEl).to.be.called;
         });
 
         it('should hide the mobile dialog if using a mobile browser', () => {
@@ -889,6 +899,78 @@ describe('lib/annotations/AnnotationDialog', () => {
             const showSectionEl = dialogEl.querySelector(constants.SECTION_SHOW);
             expect(createSectionEl).to.have.class(constants.CLASS_HIDDEN);
             expect(showSectionEl).to.not.have.class(constants.CLASS_HIDDEN);
+        });
+    });
+
+    describe('flipDialog()', () => {
+        const containerHeight = 5;
+
+        beforeEach(() => {
+            sandbox.stub(dialog.element, 'querySelector').returns(document.createElement('div'));
+            sandbox.stub(dialog, 'fitDialogHeightInPage');
+            sandbox.stub(dialog, 'toggleFlippedThreadEl');
+        });
+
+        afterEach(() => {
+            dialog.element = null;
+        });
+
+        it('should keep the dialog below the annotation icon if the annotation is in the top half of the viewport', () => {
+            const { top, bottom } = dialog.flipDialog(2, containerHeight);
+            expect(dialog.element).to.not.have.class(CLASS_FLIPPED_DIALOG);
+            expect(top).not.equals('');
+            expect(bottom).equals('');
+            expect(dialog.fitDialogHeightInPage).to.be.called;
+            expect(dialog.toggleFlippedThreadEl).to.be.called;
+        });
+
+        it('should flip the dialog above the annotation icon if the annotation is in the lower half of the viewport', () => {
+            const { top, bottom } = dialog.flipDialog(4, containerHeight);
+            expect(dialog.element).to.have.class(CLASS_FLIPPED_DIALOG);
+            expect(top).equals('');
+            expect(bottom).not.equals('');
+        });
+    });
+
+    describe('toggleFlippedThreadEl()', () => {
+        beforeEach(() => {
+            dialog.threadEl = document.createElement('div');
+        });
+
+        it('should do nothing if the dialog is not flipped', () => {
+            stubs.add = sandbox.stub(dialog.threadEl.classList, 'add');
+            stubs.remove = sandbox.stub(dialog.threadEl.classList, 'remove');
+            dialog.toggleFlippedThreadEl();
+            expect(stubs.add).to.not.be.called;
+            expect(stubs.remove).to.not.be.called;
+        });
+
+        it('should reset thread icon if dialog is flipped and hidden', () => {
+            dialog.element.classList.add(CLASS_FLIPPED_DIALOG);
+            stubs.add = sandbox.stub(dialog.threadEl.classList, 'add');
+            stubs.remove = sandbox.stub(dialog.threadEl.classList, 'remove');
+            dialog.toggleFlippedThreadEl();
+            expect(stubs.add).to.be.called;
+            expect(stubs.remove).to.not.be.called;
+        })
+
+        it('should flip thread icon if dialog is flipped and not hidden', () => {
+            dialog.element.classList.add(CLASS_FLIPPED_DIALOG);
+            dialog.element.classList.add(constants.CLASS_HIDDEN);
+            stubs.add = sandbox.stub(dialog.threadEl.classList, 'add');
+            stubs.remove = sandbox.stub(dialog.threadEl.classList, 'remove');
+            dialog.toggleFlippedThreadEl();
+            expect(stubs.add).to.not.be.called;
+            expect(stubs.remove).to.be.called;
+        })
+    });
+
+    describe('fitDialogHeightInPage()', () => {
+        it('should allow scrolling on annotations dialog if file is a powerpoint', () => {
+            dialog.dialogEl = { style: {} };
+            dialog.container = { clientHeight: 100 };
+            dialog.fitDialogHeightInPage();
+            expect(dialog.dialogEl.style.maxHeight).equals('50px');
         });
     });
 });
