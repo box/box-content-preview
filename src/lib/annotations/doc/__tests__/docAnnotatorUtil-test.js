@@ -82,23 +82,6 @@ describe('lib/annotations/doc/docAnnotatorUtil', () => {
         });
     });
 
-    describe('fitDialogHeightInPage()', () => {
-        it('should allow scrolling on annotations dialog if file is a powerpoint', () => {
-            const docEl = document.querySelector('.annotatedElement');
-            docEl.classList.add('bp-doc-presentation');
-            docEl.style.height = 100;
-
-            const dialogEl = document.querySelector(SELECTOR_ANNOTATION_DIALOG);
-            const pageHeight = 20;
-            const yPos = 5;
-
-            docAnnotatorUtil.fitDialogHeightInPage(docEl, dialogEl, pageHeight, yPos);
-
-            const annotationsEl = dialogEl.querySelector(SELECTOR_ANNOTATION_CONTAINER);
-            expect(annotationsEl.style.maxHeight).to.not.be.undefined;
-        });
-    });
-
     describe('isPointInPolyOpt()', () => {
         it('should return true if point is inside polygon', () => {
             const polygon = [[0, 0], [100, 0], [100, 100], [0, 100]];

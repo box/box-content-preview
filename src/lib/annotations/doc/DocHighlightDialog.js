@@ -150,7 +150,7 @@ class DocHighlightDialog extends AnnotationDialog {
 
         this.element.style.left = `${dialogX}px`;
         this.element.style.top = `${dialogY + PAGE_PADDING_TOP}px`;
-        docAnnotatorUtil.fitDialogHeightInPage(this.annotatedElement, this.element, pageDimensions.height, dialogY);
+        this.fitDialogHeightInPage();
         annotatorUtil.showElement(this.element);
     }
 
