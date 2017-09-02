@@ -50,6 +50,7 @@ class AnnotationThread extends EventEmitter {
         this.type = data.type;
         this.locale = data.locale;
         this.isMobile = data.isMobile;
+        this.permissions = data.permissions;
 
         this.setup();
     }
