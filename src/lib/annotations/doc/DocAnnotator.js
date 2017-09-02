@@ -21,8 +21,7 @@ import {
     PAGE_PADDING_TOP,
     PAGE_PADDING_BOTTOM,
     CLASS_ANNOTATION_LAYER_HIGHLIGHT,
-    CLASS_ANNOTATION_LAYER_DRAW,
-    PENDING_STATES
+    CLASS_ANNOTATION_LAYER_DRAW
 } from '../annotationConstants';
 
 const MOUSEMOVE_THROTTLE_MS = 50;
@@ -854,7 +853,7 @@ class DocAnnotator extends Annotator {
         const pageThreads = this.getThreadsOnPage(page);
 
         Object.values(pageThreads).forEach((thread) => {
-            if (PENDING_STATES.indexOf(thread.state) >= 0) {
+            if (annotatorUtil.isPending(thread.state)) {
                 // Destroy any pending highlights on click outside the highlight
                 if (thread.type === TYPES.point) {
                     thread.destroy();

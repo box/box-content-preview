@@ -244,10 +244,8 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     hideAnnotations() {
-        Object.values(this.threads).forEach((pageThreads) => {
-            Object.values(pageThreads).forEach((thread) => {
-                thread.hide();
-            });
+        Object.keys(this.threads).forEach((pageNum) => {
+            this.hideAnnotations(pageNum);
         });
     }
 
@@ -275,10 +273,8 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     renderAnnotations() {
-        Object.values(this.threads).forEach((pageThreads) => {
-            Object.values(pageThreads).forEach((thread) => {
-                thread.show();
-            });
+        Object.keys(this.threads).forEach((pageNum) => {
+            this.renderAnnotationsOnPage(pageNum);
         });
     }
 
@@ -847,6 +843,7 @@ class Annotator extends EventEmitter {
         if (!(page in this.threads)) {
             this.threads[page] = {};
         }
+
         return this.threads[page];
     }
 
