@@ -288,11 +288,31 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
+        describe('exitAnnotationModesExcept()', () => {
+            it('should call disableAnnotationMode on all modes except the specified one', () => {
+                annotator.modeButtons = {
+                    'type1': {
+                        selector: 'bogus',
+                        button: 'button1'
+                    },
+                    'type2': {
+                        selector: 'test',
+                        button: 'button2'
+                    }
+                };
+
+                sandbox.stub(annotator, 'disableAnnotationMode');
+                annotator.exitAnnotationModesExcept('type2');
+                expect(annotator.disableAnnotationMode).to.be.calledWith('type1', 'button1');
+                expect(annotator.disableAnnotationMode).to.not.be.calledWith('type2', 'button2');
+            });
+        });
+
         describe('toggleAnnotationHandler()', () => {
             beforeEach(() => {
                 stubs.destroyStub = sandbox.stub(annotator, 'destroyPendingThreads');
                 stubs.annotationMode = sandbox.stub(annotator, 'isInAnnotationMode');
-                stubs.exitModes = sandbox.stub(annotator, 'exitAnnotationModes');
+                stubs.exitModes = sandbox.stub(annotator, 'exitAnnotationModesExcept');
                 stubs.disable = sandbox.stub(annotator, 'disableAnnotationMode');
                 stubs.enable = sandbox.stub(annotator, 'enableAnnotationMode');
                 sandbox.stub(annotator, 'getAnnotateButton');
