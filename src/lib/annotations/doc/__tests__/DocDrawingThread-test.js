@@ -1,6 +1,7 @@
 import * as docAnnotatorUtil from '../docAnnotatorUtil';
 import * as annotatorUtil from '../../annotatorUtil';
 import DocDrawingThread from '../DocDrawingThread';
+import DocDrawingDialog from '../DocDrawingDialog';
 import AnnotationThread from '../../AnnotationThread';
 import DrawingPath from '../../drawing/DrawingPath';
 import {
@@ -113,6 +114,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             expect(docDrawingThread.onPageChange).to.be.called;
             expect(docDrawingThread.checkAndHandleScaleUpdate).to.not.be.called;
         });
+
     });
 
     describe('handleStop()', () => {
@@ -145,7 +147,8 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             docDrawingThread.dialog = {
                 value: 'non-empty',
                 removeAllListeners: () => {},
-                destroy: () => {}
+                destroy: () => {},
+                isVisible: () => false
             }
 
             docDrawingThread.handleStop();
@@ -221,6 +224,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
         beforeEach(() => {
             stubs.setBoundary = sandbox.stub(docDrawingThread, 'setBoundary');
             stubs.show = sandbox.stub(docDrawingThread, 'show');
+            stubs.createDialog = sandbox.stub(docDrawingThread, 'createDialog');
             Object.defineProperty(AnnotationThread.prototype, 'saveAnnotation', { value: sandbox.stub() });
         });
 
@@ -230,20 +234,14 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
 
         it('should clean up without committing when there are no paths to be saved', () => {
             sandbox.stub(docDrawingThread, 'reset');
-            sandbox.stub(docDrawingThread, 'emit');
-            sandbox.stub(docDrawingThread.pathContainer, 'getNumberOfItems').returns({
-                undoCount: 0,
-                redoCount: 1
-            });
+            sandbox.stub(docDrawingThread.pathContainer, 'isUndoEmpty').returns(true);
 
             docDrawingThread.saveAnnotation('draw');
-            expect(docDrawingThread.pathContainer.getNumberOfItems).to.be.called;
+            expect(docDrawingThread.pathContainer.isUndoEmpty).to.be.called;
             expect(AnnotationThread.prototype.saveAnnotation).to.not.be.called;
             expect(docDrawingThread.reset).to.be.called;
-            expect(docDrawingThread.emit).to.be.calledWith('annotationevent', {
-                type: 'drawcommit'
-            });
             expect(stubs.show).to.not.be.called;
+            expect(stubs.createDialog).to.not.be.called;
         });
 
         it('should clean up and commit in-progress drawings when there are paths to be saved', () => {
@@ -259,17 +257,15 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
                 clearRect: sandbox.stub()
             };
 
-            sandbox.stub(docDrawingThread.pathContainer, 'getNumberOfItems').returns({
-                undoCount: 1,
-                redoCount: 0
-            });
+            sandbox.stub(docDrawingThread.pathContainer, 'isUndoEmpty').returns(false);
 
             docDrawingThread.saveAnnotation('draw');
-            expect(stubs.show).to.be.called;
-            expect(stubs.setBoundary).to.be.called;
-            expect(docDrawingThread.pathContainer.getNumberOfItems).to.be.called;
+            expect(docDrawingThread.pathContainer.isUndoEmpty).to.be.called;
             expect(docDrawingThread.drawingContext.clearRect).to.be.called;
             expect(AnnotationThread.prototype.saveAnnotation).to.be.called;
+            expect(stubs.show).to.be.called;
+            expect(stubs.setBoundary).to.be.called;
+            expect(stubs.createDialog).to.be.called;
         });
     });
 
@@ -317,31 +313,43 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             docDrawingThread.pathContainer = {
                 applyToItems: sandbox.stub()
             };
+
+            docDrawingThread.annotatedElement = 'annotatedEl';
+            docDrawingThread.location = 'loc';
         });
 
         it('should do nothing when no element is assigned to the DocDrawingThread', () => {
             docDrawingThread.annotatedElement = undefined;
-            docDrawingThread.location = 'loc';
             docDrawingThread.show();
             expect(docDrawingThread.selectContext).to.not.be.called;
         });
 
         it('should do nothing when no location is assigned to the DocDrawingThread', () => {
-            docDrawingThread.annotatedElement = 'annotatedEl';
             docDrawingThread.location = undefined;
             docDrawingThread.show();
             expect(docDrawingThread.selectContext).to.not.be.called;
         });
 
         it('should draw the paths in the thread', () => {
-            docDrawingThread.annotatedElement = 'annotatedEl';
-            docDrawingThread.location = 'loc';
             docDrawingThread.state = 'not pending';
-
-            docDrawingThread.show()
+            docDrawingThread.show();
             expect(docDrawingThread.selectContext).to.be.called;
             expect(docDrawingThread.draw).to.be.called;
         });
+
+        it('should draw the boundary when a dialog exists and is visible', () => {
+            sandbox.stub(docDrawingThread, 'drawBoundary');
+            docDrawingThread.dialog = {
+                isVisible: sandbox.stub().returns(true),
+                destroy: () => {},
+                removeAllListeners: () => {},
+                hide: () => {}
+            }
+
+            docDrawingThread.show();
+            expect(docDrawingThread.dialog.isVisible).to.be.called;
+            expect(docDrawingThread.drawBoundary).to.be.called;
+        })
     });
 
     describe('selectContext()', () => {
@@ -410,6 +418,42 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             expect(stubs.createLocation).to.be.called.twice;
             expect(stubs.getBrowserCoordinates).to.be.called.twice;
             expect(value).to.deep.equal([5, 5, 45, 40]);
+        });
+    });
+
+    describe('createDialog()', () => {
+        it('should create a new doc drawing dialog', () => {
+            const existingDialog = {
+                destroy: sandbox.stub()
+            };
+
+            sandbox.stub(docDrawingThread, 'bindCustomListenersOnDialog');
+            docDrawingThread.dialog = existingDialog;
+            docDrawingThread.annotationService = {
+                canAnnotate: true
+            };
+
+            docDrawingThread.createDialog();
+
+            expect(existingDialog.destroy).to.be.called;
+            expect(docDrawingThread.dialog instanceof DocDrawingDialog).to.be.truthy;
+            expect(docDrawingThread.bindCustomListenersOnDialog).to.be.called;
+        });
+    });
+
+    describe('bindCustomListenersOnDialog', () => {
+        it('should bind listeners on the dialog', () => {
+            docDrawingThread.dialog = {
+                addListener: sandbox.stub(),
+                removeAllListeners: sandbox.stub(),
+                hide: sandbox.stub(),
+                destroy: sandbox.stub(),
+                isVisible: sandbox.stub()
+            };
+
+            docDrawingThread.bindCustomListenersOnDialog();
+            expect(docDrawingThread.dialog.addListener).to.be.calledWith('annotationcreate', sinon.match.func);
+            expect(docDrawingThread.dialog.addListener).to.be.calledWith('annotationdelete', sinon.match.func);
         });
     });
 });

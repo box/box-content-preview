@@ -90,6 +90,11 @@ class DrawingThread extends AnnotationThread {
             window.cancelAnimationFrame(this.lastAnimationRequestId);
         }
 
+        if (this.dialog) {
+            this.dialog.destroy();
+            this.dialog = null;
+        }
+
         super.destroy();
         this.reset();
         this.emit('threadcleanup');
@@ -275,10 +280,6 @@ class DrawingThread extends AnnotationThread {
      */
     emitAvailableActions() {
         const availableActions = this.pathContainer.getNumberOfItems();
-        if (this.dialog && availableActions.undoCount === 0) {
-            this.dialog.hide();
-        }
-
         this.emit('annotationevent', {
             type: 'availableactions',
             undo: availableActions.undoCount,
@@ -383,6 +384,10 @@ class DrawingThread extends AnnotationThread {
         this.maxX = boundaryData.maxX;
         this.minY = boundaryData.minY;
         this.maxY = boundaryData.maxY;
+
+        if (this.dialog && this.pathContainer.isUndoEmpty()) {
+            this.dialog.hide();
+        }
     }
 
     /**
@@ -394,6 +399,11 @@ class DrawingThread extends AnnotationThread {
      */
     getBrowserRectangularBoundary() {}
 
+    /**
+     * Clear any drawn boundary and associated dialog
+     *
+     * @return {void}
+     */
     clearBoundary() {
         if (this.drawingContext) {
             const canvas = this.drawingContext.canvas;

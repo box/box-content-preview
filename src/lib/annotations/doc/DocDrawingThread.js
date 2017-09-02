@@ -30,6 +30,7 @@ class DocDrawingThread extends DrawingThread {
         this.onPageChange = this.onPageChange.bind(this);
         this.reconstructBrowserCoordFromLocation = this.reconstructBrowserCoordFromLocation.bind(this);
     }
+
     /**
      * Handle a pointer movement
      *
@@ -141,8 +142,7 @@ class DocDrawingThread extends DrawingThread {
         this.reset();
 
         // Only make save request to server if there exist paths to save
-        const { undoCount } = this.pathContainer.getNumberOfItems();
-        if (undoCount === 0) {
+        if (this.pathContainer.isUndoEmpty()) {
             return;
         }
 
@@ -181,6 +181,53 @@ class DocDrawingThread extends DrawingThread {
         }
 
         this.draw(context, false);
+    }
+
+    /**
+     * Binds custom event listeners for the dialog.
+     *
+     * @protected
+     * @return {void}
+     */
+    bindCustomListenersOnDialog() {
+        if (!this.dialog) {
+            return;
+        }
+
+        this.dialog.addListener('annotationcreate', () => {
+            this.emit('annotationevent', {
+                type: 'softcommit'
+            });
+        });
+        this.dialog.addListener('annotationdelete', () => {
+            this.emit('annotationevent', {
+                type: 'dialogdelete'
+            });
+        });
+    }
+
+    /**
+     * Creates the document drawing annotation dialog for the thread.
+     *
+     * @protected
+     * @override
+     * @return {void}
+     */
+    createDialog() {
+        if (this.dialog) {
+            this.dialog.destroy();
+        }
+
+        this.dialog = new DocDrawingDialog({
+            annotatedElement: this.annotatedElement,
+            container: this.container,
+            annotations: this.annotations,
+            locale: this.locale,
+            location: this.location,
+            canAnnotate: this.annotationService.canAnnotate
+        });
+
+        this.bindCustomListenersOnDialog();
     }
 
     /**
@@ -276,39 +323,6 @@ class DocDrawingThread extends DrawingThread {
         const height = y2 - y1;
 
         return [x1, y1, width, height];
-    }
-
-    /**
-     * Creates the document drawing annotation dialog for the thread.
-     *
-     * @override
-     * @return {void}
-     */
-    createDialog() {
-        if (this.dialog) {
-            this.dialog.destroy();
-        }
-
-        this.dialog = new DocDrawingDialog({
-            annotatedElement: this.annotatedElement,
-            container: this.container,
-            annotations: this.annotations,
-            locale: this.locale,
-            location: this.location,
-            canAnnotate: this.annotationService.canAnnotate
-        });
-
-        const drawingThread = this;
-        this.dialog.addListener('save', () =>
-            drawingThread.emit('annotationevent', {
-                type: 'softcommit'
-            })
-        );
-        this.dialog.addListener('delete', () =>
-            drawingThread.emit('annotationevent', {
-                type: 'dialogdelete'
-            })
-        );
     }
 }
 

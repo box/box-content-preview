@@ -454,7 +454,7 @@ class DocAnnotator extends Annotator {
     bindDOMListeners() {
         super.bindDOMListeners();
 
-        if(!this.canAnnotate) {
+        if (!this.permissions.canAnnotate) {
             return;
         }
 
@@ -489,7 +489,7 @@ class DocAnnotator extends Annotator {
             this.highlightThrottleHandle = null;
         }
 
-        if (!this.canAnnotate) {
+        if (!this.permissions.canAnnotate) {
             return;
         }
 

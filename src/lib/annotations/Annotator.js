@@ -541,7 +541,7 @@ class Annotator extends EventEmitter {
         // Do not load any pre-existing annotations if the user does not have
         // the correct permissions
         if (!this.permissions.canViewAllAnnotations || !this.permissions.canViewOwnAnnotations) {
-            return this.threads;
+            return Promise.resolve(this.threads);
         }
 
         return this.annotationService.getThreadMap(this.fileVersionId).then((threadMap) => {
