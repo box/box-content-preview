@@ -512,6 +512,10 @@ class DocAnnotator extends Annotator {
     bindDOMListeners() {
         super.bindDOMListeners();
 
+        if(!this.canAnnotate) {
+            return;
+        }
+
         this.annotatedElement.addEventListener('mouseup', this.highlightMouseupHandler);
 
         // Prevent all forms of highlight annotations if annotating (or plain AND comment highlights) is disabled

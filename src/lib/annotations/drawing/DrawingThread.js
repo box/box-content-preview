@@ -280,6 +280,10 @@ class DrawingThread extends AnnotationThread {
      */
     emitAvailableActions() {
         const availableActions = this.pathContainer.getNumberOfItems();
+        if (this.dialog && availableActions.undoCount === 0) {
+            this.dialog.hide();
+        }
+
         this.emit('annotationevent', {
             type: 'availableactions',
             undo: availableActions.undoCount,
