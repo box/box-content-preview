@@ -3,6 +3,7 @@ import AnnotationModeController from '../AnnotationModeController';
 import * as annotatorUtil from '../annotatorUtil';
 import {
     TYPES,
+    STATES,
     SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
     SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO,
     SELECTOR_ANNOTATION_BUTTON_DRAW_REDO,
@@ -96,6 +97,34 @@ class DrawingModeController extends AnnotationModeController {
     }
 
     /**
+     * Unbind drawing mode listeners. Resets the undo and redo buttons to be disabled if they exist
+     *
+     * @inheritdoc
+     * @protected
+     * @return {void}
+     */
+    unbindModeListeners() {
+        super.unbindModeListeners();
+
+        annotatorUtil.disableElement(this.undoButtonEl);
+        annotatorUtil.disableElement(this.redoButtonEl);
+    }
+
+    /**
+     * Deselect a saved and selected thread
+     *
+     * @return {void}
+     */
+    cleanSelector() {
+        if (!this.selectedThread) {
+            return;
+        }
+
+        this.selectedThread.clearBoundary();
+        this.selectedThread = undefined;
+    }
+
+    /**
      * Set up and return the necessary handlers for the annotation mode
      *
      * @inheritdoc
@@ -151,19 +180,33 @@ class DrawingModeController extends AnnotationModeController {
                 // Register the thread to the threadmap when a starting location is assigned. Should only occur once.
                 this.annotator.addThreadToMap(thread);
                 break;
-            case 'drawcommit':
-                // Upon a commit, remove the listeners on the thread.
-                // Adding the thread to the Rbush only happens upon a successful save
-                thread.removeAllListeners('annotationevent');
-                break;
-            case 'pagechanged':
-                // On page change, save the original thread, create a new thread and
+            case 'softcommit':
+                // Save the original thread, create a new thread and
                 // start drawing at the location indicating the page change
                 this.currentThread = undefined;
                 thread.saveAnnotation(TYPES.draw);
                 this.unbindModeListeners();
-                this.bindModeListeners(TYPES.draw);
-                this.currentThread.handleStart(data.location);
+                this.bindModeListeners();
+
+                // Given a location (page change) start drawing at the provided location
+                if (data.location) {
+                    this.currentThread.handleStart(data.location);
+                }
+
+                break;
+            case 'dialogdelete':
+                if (thread.state === STATES.pending) {
+                    // Soft delete, in-progress thread doesn't require a redraw or a delete on the server
+                    // Clear in-progress thread and restart drawing
+                    thread.destroy();
+                    this.unbindModeListeners();
+                    this.bindModeListeners();
+                } else {
+                    // Redraw any threads that the deleted thread could have been overlapping
+                    thread.deleteThread();
+                    this.threads.search(thread).forEach((drawingThread) => drawingThread.show());
+                }
+
                 break;
             case 'availableactions':
                 this.updateUndoRedoButtonEls(data.undo, data.redo);
@@ -202,10 +245,7 @@ class DrawingModeController extends AnnotationModeController {
             .filter((drawingThread) => drawingThread.location.page === location.page);
 
         // Clear boundary on previously selected thread
-        if (this.selectedThread) {
-            const canvas = this.selectedThread.drawingContext.canvas;
-            this.selectedThread.drawingContext.clearRect(0, 0, canvas.width, canvas.height);
-        }
+        this.cleanSelector();
 
         // Selected a region with no drawing threads, remove the reference to the previously selected thread
         if (intersectingThreads.length === 0) {
@@ -213,7 +253,7 @@ class DrawingModeController extends AnnotationModeController {
             return;
         }
 
-        // Randomly select a thread in case there are multiple
+        // Randomly select a thread in case there are multiple overlapping threads (use canvas hitmap to avoid this)
         const index = Math.floor(Math.random() * intersectingThreads.length);
         const selected = intersectingThreads[index];
         this.select(selected);
@@ -227,20 +267,8 @@ class DrawingModeController extends AnnotationModeController {
      * @return {void}
      */
     select(selectedDrawingThread) {
-        if (this.selectedThread && this.selectedThread === selectedDrawingThread) {
-            // Selected the same thread twice, delete the thread
-            const toDelete = this.selectedThread;
-            toDelete.deleteThread();
-
-            // Redraw any threads that the deleted thread could have been covering
-            const toRedraw = this.threads.search(toDelete);
-            toRedraw.forEach((drawingThread) => drawingThread.show());
-            this.selectedThread = undefined;
-        } else {
-            // Selected the thread for the first time, select the thread (TODO @minhnguyen: show UI on select)
-            selectedDrawingThread.drawBoundary();
-            this.selectedThread = selectedDrawingThread;
-        }
+        selectedDrawingThread.drawBoundary();
+        this.selectedThread = selectedDrawingThread;
     }
 
     /**

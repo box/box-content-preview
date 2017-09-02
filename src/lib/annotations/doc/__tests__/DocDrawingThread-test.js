@@ -158,7 +158,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             sandbox.stub(docDrawingThread, 'handleStop');
             docDrawingThread.addListener('annotationevent', (data) => {
                 expect(docDrawingThread.handleStop).to.be.called;
-                expect(data.type).to.equal('pagechanged');
+                expect(data.type).to.equal('softcommit');
                 done();
             });
 

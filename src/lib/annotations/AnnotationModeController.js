@@ -89,6 +89,13 @@ class AnnotationModeController extends EventEmitter {
     }
 
     /**
+     * Clean up the annotation selector
+     *
+     * @return {void}
+     */
+    cleanSelector() {}
+
+    /**
      * Binds custom event listeners for a thread.
      *
      * @protected

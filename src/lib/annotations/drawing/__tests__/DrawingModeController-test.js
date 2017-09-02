@@ -178,7 +178,7 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
                 handleStart: sandbox.stub()
             };
             const data = {
-                type: 'pagechanged',
+                type: 'softcommit',
                 location: 'not empty'
             };
             sandbox.stub(drawingModeController, 'unbindModeListeners');

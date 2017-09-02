@@ -90,16 +90,16 @@ class DrawingThread extends AnnotationThread {
             window.cancelAnimationFrame(this.lastAnimationRequestId);
         }
 
-        if (this.drawingContext) {
-            const canvas = this.drawingContext.canvas;
-            this.drawingContext.clearRect(0, 0, canvas.width, canvas.height);
-        }
-
         super.destroy();
         this.reset();
         this.emit('threadcleanup');
     }
 
+    reset() {
+        super.reset();
+
+        this.clearBoundary();
+    }
     /* eslint-disable no-unused-vars */
     /**
      * Handle a pointer movement
@@ -140,7 +140,7 @@ class DrawingThread extends AnnotationThread {
 
         // Calculate the bounding rectangle
         const [x, y, width, height] = this.getBrowserRectangularBoundary();
-        // Clear the drawn thread and destroy it
+        // Clear the drawn thread and its boundary
         this.concreteContext.clearRect(
             x - DRAW_BORDER_OFFSET,
             y + DRAW_BORDER_OFFSET,
@@ -148,8 +148,7 @@ class DrawingThread extends AnnotationThread {
             height - DRAW_BORDER_OFFSET * 2
         );
 
-        // Notifies that the thread was destroyed so that observers can react accordingly
-        this.destroy();
+        this.clearBoundary();
     }
 
     /**
@@ -276,6 +275,10 @@ class DrawingThread extends AnnotationThread {
      */
     emitAvailableActions() {
         const availableActions = this.pathContainer.getNumberOfItems();
+        if (this.dialog && availableActions.undoCount === 0) {
+            this.dialog.hide();
+        }
+
         this.emit('annotationevent', {
             type: 'availableactions',
             undo: availableActions.undoCount,
@@ -307,6 +310,14 @@ class DrawingThread extends AnnotationThread {
 
         // Restore context style
         this.drawingContext.restore();
+
+        if (this.dialog) {
+            if (!this.dialog.isVisible() && !this.pathContainer.isUndoEmpty()) {
+                this.showDialog();
+            }
+
+            this.dialog.position(x + width, y);
+        }
     }
 
     /**
@@ -382,6 +393,19 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     getBrowserRectangularBoundary() {}
+
+    clearBoundary() {
+        if (this.drawingContext) {
+            const canvas = this.drawingContext.canvas;
+            this.drawingContext.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        if (!this.dialog || !this.dialog.isVisible()) {
+            return;
+        }
+
+        this.dialog.hide();
+    }
 }
 
 export default DrawingThread;
