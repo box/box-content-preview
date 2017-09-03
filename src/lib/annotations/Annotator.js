@@ -251,7 +251,7 @@ class Annotator extends EventEmitter {
      */
     hideAnnotations() {
         Object.keys(this.threads).forEach((pageNum) => {
-            this.hideAnnotations(pageNum);
+            this.hideAnnotationsOnPage(pageNum);
         });
     }
 

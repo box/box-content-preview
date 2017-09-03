@@ -208,10 +208,9 @@ describe('lib/annotations/Annotator', () => {
 
         describe('hideAnnotations()', () => {
             it('should call hide on each thread in map', () => {
-                stubs.threadMock.expects('hide');
-                stubs.threadMock2.expects('hide');
-                stubs.threadMock3.expects('hide');
+                sandbox.stub(annotator, 'hideAnnotationsOnPage');
                 annotator.hideAnnotations();
+                expect(annotator.hideAnnotationsOnPage).to.be.calledTwice;
             });
         });
 
@@ -226,10 +225,9 @@ describe('lib/annotations/Annotator', () => {
 
         describe('renderAnnotations()', () => {
             it('should call show on each thread', () => {
-                stubs.threadMock.expects('show');
-                stubs.threadMock2.expects('show');
-                stubs.threadMock3.expects('show');
+                sandbox.stub(annotator, 'renderAnnotationsOnPage');
                 annotator.renderAnnotations();
+                expect(annotator.renderAnnotationsOnPage).to.be.calledTwice;
             });
         });
 
