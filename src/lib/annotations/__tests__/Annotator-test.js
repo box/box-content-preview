@@ -290,11 +290,31 @@ describe('lib/annotations/Annotator', () => {
             });
         });
 
+        describe('exitAnnotationModesExcept()', () => {
+            it('should call disableAnnotationMode on all modes except the specified one', () => {
+                annotator.modeButtons = {
+                    'type1': {
+                        selector: 'bogus',
+                        button: 'button1'
+                    },
+                    'type2': {
+                        selector: 'test',
+                        button: 'button2'
+                    }
+                };
+
+                sandbox.stub(annotator, 'disableAnnotationMode');
+                annotator.exitAnnotationModesExcept('type2');
+                expect(annotator.disableAnnotationMode).to.be.calledWith('type1', 'button1');
+                expect(annotator.disableAnnotationMode).to.not.be.calledWith('type2', 'button2');
+            });
+        });
+
         describe('toggleAnnotationHandler()', () => {
             beforeEach(() => {
                 stubs.destroyStub = sandbox.stub(annotator, 'destroyPendingThreads');
                 stubs.annotationMode = sandbox.stub(annotator, 'isInAnnotationMode');
-                stubs.exitModes = sandbox.stub(annotator, 'exitAnnotationModes');
+                stubs.exitModes = sandbox.stub(annotator, 'exitAnnotationModesExcept');
                 stubs.disable = sandbox.stub(annotator, 'disableAnnotationMode');
                 stubs.enable = sandbox.stub(annotator, 'enableAnnotationMode');
                 sandbox.stub(annotator, 'getAnnotateButton');
@@ -436,13 +456,22 @@ describe('lib/annotations/Annotator', () => {
                     canViewAllAnnotations: false,
                     canViewOwnAnnotations: true
                 };
-                annotator.fetchAnnotations();
+                let result = annotator.fetchAnnotations();
+                expect(result instanceof Promise).to.be.truthy;
 
                 annotator.permissions = {
                     canViewAllAnnotations: true,
                     canViewOwnAnnotations: false
                 };
-                annotator.fetchAnnotations();
+                result = annotator.fetchAnnotations();
+                expect(result instanceof Promise).to.be.truthy;
+
+                annotator.permissions = {
+                    canViewAllAnnotations: false,
+                    canViewOwnAnnotations: false
+                };
+                result = annotator.fetchAnnotations();
+                expect(result instanceof Promise).to.be.truthy;
             });
 
             it('should reset and create a new thread map by fetching annotation data from the server', () => {
