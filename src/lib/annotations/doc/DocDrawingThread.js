@@ -100,23 +100,26 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     handleStop() {
+        // Stop the render loop and finish drawing
+        window.cancelAnimationFrame(this.lastAnimationRequestId);
+        this.lastAnimationRequestId = 0;
+
         this.drawingFlag = DRAW_STATES.idle;
 
         if (!this.pendingPath || this.pendingPath.isEmpty()) {
             return;
         }
 
+        if (!this.dialog) {
+            this.createDialog();
+        }
+
         this.pathContainer.insert(this.pendingPath);
         this.updateBoundary(this.pendingPath);
         this.setBoundary();
+        this.drawBoundary();
         this.emitAvailableActions();
         this.pendingPath = null;
-
-        if (this.dialog) {
-            return;
-        }
-
-        this.createDialog();
     }
 
     /**
@@ -169,6 +172,7 @@ class DocDrawingThread extends DrawingThread {
         const context = this.selectContext();
         if (this.dialog && this.dialog.isVisible()) {
             this.drawBoundary();
+            this.dialog.show();
         }
 
         // Generate the paths and draw to the annotation layer canvas

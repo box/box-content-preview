@@ -335,7 +335,6 @@ class DrawingThread extends AnnotationThread {
         const elapsed = timestamp - (this.lastRenderTimestamp || 0);
         if (elapsed >= DRAW_RENDER_THRESHOLD) {
             this.draw(this.drawingContext, true);
-            this.drawBoundary();
 
             this.lastRenderTimestamp = timestamp;
             renderAgain = this.drawingFlag === DRAW_STATES.drawing;
