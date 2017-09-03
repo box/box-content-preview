@@ -35,6 +35,8 @@ export const CLASS_ANNOTATION_BUTTON_DRAW_POST = 'bp-btn-annotate-draw-post';
 export const CLASS_ANNOTATION_BUTTON_DRAW_CANCEL = 'bp-btn-annotate-draw-cancel';
 export const CLASS_ANNOTATION_BUTTON_DRAW_ENTER = 'bp-btn-annotate-draw-enter';
 export const CLASS_ANNOTATION_DRAWING_LABEL = 'bp-annotation-drawing-label';
+export const CLASS_ANNOTATION_DRAWING_DIALOG = 'bp-annotation-drawing-dialog';
+export const CLASS_ANNOTATION_DRAWING_BTNS = 'bp-annotation-drawing-btns';
 export const CLASS_ADD_DRAWING_BTN = 'bp-btn-annotate-draw-add';
 export const CLASS_DELETE_DRAWING_BTN = 'bp-btn-annotate-draw-delete';
 

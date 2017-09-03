@@ -57,6 +57,7 @@ $avatar-color-9: #f22c44;
     }
 }
 
+.bp-annotation-drawing-dialog,
 .bp-annotation-highlight-dialog .bp-btn-plain,
 .bp-annotation-highlight-dialog .bp-btn-plain:hover {
     padding-left: 5px;
@@ -362,6 +363,7 @@ $avatar-color-9: #f22c44;
     }
 }
 
+.bp-annotation-drawing-dialog,
 .bp-annotation-highlight-dialog,
 .bp-annotation-highlight-dialog:hover {
     background-color: $white;
@@ -372,6 +374,15 @@ $avatar-color-9: #f22c44;
     // Center buttons
     .bp-add-highlight-btn {
         padding-top: 1px;
+    }
+
+    .bp-btn-annotate-draw-add {
+        padding-bottom: 3px;
+        padding-right: 6px;
+    }
+
+    .bp-btn-annotate-draw-delete {
+        padding-bottom: 3px;
     }
 
     .bp-highlight-comment-btn {
@@ -430,6 +441,7 @@ $avatar-color-9: #f22c44;
     }
 }
 
+.bp-annotation-drawing-label,
 .bp-annotation-highlight-label {
     padding-left: 5px;
     padding-right: 5px;
