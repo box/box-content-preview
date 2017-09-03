@@ -369,7 +369,7 @@ class Annotator extends EventEmitter {
         const buttonEl = event.target || this.getAnnotateButton(buttonSelector);
 
         // Exit any other annotation mode
-        this.exitAnnotationModes(mode, buttonEl);
+        this.exitAnnotationModesExcept(mode);
 
         // If in annotation mode, turn it off
         if (this.isInAnnotationMode(mode)) {
@@ -458,18 +458,20 @@ class Annotator extends EventEmitter {
      * Exits all annotation modes except the specified mode
      *
      * @param {string} mode - Current annotation mode
-     * @param {HTMLElement} buttonEl - Annotation mode button DOM element
      * @return {void}
      */
-    exitAnnotationModes(mode, buttonEl) {
+    exitAnnotationModesExcept(mode) {
         Object.keys(this.modeButtons).forEach((type) => {
             if (mode === type) {
                 return;
             }
 
             const buttonSelector = this.modeButtons[type].selector;
-            const modeButtonEl = buttonEl || this.getAnnotateButton(buttonSelector);
-            this.disableAnnotationMode(type, modeButtonEl);
+            if (!this.modeButtons[type].button) {
+                this.modeButtons[type].button = this.getAnnotateButton(buttonSelector);
+            }
+
+            this.disableAnnotationMode(type, this.modeButtons[type].button);
         });
     }
 
@@ -543,7 +545,7 @@ class Annotator extends EventEmitter {
         // Do not load any pre-existing annotations if the user does not have
         // the correct permissions
         if (!this.permissions.canViewAllAnnotations || !this.permissions.canViewOwnAnnotations) {
-            return this.threads;
+            return Promise.resolve(this.threads);
         }
 
         return this.annotationService.getThreadMap(this.fileVersionId).then((threadMap) => {
