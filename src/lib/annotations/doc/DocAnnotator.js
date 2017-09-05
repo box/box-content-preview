@@ -148,19 +148,21 @@ class DocAnnotator extends Annotator {
      */
     destroy() {
         super.destroy();
-        if (this.createHighlightDialog) {
-            if (this.commentHighlightEnabled) {
-                this.createHighlightDialog.removeListener(CreateEvents.comment, this.highlightCurrentSelection);
-                this.createHighlightDialog.removeListener(CreateEvents.commentPost, this.createHighlightThread);
-            }
-
-            if (this.plainHighlightEnabled) {
-                this.createHighlightDialog.removeListener(CreateEvents.plain, this.createPlainHighlight);
-            }
-
-            this.createHighlightDialog.destroy();
-            this.createHighlightDialog = null;
+        if (!this.createHighlightDialog) {
+            return;
         }
+
+        if (this.commentHighlightEnabled) {
+            this.createHighlightDialog.removeListener(CreateEvents.comment, this.highlightCurrentSelection);
+            this.createHighlightDialog.removeListener(CreateEvents.commentPost, this.createHighlightThread);
+        }
+
+        if (this.plainHighlightEnabled) {
+            this.createHighlightDialog.removeListener(CreateEvents.plain, this.createPlainHighlight);
+        }
+
+        this.createHighlightDialog.destroy();
+        this.createHighlightDialog = null;
     }
 
     /** @inheritdoc */

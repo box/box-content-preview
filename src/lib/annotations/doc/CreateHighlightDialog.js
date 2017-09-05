@@ -380,9 +380,11 @@ class CreateHighlightDialog extends EventEmitter {
             this.commentBox = new CommentBox(containerEl);
             this.commentCreateEl = containerEl.querySelector(`.${constants.CLASS_ADD_HIGHLIGHT_COMMENT_BTN}`);
             this.commentCreateEl.addEventListener('click', this.onCommentClick);
+
             // Event listeners
             this.commentBox.addListener(CommentBox.CommentEvents.post, this.onCommentPost);
             this.commentBox.addListener(CommentBox.CommentEvents.cancel, this.onCommentCancel);
+
             // Hide comment box, by default
             this.commentBox.hide();
 
