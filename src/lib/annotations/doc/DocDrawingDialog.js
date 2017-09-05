@@ -8,13 +8,13 @@ const COMMIT_TEMPLATE = `
     <button class="bp-btn-plain ${constants.CLASS_ADD_DRAWING_BTN}"
         title="${__('annotation_draw_save')}">
         ${ICON_DRAW_SAVE}
-        Save
+        ${__('annotation_save')}
     </button>`.trim();
 const DELETE_TEMPLATE = `
     <button class="bp-btn-plain ${constants.CLASS_DELETE_DRAWING_BTN}"
         title="${__('annotation_draw_delete')}">
         ${ICON_DRAW_DELETE}
-        Delete
+        ${__('annotation_delete')}
     </button>`.trim();
 
 class DocDrawingDialog extends AnnotationDialog {
@@ -90,12 +90,10 @@ class DocDrawingDialog extends AnnotationDialog {
     bindDOMListeners() {
         if (this.commitButtonEl) {
             this.commitButtonEl.addEventListener('click', this.postDrawing);
-            this.commitButtonEl.addEventListener('touchend', this.postDrawing);
         }
 
         if (this.deleteButtonEl) {
             this.deleteButtonEl.addEventListener('click', this.deleteAnnotation);
-            this.deleteButtonEl.addEventListener('touchend', this.deleteAnnotation);
         }
     }
 
