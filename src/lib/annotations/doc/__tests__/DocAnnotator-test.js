@@ -538,7 +538,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should bind DOM listeners if user can annotate', () => {
-            annotator.canAnnotate = true;
+            annotator.permissions.canAnnotate = true;
 
             stubs.elMock.expects('addEventListener').withArgs('mouseup', sinon.match.func);
             stubs.elMock.expects('addEventListener').withArgs('dblclick', sinon.match.func);
@@ -573,7 +573,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should unbind DOM listeners if user can annotate', () => {
-            annotator.canAnnotate = true;
+            annotator.permissions.canAnnotate = true;
 
             stubs.elMock.expects('removeEventListener').withArgs('mouseup', sinon.match.func);
             stubs.elMock.expects('removeEventListener').withArgs('mousedown', sinon.match.func);
@@ -586,7 +586,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         it('should stop and destroy the requestAnimationFrame handle created by getHighlightMousemoveHandler()', () => {
             const rafHandle = 12; // RAF handles are integers
-            annotator.canAnnotate = true;
+            annotator.permissions.canAnnotate = true;
             annotator.highlightThrottleHandle = rafHandle;
             sandbox.stub(annotator, 'getHighlightMouseMoveHandler').returns(sandbox.stub());
 
@@ -608,6 +608,18 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
             expect(docStopListen).to.be.calledWith('selectionchange', sinon.match.func);
             expect(annotatedElementStopListen).to.be.calledWith('touchstart', sinon.match.func);
+        });
+
+        it('should tell controllers to clean up selections', () => {
+            annotator.permissions.canAnnotate = true;
+            annotator.modeControllers = {
+                'test': {
+                    removeSelection: sandbox.stub()
+                }
+            };
+
+            annotator.unbindDOMListeners();
+            expect(annotator.modeControllers['test'].removeSelection).to.be.called;
         });
     });
 
@@ -1299,7 +1311,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     describe('drawingSelectionHandler()', () => {
         it('should use the controller to select with the event', () => {
             const drawController = {
-                handleSelection: sandbox.stub()
+                handleSelection: sandbox.stub(),
+                removeSelection: sandbox.stub()
             };
             annotator.modeControllers = {
                 [TYPES.draw]: drawController

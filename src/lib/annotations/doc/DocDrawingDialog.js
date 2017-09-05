@@ -1,6 +1,8 @@
 import AnnotationDialog from '../AnnotationDialog';
 
 class DocDrawingDialog extends AnnotationDialog {
+    visible = false;
+
     /**
      * Empty stub to avoid unexpected behavior.
      *
@@ -36,6 +38,10 @@ class DocDrawingDialog extends AnnotationDialog {
      * @return {void}
      */
     show() {}
+
+    isVisible() {
+        return this.visible;
+    }
 }
 
 export default DocDrawingDialog;

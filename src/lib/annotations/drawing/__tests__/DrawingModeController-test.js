@@ -146,6 +146,18 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
         });
     });
 
+    describe('unbindModeListeners()', () => {
+        it('should disable undo and redo buttons', () => {
+            sandbox.stub(annotatorUtil, 'disableElement');
+
+            drawingModeController.undoButtonEl = 'test1';
+            drawingModeController.redoButtonEl = 'test2';
+            drawingModeController.unbindModeListeners();
+            expect(annotatorUtil.disableElement).to.be.calledWith(drawingModeController.undoButtonEl);
+            expect(annotatorUtil.disableElement).to.be.calledWith(drawingModeController.redoButtonEl);
+        });
+    });
+
     describe('handleAnnotationEvent()', () => {
         it('should add thread to map on locationassigned', () => {
             const thread = 'obj';
@@ -159,15 +171,21 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
             expect(drawingModeController.annotator.addThreadToMap).to.be.called;
         });
 
-        it('should remove annotationevent listeners from the thread on drawcommit', () => {
+        it('should restart mode listeners from the thread on softcommit', () => {
             const thread = {
-                removeAllListeners: sandbox.stub()
+                saveAnnotation: sandbox.stub(),
+                handleStart: sandbox.stub()
             };
 
+            sandbox.stub(drawingModeController, 'unbindModeListeners');
+            sandbox.stub(drawingModeController, 'bindModeListeners');
             drawingModeController.handleAnnotationEvent(thread, {
-                type: 'drawcommit'
+                type: 'softcommit'
             });
-            expect(thread.removeAllListeners).to.be.calledWith('annotationevent');
+            expect(drawingModeController.unbindModeListeners).to.be.called;
+            expect(drawingModeController.bindModeListeners).to.be.called;
+            expect(thread.saveAnnotation).to.be.called;
+            expect(thread.handleStart).to.not.be.called;
         });
 
         it('should start a new thread on pagechanged', () => {
@@ -178,7 +196,7 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
                 handleStart: sandbox.stub()
             };
             const data = {
-                type: 'pagechanged',
+                type: 'softcommit',
                 location: 'not empty'
             };
             sandbox.stub(drawingModeController, 'unbindModeListeners');
@@ -204,6 +222,38 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
             });
             expect(drawingModeController.updateUndoRedoButtonEls).to.be.calledWith(1, 2);
         });
+
+        it('should soft delete a pending thread and restart mode listeners', () => {
+            const thread = {
+                state: 'pending',
+                destroy: sandbox.stub()
+            };
+
+            sandbox.stub(drawingModeController, 'unbindModeListeners');
+            sandbox.stub(drawingModeController, 'bindModeListeners');
+            drawingModeController.handleAnnotationEvent(thread, {
+                type: 'dialogdelete'
+            });
+            expect(thread.destroy).to.be.called;
+            expect(drawingModeController.unbindModeListeners).to.be.called;
+            expect(drawingModeController.bindModeListeners).to.be.called;
+        });
+
+        it('should delete a non-pending thread', () => {
+            const thread = {
+                state: 'idle',
+                deleteThread: sandbox.stub()
+            };
+            drawingModeController.threads = {
+                search: sandbox.stub().returns([])
+            };
+
+            drawingModeController.handleAnnotationEvent(thread, {
+                type: 'dialogdelete'
+            });
+            expect(thread.deleteThread).to.be.called;
+            expect(drawingModeController.threads.search).to.be.called;
+        });
     });
 
     describe('handleSelection()', () => {
@@ -221,6 +271,7 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
 
         it('should call select on an thread found in the data store', () => {
             stubs.select = sandbox.stub(drawingModeController, 'select');
+            stubs.clean = sandbox.stub(drawingModeController, 'removeSelection');
             stubs.getLoc.returns({
                 x: 5,
                 y: 5
@@ -237,7 +288,21 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
             drawingModeController.handleSelection('event');
             expect(drawingModeController.threads.search).to.be.called;
             expect(filterObjects.filter).to.be.called;
+            expect(stubs.clean).to.be.called;
             expect(stubs.select).to.be.calledWith(filteredObject);
+        });
+    });
+
+    describe('removeSelection()', () => {
+        it('should clean a selected thread boundary', () => {
+            const thread = {
+                clearBoundary: sandbox.stub()
+            };
+            drawingModeController.selectedThread = thread;
+
+            drawingModeController.removeSelection();
+            expect(thread.clearBoundary).to.be.called;
+            expect(drawingModeController.selectedThread).to.be.undefined;
         });
     });
 

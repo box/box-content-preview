@@ -439,7 +439,7 @@ export function validateThreadParams(thread) {
 }
 
 /**
- * Returns a function that passes a callback a location when given an event
+ * Returns a function that passes a callback a location when given an event on the document text layer
  *
  * @param {Function} locationFunction - The function to get a location from an event
  * @param {Function} callback - Callback to be called upon receiving an event
@@ -448,7 +448,9 @@ export function validateThreadParams(thread) {
 export function eventToLocationHandler(locationFunction, callback) {
     return (event) => {
         const evt = event || window.event;
-        if (!evt) {
+        // Do nothing when the target isn't the text layer in case the text layer receives event precedence over buttons
+        // NOTE: Currently only applicable to documents. Need to find a better way to ensure button event precedence.
+        if (!evt || (event.target && event.target.className !== 'textLayer')) {
             return;
         }
 
@@ -459,6 +461,20 @@ export function eventToLocationHandler(locationFunction, callback) {
     };
 }
 
+/**
+ * Call preventDefault and stopPropagation on an event
+ *
+ * @param {event} event - Event object to stop event bubbling
+ * @return {void}
+ */
+export function prevDefAndStopProp(event) {
+    if (!event) {
+        return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+}
 /**
  * Create a JSON object containing x/y coordinates and optionally dimensional information
  *

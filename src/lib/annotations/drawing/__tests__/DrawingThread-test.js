@@ -58,26 +58,33 @@ describe('lib/annotations/drawing/DrawingThread', () => {
 
             expect(window.cancelAnimationFrame).to.be.calledWith(1);
             expect(drawingThread.reset).to.be.called;
-            expect(drawingThread.drawingContext.clearRect).to.be.called;
         })
     });
+
+    describe('reset()', () => {
+        it('should clear the boundary', () => {
+            sandbox.stub(drawingThread, 'clearBoundary');
+            drawingThread.reset();
+            expect(drawingThread.clearBoundary).to.be.called;
+        });
+    })
 
     describe('deleteThread()', () => {
         it('should delete all attached annotations, clear the drawn rectangle, and call destroy', () => {
             sandbox.stub(drawingThread, 'getBrowserRectangularBoundary').returns(['a', 'b', 'c', 'd']);
-            sandbox.stub(drawingThread, 'destroy');
+            sandbox.stub(drawingThread, 'deleteAnnotationWithID');
+            sandbox.stub(drawingThread, 'clearBoundary');
             drawingThread.concreteContext = {
                 clearRect: sandbox.stub()
             };
-            drawingThread.annotations = {
-                forEach: sandbox.stub()
-            };
+            drawingThread.annotations = ['annotation'];
+
 
             drawingThread.deleteThread();
             expect(drawingThread.getBrowserRectangularBoundary).to.be.called;
             expect(drawingThread.concreteContext.clearRect).to.be.called;
-            expect(drawingThread.annotations.forEach).to.be.called;
-            expect(drawingThread.destroy).to.be.called;
+            expect(drawingThread.clearBoundary).to.be.called;
+            expect(drawingThread.deleteAnnotationWithID).to.be.calledWith('annotation');
         });
     });
 
@@ -338,6 +345,30 @@ describe('lib/annotations/drawing/DrawingThread', () => {
             expect(drawingThread.maxX).to.equal(drawingThread.location.maxX);
             expect(drawingThread.minY).to.equal(drawingThread.location.minY);
             expect(drawingThread.maxY).to.equal(drawingThread.location.maxY);
+        });
+    });
+
+    describe('clearBoundary()', () => {
+        it('should clear the drawing context and hide any dialog', () => {
+            drawingThread.drawingContext = {
+                canvas: {
+                    width: 100,
+                    height: 100
+                },
+                clearRect: sandbox.stub()
+            };
+
+            drawingThread.dialog = {
+                isVisible: sandbox.stub().returns(true),
+                hide: sandbox.stub(),
+                destroy: () => {},
+                removeAllListeners: () => {}
+            };
+
+            drawingThread.clearBoundary();
+            expect(drawingThread.drawingContext.clearRect).to.be.called;
+            expect(drawingThread.dialog.isVisible).to.be.called;
+            expect(drawingThread.dialog.hide).to.be.called;
         });
     });
 });
