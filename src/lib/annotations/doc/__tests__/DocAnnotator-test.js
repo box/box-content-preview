@@ -7,6 +7,7 @@ import DocAnnotator from '../DocAnnotator';
 import DocHighlightThread from '../DocHighlightThread';
 import DocDrawingThread from '../DocDrawingThread';
 import DocPointThread from '../DocPointThread';
+import { CreateEvents } from '../CreateHighlightDialog';
 import * as annotatorUtil from '../../annotatorUtil';
 import * as docAnnotatorUtil from '../docAnnotatorUtil';
 import {
@@ -31,13 +32,20 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         fixture.load('annotations/doc/__tests__/DocAnnotator-test.html');
 
         annotator = new DocAnnotator({
-            canAnnotate: true,
+            permissions: {
+                canAnnotate: true
+            },
             container: document,
             annotationService: {},
             fileVersionId: 1,
             isMobile: false,
             options: {},
-            modeButtons: {}
+            modeButtons: {},
+            options: {
+                annotator: {
+                    TYPE: ['highlight', 'highlight-comment']
+                }
+            }
         });
         annotator.annotatedElement = annotator.getAnnotatedEl(document);
         annotator.annotationService = {};
@@ -53,6 +61,56 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator = null;
         }
         stubs = {};
+    });
+
+    describe('constructor()', () => {
+        it('should not bind any plain highlight functions if they are disabled', () => {
+            const docAnno = new DocAnnotator({
+                permissions: {
+                    canAnnotate: true
+                },
+                container: document,
+                annotationService: {},
+                fileVersionId: 1,
+                isMobile: false,
+                options: {},
+                modeButtons: {},
+                options: {
+                    annotator: {
+                        TYPE: ['highlight-comment']
+                    }
+                }
+            });
+
+            const createPlain = sandbox.stub(docAnno, 'createPlainHighlight');
+            docAnno.createHighlightDialog.emit(CreateEvents.plain);
+
+            expect(createPlain).to.not.be.called;
+        });
+
+        it('should not bind any comment highlight functions if they are disabled', () => {
+            const docAnno = new DocAnnotator({
+                permissions: {
+                    canAnnotate: true
+                },
+                container: document,
+                annotationService: {},
+                fileVersionId: 1,
+                isMobile: false,
+                options: {},
+                modeButtons: {},
+                options: {
+                    annotator: {
+                        TYPE: ['highlight']
+                    }
+                }
+            });
+
+            const createComment = sandbox.stub(docAnno, 'createHighlightThread');
+            docAnno.createHighlightDialog.emit(CreateEvents.commentPost);
+
+            expect(createComment).to.not.be.called;
+        });
     });
 
     describe('getAnnotatedEl()', () => {
@@ -384,7 +442,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.createAnnotationThread.returns(thread);
 
             annotator.createHighlightThread('some text with severe passive agression');
-            expect(stubs.createAnnotationThread).to.be.calledWith([], location, TYPES.highlight);
+            expect(stubs.createAnnotationThread).to.be.calledWith([], location, TYPES.highlight_comment);
         });
 
         it('should bail out of making an annotation if thread is null', () => {
@@ -460,15 +518,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     });
 
     describe('renderAnnotationsOnPage()', () => {
-        const renderFunc = Annotator.prototype.renderAnnotationsOnPage;
 
         beforeEach(() => {
-            Object.defineProperty(Annotator.prototype, 'renderAnnotationsOnPage', { value: sandbox.mock() });
             sandbox.stub(annotator, 'scaleAnnotationCanvases');
-        });
-
-        afterEach(() => {
-            Object.defineProperty(Annotator.prototype, 'renderAnnotationsOnPage', { value: renderFunc });
         });
 
         it('should destroy any pending highlight annotations on the page', () => {
@@ -488,6 +540,24 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
             annotator.renderAnnotationsOnPage(1);
             expect(annotator.scaleAnnotationCanvases).to.be.called;
+        });
+
+        it('should call show on ONLY enabled annotation types', () => {
+            const plain = { state: 'I do not care', type: 'highlight', show: sandbox.stub() };
+            const comment = { state: 'I do not care', type: 'highlight-comment', show: sandbox.stub() };
+            const point = { state: 'I do not care', type: 'point', show: sandbox.stub() };
+            const threads = [plain, comment, point];
+            annotator.threads = { 1: threads };
+            sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns(threads);
+            annotator.options.annotator.TYPE = ['highlight', 'point'];
+
+            annotator.renderAnnotationsOnPage(1);
+
+            expect(plain.show).to.be.called;
+            expect(point.show).to.be.called;
+            expect(comment.show).to.not.be.called;
+
+            annotator.threads = {};
         });
     });
 
@@ -526,6 +596,16 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(rangy.createHighlighter).to.have.been.called;
             expect(stubs.highlighter.addClassApplier).to.have.been.called;
         });
+
+        it('should not create a highlighter if all forms of highlight are disabled', () => {
+            sandbox.stub(rangy, 'createHighlighter');
+            annotator.plainHighlightEnabled = false;
+            annotator.commentHighlightEnabled = false;
+
+            annotator.setupAnnotations();
+
+            expect(rangy.createHighlighter).to.not.be.called;
+        });
     });
 
     describe('bindDOMListeners()', () => {
@@ -553,6 +633,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.permissions.canAnnotate = true;
             annotator.isMobile = true;
             annotator.hasTouch = true;
+            
             const docListen = sandbox.spy(document, 'addEventListener');
             const annotatedElementListen = sandbox.spy(annotator.annotatedElement, 'addEventListener');
 

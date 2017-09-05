@@ -298,6 +298,10 @@ class Annotator extends EventEmitter {
 
         const pageThreads = this.getThreadsOnPage(pageNum);
         Object.values(pageThreads).forEach((thread) => {
+            if (!this.isModeAnnotatable(thread.type)) {
+                return;
+            }
+
             thread.show();
         });
     }
