@@ -432,16 +432,19 @@ class DocAnnotator extends Annotator {
         // Scale existing canvases on re-render
         this.scaleAnnotationCanvases(pageNum);
 
-        // TODO (@jholdstock|@spramod) remove this if statement, and make super call, upon refactor.
-        if (this.threads && this.threads[pageNum]) {
-            this.threads[pageNum].forEach((thread) => {
-                if (!this.isModeAnnotatable(thread.type)) {
-                    return;
-                }
-
-                thread.show(this.plainHighlightEnabled, this.commentHighlightEnabled);
-            });
+        if (!this.threads) {
+            return;
         }
+
+        // TODO (@jholdstock|@spramod) remove this if statement, and make super call, upon refactor.
+        const pageThreads = this.getThreadsOnPage(pageNum);
+        Object.values(pageThreads).forEach((thread) => {
+            if (!this.isModeAnnotatable(thread.type)) {
+                return;
+            }
+
+            thread.show(this.plainHighlightEnabled, this.commentHighlightEnabled);
+        });
 
         // Destroy current pending highlight annotation
         const highlightThreads = this.getHighlightThreadsOnPage(pageNum);

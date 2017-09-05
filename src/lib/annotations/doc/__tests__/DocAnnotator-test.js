@@ -518,15 +518,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     });
 
     describe('renderAnnotationsOnPage()', () => {
-        const renderFunc = Annotator.prototype.renderAnnotationsOnPage;
 
         beforeEach(() => {
-            Object.defineProperty(Annotator.prototype, 'renderAnnotationsOnPage', { value: sandbox.mock() });
             sandbox.stub(annotator, 'scaleAnnotationCanvases');
-        });
-
-        afterEach(() => {
-            Object.defineProperty(Annotator.prototype, 'renderAnnotationsOnPage', { value: renderFunc });
         });
 
         it('should destroy any pending highlight annotations on the page', () => {
@@ -555,7 +549,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             const threads = [plain, comment, point];
             annotator.threads = { 1: threads };
             sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns(threads);
-            sandbox.stub(annotator, 'scaleAnnotationCanvases');
             annotator.options.annotator.TYPE = ['highlight', 'point'];
 
             annotator.renderAnnotationsOnPage(1);
