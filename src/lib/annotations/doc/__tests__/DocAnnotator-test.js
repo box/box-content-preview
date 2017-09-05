@@ -690,6 +690,18 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             expect(docStopListen).to.be.calledWith('selectionchange', sinon.match.func);
             expect(annotatedElementStopListen).to.be.calledWith('touchstart', sinon.match.func);
         });
+
+        it('should tell controllers to clean up selections', () => {
+            annotator.permissions.canAnnotate = true;
+            annotator.modeControllers = {
+                'test': {
+                    removeSelection: sandbox.stub()
+                }
+            };
+
+            annotator.unbindDOMListeners();
+            expect(annotator.modeControllers['test'].removeSelection).to.be.called;
+        });
     });
 
     describe('bindCustomListenersOnThread()', () => {
@@ -1380,7 +1392,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     describe('drawingSelectionHandler()', () => {
         it('should use the controller to select with the event', () => {
             const drawController = {
-                handleSelection: sandbox.stub()
+                handleSelection: sandbox.stub(),
+                removeSelection: sandbox.stub()
             };
             annotator.modeControllers = {
                 [TYPES.draw]: drawController

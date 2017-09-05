@@ -551,6 +551,8 @@ class DocAnnotator extends Annotator {
             return;
         }
 
+        Object.values(this.modeControllers).forEach((controller) => controller.removeSelection());
+
         if (this.hasTouch && this.isMobile) {
             document.removeEventListener('selectionchange', this.onSelectionChange);
             this.annotatedElement.removeEventListener('touchstart', this.drawingSelectionHandler);
