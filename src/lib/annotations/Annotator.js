@@ -849,8 +849,8 @@ class Annotator extends EventEmitter {
         }
 
         const pageThreads = this.getThreadsOnPage(page);
-        const thread = pageThreads[threadID];
-        if (thread) {
+        if (threadID in pageThreads) {
+            const thread = pageThreads[threadID];
             thread.scrollIntoView();
         }
     }

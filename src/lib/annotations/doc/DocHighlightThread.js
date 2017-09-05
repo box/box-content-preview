@@ -118,6 +118,12 @@ class DocHighlightThread extends AnnotationThread {
         }
     }
 
+    /**
+     * Scroll annotation into the center of the viewport, if possible
+     *
+     * @private
+     * @return {void}
+     */
     scrollIntoView() {
         this.scrollToPage();
 
@@ -272,9 +278,9 @@ class DocHighlightThread extends AnnotationThread {
     }
 
     /** Overridden to hide UI elements depending on whether or not comments or plain
-     * are allowed. Note: This will be deprecated upon proper refactor or comment highlight 
+     * are allowed. Note: This will be deprecated upon proper refactor or comment highlight
      * and plain highlights.
-     * 
+     *
      * @override
      * @param {boolean} [showPlain] - Whether or not plain highlight ui is shown
      * @param {boolean} [showComment] - Whether or not comment highlight ui is shown
