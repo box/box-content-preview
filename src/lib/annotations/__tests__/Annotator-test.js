@@ -238,6 +238,21 @@ describe('lib/annotations/Annotator', () => {
                 stubs.threadMock3.expects('show').never();
                 annotator.renderAnnotationsOnPage(1);
             });
+
+            it('should not call show() if the thread type is disabled', () => {
+                const badType = 'not_accepted';
+                stubs.thread3.type = badType;
+                stubs.thread2.type = 'type';
+
+                stubs.threadMock3.expects('show').never();
+                stubs.threadMock2.expects('show').once();
+
+                const isModeAnn = sandbox.stub(annotator, 'isModeAnnotatable');
+                isModeAnn.withArgs(badType).returns(false);
+                isModeAnn.withArgs('type').returns(true);
+
+                annotator.renderAnnotationsOnPage('2');
+            });
         });
 
         describe('rotateAnnotations()', () => {

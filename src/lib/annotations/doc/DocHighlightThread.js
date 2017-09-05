@@ -248,12 +248,14 @@ class DocHighlightThread extends AnnotationThread {
      * the highlight in active state and show the 'delete' button.
      *
      * @override
+     * @param {boolean} [showPlain] - Whether or not plain highlight ui is shown (TEMPORARY UNTIL REFACTOR)
+     * @param {boolean} [showComment] - Whether or not comment highlight ui is shown (TEMPORARY UNTIL REFACTOR)
      * @return {void}
      */
-    show() {
+    show(showPlain, showComment) {
         switch (this.state) {
             case STATES.pending:
-                this.showDialog();
+                this.showDialog(showPlain, showComment);
                 break;
             case STATES.inactive:
                 this.hideDialog();
@@ -261,12 +263,30 @@ class DocHighlightThread extends AnnotationThread {
                 break;
             case STATES.hover:
             case STATES.pending_active:
-                this.showDialog();
+                this.showDialog(showPlain, showComment);
                 this.draw(HIGHLIGHT_FILL.active);
                 break;
             default:
                 break;
         }
+    }
+
+    /** Overridden to hide UI elements depending on whether or not comments or plain
+     * are allowed. Note: This will be deprecated upon proper refactor or comment highlight 
+     * and plain highlights.
+     * 
+     * @override
+     * @param {boolean} [showPlain] - Whether or not plain highlight ui is shown
+     * @param {boolean} [showComment] - Whether or not comment highlight ui is shown
+     * @return {void}
+     */
+    showDialog(showPlain, showComment) {
+        // Prevents the annotations dialog from being created each mousemove
+        if (!this.dialog.element) {
+            this.dialog.setup(this.annotations);
+        }
+
+        this.dialog.show(showPlain, showComment);
     }
 
     /**

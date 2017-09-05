@@ -198,8 +198,36 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
             expect(dialog.highlightDialogEl.classList.remove).to.be.calledWith(constants.CLASS_HIDDEN);
         });
+    });
 
-        it('should set hasComments to false');
+    describe('show()', () => {
+        beforeEach(() => {
+            Object.defineProperty(AnnotationDialog.prototype, 'show', { value: sandbox.stub() });
+        });
+
+        it('should show the highlight button if it has been enabled', () => {
+            dialog.show(true, true);
+            const button = dialog.highlightDialogEl.querySelector(`button.${constants.CLASS_ADD_HIGHLIGHT_BTN}`);
+            expect(button.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
+        });
+
+        it('should hide the highlight button if it has been disabled', () => {
+            dialog.show(false, true);
+            const button = dialog.highlightDialogEl.querySelector(`button.${constants.CLASS_ADD_HIGHLIGHT_BTN}`);
+            expect(button.classList.contains(constants.CLASS_HIDDEN)).to.be.true;
+        });
+
+        it('should show the comment button if it has been enabled', () => {
+            dialog.show(true, true);
+            const button = dialog.highlightDialogEl.querySelector(`button.${constants.CLASS_ADD_HIGHLIGHT_COMMENT_BTN}`);
+            expect(button.classList.contains(constants.CLASS_HIDDEN)).to.be.false;
+        });
+
+        it('should hide the comment button if it has been disabled', () => {
+            dialog.show(true, false);
+            const button = dialog.highlightDialogEl.querySelector(`button.${constants.CLASS_ADD_HIGHLIGHT_COMMENT_BTN}`);
+            expect(button.classList.contains(constants.CLASS_HIDDEN)).to.be.true;
+        });
     });
 
     describe('position()', () => {

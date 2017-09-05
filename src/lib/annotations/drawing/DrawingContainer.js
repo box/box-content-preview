@@ -36,7 +36,7 @@ class DrawingContainer {
      * @return {boolean} Whether or not an undo was done.
      */
     undo() {
-        if (this.undoStack.length === 0) {
+        if (this.isUndoEmpty()) {
             return false;
         }
 
@@ -58,6 +58,15 @@ class DrawingContainer {
         const latestRedone = this.redoStack.pop();
         this.undoStack.push(latestRedone);
         return true;
+    }
+
+    /**
+     * Return whether or not there are objects that can be undone
+     *
+     * @return {boolean} Whether or not there exists committed items
+     */
+    isUndoEmpty() {
+        return this.undoStack.length === 0;
     }
 
     /**

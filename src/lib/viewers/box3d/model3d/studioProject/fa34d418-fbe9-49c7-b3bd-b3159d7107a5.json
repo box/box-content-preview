@@ -24,28 +24,28 @@
             }
           },
           "enabled": true,
-          "name": "unnamed component",
+          "name": "Default Renderer",
           "id": "76add60f-9843-41e9-964d-cd56e0049a8a"
         },
         {
           "scriptId": "input",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "Input",
           "id": "be9272c0-0399-42f7-872a-02ee89220ea8"
         },
         {
           "scriptId": "render_modes",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "Render Modes",
           "id": "8f323e1e-698c-4f66-bf5b-1815698ac4ac"
         },
         {
           "scriptId": "vr_presenter",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "VR Presenter",
           "id": "78893c41-5e2f-452d-a94e-41094d9f32b3"
         }
       ],
@@ -62,22 +62,29 @@
             }
           },
           "enabled": true,
-          "name": "unnamed component",
+          "name": "DefaultRenderer",
           "id": "76add60f-9843-41e9-964d-cd56e0049a8a"
         },
         {
           "scriptId": "input",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "Inpu",
           "id": "be9272c0-0399-42f7-872a-02ee89220ea8"
         },
         {
           "scriptId": "render_modes",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "Render Mode",
           "id": "8f323e1e-698c-4f66-bf5b-1815698ac4ac"
+        },
+        {
+          "scriptId": "vr_presenter",
+          "attributes": {},
+          "enabled": true,
+          "name": "VR Presente",
+          "id": "78893c41-5e2f-452d-a94e-41094d9f32b3"
         }
       ],
       "representations": []
