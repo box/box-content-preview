@@ -454,10 +454,6 @@ class DocAnnotator extends Annotator {
     bindDOMListeners() {
         super.bindDOMListeners();
 
-        if (!this.permissions.canAnnotate) {
-            return;
-        }
-
         this.annotatedElement.addEventListener('mouseup', this.highlightMouseupHandler);
 
         if (this.hasTouch && this.isMobile) {
@@ -489,11 +485,7 @@ class DocAnnotator extends Annotator {
             this.highlightThrottleHandle = null;
         }
 
-        if (!this.permissions.canAnnotate) {
-            return;
-        }
-
-        Object.values(this.modeControllers).forEach((controller) => controller.cleanSelector());
+        Object.values(this.modeControllers).forEach((controller) => controller.removeSelection());
 
         if (this.hasTouch && this.isMobile) {
             document.removeEventListener('selectionchange', this.onSelectionChange);

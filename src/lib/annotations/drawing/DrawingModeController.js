@@ -115,7 +115,7 @@ class DrawingModeController extends AnnotationModeController {
      *
      * @return {void}
      */
-    cleanSelector() {
+    removeSelection() {
         if (!this.selectedThread) {
             return;
         }
@@ -245,7 +245,7 @@ class DrawingModeController extends AnnotationModeController {
             .filter((drawingThread) => drawingThread.location.page === location.page);
 
         // Clear boundary on previously selected thread
-        this.cleanSelector();
+        this.removeSelection();
 
         // Selected a region with no drawing threads, remove the reference to the previously selected thread
         if (intersectingThreads.length === 0) {

@@ -607,12 +607,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.permissions.canAnnotate = true;
             annotator.modeControllers = {
                 'test': {
-                    cleanSelector: sandbox.stub()
+                    removeSelection: sandbox.stub()
                 }
             };
 
             annotator.unbindDOMListeners();
-            expect(annotator.modeControllers['test'].cleanSelector).to.be.called;
+            expect(annotator.modeControllers['test'].removeSelection).to.be.called;
         });
     });
 
@@ -1348,7 +1348,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     describe('drawingSelectionHandler()', () => {
         it('should use the controller to select with the event', () => {
             const drawController = {
-                handleSelection: sandbox.stub()
+                handleSelection: sandbox.stub(),
+                removeSelection: sandbox.stub()
             };
             annotator.modeControllers = {
                 [TYPES.draw]: drawController
