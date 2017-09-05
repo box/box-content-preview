@@ -32,7 +32,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         fixture.load('annotations/doc/__tests__/DocAnnotator-test.html');
 
         annotator = new DocAnnotator({
-            canAnnotate: true,
+            permissions: {
+                canAnnotate: true
+            },
             container: document,
             annotationService: {},
             fileVersionId: 1,
@@ -63,7 +65,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     describe('constructor()', () => {
         it('should not bind any plain highlight functions if they are disabled', () => {
             const docAnno = new DocAnnotator({
-                canAnnotate: true,
+                permissions: {
+                    canAnnotate: true
+                },
                 container: document,
                 annotationService: {},
                 fileVersionId: 1,
@@ -85,7 +89,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         it('should not bind any comment highlight functions if they are disabled', () => {
             const docAnno = new DocAnnotator({
-                canAnnotate: true,
+                permissions: {
+                    canAnnotate: true
+                },
                 container: document,
                 annotationService: {},
                 fileVersionId: 1,
@@ -611,7 +617,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should bind DOM listeners if user can annotate', () => {
-            annotator.canAnnotate = true;
+            annotator.permissions.canAnnotate = true;
 
             stubs.elMock.expects('addEventListener').withArgs('mouseup', sinon.match.func);
             stubs.elMock.expects('addEventListener').withArgs('dblclick', sinon.match.func);
@@ -626,6 +632,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.permissions.canAnnotate = true;
             annotator.isMobile = true;
             annotator.hasTouch = true;
+            
             const docListen = sandbox.spy(document, 'addEventListener');
             const annotatedElementListen = sandbox.spy(annotator.annotatedElement, 'addEventListener');
 
@@ -646,7 +653,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should unbind DOM listeners if user can annotate', () => {
-            annotator.canAnnotate = true;
+            annotator.permissions.canAnnotate = true;
 
             stubs.elMock.expects('removeEventListener').withArgs('mouseup', sinon.match.func);
             stubs.elMock.expects('removeEventListener').withArgs('mousedown', sinon.match.func);
@@ -659,7 +666,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         it('should stop and destroy the requestAnimationFrame handle created by getHighlightMousemoveHandler()', () => {
             const rafHandle = 12; // RAF handles are integers
-            annotator.canAnnotate = true;
+            annotator.permissions.canAnnotate = true;
             annotator.highlightThrottleHandle = rafHandle;
             sandbox.stub(annotator, 'getHighlightMouseMoveHandler').returns(sandbox.stub());
 

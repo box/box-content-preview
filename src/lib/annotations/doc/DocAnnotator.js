@@ -509,11 +509,11 @@ class DocAnnotator extends Annotator {
         this.annotatedElement.addEventListener('mouseup', this.highlightMouseupHandler);
 
         // Prevent all forms of highlight annotations if annotating (or plain AND comment highlights) is disabled
-        if (!this.canAnnotate || (!this.plainHighlightEnabled && !this.commentHighlightEnabled)) {
+        if (!this.permissions.canAnnotate || (!this.plainHighlightEnabled && !this.commentHighlightEnabled)) {
             return;
         }
 
-        if (this.hasTouch && this.isMobile && this.createHighlightDialog) {
+        if (this.hasTouch && this.isMobile) {
             document.addEventListener('selectionchange', this.onSelectionChange);
             this.annotatedElement.addEventListener('touchstart', this.drawingSelectionHandler);
         } else {
@@ -542,11 +542,11 @@ class DocAnnotator extends Annotator {
             this.highlightThrottleHandle = null;
         }
 
-        if (!this.canAnnotate) {
+        if (!this.permissions.canAnnotate) {
             return;
         }
 
-        if (this.hasTouch && this.isMobile && this.createHighlightDialog) {
+        if (this.hasTouch && this.isMobile) {
             document.removeEventListener('selectionchange', this.onSelectionChange);
             this.annotatedElement.removeEventListener('touchstart', this.drawingSelectionHandler);
         } else {
