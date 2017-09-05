@@ -543,10 +543,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
             const threads = [pendingThread, inactiveThread];
             sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns(threads);
-<<<<<<< HEAD
-            sandbox.stub(annotator, 'scaleAnnotationCanvases');
-=======
->>>>>>> 34207995cd1fb439a301a41e5fc94e85dffa2f6c
 
             annotator.renderAnnotationsOnPage(1);
             expect(annotator.scaleAnnotationCanvases).to.be.called;
