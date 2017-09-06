@@ -121,35 +121,35 @@
             "lookSpeed": 0.5
           },
           "enabled": true,
-          "name": "unnamed component",
+          "name": "Orbit Camera",
           "id": "2a1cf65c-072b-4fd9-8bbd-81d1635aeb8d"
         },
         {
           "scriptId": "vr_render_view",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "VR Render View",
           "id": "6d1ac5a8-3b04-47f6-9af2-e7084ce32fe1"
         },
         {
           "scriptId": "vr_camera_controller",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "VR Camera Controller",
           "id": "785929b7-8327-480d-89e7-856e48a36853"
         },
         {
           "scriptId": "orbit_camera_focus",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "Camera Focus",
           "id": "6886abb5-a5b7-4703-bed8-77d656dccd3c"
         },
         {
           "scriptId": "camera_zoom",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "Camera Zoom",
           "id": "35fccf51-09db-49f5-9d8f-de02596eb01f"
         }
       ],
@@ -157,35 +157,42 @@
         {
           "scriptId": "orbit_camera",
           "attributes": {
-            "panEnabled": false,
+            "panEnabled": true,
             "zoomEnabled": true,
             "inertialDamping": 0.2,
             "lookSpeed": 0.5
           },
           "enabled": true,
-          "name": "unnamed component",
+          "name": "Orbit Camer",
           "id": "2a1cf65c-072b-4fd9-8bbd-81d1635aeb8d"
         },
         {
           "scriptId": "vr_render_view",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "VR Render Vie",
           "id": "6d1ac5a8-3b04-47f6-9af2-e7084ce32fe1"
         },
         {
           "scriptId": "vr_camera_controller",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "VR Camera Controlle",
           "id": "785929b7-8327-480d-89e7-856e48a36853"
         },
         {
           "scriptId": "orbit_camera_focus",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "Camera Focu",
           "id": "6886abb5-a5b7-4703-bed8-77d656dccd3c"
+        },
+        {
+          "scriptId": "camera_zoom",
+          "attributes": {},
+          "enabled": true,
+          "name": "Camera Zoo",
+          "id": "35fccf51-09db-49f5-9d8f-de02596eb01f"
         }
       ],
       "parentId": "63eb5333-ac0b-4f6d-b181-044627418545",
@@ -205,7 +212,7 @@
         },
         "position": {
           "x": 0,
-          "y": 1.7976931348623157e+308,
+          "y": 0,
           "z": 0
         },
         "quaternion": {
@@ -235,7 +242,7 @@
         },
         "position": {
           "x": 0,
-          "y": 1.7976931348623157e+308,
+          "y": 0,
           "z": 0
         }
       },
@@ -244,14 +251,14 @@
           "scriptId": "remote_instance",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "Load Box 3D File",
           "id": "4ec9f926-f404-4f16-a845-33b959946d26"
         },
         {
           "scriptId": "scale_to_size",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "Scale to Size",
           "id": "f4a752e9-e7e7-49df-9f5e-b478751b3da7"
         },
         {
@@ -264,7 +271,7 @@
             }
           },
           "enabled": true,
-          "name": "unnamed component",
+          "name": "Alignment",
           "id": "a4818007-4c88-4756-adfa-b13fcbe96054"
         }
       ],
@@ -273,15 +280,28 @@
           "scriptId": "remote_instance",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "LoadBox 3D File",
           "id": "4ec9f926-f404-4f16-a845-33b959946d26"
         },
         {
           "scriptId": "scale_to_size",
           "attributes": {},
           "enabled": true,
-          "name": "unnamed component",
+          "name": "Scale to Siz",
           "id": "f4a752e9-e7e7-49df-9f5e-b478751b3da7"
+        },
+        {
+          "scriptId": "align_to_position",
+          "attributes": {
+            "alignment": {
+              "x": 0,
+              "y": -1,
+              "z": 0
+            }
+          },
+          "enabled": true,
+          "name": "Alignmen",
+          "id": "a4818007-4c88-4756-adfa-b13fcbe96054"
         }
       ],
       "parentId": "63eb5333-ac0b-4f6d-b181-044627418545",
@@ -296,9 +316,9 @@
         "name": "Ambient Light",
         "lightType": "ambient",
         "position": {
-          "x": -1,
-          "y": 1,
-          "z": 1
+          "x": 0,
+          "y": 0,
+          "z": 0
         },
         "intensity": 1,
         "color": {
@@ -307,13 +327,7 @@
           "b": 0.996078431372549
         }
       },
-      "previousProperties": {
-        "color": {
-          "r": 0.996078431372549,
-          "g": 0.996078431372549,
-          "b": 0.996078431372549
-        }
-      },
+      "previousProperties": {},
       "components": [],
       "previousComponents": [],
       "parentId": "63eb5333-ac0b-4f6d-b181-044627418545",

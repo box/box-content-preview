@@ -1,6 +1,11 @@
 /* eslint-disable no-unused-expressions */
 import CreateHighlightDialog, { CreateEvents } from '../CreateHighlightDialog';
-import { CLASS_HIDDEN } from '../../annotationConstants';
+import {
+    CLASS_ADD_HIGHLIGHT_BTN,
+    CLASS_ADD_HIGHLIGHT_COMMENT_BTN,
+    CLASS_ANNOTATION_CARET,
+    CLASS_HIDDEN
+} from '../../annotationConstants';
 import CommentBox from '../../CommentBox';
 import * as annotatorUtil from '../../annotatorUtil';
 
@@ -20,6 +25,24 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
         dialog.destroy();
         dialog = null;
         parentEl = null;
+    });
+
+    describe('contructor()', () => {
+        it('should default to enable highlights and comments if no config passed in', () => {
+            const instance = new CreateHighlightDialog(document.createElement('div'));
+            expect(instance.allowHighlight).to.be.true;
+            expect(instance.allowComment).to.be.true;
+        });
+
+        it('should take config falsey value to disable highlights and comments, when passed in', () => {
+            const config = {
+                allowHighlight: 'this will falsey to true',
+                allowComment: false
+            };
+            const instance = new CreateHighlightDialog(document.createElement('div'), config);
+            expect(instance.allowHighlight).to.be.true;
+            expect(instance.allowComment).to.be.false;
+        });
     });
 
     describe('setParentEl()', () => {
@@ -110,6 +133,13 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
             const clearComment = sandbox.stub(dialog.commentBox, 'clear');
             dialog.hide();
             expect(clearComment).to.be.called;
+        });
+
+        it('should do nothing with the comment box if it does not exist', () => {
+            const clearComment = sandbox.stub(dialog.commentBox, 'clear');
+            dialog.commentBox = null;
+            dialog.hide();
+            expect(clearComment).to.not.be.called;
         });
     });
 
@@ -348,27 +378,48 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
     });
 
     describe('createElement()', () => {
-        let containerEl;
-
-        beforeEach(() => {
-            containerEl = dialog.createElement();
-        });
 
         it('should create a div with the proper create highlight class', () => {
+            let containerEl = dialog.createElement();
             expect(containerEl.nodeName).to.equal('DIV');
             expect(containerEl.classList.contains(CLASS_CREATE_DIALOG)).to.be.true;
         });
 
         it('should make a reference to the highlight button', () => {
+            let containerEl = dialog.createElement();
             expect(dialog.highlightCreateEl).to.exist;
         });
 
         it('should make a reference to the comment button', () => {
+            let containerEl = dialog.createElement();
             expect(dialog.commentCreateEl).to.exist;
         });
 
         it('should create a comment box', () => {
+            let containerEl = dialog.createElement();
             expect(dialog.commentBox).to.be.an.instanceof(CommentBox);
+        });
+
+        it('should not create the caret if on a mobile device', () => {
+            dialog.isMobile = true;
+            let containerEl = dialog.createElement();
+
+            expect(containerEl.querySelector(`.${CLASS_ANNOTATION_CARET}`)).to.not.exist;
+        });
+
+        it('should not create a highlight button if highlights are disabled', () => {
+            dialog.allowHighlight = false;
+            let containerEl = dialog.createElement();
+
+            expect(containerEl.querySelector(`.${CLASS_ADD_HIGHLIGHT_BTN}`)).to.not.exist;
+        });
+
+        it('should not create a comment box or button if comments are disabled', () => {
+            dialog.allowComment = false;
+            let containerEl = dialog.createElement();
+
+            expect(containerEl.querySelector(`.${CLASS_ADD_HIGHLIGHT_COMMENT_BTN}`)).to.not.exist;
+            expect(dialog.commentBox).to.not.exist;
         });
     });
 });

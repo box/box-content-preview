@@ -25,7 +25,8 @@ import {
     getHeaders,
     replacePlaceholders,
     createLocation,
-    round
+    round,
+    prevDefAndStopProp
 } from '../annotatorUtil';
 import {
     STATES,
@@ -35,6 +36,8 @@ import {
 } from '../annotationConstants';
 
 const DIALOG_WIDTH = 81;
+
+const sandbox = sinon.sandbox.create();
 
 describe('lib/annotations/annotatorUtil', () => {
     let childEl;
@@ -52,6 +55,7 @@ describe('lib/annotations/annotatorUtil', () => {
     });
 
     afterEach(() => {
+        sandbox.verifyAndRestore();
         fixture.cleanup();
     });
 
@@ -403,37 +407,52 @@ describe('lib/annotations/annotatorUtil', () => {
     });
 
     describe('eventToLocationHandler()', () => {
-        it('should not call the callback when the location is valid', () => {
-            const annotator = {
-                isChanged: false
-            }
-            const getLocation = ((event) => 'location');
-            const callback = ((location) => {
-                annotator.isChanged = true
-            });
-            const locationHandler = eventToLocationHandler(getLocation, callback);
+        let getLocation;
+        let annotator;
+        let callback;
+        let locationHandler;
+        let event;
 
-            locationHandler(undefined);
-            expect(annotator.isChanged).to.be.false;
-        });
-
-        it('should call the callback when the location is valid', () => {
-            const annotator = {
-                isChanged: false
-            }
-            const getLocation = ((event) => 'location');
-            const callback = ((location) => {
-                annotator.isChanged = true
-            });
-            const locationHandler = eventToLocationHandler(getLocation, callback);
-            const event = {
+        beforeEach(() => {
+            getLocation = ((event) => 'location');
+            callback = sandbox.stub();
+            locationHandler = eventToLocationHandler(getLocation, callback);
+            event = {
                 preventDefault: () => {},
                 stopPropagation: () => {}
             };
-
-            locationHandler(event);
-            expect(annotator.isChanged).to.be.true;
         });
+
+        it('should not call the callback when the location is valid', () => {
+            locationHandler(undefined);
+            expect(callback).to.not.be.called;
+        });
+
+        it('should call the callback when the location is valid', () => {
+            locationHandler(event);
+            expect(callback).to.be.calledWith('location');
+        });
+
+        it('should do nothing when the target exists and it is not the textLayer', () => {
+            event.target = {
+                className: 'button'
+            };
+            locationHandler(event);
+            expect(callback).to.not.be.called;
+        });
+    });
+
+    describe('prevDefAndStopProp()', () => {
+        it('should prevent default and stop propogation on an event', () => {
+            const event = {
+                preventDefault: sandbox.stub(),
+                stopPropagation: sandbox.stub()
+            };
+
+            prevDefAndStopProp(event);
+            expect(event.preventDefault).to.be.called;
+            expect(event.stopPropagation).to.be.called;
+        })
     });
 
     describe('createLocation()', () => {

@@ -30,6 +30,7 @@ class DocDrawingThread extends DrawingThread {
         this.onPageChange = this.onPageChange.bind(this);
         this.reconstructBrowserCoordFromLocation = this.reconstructBrowserCoordFromLocation.bind(this);
     }
+
     /**
      * Handle a pointer movement
      *
@@ -84,6 +85,10 @@ class DocDrawingThread extends DrawingThread {
             this.pendingPath = new DrawingPath();
         }
 
+        if (this.dialog && this.dialog.isVisible()) {
+            this.dialog.hide();
+        }
+
         // Start drawing rendering
         this.lastAnimationRequestId = window.requestAnimationFrame(this.render);
     }
@@ -134,14 +139,10 @@ class DocDrawingThread extends DrawingThread {
      * @return {void}
      */
     saveAnnotation(type, text) {
-        this.emit('annotationevent', {
-            type: 'drawcommit'
-        });
         this.reset();
 
         // Only make save request to server if there exist paths to save
-        const { undoCount } = this.pathContainer.getNumberOfItems();
-        if (undoCount === 0) {
+        if (this.pathContainer.isUndoEmpty()) {
             return;
         }
 
@@ -149,8 +150,7 @@ class DocDrawingThread extends DrawingThread {
         super.saveAnnotation(type, text);
 
         // Move the in-progress drawing to the concrete context
-        const inProgressCanvas = this.drawingContext.canvas;
-        this.drawingContext.clearRect(0, 0, inProgressCanvas.width, inProgressCanvas.height);
+        this.createDialog();
         this.show();
     }
 
@@ -167,7 +167,7 @@ class DocDrawingThread extends DrawingThread {
 
         // Get the annotation layer context to draw with
         const context = this.selectContext();
-        if (this.state === STATES.pending) {
+        if (this.dialog && this.dialog.isVisible()) {
             this.drawBoundary();
         }
 
@@ -181,6 +181,53 @@ class DocDrawingThread extends DrawingThread {
         }
 
         this.draw(context, false);
+    }
+
+    /**
+     * Binds custom event listeners for the dialog.
+     *
+     * @protected
+     * @return {void}
+     */
+    bindCustomListenersOnDialog() {
+        if (!this.dialog) {
+            return;
+        }
+
+        this.dialog.addListener('annotationcreate', () => {
+            this.emit('annotationevent', {
+                type: 'softcommit'
+            });
+        });
+        this.dialog.addListener('annotationdelete', () => {
+            this.emit('annotationevent', {
+                type: 'dialogdelete'
+            });
+        });
+    }
+
+    /**
+     * Creates the document drawing annotation dialog for the thread.
+     *
+     * @protected
+     * @override
+     * @return {void}
+     */
+    createDialog() {
+        if (this.dialog) {
+            this.dialog.destroy();
+        }
+
+        this.dialog = new DocDrawingDialog({
+            annotatedElement: this.annotatedElement,
+            container: this.container,
+            annotations: this.annotations,
+            locale: this.locale,
+            location: this.location,
+            canAnnotate: this.annotationService.canAnnotate
+        });
+
+        this.bindCustomListenersOnDialog();
     }
 
     /**
@@ -215,7 +262,7 @@ class DocDrawingThread extends DrawingThread {
     onPageChange(location) {
         this.handleStop();
         this.emit('annotationevent', {
-            type: 'pagechanged',
+            type: 'softcommit',
             location
         });
     }
@@ -276,23 +323,6 @@ class DocDrawingThread extends DrawingThread {
         const height = y2 - y1;
 
         return [x1, y1, width, height];
-    }
-
-    /**
-     * Creates the document drawing annotation dialog for the thread.
-     *
-     * @override
-     * @return {void}
-     */
-    createDialog() {
-        this.dialog = new DocDrawingDialog({
-            annotatedElement: this.annotatedElement,
-            container: this.container,
-            annotations: this.annotations,
-            locale: this.locale,
-            location: this.location,
-            canAnnotate: this.annotationService.canAnnotate
-        });
     }
 }
 

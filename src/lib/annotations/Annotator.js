@@ -298,6 +298,10 @@ class Annotator extends EventEmitter {
 
         const pageThreads = this.getThreadsOnPage(pageNum);
         Object.values(pageThreads).forEach((thread) => {
+            if (!this.isModeAnnotatable(thread.type)) {
+                return;
+            }
+
             thread.show();
         });
     }
@@ -415,8 +419,6 @@ class Annotator extends EventEmitter {
                 annotatorUtil.hideElement(postButtonEl);
                 annotatorUtil.hideElement(undoButtonEl);
                 annotatorUtil.hideElement(redoButtonEl);
-                annotatorUtil.disableElement(undoButtonEl);
-                annotatorUtil.disableElement(redoButtonEl);
             }
         }
 
