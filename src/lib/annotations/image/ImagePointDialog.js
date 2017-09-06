@@ -1,9 +1,7 @@
 import autobind from 'autobind-decorator';
 import AnnotationDialog from '../AnnotationDialog';
 import * as annotatorUtil from '../annotatorUtil';
-
-const POINT_ANNOTATION_ICON_HEIGHT = 31;
-const POINT_ANNOTATION_ICON_WIDTH = 24;
+import { POINT_ANNOTATION_ICON_HEIGHT, POINT_ANNOTATION_ICON_WIDTH } from '../annotationConstants';
 
 @autobind
 class ImagePointDialog extends AnnotationDialog {
@@ -32,7 +30,7 @@ class ImagePointDialog extends AnnotationDialog {
         let dialogLeftX = threadIconLeftX - dialogWidth / 2;
 
         // Adjusts Y position for transparent top border
-        const dialogTopY = this.threadEl.offsetTop + POINT_ANNOTATION_ICON_HEIGHT;
+        const dialogTopY = this.threadEl.offsetTop + POINT_ANNOTATION_ICON_HEIGHT / 2;
 
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing

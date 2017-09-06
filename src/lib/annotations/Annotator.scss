@@ -106,6 +106,7 @@ $avatar-color-9: #f22c44;
 
 .bp-annotation-dialog,
 .bp-create-annotation-dialog {
+    border-bottom: 0;
     border-top: 20px solid transparent; // Transparent border for hover detection
     cursor: default; // Overrides cursor: none from annotation mode
     position: absolute;
@@ -258,20 +259,24 @@ $avatar-color-9: #f22c44;
 }
 
 .bp-point-annotation-marker {
-    background-color: transparent;
-    border-style: none;
+    background-color: $box-blue;
+    border: 1px white solid;
+    border-radius: 50%;
+    box-shadow: 0 0 2px fade-out($sunset-grey, .5);
+    color: white;
     cursor: pointer;
+    font-size: 9px;
+    height: 20px;
     padding: 0;
     position: absolute;
-    width: 24px;
+    transition: fill .5s;
+    width: 20px;
 
-    svg {
-        fill: fade-out($box-blue, .35);
-        transition: fill .5s;
-    }
-
-    &:hover svg {
-        fill: $box-blue;
+    &:hover,
+    &.bp-is-active {
+        border: 2px white solid;
+        transform: scale(1.5);
+        transition: all .1s ease-in-out;
     }
 }
 
@@ -280,6 +285,11 @@ $avatar-color-9: #f22c44;
     rect {
         display: none;
     }
+}
+
+.bp-annotation-dialog.bp-annotation-dialog-flipped {
+    border-bottom: 20px solid transparent; // Transparent border for hover detection
+    border-top: 0;
 }
 
 .bp-annotation-dialog-flipped {
@@ -297,42 +307,6 @@ $avatar-color-9: #f22c44;
     line-height: 32px;
     text-align: center;
     width: 32px;
-
-    &.avatar-color-0 {
-        background-color: $avatar-color-1;
-    }
-
-    &.avatar-color-1 {
-        background-color: $avatar-color-2;
-    }
-
-    &.avatar-color-2 {
-        background-color: $avatar-color-3;
-    }
-
-    &.avatar-color-3 {
-        background-color: $avatar-color-4;
-    }
-
-    &.avatar-color-4 {
-        background-color: $avatar-color-5;
-    }
-
-    &.avatar-color-5 {
-        background-color: $avatar-color-6;
-    }
-
-    &.avatar-color-6 {
-        background-color: $avatar-color-7;
-    }
-
-    &.avatar-color-7 {
-        background-color: $avatar-color-8;
-    }
-
-    &.avatar-color-8 {
-        background-color: $avatar-color-9;
-    }
 }
 
 //------------------------------------------------------------------------------
@@ -486,6 +460,45 @@ $avatar-color-9: #f22c44;
 .bp-annotation-mode .textLayer > div,
 .bp-annotation-mode .textLayer .endOfContent {
     pointer-events: none;
+}
+
+.bp-point-annotation-marker,
+.bp-annotation-profile {
+    &.avatar-color-0 {
+        background-color: $avatar-color-1;
+    }
+
+    &.avatar-color-1 {
+        background-color: $avatar-color-2;
+    }
+
+    &.avatar-color-2 {
+        background-color: $avatar-color-3;
+    }
+
+    &.avatar-color-3 {
+        background-color: $avatar-color-4;
+    }
+
+    &.avatar-color-4 {
+        background-color: $avatar-color-5;
+    }
+
+    &.avatar-color-5 {
+        background-color: $avatar-color-6;
+    }
+
+    &.avatar-color-6 {
+        background-color: $avatar-color-7;
+    }
+
+    &.avatar-color-7 {
+        background-color: $avatar-color-8;
+    }
+
+    &.avatar-color-8 {
+        background-color: $avatar-color-9;
+    }
 }
 
 @import './MobileAnnotator';

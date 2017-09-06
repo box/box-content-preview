@@ -1,10 +1,7 @@
 import autobind from 'autobind-decorator';
 import AnnotationDialog from '../AnnotationDialog';
 import * as annotatorUtil from '../annotatorUtil';
-
-const PAGE_PADDING_TOP = 15;
-const POINT_ANNOTATION_ICON_HEIGHT = 31;
-const POINT_ANNOTATION_ICON_WIDTH = 24;
+import { POINT_ANNOTATION_ICON_HEIGHT, POINT_ANNOTATION_ICON_WIDTH, PAGE_PADDING_TOP } from '../annotationConstants';
 
 @autobind
 class DocPointDialog extends AnnotationDialog {
@@ -34,7 +31,7 @@ class DocPointDialog extends AnnotationDialog {
         let dialogLeftX = threadIconLeftX - dialogWidth / 2;
 
         // Adjusts Y position for transparent top border
-        const dialogTopY = this.threadEl.offsetTop + POINT_ANNOTATION_ICON_HEIGHT;
+        const dialogTopY = this.threadEl.offsetTop + POINT_ANNOTATION_ICON_HEIGHT / 2;
 
         // Only reposition if one side is past page boundary - if both are,
         // just center the dialog and cause scrolling since there is nothing
@@ -50,8 +47,8 @@ class DocPointDialog extends AnnotationDialog {
         // Position the dialog
         this.element.style.left = `${dialogLeftX - 1}px`;
 
-        const pageHeight = pageDimensions.height + PAGE_PADDING_TOP;
-        const dialogPos = this.flipDialog(dialogTopY, pageHeight + POINT_ANNOTATION_ICON_HEIGHT);
+        const pageHeight = pageDimensions.height + PAGE_PADDING_TOP + POINT_ANNOTATION_ICON_HEIGHT;
+        const dialogPos = this.flipDialog(dialogTopY, pageHeight);
         this.element.style.top = dialogPos.top;
         this.element.style.bottom = dialogPos.bottom;
     }

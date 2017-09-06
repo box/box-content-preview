@@ -262,6 +262,18 @@ export function isElementInViewport(element) {
 }
 
 /**
+ * Returns a pseudo-unique color CSS class generated from the
+ * annotator's userId
+ *
+ * @param {string} userId - User ID of annotator
+ * @return {string} CSS class specifying a color specific to the user
+ */
+export function getUserColor(userId) {
+    const index = parseInt(userId, 10) || 0;
+    return `avatar-color-${index % AVATAR_COLOR_COUNT}`;
+}
+
+/**
  * Returns avatar image HTML for annotation dialog. This will be either an
  * image with the supplied avatar URL as a source if there is a URL passed in
  * or one generated using the initials of the annotator.
@@ -282,8 +294,7 @@ export function getAvatarHtml(avatarUrl, userId, userName) {
         initials = userName.replace(/\W*(\w)\w*/g, '$1').toUpperCase().substring(0, 3);
     }
 
-    const index = parseInt(userId, 10) || 0;
-    return `<div class="bp-annotation-profile avatar-color-${index % AVATAR_COLOR_COUNT}">${initials}</div>`.trim();
+    return `<div class="bp-annotation-profile ${getUserColor(userId)}">${initials}</div>`.trim();
 }
 
 /**

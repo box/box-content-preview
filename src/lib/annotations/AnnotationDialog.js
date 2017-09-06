@@ -4,8 +4,6 @@ import * as annotatorUtil from './annotatorUtil';
 import * as constants from './annotationConstants';
 import { ICON_CLOSE, ICON_DELETE } from '../icons/icons';
 
-const POINT_ANNOTATION_ICON_HEIGHT = 31;
-const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
 const CLASS_FLIPPED_DIALOG = 'bp-annotation-dialog-flipped';
 
 const CLASS_BUTTON_DELETE_COMMENT = 'delete-comment-btn';
@@ -148,6 +146,11 @@ class AnnotationDialog extends EventEmitter {
      * @return {void}
      */
     hideMobileDialog() {
+        // De-activate annotation icon
+        if (this.threadEl) {
+            this.threadEl.classList.remove(constants.CLASS_ACTIVE);
+        }
+
         if (!this.element) {
             return;
         }
@@ -194,6 +197,11 @@ class AnnotationDialog extends EventEmitter {
 
         // Make sure entire thread icon displays for flipped dialogs
         this.toggleFlippedThreadEl();
+
+        // De-activate annotation icon
+        if (this.threadEl) {
+            this.threadEl.classList.remove(constants.CLASS_ACTIVE);
+        }
     }
 
     /**
@@ -713,12 +721,12 @@ class AnnotationDialog extends EventEmitter {
     flipDialog(yPos, containerHeight) {
         let top = '';
         let bottom = '';
-        const iconPadding = POINT_ANNOTATION_ICON_HEIGHT - POINT_ANNOTATION_ICON_DOT_HEIGHT / 2;
+        const iconPadding = constants.POINT_ANNOTATION_ICON_HEIGHT * 2 / 3;
         const annotationCaretEl = this.element.querySelector(constants.SELECTOR_ANNOTATION_CARET);
 
         if (yPos <= containerHeight / 2) {
             // Keep dialog below the icon if in the top half of the viewport
-            top = `${yPos - POINT_ANNOTATION_ICON_DOT_HEIGHT}px`;
+            top = `${yPos}px`;
             bottom = '';
 
             this.element.classList.remove(CLASS_FLIPPED_DIALOG);
@@ -726,7 +734,7 @@ class AnnotationDialog extends EventEmitter {
             annotationCaretEl.style.bottom = '';
         } else {
             // Flip dialog to above the icon if in the lower half of the viewport
-            const flippedY = containerHeight - yPos - iconPadding;
+            const flippedY = containerHeight - yPos - iconPadding - 20;
             top = '';
             bottom = `${flippedY}px`;
 

@@ -3,7 +3,11 @@ import Annotator from '../Annotator';
 import ImagePointThread from './ImagePointThread';
 import * as annotatorUtil from '../annotatorUtil';
 import * as imageAnnotatorUtil from './imageAnnotatorUtil';
-import { CLASS_ANNOTATION_POINT_MARKER, SELECTOR_ANNOTATION_BUTTON_POINT } from '../annotationConstants';
+import {
+    CLASS_ANNOTATION_POINT_MARKER,
+    SELECTOR_ANNOTATION_BUTTON_POINT,
+    POINT_ANNOTATION_ICON_HEIGHT
+} from '../annotationConstants';
 
 const IMAGE_NODE_NAME = 'img';
 // Selector for image container OR multi-image container
@@ -79,7 +83,7 @@ class ImageAnnotator extends Annotator {
 
         location = {
             x,
-            y,
+            y: y + POINT_ANNOTATION_ICON_HEIGHT,
             imageEl,
             dimensions,
             page
