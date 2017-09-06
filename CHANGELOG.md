@@ -1,3 +1,25 @@
+<a name="1.9.0"></a>
+# 1.9.0 (2017-09-06)
+
+* Fix: annotation mode exits on wrong button and fetch annotations returns non-promise (#363) ([aed6288](https://github.com/box/box-content-preview/commit/aed6288))
+* Fix: Only hide point annotation icon when dialog is flipped (#369) ([d0ede36](https://github.com/box/box-content-preview/commit/d0ede36))
+* Fix: Point 3D viewer at newest Box3D runtime ([3420799](https://github.com/box/box-content-preview/commit/3420799))
+* Temp hide show ui for plain and comment highlights (#348) ([3dbddbf](https://github.com/box/box-content-preview/commit/3dbddbf))
+* Feature: drawing annotation deletion (#337) ([34b9da1](https://github.com/box/box-content-preview/commit/34b9da1))
+* Feature: Drawing boundary updates on each action (#356) ([8f7c2df](https://github.com/box/box-content-preview/commit/8f7c2df))
+* Feature: drawingSelectionUI (#362) ([318501f](https://github.com/box/box-content-preview/commit/318501f))
+* Chore: Add a page # for image annotations that were created without one (#357) ([bf6a6f9](https://github.com/box/box-content-preview/commit/bf6a6f9))
+* Chore: Don't hide dialog on mouseout if mouse is in annotations dialog (#352) ([e01324b](https://github.com/box/box-content-preview/commit/e01324b))
+* Chore: Position point annotation dialog based off icon location (#339) ([087350b](https://github.com/box/box-content-preview/commit/087350b))
+* Chore: Store annotation threads by threadID in the thread map (#316) ([09aa1cd](https://github.com/box/box-content-preview/commit/09aa1cd))
+* New: Flip point annotation dialog if in lower half of file (#353) ([dbe8f06](https://github.com/box/box-content-preview/commit/dbe8f06))
+* New: Separate create and view permissions for annotations (#358) ([5d39f1f](https://github.com/box/box-content-preview/commit/5d39f1f))
+* New: Support multiple audio tracks (#299) ([70f5b81](https://github.com/box/box-content-preview/commit/70f5b81))
+* Mojito: Update translations (#354) ([eab7da5](https://github.com/box/box-content-preview/commit/eab7da5))
+* Upgrade: Upgrade to shaka-player 2.1.8 (#351) ([4ec7b65](https://github.com/box/box-content-preview/commit/4ec7b65))
+
+
+
 <a name="1.8.0"></a>
 # 1.8.0 (2017-08-30)
 
