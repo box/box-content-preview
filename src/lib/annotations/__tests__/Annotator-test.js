@@ -378,6 +378,7 @@ describe('lib/annotations/Annotator', () => {
 
         describe('disableAnnotationMode()', () => {
             beforeEach(() => {
+                annotator.currentAnnotationMode = TYPES.point;
                 stubs.isInMode = sandbox.stub(annotator, 'isInAnnotationMode').returns(false);
                 stubs.emit = sandbox.stub(annotator, 'emit');
                 stubs.unbindMode = sandbox.stub(annotator, 'unbindModeListeners');
@@ -393,6 +394,7 @@ describe('lib/annotations/Annotator', () => {
                 expect(stubs.unbindMode).to.be.calledWith(TYPES.point);
                 expect(stubs.bindDOM).to.be.called;
                 expect(annotator.annotatedElement).to.not.have.class(CLASS_ANNOTATION_MODE);
+                expect(annotator.currentAnnotationMode).to.be.null;
             });
 
             it('should deactivate point annotation mode button', () => {
