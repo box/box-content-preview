@@ -838,22 +838,20 @@ class Annotator extends EventEmitter {
      * Scrolls specified annotation into view
      *
      * @private
-     * @param {Object} data - annotation data for thread that should scroll into view
-     * @param {string} data.threadID - annotation thread id
-     * @param {string} data.page - annotation page number
+     * @param {Object} threadID - annotation threadID for thread that should scroll into view
      * @return {void}
      */
-    scrollToAnnotation(data) {
-        const { threadID, page } = data;
-        if (!threadID || !page) {
+    scrollToAnnotation(threadID) {
+        if (!threadID) {
             return;
         }
 
-        const pageThreads = this.getThreadsOnPage(page);
-        if (threadID in pageThreads) {
-            const thread = pageThreads[threadID];
-            thread.scrollIntoView();
-        }
+        Object.values(this.threads).forEach((pageThreads) => {
+            if (threadID in pageThreads) {
+                const thread = pageThreads[threadID];
+                thread.scrollIntoView();
+            }
+        });
     }
 
     //--------------------------------------------------------------------------
