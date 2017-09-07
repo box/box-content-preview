@@ -21,7 +21,10 @@ describe('lib/viewers/text/TextBaseViewer', () => {
         containerEl = document.querySelector('.container');
         textBase = new TextBaseViewer({
             file: {
-                id: 0
+                id: 0,
+                file_version: {
+                    id: 123
+                }
             },
             container: containerEl
         });

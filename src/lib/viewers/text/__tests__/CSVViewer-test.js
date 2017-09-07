@@ -23,7 +23,10 @@ describe('lib/viewers/text/CSVViewer', () => {
         options = {
             container: containerEl,
             file: {
-                id: 0
+                id: 0,
+                file_version: {
+                    id: 123
+                }
             },
             representation: {
                 content: {

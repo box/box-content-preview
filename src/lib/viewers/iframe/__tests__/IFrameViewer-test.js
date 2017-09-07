@@ -19,7 +19,10 @@ describe('lib/viewers/iframe/IFrameViewer', () => {
             container: containerEl,
             file: {
                 id: '123',
-                extension: 'boxnote'
+                extension: 'boxnote',
+                file_version: {
+                    id: 123
+                }
             }
         });
 

@@ -30,7 +30,10 @@ describe('lib/viewers/office/OfficeViewer', () => {
         office = new OfficeViewer({
             container: containerEl,
             file: {
-                id: '123'
+                id: '123',
+                file_version: {
+                    id: 123
+                }
             },
             viewers: {
                 Office: {

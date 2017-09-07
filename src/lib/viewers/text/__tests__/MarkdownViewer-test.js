@@ -20,7 +20,10 @@ describe('lib/viewers/text/MarkdownViewer', () => {
         containerEl = document.querySelector('.container');
         markdown = new MarkdownViewer({
             file: {
-                id: 0
+                id: 0,
+                file_version: {
+                    id: 123
+                }
             },
             container: containerEl
         });

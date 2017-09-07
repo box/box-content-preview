@@ -29,7 +29,10 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
                 unset: () => {}
             },
             file: {
-                id: 1
+                id: 1,
+                file_version: {
+                    id: 123
+                }
             },
             container: containerEl,
             representation: {

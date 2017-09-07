@@ -12,7 +12,10 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
     const options = {
         token: '12345572asdfliuohhr34812348960',
         file: {
-            id: 'f_098765'
+            id: 'f_098765',
+            file_version: {
+                id: 123
+            }
         }
     };
     const VIDEO_PROPS = {

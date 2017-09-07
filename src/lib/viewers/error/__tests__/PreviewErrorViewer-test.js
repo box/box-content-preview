@@ -22,7 +22,10 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
         containerEl = document.querySelector('.container');
         error = new PreviewErrorViewer({
             file: {
-                id: '1'
+                id: '1',
+                file_version: {
+                    id: 123
+                }
             },
             container: containerEl
         });

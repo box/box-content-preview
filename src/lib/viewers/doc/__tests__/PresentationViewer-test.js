@@ -58,6 +58,8 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         presentation.options = {
             file: 'file'
         };
+
+        sandbox.stub(presentation, 'emit');
     });
 
     afterEach(() => {
@@ -67,6 +69,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (presentation && typeof presentation.destroy === 'function') {
+            sandbox.stub(presentation, 'emit');
             presentation.pdfViewer = undefined;
             presentation.destroy();
         }

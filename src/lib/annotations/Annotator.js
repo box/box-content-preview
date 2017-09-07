@@ -918,7 +918,8 @@ class Annotator extends EventEmitter {
             event,
             data,
             annotatorName: annotator ? annotator.NAME : '',
-            fileId
+            fileId,
+            fileVersionId: this.fileVersionId
         });
     }
 }

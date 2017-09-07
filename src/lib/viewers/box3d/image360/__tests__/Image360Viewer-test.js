@@ -23,7 +23,10 @@ describe('lib/viewers/box3d/image360/Image360Viewer', () => {
             container: containerEl,
             token: '12345',
             file: {
-                id: '0'
+                id: '0',
+                file_version: {
+                    id: 123
+                }
             }
         });
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });

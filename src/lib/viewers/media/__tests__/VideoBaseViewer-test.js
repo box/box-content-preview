@@ -25,7 +25,10 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
                 unset: () => {}
             },
             file: {
-                id: 1
+                id: 1,
+                file_version: {
+                    id: 123
+                }
             },
             container: containerEl,
             content: {
@@ -41,6 +44,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
             toggle: sandbox.stub(),
             resizeTimeScrubber: sandbox.stub(),
         };
+        sandbox.stub(videoBase, 'emit');
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
         videoBase.containerEl = containerEl;
@@ -53,6 +57,7 @@ describe('lib/viewers/media/VideoBaseViewer', () => {
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (videoBase && typeof videoBase.destroy === 'function') {
+            sandbox.stub(videoBase, 'emit');
             videoBase.destroy();
         }
         videoBase = null;
