@@ -438,7 +438,8 @@ class DocAnnotator extends Annotator {
 
         // TODO (@jholdstock|@spramod) remove this if statement, and make super call, upon refactor.
         const pageThreads = this.getThreadsOnPage(pageNum);
-        Object.values(pageThreads).forEach((thread) => {
+        Object.keys(pageThreads).forEach((threadID) => {
+            const thread = pageThreads[threadID];
             if (!this.isModeAnnotatable(thread.type)) {
                 return;
             }
@@ -551,7 +552,10 @@ class DocAnnotator extends Annotator {
             return;
         }
 
-        Object.values(this.modeControllers).forEach((controller) => controller.removeSelection());
+        Object.keys(this.modeControllers).forEach((mode) => {
+            const controller = this.modeControllers[mode];
+            controller.removeSelection();
+        });
 
         if (this.hasTouch && this.isMobile) {
             document.removeEventListener('selectionchange', this.onSelectionChange);
@@ -631,7 +635,8 @@ class DocAnnotator extends Annotator {
         }
 
         // Set all annotations that are in the 'hover' state to 'inactive'
-        Object.values(this.threads).forEach((pageThreads) => {
+        Object.keys(this.threads).forEach((page) => {
+            const pageThreads = this.getThreadsOnPage(page);
             const highlightThreads = this.getHighlightThreadsOnPage(pageThreads);
             highlightThreads.filter(isThreadInHoverState).forEach((thread) => {
                 thread.reset();
@@ -675,7 +680,8 @@ class DocAnnotator extends Annotator {
         this.mouseX = event.clientX;
         this.mouseY = event.clientY;
 
-        Object.values(this.threads).forEach((pageThreads) => {
+        Object.keys(this.threads).forEach((page) => {
+            const pageThreads = this.getThreadsOnPage(page);
             const highlightThreads = this.getHighlightThreadsOnPage(pageThreads);
             highlightThreads.forEach((thread) => {
                 thread.onMousedown();
@@ -746,7 +752,9 @@ class DocAnnotator extends Annotator {
         let hoverActive = false;
 
         const pageThreads = this.getThreadsOnPage(page);
-        Object.values(pageThreads).forEach((thread) => {
+        Object.keys(pageThreads).forEach((threadID) => {
+            const thread = pageThreads[threadID];
+
             // Determine if any highlight threads on page are pending or active
             // and ignore hover events of any highlights below
             if (!annotatorUtil.isHighlightAnnotation(thread.type) || thread.state === STATES.pending) {
@@ -916,7 +924,9 @@ class DocAnnotator extends Annotator {
         const page = annotatorUtil.getPageInfo(event.target).page;
         const pageThreads = this.getThreadsOnPage(page);
 
-        Object.values(pageThreads).forEach((thread) => {
+        Object.keys(pageThreads).forEach((threadID) => {
+            const thread = pageThreads[threadID];
+
             if (annotatorUtil.isPending(thread.state)) {
                 // Destroy any pending highlights on click outside the highlight
                 if (thread.type === TYPES.point) {
@@ -975,7 +985,8 @@ class DocAnnotator extends Annotator {
         const threads = [];
         const pageThreads = this.getThreadsOnPage(page);
 
-        Object.values(pageThreads).forEach((thread) => {
+        Object.keys(pageThreads).forEach((threadID) => {
+            const thread = pageThreads[threadID];
             if (annotatorUtil.isHighlightAnnotation(thread.type)) {
                 threads.push(thread);
             }
