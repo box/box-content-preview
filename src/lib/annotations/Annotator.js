@@ -400,6 +400,7 @@ class Annotator extends EventEmitter {
      */
     disableAnnotationMode(mode, buttonEl) {
         if (this.isInAnnotationMode(mode)) {
+            this.currentAnnotationMode = null;
             this.emit(MODE_EXIT);
         }
 
