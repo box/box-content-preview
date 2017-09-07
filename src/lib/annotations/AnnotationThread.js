@@ -245,6 +245,11 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     scrollToPage() {
+        // Ignore if annotation does not have a location or page
+        if (!this.location || !this.location.page) {
+            return;
+        }
+
         const pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
         pageEl.scrollIntoView();
     }

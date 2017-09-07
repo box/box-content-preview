@@ -820,20 +820,23 @@ describe('lib/annotations/Annotator', () => {
 
         describe('scrollToAnnotation()', () => {
             beforeEach(() => {
+                stubs.thread.location = { page: 1 };
                 annotator.addThreadToMap(stubs.thread);
-                sandbox.stub(annotator, 'getThreadsOnPage').returns(annotator.threads[1]);
+            });
+
+            it('should do nothing if no threadID is provided', () => {
+                stubs.threadMock.expects('scrollIntoView').never();
+                annotator.scrollToAnnotation();
             });
 
             it('should do nothing if threadID does not exist on page', () => {
                 stubs.threadMock.expects('scrollIntoView').never();
                 annotator.scrollToAnnotation('wrong');
-                expect(annotator.getThreadsOnPage).to.be.called;
             });
 
-            it('should do nothing if threadID does not exist on page', () => {
+            it('should scroll to annotation if threadID exists on page', () => {
                 stubs.threadMock.expects('scrollIntoView');
                 annotator.scrollToAnnotation(stubs.thread.threadID);
-                expect(annotator.getThreadsOnPage).to.be.called;
             });
         });
 
