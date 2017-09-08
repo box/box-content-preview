@@ -229,13 +229,13 @@ class BaseViewer extends EventEmitter {
     };
 
     /**
-     * Emits an error when an asset (static or representation) fails to load.
+     * triggers an error when an asset (static or representation) fails to load.
      *
-     * @emits error
+     * @param {string} [err] - Optional error message
      * @return {void}
      */
-    handleAssetError = () => {
-        this.triggerError();
+    handleAssetError = (err) => {
+        this.triggerError(err);
         this.destroyed = true;
     };
 
@@ -244,11 +244,11 @@ class BaseViewer extends EventEmitter {
      *
      * @protected
      * @emits error
-     * @param {Error} [err] - Optional error with message
+     * @param {Error|string} [err] - Optional error or stringwith message
      * @return {void}
      */
     triggerError(err) {
-        this.emit('error', err instanceof Error ? err : new Error(__('error_refresh')));
+        this.emit('error', err instanceof Error ? err : new Error(err || __('error_refresh')));
     }
 
     /**
