@@ -53,6 +53,7 @@ describe('lib/annotations/Annotator', () => {
             addListener: () => {},
             unbindCustomListenersOnThread: () => {},
             removeAllListeners: () => {},
+            scrollIntoView: () => {},
             type: 'type'
         };
         stubs.threadMock = sandbox.mock(stubs.thread);
@@ -106,7 +107,6 @@ describe('lib/annotations/Annotator', () => {
             expect(unbindDOMStub).to.be.called;
             expect(unbindCustomListenersOnService).to.be.called;
             expect(unbindListener).to.be.calledWith('scaleAnnotations', sinon.match.func);
-            expect(unbindListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
         });
     });
 
@@ -823,6 +823,28 @@ describe('lib/annotations/Annotator', () => {
 
                 annotator.currentAnnotationMode = TYPES.point;
                 expect(annotator.isInAnnotationMode(TYPES.draw)).to.be.false;
+            });
+        });
+
+        describe('scrollToAnnotation()', () => {
+            beforeEach(() => {
+                stubs.thread.location = { page: 1 };
+                annotator.addThreadToMap(stubs.thread);
+            });
+
+            it('should do nothing if no threadID is provided', () => {
+                stubs.threadMock.expects('scrollIntoView').never();
+                annotator.scrollToAnnotation();
+            });
+
+            it('should do nothing if threadID does not exist on page', () => {
+                stubs.threadMock.expects('scrollIntoView').never();
+                annotator.scrollToAnnotation('wrong');
+            });
+
+            it('should scroll to annotation if threadID exists on page', () => {
+                stubs.threadMock.expects('scrollIntoView');
+                annotator.scrollToAnnotation(stubs.thread.threadID);
             });
         });
 
