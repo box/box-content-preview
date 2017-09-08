@@ -168,15 +168,15 @@ describe('lib/annotations/drawing/DrawingContainer', () => {
         });
     });
 
-    describe('isUndoEmpty()', () => {
+    describe('isEmpty()', () => {
         it('should return true when no items are in the undoStack', () => {
             drawingContainer.undoStack = [];
-            expect(drawingContainer.isUndoEmpty()).to.be.truthy;
+            expect(drawingContainer.isEmpty()).to.be.truthy;
         });
 
         it('should return false when there are items are in the undoStack', () => {
             drawingContainer.undoStack = ['one'];
-            expect(drawingContainer.isUndoEmpty()).to.be.falsy;
+            expect(drawingContainer.isEmpty()).to.be.falsy;
         });
     });
 });

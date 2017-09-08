@@ -90,10 +90,18 @@ class DocDrawingDialog extends AnnotationDialog {
     bindDOMListeners() {
         if (this.commitButtonEl) {
             this.commitButtonEl.addEventListener('click', this.postDrawing);
+
+            if (this.hasTouch) {
+                this.commitButtonEl.addEventListener('touchend', this.postDrawing);
+            }
         }
 
         if (this.deleteButtonEl) {
             this.deleteButtonEl.addEventListener('click', this.deleteAnnotation);
+
+            if (this.hasTouch) {
+                this.deleteButtonEl.addEventListener('touchend', this.deleteAnnotation);
+            }
         }
     }
 
@@ -158,6 +166,7 @@ class DocDrawingDialog extends AnnotationDialog {
             this.pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
         }
 
+        // NOTE: (@pramodsum) Add logic to flip annotation dialog
         // Reinsert when the dialog is removed from the page
         if (!this.pageEl.contains(this.element)) {
             this.pageEl.appendChild(this.element);

@@ -236,10 +236,10 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
 
         it('should clean up without committing when there are no paths to be saved', () => {
             sandbox.stub(docDrawingThread, 'reset');
-            sandbox.stub(docDrawingThread.pathContainer, 'isUndoEmpty').returns(true);
+            sandbox.stub(docDrawingThread.pathContainer, 'isEmpty').returns(true);
 
             docDrawingThread.saveAnnotation('draw');
-            expect(docDrawingThread.pathContainer.isUndoEmpty).to.be.called;
+            expect(docDrawingThread.pathContainer.isEmpty).to.be.called;
             expect(AnnotationThread.prototype.saveAnnotation).to.not.be.called;
             expect(docDrawingThread.reset).to.be.called;
             expect(stubs.show).to.not.be.called;
@@ -259,10 +259,10 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
                 clearRect: sandbox.stub()
             };
 
-            sandbox.stub(docDrawingThread.pathContainer, 'isUndoEmpty').returns(false);
+            sandbox.stub(docDrawingThread.pathContainer, 'isEmpty').returns(false);
 
             docDrawingThread.saveAnnotation('draw');
-            expect(docDrawingThread.pathContainer.isUndoEmpty).to.be.called;
+            expect(docDrawingThread.pathContainer.isEmpty).to.be.called;
             expect(docDrawingThread.drawingContext.clearRect).to.be.called;
             expect(AnnotationThread.prototype.saveAnnotation).to.be.called;
             expect(stubs.show).to.be.called;

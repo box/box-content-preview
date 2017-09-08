@@ -325,6 +325,7 @@ class DocAnnotator extends Annotator {
             container: this.container,
             fileVersionId: this.fileVersionId,
             isMobile: this.isMobile,
+            hasTouch: this.hasTouch,
             locale: this.locale,
             location,
             type,
@@ -512,10 +513,6 @@ class DocAnnotator extends Annotator {
     bindDOMListeners() {
         super.bindDOMListeners();
 
-        if (!this.permissions.canAnnotate) {
-            return;
-        }
-
         this.annotatedElement.addEventListener('mouseup', this.highlightMouseupHandler);
 
         // Prevent all forms of highlight annotations if annotating (or plain AND comment highlights) is disabled
@@ -550,10 +547,6 @@ class DocAnnotator extends Annotator {
         if (this.highlightThrottleHandle) {
             cancelAnimationFrame(this.highlightThrottleHandle);
             this.highlightThrottleHandle = null;
-        }
-
-        if (!this.permissions.canAnnotate) {
-            return;
         }
 
         Object.keys(this.modeControllers).forEach((mode) => {

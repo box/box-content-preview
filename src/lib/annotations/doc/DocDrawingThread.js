@@ -145,7 +145,7 @@ class DocDrawingThread extends DrawingThread {
         this.reset();
 
         // Only make save request to server if there exist paths to save
-        if (this.pathContainer.isUndoEmpty()) {
+        if (this.pathContainer.isEmpty()) {
             return;
         }
 
