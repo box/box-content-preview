@@ -363,7 +363,21 @@ describe('lib/annotations/AnnotationThread', () => {
     });
 
     describe('scrollToPage()', () => {
+        it('should do nothing if annotation does not have a location or page', () => {
+            const pageEl = {
+                scrollIntoView: sandbox.stub()
+            };
+
+            thread.location = {};
+            thread.scrollToPage();
+
+            thread.location = null;
+            thread.scrollToPage();
+            expect(pageEl.scrollIntoView).to.not.be.called;
+        });
+
         it('should scroll annotation\'s page into view', () => {
+            thread.location = { page: 1 };
             const pageEl = {
                 scrollIntoView: sandbox.stub()
             };
