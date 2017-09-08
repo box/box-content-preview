@@ -608,9 +608,15 @@ describe('lib/annotations/AnnotationThread', () => {
     });
 
     describe('mouseoutHandler()', () => {
+        it('should do nothing if event does not exist', () => {
+            stubs.isInDialog = sandbox.stub(annotatorUtil, 'isInDialog');
+            thread.mouseoutHandler();
+            expect(stubs.isInDialog).to.not.be.called;
+        });
+
         it('should not call hideDialog if there are no annotations in the thread', () => {
             stubs.hide = sandbox.stub(thread, 'hideDialog');
-            thread.mouseoutHandler();
+            thread.mouseoutHandler({});
             expect(stubs.hide).to.not.be.called;
         });
 
@@ -627,7 +633,7 @@ describe('lib/annotations/AnnotationThread', () => {
             });
 
             thread.annotations = [annotation];
-            thread.mouseoutHandler();
+            thread.mouseoutHandler({});
             expect(stubs.hide).to.be.called;
         });
     });
