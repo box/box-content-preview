@@ -83,8 +83,11 @@ class Annotator extends EventEmitter {
         this.unbindModeListeners();
 
         if (this.threads) {
-            Object.values(this.threads).forEach((pageThreads) => {
-                Object.values(pageThreads).forEach((thread) => {
+            Object.keys(this.threads).forEach((page) => {
+                const pageThreads = this.getThreadsOnPage(page);
+
+                Object.keys(pageThreads).forEach((threadID) => {
+                    const thread = pageThreads[threadID];
                     this.unbindCustomListenersOnThread(thread);
                 });
             });
@@ -267,7 +270,8 @@ class Annotator extends EventEmitter {
         }
 
         const pageThreads = this.getThreadsOnPage(pageNum);
-        Object.values(pageThreads).forEach((thread) => {
+        Object.keys(pageThreads).forEach((threadID) => {
+            const thread = pageThreads[threadID];
             thread.hide();
         });
     }
@@ -297,7 +301,8 @@ class Annotator extends EventEmitter {
         }
 
         const pageThreads = this.getThreadsOnPage(pageNum);
-        Object.values(pageThreads).forEach((thread) => {
+        Object.keys(pageThreads).forEach((threadID) => {
+            const thread = pageThreads[threadID];
             if (!this.isModeAnnotatable(thread.type)) {
                 return;
             }
@@ -877,8 +882,11 @@ class Annotator extends EventEmitter {
     destroyPendingThreads() {
         let hasPendingThreads = false;
 
-        Object.values(this.threads).forEach((pageThreads) => {
-            Object.values(pageThreads).forEach((thread) => {
+        Object.keys(this.threads).forEach((page) => {
+            const pageThreads = this.getThreadsOnPage(page);
+
+            Object.keys(pageThreads).forEach((threadID) => {
+                const thread = pageThreads[threadID];
                 if (annotatorUtil.isPending(thread.state)) {
                     hasPendingThreads = true;
                     thread.destroy();
