@@ -100,11 +100,17 @@ class DrawingThread extends AnnotationThread {
         this.emit('threadcleanup');
     }
 
+    /**
+     * Reset the state of the thread and clear any drawn boundary
+     *
+     * @return {void}
+     */
     reset() {
         super.reset();
 
         this.clearBoundary();
     }
+
     /* eslint-disable no-unused-vars */
     /**
      * Handle a pointer movement
@@ -313,7 +319,7 @@ class DrawingThread extends AnnotationThread {
         this.drawingContext.restore();
 
         if (this.dialog) {
-            if (!this.dialog.isVisible() && !this.pathContainer.isUndoEmpty()) {
+            if (!this.dialog.isVisible() && !this.pathContainer.isEmpty()) {
                 this.showDialog();
             }
 
@@ -335,7 +341,6 @@ class DrawingThread extends AnnotationThread {
         const elapsed = timestamp - (this.lastRenderTimestamp || 0);
         if (elapsed >= DRAW_RENDER_THRESHOLD) {
             this.draw(this.drawingContext, true);
-            this.drawBoundary();
 
             this.lastRenderTimestamp = timestamp;
             renderAgain = this.drawingFlag === DRAW_STATES.drawing;
@@ -385,7 +390,7 @@ class DrawingThread extends AnnotationThread {
         this.minY = boundaryData.minY;
         this.maxY = boundaryData.maxY;
 
-        if (this.dialog && this.pathContainer.isUndoEmpty()) {
+        if (this.dialog && this.pathContainer.isEmpty()) {
             this.dialog.hide();
         }
     }

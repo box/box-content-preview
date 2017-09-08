@@ -223,7 +223,8 @@ class DrawingModeController extends AnnotationModeController {
      * @return {void}
      */
     handleSelection(event) {
-        if (!event) {
+        // NOTE: @jpress This is a workaround when buttons are not given precedence in the event chain
+        if (!event || (event.target && event.target.nodeName === 'BUTTON')) {
             return;
         }
 

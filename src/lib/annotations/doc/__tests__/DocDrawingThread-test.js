@@ -122,6 +122,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             stubs.emitAvailableActions = sandbox.stub(docDrawingThread, 'emitAvailableActions');
             stubs.updateBoundary = sandbox.stub(docDrawingThread, 'updateBoundary');
             stubs.setBoundary = sandbox.stub(docDrawingThread, 'setBoundary');
+            stubs.drawBoundary = sandbox.stub(docDrawingThread, 'drawBoundary');
             stubs.createDialog = sandbox.stub(docDrawingThread, 'createDialog');
             docDrawingThread.drawingFlag = DRAW_STATES.drawing;
             docDrawingThread.pendingPath = {
@@ -137,6 +138,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
             expect(stubs.emitAvailableActions).to.be.called;
             expect(stubs.updateBoundary).to.be.called;
             expect(stubs.setBoundary).to.be.called;
+            expect(stubs.drawBoundary).to.be.called;
             expect(stubs.createDialog).to.be.called;
             expect(docDrawingThread.pathContainer.insert).to.be.called;
             expect(docDrawingThread.drawingFlag).to.equal(DRAW_STATES.idle);
@@ -234,10 +236,10 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
 
         it('should clean up without committing when there are no paths to be saved', () => {
             sandbox.stub(docDrawingThread, 'reset');
-            sandbox.stub(docDrawingThread.pathContainer, 'isUndoEmpty').returns(true);
+            sandbox.stub(docDrawingThread.pathContainer, 'isEmpty').returns(true);
 
             docDrawingThread.saveAnnotation('draw');
-            expect(docDrawingThread.pathContainer.isUndoEmpty).to.be.called;
+            expect(docDrawingThread.pathContainer.isEmpty).to.be.called;
             expect(AnnotationThread.prototype.saveAnnotation).to.not.be.called;
             expect(docDrawingThread.reset).to.be.called;
             expect(stubs.show).to.not.be.called;
@@ -257,10 +259,10 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
                 clearRect: sandbox.stub()
             };
 
-            sandbox.stub(docDrawingThread.pathContainer, 'isUndoEmpty').returns(false);
+            sandbox.stub(docDrawingThread.pathContainer, 'isEmpty').returns(false);
 
             docDrawingThread.saveAnnotation('draw');
-            expect(docDrawingThread.pathContainer.isUndoEmpty).to.be.called;
+            expect(docDrawingThread.pathContainer.isEmpty).to.be.called;
             expect(docDrawingThread.drawingContext.clearRect).to.be.called;
             expect(AnnotationThread.prototype.saveAnnotation).to.be.called;
             expect(stubs.show).to.be.called;
@@ -343,12 +345,14 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
                 isVisible: sandbox.stub().returns(true),
                 destroy: () => {},
                 removeAllListeners: () => {},
-                hide: () => {}
+                hide: () => {},
+                show: sandbox.stub()
             }
 
             docDrawingThread.show();
             expect(docDrawingThread.dialog.isVisible).to.be.called;
             expect(docDrawingThread.drawBoundary).to.be.called;
+            expect(docDrawingThread.dialog.show).to.be.called;
         })
     });
 

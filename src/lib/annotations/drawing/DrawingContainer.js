@@ -36,7 +36,7 @@ class DrawingContainer {
      * @return {boolean} Whether or not an undo was done.
      */
     undo() {
-        if (this.isUndoEmpty()) {
+        if (this.isEmpty()) {
             return false;
         }
 
@@ -65,7 +65,7 @@ class DrawingContainer {
      *
      * @return {boolean} Whether or not there exists committed items
      */
-    isUndoEmpty() {
+    isEmpty() {
         return this.undoStack.length === 0;
     }
 
