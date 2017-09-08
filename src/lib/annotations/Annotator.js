@@ -399,7 +399,9 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     disableAnnotationMode(mode, buttonEl) {
-        if (this.isInAnnotationMode(mode)) {
+        if (!this.isModeAnnotatable(mode)) {
+            return;
+        } else if (this.isInAnnotationMode(mode)) {
             this.currentAnnotationMode = null;
             this.emit(MODE_EXIT);
         }
