@@ -1,3 +1,12 @@
+<a name="1.9.1"></a>
+## 1.9.1 (2017-09-08)
+
+* Fix: Adding reply-container mobile padding + clearing currentAnnotationMode on mode exit (#370) ([05d3662](https://github.com/box/box-content-preview/commit/05d3662))
+* Fix: disableAnnotationMode cannot be called on disallowed modes (#372) ([1d5a172](https://github.com/box/box-content-preview/commit/1d5a172))
+* Fix: Swapping Object.values() with Object.keys() (#371) ([23527a8](https://github.com/box/box-content-preview/commit/23527a8))
+
+
+
 <a name="1.9.0"></a>
 # 1.9.0 (2017-09-06)
 
