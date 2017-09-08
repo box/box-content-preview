@@ -379,12 +379,20 @@ describe('lib/annotations/Annotator', () => {
         describe('disableAnnotationMode()', () => {
             beforeEach(() => {
                 annotator.currentAnnotationMode = TYPES.point;
+                stubs.isModeAnnotatable = sandbox.stub(annotator, 'isModeAnnotatable').returns(true);
                 stubs.isInMode = sandbox.stub(annotator, 'isInAnnotationMode').returns(false);
                 stubs.emit = sandbox.stub(annotator, 'emit');
                 stubs.unbindMode = sandbox.stub(annotator, 'unbindModeListeners');
                 stubs.bindDOM = sandbox.stub(annotator, 'bindDOMListeners');
                 stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
                 stubs.show = sandbox.stub(annotatorUtil, 'showElement');
+            });
+
+            it('should do nothing when the mode is not annotatable', () => {
+                stubs.isModeAnnotatable.returns(false);
+                annotator.annotatedElement = null;
+
+                expect(annotator.disableAnnotationMode, TYPES.draw).to.not.throw();
             });
 
             it('should exit annotation mode if currently in the specified mode', () => {
