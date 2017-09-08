@@ -19,11 +19,10 @@ import {
     SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
     SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO,
     SELECTOR_ANNOTATION_BUTTON_DRAW_REDO,
-    TYPES
+    TYPES,
+    THREAD_EVENT,
+    ANNOTATOR_EVENT
 } from './annotationConstants';
-
-const MODE_ENTER = 'annotationmodeenter';
-const MODE_EXIT = 'annotationmodeexit';
 
 @autobind
 class Annotator extends EventEmitter {
@@ -105,7 +104,7 @@ class Annotator extends EventEmitter {
 
         this.unbindDOMListeners();
         this.unbindCustomListenersOnService();
-        this.removeListener('scaleAnnotations', this.scaleAnnotations);
+        this.removeListener('scaleannotations', this.scaleAnnotations);
     }
 
     /**
@@ -407,7 +406,7 @@ class Annotator extends EventEmitter {
             return;
         } else if (this.isInAnnotationMode(mode)) {
             this.currentAnnotationMode = null;
-            this.emit(MODE_EXIT);
+            this.emit(ANNOTATOR_EVENT.modeExit, { mode });
         }
 
         this.annotatedElement.classList.remove(CLASS_ANNOTATION_MODE);
@@ -441,7 +440,7 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     enableAnnotationMode(mode, buttonEl) {
-        this.emit(MODE_ENTER, mode);
+        this.emit(ANNOTATOR_EVENT.modeEnter, { mode });
         this.annotatedElement.classList.add(CLASS_ANNOTATION_MODE);
         if (buttonEl) {
             buttonEl.classList.add(CLASS_ACTIVE);
@@ -540,7 +539,7 @@ class Annotator extends EventEmitter {
         this.threads = {};
         this.bindDOMListeners();
         this.bindCustomListenersOnService(this.annotationService);
-        this.addListener('scaleAnnotations', this.scaleAnnotations);
+        this.addListener('scaleannotations', this.scaleAnnotations);
     }
 
     /**
@@ -585,7 +584,7 @@ class Annotator extends EventEmitter {
                 }
             });
 
-            this.emit('annotationsfetched');
+            this.emit(ANNOTATOR_EVENT.fetch);
         });
     }
 
@@ -654,7 +653,7 @@ class Annotator extends EventEmitter {
         }
 
         if (errorMessage) {
-            this.emit('annotatorerror', errorMessage);
+            this.emit(ANNOTATOR_EVENT.error, errorMessage);
         }
     }
 
@@ -684,17 +683,7 @@ class Annotator extends EventEmitter {
             return;
         }
 
-        // Thread was deleted, remove from thread map
-        thread.addListener('threaddeleted', () => {
-            this.removeThreadFromMap(thread);
-        });
-
-        // Thread should be cleaned up, unbind listeners - we don't do this
-        // in threaddeleted listener since thread may still need to respond
-        // to error messages
-        thread.addListener('threadcleanup', () => {
-            this.unbindCustomListenersOnThread(thread);
-        });
+        thread.addListener('threadevent', this.handleAnnotationThreadEvents);
     }
 
     /**
@@ -705,9 +694,7 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     unbindCustomListenersOnThread(thread) {
-        thread.removeAllListeners('threaddeleted');
-        thread.removeAllListeners('threadcleanup');
-        thread.removeAllListeners('annotationsaved');
+        thread.removeAllListeners('threadevent');
         thread.removeAllListeners('annotationevent');
     }
 
@@ -755,7 +742,6 @@ class Annotator extends EventEmitter {
     pointClickHandler(event) {
         event.stopPropagation();
         event.preventDefault();
-        this.emit(MODE_EXIT);
 
         // Determine if a point annotation dialog is already open and close the
         // current open dialog
@@ -784,6 +770,8 @@ class Annotator extends EventEmitter {
             // Bind events on thread
             this.bindCustomListenersOnThread(thread);
         }
+
+        this.emit(THREAD_EVENT.pending, thread.getThreadEventData());
     }
 
     /**
@@ -876,6 +864,7 @@ class Annotator extends EventEmitter {
         this.setScale(data.scale);
         this.rotateAnnotations(data.rotationAngle, data.pageNum);
     }
+
     /**
      * Gets threads on page
      *
@@ -889,6 +878,25 @@ class Annotator extends EventEmitter {
         }
 
         return this.threads[page];
+    }
+
+    /**
+     * Gets thread specified by threadID
+     *
+     * @private
+     * @param {number} threadID - Thread ID
+     * @return {AnnotationThread} Annotation thread specified by threadID
+     */
+    getThreadByID(threadID) {
+        let thread = null;
+        Object.keys(this.threads).forEach((page) => {
+            const pageThreads = this.getThreadsOnPage(page);
+            if (threadID in pageThreads) {
+                thread = pageThreads[threadID];
+            }
+        });
+
+        return thread;
     }
 
     /**
@@ -927,8 +935,40 @@ class Annotator extends EventEmitter {
             return;
         }
 
-        this.emit('annotatorerror', __('annotations_load_error'));
+        this.emit(ANNOTATOR_EVENT.error, __('annotations_load_error'));
         this.validationErrorEmitted = true;
+    }
+
+    /**
+     * Handles annotation thread events and emits them to the viewer
+     *
+     * @private
+     * @param {Object} [data] - Annotation thread event data
+     * @param {string} [data.event] - Annotation thread event
+     * @param {string} [data.data] - Annotation thread event data
+     * @return {void}
+     */
+    handleAnnotationThreadEvents(data) {
+        const thread = this.getThreadByID(data.data.threadID);
+        if (!thread) {
+            return;
+        }
+
+        switch (data.event) {
+            case THREAD_EVENT.threadCleanup:
+                // Thread should be cleaned up, unbind listeners - we
+                // don't do this in annotationdelete listener since thread
+                // may still need to respond to error messages
+                this.unbindCustomListenersOnThread(thread);
+                break;
+            case THREAD_EVENT.threadDelete:
+                // Thread was deleted, remove from thread map
+                this.removeThreadFromMap(thread);
+                this.emit(data.event, data.data);
+                break;
+            default:
+                this.emit(data.event, data.data);
+        }
     }
 
     /**
@@ -947,6 +987,7 @@ class Annotator extends EventEmitter {
             event,
             data,
             annotatorName: annotator ? annotator.NAME : '',
+            fileVersionId: this.fileVersionId,
             fileId
         });
     }

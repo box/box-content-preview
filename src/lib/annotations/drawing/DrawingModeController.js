@@ -93,7 +93,7 @@ class DrawingModeController extends AnnotationModeController {
 
         // On save, add the thread to the Rbush, on delete, remove it from the Rbush
         thread.addListener('annotationsaved', () => this.registerThread(thread));
-        thread.addListener('threaddeleted', () => this.unregisterThread(thread));
+        thread.addListener('annotationdelete', () => this.unregisterThread(thread));
     }
 
     /**

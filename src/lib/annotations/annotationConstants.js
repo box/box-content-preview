@@ -105,6 +105,25 @@ export const HIGHLIGHT_FILL = {
     erase: 'rgba(255, 245, 132, 1)'
 };
 
+export const ANNOTATOR_EVENT = {
+    modeEnter: 'annotationmodeenter',
+    modeExit: 'annotationmodeexit',
+    fetch: 'annotationsfetched',
+    error: 'annotationerror'
+};
+
+export const THREAD_EVENT = {
+    pending: 'annotationpending',
+    threadSave: 'annotationthreadsaved',
+    threadDelete: 'annotationthreaddeleted',
+    threadCleanup: 'annotationthreadcleanup',
+    save: 'annotationsaved',
+    delete: 'annotationdeleted',
+    deleteError: 'annotationdeleteerror',
+    cancel: 'annotationcanceled',
+    createError: 'annotationcreateerror'
+};
+
 export const PAGE_PADDING_TOP = 15;
 export const PAGE_PADDING_BOTTOM = 15;
 

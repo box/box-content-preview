@@ -4,7 +4,13 @@ import Annotation from './Annotation';
 import AnnotationService from './AnnotationService';
 import * as annotatorUtil from './annotatorUtil';
 import { ICON_PLACED_ANNOTATION } from '../icons/icons';
-import { STATES, TYPES, CLASS_ANNOTATION_POINT_MARKER, DATA_TYPE_ANNOTATION_INDICATOR } from './annotationConstants';
+import {
+    STATES,
+    TYPES,
+    CLASS_ANNOTATION_POINT_MARKER,
+    DATA_TYPE_ANNOTATION_INDICATOR,
+    THREAD_EVENT
+} from './annotationConstants';
 
 @autobind
 class AnnotationThread extends EventEmitter {
@@ -77,7 +83,7 @@ class AnnotationThread extends EventEmitter {
             this.element = null;
         }
 
-        this.emit('threaddeleted');
+        this.emit(THREAD_EVENT.threadDelete);
     }
 
     /**
@@ -157,7 +163,7 @@ class AnnotationThread extends EventEmitter {
                 this.deleteAnnotation(tempAnnotationID, /* useServer */ false);
 
                 // Broadcast error
-                this.emit('annotationcreateerror');
+                this.emit(THREAD_EVENT.createError);
             });
     }
 
@@ -217,12 +223,15 @@ class AnnotationThread extends EventEmitter {
 
                     // Broadcast thread cleanup if needed
                     if (this.annotations.length === 0) {
-                        this.emit('threadcleanup');
+                        this.emit(THREAD_EVENT.threadCleanup);
                     }
+
+                    // Broadcast annotation deletion event
+                    this.emit(THREAD_EVENT.delete);
                 })
                 .catch(() => {
                     // Broadcast error
-                    this.emit('annotationdeleteerror');
+                    this.emit(THREAD_EVENT.deleteError);
                 });
         }
     }
@@ -416,7 +425,32 @@ class AnnotationThread extends EventEmitter {
         if (!annotatorUtil.isPending(this.state)) {
             return;
         }
+
+        this.emit(THREAD_EVENT.cancel);
         this.destroy();
+    }
+
+    /**
+     * Generate threadData with relevant information to be emitted with an
+     * annotation thread event
+     *
+     * @protected
+     * @return {Object} threadData - Annotation event thread data
+     */
+    getThreadEventData() {
+        const threadData = {
+            type: this.type,
+            threadID: this.threadID
+        };
+
+        if (this.annotationService.user.id > 0) {
+            threadData.userId = this.annotationService.user.id;
+        }
+        if (this.threadNumber) {
+            threadData.threadNumber = this.threadNumber;
+        }
+
+        return threadData;
     }
 
     //--------------------------------------------------------------------------
@@ -445,6 +479,7 @@ class AnnotationThread extends EventEmitter {
         // Set threadNumber if the savedAnnotation is the first annotation of the thread
         if (!this.threadNumber && savedAnnotation && savedAnnotation.threadNumber) {
             this.threadNumber = savedAnnotation.threadNumber;
+            this.emit(THREAD_EVENT.save);
         }
 
         if (this.dialog) {
@@ -457,8 +492,6 @@ class AnnotationThread extends EventEmitter {
             this.dialog.addAnnotation(savedAnnotation);
             this.dialog.removeAnnotation(tempAnnotation.annotationID);
         }
-
-        this.emit('annotationsaved');
     }
 
     /**
@@ -503,6 +536,10 @@ class AnnotationThread extends EventEmitter {
         if (this.dialog) {
             this.dialog.addAnnotation(annotation);
         }
+
+        if (this.annotations.length > 1) {
+            this.emit(THREAD_EVENT.save);
+        }
     }
 
     /**
@@ -545,6 +582,21 @@ class AnnotationThread extends EventEmitter {
      */
     deleteAnnotationWithID(data) {
         this.deleteAnnotation(data.annotationID);
+    }
+
+    /**
+     * Emits a generic viewer event
+     *
+     * @private
+     * @emits viewerevent
+     * @param {string} event - Event name
+     * @param {Object} data - Event data
+     * @return {void}
+     */
+    emit(event) {
+        const threadData = this.getThreadEventData();
+        super.emit(event, threadData);
+        super.emit('threadevent', { event, data: threadData });
     }
 }
 

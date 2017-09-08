@@ -26,8 +26,10 @@ const COMMENT_BUTTON_TEMPLATE = `
 
 /**
  * Events emitted by this component.
+ * TODO(@spramod): Evaluate if these events need to be propogated to viewer
  */
 export const CreateEvents = {
+    init: 'init_highlight_create',
     plain: 'plain_highlight_create',
     comment: 'comment_highlight_edit',
     commentPost: 'comment_highlight_post'
@@ -156,6 +158,7 @@ class CreateHighlightDialog extends EventEmitter {
         this.setButtonVisibility(true);
 
         showElement(this.containerEl);
+        this.emit(CreateEvents.init);
     }
 
     /**

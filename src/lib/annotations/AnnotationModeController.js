@@ -126,9 +126,7 @@ class AnnotationModeController extends EventEmitter {
             return;
         }
 
-        thread.removeAllListeners('threaddeleted');
-        thread.removeAllListeners('threadcleanup');
-        thread.removeAllListeners('annotationsaved');
+        thread.removeAllListeners('threadevent');
         thread.removeAllListeners('annotationevent');
     }
 
