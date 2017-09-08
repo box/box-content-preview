@@ -100,6 +100,11 @@ class DrawingThread extends AnnotationThread {
         this.emit('threadcleanup');
     }
 
+    /**
+     * Reset the state of the thread and clear any drawn boundary
+     *
+     * @return {void}
+     */
     reset() {
         super.reset();
 
@@ -313,7 +318,7 @@ class DrawingThread extends AnnotationThread {
         this.drawingContext.restore();
 
         if (this.dialog) {
-            if (!this.dialog.isVisible() && !this.pathContainer.isUndoEmpty()) {
+            if (!this.dialog.isVisible() && !this.pathContainer.isEmpty()) {
                 this.showDialog();
             }
 
@@ -384,7 +389,7 @@ class DrawingThread extends AnnotationThread {
         this.minY = boundaryData.minY;
         this.maxY = boundaryData.maxY;
 
-        if (this.dialog && this.pathContainer.isUndoEmpty()) {
+        if (this.dialog && this.pathContainer.isEmpty()) {
             this.dialog.hide();
         }
     }

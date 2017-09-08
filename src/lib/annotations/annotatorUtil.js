@@ -449,6 +449,7 @@ export function eventToLocationHandler(locationFunction, callback) {
     return (event) => {
         const evt = event || window.event;
         // Do nothing when the target isn't the text layer in case the text layer receives event precedence over buttons
+        // NOTE: Currently only applicable to documents. Need to find a better way to ensure button event precedence.
         if (!evt || (event.target && event.target.className !== 'textLayer')) {
             return;
         }
@@ -474,6 +475,7 @@ export function prevDefAndStopProp(event) {
     event.preventDefault();
     event.stopPropagation();
 }
+
 /**
  * Create a JSON object containing x/y coordinates and optionally dimensional information
  *

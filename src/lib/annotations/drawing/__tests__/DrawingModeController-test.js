@@ -271,7 +271,7 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
 
         it('should call select on an thread found in the data store', () => {
             stubs.select = sandbox.stub(drawingModeController, 'select');
-            stubs.clean = sandbox.stub(drawingModeController, 'cleanSelector');
+            stubs.clean = sandbox.stub(drawingModeController, 'removeSelection');
             stubs.getLoc.returns({
                 x: 5,
                 y: 5
@@ -293,14 +293,14 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
         });
     });
 
-    describe('cleanSelector()', () => {
+    describe('removeSelection()', () => {
         it('should clean a selected thread boundary', () => {
             const thread = {
                 clearBoundary: sandbox.stub()
             };
             drawingModeController.selectedThread = thread;
 
-            drawingModeController.cleanSelector();
+            drawingModeController.removeSelection();
             expect(thread.clearBoundary).to.be.called;
             expect(drawingModeController.selectedThread).to.be.undefined;
         });

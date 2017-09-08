@@ -41,15 +41,22 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
 
     describe('postDrawing()', () => {
         it('should emit annotation create to indicate that the save button was pressed', () => {
+            const event = {
+                stopPropagation: sandbox.stub(),
+                preventDefault: sandbox.stub()
+            }
             sandbox.stub(docDrawingDialog, 'emit');
 
-            docDrawingDialog.postDrawing();
+            docDrawingDialog.postDrawing(event);
             expect(docDrawingDialog.emit).to.be.calledWith('annotationcreate');
+            expect(event.stopPropagation).to.be.called;
+            expect(event.preventDefault).to.be.called;
         });
     });
 
     describe('bindDOMListeners()', () => {
         it('should bind listeners to a commit button element', () => {
+            docDrawingDialog.hasTouch = true;
             docDrawingDialog.commitButtonEl = {
                 addEventListener: sandbox.stub()
             };
@@ -66,6 +73,7 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
         });
 
         it('should bind listeners to a delete button element', () => {
+            docDrawingDialog.hasTouch = true;
             docDrawingDialog.deleteButtonEl = {
                 addEventListener: sandbox.stub()
             };
@@ -84,6 +92,7 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
 
     describe('unbindDOMListeners()', () => {
         it('should unbind listeners on a commit button element', () => {
+            docDrawingDialog.hasTouch = true;
             docDrawingDialog.commitButtonEl = {
                 removeEventListener: sandbox.stub()
             };
@@ -100,6 +109,7 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
         });
 
         it('should unbind listeners on a delete button element', () => {
+            docDrawingDialog.hasTouch = true;
             docDrawingDialog.deleteButtonEl = {
                 removeEventListener: sandbox.stub()
             };

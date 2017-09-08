@@ -710,6 +710,10 @@ class BaseViewer extends EventEmitter {
             this.annotator.emit('scaleAnnotations', data);
         });
 
+        this.addListener('scrolltoannotation', (data) => {
+            this.annotator.scrollToAnnotation(data);
+        });
+
         // Add a custom listener for events emmited by the annotator
         this.annotator.addListener('annotatorevent', this.handleAnnotatorNotifications);
     }

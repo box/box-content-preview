@@ -50,6 +50,7 @@ class AnnotationThread extends EventEmitter {
         this.type = data.type;
         this.locale = data.locale;
         this.isMobile = data.isMobile;
+        this.hasTouch = data.hasTouch;
         this.permissions = data.permissions;
 
         this.setup();
@@ -223,6 +224,50 @@ class AnnotationThread extends EventEmitter {
                     // Broadcast error
                     this.emit('annotationdeleteerror');
                 });
+        }
+    }
+
+    /**
+     * Scroll annotation into the center of the viewport, if possible
+     *
+     * @private
+     * @return {void}
+     */
+    scrollIntoView() {
+        const yPos = parseInt(this.location.y, 10);
+        this.scrollToPage();
+        this.centerAnnotation(this.annotatedElement.scrollTop + yPos);
+    }
+
+    /**
+     * Scroll to the annotation's page
+     *
+     * @private
+     * @return {void}
+     */
+    scrollToPage() {
+        // Ignore if annotation does not have a location or page
+        if (!this.location || !this.location.page) {
+            return;
+        }
+
+        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
+        pageEl.scrollIntoView();
+    }
+
+    /**
+     * Adjust page scroll position so annotation is centered in viewport
+     *
+     * @private
+     * @param {number} scrollVal - scroll value to adjust so annotation is
+     centered in the viewport
+     * @return {void}
+     */
+    centerAnnotation(scrollVal) {
+        if (scrollVal < this.annotatedElement.scrollHeight) {
+            this.annotatedElement.scrollTop = scrollVal;
+        } else {
+            this.annotatedElement.scrollTop = this.annotatedElement.scrollBottom;
         }
     }
 

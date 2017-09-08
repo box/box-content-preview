@@ -352,6 +352,63 @@ describe('lib/annotations/AnnotationThread', () => {
         });
     });
 
+    describe('scrollIntoView()', () => {
+        it('should scroll to annotation page and center annotation in viewport', () => {
+            sandbox.stub(thread, 'scrollToPage');
+            sandbox.stub(thread, 'centerAnnotation');
+            thread.scrollIntoView();
+            expect(thread.scrollToPage);
+            expect(thread.centerAnnotation).to.be.calledWith(sinon.match.number);
+        })
+    });
+
+    describe('scrollToPage()', () => {
+        it('should do nothing if annotation does not have a location or page', () => {
+            const pageEl = {
+                scrollIntoView: sandbox.stub()
+            };
+
+            thread.location = {};
+            thread.scrollToPage();
+
+            thread.location = null;
+            thread.scrollToPage();
+            expect(pageEl.scrollIntoView).to.not.be.called;
+        });
+
+        it('should scroll annotation\'s page into view', () => {
+            thread.location = { page: 1 };
+            const pageEl = {
+                scrollIntoView: sandbox.stub()
+            };
+            thread.annotatedElement = {
+                querySelector: sandbox.stub().returns(pageEl)
+            };
+            thread.scrollToPage();
+            expect(pageEl.scrollIntoView).to.be.called;
+        });
+    });
+
+    describe('centerAnnotation', () => {
+        beforeEach(() => {
+            thread.annotatedElement = {
+                scrollHeight: 100,
+                scrollTop: 0,
+                scrollBottom: 200
+            };
+        });
+
+        it('should scroll so annotation is vertically centered in viewport', () => {
+            thread.centerAnnotation(50);
+            expect(thread.annotatedElement.scrollTop).equals(50);
+        });
+
+        it('should scroll so annotation is vertically centered in viewport', () => {
+            thread.centerAnnotation(150);
+            expect(thread.annotatedElement.scrollTop).equals(200);
+        });
+    });
+
     describe('location()', () => {
         it('should get location', () => {
             expect(thread.location).to.equal(thread.location);

@@ -145,7 +145,7 @@ class DocDrawingThread extends DrawingThread {
         this.reset();
 
         // Only make save request to server if there exist paths to save
-        if (this.pathContainer.isUndoEmpty()) {
+        if (this.pathContainer.isEmpty()) {
             return;
         }
 
@@ -228,7 +228,9 @@ class DocDrawingThread extends DrawingThread {
             annotations: this.annotations,
             locale: this.locale,
             location: this.location,
-            canAnnotate: this.annotationService.canAnnotate
+            canAnnotate: this.annotationService.canAnnotate,
+            isMobile: this.isMobile,
+            hasTouch: this.hasTouch
         });
 
         this.bindCustomListenersOnDialog();

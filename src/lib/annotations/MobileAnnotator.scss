@@ -167,11 +167,7 @@ $tablet: "(min-width: 768px)";
     }
 
     .reply-container {
-        padding-bottom: 15px;
-
-        @media #{$tablet} {
-            padding-bottom: 45px;
-        }
+        padding-bottom: 45px;
     }
 }
 
@@ -216,20 +212,21 @@ $tablet: "(min-width: 768px)";
     z-index: 9999;
 
     .bp-annotation-highlight-btns {
+        display: flex;
+        justify-content: flex-start;
         padding: 0;
 
         button {
-            float: left;
+            flex-grow: 1;
             padding: 15px 0;
-            width: 50%;
 
-            &:first-child::after {
+            &:nth-child(2)::before {
                 border-right: 1px solid $seesee;
                 bottom: 17px;
                 content: "";
                 height: 25px;
-                left: 50%;
                 position: absolute;
+                right: 50%;
             }
         }
     }
