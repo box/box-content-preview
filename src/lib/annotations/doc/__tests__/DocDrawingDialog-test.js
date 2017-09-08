@@ -41,11 +41,16 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
 
     describe('postDrawing()', () => {
         it('should emit annotation create to indicate that the save button was pressed', () => {
-            const event = {}
+            const event = {
+                stopPropagation: sandbox.stub(),
+                preventDefault: sandbox.stub()
+            }
             sandbox.stub(docDrawingDialog, 'emit');
 
             docDrawingDialog.postDrawing(event);
             expect(docDrawingDialog.emit).to.be.calledWith('annotationcreate');
+            expect(event.stopPropagation).to.be.called;
+            expect(event.preventDefault).to.be.called;
         });
     });
 

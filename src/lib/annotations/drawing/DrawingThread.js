@@ -101,7 +101,7 @@ class DrawingThread extends AnnotationThread {
     }
 
     /**
-     * Reset the thread state and clear any drawn boundary
+     * Reset the state of the thread and clear any drawn boundary
      *
      * @return {void}
      */

@@ -633,7 +633,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.permissions.canAnnotate = true;
             annotator.isMobile = true;
             annotator.hasTouch = true;
-            
+
             const docListen = sandbox.spy(document, 'addEventListener');
             const annotatedElementListen = sandbox.spy(annotator.annotatedElement, 'addEventListener');
 

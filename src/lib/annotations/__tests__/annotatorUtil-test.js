@@ -435,7 +435,7 @@ describe('lib/annotations/annotatorUtil', () => {
 
         it('should do nothing when the target exists and it is not the textLayer', () => {
             event.target = {
-                className: 'button'
+                nodeName: 'BUTTON'
             };
             locationHandler(event);
             expect(callback).to.not.be.called;

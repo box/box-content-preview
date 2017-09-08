@@ -54,6 +54,7 @@ class AnnotationDialog extends EventEmitter {
         this.hasAnnotations = data.annotations.length > 0;
         this.canAnnotate = data.canAnnotate;
         this.locale = data.locale;
+        this.isMobile = data.isMobile;
     }
 
     /**

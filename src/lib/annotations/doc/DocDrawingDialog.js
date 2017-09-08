@@ -166,12 +166,12 @@ class DocDrawingDialog extends AnnotationDialog {
             this.pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
         }
 
-        // NOTE: (@pramodsum) Add logic to flip annotation dialog
         // Reinsert when the dialog is removed from the page
         if (!this.pageEl.contains(this.element)) {
             this.pageEl.appendChild(this.element);
         }
 
+        // NOTE: (@pramodsum) Add the annotationDialog.flipDialog implementation here
         // Show dialog so we can get width
         const clientRect = this.element.getBoundingClientRect();
         this.element.style.left = `${x - clientRect.width}px`;
@@ -248,13 +248,29 @@ class DocDrawingDialog extends AnnotationDialog {
     }
 
     /**
-     * Emit an event to save the drawing in progress
+     * Broadcasts message to save the drawing in progress
      *
      * @private
+     * @param {event} event - The event object from an event emitter
      * @return {void}
      */
-    postDrawing() {
+    postDrawing(event) {
+        event.stopPropagation();
+        event.preventDefault();
         this.emit('annotationcreate');
+    }
+
+    /**
+     * Broadcasts message to delete a drawing.
+     *
+     * @private
+     * @param {event} event - The event object from an event emitter
+     * @return {void}
+     */
+    deleteAnnotation(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        this.emit('annotationdelete');
     }
 }
 
