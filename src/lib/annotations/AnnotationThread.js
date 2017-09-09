@@ -134,7 +134,7 @@ class AnnotationThread extends EventEmitter {
      *
      * @param {string} type - Type of annotation
      * @param {string} text - Text of annotation to save
-     * @return {void}
+     * @return {Promise} - Annotation create promise
      */
     saveAnnotation(type, text) {
         const annotationData = this.createAnnotationData(type, text);
@@ -155,16 +155,10 @@ class AnnotationThread extends EventEmitter {
         // Changing state from pending
         this.state = STATES.hover;
         // Save annotation on server
-        this.annotationService
+        return this.annotationService
             .create(annotationData)
             .then((savedAnnotation) => this.updateTemporaryAnnotation(tempAnnotation, savedAnnotation))
-            .catch(() => {
-                // Remove temporary annotation
-                this.deleteAnnotation(tempAnnotationID, /* useServer */ false);
-
-                // Broadcast error
-                this.emit(THREAD_EVENT.createError);
-            });
+            .catch(() => this.handleThreadSaveError(tempAnnotationID));
     }
 
     /**
@@ -172,13 +166,13 @@ class AnnotationThread extends EventEmitter {
      *
      * @param {string} annotationID - ID of annotation to delete
      * @param {boolean} [useServer] - Whether or not to delete on server, default true
-     * @return {void}
+     * @return {Promise} - Annotation delete promise
      */
     deleteAnnotation(annotationID, useServer = true) {
         // Ignore if no corresponding annotation exists in thread or user doesn't have permissions
         const annotation = this.annotations.find((annot) => annot.annotationID === annotationID);
         if (!annotation || (annotation.permissions && !annotation.permissions.can_delete)) {
-            return;
+            return Promise.resolve();
         }
 
         // Delete annotation on client
@@ -206,34 +200,36 @@ class AnnotationThread extends EventEmitter {
             this.dialog.removeAnnotation(annotationID);
         }
 
-        // Delete annotation on server
-        if (useServer) {
-            this.annotationService
-                .delete(annotationID)
-                .then(() => {
-                    // Ensures that blank highlight comment is also deleted when removing
-                    // the last comment on a highlight
-                    canDeleteAnnotation =
-                        this.annotations.length > 0 &&
-                        this.annotations[0].permissions &&
-                        this.annotations[0].permissions.can_delete;
-                    if (annotatorUtil.isPlainHighlight(this.annotations) && canDeleteAnnotation) {
-                        this.annotationService.delete(this.annotations[0].annotationID);
-                    }
-
-                    // Broadcast thread cleanup if needed
-                    if (this.annotations.length === 0) {
-                        this.emit(THREAD_EVENT.threadCleanup);
-                    }
-
-                    // Broadcast annotation deletion event
-                    this.emit(THREAD_EVENT.delete);
-                })
-                .catch(() => {
-                    // Broadcast error
-                    this.emit(THREAD_EVENT.deleteError);
-                });
+        if (!useServer) {
+            return Promise.resolve();
         }
+
+        // Delete annotation on server
+        return this.annotationService
+            .delete(annotationID)
+            .then(() => {
+                // Ensures that blank highlight comment is also deleted when removing
+                // the last comment on a highlight
+                canDeleteAnnotation =
+                    this.annotations.length > 0 &&
+                    this.annotations[0].permissions &&
+                    this.annotations[0].permissions.can_delete;
+                if (annotatorUtil.isPlainHighlight(this.annotations) && canDeleteAnnotation) {
+                    this.annotationService.delete(this.annotations[0].annotationID);
+                }
+
+                // Broadcast thread cleanup if needed
+                if (this.annotations.length === 0) {
+                    this.emit(THREAD_EVENT.threadCleanup);
+                }
+
+                // Broadcast annotation deletion event
+                this.emit(THREAD_EVENT.delete);
+            })
+            .catch(() => {
+                // Broadcast error
+                this.emit(THREAD_EVENT.deleteError);
+            });
     }
 
     /**
@@ -479,7 +475,6 @@ class AnnotationThread extends EventEmitter {
         // Set threadNumber if the savedAnnotation is the first annotation of the thread
         if (!this.threadNumber && savedAnnotation && savedAnnotation.threadNumber) {
             this.threadNumber = savedAnnotation.threadNumber;
-            this.emit(THREAD_EVENT.save);
         }
 
         if (this.dialog) {
@@ -492,6 +487,8 @@ class AnnotationThread extends EventEmitter {
             this.dialog.addAnnotation(savedAnnotation);
             this.dialog.removeAnnotation(tempAnnotation.annotationID);
         }
+
+        this.emit(THREAD_EVENT.save);
     }
 
     /**
@@ -541,10 +538,6 @@ class AnnotationThread extends EventEmitter {
         if (this.dialog) {
             this.dialog.addAnnotation(annotation);
         }
-
-        if (this.annotations.length > 1) {
-            this.emit(THREAD_EVENT.save);
-        }
     }
 
     /**
@@ -587,6 +580,21 @@ class AnnotationThread extends EventEmitter {
      */
     deleteAnnotationWithID(data) {
         this.deleteAnnotation(data.annotationID);
+    }
+
+    /**
+     * Deletes the temporary annotation if the annotation failed to save on the server
+     *
+     * @private
+     * @param {string} tempAnnotationID - ID of temporary annotation to be updated with annotation from server
+     * @return {void}
+     */
+    handleThreadSaveError(tempAnnotationID) {
+        // Remove temporary annotation
+        this.deleteAnnotation(tempAnnotationID, /* useServer */ false);
+
+        // Broadcast error
+        this.emit(THREAD_EVENT.createError);
     }
 
     /**
