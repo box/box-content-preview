@@ -62,6 +62,8 @@ export const SELECTOR_BOX_PREVIEW_PROGRESS_BAR = `.${CLASS_BOX_PREVIEW_PROGRESS_
 
 export const PERMISSION_DOWNLOAD = 'can_download';
 export const PERMISSION_ANNOTATE = 'can_annotate';
+export const PERMISSION_CAN_VIEW_ANNOTATIONS_ALL = 'can_view_annotations_all';
+export const PERMISSION_CAN_VIEW_ANNOTATIONS_SELF = 'can_view_annotations_self';
 export const PERMISSION_PREVIEW = 'can_preview';
 
 export const API_HOST = 'https://api.box.com';

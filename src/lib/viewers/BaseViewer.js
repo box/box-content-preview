@@ -16,6 +16,8 @@ import { checkPermission } from '../file';
 import Browser from '../Browser';
 import {
     PERMISSION_ANNOTATE,
+    PERMISSION_CAN_VIEW_ANNOTATIONS_ALL,
+    PERMISSION_CAN_VIEW_ANNOTATIONS_SELF,
     CLASS_FULLSCREEN,
     CLASS_FULLSCREEN_UNSUPPORTED,
     CLASS_HIDDEN,
@@ -666,8 +668,10 @@ class BaseViewer extends EventEmitter {
 
         const { file } = this.options;
         this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
+        this.canViewAllAnnotations = checkPermission(file, PERMISSION_CAN_VIEW_ANNOTATIONS_ALL);
+        this.canViewOwnAnnotations = checkPermission(file, PERMISSION_CAN_VIEW_ANNOTATIONS_SELF);
 
-        if (this.canAnnotate) {
+        if (this.canAnnotate || this.canViewAllAnnotations || this.canViewOwnAnnotations) {
             this.initAnnotations();
         }
     }
