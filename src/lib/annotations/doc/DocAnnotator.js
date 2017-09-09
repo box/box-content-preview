@@ -129,10 +129,6 @@ class DocAnnotator extends Annotator {
             allowHighlight: this.plainHighlightEnabled
         });
 
-        this.createHighlightDialog.addListener(CreateEvents.init, () => {
-            this.emit(THREAD_EVENT.pending, TYPES.highlight);
-        });
-
         if (this.commentHighlightEnabled) {
             this.highlightCurrentSelection = this.highlightCurrentSelection.bind(this);
             this.createHighlightDialog.addListener(CreateEvents.comment, this.highlightCurrentSelection);
@@ -177,6 +173,10 @@ class DocAnnotator extends Annotator {
 
         // Allow rangy to highlight this
         this.annotatedElement.id = ID_ANNOTATED_ELEMENT;
+
+        this.createHighlightDialog.addListener(CreateEvents.init, () =>
+            this.emit(THREAD_EVENT.pending, TYPES.highlight)
+        );
     }
 
     //--------------------------------------------------------------------------
@@ -1027,6 +1027,10 @@ class DocAnnotator extends Annotator {
      * @return {void}
      */
     handleAnnotationThreadEvents(data) {
+        if (!data.data || !data.data.threadID) {
+            return;
+        }
+
         const thread = this.getThreadByID(data.data.threadID);
         if (!thread) {
             return;

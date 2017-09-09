@@ -14,7 +14,8 @@ import {
     STATES,
     TYPES,
     CLASS_ANNOTATION_LAYER_HIGHLIGHT,
-    DATA_TYPE_ANNOTATION_DIALOG
+    DATA_TYPE_ANNOTATION_DIALOG,
+    THREAD_EVENT
 } from '../../annotationConstants';
 
 let annotator;
@@ -51,6 +52,20 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         annotator.annotationService = {};
         annotator.threads = {};
 
+        stubs.thread = {
+            threadID: '123abc',
+            location: { page: 1 },
+            state: STATES.pending,
+            type: TYPES.highlight,
+            cancelFirstComment: () => {},
+            onClick: () => {},
+            show: () => {},
+            reset: () => {},
+            destroy: () => {},
+            onMousemove: () => {}
+        };
+        stubs.threadMock = sandbox.mock(stubs.thread);
+
         stubs.getPageInfo = sandbox.stub(annotatorUtil, 'getPageInfo');
     });
 
@@ -65,7 +80,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
     describe('constructor()', () => {
         it('should not bind any plain highlight functions if they are disabled', () => {
-            const docAnno = new DocAnnotator({
+            const annotator = new DocAnnotator({
                 permissions: {
                     canAnnotate: true
                 },
@@ -82,14 +97,14 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 }
             });
 
-            const createPlain = sandbox.stub(docAnno, 'createPlainHighlight');
-            docAnno.createHighlightDialog.emit(CreateEvents.plain);
+            const createPlain = sandbox.stub(annotator, 'createPlainHighlight');
+            annotator.createHighlightDialog.emit(CreateEvents.plain);
 
             expect(createPlain).to.not.be.called;
         });
 
         it('should not bind any comment highlight functions if they are disabled', () => {
-            const docAnno = new DocAnnotator({
+            const annotator = new DocAnnotator({
                 permissions: {
                     canAnnotate: true
                 },
@@ -106,10 +121,24 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 }
             });
 
-            const createComment = sandbox.stub(docAnno, 'createHighlightThread');
-            docAnno.createHighlightDialog.emit(CreateEvents.commentPost);
+            const createComment = sandbox.stub(annotator, 'createHighlightThread');
+            annotator.createHighlightDialog.emit(CreateEvents.commentPost);
 
             expect(createComment).to.not.be.called;
+        });
+    });
+
+    describe('init()', () => {
+        it('should add ID to annotatedElement add createHighlightDialog init listener', () => {
+            annotator.createHighlightDialog = {
+                addListener: sandbox.stub(),
+                removeListener: sandbox.stub(),
+                destroy: sandbox.stub()
+            };
+            stubs.add = annotator.createHighlightDialog.addListener;
+            annotator.init(1);
+            expect(annotator.annotatedElement.id).to.not.be.undefined;
+            expect(stubs.add).to.be.calledWith(CreateEvents.init, sinon.match.func);
         });
     });
 
@@ -409,7 +438,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
             thread = {
                 dialog,
-                show: sandbox.stub()
+                show: sandbox.stub(),
+                getThreadEventData: sandbox.stub()
             };
         });
 
@@ -701,33 +731,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
             annotator.unbindDOMListeners();
             expect(annotator.modeControllers['test'].removeSelection).to.be.called;
-        });
-    });
-
-    describe('bindCustomListenersOnThread()', () => {
-        const bindFunc = Annotator.prototype.bindCustomListenersOnThread;
-
-        beforeEach(() => {
-            sandbox.stub(annotatorUtil, 'isHighlightAnnotation').returns(true);
-        });
-
-        afterEach(() => {
-            Object.defineProperty(Annotator.prototype, 'bindCustomListenersOnThread', { value: bindFunc });
-        });
-
-        it('should do nothing if thread does not exist', () => {
-            annotator.bindCustomListenersOnThread(null);
-            expect(annotatorUtil.isHighlightAnnotation).to.not.be.called;
-        });
-
-        it('should call parent to bind custom listeners and also bind highlights on threaddeleted', () => {
-            const thread = { addListener: () => {} };
-            stubs.threadMock = sandbox.mock(thread);
-            stubs.threadMock.expects('addListener').withArgs('threaddeleted', sinon.match.func);
-
-            Object.defineProperty(Annotator.prototype, 'bindCustomListenersOnThread', { value: sandbox.mock() });
-
-            annotator.bindCustomListenersOnThread(thread);
         });
     });
 
@@ -1113,12 +1116,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         let selection;
         let createDialog;
         let pageInfo;
+
         beforeEach(() => {
-            stubs.thread = {
-                reset: () => {},
-                show: () => {}
-            };
-            stubs.threadMock = sandbox.mock(stubs.thread);
             selection = {
                 rangeCount: 0
             };
@@ -1206,17 +1205,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     describe('highlightClickHandler()', () => {
         beforeEach(() => {
             stubs.event = { x: 1, y: 1 };
-            stubs.thread = {
-                threadID: '123abc',
-                location: { page: 1 },
-                state: STATES.pending,
-                type: TYPES.highlight,
-                cancelFirstComment: () => {},
-                onClick: () => {},
-                show: () => {},
-                destroy: () => {}
-            };
-            stubs.threadMock = sandbox.mock(stubs.thread);
             annotator.addThreadToMap(stubs.thread);
 
             stubs.getPageInfo = stubs.getPageInfo.returns({ pageEl: {}, page: 1 });
@@ -1407,6 +1395,39 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         it('should not error when no modeButtons exist for draw', () => {
             annotator.modeButtons = {};
             expect(() => annotator.drawingSelectionHandler('irrelevant')).to.not.throw();
+        });
+    });
+
+    describe('handleAnnotationThreadEvents()', () => {
+        beforeEach(() => {
+            stubs.handleFunc = Annotator.prototype.handleAnnotationThreadEvents;
+            Object.defineProperty(Annotator.prototype, 'handleAnnotationThreadEvents', { value: sandbox.stub() });
+
+            stubs.getThread = sandbox.stub(annotator, 'getThreadByID');
+            stubs.show = sandbox.stub(annotator, 'showHighlightsOnPage');
+        });
+
+        afterEach(() => {
+            Object.defineProperty(Annotator.prototype, 'handleAnnotationThreadEvents', { value: stubs.handleFunc });
+        });
+
+        it('should do nothing if invalid params are specified', () => {
+            annotator.handleAnnotationThreadEvents('no data');
+            annotator.handleAnnotationThreadEvents({ data: 'no threadID'});
+            expect(stubs.getThread).to.not.be.called;
+
+            annotator.handleAnnotationThreadEvents({ data: { threadID: 1 }});
+            expect(Annotator.prototype.handleAnnotationThreadEvents).to.not.be.called;
+        });
+
+        it('should re-render page highlights on threadDelete', () => {
+            stubs.getThread.returns(stubs.thread);
+            const data = {
+                event: THREAD_EVENT.threadDelete,
+                data: { threadID: 1 }
+            };
+            annotator.handleAnnotationThreadEvents(data);
+            expect(stubs.show).to.be.calledWith(stubs.thread.location.page);
         });
     });
 });

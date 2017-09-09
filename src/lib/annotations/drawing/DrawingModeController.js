@@ -129,8 +129,9 @@ class DrawingModeController extends AnnotationModeController {
      *
      * @inheritdoc
      * @protected
-     * @return {Array} An array where each element is an object containing the object that will emit the event,
-     *                 the type of events to listen for, and the callback
+     * @return {Array} An array where each element is an object containing
+     * the object that will emit the event, the type of events to listen
+     * for, and the callback
      */
     setupHandlers() {
         /* eslint-disable require-jsdoc */

@@ -104,7 +104,7 @@ class Annotator extends EventEmitter {
 
         this.unbindDOMListeners();
         this.unbindCustomListenersOnService();
-        this.removeListener('scaleannotations', this.scaleAnnotations);
+        this.removeListener(ANNOTATOR_EVENT.scale, this.scaleAnnotations);
     }
 
     /**
@@ -539,7 +539,7 @@ class Annotator extends EventEmitter {
         this.threads = {};
         this.bindDOMListeners();
         this.bindCustomListenersOnService(this.annotationService);
-        this.addListener('scaleannotations', this.scaleAnnotations);
+        this.addListener(ANNOTATOR_EVENT.scale, this.scaleAnnotations);
     }
 
     /**
@@ -620,7 +620,7 @@ class Annotator extends EventEmitter {
         }
 
         /* istanbul ignore next */
-        service.addListener('annotatorerror', this.handleServiceEvents);
+        service.addListener(ANNOTATOR_EVENT.error, this.handleServiceEvents);
     }
 
     /**
@@ -668,7 +668,7 @@ class Annotator extends EventEmitter {
         if (!service || !(service instanceof AnnotationService)) {
             return;
         }
-        service.removeAllListeners('annotatorerror');
+        service.removeAllListeners(ANNOTATOR_EVENT.error);
     }
 
     /**
@@ -949,6 +949,10 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     handleAnnotationThreadEvents(data) {
+        if (!data.data || !data.data.threadID) {
+            return;
+        }
+
         const thread = this.getThreadByID(data.data.threadID);
         if (!thread) {
             return;

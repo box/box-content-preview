@@ -101,8 +101,10 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
         });
 
         it('should remove the hidden class from the UI element', () => {
+            const emit = sandbox.stub(dialog, 'emit');
             dialog.show();
             expect(dialog.containerEl.classList.contains(CLASS_HIDDEN)).to.be.false;
+            expect(emit).to.be.calledWith(CreateEvents.init);
         });
     });
 

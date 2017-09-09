@@ -98,7 +98,8 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
 
             drawingModeController.bindCustomListenersOnThread(thread);
             expect(stubs.super).to.be.called;
-            expect(thread.addListener).to.be.called.twice;
+            expect(thread.addListener).to.be.calledWith('annotationsaved');
+            expect(thread.addListener).to.be.calledWith('annotationdelete');
         });
     });
 

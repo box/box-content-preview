@@ -109,7 +109,8 @@ export const ANNOTATOR_EVENT = {
     modeEnter: 'annotationmodeenter',
     modeExit: 'annotationmodeexit',
     fetch: 'annotationsfetched',
-    error: 'annotationerror'
+    error: 'annotationerror',
+    scale: 'scaleannotations'
 };
 
 export const THREAD_EVENT = {

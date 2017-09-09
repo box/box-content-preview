@@ -50,7 +50,8 @@ const ANNOTATOR_EVENT = {
     modeEnter: 'annotationmodeenter',
     modeExit: 'annotationmodeexit',
     fetch: 'annotationsfetched',
-    error: 'annotationerror'
+    error: 'annotationerror',
+    scale: 'scaleannotations'
 };
 
 @autobind
@@ -711,7 +712,7 @@ class BaseViewer extends EventEmitter {
 
         // Add a custom listener for events related to scaling/orientation changes
         this.addListener('scale', (data) => {
-            this.annotator.emit('scaleannotations', data);
+            this.annotator.emit(ANNOTATOR_EVENT.scale, data);
         });
 
         this.addListener('scrolltoannotation', (data) => {
