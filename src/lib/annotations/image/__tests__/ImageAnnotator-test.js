@@ -3,7 +3,7 @@ import ImageAnnotator from '../ImageAnnotator';
 import ImagePointThread from '../ImagePointThread';
 import * as annotatorUtil from '../../annotatorUtil';
 import * as imageAnnotatorUtil from '../imageAnnotatorUtil';
-import { SELECTOR_ANNOTATION_POINT_BUTTON } from '../../annotationConstants';
+import { SELECTOR_ANNOTATION_POINT_BUTTON, POINT_ANNOTATION_ICON_HEIGHT } from '../../annotationConstants';
 
 let annotator;
 const sandbox = sinon.sandbox.create();
@@ -116,7 +116,7 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             });
             expect(location).to.deep.equal({
                 x,
-                y,
+                y: y + POINT_ANNOTATION_ICON_HEIGHT,
                 imageEl,
                 dimensions,
                 page: 1
