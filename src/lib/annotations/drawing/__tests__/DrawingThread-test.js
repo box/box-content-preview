@@ -1,7 +1,8 @@
 import DrawingThread from '../DrawingThread';
 import AnnotationService from '../../AnnotationService';
 import {
-    STATES
+    STATES,
+    THREAD_EVENT
 } from '../../annotationConstants'
 
 let thread;
@@ -266,7 +267,7 @@ describe('lib/annotations/drawing/DrawingThread', () => {
 
     describe('emitAvailableActions()', () => {
         afterEach(() => {
-            thread.removeAllListeners('annotationevent');
+            thread.removeAllListeners('threadevent');
         });
 
         it('should trigger an annotationevent with the number of available undo and redo actions', (done) => {
@@ -275,10 +276,11 @@ describe('lib/annotations/drawing/DrawingThread', () => {
                 redoCount: 2
             };
             sandbox.stub(thread.pathContainer, 'getNumberOfItems').returns(numItems);
-            thread.addListener('annotationevent', (data) => {
-                expect(data.type).to.equal('availableactions');
-                expect(data.undo).to.equal(numItems.undoCount);
-                expect(data.redo).to.equal(numItems.redoCount);
+            thread.addListener('threadevent', (data) => {
+                const { eventData } = data;
+                expect(data.event).to.equal('availableactions');
+                expect(eventData.undo).to.equal(numItems.undoCount);
+                expect(eventData.redo).to.equal(numItems.redoCount);
                 done();
             });
 

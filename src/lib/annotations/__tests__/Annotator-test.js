@@ -620,7 +620,6 @@ describe('lib/annotations/Annotator', () => {
         describe('unbindCustomListenersOnThread()', () => {
             it('should unbind custom listeners from the thread', () => {
                 stubs.threadMock.expects('removeAllListeners').withArgs('threadevent');
-                stubs.threadMock.expects('removeAllListeners').withArgs('annotationevent');
                 annotator.unbindCustomListenersOnThread(stubs.thread);
             });
         });

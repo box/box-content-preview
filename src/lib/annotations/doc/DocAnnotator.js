@@ -174,6 +174,10 @@ class DocAnnotator extends Annotator {
         // Allow rangy to highlight this
         this.annotatedElement.id = ID_ANNOTATED_ELEMENT;
 
+        if (!this.createHighlightDialog) {
+            return;
+        }
+
         this.createHighlightDialog.addListener(CreateEvents.init, () =>
             this.emit(THREAD_EVENT.pending, TYPES.highlight)
         );

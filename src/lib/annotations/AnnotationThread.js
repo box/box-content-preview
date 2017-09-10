@@ -603,13 +603,13 @@ class AnnotationThread extends EventEmitter {
      * @private
      * @emits viewerevent
      * @param {string} event - Event name
-     * @param {Object} data - Event data
+     * @param {Object} eventData - Event data
      * @return {void}
      */
-    emit(event) {
+    emit(event, eventData) {
         const threadData = this.getThreadEventData();
-        super.emit(event, threadData);
-        super.emit('threadevent', { event, data: threadData });
+        super.emit(event, { data: threadData, eventData });
+        super.emit('threadevent', { event, data: threadData, eventData });
     }
 }
 

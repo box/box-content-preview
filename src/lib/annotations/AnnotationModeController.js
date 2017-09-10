@@ -109,7 +109,7 @@ class AnnotationModeController extends EventEmitter {
 
         // TODO (@minhnguyen): Move annotator.bindCustomListenersOnThread logic to AnnotationModeController
         this.annotator.bindCustomListenersOnThread(thread);
-        thread.addListener('annotationevent', (data) => {
+        thread.addListener('threadevent', (data) => {
             this.handleAnnotationEvent(thread, data);
         });
     }
@@ -127,7 +127,6 @@ class AnnotationModeController extends EventEmitter {
         }
 
         thread.removeAllListeners('threadevent');
-        thread.removeAllListeners('annotationevent');
     }
 
     /**

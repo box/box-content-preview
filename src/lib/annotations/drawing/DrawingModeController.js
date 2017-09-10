@@ -176,7 +176,8 @@ class DrawingModeController extends AnnotationModeController {
      * @return {void}
      */
     handleAnnotationEvent(thread, data = {}) {
-        switch (data.type) {
+        const { eventData } = data;
+        switch (data.event) {
             case 'locationassigned':
                 // Register the thread to the threadmap when a starting location is assigned. Should only occur once.
                 this.annotator.addThreadToMap(thread);
@@ -190,8 +191,8 @@ class DrawingModeController extends AnnotationModeController {
                 this.bindModeListeners();
 
                 // Given a location (page change) start drawing at the provided location
-                if (data.location) {
-                    this.currentThread.handleStart(data.location);
+                if (eventData && eventData.location) {
+                    this.currentThread.handleStart(eventData.location);
                 }
 
                 break;
@@ -210,7 +211,7 @@ class DrawingModeController extends AnnotationModeController {
 
                 break;
             case 'availableactions':
-                this.updateUndoRedoButtonEls(data.undo, data.redo);
+                this.updateUndoRedoButtonEls(eventData.undo, eventData.redo);
                 break;
             default:
         }

@@ -168,7 +168,7 @@ describe('lib/annotations/doc/DocDrawingThread', () => {
         it('should emit an annotationevent of type pagechanged and stop a pending drawing', (done) =>{
             sandbox.stub(thread, 'handleStop');
             const location = 'location';
-            thread.addListener('annotationevent', (data) => {
+            thread.addListener('threadevent', (data) => {
                 done();
             });
 

@@ -695,7 +695,6 @@ class Annotator extends EventEmitter {
      */
     unbindCustomListenersOnThread(thread) {
         thread.removeAllListeners('threadevent');
-        thread.removeAllListeners('annotationevent');
     }
 
     /**
