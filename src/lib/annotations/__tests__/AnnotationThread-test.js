@@ -7,7 +7,8 @@ import {
     TYPES,
     CLASS_ANNOTATION_POINT_MARKER,
     DATA_TYPE_ANNOTATION_INDICATOR,
-    CLASS_HIDDEN
+    CLASS_HIDDEN,
+    CLASS_ACTIVE
 } from '../annotationConstants';
 
 let thread;
@@ -100,6 +101,12 @@ describe('lib/annotations/AnnotationThread', () => {
     });
 
     describe('showDialog()', () => {
+        it('should activate annotation icon if thread element exists', () => {
+            thread.element = document.createElement('div');
+            thread.showDialog();
+            expect(thread.element).to.have.class(CLASS_ACTIVE);
+        });
+
         it('should setup the thread dialog if the dialog element does not already exist', () => {
             thread.dialog.element = null;
             stubs.dialogMock.expects('setup');
@@ -195,6 +202,19 @@ describe('lib/annotations/AnnotationThread', () => {
 
             stubs.create = sandbox.stub(annotationService, 'create');
             stubs.saveAnnotationToThread = sandbox.stub(thread, 'saveAnnotationToThread');
+            stubs.fill = sandbox.stub(thread, 'fillPointAnnotationIcon');
+        });
+
+        it('should set the thread number and updates the thread icon with a unique color and annotator\'s initials', () => {
+            const serverAnnotation = { threadNumber: 1 };
+            const tempAnnotation = serverAnnotation;
+            thread.threadNumber = undefined;
+
+            thread.updateTemporaryAnnotation(tempAnnotation, serverAnnotation);
+
+            expect(stubs.saveAnnotationToThread).to.be.called;
+            expect(stubs.fill).to.be.called;
+            expect(thread.threadNumber).equals(1);
         });
 
         it('should save annotation to thread if it does not exist in annotations array', () => {
@@ -234,6 +254,7 @@ describe('lib/annotations/AnnotationThread', () => {
         let annotationService;
 
         beforeEach(() => {
+            sandbox.stub(thread, 'fillPointAnnotationIcon');
             annotationService = {
                 delete: () => {}
             };
@@ -242,14 +263,16 @@ describe('lib/annotations/AnnotationThread', () => {
                 annotationID: 'someID',
                 permissions: {
                     can_delete: true
-                }
+                },
+                user: { name: 'Aubrey Graham' }
             };
 
             stubs.annotation2 = {
                 annotationID: 'someID2',
                 permissions: {
                     can_delete: false
-                }
+                },
+                user: { name: 'Jane Doe' }
             };
 
             thread = new AnnotationThread({
@@ -444,6 +467,7 @@ describe('lib/annotations/AnnotationThread', () => {
             stubs.create = sandbox.stub(thread, 'createDialog');
             stubs.bind = sandbox.stub(thread, 'bindCustomListenersOnDialog');
             stubs.setup = sandbox.stub(thread, 'setupElement');
+            sandbox.stub(thread, 'fillPointAnnotationIcon');
         });
 
         it('should setup dialog', () => {
@@ -463,7 +487,7 @@ describe('lib/annotations/AnnotationThread', () => {
         it('should set state to inactive if thread is initialized with annotations', () => {
             thread = new AnnotationThread({
                 annotatedElement: document.querySelector('.annotated-element'),
-                annotations: [{}],
+                annotations: [{ user: { name: 'Aubrey Graham' } }],
                 annotationService: {},
                 fileVersionId: '1',
                 isMobile: false,
@@ -479,13 +503,23 @@ describe('lib/annotations/AnnotationThread', () => {
     });
 
     describe('setupElement()', () => {
-        it('should create element and bind listeners', () => {
+        beforeEach(() => {
             stubs.bind = sandbox.stub(thread, 'bindDOMListeners');
+            stubs.fill = sandbox.stub(thread, 'fillPointAnnotationIcon');
+        });
 
+        it('should create element and bind listeners', () => {
             thread.setupElement();
             expect(thread.element instanceof HTMLElement).to.be.true;
             expect(thread.element).to.have.class(CLASS_ANNOTATION_POINT_MARKER);
             expect(stubs.bind).to.be.called;
+            expect(stubs.fill).to.not.be.called;
+        });
+
+        it('should update the point annotation icon with user initials', () => {
+            thread.annotations = [{}];
+            thread.setupElement();
+            expect(stubs.fill).to.be.called;
         });
     });
 
@@ -698,6 +732,21 @@ describe('lib/annotations/AnnotationThread', () => {
             sandbox.stub(thread, 'deleteAnnotation');
             thread.deleteAnnotationWithID({ annotationID: 1 });
             expect(thread.deleteAnnotation).to.be.calledWith(1);
+        });
+    });
+
+    describe('fillPointAnnotationIcon()', () => {
+        it('should insert user initials and color of point annotation icon', () => {
+            const annotation = {
+                user: {
+                    id: 123,
+                    name: 'Aubrey Graham'
+                }
+            };
+            sandbox.stub(annotatorUtil, 'getUserColor').returns('blue');
+            thread.fillPointAnnotationIcon(annotation);
+            expect(thread.element).to.have.html('AG');
+            expect(thread.element).to.have.class('blue');
         });
     });
 });

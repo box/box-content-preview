@@ -16,6 +16,8 @@ const CLASS_REPLY_TEXTAREA = 'reply-textarea';
 const CLASS_DELETE_CONFIRMATION = 'delete-confirmation';
 const CLASS_BUTTON_DELETE_CONFIRM = 'confirm-delete-btn';
 
+const TRANSPARENT_BORDER = 20;
+
 @autobind
 class AnnotationDialog extends EventEmitter {
     //--------------------------------------------------------------------------
@@ -734,7 +736,7 @@ class AnnotationDialog extends EventEmitter {
             annotationCaretEl.style.bottom = '';
         } else {
             // Flip dialog to above the icon if in the lower half of the viewport
-            const flippedY = containerHeight - yPos - iconPadding - 20;
+            const flippedY = containerHeight - yPos - iconPadding - TRANSPARENT_BORDER;
             top = '';
             bottom = `${flippedY}px`;
 

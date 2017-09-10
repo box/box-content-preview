@@ -178,11 +178,15 @@ describe('lib/annotations/AnnotationDialog', () => {
     });
 
     describe('hideMobileDialog()', () => {
-        it('should do nothing if the dialog element does not exist', () => {
+        it('should only deactivate thread element if the dialog element does not exist', () => {
+            dialog.threadEl = document.createElement('div');
+            dialog.threadEl.classList.add(constants.CLASS_ACTIVE);
+
             dialog.element = null;
             stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
             dialog.hideMobileDialog();
             expect(stubs.hide).to.not.be.called;
+            expect(dialog.threadEl).to.not.have.class(constants.CLASS_ACTIVE);
         });
 
         it('should hide and reset the mobile annotations dialog', () => {
@@ -217,24 +221,36 @@ describe('lib/annotations/AnnotationDialog', () => {
 
     describe('hide()', () => {
         it('should do nothing if element is already hidden', () => {
+            dialog.threadEl = document.createElement('div');
+            dialog.threadEl.classList.add(constants.CLASS_ACTIVE);
             dialog.element.classList.add(constants.CLASS_HIDDEN);
             sandbox.stub(annotatorUtil, 'hideElement');
+
             dialog.hide();
             expect(annotatorUtil.hideElement).to.not.have.called;
+            expect(dialog.threadEl).to.have.class(constants.CLASS_ACTIVE);
         });
 
         it('should hide dialog immediately', () => {
+            dialog.threadEl = document.createElement('div');
+            dialog.threadEl.classList.add(constants.CLASS_ACTIVE);
             sandbox.stub(dialog, 'toggleFlippedThreadEl');
+
             dialog.hide();
             expect(dialog.element).to.have.class(constants.CLASS_HIDDEN);
             expect(dialog.toggleFlippedThreadEl).to.be.called;
+            expect(dialog.threadEl).to.not.have.class(constants.CLASS_ACTIVE);
         });
 
         it('should hide the mobile dialog if using a mobile browser', () => {
+            dialog.threadEl = document.createElement('div');
+            dialog.threadEl.classList.add(constants.CLASS_ACTIVE);
             dialog.isMobile = true;
             sandbox.stub(dialog, 'hideMobileDialog');
+
             dialog.hide();
             expect(dialog.hideMobileDialog).to.be.called;
+            expect(dialog.threadEl).to.not.have.class(constants.CLASS_ACTIVE);
         });
     });
 

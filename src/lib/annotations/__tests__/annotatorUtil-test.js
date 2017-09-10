@@ -11,6 +11,7 @@ import {
     hideElementVisibility,
     resetTextarea,
     isElementInViewport,
+    getUserColor,
     getAvatarHtml,
     getScale,
     isPlainHighlight,
@@ -230,6 +231,13 @@ describe('lib/annotations/annotatorUtil', () => {
             childEl.style.position = 'absolute';
             childEl.style.left = '-10px';
             assert.ok(!isElementInViewport(childEl));
+        });
+    });
+
+    describe('getUserColor()', () => {
+        it('should return avatar color % 9', () => {
+            const color = getUserColor(4);
+            expect(color).equals('avatar-color-4');
         });
     });
 

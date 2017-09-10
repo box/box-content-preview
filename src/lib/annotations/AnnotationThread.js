@@ -457,8 +457,9 @@ class AnnotationThread extends EventEmitter {
             this.annotations[tempIdx] = savedAnnotation;
         }
 
-        // Set threadNumber if the savedAnnotation is the first annotation of the thread
-        // Also update annotation thread icon color/initials according to the annotator
+        // Set threadNumber if the savedAnnotation is the first annotation
+        // of the thread. Also update annotation thread icon
+        // color/initials according to the annotator
         if (!this.threadNumber && savedAnnotation && savedAnnotation.threadNumber) {
             this.threadNumber = savedAnnotation.threadNumber;
             this.fillPointAnnotationIcon(savedAnnotation);
@@ -579,7 +580,10 @@ class AnnotationThread extends EventEmitter {
     fillPointAnnotationIcon(annotation) {
         // Update point annotation icon with user initials
         const userName = annotation.user.name;
-        const userInitials = userName.split(' ').map((n) => n[0]).join('');
+        const userInitials = userName
+            .split(' ')
+            .map((n) => n[0])
+            .join('');
         this.element.innerHTML = userInitials;
 
         // Icon color should be 'unique' to user id
