@@ -24,8 +24,8 @@ class ImagePointThread extends AnnotationThread {
         );
 
         // Position and append to image
-        this.element.style.left = `${browserX - POINT_ANNOTATION_ICON_HEIGHT / 2}px`;
-        this.element.style.top = `${browserY - POINT_ANNOTATION_ICON_HEIGHT}px`;
+        this.element.style.left = `${browserX - POINT_ANNOTATION_ICON_HEIGHT / 3}px`;
+        this.element.style.top = `${browserY - POINT_ANNOTATION_ICON_HEIGHT / 3}px`;
         this.annotatedElement.appendChild(this.element);
 
         annotatorUtil.showElement(this.element);
