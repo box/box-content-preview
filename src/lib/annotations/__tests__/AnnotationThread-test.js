@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-expressions */
+import EventEmitter from 'events';
 import AnnotationThread from '../AnnotationThread';
 import Annotation from '../Annotation';
 import * as annotatorUtil from '../annotatorUtil';
@@ -8,7 +9,8 @@ import {
     CLASS_ANNOTATION_POINT_MARKER,
     DATA_TYPE_ANNOTATION_INDICATOR,
     CLASS_HIDDEN,
-    CLASS_ACTIVE
+    CLASS_ACTIVE,
+    THREAD_EVENT
 } from '../annotationConstants';
 
 let thread;
@@ -71,7 +73,7 @@ describe('lib/annotations/AnnotationThread', () => {
             thread.destroy();
             expect(stubs.unbindCustom).to.be.called;
             expect(stubs.unbindDOM).to.be.called;
-            expect(stubs.emit).to.be.calledWith('threaddeleted');
+            expect(stubs.emit).to.be.calledWith(THREAD_EVENT.threadDelete);
         });
 
         it('should not destroy the dialog on mobile', () => {
@@ -148,6 +150,7 @@ describe('lib/annotations/AnnotationThread', () => {
                 type: 'point'
             });
 
+            sandbox.stub(thread, 'getThreadEventData').returns({});
             stubs.create = sandbox.stub(annotationService, 'create');
         });
 
@@ -169,15 +172,18 @@ describe('lib/annotations/AnnotationThread', () => {
 
         it('should delete the temporary annotation and broadcast an error if there was an error saving', (done) => {
             stubs.create.returns(Promise.reject());
-            stubs.delete = sandbox.stub(thread, 'deleteAnnotation');
+            stubs.handleError = sandbox.stub(thread, 'handleThreadSaveError');
+            stubs.serverSave = sandbox.stub(thread, 'updateTemporaryAnnotation');
 
-            thread.on('annotationcreateerror', () => {
-                expect(stubs.delete).to.be.called;
+            const promise = thread.saveAnnotation('point', 'blah');
+            promise.should.be.fulfilled.then(() => {
+                expect(stubs.handleError).to.be.called;
                 done();
+            }).catch(() => {
+                Assert.fail();
             });
-
-            thread.saveAnnotation('point', 'blah');
             expect(stubs.create).to.be.called;
+            expect(stubs.serverSave).to.not.be.called;
         });
     });
 
@@ -203,6 +209,7 @@ describe('lib/annotations/AnnotationThread', () => {
             stubs.create = sandbox.stub(annotationService, 'create');
             stubs.saveAnnotationToThread = sandbox.stub(thread, 'saveAnnotationToThread');
             stubs.fill = sandbox.stub(thread, 'fillPointAnnotationIcon');
+            sandbox.stub(thread, 'getThreadEventData').returns({});
         });
 
         it('should set the thread number and updates the thread icon with a unique color and annotator\'s initials', () => {
@@ -239,9 +246,10 @@ describe('lib/annotations/AnnotationThread', () => {
         });
 
         it('should emit an annotationsaved event on success', (done) => {
-            const serverAnnotation = 'real annotation';
+            const serverAnnotation = { threadNumber: 1 };
             const tempAnnotation = serverAnnotation;
-            thread.addListener('annotationsaved', () => {
+            thread.threadNumber = undefined;
+            thread.addListener(THREAD_EVENT.save, () => {
                 expect(stubs.saveAnnotationToThread).to.be.called;
                 done();
             });
@@ -299,16 +307,22 @@ describe('lib/annotations/AnnotationThread', () => {
             };
             stubs.dialogMock = sandbox.mock(thread.dialog);
 
-            stubs.delete = sandbox.stub(annotationService, 'delete');
             stubs.isPlain = sandbox.stub(annotatorUtil, 'isPlainHighlight');
             stubs.cancel = sandbox.stub(thread, 'cancelFirstComment');
             stubs.destroy = sandbox.stub(thread, 'destroy');
+            thread.annotationService.user = {
+                id: 1
+            };
+            sandbox.stub(thread, 'getThreadEventData').returns({
+                threadNumber: 1
+            });
         });
 
         it('should destroy the thread if the deleted annotation was the last annotation in the thread', () => {
             thread.isMobile = false;
             stubs.dialogMock.expects('removeAnnotation').never();
             stubs.dialogMock.expects('hideMobileDialog').never();
+            sandbox.stub(annotationService, 'delete').returns(Promise.resolve());
             thread.deleteAnnotation('someID', false);
             expect(stubs.destroy).to.be.called;
         });
@@ -317,6 +331,7 @@ describe('lib/annotations/AnnotationThread', () => {
             thread.isMobile = true;
             stubs.dialogMock.expects('removeAnnotation');
             stubs.dialogMock.expects('hideMobileDialog');
+            sandbox.stub(annotationService, 'delete').returns(Promise.resolve());
             thread.deleteAnnotation('someID', false);
         });
 
@@ -324,40 +339,49 @@ describe('lib/annotations/AnnotationThread', () => {
             // Add another annotation to thread so 'someID' isn't the only annotation
             thread.annotations.push(stubs.annotation2);
             stubs.dialogMock.expects('removeAnnotation').withArgs('someID');
+            sandbox.stub(annotationService, 'delete').returns(Promise.resolve());
             thread.deleteAnnotation('someID', false);
         });
 
         it('should make a server call to delete an annotation with the specified ID if useServer is true', () => {
-            stubs.delete.returns(Promise.resolve());
-            thread.deleteAnnotation('someID', true);
-            expect(stubs.delete).to.be.calledWith('someID');
+            sandbox.stub(annotationService, 'delete').returns(Promise.resolve());
+            const promise = thread.deleteAnnotation('someID');
+            promise.should.be.fulfilled.then(() => {
+                expect(stubs.emit).to.not.be.calledWith(THREAD_EVENT.threadCleanup);
+                expect(stubs.emit).to.be.calledWith(THREAD_EVENT.delete);
+                done();
+            }).catch(() => {
+                Assert.fail();
+            });
+            expect(annotationService.delete).to.be.calledWith('someID');
         });
 
-        it('should make also delete blank highlight comment from the server when removing the last comment on a highlight thread', () => {
+        it('should also delete blank highlight comment from the server when removing the last comment on a highlight thread', () => {
             stubs.annotation2.permissions.can_delete = false;
             thread.annotations.push(stubs.annotation2);
             stubs.isPlain.returns(true);
-            stubs.delete.returns(Promise.resolve());
+            sandbox.stub(annotationService, 'delete').returns(Promise.resolve());
             thread.deleteAnnotation('someID', true);
-            expect(stubs.delete).to.be.calledWith('someID');
+            expect(annotationService.delete).to.be.calledWith('someID');
         });
 
         it('should not make a server call to delete an annotation with the specified ID if useServer is false', () => {
-            stubs.delete.returns(Promise.resolve());
+            sandbox.stub(annotationService, 'delete').returns(Promise.resolve());
             thread.deleteAnnotation('someID', false);
-            expect(stubs.delete).to.not.be.called;
+            expect(annotationService.delete).to.not.be.called;
         });
 
         it('should broadcast an error if there was an error deleting from server', (done) => {
-            stubs.delete.returns(Promise.reject());
+            sandbox.stub(annotationService, 'delete').returns(Promise.reject());
             thread.on('annotationdeleteerror', () => {
                 done();
             });
             thread.deleteAnnotation('someID', true);
-            expect(stubs.delete).to.be.called;
+            expect(annotationService.delete).to.be.called;
         });
 
         it('should toggle highlight dialogs with the delete of the last comment if user does not have permission to delete the entire annotation', () => {
+            sandbox.stub(annotationService, 'delete').returns(Promise.resolve());
             thread.annotations.push(stubs.annotation2);
             stubs.isPlain.returns(true);
             thread.deleteAnnotation('someID', false);
@@ -369,7 +393,15 @@ describe('lib/annotations/AnnotationThread', () => {
             stubs.annotation2.permissions.can_delete = true;
             thread.annotations.push(stubs.annotation2);
             stubs.isPlain.returns(true);
-            thread.deleteAnnotation('someID', false);
+            sandbox.stub(annotationService, 'delete').returns(Promise.resolve());
+            const promise = thread.deleteAnnotation('someID');
+            promise.should.be.fulfilled.then(() => {
+                expect(stubs.emit).to.be.calledWith(THREAD_EVENT.threadCleanup);
+                expect(stubs.emit).to.be.calledWith(THREAD_EVENT.delete);
+                done();
+            }).catch(() => {
+                Assert.fail();
+            });
             expect(stubs.cancel).to.not.be.called;
             expect(stubs.destroy).to.be.called;
         });
@@ -619,17 +651,54 @@ describe('lib/annotations/AnnotationThread', () => {
             thread.isMobile = true;
             thread.cancelUnsavedAnnotation();
             expect(thread.destroy).to.be.called;
+            expect(thread.emit).to.be.calledWith(THREAD_EVENT.cancel);
 
             // 'pending' state
             thread.isMobile = false;
             thread.state = STATES.pending;
             thread.cancelUnsavedAnnotation();
             expect(thread.destroy).to.be.called;
+            expect(thread.emit).to.be.calledWith(THREAD_EVENT.cancel);
 
             // 'pending-active' state
             thread.state = STATES.pending_active;
             thread.cancelUnsavedAnnotation();
             expect(thread.destroy).to.be.called;
+            expect(thread.emit).to.be.calledWith(THREAD_EVENT.cancel);
+        });
+    });
+
+    describe('getThreadEventData()', () => {
+        it('should return thread type and threadID', () => {
+            thread.annotationService.user = { id: -1 };
+            thread.threadNumber = undefined;
+            const data = thread.getThreadEventData();
+            expect(data).to.deep.equal({
+                type: thread.type,
+                threadID: thread.threadID
+            });
+        });
+
+        it('should also return annotator\'s user id', () => {
+            thread.annotationService.user = { id: 1 };
+            thread.threadNumber = undefined;
+            const data = thread.getThreadEventData();
+            expect(data).to.deep.equal({
+                type: thread.type,
+                threadID: thread.threadID,
+                userId: 1
+            });
+        });
+
+        it('should return thread type and threadID', () => {
+            thread.annotationService.user = { id: -1 };
+            thread.threadNumber = 1;
+            const data = thread.getThreadEventData();
+            expect(data).to.deep.equal({
+                type: thread.type,
+                threadID: thread.threadID,
+                threadNumber: 1
+            });
         });
     });
 
@@ -747,6 +816,14 @@ describe('lib/annotations/AnnotationThread', () => {
             thread.fillPointAnnotationIcon(annotation);
             expect(thread.element).to.have.html('AG');
             expect(thread.element).to.have.class('blue');
+    });
+      
+    describe('handleThreadSaveError()', () => {
+        it('should delete temp annotation and emit event', () => {
+            sandbox.stub(thread, 'deleteAnnotation');
+            thread.handleThreadSaveError(1);
+            expect(thread.deleteAnnotation).to.be.calledWith(1, false);
+            expect(thread.emit).to.be.calledWith(THREAD_EVENT.createError);
         });
     });
 });

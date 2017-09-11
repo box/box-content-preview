@@ -1,5 +1,8 @@
 import 'whatwg-fetch';
 import {
+    PERMISSION_ANNOTATE,
+    PERMISSION_CAN_VIEW_ANNOTATIONS_ALL,
+    PERMISSION_CAN_VIEW_ANNOTATIONS_SELF,
     TYPES,
     SELECTOR_ANNOTATION_CARET,
     PENDING_STATES,
@@ -291,7 +294,10 @@ export function getAvatarHtml(avatarUrl, userId, userName) {
     let initials = '';
     if (userId !== '0') {
         // http://stackoverflow.com/questions/8133630/spliting-the-first-character-of-the-words
-        initials = userName.replace(/\W*(\w)\w*/g, '$1').toUpperCase().substring(0, 3);
+        initials = userName
+            .replace(/\W*(\w)\w*/g, '$1')
+            .toUpperCase()
+            .substring(0, 3);
     }
 
     return `<div class="bp-annotation-profile ${getUserColor(userId)}">${initials}</div>`.trim();
@@ -652,4 +658,24 @@ export function replacePlaceholders(string, placeholderValues) {
         return placeholderValues[placeholderIndex] ? placeholderValues[placeholderIndex] : match;
         /* eslint-enable no-plusplus */
     });
+}
+
+/**
+ * Determines whether the user has file permissions to annotate, view (either
+ * their own or everyone's) annotations which would allow annotations to at
+ * least be fetched for the current file
+ *
+ * @param {Object} permissions - File permissions
+ * @return {boolean} Whether or not the user has either view OR annotate permissions
+ */
+export function canLoadAnnotations(permissions) {
+    if (!permissions) {
+        return false;
+    }
+
+    const canAnnotate = permissions[PERMISSION_ANNOTATE];
+    const canViewAllAnnotations = permissions[PERMISSION_CAN_VIEW_ANNOTATIONS_ALL];
+    const canViewOwnAnnotations = permissions[PERMISSION_CAN_VIEW_ANNOTATIONS_SELF];
+
+    return !!canAnnotate || !!canViewAllAnnotations || !!canViewOwnAnnotations;
 }

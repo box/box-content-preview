@@ -93,7 +93,7 @@ class DrawingModeController extends AnnotationModeController {
 
         // On save, add the thread to the Rbush, on delete, remove it from the Rbush
         thread.addListener('annotationsaved', () => this.registerThread(thread));
-        thread.addListener('threaddeleted', () => this.unregisterThread(thread));
+        thread.addListener('annotationdelete', () => this.unregisterThread(thread));
     }
 
     /**
@@ -129,8 +129,9 @@ class DrawingModeController extends AnnotationModeController {
      *
      * @inheritdoc
      * @protected
-     * @return {Array} An array where each element is an object containing the object that will emit the event,
-     *                 the type of events to listen for, and the callback
+     * @return {Array} An array where each element is an object containing
+     * the object that will emit the event, the type of events to listen
+     * for, and the callback
      */
     setupHandlers() {
         /* eslint-disable require-jsdoc */
@@ -175,7 +176,8 @@ class DrawingModeController extends AnnotationModeController {
      * @return {void}
      */
     handleAnnotationEvent(thread, data = {}) {
-        switch (data.type) {
+        const { eventData } = data;
+        switch (data.event) {
             case 'locationassigned':
                 // Register the thread to the threadmap when a starting location is assigned. Should only occur once.
                 this.annotator.addThreadToMap(thread);
@@ -189,8 +191,8 @@ class DrawingModeController extends AnnotationModeController {
                 this.bindModeListeners();
 
                 // Given a location (page change) start drawing at the provided location
-                if (data.location) {
-                    this.currentThread.handleStart(data.location);
+                if (eventData && eventData.location) {
+                    this.currentThread.handleStart(eventData.location);
                 }
 
                 break;
@@ -209,7 +211,7 @@ class DrawingModeController extends AnnotationModeController {
 
                 break;
             case 'availableactions':
-                this.updateUndoRedoButtonEls(data.undo, data.redo);
+                this.updateUndoRedoButtonEls(eventData.undo, eventData.redo);
                 break;
             default:
         }

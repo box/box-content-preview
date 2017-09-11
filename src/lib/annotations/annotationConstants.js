@@ -78,6 +78,10 @@ export const SELECTOR_DIALOG_CLOSE = `.${CLASS_DIALOG_CLOSE}`;
 export const SELECTOR_HIGHLIGHT_BTNS = `.${CLASS_HIGHLIGHT_BTNS}`;
 export const SELECTOR_ADD_HIGHLIGHT_BTN = `.${CLASS_ADD_HIGHLIGHT_BTN}`;
 
+export const PERMISSION_ANNOTATE = 'can_annotate';
+export const PERMISSION_CAN_VIEW_ANNOTATIONS_ALL = 'can_view_annotations_all';
+export const PERMISSION_CAN_VIEW_ANNOTATIONS_SELF = 'can_view_annotations_self';
+
 export const DRAW_STATES = {
     idle: 'idle',
     drawing: 'drawing',
@@ -103,6 +107,26 @@ export const HIGHLIGHT_FILL = {
     normal: 'rgba(254, 217, 78, 0.5)',
     active: 'rgba(255, 201, 0, 0.5)',
     erase: 'rgba(255, 245, 132, 1)'
+};
+
+export const ANNOTATOR_EVENT = {
+    modeEnter: 'annotationmodeenter',
+    modeExit: 'annotationmodeexit',
+    fetch: 'annotationsfetched',
+    error: 'annotationerror',
+    scale: 'scaleannotations'
+};
+
+export const THREAD_EVENT = {
+    pending: 'annotationpending',
+    threadSave: 'annotationthreadsaved',
+    threadDelete: 'annotationthreaddeleted',
+    threadCleanup: 'annotationthreadcleanup',
+    save: 'annotationsaved',
+    delete: 'annotationdeleted',
+    deleteError: 'annotationdeleteerror',
+    cancel: 'annotationcanceled',
+    createError: 'annotationcreateerror'
 };
 
 export const PAGE_PADDING_TOP = 15;

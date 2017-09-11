@@ -8,7 +8,8 @@ import {
     TYPES,
     CLASS_ANNOTATION_POINT_MARKER,
     DATA_TYPE_ANNOTATION_INDICATOR,
-    CLASS_ACTIVE
+    CLASS_ACTIVE,
+    THREAD_EVENT
 } from './annotationConstants';
 
 @autobind
@@ -82,7 +83,7 @@ class AnnotationThread extends EventEmitter {
             this.element = null;
         }
 
-        this.emit('threaddeleted');
+        this.emit(THREAD_EVENT.threadDelete);
     }
 
     /**
@@ -138,7 +139,7 @@ class AnnotationThread extends EventEmitter {
      *
      * @param {string} type - Type of annotation
      * @param {string} text - Text of annotation to save
-     * @return {void}
+     * @return {Promise} - Annotation create promise
      */
     saveAnnotation(type, text) {
         const annotationData = this.createAnnotationData(type, text);
@@ -159,16 +160,10 @@ class AnnotationThread extends EventEmitter {
         // Changing state from pending
         this.state = STATES.hover;
         // Save annotation on server
-        this.annotationService
+        return this.annotationService
             .create(annotationData)
             .then((savedAnnotation) => this.updateTemporaryAnnotation(tempAnnotation, savedAnnotation))
-            .catch(() => {
-                // Remove temporary annotation
-                this.deleteAnnotation(tempAnnotationID, /* useServer */ false);
-
-                // Broadcast error
-                this.emit('annotationcreateerror');
-            });
+            .catch(() => this.handleThreadSaveError(tempAnnotationID));
     }
 
     /**
@@ -176,13 +171,15 @@ class AnnotationThread extends EventEmitter {
      *
      * @param {string} annotationID - ID of annotation to delete
      * @param {boolean} [useServer] - Whether or not to delete on server, default true
-     * @return {void}
+     * @return {Promise} - Annotation delete promise
      */
     deleteAnnotation(annotationID, useServer = true) {
         // Ignore if no corresponding annotation exists in thread or user doesn't have permissions
         const annotation = this.annotations.find((annot) => annot.annotationID === annotationID);
         if (!annotation || (annotation.permissions && !annotation.permissions.can_delete)) {
-            return;
+            // Broadcast error
+            this.emit(THREAD_EVENT.deleteError);
+            return Promise.reject();
         }
 
         // Delete annotation on client
@@ -210,31 +207,36 @@ class AnnotationThread extends EventEmitter {
             this.dialog.removeAnnotation(annotationID);
         }
 
-        // Delete annotation on server
-        if (useServer) {
-            this.annotationService
-                .delete(annotationID)
-                .then(() => {
-                    // Ensures that blank highlight comment is also deleted when removing
-                    // the last comment on a highlight
-                    canDeleteAnnotation =
-                        this.annotations.length > 0 &&
-                        this.annotations[0].permissions &&
-                        this.annotations[0].permissions.can_delete;
-                    if (annotatorUtil.isPlainHighlight(this.annotations) && canDeleteAnnotation) {
-                        this.annotationService.delete(this.annotations[0].annotationID);
-                    }
-
-                    // Broadcast thread cleanup if needed
-                    if (this.annotations.length === 0) {
-                        this.emit('threadcleanup');
-                    }
-                })
-                .catch(() => {
-                    // Broadcast error
-                    this.emit('annotationdeleteerror');
-                });
+        if (!useServer) {
+            return Promise.resolve();
         }
+
+        // Delete annotation on server
+        return this.annotationService
+            .delete(annotationID)
+            .then(() => {
+                // Ensures that blank highlight comment is also deleted when removing
+                // the last comment on a highlight
+                canDeleteAnnotation =
+                    this.annotations.length > 0 &&
+                    this.annotations[0].permissions &&
+                    this.annotations[0].permissions.can_delete;
+                if (annotatorUtil.isPlainHighlight(this.annotations) && canDeleteAnnotation) {
+                    this.annotationService.delete(this.annotations[0].annotationID);
+                }
+
+                // Broadcast thread cleanup if needed
+                if (this.annotations.length === 0) {
+                    this.emit(THREAD_EVENT.threadCleanup);
+                }
+
+                // Broadcast annotation deletion event
+                this.emit(THREAD_EVENT.delete);
+            })
+            .catch(() => {
+                // Broadcast error
+                this.emit(THREAD_EVENT.deleteError);
+            });
     }
 
     /**
@@ -431,7 +433,32 @@ class AnnotationThread extends EventEmitter {
         if (!annotatorUtil.isPending(this.state)) {
             return;
         }
+
+        this.emit(THREAD_EVENT.cancel);
         this.destroy();
+    }
+
+    /**
+     * Generate threadData with relevant information to be emitted with an
+     * annotation thread event
+     *
+     * @protected
+     * @return {Object} threadData - Annotation event thread data
+     */
+    getThreadEventData() {
+        const threadData = {
+            type: this.type,
+            threadID: this.threadID
+        };
+
+        if (this.annotationService.user.id > 0) {
+            threadData.userId = this.annotationService.user.id;
+        }
+        if (this.threadNumber) {
+            threadData.threadNumber = this.threadNumber;
+        }
+
+        return threadData;
     }
 
     //--------------------------------------------------------------------------
@@ -476,7 +503,7 @@ class AnnotationThread extends EventEmitter {
             this.dialog.removeAnnotation(tempAnnotation.annotationID);
         }
 
-        this.emit('annotationsaved');
+        this.emit(THREAD_EVENT.save);
     }
 
     /**
@@ -588,6 +615,35 @@ class AnnotationThread extends EventEmitter {
 
         // Icon color should be 'unique' to user id
         this.element.classList.add(annotatorUtil.getUserColor(annotation.user.id));
+    }
+
+     * Deletes the temporary annotation if the annotation failed to save on the server
+     *
+     * @private
+     * @param {string} tempAnnotationID - ID of temporary annotation to be updated with annotation from server
+     * @return {void}
+     */
+    handleThreadSaveError(tempAnnotationID) {
+        // Remove temporary annotation
+        this.deleteAnnotation(tempAnnotationID, /* useServer */ false);
+
+        // Broadcast error
+        this.emit(THREAD_EVENT.createError);
+    }
+
+    /**
+     * Emits a generic viewer event
+     *
+     * @private
+     * @emits viewerevent
+     * @param {string} event - Event name
+     * @param {Object} eventData - Event data
+     * @return {void}
+     */
+    emit(event, eventData) {
+        const threadData = this.getThreadEventData();
+        super.emit(event, { data: threadData, eventData });
+        super.emit('threadevent', { event, data: threadData, eventData });
     }
 }
 

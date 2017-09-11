@@ -271,6 +271,7 @@ $avatar-color-9: #f22c44;
     position: absolute;
     transition: fill .5s;
     width: 20px;
+    z-index: 10000; // Ensure activated point annotation icon is above dialog
 
     &:hover,
     &.bp-is-active {

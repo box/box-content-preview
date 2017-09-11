@@ -12,10 +12,8 @@ import {
     prefetchAssets,
     createAssetUrlCreator
 } from '../util';
-import { checkPermission } from '../file';
 import Browser from '../Browser';
 import {
-    PERMISSION_ANNOTATE,
     CLASS_FULLSCREEN,
     CLASS_FULLSCREEN_UNSUPPORTED,
     CLASS_HIDDEN,
@@ -36,8 +34,6 @@ const ANNOTATION_TYPE_DRAW = 'draw';
 const ANNOTATION_TYPE_POINT = 'point';
 const LOAD_TIMEOUT_MS = 180000; // 3m
 const RESIZE_WAIT_TIME_IN_MILLIS = 300;
-const ANNOTATION_MODE_ENTER = 'annotationmodeenter';
-const ANNOTATION_MODE_EXIT = 'annotationmodeexit';
 const ANNOTATION_BUTTONS = {
     point: {
         title: __('annotation_point_toggle'),
@@ -47,6 +43,13 @@ const ANNOTATION_BUTTONS = {
         title: __('annotation_draw_toggle'),
         selector: SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW
     }
+};
+const ANNOTATOR_EVENT = {
+    modeEnter: 'annotationmodeenter',
+    modeExit: 'annotationmodeexit',
+    fetch: 'annotationsfetched',
+    error: 'annotationerror',
+    scale: 'scaleannotations'
 };
 
 @autobind
@@ -229,13 +232,13 @@ class BaseViewer extends EventEmitter {
     };
 
     /**
-     * Emits an error when an asset (static or representation) fails to load.
+     * Triggers an error when an asset (static or representation) fails to load.
      *
-     * @emits error
+     * @param {string} [err] - Optional error message
      * @return {void}
      */
-    handleAssetError = () => {
-        this.triggerError();
+    handleAssetError = (err) => {
+        this.triggerError(err);
         this.destroyed = true;
     };
 
@@ -244,11 +247,11 @@ class BaseViewer extends EventEmitter {
      *
      * @protected
      * @emits error
-     * @param {Error} [err] - Optional error with message
+     * @param {Error|string} [err] - Optional error or string with message
      * @return {void}
      */
     triggerError(err) {
-        this.emit('error', err instanceof Error ? err : new Error(__('error_refresh')));
+        this.emit('error', err instanceof Error ? err : new Error(err || __('error_refresh')));
     }
 
     /**
@@ -659,17 +662,15 @@ class BaseViewer extends EventEmitter {
         const viewerName = this.options.viewer.NAME;
         const annotationsConfig = this.getViewerAnnotationsConfig();
 
-        this.annotatorConf = boxAnnotations.determineAnnotator(viewerName, annotationsConfig);
+        const { file } = this.options;
+        this.annotatorConf = boxAnnotations.determineAnnotator(viewerName, file.permissions, annotationsConfig);
+
+        // No annotatorConf will be returned if the user does not have the correct permissions
         if (!this.annotatorConf) {
             return;
         }
 
-        const { file } = this.options;
-        this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
-
-        if (this.canAnnotate) {
-            this.initAnnotations();
-        }
+        this.initAnnotations();
     }
 
     /**
@@ -707,7 +708,7 @@ class BaseViewer extends EventEmitter {
 
         // Add a custom listener for events related to scaling/orientation changes
         this.addListener('scale', (data) => {
-            this.annotator.emit('scaleAnnotations', data);
+            this.annotator.emit(ANNOTATOR_EVENT.scale, data);
         });
 
         this.addListener('scrolltoannotation', (data) => {
@@ -715,7 +716,7 @@ class BaseViewer extends EventEmitter {
         });
 
         // Add a custom listener for events emmited by the annotator
-        this.annotator.addListener('annotatorevent', this.handleAnnotatorNotifications);
+        this.annotator.addListener('annotatorevent', this.handleAnnotatorEvents);
     }
 
     /**
@@ -741,39 +742,40 @@ class BaseViewer extends EventEmitter {
      * @private
      * @param {Object} [data] - Annotator event data
      * @param {string} [data.event] - Annotator event
-     * @param {string} [data.data] -
+     * @param {string} [data.data] - Annotation event data
      * @return {void}
      */
-    handleAnnotatorNotifications(data) {
+    handleAnnotatorEvents(data) {
         /* istanbul ignore next */
         switch (data.event) {
-            case ANNOTATION_MODE_ENTER:
+            case ANNOTATOR_EVENT.modeEnter:
                 this.disableViewerControls();
 
-                if (data.data === ANNOTATION_TYPE_POINT) {
+                if (data.data.mode === ANNOTATION_TYPE_POINT) {
                     this.emit('notificationshow', __('notification_annotation_point_mode'));
-                } else if (data.data === ANNOTATION_TYPE_DRAW) {
+                } else if (data.data.mode === ANNOTATION_TYPE_DRAW) {
                     this.emit('notificationshow', __('notification_annotation_draw_mode'));
                 }
                 break;
-            case ANNOTATION_MODE_EXIT:
+            case ANNOTATOR_EVENT.modeExit:
                 this.enableViewerControls();
                 this.emit('notificationhide');
                 break;
-            case 'annotationerror':
+            case ANNOTATOR_EVENT.error:
                 this.emit('notificationshow', data.data);
                 break;
-            case 'annotationsfetched':
+            case ANNOTATOR_EVENT.fetch:
                 this.emit('scale', {
                     scale: this.scale,
                     rotationAngle: this.rotationAngle
                 });
                 break;
             default:
-                this.emit(data.event, data.data);
-                this.emit('annotatorevent', data);
-                break;
         }
+
+        // Emit all annotation events to Preview
+        this.emit(data.event, data.data);
+        this.emit('annotatorevent', data);
     }
 }
 

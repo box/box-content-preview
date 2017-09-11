@@ -482,8 +482,13 @@ class DocHighlightDialog extends AnnotationDialog {
      * @return {number} Annotations dialog width
      */
     getDialogWidth() {
-        // Switches to 'visibility: hidden' to ensure that dialog takes up DOM
-        // space while still being invisible
+        // Ensure dialog will not be displayed off the page when
+        // calculating the dialog width
+        const prevDialogX = this.element.style.left;
+        this.element.style.left = 0;
+
+        // Switches to 'visibility: hidden' to ensure that dialog takes up
+        // DOM space while still being invisible
         annotatorUtil.hideElementVisibility(this.element);
         annotatorUtil.showElement(this.element);
 
@@ -493,6 +498,9 @@ class DocHighlightDialog extends AnnotationDialog {
         // in the DOM while remaining hidden
         annotatorUtil.hideElement(this.element);
         annotatorUtil.showInvisibleElement(this.element);
+
+        // Reset dialog left positioning
+        this.element.style.left = prevDialogX;
 
         return this.highlightDialogWidth;
     }

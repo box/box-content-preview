@@ -22,7 +22,9 @@ import {
     PAGE_PADDING_BOTTOM,
     CLASS_ANNOTATION_LAYER_HIGHLIGHT,
     CLASS_ANNOTATION_LAYER_DRAW,
-    POINT_ANNOTATION_ICON_HEIGHT
+    POINT_ANNOTATION_ICON_HEIGHT,
+    THREAD_EVENT,
+    ANNOTATOR_EVENT
 } from '../annotationConstants';
 
 const MOUSEMOVE_THROTTLE_MS = 50;
@@ -172,6 +174,14 @@ class DocAnnotator extends Annotator {
 
         // Allow rangy to highlight this
         this.annotatedElement.id = ID_ANNOTATED_ELEMENT;
+
+        if (!this.createHighlightDialog) {
+            return;
+        }
+
+        this.createHighlightDialog.addListener(CreateEvents.init, () =>
+            this.emit(THREAD_EVENT.pending, TYPES.highlight)
+        );
     }
 
     //--------------------------------------------------------------------------
@@ -244,7 +254,7 @@ class DocAnnotator extends Annotator {
 
             // Do not create annotation if event doesn't have coordinates
             if (isNaN(x) || isNaN(y)) {
-                this.emit('annotationerror', __('annotations_create_error'));
+                this.emit(ANNOTATOR_EVENT.error, __('annotations_create_error'));
                 return location;
             }
 
@@ -353,7 +363,7 @@ class DocAnnotator extends Annotator {
         }
 
         if (!thread && this.notification) {
-            this.emit('annotationerror', __('annotations_create_error'));
+            this.emit(ANNOTATOR_EVENT.error, __('annotations_create_error'));
         } else if (thread && (type !== TYPES.draw || location.page)) {
             this.addThreadToMap(thread);
         }
@@ -420,6 +430,7 @@ class DocAnnotator extends Annotator {
 
         this.bindCustomListenersOnThread(thread);
 
+        this.emit(THREAD_EVENT.threadSave, thread.getThreadEventData());
         return thread;
     }
 
@@ -566,33 +577,6 @@ class DocAnnotator extends Annotator {
             this.annotatedElement.removeEventListener('mousemove', this.highlightMousemoveHandler);
             this.highlightMousemoveHandler = null;
         }
-    }
-
-    /**
-     * Binds custom event listeners for a thread.
-     *
-     * @protected
-     * @override
-     * @param {AnnotationThread} thread - Thread to bind events to
-     * @return {void}
-     */
-    bindCustomListenersOnThread(thread) {
-        if (!thread) {
-            return;
-        }
-
-        super.bindCustomListenersOnThread(thread);
-
-        // We need to redraw highlights on the page if a thread was deleted
-        // since deleting 'cuts' out the highlight, which may have been
-        // overlapping with another
-        if (!annotatorUtil.isHighlightAnnotation(thread.type)) {
-            return;
-        }
-
-        thread.addListener('threaddeleted', () => {
-            this.showHighlightsOnPage(thread.location.page);
-        });
     }
 
     //--------------------------------------------------------------------------
@@ -902,8 +886,8 @@ class DocAnnotator extends Annotator {
         if (!this.isMobile) {
             this.createHighlightDialog.setPosition(right - pageLeft, bottom - pageTop);
         }
-        this.isCreatingHighlight = true;
 
+        this.isCreatingHighlight = true;
         this.lastHighlightEvent = event;
     }
 
@@ -1036,6 +1020,35 @@ class DocAnnotator extends Annotator {
         });
 
         this.highlighter.removeHighlights(matchingHighlights);
+    }
+
+    /**
+     * Handles annotation thread events and emits them to the viewer
+     *
+     * @private
+     * @param {Object} [data] - Annotation thread event data
+     * @param {string} [data.event] - Annotation thread event
+     * @param {string} [data.data] - Annotation thread event data
+     * @return {void}
+     */
+    handleAnnotationThreadEvents(data) {
+        if (!data.data || !data.data.threadID) {
+            return;
+        }
+
+        const thread = this.getThreadByID(data.data.threadID);
+        if (!thread) {
+            return;
+        }
+
+        super.handleAnnotationThreadEvents(data);
+
+        switch (data.event) {
+            case THREAD_EVENT.threadDelete:
+                this.showHighlightsOnPage(thread.location.page);
+                break;
+            default:
+        }
     }
 }
 
