@@ -126,7 +126,7 @@ describe('lib/annotations/AnnotationModeController', () => {
             };
 
             annotationModeController.unbindCustomListenersOnThread(thread);
-            expect(thread.removeAllListeners).to.have.callCount(4);
+            expect(thread.removeAllListeners).to.be.calledWith('threadevent');
         });
     });
 

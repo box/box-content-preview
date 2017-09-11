@@ -75,9 +75,7 @@ class DocDrawingThread extends DrawingThread {
                 dimensions: location.dimensions
             };
             this.checkAndHandleScaleUpdate();
-            this.emit('annotationevent', {
-                type: 'locationassigned'
-            });
+            this.emit('locationassigned');
         }
 
         this.drawingFlag = DRAW_STATES.drawing;
@@ -198,16 +196,8 @@ class DocDrawingThread extends DrawingThread {
             return;
         }
 
-        this.dialog.addListener('annotationcreate', () => {
-            this.emit('annotationevent', {
-                type: 'softcommit'
-            });
-        });
-        this.dialog.addListener('annotationdelete', () => {
-            this.emit('annotationevent', {
-                type: 'dialogdelete'
-            });
-        });
+        this.dialog.addListener('annotationcreate', () => this.emit('softcommit'));
+        this.dialog.addListener('annotationdelete', () => this.emit('dialogdelete'));
     }
 
     /**
@@ -267,10 +257,7 @@ class DocDrawingThread extends DrawingThread {
      */
     onPageChange(location) {
         this.handleStop();
-        this.emit('annotationevent', {
-            type: 'softcommit',
-            location
-        });
+        this.emit('softcommit', { location });
     }
 
     /**

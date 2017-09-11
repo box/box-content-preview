@@ -98,7 +98,8 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
 
             drawingModeController.bindCustomListenersOnThread(thread);
             expect(stubs.super).to.be.called;
-            expect(thread.addListener).to.be.called.twice;
+            expect(thread.addListener).to.be.calledWith('annotationsaved');
+            expect(thread.addListener).to.be.calledWith('annotationdelete');
         });
     });
 
@@ -166,7 +167,7 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
             };
 
             drawingModeController.handleAnnotationEvent(thread, {
-                type: 'locationassigned'
+                event: 'locationassigned'
             });
             expect(drawingModeController.annotator.addThreadToMap).to.be.called;
         });
@@ -180,7 +181,7 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
             sandbox.stub(drawingModeController, 'unbindModeListeners');
             sandbox.stub(drawingModeController, 'bindModeListeners');
             drawingModeController.handleAnnotationEvent(thread, {
-                type: 'softcommit'
+                event: 'softcommit'
             });
             expect(drawingModeController.unbindModeListeners).to.be.called;
             expect(drawingModeController.bindModeListeners).to.be.called;
@@ -196,8 +197,10 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
                 handleStart: sandbox.stub()
             };
             const data = {
-                type: 'softcommit',
-                location: 'not empty'
+                event: 'softcommit',
+                eventData: {
+                    location: 'not empty'
+                }
             };
             sandbox.stub(drawingModeController, 'unbindModeListeners');
             sandbox.stub(drawingModeController, 'bindModeListeners', () => {
@@ -208,7 +211,7 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
             expect(thread1.saveAnnotation).to.be.called;
             expect(drawingModeController.unbindModeListeners).to.be.called;
             expect(drawingModeController.bindModeListeners).to.be.called;
-            expect(thread2.handleStart).to.be.calledWith(data.location);
+            expect(thread2.handleStart).to.be.calledWith(data.eventData.location);
         });
 
         it('should update undo and redo buttons on availableactions', () => {
@@ -216,9 +219,11 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
             sandbox.stub(drawingModeController, 'updateUndoRedoButtonEls');
 
             drawingModeController.handleAnnotationEvent(thread, {
-                type: 'availableactions',
-                undo: 1,
-                redo: 2
+                event: 'availableactions',
+                eventData: {
+                    undo: 1,
+                    redo: 2
+                }
             });
             expect(drawingModeController.updateUndoRedoButtonEls).to.be.calledWith(1, 2);
         });
@@ -232,7 +237,7 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
             sandbox.stub(drawingModeController, 'unbindModeListeners');
             sandbox.stub(drawingModeController, 'bindModeListeners');
             drawingModeController.handleAnnotationEvent(thread, {
-                type: 'dialogdelete'
+                event: 'dialogdelete'
             });
             expect(thread.destroy).to.be.called;
             expect(drawingModeController.unbindModeListeners).to.be.called;
@@ -249,7 +254,7 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
             };
 
             drawingModeController.handleAnnotationEvent(thread, {
-                type: 'dialogdelete'
+                event: 'dialogdelete'
             });
             expect(thread.deleteThread).to.be.called;
             expect(drawingModeController.threads.search).to.be.called;

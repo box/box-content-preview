@@ -7,7 +7,8 @@ import {
     DRAW_RENDER_THRESHOLD,
     DRAW_BASE_LINE_WIDTH,
     DRAW_BORDER_OFFSET,
-    DRAW_DASHED_SPACING
+    DRAW_DASHED_SPACING,
+    THREAD_EVENT
 } from '../annotationConstants';
 
 class DrawingThread extends AnnotationThread {
@@ -67,9 +68,7 @@ class DrawingThread extends AnnotationThread {
         // Recreate stored paths
         if (this.location && this.location.paths) {
             this.setBoundary();
-            this.emit('annotationevent', {
-                type: 'locationassigned'
-            });
+            this.emit('locationassigned');
 
             this.location.paths.forEach((drawingPathData) => {
                 const pathInstance = new DrawingPath(drawingPathData);
@@ -97,7 +96,7 @@ class DrawingThread extends AnnotationThread {
 
         super.destroy();
         this.reset();
-        this.emit('threadcleanup');
+        this.emit(THREAD_EVENT.threadCleanup);
     }
 
     /**
@@ -286,8 +285,7 @@ class DrawingThread extends AnnotationThread {
      */
     emitAvailableActions() {
         const availableActions = this.pathContainer.getNumberOfItems();
-        this.emit('annotationevent', {
-            type: 'availableactions',
+        this.emit('availableactions', {
             undo: availableActions.undoCount,
             redo: availableActions.redoCount
         });
