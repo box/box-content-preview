@@ -71,6 +71,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+        annotator.threads = {};
         if (typeof annotator.destroy === 'function') {
             annotator.destroy();
             annotator = null;
