@@ -969,6 +969,14 @@ class Annotator extends EventEmitter {
                 this.removeThreadFromMap(thread);
                 this.emit(data.event, data.data);
                 break;
+            case THREAD_EVENT.deleteError:
+                this.emit(ANNOTATOR_EVENT.error, __('annotations_delete_error'));
+                this.emit(data.event, data.data);
+                break;
+            case THREAD_EVENT.createError:
+                this.emit(ANNOTATOR_EVENT.error, __('annotations_create_error'));
+                this.emit(data.event, data.data);
+                break;
             default:
                 this.emit(data.event, data.data);
         }

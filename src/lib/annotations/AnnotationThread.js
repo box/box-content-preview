@@ -172,7 +172,9 @@ class AnnotationThread extends EventEmitter {
         // Ignore if no corresponding annotation exists in thread or user doesn't have permissions
         const annotation = this.annotations.find((annot) => annot.annotationID === annotationID);
         if (!annotation || (annotation.permissions && !annotation.permissions.can_delete)) {
-            return Promise.resolve();
+            // Broadcast error
+            this.emit(THREAD_EVENT.deleteError);
+            return Promise.reject();
         }
 
         // Delete annotation on client

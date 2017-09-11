@@ -1031,6 +1031,32 @@ describe('lib/annotations/Annotator', () => {
                 expect(stubs.unbind).to.not.be.called;
             });
 
+            it('should emit delete error notification event', () => {
+                stubs.getThread.returns(stubs.thread);
+                const data = {
+                    event: THREAD_EVENT.deleteError,
+                    data: { threadID: 1 }
+                };
+                annotator.handleAnnotationThreadEvents(data);
+                expect(stubs.emit).to.be.calledWith(data.event, data.data);
+                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.error, __('annotations_delete_error'));
+                expect(stubs.unbind).to.not.be.called;
+                expect(stubs.remove).to.not.be.called;
+            });
+
+            it('should emit save error notification event', () => {
+                stubs.getThread.returns(stubs.thread);
+                const data = {
+                    event: THREAD_EVENT.createError,
+                    data: { threadID: 1 }
+                };
+                annotator.handleAnnotationThreadEvents(data);
+                expect(stubs.emit).to.be.calledWith(data.event, data.data);
+                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.error, __('annotations_create_error'));
+                expect(stubs.unbind).to.not.be.called;
+                expect(stubs.remove).to.not.be.called;
+            });
+
             it('should emit thread event', () => {
                 stubs.getThread.returns(stubs.thread);
                 const data = {
