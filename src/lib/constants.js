@@ -61,7 +61,6 @@ export const SELECTOR_BOX_PREVIEW_LOGO_DEFAULT = `.${CLASS_BOX_PREVIEW_LOGO_DEFA
 export const SELECTOR_BOX_PREVIEW_PROGRESS_BAR = `.${CLASS_BOX_PREVIEW_PROGRESS_BAR}`;
 
 export const PERMISSION_DOWNLOAD = 'can_download';
-export const PERMISSION_ANNOTATE = 'can_annotate';
 export const PERMISSION_PREVIEW = 'can_preview';
 
 export const API_HOST = 'https://api.box.com';

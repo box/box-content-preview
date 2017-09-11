@@ -2,6 +2,7 @@ import DocAnnotator from './doc/DocAnnotator';
 import ImageAnnotator from './image/ImageAnnotator';
 import DrawingModeController from './drawing/DrawingModeController';
 import { TYPES } from './annotationConstants';
+import { canLoadAnnotations } from './annotatorUtil';
 
 const ANNOTATORS = [
     {
@@ -87,15 +88,17 @@ class BoxAnnotations {
      * Chooses a annotator based on viewer.
      *
      * @param {Object} viewerName - Current preview viewer name
+     * @param {Object} permissions - File permissions
      * @param {Object} [viewerConfig] - Annotation configuration for a specific viewer
      * @param {Array} [disabledAnnotators] - List of disabled annotators
      * @return {Object|null} A copy of the annotator to use, if available
      */
-    determineAnnotator(viewerName, viewerConfig = {}, disabledAnnotators = []) {
-        const annotator = this.getAnnotatorsForViewer(viewerName, disabledAnnotators);
+    determineAnnotator(viewerName, permissions, viewerConfig = {}, disabledAnnotators = []) {
         let modifiedAnnotator = null;
 
-        if (!annotator || viewerConfig.enabled === false) {
+        const hasAnnotationPermissions = canLoadAnnotations(permissions);
+        const annotator = this.getAnnotatorsForViewer(viewerName, disabledAnnotators);
+        if (!hasAnnotationPermissions || !annotator || viewerConfig.enabled === false) {
             return modifiedAnnotator;
         }
 
