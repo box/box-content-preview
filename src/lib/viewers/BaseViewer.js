@@ -229,7 +229,7 @@ class BaseViewer extends EventEmitter {
     };
 
     /**
-     * triggers an error when an asset (static or representation) fails to load.
+     * Triggers an error when an asset (static or representation) fails to load.
      *
      * @param {string} [err] - Optional error message
      * @return {void}
@@ -244,7 +244,7 @@ class BaseViewer extends EventEmitter {
      *
      * @protected
      * @emits error
-     * @param {Error|string} [err] - Optional error or stringwith message
+     * @param {Error|string} [err] - Optional error or string with message
      * @return {void}
      */
     triggerError(err) {

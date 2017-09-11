@@ -7,7 +7,6 @@ const STATUS_UPDATE_INTERVAL_MS = 2000;
 const ERROR_PASSWORD_PROTECTED = 'error_password_protected';
 const ERROR_TRY_AGAIN_LATER = 'error_try_again_later';
 const ERROR_UNSUPPORTED_FORMAT = 'error_unsupported_format';
-const ERROR_REFRESH = 'error_refesh';
 
 class RepStatus extends EventEmitter {
     /**
@@ -112,16 +111,16 @@ class RepStatus extends EventEmitter {
             case 'error':
                 switch (RepStatus.getErrorCode(this.representation)) {
                     case ERROR_PASSWORD_PROTECTED:
-                        errorCode = __(ERROR_PASSWORD_PROTECTED);
+                        errorCode = __('error_password_protected');
                         break;
                     case ERROR_TRY_AGAIN_LATER:
-                        errorCode = __(ERROR_TRY_AGAIN_LATER);
+                        errorCode = __('error_try_again_later');
                         break;
                     case ERROR_UNSUPPORTED_FORMAT:
-                        errorCode = __(ERROR_UNSUPPORTED_FORMAT);
+                        errorCode = __('error_unsupported_format');
                         break;
                     default:
-                        errorCode = __(ERROR_REFRESH);
+                        errorCode = __('error_refresh');
                         break;
                 }
 
