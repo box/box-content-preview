@@ -271,21 +271,13 @@ $avatar-color-9: #f22c44;
     position: absolute;
     transition: fill .5s;
     width: 20px;
-    z-index: 10000; // Ensure activated point annotation icon is above dialog
 
     &:hover,
     &.bp-is-active {
-        border: 2px white solid;
+        border: 1px white solid;
         transform: scale(1.5);
         transition: all .1s ease-in-out;
         z-index: 10000; // Ensure activated point annotation icon is above dialog
-    }
-}
-
-.bp-point-annotation-marker.bp-annotation-dialog-flipped {
-    path,
-    rect {
-        display: none;
     }
 }
 

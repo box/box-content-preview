@@ -617,6 +617,7 @@ class AnnotationThread extends EventEmitter {
         this.element.classList.add(annotatorUtil.getUserColor(annotation.user.id));
     }
 
+    /**
      * Deletes the temporary annotation if the annotation failed to save on the server
      *
      * @private
