@@ -161,6 +161,12 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.triggerError).to.be.called;
             expect(base.destroyed).to.be.true;
         });
+
+        it('should pass along the error if provided', () => {
+            sandbox.stub(base, 'triggerError');
+            base.handleAssetError('error');
+            expect(base.triggerError).to.be.calledWith('error');
+        });
     });
 
     describe('triggerError()', () => {

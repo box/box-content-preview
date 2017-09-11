@@ -787,7 +787,7 @@ class Preview extends EventEmitter {
         // If no loader then throw an unsupported error
         // If file type specific error message, throw the generic one
         if (!loader) {
-            throw new Error(FILE_EXT_ERROR_MAP[this.file.extension] || __('error_file_type_unsupported'));
+            throw new Error(FILE_EXT_ERROR_MAP[this.file.extension] || __('error_default'));
         }
 
         // Determine the viewer to use
