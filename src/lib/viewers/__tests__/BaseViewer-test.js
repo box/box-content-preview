@@ -766,9 +766,9 @@ describe('lib/viewers/BaseViewer', () => {
                 },
                 file: {
                     permissions: {
-                        can_annotate: false,
-                        can_view_annotations_all: false,
-                        can_view_annotations_self: false
+                        can_annotate: true,
+                        can_view_annotations_all: true,
+                        can_view_annotations_self: true
                     }
                 }
             };
@@ -818,43 +818,6 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.areAnnotationsEnabled.returns(false);
             base.loadAnnotator();
             expect(base.initAnnotations).to.not.be.called;
-        });
-
-        it('should load an annotator if the user at least one of the correct permissions', () => {
-            class BoxAnnotations {
-                determineAnnotator() {
-                    return stubs.annotatorConf;
-                }
-            }
-            window.BoxAnnotations = BoxAnnotations;
-            stubs.areAnnotationsEnabled.returns(true);
-
-            base.loadAnnotator();
-            expect(base.initAnnotations).to.not.be.called;
-        });
-
-        it('should load an annotator if the user at least one of the correct permissions', () => {
-            class BoxAnnotations {
-                determineAnnotator() {
-                    return stubs.annotatorConf;
-                }
-            }
-            window.BoxAnnotations = BoxAnnotations;
-            stubs.areAnnotationsEnabled.returns(true);
-
-            base.options.file.permissions.can_annotate = true;
-            base.loadAnnotator();
-            expect(base.initAnnotations).to.be.called;
-
-            base.options.file.permissions.can_annotate = false;
-            base.options.file.permissions.can_view_annotations_all = true;
-            base.loadAnnotator();
-            expect(base.initAnnotations).to.be.called;
-
-            base.options.file.permissions.can_view_annotations_all = false;
-            base.options.file.permissions.can_view_annotations_self = true;
-            base.loadAnnotator();
-            expect(base.initAnnotations).to.be.called;
         });
     });
 

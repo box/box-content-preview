@@ -658,7 +658,7 @@ class BaseViewer extends EventEmitter {
         const annotationsConfig = this.getViewerAnnotationsConfig();
 
         const { file } = this.options;
-        this.annotatorConf = boxAnnotations.determineAnnotator(viewerName, annotationsConfig, file.permissions);
+        this.annotatorConf = boxAnnotations.determineAnnotator(viewerName, file.permissions, annotationsConfig);
 
         // No annotatorConf will be returned if the user does not have the correct permissions
         if (!this.annotatorConf) {
