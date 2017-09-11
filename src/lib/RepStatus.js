@@ -107,6 +107,7 @@ class RepStatus extends EventEmitter {
     handleResponse() {
         const status = RepStatus.getStatus(this.representation);
         let errorCode;
+
         switch (status) {
             case 'error':
                 switch (RepStatus.getErrorCode(this.representation)) {
@@ -117,7 +118,7 @@ class RepStatus extends EventEmitter {
                         errorCode = __('error_try_again_later');
                         break;
                     case ERROR_UNSUPPORTED_FORMAT:
-                        errorCode = __('error_unsupported_format');
+                        errorCode = __('error_bad_file');
                         break;
                     default:
                         errorCode = __('error_refresh');

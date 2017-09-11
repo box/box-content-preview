@@ -167,7 +167,7 @@ describe('lib/RepStatus', () => {
         });
 
         it('should reject with the unsupported format message if the rep status is error due a bad file', () => {
-            sandbox.mock(repStatus).expects('reject').withArgs(__('error_unsupported_format'));
+            sandbox.mock(repStatus).expects('reject').withArgs(__('error_bad_file'));
             repStatus.representation.status.state = 'error';
             repStatus.representation.status.code = 'error_unsupported_format';
 
