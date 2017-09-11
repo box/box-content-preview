@@ -4,18 +4,35 @@ import { STATUS_SUCCESS, STATUS_VIEWABLE } from './constants';
 
 const STATUS_UPDATE_INTERVAL_MS = 2000;
 
+const ERROR_PASSWORD_PROTECTED = 'error_password_protected';
+const ERROR_TRY_AGAIN_LATER = 'error_try_again_later';
+const ERROR_UNSUPPORTED_FORMAT = 'error_unsupported_format';
+
 class RepStatus extends EventEmitter {
     /**
      * Gets the status out of represenation
      *
      * @public
      * @param {Object} representation - representation object
-     * @return {string} rep status instance
+     * @return {string} rep status state
      */
     static getStatus(representation) {
         let { status } = representation;
         status = typeof status === 'object' ? status.state : representation.temp_status.state;
         return status;
+    }
+
+    /**
+     * Gets the error code out of the representation
+     *
+     * @public
+     * @param {Object} representation - representation object
+     * @return {string} rep error code
+     */
+    static getErrorCode(representation) {
+        const { status } = representation;
+        const code = typeof status === 'object' ? status.code : representation.temp_status.code;
+        return code;
     }
 
     /**
@@ -89,9 +106,26 @@ class RepStatus extends EventEmitter {
      */
     handleResponse() {
         const status = RepStatus.getStatus(this.representation);
+        let errorCode;
+
         switch (status) {
             case 'error':
-                this.reject();
+                switch (RepStatus.getErrorCode(this.representation)) {
+                    case ERROR_PASSWORD_PROTECTED:
+                        errorCode = __('error_password_protected');
+                        break;
+                    case ERROR_TRY_AGAIN_LATER:
+                        errorCode = __('error_try_again_later');
+                        break;
+                    case ERROR_UNSUPPORTED_FORMAT:
+                        errorCode = __('error_bad_file');
+                        break;
+                    default:
+                        errorCode = __('error_refresh');
+                        break;
+                }
+
+                this.reject(errorCode);
                 break;
 
             case STATUS_SUCCESS:
