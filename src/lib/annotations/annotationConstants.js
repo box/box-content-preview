@@ -78,6 +78,10 @@ export const SELECTOR_DIALOG_CLOSE = `.${CLASS_DIALOG_CLOSE}`;
 export const SELECTOR_HIGHLIGHT_BTNS = `.${CLASS_HIGHLIGHT_BTNS}`;
 export const SELECTOR_ADD_HIGHLIGHT_BTN = `.${CLASS_ADD_HIGHLIGHT_BTN}`;
 
+export const PERMISSION_ANNOTATE = 'can_annotate';
+export const PERMISSION_CAN_VIEW_ANNOTATIONS_ALL = 'can_view_annotations_all';
+export const PERMISSION_CAN_VIEW_ANNOTATIONS_SELF = 'can_view_annotations_self';
+
 export const DRAW_STATES = {
     idle: 'idle',
     drawing: 'drawing',
