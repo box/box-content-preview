@@ -763,7 +763,19 @@ describe('lib/viewers/BaseViewer', () => {
             };
             stubs.areAnnotationsEnabled = sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
             sandbox.stub(base, 'initAnnotations');
-            stubs.checkPermission = sandbox.stub(file, 'checkPermission').returns(false);
+
+            base.options = {
+                viewer: {
+                    NAME: 'VIEWER'
+                },
+                file: {
+                    permissions: {
+                        can_annotate: true,
+                        can_view_annotations_all: true,
+                        can_view_annotations_self: true
+                    }
+                }
+            };
         });
 
         it('should load the appropriate annotator for the current viewer', () => {
@@ -772,7 +784,19 @@ describe('lib/viewers/BaseViewer', () => {
                     return stubs.annotatorConf;
                 }
             }
-            stubs.checkPermission.returns(true);
+
+            base.options = {
+                viewer: {
+                    NAME: 'VIEWER'
+                },
+                file: {
+                    permissions: {
+                        can_annotate: true,
+                        can_view_annotations_all: true,
+                        can_view_annotations_self: true
+                    }
+                }
+            };
 
             window.BoxAnnotations = BoxAnnotations;
             base.loadAnnotator();

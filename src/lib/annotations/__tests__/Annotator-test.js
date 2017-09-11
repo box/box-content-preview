@@ -477,23 +477,29 @@ describe('lib/annotations/Annotator', () => {
                 stubs.serviceMock.expects('getThreadMap').never();
                 annotator.permissions = {
                     canViewAllAnnotations: false,
+                    canViewOwnAnnotations: false
+                };
+                const result = annotator.fetchAnnotations();
+                expect(result instanceof Promise).to.be.truthy;
+            });
+
+            it('should fetch existing annotations if the user can view all annotations', () => {
+                stubs.serviceMock.expects('getThreadMap').returns(Promise.resolve());
+                annotator.permissions = {
+                    canViewAllAnnotations: false,
                     canViewOwnAnnotations: true
                 };
-                let result = annotator.fetchAnnotations();
+                const result = annotator.fetchAnnotations();
                 expect(result instanceof Promise).to.be.truthy;
+            });
 
+            it('should fetch existing annotations if the user can view all annotations', () => {
+                stubs.serviceMock.expects('getThreadMap').returns(Promise.resolve());
                 annotator.permissions = {
                     canViewAllAnnotations: true,
                     canViewOwnAnnotations: false
                 };
-                result = annotator.fetchAnnotations();
-                expect(result instanceof Promise).to.be.truthy;
-
-                annotator.permissions = {
-                    canViewAllAnnotations: false,
-                    canViewOwnAnnotations: false
-                };
-                result = annotator.fetchAnnotations();
+                const result = annotator.fetchAnnotations();
                 expect(result instanceof Promise).to.be.truthy;
             });
 
