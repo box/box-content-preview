@@ -26,7 +26,8 @@ import {
     replacePlaceholders,
     createLocation,
     round,
-    prevDefAndStopProp
+    prevDefAndStopProp,
+    canLoadAnnotations
 } from '../annotatorUtil';
 import {
     STATES,
@@ -38,6 +39,7 @@ import {
 const DIALOG_WIDTH = 81;
 
 const sandbox = sinon.sandbox.create();
+let stubs = {};
 
 describe('lib/annotations/annotatorUtil', () => {
     let childEl;
@@ -631,6 +633,35 @@ describe('lib/annotations/annotatorUtil', () => {
 
         it('should replace with the same value if the placeholder is repeated', () => {
             expect(replacePlaceholders('{2} highlighted {2}', ['Bob', 'Suzy'])).to.equal('Suzy highlighted Suzy');
+        });
+    });
+
+    describe('canLoadAnnotations()', () => {
+        beforeEach(() => {
+            stubs.permissions = {
+                can_annotate: false,
+                can_view_annotations_all: false,
+                can_view_annotations_self: false
+            };
+        });
+
+        it('should return false if permissions do not exist', () => {
+            expect(canLoadAnnotations()).to.be.false;
+        });
+
+        it('should return true if user has at least can_annotate permissions', () => {
+            stubs.permissions.can_annotate = true;
+            expect(canLoadAnnotations(stubs.permissions)).to.be.true;
+        });
+
+        it('should return true if user has at least can_view_annotations_all permissions', () => {
+            stubs.permissions.can_view_annotations_all = true;
+            expect(canLoadAnnotations(stubs.permissions)).to.be.true;
+        });
+
+        it('should return true if user has at least can_view_annotations_self permissions', () => {
+            stubs.permissions.can_view_annotations_self = true;
+            expect(canLoadAnnotations(stubs.permissions)).to.be.true;
         });
     });
 });

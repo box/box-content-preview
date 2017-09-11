@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-expressions */
 import BoxAnnotations from '../BoxAnnotations';
 import { TYPES } from '../annotationConstants';
+import * as annotatorUtil from '../annotatorUtil';
 import DrawingModeController from '../drawing/DrawingModeController';
 
 let loader;
@@ -62,22 +63,28 @@ describe('lib/annotators/BoxAnnotations', () => {
     describe('determineAnnotator()', () => {
         beforeEach(() => {
             stubs.instantiateControllers = sandbox.stub(loader, 'instantiateControllers');
+            stubs.canLoad = sandbox.stub(annotatorUtil, 'canLoadAnnotations').returns(true);
+        });
+
+        it('should not return an annotator if the user has incorrect permissions/scopes', () => {
+            stubs.canLoad.returns(false);
+            expect(loader.determineAnnotator('Image', {})).to.be.null;
         });
 
         it('should choose the first annotator that matches the viewer', () => {
             const viewer = 'Document';
-            const annotator = loader.determineAnnotator(viewer);
+            const annotator = loader.determineAnnotator(viewer, {});
             expect(annotator.NAME).to.equal(viewer);
             expect(stubs.instantiateControllers).to.be.called;
         });
 
         it('should not choose a disabled annotator', () => {
-            const annotator = loader.determineAnnotator('Image', {}, ['Image']);
+            const annotator = loader.determineAnnotator('Image', {}, {}, ['Image']);
             expect(annotator).to.be.null;
         });
 
-        it('should not return a annotator if no matching annotator is found', () => {
-            const annotator = loader.determineAnnotator('Swf');
+        it('should not return an annotator if no matching annotator is found', () => {
+            const annotator = loader.determineAnnotator('Swf', {});
             expect(annotator).to.be.null;
         });
 
@@ -88,7 +95,7 @@ describe('lib/annotators/BoxAnnotations', () => {
                 VIEWER: ['Document']
             };
             loader.annotators = [docAnnotator];
-            const annotator = loader.determineAnnotator(viewer);
+            const annotator = loader.determineAnnotator(viewer, {});
             docAnnotator.NAME = 'another_name';
             expect(annotator.NAME).to.equal(viewer);
             expect(annotator.NAME).to.not.equal(docAnnotator.NAME);
@@ -98,7 +105,7 @@ describe('lib/annotators/BoxAnnotations', () => {
             const config = {
                 enabled: false
             };
-            const annotator = loader.determineAnnotator('Document', config);
+            const annotator = loader.determineAnnotator('Document', {}, config);
             expect(annotator).to.be.null;
         });
 
@@ -113,7 +120,7 @@ describe('lib/annotators/BoxAnnotations', () => {
                 TYPE: ['point', 'highlight']
             };
             loader.annotators = [docAnnotator];
-            const annotator = loader.determineAnnotator('Document', config);
+            const annotator = loader.determineAnnotator('Document', {}, config);
             expect(annotator.TYPE.includes('point')).to.be.false;
             expect(annotator.TYPE.includes('highlight')).to.be.true;
             expect(annotator).to.deep.equal({

@@ -12,10 +12,8 @@ import {
     prefetchAssets,
     createAssetUrlCreator
 } from '../util';
-import { checkPermission } from '../file';
 import Browser from '../Browser';
 import {
-    PERMISSION_ANNOTATE,
     CLASS_FULLSCREEN,
     CLASS_FULLSCREEN_UNSUPPORTED,
     CLASS_HIDDEN,
@@ -659,17 +657,15 @@ class BaseViewer extends EventEmitter {
         const viewerName = this.options.viewer.NAME;
         const annotationsConfig = this.getViewerAnnotationsConfig();
 
-        this.annotatorConf = boxAnnotations.determineAnnotator(viewerName, annotationsConfig);
+        const { file } = this.options;
+        this.annotatorConf = boxAnnotations.determineAnnotator(viewerName, file.permissions, annotationsConfig);
+
+        // No annotatorConf will be returned if the user does not have the correct permissions
         if (!this.annotatorConf) {
             return;
         }
 
-        const { file } = this.options;
-        this.canAnnotate = checkPermission(file, PERMISSION_ANNOTATE);
-
-        if (this.canAnnotate) {
-            this.initAnnotations();
-        }
+        this.initAnnotations();
     }
 
     /**
