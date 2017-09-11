@@ -51,7 +51,7 @@ describe('lib/annotations/Annotator', () => {
             hide: () => {},
             addListener: () => {},
             unbindCustomListenersOnThread: () => {},
-            removeAllListeners: () => {},
+            removeListener: () => {},
             scrollIntoView: () => {},
             getThreadEventData: () => {},
             type: 'type'
@@ -204,6 +204,10 @@ describe('lib/annotations/Annotator', () => {
             annotator.addThreadToMap(stubs.thread3);
 
             annotator.init();
+        });
+
+        afterEach(() => {
+            annotator.threads = {};
         });
 
         describe('hideAnnotations()', () => {
@@ -604,7 +608,7 @@ describe('lib/annotations/Annotator', () => {
                     canAnnotate: true,
                     canDelete: true
                 });
-                const removeListenerStub = sandbox.stub(annotator.annotationService, 'removeAllListeners');
+                const removeListenerStub = sandbox.stub(annotator.annotationService, 'removeListener');
 
                 annotator.unbindCustomListenersOnService();
                 expect(removeListenerStub).to.be.called;
@@ -625,7 +629,7 @@ describe('lib/annotations/Annotator', () => {
 
         describe('unbindCustomListenersOnThread()', () => {
             it('should unbind custom listeners from the thread', () => {
-                stubs.threadMock.expects('removeAllListeners').withArgs('threadevent');
+                stubs.threadMock.expects('removeListener').withArgs('threadevent');
                 annotator.unbindCustomListenersOnThread(stubs.thread);
             });
         });

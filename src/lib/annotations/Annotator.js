@@ -668,7 +668,7 @@ class Annotator extends EventEmitter {
         if (!service || !(service instanceof AnnotationService)) {
             return;
         }
-        service.removeAllListeners(ANNOTATOR_EVENT.error);
+        service.removeListener(ANNOTATOR_EVENT.error, this.handleServiceEvents);
     }
 
     /**
@@ -694,7 +694,7 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     unbindCustomListenersOnThread(thread) {
-        thread.removeAllListeners('threadevent');
+        thread.removeListener('threadevent', this.handleAnnotationThreadEvents);
     }
 
     /**
