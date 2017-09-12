@@ -264,7 +264,10 @@ $avatar-color-9: #f22c44;
     padding: 0;
     position: absolute;
     width: 24px;
-    z-index: 10000; // Ensure activated point annotation icon is above dialog
+
+    &:hover {
+        z-index: 10000; // Ensure activated point annotation icon is above dialog
+    }
 
     svg {
         fill: fade-out($box-blue, .35);
