@@ -28,7 +28,7 @@ The document viewer remembers which page you were viewing upon closing the previ
 | annotations | object | Optional. Defines behaviour of how annotations are shown on the content |
 | annotations.enabled | boolean | Optional. Enables/disables if set. Respects higher level `showAnnotations` if empty |
 | annotations.disabledTypes | string[] | Optional. List of annotation types to disable |
-| annotations | boolean [deprecated] | Optional. Whether annotations on content are shown. Defaults to false |
+| annotations | boolean [deprecated] | Deprecated/Optional. Whether annotations on content are shown. Defaults to false |
 
 ## Events
 
