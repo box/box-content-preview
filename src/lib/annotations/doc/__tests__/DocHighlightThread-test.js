@@ -77,6 +77,16 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
             expect(highlightThread.destroy).to.be.called;
             assert.equal(highlightThread.element, null);
         });
+
+        it('should reset the thread if on mobile and a comment-highlight', () => {
+            sandbox.stub(highlightThread, 'reset');
+            highlightThread.annotations = [{}, {}, {}];
+            highlightThread.isMobile = true;
+
+            highlightThread.cancelFirstComment();
+
+            expect(highlightThread.reset).to.be.called;
+        });
     });
 
     describe('destroy()', () => {
