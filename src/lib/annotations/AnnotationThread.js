@@ -625,6 +625,7 @@ class AnnotationThread extends EventEmitter {
 
         // Broadcast error
         this.emit(THREAD_EVENT.createError);
+
         /* eslint-disable no-console */
         console.error(THREAD_EVENT.createError, error.toString());
         /* eslint-enable no-console */

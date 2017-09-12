@@ -110,9 +110,11 @@ class AnnotationService extends EventEmitter {
 
                         resolve(createdAnnotation);
                     } else {
-                        reject(new Error('Could not create annotation'));
+                        const error = new Error('Could not create annotation');
+                        reject(error);
                         this.emit('annotationerror', {
-                            reason: 'create'
+                            reason: 'create',
+                            error: error.toString()
                         });
                     }
                 })
@@ -121,7 +123,7 @@ class AnnotationService extends EventEmitter {
                     reject(new Error('Could not create annotation due to invalid or expired token'));
                     this.emit('annotationerror', {
                         reason: 'authorization',
-                        error
+                        error: error.toString()
                     });
                 });
         });
@@ -162,9 +164,11 @@ class AnnotationService extends EventEmitter {
                     if (response.status === 204) {
                         resolve();
                     } else {
-                        reject(new Error(`Could not delete annotation with ID ${annotationID}`));
+                        const error = new Error(`Could not delete annotation with ID ${annotationID}`);
+                        reject(error);
                         this.emit('annotationerror', {
-                            reason: 'delete'
+                            reason: 'delete',
+                            error: error.toString()
                         });
                     }
                 })
@@ -173,7 +177,7 @@ class AnnotationService extends EventEmitter {
                     reject(new Error('Could not delete annotation due to invalid or expired token'));
                     this.emit('annotationerror', {
                         reason: 'authorization',
-                        error
+                        error: error.toString()
                     });
                 });
         });
@@ -289,9 +293,11 @@ class AnnotationService extends EventEmitter {
             .then((response) => response.json())
             .then((data) => {
                 if (data.type === 'error' || !Array.isArray(data.entries)) {
-                    reject(new Error(`Could not read annotations from file version with ID ${fileVersionId}`));
+                    const error = new Error(`Could not read annotations from file version with ID ${fileVersionId}`);
+                    reject(error);
                     this.emit('annotationerror', {
-                        reason: 'read'
+                        reason: 'read',
+                        error: error.toString()
                     });
                 } else {
                     data.entries.forEach((annotationData) => {
@@ -309,7 +315,7 @@ class AnnotationService extends EventEmitter {
                 reject(new Error('Could not read annotations from file due to invalid or expired token'));
                 this.emit('annotationerror', {
                     reason: 'authorization',
-                    error
+                    error: error.toString()
                 });
             });
     }

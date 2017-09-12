@@ -94,7 +94,8 @@ describe('lib/annotations/AnnotationService', () => {
                 (error) => {
                     expect(error.message).to.equal('Could not create annotation');
                     expect(emitStub).to.be.calledWith('annotationerror', {
-                        reason: 'create'
+                        reason: 'create',
+                        error: sinon.match.string
                     });
                 }
             );
@@ -214,7 +215,8 @@ describe('lib/annotations/AnnotationService', () => {
                 (error) => {
                     expect(error.message).to.equal('Could not delete annotation with ID 3');
                     expect(emitStub).to.be.calledWith('annotationerror', {
-                        reason: 'delete'
+                        reason: 'delete',
+                        error: sinon.match.string
                     });
                 }
             );
@@ -415,7 +417,8 @@ describe('lib/annotations/AnnotationService', () => {
                 (error) => {
                     expect(error.message).to.equal('Could not read annotations from file version with ID 2');
                     expect(emitStub).to.be.calledWith('annotationerror', {
-                        reason: 'read'
+                        reason: 'read',
+                        error: sinon.match.string
                     });
                 }
             );
@@ -439,7 +442,8 @@ describe('lib/annotations/AnnotationService', () => {
             return promise.catch((error) => {
                 expect(error.message).to.equal('Could not read annotations from file due to invalid or expired token');
                 expect(emitStub).to.be.calledWith('annotationerror', {
-                    reason: 'authorization'
+                    reason: 'authorization',
+                    error: sinon.match.string
                 });
             });
         });

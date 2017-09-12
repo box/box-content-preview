@@ -654,7 +654,7 @@ class Annotator extends EventEmitter {
 
         if (data.error) {
             /* eslint-disable no-console */
-            console.error(ANNOTATOR_EVENT.error, data.error.toString());
+            console.error(ANNOTATOR_EVENT.error, data.error);
             /* eslint-enable no-console */
         }
 
