@@ -1,0 +1,746 @@
+{
+  "version": {
+    "major": 4,
+    "minor": 3
+  },
+  "entities": [
+    {
+      "type": "meshGeometry",
+      "id": "eac92056-0c88-408b-9fae-6db9b15d283a",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#cb672069-1462-4967-8339-b9bcde55492d"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#797eb683-04c4-4ec9-aaad-0498b44f0375"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#4dbaa2fb-3ec9-4125-82a6-de87d3092bcf"
+          }
+        },
+        "indices": "7ace8382-522a-48f4-811f-3580029f7703#dbcfdb46-3ba0-45e8-bdb0-8ae38346200f",
+        "primitives": [
+          {
+            "count": 27603,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": 0.013945,
+            "x": 0.064815,
+            "z": 0.138579
+          },
+          "min": {
+            "y": -0.080107,
+            "x": -0.04478,
+            "z": 0.023973
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "eac92056-0c88-408b-9fae-6db9b15d283a"
+    },
+    {
+      "type": "prefab",
+      "id": "ed42df95-98eb-4237-872f-97358cede7f3",
+      "sid": null,
+      "properties": {
+        "name": "Oculus Touch Right"
+      },
+      "children": [
+        "11076cce-eb56-454c-99f6-ada374a5be93"
+      ]
+    },
+    {
+      "type": "node",
+      "id": "11076cce-eb56-454c-99f6-ada374a5be93",
+      "sid": "9",
+      "properties": {
+        "position": {
+          "y": 0.036,
+          "x": 0.008,
+          "z": -0.04
+        },
+        "quaternion": {
+          "y": 0,
+          "x": 0.33709491700546734,
+          "z": 0,
+          "w": 0.9414706670571723
+        },
+        "scale": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "name": "Oculus Touch Right Root"
+      },
+      "children": [
+        "679414ba-df7c-43f3-b6aa-17165dc40110",
+        "491648e1-c35b-4f77-9aa0-aaff56fe2104",
+        "607fcf93-75c6-4f06-8eee-8b6f4c96fcea",
+        "febe0761-30a4-443c-bda7-093f84e2914a",
+        "30f0e4f0-a88f-41c4-82a3-027584c1c7b5",
+        "ba23e989-245b-4816-bf11-ff9b3fbfafd9",
+        "248fc92a-a3d6-4fed-8623-3c59b79e7869",
+        "63153186-0399-47d9-86ed-874b57b6f429"
+      ],
+      "components": [
+        {
+          "name": "VR Controller Animator",
+          "attributes": {
+            "buttons": [
+              [{
+                "movementType": "translate",
+                "mesh": "ba23e989-245b-4816-bf11-ff9b3fbfafd9",
+                "offset": { "x": 0, "y": -0.0005, "z": 0.0005}
+              }],
+              [{
+                "movementType": "rotate",
+                "mesh": "248fc92a-a3d6-4fed-8623-3c59b79e7869",
+                "pivot": { "x": 0, "y": -0.02622, "z": 0.03769},
+                "rotation": { "x": -0.31415926535898, "y": 0, "z": 0 }
+              }],
+              [{
+                "movementType": "rotate",
+                "mesh": "30f0e4f0-a88f-41c4-82a3-027584c1c7b5",
+                "offset": { "x": 0.004, "y": 0, "z": 0},
+                "pivot": { "x": -0.01, "y": 0.008, "z": 0.075},
+                "rotation": { "x": 0, "y": 0.17453292519943, "z": 0 }
+              }],
+              [{
+                "movementType": "translate",
+                "mesh": "491648e1-c35b-4f77-9aa0-aaff56fe2104",
+                "offset": { "x": 0, "y": -0.001, "z": 0.001}
+              }],
+              [{
+                "movementType": "translate",
+                "mesh": "607fcf93-75c6-4f06-8eee-8b6f4c96fcea",
+                "offset": { "x": 0, "y": -0.001, "z": 0.001}
+              }],
+              [{
+                "movementType": "translate",
+                "mesh": "null",
+                "offset": { "x": 0, "y": 0, "z": 0}
+              }]
+            ],
+            "axes": [
+              [{
+                "movementType": "rotate",
+                "mesh": "ba23e989-245b-4816-bf11-ff9b3fbfafd9",
+                "pivot": { "x": -0.00149, "y": -0.01393, "z": 0.05283 },
+                "rotation": { "x": 0, "y": 0, "z": -0.5}
+              }],
+              [{
+                "movementType": "rotate",
+                "mesh": "ba23e989-245b-4816-bf11-ff9b3fbfafd9",
+                "pivot": { "x": -0.00149, "y": -0.01393, "z": 0.05283 },
+                "rotation": { "x": 0.5, "y": 0, "z": 0}
+              }]
+            ]
+          },
+          "scriptId": "gamepad_animator"
+        }
+      ]
+    },
+    {
+      "type": "mesh",
+      "id": "679414ba-df7c-43f3-b6aa-17165dc40110",
+      "sid": "30",
+      "properties": {
+        "name": "Body",
+        "geometryId": "eac92056-0c88-408b-9fae-6db9b15d283a",
+        "materials": [
+          "0887b8e2-1212-468a-85ab-da754ae9b2d5"
+        ]
+      },
+      "children": [],
+      "parentId": "11076cce-eb56-454c-99f6-ada374a5be93"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "5e192f3d-622d-4468-8551-27a4b23743c5",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#bd54ab75-836f-4b22-b42d-c3ec9b724616"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#2e5b2bbb-ba3a-4659-a2bb-8e323a13908c"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#006e9155-5ec1-45c0-981c-709c818c096c"
+          }
+        },
+        "indices": "7ace8382-522a-48f4-811f-3580029f7703#69577b62-967c-4f7a-bcf0-f12adacf2657",
+        "primitives": [
+          {
+            "count": 1248,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": 0.003812,
+            "x": -0.006087,
+            "z": 0.062682
+          },
+          "min": {
+            "y": -0.003911,
+            "x": -0.016053,
+            "z": 0.053844
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "5e192f3d-622d-4468-8551-27a4b23743c5"
+    },
+    {
+      "type": "mesh",
+      "id": "491648e1-c35b-4f77-9aa0-aaff56fe2104",
+      "sid": "31",
+      "properties": {
+        "name": "Button A",
+        "geometryId": "5e192f3d-622d-4468-8551-27a4b23743c5",
+        "materials": [
+          "0887b8e2-1212-468a-85ab-da754ae9b2d5"
+        ]
+      },
+      "children": [],
+      "parentId": "11076cce-eb56-454c-99f6-ada374a5be93"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "63153186-0399-47d9-86ed-874b57b6f427",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#1beed844-a6bd-4d4b-835d-e638f521dbc2"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#a1b69197-dc33-4584-84fd-94f9ff912819"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#43c2bdec-2c45-4068-9d1e-08c1046e1222"
+          }
+        },
+        "indices": "7ace8382-522a-48f4-811f-3580029f7703#4d58518f-9322-49d2-b076-2c3b58e28b53",
+        "primitives": [
+          {
+            "count": 1248,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": -0.004784,
+            "x": -0.012333,
+            "z": 0.052217
+          },
+          "min": {
+            "y": -0.012507,
+            "x": -0.0223,
+            "z": 0.043379
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "63153186-0399-47d9-86ed-874b57b6f427"
+    },
+    {
+      "type": "mesh",
+      "id": "607fcf93-75c6-4f06-8eee-8b6f4c96fcea",
+      "sid": "32",
+      "properties": {
+        "name": "Button B",
+        "geometryId": "63153186-0399-47d9-86ed-874b57b6f427",
+        "materials": [
+          "0887b8e2-1212-468a-85ab-da754ae9b2d5"
+        ]
+      },
+      "children": [],
+      "parentId": "11076cce-eb56-454c-99f6-ada374a5be93"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "c6387d4c-f023-49ef-89fa-f329036ad9e0",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#f3f68ecb-c2e0-4c59-b984-3cfc3c73a977"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#69f7d01a-72e8-44d1-aefe-b5fd25300664"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#b1e6a23f-dad5-4dd2-92b0-b65bd919905f"
+          }
+        },
+        "indices": "7ace8382-522a-48f4-811f-3580029f7703#9e8bac41-a803-4c34-8b2d-fa0c27ee588d",
+        "primitives": [
+          {
+            "count": 864,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": 0.00699,
+            "x": 0.008223,
+            "z": 0.067222
+          },
+          "min": {
+            "y": 2.74E-4,
+            "x": -8.11E-4,
+            "z": 0.05944
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "c6387d4c-f023-49ef-89fa-f329036ad9e0"
+    },
+    {
+      "type": "mesh",
+      "id": "febe0761-30a4-443c-bda7-093f84e2914a",
+      "sid": "33",
+      "properties": {
+        "name": "Home Button",
+        "geometryId": "c6387d4c-f023-49ef-89fa-f329036ad9e0",
+        "materials": [
+          "0887b8e2-1212-468a-85ab-da754ae9b2d5"
+        ]
+      },
+      "children": [],
+      "parentId": "11076cce-eb56-454c-99f6-ada374a5be93"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "e3fc799b-73d1-4105-a704-c32995c3059c",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#40b682c9-ad39-4752-a998-adcb21841f11"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#cb5e7457-a6a0-4b97-a95f-2c40d49cf473"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#ab700605-878f-44bb-9be5-4ee933f2a00e"
+          }
+        },
+        "indices": "7ace8382-522a-48f4-811f-3580029f7703#85d98a80-ac82-4788-95db-ddf01411f713",
+        "primitives": [
+          {
+            "count": 1950,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": 0.003392,
+            "x": -8.12E-4,
+            "z": 0.099841
+          },
+          "min": {
+            "y": -0.021302,
+            "x": -0.013944,
+            "z": 0.075777
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "e3fc799b-73d1-4105-a704-c32995c3059c"
+    },
+    {
+      "type": "mesh",
+      "id": "30f0e4f0-a88f-41c4-82a3-027584c1c7b5",
+      "sid": "34",
+      "properties": {
+        "name": "Button Grip",
+        "geometryId": "e3fc799b-73d1-4105-a704-c32995c3059c",
+        "materials": [
+          "0887b8e2-1212-468a-85ab-da754ae9b2d5"
+        ]
+      },
+      "children": [],
+      "parentId": "11076cce-eb56-454c-99f6-ada374a5be93"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "553fc2e4-b5c8-43c6-83cc-40a0c94e6c0b",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#77d9a9ad-0bb1-4a6b-8978-880bcaf32d97"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#98dd7809-883d-457d-b514-74a1a62a3f13"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#d67fadd3-9bae-4c16-9d12-91f9b9ae27e5"
+          }
+        },
+        "indices": "7ace8382-522a-48f4-811f-3580029f7703#4abd3433-9e12-47a4-9773-42bfaef8d397",
+        "primitives": [
+          {
+            "count": 4800,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": 0.002687,
+            "x": 0.010158,
+            "z": 0.057865
+          },
+          "min": {
+            "y": -0.017401,
+            "x": -0.007183,
+            "z": 0.037724
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "553fc2e4-b5c8-43c6-83cc-40a0c94e6c0b"
+    },
+    {
+      "type": "mesh",
+      "id": "ba23e989-245b-4816-bf11-ff9b3fbfafd9",
+      "sid": "35",
+      "properties": {
+        "name": "Thumbstick",
+        "geometryId": "553fc2e4-b5c8-43c6-83cc-40a0c94e6c0b",
+        "materials": [
+          "0887b8e2-1212-468a-85ab-da754ae9b2d5"
+        ]
+      },
+      "children": [],
+      "parentId": "11076cce-eb56-454c-99f6-ada374a5be93"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "d62f7a35-1658-4026-87cc-9aea60e32213",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#674f0a45-9364-47c9-bea4-0fb85fbdf86b"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#a08271b6-a0fa-4283-9999-08fe60518803"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "7ace8382-522a-48f4-811f-3580029f7703#264c362c-a708-432d-87d1-e22fb8d23236"
+          }
+        },
+        "indices": "7ace8382-522a-48f4-811f-3580029f7703#77a5499f-a10e-4b21-b6ee-b2ee3e19e0e0",
+        "primitives": [
+          {
+            "count": 1956,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": -0.019894,
+            "x": 0.006725,
+            "z": 0.061405
+          },
+          "min": {
+            "y": -0.046112,
+            "x": -0.019267,
+            "z": 0.036159
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "d62f7a35-1658-4026-87cc-9aea60e32213"
+    },
+    {
+      "type": "mesh",
+      "id": "248fc92a-a3d6-4fed-8623-3c59b79e7869",
+      "sid": "36",
+      "properties": {
+        "name": "Trigger",
+        "geometryId": "d62f7a35-1658-4026-87cc-9aea60e32213",
+        "materials": [
+          "0887b8e2-1212-468a-85ab-da754ae9b2d5"
+        ]
+      },
+      "children": [],
+      "parentId": "11076cce-eb56-454c-99f6-ada374a5be93"
+    },
+    {
+      "type": "mesh",
+      "id": "63153186-0399-47d9-86ed-874b57b6f429",
+      "sid": "61",
+      "properties": {
+        "name": "Box Logo Mesh",
+        "geometryId": "63153186-0399-47d9-86ed-874b57b6f428",
+        "position": { "x": -0.006, "y": -0.017567707664, "z": 0.0362585},
+        "quaternion": { "x": -0.35227423327509, "y": 0, "z": 0, "w": 0.9358968236779349},
+        "materials": [ "0887b8e2-1212-468a-85ab-da754ae9b2d6" ]
+      }
+    },
+    {
+      "type": "buffer",
+      "id": "7ace8382-522a-48f4-811f-3580029f7703",
+      "sid": "geometry.bin",
+      "properties": {
+        "name": "geometry.bin",
+        "src": "geometry.bin",
+        "isExternal": true,
+        "contentLength": 457908,
+        "accessors": {
+          "cb672069-1462-4967-8339-b9bcde55492d": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 110412,
+            "byteStride": 0,
+            "count": 6639
+          },
+          "797eb683-04c4-4ec9-aaad-0498b44f0375": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 190080,
+            "byteStride": 0,
+            "count": 6639
+          },
+          "4dbaa2fb-3ec9-4125-82a6-de87d3092bcf": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 243192,
+            "byteStride": 0,
+            "count": 6639
+          },
+          "dbcfdb46-3ba0-45e8-bdb0-8ae38346200f": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 0,
+            "byteStride": 0,
+            "count": 27603
+          },
+          "bd54ab75-836f-4b22-b42d-c3ec9b724616": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 327852,
+            "byteStride": 0,
+            "count": 289
+          },
+          "2e5b2bbb-ba3a-4659-a2bb-8e323a13908c": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 331320,
+            "byteStride": 0,
+            "count": 289
+          },
+          "006e9155-5ec1-45c0-981c-709c818c096c": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 333632,
+            "byteStride": 0,
+            "count": 289
+          },
+          "69577b62-967c-4f7a-bcf0-f12adacf2657": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 322860,
+            "byteStride": 0,
+            "count": 1248
+          },
+          "1beed844-a6bd-4d4b-835d-e638f521dbc2": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 342092,
+            "byteStride": 0,
+            "count": 289
+          },
+          "a1b69197-dc33-4584-84fd-94f9ff912819": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 345560,
+            "byteStride": 0,
+            "count": 289
+          },
+          "43c2bdec-2c45-4068-9d1e-08c1046e1222": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 347872,
+            "byteStride": 0,
+            "count": 289
+          },
+          "4d58518f-9322-49d2-b076-2c3b58e28b53": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 337100,
+            "byteStride": 0,
+            "count": 1248
+          },
+          "f3f68ecb-c2e0-4c59-b984-3cfc3c73a977": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 354796,
+            "byteStride": 0,
+            "count": 225
+          },
+          "69f7d01a-72e8-44d1-aefe-b5fd25300664": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 357496,
+            "byteStride": 0,
+            "count": 225
+          },
+          "b1e6a23f-dad5-4dd2-92b0-b65bd919905f": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 359296,
+            "byteStride": 0,
+            "count": 225
+          },
+          "9e8bac41-a803-4c34-8b2d-fa0c27ee588d": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 351340,
+            "byteStride": 0,
+            "count": 864
+          },
+          "40b682c9-ad39-4752-a998-adcb21841f11": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 369796,
+            "byteStride": 0,
+            "count": 357
+          },
+          "cb5e7457-a6a0-4b97-a95f-2c40d49cf473": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 374080,
+            "byteStride": 0,
+            "count": 357
+          },
+          "ab700605-878f-44bb-9be5-4ee933f2a00e": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 376936,
+            "byteStride": 0,
+            "count": 357
+          },
+          "85d98a80-ac82-4788-95db-ddf01411f713": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 361996,
+            "byteStride": 0,
+            "count": 1950
+          },
+          "77d9a9ad-0bb1-4a6b-8978-880bcaf32d97": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 400420,
+            "byteStride": 0,
+            "count": 1204
+          },
+          "98dd7809-883d-457d-b514-74a1a62a3f13": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 414868,
+            "byteStride": 0,
+            "count": 1204
+          },
+          "d67fadd3-9bae-4c16-9d12-91f9b9ae27e5": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 424500,
+            "byteStride": 0,
+            "count": 1204
+          },
+          "4abd3433-9e12-47a4-9773-42bfaef8d397": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 381220,
+            "byteStride": 0,
+            "count": 4800
+          },
+          "674f0a45-9364-47c9-bea4-0fb85fbdf86b": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 446772,
+            "byteStride": 0,
+            "count": 348
+          },
+          "a08271b6-a0fa-4283-9999-08fe60518803": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 450948,
+            "byteStride": 0,
+            "count": 348
+          },
+          "264c362c-a708-432d-87d1-e22fb8d23236": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 453732,
+            "byteStride": 0,
+            "count": 348
+          },
+          "77a5499f-a10e-4b21-b6ee-b2ee3e19e0e0": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 438948,
+            "byteStride": 0,
+            "count": 1956
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "7ace8382-522a-48f4-811f-3580029f7703"
+    }
+  ]
+}

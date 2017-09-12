@@ -730,20 +730,24 @@ export function removeActivationListener(element, handler) {
  *
  * @public
  * @param {number} currentPageNum - The current page
+ * @param {number} previousScrollTop - The last recorded Y scrolling position
  * @param {HTMLElement} currentPageEl - The current page element
- * @param {HTMLElement} wrapperEl - the content wrapper element
+ * @param {HTMLElement} wrapperEl - The content wrapper element
  * @return {number} the resulting page number
  */
-export function pageNumberFromScroll(currentPageNum, currentPageEl, wrapperEl) {
+export function pageNumberFromScroll(currentPageNum, previousScrollTop, currentPageEl, wrapperEl) {
+    let pageNum = currentPageNum;
     const currentScrollTop = wrapperEl.scrollTop;
     const currentScrollBottom = wrapperEl.scrollTop + wrapperEl.offsetHeight;
     const currentPageMiddleY = currentPageEl.offsetTop + currentPageEl.clientHeight / 2;
 
-    if (currentScrollTop > currentPageMiddleY) {
-        return currentPageNum + 1;
-    } else if (currentScrollBottom < currentPageMiddleY) {
-        return currentPageNum - 1;
+    if (currentScrollTop > previousScrollTop) {
+        // Scrolling down
+        pageNum = currentScrollTop > currentPageMiddleY ? currentPageNum + 1 : currentPageNum;
+    } else if (currentScrollTop < previousScrollTop) {
+        // Scrolling up
+        pageNum = currentScrollBottom < currentPageMiddleY ? currentPageNum - 1 : currentPageNum;
     }
 
-    return currentPageNum;
+    return pageNum;
 }
