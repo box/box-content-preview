@@ -141,11 +141,20 @@ class Model3DRenderer extends Box3DRenderer {
                 reject(new Error('Provided Box3D application must include node named "Preview Model"'));
             }
 
-            this.instance.once('remoteInstanceCreated', () => {
-                this.setupScene();
-                resolve();
-            });
-            this.instance.trigger('createRemoteInstance', fileId);
+            // If the preview model has the component that loads a model from Box, trigger it.
+            if (this.instance.getComponentByScriptId('remote_instance')) {
+                this.instance.once('remoteInstanceCreated', () => {
+                    this.setupScene();
+                    resolve();
+                });
+                this.instance.trigger('createRemoteInstance', fileId);
+                // Otherwise, just let the scene load.
+            } else {
+                this.instance.when('load', () => {
+                    this.setupScene();
+                    resolve();
+                });
+            }
         });
     }
 
