@@ -100,6 +100,7 @@ describe('lib/Preview', () => {
     describe('show()', () => {
         beforeEach(() => {
             stubs.load = sandbox.stub(preview, 'load');
+            stubs.updateCollection = sandbox.stub(preview, 'updateCollection');
         });
 
         it('should set the preview options with string token', () => {
@@ -110,6 +111,7 @@ describe('lib/Preview', () => {
             });
         });
 
+
         it('should set the preview options with function token', () => {
             const foo = () => {};
             preview.show('123', foo, { viewer: 'viewer' });
@@ -119,9 +121,33 @@ describe('lib/Preview', () => {
             });
         });
 
+        it('should set the preview options with null token', () => {
+            preview.show('123', null);
+            expect(preview.previewOptions).to.deep.equal({
+                token: null
+            });
+        });
+
+        it('should set the preview options with no token', () => {
+            preview.show('123');
+            expect(preview.previewOptions).to.deep.equal({
+                token: undefined
+            });
+        });
+
+        it('should call update collection with optional collection', () => {
+            preview.show('123', 'token', { collection: 'collection' });
+            expect(stubs.updateCollection).to.be.calledWith('collection');
+        });
+
         it('should load file associated with the passed in file ID', () => {
             preview.show('123', 'token');
             expect(stubs.load).to.be.calledWith('123');
+        });
+
+        it('should call update collection with passed in collection', () => {
+            preview.show('123', 'token', { collection: 'collection' });
+            expect(stubs.updateCollection).to.be.calledWith('collection');
         });
 
         it('should load file matching the passed in file object', () => {
@@ -143,14 +169,14 @@ describe('lib/Preview', () => {
             expect(stubs.load).to.be.calledWith(file);
         });
 
-        it('should throw an error if there is no auth token', () => {
+        it('should throw an error if auth token is a random object', () => {
             const spy = sandbox.spy(preview, 'show');
 
             try {
                 preview.show('123', {});
             } catch (e) {
                 expect(spy.threw());
-                expect(e.message).to.equal('Missing access token!');
+                expect(e.message).to.equal('Bad access token!');
             }
         });
     });
@@ -189,20 +215,45 @@ describe('lib/Preview', () => {
     describe('updateCollection()', () => {
         beforeEach(() => {
             stubs.showNavigation = sandbox.stub(preview.ui, 'showNavigation');
+            stubs.updateFileCache = sandbox.stub(preview, 'updateFileCache');
         });
 
-        it('should set the preview and preview options collection to an array', () => {
-            let array = [1, 2, 3, 4];
+        it('should set the preview collection to an array of file ids', () => {
+            let array = ['1', '2', '3', '4'];
 
             preview.updateCollection(array);
+            expect(stubs.updateFileCache).to.be.calledWith([]);
             expect(preview.collection).to.deep.equal(array);
-            expect(preview.previewOptions.collection).to.deep.equal(array);
+        });
 
-            array = '1,2,3,4';
+        it('should set the preview collection to an array of file ids when files passed in', () => {
+            let files = ['1', { id: '2' }, '3', { id: '4' }, { id: '5' }];
+
+            preview.updateCollection(files);
+            expect(stubs.updateFileCache).to.be.calledWith([{ id: '2' }, { id: '4' }, { id: '5' }]);
+            expect(preview.collection).to.deep.equal(['1', '2', '3', '4', '5']);
+        });
+
+        it('should throw when bad array of files passed in', () => {
+            let files = ['1', { }, '3'];
+
+            expect(preview.updateCollection.bind(preview, files)).to.throw(Error, /Bad collection/);
+            expect(stubs.updateFileCache).to.not.be.called;
+        });
+
+        it('should throw when bad array of file ids passed in', () => {
+            let files = ['', '3'];
+
+            expect(preview.updateCollection.bind(preview, files)).to.throw(Error, /Bad collection/);
+            expect(stubs.updateFileCache).to.not.be.called;
+        });
+
+        it('should reset the preview collection to an empty array', () => {
+            let array = '1,2,3,4';
 
             preview.updateCollection(array);
+            expect(stubs.updateFileCache).to.be.calledWith([]);
             expect(preview.collection).to.deep.equal([]);
-            expect(preview.previewOptions.collection).to.deep.equal([]);
         });
 
         it('should show navigation if the file exists', () => {
@@ -675,12 +726,6 @@ describe('lib/Preview', () => {
             expect(preview.retryTimeout).to.equal(undefined);
         });
 
-        it('should load preview when a well-formed file object is passed', () => {
-            preview.load(stubs.file);
-            expect(stubs.loadPreviewWithTokens).to.be.calledWith({});
-            expect(stubs.getTokens).to.not.be.called;
-        });
-
         it('should set the retry count', () => {
             preview.retryCount = 0;
             preview.file.id = '0';
@@ -697,17 +742,21 @@ describe('lib/Preview', () => {
         it('should throw an error if incompatible file object is passed in', () => {
             const spy = sandbox.spy(preview, 'load');
             const file = {
-                id: '123',
                 not: 'the',
                 right: 'fields'
             }
 
-            try {
-                preview.load(file);
-            } catch (e) {
-                expect(spy.threw());
-                expect(e.message).to.equal('File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.');
-            }
+            expect(preview.load.bind(preview, file)).to.throw(Error, 'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.');
+        });
+
+        it('should get the tokens when file id is available', () => {
+            preview.previewOptions.token = 'token';
+
+            preview.load({ id: '123' });
+            return stubs.promise.then(() => {
+                expect(stubs.getTokens).to.be.calledWith('123', 'token');
+                expect(stubs.loadPreviewWithTokens).to.be.called;
+            });
         });
 
         it('should get the tokens and either handle the response or error', () => {
@@ -883,12 +932,6 @@ describe('lib/Preview', () => {
             preview.previewOptions.skipServerUpdate = true;
             preview.parseOptions(preview.previewOptions, stubs.tokens);
             expect(preview.options.skipServerUpdate).to.be.true;
-        });
-
-        it('should save the files to iterate through and any options for custom viewers', () => {
-            preview.parseOptions(preview.previewOptions, stubs.tokens);
-            expect(preview.collection).to.equal(stubs.collection);
-            expect(preview.options.viewers instanceof Object).to.be.true;
         });
 
         it('should add user created loaders before standard loaders', () => {
