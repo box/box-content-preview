@@ -33,6 +33,7 @@ class MultiImageViewer extends ImageBaseViewer {
 
         // Defaults the current page number to 1
         this.currentPageNumber = 1;
+        this.previousScrollTop = 0;
     }
 
     /**
@@ -338,12 +339,15 @@ class MultiImageViewer extends ImageBaseViewer {
     handlePageChangeFromScroll() {
         const pageChange = pageNumberFromScroll(
             this.currentPageNumber,
+            this.previousScrollTop,
             this.singleImageEls[this.currentPageNumber - 1],
             this.wrapperEl
         );
 
         this.updateCurrentPage(pageChange);
+
         this.scrollCheckHandler = null;
+        this.previousScrollTop = this.wrapperEl.scrollTop;
     }
 }
 

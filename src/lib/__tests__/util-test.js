@@ -561,4 +561,70 @@ describe('lib/util', () => {
             expect(element.style.height).to.equal(`${height}px`);
         });
     });
+
+    describe('pageNumberFromScroll()', () => {
+        it('should incrememt the page if scrolling down and scroll top has passed the midpoint of page', () => {
+            const currentPageNum = 1;
+            const previousScrollTop = 0;
+            const currentPageEl = {
+                offsetTop: 0,
+                clientHeight: 200
+            };
+            const wrapperEl = {
+                scrollTop: 101,
+                offsetHeight: 500
+            };
+
+            const result = util.pageNumberFromScroll(currentPageNum, previousScrollTop, currentPageEl, wrapperEl);
+            expect(result).to.equal(2);
+        });
+
+        it('should not change the page if scrolling down and scroll top has not passed the midpoint of page', () => {
+            const currentPageNum = 1;
+            const previousScrollTop = 0;
+            const currentPageEl = {
+                offsetTop: 0,
+                clientHeight: 200
+            };
+            const wrapperEl = {
+                scrollTop: 99,
+                offsetHeight: 500
+            };
+
+            const result = util.pageNumberFromScroll(currentPageNum, previousScrollTop, currentPageEl, wrapperEl);
+            expect(result).to.equal(1);
+        });
+
+        it('should decrement the page if scrolling up and scroll bottom has passed the midpoint of page', () => {
+            const currentPageNum = 2;
+            const previousScrollTop = 500;
+            const currentPageEl = {
+                offsetTop: 100,
+                clientHeight: 200
+            };
+            const wrapperEl = {
+                scrollTop: 0,
+                offsetHeight: 100
+            };
+
+            const result = util.pageNumberFromScroll(currentPageNum, previousScrollTop, currentPageEl, wrapperEl);
+            expect(result).to.equal(1);
+        });
+
+        it('should not change the page if scrolling up and scroll bottom has not passed the midpoint of page', () => {
+            const currentPageNum = 2;
+            const previousScrollTop = 500;
+            const currentPageEl = {
+                offsetTop: 0,
+                clientHeight: 200
+            };
+            const wrapperEl = {
+                scrollTop: 10,
+                offsetHeight: 100
+            };
+
+            const result = util.pageNumberFromScroll(currentPageNum, previousScrollTop, currentPageEl, wrapperEl);
+            expect(result).to.equal(2);
+        });
+    });
 });

@@ -528,14 +528,18 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             multiImage.singleImageEls = [document.createElement('div')];
             stubs.singleImageEls = multiImage.singleImageEls;
 
-            multiImage.wrapperEl = document.createElement('div');
+            multiImage.wrapperEl = {
+                scrollTop: 100
+            }
             stubs.wrapperEl = multiImage.wrapperEl;
+
+            multiImage.previousScrollTop = 0;
 
         })
 
         it('should determine the current page number based on scroll', () => {
             multiImage.handlePageChangeFromScroll();
-            expect(stubs.pageNumberFromScroll).to.be.calledWith(1, stubs.singleImageEls[0], stubs.wrapperEl);
+            expect(stubs.pageNumberFromScroll).to.be.calledWith(1, 0, stubs.singleImageEls[0], stubs.wrapperEl);
         });
 
         it('should attempt to update the current page number', () => {
@@ -543,11 +547,12 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(stubs.updateCurrentPage).to.be.called;
         });
 
-        it('reset the scroll check handler', () => {
+        it('reset the scroll check handler and update the previous scroll top position', () => {
             multiImage.scrollCheckHandler = true;
 
             multiImage.handlePageChangeFromScroll();
             expect(multiImage.scrollCheckHandler).to.equal(null);
+            expect(multiImage.previousScrollTop).to.equal(100);
         });
     });
 });
