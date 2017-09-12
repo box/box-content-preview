@@ -117,10 +117,11 @@ class AnnotationService extends EventEmitter {
                     }
                 })
                 /* istanbul ignore next */
-                .catch(() => {
+                .catch((error) => {
                     reject(new Error('Could not create annotation due to invalid or expired token'));
                     this.emit('annotationerror', {
-                        reason: 'authorization'
+                        reason: 'authorization',
+                        error
                     });
                 });
         });
@@ -168,10 +169,11 @@ class AnnotationService extends EventEmitter {
                     }
                 })
                 /* istanbul ignore next */
-                .catch(() => {
+                .catch((error) => {
                     reject(new Error('Could not delete annotation due to invalid or expired token'));
                     this.emit('annotationerror', {
-                        reason: 'authorization'
+                        reason: 'authorization',
+                        error
                     });
                 });
         });
@@ -303,10 +305,11 @@ class AnnotationService extends EventEmitter {
                     }
                 }
             })
-            .catch(() => {
+            .catch((error) => {
                 reject(new Error('Could not read annotations from file due to invalid or expired token'));
                 this.emit('annotationerror', {
-                    reason: 'authorization'
+                    reason: 'authorization',
+                    error
                 });
             });
     }

@@ -652,6 +652,10 @@ class Annotator extends EventEmitter {
             default:
         }
 
+        if (data.error) {
+            console.error(ANNOTATOR_EVENT.error, data.error.toString());
+        }
+
         if (errorMessage) {
             this.emit(ANNOTATOR_EVENT.error, errorMessage);
         }
@@ -935,6 +939,7 @@ class Annotator extends EventEmitter {
         }
 
         this.emit(ANNOTATOR_EVENT.error, __('annotations_load_error'));
+        console.error('Annotation could not be created due to invalid params');
         this.validationErrorEmitted = true;
     }
 

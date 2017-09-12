@@ -158,7 +158,7 @@ class AnnotationThread extends EventEmitter {
         return this.annotationService
             .create(annotationData)
             .then((savedAnnotation) => this.updateTemporaryAnnotation(tempAnnotation, savedAnnotation))
-            .catch(() => this.handleThreadSaveError(tempAnnotationID));
+            .catch((error) => this.handleThreadSaveError(error, tempAnnotationID));
     }
 
     /**
@@ -171,9 +171,23 @@ class AnnotationThread extends EventEmitter {
     deleteAnnotation(annotationID, useServer = true) {
         // Ignore if no corresponding annotation exists in thread or user doesn't have permissions
         const annotation = this.annotations.find((annot) => annot.annotationID === annotationID);
-        if (!annotation || (annotation.permissions && !annotation.permissions.can_delete)) {
+        if (!annotation) {
             // Broadcast error
             this.emit(THREAD_EVENT.deleteError);
+            console.error(
+                THREAD_EVENT.deleteError,
+                `Annotation with ID ${annotation.threadNumber} could not be found.`
+            );
+            return Promise.reject();
+        }
+
+        if (annotation.permissions && !annotation.permissions.can_delete) {
+            // Broadcast error
+            this.emit(THREAD_EVENT.deleteError);
+            console.error(
+                THREAD_EVENT.deleteError,
+                `User does not have the correct permissions to delete annotation with ID ${annotation.threadNumber}.`
+            );
             return Promise.reject();
         }
 
@@ -203,6 +217,10 @@ class AnnotationThread extends EventEmitter {
         }
 
         if (!useServer) {
+            console.error(
+                THREAD_EVENT.deleteError,
+                `Annotation with ID ${annotation.threadNumber} not deleted from server`
+            );
             return Promise.resolve();
         }
 
@@ -228,9 +246,10 @@ class AnnotationThread extends EventEmitter {
                 // Broadcast annotation deletion event
                 this.emit(THREAD_EVENT.delete);
             })
-            .catch(() => {
+            .catch((error) => {
                 // Broadcast error
                 this.emit(THREAD_EVENT.deleteError);
+                console.error(THREAD_EVENT.deleteError, error.toString());
             });
     }
 
@@ -588,15 +607,17 @@ class AnnotationThread extends EventEmitter {
      * Deletes the temporary annotation if the annotation failed to save on the server
      *
      * @private
+     * @param {error} error - error thrown while saving the annotation
      * @param {string} tempAnnotationID - ID of temporary annotation to be updated with annotation from server
      * @return {void}
      */
-    handleThreadSaveError(tempAnnotationID) {
+    handleThreadSaveError(error, tempAnnotationID) {
         // Remove temporary annotation
         this.deleteAnnotation(tempAnnotationID, /* useServer */ false);
 
         // Broadcast error
         this.emit(THREAD_EVENT.createError);
+        console.error(THREAD_EVENT.createError, error.toString());
     }
 
     /**
