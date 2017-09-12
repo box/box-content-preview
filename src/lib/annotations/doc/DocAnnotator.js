@@ -463,7 +463,9 @@ class DocAnnotator extends Annotator {
         const highlightThreads = this.getHighlightThreadsOnPage(pageNum);
         highlightThreads.forEach((thread) => {
             if (annotatorUtil.isPending(thread.state)) {
+                /* eslint-disable no-console */
                 console.error('Pending annotation thread destroyed', thread.threadNumber);
+                /* eslint-enable no-console */
                 thread.destroy();
             }
         });

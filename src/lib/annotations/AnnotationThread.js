@@ -174,20 +174,24 @@ class AnnotationThread extends EventEmitter {
         if (!annotation) {
             // Broadcast error
             this.emit(THREAD_EVENT.deleteError);
+            /* eslint-disable no-console */
             console.error(
                 THREAD_EVENT.deleteError,
                 `Annotation with ID ${annotation.threadNumber} could not be found.`
             );
+            /* eslint-enable no-console */
             return Promise.reject();
         }
 
         if (annotation.permissions && !annotation.permissions.can_delete) {
             // Broadcast error
             this.emit(THREAD_EVENT.deleteError);
+            /* eslint-disable no-console */
             console.error(
                 THREAD_EVENT.deleteError,
                 `User does not have the correct permissions to delete annotation with ID ${annotation.threadNumber}.`
             );
+            /* eslint-enable no-console */
             return Promise.reject();
         }
 
@@ -217,10 +221,12 @@ class AnnotationThread extends EventEmitter {
         }
 
         if (!useServer) {
+            /* eslint-disable no-console */
             console.error(
                 THREAD_EVENT.deleteError,
                 `Annotation with ID ${annotation.threadNumber} not deleted from server`
             );
+            /* eslint-enable no-console */
             return Promise.resolve();
         }
 
@@ -249,7 +255,9 @@ class AnnotationThread extends EventEmitter {
             .catch((error) => {
                 // Broadcast error
                 this.emit(THREAD_EVENT.deleteError);
+                /* eslint-disable no-console */
                 console.error(THREAD_EVENT.deleteError, error.toString());
+                /* eslint-enable no-console */
             });
     }
 
@@ -617,7 +625,9 @@ class AnnotationThread extends EventEmitter {
 
         // Broadcast error
         this.emit(THREAD_EVENT.createError);
+        /* eslint-disable no-console */
         console.error(THREAD_EVENT.createError, error.toString());
+        /* eslint-enable no-console */
     }
 
     /**
