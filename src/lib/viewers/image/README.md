@@ -22,7 +22,10 @@ Rotating the viewer will rotate the image 90 degrees clockwise. At the default z
 
 | Option | Type | Description |
 | --- | --- | --- |
-| annotations | boolean | Optional. Whether annotations on content are shown. Defaults to false |
+| annotations | object | Optional. Defines behaviour of how annotations are shown on the content |
+| annotations.enabled | boolean | Optional. Enables/disables if set. Respects higher level `showAnnotations` if empty |
+| annotations.disabledTypes | string[] | Optional. List of annotation types to disable |
+| annotations | boolean [deprecated] | Optional. Whether annotations on content are shown. Defaults to false |
 
 ## Events
 The image viewer fires the following events
@@ -78,7 +81,10 @@ At the default zoom level, clicking on the image will zoom in once. When zoomed 
 
 | Option | Type | Description |
 | --- | --- | --- |
-| annotations | boolean | Optional. Whether annotations on content are shown. Defaults  to false |
+| annotations | object | Optional. Defines behaviour of how annotations are shown on the content |
+| annotations.enabled | boolean | Optional. Enables/disables if set. Respects higher level `showAnnotations` if empty |
+| annotations.disabledTypes | string[] | Optional. List of annotation types to disable |
+| annotations | boolean [deprecated] | Optional. Whether annotations on content are shown. Defaults to false |
 
 ## Events
 The image viewer fires the following events
