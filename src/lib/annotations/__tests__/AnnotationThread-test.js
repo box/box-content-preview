@@ -808,16 +808,17 @@ describe('lib/annotations/AnnotationThread', () => {
         it('should insert user initials and color of point annotation icon', () => {
             const annotation = {
                 user: {
-                    id: 123,
-                    name: 'Aubrey Graham'
+                    id: 123
                 }
             };
+            sandbox.stub(annotatorUtil, 'getUserInitials').returns('AG');
             sandbox.stub(annotatorUtil, 'getUserColor').returns('blue');
             thread.fillPointAnnotationIcon(annotation);
             expect(thread.element).to.have.html('AG');
             expect(thread.element).to.have.class('blue');
+        });
     });
-      
+
     describe('handleThreadSaveError()', () => {
         it('should delete temp annotation and emit event', () => {
             sandbox.stub(thread, 'deleteAnnotation');

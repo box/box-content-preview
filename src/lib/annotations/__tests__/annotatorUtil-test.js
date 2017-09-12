@@ -11,6 +11,7 @@ import {
     hideElementVisibility,
     resetTextarea,
     isElementInViewport,
+    getUserInitials,
     getUserColor,
     getAvatarHtml,
     getScale,
@@ -233,6 +234,20 @@ describe('lib/annotations/annotatorUtil', () => {
             childEl.style.position = 'absolute';
             childEl.style.left = '-10px';
             assert.ok(!isElementInViewport(childEl));
+        });
+    });
+
+    describe('getUserInitials()', () => {
+        it('should return a blank string if no name provided', () => {
+            expect(getUserInitials()).equals('');
+        });
+
+        it('should return a blank string if provided name is a space', () => {
+            expect(getUserInitials(' ')).equals('');
+        });
+
+        it('should return first and last initial from the user\'s name', () => {
+            expect(getUserInitials('John Jacob Jingle Heimer Schmidt')).equals('JS');
         });
     });
 

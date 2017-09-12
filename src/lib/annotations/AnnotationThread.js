@@ -606,12 +606,7 @@ class AnnotationThread extends EventEmitter {
      */
     fillPointAnnotationIcon(annotation) {
         // Update point annotation icon with user initials
-        const userName = annotation.user.name;
-        const userInitials = userName
-            .split(' ')
-            .map((n) => n[0])
-            .join('');
-        this.element.innerHTML = userInitials;
+        this.element.innerHTML = annotatorUtil.getUserInitials(annotation.user.name);
 
         // Icon color should be 'unique' to user id
         this.element.classList.add(annotatorUtil.getUserColor(annotation.user.id));

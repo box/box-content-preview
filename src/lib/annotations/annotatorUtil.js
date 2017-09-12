@@ -265,6 +265,24 @@ export function isElementInViewport(element) {
 }
 
 /**
+ * Returns the first letter of the user's first and last name
+ *
+ * @param {string} userName - User's full name
+ * @return {string} First and last initials of user
+ */
+export function getUserInitials(userName) {
+    if (!userName || userName === ' ') {
+        return '';
+    }
+
+    const allNames = userName.split(' ');
+    const firstName = allNames[0];
+    const lastName = allNames[allNames.length - 1];
+
+    return firstName[0] + lastName[0];
+}
+
+/**
  * Returns a pseudo-unique color CSS class generated from the
  * annotator's userId
  *
