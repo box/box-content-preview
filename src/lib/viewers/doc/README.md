@@ -25,7 +25,10 @@ The document viewer remembers which page you were viewing upon closing the previ
 
 | Option | Type | Description |
 | --- | --- | --- |
-| annotations | boolean | Optional. Whether annotations on content are shown. Defaults  to false |
+| annotations | object | Optional. Defines behaviour of how annotations are shown on the content |
+| annotations.enabled | boolean | Optional. Enables/disables if set. Respects higher level `showAnnotations` if empty |
+| annotations.disabledTypes | string[] | Optional. List of annotation types to disable |
+| annotations | boolean [deprecated] | Deprecated/Optional. Whether annotations on content are shown. Defaults to false |
 
 ## Events
 
@@ -90,7 +93,10 @@ The presentation viewer remembers which slide you were viewing upon closing the 
 
 | Option | Type | Description |
 | --- | --- | --- |
-| annotations | boolean | Optional. Whether annotations on content are shown. Defaults  to false |
+| annotations | object | Optional. Defines behaviour of how annotations are shown on the content |
+| annotations.enabled | boolean | Optional. Enables/disables if set. Respects higher level `showAnnotations` if empty |
+| annotations.disabledTypes | string[] | Optional. List of annotation types to disable |
+| annotations | boolean [deprecated] | Deprecated/Optional. Whether annotations on content are shown. Defaults to false |
 
 ## Events
 
