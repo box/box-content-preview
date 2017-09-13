@@ -93,7 +93,7 @@ class ImageAnnotator extends Annotator {
      * it.
      *
      * @override
-     * @param {Annotation[]} annotations - Annotations in thread
+     * @param {Object} annotations - Annotations in thread
      * @param {Object} location - Location object
      * @param {string} [type] - Optional annotation type
      * @return {AnnotationThread} Created annotation thread
@@ -127,8 +127,9 @@ class ImageAnnotator extends Annotator {
 
         // Set existing thread ID if created with annotations
         if (annotations.length > 0) {
-            threadParams.threadID = annotations[0].threadID;
-            threadParams.threadNumber = annotations[0].threadNumber;
+            const firstAnnotation = annotatorUtil.getFirstAnnotation(annotations);
+            threadParams.threadID = firstAnnotation.threadID;
+            threadParams.threadNumber = firstAnnotation.threadNumber;
         }
 
         thread = new ImagePointThread(threadParams);

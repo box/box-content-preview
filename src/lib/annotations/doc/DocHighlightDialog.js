@@ -273,7 +273,8 @@ class DocHighlightDialog extends AnnotationDialog {
 
         // Determine if highlight buttons or comments dialog will display
         if (annotations.length > 0) {
-            this.hasComments = annotations[0].text !== '' || annotations.length > 1;
+            const firstAnnotation = annotatorUtil.getFirstAnnotation(annotations);
+            this.hasComments = firstAnnotation.text !== '' || annotations.length > 1;
         }
 
         // Generate HTML of highlight dialog
@@ -301,7 +302,8 @@ class DocHighlightDialog extends AnnotationDialog {
 
             // Adding thread number to dialog
             if (annotations.length > 0) {
-                this.element.dataset.threadNumber = annotations[0].threadNumber;
+                const firstAnnotation = annotatorUtil.getFirstAnnotation(annotations);
+                this.element.dataset.threadNumber = firstAnnotation.threadNumber;
             }
         }
 
@@ -313,22 +315,13 @@ class DocHighlightDialog extends AnnotationDialog {
         // Checks if highlight is a plain highlight annotation and if
         // user name has been populated. If userID is 0, user name will
         // be 'Some User'
-        if (annotatorUtil.isPlainHighlight(annotations) && annotations[0].user.id !== '0') {
+        const firstAnnotation = annotatorUtil.getFirstAnnotation(annotations);
+        if (annotatorUtil.isPlainHighlight(annotations) && firstAnnotation.user.id !== '0') {
             const highlightLabelEl = this.highlightDialogEl.querySelector(`.${CLASS_HIGHLIGHT_LABEL}`);
             highlightLabelEl.textContent = annotatorUtil.replacePlaceholders(__('annotation_who_highlighted'), [
-                annotations[0].user.name
+                firstAnnotation.user.name
             ]);
             annotatorUtil.showElement(highlightLabelEl);
-
-            if (!this.canAnnotate) {
-                // Hide all action buttons if user cannot annotate
-                const highlightButtons = this.highlightDialogEl.querySelector(constants.SELECTOR_HIGHLIGHT_BTNS);
-                annotatorUtil.hideElement(highlightButtons);
-            } else if (annotations[0].permissions && !annotations[0].permissions.can_delete) {
-                // Hide delete button on plain highlights if user doesn't have permissions
-                const addHighlightBtn = this.highlightDialogEl.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
-                annotatorUtil.hideElement(addHighlightBtn);
-            }
         }
 
         // Add annotation elements

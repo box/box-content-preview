@@ -284,6 +284,7 @@ class Annotator extends EventEmitter {
         Object.keys(this.threads).forEach((pageNum) => {
             this.renderAnnotationsOnPage(pageNum);
         });
+        // console.timeEnd('fetch and render');
     }
 
     /**
@@ -505,7 +506,7 @@ class Annotator extends EventEmitter {
      * Must be implemented to create the appropriate new thread, add it to the
      * in-memory map, and return the thread.
      *
-     * @param {Annotation[]} annotations - Annotations in thread
+     * @param {Object} annotations - Annotations in thread
      * @param {Object} location - Location object
      * @param {string} type - Annotation type
      * @return {AnnotationThread} Created annotation thread
@@ -550,6 +551,7 @@ class Annotator extends EventEmitter {
      * @return {Promise} Promise for fetching saved annotations
      */
     fetchAnnotations() {
+        // console.time('fetch and render');
         this.threads = {};
 
         // Do not load any pre-existing annotations if the user does not have
@@ -558,33 +560,69 @@ class Annotator extends EventEmitter {
             return Promise.resolve(this.threads);
         }
 
-        return this.annotationService.getThreadMap(this.fileVersionId).then((threadMap) => {
-            // Generate map of page to threads
-            Object.keys(threadMap).forEach((threadID) => {
-                const annotations = threadMap[threadID];
-                const firstAnnotation = annotations[0];
+        return this.annotationService.getThreadMap(this.fileVersionId).then(this.generateThreadMap);
+    }
 
-                if (!firstAnnotation || !this.isModeAnnotatable(firstAnnotation.type)) {
+    generateThreadMap(threadMap) {
+        // console.time('generateThreadMap');
+        // Generate map of page to threads
+        Object.keys(threadMap).forEach((threadID) => {
+            const annotations = threadMap[threadID];
+            const firstAnnotation = annotatorUtil.getFirstAnnotation(annotations);
+            if (!firstAnnotation || !this.isModeAnnotatable(firstAnnotation.type)) {
+                return;
+            }
+
+            // Bind events on valid annotation thread
+            const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
+            this.bindCustomListenersOnThread(thread);
+
+            const { annotator } = this.options;
+            if (!annotator) {
+                return;
+            }
+
+            if (this.modeControllers[firstAnnotation.type]) {
+                const controller = this.modeControllers[firstAnnotation.type];
+                controller.bindCustomListenersOnThread(thread);
+                controller.registerThread(thread);
+            }
+        });
+
+        this.emit('annotationsfetched');
+        this.annotationMap = this.annotationService.annotations;
+
+        // console.time('updateAnnotationPermissions');
+        this.updateAnnotationPermissions();
+        // console.timeEnd('generateThreadMap');
+    }
+
+    // This is shitty... we shouldn't have a promise that's dependent on a separate promise. How do we update the permissions asynchronously?
+    updateAnnotationPermissions() {
+        this.annotationService.getAnnotationsPermissions(this.fileVersionId).then((annotationMap) => {
+            Object.keys(annotationMap).forEach((annotationID) => {
+                // find associated annotation
+                const mapAnnotation = this.annotationMap[annotationID];
+                if (!mapAnnotation || !this.isModeAnnotatable(mapAnnotation.type)) {
                     return;
                 }
 
-                // Bind events on valid annotation thread
-                const thread = this.createAnnotationThread(annotations, firstAnnotation.location, firstAnnotation.type);
-                this.bindCustomListenersOnThread(thread);
-
-                const { annotator } = this.options;
-                if (!annotator) {
+                const threadID = mapAnnotation.threadID;
+                const page = mapAnnotation.location.page;
+                const threadPage = page && page > 0 ? page : 1;
+                const pageThreads = this.getThreadsOnPage(threadPage);
+                const thread = pageThreads[threadID];
+                if (!thread) {
                     return;
                 }
 
-                if (this.modeControllers[firstAnnotation.type]) {
-                    const controller = this.modeControllers[firstAnnotation.type];
-                    controller.bindCustomListenersOnThread(thread);
-                    controller.registerThread(thread);
-                }
+                // Associate permissions with thread
+                const updatedAnnotation = thread.annotations[annotationID];
+                updatedAnnotation.permissions = annotationMap[annotationID].permissions;
             });
 
             this.emit(ANNOTATOR_EVENT.fetch);
+            // console.timeEnd('updateAnnotationPermissions');
         });
     }
 
@@ -846,7 +884,8 @@ class Annotator extends EventEmitter {
             return;
         }
 
-        Object.values(this.threads).forEach((pageThreads) => {
+        Object.keys(this.threads).forEach((page) => {
+            const pageThreads = this.getThreadsOnPage(page);
             if (threadID in pageThreads) {
                 const thread = pageThreads[threadID];
                 thread.scrollIntoView();

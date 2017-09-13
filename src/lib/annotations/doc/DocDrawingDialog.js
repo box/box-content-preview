@@ -127,7 +127,7 @@ class DocDrawingDialog extends AnnotationDialog {
      * Sets up the drawing dialog element.
      *
      * @protected
-     * @param {Annotation[]} annotations - Annotations to show in the dialog
+     * @param {Object} annotations - Annotations to show in the dialog
      * @param {HTMLElement} threadEl - Annotation icon element
      * @return {void}
      */
