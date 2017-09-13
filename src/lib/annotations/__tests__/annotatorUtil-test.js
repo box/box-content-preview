@@ -249,6 +249,10 @@ describe('lib/annotations/annotatorUtil', () => {
         it('should return first and last initial from the user\'s name', () => {
             expect(getUserInitials('John Jacob Jingle Heimer Schmidt')).equals('JS');
         });
+
+        it('should return only one initial when user name is one "word"', () => {
+            expect(getUserInitials('sumedha@box.com')).equals('S');
+        });
     });
 
     describe('getUserColor()', () => {
