@@ -271,15 +271,17 @@ export function isElementInViewport(element) {
  * @return {string} First and last initials of user
  */
 export function getUserInitials(userName) {
-    if (!userName.trim()) {
+    if (!userName || !userName.trim()) {
         return '';
     }
 
     const allNames = userName.split(' ');
     const firstName = allNames[0];
-    const lastName = allNames.length > 1 ? [allNames.length - 1] : '';
+    const lastName = allNames.length > 1 ? allNames[allNames.length - 1] : '';
+    const lastIntial = lastName.length ? lastName[0] : '';
+    const intials = firstName[0] + lastIntial;
 
-    return firstName[0] + lastName[0];
+    return intials.toUpperCase();
 }
 
 /**
