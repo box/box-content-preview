@@ -1,3 +1,30 @@
+<a name="1.10.0"></a>
+# 1.10.0 (2017-09-13)
+
+* Chore: Adding console errors for annotation errors (#388) ([3762ead](https://github.com/box/box-content-preview/commit/3762ead))
+* Chore: Cleaning up old third party libraries (#390) ([ee0bc90](https://github.com/box/box-content-preview/commit/ee0bc90))
+* Upgrade: pdf.js 1.9.558 (#389) ([4d76bdd](https://github.com/box/box-content-preview/commit/4d76bdd))
+* Fix: Adding reply-container mobile padding + clearing currentAnnotationMode on mode exit (#370) ([05d3662](https://github.com/box/box-content-preview/commit/05d3662))
+* Fix: disableAnnotationMode cannot be called on disallowed modes (#372) ([1d5a172](https://github.com/box/box-content-preview/commit/1d5a172))
+* Fix: fix page change flickering when zoomed in (#384) ([d091704](https://github.com/box/box-content-preview/commit/d091704)), closes [#384](https://github.com/box/box-content-preview/issues/384)
+* Fix: Passing event into thread.mouseoutHandler() (#375) ([2fe3c37](https://github.com/box/box-content-preview/commit/2fe3c37))
+* Fix: Plain highlight is mispositioned when it runs off the side (#381) ([bfa50e5](https://github.com/box/box-content-preview/commit/bfa50e5))
+* Fix: Respect view permissions when viewer.initAnnotations() is called (#379) ([ec043b9](https://github.com/box/box-content-preview/commit/ec043b9))
+* Fix: Show point annotation above dialog only on hover (#383) ([63fafa5](https://github.com/box/box-content-preview/commit/63fafa5))
+* Fix: Swapping Object.values() with Object.keys() (#371) ([23527a8](https://github.com/box/box-content-preview/commit/23527a8))
+* Update: Allow passed in collections to be of file objects (#359) ([cc59009](https://github.com/box/box-content-preview/commit/cc59009))
+* Update: Update Box3D to 12.3.0 ([e5899b2](https://github.com/box/box-content-preview/commit/e5899b2))
+* Mojito: Update translations (#368) ([56fe656](https://github.com/box/box-content-preview/commit/56fe656))
+* Mojito: Update translations (#373) ([b800397](https://github.com/box/box-content-preview/commit/b800397))
+* Mojito: Update translations (#374) ([fe15754](https://github.com/box/box-content-preview/commit/fe15754))
+* Mojito: Update translations (#382) ([bef23db](https://github.com/box/box-content-preview/commit/bef23db))
+* New: drawing dialog (#364) ([5003c3d](https://github.com/box/box-content-preview/commit/5003c3d))
+* New: Emit annotation thread events to the viewer and beyond (#377) ([dec86c6](https://github.com/box/box-content-preview/commit/dec86c6))
+* New: More specific error messages from conversion (#378) ([a718718](https://github.com/box/box-content-preview/commit/a718718))
+* New: Scroll file to annotation position on 'scrolltoannotation' (#366) ([c867fc7](https://github.com/box/box-content-preview/commit/c867fc7))
+
+
+
 <a name="1.9.0"></a>
 # 1.9.0 (2017-09-06)
 
