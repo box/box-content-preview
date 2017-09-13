@@ -463,6 +463,9 @@ class DocAnnotator extends Annotator {
         const highlightThreads = this.getHighlightThreadsOnPage(pageNum);
         highlightThreads.forEach((thread) => {
             if (annotatorUtil.isPending(thread.state)) {
+                /* eslint-disable no-console */
+                console.error('Pending annotation thread destroyed', thread.threadNumber);
+                /* eslint-enable no-console */
                 thread.destroy();
             }
         });
@@ -861,20 +864,17 @@ class DocAnnotator extends Annotator {
 
         // Select page of first node selected
         const { pageEl } = annotatorUtil.getPageInfo(selection.anchorNode);
-
         if (!pageEl) {
             return;
         }
 
         const lastRange = selection.getRangeAt(selection.rangeCount - 1);
         const rects = lastRange.getClientRects();
-
         if (rects.length === 0) {
             return;
         }
 
         const { right, bottom } = rects[rects.length - 1];
-
         const pageDimensions = pageEl.getBoundingClientRect();
         const pageLeft = pageDimensions.left;
         const pageTop = pageDimensions.top + PAGE_PADDING_TOP;
