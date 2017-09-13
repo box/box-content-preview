@@ -652,6 +652,12 @@ class Annotator extends EventEmitter {
             default:
         }
 
+        if (data.error) {
+            /* eslint-disable no-console */
+            console.error(ANNOTATOR_EVENT.error, data.error);
+            /* eslint-enable no-console */
+        }
+
         if (errorMessage) {
             this.emit(ANNOTATOR_EVENT.error, errorMessage);
         }
@@ -935,6 +941,9 @@ class Annotator extends EventEmitter {
         }
 
         this.emit(ANNOTATOR_EVENT.error, __('annotations_load_error'));
+        /* eslint-disable no-console */
+        console.error('Annotation could not be created due to invalid params');
+        /* eslint-enable no-console */
         this.validationErrorEmitted = true;
     }
 

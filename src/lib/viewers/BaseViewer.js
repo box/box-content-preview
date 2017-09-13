@@ -346,7 +346,11 @@ class BaseViewer extends EventEmitter {
             }
 
             if (this.annotationsPromise) {
-                this.annotationsPromise.then(this.loadAnnotator);
+                this.annotationsPromise.then(this.loadAnnotator).catch((error) => {
+                    /* eslint-disable no-console */
+                    console.error('Annotation assets failed to load', error.toString());
+                    /* eslint-enable no-console */
+                });
             }
         });
     }
