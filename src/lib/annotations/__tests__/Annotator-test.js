@@ -661,7 +661,7 @@ describe('lib/annotations/Annotator', () => {
             it('should get event handlers for point annotation mode', () => {
                 annotator.bindModeListeners(TYPES.point);
                 expect(annotator.annotatedElement.addEventListener).to.be.calledWith(
-                    'mousedown',
+                    'mouseup',
                     annotator.pointClickHandler
                 );
                 expect(annotator.annotatedElement.addEventListener).to.be.calledWith(
