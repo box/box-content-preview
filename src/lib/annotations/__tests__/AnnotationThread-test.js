@@ -822,7 +822,7 @@ describe('lib/annotations/AnnotationThread', () => {
     describe('handleThreadSaveError()', () => {
         it('should delete temp annotation and emit event', () => {
             sandbox.stub(thread, 'deleteAnnotation');
-            thread.handleThreadSaveError(1);
+            thread.handleThreadSaveError(new Error(), 1);
             expect(thread.deleteAnnotation).to.be.calledWith(1, false);
             expect(thread.emit).to.be.calledWith(THREAD_EVENT.createError);
         });

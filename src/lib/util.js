@@ -155,7 +155,9 @@ export function get(url, ...rest) {
             break;
     }
 
-    return fetch(url, { headers }).then(checkStatus).then(parser);
+    return fetch(url, { headers })
+        .then(checkStatus)
+        .then(parser);
 }
 
 /**
