@@ -716,9 +716,11 @@ describe('lib/Preview', () => {
         });
 
         it('should set the preview to open, and initialize the performance logger', () => {
+            sandbox.stub(Browser, 'getBrowserInfo');
             preview.load('0');
             expect(preview.open).to.be.true;
             expect(preview.logger instanceof Logger);
+            expect(Browser.getBrowserInfo).to.not.be.called; // cached from preview constructor
         });
 
         it('should clear the retry timeout', () => {

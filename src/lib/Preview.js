@@ -129,6 +129,7 @@ class Preview extends EventEmitter {
 
         this.cache = new Cache();
         this.ui = new PreviewUI();
+        this.browserInfo = Browser.getBrowserInfo();
     }
 
     /**
@@ -536,7 +537,7 @@ class Preview extends EventEmitter {
         this.open = true;
 
         // Init performance logging
-        this.logger = new Logger(this.location.locale);
+        this.logger = new Logger(this.location.locale, this.browserInfo);
 
         // Clear any existing retry timeouts
         clearTimeout(this.retryTimeout);

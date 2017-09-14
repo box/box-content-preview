@@ -340,6 +340,30 @@ class Browser {
             (Browser.isIOS() && /(?:OS\s)10_3/i.test(userAgent)) || (Browser.isMac() && Browser.getName() === 'Safari')
         );
     }
+
+    /**
+     * Gets browser capability information.
+     *
+     * @private
+     * @return {Object} Browser capability information
+     */
+    static getBrowserInfo() {
+        return {
+            name: Browser.getName(),
+            swf: Browser.hasFlash(),
+            svg: Browser.hasSVG(),
+            mse: Browser.hasMSE(),
+            webgl: Browser.hasWebGL(),
+            mp3: Browser.canPlayMP3(),
+            dash: Browser.canPlayDash(),
+            box3d: Browser.supportsModel3D(),
+            h264: {
+                baseline: Browser.canPlayH264Baseline(),
+                main: Browser.canPlayH264Main(),
+                high: Browser.canPlayH264High()
+            }
+        };
+    }
 }
 
 export default Browser;
