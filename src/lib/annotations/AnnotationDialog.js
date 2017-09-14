@@ -8,13 +8,13 @@ const POINT_ANNOTATION_ICON_HEIGHT = 31;
 const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
 const CLASS_FLIPPED_DIALOG = 'bp-annotation-dialog-flipped';
 
-const CLASS_BUTTON_DELETE_COMMENT = 'delete-comment-btn';
 const CLASS_CANCEL_DELETE = 'cancel-delete-btn';
 const CLASS_CANNOT_ANNOTATE = 'cannot-annotate';
 const CLASS_COMMENT = 'annotation-comment';
 const CLASS_COMMENTS_CONTAINER = 'annotation-comments';
 const CLASS_REPLY_CONTAINER = 'reply-container';
 const CLASS_REPLY_TEXTAREA = 'reply-textarea';
+const CLASS_BUTTON_DELETE_COMMENT = 'delete-comment-btn';
 const CLASS_DELETE_CONFIRMATION = 'delete-confirmation';
 const CLASS_BUTTON_DELETE_CONFIRM = 'confirm-delete-btn';
 
@@ -29,7 +29,7 @@ class AnnotationDialog extends EventEmitter {
      *
      * @typedef {Object} AnnotationDialogData
      * @property {HTMLElement} annotatedElement HTML element being annotated on
-     * @property {Annotation[]} annotations Annotations in dialog, can be an
+     * @property {Object} annotations Annotations in dialog, can be an
      * empty array for a new thread
      * @property {Object} location Location object
      * @property {boolean} canAnnotate Whether or not user can annotate
@@ -51,7 +51,7 @@ class AnnotationDialog extends EventEmitter {
         this.annotatedElement = data.annotatedElement;
         this.container = data.container;
         this.location = data.location;
-        this.hasAnnotations = data.annotations.length > 0;
+        this.hasAnnotations = Object.keys(data.annotations).length > 0;
         this.canAnnotate = data.canAnnotate;
         this.locale = data.locale;
         this.isMobile = data.isMobile;
@@ -265,7 +265,7 @@ class AnnotationDialog extends EventEmitter {
     /**
      * Sets up the dialog element.
      *
-     * @param {Annotation[]} annotations - Annotations to show in the dialog
+     * @param {Object} annotations - Annotations to show in the dialog
      * @param {HTMLElement} threadEl - Annotation icon element
      * @return {void}
      * @protected
@@ -274,7 +274,7 @@ class AnnotationDialog extends EventEmitter {
         this.threadEl = threadEl;
 
         // Generate HTML of dialog
-        this.dialogEl = this.generateDialogEl(annotations.length);
+        this.dialogEl = this.generateDialogEl(Object.keys(annotations).length);
         this.dialogEl.classList.add(constants.CLASS_ANNOTATION_CONTAINER);
 
         // Setup shared mobile annotations dialog
@@ -286,15 +286,27 @@ class AnnotationDialog extends EventEmitter {
             this.element.appendChild(this.dialogEl);
 
             // Adding thread number to dialog
-            if (annotations.length > 0) {
-                this.element.dataset.threadNumber = annotations[0].threadNumber;
+            if (Object.keys(annotations).length > 0) {
+                const firstAnnotation = annotatorUtil.getFirstAnnotation(annotations);
+                this.element.dataset.threadNumber = firstAnnotation.threadNumber;
             }
 
             this.bindDOMListeners();
         }
 
         // Add annotation elements
-        annotations.forEach((annotation) => {
+        this.addSortedAnnotations(annotations);
+    }
+
+    addSortedAnnotations(annotations) {
+        // Sort annotations by date created
+        const sorted = Object.keys(annotations).map((key) => annotations[key]);
+        sorted.sort((a, b) => {
+            return new Date(a.created) - new Date(b.created);
+        });
+
+        // Add sorted annotations to dialog
+        sorted.forEach((annotation) => {
             this.addAnnotationElement(annotation);
         });
     }
@@ -625,7 +637,7 @@ class AnnotationDialog extends EventEmitter {
         const annotationEl = this.element.querySelector(`[data-annotation-id="${annotationID}"]`);
         const deleteConfirmationEl = annotationEl.querySelector(`.${CLASS_DELETE_CONFIRMATION}`);
         const cancelDeleteButtonEl = annotationEl.querySelector(`.${CLASS_CANCEL_DELETE}`);
-        const deleteButtonEl = annotationEl.querySelector(`.${CLASS_BUTTON_DELETE_COMMENT}`);
+        const deleteButtonEl = annotationEl.querySelector(constants.SELECTOR_DELETE_COMMENT_BTN);
         annotatorUtil.hideElement(deleteButtonEl);
         annotatorUtil.showElement(deleteConfirmationEl);
         cancelDeleteButtonEl.focus();
@@ -641,7 +653,7 @@ class AnnotationDialog extends EventEmitter {
     hideDeleteConfirmation(annotationID) {
         const annotationEl = this.element.querySelector(`[data-annotation-id="${annotationID}"]`);
         const deleteConfirmationEl = annotationEl.querySelector(`.${CLASS_DELETE_CONFIRMATION}`);
-        const deleteButtonEl = annotationEl.querySelector(`.${CLASS_BUTTON_DELETE_COMMENT}`);
+        const deleteButtonEl = annotationEl.querySelector(constants.SELECTOR_DELETE_COMMENT_BTN);
         annotatorUtil.showElement(deleteButtonEl);
         annotatorUtil.hideElement(deleteConfirmationEl);
         deleteButtonEl.focus();

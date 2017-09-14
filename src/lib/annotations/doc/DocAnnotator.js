@@ -321,7 +321,7 @@ class DocAnnotator extends Annotator {
      * Creates the proper type of thread, adds it to in-memory map, and returns it.
      *
      * @override
-     * @param {Annotation[]} annotations - Annotations in thread
+     * @param {Object} annotations - Annotations in thread
      * @param {Object} location - Location object
      * @param {string} [type] - Optional annotation type
      * @return {AnnotationThread} Created annotation thread
@@ -343,9 +343,10 @@ class DocAnnotator extends Annotator {
         };
 
         // Set existing thread ID if created with annotations
-        if (annotations.length > 0) {
-            threadParams.threadID = annotations[0].threadID;
-            threadParams.threadNumber = annotations[0].threadNumber;
+        if (Object.keys(annotations).length > 0) {
+            const firstAnnotation = annotatorUtil.getFirstAnnotation(annotations);
+            threadParams.threadID = firstAnnotation.threadID;
+            threadParams.threadNumber = firstAnnotation.threadNumber;
         }
 
         if (!annotatorUtil.validateThreadParams(threadParams)) {
@@ -408,7 +409,7 @@ class DocAnnotator extends Annotator {
             return null;
         }
 
-        const annotations = [];
+        const annotations = {};
         const thread = this.createAnnotationThread(annotations, location, highlightType);
         this.lastHighlightEvent = null;
         this.lastSelection = null;

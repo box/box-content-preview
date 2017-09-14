@@ -235,7 +235,7 @@ class DrawingThread extends AnnotationThread {
      * @return {void}
      */
     setup() {
-        if (this.annotations.length === 0) {
+        if (Object.keys(this.annotations).length === 0) {
             // Newly created thread
             this.state = STATES.pending;
         } else {
