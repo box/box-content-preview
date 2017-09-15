@@ -47,6 +47,8 @@ class DocHighlightThread extends AnnotationThread {
             this.type = TYPES.highlight;
         } else if (!this.isMobile) {
             this.destroy();
+        } else {
+            this.reset();
         }
     }
 

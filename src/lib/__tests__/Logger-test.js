@@ -6,7 +6,7 @@ const sandbox = sinon.sandbox.create();
 
 describe('lib/Logger', () => {
     beforeEach(() => {
-        logger = new Logger('FOO');
+        logger = new Logger('FOO', {});
     });
 
     afterEach(() => {
