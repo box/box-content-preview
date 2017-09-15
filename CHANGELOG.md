@@ -1,3 +1,10 @@
+<a name="1.10.1"></a>
+## 1.10.1 (2017-09-15)
+
+* Fix: Downgrade pdf.js (#397) ([9a0eff5](https://github.com/box/box-content-preview/commit/9a0eff5))
+
+
+
 <a name="1.10.0"></a>
 # 1.10.0 (2017-09-13)
 
