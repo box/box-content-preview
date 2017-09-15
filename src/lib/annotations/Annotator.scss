@@ -458,40 +458,14 @@ $avatar-color-9: #f22c44;
 
 .bp-point-annotation-marker,
 .bp-annotation-profile {
-    &.avatar-color-0 {
-        background-color: $avatar-color-1;
-    }
+    $index: 0;
+    $avatar-colors: $avatar-color-1, $avatar-color-2, $avatar-color-3, $avatar-color-4, $avatar-color-5, $avatar-color-6, $avatar-color-7, $avatar-color-8, $avatar-color-9;
 
-    &.avatar-color-1 {
-        background-color: $avatar-color-2;
-    }
-
-    &.avatar-color-2 {
-        background-color: $avatar-color-3;
-    }
-
-    &.avatar-color-3 {
-        background-color: $avatar-color-4;
-    }
-
-    &.avatar-color-4 {
-        background-color: $avatar-color-5;
-    }
-
-    &.avatar-color-5 {
-        background-color: $avatar-color-6;
-    }
-
-    &.avatar-color-6 {
-        background-color: $avatar-color-7;
-    }
-
-    &.avatar-color-7 {
-        background-color: $avatar-color-8;
-    }
-
-    &.avatar-color-8 {
-        background-color: $avatar-color-9;
+    @each $color in $avatar-colors {
+        &.avatar-color-#{$index} {
+            background-color: #{$color};
+        }
+        $index: $index + 1;
     }
 }
 
