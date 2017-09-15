@@ -17,7 +17,7 @@ import {
     STATUS_SUCCESS,
 } from '../../../constants';
 
-import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
+import { ICON_PRINT_CHECKMARK, ICON_FILE_PRESENTATION } from '../../../icons/icons';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -58,7 +58,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 }
             },
             file: {
-                id: '0'
+                id: '0',
+                extension: 'ppt'
             }
         });
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
@@ -90,6 +91,10 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.viewerEl.parentNode).to.equal(docBase.docEl);
 
             expect(docBase.loadTimeout).to.equal(LOAD_TIMEOUT_MS);
+        });
+
+        it('should correctly set the file icon based on file extension', () => {
+            expect(docBase.fileLoadingIcon).to.equal(ICON_FILE_PRESENTATION);
         });
     });
 
