@@ -32,14 +32,11 @@
 
     //---------- Override CSS from generic PDFJS viewer build ----------//
     .pdfViewer .page {
-        align-items: center;
         border: 0;
         border-image: none;
         /* stylelint-disable declaration-no-important */
         box-sizing: content-box !important;
         /* stylelint-enable declaration-no-important */
-        display: flex;
-        justify-content: center;
         margin: 0 auto;
         // We use padding instead of margin to push down since we want to
         // include this padding when PDF.js jumps to pages
