@@ -243,7 +243,7 @@ class Controls {
      * @return {boolean} Is the input focused
      */
     isPageNumFocused() {
-        return document.activeElement.classList.contains(CONTROLS_PAGE_NUM_INPUT_CLASS);
+        return document.activeElement && document.activeElement.classList.contains(CONTROLS_PAGE_NUM_INPUT_CLASS);
     }
 }
 
