@@ -4,78 +4,7 @@ import DocumentViewer from './DocumentViewer';
 import PresentationViewer from './PresentationViewer';
 import RepStatus from '../../RepStatus';
 import { ORIGINAL_REP_NAME, STATUS_SUCCESS } from '../../constants';
-
-const DOCUMENT_FORMATS = [
-    'as',
-    'as3',
-    'asm',
-    'bat',
-    'c',
-    'cc',
-    'cmake',
-    'cpp',
-    'cs',
-    'css',
-    'csv',
-    'cxx',
-    'diff',
-    'doc',
-    'docx',
-    'erb',
-    'gdoc',
-    'groovy',
-    'gsheet',
-    'h',
-    'haml',
-    'hh',
-    'htm',
-    'html',
-    'java',
-    'js',
-    'less',
-    'log',
-    'm',
-    'make',
-    'md',
-    'ml',
-    'mm',
-    'msg',
-    'odp',
-    'ods',
-    'odt',
-    'pdf',
-    'php',
-    'pl',
-    'plist',
-    'ppt',
-    'pptx',
-    'properties',
-    'py',
-    'rb',
-    'rst',
-    'rtf',
-    'sass',
-    'scala',
-    'scm',
-    'script',
-    'sh',
-    'sml',
-    'sql',
-    'tsv',
-    'txt',
-    'vi',
-    'vim',
-    'webdoc',
-    'wpd',
-    'xhtml',
-    'xls',
-    'xlsm',
-    'xlsx',
-    'xml',
-    'xsd',
-    'xsl',
-    'yaml'
-];
+import { DOCUMENT_EXTENSIONS } from '../../extensions';
 
 // Order of the viewers matters. For example, a PDF file can be previewed by using the preferred optimized 'pdf' rep
 // or the original as a fallback. Additionally, we include multiple entries for the presentation viewer so that it can be
@@ -91,14 +20,14 @@ const VIEWERS = [
         NAME: 'Document',
         CONSTRUCTOR: DocumentViewer,
         REP: 'pdf',
-        EXT: DOCUMENT_FORMATS
+        EXT: DOCUMENT_EXTENSIONS
     },
     // Allows other document types to use the presentation viewer when the document viewer is disabled.
     {
         NAME: 'Presentation',
         CONSTRUCTOR: PresentationViewer,
         REP: 'pdf',
-        EXT: DOCUMENT_FORMATS
+        EXT: DOCUMENT_EXTENSIONS
     },
     {
         NAME: 'Document',
