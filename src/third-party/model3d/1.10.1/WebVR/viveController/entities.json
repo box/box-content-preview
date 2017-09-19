@@ -1,0 +1,1811 @@
+{
+  "version": {
+    "major": 4,
+    "minor": 3
+  },
+  "entities": [
+    {
+      "type": "texture2D",
+      "id": "702be2b4-d955-4daf-98b3-467c160d6081",
+      "sid": "27",
+      "properties": {
+        "useMipmap": false,
+        "cropLeft": 0,
+        "textureUse": "standard",
+        "name": "onepointfive_texture.png",
+        "uvSet": "default",
+        "mappingType": "uv",
+        "wrapModeV": "repeat",
+        "wrapModeU": "repeat",
+        "uvSwap": false,
+        "alphaSource": "none",
+        "premultiplyAlpha": true,
+        "cropRight": 0,
+        "rotation": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "scaling": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "alpha": 1,
+        "translation": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "cropTop": 0,
+        "cropBottom": 0,
+        "useMaterial": false,
+        "imageId": "f0a4a127-9e4e-49cd-92ec-9b237bf3ab82"
+      },
+      "parentId": null,
+      "parentAssetId": "702be2b4-d955-4daf-98b3-467c160d6081"
+    },
+    {
+      "type": "texture2D",
+      "id": "36908f7d-f068-4aa5-bb12-49fdaf153267",
+      "sid": "28",
+      "properties": {
+        "useMipmap": false,
+        "cropLeft": 0,
+        "textureUse": "standard",
+        "name": "onepointfive_spec.png",
+        "uvSet": "default",
+        "mappingType": "uv",
+        "wrapModeV": "repeat",
+        "wrapModeU": "repeat",
+        "uvSwap": false,
+        "alphaSource": "none",
+        "premultiplyAlpha": true,
+        "cropRight": 0,
+        "rotation": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "scaling": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "alpha": 1,
+        "translation": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "cropTop": 0,
+        "cropBottom": 0,
+        "useMaterial": false,
+        "imageId": "0fd80b56-19dc-4074-92ff-ea2a04954119"
+      },
+      "parentId": null,
+      "parentAssetId": "36908f7d-f068-4aa5-bb12-49fdaf153267"
+    },
+    {
+      "type": "material",
+      "id": "65960582-73cc-452c-aa54-53e9c0619d7a",
+      "sid": "29",
+      "properties": {
+        "name": "Vive Controller",
+        "shaderId": "three_standard_shader",
+        "side": "frontOnly",
+        "roughness": 1.0,
+        "diffuseTexture": "702be2b4-d955-4daf-98b3-467c160d6081",
+        "roughnessMap": "36908f7d-f068-4aa5-bb12-49fdaf153267",
+        "ambientTexture": "5ee0068b-67d4-43f6-928a-f23147a96877"
+      },
+      "parentId": null,
+      "parentAssetId": "65960582-73cc-452c-aa54-53e9c0619d7a"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "d8b81c4e-c8e2-44e3-bc22-d7a9eca8d674",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#dc03b4d3-ac68-4091-af6f-8d87287502eb"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#2a89c921-bef9-4132-a4da-88b498ce1575"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#383ff643-6e35-4c55-a79b-9f73ee9fa827"
+          }
+        },
+        "indices": "55797b6a-8632-4654-8f76-3b9bf3a507bb#7cf3e15c-192f-4bc1-a5c2-2e32c533598f",
+        "primitives": [
+          {
+            "count": 41898,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": 0.007103,
+            "x": 0.058716,
+            "z": 0.173514
+          },
+          "min": {
+            "y": -0.075882,
+            "x": -0.058716,
+            "z": -0.045913
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "d8b81c4e-c8e2-44e3-bc22-d7a9eca8d674"
+    },
+    {
+      "type": "prefab",
+      "id": "9d1f19de-9704-4964-950d-7f0a34830aaf",
+      "sid": null,
+      "children": [
+        "c04bfc7a-eb8c-42ae-b3e2-c6e3485a0a07"
+      ],
+      "properties": {
+        "name": "Vive Controller"
+      },
+      "parentId": null,
+      "parentAssetId": "9d1f19de-9704-4964-950d-7f0a34830aaf"
+    },
+    {
+      "type": "node",
+      "id": "c04bfc7a-eb8c-42ae-b3e2-c6e3485a0a07",
+      "sid": "9",
+      "properties": {
+        "position": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "quaternion": {
+          "y": 0,
+          "x": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "name": "RootNode"
+      },
+      "children": [
+        "6a843fe1-3d5b-4131-9871-7755f8ee4436",
+        "02d6fa8f-20e8-44d4-9546-32eac20bf480",
+        "8a4ca53f-4e03-4050-bc77-144b84af1e76",
+        "f478dabd-9860-4aa9-b159-01e8886de8c4",
+        "e183a43a-2f36-44bb-8227-5e4ec6d92ce5",
+        "88d6e0d2-ef94-44c8-8b16-b3937599f67f",
+        "4a227367-5529-4c97-ba6d-9b8fd1a3f2e0",
+        "b07d8801-ea45-4f42-be64-8b68a1c17106"
+      ],
+      "components": [
+        {
+          "name": "VR Controller Animator",
+          "attributes": {
+            "buttons": [
+              [{
+                "movementType": "translate",
+                "mesh": "4a227367-5529-4c97-ba6d-9b8fd1a3f2e0",
+                "offset": { "x": 0, "y": -0.001, "z": 0}
+              }, {
+                "mesh": "c1a0fe68-efc4-483f-a2c6-a9aadf809066",
+                "movementType": "translate",
+                "offset": { "x": 0, "y": 0, "z": 0},
+                "renderOnTouchOnly": true
+              }],
+              [{
+                "movementType": "rotate",
+                "mesh": "b07d8801-ea45-4f42-be64-8b68a1c17106",
+                "pivot": { "x": 0, "y": -0.016, "z": 0.039},
+                "rotation": { "x": -0.29670597283904, "y": 0, "z": 0 }
+              }],
+              [{
+                "movementType": "rotate",
+                "mesh": "8a4ca53f-4e03-4050-bc77-144b84af1e76",
+                "pivot": { "x": -0.019, "y": -0.006, "z": 0.075},
+                "rotation": { "x": 0, "y": 0.0349, "z": 0 }
+              }, {
+                "movementType": "rotate",
+                "mesh": "e183a43a-2f36-44bb-8227-5e4ec6d92ce5",
+                "pivot": { "x": 0.019, "y": -0.006, "z": 0.075},
+                "rotation": { "x": 0, "y": -0.0349, "z": 0 }
+              }],
+              [{
+                "movementType": "translate",
+                "mesh": "02d6fa8f-20e8-44d4-9546-32eac20bf480",
+                "offset": { "x": 0, "y": -0.00075, "z": 0}
+              }]
+            ],
+            "axes": [
+              [{
+                "movementType": "translate",
+                "mesh": "c1a0fe68-efc4-483f-a2c6-a9aadf809066",
+                "offset": { "x": 0.035, "y": 0, "z": 0}
+              }],
+              [{
+                "movementType": "translate",
+                "mesh": "c1a0fe68-efc4-483f-a2c6-a9aadf809066",
+                "offset": { "x": 0, "y": 0.004, "z": -0.035}
+              }]
+            ]
+          },
+          "scriptId": "gamepad_animator"
+        }
+      ],
+      "parentId": "9d1f19de-9704-4964-950d-7f0a34830aaf",
+      "parentAssetId": "9d1f19de-9704-4964-950d-7f0a34830aaf"
+    },
+    {
+      "type": "mesh",
+      "id": "6a843fe1-3d5b-4131-9871-7755f8ee4436",
+      "sid": "30",
+      "properties": {
+        "position": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "quaternion": {
+          "y": 0,
+          "x": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "name": "Body",
+        "geometryId": "d8b81c4e-c8e2-44e3-bc22-d7a9eca8d674",
+        "materials": [
+          "65960582-73cc-452c-aa54-53e9c0619d7a"
+        ]
+      },
+      "children": [],
+      "parentId": "c04bfc7a-eb8c-42ae-b3e2-c6e3485a0a07",
+      "parentAssetId": "9d1f19de-9704-4964-950d-7f0a34830aaf"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "1c8a146c-083a-4f54-aff3-c616192e060e",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#2c81ed1d-a5b6-450a-a620-fbebdab8a8ab"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#5960c340-276b-4b4a-a7ae-6d7c14fc92e7"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#6a429e27-0b2a-413c-b948-0b22a72f1997"
+          }
+        },
+        "indices": "55797b6a-8632-4654-8f76-3b9bf3a507bb#b65862df-c105-4d01-a923-d322a6096859",
+        "primitives": [
+          {
+            "count": 792,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": 0.007729,
+            "x": 0.004993,
+            "z": 0.024979
+          },
+          "min": {
+            "y": 0.003233,
+            "x": -0.004993,
+            "z": 0.014858
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "1c8a146c-083a-4f54-aff3-c616192e060e"
+    },
+    {
+      "type": "mesh",
+      "id": "02d6fa8f-20e8-44d4-9546-32eac20bf480",
+      "sid": "31",
+      "properties": {
+        "position": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "quaternion": {
+          "y": 0,
+          "x": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "name": "Button",
+        "geometryId": "1c8a146c-083a-4f54-aff3-c616192e060e",
+        "materials": [
+          "65960582-73cc-452c-aa54-53e9c0619d7a"
+        ]
+      },
+      "children": [],
+      "parentId": "c04bfc7a-eb8c-42ae-b3e2-c6e3485a0a07",
+      "parentAssetId": "9d1f19de-9704-4964-950d-7f0a34830aaf"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "41325bb4-92f6-4004-90f6-e828ba29a50c",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#c03da50f-5983-4802-a397-bfaca600420b"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#0e116b75-21f0-4994-ab04-5477ef153184"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#8568f6bb-c2a6-4b74-afdf-cb293f55c064"
+          }
+        },
+        "indices": "55797b6a-8632-4654-8f76-3b9bf3a507bb#02a70561-1fbf-439a-9082-4cd8e85f2ee7",
+        "primitives": [
+          {
+            "count": 1176,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": -0.006792,
+            "x": -0.01216,
+            "z": 0.10192
+          },
+          "min": {
+            "y": -0.021856,
+            "x": -0.022254,
+            "z": 0.072368
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "41325bb4-92f6-4004-90f6-e828ba29a50c"
+    },
+    {
+      "type": "mesh",
+      "id": "8a4ca53f-4e03-4050-bc77-144b84af1e76",
+      "sid": "32",
+      "properties": {
+        "position": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "quaternion": {
+          "y": 0,
+          "x": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "name": "Left Grip",
+        "geometryId": "41325bb4-92f6-4004-90f6-e828ba29a50c",
+        "materials": [
+          "65960582-73cc-452c-aa54-53e9c0619d7a"
+        ]
+      },
+      "children": [],
+      "parentId": "c04bfc7a-eb8c-42ae-b3e2-c6e3485a0a07",
+      "parentAssetId": "9d1f19de-9704-4964-950d-7f0a34830aaf"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "b2542d8d-42f8-42b4-b040-9bacad867d77",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#7b30a573-b551-4994-aa9e-21e624f209bc"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#83558a55-8e03-44c4-9af0-4cfa7071699b"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#097627dd-502c-4cb3-ae85-7a80ede48b4a"
+          }
+        },
+        "indices": "55797b6a-8632-4654-8f76-3b9bf3a507bb#e02d8ad6-5890-44ff-a4b8-1bf4f0235760",
+        "primitives": [
+          {
+            "count": 180,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": 0.002979,
+            "x": 5.68E-4,
+            "z": 0.096888
+          },
+          "min": {
+            "y": 0.001996,
+            "x": -5.68E-4,
+            "z": 0.095675
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "b2542d8d-42f8-42b4-b040-9bacad867d77"
+    },
+    {
+      "type": "mesh",
+      "id": "f478dabd-9860-4aa9-b159-01e8886de8c4",
+      "sid": "33",
+      "properties": {
+        "position": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "quaternion": {
+          "y": 0,
+          "x": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "name": "LED",
+        "geometryId": "b2542d8d-42f8-42b4-b040-9bacad867d77",
+        "materials": [
+          "65960582-73cc-452c-aa54-53e9c0619d7a"
+        ]
+      },
+      "children": [],
+      "parentId": "c04bfc7a-eb8c-42ae-b3e2-c6e3485a0a07",
+      "parentAssetId": "9d1f19de-9704-4964-950d-7f0a34830aaf"
+    },
+    {
+      "type": "image",
+      "id": "08db2b5a-859f-4b63-80ca-6827ef0d1149",
+      "sid": "onepointfive_occ_bake.tga",
+      "properties": {
+        "name": "onepointfive_occ_bake.tga",
+        "filename": "onepointfive_occ_bake.tga",
+        "width": 1024,
+        "height": 1024,
+        "colorspace": "srgb",
+        "compression": "none",
+        "depth": 8,
+        "channels": [
+          "red",
+          "green",
+          "blue",
+          "alpha"
+        ],
+        "sequenceLength": 1
+      },
+      "representations": [
+        {
+          "src": "images/1024/1.png",
+          "isExternal": true,
+          "contentType": "image/png",
+          "contentLength": 507505,
+          "channels": [
+            "red",
+            "green",
+            "blue",
+            "alpha"
+          ],
+          "colorspace": "srgb",
+          "compression": "zip",
+          "depth": 8,
+          "width": 1024,
+          "height": 1024,
+          "sequenceLength": 1
+        },
+        {
+          "src": "images/64/1.png",
+          "isExternal": true,
+          "contentType": "image/png",
+          "contentLength": 8539,
+          "channels": [
+            "red",
+            "green",
+            "blue",
+            "alpha"
+          ],
+          "colorspace": "srgb",
+          "compression": "zip",
+          "depth": 8,
+          "width": 64,
+          "height": 64,
+          "sequenceLength": 1
+        }
+      ],
+      "parentId": null,
+      "parentAssetId": "08db2b5a-859f-4b63-80ca-6827ef0d1149"
+    },
+    {
+      "type": "image",
+      "id": "0fd80b56-19dc-4074-92ff-ea2a04954119",
+      "sid": "onepointfive_spec.png",
+      "properties": {
+        "name": "onepointfive_spec.png",
+        "filename": "onepointfive_spec.png",
+        "width": 1024,
+        "height": 1024,
+        "colorspace": "srgb",
+        "compression": "zip",
+        "depth": 8,
+        "channels": [
+          "red",
+          "green",
+          "blue"
+        ],
+        "sequenceLength": 1
+      },
+      "representations": [
+        {
+          "src": "images/1024/2.jpg",
+          "isExternal": true,
+          "contentType": "image/jpeg",
+          "contentLength": 95213,
+          "channels": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "colorspace": "srgb",
+          "compression": "jpeg",
+          "depth": 8,
+          "width": 1024,
+          "height": 1024,
+          "sequenceLength": 1
+        },
+        {
+          "src": "images/64/2.jpg",
+          "isExternal": true,
+          "contentType": "image/jpeg",
+          "contentLength": 5460,
+          "channels": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "colorspace": "srgb",
+          "compression": "jpeg",
+          "depth": 8,
+          "width": 64,
+          "height": 64,
+          "sequenceLength": 1
+        }
+      ],
+      "parentId": null,
+      "parentAssetId": "0fd80b56-19dc-4074-92ff-ea2a04954119"
+    },
+    {
+      "type": "image",
+      "id": "f0a4a127-9e4e-49cd-92ec-9b237bf3ab82",
+      "sid": "onepointfive_texture.png",
+      "properties": {
+        "name": "onepointfive_texture.png",
+        "filename": "onepointfive_texture.png",
+        "width": 1024,
+        "height": 1024,
+        "colorspace": "srgb",
+        "compression": "zip",
+        "depth": 8,
+        "channels": [
+          "red",
+          "green",
+          "blue"
+        ],
+        "sequenceLength": 1
+      },
+      "representations": [
+        {
+          "src": "images/1024/3.jpg",
+          "isExternal": true,
+          "contentType": "image/jpeg",
+          "contentLength": 84111,
+          "channels": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "colorspace": "srgb",
+          "compression": "jpeg",
+          "depth": 8,
+          "width": 1024,
+          "height": 1024,
+          "sequenceLength": 1
+        },
+        {
+          "src": "images/64/3.jpg",
+          "isExternal": true,
+          "contentType": "image/jpeg",
+          "contentLength": 1983,
+          "channels": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "colorspace": "srgb",
+          "compression": "jpeg",
+          "depth": 8,
+          "width": 64,
+          "height": 64,
+          "sequenceLength": 1
+        }
+      ],
+      "parentId": null,
+      "parentAssetId": "f0a4a127-9e4e-49cd-92ec-9b237bf3ab82"
+    },
+    {
+      "type": "texture2D",
+      "id": "5ee0068b-67d4-43f6-928a-f23147a96877",
+      "sid": "27",
+      "properties": {
+        "useMipmap": false,
+        "cropLeft": 0,
+        "textureUse": "standard",
+        "name": "onepointfive_occ_bake.tga",
+        "uvSet": "default",
+        "mappingType": "uv",
+        "wrapModeV": "repeat",
+        "wrapModeU": "repeat",
+        "uvSwap": false,
+        "alphaSource": "none",
+        "premultiplyAlpha": true,
+        "cropRight": 0,
+        "rotation": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "scaling": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "alpha": 1,
+        "translation": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "cropTop": 0,
+        "cropBottom": 0,
+        "useMaterial": false,
+        "imageId": "08db2b5a-859f-4b63-80ca-6827ef0d1149"
+      },
+      "parentId": null,
+      "parentAssetId": "5ee0068b-67d4-43f6-928a-f23147a96877"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "9ca85fea-8adb-4bdf-9280-6b5d933b643b",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#8a7a721c-d026-4ed4-8bab-2a7cae6bca64"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#b92412f2-da6b-4d31-9a9b-b63b5d2c18d9"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#9de3ee5b-68f5-4a23-a163-24a88716bf6e"
+          }
+        },
+        "indices": "55797b6a-8632-4654-8f76-3b9bf3a507bb#d8ea1136-92e7-481d-b2ad-5413fd5e90e4",
+        "primitives": [
+          {
+            "count": 1176,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": -0.006792,
+            "x": 0.022246,
+            "z": 0.10192
+          },
+          "min": {
+            "y": -0.021856,
+            "x": 0.012163,
+            "z": 0.072368
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "9ca85fea-8adb-4bdf-9280-6b5d933b643b"
+    },
+    {
+      "type": "mesh",
+      "id": "e183a43a-2f36-44bb-8227-5e4ec6d92ce5",
+      "sid": "34",
+      "properties": {
+        "position": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "quaternion": {
+          "y": 0,
+          "x": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "name": "Right Grip",
+        "geometryId": "9ca85fea-8adb-4bdf-9280-6b5d933b643b",
+        "materials": [
+          "65960582-73cc-452c-aa54-53e9c0619d7a"
+        ]
+      },
+      "children": [],
+      "parentId": "c04bfc7a-eb8c-42ae-b3e2-c6e3485a0a07",
+      "parentAssetId": "9d1f19de-9704-4964-950d-7f0a34830aaf"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "7d93f112-da90-4da3-aec3-a0efd27e187d",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#5168d1bb-a12d-4439-86c4-d3dd0a7e0f65"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#50952636-76cc-4da3-8dce-5071d927ba14"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#1b40a4ea-914f-453d-929e-d4c2c3d5ce93"
+          }
+        },
+        "indices": "55797b6a-8632-4654-8f76-3b9bf3a507bb#a15d23cf-fac0-461f-ba7d-ea9e5e18dc58",
+        "primitives": [
+          {
+            "count": 2304,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": 0.005168,
+            "x": 0.003965,
+            "z": 0.05977
+          },
+          "min": {
+            "y": -0.017578,
+            "x": -0.003965,
+            "z": 0.037023
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "7d93f112-da90-4da3-aec3-a0efd27e187d"
+    },
+    {
+      "type": "mesh",
+      "id": "9c33843c-7b33-46d8-9463-b14331ede881",
+      "sid": "35",
+      "properties": {
+        "position": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "quaternion": {
+          "y": 0,
+          "x": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "name": "Scroll Wheel",
+        "geometryId": "7d93f112-da90-4da3-aec3-a0efd27e187d",
+        "materials": [
+          "65960582-73cc-452c-aa54-53e9c0619d7a"
+        ]
+      },
+      "children": [],
+      "parentId": "c04bfc7a-eb8c-42ae-b3e2-c6e3485a0a07",
+      "parentAssetId": "9d1f19de-9704-4964-950d-7f0a34830aaf"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "8ce6cd69-1614-4e88-8af2-c720a2fca291",
+      "sid": "29",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#ebc3a8d8-5cd0-4eb0-9592-21d9c395f0fc"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#cc715392-b31d-4a26-aa70-17ae0a12fb64"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#22e13ea5-0867-423a-a737-91d4aba20753"
+          }
+        },
+        "indices": "55797b6a-8632-4654-8f76-3b9bf3a507bb#3ff2e8ab-725f-4f90-b8fb-64305e512501",
+        "primitives": [
+          {
+            "count": 600,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": -3.6E-4,
+            "x": 0.015,
+            "z": 0.159711
+          },
+          "min": {
+            "y": -0.00606,
+            "x": -0.015,
+            "z": 0.129877
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "8ce6cd69-1614-4e88-8af2-c720a2fca291"
+    },
+    {
+      "type": "mesh",
+      "id": "3980ab4f-cd96-47e4-9e8c-ae6176026277",
+      "sid": "36",
+      "properties": {
+        "position": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "quaternion": {
+          "y": 0,
+          "x": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "name": "Status",
+        "geometryId": "8ce6cd69-1614-4e88-8af2-c720a2fca291",
+        "materials": [
+          "65960582-73cc-452c-aa54-53e9c0619d7a"
+        ]
+      },
+      "children": [],
+      "parentId": "c04bfc7a-eb8c-42ae-b3e2-c6e3485a0a07",
+      "parentAssetId": "9d1f19de-9704-4964-950d-7f0a34830aaf"
+    },
+    {
+      "type": "image",
+      "id": "90aa10af-8298-4b1a-b221-34b91c47e2ff",
+      "sid": "status.png",
+      "properties": {
+        "name": "status.png",
+        "filename": "status.png",
+        "width": 256,
+        "height": 256,
+        "colorspace": "srgb",
+        "compression": "zip",
+        "depth": 8,
+        "channels": [
+          "red",
+          "green",
+          "blue",
+          "alpha"
+        ],
+        "sequenceLength": 1
+      },
+      "representations": [
+        {
+          "src": "images/256/4.png",
+          "isExternal": true,
+          "contentType": "image/png",
+          "contentLength": 24086,
+          "channels": [
+            "red",
+            "green",
+            "blue",
+            "alpha"
+          ],
+          "colorspace": "srgb",
+          "compression": "zip",
+          "depth": 8,
+          "width": 256,
+          "height": 256,
+          "sequenceLength": 1
+        },
+        {
+          "src": "images/128/4.png",
+          "isExternal": true,
+          "contentType": "image/png",
+          "contentLength": 11739,
+          "channels": [
+            "red",
+            "green",
+            "blue",
+            "alpha"
+          ],
+          "colorspace": "srgb",
+          "compression": "zip",
+          "depth": 8,
+          "width": 128,
+          "height": 128,
+          "sequenceLength": 1
+        },
+        {
+          "src": "images/64/4.png",
+          "isExternal": true,
+          "contentType": "image/png",
+          "contentLength": 5240,
+          "channels": [
+            "red",
+            "green",
+            "blue",
+            "alpha"
+          ],
+          "colorspace": "srgb",
+          "compression": "zip",
+          "depth": 8,
+          "width": 64,
+          "height": 64,
+          "sequenceLength": 1
+        }
+      ],
+      "parentId": null,
+      "parentAssetId": "90aa10af-8298-4b1a-b221-34b91c47e2ff"
+    },
+    {
+      "type": "texture2D",
+      "id": "246d7999-3c66-4749-9c39-b5af66cfcc59",
+      "sid": "27",
+      "properties": {
+        "useMipmap": false,
+        "cropLeft": 0,
+        "textureUse": "standard",
+        "name": "status.png",
+        "uvSet": "default",
+        "mappingType": "uv",
+        "wrapModeV": "repeat",
+        "wrapModeU": "repeat",
+        "uvSwap": false,
+        "alphaSource": "none",
+        "premultiplyAlpha": true,
+        "cropRight": 0,
+        "rotation": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "scaling": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "alpha": 1,
+        "translation": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "cropTop": 0,
+        "cropBottom": 0,
+        "useMaterial": false,
+        "imageId": "90aa10af-8298-4b1a-b221-34b91c47e2ff"
+      },
+      "parentId": null,
+      "parentAssetId": "246d7999-3c66-4749-9c39-b5af66cfcc59"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "67a935c6-b282-4934-8d1b-fe19fbe3f3c7",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#126fd407-e380-46e9-9268-95442254a829"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#d3d5ff76-9647-4c0e-9fc5-b7e9f118c66a"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#f27809dd-644b-48ef-86ca-5137dc74ab91"
+          }
+        },
+        "indices": "55797b6a-8632-4654-8f76-3b9bf3a507bb#47306056-d3c1-44b5-84a1-544fc49bca15",
+        "primitives": [
+          {
+            "count": 792,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": 0.004181,
+            "x": 0.004993,
+            "z": 0.093391
+          },
+          "min": {
+            "y": -1.01E-4,
+            "x": -0.004993,
+            "z": 0.083127
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "67a935c6-b282-4934-8d1b-fe19fbe3f3c7"
+    },
+    {
+      "type": "mesh",
+      "id": "88d6e0d2-ef94-44c8-8b16-b3937599f67f",
+      "sid": "37",
+      "properties": {
+        "position": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "quaternion": {
+          "y": 0,
+          "x": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "name": "System Button",
+        "geometryId": "67a935c6-b282-4934-8d1b-fe19fbe3f3c7",
+        "materials": [
+          "65960582-73cc-452c-aa54-53e9c0619d7a"
+        ]
+      },
+      "children": [],
+      "parentId": "c04bfc7a-eb8c-42ae-b3e2-c6e3485a0a07",
+      "parentAssetId": "9d1f19de-9704-4964-950d-7f0a34830aaf"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "e01e018f-19ea-4772-9c4c-c70ba1dc1504",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#371fd41b-40e5-4eb1-8786-5d54e722d729"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#d52fbe9e-f3f6-4056-88be-e148ce6d4ed4"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#38c509af-0f3e-4eb8-bba4-55452cad96dc"
+          }
+        },
+        "indices": "55797b6a-8632-4654-8f76-3b9bf3a507bb#6d49d03d-aaea-4cb0-8600-d67d8cd27a3d",
+        "primitives": [
+          {
+            "count": 2508,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": 0.007248,
+            "x": 0.021412,
+            "z": 0.070286
+          },
+          "min": {
+            "y": -0.005289,
+            "x": -0.021412,
+            "z": 0.027171
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "e01e018f-19ea-4772-9c4c-c70ba1dc1504"
+    },
+    {
+      "type": "mesh",
+      "id": "4a227367-5529-4c97-ba6d-9b8fd1a3f2e0",
+      "sid": "38",
+      "properties": {
+        "position": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "quaternion": {
+          "y": 0,
+          "x": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "name": "Track Pad",
+        "geometryId": "e01e018f-19ea-4772-9c4c-c70ba1dc1504",
+        "materials": [
+          "65960582-73cc-452c-aa54-53e9c0619d7a"
+        ]
+      },
+      "children": [
+        "c1a0fe68-efc4-483f-a2c6-a9aadf809066"
+      ],
+      "parentId": "c04bfc7a-eb8c-42ae-b3e2-c6e3485a0a07",
+      "parentAssetId": "9d1f19de-9704-4964-950d-7f0a34830aaf"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "ea6ff9e9-01f0-454f-ab93-12722d6eb982",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#5282dbe6-f5fc-4755-8cf3-4f736de2dd17"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#f1d2f6bc-2192-48c2-bda7-40969667877b"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#cfcb63ae-a937-43d5-971c-ddd0d0a3448c"
+          }
+        },
+        "indices": "55797b6a-8632-4654-8f76-3b9bf3a507bb#56d3f27f-08d3-4eeb-b548-52d9ae92e854",
+        "primitives": [
+          {
+            "count": 3636,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": 0.007251,
+            "x": 0.021412,
+            "z": 0.070282
+          },
+          "min": {
+            "y": -0.012278,
+            "x": -0.021412,
+            "z": 0.027171
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "ea6ff9e9-01f0-454f-ab93-12722d6eb982"
+    },
+    {
+      "type": "mesh",
+      "id": "4ce1ade0-aa40-4ad8-b79a-d885b4aac703",
+      "sid": "39",
+      "properties": {
+        "position": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "quaternion": {
+          "y": 0,
+          "x": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "name": "Track Pad Scroll Cut",
+        "geometryId": "ea6ff9e9-01f0-454f-ab93-12722d6eb982",
+        "materials": [
+          "65960582-73cc-452c-aa54-53e9c0619d7a"
+        ]
+      },
+      "children": [],
+      "parentId": "c04bfc7a-eb8c-42ae-b3e2-c6e3485a0a07",
+      "parentAssetId": "9d1f19de-9704-4964-950d-7f0a34830aaf"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "ef3ad11d-aed8-415a-b1ec-7b7e9be7f534",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#3806c41b-96ec-4002-bd7a-f785acb87a96"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#ef8d2348-38c9-46b9-91ee-d904d6bf6bdf"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#e43228b0-8fd2-467d-929b-55e5d64a8884"
+          }
+        },
+        "indices": "55797b6a-8632-4654-8f76-3b9bf3a507bb#5097768c-7877-456e-9468-376e25ca0f21",
+        "primitives": [
+          {
+            "count": 1320,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": 0.006032,
+            "x": 0.002246,
+            "z": 0.05145
+          },
+          "min": {
+            "y": 0.001539,
+            "x": -0.002246,
+            "z": 0.046957
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "ef3ad11d-aed8-415a-b1ec-7b7e9be7f534"
+    },
+    {
+      "type": "mesh",
+      "id": "c1a0fe68-efc4-483f-a2c6-a9aadf809066",
+      "sid": "40",
+      "properties": {
+        "position": {
+          "y": -0.02,
+          "x": 0,
+          "z": 0
+        },
+        "quaternion": {
+          "y": 0,
+          "x": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "name": "Track Pad Touch",
+        "geometryId": "ef3ad11d-aed8-415a-b1ec-7b7e9be7f534",
+        "materials": [
+          "65960582-73cc-452c-aa54-53e9c0619d7a"
+        ]
+      },
+      "children": [],
+      "parentId": "4a227367-5529-4c97-ba6d-9b8fd1a3f2e0"
+    },
+    {
+      "type": "meshGeometry",
+      "id": "506ebd1a-3a5c-4067-a41a-b83d8c48fa2d",
+      "sid": "31",
+      "properties": {
+        "name": "Mesh",
+        "attributes": {
+          "positions": {
+            "name": "positions",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#c5c38a94-3824-41f6-b4fd-815f6514fda9"
+          },
+          "uvs1": {
+            "name": "UVs",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#2894a326-ca05-46c4-944d-b61ee306315a"
+          },
+          "normals": {
+            "name": "Normals",
+            "accessorId": "55797b6a-8632-4654-8f76-3b9bf3a507bb#eaab2176-bc88-4862-8295-4bb5410505ff"
+          }
+        },
+        "indices": "55797b6a-8632-4654-8f76-3b9bf3a507bb#d8560de5-b12d-4bf0-a043-43ad8f43f2df",
+        "primitives": [
+          {
+            "count": 3456,
+            "start": 0,
+            "primitive": "triangles",
+            "materialIndex": 0
+          }
+        ],
+        "bounds": {
+          "max": {
+            "y": -0.016596,
+            "x": 0.009557,
+            "z": 0.057847
+          },
+          "min": {
+            "y": -0.038785,
+            "x": -0.009548,
+            "z": 0.038757
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "506ebd1a-3a5c-4067-a41a-b83d8c48fa2d"
+    },
+    {
+      "type": "mesh",
+      "id": "b07d8801-ea45-4f42-be64-8b68a1c17106",
+      "sid": "41",
+      "properties": {
+        "position": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "quaternion": {
+          "y": 0,
+          "x": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "name": "Trigger",
+        "geometryId": "506ebd1a-3a5c-4067-a41a-b83d8c48fa2d",
+        "materials": [
+          "65960582-73cc-452c-aa54-53e9c0619d7a"
+        ]
+      },
+      "children": [],
+      "parentId": "c04bfc7a-eb8c-42ae-b3e2-c6e3485a0a07",
+      "parentAssetId": "9d1f19de-9704-4964-950d-7f0a34830aaf"
+    },
+    {
+      "type": "buffer",
+      "id": "55797b6a-8632-4654-8f76-3b9bf3a507bb",
+      "sid": "geometry.bin",
+      "properties": {
+        "name": "geometry.bin",
+        "src": "geometry.bin",
+        "isExternal": true,
+        "contentLength": 683704,
+        "accessors": {
+          "dc03b4d3-ac68-4091-af6f-8d87287502eb": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 167592,
+            "byteStride": 0,
+            "count": 10279
+          },
+          "2a89c921-bef9-4132-a4da-88b498ce1575": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 290940,
+            "byteStride": 0,
+            "count": 10279
+          },
+          "383ff643-6e35-4c55-a79b-9f73ee9fa827": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 373172,
+            "byteStride": 0,
+            "count": 10279
+          },
+          "7cf3e15c-192f-4bc1-a5c2-2e32c533598f": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 0,
+            "byteStride": 0,
+            "count": 41898
+          },
+          "2c81ed1d-a5b6-450a-a620-fbebdab8a8ab": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 499688,
+            "byteStride": 0,
+            "count": 145
+          },
+          "5960c340-276b-4b4a-a7ae-6d7c14fc92e7": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 501428,
+            "byteStride": 0,
+            "count": 145
+          },
+          "6a429e27-0b2a-413c-b948-0b22a72f1997": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 502588,
+            "byteStride": 0,
+            "count": 145
+          },
+          "b65862df-c105-4d01-a923-d322a6096859": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 496520,
+            "byteStride": 0,
+            "count": 792
+          },
+          "c03da50f-5983-4802-a397-bfaca600420b": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 509032,
+            "byteStride": 0,
+            "count": 210
+          },
+          "0e116b75-21f0-4994-ab04-5477ef153184": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 511552,
+            "byteStride": 0,
+            "count": 210
+          },
+          "8568f6bb-c2a6-4b74-afdf-cb293f55c064": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 513232,
+            "byteStride": 0,
+            "count": 210
+          },
+          "02a70561-1fbf-439a-9082-4cd8e85f2ee7": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 504328,
+            "byteStride": 0,
+            "count": 1176
+          },
+          "7b30a573-b551-4994-aa9e-21e624f209bc": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 516472,
+            "byteStride": 0,
+            "count": 49
+          },
+          "83558a55-8e03-44c4-9af0-4cfa7071699b": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 517060,
+            "byteStride": 0,
+            "count": 49
+          },
+          "097627dd-502c-4cb3-ae85-7a80ede48b4a": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 517452,
+            "byteStride": 0,
+            "count": 49
+          },
+          "e02d8ad6-5890-44ff-a4b8-1bf4f0235760": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 515752,
+            "byteStride": 0,
+            "count": 180
+          },
+          "8a7a721c-d026-4ed4-8bab-2a7cae6bca64": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 522744,
+            "byteStride": 0,
+            "count": 210
+          },
+          "b92412f2-da6b-4d31-9a9b-b63b5d2c18d9": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 525264,
+            "byteStride": 0,
+            "count": 210
+          },
+          "9de3ee5b-68f5-4a23-a163-24a88716bf6e": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 526944,
+            "byteStride": 0,
+            "count": 210
+          },
+          "d8ea1136-92e7-481d-b2ad-5413fd5e90e4": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 518040,
+            "byteStride": 0,
+            "count": 1176
+          },
+          "5168d1bb-a12d-4439-86c4-d3dd0a7e0f65": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 538680,
+            "byteStride": 0,
+            "count": 470
+          },
+          "50952636-76cc-4da3-8dce-5071d927ba14": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 544320,
+            "byteStride": 0,
+            "count": 470
+          },
+          "1b40a4ea-914f-453d-929e-d4c2c3d5ce93": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 548080,
+            "byteStride": 0,
+            "count": 470
+          },
+          "a15d23cf-fac0-461f-ba7d-ea9e5e18dc58": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 529464,
+            "byteStride": 0,
+            "count": 2304
+          },
+          "ebc3a8d8-5cd0-4eb0-9592-21d9c395f0fc": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 556120,
+            "byteStride": 0,
+            "count": 121
+          },
+          "cc715392-b31d-4a26-aa70-17ae0a12fb64": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 557572,
+            "byteStride": 0,
+            "count": 121
+          },
+          "22e13ea5-0867-423a-a737-91d4aba20753": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 558540,
+            "byteStride": 0,
+            "count": 121
+          },
+          "3ff2e8ab-725f-4f90-b8fb-64305e512501": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 553720,
+            "byteStride": 0,
+            "count": 600
+          },
+          "126fd407-e380-46e9-9268-95442254a829": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 563160,
+            "byteStride": 0,
+            "count": 145
+          },
+          "d3d5ff76-9647-4c0e-9fc5-b7e9f118c66a": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 564900,
+            "byteStride": 0,
+            "count": 145
+          },
+          "f27809dd-644b-48ef-86ca-5137dc74ab91": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 566060,
+            "byteStride": 0,
+            "count": 145
+          },
+          "47306056-d3c1-44b5-84a1-544fc49bca15": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 559992,
+            "byteStride": 0,
+            "count": 792
+          },
+          "371fd41b-40e5-4eb1-8786-5d54e722d729": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 577832,
+            "byteStride": 0,
+            "count": 515
+          },
+          "d52fbe9e-f3f6-4056-88be-e148ce6d4ed4": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 584012,
+            "byteStride": 0,
+            "count": 515
+          },
+          "38c509af-0f3e-4eb8-bba4-55452cad96dc": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 588132,
+            "byteStride": 0,
+            "count": 515
+          },
+          "6d49d03d-aaea-4cb0-8600-d67d8cd27a3d": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 567800,
+            "byteStride": 0,
+            "count": 2508
+          },
+          "5282dbe6-f5fc-4755-8cf3-4f736de2dd17": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 608856,
+            "byteStride": 0,
+            "count": 864
+          },
+          "f1d2f6bc-2192-48c2-bda7-40969667877b": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 619224,
+            "byteStride": 0,
+            "count": 864
+          },
+          "cfcb63ae-a937-43d5-971c-ddd0d0a3448c": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 626136,
+            "byteStride": 0,
+            "count": 864
+          },
+          "56d3f27f-08d3-4eeb-b548-52d9ae92e854": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 594312,
+            "byteStride": 0,
+            "count": 3636
+          },
+          "3806c41b-96ec-4002-bd7a-f785acb87a96": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 641784,
+            "byteStride": 0,
+            "count": 242
+          },
+          "ef8d2348-38c9-46b9-91ee-d904d6bf6bdf": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 644688,
+            "byteStride": 0,
+            "count": 242
+          },
+          "e43228b0-8fd2-467d-929b-55e5d64a8884": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 646624,
+            "byteStride": 0,
+            "count": 242
+          },
+          "5097768c-7877-456e-9468-376e25ca0f21": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 636504,
+            "byteStride": 0,
+            "count": 1320
+          },
+          "c5c38a94-3824-41f6-b4fd-815f6514fda9": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 663352,
+            "byteStride": 0,
+            "count": 636
+          },
+          "2894a326-ca05-46c4-944d-b61ee306315a": {
+            "type": "vec2",
+            "componentType": "float32",
+            "byteOffset": 670984,
+            "byteStride": 0,
+            "count": 636
+          },
+          "eaab2176-bc88-4862-8295-4bb5410505ff": {
+            "type": "vec3",
+            "componentType": "float32",
+            "byteOffset": 676072,
+            "byteStride": 0,
+            "count": 636
+          },
+          "d8560de5-b12d-4bf0-a043-43ad8f43f2df": {
+            "type": "scalar",
+            "componentType": "uint32",
+            "byteOffset": 649528,
+            "byteStride": 0,
+            "count": 3456
+          }
+        }
+      },
+      "parentId": null,
+      "parentAssetId": "55797b6a-8632-4654-8f76-3b9bf3a507bb"
+    }
+  ]
+}
