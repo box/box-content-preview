@@ -3,13 +3,7 @@ import throttle from 'lodash.throttle';
 import DocBaseViewer from './DocBaseViewer';
 import PresentationPreloader from './PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../constants';
-import {
-    ICON_FILE_PRESENTATION,
-    ICON_FULLSCREEN_IN,
-    ICON_FULLSCREEN_OUT,
-    ICON_ZOOM_IN,
-    ICON_ZOOM_OUT
-} from '../../icons/icons';
+import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
 import './Presentation.scss';
 
 const WHEEL_THROTTLE = 200;
@@ -26,8 +20,6 @@ class PresentationViewer extends DocBaseViewer {
      * @inheritdoc
      */
     setup() {
-        this.fileLoadingIcon = ICON_FILE_PRESENTATION;
-
         // Call super() to set up common layout
         super.setup();
         this.docEl.classList.add('bp-doc-presentation');
@@ -246,6 +238,9 @@ class PresentationViewer extends DocBaseViewer {
         });
 
         super.pagesinitHandler();
+
+        // Initially scale the page to fit. This will change to auto on resize events.
+        this.pdfViewer.currentScaleValue = 'page-fit';
     }
 
     /**

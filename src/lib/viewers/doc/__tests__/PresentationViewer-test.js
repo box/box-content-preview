@@ -38,7 +38,10 @@ describe('lib/viewers/doc/PresentationViewer', () => {
                 get: () => {},
                 unset: () => {}
             },
-            container: containerEl
+            container: containerEl,
+            file: {
+                extension: 'ppt'
+            }
         });
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.mock() });
@@ -53,10 +56,6 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
         presentation.controls = {
             add: sandbox.stub()
-        };
-
-        presentation.options = {
-            file: 'file'
         };
     });
 
@@ -430,6 +429,12 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             expect(stubs.page1).to.not.have.class(CLASS_INVISIBLE);
             expect(stubs.page2).to.have.class(CLASS_INVISIBLE);
             expect(stubs.page3).to.have.class(CLASS_INVISIBLE);
+        });
+
+        it('should set the pdf viewer scale to page-fit', () => {
+            presentation.pagesinitHandler();
+
+            expect(presentation.pdfViewer.currentScaleValue).to.equal('page-fit');
         });
     });
 

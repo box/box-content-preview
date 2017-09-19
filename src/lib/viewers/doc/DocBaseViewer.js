@@ -21,7 +21,14 @@ import {
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { get, createAssetUrlCreator } from '../../util';
-import { ICON_PRINT_CHECKMARK, ICON_FILE_DOCUMENT } from '../../icons/icons';
+import {
+    ICON_FILE_DOCUMENT,
+    ICON_FILE_PDF,
+    ICON_FILE_PRESENTATION,
+    ICON_FILE_SPREADSHEET,
+    ICON_FILE_WORD,
+    ICON_PRINT_CHECKMARK
+} from '../../icons/icons';
 import { JS, CSS } from './docAssets';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
@@ -40,6 +47,21 @@ const RANGE_REQUEST_CHUNK_SIZE_NON_US = 524288; // 512KB
 const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 26214400; // 25MB
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 
+const LOADING_ICON_MAP = {
+    csv: ICON_FILE_SPREADSHEET,
+    doc: ICON_FILE_WORD,
+    docx: ICON_FILE_WORD,
+    gdoc: ICON_FILE_WORD,
+    gsheet: ICON_FILE_SPREADSHEET,
+    odp: ICON_FILE_PRESENTATION,
+    pdf: ICON_FILE_PDF,
+    ppt: ICON_FILE_PRESENTATION,
+    pptx: ICON_FILE_PRESENTATION,
+    xls: ICON_FILE_SPREADSHEET,
+    xlsm: ICON_FILE_SPREADSHEET,
+    xlsx: ICON_FILE_SPREADSHEET
+};
+
 @autobind
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
@@ -50,7 +72,8 @@ class DocBaseViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        this.fileLoadingIcon = this.fileLoadingIcon || ICON_FILE_DOCUMENT;
+        const fileExt = this.options.file.extension;
+        this.fileLoadingIcon = LOADING_ICON_MAP[fileExt] || ICON_FILE_DOCUMENT;
 
         // Call super() to set up common layout
         super.setup();

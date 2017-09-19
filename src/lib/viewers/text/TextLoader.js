@@ -4,7 +4,7 @@ import MarkdownViewer from './MarkdownViewer';
 import CSVViewer from './CSVViewer';
 import { isVeraProtectedFile } from '../../util';
 import { ORIGINAL_REP_NAME } from '../../constants';
-import { HTML_EXTENSIONS, TXT_EXTENSIONS } from './extensions';
+import { HTML_EXTENSIONS, TXT_EXTENSIONS } from '../../extensions';
 
 // Order of the viewers matters. Prefer original before others. Go from specific to general.
 const VIEWERS = [
