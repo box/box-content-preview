@@ -1,3 +1,17 @@
+<a name="1.11.0"></a>
+# 1.11.0 (2017-09-19)
+
+* Update: Box3D version 12.4.1 ([4e7eed1](https://github.com/box/box-content-preview/commit/4e7eed1))
+* New: Allow documents to be viewed in presentation mode (#396) ([d8956a7](https://github.com/box/box-content-preview/commit/d8956a7))
+* Fix: Additional logic to reset highlight-comment threads (#386) ([faef3df](https://github.com/box/box-content-preview/commit/faef3df))
+* Fix: Downgrade pdf.js (#397) ([b8c6706](https://github.com/box/box-content-preview/commit/b8c6706))
+* Fix: isPageNumFocused() null check (#401) ([b7eb6dc](https://github.com/box/box-content-preview/commit/b7eb6dc))
+* Mojito: Update translations (#392) ([a23df00](https://github.com/box/box-content-preview/commit/a23df00))
+* Mojito: Update translations (#399) ([ba4f354](https://github.com/box/box-content-preview/commit/ba4f354))
+* Chore: Only getBrowserInfo() once per preview instance (#393) ([ba0d1f7](https://github.com/box/box-content-preview/commit/ba0d1f7))
+
+
+
 <a name="1.10.0"></a>
 # 1.10.0 (2017-09-13)
 
