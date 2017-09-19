@@ -8,6 +8,7 @@ export const CLASS_BOX_PREVIEW_CONTAINER = 'bp-container';
 export const CLASS_BOX_PREVIEW_FIND_BAR = 'bp-find-bar';
 export const CLASS_BOX_PREVIEW_HAS_HEADER = 'bp-has-header';
 export const CLASS_BOX_PREVIEW_HEADER = 'bp-header';
+export const CLASS_BOX_PREVIEW_BASE_HEADER = 'bp-base-header';
 export const CLASS_BOX_PREVIEW_HEADER_BTNS = 'bp-header-btns';
 export const CLASS_BOX_PREVIEW_ICON = 'bp-icon';
 export const CLASS_BOX_PREVIEW_LINK = 'bp-link';

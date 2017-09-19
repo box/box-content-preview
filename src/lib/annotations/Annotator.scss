@@ -15,6 +15,72 @@ $avatar-color-7: #159f45;
 $avatar-color-8: #b800b2;
 $avatar-color-9: #f22c44;
 
+$tablet: 'max-width: 768px';
+
+.bp-annotate-draw-header {
+    background-color: $twos;
+}
+
+.bp-annotate-draw-undo-redo-container {
+    margin: 0 auto;
+}
+
+@media ($tablet) {
+    .bp-annotate-draw-undo-redo-container {
+        margin: 0;
+    }
+}
+
+.bp-btn-annotate-draw-cancel {
+    background-color: $twos;
+    border: solid $off-white 1px;
+    color: $off-white;
+
+    &:hover {
+        background-color: $black;
+    }
+}
+
+.bp-btn-annotate-draw-post {
+    background-color: $off-white;
+    color: $twos;
+
+    &:hover {
+        background-color: $white;
+    }
+}
+
+.bp-annotate-draw-post-cancel-container {
+    position: absolute;
+    right: 10px;
+}
+
+.bp-btn-annotate-draw-undo,
+.bp-btn-annotate-draw-undo:hover,
+.bp-btn-annotate-draw-undo:active,
+.bp-btn-annotate-draw-undo:focus,
+.bp-btn-annotate-draw-redo,
+.bp-btn-annotate-draw-redo:hover,
+.bp-btn-annotate-draw-redo:active,
+.bp-btn-annotate-draw-redo:focus {
+    background: none;
+    border: none;
+    padding: 5px;
+
+    &.is-disabled,
+    &.is-disabled:active,
+    &.is-disabled:hover,
+    &.is-disabled:focus {
+        background: none;
+        border: none;
+    }
+
+    svg {
+        fill: $off-white;
+        vertical-align: middle;
+    }
+}
+
 .bp-annotation-caret {
     left: 50%;
     position: absolute;

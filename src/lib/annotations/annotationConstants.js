@@ -15,6 +15,7 @@ export const CLASS_ANNOTATION_POINT_MARKER = 'bp-point-annotation-marker';
 export const CLASS_ANNOTATION_MODE = 'bp-annotation-mode';
 export const CLASS_ANNOTATION_CARET = 'bp-annotation-caret';
 export const CLASS_ANNOTATION_TEXTAREA = 'annotation-textarea';
+export const CLASS_BOX_PREVIEW_BASE_HEADER = 'bp-base-header';
 export const CLASS_BUTTON_CONTAINER = 'button-container';
 export const CLASS_ANNOTATION_CONTAINER = 'annotation-container';
 export const CLASS_ANIMATE_DIALOG = 'bp-animate-show-dialog';
@@ -37,6 +38,7 @@ export const CLASS_ANNOTATION_BUTTON_DRAW_ENTER = 'bp-btn-annotate-draw-enter';
 export const CLASS_ANNOTATION_DRAWING_LABEL = 'bp-annotation-drawing-label';
 export const CLASS_ANNOTATION_DRAWING_DIALOG = 'bp-annotation-drawing-dialog';
 export const CLASS_ANNOTATION_DRAWING_BTNS = 'bp-annotation-drawing-btns';
+export const CLASS_ANNOTATION_DRAWING_HEADER = 'bp-annotate-draw-header';
 export const CLASS_ADD_DRAWING_BTN = 'bp-btn-annotate-draw-add';
 export const CLASS_DELETE_DRAWING_BTN = 'bp-btn-annotate-draw-delete';
 
@@ -56,6 +58,7 @@ export const DATA_TYPE_CONFIRM_DELETE = 'confirm-delete-btn';
 export const SECTION_CREATE = '[data-section="create"]';
 export const SECTION_SHOW = '[data-section="show"]';
 
+export const SELECTOR_BOX_PREVIEW_BASE_HEADER = `.${CLASS_BOX_PREVIEW_BASE_HEADER}`;
 export const SELECTOR_ANNOTATION_BUTTON_POINT = `.${CLASS_ANNOTATION_BUTTON_POINT}`;
 export const SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO = `.${CLASS_ANNOTATION_BUTTON_DRAW_UNDO}`;
 export const SELECTOR_ANNOTATION_BUTTON_DRAW_REDO = `.${CLASS_ANNOTATION_BUTTON_DRAW_REDO}`;
@@ -64,6 +67,7 @@ export const SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL = `.${CLASS_ANNOTATION_BUTTO
 export const SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER = `.${CLASS_ANNOTATION_BUTTON_DRAW_ENTER}`;
 export const SELECTOR_ANNOTATION_BUTTON_CANCEL = `.${CLASS_ANNOTATION_BUTTON_CANCEL}`;
 export const SELECTOR_ANNOTATION_BUTTON_POST = `.${CLASS_ANNOTATION_BUTTON_POST}`;
+export const SELECTOR_ANNOTATION_DRAWING_HEADER = `.${CLASS_ANNOTATION_DRAWING_HEADER}`;
 export const SELECTOR_ANNOTATION_DIALOG = `.${CLASS_ANNOTATION_DIALOG}`;
 export const SELECTOR_ANNOTATION_HIGHLIGHT_DIALOG = `.${CLASS_ANNOTATION_HIGHLIGHT_DIALOG}`;
 export const SELECTOR_ANNOTATION_POINT_BUTTON = `.${CLASS_ANNOTATION_POINT_MARKER}`;
@@ -114,7 +118,8 @@ export const ANNOTATOR_EVENT = {
     modeExit: 'annotationmodeexit',
     fetch: 'annotationsfetched',
     error: 'annotationerror',
-    scale: 'scaleannotations'
+    scale: 'scaleannotations',
+    replaceHeader: 'replaceheader'
 };
 
 export const THREAD_EVENT = {

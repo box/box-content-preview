@@ -7,6 +7,7 @@ import './Annotator.scss';
 import {
     CLASS_ACTIVE,
     CLASS_HIDDEN,
+    SELECTOR_BOX_PREVIEW_BASE_HEADER,
     DATA_TYPE_ANNOTATION_DIALOG,
     CLASS_MOBILE_ANNOTATION_DIALOG,
     CLASS_ANNOTATION_DIALOG,
@@ -14,11 +15,7 @@ import {
     CLASS_MOBILE_DIALOG_HEADER,
     CLASS_DIALOG_CLOSE,
     ID_MOBILE_ANNOTATION_DIALOG,
-    SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL,
-    SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER,
-    SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
-    SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO,
-    SELECTOR_ANNOTATION_BUTTON_DRAW_REDO,
+    SELECTOR_ANNOTATION_DRAWING_HEADER,
     TYPES,
     THREAD_EVENT,
     ANNOTATOR_EVENT
@@ -414,17 +411,7 @@ class Annotator extends EventEmitter {
             buttonEl.classList.remove(CLASS_ACTIVE);
 
             if (mode === TYPES.draw) {
-                const drawEnterEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER);
-                const drawCancelEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
-                const postButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
-                const undoButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
-                const redoButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
-
-                annotatorUtil.showElement(drawEnterEl);
-                annotatorUtil.hideElement(drawCancelEl);
-                annotatorUtil.hideElement(postButtonEl);
-                annotatorUtil.hideElement(undoButtonEl);
-                annotatorUtil.hideElement(redoButtonEl);
+                this.emit(ANNOTATOR_EVENT.replaceHeader, SELECTOR_BOX_PREVIEW_BASE_HEADER);
             }
         }
 
@@ -446,17 +433,7 @@ class Annotator extends EventEmitter {
             buttonEl.classList.add(CLASS_ACTIVE);
 
             if (mode === TYPES.draw) {
-                const drawEnterEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_ENTER);
-                const drawCancelEl = buttonEl.querySelector(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
-                const postButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
-                const undoButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
-                const redoButtonEl = this.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
-
-                annotatorUtil.hideElement(drawEnterEl);
-                annotatorUtil.showElement(drawCancelEl);
-                annotatorUtil.showElement(postButtonEl);
-                annotatorUtil.showElement(undoButtonEl);
-                annotatorUtil.showElement(redoButtonEl);
+                this.emit(ANNOTATOR_EVENT.replaceHeader, SELECTOR_ANNOTATION_DRAWING_HEADER);
             }
         }
 

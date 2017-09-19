@@ -5,6 +5,7 @@ import { insertTemplate } from './util';
 import {
     CLASS_HIDDEN,
     CLASS_INVISIBLE,
+    CLASS_BOX_PREVIEW_BASE_HEADER,
     CLASS_BOX_PREVIEW_HAS_HEADER,
     CLASS_BOX_PREVIEW_HEADER,
     CLASS_BOX_PREVIEW_THEME_DARK,
@@ -311,6 +312,24 @@ class PreviewUI {
         this.notification.hide();
     }
 
+    /**
+     * Replaces the currently active header with a specified header
+     *
+     * @public
+     * @param {string} replacementHeader - Class name of new header
+     * @return {void}
+     */
+    replaceHeader(replacementHeader) {
+        // First hide all possible headers
+        this.container.querySelectorAll(`.${CLASS_BOX_PREVIEW_HEADER}`).forEach((element) => {
+            element.classList.add(CLASS_HIDDEN);
+        });
+
+        // Show the specified header
+        const headerToShow = this.container.querySelector(replacementHeader);
+        headerToShow.classList.remove(CLASS_HIDDEN);
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -324,7 +343,7 @@ class PreviewUI {
      */
     setupHeader(headerTheme, logoUrl) {
         const headerEl = this.container.firstElementChild;
-        headerEl.className = CLASS_BOX_PREVIEW_HEADER;
+        headerEl.classList = `${CLASS_BOX_PREVIEW_HEADER} ${CLASS_BOX_PREVIEW_BASE_HEADER}`;
         this.contentContainer.classList.add(CLASS_BOX_PREVIEW_HAS_HEADER);
 
         // Setup theme, default is 'light'
