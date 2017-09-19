@@ -23,7 +23,6 @@ export const CODE_EXTENSIONS = [
     'java',
     'js',
     'less',
-    'ly',
     'm',
     'make',
     'ml',
@@ -47,6 +46,27 @@ export const CODE_EXTENSIONS = [
     'webdoc',
     'yaml'
 ];
+
+export const DOCUMENT_EXTENSIONS = CODE_EXTENSIONS.concat(NON_CODE_EXTENSIONS)
+    .concat(HTML_EXTENSIONS)
+    .concat([
+        'doc',
+        'docx',
+        'gdoc',
+        'gsheet',
+        'msg',
+        'odp',
+        'ods',
+        'odt',
+        'pdf',
+        'ppt',
+        'pptx',
+        'rtf',
+        'wpd',
+        'xls',
+        'xlsm',
+        'xlsx'
+    ]);
 
 export const TXT_EXTENSIONS = CODE_EXTENSIONS.concat(NON_CODE_EXTENSIONS);
 
