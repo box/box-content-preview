@@ -853,6 +853,10 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotatorConf = {
                 CONSTRUCTOR: sandbox.stub().returns(base.annotator)
             };
+            base.previewUI = {
+                replaceHeader: () => {}
+            }
+
             base.initAnnotations();
         });
 
@@ -861,6 +865,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.addListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scrolltoannotation', sinon.match.func);
+            expect(base.annotator.addListener).to.be.calledWith('replaceheader', sinon.match.func);
             expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
         });
     });

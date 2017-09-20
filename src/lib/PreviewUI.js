@@ -321,8 +321,9 @@ class PreviewUI {
      */
     replaceHeader(replacementHeader) {
         // First hide all possible headers
-        this.container.querySelectorAll(`.${CLASS_BOX_PREVIEW_HEADER}`).forEach((element) => {
-            element.classList.add(CLASS_HIDDEN);
+        const headers = this.container.querySelectorAll(`.${CLASS_BOX_PREVIEW_HEADER}`);
+        [].forEach.call(headers, (header) => {
+            header.classList.add(CLASS_HIDDEN);
         });
 
         // Show the specified header
@@ -343,7 +344,7 @@ class PreviewUI {
      */
     setupHeader(headerTheme, logoUrl) {
         const headerEl = this.container.firstElementChild;
-        headerEl.classList = `${CLASS_BOX_PREVIEW_HEADER} ${CLASS_BOX_PREVIEW_BASE_HEADER}`;
+        headerEl.className = `${CLASS_BOX_PREVIEW_HEADER} ${CLASS_BOX_PREVIEW_BASE_HEADER}`;
         this.contentContainer.classList.add(CLASS_BOX_PREVIEW_HAS_HEADER);
 
         // Setup theme, default is 'light'

@@ -19,10 +19,13 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
     });
 
     describe('registerAnnotator()', () => {
+        const annotator = {
+            getAnnotateButton: sandbox.stub(),
+            options: {
+                header: 'none'
+            }
+        };
         it('should use the annotator to get button elements', () => {
-            const annotator = {
-                getAnnotateButton: sandbox.stub()
-            };
             annotator.getAnnotateButton.onCall(0).returns('cancelButton');
             annotator.getAnnotateButton.onCall(1).returns('postButton');
             annotator.getAnnotateButton.onCall(2).returns('undoButton');
@@ -37,6 +40,18 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
             expect(drawingModeController.postButtonEl).to.equal('postButton');
             expect(drawingModeController.redoButtonEl).to.equal('redoButton');
             expect(drawingModeController.undoButtonEl).to.equal('undoButton');
+        });
+
+        it('should setup the drawing header if the options allow', () => {
+            const setupHeaderStub = sandbox.stub(drawingModeController, 'setupHeader');
+
+            drawingModeController.registerAnnotator(annotator);
+            expect(setupHeaderStub).to.not.be.called;
+
+            annotator.options.header = 'dark';
+
+            drawingModeController.registerAnnotator(annotator);
+            expect(setupHeaderStub).to.be.called;
         });
     });
 
