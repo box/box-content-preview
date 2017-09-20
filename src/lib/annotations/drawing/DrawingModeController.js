@@ -4,6 +4,7 @@ import * as annotatorUtil from '../annotatorUtil';
 import {
     TYPES,
     STATES,
+    SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL,
     SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
     SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO,
     SELECTOR_ANNOTATION_BUTTON_DRAW_REDO,
@@ -18,6 +19,9 @@ class DrawingModeController extends AnnotationModeController {
 
     /** @property {DrawingThread} - The currently selected DrawingThread */
     selectedThread;
+
+    /** @property {HTMLElement} - The button to cancel the pending drawing thread */
+    cancelButtonEl;
 
     /** @property {HTMLElement} - The button to commit the pending drawing thread */
     postButtonEl;
@@ -39,6 +43,7 @@ class DrawingModeController extends AnnotationModeController {
     registerAnnotator(annotator) {
         super.registerAnnotator(annotator);
 
+        this.cancelButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
         this.postButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
         this.undoButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
         this.redoButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
@@ -158,6 +163,12 @@ class DrawingModeController extends AnnotationModeController {
             ['mouseup', 'touchcancel', 'touchend'],
             annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleStop)
         );
+
+        this.pushElementHandler(this.cancelButtonEl, 'click', () => {
+            this.currentThread.cancelUnsavedAnnotation();
+            this.annotator.toggleAnnotationHandler(TYPES.draw);
+        });
+
         this.pushElementHandler(this.postButtonEl, 'click', () => {
             this.currentThread.saveAnnotation(TYPES.draw);
             this.annotator.toggleAnnotationHandler(TYPES.draw);
