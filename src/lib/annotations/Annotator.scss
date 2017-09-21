@@ -15,6 +15,31 @@ $avatar-color-7: #159f45;
 $avatar-color-8: #b800b2;
 $avatar-color-9: #f22c44;
 
+.bp-drawing-header {
+    background-color: $twos;
+}
+
+.bp-btn-annotate-draw-cancel {
+    border: solid $off-white;
+    border-radius: 5px;
+    color: $off-white;
+
+    &:hover {
+        border: solid $off-white;
+    }
+}
+
+.bp-btn-annotate-draw-post {
+    background-color: $off-white;
+    border: solid $off-white;
+    border-radius: 5px;
+    color: $twos;
+
+    &:hover {
+        border: solid $off-white;
+    }
+}
+
 .bp-annotation-caret {
     left: 50%;
     position: absolute;

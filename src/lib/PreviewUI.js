@@ -1,5 +1,6 @@
 import ProgressBar from './ProgressBar';
 import shellTemplate from './shell.html';
+import drawingTemplate from './drawingShell.html';
 import Notification from './Notification';
 import { insertTemplate } from './util';
 import {
@@ -111,6 +112,7 @@ class PreviewUI {
         // Setup the header, buttons, and theme
         if (options.header !== 'none') {
             this.setupHeader(options.header, options.logoUrl);
+            this.setupDrawHeader();
         }
 
         // Setup progress bar
@@ -341,6 +343,14 @@ class PreviewUI {
             customLogoEl.src = logoUrl;
             customLogoEl.classList.remove(CLASS_HIDDEN);
         }
+    }
+
+    setupDrawHeader() {
+        const headerEl = this.container.firstElementChild;
+        insertTemplate(this.container, drawingTemplate);
+
+        // Uncomment the line below to see the template. Make sure to add bp-is-hidden to the drawing bar template
+        headerEl.classList.add(CLASS_HIDDEN);
     }
 
     /**
