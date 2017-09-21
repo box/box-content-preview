@@ -1,9 +1,10 @@
+import Uri from 'jsuri';
 import 'whatwg-fetch';
 
 const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
 const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
-const PARAM_CLIENT_NAME = 'box_client_name';
-const PARAM_CLIENT_VERSION = 'box_client_version';
+const CLIENT_NAME_KEY = 'box_client_name';
+const CLIENT_VERSION_KEY = 'box_client_version';
 /* eslint-disable no-undef */
 const CLIENT_NAME = __NAME__;
 const CLIENT_VERSION = __VERSION__;
@@ -337,6 +338,33 @@ export function getHeaders(headers = {}, token = '', sharedLink = '', password =
 }
 
 /**
+ * Helper function for appending query params to a url
+ *
+ * @param {string} url - Original url
+ * @param {Object} queryParams - Query params object with key value pairs
+ * @return {string} Url with query params appended
+ */
+export function appendQueryParams(url, queryParams) {
+    if (!queryParams) {
+        return url;
+    }
+
+    const uri = new Uri(url);
+    Object.keys(queryParams).forEach((key) => {
+        const value = queryParams[key];
+        if (value) {
+            if (uri.hasQueryParam(key)) {
+                uri.replaceQueryParam(key, value);
+            } else {
+                uri.addQueryParam(key, value);
+            }
+        }
+    });
+
+    return uri.toString();
+}
+
+/**
  * Appends auth params to a url
  *
  * @public
@@ -351,37 +379,13 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
         return url;
     }
 
-    let delim = '?';
-
-    if (url.indexOf('?') > 0) {
-        delim = '&';
-    }
-
-    let params = '';
-    if (token) {
-        params = `access_token=${token}`;
-    }
-
-    if (sharedLink) {
-        if (params) {
-            params = `${params}&`;
-        }
-        params = `${params}shared_link=${encodeURI(sharedLink)}`;
-        if (password) {
-            params = `${params}&shared_link_password=${encodeURI(password)}`;
-        }
-    }
-
-    // Following params are for API analytics
-    if (CLIENT_NAME) {
-        params = `${params}&${PARAM_CLIENT_NAME}=${encodeURI(CLIENT_NAME)}`;
-    }
-
-    if (CLIENT_VERSION) {
-        params = `${params}&${PARAM_CLIENT_VERSION}=${encodeURI(CLIENT_VERSION)}`;
-    }
-
-    return `${url}${delim}${params}`;
+    return appendQueryParams(url, {
+        access_token: token,
+        shared_link: sharedLink,
+        shared_link_password: password,
+        [CLIENT_NAME_KEY]: CLIENT_NAME,
+        [CLIENT_VERSION_KEY]: CLIENT_VERSION
+    });
 }
 
 /**
@@ -393,11 +397,6 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
  * @return {string} Content url
  */
 export function createContentUrl(template, asset) {
-    // @NOTE(tjin): Remove the next 3 lines after reps API is stabilized after 4/6/17
-    /* eslint-disable no-param-reassign */
-    template = template.replace('{asset_path}', asset || '');
-    /* eslint-enable no-param-reassign */
-
     return template.replace('{+asset_path}', asset || '');
 }
 

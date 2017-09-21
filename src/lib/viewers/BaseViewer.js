@@ -4,6 +4,7 @@ import debounce from 'lodash.debounce';
 import fullscreen from '../Fullscreen';
 import RepStatus from '../RepStatus';
 import {
+    appendQueryParams,
     appendAuthParams,
     getHeaders,
     createContentUrl,
@@ -297,7 +298,9 @@ class BaseViewer extends EventEmitter {
      * @return {string} content url
      */
     createContentUrl(template, asset) {
-        return createContentUrl(template, asset);
+        // Append optional query params
+        const { queryParams } = this.options;
+        return appendQueryParams(createContentUrl(template, asset), queryParams);
     }
 
     /**
@@ -311,7 +314,11 @@ class BaseViewer extends EventEmitter {
      * @return {string} content url
      */
     createContentUrlWithAuthParams(template, asset) {
-        return this.appendAuthParams(this.createContentUrl(template, asset));
+        const urlWithAuthParams = this.appendAuthParams(createContentUrl(template, asset));
+
+        // Append optional query params
+        const { queryParams } = this.options;
+        return appendQueryParams(urlWithAuthParams, queryParams);
     }
 
     /**
