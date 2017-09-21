@@ -99,7 +99,7 @@ class ImageViewer extends ImageBaseViewer {
      * @return {void}
      */
     rotateLeft() {
-        this.currentRotationAngle = (this.currentRotationAngle - 90) % 3600 % 360;
+        this.currentRotationAngle = ((this.currentRotationAngle - 90) % 3600) % 360;
         this.imageEl.setAttribute('data-rotation-angle', this.currentRotationAngle);
         this.imageEl.style.transform = `rotate(${this.currentRotationAngle}deg)`;
         this.emit('rotate');
@@ -238,7 +238,7 @@ class ImageViewer extends ImageBaseViewer {
         this.scale = width
             ? width / this.imageEl.getAttribute('originalWidth')
             : height / this.imageEl.getAttribute('originalHeight');
-        this.rotationAngle = this.currentRotationAngle % 3600 % 360;
+        this.rotationAngle = (this.currentRotationAngle % 3600) % 360;
         this.emit('scale', {
             scale: this.scale,
             rotationAngle: this.rotationAngle
@@ -397,7 +397,7 @@ class ImageViewer extends ImageBaseViewer {
         this.adjustImageZoomPadding();
 
         this.scale = this.imageEl.clientWidth / this.imageEl.getAttribute('originalWidth');
-        this.rotationAngle = this.currentRotationAngle % 3600 % 360;
+        this.rotationAngle = (this.currentRotationAngle % 3600) % 360;
         this.emit('scale', {
             scale: this.scale,
             rotationAngle: this.rotationAngle
