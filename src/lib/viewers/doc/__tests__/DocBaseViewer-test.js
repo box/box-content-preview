@@ -101,10 +101,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     describe('destroy()', () => {
         it('should unbind listeners and clear the print blob', () => {
             const unbindDOMListenersStub = sandbox.stub(docBase, 'unbindDOMListeners');
+            sandbox.stub(URL, 'revokeObjectURL');
 
             docBase.destroy();
             expect(unbindDOMListenersStub).to.be.called;
             expect(docBase.printBlob).to.equal(null);
+            expect(URL.revokeObjectURL).to.be.calledWith(docBase.printUrl);
         });
 
         it('should destroy the controls', () => {
@@ -387,10 +389,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     describe('browserPrint()', () => {
         beforeEach(() => {
             stubs.emit = sandbox.stub(docBase, 'emit');
-            stubs.createObject = sandbox.stub(URL, 'createObjectURL');
+            stubs.createObject = sandbox.stub(URL, 'createObjectURL').returns('test');
             stubs.open = sandbox.stub(window, 'open').returns(false);
             stubs.browser = sandbox.stub(Browser, 'getName').returns('Chrome');
-            stubs.revokeObjectURL = sandbox.stub(URL, 'revokeObjectURL');
             stubs.printResult = { print: sandbox.stub(), addEventListener: sandbox.stub() };
             docBase.printBlob = true;
             window.navigator.msSaveOrOpenBlob = sandbox.stub().returns(true);
@@ -421,7 +422,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             docBase.browserPrint();
             expect(stubs.createObject).to.be.calledWith(docBase.printBlob);
-            expect(stubs.open).to.be.called.with;
+            expect(stubs.open).to.be.calledWith(docBase.printURL);
             expect(stubs.emit).to.be.called;
         });
 
@@ -431,10 +432,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             docBase.browserPrint();
             expect(stubs.createObject).to.be.calledWith(docBase.printBlob);
-            expect(stubs.open).to.be.called.with;
+            expect(stubs.open).to.be.calledWith(docBase.printURL);
             expect(stubs.browser).to.be.called;
             expect(stubs.emit).to.be.called;
-            expect(stubs.revokeObjectURL).to.be.called;
         });
 
         it('should use a timeout in safari', () => {
