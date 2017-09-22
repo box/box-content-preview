@@ -39,6 +39,7 @@ export const CLASS_ANNOTATION_DRAWING_LABEL = 'bp-annotation-drawing-label';
 export const CLASS_ANNOTATION_DRAWING_DIALOG = 'bp-annotation-drawing-dialog';
 export const CLASS_ANNOTATION_DRAWING_BTNS = 'bp-annotation-drawing-btns';
 export const CLASS_ANNOTATION_DRAWING_HEADER = 'bp-annotate-draw-header';
+export const CLASS_ANNNOTATION_DRAWING_BACKGROUND = 'bp-annotate-draw-background';
 export const CLASS_ADD_DRAWING_BTN = 'bp-btn-annotate-draw-add';
 export const CLASS_DELETE_DRAWING_BTN = 'bp-btn-annotate-draw-delete';
 

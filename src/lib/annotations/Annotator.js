@@ -12,6 +12,7 @@ import {
     CLASS_MOBILE_ANNOTATION_DIALOG,
     CLASS_ANNOTATION_DIALOG,
     CLASS_ANNOTATION_MODE,
+    CLASS_ANNNOTATION_DRAWING_BACKGROUND,
     CLASS_MOBILE_DIALOG_HEADER,
     CLASS_DIALOG_CLOSE,
     ID_MOBILE_ANNOTATION_DIALOG,
@@ -411,6 +412,7 @@ class Annotator extends EventEmitter {
             buttonEl.classList.remove(CLASS_ACTIVE);
 
             if (mode === TYPES.draw) {
+                this.annotatedElement.classList.remove(CLASS_ANNNOTATION_DRAWING_BACKGROUND);
                 this.emit(ANNOTATOR_EVENT.replaceHeader, SELECTOR_BOX_PREVIEW_BASE_HEADER);
             }
         }
@@ -433,6 +435,7 @@ class Annotator extends EventEmitter {
             buttonEl.classList.add(CLASS_ACTIVE);
 
             if (mode === TYPES.draw) {
+                this.annotatedElement.classList.add(CLASS_ANNNOTATION_DRAWING_BACKGROUND);
                 this.emit(ANNOTATOR_EVENT.replaceHeader, SELECTOR_ANNOTATION_DRAWING_HEADER);
             }
         }
