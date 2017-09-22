@@ -111,6 +111,7 @@ class DocBaseViewer extends BaseViewer {
 
         // Clean up print blob
         this.printBlob = null;
+        URL.revokeObjectURL(this.printURL);
 
         if (this.pageControls) {
             this.pageControls.removeListener('pagechange', this.setPage);
@@ -692,8 +693,11 @@ class DocBaseViewer extends BaseViewer {
 
             // For other browsers, open and print in a new tab
         } else {
-            const printURL = URL.createObjectURL(this.printBlob);
-            const printResult = window.open(printURL);
+            if (!this.printURL) {
+                this.printURL = URL.createObjectURL(this.printBlob);
+            }
+
+            const printResult = window.open(this.printURL);
 
             // Open print popup if possible
             if (printResult && typeof printResult.print === 'function') {
@@ -721,8 +725,6 @@ class DocBaseViewer extends BaseViewer {
             } else {
                 this.emit('printsuccess');
             }
-
-            URL.revokeObjectURL(printURL);
         }
     }
 
