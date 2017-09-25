@@ -1,5 +1,6 @@
 import rbush from 'rbush';
 import AnnotationModeController from '../AnnotationModeController';
+import annotationsShell from './../annotationsShell.html';
 import * as annotatorUtil from '../annotatorUtil';
 import {
     TYPES,
@@ -42,6 +43,11 @@ class DrawingModeController extends AnnotationModeController {
      */
     registerAnnotator(annotator) {
         super.registerAnnotator(annotator);
+
+        if (annotator.options.header !== 'none') {
+            // We need to create our own header UI
+            this.setupHeader(annotator.container, annotationsShell);
+        }
 
         this.cancelButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
         this.postButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
@@ -153,11 +159,13 @@ class DrawingModeController extends AnnotationModeController {
             ['mousemove', 'touchmove'],
             annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleMove)
         );
+
         this.pushElementHandler(
             this.annotator.annotatedElement,
             ['mousedown', 'touchstart'],
             annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleStart)
         );
+
         this.pushElementHandler(
             this.annotator.annotatedElement,
             ['mouseup', 'touchcancel', 'touchend'],
@@ -173,6 +181,7 @@ class DrawingModeController extends AnnotationModeController {
             this.currentThread.saveAnnotation(TYPES.draw);
             this.annotator.toggleAnnotationHandler(TYPES.draw);
         });
+
         this.pushElementHandler(this.undoButtonEl, 'click', this.currentThread.undo);
         this.pushElementHandler(this.redoButtonEl, 'click', this.currentThread.redo);
     }

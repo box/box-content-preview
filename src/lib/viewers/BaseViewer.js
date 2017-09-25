@@ -726,6 +726,8 @@ class BaseViewer extends EventEmitter {
             this.annotator.scrollToAnnotation(data);
         });
 
+        this.annotator.addListener('replaceheader', this.previewUI.replaceHeader);
+
         // Add a custom listener for events emmited by the annotator
         this.annotator.addListener('annotatorevent', this.handleAnnotatorEvents);
     }

@@ -27,7 +27,8 @@ import {
     createLocation,
     round,
     prevDefAndStopProp,
-    canLoadAnnotations
+    canLoadAnnotations,
+    insertTemplate
 } from '../annotatorUtil';
 import {
     STATES,
@@ -219,6 +220,17 @@ describe('lib/annotations/annotatorUtil', () => {
             assert.equal(textAreaEl.value, '', 'Value should be reset');
             assert.equal(textAreaEl.style.width, '', 'Width should be reset');
             assert.equal(textAreaEl.style.height, '', 'Height should be reset');
+        });
+    });
+
+
+    describe('insertTemplate()', () => {
+        it('should insert template into node', () => {
+            const node = document.createElement('div');
+            document.querySelector('.container').appendChild(node);
+
+            insertTemplate(node, '<div class="foo"></div>');
+            assert.equal(node.firstElementChild.className, 'foo');
         });
     });
 
