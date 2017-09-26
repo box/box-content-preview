@@ -1,3 +1,16 @@
+<a name="1.12.0"></a>
+# 1.12.0 (2017-09-26)
+
+* Fix: Document print in Chrome (#406) ([54fa047](https://github.com/box/box-content-preview/commit/54fa047))
+* Fix: Hookup cancel button (#404) ([6c7b63a](https://github.com/box/box-content-preview/commit/6c7b63a))
+* Fix: Moved guards so drawing works when highlights disabled (#409) ([f516a4f](https://github.com/box/box-content-preview/commit/f516a4f))
+* Fix: No longer relying on system time for flakey test (#398) ([1986f9a](https://github.com/box/box-content-preview/commit/1986f9a))
+* New: Add new API to preview media player to play segments (#408) ([ef60e95](https://github.com/box/box-content-preview/commit/ef60e95))
+* New: Draw annotations UI (#403) ([4cbfc0f](https://github.com/box/box-content-preview/commit/4cbfc0f))
+* Update: Support additional query params in requests (#405) ([08da16b](https://github.com/box/box-content-preview/commit/08da16b))
+
+
+
 <a name="1.11.0"></a>
 # 1.11.0 (2017-09-19)
 
