@@ -24,7 +24,6 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
  * Model3dControls
  * This class handles the UI for 3d preview controls. This includes Reset,
  * Render Mode selection, VR and fullscreen buttons.
- * @class
  */
 @autobind
 class Model3DControls extends Box3DControls {

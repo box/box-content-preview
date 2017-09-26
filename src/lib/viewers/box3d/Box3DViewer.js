@@ -30,7 +30,6 @@ const CLASS_VR_ENABLED = 'vr-enabled';
 /**
  * Box3DViewer
  * This is the entry point for Box3D Preview Base
- * @class
  */
 @autobind
 class Box3DViewer extends BaseViewer {
