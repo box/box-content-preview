@@ -1,3 +1,10 @@
+<a name="1.11.1"></a>
+## 1.11.1 (2017-09-26)
+
+* Fix: Document print in Chrome (#406) ([8e5b9e4](https://github.com/box/box-content-preview/commit/8e5b9e4))
+
+
+
 <a name="1.11.0"></a>
 # 1.11.0 (2017-09-19)
 
