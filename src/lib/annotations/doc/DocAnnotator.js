@@ -542,7 +542,6 @@ class DocAnnotator extends Annotator {
                 document.addEventListener('selectionchange', this.onSelectionChange);
             }
         } else {
-            console.error('AARRGHGHGHGH');
             this.annotatedElement.addEventListener('click', this.drawingSelectionHandler);
 
             // Highlight listeners
