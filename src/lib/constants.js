@@ -8,6 +8,7 @@ export const CLASS_BOX_PREVIEW_CONTAINER = 'bp-container';
 export const CLASS_BOX_PREVIEW_FIND_BAR = 'bp-find-bar';
 export const CLASS_BOX_PREVIEW_HAS_HEADER = 'bp-has-header';
 export const CLASS_BOX_PREVIEW_HEADER = 'bp-header';
+export const CLASS_BOX_PREVIEW_BASE_HEADER = 'bp-base-header';
 export const CLASS_BOX_PREVIEW_HEADER_BTNS = 'bp-header-btns';
 export const CLASS_BOX_PREVIEW_ICON = 'bp-icon';
 export const CLASS_BOX_PREVIEW_LINK = 'bp-link';
@@ -82,9 +83,9 @@ export const X_REP_HINT_VIDEO_MP4 = '[mp4]';
 
 // These should be updated to match the Preview version in package.json
 // whenever a file in that third party directory is updated
-export const DOC_STATIC_ASSETS_VERSION = '1.9.0';
+export const DOC_STATIC_ASSETS_VERSION = '1.7.0';
 export const MEDIA_STATIC_ASSETS_VERSION = '1.8.0';
-export const MODEL3D_STATIC_ASSETS_VERSION = '1.9.1';
+export const MODEL3D_STATIC_ASSETS_VERSION = '1.10.1';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';
 export const TEXT_STATIC_ASSETS_VERSION = '0.114.0';
 

@@ -235,6 +235,42 @@ describe('lib/util', () => {
         });
     });
 
+    describe('appendQueryParams()', () => {
+        it('should return original url when queryParams is null', () => {
+            const url = 'foo';
+            expect(util.appendQueryParams(url, null)).to.equal(url);
+        });
+
+        it('should return original url when queryParams is empty object', () => {
+            const url = 'foo';
+            expect(util.appendQueryParams(url, {})).to.equal(url);
+        });
+
+        it('should append query params to url', () => {
+            const url = 'foo';
+            expect(util.appendQueryParams(url, {
+                foo: 'bar',
+                baz: 'boo'
+            })).to.equal(`${url}/?foo=bar&baz=boo`);
+        });
+
+        it('should correctly append new query params to url', () => {
+            const url = 'foo?test=hah';
+            expect(util.appendQueryParams(url, {
+                foo: 'bar',
+                baz: 'boo'
+            })).to.equal(`foo/?test=hah&foo=bar&baz=boo`);
+        });
+
+        it('should replace values for existing keys', () => {
+            const url = 'test.com/?foo=hah'
+            expect(util.appendQueryParams(url, {
+                foo: 'bar',
+                baz: 'boo'
+            })).to.equal('test.com/?foo=bar&baz=boo');
+        });
+    });
+
     describe('appendAuthParams()', () => {
         it('should return url when no token or shared link is provided', () => {
             const url = 'foo';
@@ -246,7 +282,7 @@ describe('lib/util', () => {
             const token = 'sometoken';
             const sharedLink = 'someSharedLink';
             expect(util.appendAuthParams(url, token, sharedLink)).to.equal(
-                `${url}?access_token=${token}&shared_link=${sharedLink}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`
+                `${url}/?access_token=${token}&shared_link=${sharedLink}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`
             );
         });
 
@@ -256,7 +292,7 @@ describe('lib/util', () => {
             const sharedLink = 'someSharedLink';
             const sharedLinkPassword = 'somePass';
             expect(util.appendAuthParams(url, token, sharedLink, sharedLinkPassword)).to.equal(
-                `foobar?access_token=${token}&shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`
+                `${url}/?access_token=${token}&shared_link=${sharedLink}&shared_link_password=${sharedLinkPassword}&box_client_name=${__NAME__}&box_client_version=${__VERSION__}`
             );
         });
     });

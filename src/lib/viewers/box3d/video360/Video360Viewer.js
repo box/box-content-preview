@@ -110,12 +110,15 @@ class Video360Viewer extends DashViewer {
         this.renderer.on(EVENT_SHOW_VR_BUTTON, this.handleShowVrButton);
         this.renderer.staticBaseURI = this.options.location.staticBaseURI;
         this.options.sceneEntities = sceneEntities;
-        this.renderer.initBox3d(this.options).then(this.create360Environment).then(() => {
-            // calling super.loadeddataHandler() will ready video playback
-            super.loadeddataHandler();
-            this.createControls();
-            this.renderer.initVr();
-        });
+        this.renderer
+            .initBox3d(this.options)
+            .then(this.create360Environment)
+            .then(() => {
+                // calling super.loadeddataHandler() will ready video playback
+                super.loadeddataHandler();
+                this.createControls();
+                this.renderer.initVr();
+            });
     }
 
     /**

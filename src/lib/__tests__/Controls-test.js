@@ -286,4 +286,16 @@ describe('lib/Controls', () => {
             expect(controls.controlsEl.classList.contains(CLASS_HIDDEN)).to.be.true;
         });
     });
+
+    describe('isPageNumFocused()', () => {
+        it('should return true if page num element is focused', () => {
+            document.activeElement.classList.add('bp-page-num-input');
+            expect(controls.isPageNumFocused()).to.be.true;
+        });
+
+        it('should return false if page num element is not', () => {
+            document.activeElement.classList.remove('bp-page-num-input');
+            expect(controls.isPageNumFocused()).to.be.false;
+        });
+    })
 });

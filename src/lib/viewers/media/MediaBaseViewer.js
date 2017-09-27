@@ -36,6 +36,7 @@ class MediaBaseViewer extends BaseViewer {
 
         this.loadTimeout = 100000;
         this.oldVolume = DEFAULT_VOLUME;
+        this.pauseListener = null;
     }
 
     /**
@@ -63,6 +64,7 @@ class MediaBaseViewer extends BaseViewer {
                 this.mediaEl.removeEventListener('loadeddata', this.loadeddataHandler);
                 this.mediaEl.removeEventListener('error', this.errorHandler);
 
+                this.removePauseEventListener();
                 this.mediaEl.removeAttribute('src');
                 this.mediaEl.load();
             }
@@ -236,6 +238,18 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
+     * Handles timeupdate event for MediaControls
+     *
+     * @private
+     * @param {number} time - Time in seconds
+     * @return {void}
+     */
+    handleTimeupdateFromMediaControls(time) {
+        this.removePauseEventListener();
+        this.setMediaTime(time);
+    }
+
+    /**
      * Adds event listeners to the media controls.
      * Makes changes to the media element.
      *
@@ -243,7 +257,7 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     addEventListenersForMediaControls() {
-        this.mediaControls.addListener('timeupdate', this.setMediaTime);
+        this.mediaControls.addListener('timeupdate', this.handleTimeupdateFromMediaControls);
         this.mediaControls.addListener('volumeupdate', this.setVolume);
         this.mediaControls.addListener('toggleplayback', this.togglePlay);
         this.mediaControls.addListener('togglemute', this.toggleMute);
@@ -378,22 +392,90 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
-     * Toggle playback
+     * Removes pause event listener
      *
      * @private
-     * @emits play
-     * @emits pause
      * @return {void}
      */
-    togglePlay() {
-        if (this.mediaEl.paused) {
+    removePauseEventListener() {
+        if (this.mediaEl) {
+            this.mediaEl.removeEventListener('timeupdate', this.pauseListener);
+        }
+    }
+
+    /**
+     * Validates time parameter
+     *
+     * @private
+     * @param {number} time - time for media
+     * @return {boolean} - true if time is valid
+     */
+    isValidTime(time) {
+        return typeof time === 'number' && isFinite(time) && time >= 0 && time <= this.mediaEl.duration;
+    }
+
+    /**
+     * Play media, optionally from start time to end time
+     *
+     * @param {number} start - start time in seconds
+     * @param {number} end - end time in seconds
+     * @emits play
+     * @return {void}
+     */
+    play(start, end) {
+        const hasValidStart = this.isValidTime(start);
+        const hasValidEnd = this.isValidTime(end);
+        this.removePauseEventListener();
+        if (hasValidStart) {
+            if (hasValidEnd && start < end) {
+                this.pause(end);
+            }
+            // Start playing media from <start> time
+            this.setMediaTime(start);
+        }
+        if (arguments.length === 0 || hasValidStart) {
             this.mediaEl.play();
             this.emit('play');
             this.handleRate();
             this.handleVolume();
+        }
+    }
+
+    /**
+     * Pause media
+     *
+     * @param {number} time - time at which media is paused
+     * @emits pause
+     * @return {void}
+     */
+    pause(time) {
+        const hasValidTime = this.isValidTime(time);
+        // Remove eventListener because segment completed playing or user paused manually
+        this.removePauseEventListener();
+        if (hasValidTime) {
+            this.pauseListener = () => {
+                if (this.mediaEl.currentTime > time) {
+                    this.pause();
+                }
+            };
+            this.mediaEl.addEventListener('timeupdate', this.pauseListener);
         } else {
             this.mediaEl.pause();
             this.emit('pause');
+        }
+    }
+
+    /**
+     * Toggle playback
+     *
+     * @private
+     * @return {void}
+     */
+    togglePlay() {
+        if (this.mediaEl.paused) {
+            this.play();
+        } else {
+            this.pause();
         }
     }
 
@@ -464,6 +546,7 @@ class MediaBaseViewer extends BaseViewer {
      */
     quickSeek(increment) {
         let newTime = this.mediaEl.currentTime + increment;
+        this.removePauseEventListener();
         // Make sure it's within bounds
         newTime = Math.max(0, Math.min(newTime, this.mediaEl.duration));
         this.setMediaTime(newTime);

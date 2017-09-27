@@ -19,7 +19,7 @@ describe('lib/PreviewUI', () => {
         fixture.load('__tests__/PreviewUI-test.html');
         containerEl = document.querySelector('.ui');
         options = {
-            container: containerEl
+            container: containerEl,
         };
     });
 
@@ -245,6 +245,25 @@ describe('lib/PreviewUI', () => {
 
             ui.hideNotification('message');
             expect(ui.notification.hide).to.be.called;
+        });
+    });
+
+
+    describe('replaceHeader()', () => {
+        it('should hide all headers and then show the specified header', () => {
+            containerEl = ui.setup(options);
+            const newHeader = document.createElement('div');
+            newHeader.className = 'bp-header bp-draw-header bp-is-hidden';
+
+            containerEl.appendChild(newHeader);
+
+            ui.replaceHeader('.bp-draw-header');
+
+            expect(newHeader.classList.contains('bp-is-hidden')).to.be.false;
+
+            const baseHeader = containerEl.querySelector('.bp-base-header');
+            expect(baseHeader.classList.contains('bp-is-hidden')).to.be.true;
+
         });
     });
 });
