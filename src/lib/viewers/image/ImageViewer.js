@@ -428,42 +428,38 @@ class ImageViewer extends ImageBaseViewer {
      * @return {Promise} A promise that is resolved if the original image dimensions were set.
      */
     setOriginalImageSize(imageEl) {
-        const promise = new Promise((resolve) => {
-            // Do not bother loading a new image when the natural size attributes exist
-            if (imageEl.naturalWidth && imageEl.naturalHeight) {
-                imageEl.setAttribute('originalWidth', imageEl.naturalWidth);
-                imageEl.setAttribute('originalHeight', imageEl.naturalHeight);
-                resolve();
-            } else {
-                // Case when natural dimensions are not assigned
-                // By default, assigned width and height in Chrome/Safari/Firefox will be 300x150.
-                // IE11 workaround. Dimensions only displayed if the image is attached to the document.
-                get(imageEl.src, {}, 'text')
-                    .then((imageAsText) => {
-                        const parser = new DOMParser();
-                        const svgEl = parser.parseFromString(imageAsText, 'image/svg+xml');
+        // Do not bother loading a new image when the natural size attributes exist
+        if (imageEl.naturalWidth && imageEl.naturalHeight) {
+            imageEl.setAttribute('originalWidth', imageEl.naturalWidth);
+            imageEl.setAttribute('originalHeight', imageEl.naturalHeight);
+            return Promise.resolve();
+        }
 
-                        try {
-                            // Assume svgEl is an instanceof an SVG with a viewBox and preserveAspectRatio of meet
-                            // where the height is the limiting axis
-                            const viewBox = svgEl.documentElement.getAttribute('viewBox');
-                            const [, , w, h] = viewBox.split(' ');
-                            const aspectRatio = h ? w / h : w;
-                            imageEl.setAttribute('originalWidth', Math.round(aspectRatio * 150));
-                            imageEl.setAttribute('originalHeight', 150);
-                        } catch (e) {
-                            // Assume 300x150 that chrome does by default
-                            imageEl.setAttribute('originalWidth', 300);
-                            imageEl.setAttribute('originalHeight', 150);
-                        } finally {
-                            resolve();
-                        }
-                    })
-                    .catch(resolve);
-            }
-        });
+        // Case when natural dimensions are not assigned
+        // By default, assigned width and height in Chrome/Safari/Firefox will be 300x150.
+        // IE11 workaround. Dimensions only displayed if the image is attached to the document.
+        return get(imageEl.src, {}, 'text')
+            .then((imageAsText) => {
+                const parser = new DOMParser();
+                const svgEl = parser.parseFromString(imageAsText, 'image/svg+xml');
 
-        return promise;
+                try {
+                    // Assume svgEl is an instanceof an SVG with a viewBox and preserveAspectRatio of meet
+                    // where the height is the limiting axis
+                    const viewBox = svgEl.documentElement.getAttribute('viewBox');
+                    const [, , w, h] = viewBox.split(' ');
+                    const aspectRatio = h ? w / h : w;
+                    imageEl.setAttribute('originalWidth', Math.round(aspectRatio * 150));
+                    imageEl.setAttribute('originalHeight', 150);
+                } catch (e) {
+                    // Assume 300x150 that chrome does by default
+                    imageEl.setAttribute('originalWidth', 300);
+                    imageEl.setAttribute('originalHeight', 150);
+                } finally {
+                    Promise.resolve();
+                }
+            })
+            .catch(Promise.resolve);
     }
 }
 
