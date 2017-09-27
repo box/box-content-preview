@@ -327,7 +327,7 @@ class DocHighlightDialog extends AnnotationDialog {
                 // Hide all action buttons if user cannot annotate
                 const highlightButtons = this.highlightDialogEl.querySelector(constants.SELECTOR_HIGHLIGHT_BTNS);
                 annotatorUtil.hideElement(highlightButtons);
-            } else if (annotations[0].permissions && !annotations[0].permissions.can_delete) {
+            } else if (firstAnnotation.permissions && !firstAnnotation.permissions.can_delete) {
                 // Hide delete button on plain highlights if user doesn't have permissions
                 const addHighlightBtn = this.highlightDialogEl.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
                 annotatorUtil.hideElement(addHighlightBtn);
