@@ -100,12 +100,14 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.mediaEl.removeEventListener = sandbox.stub();
             media.mediaEl.removeAttribute = sandbox.stub();
             media.mediaEl.load = sandbox.stub();
+            sandbox.stub(media, 'removePauseEventListener');
 
             media.destroy();
 
             expect(media.mediaEl.removeEventListener.callCount).to.equal(9);
             expect(media.mediaEl.removeAttribute).to.be.calledWith('src');
             expect(media.mediaEl.load).to.be.called;
+            expect(media.removePauseEventListener.callCount).to.equal(1);
         });
     });
 
@@ -224,6 +226,16 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             expect(media.addEventListenersForMediaControls).to.be.called;
             expect(media.addEventListenersForMediaElement).to.be.called;
+        });
+    });
+
+    describe('handleTimeupdateFromMediaControls()', () => {
+        it('should set media time and remove pause listener', () => {
+            sandbox.stub(media, 'setMediaTime');
+            sandbox.stub(media, 'removePauseEventListener');
+            media.handleTimeupdateFromMediaControls(100.23);
+            expect(media.setMediaTime).to.be.calledWith(100.23);
+            expect(media.removePauseEventListener.callCount).to.equal(1);
         });
     });
 
@@ -358,41 +370,161 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
-    describe('togglePlay()', () => {
-        it('should pause and emit if media element was playing', () => {
-            media.mediaEl = {
-                paused: false,
-                ended: false,
-                pause: sandbox.stub(),
-                play: sandbox.stub()
-            };
-            sandbox.stub(media, 'emit');
+    describe('isValidTime', () => {
+        it('should validate time parameter', () => {
+            media.mediaEl = { duration: 100 };
+            const nullCheck = media.isValidTime(null);
+            const undefinedCheck = media.isValidTime(undefined);
+            const stringCheck = media.isValidTime('abc');
+            const InfinityCheck = media.isValidTime(Infinity);
+            const durationCheck = media.isValidTime(105);
+            const numberCheck = media.isValidTime(50);
 
-            media.togglePlay();
-
-            expect(media.mediaEl.pause.callCount).to.equal(1);
-            expect(media.mediaEl.play.callCount).to.equal(0);
-            expect(media.emit).to.be.calledWith('pause');
+            expect(nullCheck).to.be.false;
+            expect(undefinedCheck).to.be.false;
+            expect(stringCheck).to.be.false;
+            expect(InfinityCheck).to.be.false;
+            expect(durationCheck).to.be.false;
+            expect(numberCheck).to.be.true;
         });
+    });
 
-        it('should play, emit, and honor speed/volume settings if media element was paused', () => {
-            media.mediaEl = {
-                paused: true,
-                ended: false,
-                pause: sandbox.stub(),
-                play: sandbox.stub()
-            };
+    describe('removePauseEventListener()', () => {
+        it('should remove pause event listener', () => {
+            const pauseListener = () => {};
+            media.mediaEl = { removeEventListener: sandbox.stub() };
+            media.pauseListener = pauseListener;
+            media.removePauseEventListener();
+            expect(media.mediaEl.removeEventListener).to.be.calledWith('timeupdate', pauseListener);
+        });
+    });
+
+    describe('play()', () => {
+        it('should play the media when no time parameters are passed', () => {
+            media.mediaEl = { play: sandbox.stub() };
             sandbox.stub(media, 'emit');
             sandbox.stub(media, 'handleRate');
             sandbox.stub(media, 'handleVolume');
-
-            media.togglePlay();
-
-            expect(media.mediaEl.pause.callCount).to.equal(0);
+            sandbox.stub(media, 'removePauseEventListener');
+            media.play();
+            expect(media.removePauseEventListener.callCount).to.equal(1);
             expect(media.mediaEl.play.callCount).to.equal(1);
-            expect(media.handleRate).to.be.called;
-            expect(media.handleVolume).to.be.called;
             expect(media.emit).to.be.calledWith('play');
+            expect(media.handleRate.callCount).to.equal(1);
+            expect(media.handleVolume.callCount).to.equal(1);
+        });
+
+        it('should start playing from start time without pausing, when only one parameter is passed', () => {
+            const isValidTimeStub = sandbox.stub(media, 'isValidTime');
+            media.mediaEl = { play: sandbox.stub() };
+            isValidTimeStub.withArgs(100).returns(true);
+            isValidTimeStub.withArgs(undefined).returns(false);
+            sandbox.stub(media, 'pause');
+            sandbox.stub(media, 'setMediaTime');
+            sandbox.stub(media, 'emit');
+            sandbox.stub(media, 'handleRate');
+            sandbox.stub(media, 'handleVolume');
+            sandbox.stub(media, 'removePauseEventListener');
+            media.play(100);
+            expect(media.removePauseEventListener.callCount).to.equal(1);
+            expect(media.setMediaTime).to.be.calledWith(100);
+            expect(media.mediaEl.play.callCount).to.equal(1);
+            expect(media.emit).to.be.calledWith('play');
+            expect(media.handleRate.callCount).to.equal(1);
+            expect(media.handleVolume.callCount).to.equal(1);
+            expect(media.pause.callCount).to.equal(0);
+        });
+
+        it('should start playing from start time and pause at end time', () => {
+            const isValidTimeStub = sandbox.stub(media, 'isValidTime');
+            media.mediaEl = { play: sandbox.stub() };
+            isValidTimeStub.withArgs(100).returns(true);
+            isValidTimeStub.withArgs(200).returns(true);
+            sandbox.stub(media, 'pause');
+            sandbox.stub(media, 'setMediaTime');
+            sandbox.stub(media, 'emit');
+            sandbox.stub(media, 'handleRate');
+            sandbox.stub(media, 'handleVolume');
+            sandbox.stub(media, 'removePauseEventListener');
+            media.play(100, 200);
+            expect(media.removePauseEventListener.callCount).to.equal(1);
+            expect(media.setMediaTime).to.be.calledWith(100);
+            expect(media.pause).to.be.calledWith(200);
+            expect(media.mediaEl.play.callCount).to.equal(1);
+            expect(media.emit).to.be.calledWith('play');
+            expect(media.handleRate.callCount).to.equal(1);
+            expect(media.handleVolume.callCount).to.equal(1);
+        });
+
+        it('should ignore when invalid time parameters are passed', () => {
+            const isValidTimeStub = sandbox.stub(media, 'isValidTime');
+            media.mediaEl = { play: sandbox.stub() };
+            isValidTimeStub.withArgs('abc').returns(false);
+            isValidTimeStub.withArgs('pqr').returns(false);
+            sandbox.stub(media, 'pause');
+            sandbox.stub(media, 'setMediaTime');
+            sandbox.stub(media, 'emit');
+            sandbox.stub(media, 'handleRate');
+            sandbox.stub(media, 'handleVolume');
+            sandbox.stub(media, 'removePauseEventListener');
+            media.play(200, 100);
+            expect(media.removePauseEventListener.callCount).to.equal(1);
+            expect(media.setMediaTime.callCount).to.equal(0);
+            expect(media.pause.callCount).to.equal(0);
+            expect(media.mediaEl.play.callCount).to.equal(0);
+            expect(media.emit.callCount).to.equal(0);
+            expect(media.handleRate.callCount).to.equal(0);
+            expect(media.handleVolume.callCount).to.equal(0);
+        });
+    });
+
+    describe('pause()', () => {
+        it('should pause the media when no time parameter is passed', () => {
+            const pauseListener = () => {};
+            media.mediaEl = {
+                duration: 100,
+                pause: sandbox.stub()
+            };
+            media.pauseListener = pauseListener;
+            sandbox.stub(media, 'removePauseEventListener');
+            sandbox.stub(media, 'emit');
+            media.pause();
+            expect(media.removePauseEventListener.callCount).to.equal(1);
+            expect(media.mediaEl.pause.callCount).to.equal(1);
+            expect(media.emit).to.be.calledWith('pause');
+        });
+
+        it('should add eventListener to pause the media when valid time parameter is passed', () => {
+            const pauseListener = () => {};
+            media.mediaEl = {
+                duration: 100,
+                addEventListener: sandbox.stub()
+            };
+            media.pauseListener = pauseListener;
+            sandbox.stub(media, 'removePauseEventListener');
+            media.pause(100);
+            expect(media.removePauseEventListener.callCount).to.equal(1);
+            expect(media.mediaEl.addEventListener.callCount).to.equal(1);
+        });
+    });
+
+    describe('togglePlay()', () => {
+        it('should pause if media element was playing', () => {
+            sandbox.stub(media, 'pause');
+            sandbox.stub(media, 'play');
+            media.mediaEl = { paused: false };
+            media.togglePlay();
+            expect(media.pause.callCount).to.equal(1);
+            expect(media.play.callCount).to.equal(0);
+        });
+
+        it('should play if media element was paused', () => {
+            sandbox.stub(media, 'pause');
+            sandbox.stub(media, 'play');
+            media.mediaEl = { paused: true };
+            media.togglePlay();
+            expect(media.pause.callCount).to.equal(0);
+            expect(media.play.callCount).to.equal(1);
         });
     });
 
@@ -479,9 +611,11 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
                 duration: 60
             };
             sandbox.stub(media, 'setMediaTime');
+            sandbox.stub(media, 'removePauseEventListener');
 
             media.quickSeek(5);
 
+            expect(media.removePauseEventListener.callCount).to.equal(1);
             expect(media.setMediaTime).calledWith(35);
         });
 
@@ -491,9 +625,11 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
                 duration: 60
             };
             sandbox.stub(media, 'setMediaTime');
+            sandbox.stub(media, 'removePauseEventListener');
 
             media.quickSeek(-5);
 
+            expect(media.removePauseEventListener.callCount).to.equal(1);
             expect(media.setMediaTime).calledWith(25);
         });
 
@@ -503,9 +639,11 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
                 duration: 60
             };
             sandbox.stub(media, 'setMediaTime');
+            sandbox.stub(media, 'removePauseEventListener');
 
             media.quickSeek(-5);
 
+            expect(media.removePauseEventListener.callCount).to.equal(1);
             expect(media.setMediaTime).calledWith(0);
         });
 
@@ -515,9 +653,11 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
                 duration: 60
             };
             sandbox.stub(media, 'setMediaTime');
+            sandbox.stub(media, 'removePauseEventListener');
 
             media.quickSeek(5);
 
+            expect(media.removePauseEventListener.callCount).to.equal(1);
             expect(media.setMediaTime).calledWith(60);
         });
     });

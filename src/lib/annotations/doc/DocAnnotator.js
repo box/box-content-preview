@@ -530,19 +530,27 @@ class DocAnnotator extends Annotator {
         this.annotatedElement.addEventListener('mouseup', this.highlightMouseupHandler);
 
         // Prevent all forms of highlight annotations if annotating (or plain AND comment highlights) is disabled
-        if (!this.permissions.canAnnotate || (!this.plainHighlightEnabled && !this.commentHighlightEnabled)) {
+        if (!this.permissions.canAnnotate) {
             return;
         }
 
         if (this.hasTouch && this.isMobile) {
-            document.addEventListener('selectionchange', this.onSelectionChange);
             this.annotatedElement.addEventListener('touchstart', this.drawingSelectionHandler);
+
+            // Highlight listeners
+            if (this.plainHighlightEnabled || this.commentHighlightEnabled) {
+                document.addEventListener('selectionchange', this.onSelectionChange);
+            }
         } else {
             this.annotatedElement.addEventListener('click', this.drawingSelectionHandler);
-            this.annotatedElement.addEventListener('dblclick', this.highlightMouseupHandler);
-            this.annotatedElement.addEventListener('mousedown', this.highlightMousedownHandler);
-            this.annotatedElement.addEventListener('contextmenu', this.highlightMousedownHandler);
-            this.annotatedElement.addEventListener('mousemove', this.getHighlightMouseMoveHandler());
+
+            // Highlight listeners
+            if (this.plainHighlightEnabled || this.commentHighlightEnabled) {
+                this.annotatedElement.addEventListener('dblclick', this.highlightMouseupHandler);
+                this.annotatedElement.addEventListener('mousedown', this.highlightMousedownHandler);
+                this.annotatedElement.addEventListener('contextmenu', this.highlightMousedownHandler);
+                this.annotatedElement.addEventListener('mousemove', this.getHighlightMouseMoveHandler());
+            }
         }
     }
 

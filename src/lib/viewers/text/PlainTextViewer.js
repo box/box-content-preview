@@ -4,7 +4,7 @@ import Browser from '../../Browser';
 import Popup from '../../Popup';
 import { CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
-import { HIGHLIGHTTABLE_EXTENSIONS } from './extensions';
+import { HIGHLIGHTTABLE_EXTENSIONS } from '../../extensions';
 import { get, openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
 
 // Inline web worker JS

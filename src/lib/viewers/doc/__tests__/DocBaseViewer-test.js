@@ -17,7 +17,7 @@ import {
     STATUS_SUCCESS,
 } from '../../../constants';
 
-import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
+import { ICON_PRINT_CHECKMARK, ICON_FILE_PRESENTATION } from '../../../icons/icons';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -58,7 +58,8 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 }
             },
             file: {
-                id: '0'
+                id: '0',
+                extension: 'ppt'
             }
         });
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
@@ -91,15 +92,21 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             expect(docBase.loadTimeout).to.equal(LOAD_TIMEOUT_MS);
         });
+
+        it('should correctly set the file icon based on file extension', () => {
+            expect(docBase.fileLoadingIcon).to.equal(ICON_FILE_PRESENTATION);
+        });
     });
 
     describe('destroy()', () => {
         it('should unbind listeners and clear the print blob', () => {
             const unbindDOMListenersStub = sandbox.stub(docBase, 'unbindDOMListeners');
+            sandbox.stub(URL, 'revokeObjectURL');
 
             docBase.destroy();
             expect(unbindDOMListenersStub).to.be.called;
             expect(docBase.printBlob).to.equal(null);
+            expect(URL.revokeObjectURL).to.be.calledWith(docBase.printUrl);
         });
 
         it('should destroy the controls', () => {
@@ -382,10 +389,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     describe('browserPrint()', () => {
         beforeEach(() => {
             stubs.emit = sandbox.stub(docBase, 'emit');
-            stubs.createObject = sandbox.stub(URL, 'createObjectURL');
+            stubs.createObject = sandbox.stub(URL, 'createObjectURL').returns('test');
             stubs.open = sandbox.stub(window, 'open').returns(false);
             stubs.browser = sandbox.stub(Browser, 'getName').returns('Chrome');
-            stubs.revokeObjectURL = sandbox.stub(URL, 'revokeObjectURL');
             stubs.printResult = { print: sandbox.stub(), addEventListener: sandbox.stub() };
             docBase.printBlob = true;
             window.navigator.msSaveOrOpenBlob = sandbox.stub().returns(true);
@@ -416,7 +422,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             docBase.browserPrint();
             expect(stubs.createObject).to.be.calledWith(docBase.printBlob);
-            expect(stubs.open).to.be.called.with;
+            expect(stubs.open).to.be.calledWith(docBase.printURL);
             expect(stubs.emit).to.be.called;
         });
 
@@ -426,10 +432,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
             docBase.browserPrint();
             expect(stubs.createObject).to.be.calledWith(docBase.printBlob);
-            expect(stubs.open).to.be.called.with;
+            expect(stubs.open).to.be.calledWith(docBase.printURL);
             expect(stubs.browser).to.be.called;
             expect(stubs.emit).to.be.called;
-            expect(stubs.revokeObjectURL).to.be.called;
         });
 
         it('should use a timeout in safari', () => {

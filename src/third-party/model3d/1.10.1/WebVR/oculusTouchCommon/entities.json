@@ -1,0 +1,322 @@
+{
+  "version": {
+    "major": 4,
+    "minor": 3
+  },
+  "entities": [
+    {
+      "type": "image",
+      "id": "db74915f-8690-4d31-a810-efd0a3600fb8",
+      "sid": "external_controller01_col.png",
+      "properties": {
+        "name": "external_controller01_col.png",
+        "filename": "external_controller01_col.png",
+        "width": 1024,
+        "height": 1024,
+        "colorspace": "srgb",
+        "compression": "zip",
+        "depth": 8,
+        "channels": [
+          "red",
+          "green",
+          "blue"
+        ],
+        "sequenceLength": 1
+      },
+      "representations": [
+        {
+          "src": "./1024/1.jpg",
+          "isExternal": true,
+          "contentType": "image/jpeg",
+          "contentLength": 77971,
+          "channels": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "colorspace": "srgb",
+          "compression": "jpeg",
+          "depth": 8,
+          "width": 1024,
+          "height": 1024,
+          "sequenceLength": 1
+        },
+        {
+          "src": "./64/1.jpg",
+          "isExternal": true,
+          "contentType": "image/jpeg",
+          "contentLength": 4783,
+          "channels": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "colorspace": "srgb",
+          "compression": "jpeg",
+          "depth": 8,
+          "width": 64,
+          "height": 64,
+          "sequenceLength": 1
+        }
+      ],
+      "parentId": null,
+      "parentAssetId": "db74915f-8690-4d31-a810-efd0a3600fb8"
+    },
+    {
+      "type": "image",
+      "id": "97de432b-163e-4ecf-ae1f-7d2febcfdfed",
+      "sid": "external_controller01_spec.png",
+      "properties": {
+        "name": "external_controller01_spec.png",
+        "filename": "external_controller01_spec.png",
+        "width": 512,
+        "height": 512,
+        "colorspace": "srgb",
+        "compression": "zip",
+        "depth": 8,
+        "channels": [
+          "red",
+          "green",
+          "blue"
+        ],
+        "sequenceLength": 1
+      },
+      "representations": [
+        {
+          "src": "./512/2.jpg",
+          "isExternal": true,
+          "contentType": "image/jpeg",
+          "contentLength": 54217,
+          "channels": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "colorspace": "srgb",
+          "compression": "jpeg",
+          "depth": 8,
+          "width": 512,
+          "height": 512,
+          "sequenceLength": 1
+        },
+        {
+          "src": "./64/2.jpg",
+          "isExternal": true,
+          "contentType": "image/jpeg",
+          "contentLength": 6055,
+          "channels": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "colorspace": "srgb",
+          "compression": "jpeg",
+          "depth": 8,
+          "width": 64,
+          "height": 64,
+          "sequenceLength": 1
+        }
+      ],
+      "parentId": null,
+      "parentAssetId": "97de432b-163e-4ecf-ae1f-7d2febcfdfed"
+    },
+    {
+      "type": "texture2D",
+      "id": "462e107c-784b-4354-ab8b-f944b95f3e12",
+      "sid": "26",
+      "properties": {
+        "useMipmap": false,
+        "cropLeft": 0,
+        "textureUse": "standard",
+        "name": "external_controller01_col.png",
+        "uvSet": "default",
+        "mappingType": "uv",
+        "wrapModeV": "repeat",
+        "wrapModeU": "repeat",
+        "uvSwap": false,
+        "alphaSource": "none",
+        "premultiplyAlpha": true,
+        "cropRight": 0,
+        "rotation": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "scaling": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "alpha": 1,
+        "translation": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "cropTop": 0,
+        "cropBottom": 0,
+        "useMaterial": false,
+        "imageId": "db74915f-8690-4d31-a810-efd0a3600fb8"
+      },
+      "parentId": null,
+      "parentAssetId": "462e107c-784b-4354-ab8b-f944b95f3e12"
+    },
+    {
+      "type": "texture2D",
+      "id": "70626ebd-f9a2-4a39-b7d7-25335f14253e",
+      "sid": "26",
+      "properties": {
+        "useMipmap": false,
+        "cropLeft": 0,
+        "textureUse": "standard",
+        "name": "external_controller01_spec.png",
+        "uvSet": "default",
+        "mappingType": "uv",
+        "wrapModeV": "repeat",
+        "wrapModeU": "repeat",
+        "uvSwap": false,
+        "alphaSource": "none",
+        "premultiplyAlpha": true,
+        "cropRight": 0,
+        "rotation": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "scaling": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "alpha": 1,
+        "translation": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "cropTop": 0,
+        "cropBottom": 0,
+        "useMaterial": false,
+        "imageId": "97de432b-163e-4ecf-ae1f-7d2febcfdfed"
+      },
+      "parentId": null,
+      "parentAssetId": "70626ebd-f9a2-4a39-b7d7-25335f14253e"
+    },
+    {
+      "type": "material",
+      "id": "0887b8e2-1212-468a-85ab-da754ae9b2d5",
+      "sid": "27",
+      "properties": {
+        "name": "Oculus Touch",
+        "shaderId": "three_standard_shader",
+        "side": "frontOnly",
+        "roughness": 1.0,
+        "diffuseTexture": "462e107c-784b-4354-ab8b-f944b95f3e12",
+        "roughnessMap": "70626ebd-f9a2-4a39-b7d7-25335f14253e"
+      },
+      "parentId": null,
+      "parentAssetId": "0887b8e2-1212-468a-85ab-da754ae9b2d5"
+    },
+    {
+      "type": "primitiveGeometry",
+      "id": "63153186-0399-47d9-86ed-874b57b6f428",
+      "sid": "60",
+      "properties": {
+        "name": "Box Logo Geometry",
+        "type": "plane",
+        "sizeX": 0.025,
+        "sizeY": 0.0125
+      }
+    },
+    {
+      "type": "image",
+      "id": "db74915f-8690-4d31-a810-efd0a3600fb9",
+      "sid": "box_logo.jpeg",
+      "properties": {
+        "name": "box_logo.jpeg",
+        "filename": "box_logo.jpeg",
+        "width": 256,
+        "height": 128,
+        "colorspace": "srgb",
+        "compression": "jpeg",
+        "depth": 8,
+        "channels": [
+          "red",
+          "green",
+          "blue"
+        ],
+        "sequenceLength": 1
+      },
+      "representations": [
+        {
+          "src": "./256/3.jpg",
+          "isExternal": true,
+          "contentType": "image/jpeg",
+          "contentLength": 3265,
+          "channels": [
+            "red",
+            "green",
+            "blue"
+          ],
+          "colorspace": "srgb",
+          "compression": "jpeg",
+          "depth": 8,
+          "width": 256,
+          "height": 128,
+          "sequenceLength": 1
+        }
+      ]
+    },
+    {
+      "type": "texture2D",
+      "id": "462e107c-784b-4354-ab8b-f944b95f3e13",
+      "sid": "64",
+      "properties": {
+        "stream": false,
+        "useMipmap": false,
+        "cropLeft": 0,
+        "textureUse": "standard",
+        "name": "box_logo.png",
+        "uvSet": "default",
+        "mappingType": "uv",
+        "wrapModeV": "repeat",
+        "wrapModeU": "repeat",
+        "uvSwap": false,
+        "alphaSource": "none",
+        "premultiplyAlpha": true,
+        "cropRight": 0,
+        "rotation": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "scaling": {
+          "y": 1,
+          "x": 1,
+          "z": 1
+        },
+        "alpha": 1,
+        "translation": {
+          "y": 0,
+          "x": 0,
+          "z": 0
+        },
+        "cropTop": 0,
+        "cropBottom": 0,
+        "useMaterial": false,
+        "imageId": "db74915f-8690-4d31-a810-efd0a3600fb9"
+      }
+    },
+    {
+      "type": "material",
+      "id": "0887b8e2-1212-468a-85ab-da754ae9b2d6",
+      "sid": "65",
+      "properties": {
+        "name": "box_logo_mat",
+        "shaderId": "fbx_surface_lambert_shader",
+        "side": "frontOnly",
+        "transparencyFactorTexture": "462e107c-784b-4354-ab8b-f944b95f3e13"
+      }
+    }
+  ]
+}
