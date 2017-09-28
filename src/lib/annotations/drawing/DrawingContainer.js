@@ -20,6 +20,16 @@ class DrawingContainer {
     redoStack = [];
 
     /**
+     * Wipes the undo/redo stack after a deletion.
+     *
+     * @return {void}
+     */
+    destroy() {
+        this.undoStack = [];
+        this.redoStack = [];
+    }
+
+    /**
      * Insert an item into the drawing container. Clears any redoable items.
      *
      * @param {Object} item - An object to be contained in the data structure.
