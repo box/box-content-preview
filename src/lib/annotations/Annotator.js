@@ -696,7 +696,7 @@ class Annotator extends EventEmitter {
         if (mode === TYPES.point) {
             handlers.push(
                 {
-                    type: 'mousedown',
+                    type: 'mouseup',
                     func: this.pointClickHandler,
                     eventObj: this.annotatedElement
                 },

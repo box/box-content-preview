@@ -3,12 +3,12 @@ import autobind from 'autobind-decorator';
 import Annotation from './Annotation';
 import AnnotationService from './AnnotationService';
 import * as annotatorUtil from './annotatorUtil';
-import { ICON_PLACED_ANNOTATION } from '../icons/icons';
 import {
     STATES,
     TYPES,
     CLASS_ANNOTATION_POINT_MARKER,
     DATA_TYPE_ANNOTATION_INDICATOR,
+    CLASS_ACTIVE,
     THREAD_EVENT
 } from './annotationConstants';
 
@@ -110,6 +110,11 @@ class AnnotationThread extends EventEmitter {
      * @return {void}
      */
     showDialog() {
+        // Activate annotation icon
+        if (this.element) {
+            this.element.classList.add(CLASS_ACTIVE);
+        }
+
         // Prevents the annotations dialog from being created each mousemove
         if (!this.dialog.element) {
             this.dialog.setup(this.annotations, this.element);
@@ -368,6 +373,11 @@ class AnnotationThread extends EventEmitter {
     setupElement() {
         this.element = this.createElement();
         this.bindDOMListeners();
+
+        // Update point annotation icon with user initials
+        if (this.annotations.length > 0) {
+            this.fillPointAnnotationIcon(this.annotations[0]);
+        }
     }
 
     /**
@@ -501,9 +511,12 @@ class AnnotationThread extends EventEmitter {
             this.annotations[tempIdx] = savedAnnotation;
         }
 
-        // Set threadNumber if the savedAnnotation is the first annotation of the thread
+        // Set threadNumber if the savedAnnotation is the first annotation
+        // of the thread. Also update annotation thread icon
+        // color/initials according to the annotator
         if (!this.threadNumber && savedAnnotation && savedAnnotation.threadNumber) {
             this.threadNumber = savedAnnotation.threadNumber;
+            this.fillPointAnnotationIcon(savedAnnotation);
         }
 
         if (this.dialog) {
@@ -530,7 +543,6 @@ class AnnotationThread extends EventEmitter {
         const indicatorEl = document.createElement('button');
         indicatorEl.classList.add(CLASS_ANNOTATION_POINT_MARKER);
         indicatorEl.setAttribute('data-type', DATA_TYPE_ANNOTATION_INDICATOR);
-        indicatorEl.innerHTML = ICON_PLACED_ANNOTATION;
         return indicatorEl;
     }
 
@@ -609,6 +621,22 @@ class AnnotationThread extends EventEmitter {
      */
     deleteAnnotationWithID(data) {
         this.deleteAnnotation(data.annotationID);
+    }
+
+    /**
+     * Inserts user initials and updates point annotation icon with a
+     * color pseudo-unique to the user
+     *
+     * @private
+     * @param {Object} annotation - first annotation in the thread
+     * @return {void}
+     */
+    fillPointAnnotationIcon(annotation) {
+        // Update point annotation icon with user initials
+        this.element.textContent = annotatorUtil.getUserInitials(annotation.user.name);
+
+        // Icon color should be 'unique' to user id
+        this.element.classList.add(annotatorUtil.getUserColor(annotation.user.id));
     }
 
     /**

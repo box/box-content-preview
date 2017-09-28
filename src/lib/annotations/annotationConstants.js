@@ -137,6 +137,8 @@ export const THREAD_EVENT = {
 
 export const PAGE_PADDING_TOP = 15;
 export const PAGE_PADDING_BOTTOM = 15;
+export const POINT_ANNOTATION_ICON_HEIGHT = 30;
+export const POINT_ANNOTATION_ICON_WIDTH = 20;
 
 export const ID_MOBILE_ANNOTATION_DIALOG = 'mobile-annotation-dialog';
 

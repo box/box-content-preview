@@ -3,12 +3,7 @@ import AnnotationThread from '../AnnotationThread';
 import DocPointDialog from './DocPointDialog';
 import * as annotatorUtil from '../annotatorUtil';
 import * as docAnnotatorUtil from './docAnnotatorUtil';
-import { STATES } from '../annotationConstants';
-
-const PAGE_PADDING_TOP = 15;
-const POINT_ANNOTATION_ICON_HEIGHT = 31;
-const POINT_ANNOTATION_ICON_DOT_HEIGHT = 8;
-const POINT_ANNOTATION_ICON_WIDTH = 24;
+import { STATES, POINT_ANNOTATION_ICON_HEIGHT, PAGE_PADDING_TOP } from '../annotationConstants';
 
 @autobind
 class DocPointThread extends AnnotationThread {
@@ -50,12 +45,9 @@ class DocPointThread extends AnnotationThread {
         );
 
         // Position and append to page
-        this.element.style.left = `${browserX - POINT_ANNOTATION_ICON_WIDTH / 2}px`;
+        this.element.style.left = `${browserX - POINT_ANNOTATION_ICON_HEIGHT / 3}px`;
         // Add 15px for vertical padding on page
-        this.element.style.top = `${browserY -
-            POINT_ANNOTATION_ICON_HEIGHT +
-            POINT_ANNOTATION_ICON_DOT_HEIGHT / 2 +
-            PAGE_PADDING_TOP}px`;
+        this.element.style.top = `${browserY - POINT_ANNOTATION_ICON_HEIGHT * 2 / 3 + PAGE_PADDING_TOP}px`;
         pageEl.appendChild(this.element);
 
         annotatorUtil.showElement(this.element);

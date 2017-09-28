@@ -11,6 +11,8 @@ import {
     hideElementVisibility,
     resetTextarea,
     isElementInViewport,
+    getUserInitials,
+    getUserColor,
     getAvatarHtml,
     getScale,
     isPlainHighlight,
@@ -244,6 +246,31 @@ describe('lib/annotations/annotatorUtil', () => {
             childEl.style.position = 'absolute';
             childEl.style.left = '-10px';
             assert.ok(!isElementInViewport(childEl));
+        });
+    });
+
+    describe('getUserInitials()', () => {
+        it('should return a blank string if no name provided', () => {
+            expect(getUserInitials()).equals('');
+        });
+
+        it('should return a blank string if provided name is a space', () => {
+            expect(getUserInitials(' ')).equals('');
+        });
+
+        it('should return first and last initial from the user\'s name', () => {
+            expect(getUserInitials('John Jacob Jingle Heimer Schmidt')).equals('JS');
+        });
+
+        it('should return only one initial when user name is one "word"', () => {
+            expect(getUserInitials('sumedha@box.com')).equals('S');
+        });
+    });
+
+    describe('getUserColor()', () => {
+        it('should return avatar color % 9', () => {
+            const color = getUserColor(4);
+            expect(color).equals('avatar-color-4');
         });
     });
 

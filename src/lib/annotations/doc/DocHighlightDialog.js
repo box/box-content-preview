@@ -10,8 +10,6 @@ const CLASS_TEXT_HIGHLIGHTED = 'bp-is-text-highlighted';
 const CLASS_HIGHLIGHT_LABEL = 'bp-annotation-highlight-label';
 
 const HIGHLIGHT_DIALOG_HEIGHT = 38;
-const PAGE_PADDING_BOTTOM = 15;
-const PAGE_PADDING_TOP = 15;
 
 @autobind
 class DocHighlightDialog extends AnnotationDialog {
@@ -143,7 +141,7 @@ class DocHighlightDialog extends AnnotationDialog {
         // zooming
         const pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
         const pageDimensions = pageEl.getBoundingClientRect();
-        const pageHeight = pageDimensions.height - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM;
+        const pageHeight = pageDimensions.height - constants.PAGE_PADDING_TOP - constants.PAGE_PADDING_BOTTOM;
 
         const [browserX, browserY] = this.getScaledPDFCoordinates(pageDimensions, pageHeight);
         pageEl.appendChild(this.element);
@@ -176,7 +174,7 @@ class DocHighlightDialog extends AnnotationDialog {
         }
 
         this.element.style.left = `${dialogX}px`;
-        this.element.style.top = `${dialogY + PAGE_PADDING_TOP}px`;
+        this.element.style.top = `${dialogY + constants.PAGE_PADDING_TOP}px`;
         this.fitDialogHeightInPage();
         annotatorUtil.showElement(this.element);
     }
@@ -525,7 +523,7 @@ class DocHighlightDialog extends AnnotationDialog {
             this.location.dimensions,
             pageDimensions,
             zoomScale,
-            PAGE_PADDING_TOP + PAGE_PADDING_BOTTOM
+            constants.PAGE_PADDING_TOP + constants.PAGE_PADDING_BOTTOM
         );
         if (dimensionScale) {
             x *= dimensionScale.x;
