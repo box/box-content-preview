@@ -1,4 +1,5 @@
 import AnnotationModeController from '../AnnotationModeController';
+import * as util from '../annotatorUtil';
 
 let annotationModeController;
 let stubs;
@@ -154,6 +155,20 @@ describe('lib/annotations/AnnotationModeController', () => {
                 func: fn,
                 type
             });
+        });
+    });
+
+    describe('setupHeader()', () => {
+        it('should insert the new header into the container before the baseheader', () => {
+            stubs.insertTemplate = sandbox.stub(util, 'insertTemplate');
+            const container = {
+                firstElementChild: 'child'
+            };
+            const header = document.createElement('div');
+
+            annotationModeController.setupHeader(container, header);
+
+            expect(stubs.insertTemplate).to.be.calledWith(container, header);
         });
     });
 });

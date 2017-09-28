@@ -19,22 +19,39 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
     });
 
     describe('registerAnnotator()', () => {
+        const annotator = {
+            getAnnotateButton: sandbox.stub(),
+            options: {
+                header: 'none'
+            }
+        };
         it('should use the annotator to get button elements', () => {
-            const annotator = {
-                getAnnotateButton: sandbox.stub()
-            };
-            annotator.getAnnotateButton.onCall(0).returns('postButton');
-            annotator.getAnnotateButton.onCall(1).returns('undoButton');
-            annotator.getAnnotateButton.onCall(2).returns('redoButton');
+            annotator.getAnnotateButton.onCall(0).returns('cancelButton');
+            annotator.getAnnotateButton.onCall(1).returns('postButton');
+            annotator.getAnnotateButton.onCall(2).returns('undoButton');
+            annotator.getAnnotateButton.onCall(3).returns('redoButton');
 
             expect(drawingModeController.postButtonEl).to.be.undefined;
             expect(drawingModeController.undoButtonEl).to.be.undefined;
             expect(drawingModeController.redoButtonEl).to.be.undefined;
 
             drawingModeController.registerAnnotator(annotator);
+            annotator.getAnnotateButton.onCall(0).returns('cancelButton');
             expect(drawingModeController.postButtonEl).to.equal('postButton');
             expect(drawingModeController.redoButtonEl).to.equal('redoButton');
             expect(drawingModeController.undoButtonEl).to.equal('undoButton');
+        });
+
+        it('should setup the drawing header if the options allow', () => {
+            const setupHeaderStub = sandbox.stub(drawingModeController, 'setupHeader');
+
+            drawingModeController.registerAnnotator(annotator);
+            expect(setupHeaderStub).to.not.be.called;
+
+            annotator.options.header = 'dark';
+
+            drawingModeController.registerAnnotator(annotator);
+            expect(setupHeaderStub).to.be.called;
         });
     });
 
@@ -139,11 +156,13 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
             drawingModeController.postButtonEl = 'not undefined';
             drawingModeController.undoButtonEl = 'also not undefined';
             drawingModeController.redoButtonEl = 'additionally not undefined';
+            drawingModeController.cancelButtonEl = 'definitely not undefined';
+
 
             drawingModeController.setupHandlers();
             expect(stubs.createThread).to.be.called;
             expect(stubs.bindCustomListenersOnThread).to.be.called;
-            expect(drawingModeController.handlers.length).to.equal(6);
+            expect(drawingModeController.handlers.length).to.equal(7);
         });
     });
 

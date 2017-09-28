@@ -3,7 +3,6 @@ import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
-import { get } from '../../util';
 
 import { CLASS_INVISIBLE } from '../../constants';
 
@@ -44,17 +43,12 @@ class ImageBaseViewer extends BaseViewer {
             return;
         }
 
-        const loadOriginalDimensions = this.setOriginalImageSize(this.imageEl);
-        loadOriginalDimensions
-            .then(() => {
-                this.loadUI();
-                this.zoom();
+        this.loadUI();
+        this.zoom();
 
-                this.imageEl.classList.remove(CLASS_INVISIBLE);
-                this.loaded = true;
-                this.emit('load');
-            })
-            .catch(this.errorHandler);
+        this.imageEl.classList.remove(CLASS_INVISIBLE);
+        this.loaded = true;
+        this.emit('load');
     }
 
     /**
@@ -171,53 +165,6 @@ class ImageBaseViewer extends BaseViewer {
     loadUI() {
         this.controls = new Controls(this.containerEl);
         this.bindControlListeners();
-    }
-
-    /**
-     * Sets the original image width and height on the img element. Can be removed when
-     * naturalHeight and naturalWidth attributes work correctly in IE 11.
-     *
-     * @private
-     * @param {HTMLElement} imageEl - The image to set the original size attributes on
-     * @return {Promise} A promise that is resolved if the original image dimensions were set.
-     */
-    setOriginalImageSize(imageEl) {
-        const promise = new Promise((resolve) => {
-            // Do not bother loading a new image when the natural size attributes exist
-            if (imageEl.naturalWidth && imageEl.naturalHeight) {
-                imageEl.setAttribute('originalWidth', imageEl.naturalWidth);
-                imageEl.setAttribute('originalHeight', imageEl.naturalHeight);
-                resolve();
-            } else {
-                // Case when natural dimensions are not assigned
-                // By default, assigned width and height in Chrome/Safari/Firefox will be 300x150.
-                // IE11 workaround. Dimensions only displayed if the image is attached to the document.
-                get(imageEl.src, {}, 'text')
-                    .then((imageAsText) => {
-                        const parser = new DOMParser();
-                        const svgEl = parser.parseFromString(imageAsText, 'image/svg+xml');
-
-                        try {
-                            // Assume svgEl is an instanceof an SVG with a viewBox and preserveAspectRatio of meet
-                            // where the height is the limiting axis
-                            const viewBox = svgEl.documentElement.getAttribute('viewBox');
-                            const [, , w, h] = viewBox.split(' ');
-                            const aspectRatio = h ? w / h : w;
-                            imageEl.setAttribute('originalWidth', Math.round(aspectRatio * 150));
-                            imageEl.setAttribute('originalHeight', 150);
-                        } catch (e) {
-                            // Assume 300x150 that chrome does by default
-                            imageEl.setAttribute('originalWidth', 300);
-                            imageEl.setAttribute('originalHeight', 150);
-                        } finally {
-                            resolve();
-                        }
-                    })
-                    .catch(resolve);
-            }
-        });
-
-        return promise;
     }
 
     //--------------------------------------------------------------------------

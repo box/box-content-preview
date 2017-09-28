@@ -15,6 +15,71 @@ $avatar-color-7: #159f45;
 $avatar-color-8: #b800b2;
 $avatar-color-9: #f22c44;
 
+$tablet: 'max-width: 768px';
+
+.bp-annotate-draw-background {
+    background-color: $fours;
+}
+
+.bp-annotate-draw-header {
+    background-color: $twos;
+    border: none;
+    position: relative;
+}
+
+.bp-btn-annotate-draw-cancel {
+    background-color: $twos;
+    border: solid $off-white 1px;
+    color: $off-white;
+
+    &:hover {
+        background-color: $black;
+    }
+}
+
+.bp-btn-annotate-draw-post {
+    background-color: $off-white;
+    color: $twos;
+
+    &:hover {
+        background-color: $white;
+    }
+}
+
+.bp-annotate-draw-post-cancel-container {
+    margin-right: 20px;
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    button {
+        height: 32px;
+        margin: 8px;
+    }
+}
+
+.bp-annotate-draw-undo-redo-container {
+    margin: 0 auto;
+
+    .bp-btn-annotate-draw-undo,
+    .bp-btn-annotate-draw-redo {
+        background: none;
+        border: none;
+        margin: 5px;
+
+        svg {
+            fill: $off-white;
+            vertical-align: middle;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .bp-annotate-draw-undo-redo-container {
+        margin: 0;
+    }
+}
+
 .bp-annotation-caret {
     left: 50%;
     position: absolute;
@@ -345,12 +410,7 @@ $avatar-color-9: #f22c44;
     }
 
     .bp-btn-annotate-draw-add {
-        padding-bottom: 3px;
-        padding-right: 6px;
-    }
-
-    .bp-btn-annotate-draw-delete {
-        padding-bottom: 3px;
+        padding-right: 8px;
     }
 
     .bp-highlight-comment-btn {

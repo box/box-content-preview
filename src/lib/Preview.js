@@ -12,7 +12,15 @@ import Cache from './Cache';
 import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
 import PreviewUI from './PreviewUI';
 import getTokens from './tokens';
-import { get, post, decodeKeydown, openUrlInsideIframe, getHeaders, findScriptLocation } from './util';
+import {
+    get,
+    post,
+    decodeKeydown,
+    openUrlInsideIframe,
+    getHeaders,
+    findScriptLocation,
+    appendQueryParams
+} from './util';
 import { getURL, getDownloadURL, checkPermission, checkFeature, checkFileValid, cacheFile, uncacheFile } from './file';
 import {
     API_HOST,
@@ -395,8 +403,12 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     download() {
+        const { apiHost, queryParams } = this.options;
+
         if (checkPermission(this.file, PERMISSION_DOWNLOAD)) {
-            get(getDownloadURL(this.file.id, this.options.apiHost), this.getRequestHeaders()).then((data) => {
+            // Append optional query params
+            const downloadUrl = appendQueryParams(getDownloadURL(this.file.id, apiHost), queryParams);
+            get(downloadUrl, this.getRequestHeaders()).then((data) => {
                 openUrlInsideIframe(data.download_url);
             });
         }
@@ -673,6 +685,9 @@ class Preview extends EventEmitter {
         // Skip load from server and any server updates
         this.options.skipServerUpdate = !!options.skipServerUpdate;
 
+        // Optional additional query params to append to requests
+        this.options.queryParams = options.queryParams || {};
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
@@ -728,7 +743,10 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     loadFromServer() {
-        get(getURL(this.file.id, this.options.apiHost), this.getRequestHeaders())
+        const { apiHost, queryParams } = this.options;
+
+        const fileInfoUrl = appendQueryParams(getURL(this.file.id, apiHost), queryParams);
+        get(fileInfoUrl, this.getRequestHeaders())
             .then(this.handleLoadResponse)
             .catch(this.triggerFetchError);
     }
@@ -1120,8 +1138,10 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     prefetchNextFiles() {
+        const { apiHost, queryParams, skipServerUpdate } = this.options;
+
         // Don't bother prefetching when there aren't more files or we need to skip server update
-        if (this.collection.length < 2 || this.options.skipServerUpdate) {
+        if (this.collection.length < 2 || skipServerUpdate) {
             return;
         }
 
@@ -1145,8 +1165,11 @@ class Preview extends EventEmitter {
                 filesToPrefetch.forEach((id) => {
                     const token = tokenMap[id];
 
+                    // Append optional query params
+                    const fileInfoUrl = appendQueryParams(getURL(id, apiHost), queryParams);
+
                     // Prefetch and cache file information and content
-                    get(getURL(id, this.options.apiHost), this.getRequestHeaders(token))
+                    get(fileInfoUrl, this.getRequestHeaders(token))
                         .then((file) => {
                             // Cache file info
                             cacheFile(this.cache, file);

@@ -1,4 +1,5 @@
 import EventEmitter from 'events';
+import { insertTemplate } from './annotatorUtil';
 
 class AnnotationModeController extends EventEmitter {
     /** @property {Array} - The array of annotation threads */
@@ -170,6 +171,19 @@ class AnnotationModeController extends EventEmitter {
             func: handlerFn,
             type
         });
+    }
+
+    /**
+      * Setups the header for the annotation mode
+      *
+      * @protected
+      * @param {HTMLElement} container - Container element
+      * @param {HTMLElement} header - Header to add to DOM
+      * @return {void}
+      */
+    setupHeader(container, header) {
+        const baseHeaderEl = container.firstElementChild;
+        insertTemplate(container, header, baseHeaderEl);
     }
 }
 

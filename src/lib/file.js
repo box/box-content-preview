@@ -1,3 +1,4 @@
+import { appendQueryParams } from './util';
 import { ORIGINAL_REP_NAME } from './constants';
 
 // List of Box Content API fields that the Preview library requires for every file. Updating this list is most likely
@@ -122,9 +123,10 @@ function addOriginalRepresentation(file) {
     }
 
     // Add an original representation if it doesn't already exist
+    const template = appendQueryParams(file.authenticated_download_url, { preview: 'true' });
     file.representations.entries.push({
         content: {
-            url_template: `${file.authenticated_download_url}?preview=true`
+            url_template: template
         },
         representation: ORIGINAL_REP_NAME,
         status: {

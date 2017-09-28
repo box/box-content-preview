@@ -169,7 +169,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
                     }
                 }
             };
-            const result2 = multiImage.constructImageUrls('file/100/content/{asset_path}');
+            const result2 = multiImage.constructImageUrls('file/100/content/{+asset_path}');
             expect(result2[0]).to.equal(firstURL);
         });
 

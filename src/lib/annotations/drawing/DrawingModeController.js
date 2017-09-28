@@ -1,9 +1,11 @@
 import rbush from 'rbush';
 import AnnotationModeController from '../AnnotationModeController';
+import annotationsShell from './../annotationsShell.html';
 import * as annotatorUtil from '../annotatorUtil';
 import {
     TYPES,
     STATES,
+    SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL,
     SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
     SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO,
     SELECTOR_ANNOTATION_BUTTON_DRAW_REDO,
@@ -18,6 +20,9 @@ class DrawingModeController extends AnnotationModeController {
 
     /** @property {DrawingThread} - The currently selected DrawingThread */
     selectedThread;
+
+    /** @property {HTMLElement} - The button to cancel the pending drawing thread */
+    cancelButtonEl;
 
     /** @property {HTMLElement} - The button to commit the pending drawing thread */
     postButtonEl;
@@ -39,6 +44,12 @@ class DrawingModeController extends AnnotationModeController {
     registerAnnotator(annotator) {
         super.registerAnnotator(annotator);
 
+        if (annotator.options.header !== 'none') {
+            // We need to create our own header UI
+            this.setupHeader(annotator.container, annotationsShell);
+        }
+
+        this.cancelButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL);
         this.postButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
         this.undoButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
         this.redoButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
@@ -148,20 +159,29 @@ class DrawingModeController extends AnnotationModeController {
             ['mousemove', 'touchmove'],
             annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleMove)
         );
+
         this.pushElementHandler(
             this.annotator.annotatedElement,
             ['mousedown', 'touchstart'],
             annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleStart)
         );
+
         this.pushElementHandler(
             this.annotator.annotatedElement,
             ['mouseup', 'touchcancel', 'touchend'],
             annotatorUtil.eventToLocationHandler(locationFunction, this.currentThread.handleStop)
         );
+
+        this.pushElementHandler(this.cancelButtonEl, 'click', () => {
+            this.currentThread.cancelUnsavedAnnotation();
+            this.annotator.toggleAnnotationHandler(TYPES.draw);
+        });
+
         this.pushElementHandler(this.postButtonEl, 'click', () => {
             this.currentThread.saveAnnotation(TYPES.draw);
             this.annotator.toggleAnnotationHandler(TYPES.draw);
         });
+
         this.pushElementHandler(this.undoButtonEl, 'click', this.currentThread.undo);
         this.pushElementHandler(this.redoButtonEl, 'click', this.currentThread.redo);
     }

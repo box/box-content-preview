@@ -243,6 +243,33 @@ export function isInDialog(event, dialogEl) {
     return false;
 }
 
+/**
+ * Creates contextual fragment
+ *
+ * @public
+ * @param {Element} node - DOM node
+ * @param {string} template - HTML template
+ * @return {DocumentFragment} Document fragment
+ */
+export function createFragment(node, template) {
+    const range = document.createRange();
+    range.selectNode(node);
+    return range.createContextualFragment(template.replace(/>\s*</g, '><')); // remove new lines
+}
+
+/**
+ * Inserts template string into DOM node, before beforeNode. If beforeNode is null, inserts at end of child nodes
+ *
+ * @public
+ * @param {Element} node - DOM node
+ * @param {string} template  html template
+ * @param {Element|void} beforeNode - DOM node
+ * @return {void}
+ */
+export function insertTemplate(node, template, beforeNode = null) {
+    node.insertBefore(createFragment(node, template), beforeNode);
+}
+
 //------------------------------------------------------------------------------
 // Point Utils
 //------------------------------------------------------------------------------
@@ -314,10 +341,7 @@ export function getAvatarHtml(avatarUrl, userId, userName) {
     let initials = '';
     if (userId !== '0') {
         // http://stackoverflow.com/questions/8133630/spliting-the-first-character-of-the-words
-        initials = userName
-            .replace(/\W*(\w)\w*/g, '$1')
-            .toUpperCase()
-            .substring(0, 3);
+        initials = userName.replace(/\W*(\w)\w*/g, '$1').toUpperCase().substring(0, 3);
     }
 
     return `<div class="bp-annotation-profile ${getUserColor(userId)}">${initials}</div>`.trim();

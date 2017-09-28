@@ -218,7 +218,7 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('createContentUrl()', () => {
         it('should return content url with no asset path', () => {
-            const url = 'url{asset_path}';
+            const url = 'url{+asset_path}';
             sandbox.spy(util, 'createContentUrl');
 
             const result = base.createContentUrl(url, '');
@@ -227,7 +227,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should return content url with asset path from args', () => {
-            const url = 'url{asset_path}';
+            const url = 'url{+asset_path}';
 
             base = new BaseViewer({
                 viewer: { ASSET: 'foo' },
@@ -246,11 +246,11 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('createContentUrlWithAuthParams()', () => {
         it('should return content url with no asset path', () => {
-            sandbox.stub(base, 'createContentUrl').returns('foo');
+            sandbox.stub(util, 'createContentUrl').returns('foo');
             sandbox.stub(base, 'appendAuthParams').returns('bar');
             const result = base.createContentUrlWithAuthParams('boo', 'hoo');
             expect(result).to.equal('bar');
-            expect(base.createContentUrl).to.be.calledWith('boo', 'hoo');
+            expect(util.createContentUrl).to.be.calledWith('boo', 'hoo');
             expect(base.appendAuthParams).to.be.calledWith('foo');
         });
     });
@@ -853,6 +853,10 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotatorConf = {
                 CONSTRUCTOR: sandbox.stub().returns(base.annotator)
             };
+            base.previewUI = {
+                replaceHeader: () => {}
+            }
+
             base.initAnnotations();
         });
 
@@ -861,6 +865,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.addListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scrolltoannotation', sinon.match.func);
+            expect(base.annotator.addListener).to.be.calledWith('replaceheader', sinon.match.func);
             expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
         });
     });

@@ -5,7 +5,10 @@ let logger;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/Logger', () => {
+    let dateNowStub = sandbox.stub(Date, 'now');
+
     beforeEach(() => {
+        dateNowStub.returns(0);
         logger = new Logger('FOO', {});
     });
 
@@ -15,6 +18,7 @@ describe('lib/Logger', () => {
     });
 
     it('should have correct defaults', () => {
+        dateNowStub.returns(1); // Took 1 ms to run
         const log = logger.done();
 
         assert.ok(log.time.total < 5, 'Total time should be correct');
@@ -37,13 +41,13 @@ describe('lib/Logger', () => {
     });
 
     it('should set and get correctly', () => {
-        const dateStub = sandbox.stub(Date, 'now').returns(0);
+        dateNowStub.returns(0); 
         logger.setCached();
         logger.setCacheStale();
         logger.setFile({ id: 1 });
         logger.setType('BAR');
 
-        dateStub.returns(100);
+        dateNowStub.returns(100);
         logger.setUnConverted();
 
         const log = logger.done();

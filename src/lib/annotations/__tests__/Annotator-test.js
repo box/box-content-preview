@@ -13,6 +13,8 @@ import {
     SELECTOR_ANNOTATION_BUTTON_DRAW_POST,
     SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO,
     SELECTOR_ANNOTATION_BUTTON_DRAW_REDO,
+    SELECTOR_ANNOTATION_DRAWING_HEADER,
+    SELECTOR_BOX_PREVIEW_BASE_HEADER,
     ANNOTATOR_EVENT,
     THREAD_EVENT
 } from '../annotationConstants';
@@ -388,8 +390,6 @@ describe('lib/annotations/Annotator', () => {
                 stubs.emit = sandbox.stub(annotator, 'emit');
                 stubs.unbindMode = sandbox.stub(annotator, 'unbindModeListeners');
                 stubs.bindDOM = sandbox.stub(annotator, 'bindDOMListeners');
-                stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
-                stubs.show = sandbox.stub(annotatorUtil, 'showElement');
             });
 
             it('should do nothing when the mode is not annotatable', () => {
@@ -419,8 +419,7 @@ describe('lib/annotations/Annotator', () => {
                 const btn = document.querySelector('.bp-btn-annotate');
                 annotator.disableAnnotationMode(TYPES.draw, btn);
                 expect(btn).to.not.have.class(CLASS_ACTIVE);
-                expect(stubs.show).to.be.called;
-                expect(stubs.hide).to.have.callCount(4);
+                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.replaceHeader, SELECTOR_BOX_PREVIEW_BASE_HEADER);
             });
         });
 
@@ -429,8 +428,6 @@ describe('lib/annotations/Annotator', () => {
                 stubs.emit = sandbox.stub(annotator, 'emit');
                 stubs.unbindDOM = sandbox.stub(annotator, 'unbindDOMListeners');
                 stubs.bindMode = sandbox.stub(annotator, 'bindModeListeners');
-                stubs.hide = sandbox.stub(annotatorUtil, 'hideElement');
-                stubs.show = sandbox.stub(annotatorUtil, 'showElement');
             });
 
             it('should enter annotation mode', () => {
@@ -451,8 +448,7 @@ describe('lib/annotations/Annotator', () => {
                 const btn = document.querySelector('.bp-btn-annotate');
                 annotator.enableAnnotationMode(TYPES.draw, btn);
                 expect(btn).to.have.class(CLASS_ACTIVE);
-                expect(stubs.hide).to.be.called;
-                expect(stubs.show).to.have.callCount(4);
+                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.replaceHeader, SELECTOR_ANNOTATION_DRAWING_HEADER);
             });
         });
 

@@ -120,7 +120,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             imageBase.updateCursor();
 
-            expect(imageBase.isZoomable).to.have.been.false;
+            expect(imageBase.isZoomable).to.be.false;
             expect(imageBase.imageEl).to.have.class(CSS_CLASS_PANNABLE);
             expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_ZOOMABLE);
         });
@@ -132,7 +132,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             imageBase.updateCursor();
 
-            expect(imageBase.isZoomable).to.have.been.true;
+            expect(imageBase.isZoomable).to.be.true;
             expect(imageBase.imageEl).to.have.class(CSS_CLASS_ZOOMABLE);
             expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_PANNABLE);
         });
@@ -157,7 +157,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             expect(imageBase.isPanning).to.be.false;
             expect(imageBase.imageEl).to.not.have.class(CSS_CLASS_PANNING);
-            expect(imageBase.emit).to.not.have.been.calledWith('panstart');
+            expect(imageBase.emit).to.not.be.calledWith('panstart');
         });
 
         it('should start panning, remove listeners, and fire "panstart" event', () => {
@@ -168,7 +168,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             expect(imageBase.isPanning).to.be.true;
             expect(imageBase.imageEl).to.have.class(CSS_CLASS_PANNING);
-            expect(imageBase.emit).to.have.been.calledWith('panstart');
+            expect(imageBase.emit).to.be.calledWith('panstart');
         });
     });
 
@@ -185,7 +185,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.pan({});
 
             expect(imageBase.didPan).to.be.true;
-            expect(stubs.emit).to.have.been.calledWith('pan');
+            expect(stubs.emit).to.be.calledWith('pan');
         });
 
         it('should not pan if the viewer is not already panning', () => {
@@ -194,7 +194,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.pan({});
 
             expect(imageBase.didPan).to.be.false;
-            expect(stubs.emit).to.not.have.been.calledWith('pan');
+            expect(stubs.emit).to.not.be.calledWith('pan');
         });
     });
 
@@ -216,60 +216,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             expect(imageBase.controls).to.not.be.undefined;
             expect(imageBase.bindControlListeners).to.be.called;
-        });
-    });
-
-    describe('setOriginalImageSize()', () => {
-        it('should use the naturalHeight and naturalWidth when available', (done) => {
-            const imageEl = {
-                naturalWidth: 100,
-                naturalHeight: 100,
-                setAttribute: (name, value) => {
-                    imageEl[name] = value;
-                },
-                getAttribute: (name) => imageEl[name]
-            };
-
-            const promise = imageBase.setOriginalImageSize(imageEl);
-            promise.should.be.fulfilled.then(() => {
-                expect(imageEl.getAttribute('originalWidth')).to.equal(imageEl.naturalWidth);
-                expect(imageEl.getAttribute('originalHeight')).to.equal(imageEl.naturalHeight);
-                done();
-            }).catch(() => {
-                Assert.fail();
-            });
-        });
-
-        it('should default to 300x150 when naturalHeight and naturalWidth are 0x0', (done) => {
-            const imageEl = {
-                naturalWidth: 0,
-                naturalHeight: 0,
-                setAttribute: (name, value) => {
-                    imageEl[name] = value;
-                },
-                getAttribute: (name) => imageEl[name]
-            };
-
-            const getStub = sandbox.stub(util, 'get').returns(Promise.resolve('not real a image'));
-            const promise = imageBase.setOriginalImageSize(imageEl);
-            promise.should.be.fulfilled.then(() => {
-                expect(imageEl.getAttribute('originalWidth')).to.equal(300);
-                expect(imageEl.getAttribute('originalHeight')).to.equal(150);
-                done();
-            }).catch(() => {
-                Assert.fail();
-            });
-        });
-
-        it('should resolve when the get call fails', (done) => {
-            const imageEl = {};
-            const getStub = sandbox.stub(util, 'get').returns(Promise.reject());
-            const promise = imageBase.setOriginalImageSize(imageEl);
-            promise.should.be.fulfilled.then(() => {
-                done();
-            }).catch(() => {
-                Assert.fail();
-            });
         });
     });
 
@@ -311,7 +257,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             event.ctrlKey = null;
             event.metaKey = 'blah';
             imageBase.handleMouseDown(event);
-            expect(stubs.pan).to.not.have.been.called;
+            expect(stubs.pan).to.not.be.called;
         });
 
         it('should start panning if correct click type', () => {
@@ -324,7 +270,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
                 preventDefault: sandbox.stub()
             };
             imageBase.handleMouseDown(event);
-            expect(stubs.pan).to.have.been.called;
+            expect(stubs.pan).to.be.called;
         });
     });
 
@@ -351,7 +297,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             event.ctrlKey = null;
             event.metaKey = 'blah';
             imageBase.handleMouseUp(event);
-            expect(stubs.zoom).to.not.have.been.called;
+            expect(stubs.zoom).to.not.be.called;
         });
 
         it('should zoom in if zoomable but not pannable', () => {
@@ -365,7 +311,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             };
             imageBase.isZoomable = true;
             imageBase.handleMouseUp(event);
-            expect(stubs.zoom).to.have.been.calledWith('in');
+            expect(stubs.zoom).to.be.calledWith('in');
         });
 
         it('should reset zoom if mouseup was not due to end of panning', () => {
@@ -380,7 +326,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.isZoomable = false;
             imageBase.didPan = false;
             imageBase.handleMouseUp(event);
-            expect(stubs.zoom).to.have.been.calledWith('reset');
+            expect(stubs.zoom).to.be.calledWith('reset');
         });
 
         it('should not zoom if mouse up was due to end of panning', () => {
@@ -395,7 +341,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.isZoomable = false;
             imageBase.didPan = true;
             imageBase.handleMouseUp(event);
-            expect(stubs.zoom).to.not.have.been.called;
+            expect(stubs.zoom).to.not.be.called;
         });
     });
 
@@ -468,24 +414,24 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
         it('should bind all default image listeners', () => {
             imageBase.bindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('mousedown', imageBase.handleMouseDown);
-            expect(stubs.listeners).to.have.been.calledWith('mouseup', imageBase.handleMouseUp);
-            expect(stubs.listeners).to.have.been.calledWith('dragstart', imageBase.cancelDragEvent);
+            expect(stubs.listeners).to.be.calledWith('mousedown', imageBase.handleMouseDown);
+            expect(stubs.listeners).to.be.calledWith('mouseup', imageBase.handleMouseUp);
+            expect(stubs.listeners).to.be.calledWith('dragstart', imageBase.cancelDragEvent);
         });
 
         it('should bind all iOS listeners', () => {
             sandbox.stub(Browser, 'isIOS').returns(true);
             imageBase.bindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('gesturestart', imageBase.mobileZoomStartHandler);
-            expect(stubs.listeners).to.have.been.calledWith('gestureend', imageBase.mobileZoomEndHandler);
+            expect(stubs.listeners).to.be.calledWith('gesturestart', imageBase.mobileZoomStartHandler);
+            expect(stubs.listeners).to.be.calledWith('gestureend', imageBase.mobileZoomEndHandler);
         });
 
         it('should bind all mobile and non-iOS listeners', () => {
             sandbox.stub(Browser, 'isIOS').returns(false);
             imageBase.bindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('touchstart', imageBase.mobileZoomStartHandler);
-            expect(stubs.listeners).to.have.been.calledWith('touchmove', imageBase.mobileZoomChangeHandler);
-            expect(stubs.listeners).to.have.been.calledWith('touchend', imageBase.mobileZoomEndHandler);
+            expect(stubs.listeners).to.be.calledWith('touchstart', imageBase.mobileZoomStartHandler);
+            expect(stubs.listeners).to.be.calledWith('touchmove', imageBase.mobileZoomChangeHandler);
+            expect(stubs.listeners).to.be.calledWith('touchend', imageBase.mobileZoomEndHandler);
         });
     });
 
@@ -545,7 +491,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.errorHandler(err);
 
             err.displayMessage = 'We\'re sorry, the preview didn\'t load. Please refresh the page.';
-            expect(stubs.emit).to.have.been.calledWith('error', err);
+            expect(stubs.emit).to.be.calledWith('error', err);
         });
     });
 
@@ -554,7 +500,6 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             imageBase.loaded = false;
             stubs.zoom = sandbox.stub(imageBase, 'zoom');
             stubs.loadUI = sandbox.stub(imageBase, 'loadUI');
-            stubs.setOriginalImageSize = sandbox.stub(imageBase, 'setOriginalImageSize');
             stubs.errorHandler = sandbox.stub(imageBase, 'errorHandler');
         });
 
@@ -564,26 +509,29 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             imageBase.finishLoading();
             expect(imageBase.loaded).to.be.false;
-            expect(stubs.emit).to.not.have.been.called;
-            expect(stubs.zoom).to.not.have.been.called;
-            expect(stubs.setOriginalImageSize).to.not.have.been.called;
-            expect(stubs.loadUI).to.not.have.been.called;
-            expect(stubs.errorHandler).to.not.have.been.called;
+            expect(stubs.emit).to.not.be.called;
+            expect(stubs.zoom).to.not.be.called;
+            expect(stubs.loadUI).to.not.be.called;
+            expect(stubs.errorHandler).to.not.be.called;
         });
 
         it('should load UI if not destroyed', (done) => {
             imageBase.on('load', () => {
-                expect(stubs.errorHandler).to.not.have.been.called;
+                expect(stubs.errorHandler).to.not.be.called;
                 expect(imageBase.loaded).to.be.true;
-                expect(stubs.zoom).to.have.been.called;
-                expect(stubs.loadUI).to.have.been.called;
+                expect(stubs.zoom).to.be.called;
+                expect(stubs.loadUI).to.be.called;
                 done();
             });
-            stubs.setOriginalImageSize.returns(Promise.resolve());
             imageBase.destroyed = false;
 
             imageBase.finishLoading();
-            expect(stubs.setOriginalImageSize).to.have.been.called;
+            expect(imageBase.loaded).to.be.false;
+            expect(stubs.emit).to.be.called;
+            expect(stubs.zoom).to.be.called;
+            expect(stubs.setOriginalImageSize).to.be.called;
+            expect(stubs.loadUI).to.be.called;
+            expect(stubs.errorHandler).to.be.called;
         });
     });
 

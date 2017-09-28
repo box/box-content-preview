@@ -1,11 +1,12 @@
 /* eslint-disable no-unused-expressions */
 import ImageViewer from '../ImageViewer';
-import BaseViewer from '../../BaseViewer';
+import ImageBaseViewer from '../ImageBaseViewer';
 import Browser from '../../../Browser';
 import * as util from '../../../util';
 
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
+const CSS_CLASS_IMAGE = 'bp-image';
 
 const sandbox = sinon.sandbox.create();
 const imageUrl =
@@ -13,17 +14,13 @@ const imageUrl =
 let image;
 let stubs = {};
 let containerEl;
-let clock;
 
 describe('lib/viewers/image/ImageViewer', () => {
-    const setupFunc = BaseViewer.prototype.setup;
-
     before(() => {
         fixture.setBase('src/lib');
     });
 
     beforeEach(() => {
-        clock = sinon.useFakeTimers();
         fixture.load('viewers/image/__tests__/ImageViewer-test.html');
         containerEl = document.querySelector('.container');
         image = new ImageViewer({
@@ -45,17 +42,12 @@ describe('lib/viewers/image/ImageViewer', () => {
             }
         });
 
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
         image.containerEl = containerEl;
-        image.setup();
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
-        clock.restore();
-
-        Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
 
         if (image && typeof image.destroy === 'function') {
             image.destroy();
@@ -65,459 +57,590 @@ describe('lib/viewers/image/ImageViewer', () => {
     });
 
     describe('setup()', () => {
+        const setupFunc = ImageBaseViewer.prototype.setup;
+
+        afterEach(() => {
+            Object.defineProperty(ImageBaseViewer.prototype, 'setup', { value: setupFunc });
+        });
+
         it('should set up layout', () => {
+            Object.defineProperty(ImageBaseViewer.prototype, 'setup', { value: sandbox.stub() });
+            image.setup();
             expect(image.wrapperEl).to.have.class('bp-image');
             expect(image.imageEl).to.have.class('bp-is-invisible');
         });
     });
 
-    describe('load()', () => {
-        it('should fetch the image URL and load an image', () => {
-            sandbox.stub(image, 'createContentUrlWithAuthParams').returns(imageUrl);
-            sandbox.stub(image, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
-            stubs.event = sandbox.stub(image.imageEl, 'addEventListener');
-            stubs.load = sandbox.stub(image, 'finishLoading');
-            stubs.error = sandbox.stub(image, 'errorHandler');
-            stubs.bind = sandbox.stub(image, 'bindDOMListeners');
+    describe('After setup', () => {
+        const loadFunc = ImageBaseViewer.prototype.load;
 
-            // load the image
-            return image
-                .load(imageUrl)
-                .then(() => {
-                    expect(image.bindDOMListeners).to.be.called;
-                    expect(image.createContentUrlWithAuthParams).to.be.calledWith('foo', '1.png');
-                })
-                .catch(() => {});
-        });
-    });
-
-    describe('prefetch()', () => {
-        it('should prefetch content if content is true and representation is ready', () => {
-            sandbox.stub(image, 'isRepresentationReady').returns(true);
-            sandbox.stub(image, 'createContentUrlWithAuthParams').returns('somecontenturl');
-            image.prefetch({ content: true });
-            expect(image.createContentUrlWithAuthParams).to.be.calledWith('foo', '1.png');
-        });
-
-        it('should not prefetch content if content is true but representation is not ready', () => {
-            sandbox.stub(image, 'isRepresentationReady').returns(false);
-            sandbox.stub(image, 'createContentUrlWithAuthParams');
-            image.prefetch({ content: true });
-            expect(image.createContentUrlWithAuthParams).to.not.be.called;
-        });
-
-        it('should not prefetch content if file is watermarked', () => {
-            image.options.file.watermark_info = {
-                is_watermarked: true
-            };
-            sandbox.stub(image, 'createContentUrlWithAuthParams');
-
-            image.prefetch({ content: true });
-
-            expect(image.createContentUrlWithAuthParams).to.not.be.called;
-        });
-    });
-
-    describe('updatePannability()', () => {
         beforeEach(() => {
-            stubs.cursor = sandbox.stub(image, 'updateCursor');
-            image.didPan = true;
+            stubs.setup = sandbox.stub(image, 'setup');
+            Object.defineProperty(ImageBaseViewer.prototype, 'load', { value: sandbox.stub() });
+            image.wrapperEl = document.querySelector('.bp-container');
+            image.wrapperEl.classList.add(CSS_CLASS_IMAGE);
+
+            image.imageEl = image.wrapperEl.appendChild(document.createElement('img'));
+            image.imageEl.setAttribute('data-page-number', 1);
         });
 
-        it('should ignore if image does not exist', () => {
-            stubs.imageEl = image.imageEl;
-            image.imageEl = null;
-
-            image.updatePannability();
-
-            expect(image.didPan).to.have.been.true;
-            expect(stubs.cursor).to.not.be.called;
-
-            image.imageEl = stubs.imageEl;
+        afterEach(() => {
+            Object.defineProperty(ImageBaseViewer.prototype, 'load', { value: loadFunc });
         });
 
-        it('should set pannability to true if rotated image is pannable', () => {
-            sandbox.stub(image, 'isRotated').returns(true);
+        describe('finishLoading()', () => {
+            const finishFunc = ImageBaseViewer.prototype.finishLoading;
 
-            image.imageEl.style.height = '50px';
-            image.imageEl.style.width = '10px';
-            image.wrapperEl.style.height = '10px';
-            image.wrapperEl.style.width = '50px';
-
-            image.updatePannability();
-            expect(image.didPan).to.have.been.false;
-            expect(stubs.cursor).to.be.called;
-        });
-
-        it('should set pannability to false if rotated image is not pannable', () => {
-            sandbox.stub(image, 'isRotated').returns(true);
-
-            image.imageEl.style.height = '10px';
-            image.wrapperEl.style.height = '50px';
-            image.imageEl.style.width = '10px';
-            image.wrapperEl.style.width = '50px';
-
-            image.updatePannability();
-
-            expect(image.didPan).to.have.been.false;
-            expect(stubs.cursor).to.be.called;
-        });
-
-        it('should set pannability to true if non-rotated image is pannable', () => {
-            sandbox.stub(image, 'isRotated').returns(false);
-
-            image.imageEl.style.height = '50px';
-            image.wrapperEl.style.height = '10px';
-            image.imageEl.style.width = '50px';
-            image.wrapperEl.style.width = '10px';
-
-            image.updatePannability();
-
-            expect(image.didPan).to.have.been.false;
-            expect(stubs.cursor).to.be.called;
-        });
-
-        it('should set pannability to false if non-rotated image is not pannable', () => {
-            sandbox.stub(image, 'isRotated').returns(false);
-
-            image.imageEl.style.height = '10px';
-            image.wrapperEl.style.height = '50px';
-            image.imageEl.style.width = '10px';
-            image.wrapperEl.style.width = '50px';
-
-            image.updatePannability();
-
-            expect(image.didPan).to.have.been.false;
-            expect(stubs.cursor).to.be.called;
-        });
-    });
-
-    describe('rotateLeft()', () => {
-        beforeEach(() => {
-            stubs.emit = sandbox.stub(image, 'emit');
-            stubs.orientChange = sandbox.stub(image, 'handleOrientationChange');
-            stubs.scale = sandbox.stub(image, 'setScale');
-            image.currentRotationAngle = 0;
-        });
-
-        it('should rotate the image 90 degrees to the left', () => {
-            image.rotateLeft();
-
-            expect(image.currentRotationAngle).to.equal(-90);
-            expect(image.imageEl.getAttribute('data-rotation-angle')).to.equal('-90');
-            expect(image.imageEl.style.transform).to.equal('rotate(-90deg)');
-            expect(stubs.emit).to.be.calledWith('rotate');
-            expect(stubs.orientChange).to.be.called;
-        });
-    });
-
-    describe('zoom()', () => {
-        beforeEach(() => {
-            sandbox.stub(image, 'appendAuthParams').returns(imageUrl);
-            sandbox.stub(image, 'finishLoading');
-
-            // Stub out methods called in zoom()
-            stubs.adjustZoom = sandbox.stub(image, 'adjustImageZoomPadding');
-
-            // Set image height & width
-            image.imageEl.style.width = '100px';
-            image.imageEl.style.height = '100px';
-            image.wrapperEl.style.width = '50px';
-            image.wrapperEl.style.height = '50px';
-
-            sandbox.stub(image, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
-            image.load(imageUrl).catch(() => {});
-        });
-
-        describe('should zoom in by modifying', () => {
-            it('width', () => {
-                image.imageEl.style.width = '200px';
-
-                const origImageSize = image.imageEl.getBoundingClientRect();
-                image.zoom('in');
-                const newImageSize = image.imageEl.getBoundingClientRect();
-                expect(newImageSize.width).gt(origImageSize.width);
+            beforeEach(() => {
+                stubs.destroyed = sandbox.stub(image, 'isDestroyed').returns(false);
+                stubs.setOriginalImageSize = sandbox.stub(image, 'setOriginalImageSize');
+                Object.defineProperty(ImageBaseViewer.prototype, 'finishLoading', { value: sandbox.stub() });
+                stubs.errorHandler = sandbox.stub(image, 'errorHandler');
             });
 
-            it('height', () => {
-                image.imageEl.style.height = '200px';
+            afterEach(() => {
+                Object.defineProperty(ImageBaseViewer.prototype, 'finishLoading', { value: finishFunc });
+            });
+
+            it('should do nothing if already destroyed', () => {
+                stubs.destroyed.returns(true);
+                image.finishLoading();
+                expect(stubs.setOriginalImageSize).to.not.have.been.called;
+                expect(stubs.errorHandler).to.not.have.been.called;
+            });
+
+            it('should load UI if not destroyed', (done) => {
+                const promise = Promise.resolve();
+                stubs.setOriginalImageSize.returns(promise);
+                promise.should.be.fulfilled.then(() => {
+                    expect(stubs.errorHandler).to.not.have.been.called;
+                    done();
+                }).catch(() => {
+                    Assert.fail();
+                });
+
+                image.finishLoading();
+                expect(stubs.setOriginalImageSize).to.have.been.called;
+            });
+
+            it('should load call error handler if viewer cannot get original image size for scaling', (done) => {
+                const promise = Promise.reject();
+                stubs.setOriginalImageSize.returns(promise);
+                promise.should.be.fulfilled.then(() => {
+                    Assert.fail();
+                }).catch(() => {
+                    expect(stubs.errorHandler).to.have.been.called;
+                    done();
+                });
+
+                image.finishLoading();
+                expect(stubs.setOriginalImageSize).to.have.been.called;
+            });
+        });
+
+        describe('load()', () => {
+
+            it('should fetch the image URL and load an image', () => {
+                sandbox.stub(image, 'createContentUrlWithAuthParams').returns(imageUrl);
+                sandbox.stub(image, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+                stubs.event = sandbox.stub(image.imageEl, 'addEventListener');
+                stubs.load = sandbox.stub(image, 'finishLoading');
+                stubs.error = sandbox.stub(image, 'errorHandler');
+                stubs.bind = sandbox.stub(image, 'bindDOMListeners');
+
+                // load the image
+                return image
+                    .load(imageUrl)
+                    .then(() => {
+                        expect(image.bindDOMListeners).to.be.called;
+                        expect(image.createContentUrlWithAuthParams).to.be.calledWith('foo', '1.png');
+                    })
+                    .catch(() => {});
+            });
+        });
+
+        describe('prefetch()', () => {
+            it('should prefetch content if content is true and representation is ready', () => {
+                sandbox.stub(image, 'isRepresentationReady').returns(true);
+                sandbox.stub(image, 'createContentUrlWithAuthParams').returns('somecontenturl');
+                image.prefetch({ content: true });
+                expect(image.createContentUrlWithAuthParams).to.be.calledWith('foo', '1.png');
+            });
+
+            it('should not prefetch content if content is true but representation is not ready', () => {
+                sandbox.stub(image, 'isRepresentationReady').returns(false);
+                sandbox.stub(image, 'createContentUrlWithAuthParams');
+                image.prefetch({ content: true });
+                expect(image.createContentUrlWithAuthParams).to.not.be.called;
+            });
+
+            it('should not prefetch content if file is watermarked', () => {
+                image.options.file.watermark_info = {
+                    is_watermarked: true
+                };
+                sandbox.stub(image, 'createContentUrlWithAuthParams');
+
+                image.prefetch({ content: true });
+
+                expect(image.createContentUrlWithAuthParams).to.not.be.called;
+            });
+        });
+
+        describe('updatePannability()', () => {
+            beforeEach(() => {
+                stubs.cursor = sandbox.stub(image, 'updateCursor');
+                image.didPan = true;
+            });
+
+            it('should ignore if image does not exist', () => {
+                stubs.imageEl = image.imageEl;
+                image.imageEl = null;
+
+                image.updatePannability();
+
+                expect(image.didPan).to.have.been.true;
+                expect(stubs.cursor).to.not.be.called;
+
+                image.imageEl = stubs.imageEl;
+            });
+
+            it('should set pannability to true if rotated image is pannable', () => {
+                sandbox.stub(image, 'isRotated').returns(true);
+
+                image.imageEl.style.height = '50px';
+                image.imageEl.style.width = '10px';
+                image.wrapperEl.style.height = '10px';
+                image.wrapperEl.style.width = '50px';
+
+                image.updatePannability();
+                expect(image.didPan).to.have.been.false;
+                expect(stubs.cursor).to.be.called;
+            });
+
+            it('should set pannability to false if rotated image is not pannable', () => {
+                sandbox.stub(image, 'isRotated').returns(true);
+
+                image.imageEl.style.height = '10px';
+                image.wrapperEl.style.height = '50px';
+                image.imageEl.style.width = '10px';
+                image.wrapperEl.style.width = '50px';
+
+                image.updatePannability();
+
+                expect(image.didPan).to.have.been.false;
+                expect(stubs.cursor).to.be.called;
+            });
+
+            it('should set pannability to true if non-rotated image is pannable', () => {
+                sandbox.stub(image, 'isRotated').returns(false);
+
+                image.imageEl.style.height = '50px';
+                image.wrapperEl.style.height = '10px';
+                image.imageEl.style.width = '50px';
+                image.wrapperEl.style.width = '10px';
+
+                image.updatePannability();
+
+                expect(image.didPan).to.have.been.false;
+                expect(stubs.cursor).to.be.called;
+            });
+
+            it('should set pannability to false if non-rotated image is not pannable', () => {
+                sandbox.stub(image, 'isRotated').returns(false);
+
+                image.imageEl.style.height = '10px';
+                image.wrapperEl.style.height = '50px';
+                image.imageEl.style.width = '10px';
+                image.wrapperEl.style.width = '50px';
+
+                image.updatePannability();
+
+                expect(image.didPan).to.have.been.false;
+                expect(stubs.cursor).to.be.called;
+            });
+        });
+
+        describe('rotateLeft()', () => {
+            beforeEach(() => {
+                stubs.emit = sandbox.stub(image, 'emit');
+                stubs.orientChange = sandbox.stub(image, 'handleOrientationChange');
+                stubs.scale = sandbox.stub(image, 'setScale');
+                image.currentRotationAngle = 0;
+            });
+
+            it('should rotate the image 90 degrees to the left', () => {
+                image.rotateLeft();
+
+                expect(image.currentRotationAngle).to.equal(-90);
+                expect(image.imageEl.getAttribute('data-rotation-angle')).to.equal('-90');
+                expect(image.imageEl.style.transform).to.equal('rotate(-90deg)');
+                expect(stubs.emit).to.be.calledWith('rotate');
+                expect(stubs.orientChange).to.be.called;
+            });
+        });
+
+        describe('zoom()', () => {
+            beforeEach(() => {
+                sandbox.stub(image, 'appendAuthParams').returns(imageUrl);
+                sandbox.stub(image, 'finishLoading');
+
+                // Stub out methods called in zoom()
+                stubs.adjustZoom = sandbox.stub(image, 'adjustImageZoomPadding');
+
+                // Set image height & width
+                image.imageEl.style.width = '100px';
+                image.imageEl.style.height = '100px';
+                image.wrapperEl.style.width = '50px';
+                image.wrapperEl.style.height = '50px';
+
+                sandbox.stub(image, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+                image.load(imageUrl).catch(() => {});
+            });
+
+            describe('should zoom in by modifying', () => {
+                it('width', () => {
+                    image.imageEl.style.width = '200px';
+
+                    const origImageSize = image.imageEl.getBoundingClientRect();
+                    image.zoom('in');
+                    const newImageSize = image.imageEl.getBoundingClientRect();
+                    expect(newImageSize.width).gt(origImageSize.width);
+                });
+
+                it('height', () => {
+                    image.imageEl.style.height = '200px';
+
+                    const origImageSize = image.imageEl.getBoundingClientRect();
+                    image.zoomIn();
+                    const newImageSize = image.imageEl.getBoundingClientRect();
+                    expect(newImageSize.height).gt(origImageSize.height);
+                    expect(stubs.adjustZoom).to.be.called;
+                });
+            });
+
+            describe('should zoom out by modifying', () => {
+                it('width', () => {
+                    image.imageEl.style.width = '200px';
+
+                    const origImageSize = image.imageEl.getBoundingClientRect();
+                    image.zoomOut();
+                    const newImageSize = image.imageEl.getBoundingClientRect();
+                    expect(newImageSize.width).lt(origImageSize.width);
+                    expect(stubs.adjustZoom).to.be.called;
+                });
+
+                it('height', () => {
+                    image.imageEl.style.height = '200px';
+
+                    const origImageSize = image.imageEl.getBoundingClientRect();
+                    image.zoomOut();
+                    const newImageSize = image.imageEl.getBoundingClientRect();
+                    expect(newImageSize.height).lt(origImageSize.height);
+                    expect(stubs.adjustZoom).to.be.called;
+                });
+            });
+
+            it('should swap height & width when image is rotated', () => {
+                sandbox.stub(image, 'isRotated').returns(true);
+
+                image.load(imageUrl).catch(() => {});
+                image.imageEl.style.width = '200px'; // ensures width > height
 
                 const origImageSize = image.imageEl.getBoundingClientRect();
                 image.zoomIn();
                 const newImageSize = image.imageEl.getBoundingClientRect();
+
                 expect(newImageSize.height).gt(origImageSize.height);
                 expect(stubs.adjustZoom).to.be.called;
             });
-        });
 
-        describe('should zoom out by modifying', () => {
-            it('width', () => {
-                image.imageEl.style.width = '200px';
+            it('should reset dimensions and adjust padding when called with reset', () => {
+                image.imageEl.style.width = '10px';
+                image.imageEl.style.height = '20px';
+                sandbox.spy(image, 'zoom');
 
-                const origImageSize = image.imageEl.getBoundingClientRect();
-                image.zoomOut();
-                const newImageSize = image.imageEl.getBoundingClientRect();
-                expect(newImageSize.width).lt(origImageSize.width);
+                image.zoom('reset');
+
+                expect(image.imageEl.style.width).to.equal('');
+                expect(image.imageEl.style.height).to.equal('');
                 expect(stubs.adjustZoom).to.be.called;
-            });
-
-            it('height', () => {
-                image.imageEl.style.height = '200px';
-
-                const origImageSize = image.imageEl.getBoundingClientRect();
-                image.zoomOut();
-                const newImageSize = image.imageEl.getBoundingClientRect();
-                expect(newImageSize.height).lt(origImageSize.height);
-                expect(stubs.adjustZoom).to.be.called;
+                expect(image.zoom).to.be.calledWith();
             });
         });
 
-        it('should swap height & width when image is rotated', () => {
-            sandbox.stub(image, 'isRotated').returns(true);
+        describe('setScale()', () => {
+            it('should emit a scale event with current scale and rotationAngle', () => {
+                sandbox.stub(image, 'emit');
+                image.currentRotationAngle = -90;
+                const [width, height] = [100, 100];
 
-            image.load(imageUrl).catch(() => {});
-            image.imageEl.style.width = '200px'; // ensures width > height
-
-            const origImageSize = image.imageEl.getBoundingClientRect();
-            image.zoomIn();
-            const newImageSize = image.imageEl.getBoundingClientRect();
-
-            expect(newImageSize.height).gt(origImageSize.height);
-            expect(stubs.adjustZoom).to.be.called;
-        });
-
-        it('should reset dimensions and adjust padding when called with reset', () => {
-            image.imageEl.style.width = '10px';
-            image.imageEl.style.height = '20px';
-            sandbox.spy(image, 'zoom');
-
-            image.zoom('reset');
-
-            expect(image.imageEl.style.width).to.equal('');
-            expect(image.imageEl.style.height).to.equal('');
-            expect(stubs.adjustZoom).to.be.called;
-            expect(image.zoom).to.be.calledWith();
-        });
-    });
-
-    describe('setScale()', () => {
-        it('should emit a scale event with current scale and rotationAngle', () => {
-            sandbox.stub(image, 'emit');
-            image.currentRotationAngle = -90;
-            const [width, height] = [100, 100];
-
-            image.setScale(width, height);
-            expect(image.emit).to.be.calledWith('scale', {
-                scale: sinon.match.any,
-                rotationAngle: sinon.match.number
+                image.setScale(width, height);
+                expect(image.emit).to.be.calledWith('scale', {
+                    scale: sinon.match.any,
+                    rotationAngle: sinon.match.number
+                });
             });
         });
-    });
 
-    describe('loadUI()', () => {
-        it('should load UI & controls for zoom', () => {
-            image.loadUI();
+        describe('loadUI()', () => {
+            it('should load UI & controls for zoom', () => {
+                image.loadUI();
 
-            expect(image.controls).to.not.be.undefined;
-            expect(image.controls.buttonRefs.length).to.equal(5);
-        });
-    });
-
-    describe('print()', () => {
-        beforeEach(() => {
-            stubs.mockIframe = util.openContentInsideIframe(image.imageEl.outerHTML);
-            stubs.focus = sandbox.stub(stubs.mockIframe.contentWindow, 'focus');
-            stubs.execCommand = sandbox.stub(stubs.mockIframe.contentWindow.document, 'execCommand');
-            stubs.print = sandbox.stub(stubs.mockIframe.contentWindow, 'print');
-
-            stubs.openContentInsideIframe = sandbox.stub(util, 'openContentInsideIframe').returns(stubs.mockIframe);
-            stubs.getName = sandbox.stub(Browser, 'getName');
+                expect(image.controls).to.not.be.undefined;
+                expect(image.controls.buttonRefs.length).to.equal(5);
+            });
         });
 
-        it('should open the content inside an iframe, center, and focus', () => {
-            image.print();
-            expect(stubs.openContentInsideIframe).to.be.called;
-            expect(image.printImage.style.display).to.equal('block');
-            expect(image.printImage.style.margin).to.equal('0px auto');
-            expect(stubs.focus).to.be.called;
+        describe('print()', () => {
+            beforeEach(() => {
+                stubs.mockIframe = util.openContentInsideIframe(image.imageEl.outerHTML);
+                stubs.focus = sandbox.stub(stubs.mockIframe.contentWindow, 'focus');
+                stubs.execCommand = sandbox.stub(stubs.mockIframe.contentWindow.document, 'execCommand');
+                stubs.print = sandbox.stub(stubs.mockIframe.contentWindow, 'print');
+
+                stubs.openContentInsideIframe = sandbox.stub(util, 'openContentInsideIframe').returns(stubs.mockIframe);
+                stubs.getName = sandbox.stub(Browser, 'getName');
+            });
+
+            it('should open the content inside an iframe, center, and focus', () => {
+                image.print();
+                expect(stubs.openContentInsideIframe).to.be.called;
+                expect(image.printImage.style.display).to.equal('block');
+                expect(image.printImage.style.margin).to.equal('0px auto');
+                expect(stubs.focus).to.be.called;
+            });
+
+            it('should execute the print command if the browser is Explorer', () => {
+                stubs.getName.returns('Explorer');
+
+                image.print();
+                expect(stubs.execCommand).to.be.calledWith('print', false, null);
+            });
+
+            it('should execute the print command if the browser is Edge', () => {
+                stubs.getName.returns('Edge');
+
+                image.print();
+                expect(stubs.execCommand).to.be.calledWith('print', false, null);
+            });
+
+            it('should call the contentWindow print for other browsers', () => {
+                stubs.getName.returns('Chrome');
+
+                image.print();
+                expect(stubs.print).to.be.called;
+            });
         });
 
-        it('should execute the print command if the browser is Explorer', () => {
-            stubs.getName.returns('Explorer');
+        describe('isRotated()', () => {
+            it('should return false if image is not rotated', () => {
+                const result = image.isRotated();
+                expect(result).to.be.false;
+            });
 
-            image.print();
-            expect(stubs.execCommand).to.be.calledWith('print', false, null);
+            it('should return true if image is rotated', () => {
+                image.currentRotationAngle = 90;
+                const result = image.isRotated();
+                expect(result).to.be.true;
+            });
         });
 
-        it('should execute the print command if the browser is Edge', () => {
-            stubs.getName.returns('Edge');
+        describe('adjustImageZoomPadding()', () => {
+            beforeEach(() => {
+                // Set wrapper dimensions
+                image.wrapperEl.style.height = '200px';
+                image.wrapperEl.style.width = '100px';
 
-            image.print();
-            expect(stubs.execCommand).to.be.calledWith('print', false, null);
+                // Set image dimensions
+                image.imageEl.style.height = '50px';
+                image.imageEl.style.width = '25px';
+            });
+
+            it('should adjust zoom padding accordingly if image is rotated', () => {
+                stubs.rotated = sandbox.stub(image, 'isRotated').returns(true);
+                image.adjustImageZoomPadding();
+                expect(stubs.rotated).to.be.called;
+                expect(image.imageEl.style.left).to.equal('37.5px');
+                expect(image.imageEl.style.top).to.equal('75px');
+            });
+
+            it('should adjust zoom padding accordingly if image is not rotated', () => {
+                image.adjustImageZoomPadding();
+                expect(image.imageEl.style.left).to.equal('37.5px');
+                expect(image.imageEl.style.top).to.equal('75px');
+            });
         });
 
-        it('should call the contentWindow print for other browsers', () => {
-            stubs.getName.returns('Chrome');
+        describe('bindDOMListeners()', () => {
+            beforeEach(() => {
+                image.isMobile = true;
+                image.imageEl.addEventListener = sandbox.stub();
+                stubs.listeners = image.imageEl.addEventListener;
+            });
 
-            image.print();
-            expect(stubs.print).to.be.called;
-        });
-    });
-
-    describe('isRotated()', () => {
-        it('should return false if image is not rotated', () => {
-            const result = image.isRotated();
-            expect(result).to.be.false;
-        });
-
-        it('should return true if image is rotated', () => {
-            image.currentRotationAngle = 90;
-            const result = image.isRotated();
-            expect(result).to.be.true;
-        });
-    });
-
-    describe('adjustImageZoomPadding()', () => {
-        beforeEach(() => {
-            // Set wrapper dimensions
-            image.wrapperEl.style.height = '200px';
-            image.wrapperEl.style.width = '100px';
-
-            // Set image dimensions
-            image.imageEl.style.height = '50px';
-            image.imageEl.style.width = '25px';
+            it('should bind all mobile listeners', () => {
+                sandbox.stub(Browser, 'isIOS').returns(true);
+                image.bindDOMListeners();
+                expect(stubs.listeners).to.have.been.calledWith('orientationchange', image.handleOrientationChange);
+            });
         });
 
-        it('should adjust zoom padding accordingly if image is rotated', () => {
-            stubs.rotated = sandbox.stub(image, 'isRotated').returns(true);
-            image.adjustImageZoomPadding();
-            expect(stubs.rotated).to.be.called;
-            expect(image.imageEl.style.left).to.equal('37.5px');
-            expect(image.imageEl.style.top).to.equal('75px');
+        describe('unbindDOMListeners()', () => {
+            beforeEach(() => {
+                stubs.removeEventListener = sandbox.stub(document, 'removeEventListener');
+                image.imageEl.removeEventListener = sandbox.stub();
+                image.isMobile = true;
+                stubs.listeners = image.imageEl.removeEventListener;
+            });
+
+            it('should unbind all default image listeners', () => {
+                image.unbindDOMListeners();
+                expect(stubs.listeners).to.have.been.calledWith('load', image.finishLoading);
+                expect(stubs.listeners).to.have.been.calledWith('error', image.errorHandler);
+            });
+
+            it('should unbind all mobile listeners', () => {
+                sandbox.stub(Browser, 'isIOS').returns(true);
+                image.unbindDOMListeners();
+                expect(stubs.listeners).to.have.been.calledWith('orientationchange', image.handleOrientationChange);
+            });
         });
 
-        it('should adjust zoom padding accordingly if image is not rotated', () => {
-            image.adjustImageZoomPadding();
-            expect(image.imageEl.style.left).to.equal('37.5px');
-            expect(image.imageEl.style.top).to.equal('75px');
-        });
-    });
+        describe('handleMouseUp()', () => {
+            beforeEach(() => {
+                stubs.pan = sandbox.stub(image, 'stopPanning');
+                stubs.zoom = sandbox.stub(image, 'zoom');
+                image.isPanning = false;
+            });
 
-    describe('bindDOMListeners()', () => {
-        beforeEach(() => {
-            image.isMobile = true;
-            image.imageEl.addEventListener = sandbox.stub();
-            stubs.listeners = image.imageEl.addEventListener;
-        });
+            it('should do nothing if incorrect click type', () => {
+                const event = {
+                    button: 3,
+                    ctrlKey: null,
+                    metaKey: null,
+                    clientX: 1,
+                    clientY: 1,
+                    preventDefault: sandbox.stub()
+                };
+                image.handleMouseUp(event);
+                event.button = 1;
+                event.ctrlKey = 'blah';
+                image.handleMouseUp(event);
+                event.ctrlKey = null;
+                event.metaKey = 'blah';
+                image.handleMouseUp(event);
+                expect(stubs.zoom).to.not.be.called;
+            });
 
-        it('should bind all mobile listeners', () => {
-            sandbox.stub(Browser, 'isIOS').returns(true);
-            image.bindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('orientationchange', image.handleOrientationChange);
-        });
-    });
+            it('should zoom in if zoomable but not pannable', () => {
+                const event = {
+                    button: 1,
+                    ctrlKey: null,
+                    metaKey: null,
+                    clientX: 1,
+                    clientY: 1,
+                    preventDefault: sandbox.stub()
+                };
+                image.isZoomable = true;
+                image.handleMouseUp(event);
+                expect(stubs.zoom).to.be.calledWith('in');
+            });
 
-    describe('unbindDOMListeners()', () => {
-        beforeEach(() => {
-            stubs.removeEventListener = sandbox.stub(document, 'removeEventListener');
-            image.imageEl.removeEventListener = sandbox.stub();
-            image.isMobile = true;
-            stubs.listeners = image.imageEl.removeEventListener;
-        });
+            it('should reset zoom if mouseup was not due to end of panning', () => {
+                const event = {
+                    button: 1,
+                    ctrlKey: null,
+                    metaKey: null,
+                    clientX: 1,
+                    clientY: 1,
+                    preventDefault: sandbox.stub()
+                };
+                image.isZoomable = false;
+                image.didPan = false;
+                image.handleMouseUp(event);
+                expect(stubs.zoom).to.be.calledWith('reset');
+            });
 
-        it('should unbind all default image listeners', () => {
-            image.unbindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('load', image.finishLoading);
-            expect(stubs.listeners).to.have.been.calledWith('error', image.errorHandler);
-        });
-
-        it('should unbind all mobile listeners', () => {
-            sandbox.stub(Browser, 'isIOS').returns(true);
-            image.unbindDOMListeners();
-            expect(stubs.listeners).to.have.been.calledWith('orientationchange', image.handleOrientationChange);
-        });
-    });
-
-    describe('handleMouseUp()', () => {
-        beforeEach(() => {
-            stubs.pan = sandbox.stub(image, 'stopPanning');
-            stubs.zoom = sandbox.stub(image, 'zoom');
-            image.isPanning = false;
-        });
-
-        it('should do nothing if incorrect click type', () => {
-            const event = {
-                button: 3,
-                ctrlKey: null,
-                metaKey: null,
-                clientX: 1,
-                clientY: 1,
-                preventDefault: sandbox.stub()
-            };
-            image.handleMouseUp(event);
-            event.button = 1;
-            event.ctrlKey = 'blah';
-            image.handleMouseUp(event);
-            event.ctrlKey = null;
-            event.metaKey = 'blah';
-            image.handleMouseUp(event);
-            expect(stubs.zoom).to.not.be.called;
-        });
-
-        it('should zoom in if zoomable but not pannable', () => {
-            const event = {
-                button: 1,
-                ctrlKey: null,
-                metaKey: null,
-                clientX: 1,
-                clientY: 1,
-                preventDefault: sandbox.stub()
-            };
-            image.isZoomable = true;
-            image.handleMouseUp(event);
-            expect(stubs.zoom).to.be.calledWith('in');
+            it('should not zoom if mouse up was due to end of panning', () => {
+                const event = {
+                    button: 1,
+                    ctrlKey: null,
+                    metaKey: null,
+                    clientX: 1,
+                    clientY: 1,
+                    preventDefault: sandbox.stub()
+                };
+                image.isZoomable = false;
+                image.didPan = true;
+                image.handleMouseUp(event);
+                expect(stubs.zoom).to.not.be.called;
+            });
         });
 
-        it('should reset zoom if mouseup was not due to end of panning', () => {
-            const event = {
-                button: 1,
-                ctrlKey: null,
-                metaKey: null,
-                clientX: 1,
-                clientY: 1,
-                preventDefault: sandbox.stub()
-            };
-            image.isZoomable = false;
-            image.didPan = false;
-            image.handleMouseUp(event);
-            expect(stubs.zoom).to.be.calledWith('reset');
+        describe('handleOrientationChange()', () => {
+            it('should adjust zoom padding and set scale', () => {
+                stubs.padding = sandbox.stub(image, 'adjustImageZoomPadding');
+                sandbox.stub(image, 'emit');
+                image.handleOrientationChange();
+                expect(stubs.padding).to.be.called;
+                expect(image.emit).to.be.calledWith('scale', {
+                    scale: sinon.match.any,
+                    rotationAngle: sinon.match.number
+                });
+            });
         });
 
-        it('should not zoom if mouse up was due to end of panning', () => {
-            const event = {
-                button: 1,
-                ctrlKey: null,
-                metaKey: null,
-                clientX: 1,
-                clientY: 1,
-                preventDefault: sandbox.stub()
-            };
-            image.isZoomable = false;
-            image.didPan = true;
-            image.handleMouseUp(event);
-            expect(stubs.zoom).to.not.be.called;
-        });
-    });
+        describe('setOriginalImageSize()', () => {
+            it('should use the naturalHeight and naturalWidth when available', (done) => {
+                const imageEl = {
+                    naturalWidth: 100,
+                    naturalHeight: 100,
+                    setAttribute: (name, value) => {
+                        imageEl[name] = value;
+                    },
+                    getAttribute: (name) => imageEl[name]
+                };
 
-    describe('handleOrientationChange()', () => {
-        it('should adjust zoom padding and set scale', () => {
-            stubs.padding = sandbox.stub(image, 'adjustImageZoomPadding');
-            sandbox.stub(image, 'emit');
-            image.handleOrientationChange();
-            expect(stubs.padding).to.be.called;
-            expect(image.emit).to.be.calledWith('scale', {
-                scale: sinon.match.any,
-                rotationAngle: sinon.match.number
+                const promise = image.setOriginalImageSize(imageEl);
+                promise.should.be.fulfilled.then(() => {
+                    expect(imageEl.getAttribute('originalWidth')).to.equal(imageEl.naturalWidth);
+                    expect(imageEl.getAttribute('originalHeight')).to.equal(imageEl.naturalHeight);
+                    done();
+                }).catch(() => {
+                    Assert.fail();
+                });
+            });
+
+            it('should default to 300x150 when naturalHeight and naturalWidth are 0x0', (done) => {
+                const imageEl = {
+                    naturalWidth: 0,
+                    naturalHeight: 0,
+                    setAttribute: (name, value) => {
+                        imageEl[name] = value;
+                    },
+                    getAttribute: (name) => imageEl[name]
+                };
+
+                const getStub = sandbox.stub(util, 'get').returns(Promise.resolve('not real a image'));
+                const promise = image.setOriginalImageSize(imageEl);
+                promise.should.be.fulfilled.then(() => {
+                    expect(imageEl.getAttribute('originalWidth')).to.equal(300);
+                    expect(imageEl.getAttribute('originalHeight')).to.equal(150);
+                    done();
+                }).catch(() => {
+                    Assert.fail();
+                });
+            });
+
+            it('should resolve when the get call fails', (done) => {
+                const imageEl = {};
+                const getStub = sandbox.stub(util, 'get').returns(Promise.reject());
+                const promise = image.setOriginalImageSize(imageEl);
+                promise.should.be.fulfilled.then(() => {
+                    Assert.fail();
+                }).catch(() => {
+                    done();
+                });
             });
         });
     });
