@@ -26,6 +26,7 @@ export const CLASS_TEXTAREA = 'bp-textarea';
 export const CLASS_HIGHLIGHT_BTNS = 'bp-annotation-highlight-btns';
 export const CLASS_ADD_HIGHLIGHT_BTN = 'bp-add-highlight-btn';
 export const CLASS_ADD_HIGHLIGHT_COMMENT_BTN = 'bp-highlight-comment-btn';
+export const CLASS_DELETE_COMMENT_BTN = 'delete-comment-btn';
 export const CLASS_ANNOTATION_LAYER_HIGHLIGHT = 'bp-annotation-layer-highlight';
 export const CLASS_ANNOTATION_LAYER_DRAW = 'bp-annotation-layer-draw';
 export const CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS = 'bp-annotation-layer-draw-in-progress';
@@ -82,6 +83,7 @@ export const SELECTOR_MOBILE_DIALOG_HEADER = `.${CLASS_MOBILE_DIALOG_HEADER}`;
 export const SELECTOR_DIALOG_CLOSE = `.${CLASS_DIALOG_CLOSE}`;
 export const SELECTOR_HIGHLIGHT_BTNS = `.${CLASS_HIGHLIGHT_BTNS}`;
 export const SELECTOR_ADD_HIGHLIGHT_BTN = `.${CLASS_ADD_HIGHLIGHT_BTN}`;
+export const SELECTOR_DELETE_COMMENT_BTN = `.${CLASS_DELETE_COMMENT_BTN}`;
 
 export const PERMISSION_ANNOTATE = 'can_annotate';
 export const PERMISSION_CAN_VIEW_ANNOTATIONS_ALL = 'can_view_annotations_all';

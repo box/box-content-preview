@@ -66,7 +66,7 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
             expect(highlightThread.reset).to.be.called;
 
             // only plain highlight annotation should still exist
-            expect(highlightThread.annotations.length).to.equal(1);
+            expect(Object.keys(highlightThread.annotations).length).to.equal(1);
         });
 
         it('should destroy the annotation when cancelling a new highlight comment annotation', () => {

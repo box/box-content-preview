@@ -136,7 +136,7 @@ class AnnotationService extends EventEmitter {
      * @return {Promise} Promise that resolves with fetched annotations
      */
     read(fileVersionId) {
-        this.annotations = [];
+        this.annotations = {};
         let resolve;
         let reject;
         const promise = new Promise((success, failure) => {
@@ -201,24 +201,20 @@ class AnnotationService extends EventEmitter {
      * Generates a map of thread ID to annotations in thread.
      *
      * @private
-     * @param {Annotation[]} annotations - Annotations to generate map from
+     * @param {Object} annotations - Annotations to generate map from
      * @return {Object} Map of thread ID to annotations in that thread
      */
     createThreadMap(annotations) {
         const threadMap = {};
+        this.annotations = annotations;
 
         // Construct map of thread ID to annotations
-        annotations.forEach((annotation) => {
+        Object.keys(annotations).forEach((annotationID) => {
+            const annotation = annotations[annotationID];
             const threadID = annotation.threadID;
-            threadMap[threadID] = threadMap[threadID] || [];
-            threadMap[threadID].push(annotation);
-        });
-
-        // Sort annotations by date created
-        Object.keys(threadMap).forEach((threadID) => {
-            threadMap[threadID].sort((a, b) => {
-                return new Date(a.created) - new Date(b.created);
-            });
+            const thread = threadMap[threadID] || [];
+            threadMap[threadID] = thread;
+            thread[annotation.annotationID] = annotation;
         });
 
         return threadMap;
@@ -301,7 +297,8 @@ class AnnotationService extends EventEmitter {
                     });
                 } else {
                     data.entries.forEach((annotationData) => {
-                        this.annotations.push(this.createAnnotation(annotationData));
+                        const annotation = this.createAnnotation(annotationData);
+                        this.annotations[annotation.annotationID] = annotation;
                     });
 
                     if (data.next_marker) {
