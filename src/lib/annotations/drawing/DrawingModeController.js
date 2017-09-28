@@ -226,6 +226,7 @@ class DrawingModeController extends AnnotationModeController {
                 } else {
                     thread.deleteThread();
                     this.unregisterThread(thread);
+
                     // Redraw any threads that the deleted thread could have been overlapping
                     this.threads.search(thread).forEach((drawingThread) => drawingThread.show());
                 }
