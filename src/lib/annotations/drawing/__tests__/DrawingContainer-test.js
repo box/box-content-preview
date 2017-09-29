@@ -17,6 +17,18 @@ describe('lib/annotations/drawing/DrawingContainer', () => {
         drawingContainer = null;
     });
 
+    describe('destroy()', () => {
+        it('should clear the undo and redo stack', () => {
+            drawingContainer.redoStack = [1,2,3];
+            drawingContainer.undoStack = [1,2,3];
+
+            drawingContainer.destroy();
+
+            expect(drawingContainer.undoStack.length).to.equal(0)
+            expect(drawingContainer.redoStack.length).to.equal(0)
+        });
+    });
+
     describe('insert()', () => {
         it('should insert an item into the undoStack and clear the redo stack', () => {
             drawingContainer.redoStack = [1,2,3];
