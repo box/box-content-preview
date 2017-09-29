@@ -77,7 +77,7 @@ class PreviewErrorViewer extends BaseViewer {
         }
 
         /* eslint-disable no-param-reassign */
-        err = err instanceof Error ? err : new Error(__('error_default'));
+        err = err instanceof Error && typeof err.displayMessage === 'string' ? err : new Error(__('error_default'));
         /* eslint-enable no-param-reassign */
 
         // If there is no display message fallback to the message from above
