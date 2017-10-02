@@ -838,18 +838,8 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         it('should do nothing if there is no Box3D runtime reference', () => {
             sandbox.mock(renderer.instance).expects('trigger').withArgs('rotate_on_axis').never();
             renderer.box3d = undefined;
-            // renderer.instance = {};
             renderer.rotateOnAxis({ x: -1 });
         });
-
-        // it('should do nothing if there is no Box3D runtime reference', () => {
-        //     sandbox.mock(renderer.instance).expects('trigger').withArgs('rotate_on_axis').never();
-        //     renderer.box3d = undefined;
-        //     renderer.instance = {
-        //         destroy: () => {}
-        //     };
-        //     renderer.rotateOnAxis({ x: -1 });
-        // });
 
         it('should trigger a "rotate_on_axis" event on the runtime', () => {
             const axis = { x: -1, y: 0 };
