@@ -27,7 +27,6 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
 /**
  * Model3d
  * This is the entry point for the model3d preview.
- * @class
  */
 @autobind
 class Model3DViewer extends Box3DViewer {

@@ -80,6 +80,11 @@ describe('lib/annotations/drawing/DrawingThread', () => {
             thread.concreteContext = {
                 clearRect: sandbox.stub()
             };
+
+            thread.pathContainer = {
+                destroy: sandbox.stub()
+            };
+
             thread.annotations = ['annotation'];
 
 
@@ -88,6 +93,7 @@ describe('lib/annotations/drawing/DrawingThread', () => {
             expect(thread.concreteContext.clearRect).to.be.called;
             expect(thread.clearBoundary).to.be.called;
             expect(thread.deleteAnnotationWithID).to.be.calledWith('annotation');
+            expect(thread.pathContainer).to.equal(null);
         });
     });
 

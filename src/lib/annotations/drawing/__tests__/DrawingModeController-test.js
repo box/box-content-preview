@@ -272,10 +272,13 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
                 search: sandbox.stub().returns([])
             };
 
+            const unregisterThreadStub = sandbox.stub(drawingModeController, 'unregisterThread');
+
             drawingModeController.handleAnnotationEvent(thread, {
                 event: 'dialogdelete'
             });
             expect(thread.deleteThread).to.be.called;
+            expect(unregisterThreadStub).to.be.called;
             expect(drawingModeController.threads.search).to.be.called;
         });
     });

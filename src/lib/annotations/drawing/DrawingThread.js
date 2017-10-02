@@ -78,7 +78,7 @@ class DrawingThread extends AnnotationThread {
     }
 
     /**
-     * Soft destructor for a drawingthread object
+     * Destructor for a drawing thread object.
      *
      * [destructor]
      * @inheritdoc
@@ -140,7 +140,8 @@ class DrawingThread extends AnnotationThread {
     /* eslint-disable no-unused-vars */
 
     /**
-     * Delete a saved drawing thread
+     * Delete a saved drawing thread by deleting each annotation
+     * and then clearing the concrete context, boundary, and destroying its path.
      *
      * @public
      * @return {void}
@@ -159,6 +160,9 @@ class DrawingThread extends AnnotationThread {
         );
 
         this.clearBoundary();
+
+        this.pathContainer.destroy();
+        this.pathContainer = null;
     }
 
     /**
