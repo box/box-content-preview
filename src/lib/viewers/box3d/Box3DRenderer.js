@@ -522,6 +522,7 @@ class Box3DRenderer extends EventEmitter {
             } else if (gamepad.id.indexOf('OpenVR') > -1) {
                 controllerName = HTC_VIVE;
             }
+
             // If there are common entities for left-right controllers, load them first.
             if (!this.vrCommonLoadPromise) {
                 if (commonEntities) {
@@ -535,17 +536,15 @@ class Box3DRenderer extends EventEmitter {
                 }
             }
             if (!this.vrGamepadLoadPromises[controllerName]) {
-                this.vrCommonLoadPromise.then(() => {
-                    this.vrGamepadLoadPromises[controllerName] = this.box3d.addRemoteEntities(
+                this.vrGamepadLoadPromises[controllerName] = this.vrCommonLoadPromise.then(() => {
+                    return this.box3d.addRemoteEntities(
                         `${this
                             .staticBaseURI}third-party/model3d/${MODEL3D_STATIC_ASSETS_VERSION}/WebVR/${controllerName}/entities.json`,
                         { isExternal: true }
                     );
-                    this.vrGamepadLoadPromises[controllerName].then(onGamepadModelLoad);
                 });
-            } else {
-                this.vrGamepadLoadPromises[controllerName].then(onGamepadModelLoad);
             }
+            this.vrGamepadLoadPromises[controllerName].then(onGamepadModelLoad);
         };
 
         const handController = controller.addComponent('motion_gamepad_device', { handPreference: handedness });

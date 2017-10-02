@@ -173,7 +173,7 @@ class Model3DRenderer extends Box3DRenderer {
         }
 
         // Add components to the instance.
-        this.instance.addComponent('preview_axis_rotation', {}, `axis_rotation_${this.instance.id}`);
+        this.instance.addComponent('axis_rotation', {}, `axis_rotation_${this.instance.id}`);
         this.instance.addComponent('animation', {}, `animation_${this.instance.id}`);
         const animations = this.box3d.getAssetsByClass(Box3D.AnimationAsset);
         if (animations.length > 0) {
@@ -182,18 +182,6 @@ class Model3DRenderer extends Box3DRenderer {
 
         this.addHelpersToScene();
         scene.when('load', () => this.onSceneLoad());
-    }
-
-    /**
-     * Request from the engine, the up and forward axes.
-     *
-     * @public
-     * @return {Promise} Resolves with the up and forward axes.
-     */
-    getAxes() {
-        return new Promise((resolve) => {
-            this.box3d.trigger('get_axes', resolve);
-        });
     }
 
     /** @inheritdoc */
@@ -213,15 +201,37 @@ class Model3DRenderer extends Box3DRenderer {
         }
 
         // Reset the transforms of the instances under the root (they can be modified in VR).
-        this.instance.getChildren().forEach((instance) => {
-            instance.setPosition(ORIGIN_VECTOR.x, ORIGIN_VECTOR.y, ORIGIN_VECTOR.z);
-            instance.setQuaternion(
+        this.instance.getChildren().forEach((child) => {
+            child.setPosition(ORIGIN_VECTOR.x, ORIGIN_VECTOR.y, ORIGIN_VECTOR.z);
+            child.setScale(1, 1, 1);
+            child.setQuaternion(
                 IDENTITY_QUATERNION.x,
                 IDENTITY_QUATERNION.y,
                 IDENTITY_QUATERNION.z,
                 IDENTITY_QUATERNION.w
             );
+            // Clear the bounds of the object so that they need to be recalculated.
+            child.unsetProperty('bounds');
         });
+        this.instance.unsetProperty('bounds');
+
+        // Re-enable auto-scaling if it exists and had previously been disabled (usually by VR)
+        const scaleToSize = this.instance.getComponentByScriptId('scale_to_size');
+        if (scaleToSize) {
+            scaleToSize.enable();
+        }
+
+        // Re-enable auto-alignment if it exists and had previously been disabled (usually by VR)
+        const alignToPosition = this.instance.getComponentByScriptId('align_to_position');
+        if (alignToPosition) {
+            alignToPosition.enable();
+        }
+
+        // If we're still in VR mode, disable the auto-scaling and alignment while keeping the
+        // newly-reset transform of the model.
+        if (this.vrEnabled) {
+            this.disableAutoTransform();
+        }
     }
 
     /** @inheritdoc */
@@ -497,7 +507,7 @@ class Model3DRenderer extends Box3DRenderer {
             return;
         }
 
-        this.box3d.trigger('rotate_on_axis', axis, true);
+        this.instance.trigger('rotate_on_axis', axis, true);
     }
 
     /**
@@ -515,7 +525,7 @@ class Model3DRenderer extends Box3DRenderer {
         }
 
         // Modify the axes.
-        this.box3d.trigger('set_axes', upAxis, forwardAxis, useTransition);
+        this.instance.trigger('set_axes_orientation', upAxis, forwardAxis, useTransition);
     }
 
     /**
@@ -574,6 +584,9 @@ class Model3DRenderer extends Box3DRenderer {
             // Enable position-less camera controls
             this.box3d.on('update', this.updateNonPositionalVrControls, this);
         }
+
+        // Disable auto-scaling and alignment components so that we can modify the model in VR.
+        this.disableAutoTransform();
     }
 
     /** @inheritdoc */
@@ -584,6 +597,31 @@ class Model3DRenderer extends Box3DRenderer {
         }
 
         super.onDisableVr();
+    }
+
+    /**
+     * Turn off scaleToSize and alignToPosition behavior for models.
+     * @return {void}
+     */
+    disableAutoTransform() {
+        if (!this.instance) {
+            return;
+        }
+
+        // We check if the components exist because, in a custom preview app, they might not.
+        const scaleToSize = this.instance.getComponentByScriptId('scale_to_size');
+        if (scaleToSize) {
+            const scale = this.instance.getScale();
+            scaleToSize.disable();
+            this.instance.setScale(scale.x, scale.y, scale.z);
+        }
+
+        const alignToPosition = this.instance.getComponentByScriptId('align_to_position');
+        if (alignToPosition) {
+            const position = this.instance.getPosition();
+            alignToPosition.disable();
+            this.instance.setPosition(position.x, position.y, position.z);
+        }
     }
 
     /**
