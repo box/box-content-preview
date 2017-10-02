@@ -9,7 +9,8 @@ const ANNOTATORS = [
         NAME: 'Document',
         CONSTRUCTOR: DocAnnotator,
         VIEWER: ['Document', 'Presentation'],
-        TYPE: [TYPES.point, TYPES.highlight, TYPES.highlight_comment]
+        // Temporarily include draw annotations for demo purposes
+        TYPE: [TYPES.point, TYPES.highlight, TYPES.highlight_comment, TYPES.draw]
     },
     {
         NAME: 'Image',
@@ -109,6 +110,11 @@ class BoxAnnotations {
             modifiedAnnotator.TYPE = modifiedAnnotator.TYPE.filter((type) => {
                 return !viewerConfig.disabledTypes.includes(type);
             });
+        }
+
+        // Remove draw annotations if they aren't explicitly enabled.
+        if (!viewerConfig.drawEnabled) {
+            modifiedAnnotator.TYPE = modifiedAnnotator.TYPE.filter((type) => type !== TYPES.draw);
         }
 
         return modifiedAnnotator;
