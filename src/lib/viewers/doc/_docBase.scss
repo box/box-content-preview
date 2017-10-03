@@ -9,6 +9,8 @@
     overflow: hidden;
     position: absolute;
     right: 0;
+    // Removes canvas flickering on tap for iOS Safari
+    -webkit-tap-highlight-color: transparent;
     top: 0;
     user-select: none;
     width: 100%;
