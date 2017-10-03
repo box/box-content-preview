@@ -65,7 +65,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             when: () => {}
         };
         renderer.box3d = {
-            addRemoteEntities: () => Promise.resolve(),
+            importEntitiesFromUrl: () => Promise.resolve(),
             canvas: {
                 addEventListener: () => {},
                 removeEventListener: () => {}
