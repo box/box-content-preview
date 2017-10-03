@@ -756,3 +756,20 @@ export function pageNumberFromScroll(currentPageNum, previousScrollTop, currentP
 
     return pageNum;
 }
+
+/**
+ * extracts an integer dimension from a representation;
+ *
+ * @public
+ * @param {Object} representation - The representation object
+ * @return {number} the dimension value
+ */
+export function getDimensionsFromRep(representation) {
+    let dimensions = representation.properties.dimensions;
+
+    if (dimensions) {
+        dimensions = parseInt(dimensions.split('x')[0], 10);
+    }
+
+    return dimensions;
+}

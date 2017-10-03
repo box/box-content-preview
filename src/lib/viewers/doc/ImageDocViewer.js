@@ -1,8 +1,9 @@
 import BaseViewer from '../BaseViewer';
 import { getRepresentation } from '../../file';
 import RepStatus from '../../RepStatus';
-import DocPreloader from './DocPreloader';
+// import DocPreloader from './DocPreloader';
 import ImagePageLoader from './ImagePageLoader';
+import ImageDocRenderer from './ImageDocRenderer';
 import { PRELOAD_REP_NAME, STATUS_ERROR } from '../../constants';
 import Controls from '../../Controls';
 import PageControls from '../../PageControls';
@@ -26,6 +27,7 @@ class ImageDocViewer extends BaseViewer {
         this.zoomOut = this.zoomOut.bind(this);
         this.zoomIn = this.zoomIn.bind(this);
         this.handlePageChangeFromScroll = this.handlePageChangeFromScroll.bind(this);
+        this.finishLoading = this.finishLoading.bind(this);
 
         this.loadedPages = [];
     }
@@ -48,11 +50,11 @@ class ImageDocViewer extends BaseViewer {
         this.spacerDiv.style.width = '100%';
 
         // Set up preloader
-        this.preloader = new DocPreloader(this.previewUI);
-        this.preloader.addListener('preload', () => {
-            this.options.logger.setPreloaded();
-            this.resetLoadTimeout(); // Some content is visible - reset load timeout
-        });
+        // this.preloader = new DocPreloader(this.previewUI);
+        // this.preloader.addListener('preload', () => {
+        //     this.options.logger.setPreloaded();
+        //     this.resetLoadTimeout(); // Some content is visible - reset load timeout
+        // });
 
         this.pageLoader = new ImagePageLoader(this.options);
 
@@ -84,18 +86,28 @@ class ImageDocViewer extends BaseViewer {
                 this.pageEls = [];
                 this.pagesCount = representation.metadata.pages;
 
-                this.setInitialHeight();
-                this.constructInitialPages();
+                this.docRenderer = new ImageDocRenderer(
+                    this.docEl,
+                    this.pagesCount,
+                    representation,
+                    this.options.viewer.ASSET,
+                    this.createContentUrlWithAuthParams
+                );
+                this.docRenderer.addListener('load', this.finishLoading);
 
-                this.pageEls.forEach((page) => {
-                    this.loadPage(page, representation);
-                });
+                this.docRenderer.renderDoc();
             })
             .catch((e) => {
                 /* eslint-disable no-console */
                 console.error(e);
                 /* eslint-enable no-console */
             });
+    }
+
+    finishLoading() {
+        this.loaded = true;
+        this.emit('load');
+        this.loadUI();
     }
 
     /**
@@ -143,11 +155,11 @@ class ImageDocViewer extends BaseViewer {
         this.pageWrapperEl.style.height = `${this.pagesCount * (1024 + PAGE_PADDING)}px`;
     }
 
-    constructInitialPages() {
-        for (let pageNum = 1; pageNum <= Math.min(this.pagesCount, INITIAL_NUM_PAGES_TO_LOAD); pageNum++) {
-            this.constructPage(pageNum, false);
-        }
-    }
+    // constructInitialPages() {
+    //     for (let pageNum = 1; pageNum <= Math.min(this.pagesCount, INITIAL_NUM_PAGES_TO_LOAD); pageNum++) {
+    //         this.constructPage(pageNum, false);
+    //     }
+    // }
 
     loadPage(page, representation) {
         const { content } = representation;
@@ -213,7 +225,7 @@ class ImageDocViewer extends BaseViewer {
     }
 
     bindDOMListeners() {
-        this.docEl.addEventListener('scroll', this.scrollHandler);
+        // this.docEl.addEventListener('scroll', this.scrollHandler);
     }
 
     /**
@@ -431,6 +443,10 @@ class ImageDocViewer extends BaseViewer {
 
     getIntVal(element) {
         return parseInt(element, 10);
+    }
+
+    resize() {
+        this.docRenderer.resize();
     }
 }
 
