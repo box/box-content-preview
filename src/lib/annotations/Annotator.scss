@@ -445,13 +445,31 @@ $tablet: 'max-width: 768px';
         padding-top: 1px;
     }
 
+    .bp-btn-annotate-draw-add,
+    .bp-btn-annotate-draw-delete {
+        color: lighten($better-black, 10%);
+        padding: 8px;
+
+        &:hover {
+            color: $better-black;
+        }
+    }
+
     .bp-btn-annotate-draw-add {
-        padding-right: 8px;
+        padding-right: 4px;
+    }
+
+    .bp-btn-annotate-draw-delete {
+        padding-left: 4px;
     }
 
     .bp-highlight-comment-btn {
         padding-top: 3px;
     }
+}
+
+.bp-annotation-drawing-dialog {
+    padding: 0;
 }
 
 .bp-use-default-cursor {
@@ -507,8 +525,7 @@ $tablet: 'max-width: 768px';
 
 .bp-annotation-drawing-label,
 .bp-annotation-highlight-label {
-    padding-left: 5px;
-    padding-right: 5px;
+    padding: 8px 0 8px 8px;
     width: 100%;
 }
 
