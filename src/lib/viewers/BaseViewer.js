@@ -1,6 +1,7 @@
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import debounce from 'lodash.debounce';
+import cloneDeep from 'lodash.clonedeep';
 import fullscreen from '../Fullscreen';
 import RepStatus from '../RepStatus';
 import {
@@ -637,25 +638,6 @@ class BaseViewer extends EventEmitter {
     //--------------------------------------------------------------------------
 
     /**
-     * Get the configuration for viewer annotations and transform if legacy format.
-     *
-     * @return {Object} An object containing configuration properties.
-     */
-    getViewerAnnotationsConfig() {
-        const option = this.getViewerOption('annotations');
-        const config = option !== null && option !== undefined ? option : {};
-
-        // Backwards compatability for old boolean flag usage
-        if (typeof config === 'boolean') {
-            return {
-                enabled: config
-            };
-        }
-
-        return config;
-    }
-
-    /**
      * Loads the appropriate annotator and loads the file's annotations
      *
      * @protected
@@ -669,12 +651,7 @@ class BaseViewer extends EventEmitter {
 
         /* global BoxAnnotations */
         const boxAnnotations = new BoxAnnotations();
-        // #TODO(@spramod|@jholdstock): remove this after we have annotation instancing
-        const viewerName = this.options.viewer.NAME;
-        const annotationsConfig = this.getViewerAnnotationsConfig();
-
-        const { file } = this.options;
-        this.annotatorConf = boxAnnotations.determineAnnotator(viewerName, file.permissions, annotationsConfig);
+        this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
 
         // No annotatorConf will be returned if the user does not have the correct permissions
         if (!this.annotatorConf) {
@@ -691,26 +668,17 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     initAnnotations() {
-        const { apiHost, container, file, location, token } = this.options;
-        const { id: fileId, file_version: { id: fileVersionId }, permissions } = file;
-
         // Construct and init annotator
-        this.annotator = new this.annotatorConf.CONSTRUCTOR({
-            container,
-            options: {
-                annotator: this.annotatorConf,
-                apiHost,
-                fileId,
-                token,
-                permissions
-            },
-            fileVersionId,
-            isMobile: this.isMobile,
-            hasTouch: this.hasTouch,
-            locale: location.locale,
+        const annotatorOptions = this.createAnnotatorOptions({
+            annotator: this.annotatorConf,
             modeButtons: ANNOTATION_BUTTONS
         });
+        this.annotator = new this.annotatorConf.CONSTRUCTOR(annotatorOptions);
         this.annotator.init(this.scale);
+
+        // Once the annotator instance has been created, emit it so that clients can attach their events.
+        // Annotator object will still be sent along with the viewer in the load event also.
+        this.emit('annotator', this.annotator);
 
         // Add a custom listener for entering/exit annotations mode using the app's custom annotations buttons
         this.addListener('toggleannotationmode', (data) => {
@@ -726,8 +694,6 @@ class BaseViewer extends EventEmitter {
             this.annotator.scrollToAnnotation(data);
         });
 
-        this.annotator.addListener('replaceheader', this.previewUI.replaceHeader);
-
         // Add a custom listener for events emmited by the annotator
         this.annotator.addListener('annotatorevent', this.handleAnnotatorEvents);
     }
@@ -739,14 +705,34 @@ class BaseViewer extends EventEmitter {
      */
     areAnnotationsEnabled() {
         // Respect viewer-specific annotation option if it is set
-        const viewerAnnotations = this.getViewerAnnotationsConfig();
+        // #TODO(@spramod|@jholdstock): remove this after we have annotation instancing
+        this.viewerConfig = this.getViewerAnnotationsConfig();
 
-        if (viewerAnnotations && viewerAnnotations.enabled !== undefined) {
-            return viewerAnnotations.enabled;
+        if (this.viewerConfig && this.viewerConfig.enabled !== undefined) {
+            return this.viewerConfig.enabled;
         }
 
         // Otherwise, use global preview annotation option
         return !!this.options.showAnnotations;
+    }
+
+    /**
+     * Get the configuration for viewer annotations and transform if legacy format.
+     *
+     * @private
+     * @return {Object} An object containing configuration properties.
+     */
+    getViewerAnnotationsConfig() {
+        const option = this.getViewerOption('annotations');
+        const config = option !== null && option !== undefined ? option : {};
+
+        // Backwards compatability for old boolean flag usage
+        if (typeof config === 'boolean') {
+            return {
+                enabled: config
+            };
+        }
+        return config;
     }
 
     /**
@@ -768,11 +754,17 @@ class BaseViewer extends EventEmitter {
                     this.emit('notificationshow', __('notification_annotation_point_mode'));
                 } else if (data.data.mode === ANNOTATION_TYPE_DRAW) {
                     this.emit('notificationshow', __('notification_annotation_draw_mode'));
+                    this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.modeExit:
                 this.enableViewerControls();
                 this.emit('notificationhide');
+
+                if (data.data.mode === ANNOTATION_TYPE_DRAW) {
+                    this.emit('notificationshow', __('notification_annotation_draw_mode'));
+                    this.previewUI.replaceHeader(data.data.headerSelector);
+                }
                 break;
             case ANNOTATOR_EVENT.error:
                 this.emit('notificationshow', data.data);
@@ -789,6 +781,23 @@ class BaseViewer extends EventEmitter {
         // Emit all annotation events to Preview
         this.emit(data.event, data.data);
         this.emit('annotatorevent', data);
+    }
+
+    /**
+     * Creates combined options to give to the annotator
+     *
+     * @private
+     * @param {Object} moreOptions - Options specified by init()
+     * @return {Object} combined options
+     */
+    createAnnotatorOptions(moreOptions) {
+        return cloneDeep(
+            Object.assign({}, this.options, moreOptions, {
+                isMobile: this.isMobile,
+                hasTouch: this.hasTouch,
+                locale: this.options.location.locale
+            })
+        );
     }
 }
 

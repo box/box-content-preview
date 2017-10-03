@@ -88,18 +88,17 @@ class BoxAnnotations {
     /**
      * Chooses a annotator based on viewer.
      *
-     * @param {Object} viewerName - Current preview viewer name
-     * @param {Object} permissions - File permissions
-     * @param {Object} [viewerConfig] - Annotation configuration for a specific viewer
+     * @param {Object} options - Viewer options
+     * @param {Object} [viewerConfig] - Viewer-specific annotations configs
      * @param {Array} [disabledAnnotators] - List of disabled annotators
      * @return {Object|null} A copy of the annotator to use, if available
      */
-    determineAnnotator(viewerName, permissions, viewerConfig = {}, disabledAnnotators = []) {
+    determineAnnotator(options, viewerConfig = {}, disabledAnnotators = []) {
         let modifiedAnnotator = null;
 
-        const hasAnnotationPermissions = canLoadAnnotations(permissions);
-        const annotator = this.getAnnotatorsForViewer(viewerName, disabledAnnotators);
-        if (!hasAnnotationPermissions || !annotator || viewerConfig.enabled === false) {
+        const hasAnnotationPermissions = canLoadAnnotations(options.file.permissions);
+        const annotator = this.getAnnotatorsForViewer(options.viewer.NAME, disabledAnnotators);
+        if (!hasAnnotationPermissions || !annotator) {
             return modifiedAnnotator;
         }
 

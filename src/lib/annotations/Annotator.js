@@ -43,32 +43,22 @@ class Annotator extends EventEmitter {
     /**
      * [constructor]
      *
-     * @param {AnnotatorData} data - Data for constructing an Annotator
+     * @param {Object} options - Options for constructing an Annotator
      * @return {Annotator} Annotator instance
      */
-    constructor(data) {
+    constructor(options) {
         super();
 
-        this.container = data.container;
-        this.options = data.options;
-        this.fileVersionId = data.fileVersionId;
-        this.locale = data.locale;
+        this.options = options;
+        this.locale = options.location.locale || 'en-US';
         this.validationErrorEmitted = false;
-        this.isMobile = data.isMobile;
-        this.hasTouch = data.hasTouch;
-        this.modeButtons = data.modeButtons;
+        this.isMobile = options.isMobile || false;
+        this.hasTouch = options.hasTouch || false;
         this.annotationModeHandlers = [];
 
-        const { CONTROLLERS } = this.options.annotator || {};
-        this.modeControllers = CONTROLLERS || {};
-
-        // Get annotation permissions
-        const permissions = data.options.permissions || {};
-        this.permissions = {
-            canAnnotate: permissions.can_annotate || false,
-            canViewAllAnnotations: permissions.can_view_annotations_all || false,
-            canViewOwnAnnotations: permissions.can_view_annotations_self || false
-        };
+        const { file } = this.options;
+        this.fileVersionId = file.file_version.id;
+        this.fileId = file.id;
     }
 
     /**
@@ -112,13 +102,22 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     init(initialScale = 1) {
+        // Get the container dom element if selector was passed, in tests
+        this.container = this.options.container;
+        if (typeof this.options.container === 'string') {
+            this.container = document.querySelector(this.options.container);
+        }
+
+        // Get annotated element from container
         this.annotatedElement = this.getAnnotatedEl(this.container);
 
-        const { apiHost, fileId, token } = this.options;
+        this.getAnnotationPermissions(this.options.file);
+        const { apiHost, file, token } = this.options;
         this.annotationService = new AnnotationService({
             apiHost,
-            fileId,
-            token
+            fileId: file.id,
+            token,
+            canAnnotate: this.permissions.canAnnotate
         });
 
         // Set up mobile annotations dialog
@@ -126,8 +125,13 @@ class Annotator extends EventEmitter {
             this.setupMobileDialog();
         }
 
+        // Get applicable annotation mode controllers
+        const { CONTROLLERS } = this.options.annotator || {};
+        this.modeControllers = CONTROLLERS || {};
+
         // Show the annotate button for all enabled types for the
         // current viewer
+        this.modeButtons = this.options.modeButtons;
         Object.keys(this.modeButtons).forEach((type) => {
             this.showModeAnnotateButton(type);
         });
@@ -139,7 +143,7 @@ class Annotator extends EventEmitter {
 
     /**
      * Returns whether or not the current annotation mode is enabled for
-     * the current viewer/anntotor.
+     * the current viewer/annotator.
      *
      * @param {string} type - Type of annotation
      * @return {boolean} Whether or not the annotation mode is enabled
@@ -196,44 +200,6 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Returns click handler for toggling annotation mode.
-     *
-     * @param {string} mode - Target annotation mode
-     * @return {Function|null} Click handler
-     */
-    getAnnotationModeClickHandler(mode) {
-        if (!mode || !this.isModeAnnotatable(mode)) {
-            return null;
-        }
-
-        return () => {
-            this.toggleAnnotationHandler(mode);
-        };
-    }
-
-    /**
-     * Sets up the shared mobile dialog element.
-     *
-     * @return {void}
-     */
-    setupMobileDialog() {
-        // Generate HTML of dialog
-        const mobileDialogEl = document.createElement('div');
-        mobileDialogEl.setAttribute('data-type', DATA_TYPE_ANNOTATION_DIALOG);
-        mobileDialogEl.classList.add(CLASS_MOBILE_ANNOTATION_DIALOG);
-        mobileDialogEl.classList.add(CLASS_ANNOTATION_DIALOG);
-        mobileDialogEl.classList.add(CLASS_HIDDEN);
-        mobileDialogEl.id = ID_MOBILE_ANNOTATION_DIALOG;
-
-        mobileDialogEl.innerHTML = `
-            <div class="${CLASS_MOBILE_DIALOG_HEADER}">
-                <button class="${CLASS_DIALOG_CLOSE}">${ICON_CLOSE}</button>
-            </div>`.trim();
-
-        this.container.appendChild(mobileDialogEl);
-    }
-
-    /**
      * Fetches and shows saved annotations.
      *
      * @return {void}
@@ -270,76 +236,6 @@ class Annotator extends EventEmitter {
             const thread = pageThreads[threadID];
             thread.hide();
         });
-    }
-
-    /**
-     * Renders annotations from memory.
-     *
-     * @private
-     * @return {void}
-     */
-    renderAnnotations() {
-        Object.keys(this.threads).forEach((pageNum) => {
-            this.renderAnnotationsOnPage(pageNum);
-        });
-    }
-
-    /**
-     * Renders annotations from memory for a specified page.
-     *
-     * @private
-     * @param {number} pageNum - Page number
-     * @return {void}
-     */
-    renderAnnotationsOnPage(pageNum) {
-        if (!this.threads) {
-            return;
-        }
-
-        const pageThreads = this.getThreadsOnPage(pageNum);
-        Object.keys(pageThreads).forEach((threadID) => {
-            const thread = pageThreads[threadID];
-            if (!this.isModeAnnotatable(thread.type)) {
-                return;
-            }
-
-            thread.show();
-        });
-    }
-
-    /**
-     * Rotates annotations. Hides point annotation mode button if rotated
-     *
-     * @override
-     * @param {number} [rotationAngle] - current angle image is rotated
-     * @param {number} [pageNum] - Page number
-     * @return {void}
-     * @private
-     */
-    rotateAnnotations(rotationAngle = 0, pageNum = 0) {
-        // Only render a specific page's annotations unless no page number
-        // is specified
-        if (pageNum) {
-            this.renderAnnotationsOnPage(pageNum);
-        } else {
-            this.renderAnnotations();
-        }
-
-        // Only show/hide point annotation button if user has the
-        // appropriate permissions
-        if (!this.permissions.canAnnotate) {
-            return;
-        }
-
-        // Hide create annotations button if image is rotated
-        const pointButtonSelector = this.modeButtons[TYPES.point].selector;
-        const pointAnnotateButton = this.getAnnotateButton(pointButtonSelector);
-
-        if (rotationAngle !== 0) {
-            annotatorUtil.hideElement(pointAnnotateButton);
-        } else {
-            annotatorUtil.showElement(pointAnnotateButton);
-        }
     }
 
     /**
@@ -404,7 +300,7 @@ class Annotator extends EventEmitter {
             return;
         } else if (this.isInAnnotationMode(mode)) {
             this.currentAnnotationMode = null;
-            this.emit(ANNOTATOR_EVENT.modeExit, { mode });
+            this.emit(ANNOTATOR_EVENT.modeExit, { mode, headerSelector: SELECTOR_BOX_PREVIEW_BASE_HEADER });
         }
 
         this.annotatedElement.classList.remove(CLASS_ANNOTATION_MODE);
@@ -413,7 +309,6 @@ class Annotator extends EventEmitter {
 
             if (mode === TYPES.draw) {
                 this.annotatedElement.classList.remove(CLASS_ANNNOTATION_DRAWING_BACKGROUND);
-                this.emit(ANNOTATOR_EVENT.replaceHeader, SELECTOR_BOX_PREVIEW_BASE_HEADER);
             }
         }
 
@@ -429,40 +324,19 @@ class Annotator extends EventEmitter {
      * @return {void}
      */
     enableAnnotationMode(mode, buttonEl) {
-        this.emit(ANNOTATOR_EVENT.modeEnter, { mode });
+        this.emit(ANNOTATOR_EVENT.modeEnter, { mode, headerSelector: SELECTOR_ANNOTATION_DRAWING_HEADER });
+
         this.annotatedElement.classList.add(CLASS_ANNOTATION_MODE);
         if (buttonEl) {
             buttonEl.classList.add(CLASS_ACTIVE);
 
             if (mode === TYPES.draw) {
                 this.annotatedElement.classList.add(CLASS_ANNNOTATION_DRAWING_BACKGROUND);
-                this.emit(ANNOTATOR_EVENT.replaceHeader, SELECTOR_ANNOTATION_DRAWING_HEADER);
             }
         }
 
         this.unbindDOMListeners(); // Disable other annotations
         this.bindModeListeners(mode); // Enable mode
-    }
-
-    /**
-     * Exits all annotation modes except the specified mode
-     *
-     * @param {string} mode - Current annotation mode
-     * @return {void}
-     */
-    exitAnnotationModesExcept(mode) {
-        Object.keys(this.modeButtons).forEach((type) => {
-            if (mode === type) {
-                return;
-            }
-
-            const buttonSelector = this.modeButtons[type].selector;
-            if (!this.modeButtons[type].button) {
-                this.modeButtons[type].button = this.getAnnotateButton(buttonSelector);
-            }
-
-            this.disableAnnotationMode(type, this.modeButtons[type].button);
-        });
     }
 
     //--------------------------------------------------------------------------
@@ -520,6 +394,29 @@ class Annotator extends EventEmitter {
         this.bindDOMListeners();
         this.bindCustomListenersOnService(this.annotationService);
         this.addListener(ANNOTATOR_EVENT.scale, this.scaleAnnotations);
+    }
+
+    /**
+     * Sets up the shared mobile dialog element.
+     *
+     * @protected
+     * @return {void}
+     */
+    setupMobileDialog() {
+        // Generate HTML of dialog
+        const mobileDialogEl = document.createElement('div');
+        mobileDialogEl.setAttribute('data-type', DATA_TYPE_ANNOTATION_DIALOG);
+        mobileDialogEl.classList.add(CLASS_MOBILE_ANNOTATION_DIALOG);
+        mobileDialogEl.classList.add(CLASS_ANNOTATION_DIALOG);
+        mobileDialogEl.classList.add(CLASS_HIDDEN);
+        mobileDialogEl.id = ID_MOBILE_ANNOTATION_DIALOG;
+
+        mobileDialogEl.innerHTML = `
+            <div class="${CLASS_MOBILE_DIALOG_HEADER}">
+                <button class="${CLASS_DIALOG_CLOSE}">${ICON_CLOSE}</button>
+            </div>`.trim();
+
+        this.container.appendChild(mobileDialogEl);
     }
 
     /**
@@ -601,46 +498,6 @@ class Annotator extends EventEmitter {
 
         /* istanbul ignore next */
         service.addListener(ANNOTATOR_EVENT.error, this.handleServiceEvents);
-    }
-
-    /**
-     * Handle events emitted by the annotaiton service
-     *
-     * @private
-     * @param {Object} [data] - Annotation service event data
-     * @param {string} [data.event] - Annotation service event
-     * @param {string} [data.data] -
-     * @return {void}
-     */
-    handleServiceEvents(data) {
-        let errorMessage = '';
-        switch (data.reason) {
-            case 'read':
-                errorMessage = __('annotations_load_error');
-                break;
-            case 'create':
-                errorMessage = __('annotations_create_error');
-                this.showAnnotations();
-                break;
-            case 'delete':
-                errorMessage = __('annotations_delete_error');
-                this.showAnnotations();
-                break;
-            case 'authorization':
-                errorMessage = __('annotations_authorization_error');
-                break;
-            default:
-        }
-
-        if (data.error) {
-            /* eslint-disable no-console */
-            console.error(ANNOTATOR_EVENT.error, data.error);
-            /* eslint-enable no-console */
-        }
-
-        if (errorMessage) {
-            this.emit(ANNOTATOR_EVENT.error, errorMessage);
-        }
     }
 
     /**
@@ -814,29 +671,112 @@ class Annotator extends EventEmitter {
         return this.currentAnnotationMode === mode;
     }
 
-    /**
-     * Scrolls specified annotation into view
-     *
-     * @private
-     * @param {Object} threadID - annotation threadID for thread that should scroll into view
-     * @return {void}
-     */
-    scrollToAnnotation(threadID) {
-        if (!threadID) {
-            return;
-        }
-
-        Object.values(this.threads).forEach((pageThreads) => {
-            if (threadID in pageThreads) {
-                const thread = pageThreads[threadID];
-                thread.scrollIntoView();
-            }
-        });
-    }
-
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
+
+    /**
+     * Renders annotations from memory.
+     *
+     * @private
+     * @return {void}
+     */
+    renderAnnotations() {
+        Object.keys(this.threads).forEach((pageNum) => {
+            this.renderAnnotationsOnPage(pageNum);
+        });
+    }
+
+    /**
+     * Renders annotations from memory for a specified page.
+     *
+     * @private
+     * @param {number} pageNum - Page number
+     * @return {void}
+     */
+    renderAnnotationsOnPage(pageNum) {
+        if (!this.threads) {
+            return;
+        }
+
+        const pageThreads = this.getThreadsOnPage(pageNum);
+        Object.keys(pageThreads).forEach((threadID) => {
+            const thread = pageThreads[threadID];
+            if (!this.isModeAnnotatable(thread.type)) {
+                return;
+            }
+
+            thread.show();
+        });
+    }
+
+    /**
+     * Rotates annotations. Hides point annotation mode button if rotated
+     *
+     * @private
+     * @param {number} [rotationAngle] - current angle image is rotated
+     * @param {number} [pageNum] - Page number
+     * @return {void}
+     * @private
+     */
+    rotateAnnotations(rotationAngle = 0, pageNum = 0) {
+        // Only render a specific page's annotations unless no page number
+        // is specified
+        if (pageNum) {
+            this.renderAnnotationsOnPage(pageNum);
+        } else {
+            this.renderAnnotations();
+        }
+
+        // Only show/hide point annotation button if user has the
+        // appropriate permissions
+        if (!this.permissions.canAnnotate) {
+            return;
+        }
+
+        // Hide create annotations button if image is rotated
+        const pointButtonSelector = this.modeButtons[TYPES.point].selector;
+        const pointAnnotateButton = this.getAnnotateButton(pointButtonSelector);
+
+        if (rotationAngle !== 0) {
+            annotatorUtil.hideElement(pointAnnotateButton);
+        } else {
+            annotatorUtil.showElement(pointAnnotateButton);
+        }
+    }
+
+    /**
+     * Returns whether or not the current annotation mode is enabled for
+     * the current viewer/annotator.
+     *
+     * @private
+     * @param {Object} file - File
+     * @return {boolean} Whether or not the annotation mode is enabled
+     */
+    getAnnotationPermissions(file) {
+        const permissions = file.permissions || {};
+        this.permissions = {
+            canAnnotate: permissions.can_annotate || false,
+            canViewAllAnnotations: permissions.can_view_annotations_all || false,
+            canViewOwnAnnotations: permissions.can_view_annotations_self || false
+        };
+    }
+
+    /**
+     * Returns click handler for toggling annotation mode.
+     *
+     * @param {string} mode - Target annotation mode
+     * @return {Function|null} Click handler
+     */
+    getAnnotationModeClickHandler(mode) {
+        if (!mode || !this.isModeAnnotatable(mode)) {
+            return null;
+        }
+
+        return () => {
+            this.toggleAnnotationHandler(mode);
+        };
+    }
 
     /**
      * Orient annotations to the correct scale and orientation of the annotated document.
@@ -848,6 +788,27 @@ class Annotator extends EventEmitter {
     scaleAnnotations(data) {
         this.setScale(data.scale);
         this.rotateAnnotations(data.rotationAngle, data.pageNum);
+    }
+
+    /**
+     * Exits all annotation modes except the specified mode
+     *
+     * @param {string} mode - Current annotation mode
+     * @return {void}
+     */
+    exitAnnotationModesExcept(mode) {
+        Object.keys(this.modeButtons).forEach((type) => {
+            if (mode === type) {
+                return;
+            }
+
+            const buttonSelector = this.modeButtons[type].selector;
+            if (!this.modeButtons[type].button) {
+                this.modeButtons[type].button = this.getAnnotateButton(buttonSelector);
+            }
+
+            this.disableAnnotationMode(type, this.modeButtons[type].button);
+        });
     }
 
     /**
@@ -882,6 +843,26 @@ class Annotator extends EventEmitter {
         });
 
         return thread;
+    }
+
+    /**
+     * Scrolls specified annotation into view
+     *
+     * @private
+     * @param {Object} threadID - annotation threadID for thread that should scroll into view
+     * @return {void}
+     */
+    scrollToAnnotation(threadID) {
+        if (!threadID) {
+            return;
+        }
+
+        Object.values(this.threads).forEach((pageThreads) => {
+            if (threadID in pageThreads) {
+                const thread = pageThreads[threadID];
+                thread.scrollIntoView();
+            }
+        });
     }
 
     /**
@@ -925,6 +906,46 @@ class Annotator extends EventEmitter {
         console.error('Annotation could not be created due to invalid params');
         /* eslint-enable no-console */
         this.validationErrorEmitted = true;
+    }
+
+    /**
+     * Handle events emitted by the annotaiton service
+     *
+     * @private
+     * @param {Object} [data] - Annotation service event data
+     * @param {string} [data.event] - Annotation service event
+     * @param {string} [data.data] -
+     * @return {void}
+     */
+    handleServiceEvents(data) {
+        let errorMessage = '';
+        switch (data.reason) {
+            case 'read':
+                errorMessage = __('annotations_load_error');
+                break;
+            case 'create':
+                errorMessage = __('annotations_create_error');
+                this.showAnnotations();
+                break;
+            case 'delete':
+                errorMessage = __('annotations_delete_error');
+                this.showAnnotations();
+                break;
+            case 'authorization':
+                errorMessage = __('annotations_authorization_error');
+                break;
+            default:
+        }
+
+        if (data.error) {
+            /* eslint-disable no-console */
+            console.error(ANNOTATOR_EVENT.error, data.error);
+            /* eslint-enable no-console */
+        }
+
+        if (errorMessage) {
+            this.emit(ANNOTATOR_EVENT.error, errorMessage);
+        }
     }
 
     /**
@@ -972,10 +993,10 @@ class Annotator extends EventEmitter {
     }
 
     /**
-     * Emits a generic viewer event
+     * Emits a generic annotator event
      *
      * @private
-     * @emits viewerevent
+     * @emits annotatorevent
      * @param {string} event - Event name
      * @param {Object} data - Event data
      * @return {void}

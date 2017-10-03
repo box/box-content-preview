@@ -119,8 +119,7 @@ export const ANNOTATOR_EVENT = {
     modeExit: 'annotationmodeexit',
     fetch: 'annotationsfetched',
     error: 'annotationerror',
-    scale: 'scaleannotations',
-    replaceHeader: 'replaceheader'
+    scale: 'scaleannotations'
 };
 
 export const THREAD_EVENT = {

@@ -371,69 +371,6 @@ class DocAnnotator extends Annotator {
     }
 
     /**
-     * Creates a plain highlight annotation.
-     *
-     * @private
-     * @return {void}
-     */
-    createPlainHighlight() {
-        this.highlightCurrentSelection();
-        this.createHighlightThread();
-    }
-
-    /**
-     * Creates an highlight annotation thread, adds it to in-memory map, and returns it.
-     *
-     * @override
-     * @param {string} [commentText] - If provided, this will save a highlight comment annotation, with commentText
-     * being the text as the first comment in the thread.
-     * @return {DocHighlightThread} Created doc highlight annotation thread
-     */
-    createHighlightThread(commentText) {
-        // Empty string will be passed in if no text submitted in comment
-        if (commentText === '' || !this.lastHighlightEvent) {
-            return null;
-        }
-
-        if (this.createHighlightDialog) {
-            this.createHighlightDialog.hide();
-        }
-
-        this.isCreatingHighlight = false;
-
-        const highlightType = commentText ? TYPES.highlight_comment : TYPES.highlight;
-        const location = this.getLocationFromEvent(this.lastHighlightEvent, highlightType);
-        this.highlighter.removeAllHighlights();
-        if (!location) {
-            return null;
-        }
-
-        const annotations = [];
-        const thread = this.createAnnotationThread(annotations, location, highlightType);
-        this.lastHighlightEvent = null;
-        this.lastSelection = null;
-
-        if (!thread) {
-            return null;
-        }
-
-        if (!commentText) {
-            thread.dialog.drawAnnotation();
-        } else {
-            thread.dialog.hasComments = true;
-        }
-
-        thread.state = STATES.hover;
-        thread.show(this.plainHighlightEnabled, this.commentHighlightEnabled);
-        thread.dialog.postAnnotation(commentText);
-
-        this.bindCustomListenersOnThread(thread);
-
-        this.emit(THREAD_EVENT.threadSave, thread.getThreadEventData());
-        return thread;
-    }
-
-    /**
      * Override to factor in highlight types being filtered out, if disabled. Also scales annotation canvases.
      *
      * @override
@@ -594,8 +531,72 @@ class DocAnnotator extends Annotator {
     //--------------------------------------------------------------------------
 
     /**
+     * Creates a plain highlight annotation.
+     *
+     * @private
+     * @return {void}
+     */
+    createPlainHighlight() {
+        this.highlightCurrentSelection();
+        this.createHighlightThread();
+    }
+
+    /**
+     * Creates an highlight annotation thread, adds it to in-memory map, and returns it.
+     *
+     * @private
+     * @param {string} [commentText] - If provided, this will save a highlight comment annotation, with commentText
+     * being the text as the first comment in the thread.
+     * @return {DocHighlightThread} Created doc highlight annotation thread
+     */
+    createHighlightThread(commentText) {
+        // Empty string will be passed in if no text submitted in comment
+        if (commentText === '' || !this.lastHighlightEvent) {
+            return null;
+        }
+
+        if (this.createHighlightDialog) {
+            this.createHighlightDialog.hide();
+        }
+
+        this.isCreatingHighlight = false;
+
+        const highlightType = commentText ? TYPES.highlight_comment : TYPES.highlight;
+        const location = this.getLocationFromEvent(this.lastHighlightEvent, highlightType);
+        this.highlighter.removeAllHighlights();
+        if (!location) {
+            return null;
+        }
+
+        const annotations = [];
+        const thread = this.createAnnotationThread(annotations, location, highlightType);
+        this.lastHighlightEvent = null;
+        this.lastSelection = null;
+
+        if (!thread) {
+            return null;
+        }
+
+        if (!commentText) {
+            thread.dialog.drawAnnotation();
+        } else {
+            thread.dialog.hasComments = true;
+        }
+
+        thread.state = STATES.hover;
+        thread.show(this.plainHighlightEnabled, this.commentHighlightEnabled);
+        thread.dialog.postAnnotation(commentText);
+
+        this.bindCustomListenersOnThread(thread);
+
+        this.emit(THREAD_EVENT.threadSave, thread.getThreadEventData());
+        return thread;
+    }
+
+    /**
      * Handles changes in text selection. Used for mobile highlight creation.
      *
+     * @private
      * @param {Event} event - The DOM event coming from interacting with the element.
      * @return {void}
      */
@@ -698,6 +699,7 @@ class DocAnnotator extends Annotator {
         /**
          * Highlight event loop
          *
+         * @private
          * @return {void}
          */
         const highlightLoop = () => {
@@ -714,6 +716,7 @@ class DocAnnotator extends Annotator {
     /**
      * Throttled processing of the most recent mouse move event.
      *
+     * @private
      * @return {void}
      */
     onHighlightCheck() {
@@ -787,6 +790,7 @@ class DocAnnotator extends Annotator {
     /**
      * Mouse move handler. Paired with throttle mouse move handler to check for annotation highlights.
      *
+     * @private
      * @param {Event} event - DDOM event fired by mouse move event
      * @return {void}
      */
