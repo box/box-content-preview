@@ -1,7 +1,7 @@
 import autobind from 'autobind-decorator';
 import VideoBaseViewer from './VideoBaseViewer';
 import fullscreen from '../../Fullscreen';
-import { get } from '../../util';
+import { appendQueryParams, get } from '../../util';
 import { getRepresentation } from '../../file';
 import { MEDIA_STATIC_ASSETS_VERSION } from '../../constants';
 import './Dash.scss';
@@ -78,6 +78,7 @@ class DashViewer extends VideoBaseViewer {
     load() {
         this.setup();
         this.mediaUrl = this.options.representation.content.url_template;
+        this.watermarkCacheBust = Date.now();
         this.mediaEl.addEventListener('loadeddata', this.loadeddataHandler);
 
         return Promise.all([this.loadAssets(this.getJSAssets()), this.getRepStatus().getPromise()])
@@ -164,7 +165,13 @@ class DashViewer extends VideoBaseViewer {
     requestFilter(type, request) {
         const asset = type === shaka.net.NetworkingEngine.RequestType.MANIFEST ? MANIFEST : undefined;
         /* eslint-disable no-param-reassign */
-        request.uris = request.uris.map((uri) => this.createContentUrlWithAuthParams(uri, asset));
+        request.uris = request.uris.map((uri) => {
+            let newUri = this.createContentUrlWithAuthParams(uri, asset);
+            if (asset !== MANIFEST && this.options.file.watermark_info.is_watermarked) {
+                newUri = appendQueryParams(newUri, { 'watermark-cache': this.watermarkCacheBust });
+            }
+            return newUri;
+        });
         /* eslint-enable no-param-reassign */
     }
 
