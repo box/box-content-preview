@@ -215,9 +215,46 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should append representation URLs with tokens', () => {
             stubs.createUrl = sandbox.stub(dash, 'createContentUrlWithAuthParams').returns('auth_url');
             stubs.req = { uris: ['uri'] };
+            dash.options = {
+                file: {
+                    watermark_info: {
+                        is_watermarked: false
+                    },
+                    representations: {
+                        entries: [
+                            { representation: 'dash' },
+                        ]
+                    }
+                }
+            }
+
             dash.requestFilter('', stubs.req);
+
             expect(stubs.createUrl).to.be.calledOnce;
             expect(stubs.req.uris).to.deep.equal(['auth_url']);
+        });
+
+        it('should append watermark cache-busting query params if file is watermarked', () => {
+            stubs.createUrl = sandbox.stub(dash, 'createContentUrlWithAuthParams').returns('www.authed.com/?foo=bar');
+            stubs.req = { uris: ['uri'] };
+            dash.watermarkCacheBust = '123'
+            dash.options = {
+                file: {
+                    watermark_info: {
+                        is_watermarked: true
+                    },
+                    representations: {
+                        entries: [
+                            { representation: 'dash' },
+                        ]
+                    }
+                }
+            }
+
+            dash.requestFilter('', stubs.req);
+
+            expect(stubs.createUrl).to.be.calledOnce;
+            expect(stubs.req.uris).to.deep.equal(['www.authed.com/?foo=bar&watermark-cache=123']);
         });
     });
 
