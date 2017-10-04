@@ -640,7 +640,7 @@ class Model3DRenderer extends Box3DRenderer {
         const camera = cameraObject.runtimeData;
         camera.position.set(0, 0, orbitController.getOrbitDistance());
         camera.position.applyQuaternion(camera.quaternion);
-        camera.position.add(orbitController.originPoint);
+        camera.position.add(orbitController.pivotPoint.position);
     }
 
     /**
