@@ -125,6 +125,7 @@ class AnnotationThread extends EventEmitter {
      */
     hideDialog() {
         if (this.dialog) {
+            this.state = STATES.inactive;
             this.dialog.hide();
         }
     }

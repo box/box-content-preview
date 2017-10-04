@@ -90,6 +90,7 @@ describe('lib/annotations/AnnotationThread', () => {
     describe('hide()', () => {
         it('should hide the thread element', () => {
             thread.hide();
+            expect(thread.state).equals(STATES.inactive);
             expect(thread.element).to.have.class(CLASS_HIDDEN);
         });
     });
