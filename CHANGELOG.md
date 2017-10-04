@@ -1,3 +1,22 @@
+<a name="1.13.0"></a>
+# 1.13.0 (2017-10-04)
+
+* Fix: Only call setOriginalImageSize() on single page images (#394) ([8f1cc35](https://github.com/box/box-content-preview/commit/8f1cc35))
+* Fix: Prevent canvas flickering on tap for mobile safari (#418) ([14322b8](https://github.com/box/box-content-preview/commit/14322b8))
+* Fix: Prevent unnecessary draw code from executing (#421) ([d6cdcf9](https://github.com/box/box-content-preview/commit/d6cdcf9))
+* Fix: Properly delete draw annotations threads (#412) ([529b9a4](https://github.com/box/box-content-preview/commit/529b9a4))
+* Fix: Set watermark-cache params for dash segments (#422) ([ec68fd1](https://github.com/box/box-content-preview/commit/ec68fd1))
+* Fix: Update Box3D and fix loading of Vive controller model ([eb613c6](https://github.com/box/box-content-preview/commit/eb613c6))
+* Chore: Cleaning up draw dialogs (#423) ([26813a4](https://github.com/box/box-content-preview/commit/26813a4))
+* Chore: Force threads to be inactive when the dialog hides (#424) ([90048ec](https://github.com/box/box-content-preview/commit/90048ec))
+* Chore: Temporarily allow draw annotations to be enabled via config (#416) ([bd35003](https://github.com/box/box-content-preview/commit/bd35003))
+* Chore: Upgrade packages and remove unnecessary dependencies (#410) ([150f038](https://github.com/box/box-content-preview/commit/150f038))
+* Update: Upgrade Box3D to 14.0.0 ([04d3cc7](https://github.com/box/box-content-preview/commit/04d3cc7))
+* Revert "Fix: Only call setOriginalImageSize() on single page images (#394)" (#415) ([d685dfe](https://github.com/box/box-content-preview/commit/d685dfe))
+* Mojito: Update translations (#413) ([9fd5d4b](https://github.com/box/box-content-preview/commit/9fd5d4b))
+
+
+
 <a name="1.12.0"></a>
 # 1.12.0 (2017-09-26)
 
