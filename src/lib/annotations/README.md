@@ -2,7 +2,7 @@
 ====================================================================
 Box Annotations allows developers to provide collaboration capabilities right from within the embedded Box preview in their application. Annotations fits a wide range of use cases and can be used to draw the reader's attention and/or provide feedback on specific parts of a document or images. To learn more about the Content Preview and for further documentation on how to use it, please go to our page on [Box Content Preview](https://developer.box.com/docs/box-content-preview).
 
-Content Preview supports four annotation types today - highlight comment, highlight only annotation, draw and point annotation. Annotations are today supported on documents and image previews only (see here for all file types and extensions supported by Box).
+Content Preview supports four annotation types today - highlight comment, highlight only, draw and point annotation. Annotations are today supported on documents and image previews only. You can find the full list of supported file types for Box Content Preview at https://community.box.com/t5/Managing-Your-Content/What-file-types-and-fonts-are-supported-by-Box-s-Content-Preview/ta-p/327#FileTypesSupported.
 
 Browser Support
 ---------------

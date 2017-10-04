@@ -43,9 +43,9 @@ describe('lib/annotations/doc/DocPointDialog', () => {
 
             dialog.position();
 
-            expect(annotatorUtil.repositionCaret).to.have.been.called;
-            expect(annotatorUtil.showElement).to.have.been.called;
-            expect(dialog.flipDialog).to.have.been.called;
+            expect(annotatorUtil.repositionCaret).to.be.called;
+            expect(annotatorUtil.showElement).to.be.called;
+            expect(dialog.flipDialog).to.be.called;
         });
     });
 });

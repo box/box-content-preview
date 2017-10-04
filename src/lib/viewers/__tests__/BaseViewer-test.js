@@ -732,32 +732,6 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('getViewerAnnotationsConfig()', () => {
-        it('should return an empty object if none options available', () => {
-            sandbox.stub(base, 'getViewerOption').returns(undefined);
-            const config = base.getViewerAnnotationsConfig();
-            expect(config).to.deep.equal({});
-        });
-
-        it('should create an object with an "enabled" flag if using legacy boolean value', () => {
-            sandbox.stub(base, 'getViewerOption').returns(false);
-            const config = base.getViewerAnnotationsConfig();
-            expect(config).to.deep.equal({ enabled: false });
-
-        });
-
-        it('should pass through the annotations object if an object', () => {
-            const annConfig = {
-                enabled: true,
-                disabledTypes: ['drawing']
-            };
-            sandbox.stub(base, 'getViewerOption').returns(annConfig);
-            const config = base.getViewerAnnotationsConfig();
-            expect(config).to.deep.equal(annConfig);
-
-        });
-    });
-
     describe('loadAnnotator()', () => {
         beforeEach(() => {
             base.options.viewer = {
@@ -853,9 +827,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotatorConf = {
                 CONSTRUCTOR: sandbox.stub().returns(base.annotator)
             };
-            base.previewUI = {
-                replaceHeader: () => {}
-            }
+            sandbox.stub(base, 'emit');
 
             base.initAnnotations();
         });
@@ -865,8 +837,8 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.addListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scrolltoannotation', sinon.match.func);
-            expect(base.annotator.addListener).to.be.calledWith('replaceheader', sinon.match.func);
             expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
+            expect(base.emit).to.be.calledWith('annotator', base.annotator);
         });
     });
 
@@ -891,6 +863,32 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
+    describe('getViewerAnnotationsConfig()', () => {
+        it('should return an empty object if none options available', () => {
+            sandbox.stub(base, 'getViewerOption').returns(undefined);
+            const config = base.getViewerAnnotationsConfig();
+            expect(config).to.deep.equal({});
+        });
+
+        it('should create an object with an "enabled" flag if using legacy boolean value', () => {
+            sandbox.stub(base, 'getViewerOption').returns(false);
+            const config = base.getViewerAnnotationsConfig();
+            expect(config).to.deep.equal({ enabled: false });
+
+        });
+
+        it('should pass through the annotations object if an object', () => {
+            const annConfig = {
+                enabled: true,
+                disabledTypes: ['drawing']
+            };
+            sandbox.stub(base, 'getViewerOption').returns(annConfig);
+            const config = base.getViewerAnnotationsConfig();
+            expect(config).to.deep.equal(annConfig);
+
+        });
+    });
+
     describe('handleAnnotatorEvents()', () => {
         const ANNOTATION_TYPE_DRAW = 'draw';
         const ANNOTATION_TYPE_POINT = 'point';
@@ -900,9 +898,11 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotator = {
                 isInAnnotationMode: sandbox.stub()
             };
-            stubs.isInAnnotationMode = base.annotator.isInAnnotationMode;
             sandbox.stub(base, 'disableViewerControls');
             sandbox.stub(base, 'enableViewerControls');
+            base.previewUI = {
+                replaceHeader: () => {}
+            }
         });
 
         it('should disable controls and show point mode notification on annotationmodeenter', () => {
@@ -917,10 +917,13 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
 
-        it('should disable controls and show draw mode notification on annotationmodeenter', () => {
+        it('should disable controls and enter draw anontation mode with notification', () => {
             const data = {
                 event: ANNOTATOR_EVENT.modeEnter,
-                data:  { mode: ANNOTATION_TYPE_DRAW }
+                data:  {
+                    mode: ANNOTATION_TYPE_DRAW,
+                    headerSelector: '.bp-header'
+                }
             };
             base.handleAnnotatorEvents(data);
             expect(base.disableViewerControls).to.be.called;
@@ -931,7 +934,24 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should enable controls and hide notification on annotationmodeexit', () => {
             const data = {
-                event: ANNOTATOR_EVENT.modeExit
+                event: ANNOTATOR_EVENT.modeExit,
+                data: {
+                    mode: ANNOTATION_TYPE_DRAW
+                }
+            };
+            base.handleAnnotatorEvents(data);
+            expect(base.enableViewerControls).to.be.called;
+            expect(base.emit).to.be.calledWith('notificationhide');
+            expect(base.emit).to.be.calledWith(data.event, data.data);
+            expect(base.emit).to.be.calledWith('annotatorevent', data);
+        });
+
+        it('should enable controls and exit draw annotation mode with notification', () => {
+            const data = {
+                event: ANNOTATOR_EVENT.modeExit,
+                data: {
+                    mode: ANNOTATION_TYPE_DRAW
+                }
             };
             base.handleAnnotatorEvents(data);
             expect(base.enableViewerControls).to.be.called;
@@ -981,6 +1001,27 @@ describe('lib/viewers/BaseViewer', () => {
             });
             expect(base.emit).to.be.calledWith(data.event, data.data);
             expect(base.emit).to.be.calledWith('annotatorevent', data);
+        });
+    });
+
+    describe('createAnnotatorOptions()', () => {
+        it('should return combined options to give to the annotator', () => {
+            base.options = {
+                file: { id: 1 },
+                location: { locale: 'en-US' }
+            };
+            base.isMobile = true;
+            base.hasTouch = false;
+
+            const combinedOptions = base.createAnnotatorOptions({ randomOption: 'derp' });
+            expect(combinedOptions).to.deep.equal({
+                file: { id: 1 },
+                isMobile: true,
+                hasTouch: false,
+                locale: 'en-US',
+                location: { locale: 'en-US' },
+                randomOption: 'derp'
+            });
         });
     });
 });

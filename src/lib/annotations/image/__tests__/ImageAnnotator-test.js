@@ -131,7 +131,7 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             sandbox.stub(annotator, 'handleValidationError');
             const thread = annotator.createAnnotationThread([], { page: 2 }, 'point');
 
-            expect(annotator.addThreadToMap).to.have.been.called;
+            expect(annotator.addThreadToMap).to.be.called;
             expect(thread instanceof ImagePointThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
             expect(thread.location.page).equals(2);
@@ -151,7 +151,7 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             sandbox.stub(annotator, 'handleValidationError');
             const thread = annotator.createAnnotationThread([], {}, 'point');
 
-            expect(annotator.addThreadToMap).to.have.been.called;
+            expect(annotator.addThreadToMap).to.be.called;
             expect(thread instanceof ImagePointThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
             expect(thread.location.page).equals(1);
@@ -163,7 +163,7 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             sandbox.stub(annotator, 'handleValidationError');
             const thread = annotator.createAnnotationThread([], { page: -1 }, 'point');
 
-            expect(annotator.addThreadToMap).to.have.been.called;
+            expect(annotator.addThreadToMap).to.be.called;
             expect(thread instanceof ImagePointThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
             expect(thread.location.page).equals(1);

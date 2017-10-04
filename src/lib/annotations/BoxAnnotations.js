@@ -98,7 +98,7 @@ class BoxAnnotations {
 
         const hasAnnotationPermissions = canLoadAnnotations(options.file.permissions);
         const annotator = this.getAnnotatorsForViewer(options.viewer.NAME, disabledAnnotators);
-        if (!hasAnnotationPermissions || !annotator) {
+        if (!hasAnnotationPermissions || !annotator || viewerConfig.enabled === false) {
             return modifiedAnnotator;
         }
 

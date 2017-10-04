@@ -40,21 +40,6 @@ const ID_ANNOTATED_ELEMENT = 'bp-rangy-annotated-element';
 const ANNOTATION_LAYER_CLASSES = [CLASS_ANNOTATION_LAYER_HIGHLIGHT, CLASS_ANNOTATION_LAYER_DRAW];
 
 /**
- * For filtering out and only showing the first thread in a list of threads.
- *
- * @param {Object} thread - The annotation thread to either hide or show
- * @param {number} index - The index of the annotation thread
- * @return {void}
- */
-function showFirstDialogFilter(thread, index) {
-    if (index === 0) {
-        thread.show(this.plainHighlightEnabled, this.commentHighlightEnabled); // TODO(@jholdstock): remove flags on refactor.
-    } else {
-        thread.hideDialog();
-    }
-}
-
-/**
  * Check if a thread is in a hover state.
  *
  * @param {Object} thread - The thread to check the state of
@@ -120,7 +105,7 @@ class DocAnnotator extends Annotator {
         // Explicit scoping
         this.highlightCreateHandler = this.highlightCreateHandler.bind(this);
         this.drawingSelectionHandler = this.drawingSelectionHandler.bind(this);
-        this.showFirstDialogFilter = showFirstDialogFilter.bind(this);
+        this.showFirstDialogFilter = this.showFirstDialogFilter.bind(this);
 
         this.createHighlightDialog = new CreateHighlightDialog(this.container, {
             isMobile: this.isMobile,
@@ -1059,6 +1044,22 @@ class DocAnnotator extends Annotator {
                 this.showHighlightsOnPage(thread.location.page);
                 break;
             default:
+        }
+    }
+
+    /**
+     * For filtering out and only showing the first thread in a list of threads.
+     *
+     * @private
+     * @param {Object} thread - The annotation thread to either hide or show
+     * @param {number} index - The index of the annotation thread
+     * @return {void}
+     */
+    showFirstDialogFilter(thread, index) {
+        if (index === 0) {
+            thread.show(this.plainHighlightEnabled, this.commentHighlightEnabled); // TODO(@jholdstock): remove flags on refactor.
+        } else {
+            thread.hideDialog();
         }
     }
 }

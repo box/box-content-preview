@@ -32,25 +32,31 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     beforeEach(() => {
         fixture.load('annotations/doc/__tests__/DocAnnotator-test.html');
 
+        const options = {
+            annotator: {
+                NAME: 'name',
+                TYPE: ['highlight', 'highlight-comment']
+            }
+        };
         annotator = new DocAnnotator({
-            permissions: {
-                canAnnotate: true
-            },
+            canAnnotate: true,
             container: document,
             annotationService: {},
-            fileVersionId: 1,
+            file: {
+                file_version: { id: 1 }
+            },
             isMobile: false,
-            options: {},
+            options,
             modeButtons: {},
-            options: {
-                annotator: {
-                    TYPE: ['highlight', 'highlight-comment']
-                }
+            location: {
+                locale: 'en-US'
             }
         });
-        annotator.annotatedElement = annotator.getAnnotatedEl(document);
+        annotator.annotatedElement = document.querySelector('.annotated-element');
         annotator.annotationService = {};
         annotator.threads = {};
+        annotator.modeControllers = {};
+        annotator.getAnnotationPermissions(annotator.options.file);
 
         stubs.thread = {
             threadID: '123abc',
@@ -67,11 +73,25 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         stubs.threadMock = sandbox.mock(stubs.thread);
 
         stubs.getPageInfo = sandbox.stub(annotatorUtil, 'getPageInfo');
+        annotator.createHighlightDialog = {
+            emit: () => {},
+            addListener: () => {},
+            removeListener: () => {},
+            destroy: () => {},
+            show: () => {},
+            hide: () => {},
+            setPosition: () => {}
+        };
+        stubs.createDialogMock = sandbox.mock(annotator.createHighlightDialog);
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
         annotator.threads = {};
+        annotator.modeButtons = {};
+        annotator.modeControllers = {};
+
+        annotator.annotatedElement = document.querySelector('.annotated-element');
         if (typeof annotator.destroy === 'function') {
             annotator.destroy();
             annotator = null;
@@ -81,65 +101,60 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
     describe('constructor()', () => {
         it('should not bind any plain highlight functions if they are disabled', () => {
-            const annotator = new DocAnnotator({
-                permissions: {
-                    canAnnotate: true
-                },
+            const options = {
+                annotator: {
+                    NAME: 'name',
+                    TYPE: ['highlight-comment']
+                }
+            };
+            annotator = new DocAnnotator({
+                canAnnotate: true,
                 container: document,
                 annotationService: {},
-                fileVersionId: 1,
+                file: {
+                    file_version: { id: 1 }
+                },
                 isMobile: false,
-                options: {},
+                options,
                 modeButtons: {},
-                options: {
-                    annotator: {
-                        TYPE: ['highlight-comment']
-                    }
+                location: {
+                    locale: 'en-US'
                 }
             });
-
-            const createPlain = sandbox.stub(annotator, 'createPlainHighlight');
-            annotator.createHighlightDialog.emit(CreateEvents.plain);
-
-            expect(createPlain).to.not.be.called;
+            stubs.createDialogMock.expects('addListener').withArgs(CreateEvents.plain, sinon.match.func).never();
         });
 
         it('should not bind any comment highlight functions if they are disabled', () => {
-            const annotator = new DocAnnotator({
-                permissions: {
-                    canAnnotate: true
-                },
+            const options = {
+                annotator: {
+                    NAME: 'name',
+                    TYPE: ['highlight']
+                }
+            };
+            annotator = new DocAnnotator({
+                canAnnotate: true,
                 container: document,
                 annotationService: {},
-                fileVersionId: 1,
+                file: {
+                    file_version: { id: 1 }
+                },
                 isMobile: false,
-                options: {},
+                options,
                 modeButtons: {},
-                options: {
-                    annotator: {
-                        TYPE: ['highlight']
-                    }
+                location: {
+                    locale: 'en-US'
                 }
             });
-
-            const createComment = sandbox.stub(annotator, 'createHighlightThread');
-            annotator.createHighlightDialog.emit(CreateEvents.commentPost);
-
-            expect(createComment).to.not.be.called;
+            stubs.createDialogMock.expects('addListener').withArgs(CreateEvents.comment, sinon.match.func).never();
+            stubs.createDialogMock.expects('addListener').withArgs(CreateEvents.commentPost, sinon.match.func).never();
         });
     });
 
     describe('init()', () => {
         it('should add ID to annotatedElement add createHighlightDialog init listener', () => {
-            annotator.createHighlightDialog = {
-                addListener: sandbox.stub(),
-                removeListener: sandbox.stub(),
-                destroy: sandbox.stub()
-            };
-            stubs.add = annotator.createHighlightDialog.addListener;
+            stubs.createDialogMock.expects('addListener').withArgs(CreateEvents.init, sinon.match.func);
             annotator.init(1);
             expect(annotator.annotatedElement.id).to.not.be.undefined;
-            expect(stubs.add).to.be.calledWith(CreateEvents.init, sinon.match.func);
         });
     });
 
@@ -263,7 +278,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         describe(TYPES.highlight, () => {
             beforeEach(() => {
                 annotator.setupAnnotations();
-                stubs.highlighter = sandbox.mock(annotator.highlighter);
+                annotator.highlighter = {
+                    highlights: []
+                };
             });
 
             it('should not return a location if there is no selection present', () => {
@@ -297,7 +314,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         describe(TYPES.highlight_comment, () => {
             beforeEach(() => {
                 annotator.setupAnnotations();
-                stubs.highlighter = sandbox.mock(annotator.highlighter);
+                annotator.highlighter = {
+                    highlights: []
+                };
             });
 
             it('should not return a location if there is no selection present', () => {
@@ -346,21 +365,21 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         it('should create, add highlight thread to internal map, and return it', () => {
             const thread = annotator.createAnnotationThread([], {}, TYPES.highlight);
-            expect(stubs.addThread).to.have.been.called;
+            expect(stubs.addThread).to.be.called;
             expect(thread instanceof DocHighlightThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
         });
 
         it('should create, add highlight comment thread to internal map, and return it', () => {
             const thread = annotator.createAnnotationThread([], {}, TYPES.highlight_comment);
-            expect(stubs.addThread).to.have.been.called;
+            expect(stubs.addThread).to.be.called;
             expect(thread instanceof DocHighlightThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
         });
 
         it('should create, add point thread to internal map, and return it', () => {
             const thread = annotator.createAnnotationThread([], {}, TYPES.point);
-            expect(stubs.addThread).to.have.been.called;
+            expect(stubs.addThread).to.be.called;
             expect(thread instanceof DocPointThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
         });
@@ -377,7 +396,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             });
             const thread = annotator.createAnnotationThread([annotation], {}, TYPES.highlight);
 
-            expect(stubs.addThread).to.have.been.called;
+            expect(stubs.addThread).to.be.called;
             expect(thread.threadID).to.equal(annotation.threadID);
             expect(thread.threadNumber).to.equal(annotation.threadNumber);
             expect(thread instanceof DocHighlightThread).to.be.true;
@@ -386,7 +405,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         it('should create drawing thread and return it without adding it to the internal thread map', () => {
             const thread = annotator.createAnnotationThread([], {}, TYPES.draw);
-            expect(stubs.addThread).to.not.have.been.called;
+            expect(stubs.addThread).to.not.be.called;
             expect(thread instanceof DocDrawingThread).to.be.true;
             expect(annotator.handleValidationError).to.not.be.called;
         });
@@ -420,16 +439,14 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         let thread;
         let dialog;
         beforeEach(() => {
-            stubs.hideDialog = sandbox.stub(annotator.createHighlightDialog, 'hide');
             stubs.getLocationFromEvent = sandbox.stub(annotator, 'getLocationFromEvent');
             stubs.createAnnotationThread = sandbox.stub(annotator, 'createAnnotationThread');
             stubs.bindCustomListenersOnThread = sandbox.stub(annotator, 'bindCustomListenersOnThread');
             stubs.renderAnnotationsOnPage = sandbox.stub(annotator, 'renderAnnotationsOnPage');
 
             annotator.highlighter = {
-                removeAllHighlights: () => {}
+                removeAllHighlights: sandbox.stub()
             };
-            stubs.removeAllHighlights = sandbox.stub(annotator.highlighter, 'removeAllHighlights');
 
             dialog = {
                 hasComments: false,
@@ -446,16 +463,14 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
         it('should do nothing and return null if empty string passed in', () => {
             annotator.lastHighlightEvent = {};
-
+            stubs.createDialogMock.expects('hide').never();
             annotator.createHighlightThread('');
-            expect(stubs.hideDialog).to.not.be.called;
         });
 
         it('should do nothing and return null if there was no highlight event on the previous action', () => {
             annotator.lastHighlightEvent = null;
-
+            stubs.createDialogMock.expects('hide').never();
             annotator.createHighlightThread('some text');
-            expect(stubs.hideDialog).to.not.be.called;
         });
 
         it('should do nothing and return null if not a valid annotation location', () => {
@@ -549,7 +564,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     });
 
     describe('renderAnnotationsOnPage()', () => {
-
         beforeEach(() => {
             sandbox.stub(annotator, 'scaleAnnotationCanvases');
         });
@@ -580,7 +594,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             const threads = [plain, comment, point];
             annotator.threads = { 1: threads };
             sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns(threads);
-            annotator.options.annotator.TYPE = ['highlight', 'point'];
+            annotator.options.annotator = {
+                TYPE: ['highlight', 'point']
+            };
 
             annotator.renderAnnotationsOnPage(1);
 
@@ -618,14 +634,27 @@ describe('lib/annotations/doc/DocAnnotator', () => {
     });
 
     describe('setupAnnotations()', () => {
+        const setupFunc = Annotator.prototype.setupAnnotations;
+
+        beforeEach(() => {
+            Object.defineProperty(Annotator.prototype, 'setupAnnotations', { value: sandbox.stub() });
+            annotator.plainHighlightEnabled = true;
+            annotator.commentHighlightEnabled = true;
+            annotator.highlighter = {
+                addClassApplier: sandbox.stub()
+            };
+        });
+
+        afterEach(() => {
+            Object.defineProperty(Annotator.prototype, 'setupAnnotations', { value: setupFunc });
+        });
+
         it('should call parent to setup annotations and initialize highlighter', () => {
-            stubs.highlighter = { addClassApplier: sandbox.stub() };
-            sandbox.stub(rangy, 'createHighlighter').returns(stubs.highlighter);
+            sandbox.stub(rangy, 'createHighlighter').returns(annotator.highlighter);
 
             annotator.setupAnnotations();
-
-            expect(rangy.createHighlighter).to.have.been.called;
-            expect(stubs.highlighter.addClassApplier).to.have.been.called;
+            expect(rangy.createHighlighter).to.be.called;
+            expect(annotator.highlighter.addClassApplier).to.be.called;
         });
 
         it('should not create a highlighter if all forms of highlight are disabled', () => {
@@ -634,23 +663,31 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.commentHighlightEnabled = false;
 
             annotator.setupAnnotations();
-
             expect(rangy.createHighlighter).to.not.be.called;
+            expect(annotator.highlighter.addClassApplier).to.not.be.called;
         });
     });
 
     describe('bindDOMListeners()', () => {
+        const bindFunc = Annotator.prototype.bindDOMListeners;
+
         beforeEach(() => {
+            Object.defineProperty(Annotator.prototype, 'bindDOMListeners', { value: sandbox.stub() });
             annotator.annotatedElement = {
                 addEventListener: () => {},
                 removeEventListener: () => {}
             };
             stubs.elMock = sandbox.mock(annotator.annotatedElement);
+
+            annotator.permissions.canAnnotate = true;
+            annotator.plainHighlightEnabled = true;
         });
 
-        it('should bind DOM listeners if user can annotate', () => {
-            annotator.permissions.canAnnotate = true;
+        afterEach(() => {
+            Object.defineProperty(Annotator.prototype, 'bindDOMListeners', { value: bindFunc });
+        });
 
+        it('should bind DOM listeners if user can annotate and highlight', () => {
             stubs.elMock.expects('addEventListener').withArgs('mouseup', sinon.match.func);
             stubs.elMock.expects('addEventListener').withArgs('dblclick', sinon.match.func);
             stubs.elMock.expects('addEventListener').withArgs('mousedown', sinon.match.func);
@@ -661,7 +698,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should bind selectionchange and touchstart event, on the document, if on mobile and can annotate', () => {
-            annotator.permissions.canAnnotate = true;
             annotator.isMobile = true;
             annotator.hasTouch = true;
 
@@ -675,7 +711,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should not bind selection change event if both annotation types are disabled, and touch enabled, mobile enabled', () => {
-            annotator.permissions.canAnnotate = true;
             annotator.isMobile = true;
             annotator.hasTouch = true;
             annotator.plainHighlightEnabled = false;
@@ -691,7 +726,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should not bind selection change event if both annotation types are disabled, and touch disabled, mobile disabled', () => {
-            annotator.permissions.canAnnotate = true;
             annotator.isMobile = false;
             annotator.hasTouch = false;
             annotator.plainHighlightEnabled = false;
@@ -771,32 +805,20 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
     describe('highlightCurrentSelection()', () => {
         beforeEach(() => {
+            annotator.highlighter = {
+                highlightSelection: sandbox.stub()
+            };
             annotator.setupAnnotations();
         });
 
-        it('should do nothing if no highlighter reference', () => {
-            const highlightSelection = sandbox.stub(annotator.highlighter, 'highlightSelection');
-            annotator.highlighter = null;
-
-            annotator.highlightCurrentSelection();
-
-            expect(highlightSelection).to.not.be.called;
-        });
-
         it('should invoke highlighter.highlightSelection()', () => {
-            const highlightSelection = sandbox.stub(annotator.highlighter, 'highlightSelection');
-
             annotator.highlightCurrentSelection();
-
-            expect(highlightSelection).to.be.called;
+            expect(annotator.highlighter.highlightSelection).to.be.called;
         });
 
         it('should invoke highlighter.highlightSelection() with the annotated element\'s id', () => {
-            const highlightSelection = sandbox.stub(annotator.highlighter, 'highlightSelection');
-
             annotator.highlightCurrentSelection();
-
-            expect(highlightSelection).to.be.calledWith('rangy-highlight', { containerElementId: 'doc-annotator-el' });
+            expect(annotator.highlighter.highlightSelection).to.be.calledWith('rangy-highlight', { containerElementId: 'doc-annotator-el' });
         });
     });
 
@@ -1043,16 +1065,21 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         });
 
         it('should call highlighter.removeAllHighlghts', () => {
-            annotator.setupAnnotations();
-            const removeAll = sandbox.stub(annotator.highlighter, 'removeAllHighlights');
+            annotator.highlighter = {
+                removeAllHighlights: sandbox.stub()
+            };
             annotator.highlightMouseupHandler({ x: 0, y: 0 });
-            expect(removeAll).to.be.called;
+            expect(annotator.highlighter.removeAllHighlights).to.be.called;
         });
     });
 
     describe('onSelectionChange()', () => {
         beforeEach(() => {
             annotator.setupAnnotations();
+
+            annotator.highlighter = {
+                removeAllHighlights: sandbox.stub()
+            };
         });
 
         it('should do nothing if focus is on a text input element', () => {
@@ -1064,7 +1091,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.onSelectionChange({
                 nodeName: 'textarea'
             });
-
             expect(getSelStub).to.not.be.called;
         });
 
@@ -1078,11 +1104,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             };
             annotator.lastSelection = lastSelection;
             sandbox.stub(window, 'getSelection').returns(selection);
-            const removeHighlights = sandbox.stub(annotator.highlighter, 'removeAllHighlights');
 
             annotator.onSelectionChange({});
-
-            expect(removeHighlights).to.be.called;
+            expect(annotator.highlighter.removeAllHighlights).to.be.called;
         });
 
         it('should clear out highlights and exit "annotation creation" mode if an invalid selection', () => {
@@ -1092,15 +1116,12 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             sandbox.stub(window, 'getSelection').returns(selection);
             annotator.lastSelection = selection;
             annotator.lastHighlightEvent = {};
-            const dialogHide = sandbox.stub(annotator.createHighlightDialog, 'hide');
-            const removeAllHighlights = sandbox.stub(annotator.highlighter, 'removeAllHighlights');
 
+            stubs.createDialogMock.expects('hide');
             annotator.onSelectionChange({});
-
             expect(annotator.lastSelection).to.be.null;
             expect(annotator.lastHighlightEvent).to.be.null;
-            expect(dialogHide).to.be.called;
-            expect(removeAllHighlights).to.be.called;
+            expect(annotator.highlighter.removeAllHighlights).to.be.called;
         });
 
         it('should show the createHighlightDialog if it isn\'t already shown', () => {
@@ -1112,13 +1133,10 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             sandbox.stub(window, 'getSelection').returns(selection);
             annotator.lastSelection = selection;
             annotator.lastHighlightEvent = {};
-            const dialogShow = sandbox.stub(annotator.createHighlightDialog, 'show');
             annotator.createHighlightDialog.isVisible = false;
-            const removeAllHighlights = sandbox.stub(annotator.highlighter, 'removeAllHighlights');
 
+            stubs.createDialogMock.expects('show').withArgs(annotator.container);
             annotator.onSelectionChange({});
-
-            expect(dialogShow).to.be.calledWith(annotator.container);
         });
 
         it('should set all of the highlight annotations on the page to "inactive" state', () => {
@@ -1140,7 +1158,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
             sandbox.stub(window, 'getSelection').returns(selection);
             sandbox.stub(annotator.createHighlightDialog, 'show');
-            sandbox.stub(annotator.highlighter, 'removeAllHighlights');
             sandbox.stub(annotator, 'getHighlightThreadsOnPage').returns([thread]);
 
             annotator.onSelectionChange({});
@@ -1169,8 +1186,6 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             stubs.event = new Event({ x: 1, y: 1 });
             stubs.stopEvent = sandbox.stub(stubs.event, 'stopPropagation');
             stubs.getSel.returns(selection);
-
-            createDialog = sandbox.mock(annotator.createHighlightDialog);
         });
 
         afterEach(() => {
@@ -1208,8 +1223,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
                 getClientRects: sandbox.stub().returns([rect])
             });
 
-            createDialog.expects('show').withArgs(pageInfo.pageEl);
-            createDialog.expects('setPosition');
+            stubs.createDialogMock.expects('show').withArgs(pageInfo.pageEl);
+            stubs.createDialogMock.expects('setPosition');
 
             annotator.highlightCreateHandler(stubs.event);
         });
@@ -1230,8 +1245,8 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             });
             annotator.isMobile = false;
 
-            createDialog.expects('show');
-            createDialog.expects('setPosition').withArgs(50, 35); // 35 with page padding
+            stubs.createDialogMock.expects('show');
+            stubs.createDialogMock.expects('setPosition').withArgs(50, 35); // 35 with page padding
 
             annotator.highlightCreateHandler(stubs.event);
         });
