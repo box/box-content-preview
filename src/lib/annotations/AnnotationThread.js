@@ -211,8 +211,8 @@ class AnnotationThread extends EventEmitter {
             // If this annotation was the last one in the thread, destroy the thread
         } else if (this.annotations.length === 0 || annotatorUtil.isPlainHighlight(this.annotations)) {
             if (this.isMobile && this.dialog) {
-                this.dialog.removeAnnotation(annotationID);
                 this.dialog.hideMobileDialog();
+                this.dialog.removeAnnotation(annotationID);
             }
             this.destroy();
 
