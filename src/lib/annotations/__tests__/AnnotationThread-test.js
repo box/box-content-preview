@@ -121,6 +121,7 @@ describe('lib/annotations/AnnotationThread', () => {
         it('should hide the thread dialog', () => {
             stubs.dialogMock.expects('hide');
             thread.hideDialog();
+            expect(thread.state).equals(STATES.inactive);
         });
     });
 
