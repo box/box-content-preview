@@ -65,7 +65,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             when: () => {}
         };
         renderer.box3d = {
-            addRemoteEntities: () => Promise.resolve(),
+            importEntitiesFromUrl: () => Promise.resolve(),
             canvas: {
                 addEventListener: () => {},
                 removeEventListener: () => {}
@@ -964,7 +964,8 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             position = sandbox.mock(pos);
             quaternion = { x: 1, y: 2, z: 3, w: 1 };
             orbitCam = {
-                getOrbitDistance: () => orbitDist
+                getOrbitDistance: () => orbitDist,
+                pivotPoint: {position: pos}
             };
             camera = {
                 runtimeData: {
