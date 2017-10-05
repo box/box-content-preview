@@ -505,8 +505,8 @@ class AnnotationDialog extends EventEmitter {
             </div>
             <div class="comment-text">${text}</div>
             <button class="bp-btn-plain ${CLASS_BUTTON_DELETE_COMMENT} ${annotation.permissions.can_delete
-            ? ''
-            : constants.CLASS_HIDDEN}" data-type="${constants.DATA_TYPE_DELETE}" title="${__('annotation_delete')}">
+    ? ''
+    : constants.CLASS_HIDDEN}" data-type="${constants.DATA_TYPE_DELETE}" title="${__('annotation_delete')}">
                 ${ICON_DELETE}
             </button>
             <div class="${CLASS_DELETE_CONFIRMATION} ${constants.CLASS_HIDDEN}">
@@ -685,8 +685,8 @@ class AnnotationDialog extends EventEmitter {
                 <div class="${CLASS_REPLY_CONTAINER}">
                     <textarea class="${constants.CLASS_TEXTAREA} ${CLASS_REPLY_TEXTAREA}"
                         placeholder="${__(
-                            'annotation_reply_placeholder'
-                        )}" data-type="${constants.DATA_TYPE_REPLY_TEXTAREA}"></textarea>
+        'annotation_reply_placeholder'
+    )}" data-type="${constants.DATA_TYPE_REPLY_TEXTAREA}"></textarea>
                     <div class="${constants.CLASS_BUTTON_CONTAINER} ${constants.CLASS_HIDDEN}">
                         <button class="bp-btn ${constants.CLASS_ANNOTATION_BUTTON_CANCEL}" data-type="${constants.DATA_TYPE_CANCEL_REPLY}">
                             ${__('annotation_cancel')}

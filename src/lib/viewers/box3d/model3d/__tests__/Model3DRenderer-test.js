@@ -65,7 +65,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             when: () => {}
         };
         renderer.box3d = {
-            addRemoteEntities: () => Promise.resolve(),
+            importEntitiesFromUrl: () => Promise.resolve(),
             canvas: {
                 addEventListener: () => {},
                 removeEventListener: () => {}
@@ -255,7 +255,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.instance = instance;
             sandbox.stub(instance, 'addComponent');
             renderer.setupScene();
-            expect(instance.addComponent).to.be.calledWith('preview_axis_rotation', {}, 'axis_rotation_INSTANCE_ID');
+            expect(instance.addComponent).to.be.calledWith('axis_rotation', {}, 'axis_rotation_INSTANCE_ID');
         });
 
         it('should add the animation component to the instance', () => {
@@ -269,33 +269,6 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             renderer.instance = instance;
             renderMock.expects('setAnimationAsset').withArgs(animation);
             renderer.setupScene();
-        });
-    });
-
-    describe('getAxes()', () => {
-        it('should return a Promise', () => {
-            const prom = renderer.getAxes();
-            expect(prom).to.be.a('Promise');
-        });
-
-        it('should trigger a "get_axes" event', () => {
-            sandbox.mock(renderer.box3d).expects('trigger').withArgs('get_axes');
-            renderer.getAxes();
-        });
-
-        it('should trigger a "get_axes" event with a callback function', (done) => {
-            sandbox.stub(renderer.box3d, 'trigger', (eventName, callback) => {
-                expect(callback).to.be.a('function');
-                done();
-            });
-            renderer.getAxes();
-        });
-
-        it('should resolve the Promise after "get_axes" event has been processed', (done) => {
-            sandbox.stub(renderer.box3d, 'trigger', (eventName, callback) => {
-                callback();
-            });
-            renderer.getAxes().then(done);
         });
     });
 
@@ -323,6 +296,8 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                 destroy: () => {},
                 getChildren: () => [],
                 scaleToSize: () => {},
+                unsetProperty: () => {},
+                getComponentByScriptId: () => {},
                 runtimeData: {}
             };
         });
@@ -336,20 +311,36 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         it('should set the position of each child model instance to the origin', () => {
             const child = {
                 setPosition: () => {},
-                setQuaternion: () => {}
+                setQuaternion: () => {},
+                setScale: () => {},
+                unsetProperty: () => {}
             };
             sandbox.stub(renderer.instance, 'getChildren').returns([child]);
             sandbox.mock(child).expects('setPosition').withArgs(0, 0, 0);
             renderer.resetModel();
         });
 
-        it('should set the orientation of the mode to be that of the origin', () => {
+        it('should set the orientation of each child model to the identity transform', () => {
             const child = {
                 setPosition: () => {},
-                setQuaternion: () => {}
+                setQuaternion: () => {},
+                setScale: () => {},
+                unsetProperty: () => {}
             };
             sandbox.stub(renderer.instance, 'getChildren').returns([child]);
             sandbox.mock(child).expects('setQuaternion').withArgs(0, 0, 0, 1);
+            renderer.resetModel();
+        });
+
+        it('should set the scale of each child model to unity', () => {
+            const child = {
+                setPosition: () => {},
+                setQuaternion: () => {},
+                setScale: () => {},
+                unsetProperty: () => {}
+            };
+            sandbox.stub(renderer.instance, 'getChildren').returns([child]);
+            sandbox.mock(child).expects('setScale').withArgs(1, 1, 1);
             renderer.resetModel();
         });
 
@@ -832,6 +823,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         beforeEach(() => {
             center = new THREE.Vector3();
             renderer.instance = {
+                trigger: () => {},
                 getCenter: sandbox.stub().returns(center),
                 destroy: () => {}
             };
@@ -844,24 +836,14 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         });
 
         it('should do nothing if there is no Box3D runtime reference', () => {
-            sandbox.mock(renderer.box3d).expects('trigger').withArgs('rotate_on_axis').never();
+            sandbox.mock(renderer.instance).expects('trigger').withArgs('rotate_on_axis').never();
             renderer.box3d = undefined;
-            renderer.instance = {};
-            renderer.rotateOnAxis({ x: -1 });
-        });
-
-        it('should do nothing if there is no Box3D runtime reference', () => {
-            sandbox.mock(renderer.box3d).expects('trigger').withArgs('rotate_on_axis').never();
-            renderer.box3d = undefined;
-            renderer.instance = {
-                destroy: () => {}
-            };
             renderer.rotateOnAxis({ x: -1 });
         });
 
         it('should trigger a "rotate_on_axis" event on the runtime', () => {
             const axis = { x: -1, y: 0 };
-            sandbox.mock(renderer.box3d).expects('trigger').withArgs('rotate_on_axis', axis);
+            sandbox.mock(renderer.instance).expects('trigger').withArgs('rotate_on_axis', axis);
             renderer.rotateOnAxis(axis);
         });
     });
@@ -871,13 +853,12 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         it('should do nothing if no instance available', () => {
             renderer.instance = undefined;
             sandbox.stub(renderer.box3d, 'trigger');
-            renderer.setAxisRotation('-x', '-y', false);
-            expect(renderer.box3d.trigger).to.not.be.called;
+            expect(renderer.setAxisRotation('-x', '-y', false)).to.not.throw;
         });
 
-        it('should trigger a "set_axes" event on the runtime instance', () => {
-            renderer.instance = { destroy: () => {} };
-            sandbox.mock(renderer.box3d).expects('trigger').withArgs('set_axes', '-x', '-y', true);
+        it('should trigger a "set_axes_orientation" event on the runtime instance', () => {
+            renderer.instance = { trigger: () => {} };
+            sandbox.mock(renderer.instance).expects('trigger').withArgs('set_axes_orientation', '-x', '-y', true);
             renderer.setAxisRotation('-x', '-y', true);
         });
     });
@@ -983,7 +964,8 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             position = sandbox.mock(pos);
             quaternion = { x: 1, y: 2, z: 3, w: 1 };
             orbitCam = {
-                getOrbitDistance: () => orbitDist
+                getOrbitDistance: () => orbitDist,
+                pivotPoint: {position: pos}
             };
             camera = {
                 runtimeData: {

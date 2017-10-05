@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import React from 'react';
+import createReactClass from 'create-react-class';
 import CSVViewer from '../CSVViewer';
 import TextBaseViewer from '../TextBaseViewer';
 import BaseViewer from '../../BaseViewer';
@@ -153,8 +154,7 @@ describe('lib/viewers/text/CSVViewer', () => {
 
     describe('finishLoading()', () => {
         it('should render CSV and finish setting up UI', () => {
-            /* eslint-disable react/prefer-es6-class */
-            window.BoxCSV = React.createClass({
+            window.BoxCSV = createReactClass({
                 destroy: sandbox.stub(),
                 renderCSV: sandbox.mock(),
                 render: () => {

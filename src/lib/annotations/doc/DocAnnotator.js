@@ -91,6 +91,9 @@ class DocAnnotator extends Annotator {
     /** @property {boolean} - True if regular highlights are allowed to be read/written */
     plainHighlightEnabled;
 
+    /** @property {boolean} - True if draw annotations are allowed to be read/written */
+    drawEnabled;
+
     /** @property {boolean} - True if comment highlights are allowed to be read/written */
     commentHighlightEnabled;
 
@@ -111,6 +114,12 @@ class DocAnnotator extends Annotator {
 
         this.plainHighlightEnabled = this.isModeAnnotatable(TYPES.highlight);
         this.commentHighlightEnabled = this.isModeAnnotatable(TYPES.highlight_comment);
+        this.drawEnabled = this.isModeAnnotatable(TYPES.draw);
+
+        // Don't bind to draw specific handlers if we cannot draw
+        if (this.drawEnabled) {
+            this.drawingSelectionHandler = this.drawingSelectionHandler.bind(this);
+        }
 
         // Don't bind to highlight specific handlers if we cannot highlight
         if (!this.plainHighlightEnabled && !this.commentHighlightEnabled) {
@@ -119,7 +128,6 @@ class DocAnnotator extends Annotator {
 
         // Explicit scoping
         this.highlightCreateHandler = this.highlightCreateHandler.bind(this);
-        this.drawingSelectionHandler = this.drawingSelectionHandler.bind(this);
         this.showFirstDialogFilter = showFirstDialogFilter.bind(this);
 
         this.createHighlightDialog = new CreateHighlightDialog(this.container, {
@@ -535,14 +543,18 @@ class DocAnnotator extends Annotator {
         }
 
         if (this.hasTouch && this.isMobile) {
-            this.annotatedElement.addEventListener('touchstart', this.drawingSelectionHandler);
+            if (this.drawEnabled) {
+                this.annotatedElement.addEventListener('touchstart', this.drawingSelectionHandler);
+            }
 
             // Highlight listeners
             if (this.plainHighlightEnabled || this.commentHighlightEnabled) {
                 document.addEventListener('selectionchange', this.onSelectionChange);
             }
         } else {
-            this.annotatedElement.addEventListener('click', this.drawingSelectionHandler);
+            if (this.drawEnabled) {
+                this.annotatedElement.addEventListener('click', this.drawingSelectionHandler);
+            }
 
             // Highlight listeners
             if (this.plainHighlightEnabled || this.commentHighlightEnabled) {

@@ -9,7 +9,8 @@ const ANNOTATORS = [
         NAME: 'Document',
         CONSTRUCTOR: DocAnnotator,
         VIEWER: ['Document', 'Presentation'],
-        TYPE: [TYPES.point, TYPES.highlight, TYPES.highlight_comment]
+        // Temporarily include draw annotations for demo purposes
+        TYPE: [TYPES.point, TYPES.highlight, TYPES.highlight_comment, TYPES.draw]
     },
     {
         NAME: 'Image',
@@ -85,7 +86,7 @@ class BoxAnnotations {
     }
 
     /**
-     * Chooses a annotator based on viewer.
+     * Chooses an annotator based on viewer.
      *
      * @param {Object} viewerName - Current preview viewer name
      * @param {Object} permissions - File permissions
@@ -95,6 +96,11 @@ class BoxAnnotations {
      */
     determineAnnotator(viewerName, permissions, viewerConfig = {}, disabledAnnotators = []) {
         let modifiedAnnotator = null;
+
+        // Remove draw annotations if they aren't explicitly enabled.
+        if (!viewerConfig.drawEnabled) {
+            this.annotators[0].TYPE = this.annotators[0].TYPE.filter((type) => type !== TYPES.draw);
+        }
 
         const hasAnnotationPermissions = canLoadAnnotations(permissions);
         const annotator = this.getAnnotatorsForViewer(viewerName, disabledAnnotators);
