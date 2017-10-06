@@ -336,13 +336,13 @@ For general Box Platform, API, and UI Element questions, please visit our [devel
 
 Copyright and License
 ---------------------
-Copyright 2016-2017 Box, Inc. All Rights Reserved.
+Copyright 2016-present Box, Inc. All Rights Reserved.
 
 Licensed under the Box Software License Agreement v.20170516.
 You may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-   https://github.com/box/box-content-preview/blob/master/LICENSE
+   https://developer.box.com/docs/box-sdk-license
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
