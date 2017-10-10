@@ -70,7 +70,6 @@ describe('lib/annotators/BoxAnnotations', () => {
                 VIEWER: ['Document'],
                 TYPE: ['point']
             };
-            stubs.getAnnotators = sandbox.stub(loader, 'getAnnotatorsForViewer').returns(stubs.annotator);
 
             stubs.options = {
                 file: {
@@ -82,27 +81,45 @@ describe('lib/annotators/BoxAnnotations', () => {
             }
         });
 
+        // Temporary test for demo purposes
+        it('should remove draw annotations not explicitly enabled', () => {
+            let config = {
+                enabled: true,
+                drawEnabled: true,
+                disabledTypes: ['point']
+            };
+
+            let annotator = loader.determineAnnotator(stubs.options, config);
+            expect(annotator.TYPE.includes('draw')).to.be.true;
+
+            config.drawEnabled = false;
+            annotator = loader.determineAnnotator(stubs.options, config);
+            expect(annotator.TYPE.includes('draw')).to.be.false;
+        });
+
         it('should not return an annotator if the user has incorrect permissions/scopes', () => {
+            sandbox.stub(loader, 'getAnnotatorsForViewer').returns(stubs.annotator);
             stubs.canLoad.returns(false);
             expect(loader.determineAnnotator(stubs.options)).to.be.null;
         });
 
         it('should choose the first annotator that matches the viewer', () => {
             const viewer = 'Document';
+            sandbox.stub(loader, 'getAnnotatorsForViewer').returns(stubs.annotator);
             const annotator = loader.determineAnnotator(stubs.options);
             expect(annotator.NAME).to.equal(viewer);
-            expect(stubs.getAnnotators).to.be.called;
+            expect(loader.getAnnotatorsForViewer).to.be.called;
         });
 
         it('should not return an annotator if no matching annotator is found', () => {
-            stubs.getAnnotators.returns(undefined);
+            sandbox.stub(loader, 'getAnnotatorsForViewer').returns(undefined);
             const annotator = loader.determineAnnotator(stubs.options);
             expect(annotator).to.be.null;
         });
 
         it('should return a copy of the annotator that matches', () => {
             const viewer = 'Document';
-            loader.annotators = [stubs.annotator];
+            sandbox.stub(loader, 'getAnnotatorsForViewer').returns(stubs.annotator);
             const annotator = loader.determineAnnotator(stubs.options);
 
             stubs.annotator.NAME = 'another_name';
@@ -114,6 +131,7 @@ describe('lib/annotators/BoxAnnotations', () => {
             const config = {
                 enabled: false
             };
+            sandbox.stub(loader, 'getAnnotatorsForViewer').returns(stubs.annotator);
             const annotator = loader.determineAnnotator(stubs.options, config);
             expect(annotator).to.be.null;
         });
@@ -125,7 +143,7 @@ describe('lib/annotators/BoxAnnotations', () => {
             };
 
             stubs.annotator.TYPE = ['point', 'highlight'];
-            loader.annotators = [stubs.annotator];
+            sandbox.stub(loader, 'getAnnotatorsForViewer').returns(stubs.annotator);
             const annotator = loader.determineAnnotator(stubs.options, config);
             expect(annotator.TYPE.includes('point')).to.be.false;
             expect(annotator.TYPE.includes('highlight')).to.be.true;
@@ -134,32 +152,7 @@ describe('lib/annotators/BoxAnnotations', () => {
                 VIEWER: ['Document'],
                 TYPE: ['highlight']
             });
-            expect(stubs.getAnnotators).to.be.called;
-        });
-
-        // Temporary test for demo purposes
-        it('should remove draw annotations not explicitly enabled', () => {
-            let config = {
-                enabled: true,
-                drawEnabled: true,
-                disabledTypes: ['point']
-            };
-            const docAnnotator = {
-                NAME: 'Document',
-                VIEWER: ['Document'],
-                TYPE: ['point', 'highlight', 'draw']
-            };
-
-            stubs.getAnnotators.returns(docAnnotator);
-            let annotator = loader.determineAnnotator(stubs.options, config);
-            expect(annotator.TYPE.includes('draw')).to.be.false;
-
-            annotator = loader.determineAnnotator(stubs.options, config);
-            expect(annotator.TYPE.includes('draw')).to.be.true;
-
-            config.drawEnabled = undefined;
-            annotator = loader.determineAnnotator(stubs.options, config);
-            expect(annotator.TYPE.includes('draw')).to.be.false;
+            expect(loader.getAnnotatorsForViewer).to.be.called;
         });
     });
 
