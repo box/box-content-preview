@@ -681,6 +681,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
 
             annotator.permissions.canAnnotate = true;
             annotator.plainHighlightEnabled = true;
+            annotator.drawEnabled = true;
         });
 
         afterEach(() => {
@@ -700,6 +701,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
         it('should bind selectionchange and touchstart event, on the document, if on mobile and can annotate', () => {
             annotator.isMobile = true;
             annotator.hasTouch = true;
+            annotator.drawEnabled = true;
 
             const docListen = sandbox.spy(document, 'addEventListener');
             const annotatedElementListen = sandbox.spy(annotator.annotatedElement, 'addEventListener');
@@ -715,6 +717,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.hasTouch = true;
             annotator.plainHighlightEnabled = false;
             annotator.commentHighlightEnabled = false;
+            annotator.drawEnabled = true;
 
             const docListen = sandbox.spy(document, 'addEventListener');
             const annotatedElementListen = sandbox.spy(annotator.annotatedElement, 'addEventListener');
@@ -730,6 +733,7 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             annotator.hasTouch = false;
             annotator.plainHighlightEnabled = false;
             annotator.commentHighlightEnabled = false;
+            annotator.drawEnabled = true;
 
             stubs.elMock.expects('addEventListener').withArgs('mouseup', sinon.match.func);
             stubs.elMock.expects('addEventListener').withArgs('click', sinon.match.func);

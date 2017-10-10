@@ -141,8 +141,8 @@ describe('lib/annotators/BoxAnnotations', () => {
         it('should remove draw annotations not explicitly enabled', () => {
             let config = {
                 enabled: true,
-                disabledTypes: ['point'],
-                drawEnabled: false
+                drawEnabled: true,
+                disabledTypes: ['point']
             };
             const docAnnotator = {
                 NAME: 'Document',
@@ -154,9 +154,12 @@ describe('lib/annotators/BoxAnnotations', () => {
             let annotator = loader.determineAnnotator(stubs.options, config);
             expect(annotator.TYPE.includes('draw')).to.be.false;
 
-            config.drawEnabled = true;
             annotator = loader.determineAnnotator(stubs.options, config);
             expect(annotator.TYPE.includes('draw')).to.be.true;
+
+            config.drawEnabled = undefined;
+            annotator = loader.determineAnnotator(stubs.options, config);
+            expect(annotator.TYPE.includes('draw')).to.be.false;
         });
     });
 

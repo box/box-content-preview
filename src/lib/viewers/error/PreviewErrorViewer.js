@@ -81,7 +81,8 @@ class PreviewErrorViewer extends BaseViewer {
         /* eslint-enable no-param-reassign */
 
         // If there is no display message fallback to the message from above
-        const displayMessage = err.displayMessage || err.message;
+        let displayMessage = err.displayMessage || err.message;
+        displayMessage = typeof displayMessage === 'string' ? displayMessage : __('error_default');
 
         this.iconEl.innerHTML = icon;
         this.messageEl.textContent = displayMessage;

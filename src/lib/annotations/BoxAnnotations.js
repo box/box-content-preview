@@ -86,7 +86,7 @@ class BoxAnnotations {
     }
 
     /**
-     * Chooses a annotator based on viewer.
+     * Chooses an annotator based on viewer.
      *
      * @param {Object} options - Viewer options
      * @param {Object} [viewerConfig] - Viewer-specific annotations configs
@@ -95,6 +95,11 @@ class BoxAnnotations {
      */
     determineAnnotator(options, viewerConfig = {}, disabledAnnotators = []) {
         let modifiedAnnotator = null;
+      
+        // Remove draw annotations if they aren't explicitly enabled.
+        if (!viewerConfig.drawEnabled) {
+            this.annotators[0].TYPE = this.annotators[0].TYPE.filter((type) => type !== TYPES.draw);
+        }
 
         const hasAnnotationPermissions = canLoadAnnotations(options.file.permissions);
         const annotator = this.getAnnotatorsForViewer(options.viewer.NAME, disabledAnnotators);
@@ -109,11 +114,6 @@ class BoxAnnotations {
             modifiedAnnotator.TYPE = modifiedAnnotator.TYPE.filter((type) => {
                 return !viewerConfig.disabledTypes.includes(type);
             });
-        }
-
-        // Remove draw annotations if they aren't explicitly enabled.
-        if (!viewerConfig.drawEnabled) {
-            modifiedAnnotator.TYPE = modifiedAnnotator.TYPE.filter((type) => type !== TYPES.draw);
         }
 
         return modifiedAnnotator;

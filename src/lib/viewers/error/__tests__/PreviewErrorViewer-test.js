@@ -104,6 +104,17 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             expect(error.addDownloadButton).to.not.be.called;
         });
 
+        it('set the display message to the fallback error if the original display message is not a string', () => {
+            const err = new Error();
+            err.displayMessage = {
+                error: 'error!'
+            };
+
+            error.load(err);
+
+            expect(error.messageEl.textContent).to.equal(__('error_default'));
+        });
+
         it('should not add download button if the browser cannot download', () => {
             sandbox.stub(error, 'addDownloadButton');
             sandbox.stub(Browser, 'canDownload').returns(false);
