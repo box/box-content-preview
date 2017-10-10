@@ -679,7 +679,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             stubs.emit = sandbox.stub(docBase, 'emit');
         });
 
-        it('should turn on enhanced text selection if not on mobile and turn on rendering of interactive forms', () => {
+        it('should turn on enhanced text selection if not on mobile', () => {
             docBase.options.location = {
                 locale: 'en-US'
             };
@@ -691,8 +691,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(stubs.pdfViewerStub).to.be.calledWith({
                 container: sinon.match.any,
                 linkService: sinon.match.any,
-                enhanceTextSelection: true,
-                renderInteractiveForms: true
+                enhanceTextSelection: true
             });
         });
 
@@ -708,8 +707,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(stubs.pdfViewerStub).to.be.calledWith({
                 container: sinon.match.any,
                 linkService: sinon.match.any,
-                enhanceTextSelection: false,
-                renderInteractiveForms: true
+                enhanceTextSelection: false
             });
         });
 
