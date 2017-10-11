@@ -126,13 +126,13 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             });
         });
 
-        it('should set autoplay if loaded in iOS', () => {
-            sandbox.stub(Browser, 'isIOS').returns(true);
-
+        it('should check autoplay settings', () => {
             sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+            sandbox.stub(media, 'checkAutoplay');
+
             return media.load().then(() => {
-                expect(media.mediaEl.autoplay).to.equal(true);
-            });
+                expect(media.checkAutoplay).to.be.called;
+            })
         });
     });
 
@@ -215,6 +215,57 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         });
     });
 
+    describe('handleAutoplay()', () => {
+        it('should emit the new autoplay value', () => {
+            sandbox.stub(media.cache, 'has').returns(true);
+            sandbox.stub(media.cache, 'get').returns('Disbled');
+            sandbox.stub(media, 'emit');
+
+            media.handleAutoplay();
+            expect(media.emit).to.be.calledWith('autoplay', false);
+
+            media.cache.get.returns('Enabled');
+
+            media.handleAutoplay();
+            expect(media.emit).to.be.calledWith('autoplay', true);
+        });
+    });
+
+    describe('checkAutoplay()', () => {
+        beforeEach(() => {
+            media.mediaEl = document.createElement('video');
+            sandbox.stub(media.cache, 'has').returns(true);
+            sandbox.stub(media.cache, 'get');
+            sandbox.stub(Browser, 'isIOS').returns(false);
+        });
+
+        it('should do nothing the settings value is absent or disabled', () => {
+            media.cache.has.returns(false);
+            media.checkAutoplay();
+            expect(media.mediaEl.autoplay).to.not.equal(true);
+
+            media.cache.has.returns(true);
+            media.cache.get.returns('Disabled');
+            media.checkAutoplay();
+            expect(media.mediaEl.autoplay).to.not.equal(false);
+        });
+
+        it('should set autoplay if setting is enabled', () => {
+            media.cache.get.returns('Enabled');
+
+            media.checkAutoplay();
+            expect(media.mediaEl.autoplay).to.equal(true);
+        });
+
+        it('should set autoplay if on iOS', () => {
+            media.cache.get.returns('Disabled');
+            Browser.isIOS.returns(true);
+
+            media.checkAutoplay();
+            expect(media.mediaEl.autoplay).to.equal(true);
+        });
+    });
+
     describe('loadUI()', () => {
         it('should set up media controls and element', () => {
             const duration = 10;
@@ -248,6 +299,8 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.mediaControls.addListener).to.be.calledWith('toggleplayback', sinon.match.func);
             expect(media.mediaControls.addListener).to.be.calledWith('togglemute', sinon.match.func);
             expect(media.mediaControls.addListener).to.be.calledWith('ratechange', sinon.match.func);
+            expect(media.mediaControls.addListener).to.be.calledWith('autoplaychange', sinon.match.func);
+
         });
     });
 

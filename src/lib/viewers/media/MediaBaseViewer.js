@@ -10,6 +10,7 @@ const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
 const DEFAULT_VOLUME = 1;
 const MEDIA_VOLUME_CACHE_KEY = 'media-volume';
+const MEDIA_AUTOPLAY_CACHE_KEY = 'media-autoplay';
 const MEDIA_VOLUME_INCREMENT = 0.05;
 const EMIT_WAIT_TIME_IN_MILLIS = 100;
 
@@ -28,7 +29,7 @@ class MediaBaseViewer extends BaseViewer {
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_MEDIA;
 
-        // Media Wrapper
+        // Media Container
         this.mediaContainerEl = this.wrapperEl.appendChild(document.createElement('div'));
         this.mediaContainerEl.setAttribute('tabindex', '-1');
         this.mediaContainerEl.className = CSS_CLASS_MEDIA_CONTAINER;
@@ -96,12 +97,7 @@ class MediaBaseViewer extends BaseViewer {
         this.mediaEl.addEventListener('error', this.errorHandler);
         this.mediaEl.setAttribute('title', this.options.file.name);
 
-        if (Browser.isIOS()) {
-            // iOS doesn't fire loadeddata event until some data loads
-            // Adding autoplay helps with that and itself won't autoplay.
-            // https://webkit.org/blog/6784/new-video-policies-for-ios/
-            this.mediaEl.autoplay = true;
-        }
+        this.checkAutoplay();
 
         return this.getRepStatus()
             .getPromise()
@@ -212,6 +208,40 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
+     * Handler for autoplay
+     *
+     * @private
+     * @emits autoplay
+     * @return {void}
+     */
+    handleAutoplay() {
+        const isAutoplayEnabled =
+            this.cache.has(MEDIA_AUTOPLAY_CACHE_KEY) && this.cache.get(MEDIA_AUTOPLAY_CACHE_KEY) === 'Enabled';
+        this.emit('autoplay', isAutoplayEnabled);
+    }
+
+    /**
+     * Determines if media should autoplay based on cached settings value.
+     *
+     * @private
+     * @emits volume
+     * @return {void}
+     */
+    checkAutoplay() {
+        if (
+            (!this.cache.has(MEDIA_AUTOPLAY_CACHE_KEY) || this.cache.get(MEDIA_AUTOPLAY_CACHE_KEY) === 'Disabled') &&
+            !Browser.isIOS()
+        ) {
+            return;
+        }
+
+        // iOS doesn't fire loadeddata event until some data loads
+        // Adding autoplay prevents that, but iOS Safari won't autoplay media
+        // https://webkit.org/blog/6784/new-video-policies-for-ios/
+        this.mediaEl.autoplay = true;
+    }
+
+    /**
      * Resize handler
      *
      * @private
@@ -262,6 +292,7 @@ class MediaBaseViewer extends BaseViewer {
         this.mediaControls.addListener('toggleplayback', this.togglePlay);
         this.mediaControls.addListener('togglemute', this.toggleMute);
         this.mediaControls.addListener('ratechange', this.handleRate);
+        this.mediaControls.addListener('autoplaychange', this.handleAutoplay);
     }
 
     /**

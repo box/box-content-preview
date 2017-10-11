@@ -113,15 +113,20 @@ describe('lib/viewers/media/Settings', () => {
             sandbox.stub(settings, 'chooseOption');
             const quality = 'HD';
             const speed = '2.0';
+            const autoplay = 'Enabled'
 
             const getStub = sandbox.stub(settings.cache, 'get');
             getStub.withArgs('media-quality').returns(quality);
             getStub.withArgs('media-speed').returns(speed);
+            getStub.withArgs('media-autoplay').returns(autoplay);
+
 
             settings.init();
 
             expect(settings.chooseOption).to.be.calledWith('quality', quality);
             expect(settings.chooseOption).to.be.calledWith('speed', speed);
+            expect(settings.chooseOption).to.be.calledWith('autoplay', autoplay);
+
         });
     });
 
