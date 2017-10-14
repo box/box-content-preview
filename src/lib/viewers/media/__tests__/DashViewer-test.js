@@ -434,7 +434,8 @@ describe('lib/viewers/media/DashViewer', () => {
                 detail: {
                     severity: 2, // critical severity
                     category: 1,
-                    code: 1100
+                    code: 1100,
+                    data: ['foobar']
                 }
             };
 
@@ -448,7 +449,8 @@ describe('lib/viewers/media/DashViewer', () => {
                 detail: {
                     severity: 1, // recoverable severity
                     category: 1,
-                    code: 1100
+                    code: 1100,
+                    data: ['foobar']
                 }
             };
 
