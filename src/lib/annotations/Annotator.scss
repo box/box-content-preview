@@ -407,8 +407,6 @@ $tablet: 'max-width: 768px';
 //------------------------------------------------------------------------------
 // CSS for highlights
 //------------------------------------------------------------------------------
-.bp-annotation-layer-draw,
-.bp-annotation-layer-draw-in-progress,
 .bp-annotation-layer-highlight {
     cursor: text;
     left: 0;
@@ -548,6 +546,22 @@ $tablet: 'max-width: 768px';
     to {
         stroke-dashoffset: 0;
     }
+}
+
+.bp-annotation-draw .textLayer {
+    pointer-events: none;
+
+    > div {
+        pointer-events: auto;
+    }
+}
+
+.bp-annotation-layer-draw,
+.bp-annotation-layer-draw-in-progress {
+    left: 0;
+    mix-blend-mode: multiply;
+    position: absolute;
+    top: 15px; // Match 15px padding top on page
 }
 
 //------------------------------------------------------------------------------

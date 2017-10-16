@@ -838,7 +838,7 @@ class DocAnnotator extends Annotator {
             this.highlighter.removeAllHighlights();
         }
 
-        if (this.createHighlightDialog) {
+        if (this.createHighlightDialog.isVisible) {
             this.createHighlightDialog.hide();
         }
 

@@ -361,6 +361,11 @@ describe('lib/annotations/Annotator', () => {
                     point: { selector: 'point_btn' },
                     draw: { selector: 'draw_btn' }
                 };
+
+                annotator.createHighlightDialog = {
+                    isVisible: false,
+                    hide: sandbox.stub()
+                }
             });
 
             afterEach(() => {
@@ -377,6 +382,16 @@ describe('lib/annotations/Annotator', () => {
                 annotator.toggleAnnotationHandler(TYPES.highlight);
                 expect(stubs.destroyStub).to.be.called;
                 expect(stubs.exitModes).to.not.be.called;
+            });
+
+            it('should hide the create highlight dialog if it is visible', () => {
+                annotator.toggleAnnotationHandler(TYPES.highlight);
+                expect(annotator.createHighlightDialog.hide).to.not.be.called;
+
+                annotator.createHighlightDialog.isVisible = true;
+
+                annotator.toggleAnnotationHandler(TYPES.highlight);
+                expect(annotator.createHighlightDialog.hide).to.be.called;
             });
 
             it('should turn annotation mode on if it is off', () => {

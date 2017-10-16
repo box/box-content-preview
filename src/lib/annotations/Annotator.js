@@ -265,6 +265,10 @@ class Annotator extends EventEmitter {
 
         this.destroyPendingThreads();
 
+        if (this.createHighlightDialog.isVisible) {
+            this.createHighlightDialog.hide();
+        }
+
         // No specific mode available for annotation type
         if (!(mode in this.modeButtons)) {
             return;
