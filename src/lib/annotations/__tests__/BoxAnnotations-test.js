@@ -131,29 +131,6 @@ describe('lib/annotators/BoxAnnotations', () => {
             });
             expect(stubs.instantiateControllers).to.be.called;
         });
-
-        // Temporary test for demo purposes
-        it('should remove draw annotations unless explicitly enabled', () => {
-            let config = {
-                enabled: true,
-                drawEnabled: true,
-                disabledTypes: ['point']
-            };
-            const docAnnotator = {
-                NAME: 'Document',
-                VIEWER: ['Document'],
-                TYPE: ['point', 'highlight', 'draw']
-            };
-
-            loader.annotators = [docAnnotator];
-
-            annotator = loader.determineAnnotator('Document', {}, config);
-            expect(annotator.TYPE.includes('draw')).to.be.true;
-
-            config.drawEnabled = undefined;
-            let annotator = loader.determineAnnotator('Document', {}, config);
-            expect(annotator.TYPE.includes('draw')).to.be.false;
-        });
     });
 
     describe('instantiateControllers()', () => {
