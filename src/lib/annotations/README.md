@@ -1,8 +1,8 @@
 [Box Annotations](https://developer.box.com/docs/getting-started-with-new-box-view#section-annotations)
 ====================================================================
-Box Annotations allows developers to provide collaboration capabilities right from within the embedded Box preview in their application. Annotations fits a wide range of use cases and can be used to draw the reader's attention and/or provide feedback on specific parts of a document or images. To learn more about the Content Preview and for further documentation on how to use it, please go to our page on [Box Content Preview](https://developer.box.com/docs/box-content-preview).
+Box Annotations allow developers to provide collaboration capabilities right from within the embedded Box preview in their application. Annotations fits a wide range of use cases and can be used to draw the previewer's attention and/or provide feedback on specific parts of a document or images. To learn more about Box Content Preview and for further documentation on how to use it, please go to our page on [Box Content Preview](https://developer.box.com/docs/box-content-preview).
 
-Content Preview supports four annotation types today - highlight comment, highlight only, draw and point annotation. Annotations are today supported on documents and image previews only. You can find the full list of supported file types for Box Content Preview at https://community.box.com/t5/Managing-Your-Content/What-file-types-and-fonts-are-supported-by-Box-s-Content-Preview/ta-p/327#FileTypesSupported.
+Box Content Preview currently supports four annotation types - highlight comment, highlight only, draw, and point annotation. Annotations are today supported on documents and image previews only. You can find the full list of supported file types for Box Content Preview at https://community.box.com/t5/Managing-Your-Content/What-file-types-and-fonts-are-supported-by-Box-s-Content-Preview/ta-p/327#FileTypesSupported.
 
 Browser Support
 ---------------
@@ -43,7 +43,7 @@ const annotator = new annotatorConf.CONSTRUCTOR(options);
 
 annotator.init(scale);
 ```
-Where `disabledAnnotationTypes` is a string of valid annotation types to disable.
+Where `disabledAnnotationTypes` is a string of valid annotation types to disable. See [Enabling/Disabling Annotations and Annotation Types](#enablingdisabling-annotations-and-annotation-types) below for more details on viewer specific annotation configurations.
 
 Parameters & Options
 -------
@@ -72,10 +72,8 @@ const annotator = new annotatorConf.CONSTRUCTOR({
         },
     }
 });
-
-See **Enabling/Disabling Annotations and Annotation Types** below for more details on viewer specific annotation configurations.
-
 ```
+
 | Parameter | Description |
 | --- | --- |
 | annotator | Viewer-specific annotator configurations object |
@@ -84,8 +82,8 @@ See **Enabling/Disabling Annotations and Annotation Types** below for more detai
 | token | A string auth token, see below for details on how to generate annotator tokens with appropriate scopes |
 | container | DOM node or selector where Preview should be placed |
 | file | File metadata object |
-| file.id | String `Box_File` id |
-| file.file_version.id | String `Box_File_Version` id |
+| file.id | String **Box_File** id |
+| file.file_version.id | String **Box_File_Version** id |
 | file.permissions | File permissions object, see below on how to scope permissions  |
 | modeButtons | Object containing a CSS selector and accessibility message for the annotation mode button, see parameters and options example above |
 
@@ -136,16 +134,6 @@ preview.show(..., {
 ```
 Combined with the following:
 ```
-// [LEGACY] BOOLEAN - turn on/off annotations for a viewer
-preview.show(..., {
-    viewers: {
-        VIEWER_NAME: {
-            annotations: Boolean
-        }
-    }
-});
-
-// [NEW] OBJECT - turn on/off annotations for a viewer.
 preview.show(..., {
     viewers: {
         VIEWER_NAME: {
@@ -209,7 +197,7 @@ Additional Methods
 
 Events
 ------
-The annotator object exposes `addListener` and `removeListener` for binding to events. Event listeners should be bound before `showAnnotations()` is called, otherwise events can be missed.
+Events can be bound to the annotator object with `addListener` and removed with `removeListener`. Event listeners should be bound before `showAnnotations()` is called, otherwise events can be missed.
 
 ```javascript
 /* global BoxAnnotations */
@@ -425,10 +413,11 @@ Supported Annotation Types
 --------------------
 Point annotations are supported on both document and image formats. Highlight comment, highlight only, and draw annotations are only supported on document formats.
 
-### Annotation Thread
 
-**Methods**
+Annotation Thread
+--------------------
 
+## Methods
 The following methods are available for the annotation threads.
 
 | Method Name | Explanation | Method Parameters |
@@ -442,24 +431,7 @@ The following methods are available for the annotation threads.
 | saveAnnotation | Saves an annotation locally and on the server | {string} annotation type, {text} text of annotation to save ||
 | deleteAnnotation | Deletes an annotation | {string} annotation ID, {boolean} whether or not to delete on server, default true ||
 
-### Annotation Dialog
-
-**Methods**
-
-The following methods are available for the annotation dialogs.
-
-| Method Name | Explanation | Method Parameters |
-| --- | --- | --- |
-| show | Positions and shows the dialog |  ||
-| hide | Hides the dialog |  ||
-| hideMobileDialog | Hides and resets the shared mobile dialog |  ||
-| addAnnotation | Adds an annotation to the dialog | {Annotation} annotation to add ||
-| removeAnnotation | Removes an annotation from the dialog | {string} annotation ID ||
-| postAnnotation | Posts an annotation in the dialog | {string} annotation text to post ||
-| position | Positions the dialog |  ||
-
-### Events
-
+## Events
 All annotation threads fire the following events. The event data will contain:
 ```javascript
   {
@@ -484,3 +456,19 @@ All annotation threads fire the following events. The event data will contain:
 | annotationcreateerror | An error occurs while posting an annotation on either a new or existing thread. ||
 
 See the **Events** section above for example event usage.
+
+Annotation Dialog
+--------------------
+
+## Methods
+The following methods are available for the annotation dialogs.
+
+| Method Name | Explanation | Method Parameters |
+| --- | --- | --- |
+| show | Positions and shows the dialog |  ||
+| hide | Hides the dialog |  ||
+| hideMobileDialog | Hides and resets the shared mobile dialog |  ||
+| addAnnotation | Adds an annotation to the dialog | {Annotation} annotation to add ||
+| removeAnnotation | Removes an annotation from the dialog | {string} annotation ID ||
+| postAnnotation | Posts an annotation in the dialog | {string} annotation text to post ||
+| position | Positions the dialog |  ||
