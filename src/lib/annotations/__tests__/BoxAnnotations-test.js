@@ -153,6 +153,7 @@ describe('lib/annotators/BoxAnnotations', () => {
                 TYPE: ['highlight']
             });
             expect(loader.getAnnotatorsForViewer).to.be.called;
+            expect(stubs.instantiateControllers).to.be.called;
         });
     });
 
