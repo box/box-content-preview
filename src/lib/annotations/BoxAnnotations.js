@@ -96,11 +96,6 @@ class BoxAnnotations {
     determineAnnotator(viewerName, permissions, viewerConfig = {}, disabledAnnotators = []) {
         let modifiedAnnotator = null;
 
-        // Remove draw annotations if they aren't explicitly enabled.
-        if (!viewerConfig.drawEnabled) {
-            this.annotators[0].TYPE = this.annotators[0].TYPE.filter((type) => type !== TYPES.draw);
-        }
-
         const hasAnnotationPermissions = canLoadAnnotations(permissions);
         const annotator = this.getAnnotatorsForViewer(viewerName, disabledAnnotators);
         if (!hasAnnotationPermissions || !annotator || viewerConfig.enabled === false) {
