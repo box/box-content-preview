@@ -1,3 +1,5 @@
+import 'box-annotations/lib/Annotator.scss';
+import BoxAnnotations from 'box-annotations/lib/BoxAnnotations';
 import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import debounce from 'lodash.debounce';
@@ -30,8 +32,6 @@ import {
 } from '../constants';
 import { ICON_FILE_DEFAULT } from '../icons/icons';
 
-const ANNOTATIONS_JS = ['annotations.js'];
-const ANNOTATIONS_CSS = ['annotations.css'];
 const ANNOTATION_TYPE_DRAW = 'draw';
 const ANNOTATION_TYPE_POINT = 'point';
 const LOAD_TIMEOUT_MS = 180000; // 3m
@@ -140,7 +140,7 @@ class BaseViewer extends EventEmitter {
         // the assets are available, the showAnnotations flag is true, and the
         // expiring embed is not a shared link
         if (this.areAnnotationsEnabled() && !this.options.sharedLink) {
-            this.annotationsPromise = this.loadAssets(ANNOTATIONS_JS, ANNOTATIONS_CSS);
+            this.loadAnnotator();
         }
     }
 
@@ -365,12 +365,8 @@ class BaseViewer extends EventEmitter {
                 this.scale = event.scale;
             }
 
-            if (this.annotationsPromise) {
-                this.annotationsPromise.then(this.loadAnnotator).catch((error) => {
-                    /* eslint-disable no-console */
-                    console.error('Annotation assets failed to load', error.toString());
-                    /* eslint-enable no-console */
-                });
+            if (this.annotatorConf) {
+                this.initAnnotations();
             }
         });
     }
@@ -661,16 +657,14 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        /* global BoxAnnotations */
         const boxAnnotations = new BoxAnnotations();
-        this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
-
-        // No annotatorConf will be returned if the user does not have the correct permissions
-        if (!this.annotatorConf) {
+        if (!boxAnnotations) {
+            /* eslint-disable no-console */
+            console.error('Annotation assets failed to load');
+            /* eslint-enable no-console */
             return;
         }
-
-        this.initAnnotations();
+        this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
     }
 
     /**
