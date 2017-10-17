@@ -81,22 +81,6 @@ describe('lib/annotators/BoxAnnotations', () => {
             }
         });
 
-        // Temporary test for demo purposes
-        it('should remove draw annotations not explicitly enabled', () => {
-            let config = {
-                enabled: true,
-                drawEnabled: true,
-                disabledTypes: ['point']
-            };
-
-            let annotator = loader.determineAnnotator(stubs.options, config);
-            expect(annotator.TYPE.includes('draw')).to.be.true;
-
-            config.drawEnabled = false;
-            annotator = loader.determineAnnotator(stubs.options, config);
-            expect(annotator.TYPE.includes('draw')).to.be.false;
-        });
-
         it('should not return an annotator if the user has incorrect permissions/scopes', () => {
             sandbox.stub(loader, 'getAnnotatorsForViewer').returns(stubs.annotator);
             stubs.canLoad.returns(false);
