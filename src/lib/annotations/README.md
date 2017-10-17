@@ -139,7 +139,8 @@ preview.show(..., {
         VIEWER_NAME: {
             annotations: {
                 enabled: Boolean, // Enables/disables if set. Respects "showAnnotations" if empty
-                disabledTypes: String[] // List of annotation types to disable
+                enabledTypes: String[] | null // List of annotation types to enable for this viewer. If empty, will respect default types for that annotator.
+                disabledTypes: String[] | null // DEPRECATED. List of annotation types to disable.
             }
         }
     }
@@ -147,7 +148,7 @@ preview.show(..., {
 ```
 
 ### Example
-Enable all annotations, turn off for Image Viewers, and disable point annotations on Document viewer:
+Enable all annotations, turn off for Image Viewers, and enable only point annotations on Document viewer:
 ```
 preview.show(fileId, token, {
     showAnnotations: true,
@@ -160,7 +161,7 @@ preview.show(fileId, token, {
         Document: {
             annotations: {
                 enabled: true,
-                disabledTypes: ['point']
+                enabledTypes: ['point']
             }
         }
     }
