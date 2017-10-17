@@ -272,7 +272,7 @@ class DocBaseViewer extends BaseViewer {
         // interact with the text layer
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
 
-        if (this.options.useFindBar) {
+        if (this.getViewerOption('useFindBar') !== false) {
             this.findBar = new DocFindBar(this.findBarEl, this.findController, canDownload);
         }
     }

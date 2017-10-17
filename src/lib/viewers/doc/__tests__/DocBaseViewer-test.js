@@ -385,14 +385,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.pdfViewer.setFindController).to.be.called;
         });
 
-        it('should not set find bar if useFindBar is false', () => {
-            docBase.options.useFindBar = false
+        it('should not set find bar if viewer option useFindBar is false', () => {
+            sandbox.stub(docBase, 'getViewerOption').withArgs('useFindBar').returns(false);
             docBase.initFind();
             expect(docBase.findBar).to.be.undefined;
         });
 
-        it('should set findBar to a function with useFindBar default', () => {
-            docBase.options.useFindBar = true
+        it('should set findBar to a function if viewer option useFindBar is not set', () => {
             docBase.initFind();
             expect(docBase.findBar).to.be.a.function;
         });

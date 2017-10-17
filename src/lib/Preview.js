@@ -679,9 +679,6 @@ class Preview extends EventEmitter {
         // Custom Box3D application definition
         this.options.box3dApplication = options.box3dApplication;
 
-        // Enable or disable findBar
-        this.options.useFindBar = options.useFindBar !== false;
-
         // Save the reference to any additional custom options for viewers
         this.options.viewers = options.viewers || {};
 
