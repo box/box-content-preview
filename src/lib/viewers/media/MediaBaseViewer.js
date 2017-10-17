@@ -293,7 +293,7 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     setVolume(volume) {
-        this.cache.set(MEDIA_VOLUME_CACHE_KEY, volume);
+        this.cache.set(MEDIA_VOLUME_CACHE_KEY, volume, true);
         this.handleVolume();
     }
 
@@ -488,9 +488,9 @@ class MediaBaseViewer extends BaseViewer {
     toggleMute() {
         if (this.mediaEl.volume) {
             this.oldVolume = this.mediaEl.volume;
-            this.cache.set(MEDIA_VOLUME_CACHE_KEY, 0);
+            this.cache.set(MEDIA_VOLUME_CACHE_KEY, 0, true);
         } else {
-            this.cache.set(MEDIA_VOLUME_CACHE_KEY, this.oldVolume);
+            this.cache.set(MEDIA_VOLUME_CACHE_KEY, this.oldVolume, true);
         }
         this.handleVolume();
     }

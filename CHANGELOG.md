@@ -1,3 +1,11 @@
+<a name="1.14.0"></a>
+# 1.14.0 (2017-10-11)
+
+* Fix: Ensure we are displaying a valid error string (#414) ([ec908ba](https://github.com/box/box-content-preview/commit/ec908ba))
+* Fix: Turn off rendering interactive forms (#430) ([99bdf48](https://github.com/box/box-content-preview/commit/99bdf48))
+
+
+
 <a name="1.13.0"></a>
 # 1.13.0 (2017-10-04)
 

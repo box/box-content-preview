@@ -476,8 +476,7 @@ class DocBaseViewer extends BaseViewer {
             container: this.docEl,
             linkService: new PDFJS.PDFLinkService(),
             // Enhanced text selection uses more memory, so disable on mobile
-            enhanceTextSelection: !this.isMobile,
-            renderInteractiveForms: true
+            enhanceTextSelection: !this.isMobile
         });
 
         // Use chunk size set in viewer options if available
