@@ -4,18 +4,27 @@ import DrawingModeController from './drawing/DrawingModeController';
 import { TYPES } from './annotationConstants';
 import { canLoadAnnotations } from './annotatorUtil';
 
+/**
+ * NAME: The name of the annotator.
+ * CONSTRUCTOR: Constructor for the annotator.
+ * VIEWER: The kinds of viewers that can be annotated by this.
+ * TYPE: The types of annotations that can be used by this annotator.
+ * DEFAULT_ENABLED: The default annotation types enabled if none provided.
+ */
 const ANNOTATORS = [
     {
         NAME: 'Document',
         CONSTRUCTOR: DocAnnotator,
         VIEWER: ['Document', 'Presentation'],
-        TYPE: [TYPES.point, TYPES.highlight, TYPES.highlight_comment]
+        TYPE: [TYPES.point, TYPES.highlight, TYPES.highlight_comment, TYPES.draw],
+        DEFAULT_ENABLED: [TYPES.point, TYPES.highlight, TYPES.highlight_comment]
     },
     {
         NAME: 'Image',
         CONSTRUCTOR: ImageAnnotator,
         VIEWER: ['Image', 'MultiImage'],
-        TYPE: [TYPES.point]
+        TYPE: [TYPES.point],
+        DEFAULT_ENABLED: [TYPES.point]
     }
 ];
 
@@ -104,12 +113,19 @@ class BoxAnnotations {
 
         modifiedAnnotator = Object.assign({}, annotator);
 
-        // Filter out disabled annotation types
-        if (Array.isArray(viewerConfig.disabledTypes)) {
-            modifiedAnnotator.TYPE = modifiedAnnotator.TYPE.filter((type) => {
-                return !viewerConfig.disabledTypes.includes(type);
-            });
-        }
+        const enabledTypes = viewerConfig.enabledTypes || [...modifiedAnnotator.DEFAULT_ENABLED];
+
+        // Keeping disabledTypes for backwards compatibility
+        const disabledTypes = viewerConfig.disabledTypes || [];
+
+        const annotatorTypes = enabledTypes.filter((type) => {
+            return (
+                !disabledTypes.some((disabled) => disabled === type) &&
+                modifiedAnnotator.TYPE.some((allowed) => allowed === type)
+            );
+        });
+
+        modifiedAnnotator.TYPE = annotatorTypes;
 
         return modifiedAnnotator;
     }

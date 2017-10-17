@@ -93,7 +93,8 @@ describe('lib/annotators/BoxAnnotations', () => {
             const docAnnotator = {
                 NAME: viewer,
                 VIEWER: ['Document'],
-                TYPE: ['point']
+                TYPE: ['point', 'highlight'],
+                DEFAULT_ENABLED: ['point']
             };
             loader.annotators = [docAnnotator];
             const annotator = loader.determineAnnotator(viewer, {});
@@ -118,7 +119,8 @@ describe('lib/annotators/BoxAnnotations', () => {
             const docAnnotator = {
                 NAME: 'Document',
                 VIEWER: ['Document'],
-                TYPE: ['point', 'highlight']
+                TYPE: ['point', 'highlight'],
+                DEFAULT_ENABLED: ['point', 'highlight']
             };
             loader.annotators = [docAnnotator];
             const annotator = loader.determineAnnotator('Document', {}, config);
@@ -127,9 +129,52 @@ describe('lib/annotators/BoxAnnotations', () => {
             expect(annotator).to.deep.equal({
                 NAME: 'Document',
                 VIEWER: ['Document'],
-                TYPE: ['highlight']
+                TYPE: ['highlight'],
+                DEFAULT_ENABLED: ['point', 'highlight']
             });
             expect(stubs.instantiateControllers).to.be.called;
+        });
+        
+        it('should filter and only keep allowed types of annotations', () => {
+            const config = {
+                enabled: true,
+                enabledTypes: ['point', 'timestamp']
+            };
+
+            const docAnnotator = {
+                NAME: 'Document',
+                VIEWER: ['Document'],
+                TYPE: ['point', 'highlight', 'highlight-comment', 'draw'],
+                DEFAULT_ENABLED: ['point', 'highlight']
+            };
+            loader.annotators = [docAnnotator];
+            const annotator = loader.determineAnnotator('Document', {}, config);
+            expect(annotator.TYPE.includes('point')).to.be.true;
+            expect(annotator.TYPE.includes('highlight')).to.be.false;
+            expect(annotator).to.deep.equal({
+                NAME: 'Document',
+                VIEWER: ['Document'],
+                TYPE: ['point'],
+                DEFAULT_ENABLED: ['point', 'highlight']
+            });
+            expect(stubs.instantiateControllers).to.be.called;
+        });
+
+        it('should respect default annotators if none provided', () => {
+            const config = {
+                enabled: true
+            };
+
+            const docAnnotator = {
+                NAME: 'Document',
+                VIEWER: ['Document'],
+                TYPE: ['point', 'highlight', 'highlight-comment', 'draw'],
+                DEFAULT_ENABLED: ['point', 'draw']
+            };
+            loader.annotators = [docAnnotator];
+            const annotator = loader.determineAnnotator('Document', {}, config);
+            
+            expect(annotator.TYPE).to.deep.equal(['point', 'draw']);
         });
     });
 
