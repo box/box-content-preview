@@ -82,8 +82,8 @@ const annotator = new annotatorConf.CONSTRUCTOR({
 | token | A string auth token, see below for details on how to generate annotator tokens with appropriate scopes |
 | container | DOM node or selector where Preview should be placed |
 | file | File metadata object |
-| file.id | String **Box_File** id |
-| file.file_version.id | String **Box_File_Version** id |
+| file.id | String `Box_File` id |
+| file.file_version.id | String `Box_File_Version` id |
 | file.permissions | File permissions object, see below on how to scope permissions  |
 | modeButtons | Object containing a CSS selector and accessibility message for the annotation mode button, see parameters and options example above |
 
