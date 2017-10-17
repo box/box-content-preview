@@ -417,7 +417,7 @@ Point annotations are supported on both document and image formats. Highlight co
 Annotation Thread
 --------------------
 
-## Methods
+### Methods
 The following methods are available for the annotation threads.
 
 | Method Name | Explanation | Method Parameters |
@@ -431,7 +431,7 @@ The following methods are available for the annotation threads.
 | saveAnnotation | Saves an annotation locally and on the server | {string} annotation type, {text} text of annotation to save ||
 | deleteAnnotation | Deletes an annotation | {string} annotation ID, {boolean} whether or not to delete on server, default true ||
 
-## Events
+### Events
 All annotation threads fire the following events. The event data will contain:
 ```javascript
   {
@@ -460,7 +460,7 @@ See the **Events** section above for example event usage.
 Annotation Dialog
 --------------------
 
-## Methods
+### Methods
 The following methods are available for the annotation dialogs.
 
 | Method Name | Explanation | Method Parameters |
