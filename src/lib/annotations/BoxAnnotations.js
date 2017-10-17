@@ -9,7 +9,7 @@ import { canLoadAnnotations } from './annotatorUtil';
  * CONSTRUCTOR: Constructor for the annotator.
  * VIEWER: The kinds of viewers that can be annotated by this.
  * TYPE: The types of annotations that can be used by this annotator.
- * DEFAULT_ENABLED: The default annotation types enabled if none provided.
+ * DEFAULT_TYPES: The default annotation types enabled if none provided.
  */
 const ANNOTATORS = [
     {
@@ -17,14 +17,14 @@ const ANNOTATORS = [
         CONSTRUCTOR: DocAnnotator,
         VIEWER: ['Document', 'Presentation'],
         TYPE: [TYPES.point, TYPES.highlight, TYPES.highlight_comment, TYPES.draw],
-        DEFAULT_ENABLED: [TYPES.point, TYPES.highlight, TYPES.highlight_comment]
+        DEFAULT_TYPES: [TYPES.point, TYPES.highlight, TYPES.highlight_comment]
     },
     {
         NAME: 'Image',
         CONSTRUCTOR: ImageAnnotator,
         VIEWER: ['Image', 'MultiImage'],
         TYPE: [TYPES.point],
-        DEFAULT_ENABLED: [TYPES.point]
+        DEFAULT_TYPES: [TYPES.point]
     }
 ];
 
@@ -112,7 +112,7 @@ class BoxAnnotations {
 
         modifiedAnnotator = Object.assign({}, annotator);
 
-        const enabledTypes = viewerConfig.enabledTypes || [...modifiedAnnotator.DEFAULT_ENABLED];
+        const enabledTypes = viewerConfig.enabledTypes || [...modifiedAnnotator.DEFAULT_TYPES];
 
         // Keeping disabledTypes for backwards compatibility
         const disabledTypes = viewerConfig.disabledTypes || [];

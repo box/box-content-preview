@@ -69,7 +69,7 @@ describe('lib/annotators/BoxAnnotations', () => {
                 NAME: 'Document',
                 VIEWER: ['Document'],
                 TYPE: ['point'],
-                DEFAULT_ENABLED: ['point']
+                DEFAULT_TYPES: ['point']
             };
 
             stubs.options = {
@@ -109,7 +109,7 @@ describe('lib/annotators/BoxAnnotations', () => {
                 NAME: viewer,
                 VIEWER: ['Document'],
                 TYPE: ['point', 'highlight'],
-                DEFAULT_ENABLED: ['point']
+                DEFAULT_TYPES: ['point']
             };
 
             sandbox.stub(loader, 'getAnnotatorsForViewer').returns(docAnnotator);
@@ -138,7 +138,7 @@ describe('lib/annotators/BoxAnnotations', () => {
                 NAME: 'Document',
                 VIEWER: ['Document'],
                 TYPE: ['point', 'highlight'],
-                DEFAULT_ENABLED: ['point', 'highlight']
+                DEFAULT_TYPES: ['point', 'highlight']
             };
             sandbox.stub(loader, 'getAnnotatorsForViewer').returns(docAnnotator);
             const annotator = loader.determineAnnotator(stubs.options, config);
@@ -149,7 +149,7 @@ describe('lib/annotators/BoxAnnotations', () => {
                 NAME: 'Document',
                 VIEWER: ['Document'],
                 TYPE: ['highlight'],
-                DEFAULT_ENABLED: ['point', 'highlight']
+                DEFAULT_TYPES: ['point', 'highlight']
             });
             expect(loader.getAnnotatorsForViewer).to.be.called;
         });
@@ -164,7 +164,7 @@ describe('lib/annotators/BoxAnnotations', () => {
                 NAME: 'Document',
                 VIEWER: ['Document'],
                 TYPE: ['point', 'highlight', 'highlight-comment', 'draw'],
-                DEFAULT_ENABLED: ['point', 'highlight']
+                DEFAULT_TYPES: ['point', 'highlight']
             };
             
             sandbox.stub(loader, 'getAnnotatorsForViewer').returns(docAnnotator);
@@ -175,7 +175,7 @@ describe('lib/annotators/BoxAnnotations', () => {
                 NAME: 'Document',
                 VIEWER: ['Document'],
                 TYPE: ['point'],
-                DEFAULT_ENABLED: ['point', 'highlight']
+                DEFAULT_TYPES: ['point', 'highlight']
             });
         });
 
@@ -188,7 +188,7 @@ describe('lib/annotators/BoxAnnotations', () => {
                 NAME: 'Document',
                 VIEWER: ['Document'],
                 TYPE: ['point', 'highlight', 'highlight-comment', 'draw'],
-                DEFAULT_ENABLED: ['point', 'draw']
+                DEFAULT_TYPES: ['point', 'draw']
             };
             sandbox.stub(loader, 'getAnnotatorsForViewer').returns(docAnnotator);
             const annotator = loader.determineAnnotator(stubs.options, config);
