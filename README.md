@@ -122,6 +122,17 @@ preview.show(fileId, accessToken, {
 | showDownload | false | Whether download button is shown |
 | useHotkeys | true | Whether hotkeys (keyboard shortcuts) are enabled |
 
+Viewer specific options:
+```javascript
+preview.show(fileId, accessToken, {
+    ...,
+    viewers: { Document: { useFindBar: false } }
+});
+```
+| Option | Default | Description |
+| --- | --- | --- |
+| useFindBar | true | Setting to false will enable the browser's findBar in place of the viewers. Applies to `Document`, `Presentation` viewers. |
+
 Access Token
 ------------
 Box Content Preview needs an access token to make Box API calls. You can either get an access token from the token endpoint (https://developer.box.com/reference#token) or generate a developer token on your application management page (https://blog.box.com/blog/introducing-developer-tokens/).
