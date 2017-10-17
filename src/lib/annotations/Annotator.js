@@ -266,6 +266,7 @@ class Annotator extends EventEmitter {
         this.destroyPendingThreads();
 
         if (this.createHighlightDialog.isVisible) {
+            document.getSelection().removeAllRanges();
             this.createHighlightDialog.hide();
         }
 

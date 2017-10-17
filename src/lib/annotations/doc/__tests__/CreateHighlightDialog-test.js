@@ -139,12 +139,6 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
             expect(dialog.containerEl.classList.contains(CLASS_HIDDEN)).to.be.true;
         });
 
-        it('should clear any selection that may be pending', () => {
-            const getSelectionStub = sandbox.spy(document, 'getSelection')
-            dialog.hide();
-            expect(getSelectionStub).to.be.called;
-        });
-
         it('should hide the comment box', () => {
             const hideComment = sandbox.stub(dialog.commentBox, 'hide');
             dialog.hide();

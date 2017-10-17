@@ -840,6 +840,7 @@ class DocAnnotator extends Annotator {
 
         if (this.createHighlightDialog.isVisible) {
             this.createHighlightDialog.hide();
+            document.getSelection().removeAllRanges();
         }
 
         this.isCreatingHighlight = false;

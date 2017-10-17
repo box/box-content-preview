@@ -384,14 +384,20 @@ describe('lib/annotations/Annotator', () => {
                 expect(stubs.exitModes).to.not.be.called;
             });
 
-            it('should hide the create highlight dialog if it is visible', () => {
+            it('should hide the highlight dialog and remove selection if it is visible', () => {
+                const getSelectionStub = sandbox.stub(document, 'getSelection').returns({
+                    removeAllRanges: sandbox.stub()
+                });
+
                 annotator.toggleAnnotationHandler(TYPES.highlight);
                 expect(annotator.createHighlightDialog.hide).to.not.be.called;
+                expect(getSelectionStub).to.not.be.called;
 
                 annotator.createHighlightDialog.isVisible = true;
 
                 annotator.toggleAnnotationHandler(TYPES.highlight);
                 expect(annotator.createHighlightDialog.hide).to.be.called;
+                expect(getSelectionStub).to.be.called;
             });
 
             it('should turn annotation mode on if it is off', () => {

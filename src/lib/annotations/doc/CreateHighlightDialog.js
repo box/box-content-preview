@@ -161,7 +161,6 @@ class CreateHighlightDialog extends EventEmitter {
         }
 
         hideElement(this.containerEl);
-        document.getSelection().removeAllRanges();
 
         if (this.commentBox) {
             this.commentBox.hide();
