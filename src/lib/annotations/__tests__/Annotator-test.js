@@ -40,12 +40,16 @@ describe('lib/annotations/Annotator', () => {
             canAnnotate: true,
             container: document,
             annotationService: {},
-            fileVersionId: 1,
+            file: {
+                file_version: { id: 1 }
+            },
             isMobile: false,
             options,
-            modeButtons: {}
+            modeButtons: {},
+            location: {}
         });
         annotator.threads = {};
+        annotator.modeControllers = {};
 
         stubs.thread = {
             threadID: '123abc',
@@ -85,31 +89,15 @@ describe('lib/annotations/Annotator', () => {
 
     afterEach(() => {
         sandbox.verifyAndRestore();
+        annotator.modeButtons = {};
+        annotator.modeControllers = {};
+
         if (typeof annotator.destroy === 'function') {
             annotator.destroy();
             annotator = null;
         }
 
         stubs = {};
-    });
-
-    describe('destroy()', () => {
-        it('should unbind custom listeners on thread and unbind DOM listeners', () => {
-            stubs.thread.location = { page: 1 };
-            annotator.addThreadToMap(stubs.thread);
-
-            const unbindCustomStub = sandbox.stub(annotator, 'unbindCustomListenersOnThread');
-            const unbindDOMStub = sandbox.stub(annotator, 'unbindDOMListeners');
-            const unbindCustomListenersOnService = sandbox.stub(annotator, 'unbindCustomListenersOnService');
-            const unbindListener = sandbox.stub(annotator, 'removeListener');
-
-            annotator.destroy();
-
-            expect(unbindCustomStub).to.be.calledWith(stubs.thread);
-            expect(unbindDOMStub).to.be.called;
-            expect(unbindCustomListenersOnService).to.be.called;
-            expect(unbindListener).to.be.calledWith(ANNOTATOR_EVENT.scale, sinon.match.func);
-        });
     });
 
     describe('init()', () => {
@@ -123,8 +111,9 @@ describe('lib/annotations/Annotator', () => {
             stubs.show = sandbox.stub(annotator, 'showAnnotations');
             stubs.setupMobileDialog = sandbox.stub(annotator, 'setupMobileDialog');
             stubs.showButton = sandbox.stub(annotator, 'showModeAnnotateButton');
+            stubs.getPermissions = sandbox.stub(annotator, 'getAnnotationPermissions');
 
-            annotator.permissions.canAnnotate = true;
+            annotator.permissions = { canAnnotate: true };
             annotator.modeButtons = {
                 point: { selector: 'point_btn' },
                 draw: { selector: 'draw_btn' }
@@ -141,12 +130,14 @@ describe('lib/annotations/Annotator', () => {
             expect(stubs.setup).to.be.called;
             expect(stubs.show).to.be.called;
             expect(annotator.annotationService).to.not.be.null;
+            expect(stubs.getPermissions).to.be.called;
         });
 
         it('should setup mobile dialog for mobile browsers', () => {
             annotator.isMobile = true;
             annotator.init();
             expect(stubs.setupMobileDialog).to.be.called;
+            expect(stubs.getPermissions).to.be.called;
         });
     });
 
@@ -212,6 +203,25 @@ describe('lib/annotations/Annotator', () => {
             annotator.threads = {};
         });
 
+        describe('destroy()', () => {
+            it('should unbind custom listeners on thread and unbind DOM listeners', () => {
+                stubs.thread.location = { page: 1 };
+                annotator.addThreadToMap(stubs.thread);
+
+                const unbindCustomStub = sandbox.stub(annotator, 'unbindCustomListenersOnThread');
+                const unbindDOMStub = sandbox.stub(annotator, 'unbindDOMListeners');
+                const unbindCustomListenersOnService = sandbox.stub(annotator, 'unbindCustomListenersOnService');
+                const unbindListener = sandbox.stub(annotator, 'removeListener');
+
+                annotator.destroy();
+
+                expect(unbindCustomStub).to.be.calledWith(stubs.thread);
+                expect(unbindDOMStub).to.be.called;
+                expect(unbindCustomListenersOnService).to.be.called;
+                expect(unbindListener).to.be.calledWith(ANNOTATOR_EVENT.scale, sinon.match.func);
+            });
+        });
+
         describe('hideAnnotations()', () => {
             it('should call hide on each thread in map', () => {
                 sandbox.stub(annotator, 'hideAnnotationsOnPage');
@@ -239,6 +249,7 @@ describe('lib/annotations/Annotator', () => {
 
         describe('renderAnnotationsOnPage()', () => {
             it('should call show on each thread', () => {
+                sandbox.stub(annotator, 'isModeAnnotatable').returns(true);
                 stubs.threadMock.expects('show');
                 stubs.threadMock2.expects('show').never();
                 stubs.threadMock3.expects('show').never();
@@ -402,7 +413,7 @@ describe('lib/annotations/Annotator', () => {
             it('should exit annotation mode if currently in the specified mode', () => {
                 stubs.isInMode.returns(true);
                 annotator.disableAnnotationMode(TYPES.point);
-                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.modeExit, { mode: TYPES.point });
+                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.modeExit, sinon.match.object);
                 expect(stubs.unbindMode).to.be.calledWith(TYPES.point);
                 expect(stubs.bindDOM).to.be.called;
                 expect(annotator.annotatedElement).to.not.have.class(CLASS_ANNOTATION_MODE);
@@ -419,7 +430,6 @@ describe('lib/annotations/Annotator', () => {
                 const btn = document.querySelector('.bp-btn-annotate');
                 annotator.disableAnnotationMode(TYPES.draw, btn);
                 expect(btn).to.not.have.class(CLASS_ACTIVE);
-                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.replaceHeader, SELECTOR_BOX_PREVIEW_BASE_HEADER);
             });
         });
 
@@ -432,7 +442,7 @@ describe('lib/annotations/Annotator', () => {
 
             it('should enter annotation mode', () => {
                 annotator.enableAnnotationMode(TYPES.point);
-                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.modeEnter, { mode: TYPES.point });
+                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.modeEnter, sinon.match.object);
                 expect(stubs.unbindDOM).to.be.called;
                 expect(stubs.bindMode).to.be.calledWith(TYPES.point);
                 expect(annotator.annotatedElement).to.have.class(CLASS_ANNOTATION_MODE);
@@ -448,7 +458,6 @@ describe('lib/annotations/Annotator', () => {
                 const btn = document.querySelector('.bp-btn-annotate');
                 annotator.enableAnnotationMode(TYPES.draw, btn);
                 expect(btn).to.have.class(CLASS_ACTIVE);
-                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.replaceHeader, SELECTOR_ANNOTATION_DRAWING_HEADER);
             });
         });
 
@@ -1088,12 +1097,15 @@ describe('lib/annotations/Annotator', () => {
                     canAnnotate: true,
                     container: document,
                     annotationService: {},
-                    fileVersionId: '1',
                     isMobile: false,
-                    options: {
-                        annotator: { NAME: annotatorName },
-                        fileId
+                    annotator: { NAME: annotatorName },
+                    file: {
+                        id: fileId,
+                        file_version: {
+                            id: fileVersionId
+                        }
                     },
+                    location: { locale: 'en-US' },
                     modeButtons: {}
                 });
 
@@ -1228,7 +1240,7 @@ describe('lib/annotations/Annotator', () => {
                 expect(handler).to.be.a('function');
 
                 handler(event);
-                expect(stubs.toggle).to.have.been.calledWith(TYPES.point);
+                expect(stubs.toggle).to.be.calledWith(TYPES.point);
             });
         });
     });

@@ -376,12 +376,32 @@ class DocHighlightDialog extends AnnotationDialog {
     }
 
     /**
+     * Toggles the highlight icon color to a darker yellow based on if the user
+     * is hovering over the highlight to activate it
+     *
+     * @param {string} fillStyle - RGBA fill style
+     * @return {void}
+     */
+    toggleHighlightIcon(fillStyle) {
+        const addHighlightBtn = this.dialogEl.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
+        if (fillStyle === constants.HIGHLIGHT_FILL.active) {
+            addHighlightBtn.classList.add(constants.CLASS_ACTIVE);
+        } else {
+            addHighlightBtn.classList.remove(constants.CLASS_ACTIVE);
+        }
+    }
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
+    /**
      * Keydown handler on dialog. Needed since we are binding to 'mousedown'
      * instead of 'click'.
      *
      * @override
+     * @private
      * @return {void}
-     * @protected
      */
     keydownHandler(event) {
         event.stopPropagation();
@@ -394,9 +414,9 @@ class DocHighlightDialog extends AnnotationDialog {
     /**
      * Mousedown handler on dialog.
      *
+     * @private
      * @param {Event} event - DOM event
      * @return {void}
-     * @protected
      */
     mousedownHandler(event) {
         event.stopPropagation();
@@ -425,26 +445,6 @@ class DocHighlightDialog extends AnnotationDialog {
     }
 
     /**
-     * Toggles the highlight icon color to a darker yellow based on if the user
-     * is hovering over the highlight to activate it
-     *
-     * @param {string} fillStyle - RGBA fill style
-     * @return {void}
-     */
-    toggleHighlightIcon(fillStyle) {
-        const addHighlightBtn = this.dialogEl.querySelector(constants.SELECTOR_ADD_HIGHLIGHT_BTN);
-        if (fillStyle === constants.HIGHLIGHT_FILL.active) {
-            addHighlightBtn.classList.add(constants.CLASS_ACTIVE);
-        } else {
-            addHighlightBtn.classList.remove(constants.CLASS_ACTIVE);
-        }
-    }
-
-    //--------------------------------------------------------------------------
-    // Private
-    //--------------------------------------------------------------------------
-
-    /**
      * Saves or deletes the highlight annotation based on the current state of
      * the highlight
      *
@@ -469,6 +469,8 @@ class DocHighlightDialog extends AnnotationDialog {
 
     /**
      * Focuses on "Add a comment" textarea in the annotations dialog
+     *
+     * @private
      * @return {void}
      */
     focusAnnotationsTextArea() {
@@ -481,6 +483,8 @@ class DocHighlightDialog extends AnnotationDialog {
     /**
      * Calculates the dialog width if the highlighter's name is to be displayed
      * in the annotations dialog
+     *
+     * @private
      * @return {number} Annotations dialog width
      */
     getDialogWidth() {
@@ -511,6 +515,8 @@ class DocHighlightDialog extends AnnotationDialog {
      * Get scaled coordinates for the lower center point of the highlight if the
      * highlight has comments or the lower right corner of the highlight for
      * plain highlights
+     *
+     * @private
      * @param  {DOMRect} pageDimensions Dimensions of the highlight annotations dialog element
      * @param  {number} pageHeight Document page height
      * @return {number[]} [x,y] coordinates in DOM space in CSS
@@ -539,6 +545,7 @@ class DocHighlightDialog extends AnnotationDialog {
      * Adds an annotation to the dialog.
      *
      * @override
+     * @private
      * @param {Annotation} annotation - Annotation to add
      * @return {void}
      */

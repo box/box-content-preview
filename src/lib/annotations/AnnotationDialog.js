@@ -336,38 +336,6 @@ class AnnotationDialog extends EventEmitter {
     }
 
     /**
-     * Keydown handler for dialog.
-     *
-     * @protected
-     * @param {Event} event - DOM event
-     * @return {void}
-     */
-    keydownHandler(event) {
-        event.stopPropagation();
-
-        const key = annotatorUtil.decodeKeydown(event);
-        if (key === 'Escape') {
-            this.hide();
-        } else {
-            const dataType = annotatorUtil.findClosestDataType(event.target);
-            if (dataType === CLASS_REPLY_TEXTAREA) {
-                this.activateReply();
-            }
-        }
-    }
-
-    /**
-     * Stops propagation of DOM event.
-     *
-     * @protected
-     * @param {Event} event - DOM event
-     * @return {void}
-     */
-    stopPropagation(event) {
-        event.stopPropagation();
-    }
-
-    /**
      * Mouseenter handler. Clears hide timeout.
      *
      * @protected
@@ -400,10 +368,46 @@ class AnnotationDialog extends EventEmitter {
         }
     }
 
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
+    /**
+     * Keydown handler for dialog.
+     *
+     * @private
+     * @param {Event} event - DOM event
+     * @return {void}
+     */
+    keydownHandler(event) {
+        event.stopPropagation();
+
+        const key = annotatorUtil.decodeKeydown(event);
+        if (key === 'Escape') {
+            this.hide();
+        } else {
+            const dataType = annotatorUtil.findClosestDataType(event.target);
+            if (dataType === CLASS_REPLY_TEXTAREA) {
+                this.activateReply();
+            }
+        }
+    }
+
+    /**
+     * Stops propagation of DOM event.
+     *
+     * @private
+     * @param {Event} event - DOM event
+     * @return {void}
+     */
+    stopPropagation(event) {
+        event.stopPropagation();
+    }
+
     /**
      * Click handler on dialog.
      *
-     * @protected
+     * @private
      * @param {Event} event - DOM event
      * @return {void}
      */
@@ -460,10 +464,6 @@ class AnnotationDialog extends EventEmitter {
                 break;
         }
     }
-
-    //--------------------------------------------------------------------------
-    // Private
-    //--------------------------------------------------------------------------
 
     /**
      * Adds an annotation to the dialog.

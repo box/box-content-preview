@@ -121,21 +121,6 @@ class DocHighlightThread extends AnnotationThread {
     }
 
     /**
-     * Scroll annotation into the center of the viewport, if possible
-     *
-     * @private
-     * @return {void}
-     */
-    scrollIntoView() {
-        this.scrollToPage();
-
-        const [yPos] = docAnnotatorUtil.getLowerRightCornerOfLastQuadPoint(this.location.quadPoints);
-
-        // Adjust scroll to highlight position
-        this.adjustScroll(this.annotatedElement.scrollTop + yPos);
-    }
-
-    /**
      * Mousedown handler for thread. Deletes this thread if it is still pending.
      *
      * @return {void}
@@ -401,6 +386,21 @@ class DocHighlightThread extends AnnotationThread {
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
+
+    /**
+     * Scroll annotation into the center of the viewport, if possible
+     *
+     * @private
+     * @return {void}
+     */
+    scrollIntoView() {
+        this.scrollToPage();
+
+        const [yPos] = docAnnotatorUtil.getLowerRightCornerOfLastQuadPoint(this.location.quadPoints);
+
+        // Adjust scroll to highlight position
+        this.adjustScroll(this.annotatedElement.scrollTop + yPos);
+    }
 
     /**
      * Draws the highlight with the specified fill style.

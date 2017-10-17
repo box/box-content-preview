@@ -155,6 +155,7 @@ class AnnotationThread extends EventEmitter {
 
         // Changing state from pending
         this.state = STATES.hover;
+
         // Save annotation on server
         return this.annotationService
             .create(annotationData)
@@ -260,50 +261,6 @@ class AnnotationThread extends EventEmitter {
                 console.error(THREAD_EVENT.deleteError, error.toString());
                 /* eslint-enable no-console */
             });
-    }
-
-    /**
-     * Scroll annotation into the center of the viewport, if possible
-     *
-     * @private
-     * @return {void}
-     */
-    scrollIntoView() {
-        const yPos = parseInt(this.location.y, 10);
-        this.scrollToPage();
-        this.centerAnnotation(this.annotatedElement.scrollTop + yPos);
-    }
-
-    /**
-     * Scroll to the annotation's page
-     *
-     * @private
-     * @return {void}
-     */
-    scrollToPage() {
-        // Ignore if annotation does not have a location or page
-        if (!this.location || !this.location.page) {
-            return;
-        }
-
-        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
-        pageEl.scrollIntoView();
-    }
-
-    /**
-     * Adjust page scroll position so annotation is centered in viewport
-     *
-     * @private
-     * @param {number} scrollVal - scroll value to adjust so annotation is
-     centered in the viewport
-     * @return {void}
-     */
-    centerAnnotation(scrollVal) {
-        if (scrollVal < this.annotatedElement.scrollHeight) {
-            this.annotatedElement.scrollTop = scrollVal;
-        } else {
-            this.annotatedElement.scrollTop = this.annotatedElement.scrollBottom;
-        }
     }
 
     //--------------------------------------------------------------------------
@@ -456,32 +413,53 @@ class AnnotationThread extends EventEmitter {
         this.destroy();
     }
 
-    /**
-     * Generate threadData with relevant information to be emitted with an
-     * annotation thread event
-     *
-     * @protected
-     * @return {Object} threadData - Annotation event thread data
-     */
-    getThreadEventData() {
-        const threadData = {
-            type: this.type,
-            threadID: this.threadID
-        };
-
-        if (this.annotationService.user.id > 0) {
-            threadData.userId = this.annotationService.user.id;
-        }
-        if (this.threadNumber) {
-            threadData.threadNumber = this.threadNumber;
-        }
-
-        return threadData;
-    }
-
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
+
+    /**
+     * Scroll annotation into the center of the viewport, if possible
+     *
+     * @private
+     * @return {void}
+     */
+    scrollIntoView() {
+        const yPos = parseInt(this.location.y, 10);
+        this.scrollToPage();
+        this.centerAnnotation(this.annotatedElement.scrollTop + yPos);
+    }
+
+    /**
+     * Scroll to the annotation's page
+     *
+     * @private
+     * @return {void}
+     */
+    scrollToPage() {
+        // Ignore if annotation does not have a location or page
+        if (!this.location || !this.location.page) {
+            return;
+        }
+
+        const pageEl = this.annotatedElement.querySelector(`[data-page-number="${this.location.page}"]`);
+        pageEl.scrollIntoView();
+    }
+
+    /**
+     * Adjust page scroll position so annotation is centered in viewport
+     *
+     * @private
+     * @param {number} scrollVal - scroll value to adjust so annotation is
+     centered in the viewport
+     * @return {void}
+     */
+    centerAnnotation(scrollVal) {
+        if (scrollVal < this.annotatedElement.scrollHeight) {
+            this.annotatedElement.scrollTop = scrollVal;
+        } else {
+            this.annotatedElement.scrollTop = this.annotatedElement.scrollBottom;
+        }
+    }
 
     /**
      * Update a temporary annotation with the annotation saved on the backend. Set the threadNumber if it has not
@@ -630,6 +608,29 @@ class AnnotationThread extends EventEmitter {
         /* eslint-disable no-console */
         console.error(THREAD_EVENT.createError, error.toString());
         /* eslint-enable no-console */
+    }
+
+    /**
+     * Generate threadData with relevant information to be emitted with an
+     * annotation thread event
+     *
+     * @private
+     * @return {Object} threadData - Annotation event thread data
+     */
+    getThreadEventData() {
+        const threadData = {
+            type: this.type,
+            threadID: this.threadID
+        };
+
+        if (this.annotationService.user.id > 0) {
+            threadData.userId = this.annotationService.user.id;
+        }
+        if (this.threadNumber) {
+            threadData.threadNumber = this.threadNumber;
+        }
+
+        return threadData;
     }
 
     /**
