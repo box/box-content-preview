@@ -64,50 +64,67 @@ describe('lib/annotators/BoxAnnotations', () => {
         beforeEach(() => {
             stubs.instantiateControllers = sandbox.stub(loader, 'instantiateControllers');
             stubs.canLoad = sandbox.stub(annotatorUtil, 'canLoadAnnotations').returns(true);
+
+            stubs.annotator = {
+                NAME: 'Document',
+                VIEWER: ['Document'],
+                TYPE: ['point'],
+                DEFAULT_ENABLED: ['point']
+            };
+
+            stubs.options = {
+                file: {
+                    permissions: {}
+                },
+                viewer: {
+                    NAME: 'Document'
+                }
+            }
         });
 
         it('should not return an annotator if the user has incorrect permissions/scopes', () => {
+            sandbox.stub(loader, 'getAnnotatorsForViewer').returns(stubs.annotator);
             stubs.canLoad.returns(false);
-            expect(loader.determineAnnotator('Image', {})).to.be.null;
+            expect(loader.determineAnnotator(stubs.options)).to.be.null;
         });
 
         it('should choose the first annotator that matches the viewer', () => {
             const viewer = 'Document';
-            const annotator = loader.determineAnnotator(viewer, {});
+            sandbox.stub(loader, 'getAnnotatorsForViewer').returns(stubs.annotator);
+            const annotator = loader.determineAnnotator(stubs.options);
             expect(annotator.NAME).to.equal(viewer);
-            expect(stubs.instantiateControllers).to.be.called;
-        });
-
-        it('should not choose a disabled annotator', () => {
-            const annotator = loader.determineAnnotator('Image', {}, {}, ['Image']);
-            expect(annotator).to.be.null;
+            expect(loader.getAnnotatorsForViewer).to.be.called;
         });
 
         it('should not return an annotator if no matching annotator is found', () => {
-            const annotator = loader.determineAnnotator('Swf', {});
+            sandbox.stub(loader, 'getAnnotatorsForViewer').returns(undefined);
+            const annotator = loader.determineAnnotator(stubs.options);
             expect(annotator).to.be.null;
         });
 
         it('should return a copy of the annotator that matches', () => {
             const viewer = 'Document';
+
             const docAnnotator = {
                 NAME: viewer,
                 VIEWER: ['Document'],
                 TYPE: ['point', 'highlight'],
                 DEFAULT_ENABLED: ['point']
             };
-            loader.annotators = [docAnnotator];
-            const annotator = loader.determineAnnotator(viewer, {});
-            docAnnotator.NAME = 'another_name';
-            expect(annotator.NAME).to.equal(viewer);
-            expect(annotator.NAME).to.not.equal(docAnnotator.NAME);
+
+            sandbox.stub(loader, 'getAnnotatorsForViewer').returns(docAnnotator);
+            const annotator = loader.determineAnnotator(stubs.options);
+
+            stubs.annotator.NAME = 'another_name';
+            expect(annotator.NAME).to.not.equal(stubs.annotator.NAME);
         });
 
         it('should return null if the config for the viewer disables annotations', () => {
             const config = {
                 enabled: false
             };
-            const annotator = loader.determineAnnotator('Document', {}, config);
+            sandbox.stub(loader, 'getAnnotatorsForViewer').returns(stubs.annotator);
+            const annotator = loader.determineAnnotator(stubs.options, config);
             expect(annotator).to.be.null;
         });
 
@@ -116,14 +133,16 @@ describe('lib/annotators/BoxAnnotations', () => {
                 enabled: true,
                 disabledTypes: ['point']
             };
+            
             const docAnnotator = {
                 NAME: 'Document',
                 VIEWER: ['Document'],
                 TYPE: ['point', 'highlight'],
                 DEFAULT_ENABLED: ['point', 'highlight']
             };
-            loader.annotators = [docAnnotator];
-            const annotator = loader.determineAnnotator('Document', {}, config);
+            sandbox.stub(loader, 'getAnnotatorsForViewer').returns(docAnnotator);
+            const annotator = loader.determineAnnotator(stubs.options, config);
+
             expect(annotator.TYPE.includes('point')).to.be.false;
             expect(annotator.TYPE.includes('highlight')).to.be.true;
             expect(annotator).to.deep.equal({
@@ -132,7 +151,7 @@ describe('lib/annotators/BoxAnnotations', () => {
                 TYPE: ['highlight'],
                 DEFAULT_ENABLED: ['point', 'highlight']
             });
-            expect(stubs.instantiateControllers).to.be.called;
+            expect(loader.getAnnotatorsForViewer).to.be.called;
         });
         
         it('should filter and only keep allowed types of annotations', () => {
@@ -147,8 +166,9 @@ describe('lib/annotators/BoxAnnotations', () => {
                 TYPE: ['point', 'highlight', 'highlight-comment', 'draw'],
                 DEFAULT_ENABLED: ['point', 'highlight']
             };
-            loader.annotators = [docAnnotator];
-            const annotator = loader.determineAnnotator('Document', {}, config);
+            
+            sandbox.stub(loader, 'getAnnotatorsForViewer').returns(docAnnotator);
+            const annotator = loader.determineAnnotator(stubs.options, config);
             expect(annotator.TYPE.includes('point')).to.be.true;
             expect(annotator.TYPE.includes('highlight')).to.be.false;
             expect(annotator).to.deep.equal({
@@ -157,7 +177,6 @@ describe('lib/annotators/BoxAnnotations', () => {
                 TYPE: ['point'],
                 DEFAULT_ENABLED: ['point', 'highlight']
             });
-            expect(stubs.instantiateControllers).to.be.called;
         });
 
         it('should respect default annotators if none provided', () => {
@@ -171,8 +190,8 @@ describe('lib/annotators/BoxAnnotations', () => {
                 TYPE: ['point', 'highlight', 'highlight-comment', 'draw'],
                 DEFAULT_ENABLED: ['point', 'draw']
             };
-            loader.annotators = [docAnnotator];
-            const annotator = loader.determineAnnotator('Document', {}, config);
+            sandbox.stub(loader, 'getAnnotatorsForViewer').returns(docAnnotator);
+            const annotator = loader.determineAnnotator(stubs.options, config);
             
             expect(annotator.TYPE).to.deep.equal(['point', 'draw']);
         });

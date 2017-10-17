@@ -246,10 +246,10 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
             dialog.position();
 
-            expect(stubs.scaled).to.have.been.called;
-            expect(stubs.width).to.have.been.called;
-            expect(stubs.caret).to.have.been.called;
-            expect(stubs.show).to.have.been.called;
+            expect(stubs.scaled).to.be.called;
+            expect(stubs.width).to.be.called;
+            expect(stubs.caret).to.be.called;
+            expect(stubs.show).to.be.called;
             expect(dialog.element.style.left).equals('10px');
         });
 
@@ -259,10 +259,10 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
             dialog.position();
 
-            expect(stubs.scaled).to.have.been.called;
-            expect(stubs.width).to.have.been.called;
-            expect(stubs.caret).to.have.been.called;
-            expect(stubs.show).to.have.been.called;
+            expect(stubs.scaled).to.be.called;
+            expect(stubs.width).to.be.called;
+            expect(stubs.caret).to.be.called;
+            expect(stubs.show).to.be.called;
             expect(dialog.element.style.left).equals('10px');
         });
 
@@ -272,7 +272,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
             dialog.position();
 
-            expect(stubs.scaled).to.have.been.called;
+            expect(stubs.scaled).to.be.called;
             expect(dialog.element.style.top).equals(`${PAGE_PADDING_TOP}px`);
         });
 
@@ -281,7 +281,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
             dialog.position();
 
-            expect(stubs.scaled).to.have.been.called;
+            expect(stubs.scaled).to.be.called;
             expect(dialog.element.style.top).equals(`${PAGE_PADDING_TOP}px`);
         });
     });
@@ -297,7 +297,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
             dialog.toggleHighlightDialogs();
 
             expect(dialog.element).to.have.class(constants.CLASS_ANNOTATION_DIALOG);
-            expect(dialog.position).to.have.been.called;
+            expect(dialog.position).to.be.called;
         });
 
         it('should display highlight buttons dialog on toggle when comments dialog is currently shown', () => {
@@ -310,7 +310,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
             dialog.toggleHighlightDialogs();
 
             expect(dialog.element).to.not.have.class(constants.CLASS_ANNOTATION_DIALOG);
-            expect(dialog.position).to.have.been.called;
+            expect(dialog.position).to.be.called;
         });
     });
 
@@ -658,7 +658,7 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
 
             dialog.getScaledPDFCoordinates({}, 100);
 
-            expect(stubs.corner).to.have.been.called;
+            expect(stubs.corner).to.be.called;
         });
     });
 

@@ -49,7 +49,7 @@ describe('lib/annotations/doc/DocPointThread', () => {
 
             pointThread.showDialog();
 
-            expect(AnnotationThread.prototype.showDialog).to.not.have.been.called;
+            expect(AnnotationThread.prototype.showDialog).to.not.be.called;
         });
 
         it('should call parent showDialog if user can\'t annotate', () => {
@@ -60,7 +60,7 @@ describe('lib/annotations/doc/DocPointThread', () => {
 
             pointThread.showDialog();
 
-            expect(AnnotationThread.prototype.showDialog).to.have.been.called;
+            expect(AnnotationThread.prototype.showDialog).to.be.called;
         });
 
         it('should call parent showDialog if there isn\'t a selection present', () => {
@@ -71,7 +71,7 @@ describe('lib/annotations/doc/DocPointThread', () => {
 
             pointThread.showDialog();
 
-            expect(AnnotationThread.prototype.showDialog).to.have.been.called;
+            expect(AnnotationThread.prototype.showDialog).to.be.called;
         });
     });
 
@@ -82,11 +82,11 @@ describe('lib/annotations/doc/DocPointThread', () => {
 
             pointThread.show();
 
-            expect(docAnnotatorUtil.getBrowserCoordinatesFromLocation).to.have.been.calledWith(
+            expect(docAnnotatorUtil.getBrowserCoordinatesFromLocation).to.be.calledWith(
                 pointThread.location,
                 pointThread.annotatedElement
             );
-            expect(annotatorUtil.showElement).to.have.been.calledWith(pointThread.element);
+            expect(annotatorUtil.showElement).to.be.calledWith(pointThread.element);
         });
 
         it('should show the dialog if the state is pending', () => {
@@ -97,7 +97,7 @@ describe('lib/annotations/doc/DocPointThread', () => {
             pointThread.state = STATES.pending;
             pointThread.show();
 
-            expect(pointThread.showDialog).to.have.been.called;
+            expect(pointThread.showDialog).to.be.called;
         });
 
         it('should not show the dialog if the state is not pending', () => {
@@ -108,7 +108,7 @@ describe('lib/annotations/doc/DocPointThread', () => {
             pointThread.state = STATES.inactive;
             pointThread.show();
 
-            expect(pointThread.showDialog).to.not.have.been.called;
+            expect(pointThread.showDialog).to.not.be.called;
         });
     });
 
