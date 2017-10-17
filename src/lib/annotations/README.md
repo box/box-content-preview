@@ -1,13 +1,13 @@
 [Box Annotations](https://developer.box.com/docs/getting-started-with-new-box-view#section-annotations)
 ====================================================================
-Box Annotations allow developers to provide collaboration capabilities right from within the embedded Box preview in their application. Annotations fits a wide range of use cases and can be used to draw the previewer's attention and/or provide feedback on specific parts of a document or images. To learn more about Box Content Preview and for further documentation on how to use it, please go to our page on [Box Content Preview](https://developer.box.com/docs/box-content-preview).
+Box Annotations allow developers to provide collaboration capabilities right from within the embedded Box preview in their application. Box Annotations fit a wide range of use cases and can be used to draw the previewer's attention and/or provide feedback on specific parts of a document or images. To learn more about Box Content Preview and for further documentation on how to use it, please go to our page on [Box Content Preview](https://developer.box.com/docs/box-content-preview).
 
-Box Content Preview currently supports four annotation types - highlight comment, highlight only, draw, and point annotation. Annotations are today supported on documents and image previews only. You can find the full list of supported file types for Box Content Preview at https://community.box.com/t5/Managing-Your-Content/What-file-types-and-fonts-are-supported-by-Box-s-Content-Preview/ta-p/327#FileTypesSupported.
+Box Content Preview currently supports four annotation types - highlight comment, highlight only, draw, and point annotation. Box Annotations are today supported on documents and image previews only. You can find the full list of supported file types for Box Content Preview at https://community.box.com/t5/Managing-Your-Content/What-file-types-and-fonts-are-supported-by-Box-s-Content-Preview/ta-p/327#FileTypesSupported.
 
 Browser Support
 ---------------
 * Desktop Chrome, Firefox, Safari, Edge, and Internet Explorer 11
-* Limited support for mobile web - previews will render but some controls may not work
+* Mobile support available for iOS Safari, Android Chrome
 
 If you are using Internet Explorer 11, which doesn't natively support promises, include a polyfill.io script (see sample code below) or a Promise library like Bluebird.
 
@@ -125,7 +125,7 @@ Below are a set of new Annotation-specific scopes to go alongside Token Exchange
 
 Enabling/Disabling Annotations and Annotation Types
 ------------
-Annotations can be selectively disabled through preview options. Viewer options override global showAnnotations value, for that viewer. See [Box Content Preview](https://github.com/box/box-content-preview) for more details on how to set up the Preview instances that are used with Box Annotations here.
+Annotation types can be selectively disabled through preview options. Viewer options override global showAnnotations value, for that viewer. See [Box Content Preview](https://github.com/box/box-content-preview) for more details on how to set up the Preview instances that are used with Box Annotations here.
 ```
 // Turn on/off annotations for all viewers
 preview.show(..., {
@@ -194,6 +194,10 @@ Additional Methods
 `annotator.disableAnnotationMode(/* String */ mode, /* HTMLElement */ buttonEl)` disables the specified annotation mode.
 
 `annotator.enableAnnotationMode(/* String */ mode, /* HTMLElement */ buttonEl)` enables the specified annotation mode.
+
+`annotator.getAnnotatedEl(/* HTMLElement */ containerEl)` determines the annotated element in the viewer.
+
+`annotator.createAnnotationThread(/* Annotation[] */ annotations, /* Object */ location, /* String */ [annotation type])` creates the proper type of annotation thread, adds it to the in-memory map, and returns it.
 
 Events
 ------
@@ -409,10 +413,6 @@ preview.addListener('annotationsfetched', (data) => {
 });
 ```
 
-Supported Annotation Types
---------------------
-Point annotations are supported on both document and image formats. Highlight comment, highlight only, and draw annotations are only supported on document formats.
-
 
 Annotation Thread
 --------------------
@@ -472,3 +472,66 @@ The following methods are available for the annotation dialogs.
 | removeAnnotation | Removes an annotation from the dialog | {string} annotation ID ||
 | postAnnotation | Posts an annotation in the dialog | {string} annotation text to post ||
 | position | Positions the dialog |  ||
+
+Supported Annotation Types
+--------------------
+Point annotations are supported on both document and image formats. Highlight comment, highlight only, and draw annotations are only supported on document formats.
+
+### Document and Presentation Annotations
+
+The document and presentation viewers supports highlight comment, highlight only, draw and point annotations.
+
+<!-- ## Screenshot
+
+![Screenshot of document point annotations](../../../../images/doc_point.png)
+
+![Screenshot of document highlight annotations](../../../../images/doc_highlight.png)
+
+![Screenshot of document draw  annotations](../../../../images/doc_draw.png) -->
+
+#### Point Annotations
+
+See BoxAnnotations annotation [thread methods/events](#annotation-thread) and [dialog methods/events](#annotation-dialog).
+
+#### Highlight Only and Highlight Comment Annotations
+
+The following methods are available for only highlight annotation threads.
+
+| Method Name | Explanation | Method Parameters |
+| --- | --- | --- |
+| cancelFirstComment | Cancels the first comment in the thread |  ||
+| isOnHighlight | Checks if Mouse event is either over the text highlight or the annotations dialog | {Event} mouse event ||
+| activateDialog | Sets thread state to hover or active-hover accordingly and triggers dialog to remain open |  ||
+
+The following methods are available for only highlight annotation dialogs.
+
+| Method Name | Explanation | Method Parameters |
+| --- | --- | --- |
+| toggleHighlightDialogs | Toggles between the highlight annotations buttons dialog and the highlight comments dialog. Dialogs are toggled based on whether the highlight annotation has text comments or not |  ||
+| toggleHighlightIcon | Toggles the highlight icon color to a darker yellow based on if the user is hovering over the highlight to activate it | {string} RGBA fill style for highlight ||
+
+#### Draw Annotations
+
+The following methods are available for the annotation threads.
+
+| Method Name | Explanation | Method Parameters |
+| --- | --- | --- |
+| hasPageChanged | Determine if the drawing in progress if a drawing goes to a different page | {Object} current location information ||
+
+The following methods are available for the annotation dialogs.
+
+| Method Name | Explanation | Method Parameters |
+| --- | --- | --- |
+| isVisible | Returns whether or not the dialog is able to be seen |  ||
+
+### Image Annotations
+
+The image and multi-page image viewers support point annotations. The creation of annotations is disabled on rotated images.
+
+<!-- ## Screenshot
+
+![Screenshot of image point annotations](../../../../images/image_point.png) -->
+
+#### Point Annotations
+
+See BoxAnnotations annotation [thread methods/events](#annotation-thread) and [dialog methods/events](#annotation-dialog).
