@@ -110,6 +110,13 @@ $item-hover-color: #f6fafd;
     }
 }
 
+.bp-media-settings-item-autoplay,
+.bp-media-settings-menu-autoplay {
+    .bp-media-settings-autoplay-unavailable & {
+        display: none;
+    }
+}
+
 .bp-media-settings-item-audiotracks,
 .bp-media-settings-menu-audiotracks {
     .bp-media-settings-audiotracks-unavailable & {

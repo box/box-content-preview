@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import { addActivationListener, removeActivationListener, decodeKeydown, insertTemplate } from '../../util';
 import { ICON_ARROW_LEFT, ICON_ARROW_RIGHT, ICON_CHECK_MARK } from '../../icons/icons';
 import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../constants';
+import Browser from '../../Browser';
 
 const TYPE_SPEED = 'speed';
 const TYPE_QUALITY = 'quality';
@@ -12,6 +13,7 @@ const CLASS_SETTINGS_SELECTED = 'bp-media-settings-selected';
 const CLASS_SETTINGS_OPEN = 'bp-media-settings-is-open';
 const CLASS_SETTINGS_SUBTITLES_UNAVAILABLE = 'bp-media-settings-subtitles-unavailable';
 const CLASS_SETTINGS_AUDIOTRACKS_UNAVAILABLE = 'bp-media-settings-audiotracks-unavailable';
+const CLASS_SETTINGS_AUTOPLAY_UNAVAILABLE = 'bp-media-settings-autoplay-unavailable';
 const CLASS_SETTINGS_SUBTITLES_ON = 'bp-media-settings-subtitles-on';
 const SELECTOR_SETTINGS_SUB_ITEM = '.bp-media-settings-sub-item';
 const SELECTOR_SETTINGS_VALUE = '.bp-media-settings-value';
@@ -180,6 +182,11 @@ class Settings extends EventEmitter {
         addActivationListener(this.settingsEl, this.menuEventHandler);
         this.containerEl.classList.add(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
         this.containerEl.classList.add(CLASS_SETTINGS_AUDIOTRACKS_UNAVAILABLE);
+
+        if (Browser.isIOS()) {
+            this.containerEl.classList.add(CLASS_SETTINGS_AUTOPLAY_UNAVAILABLE);
+        }
+
         this.init();
     }
 

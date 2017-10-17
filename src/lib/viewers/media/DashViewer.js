@@ -411,6 +411,7 @@ class DashViewer extends VideoBaseViewer {
             return;
         }
 
+        this.checkAutoplay();
         this.calculateVideoDimensions();
         this.loadUI();
         this.loadFilmStrip();

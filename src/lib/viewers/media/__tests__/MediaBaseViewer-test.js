@@ -126,12 +126,13 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             });
         });
 
-        it('should check autoplay settings', () => {
+        it('should enable autoplay if on iOS', () => {
+            sandbox.stub(Browser, 'isIOS').returns(true);
             sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
-            sandbox.stub(media, 'checkAutoplay');
+            media.mediaEl = document.createElement('video');
 
             return media.load().then(() => {
-                expect(media.checkAutoplay).to.be.called;
+                expect(media.mediaEl.autoplay).to.be.true;
             })
         });
     });
@@ -233,36 +234,35 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
     describe('checkAutoplay()', () => {
         beforeEach(() => {
-            media.mediaEl = document.createElement('video');
-            sandbox.stub(media.cache, 'has').returns(true);
-            sandbox.stub(media.cache, 'get');
+            media.mediaEl = {
+                play: sandbox.stub().returns(Promise.resolve())
+            };
+
+            sandbox.stub(media.cache, 'get').returns('Enabled');
             sandbox.stub(Browser, 'isIOS').returns(false);
         });
 
         it('should do nothing the settings value is absent or disabled', () => {
-            media.cache.has.returns(false);
+            media.cache.get.returns(false);
             media.checkAutoplay();
-            expect(media.mediaEl.autoplay).to.not.equal(true);
+            expect(media.mediaEl.play).to.not.be.called;
 
-            media.cache.has.returns(true);
+            media.cache.get.returns(true);
             media.cache.get.returns('Disabled');
             media.checkAutoplay();
-            expect(media.mediaEl.autoplay).to.not.equal(false);
+            expect(media.mediaEl.play).to.not.be.called;
         });
 
-        it('should set autoplay if setting is enabled', () => {
-            media.cache.get.returns('Enabled');
-
+        it('should set autoplay if setting is enabled and handle the promise if it is a valid promise', () => {
             media.checkAutoplay();
-            expect(media.mediaEl.autoplay).to.equal(true);
+            expect(media.mediaEl.play).to.be.called;
+            expect(media.mediaEl.autoplay).to.be.undefined;
         });
 
-        it('should set autoplay if on iOS', () => {
-            media.cache.get.returns('Disabled');
-            Browser.isIOS.returns(true);
-
+        it('should set autoplay to true if play does not return a promise', () => {
+            media.mediaEl.play.returns(undefined);
             media.checkAutoplay();
-            expect(media.mediaEl.autoplay).to.equal(true);
+            expect(media.mediaEl.autoplay).to.be.true;
         });
     });
 
@@ -353,6 +353,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             sandbox.stub(media, 'hideLoadingIcon');
             sandbox.stub(media, 'handleRate');
             sandbox.stub(media, 'handleVolume');
+            sandbox.stub(media, 'emit');
 
             media.playingHandler();
 
@@ -360,6 +361,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.hideLoadingIcon).to.be.called;
             expect(media.handleRate).to.be.called;
             expect(media.handleVolume).to.be.called;
+            expect(media.emit).to.be.calledWith('play');
         });
     });
 
@@ -455,14 +457,12 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     describe('play()', () => {
         it('should play the media when no time parameters are passed', () => {
             media.mediaEl = { play: sandbox.stub() };
-            sandbox.stub(media, 'emit');
             sandbox.stub(media, 'handleRate');
             sandbox.stub(media, 'handleVolume');
             sandbox.stub(media, 'removePauseEventListener');
             media.play();
             expect(media.removePauseEventListener.callCount).to.equal(1);
             expect(media.mediaEl.play.callCount).to.equal(1);
-            expect(media.emit).to.be.calledWith('play');
             expect(media.handleRate.callCount).to.equal(1);
             expect(media.handleVolume.callCount).to.equal(1);
         });
@@ -474,7 +474,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             isValidTimeStub.withArgs(undefined).returns(false);
             sandbox.stub(media, 'pause');
             sandbox.stub(media, 'setMediaTime');
-            sandbox.stub(media, 'emit');
             sandbox.stub(media, 'handleRate');
             sandbox.stub(media, 'handleVolume');
             sandbox.stub(media, 'removePauseEventListener');
@@ -482,7 +481,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.removePauseEventListener.callCount).to.equal(1);
             expect(media.setMediaTime).to.be.calledWith(100);
             expect(media.mediaEl.play.callCount).to.equal(1);
-            expect(media.emit).to.be.calledWith('play');
             expect(media.handleRate.callCount).to.equal(1);
             expect(media.handleVolume.callCount).to.equal(1);
             expect(media.pause.callCount).to.equal(0);
@@ -495,7 +493,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             isValidTimeStub.withArgs(200).returns(true);
             sandbox.stub(media, 'pause');
             sandbox.stub(media, 'setMediaTime');
-            sandbox.stub(media, 'emit');
             sandbox.stub(media, 'handleRate');
             sandbox.stub(media, 'handleVolume');
             sandbox.stub(media, 'removePauseEventListener');
@@ -504,7 +501,6 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             expect(media.setMediaTime).to.be.calledWith(100);
             expect(media.pause).to.be.calledWith(200);
             expect(media.mediaEl.play.callCount).to.equal(1);
-            expect(media.emit).to.be.calledWith('play');
             expect(media.handleRate.callCount).to.equal(1);
             expect(media.handleVolume.callCount).to.equal(1);
         });

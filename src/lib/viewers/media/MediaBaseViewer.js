@@ -97,12 +97,18 @@ class MediaBaseViewer extends BaseViewer {
         this.mediaEl.addEventListener('error', this.errorHandler);
         this.mediaEl.setAttribute('title', this.options.file.name);
 
-        this.checkAutoplay();
+        if (Browser.isIOS()) {
+            // iOS doesn't fire loadeddata event until some data loads
+            // Adding autoplay prevents this but won't actually autoplay the video.
+            // https://webkit.org/blog/6784/new-video-policies-for-ios/
+            this.mediaEl.autoplay = true;
+        }
 
         return this.getRepStatus()
             .getPromise()
             .then(() => {
                 this.mediaEl.src = this.mediaUrl;
+                this.checkAutoplay();
             })
             .catch(this.handleAssetError);
     }
@@ -215,8 +221,7 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleAutoplay() {
-        const isAutoplayEnabled =
-            this.cache.has(MEDIA_AUTOPLAY_CACHE_KEY) && this.cache.get(MEDIA_AUTOPLAY_CACHE_KEY) === 'Enabled';
+        const isAutoplayEnabled = this.cache.get(MEDIA_AUTOPLAY_CACHE_KEY) === 'Enabled';
         this.emit('autoplay', isAutoplayEnabled);
     }
 
@@ -228,17 +233,28 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     checkAutoplay() {
-        if (
-            (!this.cache.has(MEDIA_AUTOPLAY_CACHE_KEY) || this.cache.get(MEDIA_AUTOPLAY_CACHE_KEY) === 'Disabled') &&
-            !Browser.isIOS()
-        ) {
+        if (this.cache.get(MEDIA_AUTOPLAY_CACHE_KEY) !== 'Enabled') {
             return;
         }
 
-        // iOS doesn't fire loadeddata event until some data loads
-        // Adding autoplay prevents that, but iOS Safari won't autoplay media
-        // https://webkit.org/blog/6784/new-video-policies-for-ios/
-        this.mediaEl.autoplay = true;
+        // Play may return a promise depening on browser support. This promise
+        // will resolve when playback starts. If it fails, pause UI should be shown.
+        // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/
+        const autoPlayPromise = this.mediaEl.play();
+
+        if (autoPlayPromise && typeof autoPlayPromise.then === 'function') {
+            autoPlayPromise
+                .then(() => {
+                    this.handleRate();
+                    this.handleVolume();
+                })
+                .catch(() => {
+                    this.pause();
+                });
+        } else {
+            // Fallback to traditional autoplay tag if play does not return a promise
+            this.mediaEl.autoplay = true;
+        }
     }
 
     /**
@@ -352,6 +368,7 @@ class MediaBaseViewer extends BaseViewer {
         this.hideLoadingIcon();
         this.handleRate();
         this.handleVolume();
+        this.emit('play');
     }
 
     /**
@@ -466,7 +483,6 @@ class MediaBaseViewer extends BaseViewer {
         }
         if (arguments.length === 0 || hasValidStart) {
             this.mediaEl.play();
-            this.emit('play');
             this.handleRate();
             this.handleVolume();
         }

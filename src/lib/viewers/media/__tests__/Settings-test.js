@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import Settings from '../Settings';
+import Browser from '../../../Browser';
 
 let settings;
 const sandbox = sinon.sandbox.create();
@@ -12,6 +13,7 @@ describe('lib/viewers/media/Settings', () => {
     beforeEach(() => {
         fixture.load('viewers/media/__tests__/Settings-test.html');
         const containerEl = document.querySelector('.container');
+        sandbox.stub(Browser, 'isIOS').returns(true);
         settings = new Settings(containerEl, {
             set: () => {},
             has: () => {},
@@ -40,6 +42,10 @@ describe('lib/viewers/media/Settings', () => {
             expect(settings.hasSubtitles()).to.be.false;
             expect(settings.areSubtitlesOn()).to.be.false;
             expect(settings.containerEl).to.have.class('bp-media-settings-subtitles-unavailable');
+        });
+
+        it('should hide the autoplay option if on iOS', () => {
+            expect(settings.containerEl.classList.contains('bp-media-settings-autoplay-unavailable')).to.be.true;
         });
     });
 
