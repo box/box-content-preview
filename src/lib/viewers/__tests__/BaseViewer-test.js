@@ -280,23 +280,39 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('addCommonListeners()', () => {
+        beforeEach(() => {
+            stubs.fullscreenAddListener = sandbox.stub(fullscreen, 'addListener');
+            stubs.baseAddListener = sandbox.spy(base, 'addListener');
+            stubs.documentAddEventListener = sandbox.stub(document.defaultView, 'addEventListener');
+            stubs.loadAnnotator = sandbox.stub(base, 'loadAnnotator');
+
+
+        });
         it('should append common event listeners', () => {
-            sandbox.stub(fullscreen, 'addListener');
-            sandbox.stub(base, 'addListener');
-            sandbox.stub(document.defaultView, 'addEventListener');
+            base.addCommonListeners();
+
+            expect(stubs.fullscreenAddListener).to.be.calledWith('enter', sinon.match.func);
+            expect(stubs.fullscreenAddListener).to.be.calledWith('exit', sinon.match.func);
+            expect(stubs.documentAddEventListener).to.be.calledWith('resize', base.debouncedResizeHandler);
+            expect(stubs.baseAddListener).to.be.calledWith('load', sinon.match.func);
+        });
+
+        it('should prevent the context menu if preview only permissions', () => {
+            base.options.file.permissions = {
+                can_download: false
+            };
+
+            base.containerEl = {
+                addEventListener: sandbox.stub(),
+                removeEventListener: sandbox.stub()
+            }
 
             base.addCommonListeners();
 
-            expect(fullscreen.addListener).to.be.calledWith('enter', sinon.match.func);
-            expect(fullscreen.addListener).to.be.calledWith('exit', sinon.match.func);
-            expect(document.defaultView.addEventListener).to.be.calledWith('resize', base.debouncedResizeHandler);
-            expect(base.addListener).to.be.calledWith('load', sinon.match.func);
+            expect(base.containerEl.addEventListener).to.be.calledWith('contextmenu', sinon.match.func);
         });
 
         it('should load the annotator when load is emitted with scale', (done) => {
-            sandbox.stub(fullscreen, 'addListener');
-            sandbox.stub(document.defaultView, 'addEventListener');
-            sandbox.stub(base, 'loadAnnotator');
             base.containerEl = containerEl;
             base.annotationsPromise = {
                 then: (arg) => {
@@ -314,9 +330,6 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should load the annotator when load is emitted without an event', (done) => {
-            sandbox.stub(fullscreen, 'addListener');
-            sandbox.stub(document.defaultView, 'addEventListener');
-            sandbox.stub(base, 'loadAnnotator');
             base.containerEl = containerEl;
             base.annotationsPromise = {
                 then: (arg) => {
@@ -427,6 +440,19 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.annotator.removeAllListeners).to.be.called;
             expect(base.annotator.destroy).to.be.called;
         });
+
+        it('should remove the context listener if its callback exists', () => {
+            base.preventDefault = sandbox.stub();
+            base.containerEl = {
+                addEventListener: sandbox.stub(),
+                removeEventListener: sandbox.stub()
+            }
+
+            base.destroy();
+
+            expect(base.containerEl.removeEventListener).to.be.calledWith('contextmenu', sinon.match.func)
+            expect(base.preventDefault).to.be.null;
+        });
     });
 
     describe('emit()', () => {
@@ -472,7 +498,7 @@ describe('lib/viewers/BaseViewer', () => {
             base = new BaseViewer({
                 container: containerEl,
                 file: {
-                    id: '123'
+                    id: '123',
                 }
             });
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
