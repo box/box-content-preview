@@ -32,15 +32,11 @@ The following methods are available for the document viewer.
 
 ### Annotation Thread
 
-**Methods**
-
-See BoxAnnotations annotation thread events.
+See [BoxAnnotations annotation thread methods and events](https://github.com/box/box-content-preview/src/lib/annotations/README.md#annotation-thread).
 
 ### Annotation Dialog
 
-**Methods**
-
-See BoxAnnotations annotation dialog events.
+See [BoxAnnotations annotation dialog methods and events](https://github.com/box/box-content-preview/src/lib/annotations/README.md#annotation-dialog).
 
 ## Highlight Only and Highlight Comment Annotations
 

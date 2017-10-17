@@ -25,4 +25,11 @@ The following methods are available for the document viewer.
 | showAllAnnotations | Shows all annotations on the image. Shows button in header that enables point annotation mode |  ||
 
 ## Point Annotations
-See BoxAnnotations annotation thread and dialog events.
+
+### Annotation Thread
+
+See [BoxAnnotations annotation thread methods and events](https://github.com/box/box-content-preview/src/lib/annotations/README.md#annotation-thread).
+
+### Annotation Dialog
+
+See [BoxAnnotations annotation dialog methods and events](https://github.com/box/box-content-preview/src/lib/annotations/README.md#annotation-dialog).
