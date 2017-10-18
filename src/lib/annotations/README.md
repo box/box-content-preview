@@ -140,7 +140,6 @@ preview.show(..., {
             annotations: {
                 enabled: Boolean, // Enables/disables if set. Respects "showAnnotations" if empty
                 enabledTypes: String[] | null // List of annotation types to enable for this viewer. If empty, will respect default types for that annotator.
-                disabledTypes: String[] | null // DEPRECATED. List of annotation types to disable.
             }
         }
     }
