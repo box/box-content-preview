@@ -606,7 +606,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                 })
             );
             const username = document.querySelector('.user-name');
-            expect(username).to.contain.html(__('annotation_posting_message'));
+            expect(username).to.contain.html(sinon.match.string);
         });
 
         it('should display user name if the user id is not 0', () => {

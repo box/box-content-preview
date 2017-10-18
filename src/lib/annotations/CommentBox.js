@@ -2,32 +2,27 @@ import EventEmitter from 'events';
 import * as constants from './annotationConstants';
 import { hideElement, showElement } from './annotatorUtil';
 
-// Display Text
-const TEXT_ANNOTATION_CANCEL = __('annotation_cancel');
-const TEXT_ANNOTATION_POST = __('annotation_post');
-const TEXT_ADD_COMMENT_PLACEHOLDER = __('annotation_add_comment_placeholder');
-
 class CommentBox extends EventEmitter {
     /**
      * Text displayed in the Cancel button element.
      *
      * @property {string}
      */
-    cancelText = TEXT_ANNOTATION_CANCEL;
+    cancelText;
 
     /**
      * Text displayed in the Post button element.
      *
      * @property {string}
      */
-    postText = TEXT_ANNOTATION_POST;
+    postText;
 
     /**
      * Placeholder text displayed in the text area element.
      *
      * @property {string}
      */
-    placeholderText = TEXT_ADD_COMMENT_PLACEHOLDER;
+    placeholderText;
 
     /**
      * Reference to the comment box element. Contains buttons and text area.
@@ -78,19 +73,17 @@ class CommentBox extends EventEmitter {
      *
      * @param {HTMLElement} parentEl - Parent element
      * @param {Object} [config] - Object containing text values to be displayed to the user.
-     * @param {string} config.cancel - Text displayed in the "Cancel" button
-     * @param {string} config.post - Text displayed in the "Post" button
-     * @param {string} config.placeholder - Placeholder text displayed in the text area
+     * @param {Object} config.localized - Translated strings for UI
      */
     constructor(parentEl, config = {}) {
         super();
 
         this.parentEl = parentEl;
 
-        this.cancelText = config.cancel || this.cancelText;
-        this.postText = config.post || this.postText;
-        this.placeholderText = config.placeholder || this.placeholderText;
         this.hasTouch = config.hasTouch;
+        this.cancelText = config.localized.cancelButton;
+        this.postText = config.localized.postButton;
+        this.placeholderText = config.localized.addCommentPlaceholder;
 
         // Explicit scope binding for event listeners
         this.onCancel = this.onCancel.bind(this);

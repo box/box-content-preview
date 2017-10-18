@@ -4,18 +4,6 @@ import * as constants from '../annotationConstants';
 import { ICON_DRAW_SAVE, ICON_DRAW_DELETE } from '../../icons/icons';
 
 const LABEL_TEMPLATE = `<span class="${constants.CLASS_ANNOTATION_DRAWING_LABEL} ${constants.CLASS_HIDDEN}"></span>`;
-const COMMIT_TEMPLATE = `
-    <button class="bp-btn-plain ${constants.CLASS_ADD_DRAWING_BTN}"
-        title="${__('annotation_draw_save')}">
-        ${ICON_DRAW_SAVE}
-        ${__('annotation_save')}
-    </button>`.trim();
-const DELETE_TEMPLATE = `
-    <button class="bp-btn-plain ${constants.CLASS_DELETE_DRAWING_BTN}"
-        title="${__('annotation_draw_delete')}">
-        ${ICON_DRAW_DELETE}
-        ${__('annotation_delete')}
-    </button>`.trim();
 
 class DocDrawingDialog extends AnnotationDialog {
     /** @property {boolean} Whether or not the dialog is visible */
@@ -212,18 +200,27 @@ class DocDrawingDialog extends AnnotationDialog {
         const canDelete = canCommit || (annotations[0].permissions && annotations[0].permissions.can_delete);
 
         const drawingDialogEl = document.createElement('div');
-
-        let includedButtonsHTML = canCommit ? COMMIT_TEMPLATE : '';
-        if (canDelete) {
-            includedButtonsHTML += DELETE_TEMPLATE;
-        }
-
         drawingDialogEl.classList.add(constants.CLASS_ANNOTATION_DRAWING_DIALOG);
-        drawingDialogEl.innerHTML = `
-            <span class="${constants.CLASS_ANNOTATION_DRAWING_BTNS}">
-                ${LABEL_TEMPLATE}
-                ${includedButtonsHTML}
-            </span>`.trim();
+
+        const drawingButtonsEl = document.createElement('span');
+        drawingButtonsEl.classList.add(constants.CLASS_ANNOTATION_DRAWING_BTNS);
+        drawingButtonsEl.textContent = LABEL_TEMPLATE;
+
+        const commitButton = annotatorUtil.generateBtn(
+            constants.CLASS_ADD_DRAWING_BTN,
+            this.localized.drawSave,
+            `${ICON_DRAW_SAVE}${this.localized.saveButton}`.trim()
+        );
+        drawingButtonsEl.appendChild(commitButton);
+
+        if (canDelete) {
+            const deleteButton = annotatorUtil.generateBtn(
+                constants.CLASS_DELETE_DRAWING_BTN,
+                this.localized.drawDelete,
+                `${ICON_DRAW_DELETE}${this.localized.deleteButton}`.trim()
+            );
+            drawingButtonsEl.appendChild(deleteButton);
+        }
         return drawingDialogEl;
     }
 
@@ -242,7 +239,7 @@ class DocDrawingDialog extends AnnotationDialog {
 
         const drawingLabelEl = this.drawingDialogEl.querySelector(`.${constants.CLASS_ANNOTATION_DRAWING_LABEL}`);
         const username = savedAnnotation.user ? savedAnnotation.user.name : constants.USER_ANONYMOUS;
-        drawingLabelEl.textContent = annotatorUtil.replacePlaceholders(__('annotation_who_drew'), [username]);
+        drawingLabelEl.textContent = annotatorUtil.replacePlaceholders(this.localized.whoDrew, [username]);
 
         annotatorUtil.showElement(drawingLabelEl);
     }

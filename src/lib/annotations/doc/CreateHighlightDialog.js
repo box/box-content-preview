@@ -1,28 +1,14 @@
 import EventEmitter from 'events';
 import { ICON_HIGHLIGHT, ICON_HIGHLIGHT_COMMENT } from '../../icons/icons';
 import CommentBox from '../CommentBox';
-import { hideElement, showElement } from '../annotatorUtil';
+import { hideElement, showElement, generateBtn } from '../annotatorUtil';
 import * as constants from '../annotationConstants';
 
 const CLASS_CREATE_DIALOG = 'bp-create-annotation-dialog';
-const TITLE_HIGHLIGHT_TOGGLE = __('annotation_highlight_toggle');
-const TITLE_HIGHLIGHT_COMMENT = __('annotation_highlight_comment');
 const DATA_TYPE_HIGHLIGHT = 'add-highlight-btn';
 const DATA_TYPE_ADD_HIGHLIGHT_COMMENT = 'add-highlight-comment-btn';
 
 const CARAT_TEMPLATE = `<div class="${constants.CLASS_ANNOTATION_CARET}" style="left: 50%;"></div>`;
-const HIGHLIGHT_BUTTON_TEMPLATE = `
-    <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_BTN}"
-        data-type="${DATA_TYPE_HIGHLIGHT}"
-        title="${TITLE_HIGHLIGHT_TOGGLE}">
-        ${ICON_HIGHLIGHT}
-    </button>`.trim();
-const COMMENT_BUTTON_TEMPLATE = `
-    <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_COMMENT_BTN}"
-        data-type="${DATA_TYPE_ADD_HIGHLIGHT_COMMENT}""
-        title="${TITLE_HIGHLIGHT_COMMENT}">
-        ${ICON_HIGHLIGHT_COMMENT}
-    </button>`.trim();
 
 /**
  * Events emitted by this component.
@@ -75,6 +61,9 @@ class CreateHighlightDialog extends EventEmitter {
     /** @property {boolean} - Whether or not to allow comment interactions. */
     allowComment;
 
+    /** @property {Object} - Translated strings for dialog */
+    localized;
+
     /**
      * A dialog used to create plain and comment highlights.
      *
@@ -94,6 +83,7 @@ class CreateHighlightDialog extends EventEmitter {
         this.hasTouch = config.hasTouch || false;
         this.allowHighlight = config.allowHighlight !== undefined ? !!config.allowHighlight : true;
         this.allowComment = config.allowComment !== undefined ? !!config.allowComment : true;
+        this.localized = config.localized;
 
         // Explicit scope binding for event listeners
         if (this.allowHighlight) {
@@ -331,24 +321,38 @@ class CreateHighlightDialog extends EventEmitter {
      * @return {HTMLElement} The element containing Highlight creation UI
      */
     createElement() {
-        const caretTemplate = this.isMobile ? '' : CARAT_TEMPLATE;
-        const highlightTemplate = this.allowHighlight ? HIGHLIGHT_BUTTON_TEMPLATE : '';
-        const commentTemplate = this.allowComment ? COMMENT_BUTTON_TEMPLATE : '';
+        const dialogEl = document.createElement('div');
+        dialogEl.classList.add(constants.CLASS_ANNOTATION_HIGHLIGHT_DIALOG);
 
-        const createHighlightDialogTemplate = `
-            ${caretTemplate}
-            <div>
-                <div class="${constants.CLASS_ANNOTATION_HIGHLIGHT_DIALOG}">
-                    <span class="${constants.CLASS_HIGHLIGHT_BTNS}">
-                        ${highlightTemplate}
-                        ${commentTemplate}
-                    </span>
-                </div>
-            </div>`.trim();
+        const buttonsEl = document.createElement('span');
+        buttonsEl.classList.add(constants.CLASS_HIGHLIGHT_BTNS);
+
+        if (this.allowHighlight) {
+            const highlightEl = generateBtn(
+                constants.CLASS_ADD_HIGHLIGHT_BTN,
+                this.localized.highlightToggle,
+                ICON_HIGHLIGHT,
+                DATA_TYPE_HIGHLIGHT
+            );
+            buttonsEl.appendChild(highlightEl);
+        }
+
+        if (this.allowComment) {
+            const commentEl = generateBtn(
+                constants.CLASS_ADD_HIGHLIGHT_COMMENT_BTN,
+                this.localized.highlightComment,
+                ICON_HIGHLIGHT_COMMENT,
+                DATA_TYPE_ADD_HIGHLIGHT_COMMENT
+            );
+            buttonsEl.appendChild(commentEl);
+        }
 
         const highlightDialogEl = document.createElement('div');
         highlightDialogEl.classList.add(CLASS_CREATE_DIALOG);
-        highlightDialogEl.innerHTML = createHighlightDialogTemplate;
+
+        const caretTemplate = this.isMobile ? '' : CARAT_TEMPLATE;
+        highlightDialogEl.appendChild(caretTemplate);
+        highlightDialogEl.appendChild(dialogEl);
 
         // Get rid of the caret
         if (this.isMobile) {
@@ -380,7 +384,10 @@ class CreateHighlightDialog extends EventEmitter {
         // Events for comment button
         if (this.allowComment) {
             // Create comment box
-            this.commentBox = new CommentBox(containerEl);
+            this.commentBox = new CommentBox(containerEl, {
+                hasTouch: this.hasTouch,
+                localized: this.localized
+            });
             this.commentCreateEl = containerEl.querySelector(`.${constants.CLASS_ADD_HIGHLIGHT_COMMENT_BTN}`);
             this.commentCreateEl.addEventListener('click', this.onCommentClick);
 
