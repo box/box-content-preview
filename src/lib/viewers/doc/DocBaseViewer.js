@@ -271,9 +271,10 @@ class DocBaseViewer extends BaseViewer {
         // the file. Users without download permissions shouldn't be able to
         // interact with the text layer
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
-        if (!this.getViewerOption('disableFindBar')) {
-            this.findBar = new DocFindBar(this.findBarEl, this.findController, canDownload);
+        if (this.getViewerOption('disableFindBar')) {
+            return;
         }
+        this.findBar = new DocFindBar(this.findBarEl, this.findController, canDownload);
     }
 
     /**
@@ -475,7 +476,8 @@ class DocBaseViewer extends BaseViewer {
             container: this.docEl,
             linkService: new PDFJS.PDFLinkService(),
             // Enhanced text selection uses more memory, so disable on mobile
-            enhanceTextSelection: !this.isMobile
+            enhanceTextSelection: !this.isMobile,
+            renderInteractiveForms: true
         });
 
         // Use chunk size set in viewer options if available
