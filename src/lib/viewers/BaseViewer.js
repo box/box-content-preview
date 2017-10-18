@@ -175,6 +175,12 @@ class BaseViewer extends EventEmitter {
 
         fullscreen.removeAllListeners();
         document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
+
+        if (this.preventDefault) {
+            this.containerEl.removeEventListener('contextmenu', this.preventDefault);
+            this.preventDefault = null;
+        }
+
         this.removeAllListeners();
 
         if (this.containerEl) {
@@ -346,6 +352,12 @@ class BaseViewer extends EventEmitter {
 
         // Add a resize handler for the window
         document.defaultView.addEventListener('resize', this.debouncedResizeHandler);
+
+        const { permissions } = this.options.file;
+        if (permissions && !permissions.can_download) {
+            this.preventDefault = (event) => event.preventDefault();
+            this.containerEl.addEventListener('contextmenu', this.preventDefault);
+        }
 
         this.addListener('load', (event) => {
             if (event && event.scale) {

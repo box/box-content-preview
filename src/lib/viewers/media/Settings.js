@@ -420,7 +420,7 @@ class Settings extends EventEmitter {
      */
     chooseOption(type, value) {
         // Save the value
-        this.cache.set(`media-${type}`, value);
+        this.cache.set(`media-${type}`, value, true);
 
         // Emit to the listener what was chosen
         this.emit(type);
