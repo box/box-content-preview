@@ -47,11 +47,11 @@ describe('lib/annotations/image/ImagePointThread', () => {
 
             thread.show();
 
-            expect(imageAnnotatorUtil.getBrowserCoordinatesFromLocation).to.have.been.calledWith(
+            expect(imageAnnotatorUtil.getBrowserCoordinatesFromLocation).to.be.calledWith(
                 thread.location,
                 thread.annotatedElement
             );
-            expect(annotatorUtil.showElement).to.have.been.calledWith(thread.element);
+            expect(annotatorUtil.showElement).to.be.calledWith(thread.element);
         });
 
         it('should show the dialog if the state is pending', () => {
@@ -62,8 +62,8 @@ describe('lib/annotations/image/ImagePointThread', () => {
             thread.state = STATES.pending;
             thread.show();
 
-            expect(thread.showDialog).to.have.been.called;
-            expect(thread.dialog.position).to.have.been.called;
+            expect(thread.showDialog).to.be.called;
+            expect(thread.dialog.position).to.be.called;
         });
 
         it('should not show the dialog if the state is not pending', () => {
@@ -74,7 +74,7 @@ describe('lib/annotations/image/ImagePointThread', () => {
             thread.state = STATES.inactive;
             thread.show();
 
-            expect(thread.showDialog).to.not.have.been.called;
+            expect(thread.showDialog).to.not.be.called;
         });
 
         it('should not re-position the dialog if pending but on a mobile device', () => {
@@ -87,13 +87,13 @@ describe('lib/annotations/image/ImagePointThread', () => {
 
             thread.show();
 
-            expect(imageAnnotatorUtil.getBrowserCoordinatesFromLocation).to.have.been.calledWith(
+            expect(imageAnnotatorUtil.getBrowserCoordinatesFromLocation).to.be.calledWith(
                 thread.location,
                 thread.annotatedElement
             );
 
-            expect(thread.dialog.position).to.not.have.been.called;
-            expect(annotatorUtil.showElement).to.have.been.calledWith(thread.element);
+            expect(thread.dialog.position).to.not.be.called;
+            expect(annotatorUtil.showElement).to.be.calledWith(thread.element);
             expect()
         });
     });

@@ -1,3 +1,17 @@
+<a name="1.15.0"></a>
+# 1.15.0 (2017-10-17)
+
+*  New: Adding README.md for Annotations codebase + cleanup (#420) ([7df251e](https://github.com/box/box-content-preview/commit/7df251e))
+* Revert "Chore: Temporarily allow draw annotations to be enabled via config (#416)" (#434) ([09c279d](https://github.com/box/box-content-preview/commit/09c279d))
+* New: Disable right click when user does not have download permissions (#427) ([b3a6407](https://github.com/box/box-content-preview/commit/b3a6407))
+* Fix: Prevent preview from erroring if  listener callback errors (#425) ([ed0efb8](https://github.com/box/box-content-preview/commit/ed0efb8))
+* Fix: Prevent SVGs from depending on CSS for sizing (#426) ([86072bd](https://github.com/box/box-content-preview/commit/86072bd))
+* Fix: Remove draw annotations flag (#436) ([87a3278](https://github.com/box/box-content-preview/commit/87a3278))
+* Fix: Use local storage to cache media settings (#432) ([e26e323](https://github.com/box/box-content-preview/commit/e26e323))
+* Chore: Add more detail to shaka error logging (#435) ([aa14549](https://github.com/box/box-content-preview/commit/aa14549))
+
+
+
 <a name="1.14.0"></a>
 # 1.14.0 (2017-10-11)
 
