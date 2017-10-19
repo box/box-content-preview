@@ -13,7 +13,11 @@ describe('lib/annotations/CommentBox', () => {
 
     beforeEach(() => {
         parentEl = document.createElement('span');
-        commentBox = new CommentBox(parentEl);
+        commentBox = new CommentBox(parentEl, {
+            localized: {
+                cancelButton: 'cancel'
+            }
+        });
     });
 
     afterEach(() => {
@@ -24,14 +28,14 @@ describe('lib/annotations/CommentBox', () => {
 
     describe('constructor()', () => {
         let tempCommentBox;
-        const config = {
-            placeholder: 'some placeholder',
-            cancel: 'some cancel',
-            post: 'some postage'
+        const localized = {
+            cancelButton: 'cancel',
+            postButton: 'post',
+            addCommentPlaceholder: 'placeholder'
         };
 
         beforeEach(() => {
-            tempCommentBox = new CommentBox(parentEl, config);
+            tempCommentBox = new CommentBox(parentEl, { localized });
         });
 
         afterEach(() => {
@@ -44,15 +48,15 @@ describe('lib/annotations/CommentBox', () => {
         });
 
         it('should assign cancelText to the string passed in the config', () => {
-            expect(tempCommentBox.cancelText).to.equal(config.cancel);
+            expect(tempCommentBox.cancelText).to.equal(localized.cancelButton);
         });
 
         it('should assign postText to the string passed in the config', () => {
-            expect(tempCommentBox.postText).to.equal(config.post);
+            expect(tempCommentBox.postText).to.equal(localized.postButton);
         });
 
         it('should assign placeholderText to the string passed in the config', () => {
-            expect(tempCommentBox.placeholderText).to.equal(config.placeholder);
+            expect(tempCommentBox.placeholderText).to.equal(localized.addCommentPlaceholder);
         });
     });
 

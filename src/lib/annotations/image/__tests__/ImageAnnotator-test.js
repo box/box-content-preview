@@ -34,6 +34,9 @@ describe('lib/annotations/image/ImageAnnotator', () => {
             modeButtons: {},
             location: {
                 locale: 'en-US'
+            },
+            localizedStrings: {
+                anonymousUserName: 'anonymous'
             }
         });
         annotator.annotatedElement = annotator.getAnnotatedEl(document);

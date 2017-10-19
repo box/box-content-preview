@@ -246,7 +246,6 @@ class DrawingThread extends AnnotationThread {
             // Saved thread, load boundary dialog
             this.state = STATES.inactive;
             this.createDialog();
-            this.dialog.localized = this.localized;
         }
     }
 

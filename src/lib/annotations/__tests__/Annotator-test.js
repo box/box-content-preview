@@ -46,7 +46,14 @@ describe('lib/annotations/Annotator', () => {
             isMobile: false,
             options,
             modeButtons: {},
-            location: {}
+            location: {},
+            localizedStrings: {
+                anonymousUserName: 'anonymous',
+                loadError: 'load error',
+                createError: 'create error',
+                deleteError: 'delete error',
+                authError: 'auth error',
+            }
         });
         annotator.threads = {};
         annotator.modeControllers = {};

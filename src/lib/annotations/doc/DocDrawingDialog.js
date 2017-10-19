@@ -3,8 +3,6 @@ import * as annotatorUtil from '../annotatorUtil';
 import * as constants from '../annotationConstants';
 import { ICON_DRAW_SAVE, ICON_DRAW_DELETE } from '../../icons/icons';
 
-const LABEL_TEMPLATE = `<span class="${constants.CLASS_ANNOTATION_DRAWING_LABEL} ${constants.CLASS_HIDDEN}"></span>`;
-
 class DocDrawingDialog extends AnnotationDialog {
     /** @property {boolean} Whether or not the dialog is visible */
     visible = false;
@@ -199,19 +197,22 @@ class DocDrawingDialog extends AnnotationDialog {
         const canCommit = annotations.length === 0;
         const canDelete = canCommit || (annotations[0].permissions && annotations[0].permissions.can_delete);
 
-        const drawingDialogEl = document.createElement('div');
-        drawingDialogEl.classList.add(constants.CLASS_ANNOTATION_DRAWING_DIALOG);
-
         const drawingButtonsEl = document.createElement('span');
         drawingButtonsEl.classList.add(constants.CLASS_ANNOTATION_DRAWING_BTNS);
-        drawingButtonsEl.textContent = LABEL_TEMPLATE;
 
-        const commitButton = annotatorUtil.generateBtn(
-            constants.CLASS_ADD_DRAWING_BTN,
-            this.localized.drawSave,
-            `${ICON_DRAW_SAVE}${this.localized.saveButton}`.trim()
-        );
-        drawingButtonsEl.appendChild(commitButton);
+        const labelTemplate = document.createElement('span');
+        labelTemplate.classList.add(constants.CLASS_ANNOTATION_DRAWING_LABEL);
+        labelTemplate.classList.add(constants.CLASS_HIDDEN);
+        drawingButtonsEl.appendChild(labelTemplate);
+
+        if (canCommit) {
+            const commitButton = annotatorUtil.generateBtn(
+                constants.CLASS_ADD_DRAWING_BTN,
+                this.localized.drawSave,
+                `${ICON_DRAW_SAVE}${this.localized.saveButton}`.trim()
+            );
+            drawingButtonsEl.appendChild(commitButton);
+        }
 
         if (canDelete) {
             const deleteButton = annotatorUtil.generateBtn(
@@ -221,6 +222,11 @@ class DocDrawingDialog extends AnnotationDialog {
             );
             drawingButtonsEl.appendChild(deleteButton);
         }
+
+        const drawingDialogEl = document.createElement('div');
+        drawingDialogEl.classList.add(constants.CLASS_ANNOTATION_DRAWING_DIALOG);
+        drawingDialogEl.appendChild(drawingButtonsEl);
+
         return drawingDialogEl;
     }
 

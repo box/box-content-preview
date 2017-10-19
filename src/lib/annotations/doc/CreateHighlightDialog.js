@@ -8,8 +8,6 @@ const CLASS_CREATE_DIALOG = 'bp-create-annotation-dialog';
 const DATA_TYPE_HIGHLIGHT = 'add-highlight-btn';
 const DATA_TYPE_ADD_HIGHLIGHT_COMMENT = 'add-highlight-comment-btn';
 
-const CARAT_TEMPLATE = `<div class="${constants.CLASS_ANNOTATION_CARET}" style="left: 50%;"></div>`;
-
 /**
  * Events emitted by this component.
  * TODO(@spramod): Evaluate if these events need to be propogated to viewer
@@ -321,8 +319,15 @@ class CreateHighlightDialog extends EventEmitter {
      * @return {HTMLElement} The element containing Highlight creation UI
      */
     createElement() {
-        const dialogEl = document.createElement('div');
-        dialogEl.classList.add(constants.CLASS_ANNOTATION_HIGHLIGHT_DIALOG);
+        const highlightDialogEl = document.createElement('div');
+        highlightDialogEl.classList.add(CLASS_CREATE_DIALOG);
+
+        if (!this.isMobile) {
+            const caretTemplate = document.createElement('div');
+            caretTemplate.classList.add(constants.CLASS_ANNOTATION_CARET);
+            caretTemplate.left = '50%';
+            highlightDialogEl.appendChild(caretTemplate);
+        }
 
         const buttonsEl = document.createElement('span');
         buttonsEl.classList.add(constants.CLASS_HIGHLIGHT_BTNS);
@@ -347,11 +352,9 @@ class CreateHighlightDialog extends EventEmitter {
             buttonsEl.appendChild(commentEl);
         }
 
-        const highlightDialogEl = document.createElement('div');
-        highlightDialogEl.classList.add(CLASS_CREATE_DIALOG);
-
-        const caretTemplate = this.isMobile ? '' : CARAT_TEMPLATE;
-        highlightDialogEl.appendChild(caretTemplate);
+        const dialogEl = document.createElement('div');
+        dialogEl.classList.add(constants.CLASS_ANNOTATION_HIGHLIGHT_DIALOG);
+        dialogEl.appendChild(buttonsEl);
         highlightDialogEl.appendChild(dialogEl);
 
         // Get rid of the caret
