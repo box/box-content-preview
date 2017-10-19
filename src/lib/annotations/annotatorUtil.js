@@ -286,7 +286,7 @@ export function generateBtn(className, title, content, dataType = '') {
     buttonEl.classList.add(CLASS_BUTTON);
     buttonEl.classList.add(className);
     buttonEl.title = title;
-    buttonEl.textContent = content;
+    buttonEl.innerHTML = content;
     buttonEl.setAttribute('data-type', dataType);
     return buttonEl;
 }
