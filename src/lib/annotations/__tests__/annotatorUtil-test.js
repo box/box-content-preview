@@ -236,12 +236,12 @@ describe('lib/annotations/annotatorUtil', () => {
 
     describe('generateBtn()', () => {
         it('should return button node from specified details', () => {
-            const btn = generateBtn('class', 'title', 'content', 'type');
+            const btn = generateBtn('class', 'title', document.createElement('div'), 'type');
             expect(btn).to.have.class('bp-btn-plain');
             expect(btn).to.have.class('class');
             expect(btn).to.have.attribute('data-type', 'type');
             expect(btn).to.have.attribute('title', 'title');
-            expect(btn).to.have.text('content');
+            expect(btn).to.contain.html(document.createElement('div'));
         });
     });
 
