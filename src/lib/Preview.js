@@ -912,6 +912,14 @@ class Preview extends EventEmitter {
         }
     }
 
+    /**
+     * Wrapper around emit to prevent errors from affecting the client.
+     *
+     * @private
+     * @param {string} eventName - event name to emit
+     * @param {Object} [data] - event name to emit
+     * @return {void}
+     */
     emit(eventName, data) {
         try {
             super.emit(eventName, data);
