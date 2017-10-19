@@ -8,9 +8,11 @@ import {
     STATES,
     TYPES,
     HIGHLIGHT_FILL,
+    SELECTOR_ANNOTATION_HIGHLIGHT_DIALOG,
+    SELECTOR_ANNOTATION_DIALOG
 } from '../../annotationConstants';
 
-let highlightThread;
+let thread;
 const sandbox = sinon.sandbox.create();
 
 describe('lib/annotations/doc/DocHighlightThread', () => {
@@ -21,7 +23,7 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
     beforeEach(() => {
         fixture.load('annotations/doc/__tests__/DocHighlightThread-test.html');
 
-        highlightThread = new DocHighlightThread({
+        thread = new DocHighlightThread({
             annotatedElement: document.querySelector('.annotated-element'),
             annotations: [],
             annotationService: new AnnotationService({
@@ -39,59 +41,62 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                 canViewAllAnnotations: true
             }
         });
-        highlightThread.dialog.setup([]);
+        thread.dialog.localized = {
+            highlightToggle: 'highlight toggle'
+        };
+        thread.dialog.setup([]);
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
-        if (typeof highlightThread.destroy === 'function') {
-            highlightThread.destroy();
-            highlightThread = null;
+        if (typeof thread.destroy === 'function') {
+            thread.destroy();
+            thread = null;
         }
     });
 
     describe('cancelFirstComment()', () => {
         it('should switch dialogs when cancelling the first comment on an existing plain highlight', () => {
             // Adding a plain highlight annotation to the thread
-            sandbox.stub(highlightThread.annotationService, 'create').returns(Promise.resolve({}));
-            sandbox.stub(highlightThread.dialog, 'position');
-            highlightThread.saveAnnotation('highlight', '');
+            sandbox.stub(thread.annotationService, 'create').returns(Promise.resolve({}));
+            sandbox.stub(thread.dialog, 'position');
+            thread.saveAnnotation('highlight', '');
 
             // Cancel first comment on existing annotation
-            sandbox.stub(highlightThread.dialog, 'toggleHighlightDialogs');
-            sandbox.stub(highlightThread, 'reset');
-            highlightThread.cancelFirstComment();
+            sandbox.stub(thread.dialog, 'toggleHighlightDialogs');
+            sandbox.stub(thread, 'reset');
+            thread.cancelFirstComment();
 
-            expect(highlightThread.dialog.toggleHighlightDialogs).to.be.called;
-            expect(highlightThread.reset).to.be.called;
+            expect(thread.dialog.toggleHighlightDialogs).to.be.called;
+            expect(thread.reset).to.be.called;
 
             // only plain highlight annotation should still exist
-            expect(highlightThread.annotations.length).to.equal(1);
+            expect(thread.annotations.length).to.equal(1);
         });
 
         it('should destroy the annotation when cancelling a new highlight comment annotation', () => {
             // Cancel first comment on existing annotation
-            sandbox.stub(highlightThread, 'destroy');
-            highlightThread.cancelFirstComment();
+            sandbox.stub(thread, 'destroy');
+            thread.cancelFirstComment();
 
-            expect(highlightThread.destroy).to.be.called;
-            assert.equal(highlightThread.element, null);
+            expect(thread.destroy).to.be.called;
+            assert.equal(thread.element, null);
         });
 
         it('should reset the thread if on mobile and a comment-highlight', () => {
-            sandbox.stub(highlightThread, 'reset');
-            highlightThread.annotations = [{}, {}, {}];
-            highlightThread.isMobile = true;
+            sandbox.stub(thread, 'reset');
+            thread.annotations = [{}, {}, {}];
+            thread.isMobile = true;
 
-            highlightThread.cancelFirstComment();
+            thread.cancelFirstComment();
 
-            expect(highlightThread.reset).to.be.called;
+            expect(thread.reset).to.be.called;
         });
     });
 
     describe('destroy()', () => {
         it('should destroy the thread', () => {
-            highlightThread.state = STATES.pending;
+            thread.state = STATES.pending;
 
             // This stubs out a parent method by forcing the method we care about
             // in the prototype of the prototype of DocHighlightThread (ie
@@ -100,30 +105,30 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                 value: sandbox.stub()
             });
 
-            highlightThread.destroy();
+            thread.destroy();
 
-            assert.equal(highlightThread.element, null);
+            assert.equal(thread.element, null);
         });
     });
 
     describe('hide()', () => {
         it('should erase highlight thread from the UI', () => {
-            sandbox.stub(highlightThread, 'draw');
+            sandbox.stub(thread, 'draw');
 
-            highlightThread.hide();
+            thread.hide();
 
-            expect(highlightThread.draw).to.be.called;
+            expect(thread.draw).to.be.called;
         });
     });
 
     describe('reset()', () => {
         it('should set highlight to inactive and redraw', () => {
-            sandbox.stub(highlightThread, 'show');
+            sandbox.stub(thread, 'show');
 
-            highlightThread.reset();
+            thread.reset();
 
-            expect(highlightThread.show).to.be.called;
-            assert.equal(highlightThread.state, STATES.inactive);
+            expect(thread.show).to.be.called;
+            assert.equal(thread.state, STATES.inactive);
         });
     });
 
@@ -136,7 +141,7 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                 value: sandbox.stub()
             });
 
-            highlightThread.saveAnnotation(TYPES.highlight, '');
+            thread.saveAnnotation(TYPES.highlight, '');
         });
 
         it('should save a highlight comment annotation', () => {
@@ -147,7 +152,7 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                 value: sandbox.stub()
             });
 
-            highlightThread.saveAnnotation(TYPES.highlight, 'bleh');
+            thread.saveAnnotation(TYPES.highlight, 'bleh');
         });
     });
 
@@ -171,6 +176,9 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                     canViewAllAnnotations: true
                 }
             });
+            plainHighlightThread.dialog.localized = {
+                highlightToggle: 'highlight toggle'
+            };
             plainHighlightThread.dialog.setup([]);
 
             Object.defineProperty(Object.getPrototypeOf(DocHighlightThread.prototype), 'deleteAnnotation', {
@@ -216,64 +224,64 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
 
     describe('onMousedown()', () => {
         it('should destroy the thread when annotation is in pending state', () => {
-            highlightThread.state = STATES.pending;
+            thread.state = STATES.pending;
 
-            sandbox.stub(highlightThread, 'destroy');
+            sandbox.stub(thread, 'destroy');
 
-            highlightThread.onMousedown();
+            thread.onMousedown();
 
-            expect(highlightThread.destroy).to.be.called;
+            expect(thread.destroy).to.be.called;
         });
     });
 
     describe('onClick()', () => {
         it('should set annotation to inactive if event has already been consumed', () => {
-            highlightThread.state = STATES.hover;
-            highlightThread.type = TYPES.highlight_comment;
+            thread.state = STATES.hover;
+            thread.type = TYPES.highlight_comment;
 
-            const isHighlightPending = highlightThread.onClick({}, true);
+            const isHighlightPending = thread.onClick({}, true);
 
             expect(isHighlightPending).to.be.false;
-            expect(highlightThread.state).to.equal(STATES.inactive);
+            expect(thread.state).to.equal(STATES.inactive);
         });
 
         it('should set annotation to hover if mouse is hovering over highlight or dialog', () => {
-            highlightThread.state = STATES.pending;
-            highlightThread.type = TYPES.highlight_comment;
-            sandbox.stub(highlightThread, 'isOnHighlight').returns(true);
-            sandbox.stub(highlightThread, 'reset');
+            thread.state = STATES.pending;
+            thread.type = TYPES.highlight_comment;
+            sandbox.stub(thread, 'isOnHighlight').returns(true);
+            sandbox.stub(thread, 'reset');
 
-            const isHighlightPending = highlightThread.onClick({}, false);
+            const isHighlightPending = thread.onClick({}, false);
 
             expect(isHighlightPending).to.be.true;
-            expect(highlightThread.reset).to.not.be.called;
-            expect(highlightThread.state).to.equal(STATES.hover);
+            expect(thread.reset).to.not.be.called;
+            expect(thread.state).to.equal(STATES.hover);
         });
     });
 
     describe('isOnHighlight()', () => {
         it('should return true if mouse event is over highlight', () => {
-            sandbox.stub(highlightThread, 'isInHighlight').returns(true);
+            sandbox.stub(thread, 'isInHighlight').returns(true);
 
-            const result = highlightThread.isOnHighlight({});
+            const result = thread.isOnHighlight({});
 
             expect(result).to.be.true;
         });
 
         it('should return true if mouse event is over highlight dialog', () => {
-            sandbox.stub(highlightThread, 'isInHighlight').returns(false);
+            sandbox.stub(thread, 'isInHighlight').returns(false);
             sandbox.stub(annotatorUtil, 'isInDialog').returns(true);
 
-            const result = highlightThread.isOnHighlight({});
+            const result = thread.isOnHighlight({});
 
             expect(result).to.be.true;
         });
 
         it('should return false if mouse event is neither over the highlight or the dialog', () => {
-            sandbox.stub(highlightThread, 'isInHighlight').returns(false);
+            sandbox.stub(thread, 'isInHighlight').returns(false);
             sandbox.stub(annotatorUtil, 'isInDialog').returns(false);
 
-            const result = highlightThread.isOnHighlight({});
+            const result = thread.isOnHighlight({});
 
             expect(result).to.be.false;
         });
@@ -282,148 +290,148 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
     describe('activateDialog()', () => {
         it('should set to hover and trigger dialog mouseenter event if thread is not in the active or active-hover state', () => {
             sandbox.stub(annotatorUtil, 'isInDialog').returns(true);
-            sandbox.stub(highlightThread.dialog, 'mouseenterHandler');
-            highlightThread.state = STATES.inactive;
+            sandbox.stub(thread.dialog, 'mouseenterHandler');
+            thread.state = STATES.inactive;
 
-            highlightThread.activateDialog();
+            thread.activateDialog();
 
-            assert.equal(highlightThread.state, STATES.hover);
-            expect(highlightThread.dialog.mouseenterHandler).to.be.called;
+            assert.equal(thread.state, STATES.hover);
+            expect(thread.dialog.mouseenterHandler).to.be.called;
         });
 
         it('should ensure element is set up before calling mouse events', () => {
-            highlightThread.dialog.element = null;
+            thread.dialog.element = null;
             sandbox.stub(annotatorUtil, 'isInDialog').returns(true);
-            sandbox.stub(highlightThread.dialog, 'setup');
-            sandbox.stub(highlightThread.dialog, 'mouseenterHandler');
+            sandbox.stub(thread.dialog, 'setup');
+            sandbox.stub(thread.dialog, 'mouseenterHandler');
 
-            highlightThread.activateDialog();
-            expect(highlightThread.dialog.setup).to.be.called;
+            thread.activateDialog();
+            expect(thread.dialog.setup).to.be.called;
         });
     });
 
     describe('onMousemove()', () => {
         it('should delay drawing highlight if mouse is hovering over a highlight dialog and not pending comment', () => {
-            sandbox.stub(highlightThread, 'getPageEl').returns(highlightThread.annotatedElement);
+            sandbox.stub(thread, 'getPageEl').returns(thread.annotatedElement);
             sandbox.stub(annotatorUtil, 'isInDialog').returns(true);
-            highlightThread.state = STATES.inactive;
+            thread.state = STATES.inactive;
 
-            const result = highlightThread.onMousemove({});
+            const result = thread.onMousemove({});
 
             expect(result).to.be.true;
-            expect(highlightThread.state).to.equal(STATES.hover);
+            expect(thread.state).to.equal(STATES.hover);
         });
 
         it('should do nothing if mouse is hovering over a highlight dialog and pending comment', () => {
-            sandbox.stub(highlightThread, 'getPageEl').returns(highlightThread.annotatedElement);
+            sandbox.stub(thread, 'getPageEl').returns(thread.annotatedElement);
             sandbox.stub(annotatorUtil, 'isInDialog').returns(true);
-            sandbox.stub(highlightThread, 'activateDialog');
-            highlightThread.state = STATES.pending_active;
+            sandbox.stub(thread, 'activateDialog');
+            thread.state = STATES.pending_active;
 
-            const result = highlightThread.onMousemove({});
+            const result = thread.onMousemove({});
 
-            expect(highlightThread.activateDialog).to.not.be.called;
+            expect(thread.activateDialog).to.not.be.called;
             expect(result).to.be.false;
         });
 
         it('should delay drawing highlight if mouse is hovering over a highlight', () => {
-            sandbox.stub(highlightThread, 'getPageEl').returns(highlightThread.annotatedElement);
+            sandbox.stub(thread, 'getPageEl').returns(thread.annotatedElement);
             sandbox.stub(annotatorUtil, 'isInDialog').returns(false);
-            sandbox.stub(highlightThread, 'isInHighlight').returns(true);
-            sandbox.stub(highlightThread, 'activateDialog');
-            highlightThread.state = STATES.hover;
+            sandbox.stub(thread, 'isInHighlight').returns(true);
+            sandbox.stub(thread, 'activateDialog');
+            thread.state = STATES.hover;
 
-            const result = highlightThread.onMousemove({});
+            const result = thread.onMousemove({});
 
-            expect(highlightThread.activateDialog).to.be.called;
+            expect(thread.activateDialog).to.be.called;
             expect(result).to.be.true;
         });
 
         it('should not delay drawing highlight if mouse is not in highlight and the state is not already inactive', () => {
-            sandbox.stub(highlightThread, 'getPageEl').returns(highlightThread.annotatedElement);
+            sandbox.stub(thread, 'getPageEl').returns(thread.annotatedElement);
             sandbox.stub(annotatorUtil, 'isInDialog').returns(false);
-            sandbox.stub(highlightThread, 'isInHighlight').returns(false);
-            highlightThread.state = STATES.hover;
+            sandbox.stub(thread, 'isInHighlight').returns(false);
+            thread.state = STATES.hover;
 
-            const result = highlightThread.onMousemove({});
+            const result = thread.onMousemove({});
 
-            expect(highlightThread.hoverTimeoutHandler).to.not.be.undefined;
+            expect(thread.hoverTimeoutHandler).to.not.be.undefined;
             expect(result).to.be.false;
         });
 
         it('should not delay drawing highlight if the state is already inactive', () => {
-            sandbox.stub(highlightThread, 'getPageEl').returns(highlightThread.annotatedElement);
+            sandbox.stub(thread, 'getPageEl').returns(thread.annotatedElement);
             sandbox.stub(annotatorUtil, 'isInDialog').returns(false);
-            sandbox.stub(highlightThread, 'isInHighlight').returns(false);
-            highlightThread.state = STATES.inactive;
+            sandbox.stub(thread, 'isInHighlight').returns(false);
+            thread.state = STATES.inactive;
 
-            const result = highlightThread.onMousemove({});
+            const result = thread.onMousemove({});
 
-            assert.equal(highlightThread.state, STATES.inactive);
+            assert.equal(thread.state, STATES.inactive);
             expect(result).to.be.false;
         });
     });
 
     describe('show()', () => {
         it('should show the dialog if the state is pending', () => {
-            sandbox.stub(highlightThread, 'showDialog');
+            sandbox.stub(thread, 'showDialog');
 
-            highlightThread.state = STATES.pending;
-            highlightThread.show();
+            thread.state = STATES.pending;
+            thread.show();
 
-            expect(highlightThread.showDialog).to.be.called;
+            expect(thread.showDialog).to.be.called;
         });
 
         it('should not show the dialog if the state is inactive and redraw the highlight as not active', () => {
-            sandbox.stub(highlightThread, 'hideDialog');
-            sandbox.stub(highlightThread, 'draw');
+            sandbox.stub(thread, 'hideDialog');
+            sandbox.stub(thread, 'draw');
 
-            highlightThread.state = STATES.inactive;
-            highlightThread.show();
+            thread.state = STATES.inactive;
+            thread.show();
 
-            expect(highlightThread.hideDialog).to.be.called;
-            expect(highlightThread.draw).to.be.calledWith(HIGHLIGHT_FILL.normal);
+            expect(thread.hideDialog).to.be.called;
+            expect(thread.draw).to.be.calledWith(HIGHLIGHT_FILL.normal);
         });
 
         it('should show the dialog if the state is not pending and redraw the highlight as active', () => {
-            sandbox.stub(highlightThread, 'showDialog');
-            sandbox.stub(highlightThread, 'draw');
+            sandbox.stub(thread, 'showDialog');
+            sandbox.stub(thread, 'draw');
 
-            highlightThread.state = STATES.hover;
-            highlightThread.show();
+            thread.state = STATES.hover;
+            thread.show();
 
-            expect(highlightThread.showDialog).to.be.called;
-            expect(highlightThread.draw).to.be.calledWith(HIGHLIGHT_FILL.active);
+            expect(thread.showDialog).to.be.called;
+            expect(thread.draw).to.be.calledWith(HIGHLIGHT_FILL.active);
         });
 
         it('should do nothing if state is invalid', () => {
-            sandbox.stub(highlightThread, 'showDialog');
-            sandbox.stub(highlightThread, 'draw');
+            sandbox.stub(thread, 'showDialog');
+            sandbox.stub(thread, 'draw');
 
-            highlightThread.state = 'invalid';
-            highlightThread.show();
+            thread.state = 'invalid';
+            thread.show();
 
-            expect(highlightThread.showDialog).to.not.be.called;
-            expect(highlightThread.draw).to.not.be.called;
+            expect(thread.showDialog).to.not.be.called;
+            expect(thread.draw).to.not.be.called;
         });
     });
 
     describe('createDialog()', () => {
         it('should initialize an appropriate dialog', () => {
-            highlightThread.createDialog();
-            expect(highlightThread.dialog instanceof DocHighlightDialog).to.be.true;
+            thread.createDialog();
+            expect(thread.dialog instanceof DocHighlightDialog).to.be.true;
         });
     });
 
     describe('bindCustomListenersOnDialog()', () => {
         it('should bind custom listeners on dialog', () => {
-            highlightThread.dialog = {
+            thread.dialog = {
                 addListener: () => {}
             };
 
-            const addListenerStub = sandbox.stub(highlightThread.dialog, 'addListener');
+            const addListenerStub = sandbox.stub(thread.dialog, 'addListener');
 
-            highlightThread.bindCustomListenersOnDialog();
+            thread.bindCustomListenersOnDialog();
 
             expect(addListenerStub).to.be.calledWith('annotationdraw', sinon.match.func);
             expect(addListenerStub).to.be.calledWith('annotationcommentpending', sinon.match.func);
@@ -435,13 +443,13 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
 
     describe('unbindCustomListenersOnDialog()', () => {
         it('should unbind custom listeners on dialog', () => {
-            highlightThread.dialog = {
+            thread.dialog = {
                 removeAllListeners: () => {}
             };
 
-            const removeAllListenersStub = sandbox.stub(highlightThread.dialog, 'removeAllListeners');
+            const removeAllListenersStub = sandbox.stub(thread.dialog, 'removeAllListeners');
 
-            highlightThread.unbindCustomListenersOnDialog();
+            thread.unbindCustomListenersOnDialog();
 
             expect(removeAllListenersStub).to.be.calledWith('annotationdraw');
             expect(removeAllListenersStub).to.be.calledWith('annotationcommentpending');
@@ -453,12 +461,12 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
 
     describe('draw()', () => {
         it('should not draw if no context exists', () => {
-            sandbox.stub(highlightThread, 'getPageEl');
+            sandbox.stub(thread, 'getPageEl');
             sandbox.stub(docAnnotatorUtil, 'getContext').returns(null);
             sandbox.stub(annotatorUtil, 'getScale');
 
-            highlightThread.draw('fill');
-            expect(highlightThread.pageEl).to.be.undefined;
+            thread.draw('fill');
+            expect(thread.pageEl).to.be.undefined;
             expect(annotatorUtil.getScale).to.not.be.called;
         });
     });
@@ -469,15 +477,15 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                 getBoundingClientRect: sandbox.stub()
             };
             pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
-            const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(pageEl);
+            const pageElStub = sandbox.stub(thread, 'getPageEl').returns(pageEl);
             const dimensionScaleStub = sandbox.stub(annotatorUtil, 'getDimensionScale').returns(false);
             const quadPoint = {};
-            highlightThread.location.quadPoints = [quadPoint, quadPoint, quadPoint];
+            thread.location.quadPoints = [quadPoint, quadPoint, quadPoint];
             const convertStub = sandbox
                 .stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace')
                 .returns([0, 0, 0, 0, 0, 0, 0, 0]);
 
-            highlightThread.isInHighlight({ clientX: 0, clientY: 0 });
+            thread.isInHighlight({ clientX: 0, clientY: 0 });
             expect(pageElStub).to.be.called;
             expect(pageEl.getBoundingClientRect).to.be.called;
             expect(dimensionScaleStub).to.be.called;
@@ -489,15 +497,15 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                 getBoundingClientRect: sandbox.stub()
             };
             pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
-            const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(pageEl);
+            const pageElStub = sandbox.stub(thread, 'getPageEl').returns(pageEl);
             const dimensionScaleStub = sandbox.stub(annotatorUtil, 'getDimensionScale').returns(true);
             const quadPoint = {};
-            highlightThread.location.quadPoints = [quadPoint, quadPoint, quadPoint];
+            thread.location.quadPoints = [quadPoint, quadPoint, quadPoint];
             const convertStub = sandbox
                 .stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace')
                 .returns([0, 0, 0, 0, 0, 0, 0, 0]);
 
-            highlightThread.isInHighlight({ clientX: 0, clientY: 0 });
+            thread.isInHighlight({ clientX: 0, clientY: 0 });
             expect(pageElStub).to.be.called;
             expect(pageEl.getBoundingClientRect).to.be.called;
             expect(dimensionScaleStub).to.be.called;
@@ -509,16 +517,16 @@ describe('lib/annotations/doc/DocHighlightThread', () => {
                 getBoundingClientRect: sandbox.stub()
             };
             pageEl.getBoundingClientRect.returns({ height: 0, top: 10 });
-            const pageElStub = sandbox.stub(highlightThread, 'getPageEl').returns(pageEl);
+            const pageElStub = sandbox.stub(thread, 'getPageEl').returns(pageEl);
             const dimensionScaleStub = sandbox.stub(annotatorUtil, 'getDimensionScale').returns(false);
             const quadPoint = {};
-            highlightThread.location.quadPoints = [quadPoint, quadPoint, quadPoint];
+            thread.location.quadPoints = [quadPoint, quadPoint, quadPoint];
             const convertStub = sandbox
                 .stub(docAnnotatorUtil, 'convertPDFSpaceToDOMSpace')
                 .returns([0, 0, 0, 0, 0, 0, 0, 0]);
             const pointInPolyStub = sandbox.stub(docAnnotatorUtil, 'isPointInPolyOpt');
 
-            highlightThread.isInHighlight({ clientX: 0, clientY: 0 });
+            thread.isInHighlight({ clientX: 0, clientY: 0 });
             expect(pageElStub).to.be.called;
             expect(pageEl.getBoundingClientRect).to.be.called;
             expect(dimensionScaleStub).to.be.called;

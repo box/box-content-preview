@@ -3,7 +3,11 @@ import Annotator from '../Annotator';
 import ImagePointThread from './ImagePointThread';
 import * as annotatorUtil from '../annotatorUtil';
 import * as imageAnnotatorUtil from './imageAnnotatorUtil';
-import { CLASS_ANNOTATION_POINT_MARKER, SELECTOR_ANNOTATION_BUTTON_POINT } from '../annotationConstants';
+import {
+    CLASS_ANNOTATION_POINT_MARKER,
+    SELECTOR_ANNOTATION_BUTTON_POINT,
+    ANNOTATOR_EVENT
+} from '../annotationConstants';
 
 const IMAGE_NODE_NAME = 'img';
 // Selector for image container OR multi-image container
@@ -61,7 +65,7 @@ class ImageAnnotator extends Annotator {
 
         // Do not create annotation if event doesn't have coordinates
         if (isNaN(x) || isNaN(y)) {
-            this.emit('annotationerror', __('annotations_create_error'));
+            this.emit(ANNOTATOR_EVENT.error, this.localized.createError);
             return location;
         }
 
@@ -117,7 +121,8 @@ class ImageAnnotator extends Annotator {
             locale: this.locale,
             location: fixedLocation,
             type,
-            permissions: this.permissions
+            permissions: this.permissions,
+            localized: this.localized
         };
 
         if (!annotatorUtil.validateThreadParams(threadParams)) {

@@ -50,6 +50,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             modeButtons: {},
             location: {
                 locale: 'en-US'
+            },
+            localizedStrings: {
+                anonymousUserName: 'anonymous'
             }
         });
         annotator.annotatedElement = document.querySelector('.annotated-element');

@@ -4,6 +4,7 @@ export const CLASS_ACTIVE = 'bp-is-active';
 export const CLASS_HIDDEN = 'bp-is-hidden';
 export const CLASS_INVISIBLE = 'bp-is-invisible';
 export const CLASS_DISABLED = 'is-disabled';
+export const CLASS_BUTTON = 'bp-btn-plain';
 
 export const CLASS_ANNOTATION_BUTTON_CANCEL = 'cancel-annotation-btn';
 export const CLASS_ANNOTATION_BUTTON_POST = 'post-annotation-btn';
