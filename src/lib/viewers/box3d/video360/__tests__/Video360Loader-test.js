@@ -24,7 +24,7 @@ describe('lib/viewers/box3d/video360/Video360Loader', () => {
 
         it('should throw an error if browser is not supported', () => {
             sandbox.stub(Browser, 'hasWebGL').returns(true);
-            sandbox.stub(Browser, 'getName').returns('Safari'); // Safari is not supported
+            sandbox.stub(Browser, 'getName').returns('IE11');
             expect(() => Video360Loader.determineViewer(file)).to.throw(Error, /support preview for 360-degree videos/);
         });
 
