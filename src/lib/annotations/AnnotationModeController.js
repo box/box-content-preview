@@ -9,17 +9,6 @@ class AnnotationModeController extends EventEmitter {
     handlers = [];
 
     /**
-     * [constructor]
-     *
-     * @return {AnnotationModeController} Annotation controller instance
-     */
-    constructor() {
-        super();
-
-        this.handleAnnotationEvent = this.handleAnnotationEvent.bind(this);
-    }
-
-    /**
      * Register the annotator and any information associated with the annotator
      *
      * @public

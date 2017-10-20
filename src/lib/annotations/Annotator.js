@@ -472,6 +472,7 @@ class Annotator extends EventEmitter {
      * needs to bind event listeners to the DOM in the normal state (ie not
      * in any annotation mode).
      *
+     * @protected
      * @return {void}
      */
     bindDOMListeners() {}
@@ -719,7 +720,6 @@ class Annotator extends EventEmitter {
      * @param {number} [rotationAngle] - current angle image is rotated
      * @param {number} [pageNum] - Page number
      * @return {void}
-     * @private
      */
     rotateAnnotations(rotationAngle = 0, pageNum = 0) {
         // Only render a specific page's annotations unless no page number
@@ -767,6 +767,7 @@ class Annotator extends EventEmitter {
     /**
      * Returns click handler for toggling annotation mode.
      *
+     * @private
      * @param {string} mode - Target annotation mode
      * @return {Function|null} Click handler
      */
@@ -783,7 +784,7 @@ class Annotator extends EventEmitter {
     /**
      * Orient annotations to the correct scale and orientation of the annotated document.
      *
-     * @protected
+     * @private
      * @param {Object} data - Scale and orientation values needed to orient annotations.
      * @return {void}
      */
