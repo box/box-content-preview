@@ -46,7 +46,14 @@ describe('lib/annotations/Annotator', () => {
             isMobile: false,
             options,
             modeButtons: {},
-            location: {}
+            location: {},
+            localizedStrings: {
+                anonymousUserName: 'anonymous',
+                loadError: 'load error',
+                createError: 'create error',
+                deleteError: 'delete error',
+                authError: 'auth error',
+            }
         });
         annotator.threads = {};
         annotator.modeControllers = {};
@@ -1048,7 +1055,7 @@ describe('lib/annotations/Annotator', () => {
                 };
                 annotator.handleAnnotationThreadEvents(data);
                 expect(stubs.emit).to.be.calledWith(data.event, data.data);
-                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.error, __('annotations_delete_error'));
+                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.error, sinon.match.string);
                 expect(stubs.unbind).to.not.be.called;
                 expect(stubs.remove).to.not.be.called;
             });
@@ -1061,7 +1068,7 @@ describe('lib/annotations/Annotator', () => {
                 };
                 annotator.handleAnnotationThreadEvents(data);
                 expect(stubs.emit).to.be.calledWith(data.event, data.data);
-                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.error, __('annotations_create_error'));
+                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.error, sinon.match.string);
                 expect(stubs.unbind).to.not.be.called;
                 expect(stubs.remove).to.not.be.called;
             });

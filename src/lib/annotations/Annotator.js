@@ -55,6 +55,7 @@ class Annotator extends EventEmitter {
         this.isMobile = options.isMobile || false;
         this.hasTouch = options.hasTouch || false;
         this.annotationModeHandlers = [];
+        this.localized = options.localizedStrings;
 
         const { file } = this.options;
         this.fileVersionId = file.file_version.id;
@@ -117,7 +118,8 @@ class Annotator extends EventEmitter {
             apiHost,
             fileId: file.id,
             token,
-            canAnnotate: this.permissions.canAnnotate
+            canAnnotate: this.permissions.canAnnotate,
+            anonymousUserName: this.localized.anonymousUserName
         });
 
         // Set up mobile annotations dialog
@@ -901,7 +903,7 @@ class Annotator extends EventEmitter {
             return;
         }
 
-        this.emit(ANNOTATOR_EVENT.error, __('annotations_load_error'));
+        this.emit(ANNOTATOR_EVENT.error, this.localized.loadError);
         /* eslint-disable no-console */
         console.error('Annotation could not be created due to invalid params');
         /* eslint-enable no-console */
@@ -921,18 +923,18 @@ class Annotator extends EventEmitter {
         let errorMessage = '';
         switch (data.reason) {
             case 'read':
-                errorMessage = __('annotations_load_error');
+                errorMessage = this.localized.loadError;
                 break;
             case 'create':
-                errorMessage = __('annotations_create_error');
+                errorMessage = this.localized.createError;
                 this.showAnnotations();
                 break;
             case 'delete':
-                errorMessage = __('annotations_delete_error');
+                errorMessage = this.localized.deleteError;
                 this.showAnnotations();
                 break;
             case 'authorization':
-                errorMessage = __('annotations_authorization_error');
+                errorMessage = this.localized.authError;
                 break;
             default:
         }
@@ -980,11 +982,11 @@ class Annotator extends EventEmitter {
                 this.emit(data.event, data.data);
                 break;
             case THREAD_EVENT.deleteError:
-                this.emit(ANNOTATOR_EVENT.error, __('annotations_delete_error'));
+                this.emit(ANNOTATOR_EVENT.error, this.localized.deleteError);
                 this.emit(data.event, data.data);
                 break;
             case THREAD_EVENT.createError:
-                this.emit(ANNOTATOR_EVENT.error, __('annotations_create_error'));
+                this.emit(ANNOTATOR_EVENT.error, this.localized.createError);
                 this.emit(data.event, data.data);
                 break;
             default:

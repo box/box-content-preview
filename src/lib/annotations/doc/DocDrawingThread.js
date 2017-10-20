@@ -222,6 +222,7 @@ class DocDrawingThread extends DrawingThread {
             isMobile: this.isMobile,
             hasTouch: this.hasTouch
         });
+        this.dialog.localized = this.localized;
 
         this.bindCustomListenersOnDialog();
     }

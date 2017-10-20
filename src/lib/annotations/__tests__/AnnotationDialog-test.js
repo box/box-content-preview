@@ -31,6 +31,10 @@ describe('lib/annotations/AnnotationDialog', () => {
             annotations: [],
             canAnnotate: true
         });
+        dialog.localized = {
+            addCommentPlaceholder: 'add comment placeholder',
+            posting: 'posting'
+        };
         dialog.setup([]);
         document.querySelector('.annotated-element').appendChild(dialog.element);
 
@@ -606,7 +610,7 @@ describe('lib/annotations/AnnotationDialog', () => {
                 })
             );
             const username = document.querySelector('.user-name');
-            expect(username).to.contain.html(__('annotation_posting_message'));
+            expect(username).to.contain.html(dialog.localized.posting);
         });
 
         it('should display user name if the user id is not 0', () => {
