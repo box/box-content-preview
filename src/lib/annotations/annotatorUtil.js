@@ -9,7 +9,8 @@ import {
     CLASS_ACTIVE,
     CLASS_HIDDEN,
     CLASS_INVISIBLE,
-    CLASS_DISABLED
+    CLASS_DISABLED,
+    CLASS_BUTTON
 } from './annotationConstants';
 
 const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
@@ -37,8 +38,8 @@ const THREAD_PARAMS = [
 /**
  * Finds the closest ancestor DOM element with the specified class.
  *
- * @param {HTMLElement} element - Element to search ancestors of
- * @param {string} className - Class name to query
+ * @param {HTMLElement} element Element to search ancestors of
+ * @param {string} className Class name to query
  * @return {HTMLElement|null} Closest ancestor with given class or null
  */
 export function findClosestElWithClass(element, className) {
@@ -54,7 +55,7 @@ export function findClosestElWithClass(element, className) {
 /**
  * Returns the page element and page number that the element is on.
  *
- * @param {HTMLElement} element - Element to find page and page number for
+ * @param {HTMLElement} element Element to find page and page number for
  * @return {Object} Page element/page number if found or null/-1 if not
  */
 export function getPageInfo(element) {
@@ -73,8 +74,8 @@ export function getPageInfo(element) {
  * an attributeName is provided, search for that data atttribute instead of
  * data type.
  *
- * @param {HTMLElement} element - Element to find closest data type for
- * @param {string} [attributeName] - Optional different data attribute to search
+ * @param {HTMLElement} element Element to find closest data type for
+ * @param {string} [attributeName] Optional different data attribute to search
  * for
  * @return {string} Closest data type or empty string
  */
@@ -93,7 +94,7 @@ export function findClosestDataType(element, attributeName) {
 /**
  * Shows the specified element or element with specified selector.
  *
- * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
+ * @param {HTMLElement|string} elementOrSelector Element or CSS selector
  * @return {void}
  */
 export function showElement(elementOrSelector) {
@@ -110,7 +111,7 @@ export function showElement(elementOrSelector) {
 /**
  * Hides the specified element or element with specified selector.
  *
- * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
+ * @param {HTMLElement|string} elementOrSelector Element or CSS selector
  * @return {void}
  */
 export function hideElement(elementOrSelector) {
@@ -127,7 +128,7 @@ export function hideElement(elementOrSelector) {
 /**
  * Disables the specified element or element with specified selector.
  *
- * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
+ * @param {HTMLElement|string} elementOrSelector Element or CSS selector
  * @return {void}
  */
 export function disableElement(elementOrSelector) {
@@ -144,7 +145,7 @@ export function disableElement(elementOrSelector) {
 /**
  * Enables the specified element or element with specified selector.
  *
- * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
+ * @param {HTMLElement|string} elementOrSelector Element or CSS selector
  * @return {void}
  */
 export function enableElement(elementOrSelector) {
@@ -161,7 +162,7 @@ export function enableElement(elementOrSelector) {
 /**
  * Shows the specified element or element with specified selector.
  *
- * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
+ * @param {HTMLElement|string} elementOrSelector Element or CSS selector
  * @return {void}
  */
 export function showInvisibleElement(elementOrSelector) {
@@ -179,7 +180,7 @@ export function showInvisibleElement(elementOrSelector) {
  * Hides the specified element or element with specified selector. The element
  * will still take up DOM space but not be visible in the UI.
  *
- * @param {HTMLElement|string} elementOrSelector - Element or CSS selector
+ * @param {HTMLElement|string} elementOrSelector Element or CSS selector
  * @return {void}
  */
 export function hideElementVisibility(elementOrSelector) {
@@ -197,8 +198,8 @@ export function hideElementVisibility(elementOrSelector) {
  * Reset textarea element - clears value, resets styles, and remove active
  * state.
  *
- * @param {HTMLElement} element - Textarea to reset
- * @param {boolean} clearText - Whether or not text in text area should be cleared
+ * @param {HTMLElement} element Textarea to reset
+ * @param {boolean} clearText Whether or not text in text area should be cleared
  * @return {void}
  */
 export function resetTextarea(element, clearText) {
@@ -216,8 +217,8 @@ export function resetTextarea(element, clearText) {
  * Checks whether mouse is inside the dialog represented by this thread.
  *
  * @private
- * @param {Event} event - Mouse event
- * @param {HTMLElement} dialogEl - Dialog element
+ * @param {Event} event Mouse event
+ * @param {HTMLElement} dialogEl Dialog element
  * @return {boolean} Whether or not mouse is inside dialog
  */
 export function isInDialog(event, dialogEl) {
@@ -247,8 +248,8 @@ export function isInDialog(event, dialogEl) {
  * Creates contextual fragment
  *
  * @public
- * @param {Element} node - DOM node
- * @param {string} template - HTML template
+ * @param {Element} node DOM node
+ * @param {string} template HTML template
  * @return {DocumentFragment} Document fragment
  */
 export function createFragment(node, template) {
@@ -261,13 +262,33 @@ export function createFragment(node, template) {
  * Inserts template string into DOM node, before beforeNode. If beforeNode is null, inserts at end of child nodes
  *
  * @public
- * @param {Element} node - DOM node
+ * @param {Element} node DOM node
  * @param {string} template  html template
- * @param {Element|void} beforeNode - DOM node
+ * @param {Element|void} beforeNode DOM node
  * @return {void}
  */
 export function insertTemplate(node, template, beforeNode = null) {
     node.insertBefore(createFragment(node, template), beforeNode);
+}
+
+/**
+ * Returns a button HTMLElement with specified information
+ *
+ * @public
+ * @param {string} className Button CSS class
+ * @param {string} title Accessibilty title
+ * @param {string} content Button HTML content
+ * @param {string} [dataType] Optional data type
+ * @return {HTMLElement} Button
+ */
+export function generateBtn(className, title, content, dataType = '') {
+    const buttonEl = document.createElement('button');
+    buttonEl.classList.add(CLASS_BUTTON);
+    buttonEl.classList.add(className);
+    buttonEl.title = title;
+    buttonEl.innerHTML = content;
+    buttonEl.setAttribute('data-type', dataType);
+    return buttonEl;
 }
 
 //------------------------------------------------------------------------------
@@ -277,7 +298,7 @@ export function insertTemplate(node, template, beforeNode = null) {
 /**
  * Checks whether element is fully in viewport.
  *
- * @param {HTMLElement} element - The element to check and see if it lies in the viewport
+ * @param {HTMLElement} element The element to check and see if it lies in the viewport
  * @return {boolean} Whether the element is fully in viewport
  */
 export function isElementInViewport(element) {
@@ -296,20 +317,24 @@ export function isElementInViewport(element) {
  * image with the supplied avatar URL as a source if there is a URL passed in
  * or one generated using the initials of the annotator.
  *
- * @param {string} avatarUrl - URL of avatar photo
- * @param {string} userId - User ID of annotator
- * @param {string} userName - Username of annotator
+ * @param {string} avatarUrl URL of avatar photo
+ * @param {string} userId User ID of annotator
+ * @param {string} userName Username of annotator
+ * @param {string} altText Alternate text if profile picture is not available
  * @return {string} HTML for profile image
  */
-export function getAvatarHtml(avatarUrl, userId, userName) {
+export function getAvatarHtml(avatarUrl, userId, userName, altText) {
     if (avatarUrl !== '') {
-        return `<img src="${avatarUrl}" alt="${__('annotation_profile_alt')}">`.trim();
+        return `<img src="${avatarUrl}" alt="${altText}">`.trim();
     }
 
     let initials = '';
     if (userId !== '0') {
         // http://stackoverflow.com/questions/8133630/spliting-the-first-character-of-the-words
-        initials = userName.replace(/\W*(\w)\w*/g, '$1').toUpperCase().substring(0, 3);
+        initials = userName
+            .replace(/\W*(\w)\w*/g, '$1')
+            .toUpperCase()
+            .substring(0, 3);
     }
 
     const index = parseInt(userId, 10) || 0;
@@ -319,7 +344,7 @@ export function getAvatarHtml(avatarUrl, userId, userName) {
 /**
  * Returns zoom scale of annotated element.
  *
- * @param {HTMLElement} annotatedElement - HTML element being annotated on
+ * @param {HTMLElement} annotatedElement HTML element being annotated on
  * @return {number} Zoom scale
  */
 export function getScale(annotatedElement) {
@@ -333,7 +358,7 @@ export function getScale(annotatedElement) {
 /**
  * Whether or not a highlight annotation has comments or is a plain highlight
  *
- * @param {Annotation[]} annotations - Annotations in highlight thread
+ * @param {Annotation[]} annotations Annotations in highlight thread
  * @return {boolean} Whether annotation is a plain highlight annotation
  */
 export function isPlainHighlight(annotations) {
@@ -344,7 +369,7 @@ export function isPlainHighlight(annotations) {
  * Returns whether or not the annotation type is 'highlight' or
  * 'highlight-comment'
  *
- * @param {string} type - Annotatation type
+ * @param {string} type Annotatation type
  * @return {boolean} Whether or not annotation is a highlight
  */
 export function isHighlightAnnotation(type) {
@@ -360,10 +385,10 @@ export function isHighlightAnnotation(type) {
  * the current annotated element dimensions scaled to 100% with annotated
  * element dimensions when annotations were created.
  *
- * @param {Object} dimensions - Dimensions saved in annotation
- * @param {Object} fileDimensions - Current annotated element dimensions
- * @param {number} zoomScale - Zoom scale
- * @param {number} heightPadding - Top & bottom padding for annotated element
+ * @param {Object} dimensions Dimensions saved in annotation
+ * @param {Object} fileDimensions Current annotated element dimensions
+ * @param {number} zoomScale Zoom scale
+ * @param {number} heightPadding Top & bottom padding for annotated element
  * @return {Object|null} {x, y} dimension scale if needed, null otherwise
  */
 export function getDimensionScale(dimensions, fileDimensions, zoomScale, heightPadding) {
@@ -389,7 +414,7 @@ export function getDimensionScale(dimensions, fileDimensions, zoomScale, heightP
 /**
  * Escapes HTML.
  *
- * @param {string} str - Input string
+ * @param {string} str Input string
  * @return {string} HTML escaped string
  */
 export function htmlEscape(str) {
@@ -447,7 +472,7 @@ export function repositionCaret(dialogEl, dialogX, highlightDialogWidth, browser
 /**
  * Checks thread is in a pending or pending-active state
  *
- * @param {string} threadState - State of thread
+ * @param {string} threadState State of thread
  * @return {boolean} Whether annotation thread is in a pending state
  */
 export function isPending(threadState) {
@@ -458,7 +483,7 @@ export function isPending(threadState) {
  * Checks whether annotation thread is valid by checking whether each property
  * in THREAD_PARAMS on the specified file object is defined.
  *
- * @param {Object} thread - Annotation thread params to check
+ * @param {Object} thread Annotation thread params to check
  * @return {boolean} Whether or not annotation thread has all the required params
  */
 export function validateThreadParams(thread) {
@@ -471,8 +496,8 @@ export function validateThreadParams(thread) {
 /**
  * Returns a function that passes a callback a location when given an event on the document text layer
  *
- * @param {Function} locationFunction - The function to get a location from an event
- * @param {Function} callback - Callback to be called upon receiving an event
+ * @param {Function} locationFunction The function to get a location from an event
+ * @param {Function} callback Callback to be called upon receiving an event
  * @return {Function} Event listener to convert to document location
  */
 export function eventToLocationHandler(locationFunction, callback) {
@@ -495,7 +520,7 @@ export function eventToLocationHandler(locationFunction, callback) {
 /**
  * Call preventDefault and stopPropagation on an event
  *
- * @param {event} event - Event object to stop event bubbling
+ * @param {event} event Event object to stop event bubbling
  * @return {void}
  */
 export function prevDefAndStopProp(event) {
@@ -510,10 +535,10 @@ export function prevDefAndStopProp(event) {
 /**
  * Create a JSON object containing x/y coordinates and optionally dimensional information
  *
- * @param {number} x - The x position of the location object
- * @param {number} y - The y position of the location object
- * @param {Object} [dimensions] - The dimensional information of the location object
- * @return {Object} - A location object with x/y position information as well as provided dimensional information
+ * @param {number} x The x position of the location object
+ * @param {number} y The y position of the location object
+ * @param {Object} [dimensions] The dimensional information of the location object
+ * @return {Object} A location object with x/y position information as well as provided dimensional information
  */
 export function createLocation(x, y, dimensions) {
     const loc = { x, y };
@@ -531,7 +556,7 @@ export function createLocation(x, y, dimensions) {
 /**
  * Function to decode key down events into keys
  *
- * @param {Event} event - Keydown event
+ * @param {Event} event Keydown event
  * @return {string} Decoded keydown key
  */
 export function decodeKeydown(event) {
@@ -600,10 +625,10 @@ export function decodeKeydown(event) {
 /**
  * Builds a list of required XHR headers.
  *
- * @param {Object} [headers] - Optional headers
- * @param {string} [token] - Optional auth token
- * @param {string} [sharedLink] - Optional shared link
- * @param {string} [password] - Optional shared link password
+ * @param {Object} [headers] Optional headers
+ * @param {string} [token] Optional auth token
+ * @param {string} [sharedLink] Optional shared link
+ * @param {string} [password] Optional shared link password
  * @return {Object} Headers
  */
 export function getHeaders(headers = {}, token = '', sharedLink = '', password = '') {
@@ -635,8 +660,8 @@ export function getHeaders(headers = {}, token = '', sharedLink = '', password =
 /**
  * Round a number to a certain decimal place by concatenating an exponential factor. Credits to lodash library.
  *
- * @param {number} number - The number to be rounded
- * @param {number} precision - The amount of decimal places to keep
+ * @param {number} number The number to be rounded
+ * @param {number} precision The amount of decimal places to keep
  * @return {number} The rounded number
  */
 export function round(number, precision) {
@@ -652,8 +677,8 @@ export function round(number, precision) {
  * Replaces variable place holders specified between {} in the string with
  * specified custom value. Localizes strings that include variables.
  *
- * @param {string} string - String to be interpolated
- * @param {string[]} placeholderValues - Custom values to replace into string
+ * @param {string} string String to be interpolated
+ * @param {string[]} placeholderValues Custom values to replace into string
  * @return {string} Properly translated string with replaced custom variable
  */
 export function replacePlaceholders(string, placeholderValues) {
@@ -678,7 +703,7 @@ export function replacePlaceholders(string, placeholderValues) {
  * their own or everyone's) annotations which would allow annotations to at
  * least be fetched for the current file
  *
- * @param {Object} permissions - File permissions
+ * @param {Object} permissions File permissions
  * @return {boolean} Whether or not the user has either view OR annotate permissions
  */
 export function canLoadAnnotations(permissions) {

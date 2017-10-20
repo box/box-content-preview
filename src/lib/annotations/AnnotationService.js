@@ -4,11 +4,6 @@ import autobind from 'autobind-decorator';
 import Annotation from './Annotation';
 import { getHeaders } from './annotatorUtil';
 
-const ANONYMOUS_USER = {
-    id: '0',
-    name: __('annotation_anonymous_user_name')
-};
-
 @autobind
 class AnnotationService extends EventEmitter {
     //--------------------------------------------------------------------------
@@ -60,7 +55,10 @@ class AnnotationService extends EventEmitter {
         this.fileId = data.fileId;
         this.headers = getHeaders({}, data.token);
         this.canAnnotate = data.canAnnotate;
-        this.user = ANONYMOUS_USER;
+        this.user = {
+            id: '0',
+            name: this.anonymousUserName
+        };
     }
 
     /**

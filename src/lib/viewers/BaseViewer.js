@@ -803,11 +803,39 @@ class BaseViewer extends EventEmitter {
      * @return {Object} combined options
      */
     createAnnotatorOptions(moreOptions) {
+        // Temporary solution for localizing strings in the BoxAnnotations npm package
+        // TODO(@spramod): Remove once BoxAnnotations has it's own localization strategy
+        const localizedStrings = {
+            loadError: __('annotations_load_error'),
+            createError: __('annotations_create_error'),
+            deleteError: __('annotations_delete_error'),
+            authError: __('annotations_authorization_error'),
+            cancelButton: __('annotation_cancel'),
+            saveButton: __('annotation_save'),
+            postButton: __('annotation_post'),
+            deleteButton: __('annotation_delete'),
+            addCommentPlaceholder: __('annotation_add_comment_placeholder'),
+            replyPlaceholder: __('annotation_reply_placeholder'),
+            deleteConfirmation: __('annotation_delete_confirmation_message'),
+            posting: __('annotation_posting_message'),
+            profileAlt: __('annotation_profile_alt'),
+            anonymousUserName: __('annotation_anonymous_user_name'),
+            pointToggle: __('annotation_point_toggle'),
+            highlightToggle: __('annotation_highlight_toggle'),
+            highlightComment: __('annotation_highlight_comment'),
+            whoHighlighted: __('annotation_who_highlighted'),
+            drawToggle: __('annotation_draw_toggle'),
+            drawSave: __('annotation_draw_save'),
+            drawDelete: __('annotation_draw_delete'),
+            whoDrew: __('annotation_who_drew')
+        };
+
         return cloneDeep(
             Object.assign({}, this.options, moreOptions, {
                 isMobile: this.isMobile,
                 hasTouch: this.hasTouch,
-                locale: this.options.location.locale
+                locale: this.options.location.locale,
+                localizedStrings
             })
         );
     }

@@ -34,6 +34,10 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
             annotations: [],
             canAnnotate: true
         });
+        dialog.localized = {
+            highlightToggle: 'highlight toggle',
+            whoHighlighted: '{1} highlighted'
+        };
         dialog.setup([]);
         document.querySelector('.annotated-element').appendChild(dialog.element);
 
