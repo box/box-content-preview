@@ -518,7 +518,7 @@ class AnnotationDialog extends EventEmitter {
                         ${this.localized.cancelButton}
                     </button>
                     <button class="bp-btn bp-btn-primary ${CLASS_BUTTON_DELETE_CONFIRM}" data-type="${constants.DATA_TYPE_CONFIRM_DELETE}">
-                        ${this.localized.delete}
+                        ${this.localized.deleteButton}
                     </button>
                 </div>
             </div>`.trim();
