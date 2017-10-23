@@ -1,6 +1,7 @@
 import AnnotationModeController from '../../AnnotationModeController';
 import DrawingModeController from '../DrawingModeController';
 import * as annotatorUtil from '../../annotatorUtil';
+import { CLASS_ANNOTATION_DRAW} from '../../annotationConstants';
 
 let drawingModeController;
 let stubs;
@@ -23,6 +24,11 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
             getAnnotateButton: sandbox.stub(),
             options: {
                 header: 'none'
+            },
+            annotatedElement: {
+                classList: {
+                    add: sandbox.stub()
+                }
             }
         };
         it('should use the annotator to get button elements', () => {
@@ -52,6 +58,12 @@ describe('lib/annotations/drawing/DrawingModeController', () => {
 
             drawingModeController.registerAnnotator(annotator);
             expect(setupHeaderStub).to.be.called;
+        });
+
+        it('should add the draw class to the annotated element', () => {
+            annotator.options.header = 'none';
+            drawingModeController.registerAnnotator(annotator);
+            expect(annotator.annotatedElement.classList.add).to.be.calledWith(CLASS_ANNOTATION_DRAW);
         });
     });
 

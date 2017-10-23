@@ -20,8 +20,14 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
         highlightComment: 'highlight comment'
     };
 
+    before(() => {
+        fixture.setBase('src/lib');
+    });
+
     beforeEach(() => {
-        parentEl = document.createElement('div');
+        fixture.load('annotations/doc/__tests__/CreateHighlightDialog-test.html');
+
+        const parentEl = document.querySelector('.bp-create-highlight-dialog-container');
         dialog = new CreateHighlightDialog(parentEl, { localized });
     });
 
@@ -94,7 +100,10 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
         });
 
         it('should move the UI element to the parent element if it does not already contain it', () => {
-            const append = sandbox.stub(parentEl, 'appendChild');
+            const newParent = document.createElement('span');
+            dialog.setParentEl(newParent);
+            const append = sandbox.stub(newParent, 'appendChild');
+
             dialog.show();
             expect(append).to.be.calledWith(dialog.containerEl);
         });
