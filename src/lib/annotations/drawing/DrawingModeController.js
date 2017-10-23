@@ -14,11 +14,6 @@ import {
 } from '../annotationConstants';
 
 class DrawingModeController extends AnnotationModeController {
-    /* eslint-disable new-cap */
-    /** @property {Array} - The array of annotation threads */
-    threads = new rbush();
-    /* eslint-enable new-cap */
-
     /** @property {DrawingThread} - The currently selected DrawingThread */
     selectedThread;
 
@@ -71,7 +66,13 @@ class DrawingModeController extends AnnotationModeController {
             return;
         }
 
-        this.threads.insert(thread);
+        const page = thread.location.page || 1; // Defaults to page 1 if thread has no page'
+        if (!(page in this.threads)) {
+            /* eslint-disable new-cap */
+            this.threads[page] = new rbush();
+            /* eslint-enable new-cap */
+        }
+        this.threads[page].insert(thread);
     }
 
     /**
@@ -87,7 +88,8 @@ class DrawingModeController extends AnnotationModeController {
             return;
         }
 
-        this.threads.remove(thread);
+        const page = thread.location.page || 1;
+        this.threads[page].remove(thread);
     }
 
     /**
@@ -231,7 +233,8 @@ class DrawingModeController extends AnnotationModeController {
                     this.unregisterThread(thread);
 
                     // Redraw any threads that the deleted thread could have been overlapping
-                    this.threads.search(thread).forEach((drawingThread) => drawingThread.show());
+                    const page = thread.location.page;
+                    this.threads[page].all().forEach((drawingThread) => drawingThread.show());
                 }
 
                 break;
@@ -268,9 +271,7 @@ class DrawingModeController extends AnnotationModeController {
         };
 
         // Get the threads that correspond to the point that was clicked on
-        const intersectingThreads = this.threads
-            .search(eventBoundary)
-            .filter((drawingThread) => drawingThread.location.page === location.page);
+        const intersectingThreads = this.threads[location.page].search(eventBoundary);
 
         // Clear boundary on previously selected thread
         this.removeSelection();
