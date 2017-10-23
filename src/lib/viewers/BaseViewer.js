@@ -774,7 +774,6 @@ class BaseViewer extends EventEmitter {
                 this.emit('notificationhide');
 
                 if (data.data.mode === ANNOTATION_TYPE_DRAW) {
-                    this.emit('notificationshow', __('notification_annotation_draw_mode'));
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;

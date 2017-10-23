@@ -91,6 +91,33 @@ describe('lib/annotations/doc/DocHighlightDialog', () => {
         });
     });
 
+    describe('removeAnnotation()', () => {
+        it('should remove annotation element and deactivate reply', () => {
+            stubs.deactivate = sandbox.stub(dialog, 'deactivateReply');
+
+            dialog.addAnnotation(
+                new Annotation({
+                    annotationID: 'someID',
+                    text: 'blah',
+                    user: {},
+                    permissions: {}
+                })
+            );
+
+            dialog.removeAnnotation('someID');
+            const annotationEl = dialog.commentsDialogEl.querySelector('[data-annotation-id="someID"]');
+            expect(annotationEl).to.be.null;
+            expect(stubs.deactivate).to.be.called;
+        });
+
+        it('should not do anything if the specified annotation does not exist', () => {
+            stubs.deactivate = sandbox.stub(dialog, 'deactivateReply');
+
+            dialog.removeAnnotation('someID');
+            expect(stubs.deactivate).to.not.be.called;
+        });
+    });
+
     describe('postAnnotation()', () => {
         beforeEach(() => {
             stubs.postFunc = AnnotationDialog.prototype.postAnnotation;

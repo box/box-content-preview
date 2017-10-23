@@ -972,7 +972,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
 
-        it('should enable controls and exit draw annotation mode with notification', () => {
+        it('should enable controls and exit draw annotation mode', () => {
             const data = {
                 event: ANNOTATOR_EVENT.modeExit,
                 data: {

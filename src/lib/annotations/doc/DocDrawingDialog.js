@@ -37,6 +37,8 @@ class DocDrawingDialog extends AnnotationDialog {
         if (this.pageEl && this.pageEl.contains(this.element)) {
             this.pageEl.removeChild(this.element);
         }
+
+        this.element = null;
     }
 
     /**
@@ -209,7 +211,7 @@ class DocDrawingDialog extends AnnotationDialog {
             const commitButton = annotatorUtil.generateBtn(
                 constants.CLASS_ADD_DRAWING_BTN,
                 this.localized.drawSave,
-                `${ICON_DRAW_SAVE}${this.localized.saveButton}`.trim()
+                `${ICON_DRAW_SAVE} ${this.localized.saveButton}`
             );
             drawingButtonsEl.appendChild(commitButton);
         }
@@ -218,7 +220,7 @@ class DocDrawingDialog extends AnnotationDialog {
             const deleteButton = annotatorUtil.generateBtn(
                 constants.CLASS_DELETE_DRAWING_BTN,
                 this.localized.drawDelete,
-                `${ICON_DRAW_DELETE}${this.localized.deleteButton}`.trim()
+                `${ICON_DRAW_DELETE} ${this.localized.deleteButton}`
             );
             drawingButtonsEl.appendChild(deleteButton);
         }
