@@ -3,7 +3,7 @@ import { insertTemplate } from './annotatorUtil';
 
 class AnnotationModeController extends EventEmitter {
     /** @property {Array} - The array of annotation threads */
-    threads = [];
+    threads = {};
 
     /** @property {Array} - The array of annotation handlers */
     handlers = [];
@@ -64,7 +64,12 @@ class AnnotationModeController extends EventEmitter {
      * @return {void}
      */
     registerThread(thread) {
-        this.threads.push(thread);
+        const page = thread.location.page || 1; // Defaults to page 1 if thread has no page'
+        if (!(page in this.threads)) {
+            this.threads[page] = {};
+        }
+        const pageThreads = this.threads[page];
+        pageThreads[thread.threadID] = thread;
     }
 
     /**
@@ -75,7 +80,8 @@ class AnnotationModeController extends EventEmitter {
      * @return {void}
      */
     unregisterThread(thread) {
-        this.threads = this.threads.filter((item) => item !== thread);
+        const page = thread.location.page || 1;
+        delete this.threads[page][thread.threadID];
     }
 
     /**
