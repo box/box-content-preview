@@ -203,6 +203,7 @@ describe('lib/annotations/AnnotationThread', () => {
             stubs.create = sandbox.stub(annotationService, 'create');
             stubs.saveAnnotationToThread = sandbox.stub(thread, 'saveAnnotationToThread');
             sandbox.stub(thread, 'getThreadEventData').returns({});
+            sandbox.stub(thread, 'showDialog');
         });
 
         it('should save annotation to thread if it does not exist in annotations array', () => {

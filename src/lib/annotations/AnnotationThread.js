@@ -498,6 +498,7 @@ class AnnotationThread extends EventEmitter {
             this.dialog.removeAnnotation(tempAnnotation.annotationID);
         }
 
+        this.showDialog();
         this.emit(THREAD_EVENT.save);
     }
 
