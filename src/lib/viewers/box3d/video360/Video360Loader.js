@@ -19,7 +19,7 @@ const VIDEO_FORMATS = [
     'qt',
     'wmv'
 ];
-const BROWSERS_SUPPORTED = ['Chrome', 'Edge', 'Firefox', 'Opera'];
+const BROWSERS_SUPPORTED = ['Chrome', 'Edge', 'Firefox', 'Opera', 'Safari'];
 
 const VIEWERS = [
     {

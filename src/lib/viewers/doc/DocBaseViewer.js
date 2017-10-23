@@ -111,7 +111,10 @@ class DocBaseViewer extends BaseViewer {
 
         // Clean up print blob
         this.printBlob = null;
-        URL.revokeObjectURL(this.printURL);
+
+        if (this.printURL) {
+            URL.revokeObjectURL(this.printURL);
+        }
 
         if (this.pageControls) {
             this.pageControls.removeListener('pagechange', this.setPage);

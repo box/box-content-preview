@@ -1,7 +1,8 @@
 import * as annotatorUtil from '../../annotatorUtil';
+import * as constants from '../../annotationConstants';
 import DocDrawingDialog from '../DocDrawingDialog';
 
-let docDrawingDialog;
+let dialog;
 let stubs;
 const sandbox = sinon.sandbox.create();
 
@@ -12,30 +13,34 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
 
     beforeEach(() => {
         fixture.load('annotations/doc/__tests__/DocDrawingDialog-test.html');
-        docDrawingDialog = new DocDrawingDialog({
+        dialog = new DocDrawingDialog({
             annotatedElement: document.querySelector('.annotated-element'),
             location: {},
             annotations: [],
             canAnnotate: true
         });
+        dialog.localized = {
+            drawSave: 'save',
+            whoDrew: 'someone drew'
+        };
         stubs = {};
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
-        docDrawingDialog = null;
+        dialog = null;
         stubs = null;
     });
 
     describe('isVisible()', () => {
         it('should return true if the dialog is visible', () => {
-            docDrawingDialog.visible = true;
-            expect(docDrawingDialog.isVisible()).to.be.truthy;
+            dialog.visible = true;
+            expect(dialog.isVisible()).to.be.truthy;
         });
 
         it('should return false if the dialog is not visible', () => {
-            docDrawingDialog.visible = false;
-            expect(docDrawingDialog.isVisible()).to.be.falsy;
+            dialog.visible = false;
+            expect(dialog.isVisible()).to.be.falsy;
         });
     });
 
@@ -45,10 +50,10 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
                 stopPropagation: sandbox.stub(),
                 preventDefault: sandbox.stub()
             }
-            sandbox.stub(docDrawingDialog, 'emit');
+            sandbox.stub(dialog, 'emit');
 
-            docDrawingDialog.postDrawing(event);
-            expect(docDrawingDialog.emit).to.be.calledWith('annotationcreate');
+            dialog.postDrawing(event);
+            expect(dialog.emit).to.be.calledWith('annotationcreate');
             expect(event.stopPropagation).to.be.called;
             expect(event.preventDefault).to.be.called;
         });
@@ -56,72 +61,72 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
 
     describe('bindDOMListeners()', () => {
         it('should bind listeners to a commit button element', () => {
-            docDrawingDialog.hasTouch = true;
-            docDrawingDialog.commitButtonEl = {
+            dialog.hasTouch = true;
+            dialog.commitButtonEl = {
                 addEventListener: sandbox.stub()
             };
 
-            docDrawingDialog.bindDOMListeners();
-            expect(docDrawingDialog.commitButtonEl.addEventListener).to.be.calledWith(
+            dialog.bindDOMListeners();
+            expect(dialog.commitButtonEl.addEventListener).to.be.calledWith(
                 'click',
-                docDrawingDialog.postDrawing
+                dialog.postDrawing
             );
-            expect(docDrawingDialog.commitButtonEl.addEventListener).to.be.calledWith(
+            expect(dialog.commitButtonEl.addEventListener).to.be.calledWith(
                 'touchend',
-                docDrawingDialog.postDrawing
+                dialog.postDrawing
             );
         });
 
         it('should bind listeners to a delete button element', () => {
-            docDrawingDialog.hasTouch = true;
-            docDrawingDialog.deleteButtonEl = {
+            dialog.hasTouch = true;
+            dialog.deleteButtonEl = {
                 addEventListener: sandbox.stub()
             };
 
-            docDrawingDialog.bindDOMListeners();
-            expect(docDrawingDialog.deleteButtonEl.addEventListener).to.be.calledWith(
+            dialog.bindDOMListeners();
+            expect(dialog.deleteButtonEl.addEventListener).to.be.calledWith(
                 'click',
-                docDrawingDialog.deleteAnnotation
+                dialog.deleteAnnotation
             );
-            expect(docDrawingDialog.deleteButtonEl.addEventListener).to.be.calledWith(
+            expect(dialog.deleteButtonEl.addEventListener).to.be.calledWith(
                 'touchend',
-                docDrawingDialog.deleteAnnotation
+                dialog.deleteAnnotation
             );
         })
     });
 
     describe('unbindDOMListeners()', () => {
         it('should unbind listeners on a commit button element', () => {
-            docDrawingDialog.hasTouch = true;
-            docDrawingDialog.commitButtonEl = {
+            dialog.hasTouch = true;
+            dialog.commitButtonEl = {
                 removeEventListener: sandbox.stub()
             };
 
-            docDrawingDialog.unbindDOMListeners();
-            expect(docDrawingDialog.commitButtonEl.removeEventListener).to.be.calledWith(
+            dialog.unbindDOMListeners();
+            expect(dialog.commitButtonEl.removeEventListener).to.be.calledWith(
                 'click',
-                docDrawingDialog.postDrawing
+                dialog.postDrawing
             );
-            expect(docDrawingDialog.commitButtonEl.removeEventListener).to.be.calledWith(
+            expect(dialog.commitButtonEl.removeEventListener).to.be.calledWith(
                 'touchend',
-                docDrawingDialog.postDrawing
+                dialog.postDrawing
             );
         });
 
         it('should unbind listeners on a delete button element', () => {
-            docDrawingDialog.hasTouch = true;
-            docDrawingDialog.deleteButtonEl = {
+            dialog.hasTouch = true;
+            dialog.deleteButtonEl = {
                 removeEventListener: sandbox.stub()
             };
 
-            docDrawingDialog.unbindDOMListeners();
-            expect(docDrawingDialog.deleteButtonEl.removeEventListener).to.be.calledWith(
+            dialog.unbindDOMListeners();
+            expect(dialog.deleteButtonEl.removeEventListener).to.be.calledWith(
                 'click',
-                docDrawingDialog.deleteAnnotation
+                dialog.deleteAnnotation
             );
-            expect(docDrawingDialog.deleteButtonEl.removeEventListener).to.be.calledWith(
+            expect(dialog.deleteButtonEl.removeEventListener).to.be.calledWith(
                 'touchend',
-                docDrawingDialog.deleteAnnotation
+                dialog.deleteAnnotation
             );
         })
     });
@@ -132,9 +137,9 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
         beforeEach(() => {
             drawingDialogEl = document.querySelector('.bp-annotation-drawing-dialog');
 
-            sandbox.stub(docDrawingDialog, 'generateDialogEl').returns(drawingDialogEl);
-            sandbox.stub(docDrawingDialog, 'bindDOMListeners');
-            sandbox.stub(docDrawingDialog, 'assignDrawingLabel');
+            sandbox.stub(dialog, 'generateDialogEl').returns(drawingDialogEl);
+            sandbox.stub(dialog, 'bindDOMListeners');
+            sandbox.stub(dialog, 'assignDrawingLabel');
         });
 
         it('should setup the dialog element without a commit button when given an annotation', () => {
@@ -144,23 +149,23 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
                 }
             };
 
-            expect(docDrawingDialog.element).to.be.undefined;
-            docDrawingDialog.setup([annotation]);
-            expect(docDrawingDialog.generateDialogEl).to.be.called;
-            expect(docDrawingDialog.bindDOMListeners).to.be.called;
-            expect(docDrawingDialog.assignDrawingLabel).to.be.called;
-            expect(docDrawingDialog.element.contains(docDrawingDialog.drawingDialogEl));
-            expect(docDrawingDialog.commitButtonEl).to.be.null;
+            expect(dialog.element).to.be.undefined;
+            dialog.setup([annotation]);
+            expect(dialog.generateDialogEl).to.be.called;
+            expect(dialog.bindDOMListeners).to.be.called;
+            expect(dialog.assignDrawingLabel).to.be.called;
+            expect(dialog.element.contains(dialog.drawingDialogEl));
+            expect(dialog.commitButtonEl).to.be.null;
         });
 
         it('should setup the dialog element with a commit button when not given an annotation', () => {
-            docDrawingDialog.setup([]);
-            expect(docDrawingDialog.generateDialogEl).to.be.called;
-            expect(docDrawingDialog.bindDOMListeners).to.be.called;
-            expect(docDrawingDialog.assignDrawingLabel).to.not.be.called;
-            expect(docDrawingDialog.element.contains(docDrawingDialog.drawingDialogEl));
-            expect(docDrawingDialog.commitButtonEl).to.not.be.undefined;
-            expect(docDrawingDialog.element.contains(docDrawingDialog.commitButtonEl));
+            dialog.setup([]);
+            expect(dialog.generateDialogEl).to.be.called;
+            expect(dialog.bindDOMListeners).to.be.called;
+            expect(dialog.assignDrawingLabel).to.not.be.called;
+            expect(dialog.element.contains(dialog.drawingDialogEl));
+            expect(dialog.commitButtonEl).to.not.be.undefined;
+            expect(dialog.element.contains(dialog.commitButtonEl));
         });
     });
 
@@ -174,13 +179,13 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
                 appendChild: sandbox.stub()
             };
 
-            docDrawingDialog.location = {
+            dialog.location = {
                 page: 1
             };
-            docDrawingDialog.annotatedElement = {
+            dialog.annotatedElement = {
                 querySelector: sandbox.stub().returns(pageEl)
             };
-            docDrawingDialog.element = {
+            dialog.element = {
                 style: {
                     left: 0,
                     top: 0
@@ -188,12 +193,12 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
                 getBoundingClientRect: sandbox.stub().returns(rect)
             }
 
-            docDrawingDialog.position(5, 10);
-            expect(docDrawingDialog.element.getBoundingClientRect).to.be.called;
+            dialog.position(5, 10);
+            expect(dialog.element.getBoundingClientRect).to.be.called;
             expect(pageEl.contains).to.be.called;
-            expect(pageEl.appendChild).to.be.calledWith(docDrawingDialog.element);
-            expect(docDrawingDialog.annotatedElement.querySelector).to.be.called;
-            expect(docDrawingDialog.element.style.left).to.equal(`4px`, `10px`);
+            expect(pageEl.appendChild).to.be.calledWith(dialog.element);
+            expect(dialog.annotatedElement.querySelector).to.be.called;
+            expect(dialog.element.style.left).to.equal(`4px`, `10px`);
         });
     });
 
@@ -202,12 +207,12 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
             const element = 'e';
 
             sandbox.stub(annotatorUtil, 'hideElement');
-            docDrawingDialog.element = element;
-            expect(docDrawingDialog.visible).to.be.truthy;
+            dialog.element = element;
+            expect(dialog.visible).to.be.truthy;
 
-            docDrawingDialog.hide();
+            dialog.hide();
             expect(annotatorUtil.hideElement).to.be.calledWith(element);
-            expect(docDrawingDialog.visible).to.be.falsy;
+            expect(dialog.visible).to.be.falsy;
         });
     });
 
@@ -216,12 +221,12 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
             const element = 'e';
 
             sandbox.stub(annotatorUtil, 'showElement');
-            docDrawingDialog.element = element;
-            expect(docDrawingDialog.visible).to.be.falsy;
+            dialog.element = element;
+            expect(dialog.visible).to.be.falsy;
 
-            docDrawingDialog.show();
+            dialog.show();
             expect(annotatorUtil.showElement).to.be.calledWith(element);
-            expect(docDrawingDialog.visible).to.be.truthy;
+            expect(dialog.visible).to.be.truthy;
         });
     });
 
@@ -242,27 +247,27 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
         it('should generate the correctly formatted label dialog element', () => {
             annotation.permissions.can_delete = false;
 
-            const returnValue = docDrawingDialog.generateDialogEl([annotation]);
-            expect(returnValue.classList.contains('bp-annotation-drawing-dialog')).to.be.truthy;
-            expect(returnValue.querySelector('.bp-btn-annotate-draw-delete')).to.be.null;
-            expect(returnValue.querySelector('.bp-btn-annotate-draw-add')).to.be.null;
-            expect(returnValue.querySelector('.bp-annotation-drawing-label')).to.not.be.null;
+            const dialogEl = dialog.generateDialogEl([annotation]);
+            expect(dialogEl.classList.contains(constants.CLASS_ANNOTATION_DRAWING_DIALOG)).to.be.truthy;
+            expect(dialogEl.querySelector(`.${constants.CLASS_DELETE_DRAWING_BTN}`)).to.be.null;
+            expect(dialogEl.querySelector(`.${constants.CLASS_ADD_DRAWING_BTN}`)).to.be.null;
+            expect(dialogEl.querySelector('.bp-annotation-drawing-label')).to.not.be.null;
         });
 
         it('should generate without a save button', () => {
-            const returnValue = docDrawingDialog.generateDialogEl([annotation]);
-            expect(returnValue.classList.contains('bp-annotation-drawing-dialog')).to.be.truthy;
-            expect(returnValue.querySelector('.bp-btn-annotate-draw-delete')).to.not.be.null;
-            expect(returnValue.querySelector('.bp-btn-annotate-draw-add')).to.be.null;
-            expect(returnValue.querySelector('.bp-annotation-drawing-label')).to.not.be.null;
+            const dialogEl = dialog.generateDialogEl([annotation]);
+            expect(dialogEl.classList.contains(constants.CLASS_ANNOTATION_DRAWING_DIALOG)).to.be.truthy;
+            expect(dialogEl.querySelector(`.${constants.CLASS_DELETE_DRAWING_BTN}`)).to.not.be.null;
+            expect(dialogEl.querySelector(`.${constants.CLASS_ADD_DRAWING_BTN}`)).to.be.null;
+            expect(dialogEl.querySelector('.bp-annotation-drawing-label')).to.not.be.null;
         });
 
         it('should generate a save and delete button', () => {
-            const returnValue = docDrawingDialog.generateDialogEl([]);
-            expect(returnValue.classList.contains('bp-annotation-drawing-dialog')).to.be.truthy;
-            expect(returnValue.querySelector('.bp-btn-annotate-draw-delete')).to.not.be.null;
-            expect(returnValue.querySelector('.bp-btn-annotate-draw-add')).to.not.be.null;
-            expect(returnValue.querySelector('.bp-annotation-drawing-label')).to.not.be.null;
+            const dialogEl = dialog.generateDialogEl([]);
+            expect(dialogEl.classList.contains(constants.CLASS_ANNOTATION_DRAWING_DIALOG)).to.be.truthy;
+            expect(dialogEl.querySelector(`.${constants.CLASS_DELETE_DRAWING_BTN}`)).to.not.be.null;
+            expect(dialogEl.querySelector(`.${constants.CLASS_ADD_DRAWING_BTN}`)).to.not.be.null;
+            expect(dialogEl.querySelector('.bp-annotation-drawing-label')).to.not.be.null;
         });
     });
 
@@ -270,25 +275,25 @@ describe('lib/annotations/doc/DocDrawingDialog', () => {
         it('should assign a name to a drawing label', () => {
             const drawingLabelEl = {};
             const notYaoMing = 'not yao ming';
-            docDrawingDialog.drawingDialogEl = {
+            dialog.drawingDialogEl = {
                 querySelector: sandbox.stub().returns(drawingLabelEl)
             };
             sandbox.stub(annotatorUtil, 'replacePlaceholders').returns(notYaoMing);
             sandbox.stub(annotatorUtil, 'showElement');
 
-            docDrawingDialog.assignDrawingLabel('non empty');
+            dialog.assignDrawingLabel('non empty');
             expect(drawingLabelEl.textContent).to.equal(notYaoMing);
-            expect(docDrawingDialog.drawingDialogEl.querySelector).to.be.called;
+            expect(dialog.drawingDialogEl.querySelector).to.be.called;
             expect(annotatorUtil.replacePlaceholders).to.be.called;
             expect(annotatorUtil.showElement).to.be.called;
         });
 
         it('should do nothing when given an invalid annotation or does not have a dialog', () => {
-            expect(docDrawingDialog.assignDrawingLabel, 'not empty').to.not.throw();
+            expect(dialog.assignDrawingLabel, 'not empty').to.not.throw();
 
-            docDrawingDialog.drawingDialogEl = 'not empty';
-            expect(docDrawingDialog.assignDrawingLabel, undefined).to.not.throw();
-            expect(docDrawingDialog.assignDrawingLabel, null).to.not.throw();
+            dialog.drawingDialogEl = 'not empty';
+            expect(dialog.assignDrawingLabel, undefined).to.not.throw();
+            expect(dialog.assignDrawingLabel, null).to.not.throw();
         });
     });
 });

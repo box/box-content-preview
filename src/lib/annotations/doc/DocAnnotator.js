@@ -119,7 +119,8 @@ class DocAnnotator extends Annotator {
             isMobile: this.isMobile,
             hasTouch: this.hasTouch,
             allowComment: this.commentHighlightEnabled,
-            allowHighlight: this.plainHighlightEnabled
+            allowHighlight: this.plainHighlightEnabled,
+            localized: this.localized
         });
 
         if (this.commentHighlightEnabled) {
@@ -246,7 +247,7 @@ class DocAnnotator extends Annotator {
 
             // Do not create annotation if event doesn't have coordinates
             if (isNaN(x) || isNaN(y)) {
-                this.emit(ANNOTATOR_EVENT.error, __('annotations_create_error'));
+                this.emit(ANNOTATOR_EVENT.error, this.localized.createError);
                 return location;
             }
 
@@ -332,7 +333,8 @@ class DocAnnotator extends Annotator {
             locale: this.locale,
             location,
             type,
-            permissions: this.permissions
+            permissions: this.permissions,
+            localized: this.localized
         };
 
         // Set existing thread ID if created with annotations
@@ -355,7 +357,7 @@ class DocAnnotator extends Annotator {
         }
 
         if (!thread && this.notification) {
-            this.emit(ANNOTATOR_EVENT.error, __('annotations_create_error'));
+            this.emit(ANNOTATOR_EVENT.error, this.localized.createError);
         } else if (thread && (type !== TYPES.draw || location.page)) {
             this.addThreadToMap(thread);
         }
