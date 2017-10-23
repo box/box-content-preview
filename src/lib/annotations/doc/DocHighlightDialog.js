@@ -54,10 +54,6 @@ class DocHighlightDialog extends AnnotationDialog {
      * @return {void}
      */
     removeAnnotation(annotationID) {
-        if (!this.commentsDialogEl) {
-            return;
-        }
-
         const annotationEl = this.commentsDialogEl.querySelector(`[data-annotation-id="${annotationID}"]`);
         if (annotationEl) {
             annotationEl.parentNode.removeChild(annotationEl);
