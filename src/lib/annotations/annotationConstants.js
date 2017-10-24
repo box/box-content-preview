@@ -27,6 +27,7 @@ export const CLASS_TEXTAREA = 'bp-textarea';
 export const CLASS_HIGHLIGHT_BTNS = 'bp-annotation-highlight-btns';
 export const CLASS_ADD_HIGHLIGHT_BTN = 'bp-add-highlight-btn';
 export const CLASS_ADD_HIGHLIGHT_COMMENT_BTN = 'bp-highlight-comment-btn';
+export const CLASS_ANNOTATION_DRAW = 'bp-annotation-draw';
 export const CLASS_ANNOTATION_LAYER_HIGHLIGHT = 'bp-annotation-layer-highlight';
 export const CLASS_ANNOTATION_LAYER_DRAW = 'bp-annotation-layer-draw';
 export const CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS = 'bp-annotation-layer-draw-in-progress';
