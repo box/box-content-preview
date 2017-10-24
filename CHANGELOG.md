@@ -1,3 +1,20 @@
+<a name="1.16.0"></a>
+# 1.16.0 (2017-10-24)
+
+* New: add autoplay to media viewers (#433) ([10982de](https://github.com/box/box-content-preview/commit/10982de))
+* New: Added enabledTypes property. Backwards compat for disabledTypes (#439) ([15a7712](https://github.com/box/box-content-preview/commit/15a7712))
+* New: Enable 360 video on desktop Safari (#445) ([62a67f9](https://github.com/box/box-content-preview/commit/62a67f9))
+* Fix: Annotations cleanup (#449) ([e8f6fd3](https://github.com/box/box-content-preview/commit/e8f6fd3))
+* Fix: controller.handleAnnotationEvent() not bound correctly (#448) ([b11f2dd](https://github.com/box/box-content-preview/commit/b11f2dd))
+* Fix: Don't revoke print URL if it doesn't exist (#444) ([9f06212](https://github.com/box/box-content-preview/commit/9f06212))
+* Fix: Don't show notification on draw mode exit (#447) ([43422e4](https://github.com/box/box-content-preview/commit/43422e4))
+* Fix: Fix draw selection and related bugs (#440) ([6a667f1](https://github.com/box/box-content-preview/commit/6a667f1)), closes [#440](https://github.com/box/box-content-preview/issues/440)
+* Fix: Setting innerHTML in annotatorUtil.generateButton() (#446) ([4035d8e](https://github.com/box/box-content-preview/commit/4035d8e))
+* Chore: Add JSDoc for Emit wrapper (#442) ([360989d](https://github.com/box/box-content-preview/commit/360989d))
+* Chore: Passing localized strings into annotations (#441) ([0ae1c47](https://github.com/box/box-content-preview/commit/0ae1c47))
+
+
+
 <a name="1.15.0"></a>
 # 1.15.0 (2017-10-17)
 
