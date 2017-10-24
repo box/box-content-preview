@@ -167,6 +167,8 @@ describe('lib/viewers/media/MediaControls', () => {
             mediaControls.destroy();
             expect(stubs.genericEl.removeListener).to.be.calledWith('quality', mediaControls.handleQuality);
             expect(stubs.genericEl.removeListener).to.be.calledWith('speed', mediaControls.handleRate);
+            expect(stubs.genericEl.removeListener).to.be.calledWith('autoplay', mediaControls.handleAutoplay);
+
             expect(stubs.genericEl.destroy);
             expect(mediaControls.settings).to.equal(undefined);
         });
@@ -216,6 +218,15 @@ describe('lib/viewers/media/MediaControls', () => {
         });
     });
 
+    describe('handleAutoplay()', () => {
+        it('should emit the autoplay event', () => {
+            stubs.emit = sandbox.stub(mediaControls, 'emit');
+
+            mediaControls.handleAutoplay();
+            expect(stubs.emit).to.be.calledWith('autoplaychange');
+        });
+    });
+
     describe('handleSubtitle()', () => {
         it('should emit the subtitlechange event', () => {
             stubs.emit = sandbox.stub(mediaControls, 'emit');
@@ -233,6 +244,8 @@ describe('lib/viewers/media/MediaControls', () => {
             expect(mediaControls.settings instanceof Settings);
             expect(settingsStub).to.be.calledWith('quality', mediaControls.handleQuality);
             expect(settingsStub).to.be.calledWith('speed', mediaControls.handleRate);
+            expect(settingsStub).to.be.calledWith('autoplay', mediaControls.handleAutoplay);
+
         });
     });
 

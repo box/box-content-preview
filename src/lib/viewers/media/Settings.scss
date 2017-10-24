@@ -36,10 +36,12 @@ $item-hover-color: #f6fafd;
     display: table;
 }
 
+.bp-media-settings-menu-autoplay,
 .bp-media-settings-menu-quality,
 .bp-media-settings-menu-speed,
 .bp-media-settings-menu-subtitles,
 .bp-media-settings-menu-audiotracks,
+.bp-media-settings-show-autoplay .bp-media-settings-menu-main,
 .bp-media-settings-show-speed .bp-media-settings-menu-main,
 .bp-media-settings-show-quality .bp-media-settings-menu-main,
 .bp-media-settings-show-subtitles .bp-media-settings-menu-main,
@@ -47,6 +49,7 @@ $item-hover-color: #f6fafd;
     display: none;
 }
 
+.bp-media-settings-show-autoplay .bp-media-settings-menu-autoplay,
 .bp-media-settings-show-speed .bp-media-settings-menu-speed,
 .bp-media-settings-show-quality .bp-media-settings-menu-quality,
 .bp-media-settings-show-subtitles .bp-media-settings-menu-subtitles,
@@ -54,7 +57,7 @@ $item-hover-color: #f6fafd;
     display: table;
 }
 
-// For MP3 and MP4 we only have speed option
+// For MP3 and MP4 we only have speed and autoplay options
 .bp-media-mp4,
 .bp-media-mp3 {
     .bp-media-settings-item-quality,
@@ -103,6 +106,13 @@ $item-hover-color: #f6fafd;
 .bp-media-settings-item-subtitles,
 .bp-media-settings-menu-subtitles {
     .bp-media-settings-subtitles-unavailable & {
+        display: none;
+    }
+}
+
+.bp-media-settings-item-autoplay,
+.bp-media-settings-menu-autoplay {
+    .bp-media-settings-autoplay-unavailable & {
         display: none;
     }
 }
