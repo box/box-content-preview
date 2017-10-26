@@ -2,6 +2,10 @@
 
 $header-height: 48px;
 
+.notVisible {
+    visibility: hidden;
+}
+
 .bp-is-hidden {
     /* stylelint-disable declaration-no-important */
     display: none !important;

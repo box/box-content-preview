@@ -1867,6 +1867,7 @@ var TextLayerBuilder = function () {
     value: function setTextContent(textContent) {
       this.cancel();
       this.textContent = textContent;
+      console.log(textContent);
     }
   }, {
     key: 'convertMatches',

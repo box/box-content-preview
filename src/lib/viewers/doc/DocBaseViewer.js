@@ -80,6 +80,7 @@ class DocBaseViewer extends BaseViewer {
 
         this.docEl = this.containerEl.appendChild(document.createElement('div'));
         this.docEl.classList.add('bp-doc');
+        this.curPageInfo = {};
 
         if (Browser.getName() === 'Safari') {
             this.docEl.classList.add(IS_SAFARI_CLASS);
@@ -552,7 +553,9 @@ class DocBaseViewer extends BaseViewer {
         this.pdfViewer.update();
 
         this.setPage(currentPageNumber);
-
+        if (this.pagesRendered) {
+            this.handleAllTextRendered();
+        }
         super.resize();
     }
 
@@ -761,6 +764,8 @@ class DocBaseViewer extends BaseViewer {
         // When a page is rendered, update scale
         this.docEl.addEventListener('pagerendered', this.pagerenderedHandler);
 
+        this.docEl.addEventListener('textlayerrendered', this.textlayerrenderedHandler);
+
         // Update page number when page changes
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
@@ -838,6 +843,7 @@ class DocBaseViewer extends BaseViewer {
         this.docEl.classList.add(CLASS_IS_SCROLLABLE);
 
         // Broadcast that preview has 'loaded' when page structure is available
+        this.numPages = this.pdfViewer.pagesCount;
         if (!this.loaded) {
             this.loaded = true;
             this.emit('load', {
@@ -876,6 +882,23 @@ class DocBaseViewer extends BaseViewer {
                 this.hidePreload();
                 this.emit('progressend');
                 this.somePageRendered = true;
+            }
+        }
+    }
+
+    textlayerrenderedHandler(event) {
+        const pageNumber = event.detail ? event.detail.pageNumber : event.pageNumber;
+
+        if (pageNumber) {
+            const { textNodes, allText } = this.diffController.getTextNodesAndAllText(event.srcElement);
+            this.curPageInfo[pageNumber] = {
+                textNodes,
+                allText
+            };
+
+            if (Object.keys(this.curPageInfo).length === this.numPages) {
+                this.pagesRendered = true;
+                this.handleAllTextRendered();
             }
         }
     }
@@ -954,6 +977,18 @@ class DocBaseViewer extends BaseViewer {
             this.scrollStarted = false;
         }, SCROLL_END_TIMEOUT);
     }, SCROLL_EVENT_THROTTLE_INTERVAL);
+
+    handleAllTextRendered() {
+        let combinedAllText = '';
+        let combinedTextNodes = [];
+        for (let i = 1; i <= Object.keys(this.curPageInfo).length; i++) {
+            const { textNodes, allText } = this.curPageInfo[i];
+            combinedAllText += allText;
+            combinedTextNodes = combinedTextNodes.concat(textNodes);
+        }
+
+        this.showDiffs(combinedTextNodes, combinedAllText);
+    }
 }
 
 export default DocBaseViewer;
