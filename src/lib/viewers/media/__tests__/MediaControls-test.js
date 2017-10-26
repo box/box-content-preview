@@ -415,21 +415,15 @@ describe('lib/viewers/media/MediaControls', () => {
     describe('toggleFullscreen()', () => {
         beforeEach(() => {
             stubs.emit = sandbox.stub(mediaControls, 'emit');
-            stubs.setFullscreenLabel = sandbox.stub(mediaControls, 'setFullscreenLabel');
         });
 
         it('should emit a togglefullscreen message', () => {
             mediaControls.toggleFullscreen();
             expect(stubs.emit).to.be.calledWith('togglefullscreen');
         });
-
-        it('should set the fullscreen label', () => {
-            mediaControls.toggleFullscreen();
-            expect(stubs.setFullscreenLabel).to.be.called;
-        });
     });
 
-    describe('setFullscreenLabel()', () => {
+    describe('toggleFullscreenIcon()', () => {
         beforeEach(() => {
             stubs.isFullscreen = sandbox.stub(fullscreen, 'isFullscreen');
             stubs.setLabel = sandbox.stub(mediaControls, 'setLabel');
@@ -438,15 +432,17 @@ describe('lib/viewers/media/MediaControls', () => {
         it('should set the label to exit fullscreen if in fullscreen', () => {
             stubs.isFullscreen.returns(true);
 
-            mediaControls.setFullscreenLabel();
+            mediaControls.toggleFullscreenIcon();
             expect(stubs.setLabel).to.be.calledWith(mediaControls.fullscreenButtonEl, __('exit_fullscreen'));
+            expect(mediaControls.containerEl.classList.contains('bp-is-fullscreen')).to.be.true;
         });
 
         it('should set the label to enter fullscreen if it\'s not fullscreen', () => {
             stubs.isFullscreen.returns(false);
 
-            mediaControls.setFullscreenLabel();
+            mediaControls.toggleFullscreenIcon();
             expect(stubs.setLabel).to.be.calledWith(mediaControls.fullscreenButtonEl, __('enter_fullscreen'));
+            expect(mediaControls.containerEl.classList.contains('bp-is-fullscreen')).to.be.false;
         });
     });
 
