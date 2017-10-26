@@ -73,8 +73,11 @@ class MarkdownViewer extends PlainTextViewer {
      * @return {void}
      */
     finishLoading(content) {
+        this.content = content;
         const md = this.initRemarkable();
         this.markdownEl.innerHTML = md.render(content);
+
+        this.showSingleFileDiffs(this.markdownEl);
 
         this.loadUI();
         this.textEl.classList.remove(CLASS_HIDDEN);

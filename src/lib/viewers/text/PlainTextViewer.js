@@ -149,12 +149,15 @@ class PlainTextViewer extends TextBaseViewer {
      * @return {void}
      */
     finishLoading(content, isHighlighted) {
+        this.content = content;
         // Change embed strategy based on whether or not text was highlighted
         if (isHighlighted) {
             this.codeEl.innerHTML = content;
         } else {
             this.codeEl.textContent = content;
         }
+
+        this.showSingleFileDiffs(this.codeEl);
 
         this.loadUI();
         this.textEl.classList.remove(CLASS_HIDDEN);
@@ -191,7 +194,8 @@ class PlainTextViewer extends TextBaseViewer {
         this.truncated = size > SIZE_LIMIT_BYTES;
         const headers = this.truncated ? { Range: `bytes=0-${SIZE_LIMIT_BYTES}` } : {};
 
-        get(this.createContentUrlWithAuthParams(template), headers, 'text')
+        const contentUrl = this.createContentUrlWithAuthParams(template);
+        get(contentUrl, headers, 'text')
             .then((text) => {
                 if (this.isDestroyed()) {
                     return;
@@ -201,8 +205,6 @@ class PlainTextViewer extends TextBaseViewer {
                 if (this.truncated) {
                     fetchedText += '...';
                 }
-
-                // Only highlight code files
                 if (HIGHLIGHTTABLE_EXTENSIONS.indexOf(extension) === -1) {
                     this.finishLoading(fetchedText, false);
                 } else {

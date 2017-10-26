@@ -1,5 +1,13 @@
 @import '../../boxuiVariables';
 
+.unseen-change {
+    background-color: #EAD9F9;
+}
+
+.bp-doc .unseen-change {
+    background-color: purple;
+}
+
 .bp-text-plain {
     background-color: $white;
     bottom: 0;

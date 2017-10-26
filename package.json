@@ -130,5 +130,7 @@
       "git add"
     ]
   },
-  "dependencies": {}
+  "dependencies": {
+    "diff-match-patch": "^1.0.0"
+  }
 }

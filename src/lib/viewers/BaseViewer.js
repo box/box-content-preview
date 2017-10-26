@@ -29,6 +29,7 @@ import {
     STATUS_VIEWABLE
 } from '../constants';
 import { ICON_FILE_DEFAULT } from '../icons/icons';
+import DiffController from '../DiffController';
 
 const ANNOTATIONS_JS = ['annotations.js'];
 const ANNOTATIONS_CSS = ['annotations.css'];
@@ -106,6 +107,7 @@ class BaseViewer extends EventEmitter {
         this.repStatuses = [];
         this.isMobile = Browser.isMobile();
         this.hasTouch = Browser.hasTouch();
+        this.diffController = new DiffController();
     }
 
     /**
@@ -215,6 +217,15 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     load() {
+        if (localStorage) {
+            const lastVersionKey = `diffs-${  this.options.file.id}`;
+            // get last version
+            this.lastVersion = localStorage.getItem(lastVersionKey);
+            // set last version
+            if (this.options.file.file_version) {
+                localStorage.setItem(lastVersionKey, this.options.file.file_version.id);
+            }
+        }
         this.resetLoadTimeout();
     }
 
@@ -837,6 +848,29 @@ class BaseViewer extends EventEmitter {
                 localizedStrings
             })
         );
+    }
+
+    showSinglePageFileDiffs(containerEl) {
+        const { textNodes, allText } = this.diffController.getTextNodesAndAllText(containerEl);
+        this.showDiffs(textNodes, allText);
+    }
+
+    showDiffs(textNodes, allText) {
+        if (localStorage) {
+            const lastVersionKey = `diffs-text${  this.options.file.id}`;
+
+            // get last version
+            this.lastVersionText = localStorage.getItem(lastVersionKey);
+
+            // set last version
+            if (this.options.file.file_version) {
+                localStorage.setItem(lastVersionKey, allText);
+            }
+        }
+        if (this.lastVersionText) {
+            const diffOps = this.diffController.getDiffOps(this.lastVersionText, allText);
+            this.diffController.zipTextNodesAndDiffOps(allText, textNodes, diffOps);
+        }
     }
 }
 
