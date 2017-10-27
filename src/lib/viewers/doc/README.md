@@ -26,6 +26,8 @@ The document viewer remembers which page you were viewing upon closing the previ
 | Option | Type | Description |
 | --- | --- | --- |
 | annotations | boolean | Optional. Whether annotations on content are shown. Defaults  to false |
+| disableFindBar | boolean | Optional. Setting to true will enable the browser's findBar in place of the viewers. Defaults to false |
+
 
 ## Events
 
@@ -91,6 +93,7 @@ The presentation viewer remembers which slide you were viewing upon closing the 
 | Option | Type | Description |
 | --- | --- | --- |
 | annotations | boolean | Optional. Whether annotations on content are shown. Defaults  to false |
+| disableFindBar | boolean | Optional. Setting to true will enable the browser's findBar in place of the viewers. Defaults to false |
 
 ## Events
 
