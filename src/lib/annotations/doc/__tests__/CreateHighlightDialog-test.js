@@ -15,10 +15,20 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
     const sandbox = sinon.sandbox.create();
     let dialog;
     let parentEl;
+    const localized = {
+        highlightToggle: 'highlight toggle',
+        highlightComment: 'highlight comment'
+    };
+
+    before(() => {
+        fixture.setBase('src/lib');
+    });
 
     beforeEach(() => {
-        parentEl = document.createElement('div');
-        dialog = new CreateHighlightDialog(parentEl);
+        fixture.load('annotations/doc/__tests__/CreateHighlightDialog-test.html');
+
+        const parentEl = document.querySelector('.bp-create-highlight-dialog-container');
+        dialog = new CreateHighlightDialog(parentEl, { localized });
     });
 
     afterEach(() => {
@@ -37,7 +47,8 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
         it('should take config falsey value to disable highlights and comments, when passed in', () => {
             const config = {
                 allowHighlight: 'this will falsey to true',
-                allowComment: false
+                allowComment: false,
+                localized
             };
             const instance = new CreateHighlightDialog(document.createElement('div'), config);
             expect(instance.allowHighlight).to.be.true;
@@ -83,13 +94,16 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
 
         it('should set the parentEl to a new reference, via setParentEl(), if a new one is supplied', () => {
             const set = sandbox.stub(dialog, 'setParentEl');
-            const newParent = { name: 'NewParent' };
+            const newParent = document.createElement('span');
             dialog.show(newParent);
             expect(set).to.be.calledWith(newParent);
         });
 
         it('should move the UI element to the parent element if it does not already contain it', () => {
-            const append = sandbox.stub(parentEl, 'appendChild');
+            const newParent = document.createElement('span');
+            dialog.setParentEl(newParent);
+            const append = sandbox.stub(newParent, 'appendChild');
+
             dialog.show();
             expect(append).to.be.calledWith(dialog.containerEl);
         });
@@ -380,7 +394,6 @@ describe('lib/annotations/doc/CreateHighlightDialog', () => {
     });
 
     describe('createElement()', () => {
-
         it('should create a div with the proper create highlight class', () => {
             let containerEl = dialog.createElement();
             expect(containerEl.nodeName).to.equal('DIV');

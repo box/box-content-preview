@@ -4,6 +4,7 @@ export const CLASS_ACTIVE = 'bp-is-active';
 export const CLASS_HIDDEN = 'bp-is-hidden';
 export const CLASS_INVISIBLE = 'bp-is-invisible';
 export const CLASS_DISABLED = 'is-disabled';
+export const CLASS_BUTTON = 'bp-btn-plain';
 
 export const CLASS_ANNOTATION_BUTTON_CANCEL = 'cancel-annotation-btn';
 export const CLASS_ANNOTATION_BUTTON_POST = 'post-annotation-btn';
@@ -26,6 +27,7 @@ export const CLASS_TEXTAREA = 'bp-textarea';
 export const CLASS_HIGHLIGHT_BTNS = 'bp-annotation-highlight-btns';
 export const CLASS_ADD_HIGHLIGHT_BTN = 'bp-add-highlight-btn';
 export const CLASS_ADD_HIGHLIGHT_COMMENT_BTN = 'bp-highlight-comment-btn';
+export const CLASS_ANNOTATION_DRAW = 'bp-annotation-draw';
 export const CLASS_ANNOTATION_LAYER_HIGHLIGHT = 'bp-annotation-layer-highlight';
 export const CLASS_ANNOTATION_LAYER_DRAW = 'bp-annotation-layer-draw';
 export const CLASS_ANNOTATION_LAYER_DRAW_IN_PROGRESS = 'bp-annotation-layer-draw-in-progress';

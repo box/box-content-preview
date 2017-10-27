@@ -28,7 +28,8 @@ import {
     round,
     prevDefAndStopProp,
     canLoadAnnotations,
-    insertTemplate
+    insertTemplate,
+    generateBtn
 } from '../annotatorUtil';
 import {
     STATES,
@@ -223,7 +224,6 @@ describe('lib/annotations/annotatorUtil', () => {
         });
     });
 
-
     describe('insertTemplate()', () => {
         it('should insert template into node', () => {
             const node = document.createElement('div');
@@ -231,6 +231,17 @@ describe('lib/annotations/annotatorUtil', () => {
 
             insertTemplate(node, '<div class="foo"></div>');
             assert.equal(node.firstElementChild.className, 'foo');
+        });
+    });
+
+    describe('generateBtn()', () => {
+        it('should return button node from specified details', () => {
+            const btn = generateBtn('class', 'title', document.createElement('div'), 'type');
+            expect(btn).to.have.class('bp-btn-plain');
+            expect(btn).to.have.class('class');
+            expect(btn).to.have.attribute('data-type', 'type');
+            expect(btn).to.have.attribute('title', 'title');
+            expect(btn).to.contain.html(document.createElement('div'));
         });
     });
 
@@ -250,7 +261,7 @@ describe('lib/annotations/annotatorUtil', () => {
     describe('getAvatarHtml()', () => {
         it('should return avatar HTML with img if avatarUrl is provided', () => {
             const expectedHtml = '<img src="https://example.com" alt="Avatar">';
-            assert.equal(getAvatarHtml('https://example.com', '1', 'Some Name'), expectedHtml);
+            assert.equal(getAvatarHtml('https://example.com', '1', 'Some Name', 'Avatar'), expectedHtml);
         });
 
         it('should return avatar HTML initials if no avatarUrl is provided', () => {

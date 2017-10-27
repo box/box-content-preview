@@ -972,7 +972,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
 
-        it('should enable controls and exit draw annotation mode with notification', () => {
+        it('should enable controls and exit draw annotation mode', () => {
             const data = {
                 event: ANNOTATOR_EVENT.modeExit,
                 data: {
@@ -1040,14 +1040,13 @@ describe('lib/viewers/BaseViewer', () => {
             base.hasTouch = false;
 
             const combinedOptions = base.createAnnotatorOptions({ randomOption: 'derp' });
-            expect(combinedOptions).to.deep.equal({
-                file: { id: 1 },
-                isMobile: true,
-                hasTouch: false,
-                locale: 'en-US',
-                location: { locale: 'en-US' },
-                randomOption: 'derp'
-            });
+            expect(combinedOptions.file).to.deep.equal({ id: 1 });
+            expect(combinedOptions.isMobile).to.be.true;
+            expect(combinedOptions.hasTouch).to.be.false;
+            expect(combinedOptions.locale).to.equal('en-US');
+            expect(combinedOptions.location).to.deep.equal({ locale: 'en-US' });
+            expect(combinedOptions.randomOption).to.equal('derp');
+            expect(combinedOptions.localizedStrings).to.not.be.undefined;
         });
     });
 });

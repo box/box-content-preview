@@ -33,7 +33,7 @@ class DocHighlightDialog extends AnnotationDialog {
         // Will be displayed as '{name} highlighted'
         if (annotation.text === '' && annotation.user.id !== '0') {
             const highlightLabelEl = this.highlightDialogEl.querySelector(`.${CLASS_HIGHLIGHT_LABEL}`);
-            highlightLabelEl.textContent = annotatorUtil.replacePlaceholders(__('annotation_who_highlighted'), [
+            highlightLabelEl.textContent = annotatorUtil.replacePlaceholders(this.localized.whoHighlighted, [
                 annotation.user.name
             ]);
             annotatorUtil.showElement(highlightLabelEl);
@@ -45,6 +45,20 @@ class DocHighlightDialog extends AnnotationDialog {
         }
 
         super.addAnnotation(annotation);
+    }
+
+    /**
+     * Removes an annotation from the dialog.
+     *
+     * @param {string} annotationID - ID of annotation to remove
+     * @return {void}
+     */
+    removeAnnotation(annotationID) {
+        const annotationEl = this.commentsDialogEl.querySelector(`[data-annotation-id="${annotationID}"]`);
+        if (annotationEl) {
+            annotationEl.parentNode.removeChild(annotationEl);
+            this.deactivateReply(); // Deactivate reply area and focus
+        }
     }
 
     /** @inheritdoc */
@@ -315,7 +329,7 @@ class DocHighlightDialog extends AnnotationDialog {
         // be 'Some User'
         if (annotatorUtil.isPlainHighlight(annotations) && annotations[0].user.id !== '0') {
             const highlightLabelEl = this.highlightDialogEl.querySelector(`.${CLASS_HIGHLIGHT_LABEL}`);
-            highlightLabelEl.textContent = annotatorUtil.replacePlaceholders(__('annotation_who_highlighted'), [
+            highlightLabelEl.textContent = annotatorUtil.replacePlaceholders(this.localized.whoHighlighted, [
                 annotations[0].user.name
             ]);
             annotatorUtil.showElement(highlightLabelEl);
@@ -571,12 +585,12 @@ class DocHighlightDialog extends AnnotationDialog {
             <span class="${constants.CLASS_HIGHLIGHT_BTNS}">
                 <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_BTN}"
                     data-type="${constants.DATA_TYPE_HIGHLIGHT}"
-                    title="${__('annotation_highlight_toggle')}">
+                    title="${this.localized.highlightToggle}">
                     ${ICON_HIGHLIGHT}
                 </button>
                 <button class="bp-btn-plain ${constants.CLASS_ADD_HIGHLIGHT_COMMENT_BTN}"
                     data-type="${constants.DATA_TYPE_ADD_HIGHLIGHT_COMMENT}"
-                    title="${__('annotation_highlight_comment')}">
+                    title="${this.localized.highlightComment}">
                     ${ICON_HIGHLIGHT_COMMENT}
                 </button>
             </span>`.trim();

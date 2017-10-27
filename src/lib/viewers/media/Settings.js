@@ -3,14 +3,17 @@ import EventEmitter from 'events';
 import { addActivationListener, removeActivationListener, decodeKeydown, insertTemplate } from '../../util';
 import { ICON_ARROW_LEFT, ICON_ARROW_RIGHT, ICON_CHECK_MARK } from '../../icons/icons';
 import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../constants';
+import Browser from '../../Browser';
 
 const TYPE_SPEED = 'speed';
 const TYPE_QUALITY = 'quality';
+const TYPE_AUTOPLAY = 'autoplay';
 const CLASS_SETTINGS = 'bp-media-settings';
 const CLASS_SETTINGS_SELECTED = 'bp-media-settings-selected';
 const CLASS_SETTINGS_OPEN = 'bp-media-settings-is-open';
 const CLASS_SETTINGS_SUBTITLES_UNAVAILABLE = 'bp-media-settings-subtitles-unavailable';
 const CLASS_SETTINGS_AUDIOTRACKS_UNAVAILABLE = 'bp-media-settings-audiotracks-unavailable';
+const CLASS_SETTINGS_AUTOPLAY_UNAVAILABLE = 'bp-media-settings-autoplay-unavailable';
 const CLASS_SETTINGS_SUBTITLES_ON = 'bp-media-settings-subtitles-on';
 const SELECTOR_SETTINGS_SUB_ITEM = '.bp-media-settings-sub-item';
 const SELECTOR_SETTINGS_VALUE = '.bp-media-settings-value';
@@ -18,6 +21,11 @@ const MEDIA_SPEEDS = ['0.5', '1.0', '1.25', '1.5', '2.0'];
 
 const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
     <div class="bp-media-settings-menu-main bp-media-settings-menu" role="menu">
+        <div class="bp-media-settings-item bp-media-settings-item-autoplay" data-type="autoplay" tabindex="0" role="menuitem" aria-haspopup="true">
+            <div class="bp-media-settings-label" aria-label="${__('media_autoplay')}">${__('media_autoplay')}</div>
+            <div class="bp-media-settings-value">${__('media_autoplay_disabled')}</div>
+            <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
+        </div>
         <div class="bp-media-settings-item bp-media-settings-item-speed" data-type="speed" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-label" aria-label="${__('media_speed')}">${__('media_speed')}</div>
             <div class="bp-media-settings-value">${__('media_speed_normal')}</div>
@@ -37,6 +45,20 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
             <div class="bp-media-settings-label" aria-label="${__('media_audio')}">${__('media_audio')}</div>
             <div class="bp-media-settings-value"></div>
             <div class="bp-media-settings-arrow">${ICON_ARROW_RIGHT}</div>
+        </div>
+    </div>
+    <div class="bp-media-settings-menu-autoplay bp-media-settings-menu" role="menu">
+        <div class="bp-media-settings-sub-item bp-media-settings-sub-item-autoplay" data-type="menu" tabindex="0" role="menuitem" aria-haspopup="true">
+            <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
+            <div class="bp-media-settings-label" aria-label="${__('media_autoplay')}">${__('media_autoplay')}</div>
+        </div>
+        <div class="bp-media-settings-sub-item" data-type="autoplay" data-value="Disabled" tabindex="0" role="menuitemradio">
+            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+            <div class="bp-media-settings-value">${__('media_autoplay_disabled')}</div>
+        </div>
+        <div class="bp-media-settings-sub-item" data-type="autoplay" data-value="Enabled" tabindex="0" role="menuitemradio">
+            <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
+            <div class="bp-media-settings-value">${__('media_autoplay_enabled')}</div>
         </div>
     </div>
     <div class="bp-media-settings-menu-speed bp-media-settings-menu" role="menu">
@@ -160,6 +182,11 @@ class Settings extends EventEmitter {
         addActivationListener(this.settingsEl, this.menuEventHandler);
         this.containerEl.classList.add(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
         this.containerEl.classList.add(CLASS_SETTINGS_AUDIOTRACKS_UNAVAILABLE);
+
+        if (Browser.isIOS()) {
+            this.containerEl.classList.add(CLASS_SETTINGS_AUTOPLAY_UNAVAILABLE);
+        }
+
         this.init();
     }
 
@@ -172,9 +199,11 @@ class Settings extends EventEmitter {
     init() {
         const quality = this.cache.get('media-quality') || 'auto';
         const speed = this.cache.get('media-speed') || '1.0';
+        const autoplay = this.cache.get('media-autoplay') || 'Disabled';
 
         this.chooseOption(TYPE_QUALITY, quality);
         this.chooseOption(TYPE_SPEED, speed);
+        this.chooseOption(TYPE_AUTOPLAY, autoplay);
     }
 
     /**
@@ -276,7 +305,7 @@ class Settings extends EventEmitter {
      * Show sub-menu
      *
      * @private
-     * @param {string} type - Either "speed" or "quality"
+     * @param {string} type - Either "speed", "quality", or "autoplay"
      * @return {void}
      */
     showSubMenu(type) {

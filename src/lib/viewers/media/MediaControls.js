@@ -102,6 +102,7 @@ class MediaControls extends EventEmitter {
             this.settings.removeListener('quality', this.handleQuality);
             this.settings.removeListener('speed', this.handleRate);
             this.settings.removeListener('subtitles', this.handleSubtitle);
+            this.settings.removeListener('autoplay', this.handleAutoplay);
             this.settings.destroy();
             this.settings = undefined;
         }
@@ -190,6 +191,16 @@ class MediaControls extends EventEmitter {
     }
 
     /**
+     * Autoplay handler
+     *
+     * @private
+     * @return {void}
+     */
+    handleAutoplay() {
+        this.emit('autoplaychange');
+    }
+
+    /**
      * Attaches settings menu
      *
      * @private
@@ -199,6 +210,7 @@ class MediaControls extends EventEmitter {
         this.settings = new Settings(this.containerEl, this.cache);
         this.settings.addListener('quality', this.handleQuality);
         this.settings.addListener('speed', this.handleRate);
+        this.settings.addListener('autoplay', this.handleAutoplay);
     }
 
     /**

@@ -46,7 +46,14 @@ describe('lib/annotations/Annotator', () => {
             isMobile: false,
             options,
             modeButtons: {},
-            location: {}
+            location: {},
+            localizedStrings: {
+                anonymousUserName: 'anonymous',
+                loadError: 'load error',
+                createError: 'create error',
+                deleteError: 'delete error',
+                authError: 'auth error',
+            }
         });
         annotator.threads = {};
         annotator.modeControllers = {};
@@ -354,6 +361,11 @@ describe('lib/annotations/Annotator', () => {
                     point: { selector: 'point_btn' },
                     draw: { selector: 'draw_btn' }
                 };
+
+                annotator.createHighlightDialog = {
+                    isVisible: false,
+                    hide: sandbox.stub()
+                }
             });
 
             afterEach(() => {
@@ -370,6 +382,22 @@ describe('lib/annotations/Annotator', () => {
                 annotator.toggleAnnotationHandler(TYPES.highlight);
                 expect(stubs.destroyStub).to.be.called;
                 expect(stubs.exitModes).to.not.be.called;
+            });
+
+            it('should hide the highlight dialog and remove selection if it is visible', () => {
+                const getSelectionStub = sandbox.stub(document, 'getSelection').returns({
+                    removeAllRanges: sandbox.stub()
+                });
+
+                annotator.toggleAnnotationHandler(TYPES.highlight);
+                expect(annotator.createHighlightDialog.hide).to.not.be.called;
+                expect(getSelectionStub).to.not.be.called;
+
+                annotator.createHighlightDialog.isVisible = true;
+
+                annotator.toggleAnnotationHandler(TYPES.highlight);
+                expect(annotator.createHighlightDialog.hide).to.be.called;
+                expect(getSelectionStub).to.be.called;
             });
 
             it('should turn annotation mode on if it is off', () => {
@@ -1048,7 +1076,7 @@ describe('lib/annotations/Annotator', () => {
                 };
                 annotator.handleAnnotationThreadEvents(data);
                 expect(stubs.emit).to.be.calledWith(data.event, data.data);
-                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.error, __('annotations_delete_error'));
+                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.error, sinon.match.string);
                 expect(stubs.unbind).to.not.be.called;
                 expect(stubs.remove).to.not.be.called;
             });
@@ -1061,7 +1089,7 @@ describe('lib/annotations/Annotator', () => {
                 };
                 annotator.handleAnnotationThreadEvents(data);
                 expect(stubs.emit).to.be.calledWith(data.event, data.data);
-                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.error, __('annotations_create_error'));
+                expect(stubs.emit).to.be.calledWith(ANNOTATOR_EVENT.error, sinon.match.string);
                 expect(stubs.unbind).to.not.be.called;
                 expect(stubs.remove).to.not.be.called;
             });

@@ -1,4 +1,5 @@
 import AnnotationModeController from '../AnnotationModeController';
+import DocDrawingThread from '../doc/DocDrawingThread';
 import * as util from '../annotatorUtil';
 
 let annotationModeController;
@@ -108,6 +109,25 @@ describe('lib/annotations/AnnotationModeController', () => {
             annotationModeController.bindCustomListenersOnThread(thread);
             expect(annotationModeController.annotator.bindCustomListenersOnThread).to.be.called;
             expect(thread.addListener).to.be.called;
+        });
+
+        // Catches edge case where sometimes the first click upon entering
+        // Draw annotation mode, the annotator is not registered properly
+        // with the controller
+        it('should maintain annotator context when a "threadevent" is fired', () => {
+            Object.defineProperty(DocDrawingThread.prototype, 'setup', { value: sandbox.stub() });
+            Object.defineProperty(DocDrawingThread.prototype, 'getThreadEventData', { value: sandbox.stub() });
+            const thread = new DocDrawingThread({ threadID: 123 });
+
+            annotationModeController.handleAnnotationEvent = () => {
+                expect(annotationModeController.annotator).to.not.be.undefined;
+            };
+            annotationModeController.annotator = {
+                bindCustomListenersOnThread: sandbox.stub()
+            };
+
+            annotationModeController.bindCustomListenersOnThread(thread);
+            thread.emit('threadevent', {});
         });
     });
 

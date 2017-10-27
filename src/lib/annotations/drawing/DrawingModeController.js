@@ -3,6 +3,7 @@ import AnnotationModeController from '../AnnotationModeController';
 import annotationsShell from './../annotationsShell.html';
 import * as annotatorUtil from '../annotatorUtil';
 import {
+    CLASS_ANNOTATION_DRAW,
     TYPES,
     STATES,
     SELECTOR_ANNOTATION_BUTTON_DRAW_CANCEL,
@@ -53,6 +54,8 @@ class DrawingModeController extends AnnotationModeController {
         this.postButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_POST);
         this.undoButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_UNDO);
         this.redoButtonEl = annotator.getAnnotateButton(SELECTOR_ANNOTATION_BUTTON_DRAW_REDO);
+
+        this.annotator.annotatedElement.classList.add(CLASS_ANNOTATION_DRAW);
     }
 
     /**

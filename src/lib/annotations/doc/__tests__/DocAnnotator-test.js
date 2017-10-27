@@ -50,6 +50,9 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             modeButtons: {},
             location: {
                 locale: 'en-US'
+            },
+            localizedStrings: {
+                anonymousUserName: 'anonymous'
             }
         });
         annotator.annotatedElement = document.querySelector('.annotated-element');
@@ -1074,6 +1077,29 @@ describe('lib/annotations/doc/DocAnnotator', () => {
             };
             annotator.highlightMouseupHandler({ x: 0, y: 0 });
             expect(annotator.highlighter.removeAllHighlights).to.be.called;
+        });
+
+        it('should hide the highlight dialog and clear selection if it is visible', () => {
+            annotator.createHighlightDialog = {
+                isVisible: false,
+                hide: sandbox.stub(),
+                removeListener: sandbox.stub(),
+                destroy: sandbox.stub()
+            }
+
+            const getSelectionStub = sandbox.stub(document, 'getSelection').returns({
+                removeAllRanges: sandbox.stub()
+            });
+
+            annotator.highlightMouseupHandler({ x: 0, y: 0 });
+            expect(annotator.createHighlightDialog.hide).to.not.be.called;
+            expect(getSelectionStub).to.not.be.called;
+
+            annotator.createHighlightDialog.isVisible = true;
+
+            annotator.highlightMouseupHandler({ x: 0, y: 0 });
+            expect(annotator.createHighlightDialog.hide).to.be.called;
+            expect(getSelectionStub).to.be.called;
         });
     });
 

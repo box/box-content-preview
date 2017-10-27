@@ -10,6 +10,7 @@ const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
 const DEFAULT_VOLUME = 1;
 const MEDIA_VOLUME_CACHE_KEY = 'media-volume';
+const MEDIA_AUTOPLAY_CACHE_KEY = 'media-autoplay';
 const MEDIA_VOLUME_INCREMENT = 0.05;
 const EMIT_WAIT_TIME_IN_MILLIS = 100;
 
@@ -28,7 +29,7 @@ class MediaBaseViewer extends BaseViewer {
         this.wrapperEl = this.containerEl.appendChild(document.createElement('div'));
         this.wrapperEl.className = CSS_CLASS_MEDIA;
 
-        // Media Wrapper
+        // Media Container
         this.mediaContainerEl = this.wrapperEl.appendChild(document.createElement('div'));
         this.mediaContainerEl.setAttribute('tabindex', '-1');
         this.mediaContainerEl.className = CSS_CLASS_MEDIA_CONTAINER;
@@ -98,7 +99,7 @@ class MediaBaseViewer extends BaseViewer {
 
         if (Browser.isIOS()) {
             // iOS doesn't fire loadeddata event until some data loads
-            // Adding autoplay helps with that and itself won't autoplay.
+            // Adding autoplay prevents this but won't actually autoplay the video.
             // https://webkit.org/blog/6784/new-video-policies-for-ios/
             this.mediaEl.autoplay = true;
         }
@@ -107,6 +108,7 @@ class MediaBaseViewer extends BaseViewer {
             .getPromise()
             .then(() => {
                 this.mediaEl.src = this.mediaUrl;
+                this.checkAutoplay();
             })
             .catch(this.handleAssetError);
     }
@@ -212,6 +214,50 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
+     * Handler for autoplay
+     *
+     * @private
+     * @emits autoplay
+     * @return {void}
+     */
+    handleAutoplay() {
+        const isAutoplayEnabled = this.cache.get(MEDIA_AUTOPLAY_CACHE_KEY) === 'Enabled';
+        this.emit('autoplay', isAutoplayEnabled);
+    }
+
+    /**
+     * Determines if media should autoplay based on cached settings value.
+     *
+     * @private
+     * @emits volume
+     * @return {void}
+     */
+    checkAutoplay() {
+        if (this.cache.get(MEDIA_AUTOPLAY_CACHE_KEY) !== 'Enabled') {
+            return;
+        }
+
+        // Play may return a promise depening on browser support. This promise
+        // will resolve when playback starts. If it fails, pause UI should be shown.
+        // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/
+        const autoPlayPromise = this.mediaEl.play();
+
+        if (autoPlayPromise && typeof autoPlayPromise.then === 'function') {
+            autoPlayPromise
+                .then(() => {
+                    this.handleRate();
+                    this.handleVolume();
+                })
+                .catch(() => {
+                    this.pause();
+                });
+        } else {
+            // Fallback to traditional autoplay tag if play does not return a promise
+            this.mediaEl.autoplay = true;
+        }
+    }
+
+    /**
      * Resize handler
      *
      * @private
@@ -262,6 +308,7 @@ class MediaBaseViewer extends BaseViewer {
         this.mediaControls.addListener('toggleplayback', this.togglePlay);
         this.mediaControls.addListener('togglemute', this.toggleMute);
         this.mediaControls.addListener('ratechange', this.handleRate);
+        this.mediaControls.addListener('autoplaychange', this.handleAutoplay);
     }
 
     /**
@@ -321,6 +368,7 @@ class MediaBaseViewer extends BaseViewer {
         this.hideLoadingIcon();
         this.handleRate();
         this.handleVolume();
+        this.emit('play');
     }
 
     /**
@@ -435,7 +483,6 @@ class MediaBaseViewer extends BaseViewer {
         }
         if (arguments.length === 0 || hasValidStart) {
             this.mediaEl.play();
-            this.emit('play');
             this.handleRate();
             this.handleVolume();
         }

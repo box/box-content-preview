@@ -46,6 +46,7 @@ The DASH viewer fires the following events
 | switchhistory | Gives quality switching history when the preview is destroyed | {array} quality switch objects |
 | adaptation | Quality adapts to a change in bandwidth | {number} bandwidth |
 | play | The video plays ||
+| autoplay | the autoplay option has been enabled/disabled | {boolean} new autoplay value|
 | pause | The video pauses ||
 | seeked | The video skips to a time | {number} time |
 
@@ -103,6 +104,7 @@ The MP3 viewer fires the following events
 | ratechange | Media speed changes | {string} playback speed |
 | volumechange | The media volume changes | {number} volume between 0 and 1|
 | play | The audio plays ||
+| autoplay | the autoplay option has been enabled/disabled | {boolean} new autoplay value|
 | pause | The audio pauses ||
 | seeked | The audio skips to a time | {number} time |
 
@@ -163,6 +165,7 @@ The MP4 viewer fires the following events
 | ratechange | Media speed changes | {string} playback speed |
 | volumechange | The media volume changes | {number} volume between 0 and 1 |
 | play | The video plays ||
+| autoplay | the autoplay option has been enabled/disabled | {boolean} new autoplay value|
 | pause | The video pauses ||
 | seeked | The video skips to a time | {number} time |
 

@@ -58,6 +58,7 @@ class AnnotationThread extends EventEmitter {
         this.isMobile = data.isMobile;
         this.hasTouch = data.hasTouch;
         this.permissions = data.permissions;
+        this.localized = data.localized;
 
         this.setup();
     }
@@ -312,6 +313,7 @@ class AnnotationThread extends EventEmitter {
 
         if (this.dialog) {
             this.dialog.isMobile = this.isMobile;
+            this.dialog.localized = this.localized;
         }
 
         this.setupElement();
@@ -496,6 +498,7 @@ class AnnotationThread extends EventEmitter {
             this.dialog.removeAnnotation(tempAnnotation.annotationID);
         }
 
+        this.showDialog();
         this.emit(THREAD_EVENT.save);
     }
 

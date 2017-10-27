@@ -101,12 +101,13 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
     describe('destroy()', () => {
         it('should unbind listeners and clear the print blob', () => {
             const unbindDOMListenersStub = sandbox.stub(docBase, 'unbindDOMListeners');
+            docBase.printURL = 'someblob';
             sandbox.stub(URL, 'revokeObjectURL');
 
             docBase.destroy();
             expect(unbindDOMListenersStub).to.be.called;
             expect(docBase.printBlob).to.equal(null);
-            expect(URL.revokeObjectURL).to.be.calledWith(docBase.printUrl);
+            expect(URL.revokeObjectURL).to.be.calledWith(docBase.printURL);
         });
 
         it('should destroy the controls', () => {
