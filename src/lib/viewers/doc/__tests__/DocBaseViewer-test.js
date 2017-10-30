@@ -398,6 +398,32 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
     });
 
+    describe('find()', () => {
+        beforeEach(() => {
+            docBase.findBar = {
+                setFindFieldElValue: sandbox.stub(),
+                findFieldHandler: sandbox.stub(),
+                open: sandbox.stub(),
+                destroy: sandbox.stub()
+            }
+        });
+
+        it('should set the search value and handle a find', () => {
+            docBase.find('hi');
+
+            expect(docBase.findBar.setFindFieldElValue).to.be.calledWith('hi');
+            expect(docBase.findBar.findFieldHandler).to.be.called;
+        });
+
+        it('should open the findbar if the openFindBar flag is true', () => {
+            docBase.find('hi', true);
+
+            expect(docBase.findBar.setFindFieldElValue).to.be.calledWith('hi');
+            expect(docBase.findBar.findFieldHandler).to.be.called;
+            expect(docBase.findBar.open).to.be.called;
+        });
+    });
+
     describe('browserPrint()', () => {
         beforeEach(() => {
             stubs.emit = sandbox.stub(docBase, 'emit');

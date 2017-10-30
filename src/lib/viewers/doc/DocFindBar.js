@@ -55,6 +55,7 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Creates find input field, search icon and results count elements
+     *
      * @return {void}
      */
     createFindField() {
@@ -78,6 +79,7 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Creates previous, next, and close buttons for find bar
+     *
      * @return {void}
      */
     createFindButtons() {
@@ -125,6 +127,7 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Update Find Bar UI to current match state
+     *
      * @param  {number} state FindState from PDFFindController
      * @return {void}
      */
@@ -154,6 +157,7 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Update results count to current match count
+     *
      * @return {void}
      */
     updateUIResultsCount() {
@@ -178,13 +182,24 @@ class DocFindBar extends EventEmitter {
         this.findResultsCountEl.classList.remove(CLASS_HIDDEN);
     }
 
+    /**
+     * Sets the findFieldEl value
+     *
+     * @param {string} phrase - Phrase to set the find field el value to
+     * @return {void}
+     */
+    setFindFieldElValue(phrase) {
+        this.findFieldEl.value = phrase;
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
     /**
      * Add event listeners to the DOM elements
-     * @return {void}
+     *
      * @private
+     * @return {void}
      */
     bindDOMListeners() {
         this.bar.addEventListener('keydown', this.barKeyDownHandler);
@@ -199,8 +214,9 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Remove event listeners from the DOM elements
-     * @return {void}
+     *
      * @private
+     * @return {void}
      */
     unbindDOMListeners() {
         this.bar.removeEventListener('keydown', this.barKeyDownHandler);
@@ -255,9 +271,9 @@ class DocFindBar extends EventEmitter {
     /**
      * Handler for find keyboard short cuts
      *
+     * @private
      * @param {Event} event - Key event
      * @return {void}
-     * @private
      */
     barKeyDownHandler(event) {
         const key = decodeKeydown(event).toLowerCase();
@@ -292,9 +308,10 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Handler to find next match count and update match count accordingly
+     *
+     * @private
      * @param  {boolean} clicked False when triggered through keyboard shortcut
      * @return {void}
-     * @private
      */
     findNextHandler(clicked) {
         if (this.findFieldEl.value) {
@@ -314,9 +331,10 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Handler to find previous match and update match count accordingly
+     *
+     * @private
      * @param  {boolean} clicked False when triggered through keyboard shortcut
      * @return {void}
-     * @private
      */
     findPreviousHandler(clicked) {
         if (this.findFieldEl.value) {
@@ -336,13 +354,14 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Unhide Find Bar
-     * @return {void}
+     *
      * @private
+     * @return {void}
      */
     open() {
         // Repopulate and re-highlight find field with last search
         if (this.prevSearchQuery) {
-            this.findFieldEl.value = this.prevSearchQuery;
+            this.setFindFieldElValue(this.prevSearchQuery);
             this.findFieldHandler();
         }
 
@@ -356,13 +375,14 @@ class DocFindBar extends EventEmitter {
 
     /**
      * Hide Find Bar
-     * @return {void}
+     *
      * @private
+     * @return {void}
      */
     close() {
         // Save and clear current search to hide highlights
         this.prevSearchQuery = this.findFieldEl.value;
-        this.findFieldEl.value = '';
+        this.setFindFieldElValue('');
         this.findFieldHandler();
 
         if (!this.opened) {

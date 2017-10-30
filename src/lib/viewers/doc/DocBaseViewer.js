@@ -258,6 +258,7 @@ class DocBaseViewer extends BaseViewer {
 
     /**
      * Initializes the Find Bar and Find Controller
+     *
      * @return {void}
      */
     initFind() {
@@ -278,6 +279,23 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
         this.findBar = new DocFindBar(this.findBarEl, this.findController, canDownload);
+    }
+
+    /**
+     * Scrolls to and highlights the next occurences of a phrase in the document using the DocFindBar
+     *
+     * @public
+     * @param {string} phrase - Phrase to find
+     * @param {boolean} [openFindBar] - Option to open the findbar on find
+     * @return {void}
+     */
+    find(phrase, openFindBar = false) {
+        this.findBar.setFindFieldElValue(phrase);
+        this.findBar.findFieldHandler();
+
+        if (openFindBar) {
+            this.findBar.open();
+        }
     }
 
     /**
