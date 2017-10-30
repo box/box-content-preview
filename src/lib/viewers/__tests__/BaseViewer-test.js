@@ -49,8 +49,9 @@ describe('lib/viewers/BaseViewer', () => {
     describe('setup()', () => {
         it('should set options, a container, bind event listeners, and set timeout', () => {
             sandbox.stub(base, 'addCommonListeners');
-            sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
+            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
             sandbox.stub(base, 'finishLoadingSetup');
+            sandbox.stub(base, 'loadAnnotator');
             base.options.showAnnotations = true;
 
             base.setup();
@@ -65,12 +66,12 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.containerEl).to.have.class('bp');
             expect(base.addCommonListeners).to.be.called;
             expect(base.loadTimeout).to.be.a.number;
-            expect(base.loadAssets).to.be.called;
+            expect(base.loadAnnotator).to.be.called;
         });
 
         it('should add a mobile class to the container if on mobile', () => {
             base.isMobile = true;
-            sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
+            sandbox.stub(base, 'loadAnnotator');
             sandbox.stub(base, 'finishLoadingSetup');
 
             base.setup();
@@ -81,24 +82,26 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should not load annotations assets if global preview showAnnotations option is false', () => {
             sandbox.stub(base, 'addCommonListeners');
-            sandbox.stub(base, 'loadAssets');
+            sandbox.stub(base, 'areAnnotationsEnabled').returns(false);
+            sandbox.stub(base, 'loadAnnotator');
             sandbox.stub(base, 'finishLoadingSetup');
             base.options.showAnnotations = false;
 
             base.setup();
 
-            expect(base.loadAssets).to.not.be.called;
+            expect(base.loadAnnotator).to.not.be.called;
         });
 
         it('should not load annotations assets if expiring embed is a shared link', () => {
             sandbox.stub(base, 'addCommonListeners');
-            sandbox.stub(base, 'loadAssets');
+            sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
+            sandbox.stub(base, 'loadAnnotator');
             sandbox.stub(base, 'finishLoadingSetup');
             base.options.sharedLink = 'url';
 
             base.setup();
 
-            expect(base.loadAssets).to.not.be.called;
+            expect(base.loadAnnotator).to.not.be.called;
         });
     });
 
@@ -284,7 +287,7 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.fullscreenAddListener = sandbox.stub(fullscreen, 'addListener');
             stubs.baseAddListener = sandbox.spy(base, 'addListener');
             stubs.documentAddEventListener = sandbox.stub(document.defaultView, 'addEventListener');
-            stubs.loadAnnotator = sandbox.stub(base, 'loadAnnotator');
+            sandbox.stub(base, 'initAnnotations');
 
 
         });
@@ -312,34 +315,27 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.containerEl.addEventListener).to.be.calledWith('contextmenu', sinon.match.func);
         });
 
-        it('should load the annotator when load is emitted with scale', (done) => {
+        it('should load the annotator when load is emitted with scale', () => {
             base.containerEl = containerEl;
-            base.annotationsPromise = {
-                then: (arg) => {
-                    expect(base.scale).to.equal(1.5);
-                    expect(arg).to.equal(base.loadAnnotator);
-                    done();
-                }
-            };
+            base.annotatorConf = {};
 
             base.addCommonListeners();
             expect(base.scale).to.equal(1);
+
             base.emit('load', {
                 scale: 1.5
             });
+            expect(base.scale).to.equal(1.5);
+            expect(base.initAnnotations).to.be.called;
         });
 
-        it('should load the annotator when load is emitted without an event', (done) => {
+        it('should not load the annotator when there is no annotator config', () => {
             base.containerEl = containerEl;
-            base.annotationsPromise = {
-                then: (arg) => {
-                    expect(arg).to.equal(base.loadAnnotator);
-                    done();
-                }
-            };
+            base.annotatorConf = undefined;
 
             base.addCommonListeners();
             base.emit('load');
+            expect(base.initAnnotations).to.not.be.called;
         });
     });
 
@@ -768,7 +764,6 @@ describe('lib/viewers/BaseViewer', () => {
                 TYPE: ['point', 'highlight']
             };
             stubs.areAnnotationsEnabled = sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
-            sandbox.stub(base, 'initAnnotations');
 
             base.options = {
                 viewer: {
@@ -806,7 +801,6 @@ describe('lib/viewers/BaseViewer', () => {
 
             window.BoxAnnotations = BoxAnnotations;
             base.loadAnnotator();
-            expect(base.initAnnotations).to.be.called;
         });
 
         it('should not load an annotator if no loader was found', () => {
@@ -815,7 +809,6 @@ describe('lib/viewers/BaseViewer', () => {
             }
             window.BoxAnnotations = BoxAnnotations;
             base.loadAnnotator();
-            expect(base.initAnnotations).to.not.be.called;
         });
 
         it('should not load an annotator if the viewer is not annotatable', () => {
@@ -827,7 +820,6 @@ describe('lib/viewers/BaseViewer', () => {
             window.BoxAnnotations = BoxAnnotations;
             stubs.areAnnotationsEnabled.returns(false);
             base.loadAnnotator();
-            expect(base.initAnnotations).to.not.be.called;
         });
     });
 
