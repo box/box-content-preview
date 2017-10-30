@@ -115,6 +115,8 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
         beforeEach(() => {
             media.mediaEl = document.createElement('video');
             media.mediaEl.addEventListener = sandbox.stub();
+            sandbox.stub(media, 'isAutoplayEnabled').returns(false);
+            sandbox.stub(media, 'autoplay');
         });
 
         it('should load mediaUrl in the media element', () => {
@@ -133,6 +135,16 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             return media.load().then(() => {
                 expect(media.mediaEl.autoplay).to.be.true;
+            })
+        });
+
+        it('should autoplay if enabled', () => {
+            media.isAutoplayEnabled.returns(true);
+            sandbox.stub(media, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
+            media.mediaEl = document.createElement('video');
+
+            return media.load().then(() => {
+                expect(media.autoplay).to.be.called;
             })
         });
     });
@@ -218,50 +230,38 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
     describe('handleAutoplay()', () => {
         it('should emit the new autoplay value', () => {
-            sandbox.stub(media.cache, 'has').returns(true);
-            sandbox.stub(media.cache, 'get').returns('Disbled');
+            sandbox.stub(media, 'isAutoplayEnabled').returns(false);
             sandbox.stub(media, 'emit');
 
             media.handleAutoplay();
             expect(media.emit).to.be.calledWith('autoplay', false);
 
-            media.cache.get.returns('Enabled');
+            media.isAutoplayEnabled.returns(true);
 
             media.handleAutoplay();
             expect(media.emit).to.be.calledWith('autoplay', true);
         });
     });
 
-    describe('checkAutoplay()', () => {
+    describe('autoplay()', () => {
         beforeEach(() => {
             media.mediaEl = {
                 play: sandbox.stub().returns(Promise.resolve())
             };
 
-            sandbox.stub(media.cache, 'get').returns('Enabled');
+            sandbox.stub(media, 'isAutoplayEnabled').returns(true);
             sandbox.stub(Browser, 'isIOS').returns(false);
         });
 
-        it('should do nothing the settings value is absent or disabled', () => {
-            media.cache.get.returns(false);
-            media.checkAutoplay();
-            expect(media.mediaEl.play).to.not.be.called;
-
-            media.cache.get.returns(true);
-            media.cache.get.returns('Disabled');
-            media.checkAutoplay();
-            expect(media.mediaEl.play).to.not.be.called;
-        });
-
         it('should set autoplay if setting is enabled and handle the promise if it is a valid promise', () => {
-            media.checkAutoplay();
+            media.autoplay();
             expect(media.mediaEl.play).to.be.called;
             expect(media.mediaEl.autoplay).to.be.undefined;
         });
 
         it('should set autoplay to true if play does not return a promise', () => {
             media.mediaEl.play.returns(undefined);
-            media.checkAutoplay();
+            media.autoplay();
             expect(media.mediaEl.autoplay).to.be.true;
         });
     });
@@ -392,6 +392,22 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             expect(media.hideLoadingIcon).to.be.called;
             expect(media.debouncedEmit).to.be.calledWith('seeked', currentTime);
+        });
+    });
+
+    describe('mediaendHandler()', () => {
+        it('emit the previewnextfile event if autoplay is enabled', () => {
+            sandbox.stub(media, 'isAutoplayEnabled').returns(false);
+            sandbox.stub(media, 'emit');
+
+            media.mediaendHandler();
+            expect(media.isAutoplayEnabled).to.be.called;
+            expect(media.emit).to.not.be.called;
+
+            media.isAutoplayEnabled.returns(true);
+
+            media.mediaendHandler();
+            expect(media.emit).to.be.calledWith('previewnextfile');
         });
     });
 
@@ -649,7 +665,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             media.addEventListenersForMediaElement();
 
-            expect(media.mediaEl.addEventListener.callCount).to.equal(7);
+            expect(media.mediaEl.addEventListener.callCount).to.equal(8);
         });
     });
 

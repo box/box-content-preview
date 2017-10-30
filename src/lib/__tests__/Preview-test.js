@@ -1411,6 +1411,14 @@ describe('lib/Preview', () => {
             expect(preview.ui.hideNotification).to.be.called;
         });
 
+        it('should navigate right on previewnextfile event', () => {
+            sandbox.stub(preview, 'navigateRight');
+            const data = { event: 'previewnextfile' };
+
+            preview.handleViewerEvents(data);
+            expect(preview.navigateRight).to.be.called;
+        });
+
         it('should emit viewerevent when event does not match', () => {
             sandbox.stub(preview, 'emit');
             const data = {

@@ -108,7 +108,9 @@ class MediaBaseViewer extends BaseViewer {
             .getPromise()
             .then(() => {
                 this.mediaEl.src = this.mediaUrl;
-                this.checkAutoplay();
+                if (this.isAutoplayEnabled()) {
+                    this.autoplay();
+                }
             })
             .catch(this.handleAssetError);
     }
@@ -221,8 +223,7 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     handleAutoplay() {
-        const isAutoplayEnabled = this.cache.get(MEDIA_AUTOPLAY_CACHE_KEY) === 'Enabled';
-        this.emit('autoplay', isAutoplayEnabled);
+        this.emit('autoplay', this.isAutoplayEnabled());
     }
 
     /**
@@ -232,8 +233,8 @@ class MediaBaseViewer extends BaseViewer {
      * @emits volume
      * @return {void}
      */
-    checkAutoplay() {
-        if (this.cache.get(MEDIA_AUTOPLAY_CACHE_KEY) !== 'Enabled') {
+    autoplay() {
+        if (!this.isAutoplayEnabled()) {
             return;
         }
 
@@ -255,6 +256,16 @@ class MediaBaseViewer extends BaseViewer {
             // Fallback to traditional autoplay tag if play does not return a promise
             this.mediaEl.autoplay = true;
         }
+    }
+
+    /**
+     * Determines if autoplay is enabled
+     *
+     * @private
+     * @return {boolean} Indicates if autoplay is enabled
+     */
+    isAutoplayEnabled() {
+        return this.cache.get(MEDIA_AUTOPLAY_CACHE_KEY) === 'Enabled';
     }
 
     /**
@@ -401,6 +412,19 @@ class MediaBaseViewer extends BaseViewer {
     seekHandler() {
         this.hideLoadingIcon();
         this.debouncedEmit('seeked', this.mediaEl.currentTime);
+    }
+
+    /**
+     * Emits the previewnextfile event if autoplay is enabled.
+     *
+     * @private
+     * @emits previewnextfile
+     * @return {void}
+     */
+    mediaendHandler() {
+        if (this.isAutoplayEnabled()) {
+            this.emit('previewnextfile');
+        }
     }
 
     /**
@@ -582,6 +606,7 @@ class MediaBaseViewer extends BaseViewer {
         this.mediaEl.addEventListener('pause', this.pauseHandler);
         this.mediaEl.addEventListener('ended', this.resetPlayIcon);
         this.mediaEl.addEventListener('seeked', this.seekHandler);
+        this.mediaEl.addEventListener('ended', this.mediaendHandler);
     }
 
     /**
