@@ -657,14 +657,14 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        const boxAnnotations = new BoxAnnotations();
-        if (!boxAnnotations) {
+        try {
+            const boxAnnotations = new BoxAnnotations();
+            this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
+        } catch (err) {
             /* eslint-disable no-console */
             console.error('Annotation assets failed to load');
             /* eslint-enable no-console */
-            return;
         }
-        this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
     }
 
     /**
