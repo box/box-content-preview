@@ -406,11 +406,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 open: sandbox.stub(),
                 destroy: sandbox.stub()
             }
+
+            sandbox.stub(docBase, 'setPage');
         });
 
         it('should set the search value and handle a find', () => {
             docBase.find('hi');
 
+            expect(docBase.setPage).to.be.calledWith(1);
             expect(docBase.findBar.setFindFieldElValue).to.be.calledWith('hi');
             expect(docBase.findBar.findFieldHandler).to.be.called;
         });
