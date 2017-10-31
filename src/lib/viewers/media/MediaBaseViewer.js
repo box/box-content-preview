@@ -419,7 +419,7 @@ class MediaBaseViewer extends BaseViewer {
      */
     mediaendHandler() {
         if (this.isAutoplayEnabled()) {
-            this.emit('previewnextfile');
+            this.emit('mediaendautoplay');
         }
     }
 

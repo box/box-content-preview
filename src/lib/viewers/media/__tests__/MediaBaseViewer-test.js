@@ -396,7 +396,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     });
 
     describe('mediaendHandler()', () => {
-        it('emit the previewnextfile event if autoplay is enabled', () => {
+        it('emit the mediaendautoplay event if autoplay is enabled', () => {
             sandbox.stub(media, 'isAutoplayEnabled').returns(false);
             sandbox.stub(media, 'emit');
 
@@ -407,7 +407,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.isAutoplayEnabled.returns(true);
 
             media.mediaendHandler();
-            expect(media.emit).to.be.calledWith('previewnextfile');
+            expect(media.emit).to.be.calledWith('mediaendautoplay');
         });
     });
 
