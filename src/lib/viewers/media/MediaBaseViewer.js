@@ -234,10 +234,6 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     autoplay() {
-        if (!this.isAutoplayEnabled()) {
-            return;
-        }
-
         // Play may return a promise depening on browser support. This promise
         // will resolve when playback starts. If it fails, pause UI should be shown.
         // https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/

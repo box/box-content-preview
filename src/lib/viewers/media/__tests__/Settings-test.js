@@ -13,7 +13,7 @@ describe('lib/viewers/media/Settings', () => {
     beforeEach(() => {
         fixture.load('viewers/media/__tests__/Settings-test.html');
         const containerEl = document.querySelector('.container');
-        sandbox.stub(Browser, 'isIOS').returns(true);
+        sandbox.stub(Browser, 'isMobile').returns(true);
         settings = new Settings(containerEl, {
             set: () => {},
             has: () => {},
@@ -44,7 +44,7 @@ describe('lib/viewers/media/Settings', () => {
             expect(settings.containerEl).to.have.class('bp-media-settings-subtitles-unavailable');
         });
 
-        it('should hide the autoplay option if on iOS', () => {
+        it('should hide the autoplay option if on mobile', () => {
             expect(settings.containerEl.classList.contains('bp-media-settings-autoplay-unavailable')).to.be.true;
         });
     });
