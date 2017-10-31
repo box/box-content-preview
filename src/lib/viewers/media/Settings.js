@@ -183,7 +183,7 @@ class Settings extends EventEmitter {
         this.containerEl.classList.add(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
         this.containerEl.classList.add(CLASS_SETTINGS_AUDIOTRACKS_UNAVAILABLE);
 
-        if (Browser.isIOS()) {
+        if (Browser.isMobile()) {
             this.containerEl.classList.add(CLASS_SETTINGS_AUTOPLAY_UNAVAILABLE);
         }
 

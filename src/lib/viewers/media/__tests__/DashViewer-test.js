@@ -137,7 +137,9 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash, 'loadDashPlayer');
             sandbox.stub(dash, 'resetLoadTimeout');
             sandbox.stub(dash, 'loadAssets');
-            sandbox.stub(dash, 'checkAutoplay');
+            sandbox.stub(dash, 'isAutoplayEnabled').returns(true);
+            sandbox.stub(dash, 'autoplay');
+
             sandbox.stub(dash, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
             sandbox.stub(Promise, 'all').returns(stubs.promise);
 
@@ -147,7 +149,7 @@ describe('lib/viewers/media/DashViewer', () => {
                     expect(dash.setup).to.be.called;
                     expect(dash.loadDashPlayer).to.be.called;
                     expect(dash.resetLoadTimeout).to.be.called;
-                    expect(dash.checkAutoplay).to.be.called;
+                    expect(dash.autoplay).to.be.called;
                 })
                 .catch(() => {});
         });
@@ -493,7 +495,8 @@ describe('lib/viewers/media/DashViewer', () => {
         it('should load the meta data for the media element, show the media/play button, load subs, check for autoplay, and set focus', () => {
             sandbox.stub(dash, 'isDestroyed').returns(false);
             sandbox.stub(dash, 'showMedia');
-            sandbox.stub(dash, 'checkAutoplay');
+            sandbox.stub(dash, 'isAutoplayEnabled').returns(true);
+            sandbox.stub(dash, 'autoplay');
             sandbox.stub(dash, 'calculateVideoDimensions');
             sandbox.stub(dash, 'loadUI');
             sandbox.stub(dash, 'loadFilmStrip');
@@ -506,7 +509,7 @@ describe('lib/viewers/media/DashViewer', () => {
             sandbox.stub(dash, 'showPlayButton');
 
             dash.loadeddataHandler();
-            expect(dash.checkAutoplay).to.be.called;
+            expect(dash.autoplay).to.be.called;
             expect(dash.showMedia).to.be.called;
             expect(dash.showPlayButton).to.be.called;
             expect(dash.loadSubtitles).to.be.called;

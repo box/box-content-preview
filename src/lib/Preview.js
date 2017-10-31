@@ -905,6 +905,9 @@ class Preview extends EventEmitter {
             case 'notificationhide':
                 this.ui.hideNotification();
                 break;
+            case 'mediaendautoplay':
+                this.navigateRight();
+                break;
             default:
                 // This includes 'notification', 'preload' and others
                 this.emit(data.event, data.data);
