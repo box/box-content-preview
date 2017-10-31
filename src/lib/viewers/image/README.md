@@ -22,7 +22,7 @@ Rotating the viewer will rotate the image 90 degrees clockwise. At the default z
 
 | Option | Type | Description |
 | --- | --- | --- |
-| annotations | boolean | Optional. Whether annotations on content are shown. Defaults to false |
+| annotations | boolean | Optional. Whether annotations on content are shown. Defaults to false. See [Box Annotations](https://github.com/box/box-annotations) for more details. |
 
 ## Events
 The image viewer fires the following events
@@ -78,7 +78,7 @@ At the default zoom level, clicking on the image will zoom in once. When zoomed 
 
 | Option | Type | Description |
 | --- | --- | --- |
-| annotations | boolean | Optional. Whether annotations on content are shown. Defaults  to false |
+| annotations | boolean | Optional. Whether annotations on content are shown. Defaults to false. See [Box Annotations](https://github.com/box/box-annotations) for more details. |
 
 ## Events
 The image viewer fires the following events

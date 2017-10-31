@@ -118,7 +118,7 @@ preview.show(fileId, accessToken, {
 | collection |  | List of file IDs to iterate over for previewing |
 | header | 'light' | String value of 'none' or 'dark' or 'light' that controls header visibility and theme |
 | logoUrl |  | URL of logo to show in header |
-| showAnnotations | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. |
+| showAnnotations | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. See [Box Annotations](https://github.com/box/box-annotations) for more details. |
 | showDownload | false | Whether download button is shown |
 | useHotkeys | true | Whether hotkeys (keyboard shortcuts) are enabled |
 
