@@ -64,6 +64,7 @@ The following methods are available for the document viewer.
 | zoomIn | Zooms the document in | {number} number of steps to zoom in based on scale |
 | zoomOut | Zooms the document out | {number} number of steps to zoom out based on scale |
 | toggleFullscreen | Toggles fullscreen mode ||
+| find | scrolls to and highlights the next occurrences of a given phrase | {string} phrase to find, {boolean} option to open the find bar on find, defaults to false |
 
 # Presentation Viewer
 
