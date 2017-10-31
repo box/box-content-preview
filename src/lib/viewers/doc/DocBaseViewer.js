@@ -290,6 +290,10 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     find(phrase, openFindBar = false) {
+        if (!this.findBar) {
+            return;
+        }
+
         // Go to page one so that we can find the first occurence in the document
         this.setPage(1);
         this.findBar.setFindFieldElValue(phrase);

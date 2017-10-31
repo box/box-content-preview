@@ -410,6 +410,14 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             sandbox.stub(docBase, 'setPage');
         });
 
+        it('should do nothing if there is no findbar', () => {
+            docBase.findBar = undefined;
+
+            docBase.find('hi');
+
+            expect(docBase.setPage).to.not.be.called;
+        });
+
         it('should set the search value and handle a find', () => {
             docBase.find('hi');
 
