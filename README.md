@@ -1,7 +1,7 @@
 [![Project Status](https://img.shields.io/badge/status-active-brightgreen.svg?style=flat-square)](http://opensource.box.com/badges/)
 [![Styled With Prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![build status](https://img.shields.io/travis/box/box-content-preview/master.svg?style=flat-square)](https://travis-ci.org/box/box-content-preview)
-[![version](https://img.shields.io/badge/version-v1.16.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
+[![version](https://img.shields.io/badge/version-v1.17.0-blue.svg?style=flat-square)](https://github.com/box/box-content-preview)
 [![npm version](https://img.shields.io/npm/v/box-ui-elements.svg?style=flat-square)](https://www.npmjs.com/package/box-ui-elements)
 
 [Box Content Preview](https://developer.box.com/docs/box-content-preview)
@@ -19,11 +19,11 @@ If you are using Internet Explorer 11, which doesn't natively support promises, 
 
 Current Version
 ---------------
-* Version: v1.16.0
+* Version: v1.17.0
 * Locale: en-US
 
-https://cdn01.boxcdn.net/platform/preview/1.16.0/en-US/preview.js
-https://cdn01.boxcdn.net/platform/preview/1.16.0/en-US/preview.css
+https://cdn01.boxcdn.net/platform/preview/1.17.0/en-US/preview.js
+https://cdn01.boxcdn.net/platform/preview/1.17.0/en-US/preview.css
 
 Supported Locales
 -----------------
@@ -53,8 +53,8 @@ You can self-host the Box Content Preview UI Element or reference the versions a
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise"></script>
 
     <!-- Latest version of Preview SDK for your locale -->
-    <script src="https://cdn01.boxcdn.net/platform/preview/1.16.0/en-US/preview.js"></script>
-    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/1.16.0/en-US/preview.css" />
+    <script src="https://cdn01.boxcdn.net/platform/preview/1.17.0/en-US/preview.js"></script>
+    <link rel="stylesheet" href="https://cdn01.boxcdn.net/platform/preview/1.17.0/en-US/preview.css" />
 </head>
 <body>
     <div class="preview-container" style="height:400px;width:575px"></div>
@@ -118,7 +118,7 @@ preview.show(fileId, accessToken, {
 | collection |  | List of file IDs to iterate over for previewing |
 | header | 'light' | String value of 'none' or 'dark' or 'light' that controls header visibility and theme |
 | logoUrl |  | URL of logo to show in header |
-| showAnnotations | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. |
+| showAnnotations | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. See [Box Annotations](https://github.com/box/box-annotations) for more details. |
 | showDownload | false | Whether download button is shown |
 | useHotkeys | true | Whether hotkeys (keyboard shortcuts) are enabled |
 
@@ -336,13 +336,13 @@ For general Box Platform, API, and UI Element questions, please visit our [devel
 
 Copyright and License
 ---------------------
-Copyright 2016-2017 Box, Inc. All Rights Reserved.
+Copyright 2016-present Box, Inc. All Rights Reserved.
 
 Licensed under the Box Software License Agreement v.20170516.
 You may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-   https://github.com/box/box-content-preview/blob/master/LICENSE
+   https://developer.box.com/docs/box-sdk-license
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,

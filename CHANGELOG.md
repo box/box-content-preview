@@ -1,3 +1,18 @@
+<a name="1.17.0"></a>
+# 1.17.0 (2017-10-31)
+
+* New: Find method for documents (#460) ([3a0b868](https://github.com/box/box-content-preview/commit/3a0b868))
+* New: Make findBar optional (#438) ([3ea11cc](https://github.com/box/box-content-preview/commit/3ea11cc))
+* New: Update BaseViewer to use box-annotations npm package (#459) ([4f71ab2](https://github.com/box/box-content-preview/commit/4f71ab2))
+* Fix: Fix fullscreen icon for video (#456) ([ef5614a](https://github.com/box/box-content-preview/commit/ef5614a)), closes [#456](https://github.com/box/box-content-preview/issues/456)
+* Fix: update autoplay behavior (#461) ([c4778f8](https://github.com/box/box-content-preview/commit/c4778f8))
+* Chore: Removing annotations from Box-Content-Preview (#451) ([fa7855e](https://github.com/box/box-content-preview/commit/fa7855e))
+* Chore: Removing annotations README.md (#462) ([bdbb75a](https://github.com/box/box-content-preview/commit/bdbb75a))
+* Mojito: Update translations (#452) ([9b7bbb7](https://github.com/box/box-content-preview/commit/9b7bbb7))
+* Mojito: Update translations (#454) ([fcd3aad](https://github.com/box/box-content-preview/commit/fcd3aad))
+
+
+
 <a name="1.16.0"></a>
 # 1.16.0 (2017-10-24)
 

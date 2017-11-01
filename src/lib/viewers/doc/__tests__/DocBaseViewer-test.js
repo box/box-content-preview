@@ -385,6 +385,54 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.initFind();
             expect(docBase.pdfViewer.setFindController).to.be.called;
         });
+
+        it('should not set find bar if viewer option disableFindBar is true', () => {
+            sandbox.stub(docBase, 'getViewerOption').withArgs('disableFindBar').returns(true);
+            docBase.initFind();
+            expect(docBase.findBar).to.be.undefined;
+        });
+
+        it('should set findBar to a function if viewer option disableFindBar is not set', () => {
+            docBase.initFind();
+            expect(docBase.findBar).to.be.a.function;
+        });
+    });
+
+    describe('find()', () => {
+        beforeEach(() => {
+            docBase.findBar = {
+                setFindFieldElValue: sandbox.stub(),
+                findFieldHandler: sandbox.stub(),
+                open: sandbox.stub(),
+                destroy: sandbox.stub()
+            }
+
+            sandbox.stub(docBase, 'setPage');
+        });
+
+        it('should do nothing if there is no findbar', () => {
+            docBase.findBar = undefined;
+
+            docBase.find('hi');
+
+            expect(docBase.setPage).to.not.be.called;
+        });
+
+        it('should set the search value and handle a find', () => {
+            docBase.find('hi');
+
+            expect(docBase.setPage).to.be.calledWith(1);
+            expect(docBase.findBar.setFindFieldElValue).to.be.calledWith('hi');
+            expect(docBase.findBar.findFieldHandler).to.be.called;
+        });
+
+        it('should open the findbar if the openFindBar flag is true', () => {
+            docBase.find('hi', true);
+
+            expect(docBase.findBar.setFindFieldElValue).to.be.calledWith('hi');
+            expect(docBase.findBar.findFieldHandler).to.be.called;
+            expect(docBase.findBar.open).to.be.called;
+        });
     });
 
     describe('browserPrint()', () => {

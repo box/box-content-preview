@@ -1411,6 +1411,14 @@ describe('lib/Preview', () => {
             expect(preview.ui.hideNotification).to.be.called;
         });
 
+        it('should navigate right on mediaendautoplay event', () => {
+            sandbox.stub(preview, 'navigateRight');
+            const data = { event: 'mediaendautoplay' };
+
+            preview.handleViewerEvents(data);
+            expect(preview.navigateRight).to.be.called;
+        });
+
         it('should emit viewerevent when event does not match', () => {
             sandbox.stub(preview, 'emit');
             const data = {

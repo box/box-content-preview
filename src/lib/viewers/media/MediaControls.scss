@@ -140,6 +140,12 @@
     }
 }
 
+.bp-is-fullscreen {
+    .bp-media-fullscreen-icon .bp-exit-fullscreen-icon {
+        display: inline-block;
+    }
+}
+
 .bp-media-fullscreen-icon {
     position: absolute;
     right: 10px;

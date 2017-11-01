@@ -258,6 +258,7 @@ class DocBaseViewer extends BaseViewer {
 
     /**
      * Initializes the Find Bar and Find Controller
+     *
      * @return {void}
      */
     initFind() {
@@ -274,7 +275,33 @@ class DocBaseViewer extends BaseViewer {
         // the file. Users without download permissions shouldn't be able to
         // interact with the text layer
         const canDownload = checkPermission(this.options.file, PERMISSION_DOWNLOAD);
+        if (this.getViewerOption('disableFindBar')) {
+            return;
+        }
         this.findBar = new DocFindBar(this.findBarEl, this.findController, canDownload);
+    }
+
+    /**
+     * Scrolls to and highlights the next occurences of a phrase in the document using the DocFindBar
+     *
+     * @public
+     * @param {string} phrase - Phrase to find
+     * @param {boolean} [openFindBar] - Option to open the findbar on find
+     * @return {void}
+     */
+    find(phrase, openFindBar = false) {
+        if (!this.findBar) {
+            return;
+        }
+
+        // Go to page one so that we can find the first occurence in the document
+        this.setPage(1);
+        this.findBar.setFindFieldElValue(phrase);
+        this.findBar.findFieldHandler();
+
+        if (openFindBar) {
+            this.findBar.open();
+        }
     }
 
     /**

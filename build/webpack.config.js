@@ -13,14 +13,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
     .BundleAnalyzerPlugin;
 const version = isRelease ? require('../package.json').version : 'dev';
 const fs = require('fs');
-
-const licenseNotification = `Box UI Element
-Copyright 2016-2017 Box, Inc. All rights reserved.
-
-This source code is licensed under the Box Software License Agreement found
-in the LICENSE file in the root directory of this source tree. Additional
-third party license disclosures can be found in the THIRD_PARTY_LICENSES
-file in the same directory.`;
+const license = require('./license');
 
 let rsyncLocation = '';
 if (fs.existsSync('build/rsync.json')) {
@@ -67,8 +60,7 @@ function updateConfig(conf, language, index) {
     const config = Object.assign(conf, {
         entry: {
             preview: [`${lib}/Preview.js`],
-            csv: [`${lib}/viewers/text/BoxCSV.js`],
-            annotations: [`${lib}/annotations/BoxAnnotations.js`]
+            csv: [`${lib}/viewers/text/BoxCSV.js`]
         },
         output: {
             path: path.resolve('dist', version, language),
@@ -126,7 +118,7 @@ function updateConfig(conf, language, index) {
         );
 
         // Add license message to top of code
-        config.plugins.push(new BannerPlugin(licenseNotification));
+        config.plugins.push(new BannerPlugin(license));
     }
 
     return config;

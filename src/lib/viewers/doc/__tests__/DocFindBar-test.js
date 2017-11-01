@@ -252,6 +252,18 @@ describe('lib/viewers/doc/DocFindBar', () => {
         });
     });
 
+    describe('setFindFieldElValue()', () => {
+        it('should set the findFieldEl value', () => {
+            docFindBar.findFieldEl = {
+                removeEventListener: sandbox.stub()
+            }
+
+            docFindBar.setFindFieldElValue('test');
+
+            expect(docFindBar.findFieldEl.value).to.equal('test');
+        });
+    });
+
     describe('bindDOMListeners()', () => {
         it('should add the correct event listeners', () => {
             const barStub = sandbox.stub(docFindBar.bar, 'addEventListener');
