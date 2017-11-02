@@ -25,8 +25,6 @@ class ImageDocRenderer extends EventEmitter {
         this.asset = asset;
         this.createImageSource = cb;
         this.resizePage = this.resizePage.bind(this);
-        // this.getRowHeight = this.getRowHeight.bind(this);
-        this.pageHeights = {};
         this.cache = new CellMeasurerCache({
             defaultHeight: getDimensionsFromRep(this.currentRep),
             fixedWidth: true
@@ -68,12 +66,13 @@ class ImageDocRenderer extends EventEmitter {
                     return (
                         <div style={style} className={'bp-page'} key={key} data-page-number={index + 1}>
                             <img
-                                className={'bp-invisible'}
+                                className={'bp-hidden'}
                                 onLoad={() => {
                                     this.resizePage(measure, index + 1);
                                 }}
                                 alt={`page ${index + 1}`}
                                 src={url}
+                                validate={'always'}
                             />
                         </div>
                     );
@@ -85,26 +84,36 @@ class ImageDocRenderer extends EventEmitter {
 
     resizePage(measure, pageNumber) {
         const page = this.docEl.querySelector(`[data-page-number="${pageNumber}"]`);
+
         const image = page.firstChild;
 
-        const scaleValue = (this.docEl.clientWidth - 30) / image.clientWidth;
+        const scaleValue = (this.docEl.clientWidth - ROW_HEIGHT_PADDING) / image.naturalWidth;
 
-        if (image.width !== image.naturalWidth * scaleValue) {
-            image.width = image.naturalWidth * scaleValue;
-            image.height = image.naturalHeight * scaleValue;
-            this.cache.clear(pageNumber - 1);
-            measure();
+        image.width = image.naturalWidth * scaleValue;
+        image.height = image.naturalHeight * scaleValue;
 
-            image.classList.remove('bp-invisible');
-        }
+        this.cache.clear(pageNumber - 1);
+        measure();
+        this.list.recomputeRowHeights(pageNumber - 1);
+
+        image.classList.remove('bp-hidden');
 
         if (pageNumber === 1) {
             this.emit('load');
-            this.cache._defaultHeight = image.height + 30;
+            this.cache._defaultHeight = image.height + ROW_HEIGHT_PADDING;
         }
     }
 
-    resize() {}
+    resize() {
+        this.cache.clearAll();
+        const renderedPages = this.docEl.querySelectorAll('.bp-page');
+        renderedPages.forEach((page) => {
+            const image = page.firstChild;
+            const src = image.src;
+            image.src = null;
+            image.src = src;
+        });
+    }
 
     /**
      * Renders the document
