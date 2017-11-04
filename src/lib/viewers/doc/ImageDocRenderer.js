@@ -5,6 +5,8 @@ import { List, AutoSizer, CellMeasurerCache, CellMeasurer } from 'react-virtuali
 import { getDimensionsFromRep } from '../../util';
 
 const ROW_HEIGHT_PADDING = 30;
+const MINIMUM_REP_DIMENSION = 1024;
+const MAX_AUTO_SCALE = 1.25;
 
 class ImageDocRenderer extends EventEmitter {
     /**
@@ -24,11 +26,13 @@ class ImageDocRenderer extends EventEmitter {
         this.numPages = numPages;
         this.asset = asset;
         this.createImageSource = cb;
-        this.resizePage = this.resizePage.bind(this);
+        this.currentScaleValue = 'auto';
         this.cache = new CellMeasurerCache({
             defaultHeight: getDimensionsFromRep(this.currentRep),
             fixedWidth: true
         });
+
+        this.resizePage = this.resizePage.bind(this);
     }
 
     /**
@@ -47,15 +51,15 @@ class ImageDocRenderer extends EventEmitter {
     /**
      * Renders cell
      *
-     * @param {Object} cellInfo - Cell data
-     * @param {number} cellInfo.columnIndex - Cell column index
-     * @param {string} cellInfo.key - Cell key
-     * @param {number} cellInfo.rowIndex - Cell row index
-     * @param {string} cellInfo.style - Cell style
-     * @return {Function} Cell renderer function
      * @private
+     * @param {Object} pageInfo - Page data
+     * @param {number} pageInfo.columnIndex - Page column index
+     * @param {string} pageInfo.key - Page key
+     * @param {number} pageInfo.rowIndex - Page row index
+     * @param {string} cellInfo.style - Page style
+     * @return {Function} Page renderer function
      */
-    cellRenderer = ({ index, key, style }) => {
+    pageRenderer = ({ index, key, style }) => {
         const { url_template: template } = this.currentRep.content;
         let url = this.createImageSource(template, this.asset);
         url = url.replace(this.asset, `${index + 1}.png`);
@@ -82,12 +86,24 @@ class ImageDocRenderer extends EventEmitter {
     };
     /* eslint-enable react/prop-types */
 
+    /**
+     * Resizes a page based on representation and scale value
+     *
+     * @private
+     * @param {Function} measure - The measure function provided by the CellMeasurer component
+     * @param {number} pageNumber - The page number to resize
+     * @return {void}
+     */
     resizePage(measure, pageNumber) {
-        const page = this.docEl.querySelector(`[data-page-number="${pageNumber}"]`);
+        if (this.currentScaleValue !== 'auto') {
+            return;
+        }
 
+        const page = this.docEl.querySelector(`[data-page-number="${pageNumber}"]`);
         const image = page.firstChild;
 
-        const scaleValue = (this.docEl.clientWidth - ROW_HEIGHT_PADDING) / image.naturalWidth;
+        const maxScale = MAX_AUTO_SCALE / (getDimensionsFromRep(this.currentRep) / MINIMUM_REP_DIMENSION);
+        const scaleValue = Math.min((this.docEl.clientWidth - ROW_HEIGHT_PADDING) / image.naturalWidth, maxScale);
 
         image.width = image.naturalWidth * scaleValue;
         image.height = image.naturalHeight * scaleValue;
@@ -104,6 +120,12 @@ class ImageDocRenderer extends EventEmitter {
         }
     }
 
+    /**
+     * Allows pages to be rerendered on a resize event
+     *
+     * @public
+     * @return {void}
+     */
     resize() {
         this.cache.clearAll();
         const renderedPages = this.docEl.querySelectorAll('.bp-page');
@@ -118,8 +140,8 @@ class ImageDocRenderer extends EventEmitter {
     /**
      * Renders the document
      *
-     * @return {void}
      * @private
+     * @return {void}
      */
     renderDoc() {
         this.docComponent = render(
@@ -133,7 +155,7 @@ class ImageDocRenderer extends EventEmitter {
                         }}
                         rowCount={this.numPages}
                         rowHeight={this.cache.rowHeight}
-                        rowRenderer={this.cellRenderer}
+                        rowRenderer={this.pageRenderer}
                         overscanRowCount={10}
                         className={'bp-list'}
                     />

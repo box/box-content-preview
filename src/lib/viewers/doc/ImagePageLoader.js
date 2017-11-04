@@ -4,6 +4,11 @@ import RepStatus from '../../RepStatus';
 const REPS = ['png_1024x1024', 'png_2048x2048', 'jpg_1024x1024'];
 
 class ImagePageLoader extends EventEmitter {
+    /**
+     * [constructor]
+     *
+     * @param {Object} options Viewer options
+     */
     constructor(options) {
         super();
         this.availableReps = {};
@@ -11,22 +16,34 @@ class ImagePageLoader extends EventEmitter {
         this.checkAvailableReps();
     }
 
-    getInitialRep(previewHeight, previewWidth) {
-        let initialRep;
-        let initialsize;
+    /**
+     * Gets a representation based on preview size
+     *
+     * @param {number} previewHeight - Height of preview window
+     * @param {number} previewWidth - Width of preview window
+     * @return {Object} Instance of RepStatus
+     */
+    getRepresentation(previewHeight, previewWidth) {
+        let rep;
+        let size;
         const maxDimension = Math.max(previewHeight, previewWidth);
         Object.keys(this.availableReps).forEach((repType) => {
             const repDimension = parseInt(this.extractDimension(repType), 10);
-            const smaller = initialsize ? repDimension < initialsize : true;
+            const smaller = size ? repDimension < size : true;
             if (maxDimension < repDimension && smaller) {
-                initialRep = this.availableReps[repType];
-                initialsize = repDimension;
+                rep = this.availableReps[repType];
+                size = repDimension;
             }
         });
 
-        return initialRep;
+        return rep;
     }
 
+    /**
+     * Returns available representations
+     *
+     * @return {void}
+     */
     checkAvailableReps() {
         this.options.file.representations.entries.forEach((entry) => {
             const { representation, properties } = entry;
@@ -58,6 +75,12 @@ class ImagePageLoader extends EventEmitter {
         }).getPromise();
     }
 
+    /**
+     * Returns dimension from a rep name
+     *
+     * @param {Object} [repString] - Representation string name
+     * @return {string} Rep dimension
+     */
     extractDimension(repString) {
         return repString.split('x')[1];
     }
