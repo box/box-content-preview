@@ -27,7 +27,7 @@ class AssetLoader {
      * @return {Object} The viewer to use
      */
     determineViewer(file, disabledViewers = []) {
-        const finalViewer = this.viewers.find((viewer) => {
+        return this.viewers.find((viewer) => {
             if (disabledViewers.indexOf(viewer.NAME) > -1) {
                 return false;
             }
@@ -36,8 +36,6 @@ class AssetLoader {
                 file.representations.entries.some((entry) => viewer.REP === entry.representation)
             );
         });
-        // console.log(finalViewer);
-        return finalViewer;
     }
 
     /**
@@ -50,10 +48,7 @@ class AssetLoader {
      * @return {Object} The representation to load
      */
     determineRepresentation(file, viewer) {
-        // console.log(file.representations.entries);
-        const filePicked = file.representations.entries.find((entry) => viewer.REP === entry.representation);
-        // console.log(filePicked);
-        return filePicked;
+        return file.representations.entries.find((entry) => viewer.REP === entry.representation);
     }
 }
 

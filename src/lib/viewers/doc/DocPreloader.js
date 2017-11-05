@@ -76,14 +76,13 @@ class DocPreloader extends EventEmitter {
         this.containerEl = containerEl;
 
         // Need to load image as a blob to read EXIF
-        console.log('get the blob');
         return get(preloadUrlWithAuth, 'blob').then((imgBlob) => {
             if (this.checkDocumentLoaded()) {
                 return;
             }
 
             this.srcUrl = URL.createObjectURL(imgBlob);
-            console.log('show preload!');
+
             this.wrapperEl = document.createElement('div');
             this.wrapperEl.className = this.wrapperClassName;
             this.wrapperEl.innerHTML = `
