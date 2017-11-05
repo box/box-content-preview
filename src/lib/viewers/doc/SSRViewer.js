@@ -1,10 +1,10 @@
 import BaseViewer from '../BaseViewer';
 import ImagePageLoader from './ImagePageLoader';
-import ImageDocRenderer from './ImageDocRenderer';
+import SSRRenderer from './SSRRenderer';
 
-import './ImageDocViewer.scss';
+import './SSRViewer.scss';
 
-class ImageDocViewer extends BaseViewer {
+class SSRViewer extends BaseViewer {
     constructor(options) {
         super(options);
         this.finishLoading = this.finishLoading.bind(this);
@@ -47,7 +47,7 @@ class ImageDocViewer extends BaseViewer {
         this.pageLoader
             .getRepresentation(this.containerEl.clientHeight, this.containerEl.clientWidth)
             .then((representation) => {
-                this.docRenderer = new ImageDocRenderer(
+                this.docRenderer = new SSRRenderer(
                     this.docEl,
                     representation.metadata.pages,
                     representation,
@@ -88,4 +88,4 @@ class ImageDocViewer extends BaseViewer {
     }
 }
 
-export default ImageDocViewer;
+export default SSRViewer;

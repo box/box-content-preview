@@ -2,7 +2,7 @@ import AssetLoader from '../AssetLoader';
 import { getRepresentation } from '../../file';
 import DocumentViewer from './DocumentViewer';
 import PresentationViewer from './PresentationViewer';
-import ImageDocViewer from '../doc/ImageDocViewer';
+import SSRViewer from '../doc/SSRViewer';
 import RepStatus from '../../RepStatus';
 import { ORIGINAL_REP_NAME, STATUS_SUCCESS } from '../../constants';
 import { DOCUMENT_EXTENSIONS } from '../../extensions';
@@ -13,7 +13,7 @@ import { DOCUMENT_EXTENSIONS } from '../../extensions';
 const VIEWERS = [
     {
         NAME: 'Simple',
-        CONSTRUCTOR: ImageDocViewer,
+        CONSTRUCTOR: SSRViewer,
         REP: 'png',
         EXT: DOCUMENT_EXTENSIONS,
         ASSET: '{page}.png'

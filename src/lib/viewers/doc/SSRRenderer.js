@@ -8,7 +8,7 @@ const ROW_HEIGHT_PADDING = 30;
 const MINIMUM_REP_DIMENSION = 1024;
 const MAX_AUTO_SCALE = 1.25;
 
-class ImageDocRenderer extends EventEmitter {
+class SSRRenderer extends EventEmitter {
     /**
      * [constructor]
      *
@@ -166,4 +166,4 @@ class ImageDocRenderer extends EventEmitter {
     }
 }
 
-export default ImageDocRenderer;
+export default SSRRenderer;
