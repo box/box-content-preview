@@ -1,7 +1,7 @@
 require('babel-polyfill');
 
 const merge = require('deepmerge');
-const IgnorePlugin = require('webpack').IgnorePlugin;
+const { IgnorePlugin } = require('webpack');
 const commonConfig = require('./webpack.common.config');
 
 const baseConfig = commonConfig('en-US');

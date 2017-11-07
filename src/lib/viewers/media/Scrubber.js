@@ -206,13 +206,15 @@ class Scrubber extends EventEmitter {
         // Stops vertical scrolling when scrubbing
         event.preventDefault();
 
-        let pageX = event.pageX;
+        let { pageX } = event;
 
         // Android Chrome fires both mousedown events and touchstart events. The touch start event
         // does not include pageX, but pageX can be found in the touches list which is present for
         // touch events across all browsers.
         if (event.touches) {
+            /* eslint-disable prefer-destructuring */
             pageX = event.touches[0].pageX;
+            /* eslint-enable prefer-destructuring */
         }
 
         const newValue = this.computeScrubberPosition(pageX);

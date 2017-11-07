@@ -408,8 +408,7 @@ export function createContentUrl(template, asset) {
  * @return {Function} Factory for creating asset url
  */
 export function createAssetUrlCreator(location) {
-    const baseURI = location.baseURI;
-    const staticBaseURI = location.staticBaseURI;
+    const { baseURI, staticBaseURI } = location;
 
     return (name) => {
         let asset;
@@ -437,7 +436,7 @@ export function createAssetUrlCreator(location) {
  * @return {void}
  */
 export function prefetchAssets(urls) {
-    const head = document.head;
+    const { head } = document;
 
     urls.forEach((url) => {
         if (!head.querySelector(`link[rel="prefetch"][href="${url}"]`)) {
@@ -454,7 +453,7 @@ export function prefetchAssets(urls) {
  * @return {void}
  */
 export function loadStylesheets(urls) {
-    const head = document.head;
+    const { head } = document;
 
     urls.forEach((url) => {
         if (!head.querySelector(`link[rel="stylesheet"][href="${url}"]`)) {
@@ -471,7 +470,7 @@ export function loadStylesheets(urls) {
  * @return {Promise} Promise to load scripts
  */
 export function loadScripts(urls) {
-    const head = document.head;
+    const { head } = document;
     const promises = [];
 
     urls.forEach((url) => {
@@ -580,7 +579,7 @@ export function findScriptLocation(name, script) {
     const anchor = document.createElement('a');
     anchor.href = scriptSrc;
 
-    const pathname = anchor.pathname;
+    const { pathname } = anchor;
     const pathFragments = pathname.split('/');
     const fragmentLength = pathFragments.length;
     const fileName = pathFragments[fragmentLength - 1];

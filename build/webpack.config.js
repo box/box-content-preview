@@ -6,11 +6,10 @@ const isDev = process.env.NODE_ENV === 'dev';
 const path = require('path');
 const commonConfig = require('./webpack.common.config');
 const RsyncPlugin = require('./RsyncPlugin');
-const UglifyJsPlugin = require('webpack').optimize.UglifyJsPlugin;
+const { UglifyJsPlugin } = require('webpack').optimize;
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const BannerPlugin = require('webpack').BannerPlugin;
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-    .BundleAnalyzerPlugin;
+const { BannerPlugin } = require('webpack');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const version = isRelease ? require('../package.json').version : 'dev';
 const fs = require('fs');
 const license = require('./license');

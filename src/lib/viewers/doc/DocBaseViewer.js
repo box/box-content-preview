@@ -538,7 +538,7 @@ class DocBaseViewer extends BaseViewer {
             .then((doc) => {
                 this.pdfViewer.setDocument(doc);
 
-                const linkService = this.pdfViewer.linkService;
+                const { linkService } = this.pdfViewer;
                 if (linkService instanceof PDFJS.PDFLinkService) {
                     linkService.setDocument(doc, pdfUrl);
                     linkService.setViewer(this.pdfViewer);
@@ -572,7 +572,7 @@ class DocBaseViewer extends BaseViewer {
         }
 
         // Save page and return after resize
-        const currentPageNumber = this.pdfViewer.currentPageNumber;
+        const { currentPageNumber } = this.pdfViewer.currentPageNumber;
 
         this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
         this.pdfViewer.update();
@@ -678,7 +678,7 @@ class DocBaseViewer extends BaseViewer {
         const pageEls = this.containerEl.querySelectorAll('.page');
         [].forEach.call(pageEls, (pageEl) => {
             /* eslint-disable no-param-reassign */
-            const pageNumber = pageEl.dataset.pageNumber;
+            const { pageNumber } = pageEl.dataset;
             if (pageNumber) {
                 pageEl.id = `bp-page-${pageNumber}`;
             }
@@ -914,7 +914,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     pagechangeHandler(event) {
-        const pageNumber = event.pageNumber;
+        const { pageNumber } = event;
         this.pageControls.updateCurrentPage(pageNumber);
 
         // We only set cache the current page if 'pagechange' was fired after
