@@ -118,6 +118,7 @@
     "release": "yarn run clean && yarn run build-rb && yarn run lint && yarn run test && yarn run prod",
     "test": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js",
     "upgrade-pdfjs": "./build/upgrade_pdfjs.sh && ./build/minify_pdfjs.sh",
+    "upgrade-annotations": "./build/upgrade_annotations.sh",
     "watch": "BABEL_ENV=dev NODE_ENV=dev ./node_modules/.bin/webpack --watch --progress --colors --config build/webpack.config.js",
     "major": "./build/release.sh -m",
     "minor": "./build/release.sh -n",
