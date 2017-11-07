@@ -82,9 +82,9 @@ export const X_REP_HINT_IMAGE = '[jpg?dimensions=2048x2048,png?dimensions=2048x2
 export const X_REP_HINT_VIDEO_DASH = '[dash,mp4][filmstrip]';
 export const X_REP_HINT_VIDEO_MP4 = '[mp4]';
 
-// These should be updated to match the Preview version in package.json
-// whenever a file in that third party directory is updated
-export const DOC_STATIC_ASSETS_VERSION = '1.7.0';
+// These should be updated to match the Preview version in package.json whenever a file in that third party directory
+// is updated. Also, update the matching configuration in karma.conf.js, which is needed for tests
+export const DOC_STATIC_ASSETS_VERSION = '1.17.0';
 export const MEDIA_STATIC_ASSETS_VERSION = '1.8.0';
 export const MODEL3D_STATIC_ASSETS_VERSION = '1.12.0';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';
