@@ -104,7 +104,7 @@
     "build": "yarn run clean && yarn run build-rb && yarn run lint && yarn run dev",
     "build-ci": "./node_modules/.bin/webpack --progress --colors --config build/webpack.config.js",
     "build-rb": "mojito-rb-gen -s src/i18n -o src/i18n/json -b en-US.properties",
-    "ci": "yarn run clean && yarn run build-rb && yarn run lint && yarn run test && yarn run build-ci && yarn run functional-tests-ci",
+    "ci": "yarn run clean && yarn run build-rb && yarn run lint && yarn run test && yarn run build-ci",
     "clean": "rm -rf dist && rm -rf reports/coverage && rm -rf src/i18n/json",
     "commitmsg": "commitlint -e",
     "debug": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js --no-single-run --auto-watch",
