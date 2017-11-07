@@ -127,6 +127,10 @@
     "src/lib/**/*.js": [
       "prettier-eslint --print-width 120 --single-quote --tab-width 4 --write",
       "git add"
+    ],
+    "functional-tests/*.js": [
+      "prettier-eslint --print-width 120 --single-quote --tab-width 4 --write",
+      "git add"
     ]
   },
   "dependencies": {}
