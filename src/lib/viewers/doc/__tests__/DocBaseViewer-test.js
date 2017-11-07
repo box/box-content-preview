@@ -14,6 +14,7 @@ import {
     CLASS_HIDDEN,
     PERMISSION_DOWNLOAD,
     STATUS_ERROR,
+    STATUS_PENDING,
     STATUS_SUCCESS,
 } from '../../../constants';
 
@@ -284,6 +285,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             sandbox.stub(file, 'getRepresentation').returns({
                 status: {
                     state: STATUS_ERROR
+                }
+            });
+            sandbox.mock(docBase.preloader).expects('showPreload').never();
+
+            docBase.showPreload();
+        });
+
+        it('should not do anything if preload rep is pending', () => {
+            sandbox.stub(docBase, 'getCachedPage').returns(1);
+            sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
+            sandbox.stub(file, 'getRepresentation').returns({
+                status: {
+                    state: STATUS_PENDING
                 }
             });
             sandbox.mock(docBase.preloader).expects('showPreload').never();

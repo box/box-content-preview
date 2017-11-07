@@ -73,6 +73,7 @@ export const PRELOAD_REP_NAME = 'jpg';
 export const STATUS_ERROR = 'error';
 export const STATUS_SUCCESS = 'success';
 export const STATUS_VIEWABLE = 'viewable';
+export const STATUS_PENDING = 'pending';
 
 // X-Rep-Hints for Representations API
 export const X_REP_HINT_BASE = '[3d][pdf][text][mp3]';
