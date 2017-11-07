@@ -22,6 +22,7 @@ export const CODE_EXTENSIONS = [
     'hh',
     'java',
     'js',
+    'json',
     'less',
     'm',
     'make',
