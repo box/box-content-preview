@@ -231,7 +231,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             };
 
             const promise = imageBase.setOriginalImageSize(imageEl);
-            promise.should.be.fulfilled.then(() => {
+            promise.then(() => {
                 expect(imageEl.getAttribute('originalWidth')).to.equal(imageEl.naturalWidth);
                 expect(imageEl.getAttribute('originalHeight')).to.equal(imageEl.naturalHeight);
                 done();
@@ -252,7 +252,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
 
             const getStub = sandbox.stub(util, 'get').returns(Promise.resolve('not real a image'));
             const promise = imageBase.setOriginalImageSize(imageEl);
-            promise.should.be.fulfilled.then(() => {
+            promise.then(() => {
                 expect(imageEl.getAttribute('originalWidth')).to.equal(300);
                 expect(imageEl.getAttribute('originalHeight')).to.equal(150);
                 done();
@@ -265,11 +265,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             const imageEl = {};
             const getStub = sandbox.stub(util, 'get').returns(Promise.reject());
             const promise = imageBase.setOriginalImageSize(imageEl);
-            promise.should.be.fulfilled.then(() => {
-                done();
-            }).catch(() => {
-                Assert.fail();
-            });
+            promise.should.be.fulfilled.notify(done);
         });
     });
 
