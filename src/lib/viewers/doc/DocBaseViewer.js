@@ -17,7 +17,7 @@ import {
     DOC_STATIC_ASSETS_VERSION,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
-    STATUS_ERROR
+    STATUS_SUCCESS
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { get, createAssetUrlCreator } from '../../util';
@@ -201,10 +201,9 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
-        // Don't show preload if there is no preload rep, the 'preload' viewer option isn't set,
-        // or the rep has an error
+        // Don't show preload if there is no preload rep, the 'preload' viewer option isn't set, or the rep isn't ready
         const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
-        if (!preloadRep || !this.getViewerOption('preload') || RepStatus.getStatus(preloadRep) === STATUS_ERROR) {
+        if (!preloadRep || !this.getViewerOption('preload') || RepStatus.getStatus(preloadRep) !== STATUS_SUCCESS) {
             return;
         }
 
