@@ -38,7 +38,8 @@ function arrayToString(array) {
 }
 
 /**
- * 
+ * Logging mechanism that allows for storage of log messages, saving to backend, and 
+ * controlling what messages are shown to the user via browser console.
  */
 class Logger {
     /** @property {Object} - Instance of internal logger */
