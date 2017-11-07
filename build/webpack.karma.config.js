@@ -1,12 +1,11 @@
 require('babel-polyfill');
 
-const merge = require('deepmerge');
 const { IgnorePlugin } = require('webpack');
 const commonConfig = require('./webpack.common.config');
 
 const baseConfig = commonConfig('en-US');
 
-const config = merge(baseConfig, {
+const config = Object.assign(baseConfig, {
     devtool: 'inline-source-map',
     resolve: {
         alias: {
