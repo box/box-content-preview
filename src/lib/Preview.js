@@ -38,6 +38,9 @@ import {
 } from './constants';
 import './Preview.scss';
 
+// TESTING
+import NewLogger from './logging/Logger';
+
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
 const PREFETCH_COUNT = 4; // number of files to prefetch
 const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
@@ -138,6 +141,11 @@ class Preview extends EventEmitter {
         this.cache = new Cache();
         this.ui = new PreviewUI();
         this.browserInfo = Browser.getBrowserInfo();
+
+        // TESTING
+        window.TESTLOG = new NewLogger();
+
+        throw new Error('uh oh');
     }
 
     /**
