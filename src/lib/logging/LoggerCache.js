@@ -17,6 +17,7 @@ class LoggerCache {
     /**
      * Clears and removes the cache.
      *
+     * @public
      * @return {void}
      */
     destroy() {

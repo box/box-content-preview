@@ -54,7 +54,22 @@ class Logger {
         this.cache = new LoggerCache();
         this.logger = LogLevel.noConflict();
 
-        window.addEventListener('error', this.onUncaughtError.bind(this));
+        this.onUncaughtError = this.onUncaughtError.bind(this);
+        window.addEventListener('error', this.onUncaughtError);
+    }
+
+    /**
+     * Destroys the logger.
+     * 
+     * @public
+     * @return {void}
+     */
+    destroy() {
+        this.cache.destroy();
+        this.cache = null;
+        this.logger = null;
+
+        window.removeEventListener('error', this.onUncaughtError);
     }
 
     /**
