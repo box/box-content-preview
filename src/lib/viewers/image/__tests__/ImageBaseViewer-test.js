@@ -265,7 +265,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             const imageEl = {};
             const getStub = sandbox.stub(util, 'get').returns(Promise.reject());
             const promise = imageBase.setOriginalImageSize(imageEl);
-            promise.should.be.fulfilled.notify(done);
+            promise.then(() => Assert.fail()).catch(() => done());
         });
     });
 
