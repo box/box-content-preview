@@ -6,4 +6,7 @@ export const LOG_CODES = {
     metric: 'METRIC'
 };
 
-export default LOG_CODES;
+/* eslint-disable no-undef */
+export const CLIENT_NAME = __NAME__;
+export const CLIENT_VERSION = __VERSION__;
+/* eslint-enable no-undef */

@@ -56,17 +56,35 @@ class LoggerCache {
      *
      * @public
      * @param {LOG_CODES|string} code - Type of message to add to the cache.
-     * @param {string} message - The message to store in the cache.
+     * @param {string} timestamp - A timestamp of when the log occurred.
+     * @param {string|Object} message - The message to store in the cache.
      * @return {void|Error} - Validation throws an error if if fails.
      */
-    add(code, message) {
+    add(code, timestamp, message) {
         this.validateLogCode(code);
 
         if (!this.cache[code]) {
             this.initializeGroup(code);
         }
 
-        this.cache[code].push(message);
+        this.cache[code].push({
+            timestamp,
+            message
+        });
+    }
+
+    /**
+     * Get a group of logs from the cache.
+     *
+     * @param {LOG_CODES|string} code - Group name to get from the cache.
+     * @return {Array} The group from the cache, if available, otherwise an empty array.
+     */
+    getGroup(code) {
+        if (!this.cache || !this.cache[code]) {
+            return [];
+        }
+
+        return this.cache[code];
     }
 
     /**

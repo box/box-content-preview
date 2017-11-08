@@ -2,40 +2,7 @@ import * as LogLevel from 'loglevel';
 
 import LoggerCache from './LoggerCache';
 import { LOG_CODES } from './logConstants';
-
-/**
- * Convert an array to a string, including nested objects.
- *
- * @param {Array} array - The array to convert to a string.
- * @return {string} The array as a string.
- */
-function arrayToString(array) {
-    if (!Array.isArray(array)) {
-        throw new Error('Invalid arguments for logging. Not an Array.');
-    }
-
-    const lastIndex = array.length - 1;
-    const message = array.reduce((accumulator, value, index) => {
-        let parsedValue;
-
-        if (Array.isArray(value)) {
-            parsedValue = `[${arrayToString(value)}]`;
-        } else if (typeof value === 'object') {
-            parsedValue = JSON.stringify(value);
-        } else {
-            parsedValue = value;
-        }
-
-        // Add a comma if needed
-        if (index < lastIndex) {
-            parsedValue += ', ';
-        }
-
-        return accumulator + parsedValue;
-    }, '');
-
-    return message;
-}
+import { arrayToString } from './logUtils';
 
 /**
  * Logging mechanism that allows for storage of log messages, saving to backend, and 
@@ -92,9 +59,10 @@ class Logger {
                 logFunction = this.logger.error;
                 break;
             case LOG_CODES.info:
-            case LOG_CODES.metric:
-            default:
                 logFunction = this.logger.info;
+                break;
+            default:
+                logFunction = null;
         }
 
         return logFunction;
@@ -116,21 +84,22 @@ class Logger {
      *
      * @private
      * @param {LOG_CODES|string} code - The log code this belongs to.
-     * @param {string} message - The message to log.
+     * @param {*} message - The message to log.
      * @return {void}
      */
-    commitMessage(code, message = '') {
+    commitMessage(code, message) {
         const logFunction = this.getLoggerFunction(code);
 
         // Format message and add a timestamp
         const timestamp = new Date().toISOString();
-        const formatted = `${timestamp} "${message}"`;
-
-        this.cache.add(code, formatted);
+        this.cache.add(code, timestamp, message);
 
         // Also wrapping the code into the message
         // #TODO(@jholdstock): abstract this step
-        logFunction(`[${code}] ${formatted}`);
+        if (logFunction) {
+            const formattedMessage = `${timestamp} "${message}"`;
+            logFunction(`[${code}] ${formatted}`);
+        }
     }
 
     /**
@@ -173,13 +142,138 @@ class Logger {
      * Log a metric message to the logger, and commit to the cache.
      *
      * @public
-     * @param {*} args - Arguments to be printed to the log and cache.
+     * @param {number} code - Code associated with a specific metric.
+     * @param {*} value - 
      * @return {void}
      */
-    metric(...args) {
-        const message = arrayToString(args);
-        this.commitMessage(LOG_CODES.metric, message);
+    metric(code, value) {
+        this.commitMessage(LOG_CODES.metric, {
+            metric_code: code,
+            metric_value: value
+        });
+    }
+
+    /**
+     * Clear out the cache.
+     * 
+     * @public
+     * @return {void}
+     */
+    clearCache() {
+        this.cache.clear();
+    }
+
+    /**
+     * Get logs from the cache.
+     * 
+     * @param {LOG_CODES|string|string[]} [code] - Type of logs to get. If empty, will get all logs.
+     * If a list is given, will get each entry specified.
+     * @return {Object} A copy of the cache entry requested.
+     */
+    getLogs(code) {
+        let logs = {};
+
+        if (!code) {
+            logs = JSON.stringify(JSON.parse(this.cache.cache));
+        } else if (Array.isArray(code)) {
+            Object.keys(LOG_CODES).forEach((msgCode) => {
+                logs[msgCode] = this.cache.getGroup(msgCode);
+            });
+        } else {
+            logs[code] = this.cache.getGroup(code);
+        }
+
+        return logs;
     }
 }
 
 export default Logger;
+
+/**
+    data:[  
+    {  
+       "event_type":"preview",
+       "category":"ERROR",
+       "events":[  ]
+    },
+    {
+       "event_type":"preview",
+       "category":"WARNING",
+       "events":[  ]
+    },
+    {  
+       "event_type":"preview",
+       "category":"INFO",
+       "events":[  ]
+    },
+    {  
+       "event_type":"preview",
+       "category":"METRIC",
+       "events":[  ]
+    }
+ */
+
+/** 
+    // Each event is as follows
+
+    {
+        "file_id": <file_id>,
+        "client_version": <client_version>,
+        "timestamp": <timestamp>,
+        "message": <message_string>
+        //
+        //  Message Examples
+        //
+        "Uncaught error" // ERROR
+        "User did something unexpected" // INFO
+        "User doesn't support webgl" // WARNING
+    }
+
+    // METRIC messages follow a slightly different format
+    // Given timestamp, file_id, and metric codes, we should be able to roughly
+    // recreate how a user interacts with the document
+    {
+        "file_id": <file_id>,
+        "client_version": <client_version>,
+        "timestamp": <timestamp>
+        "metric_code": <metric_code> // A code will correspond to an action.
+        "metric_value": <value> // A value that relates to the metric.
+        //
+        //  Metric examples. Not concrete, just examples.
+        //  
+
+        // Time spent in preview
+        metric_code: 1,
+        metric_value: 1238978
+
+        // Abandoned preview. Doesn't matter what the value is, bc this'll
+        // only be triggered on navigate before preview
+        metric_code: 2,
+        metric_value: true
+        
+        // Controls interaction. Timestamp will be when it saves, and 
+        // value stamps will be interaction steps
+        metric_code: 9
+        metric_value: [ // each control will have it's own code
+            {
+                timestamp: 1000,
+                code: 1 // zoom in
+            },
+            {
+                timestamp: 1010,
+                code: 2 // zoom out
+            },
+            {
+                timestamp: 1050,
+                code: 6 // interact with page controls
+            }
+        ]
+        // Note, the array for controls will be aggregated when submitting to 
+        // gen204, in the network translation layer (I think I want one)
+
+        // Scrubbing audio
+        metric_code: 10 // different than scrubbing video
+        metric_value: 5000// time (ms) since last scrub OR start of preview
+
+    }
+*/
