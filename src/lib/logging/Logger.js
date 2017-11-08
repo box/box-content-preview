@@ -98,7 +98,7 @@ class Logger {
         // #TODO(@jholdstock): abstract this step
         if (logFunction) {
             const formattedMessage = `${timestamp} "${message}"`;
-            logFunction(`[${code}] ${formatted}`);
+            logFunction(`[${code}] ${formattedMessage}`);
         }
     }
 
@@ -166,24 +166,66 @@ class Logger {
     /**
      * Get logs from the cache.
      * 
-     * @param {LOG_CODES|string|string[]} [code] - Type of logs to get. If empty, will get all logs.
+     * @param {LOG_CODES|LOG_CODES[]} [code] - Type of logs to get. If empty, will get all logs.
      * If a list is given, will get each entry specified.
-     * @return {Object} A copy of the cache entry requested.
+     * @return {Object} The cache entry(ies) requested.
      */
     getLogs(code) {
-        let logs = {};
+        const logs = {};
 
         if (!code) {
-            logs = JSON.stringify(JSON.parse(this.cache.cache));
-        } else if (Array.isArray(code)) {
             Object.keys(LOG_CODES).forEach((msgCode) => {
-                logs[msgCode] = this.cache.getGroup(msgCode);
+                const logCode = LOG_CODES[msgCode];
+                logs[logCode] = this.cache.getGroup(logCode);
+            });
+        } else if (Array.isArray(code)) {
+            code.forEach((msgCode) => {
+                const logCode = LOG_CODES[msgCode];
+                logs[logCode] = this.cache.getGroup(logCode);
             });
         } else {
-            logs[code] = this.cache.getGroup(code);
+            const logCode = LOG_CODES[code];
+            logs[logCode] = this.cache.getGroup(logCode);
         }
 
         return logs;
+    }
+
+    /**
+     * Print logs from the cache, to the console.
+     * 
+     * @param {LOG_CODES|LOG_CODES[]} [code] - Type of logs to print. If empty, will print all logs.
+     * If a list is given, will print each entry specified.
+     * @return {void}
+     */
+    printLogs(code) {
+        const logs = this.getLogs(code);
+        let logArray = [];
+
+        // Collect all in the appropriate format to sort and print
+        Object.keys(logs).forEach((logGroupKey) => {
+            logs[logGroupKey].forEach((log) => {
+                const { timestamp, message } = log;
+                logArray.push({
+                    type: logGroupKey,
+                    timestamp,
+                    message
+                });
+            });
+        });
+
+        // sort by date
+        logArray = logArray.sort((prev, next) => {
+            return Date.parse(prev.timestamp) > Date.parse(next.timestamp);
+        });
+
+        // collect for printing to console
+
+        // print
+        logArray.forEach((log) => {
+            const output = `[${log.type}] ${log.timestamp} "${log.message}"`;
+            console.log(output);
+        });
     }
 }
 
