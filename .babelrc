@@ -1,8 +1,7 @@
 // Configuration for Babel transpilation
 {
     "presets": [
-        ["es2015", { "modules": false }],
-        "es2016",
+        ["env"],
         "react"
     ],
     "plugins": [
