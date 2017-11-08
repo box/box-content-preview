@@ -1095,9 +1095,9 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
-box-annotations@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-0.1.0.tgz#2951ec199eb7674c2b8a00825cc36a0b5b13711f"
+box-annotations@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-0.2.0.tgz#489efba51665b165886837a2ef5edc5e4586e3f9"
   dependencies:
     rangy "^1.3.0"
     rbush "^2.0.1"
