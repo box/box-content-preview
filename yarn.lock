@@ -4119,10 +4119,6 @@ karma-phantomjs-launcher@^1.0.4:
     lodash "^4.0.1"
     phantomjs-prebuilt "^2.1.7"
 
-karma-sinon-stub-promise@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/karma-sinon-stub-promise/-/karma-sinon-stub-promise-1.0.0.tgz#617e9666e6fce77d63082cb94b637974c84a36bc"
-
 karma-sinon@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/karma-sinon/-/karma-sinon-1.0.5.tgz#4e3443f2830fdecff624d3747163f1217daa2a9a"
@@ -6444,10 +6440,6 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
 sinon-chai@2.14.0:
   version "2.14.0"
   resolved "https://registry.yarnpkg.com/sinon-chai/-/sinon-chai-2.14.0.tgz#da7dd4cc83cd6a260b67cca0f7a9fdae26a1205d"
-
-sinon-stub-promise@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/sinon-stub-promise/-/sinon-stub-promise-4.0.0.tgz#6d498ba1198557cd01e3466af92dc7df725192c2"
 
 sinon@^1.17.7:
   version "1.17.7"
