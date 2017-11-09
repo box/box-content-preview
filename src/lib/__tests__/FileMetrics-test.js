@@ -1,25 +1,25 @@
 /* eslint-disable no-unused-expressions */
-import Logger from '../Logger';
+import FileMetrics from '../FileMetrics';
 
-let logger;
+let fileMetrics;
 const sandbox = sinon.sandbox.create();
 
-describe('lib/Logger', () => {
+describe('lib/FileMetrics', () => {
     let dateNowStub = sandbox.stub(Date, 'now');
 
     beforeEach(() => {
         dateNowStub.returns(0);
-        logger = new Logger('FOO', {});
+        fileMetrics = new FileMetrics('FOO', {});
     });
 
     afterEach(() => {
         sandbox.verifyAndRestore();
-        logger = null;
+        fileMetrics = null;
     });
 
     it('should have correct defaults', () => {
         dateNowStub.returns(1); // Took 1 ms to run
-        const log = logger.done();
+        const log = fileMetrics.done();
 
         assert.ok(log.time.total < 5, 'Total time should be correct');
         assert.ok(log.time.conversion < 5, 'Conversion time should be correct');
@@ -42,15 +42,15 @@ describe('lib/Logger', () => {
 
     it('should set and get correctly', () => {
         dateNowStub.returns(0); 
-        logger.setCached();
-        logger.setCacheStale();
-        logger.setFile({ id: 1 });
-        logger.setType('BAR');
+        fileMetrics.setCached();
+        fileMetrics.setCacheStale();
+        fileMetrics.setFile({ id: 1 });
+        fileMetrics.setType('BAR');
 
         dateNowStub.returns(100);
-        logger.setUnConverted();
+        fileMetrics.setUnConverted();
 
-        const log = logger.done();
+        const log = fileMetrics.done();
 
         assert.equal('number', typeof log.time.total, 'Total time should be a number');
         assert.equal('number', typeof log.time.conversion, 'Conversion time should be a number');
@@ -68,53 +68,53 @@ describe('lib/Logger', () => {
 
     describe('setCached()', () => {
         it('should indicate a cache hit', () => {
-            logger.setCached();
+            fileMetrics.setCached();
 
-            assert.ok(logger.log.cache.hit);
+            assert.ok(fileMetrics.log.cache.hit);
         });
     });
 
     describe('setUnConverted()', () => {
         it('should set converted to false', () => {
-            logger.setUnConverted();
+            fileMetrics.setUnConverted();
 
-            assert.notOk(logger.log.converted);
+            assert.notOk(fileMetrics.log.converted);
         });
     });
 
     describe('setPreloaded()', () => {
         it('should set preloaded time', () => {
-            logger.start = 0;
+            fileMetrics.start = 0;
             sandbox.stub(Date, 'now').returns(100);
 
-            logger.setPreloaded();
+            fileMetrics.setPreloaded();
 
-            expect(logger.log.time.preload).to.equal(100);
+            expect(fileMetrics.log.time.preload).to.equal(100);
         });
     });
 
     describe('setFile()', () => {
         it('should set the file', () => {
-            logger.setFile('file');
+            fileMetrics.setFile('file');
 
-            assert.equal(logger.log.file, 'file');
+            assert.equal(fileMetrics.log.file, 'file');
         });
     });
 
     describe('setType()', () => {
         it('should set the type', () => {
-            logger.setType('type');
+            fileMetrics.setType('type');
 
-            assert.equal(logger.log.type, 'type');
+            assert.equal(fileMetrics.log.type, 'type');
         });
     });
 
     describe('done()', () => {
         it('should set the count, rendering time, and return the log', () => {
-            const log = logger.done(0);
+            const log = fileMetrics.done(0);
 
-            assert.equal(logger.log.count, 0);
-            assert.equal(log, logger.log);
+            assert.equal(fileMetrics.log.count, 0);
+            assert.equal(log, fileMetrics.log);
         });
     });
 });

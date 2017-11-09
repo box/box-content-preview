@@ -3,13 +3,13 @@ const CLIENT_NAME = __NAME__;
 const CLIENT_VERSION = __VERSION__;
 /* eslint-enable no-undef */
 
-class Logger {
+class FileMetrics {
     /**
      * [constructor]
      *
      * @param {string} locale - Locale
      * @param {Object} browser - Browser information
-     * @return {Logger} Logger instance
+     * @return {FileMetrics} FileMetrics instance
      */
     constructor(locale, browser) {
         this.start = Date.now();
@@ -112,4 +112,4 @@ class Logger {
     }
 }
 
-export default Logger;
+export default FileMetrics;

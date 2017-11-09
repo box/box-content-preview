@@ -18,10 +18,10 @@ describe('lib/RepStatus', () => {
             links: {},
             status: {}
         };
-        const logger = () => {};
+        const fileMetrics = () => {};
         repStatus = new RepStatus({
             representation: rep,
-            logger
+            fileMetrics
         });
     });
 
@@ -70,11 +70,11 @@ describe('lib/RepStatus', () => {
         it('should set the correct object properties', () => {
             repStatus = new RepStatus({
                 representation: rep,
-                logger: {}
+                fileMetrics: {}
             });
 
             expect(repStatus.representation).to.deep.equal(rep);
-            expect(repStatus.logger).to.be.an.object;
+            expect(repStatus.fileMetrics).to.be.an.object;
             expect(repStatus.infoUrl).to.equal(infoUrl);
             expect(repStatus.promise).to.be.a.promise;
         });
@@ -188,11 +188,11 @@ describe('lib/RepStatus', () => {
             repStatus.handleResponse();
         });
 
-        it('should log that file needs conversion if status is pending and logger exists', () => {
-            repStatus.logger = {
+        it('should log that file needs conversion if status is pending and file metrics tracker exists', () => {
+            repStatus.fileMetrics = {
                 setUnConverted: () => {}
             };
-            sandbox.mock(repStatus.logger).expects('setUnConverted');
+            sandbox.mock(repStatus.fileMetrics).expects('setUnConverted');
             sandbox.stub(repStatus, 'emit');
             repStatus.representation.status.state = 'pending';
 
@@ -203,7 +203,7 @@ describe('lib/RepStatus', () => {
 
         it('should update status after a timeout', () => {
             const clock = sinon.useFakeTimers();
-            repStatus.logger = false;
+            repStatus.fileMetrics = false;
             sandbox.mock(repStatus).expects('updateStatus');
             repStatus.representation.status.state = 'pending';
 

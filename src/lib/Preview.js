@@ -6,7 +6,8 @@ import throttle from 'lodash.throttle';
 import cloneDeep from 'lodash.clonedeep';
 /* eslint-enable import/first */
 import Browser from './Browser';
-import Logger from './Logger';
+import FileMetrics from './FileMetrics';
+import Logger from './logging/Logger';
 import loaderList from './loaders';
 import Cache from './Cache';
 import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
@@ -36,10 +37,13 @@ import {
     X_REP_HINT_VIDEO_DASH,
     X_REP_HINT_VIDEO_MP4
 } from './constants';
+import {
+    METRIC_FILE_PREVIEW_SUCCESS,
+    METRIC_FILE_PREVIEW_FAIL,
+    METRIC_CONTROLS,
+    METRIC_CONTROL_ACTIONS
+} from './logging/metricsConstants';
 import './Preview.scss';
-
-// TESTING
-import NewLogger from './logging/Logger';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
 const PREFETCH_COUNT = 4; // number of files to prefetch
@@ -93,8 +97,10 @@ class Preview extends EventEmitter {
     /** @property {AssetLoader[]} - List of asset loaders */
     loaders = loaderList;
 
-    /** @property {Logger} - Logger instance */
-    logger;
+    /** @property {FileMetrics} - File metrics tracker instance */
+    fileMetrics;
+
+    /** @property {Logger} - Logging system instance */
 
     /** @property {number} - Number of times a particular preview has been retried */
     retryCount = 0;
@@ -141,11 +147,7 @@ class Preview extends EventEmitter {
         this.cache = new Cache();
         this.ui = new PreviewUI();
         this.browserInfo = Browser.getBrowserInfo();
-
-        // TESTING
-        window.TESTLOG = new NewLogger();
-
-        throw new Error('uh oh');
+        this.logger = new Logger();
     }
 
     /**
@@ -557,7 +559,7 @@ class Preview extends EventEmitter {
         this.open = true;
 
         // Init performance logging
-        this.logger = new Logger(this.location.locale, this.browserInfo);
+        this.fileMetrics = new FileMetrics(this.location.locale, this.browserInfo);
 
         // Clear any existing retry timeouts
         clearTimeout(this.retryTimeout);
@@ -732,8 +734,8 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     loadFromCache() {
-        // Add details to the logger
-        this.logger.setCached();
+        // Add details to the file metrics tracker
+        this.fileMetrics.setCached();
 
         // Finally load the viewer
         this.loadViewer();
@@ -773,9 +775,9 @@ class Preview extends EventEmitter {
         }
 
         try {
-            // Save reference to the file and update logger
+            // Save reference to the file and update file metrics tracker
             this.file = file;
-            this.logger.setFile(file);
+            this.fileMetrics.setFile(file);
 
             // Keep reference to previously cached file version
             const cachedFile = this.cache.get(file.id);
@@ -800,7 +802,7 @@ class Preview extends EventEmitter {
                 isWatermarked;
 
             if (shouldLoadViewer) {
-                this.logger.setCacheStale();
+                this.fileMetrics.setCacheStale();
                 this.loadViewer();
             }
         } catch (err) {
@@ -843,8 +845,8 @@ class Preview extends EventEmitter {
         // Determine the viewer to use
         const viewer = loader.determineViewer(this.file, Object.keys(this.disabledViewers));
 
-        // Log the type of file
-        this.logger.setType(viewer.NAME);
+        // Store the type of file
+        this.fileMetrics.setType(viewer.NAME);
 
         // Determine the representation to use
         const representation = loader.determineRepresentation(this.file, viewer);
@@ -856,7 +858,7 @@ class Preview extends EventEmitter {
             container: this.container,
             file: this.file
         });
-        viewerOptions.logger = this.logger; // Don't clone the logger since it needs to track metrics
+        viewerOptions.fileMetrics = this.fileMetrics; // Don't clone the file metrics tracker since it needs to track metrics
         this.viewer = new viewer.CONSTRUCTOR(viewerOptions);
 
         // Add listeners for viewer events
@@ -965,12 +967,16 @@ class Preview extends EventEmitter {
             // Bump up preview count
             this.count.error += 1;
 
+            const metrics = this.fileMetrics.done(this.count);
+
             // 'load' with { error } signifies a preview error
             this.emit('load', {
                 error,
-                metrics: this.logger.done(this.count),
+                metrics,
                 file: this.file
             });
+
+            this.logger.metric(METRIC_FILE_PREVIEW_FAIL, metrics);
 
             // Hookup for phantom JS health check
             if (typeof window.callPhantom === 'function') {
@@ -980,12 +986,17 @@ class Preview extends EventEmitter {
             // Bump up preview count
             this.count.success += 1;
 
+            const metrics = this.fileMetrics.done(this.count);
+
             // Finally emit the viewer instance back with a load event
             this.emit('load', {
                 viewer: this.viewer,
-                metrics: this.logger.done(this.count),
+                metrics,
                 file: this.file
             });
+
+            // Track in interal logger
+            this.logger.metric(METRIC_FILE_PREVIEW_SUCCESS, metrics);
 
             // If there wasn't an error, use Events API to log a preview
             this.logPreviewEvent(this.file.id, this.options);
@@ -1362,10 +1373,12 @@ class Preview extends EventEmitter {
         if (!consumed) {
             switch (key) {
                 case 'ArrowLeft':
+                    this.logger.metric(METRIC_CONTROLS, METRIC_CONTROL_ACTIONS.navigate_prev_key);
                     this.navigateLeft();
                     consumed = true;
                     break;
                 case 'ArrowRight':
+                    this.logger.metric(METRIC_CONTROLS, METRIC_CONTROL_ACTIONS.navigate_next_key);
                     this.navigateRight();
                     consumed = true;
                     break;

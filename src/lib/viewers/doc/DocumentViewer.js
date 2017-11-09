@@ -22,7 +22,7 @@ class DocumentViewer extends DocBaseViewer {
         // Set up preloader
         this.preloader = new DocPreloader(this.previewUI);
         this.preloader.addListener('preload', () => {
-            this.options.logger.setPreloaded();
+            this.options.fileMetrics.setPreloaded();
             this.resetLoadTimeout(); // Some content is visible - reset load timeout
         });
     }

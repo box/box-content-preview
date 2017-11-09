@@ -592,13 +592,13 @@ class BaseViewer extends EventEmitter {
      * @return {RepStatus} Instance of RepStatus
      */
     getRepStatus(representation) {
-        const { token, sharedLink, sharedLinkPassword, logger } = this.options;
+        const { token, sharedLink, sharedLinkPassword, fileMetrics } = this.options;
         const repStatus = new RepStatus({
             representation: representation || this.options.representation,
             token,
             sharedLink,
             sharedLinkPassword,
-            logger: representation ? null : logger // Do not log to main preview status if rep is passed in
+            fileMetrics: representation ? null : fileMetrics // Do not log to main preview status if rep is passed in
         });
 
         // Don't time out while conversion is pending

@@ -2,14 +2,7 @@ import * as LogLevel from 'loglevel';
 
 import LoggerCache from './LoggerCache';
 import { LOG_CODES } from './logConstants';
-import { arrayToString } from './logUtils';
-
-const CONSOLE_COLORS = {
-    [LOG_CODES.error]: '#C70039',
-    [LOG_CODES.warning]: '#FFBE33',
-    [LOG_CODES.info]: '#33BEFF',
-    none: '#FFF'
-};
+import { arrayToString, sortLogsByTime, printLog } from './logUtils';
 
 /**
  * Logging mechanism that allows for storage of log messages, saving to backend, and 
@@ -222,19 +215,10 @@ class Logger {
         });
 
         // sort by date
-        logArray = logArray.sort((prev, next) => {
-            return Date.parse(prev.timestamp) > Date.parse(next.timestamp);
-        });
-
-        // collect for printing to console
+        logArray = logArray.sort(sortLogsByTime);
 
         // print
-        logArray.forEach((log) => {
-            const color = CONSOLE_COLORS[log.type] || CONSOLE_COLORS.none;
-            const output = `${log.timestamp} "${log.message}"`;
-            // eslint-disable-next-line no-console
-            console.log(`%c [${log.type}] `, `color: ${color}`, output);
-        });
+        logArray.forEach(printLog);
     }
 }
 
