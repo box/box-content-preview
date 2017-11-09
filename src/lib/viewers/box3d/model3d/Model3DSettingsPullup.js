@@ -114,7 +114,7 @@ class Model3DSettingsPullup extends EventEmitter {
      */
     convertToValidCallback(configEntry) {
         const entry = configEntry;
-        const callback = entry.callback;
+        const { callback } = entry;
 
         if (typeof callback === 'string' && this[callback]) {
             entry.callback = this[callback].bind(this, ...entry.args);

@@ -117,11 +117,10 @@ class Popup {
      * @return {void}
      */
     addContent(element, prepend) {
-        const contentEl = this.contentEl;
         if (prepend) {
-            contentEl.insertBefore(element, contentEl.firstChild);
+            this.contentEl.insertBefore(element, this.contentEl.firstChild);
         } else {
-            contentEl.appendChild(element);
+            this.contentEl.appendChild(element);
         }
     }
 

@@ -1343,7 +1343,7 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     keydownHandler(event) {
-        const target = event.target;
+        const { target } = event;
 
         // If keyboard shortcuts / hotkeys are disabled, ignore
         if (!this.options.useHotkeys) {

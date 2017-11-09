@@ -117,6 +117,13 @@
                     "String": "string"
                 }
             }
+        ],
+        "prefer-destructuring": [
+            "error",
+            {
+                "object": true,
+                "array": false
+            }
         ]
     },
     "settings": {

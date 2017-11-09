@@ -101,7 +101,7 @@ class DashViewer extends VideoBaseViewer {
             this.prefetchAssets(this.getJSAssets());
         }
 
-        const representation = this.options.representation;
+        const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
             get(this.createContentUrlWithAuthParams(template, MANIFEST), 'any');
@@ -566,8 +566,7 @@ class DashViewer extends VideoBaseViewer {
         const bandwidth = stats.estimatedBandwidth;
 
         // Streaming representation history
-        const stream = stats.streamBandwidth;
-        const switchHistory = stats.switchHistory;
+        const { switchHistory, streamBandwidth: stream } = stats;
         this.bandwidthHistory.push({ bandwidth, stream });
         this.switchHistory.push({ switchHistory, stream });
 

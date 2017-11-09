@@ -1,3 +1,16 @@
+<a name="1.18.0"></a>
+# 1.18.0 (2017-11-08)
+
+* Update: box-annotations to v0.2.0 (#477) ([a7ffbb8](https://github.com/box/box-content-preview/commit/a7ffbb8))
+* Chore: Temporarily disable functional tests (#476) ([bafb699](https://github.com/box/box-content-preview/commit/bafb699))
+* Chore: Update LICENSE to generic Box SDK license (#437) ([619e2dd](https://github.com/box/box-content-preview/commit/619e2dd))
+* Fix: es-MX clean-up (We'll be using es-419 instead) (#457) ([e78cf06](https://github.com/box/box-content-preview/commit/e78cf06))
+* Fix: Instant Preview when thumbnail is pending (#473) ([a2f4f8b](https://github.com/box/box-content-preview/commit/a2f4f8b))
+* New: Add script to upgrade box-annotations version in Preview (#468) ([7de9e4a](https://github.com/box/box-content-preview/commit/7de9e4a))
+* New: Support preview of JSON files (#467) ([e758871](https://github.com/box/box-content-preview/commit/e758871))
+
+
+
 <a name="1.17.0"></a>
 # 1.17.0 (2017-10-31)
 

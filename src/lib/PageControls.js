@@ -240,10 +240,10 @@ class PageControls extends EventEmitter {
      * @return {void}
      */
     pageNumInputBlurHandler(event) {
-        const target = event.target;
+        const { target } = event;
         const pageNumber = parseInt(target.value, 10);
 
-        if (!isNaN(pageNumber)) {
+        if (!Number.isNaN(pageNumber)) {
             this.emit('pagechange', pageNumber);
         }
 

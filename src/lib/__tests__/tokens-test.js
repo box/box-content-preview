@@ -33,7 +33,11 @@ describe('lib/tokens', () => {
 
     describe('getTokens', () => {
         it('should throw an error when no id provided', () => {
-            return getTokens(null, 'token').should.be.rejectedWith(Error);
+            return getTokens(null, 'token')
+                .then(() => Assert.fail())
+                .catch((err) => {
+                    expect(err).to.be.an('error');
+                });
         });
         it('should use undefined token when no token provided', () => {
             return getTokens('123').then((data) => {
@@ -90,7 +94,11 @@ describe('lib/tokens', () => {
             });
         });
         it('should throw an error when not all tokens could be fetched', () => {
-            return getTokens(['123', '456', '789'], mapIdTokenFunction).should.be.rejectedWith(Error);
+            return getTokens(['123', '456', '789'], mapIdTokenFunction)
+                .then(() => Assert.fail())
+                .catch((err) => {
+                    expect(err).to.be.an('error');
+                });
         });
     });
 });

@@ -91,7 +91,7 @@ class MultiImageViewer extends ImageBaseViewer {
      */
     constructImageUrls(template) {
         const { viewer, representation } = this.options;
-        const metadata = representation.metadata;
+        const { metadata } = representation;
         const asset = viewer.ASSET;
         this.pagesCount = metadata.pages;
 
