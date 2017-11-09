@@ -4,6 +4,13 @@ import LoggerCache from './LoggerCache';
 import { LOG_CODES } from './logConstants';
 import { arrayToString } from './logUtils';
 
+const CONSOLE_COLORS = {
+    [LOG_CODES.error]: '#C70039',
+    [LOG_CODES.warning]: '#FFBE33',
+    [LOG_CODES.info]: '#33BEFF',
+    none: '#FFF'
+};
+
 /**
  * Logging mechanism that allows for storage of log messages, saving to backend, and 
  * controlling what messages are shown to the user via browser console.
@@ -223,8 +230,10 @@ class Logger {
 
         // print
         logArray.forEach((log) => {
-            const output = `[${log.type}] ${log.timestamp} "${log.message}"`;
-            console.log(output);
+            const color = CONSOLE_COLORS[log.type] || CONSOLE_COLORS.none;
+            const output = `${log.timestamp} "${log.message}"`;
+            // eslint-disable-next-line no-console
+            console.log(`%c [${log.type}] `, `color: ${color}`, output);
         });
     }
 }
