@@ -506,28 +506,17 @@ class DashViewer extends VideoBaseViewer {
         // that larger than the current videoHeight.
         this.mediaEl.style.width = '';
 
-        // Add a new width or height. Don't need to add both
-        // since the video will auto adjust the other dimension accordingly.
-        if (fullscreen.isFullscreen(this.containerEl)) {
-            // Case 1: Full screen mode, stretch the video
-            // to fit the whole screen irrespective of its width and height.
-
-            if (this.aspect >= 1) {
-                this.mediaEl.style.width = `${viewport.width}px`;
-            } else {
-                this.mediaEl.style.width = `${viewport.height * this.aspect}px`;
-            }
-        } else if (width <= viewport.width && height <= viewport.height) {
-            // Case 2: The video ends up fitting within the viewport of preview
+        if (!fullscreen.isFullscreen(this.containerEl) && (width <= viewport.width && height <= viewport.height)) {
+            // Case 1: The video ends up fitting within the viewport of preview
             // For this case, just set the video player dimensions to match the
             // actual video's dimenstions.
-
             if (this.aspect >= 1) {
                 this.mediaEl.style.width = `${width}px`;
             } else {
                 this.mediaEl.style.width = `${height * this.aspect}px`;
             }
         } else {
+            // Case 2: The video is now in fullscreen and needs to be scaled
             // Case 3: The video overflows the viewport of preview
             // For this case, try fitting in the video by reducing
             // either its width or its height.
