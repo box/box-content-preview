@@ -84,9 +84,7 @@ module.exports = (config) => config.set({
 
     frameworks: [
         'mocha',
-        'sinon-stub-promise',
         'chai-sinon',
-        'chai-as-promised',
         'chai-dom',
         'chai',
         'sinon',

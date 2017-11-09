@@ -24,7 +24,7 @@ class MP4Viewer extends VideoBaseViewer {
      * @return {void}
      */
     prefetch({ content = true }) {
-        const representation = this.options.representation;
+        const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
             document.createElement('video').src = this.createContentUrlWithAuthParams(template);

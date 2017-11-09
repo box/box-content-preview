@@ -4,7 +4,7 @@ const webpack = require('webpack');
 const I18nPlugin = require('i18n-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
-const DefinePlugin = webpack.DefinePlugin;
+const { DefinePlugin } = webpack;
 const NormalPlugin = webpack.NormalModuleReplacementPlugin;
 
 /* eslint-disable global-require */

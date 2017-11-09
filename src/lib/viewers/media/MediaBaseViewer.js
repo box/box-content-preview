@@ -479,7 +479,7 @@ class MediaBaseViewer extends BaseViewer {
      * @return {boolean} - true if time is valid
      */
     isValidTime(time) {
-        return typeof time === 'number' && isFinite(time) && time >= 0 && time <= this.mediaEl.duration;
+        return typeof time === 'number' && Number.isFinite(time) && time >= 0 && time <= this.mediaEl.duration;
     }
 
     /**
