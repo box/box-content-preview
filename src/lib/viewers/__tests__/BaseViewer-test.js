@@ -836,7 +836,6 @@ describe('lib/viewers/BaseViewer', () => {
                     locale: 'en-US'
                 }
             };
-            base.addListener = sandbox.stub();
             base.scale = 1.5;
             base.annotator = {
                 init: sandbox.stub(),
@@ -845,12 +844,13 @@ describe('lib/viewers/BaseViewer', () => {
             base.annotatorConf = {
                 CONSTRUCTOR: sandbox.stub().returns(base.annotator)
             };
-            sandbox.stub(base, 'emit');
-
-            base.initAnnotations();
         });
 
         it('should initialize the annotator', () => {
+            sandbox.stub(base, 'emit');
+            base.addListener = sandbox.stub();
+            base.initAnnotations();
+
             expect(base.annotator.init).to.be.calledWith(1.5);
             expect(base.addListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
@@ -858,6 +858,14 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.annotator.addListener).to.be.calledWith('annotatorevent', sinon.match.func);
             expect(base.emit).to.be.calledWith('annotator', base.annotator);
         });
+
+        it('should call the correct handler to toggle annotation modes', () => {
+            base.initAnnotations();
+            base.annotator.toggleAnnotationMode = sandbox.stub();
+
+            base.emit('toggleannotationmode', 'mode');
+            expect(base.annotator.toggleAnnotationMode).to.be.called;
+        })
     });
 
     describe('areAnnotationsEnabled()', () => {
