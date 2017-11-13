@@ -290,7 +290,7 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     setTimeCode(time) {
-        const duration = this.mediaEl.duration;
+        const { duration } = this.mediaEl;
         this.timeScrubber.setValue(duration ? (time || 0) / duration : 0);
         this.timecodeEl.textContent = this.formatTime(time || 0);
         this.timeScrubber.setAriaValues(
@@ -305,7 +305,7 @@ class MediaControls extends EventEmitter {
      * @return {void}
      */
     updateProgress() {
-        const buffered = this.mediaEl.buffered;
+        const { buffered } = this.mediaEl;
         const duration = this.mediaEl.duration || 1;
         const bufferedLength = buffered.length;
         const bufferedValue = bufferedLength ? buffered.end(bufferedLength - 1) : 0; // Get the new last buffered value
@@ -847,7 +847,7 @@ class MediaControls extends EventEmitter {
         }
 
         const rect = this.containerEl.getBoundingClientRect();
-        const pageX = event.pageX; // get the mouse X position
+        const { pageX } = event; // get the mouse X position
         const filmstripPositions = this.computeFilmstripPositions(
             pageX,
             rect.left,

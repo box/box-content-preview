@@ -686,19 +686,17 @@ class BaseViewer extends EventEmitter {
         // Annotator object will still be sent along with the viewer in the load event also.
         this.emit('annotator', this.annotator);
 
-        // Add a custom listener for entering/exit annotations mode using the app's custom annotations buttons
-        this.addListener('toggleannotationmode', (data) => {
-            this.annotator.toggleAnnotationHandler(data);
-        });
+        // Add a custom listener for entering/exit annotations mode using the app's
+        // custom annotations buttons
+        this.addListener('toggleannotationmode', (data) => this.annotator.toggleAnnotationMode(data));
 
         // Add a custom listener for events related to scaling/orientation changes
         this.addListener('scale', (data) => {
             this.annotator.emit(ANNOTATOR_EVENT.scale, data);
         });
 
-        this.addListener('scrolltoannotation', (data) => {
-            this.annotator.scrollToAnnotation(data);
-        });
+        // Add a custom listener to scroll to the specified annotation
+        this.addListener('scrolltoannotation', (data) => this.annotator.scrollToAnnotation(data));
 
         // Add a custom listener for events emmited by the annotator
         this.annotator.addListener('annotatorevent', this.handleAnnotatorEvents);

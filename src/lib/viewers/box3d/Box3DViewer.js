@@ -203,7 +203,7 @@ class Box3DViewer extends BaseViewer {
             this.prefetchAssets(JS);
         }
 
-        const representation = this.options.representation;
+        const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
             get(this.createContentUrl(template, 'entities.json'), this.appendAuthHeader(), 'any');

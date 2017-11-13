@@ -31,7 +31,7 @@ class MP3Viewer extends MediaBaseViewer {
      * @return {void}
      */
     prefetch({ content = true }) {
-        const representation = this.options.representation;
+        const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
             document.createElement('audio').src = this.createContentUrlWithAuthParams(template);

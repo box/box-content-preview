@@ -84,7 +84,7 @@ class CSVViewer extends TextBaseViewer {
             this.prefetchAssets(JS);
         }
 
-        const representation = this.options.representation;
+        const { representation } = this.options;
         if (content && this.isRepresentationReady(representation)) {
             const template = representation.content.url_template;
             get(this.createContentUrlWithAuthParams(template), 'any');

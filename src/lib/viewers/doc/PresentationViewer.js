@@ -134,12 +134,12 @@ class PresentationViewer extends DocBaseViewer {
     //--------------------------------------------------------------------------
 
     /**
-    * Binds DOM listeners for presentation viewer.
-    *
-    * @override
-    * @return {void}
-    * @protected
-    */
+     * Binds DOM listeners for presentation viewer.
+     *
+     * @override
+     * @return {void}
+     * @protected
+     */
     bindDOMListeners() {
         super.bindDOMListeners();
 
@@ -152,12 +152,12 @@ class PresentationViewer extends DocBaseViewer {
     }
 
     /**
-    * Unbinds DOM listeners for presentation viewer.
-    *
-    * @override
-    * @return {void}
-    * @protected
-    */
+     * Unbinds DOM listeners for presentation viewer.
+     *
+     * @override
+     * @return {void}
+     * @protected
+     */
     unbindDOMListeners() {
         super.unbindDOMListeners();
 
@@ -264,7 +264,7 @@ class PresentationViewer extends DocBaseViewer {
         if (!this.throttledWheelHandler) {
             this.throttledWheelHandler = throttle((event) => {
                 // Should not change pages if there is overflow, horizontal movement or a lack of vertical movement
-                if (event.deltaY === -0 || event.deltaX !== -0 || this.checkOverflow()) {
+                if (event.deltaY === 0 || event.deltaX !== 0 || this.checkOverflow()) {
                     return;
                 }
 

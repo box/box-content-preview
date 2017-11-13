@@ -908,8 +908,8 @@ describe('lib/viewers/media/DashViewer', () => {
                 switchHistory: 'history'
             });
             dash.getBandwidthInterval();
-            expect(dash.bandwidthHistory).to.contain({ bandwidth: 2000, stream: 1000 });
-            expect(dash.switchHistory).to.contain({ switchHistory: 'history', stream: 1000 });
+            expect(dash.bandwidthHistory[0]).to.deep.equal({ bandwidth: 2000, stream: 1000 });
+            expect(dash.switchHistory[0]).to.deep.equal({ switchHistory: 'history', stream: 1000 });
         });
 
         it('should display stats visually if stats element exists', () => {
