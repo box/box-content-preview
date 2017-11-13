@@ -14,6 +14,7 @@ import {
     CLASS_HIDDEN,
     PERMISSION_DOWNLOAD,
     STATUS_ERROR,
+    STATUS_PENDING,
     STATUS_SUCCESS,
 } from '../../../constants';
 
@@ -284,6 +285,19 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             sandbox.stub(file, 'getRepresentation').returns({
                 status: {
                     state: STATUS_ERROR
+                }
+            });
+            sandbox.mock(docBase.preloader).expects('showPreload').never();
+
+            docBase.showPreload();
+        });
+
+        it('should not do anything if preload rep is pending', () => {
+            sandbox.stub(docBase, 'getCachedPage').returns(1);
+            sandbox.stub(docBase, 'getViewerOption').withArgs('preload').returns(true);
+            sandbox.stub(file, 'getRepresentation').returns({
+                status: {
+                    state: STATUS_PENDING
                 }
             });
             sandbox.mock(docBase.preloader).expects('showPreload').never();
@@ -939,17 +953,9 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(PDFJS.disableFontFace).to.be.true;
         });
 
-        it('should not disable range requests if the locale is en-US', () => {
+        it('should not disable range requests normally', () => {
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.false;
-        });
-
-        it('should disable range requests if locale is not en-US, the file is smaller than 25MB and is not an Excel file', () => {
-            docBase.options.file.size = 26000000;
-            docBase.options.extension = 'pdf';
-            docBase.options.location.locale = 'ja-JP';
-            docBase.setupPdfjs();
-            expect(PDFJS.disableRange).to.be.true;
         });
 
         it('should disable range requests if the file is watermarked', () => {
@@ -957,15 +963,6 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.options.file.watermark_info.is_watermarked = true;
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.true;
-        });
-
-        it('should enable range requests if locale is not en-US, the file is greater than 25MB and is not watermarked', () => {
-            docBase.options.location.locale = 'ja-JP';
-            docBase.options.file.size = 26500000;
-            docBase.options.extension = 'pdf';
-            docBase.options.file.watermark_info.is_watermarked = false;
-            docBase.setupPdfjs();
-            expect(PDFJS.disableRange).to.be.false;
         });
 
         it('should disable or enable text layer based on download permissions', () => {

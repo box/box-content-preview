@@ -136,7 +136,7 @@ class Video360Viewer extends DashViewer {
             return;
         }
 
-        const canvas = this.renderer.getBox3D().canvas;
+        const { canvas } = this.renderer.getBox3D();
         if (!canvas) {
             return;
         }
@@ -162,7 +162,7 @@ class Video360Viewer extends DashViewer {
             return;
         }
 
-        const canvas = this.renderer.getBox3D().canvas;
+        const { canvas } = this.renderer.getBox3D();
         if (!canvas) {
             return;
         }

@@ -120,8 +120,7 @@ class ImageViewer extends ImageBaseViewer {
         let newWidth;
         let newHeight;
         const imageCurrentDimensions = this.imageEl.getBoundingClientRect(); // Getting bounding rect does not ignore transforms / rotates
-        const width = imageCurrentDimensions.width;
-        const height = imageCurrentDimensions.height;
+        const { height, width } = imageCurrentDimensions;
         const aspect = width / height;
         const viewport = {
             width: this.wrapperEl.clientWidth - IMAGE_PADDING,
@@ -386,13 +385,13 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
-    * Adjust padding on image rotation/zoom of images when the view port
-    * orientation changes from landscape to portrait and vice versa. Especially
-    * important for mobile devices because rotating the device doesn't triggers
-    * rotateLeft()
-    *
-    * @return {void}
-    */
+     * Adjust padding on image rotation/zoom of images when the view port
+     * orientation changes from landscape to portrait and vice versa. Especially
+     * important for mobile devices because rotating the device doesn't triggers
+     * rotateLeft()
+     *
+     * @return {void}
+     */
     handleOrientationChange() {
         this.adjustImageZoomPadding();
 

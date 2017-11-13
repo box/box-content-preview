@@ -345,13 +345,20 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 },
                 getTag: sandbox.stub().returns('')
             };
-
-            return docPreloader.readEXIF(fakeImageEl).should.eventually.be.rejected;
+            docPreloader.readEXIF(fakeImageEl)
+                .then(() => Assert.fail())
+                .catch((err) => {
+                    expect(err).to.be.an('error');
+                });
         });
 
         it('should return a promise that eventually rejects if EXIF parser is not available', () => {
             window.EXIF = null;
-            return docPreloader.readEXIF(fakeImageEl).should.eventually.be.rejected;
+            return docPreloader.readEXIF(fakeImageEl)
+                .then(() => Assert.fail())
+                .catch((err) => {
+                    expect(err).to.be.an('error');
+                });
         });
 
         it('should return a promise that eventually rejects if num pages is not valid', () => {
@@ -369,7 +376,11 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 getTag: sandbox.stub().returns(exifRawArray)
             };
 
-            return docPreloader.readEXIF(fakeImageEl).should.eventually.be.rejected;
+            return docPreloader.readEXIF(fakeImageEl)
+                .then(() => Assert.fail())
+                .catch((err) => {
+                    expect(err).to.be.an('error');
+                });
         });
 
         it('should return a promise that eventually rejects if image dimensions are invalid', () => {
@@ -387,7 +398,11 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 getTag: sandbox.stub().returns(exifRawArray)
             };
 
-            return docPreloader.readEXIF(fakeImageEl).should.eventually.be.rejected;
+            return docPreloader.readEXIF(fakeImageEl)
+                .then(() => Assert.fail())
+                .catch((err) => {
+                    expect(err).to.be.an('error');
+                });
         });
 
         it('should return a promise that eventually resolves with pdf width, height, and number of pages if EXIF is successfully read', () => {
@@ -405,11 +420,15 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 getTag: sandbox.stub().returns(exifRawArray)
             };
 
-            return docPreloader.readEXIF(fakeImageEl).should.eventually.deep.equal({
-                pdfWidth: pdfWidth * PDFJS_CSS_UNITS,
-                pdfHeight: pdfHeight * PDFJS_CSS_UNITS,
-                numPages
-            });
+            return docPreloader.readEXIF(fakeImageEl)
+                .then((response) => {
+                    response.should.deep.equal({
+                        pdfWidth: pdfWidth * PDFJS_CSS_UNITS,
+                        pdfHeight: pdfHeight * PDFJS_CSS_UNITS,
+                        numPages
+                    });
+                })
+                .catch(() => Assert.fail());
         });
 
         it('should return a promise that eventually resolves with swapped pdf width and height if PDF data is rotated', () => {
@@ -427,11 +446,15 @@ describe('lib/viewers/doc/DocPreloader', () => {
                 getTag: sandbox.stub().returns(exifRawArray)
             };
 
-            return docPreloader.readEXIF(fakeImageEl).should.eventually.deep.equal({
-                pdfWidth: pdfHeight * PDFJS_CSS_UNITS,
-                pdfHeight: pdfWidth * PDFJS_CSS_UNITS,
-                numPages
-            });
+            return docPreloader.readEXIF(fakeImageEl)
+                .then((response) => {
+                    response.should.deep.equal({
+                        pdfWidth: pdfHeight * PDFJS_CSS_UNITS,
+                        pdfHeight: pdfWidth * PDFJS_CSS_UNITS,
+                        numPages
+                    });
+                })
+                .catch(() => Assert.fail());
         });
     });
 

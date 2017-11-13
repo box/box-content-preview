@@ -207,7 +207,7 @@ class DocPreloader extends EventEmitter {
      * @return {void}
      */
     restoreScrollPosition() {
-        const scrollTop = this.wrapperEl.scrollTop;
+        const { scrollTop } = this.wrapperEl;
         const docEl = this.wrapperEl.parentNode.querySelector('.bp-doc');
         if (docEl && scrollTop > 0) {
             docEl.scrollTop = scrollTop;
@@ -262,7 +262,7 @@ class DocPreloader extends EventEmitter {
 
                     // There should be 3 pieces of metadata: PDF width, PDF height, and num pages
                     if (!match || match.length !== 4) {
-                        reject('No valid EXIF data found');
+                        reject(new Error('No valid EXIF data found'));
                         return;
                     }
 
@@ -273,7 +273,7 @@ class DocPreloader extends EventEmitter {
 
                     // Validate number of pages
                     if (numPages <= 0) {
-                        reject('EXIF num pages data is invalid');
+                        reject(new Error('EXIF num pages data is invalid'));
                         return;
                     }
 
@@ -286,7 +286,7 @@ class DocPreloader extends EventEmitter {
 
                         // Check if ratio is valid after height and width are swapped since PDF may be rotated
                         if (Math.abs(rotatedPdfRatio - imageRatio) > ACCEPTABLE_RATIO_DIFFERENCE) {
-                            reject('EXIF PDF width and height are invalid');
+                            reject(new Error('EXIF PDF width and height are invalid'));
                             return;
                         }
 
@@ -304,7 +304,7 @@ class DocPreloader extends EventEmitter {
                     });
                 });
             } catch (e) {
-                reject('Error reading EXIF data');
+                reject(new Error('Error reading EXIF data'));
             }
         });
     }

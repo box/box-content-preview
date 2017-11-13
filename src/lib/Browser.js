@@ -5,7 +5,7 @@ const EXT_STANDARD_DERIVATIVES = 'OES_standard_derivatives';
 const EXT_LOSE_CONTEXT = 'WEBGL_lose_context';
 const EVENT_WEBGL_CONEXT_LOST = 'webglcontextlost';
 
-let userAgent = navigator.userAgent;
+let { userAgent } = navigator;
 let name;
 let gl;
 let supportsWebGL;

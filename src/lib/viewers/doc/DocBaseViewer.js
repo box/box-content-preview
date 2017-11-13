@@ -17,7 +17,7 @@ import {
     DOC_STATIC_ASSETS_VERSION,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
-    STATUS_ERROR
+    STATUS_SUCCESS
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { get, createAssetUrlCreator } from '../../util';
@@ -41,10 +41,8 @@ const MIN_SCALE = 0.1;
 const IS_SAFARI_CLASS = 'is-safari';
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
-
 const RANGE_REQUEST_CHUNK_SIZE_US = 1048576; // 1MB
 const RANGE_REQUEST_CHUNK_SIZE_NON_US = 524288; // 512KB
-const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 26214400; // 25MB
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 
 const LOADING_ICON_MAP = {
@@ -201,10 +199,9 @@ class DocBaseViewer extends BaseViewer {
             return;
         }
 
-        // Don't show preload if there is no preload rep, the 'preload' viewer option isn't set,
-        // or the rep has an error
+        // Don't show preload if there is no preload rep, the 'preload' viewer option isn't set, or the rep isn't ready
         const preloadRep = getRepresentation(file, PRELOAD_REP_NAME);
-        if (!preloadRep || !this.getViewerOption('preload') || RepStatus.getStatus(preloadRep) === STATUS_ERROR) {
+        if (!preloadRep || !this.getViewerOption('preload') || RepStatus.getStatus(preloadRep) !== STATUS_SUCCESS) {
             return;
         }
 
@@ -366,7 +363,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     setPage(pageNumber) {
-        if (pageNumber < 1 || pageNumber > this.pdfViewer.pagesCount) {
+        if (!pageNumber || pageNumber < 1 || pageNumber > this.pdfViewer.pagesCount) {
             return;
         }
 
@@ -539,7 +536,7 @@ class DocBaseViewer extends BaseViewer {
             .then((doc) => {
                 this.pdfViewer.setDocument(doc);
 
-                const linkService = this.pdfViewer.linkService;
+                const { linkService } = this.pdfViewer;
                 if (linkService instanceof PDFJS.PDFLinkService) {
                     linkService.setDocument(doc, pdfUrl);
                     linkService.setViewer(this.pdfViewer);
@@ -573,7 +570,7 @@ class DocBaseViewer extends BaseViewer {
         }
 
         // Save page and return after resize
-        const currentPageNumber = this.pdfViewer.currentPageNumber;
+        const { currentPageNumber } = this.pdfViewer.currentPageNumber;
 
         this.pdfViewer.currentScaleValue = this.pdfViewer.currentScaleValue || 'auto';
         this.pdfViewer.update();
@@ -596,7 +593,7 @@ class DocBaseViewer extends BaseViewer {
     setupPdfjs() {
         // Set PDFJS worker & character maps
         const { file, location } = this.options;
-        const { size, watermark_info: watermarkInfo } = file;
+        const { watermark_info: watermarkInfo } = file;
         const assetUrlCreator = createAssetUrlCreator(location);
         PDFJS.workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
         PDFJS.imageResourcesPath = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/images/`);
@@ -610,15 +607,9 @@ class DocBaseViewer extends BaseViewer {
         // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
         PDFJS.disableFontFace = PDFJS.disableFontFace || Browser.hasFontIssue();
 
-        // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (25MB) for
-        // previews outside of the US since the additional latency overhead per range request can be
-        // more than the additional time for a continuous request. This also overrides any range request
-        // disabling that may be set by pdf.js's compatibility checking since the browsers we support
-        // should all be able to properly handle range requests.
-        PDFJS.disableRange = location.locale !== 'en-US' && size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US;
-
-        // Disable range requests for watermarked files since they are streamed
-        PDFJS.disableRange = PDFJS.disableRange || (watermarkInfo && watermarkInfo.is_watermarked);
+        // Disable range requests for watermarked files since they are streamed, otherwise override range request
+        // disabling by pdf.js's compatibility checking since all the browsers we support allow range requests
+        PDFJS.disableRange = watermarkInfo && watermarkInfo.is_watermarked;
 
         // Disable text layer if user doesn't have download permissions
         PDFJS.disableTextLayer =
@@ -679,7 +670,7 @@ class DocBaseViewer extends BaseViewer {
         const pageEls = this.containerEl.querySelectorAll('.page');
         [].forEach.call(pageEls, (pageEl) => {
             /* eslint-disable no-param-reassign */
-            const pageNumber = pageEl.dataset.pageNumber;
+            const { pageNumber } = pageEl.dataset;
             if (pageNumber) {
                 pageEl.id = `bp-page-${pageNumber}`;
             }
@@ -915,7 +906,7 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     pagechangeHandler(event) {
-        const pageNumber = event.pageNumber;
+        const { pageNumber } = event;
         this.pageControls.updateCurrentPage(pageNumber);
 
         // We only set cache the current page if 'pagechange' was fired after
