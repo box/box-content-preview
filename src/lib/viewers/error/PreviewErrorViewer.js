@@ -59,17 +59,17 @@ class PreviewErrorViewer extends BaseViewer {
         this.setup();
 
         const { file, showDownload } = this.options;
-        let icon = ICON_FILE_DEFAULT;
+        this.icon = ICON_FILE_DEFAULT;
 
         // Generic errors will not have the file object
         if (file) {
             switch (file.extension) {
                 case 'zip':
                 case 'tgz':
-                    icon = ICON_FILE_ZIP;
+                    this.icon = ICON_FILE_ZIP;
                     break;
                 case 'flv':
-                    icon = ICON_FILE_MEDIA;
+                    this.icon = ICON_FILE_MEDIA;
                     break;
                 default:
                 // no-op
@@ -84,7 +84,7 @@ class PreviewErrorViewer extends BaseViewer {
         let displayMessage = err.displayMessage || err.message;
         displayMessage = typeof displayMessage === 'string' ? displayMessage : __('error_default');
 
-        this.iconEl.innerHTML = icon;
+        this.iconEl.innerHTML = this.icon;
         this.messageEl.textContent = displayMessage;
 
         // Add optional download button

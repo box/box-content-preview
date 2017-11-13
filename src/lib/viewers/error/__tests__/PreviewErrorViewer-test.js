@@ -69,7 +69,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
                 error.options.file.extension = extension;
                 error.load(err);
 
-                expect(error.iconEl).to.contain.html(expectedIcon);
+                expect(error.icon).to.equal(expectedIcon);
                 expect(error.messageEl.textContent).to.equal(err.displayMessage);
             });
         });
