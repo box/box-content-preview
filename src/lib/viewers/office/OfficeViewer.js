@@ -4,7 +4,7 @@ import Browser from '../../Browser';
 import Popup from '../../Popup';
 import { CLASS_HIDDEN } from '../../constants';
 import { getRepresentation } from '../../file';
-import { ICON_FILE_SPREADSHEET, ICON_PRINT_CHECKMARK } from '../../icons/icons';
+import { ICON_FILE_EXCEL, ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { get } from '../../util';
 
 const LOAD_TIMEOUT_MS = 120000;
@@ -25,7 +25,7 @@ class OfficeViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        this.fileLoadingIcon = ICON_FILE_SPREADSHEET;
+        this.fileLoadingIcon = ICON_FILE_EXCEL;
 
         // Call super() to set up common layout
         super.setup();
@@ -50,6 +50,11 @@ class OfficeViewer extends BaseViewer {
         if (this.printPopup) {
             this.printPopup.destroy();
         }
+
+        if (this.printURL) {
+            URL.revokeObjectURL(this.printURL);
+        }
+
         super.destroy();
     }
 
@@ -331,8 +336,11 @@ class OfficeViewer extends BaseViewer {
 
             // For other browsers, open and print in a new tab
         } else {
-            const printURL = URL.createObjectURL(this.printBlob);
-            const printResult = window.open(printURL);
+            if (!this.printURL) {
+                this.printURL = URL.createObjectURL(this.printBlob);
+            }
+
+            const printResult = window.open(this.printURL);
 
             // Open print popup if possible
             if (printResult && typeof printResult.print === 'function') {
@@ -360,8 +368,6 @@ class OfficeViewer extends BaseViewer {
             } else {
                 this.emit('printsuccess');
             }
-
-            URL.revokeObjectURL(printURL);
         }
     }
 }

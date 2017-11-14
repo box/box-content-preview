@@ -18,7 +18,7 @@ import {
     STATUS_SUCCESS,
 } from '../../../constants';
 
-import { ICON_PRINT_CHECKMARK, ICON_FILE_PRESENTATION } from '../../../icons/icons';
+import { ICON_PRINT_CHECKMARK, ICON_FILE_POWERPOINT } from '../../../icons/icons';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -95,7 +95,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should correctly set the file icon based on file extension', () => {
-            expect(docBase.fileLoadingIcon).to.equal(ICON_FILE_PRESENTATION);
+            expect(docBase.fileLoadingIcon).to.equal(ICON_FILE_POWERPOINT);
         });
     });
 
