@@ -1,7 +1,8 @@
 import { LOG_CODES } from './logConstants';
 
 const CONSOLE_COLORS = {
-    [LOG_CODES.error]: '#C70039', // Red
+    [LOG_CODES.error]: '#900C3F', // Red
+    [LOG_CODES.uncaught_error]: '#C70039', // Red
     [LOG_CODES.warning]: '#FFBE33', // Yellow
     [LOG_CODES.info]: '#33BEFF', // Blue
     [LOG_CODES.metric]: '#A233FF', // Purple
@@ -55,9 +56,9 @@ export function sortLogsByTime(prev, next) {
 
 /**
  * Prints a single log object to the browser console.
- * 
+ *
  * @param {Object} log - Log object created in printLogs().
- * @return {void} 
+ * @return {void}
  */
 export function printLog(log) {
     const { type, message, timestamp } = log;

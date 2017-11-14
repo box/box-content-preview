@@ -1,11 +1,15 @@
 import * as LogLevel from 'loglevel';
 
 import LoggerCache from './LoggerCache';
-import { LOG_CODES } from './logConstants';
+import LoggerNetwork from './LoggerNetwork';
+import { LOG_CODES, LOG_LEVELS } from './logConstants';
 import { arrayToString, sortLogsByTime, printLog } from './logUtils';
 
+// By default, print nothing.
+const DEFAULT_LOG_LEVEL = LOG_LEVELS.silent;
+
 /**
- * Logging mechanism that allows for storage of log messages, saving to backend, and 
+ * Logging mechanism that allows for storage of log messages, saving to backend, and
  * controlling what messages are shown to the user via browser console.
  */
 class Logger {
@@ -15,12 +19,33 @@ class Logger {
     /** @property {LoggerCache} - Cache for storing and validating log messages */
     cache;
 
+    /** */
+    networkLayer;
+
     /**
      * @constructor
+     *
+     * @param {Object} config - Configures log level and network layer.
+     * @param {LOG_LEVELS|string} [config.logLevel] - Level to set for writing to the browser console.
+     * @param {string} [config.logEndpoint] - The URL to POST logs to.
+     * @return {Logger} Newly created Logger instance.
      */
-    constructor() {
+    constructor(config = {}) {
         this.cache = new LoggerCache();
         this.logger = LogLevel.noConflict();
+
+        // If a log level has not been set and/or persisted, default to silent
+        this.logger.setDefaultLevel(DEFAULT_LOG_LEVEL);
+
+        const { logLevel, logEndpoint } = config;
+
+        if (logLevel) {
+            this.setLogLevel(logLevel);
+        }
+
+        if (logEndpoint) {
+            this.networkLayer = new LoggerNetwork();
+        }
 
         this.onUncaughtError = this.onUncaughtError.bind(this);
         window.addEventListener('error', this.onUncaughtError);
@@ -28,7 +53,7 @@ class Logger {
 
     /**
      * Destroys the logger.
-     * 
+     *
      * @public
      * @return {void}
      */
@@ -56,6 +81,7 @@ class Logger {
                 logFunction = this.logger.warn;
                 break;
             case LOG_CODES.error:
+            case LOG_CODES.uncaught_error:
                 logFunction = this.logger.error;
                 break;
             case LOG_CODES.info:
@@ -76,7 +102,8 @@ class Logger {
      * @return {void}
      */
     onUncaughtError(error) {
-        this.error(error.message, '\n', error.error.stack);
+        const message = `${error.message} \n ${error.error.stack}`;
+        this.commitMessage(LOG_CODES.uncaught_error, message);
     }
 
     /**
@@ -143,7 +170,7 @@ class Logger {
      *
      * @public
      * @param {number} code - Code associated with a specific metric.
-     * @param {*} value - 
+     * @param {*} value -
      * @return {void}
      */
     metric(code, value) {
@@ -155,7 +182,7 @@ class Logger {
 
     /**
      * Clear out the cache.
-     * 
+     *
      * @public
      * @return {void}
      */
@@ -164,8 +191,19 @@ class Logger {
     }
 
     /**
+     * Sets the current level of messages to be logged to the console.
+     *
+     * @param {LOG_LEVELS|string} level - The level of logging to log to console.
+     * @param {boolean} [persist] - Whether or not to persist across sessions.
+     * @return {void}
+     */
+    setLogLevel(level, persist = false) {
+        this.logger.setLevel(level, persist);
+    }
+
+    /**
      * Get logs from the cache.
-     * 
+     *
      * @param {LOG_CODES|LOG_CODES[]} [code] - Type of logs to get. If empty, will get all logs.
      * If a list is given, will get each entry specified.
      * @return {Object} The cache entry(ies) requested.
@@ -193,7 +231,7 @@ class Logger {
 
     /**
      * Print logs from the cache, to the console.
-     * 
+     *
      * @param {LOG_CODES|LOG_CODES[]} [code] - Type of logs to print. If empty, will print all logs.
      * If a list is given, will print each entry specified.
      * @return {void}
