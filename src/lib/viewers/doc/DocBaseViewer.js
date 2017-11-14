@@ -23,7 +23,15 @@ import { checkPermission, getRepresentation } from '../../file';
 import { get, createAssetUrlCreator } from '../../util';
 import {
     ICON_FILE_DOCUMENT,
+    ICON_FILE_EXCEL,
+    ICON_FILE_GOOGLE_DOC,
+    ICON_FILE_GOOGLE_SHEET,
+    ICON_FILE_GOOGLE_SLIDE,
+    ICON_FILE_KEYNOTE,
+    ICON_FILE_NUMBERS,
+    ICON_FILE_PAGES,
     ICON_FILE_PDF,
+    ICON_FILE_POWERPOINT,
     ICON_FILE_PRESENTATION,
     ICON_FILE_SPREADSHEET,
     ICON_FILE_WORD,
@@ -49,15 +57,19 @@ const LOADING_ICON_MAP = {
     csv: ICON_FILE_SPREADSHEET,
     doc: ICON_FILE_WORD,
     docx: ICON_FILE_WORD,
-    gdoc: ICON_FILE_WORD,
-    gsheet: ICON_FILE_SPREADSHEET,
+    gdoc: ICON_FILE_GOOGLE_DOC,
+    gsheet: ICON_FILE_GOOGLE_SHEET,
+    gslide: ICON_FILE_GOOGLE_SLIDE,
+    key: ICON_FILE_KEYNOTE,
+    numbers: ICON_FILE_NUMBERS,
     odp: ICON_FILE_PRESENTATION,
+    pages: ICON_FILE_PAGES,
     pdf: ICON_FILE_PDF,
-    ppt: ICON_FILE_PRESENTATION,
-    pptx: ICON_FILE_PRESENTATION,
-    xls: ICON_FILE_SPREADSHEET,
-    xlsm: ICON_FILE_SPREADSHEET,
-    xlsx: ICON_FILE_SPREADSHEET
+    ppt: ICON_FILE_POWERPOINT,
+    pptx: ICON_FILE_POWERPOINT,
+    xls: ICON_FILE_EXCEL,
+    xlsm: ICON_FILE_EXCEL,
+    xlsx: ICON_FILE_EXCEL
 };
 
 @autobind
