@@ -100,8 +100,11 @@ update_readme() {
 
 
 push_to_github() {
+    # Get latest changes from changelog
+    CHANGELOG="$(cat CHANGELOG.md | awk '/\#/{f=1} f{print; if (/\<a/) exit}' | grep . | sed 's/\<a.*//')";
+
     # Add new files
-    git commit -am "Release: $VERSION"
+    git commit -am "Release: $VERSION" -m "https://github.com/box/box-content-preview/releases" -m "$CHANGELOG" -m "Annotations changes: https://github.com/box/box-annotations/releases"
 
     # Force update tag after updating files
     git tag -a v$VERSION -m $VERSION
