@@ -953,7 +953,29 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(PDFJS.disableFontFace).to.be.true;
         });
 
-        it('should not disable range requests normally', () => {
+        it('should not disable streaming', () => {
+            docBase.setupPdfjs();
+            expect(PDFJS.disableStream).to.be.true;
+        });
+
+        it('should not disable range requests if the locale is en-US', () => {
+            docBase.setupPdfjs();
+            expect(PDFJS.disableRange).to.be.false;
+        });
+
+        it('should disable range requests if locale is not en-US, the file is smaller than 25MB and is not an Excel file', () => {
+            docBase.options.file.size = 26000000;
+            docBase.options.extension = 'pdf';
+            docBase.options.location.locale = 'ja-JP';
+            docBase.setupPdfjs();
+            expect(PDFJS.disableRange).to.be.true;
+        });
+
+        it('should enable range requests if locale is not en-US, the file is greater than 25MB and is not watermarked', () => {
+            docBase.options.location.locale = 'ja-JP';
+            docBase.options.file.size = 26500000;
+            docBase.options.extension = 'pdf';
+            docBase.options.file.watermark_info.is_watermarked = false;
             docBase.setupPdfjs();
             expect(PDFJS.disableRange).to.be.false;
         });
