@@ -838,22 +838,6 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.resize();
             expect(dash.mediaEl.style.width).to.equal('325px');
         });
-
-        describe('Full screen mode', () => {
-            it('should set mediaEl width to viewport width if aspect ratio is >= 1', () => {
-                sandbox.stub(fullscreen, 'isFullscreen').returns(true);
-                dash.resize();
-                expect(dash.mediaEl.style.width).to.equal('600px');
-            });
-
-            it('should set mediaEl width to adjusted viewport height if aspect ratio is < 1', () => {
-                sandbox.stub(fullscreen, 'isFullscreen').returns(true);
-                dash.aspect = 0.5;
-                dash.resize();
-                expect(dash.mediaEl.style.width).to.equal('325px');
-            });
-        });
-
         describe('Video fits in the viewport of preview', () => {
             it('should set mediaEl width to video width if aspect ratio is >= 1', () => {
                 dash.resize();

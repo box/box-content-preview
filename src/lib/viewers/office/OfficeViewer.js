@@ -50,6 +50,11 @@ class OfficeViewer extends BaseViewer {
         if (this.printPopup) {
             this.printPopup.destroy();
         }
+
+        if (this.printURL) {
+            URL.revokeObjectURL(this.printURL);
+        }
+
         super.destroy();
     }
 
@@ -331,8 +336,11 @@ class OfficeViewer extends BaseViewer {
 
             // For other browsers, open and print in a new tab
         } else {
-            const printURL = URL.createObjectURL(this.printBlob);
-            const printResult = window.open(printURL);
+            if (!this.printURL) {
+                this.printURL = URL.createObjectURL(this.printBlob);
+            }
+
+            const printResult = window.open(this.printURL);
 
             // Open print popup if possible
             if (printResult && typeof printResult.print === 'function') {
@@ -360,8 +368,6 @@ class OfficeViewer extends BaseViewer {
             } else {
                 this.emit('printsuccess');
             }
-
-            URL.revokeObjectURL(printURL);
         }
     }
 }
