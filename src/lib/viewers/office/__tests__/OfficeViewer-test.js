@@ -92,6 +92,13 @@ describe('lib/viewers/office/OfficeViewer', () => {
             office.destroy();
             expect(office.printBlob).to.equal(null);
         });
+
+        it('should revoke the printURL object', () => {
+            sandbox.stub(URL, 'revokeObjectURL');
+            office.printURL = 'someblob';
+            office.destroy();
+            expect(URL.revokeObjectURL).to.be.calledWith(office.printURL);
+        });
     });
 
     describe('load()', () => {
@@ -382,7 +389,6 @@ describe('lib/viewers/office/OfficeViewer', () => {
             stubs.createObject = sandbox.stub(URL, 'createObjectURL');
             stubs.open = sandbox.stub(window, 'open').returns(false);
             stubs.browser = sandbox.stub(Browser, 'getName').returns('Chrome');
-            stubs.revokeObjectURL = sandbox.stub(URL, 'revokeObjectURL');
             stubs.printResult = {
                 print: sandbox.stub(),
                 addEventListener: sandbox.stub()
@@ -429,7 +435,6 @@ describe('lib/viewers/office/OfficeViewer', () => {
             expect(stubs.open).to.be.called.with;
             expect(stubs.browser).to.be.called;
             expect(stubs.emit).to.be.called;
-            expect(stubs.revokeObjectURL).to.be.called;
         });
 
         it('should use a timeout in safari', () => {
