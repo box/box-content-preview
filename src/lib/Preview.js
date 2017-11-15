@@ -860,6 +860,10 @@ class Preview extends EventEmitter {
         // Once the viewer instance has been created, emit it so that clients can attach their events.
         // Viewer object will still be sent along the load event also.
         this.emit('viewer', this.viewer);
+
+        // Reset retry count after successful load so we don't go into the retry short circuit when the same file
+        // previewed again
+        this.retryCount = 0;
     }
 
     /**

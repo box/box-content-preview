@@ -1349,6 +1349,11 @@ describe('lib/Preview', () => {
             preview.loadViewer();
             expect(stubs.emit).to.be.calledWith('viewer', stubs.viewer);
         });
+
+        it('should reset retry count', () => {
+            preview.loadViewer();
+            expect(preview.retryCount).to.equal(0);
+        });
     });
 
     describe('attachViewerListeners()', () => {
