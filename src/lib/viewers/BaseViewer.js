@@ -22,6 +22,7 @@ import {
     CLASS_FULLSCREEN_UNSUPPORTED,
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
+    EVENT_LOG,
     SELECTOR_BOX_PREVIEW,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
@@ -31,6 +32,7 @@ import {
     STATUS_VIEWABLE
 } from '../constants';
 import { ICON_FILE_DEFAULT } from '../icons/icons';
+import { LOG_CODES } from '../logging/logConstants';
 
 const ANNOTATION_TYPE_DRAW = 'draw';
 const ANNOTATION_TYPE_POINT = 'point';
@@ -661,9 +663,7 @@ class BaseViewer extends EventEmitter {
             const boxAnnotations = new BoxAnnotations();
             this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
         } catch (err) {
-            /* eslint-disable no-console */
-            console.error('Annotation assets failed to load');
-            /* eslint-enable no-console */
+            this.logError('Annotation assets failed to load');
         }
     }
 
@@ -829,6 +829,74 @@ class BaseViewer extends EventEmitter {
                 localizedStrings
             })
         );
+    }
+
+    //--------------------------------------------------------------------------
+    // Logging
+    //--------------------------------------------------------------------------
+
+    /**
+     * Emit an Info log event.
+     *
+     * @param {*} args - Data to be logged to the Logger as info.
+     * @return {void}
+     */
+    logInfo(...args) {
+        const dataWithType = {
+            event: LOG_CODES.info,
+            data: args
+        };
+
+        this.emit(EVENT_LOG, dataWithType);
+    }
+
+    /**
+     * Emit a Warning log event.
+     *
+     * @param {*} args - Data to be logged to the Logger as info.
+     * @return {void}
+     */
+    logWarning(...args) {
+        const dataWithType = {
+            event: LOG_CODES.warning,
+            data: args
+        };
+
+        this.emit(EVENT_LOG, dataWithType);
+    }
+
+    /**
+     * Emit a Error log event message.
+     *
+     * @param {*} args - Data to be logged to the Logger as info.
+     * @return {void}
+     */
+    logError(...args) {
+        const dataWithType = {
+            event: LOG_CODES.error,
+            data: args
+        };
+
+        this.emit(EVENT_LOG, dataWithType);
+    }
+
+    /**
+     * Emit a Metric event message.
+     *
+     * @param {integer} metricCode - The metric code corresponding to the action to record. See metricsConstants.js
+     * @param {*} metricValue - The value to save as a metric
+     * @return {void}
+     */
+    logMetric(metricCode, metricValue) {
+        const data = {
+            event: LOG_CODES.metric,
+            data: {
+                metricCode,
+                metricValue
+            }
+        };
+
+        this.emit(EVENT_LOG, data);
     }
 }
 

@@ -1,7 +1,7 @@
 // Kinds of logs that can be stored
 export const LOG_CODES = {
     error: 'ERROR',
-    encaught_error: 'UNCAUGHT_ERROR',
+    uncaught_error: 'UNCAUGHT_ERROR',
     warning: 'WARNING',
     info: 'INFO',
     metric: 'METRIC'

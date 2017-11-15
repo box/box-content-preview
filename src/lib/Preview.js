@@ -27,6 +27,7 @@ import {
     API_HOST,
     APP_HOST,
     CLASS_NAVIGATION_VISIBILITY,
+    EVENT_LOG,
     FILE_EXT_ERROR_MAP,
     PERMISSION_DOWNLOAD,
     PERMISSION_PREVIEW,
@@ -43,6 +44,7 @@ import {
     METRIC_CONTROLS,
     METRIC_CONTROL_ACTIONS
 } from './logging/metricsConstants';
+import { LOG_CODES } from './logging/logConstants';
 import './Preview.scss';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
@@ -100,8 +102,6 @@ class Preview extends EventEmitter {
     /** @property {FileMetrics} - File metrics tracker instance */
     fileMetrics;
 
-    /** @property {Logger} - Logging system instance */
-
     /** @property {number} - Number of times a particular preview has been retried */
     retryCount = 0;
 
@@ -122,6 +122,9 @@ class Preview extends EventEmitter {
 
     /** @property {PreviewUI} - Preview's UI instance */
     ui;
+
+    /** @property {Logger} - Preview's Logger instance */
+    logger;
 
     //--------------------------------------------------------------------------
     // Public
@@ -277,9 +280,7 @@ class Preview extends EventEmitter {
             if (checkFileValid(file)) {
                 cacheFile(this.cache, file);
             } else {
-                /* eslint-disable no-console */
-                console.error('[Preview SDK] Tried to cache invalid file: ', file);
-                /* eslint-enable no-console */
+                this.logger.error('[Preview SDK] Tried to cache invalid file: ', file);
             }
         });
     }
@@ -479,9 +480,7 @@ class Preview extends EventEmitter {
                 return;
             }
         } catch (err) {
-            /* eslint-disable no-console */
-            console.error(`Error prefetching file ID ${fileId} - ${err}`);
-            /* eslint-enable no-console */
+            this.logger.error(`Error prefetching file ID ${fileId} - ${err}`);
             return;
         }
 
@@ -885,6 +884,30 @@ class Preview extends EventEmitter {
     }
 
     /**
+     * Handles log events and delegates to the Logger instance.
+     *
+     * @param {LOG_CODES} event - Log event that occurred.
+     * @param {Object} data - Log event data.
+     * @return {void}
+     */
+    handlLogEvent(event, data) {
+        switch (event) {
+            case LOG_CODES.warning:
+                this.logger.warn(...data);
+                break;
+            case LOG_CODES.error:
+                this.logger.error(...data);
+                break;
+            case LOG_CODES.metric:
+                this.logger.metric(data.metricCode, data.metricValue);
+                break;
+            case LOG_CODES.info:
+            default:
+                this.logger.info(...data);
+        }
+    }
+
+    /**
      * Handle events emitted by the viewer
      *
      * @private
@@ -918,6 +941,9 @@ class Preview extends EventEmitter {
             case 'mediaendautoplay':
                 this.navigateRight();
                 break;
+            case EVENT_LOG:
+                this.handlLogEvent(data.event, data.data);
+                break;
             default:
                 // This includes 'notification', 'preload' and others
                 this.emit(data.event, data.data);
@@ -937,9 +963,7 @@ class Preview extends EventEmitter {
         try {
             super.emit(eventName, data);
         } catch (e) {
-            /* eslint-disable no-console */
-            console.error(e);
-            /* eslint-enable no-console */
+            this.logger.error(e);
         }
     }
 
@@ -1222,16 +1246,12 @@ class Preview extends EventEmitter {
                             });
                         })
                         .catch((err) => {
-                            /* eslint-disable no-console */
-                            console.error(`Error prefetching file ID ${id} - ${err}`);
-                            /* eslint-enable no-console */
+                            this.logger.error(`Error prefetching file ID ${id} - ${err}`);
                         });
                 });
             })
             .catch(() => {
-                /* eslint-disable no-console */
-                console.error('Error prefetching files');
-                /* eslint-enable no-console */
+                this.logger.error('Error prefetching files');
             });
     }
 
