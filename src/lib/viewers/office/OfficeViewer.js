@@ -3,7 +3,7 @@ import Browser from '../../Browser';
 import Popup from '../../Popup';
 import { CLASS_HIDDEN } from '../../constants';
 import { getRepresentation } from '../../file';
-import { ICON_FILE_EXCEL, ICON_PRINT_CHECKMARK } from '../../icons/icons';
+import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { get } from '../../util';
 
 const LOAD_TIMEOUT_MS = 120000;
@@ -33,8 +33,6 @@ class OfficeViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        this.fileLoadingIcon = ICON_FILE_EXCEL;
-
         // Call super() to set up common layout
         super.setup();
 

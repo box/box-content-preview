@@ -1,6 +1,6 @@
 import Browser from '../../Browser';
 import ImageBaseViewer from './ImageBaseViewer';
-import { ICON_FILE_IMAGE, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
+import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
 import { openContentInsideIframe } from '../../util';
 import './Image.scss';
@@ -25,8 +25,6 @@ class ImageViewer extends ImageBaseViewer {
      * @inheritdoc
      */
     setup() {
-        this.fileLoadingIcon = ICON_FILE_IMAGE;
-
         // Call super() to set up common layout
         super.setup();
 

@@ -1,7 +1,7 @@
 import ImageBaseViewer from './ImageBaseViewer';
 import PageControls from '../../PageControls';
 import './MultiImage.scss';
-import { ICON_FILE_IMAGE, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
+import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
 import { pageNumberFromScroll } from '../../util';
 
@@ -24,8 +24,6 @@ class MultiImageViewer extends ImageBaseViewer {
      * @inheritdoc
      */
     setup() {
-        this.fileLoadingIcon = ICON_FILE_IMAGE;
-
         // Call super() to set up common layout
         super.setup();
 
