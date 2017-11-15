@@ -1,3 +1,19 @@
+<a name="1.19.0"></a>
+# 1.19.0 (2017-11-14)
+
+* Update: box-annotations to v0.2.1 (#479) ([1229c0e](https://github.com/box/box-content-preview/commit/1229c0e))
+* Update: box-annotations to v0.3.0 (#485) ([a786dfe](https://github.com/box/box-content-preview/commit/a786dfe)), closes [#21](https://github.com/box/box-content-preview/issues/21) [#21](https://github.com/box/box-content-preview/issues/21)
+* Update: Disable pdf.js streaming (#483) ([5a062c1](https://github.com/box/box-content-preview/commit/5a062c1))
+* New: Updated file icons (#484) ([25d7840](https://github.com/box/box-content-preview/commit/25d7840))
+* Fix: Correctly revoke objectURL for print blob in office viewer (#482) ([bc12c53](https://github.com/box/box-content-preview/commit/bc12c53))
+* Fix: Simplify video resize logic (#480) ([b666605](https://github.com/box/box-content-preview/commit/b666605))
+* Fix: toggleannotationmode event to trigger the right method (#478) ([f27bb07](https://github.com/box/box-content-preview/commit/f27bb07))
+* Mojito: Update translations (#458) ([28fa161](https://github.com/box/box-content-preview/commit/28fa161))
+* Upgrade: pdf.js v2.0.104 (#474) ([a86618f](https://github.com/box/box-content-preview/commit/a86618f))
+*  Update: npm packages to latest versions (#472) ([26e8d7b](https://github.com/box/box-content-preview/commit/26e8d7b))
+
+
+
 <a name="1.18.0"></a>
 # 1.18.0 (2017-11-08)
 

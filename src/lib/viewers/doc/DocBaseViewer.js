@@ -23,7 +23,15 @@ import { checkPermission, getRepresentation } from '../../file';
 import { get, createAssetUrlCreator } from '../../util';
 import {
     ICON_FILE_DOCUMENT,
+    ICON_FILE_EXCEL,
+    ICON_FILE_GOOGLE_DOC,
+    ICON_FILE_GOOGLE_SHEET,
+    ICON_FILE_GOOGLE_SLIDE,
+    ICON_FILE_KEYNOTE,
+    ICON_FILE_NUMBERS,
+    ICON_FILE_PAGES,
     ICON_FILE_PDF,
+    ICON_FILE_POWERPOINT,
     ICON_FILE_PRESENTATION,
     ICON_FILE_SPREADSHEET,
     ICON_FILE_WORD,
@@ -43,21 +51,26 @@ const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
 const RANGE_REQUEST_CHUNK_SIZE_US = 1048576; // 1MB
 const RANGE_REQUEST_CHUNK_SIZE_NON_US = 524288; // 512KB
+const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 26214400; // 25MB
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 
 const LOADING_ICON_MAP = {
     csv: ICON_FILE_SPREADSHEET,
     doc: ICON_FILE_WORD,
     docx: ICON_FILE_WORD,
-    gdoc: ICON_FILE_WORD,
-    gsheet: ICON_FILE_SPREADSHEET,
+    gdoc: ICON_FILE_GOOGLE_DOC,
+    gsheet: ICON_FILE_GOOGLE_SHEET,
+    gslide: ICON_FILE_GOOGLE_SLIDE,
+    key: ICON_FILE_KEYNOTE,
+    numbers: ICON_FILE_NUMBERS,
     odp: ICON_FILE_PRESENTATION,
+    pages: ICON_FILE_PAGES,
     pdf: ICON_FILE_PDF,
-    ppt: ICON_FILE_PRESENTATION,
-    pptx: ICON_FILE_PRESENTATION,
-    xls: ICON_FILE_SPREADSHEET,
-    xlsm: ICON_FILE_SPREADSHEET,
-    xlsx: ICON_FILE_SPREADSHEET
+    ppt: ICON_FILE_POWERPOINT,
+    pptx: ICON_FILE_POWERPOINT,
+    xls: ICON_FILE_EXCEL,
+    xlsm: ICON_FILE_EXCEL,
+    xlsx: ICON_FILE_EXCEL
 };
 
 @autobind
@@ -591,7 +604,7 @@ class DocBaseViewer extends BaseViewer {
     setupPdfjs() {
         // Set PDFJS worker & character maps
         const { file, location } = this.options;
-        const { watermark_info: watermarkInfo } = file;
+        const { size, watermark_info: watermarkInfo } = file;
         const assetUrlCreator = createAssetUrlCreator(location);
         PDFJS.workerSrc = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/pdf.worker.min.js`);
         PDFJS.imageResourcesPath = assetUrlCreator(`third-party/doc/${DOC_STATIC_ASSETS_VERSION}/images/`);
@@ -601,13 +614,22 @@ class DocBaseViewer extends BaseViewer {
         // Open links in new tab
         PDFJS.externalLinkTarget = PDFJS.LinkTarget.BLANK;
 
+        // Disable streaming via fetch until performance is improved
+        PDFJS.disableStream = true;
+
         // Disable font faces on IOS 10.3.X
         // @NOTE(JustinHoldstock) 2017-04-11: Check to remove this after next IOS release after 10.3.1
         PDFJS.disableFontFace = PDFJS.disableFontFace || Browser.hasFontIssue();
 
-        // Disable range requests for watermarked files since they are streamed, otherwise override range request
-        // disabling by pdf.js's compatibility checking since all the browsers we support allow range requests
-        PDFJS.disableRange = watermarkInfo && watermarkInfo.is_watermarked;
+        // Disable range requests for files smaller than MINIMUM_RANGE_REQUEST_FILE_SIZE (25MB) for
+        // previews outside of the US since the additional latency overhead per range request can be
+        // more than the additional time for a continuous request. This also overrides any range request
+        // disabling that may be set by pdf.js's compatibility checking since the browsers we support
+        // should all be able to properly handle range requests.
+        PDFJS.disableRange = location.locale !== 'en-US' && size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US;
+
+        // Disable range requests for watermarked files since they are streamed
+        PDFJS.disableRange = PDFJS.disableRange || (watermarkInfo && watermarkInfo.is_watermarked);
 
         // Disable text layer if user doesn't have download permissions
         PDFJS.disableTextLayer =
