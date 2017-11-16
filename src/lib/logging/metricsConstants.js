@@ -4,8 +4,11 @@
 export const METRIC_FILE_PREVIEW_SUCCESS = 1;
 export const METRIC_FILE_PREVIEW_FAIL = 2;
 
+// User aborted preview before it could load
+export const METRIC_FILE_PREVIEW_ABORTED = 3;
+
 // Interaction with Preview controls
-export const METRIC_CONTROLS = 3;
+export const METRIC_CONTROLS = 4;
 
 export const METRIC_CONTROL_ACTIONS = {
     zoom_in_button: 1,

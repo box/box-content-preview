@@ -616,8 +616,8 @@ class Preview extends EventEmitter {
         this.container = this.ui.setup(
             this.options,
             this.keydownHandler,
-            this.navigateLeft,
-            this.navigateRight,
+            this.uiNavigateLeft,
+            this.uiNavigateRight,
             this.getGlobalMousemoveHandler()
         );
 
@@ -1352,6 +1352,28 @@ class Preview extends EventEmitter {
      */
     getLoader(file) {
         return this.loaders.find((loader) => loader.canLoad(file, Object.keys(this.disabledViewers)));
+    }
+
+    /**
+     * Navigate right via the UI.
+     *
+     * @private
+     * @return {void}
+     */
+    uiNavigateRight() {
+        this.logger.metric(METRIC_CONTROLS, METRIC_CONTROL_ACTIONS.navigate_prev_button);
+        this.navigateRight();
+    }
+
+    /**
+     * Navigate left via the UI.
+     *
+     * @private
+     * @return {void}
+     */
+    uiNavigateLeft() {
+        this.logger.metric(METRIC_CONTROLS, METRIC_CONTROL_ACTIONS.navigate_next_button);
+        this.navigateRight();
     }
 
     /**

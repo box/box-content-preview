@@ -211,19 +211,18 @@ class Logger {
     getLogs(code) {
         const logs = {};
 
-        if (!code) {
-            Object.keys(LOG_CODES).forEach((msgCode) => {
-                const logCode = LOG_CODES[msgCode];
-                logs[logCode] = this.cache.getGroup(logCode);
-            });
-        } else if (Array.isArray(code)) {
-            code.forEach((msgCode) => {
-                const logCode = LOG_CODES[msgCode];
-                logs[logCode] = this.cache.getGroup(logCode);
-            });
-        } else {
-            const logCode = LOG_CODES[code];
+        // eslint-disable-next-line require-jsdoc
+        const addGroupToLogs = (msgCode) => {
+            const logCode = LOG_CODES[msgCode];
             logs[logCode] = this.cache.getGroup(logCode);
+        };
+
+        if (!code) {
+            Object.keys(LOG_CODES).forEach(addGroupToLogs);
+        } else if (Array.isArray(code)) {
+            code.forEach(addGroupToLogs);
+        } else {
+            addGroupToLogs(code.toLowerCase());
         }
 
         return logs;
