@@ -2,6 +2,7 @@ import * as LogLevel from 'loglevel';
 
 import LoggerCache from './LoggerCache';
 import LoggerNetwork from './LoggerNetwork';
+import { registerLogger, unregisterLogger } from './loggerRegistry';
 import { LOG_CODES, LOG_LEVELS } from './logConstants';
 import { arrayToString, sortLogsByTime, printLog } from './logUtils';
 
@@ -21,6 +22,8 @@ class Logger {
 
     /** */
     networkLayer;
+
+    name;
 
     /**
      * @constructor
@@ -49,6 +52,8 @@ class Logger {
 
         this.onUncaughtError = this.onUncaughtError.bind(this);
         window.addEventListener('error', this.onUncaughtError);
+
+        this.name = registerLogger(this);
     }
 
     /**
@@ -63,6 +68,9 @@ class Logger {
         this.logger = null;
 
         window.removeEventListener('error', this.onUncaughtError);
+
+        unregisterLogger(this.name);
+        this.name = null;
     }
 
     /**
