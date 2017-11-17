@@ -66,6 +66,53 @@ describe('lib/viewers/doc/DocPreloader', () => {
         });
     });
 
+    describe('scaleAndShowPreload()', () => {
+        beforeEach(() => {
+            stubs.checkDocumentLoaded = sandbox.stub(docPreloader, 'checkDocumentLoaded');
+            stubs.emit = sandbox.stub(docPreloader, 'emit');
+            stubs.setDimensions = sandbox.stub(util, 'setDimensions');
+            stubs.hideLoadingIndicator = sandbox.stub(docPreloader.previewUI, 'hideLoadingIndicator');
+            docPreloader.imageEl = {};
+            docPreloader.preloadEl = document.createElement('div');
+        });
+
+        it('should not do anything if document is loaded', () => {
+            stubs.checkDocumentLoaded.returns(true);
+
+            docPreloader.scaleAndShowPreload(1, 1, 1);
+
+            expect(stubs.setDimensions).to.not.be.called;
+            expect(stubs.hideLoadingIndicator).to.not.be.called;
+        });
+
+        it('should set preload image dimensions, hide loading indicator, show preload element, and emit preload event', () => {
+            docPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
+
+            const width = 100;
+            const height = 100;
+
+            docPreloader.scaleAndShowPreload(width, height, 1);
+
+            expect(stubs.setDimensions).to.be.calledWith(docPreloader.imageEl, width, height);
+            expect(stubs.setDimensions).to.be.calledWith(docPreloader.overlayEl, width, height);
+            expect(stubs.hideLoadingIndicator).to.be.called;
+            expect(stubs.emit).to.be.calledWith('preload');
+            expect(docPreloader.preloadEl).to.not.have.class(CLASS_INVISIBLE);
+        });
+
+        [5, 10, 11, 100].forEach((numPages) => {
+            it('should create and set dimensions for numPages - 1 placeholders', () => {
+                docPreloader.scaleAndShowPreload(100, 100, numPages);
+
+                // Should scale 1 preload image, one overlay, and numPages - 1 placeholders
+                expect(stubs.setDimensions).to.have.callCount(numPages + 1);
+
+                // Should have numPages - 1 placeholder elements
+                expect(docPreloader.preloadEl).to.have.length(numPages - 1);
+            });
+        });
+    });
+
     describe('hidePreload()', () => {
         beforeEach(() => {
             stubs.restoreScrollPosition = sandbox.stub(docPreloader, 'restoreScrollPosition');
@@ -128,53 +175,6 @@ describe('lib/viewers/doc/DocPreloader', () => {
             expect(docPreloader.preloadEl).to.be.undefined;
             expect(docPreloader.imageEl).to.be.undefined;
             expect(containerEl).to.not.contain(docPreloader.wrapperEl);
-        });
-    });
-
-    describe('scaleAndShowPreload()', () => {
-        beforeEach(() => {
-            stubs.checkDocumentLoaded = sandbox.stub(docPreloader, 'checkDocumentLoaded');
-            stubs.emit = sandbox.stub(docPreloader, 'emit');
-            stubs.setDimensions = sandbox.stub(util, 'setDimensions');
-            stubs.hideLoadingIndicator = sandbox.stub(docPreloader.previewUI, 'hideLoadingIndicator');
-            docPreloader.imageEl = {};
-            docPreloader.preloadEl = document.createElement('div');
-        });
-
-        it('should not do anything if document is loaded', () => {
-            stubs.checkDocumentLoaded.returns(true);
-
-            docPreloader.scaleAndShowPreload(1, 1, 1);
-
-            expect(stubs.setDimensions).to.not.be.called;
-            expect(stubs.hideLoadingIndicator).to.not.be.called;
-        });
-
-        it('should set preload image dimensions, hide loading indicator, show preload element, and emit preload event', () => {
-            docPreloader.preloadEl.classList.add(CLASS_INVISIBLE);
-
-            const width = 100;
-            const height = 100;
-
-            docPreloader.scaleAndShowPreload(width, height, 1);
-
-            expect(stubs.setDimensions).to.be.calledWith(docPreloader.imageEl, width, height);
-            expect(stubs.setDimensions).to.be.calledWith(docPreloader.overlayEl, width, height);
-            expect(stubs.hideLoadingIndicator).to.be.called;
-            expect(stubs.emit).to.be.calledWith('preload');
-            expect(docPreloader.preloadEl).to.not.have.class(CLASS_INVISIBLE);
-        });
-
-        [5, 10, 11, 100].forEach((numPages) => {
-            it('should create and set dimensions for numPages - 1 placeholders', () => {
-                docPreloader.scaleAndShowPreload(100, 100, numPages);
-
-                // Should scale 1 preload image, one overlay, and numPages - 1 placeholders
-                expect(stubs.setDimensions).to.have.callCount(numPages + 1);
-
-                // Should have numPages - 1 placeholder elements
-                expect(docPreloader.preloadEl).to.have.length(numPages - 1);
-            });
         });
     });
 
@@ -328,6 +328,82 @@ describe('lib/viewers/doc/DocPreloader', () => {
         });
     });
 
+    describe('getScaledDimensions()', () => {
+        beforeEach(() => {
+            docPreloader.wrapperEl = document.createElement('div');
+            containerEl.appendChild(docPreloader.wrapperEl);
+        });
+
+        it('should scale up to a max defined by maxZoomScale', () => {
+            const clientWidth = 500;
+            const clientHeight = 500;
+            docPreloader.wrapperEl.style.width = `${clientWidth}px`;
+            docPreloader.wrapperEl.style.height = `${clientHeight}px`;
+            const expectedScale = 1.25;
+            docPreloader.maxZoomScale = expectedScale;
+
+            const scaledDimensions = docPreloader.getScaledDimensions(100, 100);
+            expect(scaledDimensions).to.deep.equal({
+                scaledWidth: Math.floor(expectedScale * 100),
+                scaledHeight: Math.floor(expectedScale * 100)
+            });
+        });
+
+        it('should scale with height scale if in landscape and height scale is less than width scale', () => {
+            const clientWidth = 1000;
+            const clientHeight = 500;
+            docPreloader.wrapperEl.style.width = `${clientWidth}px`;
+            docPreloader.wrapperEl.style.height = `${clientHeight}px`;
+
+            const pdfWidth = 1000;
+            const pdfHeight = 600;
+            const scaledDimensions = docPreloader.getScaledDimensions(pdfWidth, pdfHeight);
+
+            // Expect height scale to be used
+            const expectedScale = (clientHeight - 5) / pdfHeight;
+            expect(scaledDimensions).to.deep.equal({
+                scaledWidth: Math.floor(expectedScale * pdfWidth),
+                scaledHeight: Math.floor(expectedScale * pdfHeight)
+            });
+        });
+
+        it('should scale with width scale if in landscape and width scale is less than height scale', () => {
+            const clientWidth = 1000;
+            const clientHeight = 500;
+            docPreloader.wrapperEl.style.width = `${clientWidth}px`;
+            docPreloader.wrapperEl.style.height = `${clientHeight}px`;
+
+            const pdfWidth = 1000;
+            const pdfHeight = 500;
+            const scaledDimensions = docPreloader.getScaledDimensions(pdfWidth, pdfHeight);
+
+            // Expect width scale to be used
+            const expectedScale = (clientWidth - 40) / pdfWidth;
+            expect(scaledDimensions).to.deep.equal({
+                scaledWidth: Math.floor(expectedScale * pdfWidth),
+                scaledHeight: Math.floor(expectedScale * pdfHeight)
+            });
+        });
+
+        it('should scale with width scale if not in landscape', () => {
+            const clientWidth = 600;
+            const clientHeight = 1100;
+            docPreloader.wrapperEl.style.width = `${clientWidth}px`;
+            docPreloader.wrapperEl.style.height = `${clientHeight}px`;
+
+            const pdfWidth = 500;
+            const pdfHeight = 1000;
+            const scaledDimensions = docPreloader.getScaledDimensions(pdfWidth, pdfHeight);
+
+            // Expect width scale to be used
+            const expectedScale = (clientWidth - 40) / pdfWidth;
+            expect(scaledDimensions).to.deep.equal({
+                scaledWidth: Math.floor(expectedScale * pdfWidth),
+                scaledHeight: Math.floor(expectedScale * pdfHeight)
+            });
+        });
+    });
+
     describe('readEXIF()', () => {
         let fakeImageEl;
 
@@ -455,83 +531,6 @@ describe('lib/viewers/doc/DocPreloader', () => {
                     });
                 })
                 .catch(() => Assert.fail());
-        });
-    });
-
-    describe('getScaledDimensions()', () => {
-        beforeEach(() => {
-            docPreloader.wrapperEl = document.createElement('div');
-            containerEl.appendChild(docPreloader.wrapperEl);
-        });
-
-        it('should scale up to a max of 1.25', () => {
-            const clientWidth = 500;
-            const clientHeight = 500;
-            docPreloader.wrapperEl.style.width = `${clientWidth}px`;
-            docPreloader.wrapperEl.style.height = `${clientHeight}px`;
-
-            const scaledDimensions = docPreloader.getScaledDimensions(100, 100);
-
-            // Expect max scale of 1.25
-            const expectedScale = 1.25;
-            expect(scaledDimensions).to.deep.equal({
-                scaledWidth: Math.floor(expectedScale * 100),
-                scaledHeight: Math.floor(expectedScale * 100)
-            });
-        });
-
-        it('should scale with height scale if in landscape and height scale is less than width scale', () => {
-            const clientWidth = 1000;
-            const clientHeight = 500;
-            docPreloader.wrapperEl.style.width = `${clientWidth}px`;
-            docPreloader.wrapperEl.style.height = `${clientHeight}px`;
-
-            const pdfWidth = 1000;
-            const pdfHeight = 600;
-            const scaledDimensions = docPreloader.getScaledDimensions(pdfWidth, pdfHeight);
-
-            // Expect height scale to be used
-            const expectedScale = (clientHeight - 5) / pdfHeight;
-            expect(scaledDimensions).to.deep.equal({
-                scaledWidth: Math.floor(expectedScale * pdfWidth),
-                scaledHeight: Math.floor(expectedScale * pdfHeight)
-            });
-        });
-
-        it('should scale with width scale if in landscape and width scale is less than height scale', () => {
-            const clientWidth = 1000;
-            const clientHeight = 500;
-            docPreloader.wrapperEl.style.width = `${clientWidth}px`;
-            docPreloader.wrapperEl.style.height = `${clientHeight}px`;
-
-            const pdfWidth = 1000;
-            const pdfHeight = 500;
-            const scaledDimensions = docPreloader.getScaledDimensions(pdfWidth, pdfHeight);
-
-            // Expect width scale to be used
-            const expectedScale = (clientWidth - 40) / pdfWidth;
-            expect(scaledDimensions).to.deep.equal({
-                scaledWidth: Math.floor(expectedScale * pdfWidth),
-                scaledHeight: Math.floor(expectedScale * pdfHeight)
-            });
-        });
-
-        it('should scale with width scale if not in landscape', () => {
-            const clientWidth = 600;
-            const clientHeight = 1100;
-            docPreloader.wrapperEl.style.width = `${clientWidth}px`;
-            docPreloader.wrapperEl.style.height = `${clientHeight}px`;
-
-            const pdfWidth = 500;
-            const pdfHeight = 1000;
-            const scaledDimensions = docPreloader.getScaledDimensions(pdfWidth, pdfHeight);
-
-            // Expect width scale to be used
-            const expectedScale = (clientWidth - 40) / pdfWidth;
-            expect(scaledDimensions).to.deep.equal({
-                scaledWidth: Math.floor(expectedScale * pdfWidth),
-                scaledHeight: Math.floor(expectedScale * pdfHeight)
-            });
         });
     });
 

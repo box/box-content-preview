@@ -7,17 +7,16 @@ import {
     CLASS_INVISIBLE,
     CLASS_IS_TRANSPARENT,
     CLASS_PREVIEW_LOADED,
-    CLASS_SPINNER
+    CLASS_SPINNER,
+    PDFJS_CSS_UNITS,
+    PDFJS_MAX_AUTO_SCALE,
+    PDFJS_WIDTH_PADDING_PX,
+    PDFJS_HEIGHT_PADDING_PX
 } from '../../constants';
 import { get, setDimensions } from '../../util';
 
 const EXIF_COMMENT_TAG_NAME = 'UserComment'; // Read EXIF data from 'UserComment' tag
 const EXIF_COMMENT_REGEX = /pdfWidth:([0-9.]+)pts,pdfHeight:([0-9.]+)pts,numPages:([0-9]+)/;
-
-const PDFJS_CSS_UNITS = 96.0 / 72.0; // Should match CSS_UNITS in pdf_viewer.js
-const PDFJS_MAX_AUTO_SCALE = 1.25; // Should match MAX_AUTO_SCALE in pdf_viewer.js
-const PDFJS_WIDTH_PADDING_PX = 40; // Should match SCROLLBAR_PADDING in pdf_viewer.js
-const PDFJS_HEIGHT_PADDING_PX = 5; // Should match VERTICAL_PADDING in pdf_viewer.js
 
 const NUM_PAGES_DEFAULT = 2; // Default to 2 pages for preload if true number of pages cannot be read
 const NUM_PAGES_MAX = 500; // Don't show more than 500 placeholder pages
@@ -32,6 +31,9 @@ class DocPreloader extends EventEmitter {
 
     /** @property {HTMLElement} - Preload image element */
     imageEl;
+
+    /** @property {HTMLElement} - Maximum auto-zoom scale */
+    maxZoomScale = PDFJS_MAX_AUTO_SCALE;
 
     /** @property {HTMLElement} - Preload overlay element */
     overlayEl;
@@ -59,7 +61,6 @@ class DocPreloader extends EventEmitter {
      */
     constructor(previewUI) {
         super();
-
         this.previewUI = previewUI;
         this.wrapperClassName = CLASS_BOX_PREVIEW_PRELOAD_WRAPPER_DOCUMENT;
     }
@@ -243,6 +244,33 @@ class DocPreloader extends EventEmitter {
     };
 
     /**
+     * Returns scaled PDF dimensions using same algorithm as pdf.js up to a maximum of 1.25x zoom.
+     *
+     * @private
+     * @param {number} pdfWidth - Width of PDF in pixels
+     * @param {number} pdfHeight - Height of PDF in pixels
+     * @return {Object} Scaled width and height in pixels
+     */
+    getScaledDimensions(pdfWidth, pdfHeight) {
+        const { clientWidth, clientHeight } = this.wrapperEl;
+        const widthScale = (clientWidth - PDFJS_WIDTH_PADDING_PX) / pdfWidth;
+        const heightScale = (clientHeight - PDFJS_HEIGHT_PADDING_PX) / pdfHeight;
+
+        const isLandscape = pdfWidth > pdfHeight;
+        let scale = isLandscape ? Math.min(heightScale, widthScale) : widthScale;
+
+        // Optionally limit to maximum zoom scale if defined
+        if (this.maxZoomScale) {
+            scale = Math.min(this.maxZoomScale, scale);
+        }
+
+        return {
+            scaledWidth: Math.floor(scale * pdfWidth),
+            scaledHeight: Math.floor(scale * pdfHeight)
+        };
+    }
+
+    /**
      * Reads EXIF from preload JPG for PDF width, height, and numPages. This is currently encoded
      * by Box Conversion into the preload JPG itself, but eventually this information will be
      * available as a property on the preload representation object.
@@ -307,29 +335,6 @@ class DocPreloader extends EventEmitter {
                 reject(new Error('Error reading EXIF data'));
             }
         });
-    }
-
-    /**
-     * Returns scaled PDF dimensions using same algorithm as pdf.js up to a maximum of 1.25x zoom.
-     *
-     * @private
-     * @param {number} pdfWidth - Width of PDF in pixels
-     * @param {number} pdfHeight - Height of PDF in pixels
-     * @return {Object} Scaled width and height in pixels
-     */
-    getScaledDimensions(pdfWidth, pdfHeight) {
-        const { clientWidth, clientHeight } = this.wrapperEl;
-        const widthScale = (clientWidth - PDFJS_WIDTH_PADDING_PX) / pdfWidth;
-        const heightScale = (clientHeight - PDFJS_HEIGHT_PADDING_PX) / pdfHeight;
-        const isLandscape = pdfWidth > pdfHeight;
-
-        let scale = isLandscape ? Math.min(heightScale, widthScale) : widthScale;
-        scale = Math.min(PDFJS_MAX_AUTO_SCALE, scale);
-
-        return {
-            scaledWidth: Math.floor(scale * pdfWidth),
-            scaledHeight: Math.floor(scale * pdfHeight)
-        };
     }
 
     /**
