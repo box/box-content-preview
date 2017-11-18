@@ -122,8 +122,15 @@ function addOriginalRepresentation(file) {
         return;
     }
 
-    // Add an original representation if it doesn't already exist
-    const template = appendQueryParams(file.authenticated_download_url, { preview: 'true' });
+    const queryParams = {
+        preview: 'true'
+    };
+
+    if (file.file_version) {
+        queryParams.version = file.file_version.id;
+    }
+
+    const template = appendQueryParams(file.authenticated_download_url, queryParams);
     file.representations.entries.push({
         content: {
             url_template: template

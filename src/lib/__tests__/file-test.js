@@ -167,6 +167,25 @@ describe('lib/file', () => {
             cacheFile(cache, file);
             expect(file.representations.entries.length).to.equal(1);
         });
+
+        it('should append file version to original rep content URL', () => {
+            const cache = {
+                set: sandbox.stub()
+            };
+
+            const file = {
+                id: '0',
+                file_version: {
+                    id: '123'
+                },
+                representations: {
+                    entries: []
+                }
+            };
+
+            cacheFile(cache, file);
+            expect(file.representations.entries[0].content.url_template).to.have.string('version=123');
+        });
     });
 
     describe('uncacheFile', () => {
