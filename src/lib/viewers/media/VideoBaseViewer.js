@@ -77,6 +77,10 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.mediaControls.show();
     }
 
+    loadUI() {
+        super.loadUI();
+    }
+
     /**
      * Handler for a pointer event on the media element.
      *

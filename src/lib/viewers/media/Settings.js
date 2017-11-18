@@ -12,11 +12,15 @@ const CLASS_SETTINGS_SELECTED = 'bp-media-settings-selected';
 const CLASS_SETTINGS_OPEN = 'bp-media-settings-is-open';
 const CLASS_SETTINGS_SUBTITLES_UNAVAILABLE = 'bp-media-settings-subtitles-unavailable';
 const CLASS_SETTINGS_AUDIOTRACKS_UNAVAILABLE = 'bp-media-settings-audiotracks-unavailable';
+const CLASS_SETTINGS_HD_UNAVAILABLE = 'bp-media-settings-hd-unavailable';
 const CLASS_SETTINGS_AUTOPLAY_UNAVAILABLE = 'bp-media-settings-autoplay-unavailable';
 const CLASS_SETTINGS_SUBTITLES_ON = 'bp-media-settings-subtitles-on';
 const SELECTOR_SETTINGS_SUB_ITEM = '.bp-media-settings-sub-item';
 const SELECTOR_SETTINGS_VALUE = '.bp-media-settings-value';
 const MEDIA_SPEEDS = ['0.5', '1.0', '1.25', '1.5', '2.0'];
+const MEDIA_QUALITY_SD = 'sd';
+const MEDIA_QUALITY_HD = 'hd';
+const MEDIA_QUALITY_AUTO = 'auto';
 
 const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
     <div class="bp-media-settings-menu-main bp-media-settings-menu" role="menu">
@@ -86,20 +90,26 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
             <div class="bp-media-settings-value">2.0</div>
         </div>
     </div>
-    <div class="bp-media-settings-menu-quality bp-media-settings-menu" role="menu">
+    <div class="bp-media-settings-menu-quality bp-media-settings-menu bp-media-settings-is-hidden" role="menu">
         <div class="bp-media-settings-sub-item bp-media-settings-sub-item-quality" data-type="menu" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
             <div class="bp-media-settings-label" aria-label="${__('media_quality')}">${__('media_quality')}</div>
         </div>
-        <div class="bp-media-settings-sub-item" data-type="quality" data-value="sd" tabindex="0" role="menuitemradio">
+        <div class="bp-media-settings-sub-item" data-type="quality" data-value=${
+    MEDIA_QUALITY_SD
+} tabindex="0" role="menuitemradio">
             <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
             <div class="bp-media-settings-value">480p</div>
         </div>
-        <div class="bp-media-settings-sub-item" data-type="quality" data-value="hd" tabindex="0" role="menuitemradio">
+        <div class="bp-media-settings-sub-item" data-type="quality" data-value=${
+    MEDIA_QUALITY_HD
+} tabindex="0" role="menuitemradio">
             <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
             <div class="bp-media-settings-value">1080p</div>
         </div>
-        <div class="bp-media-settings-sub-item bp-media-settings-selected" data-type="quality" data-value="auto" tabindex="0" role="menuitemradio" aria-checked="true">
+        <div class="bp-media-settings-sub-item bp-media-settings-selected" data-type="quality" data-value=${
+    MEDIA_QUALITY_AUTO
+} tabindex="0" role="menuitemradio" aria-checked="true">
             <div class="bp-media-settings-icon">${ICON_CHECK_MARK}</div>
             <div class="bp-media-settings-value">${__('media_quality_auto')}</div>
         </div>
@@ -185,6 +195,7 @@ class Settings extends EventEmitter {
         addActivationListener(this.settingsEl, this.menuEventHandler);
         this.containerEl.classList.add(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
         this.containerEl.classList.add(CLASS_SETTINGS_AUDIOTRACKS_UNAVAILABLE);
+        this.containerEl.classList.add(CLASS_SETTINGS_HD_UNAVAILABLE);
 
         // Allow scrollbars after animations end
         this.settingsEl.addEventListener('transitionend', this.handleTransitionEnd);
@@ -203,11 +214,11 @@ class Settings extends EventEmitter {
      * @return {void}
      */
     init() {
-        const quality = this.cache.get('media-quality') || 'auto';
         const speed = this.cache.get('media-speed') || '1.0';
         const autoplay = this.cache.get('media-autoplay') || 'Disabled';
 
-        this.chooseOption(TYPE_QUALITY, quality);
+        // We initialize quality with SD because we don't yet know if the video has an HD rep
+        this.chooseOption(TYPE_QUALITY, MEDIA_QUALITY_SD, false);
         this.chooseOption(TYPE_SPEED, speed);
         this.chooseOption(TYPE_AUTOPLAY, autoplay);
     }
@@ -465,11 +476,14 @@ class Settings extends EventEmitter {
      *
      * @param {string} type - of menu option
      * @param {string} value - of menu option
+     * @param {boolean} setCache - should we set the cache with the given settings value
      * @return {void}
      */
-    chooseOption(type, value) {
-        // Save the value
-        this.cache.set(`media-${type}`, value, true);
+    chooseOption(type, value, setCache = true) {
+        // Save the value if specified
+        if (setCache) {
+            this.cache.set(`media-${type}`, value, true);
+        }
 
         // Emit to the listener what was chosen
         this.emit(type);
@@ -698,6 +712,21 @@ class Settings extends EventEmitter {
 
         this.containerEl.classList.remove(CLASS_SETTINGS_AUDIOTRACKS_UNAVAILABLE);
         this.reset();
+    }
+
+    /**
+     * Adds the quality options to the settings menu
+     *
+     * @return {void}
+     */
+    enableHD() {
+        this.containerEl.classList.remove(CLASS_SETTINGS_HD_UNAVAILABLE);
+
+        // Check our cached settings value now that we know the HD rep is available
+        const quality = this.cache.get('media-quality') || MEDIA_QUALITY_AUTO;
+        this.chooseOption(TYPE_QUALITY, quality);
+
+        // this.reset();
     }
 }
 

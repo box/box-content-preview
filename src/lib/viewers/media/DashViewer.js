@@ -288,7 +288,8 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     handleQuality() {
-        const quality = this.cache.get('media-quality');
+        // If there is no HD rep, use the standard definition option
+        const quality = this.hdVideoId !== -1 ? this.cache.get('media-quality') : 'sd';
 
         switch (quality) {
             case 'hd':
@@ -343,9 +344,8 @@ class DashViewer extends VideoBaseViewer {
      */
     shakaErrorHandler(shakaError) {
         const error = new Error(
-            `Shaka error. Code = ${shakaError.detail.code}, Category = ${shakaError.detail.category}, Severity = ${
-                shakaError.detail.severity
-            }, Data = ${shakaError.detail.data.toString()}`
+            `Shaka error. Code = ${shakaError.detail.code}, Category = ${shakaError.detail
+                .category}, Severity = ${shakaError.detail.severity}, Data = ${shakaError.detail.data.toString()}`
         );
         error.displayMessage = __('error_refresh');
 
@@ -449,6 +449,14 @@ class DashViewer extends VideoBaseViewer {
         this.showMedia();
         this.mediaControls.show();
         this.mediaContainerEl.focus();
+    }
+
+    loadUI() {
+        super.loadUI();
+
+        if (this.hdVideoId !== -1) {
+            this.mediaControls.enableHDSettings();
+        }
     }
 
     /**

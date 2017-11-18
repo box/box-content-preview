@@ -117,7 +117,7 @@ describe('lib/viewers/media/Settings', () => {
     describe('init()', () => {
         it('should set the initial quality and speed', () => {
             sandbox.stub(settings, 'chooseOption');
-            const quality = 'HD';
+            const quality = 'sd';
             const speed = '2.0';
             const autoplay = 'Enabled'
 
@@ -693,6 +693,16 @@ describe('lib/viewers/media/Settings', () => {
 
             expect(settings.handleSubtitleSelection).to.not.be.called;
         });
+
+        it('should not not set the cache if setCache is set to false', () => {
+            sandbox.stub(settings, 'handleSubtitleSelection');
+            sandbox.stub(settings.cache, 'set');
+
+
+            settings.chooseOption('speed', 0.5, false);
+
+            expect(settings.cache.set).to.not.be.called;
+        });
     });
 
     describe('handleSubtitleSelection()', () => {
@@ -1051,6 +1061,18 @@ describe('lib/viewers/media/Settings', () => {
             expect(settings.visible).to.be.false;
             expect(document.removeEventListener).to.be.calledWith('click', settings.blurHandler);
             expect(document.removeEventListener).to.be.calledWith('keydown', settings.blurHandler);
+        });
+    });
+
+    describe('enableHD()', () => {
+        it('should remove the unavailable class, and choose the cached quality option', () => {
+            sandbox.stub(settings.cache, 'get').returns('hd');
+            sandbox.stub(settings, 'chooseOption');
+
+            settings.enableHD();
+
+            expect(settings.containerEl.classList.contains('bp-media-settings-hd-unavailable')).to.be.false;
+            expect(settings.chooseOption).to.be.calledWith('quality', 'hd');
         });
     });
 });
