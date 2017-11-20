@@ -51,7 +51,7 @@ export function arrayToString(array) {
  * @return {boolean} True if the previous is older than next.
  */
 export function sortLogsByTime(prev, next) {
-    return Date.parse(prev.timestamp) > Date.parse(next.timestamp);
+    return new Date(prev.timestamp).getTime() < new Date(next.timestamp).getTime();
 }
 
 /**

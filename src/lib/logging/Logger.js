@@ -1,10 +1,14 @@
 import * as LogLevel from 'loglevel';
 
 import LoggerCache from './LoggerCache';
-import LoggerNetwork from './LoggerNetwork';
+import LoggerBackend from './LoggerBackend';
 import { registerLogger, unregisterLogger } from './loggerRegistry';
 import { LOG_CODES, LOG_LEVELS } from './logConstants';
 import { arrayToString, sortLogsByTime, printLog } from './logUtils';
+import { APP_HOST } from '../constants';
+
+// Publicliy accessible, doesn't require auth token.
+const DEFAULT_LOG_ENDPOINT = '?rm=preview_metrics';
 
 // By default, print nothing.
 const DEFAULT_LOG_LEVEL = LOG_LEVELS.silent;
@@ -20,9 +24,10 @@ class Logger {
     /** @property {LoggerCache} - Cache for storing and validating log messages */
     cache;
 
-    /** */
-    networkLayer;
+    /** @property */
+    loggerBackend;
 
+    /** @property {string} - The name of the logger. Used with the Global Registry */
     name;
 
     /**
@@ -30,7 +35,8 @@ class Logger {
      *
      * @param {Object} config - Configures log level and network layer.
      * @param {LOG_LEVELS|string} [config.logLevel] - Level to set for writing to the browser console.
-     * @param {string} [config.logEndpoint] - The URL to POST logs to.
+     * @param {string} [config.backendConfig] - Configuration for saving logs to an endpoint. If empty, does
+     * not save logs to a URL.
      * @return {Logger} Newly created Logger instance.
      */
     constructor(config = {}) {
@@ -40,20 +46,21 @@ class Logger {
         // If a log level has not been set and/or persisted, default to silent
         this.logger.setDefaultLevel(DEFAULT_LOG_LEVEL);
 
-        const { logLevel, logEndpoint } = config;
+        const { logLevel, backendConfig } = config;
 
         if (logLevel) {
             this.setLogLevel(logLevel);
-        }
-
-        if (logEndpoint) {
-            this.networkLayer = new LoggerNetwork();
         }
 
         this.onUncaughtError = this.onUncaughtError.bind(this);
         window.addEventListener('error', this.onUncaughtError);
 
         this.name = registerLogger(this);
+
+        if (backendConfig) {
+            const sanitizedConfig = this.sanitizeBackendConfig(backendConfig);
+            this.loggerBackend = new LoggerBackend(sanitizedConfig);
+        }
     }
 
     /**
@@ -71,6 +78,30 @@ class Logger {
 
         unregisterLogger(this.name);
         this.name = null;
+    }
+
+    /**
+     *
+     * @param {Object} config - Configuration required for configuring the LoggerBackend
+     * @return {Object} Sanitized configuration for the LoggerBackend.
+     */
+    sanitizeBackendConfig(config) {
+        let { logUrl } = config;
+        const { appHost, logEndpoint, auth, allowedLogs } = config;
+
+        if (!logUrl) {
+            logUrl = `${appHost || APP_HOST}${logEndpoint || DEFAULT_LOG_ENDPOINT}`;
+        }
+
+        if (!auth.header || !auth.value) {
+            throw new Error('Invalid authorization object provided for saving logs!');
+        }
+
+        return {
+            logUrl,
+            auth,
+            allowedLogs
+        };
     }
 
     /**
