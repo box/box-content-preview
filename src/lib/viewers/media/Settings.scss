@@ -32,6 +32,10 @@ $item-hover-color: #f6fafd;
     }
 }
 
+.bp-media-settings-in-transition {
+    overflow: hidden; // hide scrollbars during menu -> submenu transition
+}
+
 .bp-media-settings-menu {
     display: table;
 }

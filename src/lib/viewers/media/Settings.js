@@ -183,6 +183,11 @@ class Settings extends EventEmitter {
         this.containerEl.classList.add(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
         this.containerEl.classList.add(CLASS_SETTINGS_AUDIOTRACKS_UNAVAILABLE);
 
+        // Allow scrollbars after animations end
+        this.settingsEl.addEventListener('transitionend', () => {
+            this.settingsEl.classList.remove('bp-media-settings-in-transition');
+        });
+
         if (Browser.isMobile()) {
             this.containerEl.classList.add(CLASS_SETTINGS_AUTOPLAY_UNAVAILABLE);
         }
@@ -214,6 +219,7 @@ class Settings extends EventEmitter {
     destroy() {
         if (this.settingsEl) {
             removeActivationListener(this.settingsEl, this.menuEventHandler);
+            this.settingsEl.removeEventListener('transitionend');
         }
         document.removeEventListener('click', this.blurHandler);
     }
@@ -311,6 +317,7 @@ class Settings extends EventEmitter {
     showSubMenu(type) {
         const subMenu = this.settingsEl.querySelector(`.bp-media-settings-menu-${type}`);
         this.settingsEl.classList.add(`bp-media-settings-show-${type}`);
+
         this.setMenuContainerDimensions(subMenu);
         // Move focus to the currently selected value
         const curSelectedOption = this.settingsEl.querySelector(
@@ -329,6 +336,9 @@ class Settings extends EventEmitter {
     menuItemSelect(menuItem) {
         const type = menuItem.getAttribute('data-type');
         const value = menuItem.getAttribute('data-value');
+
+        // Hide scrollbars while menu animation is happening - this is removed when transition ends
+        this.settingsEl.classList.add('bp-media-settings-in-transition');
 
         if (type === 'menu') {
             // We are in the sub menu and going back to the main menu
