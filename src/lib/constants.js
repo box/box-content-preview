@@ -82,6 +82,11 @@ export const X_REP_HINT_IMAGE = '[jpg?dimensions=2048x2048,png?dimensions=2048x2
 export const X_REP_HINT_VIDEO_DASH = '[dash,mp4][filmstrip]';
 export const X_REP_HINT_VIDEO_MP4 = '[mp4]';
 
+export const PDFJS_CSS_UNITS = 96.0 / 72.0; // Should match CSS_UNITS in pdf_viewer.js
+export const PDFJS_MAX_AUTO_SCALE = 1.25; // Should match MAX_AUTO_SCALE in pdf_viewer.js
+export const PDFJS_WIDTH_PADDING_PX = 40; // Should match SCROLLBAR_PADDING in pdf_viewer.js
+export const PDFJS_HEIGHT_PADDING_PX = 5; // Should match VERTICAL_PADDING in pdf_viewer.js
+
 // These should be updated to match the Preview version in package.json whenever a file in that third party directory
 // is updated. Also, update the matching configuration in karma.conf.js, which is needed for tests
 export const DOC_STATIC_ASSETS_VERSION = '1.17.0';
