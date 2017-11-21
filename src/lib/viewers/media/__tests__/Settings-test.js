@@ -564,6 +564,14 @@ describe('lib/viewers/media/Settings', () => {
         });
     });
 
+    describe('handleTransitionEnd', () => {
+        it('should remove in transition class', () => {
+            settings.settingsEl.classList.add('bp-media-settings-in-transition');
+            settings.handleTransitionEnd();
+            expect(settings.settingsEl).to.not.have.class('bp-media-settings-in-transition');
+        });
+    });
+
     describe('showSubMenu()', () => {
         it('should show the speed submenu if speed is selected', () => {
             settings.showSubMenu('speed');
