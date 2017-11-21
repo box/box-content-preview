@@ -23,15 +23,14 @@ class ImageBaseViewer extends BaseViewer {
         // Explicit event handler bindings
         this.pan = this.pan.bind(this);
         this.stopPanning = this.stopPanning.bind(this);
+        this.zoomIn = this.zoomIn.bind(this);
+        this.zoomOut = this.zoomOut.bind(this);
 
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.cancelDragEvent = this.cancelDragEvent.bind(this);
         this.finishLoading = this.finishLoading.bind(this);
         this.errorHandler = this.errorHandler.bind(this);
-
-        this.zoomIn = this.zoomIn.bind(this);
-        this.zoomOut = this.zoomOut.bind(this);
 
         if (this.isMobile) {
             if (Browser.isIOS()) {
