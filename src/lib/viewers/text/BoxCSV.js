@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import Grid from 'react-virtualized/dist/es/Grid/Grid';
@@ -8,7 +7,6 @@ const WIDTH_SCROLLER = 5;
 const WIDTH_COLUMN = 160;
 const WIDTH_BORDER = 2;
 
-@autobind
 class BoxCSV {
     /**
      * [constructor]
