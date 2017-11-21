@@ -446,8 +446,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.destroy();
 
-            expect(base.containerEl.removeEventListener).to.be.calledWith('contextmenu', sinon.match.func)
-            expect(base.preventDefault).to.be.null;
+            expect(base.containerEl.removeEventListener).to.be.calledWith('contextmenu', sinon.match.func);
         });
     });
 
