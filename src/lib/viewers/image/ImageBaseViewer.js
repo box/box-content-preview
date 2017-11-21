@@ -28,6 +28,10 @@ class ImageBaseViewer extends BaseViewer {
         this.handleMouseUp = this.handleMouseUp.bind(this);
         this.cancelDragEvent = this.cancelDragEvent.bind(this);
         this.finishLoading = this.finishLoading.bind(this);
+        this.errorHandler = this.errorHandler.bind(this);
+
+        this.zoomIn = this.zoomIn.bind(this);
+        this.zoomOut = this.zoomOut.bind(this);
 
         if (this.isMobile) {
             if (Browser.isIOS()) {
@@ -72,8 +76,6 @@ class ImageBaseViewer extends BaseViewer {
             return;
         }
 
-        const onError = this.errorHandler.bind(this);
-
         const loadOriginalDimensions = this.setOriginalImageSize(this.imageEl);
         loadOriginalDimensions
             .then(() => {
@@ -84,7 +86,7 @@ class ImageBaseViewer extends BaseViewer {
                 this.loaded = true;
                 this.emit('load');
             })
-            .catch(onError);
+            .catch(this.errorHandler);
     }
 
     /**
@@ -261,10 +263,8 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     bindControlListeners() {
-        const zoomOut = this.zoomOut.bind(this);
-        const zoomIn = this.zoomIn.bind(this);
-        this.controls.add(__('zoom_out'), zoomOut, 'bp-image-zoom-out-icon', ICON_ZOOM_OUT);
-        this.controls.add(__('zoom_in'), zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
+        this.controls.add(__('zoom_out'), this.zoomOut, 'bp-image-zoom-out-icon', ICON_ZOOM_OUT);
+        this.controls.add(__('zoom_in'), this.zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
     }
 
     /**
@@ -322,7 +322,7 @@ class ImageBaseViewer extends BaseViewer {
      * @param {Error} err - Error to handle
      * @return {void}
      */
-    errorHandler = (err) => {
+    errorHandler(err) {
         /* eslint-disable no-console */
         console.error(err);
         /* eslint-enable no-console */
@@ -333,7 +333,7 @@ class ImageBaseViewer extends BaseViewer {
             error.displayMessage = __('error_refresh');
         }
         this.emit('error', error);
-    };
+    }
 
     /**
      * Handles keyboard events for media

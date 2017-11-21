@@ -76,8 +76,6 @@ class MultiImageViewer extends ImageBaseViewer {
         this.bindImageListeners(0);
         this.bindDOMListeners();
 
-        const onAssetError = this.handleAssetError.bind(this);
-
         return this.getRepStatus()
             .getPromise()
             .then(() => {
@@ -88,7 +86,7 @@ class MultiImageViewer extends ImageBaseViewer {
 
                 this.wrapperEl.addEventListener('scroll', this.scrollHandler, true);
             })
-            .catch(onAssetError);
+            .catch(this.handleAssetError);
     }
 
     /**
@@ -333,8 +331,8 @@ class MultiImageViewer extends ImageBaseViewer {
         if (this.scrollCheckHandler) {
             return;
         }
-
-        this.scrollCheckHandler = window.requestAnimationFrame(this.handlePageChangeFromScroll);
+        const imageScrollHandler = this.handlePageChangeFromScroll;
+        this.scrollCheckHandler = window.requestAnimationFrame(imageScrollHandler);
     }
 
     /**
