@@ -998,6 +998,4 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(result).to.not.be.true;
         });
     });
-
-
 });

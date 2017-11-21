@@ -14,6 +14,9 @@ const MEDIA_VOLUME_INCREMENT = 0.05;
 const EMIT_WAIT_TIME_IN_MILLIS = 100;
 
 class MediaBaseViewer extends BaseViewer {
+    /**
+     * @inheritdoc
+     */
     constructor(options) {
         super(options);
 

@@ -66,7 +66,7 @@ class MediaControls extends EventEmitter {
         this.setupSettings();
         this.setupScrubbers();
 
-        // Bind handlers
+        // Bind context for callbacks
         this.mouseenterHandler = this.mouseenterHandler.bind(this);
         this.mouseleaveHandler = this.mouseleaveHandler.bind(this);
         this.scrubberExpand = this.scrubberExpand.bind(this);
@@ -76,6 +76,7 @@ class MediaControls extends EventEmitter {
         this.togglePlay = this.togglePlay.bind(this);
         this.toggleMute = this.toggleMute.bind(this);
         this.toggleFullscreen = this.toggleFullscreen.bind(this);
+        this.toggleFullscreenIcon = this.toggleFullscreenIcon.bind(this);
         this.toggleSettings = this.toggleSettings.bind(this);
         this.toggleSubtitles = this.toggleSubtitles.bind(this);
         this.setFilmstrip = this.setFilmstrip.bind(this);

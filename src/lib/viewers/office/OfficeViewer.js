@@ -22,6 +22,16 @@ class OfficeViewer extends BaseViewer {
     /**
      * @inheritdoc
      */
+    constructor(options) {
+        super(options);
+
+        // Bind context for handlers
+        this.print = this.print.bind(this);
+    }
+
+    /**
+     * @inheritdoc
+     */
     setup() {
         this.fileLoadingIcon = ICON_FILE_EXCEL;
 

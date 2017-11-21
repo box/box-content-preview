@@ -10,6 +10,21 @@ class VideoBaseViewer extends MediaBaseViewer {
     /**
      * @inheritdoc
      */
+    constructor(options) {
+        super(options);
+
+        // Bind context for handlers
+        this.loadeddataHandler = this.loadeddataHandler.bind(this);
+        this.pointerHandler = this.pointerHandler.bind(this);
+        this.waitingHandler = this.waitingHandler.bind(this);
+        this.playingHandler = this.playingHandler.bind(this);
+        this.pauseHandler = this.pauseHandler.bind(this);
+        this.resize = this.resize.bind(this);
+    }
+
+    /**
+     * @inheritdoc
+     */
     setup() {
         // Call super() to set up common layout
         super.setup();
@@ -27,14 +42,6 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.playButtonEl.innerHTML = ICON_PLAY_LARGE;
 
         this.lowerLights();
-
-        // Bind context for handlers
-        this.loadeddataHandler = this.loadeddataHandler.bind(this);
-        this.pointerHandler = this.pointerHandler.bind(this);
-        this.waitingHandler = this.waitingHandler.bind(this);
-        this.playingHandler = this.playingHandler.bind(this);
-        this.pauseHandler = this.pauseHandler.bind(this);
-        this.resize = this.resize.bind(this);
     }
 
     /**

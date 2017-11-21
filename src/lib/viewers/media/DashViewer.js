@@ -15,10 +15,13 @@ const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
 
 class DashViewer extends VideoBaseViewer {
+    /**
+     * @inheritdoc
+     */
     constructor(options) {
         super(options);
 
-        // Bind handlers
+        // Bind context for callbacks
         this.loadeddataHandler = this.loadeddataHandler.bind(this);
         this.adaptationHandler = this.adaptationHandler.bind(this);
         this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
@@ -28,6 +31,7 @@ class DashViewer extends VideoBaseViewer {
         this.handleAudioTrack = this.handleAudioTrack.bind(this);
         this.getBandwidthInterval = this.getBandwidthInterval.bind(this);
     }
+
     /**
      * @inheritdoc
      */

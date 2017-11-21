@@ -64,7 +64,7 @@ class Scrubber extends EventEmitter {
         this.setBufferedValue(bufferedValue);
         this.setValue(value);
 
-        // Bind handlers
+        // Bind context for callbacks
         this.pointerUpHandler = this.pointerUpHandler.bind(this);
         this.scrubbingHandler = this.scrubbingHandler.bind(this);
         this.pointerDownHandler = this.pointerDownHandler.bind(this);
