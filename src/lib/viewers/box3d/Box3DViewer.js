@@ -42,6 +42,12 @@ class Box3DViewer extends BaseViewer {
     /** @property {Notification} - Used to notify users of WebGL context issues */
     contextNotification;
 
+    constructor(options) {
+        super(options);
+
+        this.handleToggleVr = this.handleToggleVr.bind(this);
+    }
+
     /**
      * @inheritdoc
      */

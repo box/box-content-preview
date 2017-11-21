@@ -206,31 +206,31 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
         });
 
         it('should create a new Video360 renderer instance', (done) => {
-            stubs.createControls = sandbox.stub(viewer, 'createControls', done);
+            stubs.createControls = sandbox.stub(viewer, 'createControls').callsFake(done);
             viewer.loadeddataHandler();
             expect(viewer.renderer).to.be.an.instanceof(Video360Renderer);
         });
 
         it('should set .options.sceneEntities to the sceneEntities imported into Video360', (done) => {
-            stubs.createControls = sandbox.stub(viewer, 'createControls', done);
+            stubs.createControls = sandbox.stub(viewer, 'createControls').callsFake(done);
             viewer.loadeddataHandler();
             expect(viewer.options.sceneEntities).to.deep.equal(sceneEntities);
         });
 
         it('should add custom event handler for VR Toggle to .renderer via .renderer.on()', (done) => {
-            stubs.createControls = sandbox.stub(viewer, 'createControls', done);
+            stubs.createControls = sandbox.stub(viewer, 'createControls').callsFake(done);
             viewer.loadeddataHandler();
             expect(stubs.on).to.be.calledWith(EVENT_SHOW_VR_BUTTON, viewer.handleShowVrButton);
         });
 
         it('should invoke .renderer.initBox3d() with .options', (done) => {
-            stubs.createControls = sandbox.stub(viewer, 'createControls', done);
+            stubs.createControls = sandbox.stub(viewer, 'createControls').callsFake(done);
             viewer.loadeddataHandler();
             expect(stubs.initBox3d).to.be.calledWith(viewer.options);
         });
 
         it('should invoke .create360Environment() after successfully initializing renderer', (done) => {
-            stubs.createControls = sandbox.stub(viewer, 'createControls', () => {
+            stubs.createControls = sandbox.stub(viewer, 'createControls').callsFake(() => {
                 expect(stubs.create360Environment).to.be.called;
                 done();
             });
@@ -238,7 +238,7 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
         });
 
         it('should invoke super.metadataloadedHandler() on successfully creating 360 environment', (done) => {
-            stubs.createControls = sandbox.stub(viewer, 'createControls', () => {
+            stubs.createControls = sandbox.stub(viewer, 'createControls').callsFake(() => {
                 expect(superLoadedData).to.be.called;
                 done();
             });
@@ -246,14 +246,14 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
         });
 
         it('should invoke .createControls() on successfully creating 360 environment', (done) => {
-            sandbox.stub(viewer, 'createControls', done);
+            sandbox.stub(viewer, 'createControls').callsFake(done);
             viewer.loadeddataHandler();
         });
 
         it('should invoke .renderer.initVrIfPresent() on successfully creating 360 environment', (done) => {
             sandbox.stub(viewer, 'createControls');
             stubs.initVr.restore();
-            stubs.initVr = sandbox.stub(Video360Renderer.prototype, 'initVr', () => {
+            stubs.initVr = sandbox.stub(Video360Renderer.prototype, 'initVr').callsFake(() => {
                 expect(stubs.initVr).to.be.called;
                 done();
             });
@@ -590,8 +590,9 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             };
 
             viewer.renderer = {
-                getInputController: sandbox.stub().returns(input)
+                getInputController: sandbox.stub().callsFake(() => input)
             };
+
             sandbox.stub(viewer, 'togglePlay');
         });
 
