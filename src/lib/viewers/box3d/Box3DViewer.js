@@ -40,6 +40,12 @@ class Box3DViewer extends BaseViewer {
     /** @property {Notification} - Used to notify users of WebGL context issues */
     contextNotification;
 
+    /**
+     * [constructor]
+     *
+     * @param {Object} options - Some options
+     * @return {Box3DViewer} Instance of Box3D viewer
+     */
     constructor(options) {
         super(options);
 
