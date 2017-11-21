@@ -35,12 +35,7 @@ class Video360Viewer extends DashViewer {
     /** @property {Box3D.Components.SkyboxRenderer} - The component for rendering the video as 360 degree (on a skybox) */
     skybox;
 
-    /**
-     * [constructor]
-     *
-     * @param {Object} options - Some options
-     * @return {Video360Viewer} Instance of Video360 viewer
-     */
+    /** @inheritdoc */
     constructor(options) {
         super(options);
 
