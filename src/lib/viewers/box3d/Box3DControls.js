@@ -1,5 +1,4 @@
 import EventEmitter from 'events';
-import autobind from 'autobind-decorator';
 import Controls from '../../Controls';
 import { EVENT_RESET, EVENT_SCENE_LOADED, EVENT_TOGGLE_FULLSCREEN, EVENT_TOGGLE_VR } from './box3DConstants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_3D_VR } from '../../icons/icons';
@@ -8,7 +7,6 @@ import './Box3DControls.scss';
 import { CLASS_HIDDEN } from '../../constants';
 import { UIRegistry } from './Box3DUIUtils';
 
-@autobind
 class Box3DControls extends EventEmitter {
     /** @property {HTMLElement} - Reference to the parent container to nest UI in */
     el;
@@ -41,6 +39,9 @@ class Box3DControls extends EventEmitter {
         this.controls = new Controls(this.el);
 
         this.uiRegistry = new UIRegistry();
+
+        this.handleToggleFullscreen = this.handleToggleFullscreen.bind(this);
+        this.handleToggleVr = this.handleToggleVr.bind(this);
     }
 
     /**
