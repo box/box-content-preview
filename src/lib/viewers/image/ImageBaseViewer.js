@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
@@ -11,8 +10,37 @@ const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
 
-@autobind
 class ImageBaseViewer extends BaseViewer {
+    /**
+     * [constructor]
+     *
+     * @param {Object} options - Some options
+     * @return {ImageBaseViewer} Instance of image base viewer
+     */
+    constructor(options) {
+        super(options);
+
+        // Explicit event handler bindings
+        this.pan = this.pan.bind(this);
+        this.stopPanning = this.stopPanning.bind(this);
+
+        this.handleMouseDown = this.handleMouseDown.bind(this);
+        this.handleMouseUp = this.handleMouseUp.bind(this);
+        this.cancelDragEvent = this.cancelDragEvent.bind(this);
+        this.finishLoading = this.finishLoading.bind(this);
+
+        if (this.isMobile) {
+            if (Browser.isIOS()) {
+                this.mobileZoomStartHandler = this.mobileZoomStartHandler.bind(this);
+                this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
+            } else {
+                this.mobileZoomStartHandler = this.mobileZoomStartHandler.bind(this);
+                this.mobileZoomChangeHandler = this.mobileZoomChangeHandler.bind(this);
+                this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
+            }
+        }
+    }
+
     /**
      * [destructor]
      *
@@ -44,6 +72,8 @@ class ImageBaseViewer extends BaseViewer {
             return;
         }
 
+        const onError = this.errorHandler.bind(this);
+
         const loadOriginalDimensions = this.setOriginalImageSize(this.imageEl);
         loadOriginalDimensions
             .then(() => {
@@ -54,7 +84,7 @@ class ImageBaseViewer extends BaseViewer {
                 this.loaded = true;
                 this.emit('load');
             })
-            .catch(this.errorHandler);
+            .catch(onError);
     }
 
     /**
@@ -231,8 +261,10 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     bindControlListeners() {
-        this.controls.add(__('zoom_out'), this.zoomOut, 'bp-image-zoom-out-icon', ICON_ZOOM_OUT);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
+        const zoomOut = this.zoomOut.bind(this);
+        const zoomIn = this.zoomIn.bind(this);
+        this.controls.add(__('zoom_out'), zoomOut, 'bp-image-zoom-out-icon', ICON_ZOOM_OUT);
+        this.controls.add(__('zoom_in'), zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
     }
 
     /**

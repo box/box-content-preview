@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import ImageBaseViewer from './ImageBaseViewer';
 import PageControls from '../../PageControls';
 import './MultiImage.scss';
@@ -11,8 +10,15 @@ const CSS_CLASS_IMAGE = 'bp-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
 const ZOOM_UPDATE_PAN_DELAY = 50;
 
-@autobind
 class MultiImageViewer extends ImageBaseViewer {
+    constructor(options) {
+        super(options);
+
+        this.setPage = this.setPage.bind(this);
+        this.scrollHandler = this.scrollHandler.bind(this);
+        this.handlePageChangeFromScroll = this.handlePageChangeFromScroll.bind(this);
+    }
+
     /**
      * @inheritdoc
      */
@@ -70,6 +76,8 @@ class MultiImageViewer extends ImageBaseViewer {
         this.bindImageListeners(0);
         this.bindDOMListeners();
 
+        const onAssetError = this.handleAssetError.bind(this);
+
         return this.getRepStatus()
             .getPromise()
             .then(() => {
@@ -80,7 +88,7 @@ class MultiImageViewer extends ImageBaseViewer {
 
                 this.wrapperEl.addEventListener('scroll', this.scrollHandler, true);
             })
-            .catch(this.handleAssetError);
+            .catch(onAssetError);
     }
 
     /**
@@ -326,8 +334,7 @@ class MultiImageViewer extends ImageBaseViewer {
             return;
         }
 
-        const imageScrollHandler = this.handlePageChangeFromScroll;
-        this.scrollCheckHandler = window.requestAnimationFrame(imageScrollHandler);
+        this.scrollCheckHandler = window.requestAnimationFrame(this.handlePageChangeFromScroll);
     }
 
     /**
