@@ -125,9 +125,9 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('debouncedResizeHandler()', () => {
+    describe('getResizeHandler()', () => {
         it('should return a resize handler', () => {
-            expect(base.debouncedResizeHandler()).to.be.a.function;
+            expect(base.getResizeHandler()).to.be.a.function;
         });
     });
 
