@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import scrubberTemplate from './Scrubber.html';
 import Browser from '../../Browser';
@@ -8,7 +7,6 @@ const MAX_VALUE = 1;
 const CLASS_SCRUBBER_HOVER = 'bp-media-scrubber-hover';
 const CLASS_SCRUBBER_TOUCH = 'bp-media-scrubber-touch';
 
-@autobind
 class Scrubber extends EventEmitter {
     /**
      * Service to handle the position and movement of a slider element
@@ -65,6 +63,11 @@ class Scrubber extends EventEmitter {
         this.setConvertedValue(convertedValue);
         this.setBufferedValue(bufferedValue);
         this.setValue(value);
+
+        // Bind context for callbacks
+        this.pointerUpHandler = this.pointerUpHandler.bind(this);
+        this.scrubbingHandler = this.scrubbingHandler.bind(this);
+        this.pointerDownHandler = this.pointerDownHandler.bind(this);
 
         this.playedEl.addEventListener('mousedown', this.pointerDownHandler);
         this.convertedEl.addEventListener('mousedown', this.pointerDownHandler);

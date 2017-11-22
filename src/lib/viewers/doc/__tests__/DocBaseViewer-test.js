@@ -347,7 +347,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             sandbox.stub(docBase, 'setup');
             Object.defineProperty(BaseViewer.prototype, 'load', { value: sandbox.mock() });
             sandbox.stub(docBase, 'createContentUrlWithAuthParams');
-            sandbox.stub(docBase, 'postload');
+            sandbox.stub(docBase, 'handleAssetAndRepLoad');
             sandbox.stub(docBase, 'getRepStatus').returns({ getPromise: () => Promise.resolve() });
             sandbox.stub(docBase, 'loadAssets');
 
@@ -355,12 +355,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(docBase.loadAssets).to.be.called;
                 expect(docBase.setup).to.be.called;
                 expect(docBase.createContentUrlWithAuthParams).to.be.calledWith('foo');
-                expect(docBase.postload).to.be.called;
+                expect(docBase.handleAssetAndRepLoad).to.be.called;
             });
         });
     });
 
-    describe('postload', () => {
+    describe('handleAssetAndRepLoad', () => {
         it('should setup pdfjs, init viewer, print, and find', () => {
             const url = 'foo';
             docBase.pdfUrl = url;
@@ -373,7 +373,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const initPrintStub = sandbox.stub(docBase, 'initPrint');
             const initFindStub = sandbox.stub(docBase, 'initFind');
 
-            docBase.postload();
+            docBase.handleAssetAndRepLoad();
 
             expect(setupPdfjsStub).to.be.called;
             expect(initViewerStub).to.be.calledWith(docBase.pdfUrl);
@@ -749,12 +749,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.isMobile = false;
             sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
-            docBase.initViewer('');
-
-            expect(stubs.pdfViewerStub).to.be.calledWith({
-                container: sinon.match.any,
-                linkService: sinon.match.any,
-                enhanceTextSelection: true
+            return docBase.initViewer('').then(() => {
+                expect(stubs.pdfViewerStub).to.be.calledWith({
+                    container: sinon.match.any,
+                    linkService: sinon.match.any,
+                    enhanceTextSelection: true
+                });
             });
         });
 
@@ -765,12 +765,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.isMobile = true;
             sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
-            docBase.initViewer('');
-
-            expect(stubs.pdfViewerStub).to.be.calledWith({
-                container: sinon.match.any,
-                linkService: sinon.match.any,
-                enhanceTextSelection: false
+            return docBase.initViewer('').then(() => {
+                expect(stubs.pdfViewerStub).to.be.calledWith({
+                    container: sinon.match.any,
+                    linkService: sinon.match.any,
+                    enhanceTextSelection: false
+                });
             });
         });
 
@@ -1168,7 +1168,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(stubs.addEventListener).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
             expect(stubs.addEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
             expect(stubs.addEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
-            expect(stubs.addEventListener).to.be.calledWith('scroll', docBase.scrollHandler);
+            expect(stubs.addEventListener).to.be.calledWith('scroll', docBase.throttledScrollHandler);
 
             expect(stubs.addEventListener).to.not.be.calledWith('gesturestart', docBase.mobileZoomStartHandler);
             expect(stubs.addEventListener).to.not.be.calledWith('gestureend', docBase.mobileZoomEndHandler);
@@ -1209,7 +1209,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(stubs.removeEventListener).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
             expect(stubs.removeEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
             expect(stubs.removeEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
-            expect(stubs.removeEventListener).to.be.calledWith('scroll', docBase.scrollHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('scroll', docBase.throttledScrollHandler);
         });
 
         it('should not remove the doc element listeners if the doc element does not exist', () => {
@@ -1306,7 +1306,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(stubs.emit).to.be.calledWith('scale', { pageNum: 1, scale: 0.5 });
         });
 
-        it('should emit postload event if not already emitted', () => {
+        it('should emit handleAssetAndRepLoad event if not already emitted', () => {
             docBase.pagerenderedHandler(docBase.event);
             expect(stubs.emit).to.be.calledWith('progressend');
         });
@@ -1384,28 +1384,30 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
     });
 
-    describe('scrollHandler()', () => {
+    describe('getScrollHandler()', () => {
+        let scrollHandler;
+
         beforeEach(() => {
             stubs.emit = sandbox.stub(docBase, 'emit');
             docBase.scrollStarted = false;
+            scrollHandler = docBase.getScrollHandler();
         });
 
         it('should emit the scrollstart event on a new scroll', () => {
-            docBase.scrollHandler();
+            scrollHandler();
             expect(stubs.emit).to.be.calledWith('scrollstart');
         });
 
         it('should not emit the scrollstart event on a continued scroll', () => {
             docBase.scrollStarted = true;
-
-            docBase.scrollHandler();
+            scrollHandler();
             expect(stubs.emit).to.not.be.calledWith('scrollstart');
         });
 
         it('should emit a scrollend event after scroll timeout', () => {
             const clock = sinon.useFakeTimers();
 
-            docBase.scrollHandler();
+            scrollHandler();
             expect(stubs.emit).to.be.calledWith('scrollstart');
 
             clock.tick(SCROLL_END_TIMEOUT + 1);

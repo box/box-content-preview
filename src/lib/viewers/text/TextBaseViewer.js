@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
 import { checkPermission } from '../../file';
@@ -21,8 +20,17 @@ const LOADING_ICON_MAP = {
     txt: ICON_FILE_DOCUMENT
 };
 
-@autobind
 class TextBaseViewer extends BaseViewer {
+    /**
+     * @inheritdoc
+     */
+    constructor(options) {
+        super(options);
+
+        // Bind context for handlers;
+        this.zoomOut = this.zoomOut.bind(this);
+        this.zoomIn = this.zoomIn.bind(this);
+    }
     /**
      * @inheritdoc
      */
@@ -127,17 +135,6 @@ class TextBaseViewer extends BaseViewer {
     }
 
     /**
-     * Resize handler
-     *
-     * @override
-     * @return {void}
-     * @protected
-     */
-    resize() {
-        super.resize();
-    }
-
-    /**
      * Handles keyboard events for media
      *
      * @param {string} key - keydown key
@@ -159,6 +156,13 @@ class TextBaseViewer extends BaseViewer {
         }
 
         return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    resize() {
+        super.resize();
     }
 }
 

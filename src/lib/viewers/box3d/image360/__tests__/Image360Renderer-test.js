@@ -238,10 +238,6 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
         });
     });
 
-    describe('loadPanoramaFile()', () => {
-        it('should have @jholdstock implement this test after @mbond gets 3D image representations in prod');
-    });
-
     describe('enableVr()', () => {
         beforeEach(() => {
             // We don't care about super calls :D
