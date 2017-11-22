@@ -7,6 +7,15 @@ import { LOG_CODES, LOG_LEVELS } from './logConstants';
 import { arrayToString, sortLogsByTime, printLog } from './logUtils';
 import { APP_HOST } from '../constants';
 
+// Filter for logs allowed to be saved to the logUrl
+const DEFAULT_ALLOWED_LOGS = {
+    info: true,
+    metric: true,
+    warning: true,
+    error: true,
+    uncaught_error: true
+};
+
 // Publicliy accessible, doesn't require auth token.
 const DEFAULT_LOG_ENDPOINT = '?rm=preview_metrics';
 
@@ -24,8 +33,8 @@ class Logger {
     /** @property {LoggerCache} - Cache for storing and validating log messages */
     cache;
 
-    /** @property */
-    loggerBackend;
+    /** @property {LoggerBackend} - Backend object for translating and saving logs. */
+    backend;
 
     /** @property {string} - The name of the logger. Used with the Global Registry */
     name;
@@ -37,6 +46,7 @@ class Logger {
      * @param {LOG_LEVELS|string} [config.logLevel] - Level to set for writing to the browser console.
      * @param {string} [config.backendConfig] - Configuration for saving logs to an endpoint. If empty, does
      * not save logs to a URL.
+     * @param {Object} [config.allowedLogs] - Flags to allow types of logs to be saved and logged.
      * @return {Logger} Newly created Logger instance.
      */
     constructor(config = {}) {
@@ -52,6 +62,8 @@ class Logger {
             this.setLogLevel(logLevel);
         }
 
+        this.allowedLogs = { ...DEFAULT_ALLOWED_LOGS, ...(config.allowedLogs || {}) };
+
         this.onUncaughtError = this.onUncaughtError.bind(this);
         window.addEventListener('error', this.onUncaughtError);
 
@@ -59,7 +71,7 @@ class Logger {
 
         if (backendConfig) {
             const sanitizedConfig = this.sanitizeBackendConfig(backendConfig);
-            this.loggerBackend = new LoggerBackend(sanitizedConfig);
+            this.backend = new LoggerBackend(sanitizedConfig);
         }
     }
 
@@ -81,13 +93,14 @@ class Logger {
     }
 
     /**
+     * Sanitizes the configuration for the backend and creates the proper parameters from it.
      *
      * @param {Object} config - Configuration required for configuring the LoggerBackend
      * @return {Object} Sanitized configuration for the LoggerBackend.
      */
     sanitizeBackendConfig(config) {
         let { logUrl } = config;
-        const { appHost, logEndpoint, auth, allowedLogs } = config;
+        const { appHost, logEndpoint, auth } = config;
 
         if (!logUrl) {
             logUrl = `${appHost || APP_HOST}${logEndpoint || DEFAULT_LOG_ENDPOINT}`;
@@ -99,8 +112,7 @@ class Logger {
 
         return {
             logUrl,
-            auth,
-            allowedLogs
+            auth
         };
     }
 
@@ -146,6 +158,15 @@ class Logger {
     }
 
     /**
+     * Get current time in ISO format.
+     *
+     * @return {string} The time in ISO format.
+     */
+    getISOTime() {
+        return new Date().toISOString();
+    }
+
+    /**
      * Commit a message to the cache and run the appropriate log function.
      *
      * @private
@@ -157,7 +178,7 @@ class Logger {
         const logFunction = this.getLoggerFunction(code);
 
         // Format message and add a timestamp
-        const timestamp = new Date().toISOString();
+        const timestamp = this.getISOTime();
         this.cache.add(code, timestamp, message);
 
         // Also wrapping the code into the message
@@ -295,6 +316,43 @@ class Logger {
 
         // print
         logArray.forEach(printLog);
+    }
+
+    /**
+     * Saves the logs to the backend.
+     *
+     * @param {LOG_CODES|LOG_CODES[]} code - Type of logs to save.
+     * @return {void}
+     */
+    save(code) {
+        // If we're not supposed to save, don't attempt it.
+        if (!this.backend) {
+            return;
+        }
+
+        const logs = this.getLogs(code);
+
+        // Filter out disallowed log types
+        Object.keys(this.allowedLogs).forEach((logType) => {
+            if (!this.allowedLogs[logType]) {
+                delete logs[logType];
+            }
+        });
+
+        const logBatch = [];
+
+        Object.keys(logs).forEach((logType) => {
+            // Filter out empty logs
+            if (!logs[logType].length) {
+                delete logs[logType];
+            }
+
+            const batch = this.backend.createBatch(logType, logs[logType]);
+            logBatch.push(batch);
+        });
+
+        // save the whole thing
+        this.backend.save(logBatch);
     }
 }
 
