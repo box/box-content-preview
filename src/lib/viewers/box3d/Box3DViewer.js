@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import BaseViewer from '../BaseViewer';
 import fullscreen from '../../Fullscreen';
 import Box3DControls from './Box3DControls';
@@ -31,7 +30,6 @@ const CLASS_VR_ENABLED = 'vr-enabled';
  * Box3DViewer
  * This is the entry point for Box3D Preview Base
  */
-@autobind
 class Box3DViewer extends BaseViewer {
     /** @property {Box3DRenderer} - Box3DRenderer instance. Renders the 3D scene */
     renderer;
@@ -41,6 +39,25 @@ class Box3DViewer extends BaseViewer {
 
     /** @property {Notification} - Used to notify users of WebGL context issues */
     contextNotification;
+
+    /** @inheritdoc */
+    constructor(options) {
+        super(options);
+
+        this.handleToggleVr = this.handleToggleVr.bind(this);
+        this.handleReset = this.handleReset.bind(this);
+        this.handleSceneLoaded = this.handleSceneLoaded.bind(this);
+        this.handleShowVrButton = this.handleShowVrButton.bind(this);
+        this.handleError = this.handleError.bind(this);
+        this.handleContextRestored = this.handleContextRestored.bind(this);
+        this.handleContextLost = this.handleContextLost.bind(this);
+
+        this.onVrPresentChange = this.onVrPresentChange.bind(this);
+        this.handleEnableVr = this.handleEnableVr.bind(this);
+        this.handleDisableVr = this.handleDisableVr.bind(this);
+
+        this.postLoad = this.postLoad.bind(this);
+    }
 
     /**
      * @inheritdoc
