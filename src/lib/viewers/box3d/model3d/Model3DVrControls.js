@@ -1,5 +1,4 @@
 /* global THREE */
-import autobind from 'autobind-decorator';
 
 /** The various object manipulation modes supported. */
 const controlType = {
@@ -52,10 +51,15 @@ class Model3DVrControls {
     constructor(vrGamepads, box3dEngine) {
         this.vrGamepads = vrGamepads;
         this.box3d = box3dEngine;
+
+        this.onScaleUpdate = this.onScaleUpdate.bind(this);
+        this.onGamepadButtonDown = this.onGamepadButtonDown.bind(this);
+        this.onGamepadButtonUp = this.onGamepadButtonUp.bind(this);
+
         // Listen for gamepad button events to trigger actions.
         this.vrGamepads.forEach((gamepad) => {
-            gamepad.listenTo(gamepad, 'gamepadButtonDown', this.onGamepadButtonDown.bind(this));
-            gamepad.listenTo(gamepad, 'gamepadButtonUp', this.onGamepadButtonUp.bind(this));
+            gamepad.listenTo(gamepad, 'gamepadButtonDown', this.onGamepadButtonDown);
+            gamepad.listenTo(gamepad, 'gamepadButtonUp', this.onGamepadButtonUp);
         });
         this.controllerState = {
             initiatingController: null,
@@ -125,7 +129,6 @@ class Model3DVrControls {
      *
      * @return {void}
      */
-    @autobind
     onScaleUpdate() {
         this.vrGamepads[0].getPosition(this.vrWorkVector1);
         this.vrGamepads[1].getPosition(this.vrWorkVector2);
