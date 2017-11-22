@@ -1,6 +1,5 @@
 /* eslint-disable import/first */
 import './polyfill';
-import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import throttle from 'lodash.throttle';
 import cloneDeep from 'lodash.clonedeep';
@@ -54,7 +53,6 @@ const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
 // and not when preview is instantiated, which is too late.
 const PREVIEW_LOCATION = findScriptLocation(PREVIEW_SCRIPT_NAME, document.currentScript);
 
-@autobind
 class Preview extends EventEmitter {
     /** @property {boolean} - Whether preview is open */
     open = false;
@@ -138,6 +136,18 @@ class Preview extends EventEmitter {
         this.cache = new Cache();
         this.ui = new PreviewUI();
         this.browserInfo = Browser.getBrowserInfo();
+
+        // Bind context for callbacks
+        this.print = this.print.bind(this);
+        this.handleTokenResponse = this.handleTokenResponse.bind(this);
+        this.handleFileInfoResponse = this.handleFileInfoResponse.bind(this);
+        this.handleFetchError = this.handleFetchError.bind(this);
+        this.handleViewerEvents = this.handleViewerEvents.bind(this);
+        this.triggerError = this.triggerError.bind(this);
+        this.throttledMousemoveHandler = this.getGlobalMousemoveHandler().bind(this);
+        this.navigateLeft = this.navigateLeft.bind(this);
+        this.navigateRight = this.navigateRight.bind(this);
+        this.keydownHandler = this.keydownHandler.bind(this);
     }
 
     /**
@@ -582,8 +592,8 @@ class Preview extends EventEmitter {
 
         // Fetch access tokens before proceeding
         getTokens(this.file.id, this.previewOptions.token)
-            .then(this.loadPreviewWithTokens)
-            .catch(this.triggerFetchError);
+            .then(this.handleTokenResponse)
+            .catch(this.handleFetchError);
     }
 
     /**
@@ -593,7 +603,7 @@ class Preview extends EventEmitter {
      * @param {Object} tokenMap - Map of file ID to access token
      * @return {void}
      */
-    loadPreviewWithTokens(tokenMap) {
+    handleTokenResponse(tokenMap) {
         // If this is a retry, short-circuit and load from server
         if (this.retryCount > 0) {
             this.loadFromServer();
@@ -609,7 +619,7 @@ class Preview extends EventEmitter {
             this.keydownHandler,
             this.navigateLeft,
             this.navigateRight,
-            this.getGlobalMousemoveHandler()
+            this.throttledMousemoveHandler
         );
 
         // Setup loading UI and progress bar
@@ -747,8 +757,8 @@ class Preview extends EventEmitter {
 
         const fileInfoUrl = appendQueryParams(getURL(this.file.id, apiHost), queryParams);
         get(fileInfoUrl, this.getRequestHeaders())
-            .then(this.handleLoadResponse)
-            .catch(this.triggerFetchError);
+            .then(this.handleFileInfoResponse)
+            .catch(this.handleFetchError);
     }
 
     /**
@@ -758,7 +768,7 @@ class Preview extends EventEmitter {
      * @param {Object} file - File object
      * @return {void}
      */
-    handleLoadResponse(file) {
+    handleFileInfoResponse(file) {
         // If preview is closed or response comes back for an incorrect file, don't do anything
         if (!this.open || (this.file && this.file.id !== file.id)) {
             return;
@@ -1058,7 +1068,7 @@ class Preview extends EventEmitter {
      * @param {Object} err Error object
      * @return {void}
      */
-    triggerFetchError(err) {
+    handleFetchError(err) {
         // If preview is closed don't do anything
         if (!this.open) {
             return;
@@ -1227,11 +1237,7 @@ class Preview extends EventEmitter {
      * @return {Function} Throttled mousemove handler
      */
     getGlobalMousemoveHandler() {
-        if (this.throttledMousemoveHandler) {
-            return this.throttledMousemoveHandler;
-        }
-
-        this.throttledMousemoveHandler = throttle(
+        return throttle(
             () => {
                 clearTimeout(this.timeoutHandler);
 
@@ -1262,8 +1268,6 @@ class Preview extends EventEmitter {
             MOUSEMOVE_THROTTLE - 500,
             true
         );
-
-        return this.throttledMousemoveHandler;
     }
 
     /**
