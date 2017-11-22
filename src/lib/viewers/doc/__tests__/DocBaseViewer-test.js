@@ -749,12 +749,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.isMobile = false;
             sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
-            docBase.initViewer('');
-
-            expect(stubs.pdfViewerStub).to.be.calledWith({
-                container: sinon.match.any,
-                linkService: sinon.match.any,
-                enhanceTextSelection: true
+            return docBase.initViewer('').then(() => {
+                expect(stubs.pdfViewerStub).to.be.calledWith({
+                    container: sinon.match.any,
+                    linkService: sinon.match.any,
+                    enhanceTextSelection: true
+                });
             });
         });
 
@@ -765,12 +765,12 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.isMobile = true;
             sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
 
-            docBase.initViewer('');
-
-            expect(stubs.pdfViewerStub).to.be.calledWith({
-                container: sinon.match.any,
-                linkService: sinon.match.any,
-                enhanceTextSelection: false
+            return docBase.initViewer('').then(() => {
+                expect(stubs.pdfViewerStub).to.be.calledWith({
+                    container: sinon.match.any,
+                    linkService: sinon.match.any,
+                    enhanceTextSelection: false
+                });
             });
         });
 

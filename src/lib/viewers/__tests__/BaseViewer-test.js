@@ -288,15 +288,14 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.baseAddListener = sandbox.spy(base, 'addListener');
             stubs.documentAddEventListener = sandbox.stub(document.defaultView, 'addEventListener');
             sandbox.stub(base, 'initAnnotations');
-
-
         });
+
         it('should append common event listeners', () => {
             base.addCommonListeners();
 
             expect(stubs.fullscreenAddListener).to.be.calledWith('enter', sinon.match.func);
             expect(stubs.fullscreenAddListener).to.be.calledWith('exit', sinon.match.func);
-            expect(stubs.documentAddEventListener).to.be.calledWith('resize', base.debouncedResizeHandler);
+            expect(stubs.documentAddEventListener).to.be.calledWith('resize', sinon.match.func);
             expect(stubs.baseAddListener).to.be.calledWith('load', sinon.match.func);
         });
 
