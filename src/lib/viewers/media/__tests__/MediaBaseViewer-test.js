@@ -179,8 +179,9 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     describe('errorHandler', () => {
         it('should emit the error and set a display message', () => {
             sandbox.stub(media, 'emit');
-
             const err = new Error('blah');
+            sandbox.mock(window.console).expects('error').withArgs(err);
+
             media.errorHandler(err);
 
             err.displayMessage = 'We\'re sorry, the preview didn\'t load. Please refresh the page.';
