@@ -488,7 +488,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
     describe('handleSceneLoaded()', () => {
         let eventNameUsed;
         beforeEach(() => {
-            sandbox.stub(box3d, 'emit').callsFake((eventName) => {
+            sandbox.stub(box3d, 'emit', (eventName) => {
                 eventNameUsed = eventName;
             });
             box3d.controls.addUi = sandbox.stub();
@@ -525,7 +525,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
     describe('handleError()', () => {
         it('should call emit() with params ["error", error_object]', () => {
             const error = {};
-            const emitStub = sandbox.stub(box3d, 'emit').callsFake((eventName, errorObj) => {
+            const emitStub = sandbox.stub(box3d, 'emit', (eventName, errorObj) => {
                 expect(eventName).to.equal(EVENT_ERROR);
                 expect(errorObj).to.equal(error);
             });
@@ -538,7 +538,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
 
     describe('handleContextLost()', () => {
         it('should call destroySubModules', () => {
-            const destroySubModules = sandbox.stub(box3d, 'destroySubModules').callsFake(() => {});
+            const destroySubModules = sandbox.stub(box3d, 'destroySubModules', () => {});
             box3d.handleContextLost();
             expect(destroySubModules).to.be.called;
         });
@@ -546,7 +546,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
 
     describe('handleContextRestored()', () => {
         it('should call emit() with params ["progressstart"]', () => {
-            const emitStub = sandbox.stub(box3d, 'emit').callsFake((eventName) => {
+            const emitStub = sandbox.stub(box3d, 'emit', (eventName) => {
                 expect(eventName).to.equal('progressstart');
             });
 
