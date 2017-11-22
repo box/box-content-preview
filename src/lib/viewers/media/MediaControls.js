@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import controlsTemplate from './MediaControls.html';
 import Scrubber from './Scrubber';
@@ -21,7 +20,6 @@ const CRAWLER =
 const FILMSTRIP_FRAMES_PER_ROW = 100;
 const FILMSTRIP_FRAME_HEIGHT = 90;
 
-@autobind
 class MediaControls extends EventEmitter {
     /**
      * [constructor]
@@ -67,6 +65,25 @@ class MediaControls extends EventEmitter {
         this.setDuration(this.mediaEl.duration);
         this.setupSettings();
         this.setupScrubbers();
+
+        // Bind context for callbacks
+        this.mouseenterHandler = this.mouseenterHandler.bind(this);
+        this.mouseleaveHandler = this.mouseleaveHandler.bind(this);
+        this.scrubberExpand = this.scrubberExpand.bind(this);
+        this.scrubberHide = this.scrubberHide.bind(this);
+        this.scrubberMouseDownHandler = this.scrubberMouseDownHandler.bind(this);
+        this.scrubberMouseUpHandler = this.scrubberMouseUpHandler.bind(this);
+        this.togglePlay = this.togglePlay.bind(this);
+        this.toggleMute = this.toggleMute.bind(this);
+        this.toggleFullscreen = this.toggleFullscreen.bind(this);
+        this.toggleFullscreenIcon = this.toggleFullscreenIcon.bind(this);
+        this.toggleSettings = this.toggleSettings.bind(this);
+        this.toggleSubtitles = this.toggleSubtitles.bind(this);
+        this.setFilmstrip = this.setFilmstrip.bind(this);
+        this.filmstripShowHandler = this.filmstripShowHandler.bind(this);
+        this.filmstripHideHandler = this.filmstripHideHandler.bind(this);
+        this.timeScrubbingStopHandler = this.timeScrubbingStopHandler.bind(this);
+
         this.attachEventHandlers();
     }
 

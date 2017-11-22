@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import Browser from '../../Browser';
 import ImageBaseViewer from './ImageBaseViewer';
 import { ICON_FILE_IMAGE, ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
@@ -10,8 +9,18 @@ const CSS_CLASS_IMAGE = 'bp-image';
 const IMAGE_PADDING = 15;
 const IMAGE_ZOOM_SCALE = 1.2;
 
-@autobind
 class ImageViewer extends ImageBaseViewer {
+    /** @inheritdoc */
+    constructor(options) {
+        super(options);
+
+        this.rotateLeft = this.rotateLeft.bind(this);
+
+        if (this.isMobile) {
+            this.handleOrientationChange = this.handleOrientationChange.bind(this);
+        }
+    }
+
     /**
      * @inheritdoc
      */
@@ -379,9 +388,6 @@ class ImageViewer extends ImageBaseViewer {
         if (this.isMobile) {
             this.imageEl.removeEventListener('orientationchange', this.handleOrientationChange);
         }
-
-        document.removeEventListener('mousemove', this.pan);
-        document.removeEventListener('mouseup', this.stopPanning);
     }
 
     /**
