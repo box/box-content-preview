@@ -705,7 +705,7 @@ describe('lib/Preview', () => {
             });
 
             stubs.getTokens = sandbox.stub(tokens, 'default').returns(stubs.promise);
-            stubs.loadPreviewWithTokens = sandbox.stub(preview, 'loadPreviewWithTokens');
+            stubs.handleTokenResponse = sandbox.stub(preview, 'handleTokenResponse');
             stubs.get = sandbox.stub(preview.cache, 'get');
             stubs.destroy = sandbox.stub(preview, 'destroy');
         });
@@ -757,7 +757,7 @@ describe('lib/Preview', () => {
             preview.load({ id: '123' });
             return stubs.promise.then(() => {
                 expect(stubs.getTokens).to.be.calledWith('123', 'token');
-                expect(stubs.loadPreviewWithTokens).to.be.called;
+                expect(stubs.handleTokenResponse).to.be.called;
             });
         });
 
@@ -767,12 +767,12 @@ describe('lib/Preview', () => {
             preview.load('0');
             return stubs.promise.then(() => {
                 expect(stubs.getTokens).to.be.calledWith('0', 'token');
-                expect(stubs.loadPreviewWithTokens).to.be.called;
+                expect(stubs.handleTokenResponse).to.be.called;
             });
         });
     });
 
-    describe('loadPreviewWithTokens()', () => {
+    describe('handleTokenResponse()', () => {
         beforeEach(() => {
             stubs.loadFromServer = sandbox.stub(preview, 'loadFromServer');
             stubs.parseOptions = sandbox.stub(preview, 'parseOptions');
@@ -789,7 +789,7 @@ describe('lib/Preview', () => {
         it('should short circuit and load from server if it is a retry', () => {
             preview.retryCount = 1;
 
-            preview.loadPreviewWithTokens({});
+            preview.handleTokenResponse({});
             expect(stubs.loadFromServer).to.be.called;
             expect(stubs.parseOptions).to.not.be.called;
         });
@@ -797,26 +797,26 @@ describe('lib/Preview', () => {
         it('should parse the preview options', () => {
             preview.retryCount = 0;
 
-            preview.loadPreviewWithTokens({});
+            preview.handleTokenResponse({});
             expect(stubs.parseOptions).to.be.called;
         });
 
         it('should setup the container and show the loading indicator and progress bar', () => {
-            preview.loadPreviewWithTokens({});
+            preview.handleTokenResponse({});
             expect(stubs.setup).to.be.called;
             expect(stubs.showLoadingIndicator).to.be.called;
             expect(stubs.startProgressBar).to.be.called;
         });
 
         it('should show navigation', () => {
-            preview.loadPreviewWithTokens({});
+            preview.handleTokenResponse({});
             expect(stubs.showNavigation).to.be.called;
         });
 
         it('should load from cache if the file is valid', () => {
             stubs.checkFileValid.returns(true);
 
-            preview.loadPreviewWithTokens({});
+            preview.handleTokenResponse({});
             expect(stubs.cacheFile).to.be.calledWith(preview.cache, preview.file);
             expect(stubs.loadFromCache).to.be.called;
             expect(stubs.loadFromServer).to.not.be.called;
@@ -825,7 +825,7 @@ describe('lib/Preview', () => {
         it('should load from the server on a cache miss', () => {
             stubs.checkFileValid.returns(false);
 
-            preview.loadPreviewWithTokens({});
+            preview.handleTokenResponse({});
             expect(stubs.loadFromCache).to.not.be.called;
             expect(stubs.loadFromServer).to.be.called;
         });
@@ -1008,8 +1008,8 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             stubs.promise = Promise.resolve('file');
             stubs.get = sandbox.stub(util, 'get').returns(stubs.promise);
-            stubs.handleLoadResponse = sandbox.stub(preview, 'handleLoadResponse');
-            stubs.triggerFetchError = sandbox.stub(preview, 'triggerFetchError');
+            stubs.handleFileInfoResponse = sandbox.stub(preview, 'handleFileInfoResponse');
+            stubs.handleFetchError = sandbox.stub(preview, 'handleFetchError');
             stubs.getURL = sandbox.stub(file, 'getURL').returns('/get_url');
             preview.file = {
                 id: 0
@@ -1021,13 +1021,13 @@ describe('lib/Preview', () => {
             expect(stubs.get).to.be.called;
             expect(stubs.getURL).to.be.called;
             return stubs.promise.then(() => {
-                expect(stubs.handleLoadResponse).to.be.called;
-                expect(stubs.triggerFetchError).to.not.be.called;
+                expect(stubs.handleFileInfoResponse).to.be.called;
+                expect(stubs.handleFetchError).to.not.be.called;
             });
         });
     });
 
-    describe('handleLoadResponse()', () => {
+    describe('handleFileInfoResponse()', () => {
         beforeEach(() => {
             preview.logger = {
                 setFile: sandbox.stub(),
@@ -1056,7 +1056,7 @@ describe('lib/Preview', () => {
 
         it('should do nothing if the preview is closed', () => {
             preview.open = false;
-            preview.handleLoadResponse(stubs.file);
+            preview.handleFileInfoResponse(stubs.file);
             expect(stubs.set).to.not.be.called;
         });
 
@@ -1067,7 +1067,7 @@ describe('lib/Preview', () => {
             };
             stubs.file.id = 1;
 
-            preview.handleLoadResponse(stubs.file);
+            preview.handleFileInfoResponse(stubs.file);
             expect(stubs.set).to.not.be.called;
         });
 
@@ -1077,7 +1077,7 @@ describe('lib/Preview', () => {
                 id: 0
             };
 
-            preview.handleLoadResponse(stubs.file);
+            preview.handleFileInfoResponse(stubs.file);
             expect(preview.file).to.equal(stubs.file);
             expect(preview.logger.setFile).to.be.called;
         });
@@ -1096,7 +1096,7 @@ describe('lib/Preview', () => {
 
             stubs.file.file_version.sha1 = 0;
 
-            preview.handleLoadResponse(stubs.file);
+            preview.handleFileInfoResponse(stubs.file);
             expect(stubs.get).to.be.calledWith(stubs.file.id);
             expect(stubs.set).to.be.calledWith(stubs.file.id);
             expect(stubs.loadViewer).to.not.be.called;
@@ -1117,7 +1117,7 @@ describe('lib/Preview', () => {
 
             stubs.file.file_version.sha1 = 0;
 
-            preview.handleLoadResponse(stubs.file);
+            preview.handleFileInfoResponse(stubs.file);
             expect(stubs.set).to.be.not.be.called;
         });
 
@@ -1129,7 +1129,7 @@ describe('lib/Preview', () => {
 
             stubs.get.returns(false);
 
-            preview.handleLoadResponse(stubs.file);
+            preview.handleFileInfoResponse(stubs.file);
             expect(preview.logger.setCacheStale).to.be.called;
             expect(stubs.loadViewer).to.be.called;
         });
@@ -1142,7 +1142,7 @@ describe('lib/Preview', () => {
 
             stubs.checkFileValid.returns(false);
 
-            preview.handleLoadResponse(stubs.file);
+            preview.handleFileInfoResponse(stubs.file);
             expect(preview.logger.setCacheStale).to.be.called;
             expect(stubs.loadViewer).to.be.called;
         });
@@ -1161,7 +1161,7 @@ describe('lib/Preview', () => {
 
             stubs.file.file_version.sha1 = 2;
 
-            preview.handleLoadResponse(stubs.file);
+            preview.handleFileInfoResponse(stubs.file);
             expect(preview.logger.setCacheStale).to.be.called;
             expect(stubs.loadViewer).to.be.called;
         });
@@ -1181,7 +1181,7 @@ describe('lib/Preview', () => {
 
             stubs.file.file_version.sha1 = 2;
 
-            preview.handleLoadResponse(stubs.file);
+            preview.handleFileInfoResponse(stubs.file);
             expect(preview.logger.setCacheStale).to.be.called;
             expect(stubs.loadViewer).to.be.called;
         });
@@ -1194,7 +1194,7 @@ describe('lib/Preview', () => {
 
             stubs.get.throws(new Error());
 
-            preview.handleLoadResponse(stubs.file);
+            preview.handleFileInfoResponse(stubs.file);
             expect(stubs.triggerError).to.be.called;
         });
     });
@@ -1641,7 +1641,7 @@ describe('lib/Preview', () => {
         });
     });
 
-    describe('triggerFetchError()', () => {
+    describe('handleFetchError()', () => {
         beforeEach(() => {
             stubs.unset = sandbox.stub(preview.cache, 'unset');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
@@ -1659,7 +1659,7 @@ describe('lib/Preview', () => {
             };
             preview.open = false;
 
-            preview.triggerFetchError(stubs.error);
+            preview.handleFetchError(stubs.error);
             expect(stubs.unset).to.not.be.called;
         });
 
@@ -1669,7 +1669,7 @@ describe('lib/Preview', () => {
             };
             preview.open = true;
 
-            preview.triggerFetchError(stubs.error);
+            preview.handleFetchError(stubs.error);
             expect(stubs.unset).to.be.called;
         });
 
@@ -1680,7 +1680,7 @@ describe('lib/Preview', () => {
             preview.open = true;
             preview.retryCount = 6;
 
-            preview.triggerFetchError(stubs.error);
+            preview.handleFetchError(stubs.error);
             expect(stubs.triggerError).to.be.called;
         });
 
@@ -1692,7 +1692,7 @@ describe('lib/Preview', () => {
             preview.retryCount = 6;
             stubs.error.response.status = 429;
 
-            preview.triggerFetchError(stubs.error);
+            preview.handleFetchError(stubs.error);
             try {
                 expect(stubs.triggerError).to.be.calledWith(new Error(__('error_rate_limit')));
             } catch (e) {
@@ -1709,7 +1709,7 @@ describe('lib/Preview', () => {
             preview.retryCount = 1;
             preview.file.id = 1;
 
-            preview.triggerFetchError(stubs.error);
+            preview.handleFetchError(stubs.error);
             expect(stubs.triggerError).to.not.be.called;
 
             clock.tick(RETRY_TIMEOUT + 1);
@@ -1907,13 +1907,6 @@ describe('lib/Preview', () => {
     });
 
     describe('getGlobalMousemoveHandler()', () => {
-        it('should return the throttled mouse move handler if it already exists', () => {
-            preview.throttledMousemoveHandler = true;
-
-            const handler = preview.getGlobalMousemoveHandler();
-            expect(handler).to.be.true;
-        });
-
         it('should clear the timeout handler and do nothing if the container doesn\'t exist', () => {
             preview.container = false;
 
