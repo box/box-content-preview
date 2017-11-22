@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import { addActivationListener, removeActivationListener, decodeKeydown, insertTemplate } from '../../util';
 import { ICON_ARROW_LEFT, ICON_ARROW_RIGHT, ICON_CHECK_MARK } from '../../icons/icons';
@@ -128,7 +127,6 @@ const SUBMENU_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data-t
     <div class="bp-media-settings-value"></div>
 </div>`;
 
-@autobind
 class Settings extends EventEmitter {
     /** @property {HTMLElement} - Settings container element */
     containerEl;
@@ -174,6 +172,8 @@ class Settings extends EventEmitter {
 
         // Bind context for callbacks
         this.handleTransitionEnd = this.handleTransitionEnd.bind(this);
+        this.blurHandler = this.blurHandler.bind(this);
+        this.menuEventHandler = this.menuEventHandler.bind(this);
 
         insertTemplate(this.containerEl, SETTINGS_TEMPLATE, containerEl.querySelector('.bp-media-controls-wrapper'));
         this.settingsEl = this.containerEl.querySelector('.bp-media-settings');
