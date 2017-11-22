@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import TextBaseViewer from './TextBaseViewer';
 import { createAssetUrlCreator, get } from '../../util';
 import { TEXT_STATIC_ASSETS_VERSION } from '../../constants';
@@ -6,7 +5,6 @@ import './CSV.scss';
 
 const JS = [`third-party/text/${TEXT_STATIC_ASSETS_VERSION}/papaparse.min.js`, 'csv.js'];
 
-@autobind
 class CSVViewer extends TextBaseViewer {
     /**
      * @inheritdoc
@@ -101,6 +99,7 @@ class CSVViewer extends TextBaseViewer {
         if (this.csvComponent) {
             this.csvComponent.renderCSV();
         }
+
         super.resize();
     }
 

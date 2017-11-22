@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import Controls from '../../Controls';
 import PlainTextViewer from './PlainTextViewer';
 import { CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
@@ -7,7 +6,6 @@ import './Markdown.scss';
 
 const STATIC_URI = `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/`;
 
-@autobind
 class MarkdownViewer extends PlainTextViewer {
     /**
      * @inheritdoc
