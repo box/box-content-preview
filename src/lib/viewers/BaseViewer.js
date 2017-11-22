@@ -108,7 +108,7 @@ class BaseViewer extends EventEmitter {
         // Bind context for callbacks
         this.resetLoadTimeout = this.resetLoadTimeout.bind(this);
         this.preventDefault = this.preventDefault.bind(this);
-        this.debouncedResizeHandler = this.debouncedResizeHandler.bind(this);
+        this.debouncedResizeHandler = this.getResizeHandler().bind(this);
         this.handleAssetError = this.handleAssetError.bind(this);
         this.toggleFullscreen = this.toggleFullscreen.bind(this);
         this.onFullscreenToggled = this.onFullscreenToggled.bind(this);
@@ -209,7 +209,7 @@ class BaseViewer extends EventEmitter {
      * @private
      * @return {Function} debounced resize handler
      */
-    debouncedResizeHandler() {
+    getResizeHandler() {
         return debounce(() => {
             this.resize();
         }, RESIZE_WAIT_TIME_IN_MILLIS);
