@@ -1,5 +1,4 @@
 /* global BoxSDK */
-import autobind from 'autobind-decorator';
 import fullscreen from '../../../Fullscreen';
 import DashViewer from '../../media/DashViewer';
 import Video360Controls from './Video360Controls';
@@ -35,6 +34,17 @@ class Video360Viewer extends DashViewer {
 
     /** @property {Box3D.Components.SkyboxRenderer} - The component for rendering the video as 360 degree (on a skybox) */
     skybox;
+
+    /** @inheritdoc */
+    constructor(options) {
+        super(options);
+
+        this.create360Environment = this.create360Environment.bind(this);
+        this.handleToggleVr = this.handleToggleVr.bind(this);
+        this.handleShowVrButton = this.handleShowVrButton.bind(this);
+        this.onCanvasMouseDown = this.onCanvasMouseDown.bind(this);
+        this.onCanvasMouseUp = this.onCanvasMouseUp.bind(this);
+    }
 
     /** @inheritdoc */
     setup() {
@@ -103,7 +113,6 @@ class Video360Viewer extends DashViewer {
      *
      * @inheritdoc
      */
-    @autobind
     loadeddataHandler() {
         const { token, apiHost } = this.options;
         this.renderer = new Video360Renderer(this.mediaContainerEl, new BoxSDK({ token, apiBase: apiHost }));
@@ -174,7 +183,6 @@ class Video360Viewer extends DashViewer {
     /**
      * @inheritdoc
      */
-    @autobind
     resize() {
         super.resize();
         if (this.renderer) {
@@ -189,7 +197,6 @@ class Video360Viewer extends DashViewer {
      * @private
      * @return {void}
      */
-    @autobind
     create360Environment() {
         this.skybox = this.renderer.getScene().getComponentByScriptId('skybox_renderer');
 
@@ -220,7 +227,6 @@ class Video360Viewer extends DashViewer {
     /**
      * @inheritdoc
      */
-    @autobind
     toggleFullscreen() {
         fullscreen.toggle(this.wrapperEl);
     }
@@ -230,7 +236,6 @@ class Video360Viewer extends DashViewer {
      *
      * @return {void}
      */
-    @autobind
     handleToggleVr() {
         this.renderer.toggleVr();
 
@@ -251,7 +256,6 @@ class Video360Viewer extends DashViewer {
      *
      * @return {void}
      */
-    @autobind
     handleShowVrButton() {
         this.controls.showVrButton();
     }
@@ -261,7 +265,6 @@ class Video360Viewer extends DashViewer {
      *
      * @return {void}
      */
-    @autobind
     onCanvasMouseDown() {
         this.renderer.getBox3D().once('mouseUp', this.onCanvasMouseUp);
     }
@@ -271,11 +274,10 @@ class Video360Viewer extends DashViewer {
      *
      * @return {void}
      */
-    @autobind
     onCanvasMouseUp() {
         const input = this.renderer.getInputController();
         // Make sure the mouse hasn't moved (within mouse/touch buffer drag allowance)
-        if (!input.getPreviousMouseDragState() && !input.getPreviousTouchDragState()) {
+        if (input && !input.getPreviousMouseDragState() && !input.getPreviousTouchDragState()) {
             this.togglePlay();
         }
     }

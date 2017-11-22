@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import BaseViewer from '../BaseViewer';
 import { checkPermission } from '../../file';
 import Browser from '../../Browser';
@@ -6,7 +5,6 @@ import { PERMISSION_DOWNLOAD } from '../../constants';
 import { ICON_FILE_DEFAULT, ICON_FILE_MEDIA, ICON_FILE_ZIP } from '../../icons/icons';
 import './PreviewError.scss';
 
-@autobind
 class PreviewErrorViewer extends BaseViewer {
     /**
      * [constructor]

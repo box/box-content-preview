@@ -592,6 +592,7 @@ describe('lib/viewers/box3d/video360/Video360Viewer', () => {
             viewer.renderer = {
                 getInputController: sandbox.stub().returns(input)
             };
+
             sandbox.stub(viewer, 'togglePlay');
         });
 

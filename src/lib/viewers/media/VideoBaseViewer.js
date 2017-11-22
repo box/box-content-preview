@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
 import MediaBaseViewer from './MediaBaseViewer';
 import { CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_DARK } from '../../constants';
@@ -7,8 +6,22 @@ import { ICON_PLAY_LARGE } from '../../icons/icons';
 const MOUSE_MOVE_TIMEOUT_IN_MILLIS = 1000;
 const CLASS_PLAY_BUTTON = 'bp-media-play-button';
 
-@autobind
 class VideoBaseViewer extends MediaBaseViewer {
+    /**
+     * @inheritdoc
+     */
+    constructor(options) {
+        super(options);
+
+        // Bind context for handlers
+        this.loadeddataHandler = this.loadeddataHandler.bind(this);
+        this.pointerHandler = this.pointerHandler.bind(this);
+        this.waitingHandler = this.waitingHandler.bind(this);
+        this.playingHandler = this.playingHandler.bind(this);
+        this.pauseHandler = this.pauseHandler.bind(this);
+        this.resize = this.resize.bind(this);
+    }
+
     /**
      * @inheritdoc
      */
@@ -134,13 +147,6 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     /**
-     * @inheritdoc
-     */
-    showLoadingIcon() {
-        super.showLoadingIcon();
-    }
-
-    /**
      * Adds event listeners to the media element.
      * Makes changes to the media controls.
      *
@@ -202,17 +208,6 @@ class VideoBaseViewer extends MediaBaseViewer {
         if (this.containerEl) {
             this.containerEl.classList.add(CLASS_DARK);
         }
-    }
-
-    /**
-     * Handles keyboard events for video
-     *
-     * @override
-     * @param {string} key - Keydown key
-     * @return {boolean} Consumed or not
-     */
-    onKeydown(key) {
-        return super.onKeydown(key);
     }
 }
 
