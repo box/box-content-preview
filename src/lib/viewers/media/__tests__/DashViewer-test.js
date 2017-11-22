@@ -272,15 +272,13 @@ describe('lib/viewers/media/DashViewer', () => {
     });
 
     describe('showLoadingIcon()', () => {
-        const loadingFunc = DashViewer.prototype.showLoadingIcon;
-
         afterEach(() => {
-            Object.defineProperty(VideoBaseViewer.prototype, 'showLoadingIcon', { value: loadingFunc });
+            VideoBaseViewer.prototype.showLoadingIcon.restore();
         });
 
         it('should show the loading indicator if active track does not equal the rep id', () => {
             sandbox.stub(dash, 'getActiveTrack').returns({ id: 1 });
-            Object.defineProperty(VideoBaseViewer.prototype, 'showLoadingIcon', { value: sandbox.mock() });
+            sinon.stub(VideoBaseViewer.prototype, 'showLoadingIcon');
             dash.showLoadingIcon(2);
         });
     });
@@ -978,10 +976,12 @@ describe('lib/viewers/media/DashViewer', () => {
     });
 
     describe('onKeydown()', () => {
-        const keydownFunc = DashViewer.prototype.onKeydown;
+        beforeEach(() => {
+            sinon.stub(VideoBaseViewer.prototype, 'onKeydown');
+        });
 
         afterEach(() => {
-            Object.defineProperty(VideoBaseViewer.prototype, 'onKeydown', { value: keydownFunc });
+            VideoBaseViewer.prototype.onKeydown.restore();
         });
 
         it('should toggle the stats on Shift+I', () => {
@@ -993,7 +993,6 @@ describe('lib/viewers/media/DashViewer', () => {
 
         it('should call super keydown handler for all other keys', () => {
             sandbox.stub(dash, 'toggleStats');
-            Object.defineProperty(VideoBaseViewer.prototype, 'onKeydown', { value: sandbox.mock() });
             const result = dash.onKeydown('blah');
             expect(dash.toggleStats).to.not.be.called;
             expect(result).to.not.be.true;
