@@ -42,6 +42,7 @@ class Box3DControls extends EventEmitter {
 
         this.handleToggleFullscreen = this.handleToggleFullscreen.bind(this);
         this.handleToggleVr = this.handleToggleVr.bind(this);
+        this.handleReset = this.handleReset.bind(this);
     }
 
     /**
