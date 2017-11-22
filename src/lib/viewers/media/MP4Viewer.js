@@ -1,10 +1,8 @@
-import autobind from 'autobind-decorator';
 import VideoBaseViewer from './VideoBaseViewer';
 import './MP4.scss';
 
 const CSS_CLASS_MP4 = 'bp-media-mp4';
 
-@autobind
 class MP4Viewer extends VideoBaseViewer {
     /**
      * @inheritdoc

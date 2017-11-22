@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
 import DocBaseViewer from './DocBaseViewer';
 import PresentationPreloader from './PresentationPreloader';
@@ -10,11 +9,23 @@ const WHEEL_THROTTLE = 200;
 const PADDING_OFFSET = 30;
 const SCROLL_EVENT_OFFSET = 5;
 
-@autobind
 class PresentationViewer extends DocBaseViewer {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
+
+    /**
+     * @inheritdoc
+     */
+    constructor(options) {
+        super(options);
+
+        // Bind context for callbacks
+        this.mobileScrollHandler = this.mobileScrollHandler.bind(this);
+        this.pagesinitHandler = this.pagesinitHandler.bind(this);
+        this.pagechangeHandler = this.pagechangeHandler.bind(this);
+        this.throttledWheelHandler = this.getWheelHandler().bind(this);
+    }
 
     /**
      * @inheritdoc
@@ -143,7 +154,7 @@ class PresentationViewer extends DocBaseViewer {
     bindDOMListeners() {
         super.bindDOMListeners();
 
-        this.docEl.addEventListener('wheel', this.wheelHandler());
+        this.docEl.addEventListener('wheel', this.throttledWheelHandler);
         if (this.hasTouch) {
             this.docEl.addEventListener('touchstart', this.mobileScrollHandler);
             this.docEl.addEventListener('touchmove', this.mobileScrollHandler);
@@ -161,7 +172,7 @@ class PresentationViewer extends DocBaseViewer {
     unbindDOMListeners() {
         super.unbindDOMListeners();
 
-        this.docEl.removeEventListener('wheel', this.wheelHandler());
+        this.docEl.removeEventListener('wheel', this.throttledWheelHandler);
         if (this.hasTouch) {
             this.docEl.removeEventListener('touchstart', this.mobileScrollHandler);
             this.docEl.removeEventListener('touchmove', this.mobileScrollHandler);
@@ -256,27 +267,23 @@ class PresentationViewer extends DocBaseViewer {
     }
 
     /**
-     * Handles zoom logic around opening the find bar.
+     * Returns throttled mousewheel handler
      *
-     * @return {void}
+     * @return {Function} Throttled wheel handler
      */
-    wheelHandler() {
-        if (!this.throttledWheelHandler) {
-            this.throttledWheelHandler = throttle((event) => {
-                // Should not change pages if there is overflow, horizontal movement or a lack of vertical movement
-                if (event.deltaY === 0 || event.deltaX !== 0 || this.checkOverflow()) {
-                    return;
-                }
+    getWheelHandler() {
+        return throttle((event) => {
+            // Should not change pages if there is overflow, horizontal movement or a lack of vertical movement
+            if (event.deltaY === 0 || event.deltaX !== 0 || this.checkOverflow()) {
+                return;
+            }
 
-                if (event.deltaY > 0) {
-                    this.nextPage();
-                } else if (event.deltaY < 0) {
-                    this.previousPage();
-                }
-            }, WHEEL_THROTTLE);
-        }
-
-        return this.throttledWheelHandler;
+            if (event.deltaY > 0) {
+                this.nextPage();
+            } else if (event.deltaY < 0) {
+                this.previousPage();
+            }
+        }, WHEEL_THROTTLE);
     }
 
     //--------------------------------------------------------------------------

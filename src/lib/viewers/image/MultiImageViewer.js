@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import ImageBaseViewer from './ImageBaseViewer';
 import PageControls from '../../PageControls';
 import './MultiImage.scss';
@@ -11,8 +10,16 @@ const CSS_CLASS_IMAGE = 'bp-images';
 const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
 const ZOOM_UPDATE_PAN_DELAY = 50;
 
-@autobind
 class MultiImageViewer extends ImageBaseViewer {
+    /** @inheritdoc */
+    constructor(options) {
+        super(options);
+
+        this.setPage = this.setPage.bind(this);
+        this.scrollHandler = this.scrollHandler.bind(this);
+        this.handlePageChangeFromScroll = this.handlePageChangeFromScroll.bind(this);
+    }
+
     /**
      * @inheritdoc
      */
@@ -325,7 +332,6 @@ class MultiImageViewer extends ImageBaseViewer {
         if (this.scrollCheckHandler) {
             return;
         }
-
         const imageScrollHandler = this.handlePageChangeFromScroll;
         this.scrollCheckHandler = window.requestAnimationFrame(imageScrollHandler);
     }

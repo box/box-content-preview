@@ -67,11 +67,6 @@ describe('lib/viewers/doc/DocFindBar', () => {
             expect(docFindBar.canDownload).to.be.true;
         });
 
-        it('should override find controller methods', () => {
-            expect(docFindBar.findController.updateUIState).to.equal(docFindBar.updateUIState);
-            expect(docFindBar.findController.updateUIResultsCount).to.equal(docFindBar.updateUIResultsCount);
-        });
-
         it('should throw an error if there is no findController', () => {
             docFindBar.destroy();
             findController = null;
@@ -80,24 +75,6 @@ describe('lib/viewers/doc/DocFindBar', () => {
             } catch (e) {
                 expect(e.message).to.equal('DocFindBar cannot be used without a PDFFindController instance.');
             }
-        });
-
-        it('should create elements and bind DOM Listeners', () => {
-            const proto = DocFindBar.prototype;
-            DocFindBar.prototype = {
-                createFindField: sandbox.stub(),
-                createFindButtons: sandbox.stub(),
-                bindDOMListeners: sandbox.stub()
-            };
-
-            let docFindBar2 = new DocFindBar(findBarEl, findController);
-            expect(DocFindBar.prototype.createFindField).to.be.called;
-            expect(DocFindBar.prototype.createFindButtons).to.be.called;
-            expect(DocFindBar.prototype.bindDOMListeners).to.be.called;
-            expect(docFindBar2 instanceof DocFindBar).to.be.true;
-
-            DocFindBar.prototype = proto;
-            docFindBar2 = undefined;
         });
     });
 
