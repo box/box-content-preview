@@ -40,7 +40,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         sandbox.verifyAndRestore();
         fixture.cleanup();
 
-        if (typeof imageBase.destroy === 'function') {
+        if (imageBase && typeof imageBase.destroy === 'function') {
             imageBase.destroy();
         }
 
