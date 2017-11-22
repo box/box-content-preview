@@ -11,12 +11,7 @@ const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
 const ZOOM_UPDATE_PAN_DELAY = 50;
 
 class MultiImageViewer extends ImageBaseViewer {
-    /**
-     * [constructor]
-     *
-     * @param {Object} options - Some options
-     * @return {MultiImageViewer} Instance of multi image viewer
-     */
+    /** @inheritdoc */
     constructor(options) {
         super(options);
 

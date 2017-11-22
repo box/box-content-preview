@@ -11,12 +11,7 @@ const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
 
 class ImageBaseViewer extends BaseViewer {
-    /**
-     * [constructor]
-     *
-     * @param {Object} options - Some options
-     * @return {ImageBaseViewer} Instance of image base viewer
-     */
+    /** @inheritdoc */
     constructor(options) {
         super(options);
 

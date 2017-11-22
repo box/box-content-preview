@@ -10,12 +10,7 @@ const IMAGE_PADDING = 15;
 const IMAGE_ZOOM_SCALE = 1.2;
 
 class ImageViewer extends ImageBaseViewer {
-    /**
-     * [constructor]
-     *
-     * @param {Object} options - Some options
-     * @return {ImageBaseViewer} Instance of image base viewer
-     */
+    /** @inheritdoc */
     constructor(options) {
         super(options);
 
