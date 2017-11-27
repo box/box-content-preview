@@ -17,7 +17,7 @@ const DEFAULT_ALLOWED_LOGS = {
 };
 
 // Publicliy accessible, doesn't require auth token.
-const DEFAULT_LOG_ENDPOINT = '?rm=preview_metrics';
+const DEFAULT_LOG_ENDPOINT = 'index.php?rm=preview_metrics';
 
 // By default, print nothing.
 const DEFAULT_LOG_LEVEL = LOG_LEVELS.silent;
@@ -119,11 +119,11 @@ class Logger {
      * @return {Object} Sanitized configuration for the LoggerBackend.
      */
     sanitizeBackendConfig(config) {
-        let { logUrl } = config;
+        let { logURL } = config;
         const { appHost, logEndpoint, auth } = config;
 
-        if (!logUrl) {
-            logUrl = `${appHost || APP_HOST}${logEndpoint || DEFAULT_LOG_ENDPOINT}`;
+        if (!logURL) {
+            logURL = `${appHost || APP_HOST}/${logEndpoint || DEFAULT_LOG_ENDPOINT}`;
         }
 
         if (auth && (!auth.header || !auth.value)) {
@@ -131,7 +131,7 @@ class Logger {
         }
 
         return {
-            logUrl,
+            logURL,
             auth
         };
     }

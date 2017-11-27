@@ -1,10 +1,11 @@
 import Browser from '../Browser';
 import { LOG_CODES, CLIENT_VERSION } from './logConstants';
 import { transformMetrics, transformWarnings, transformInfo, transformErrors } from './logTransformers';
+import { post } from '../util';
 
 class LoggerBackend {
     /** @property {string} - URL to POST log events to */
-    logUrl;
+    logURL;
 
     /** @property {Object} - Auth token to set as a Header on each log request */
     auth;
@@ -82,7 +83,7 @@ class LoggerBackend {
             events: batchList
         };
 
-        console.log(logsToSave);
+        post(this.logURL, {}, logsToSave);
     }
 }
 
