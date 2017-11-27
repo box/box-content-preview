@@ -225,6 +225,9 @@ class Preview extends EventEmitter {
 
         // Nuke the file
         this.file = undefined;
+
+        // Clear logger from logging ids
+        this.logger.setFileIds(null, null);
     }
 
     /**
@@ -594,6 +597,10 @@ class Preview extends EventEmitter {
             );
         }
 
+        // Set logger to use up to date file and file version ids.
+        const fileVersion = this.file.file_version ? this.file.file_version.id : null;
+        this.logger.setFileIds(this.file.id, fileVersion);
+
         // Retry up to RETRY_COUNT if we are reloading same file
         if (this.file.id === currentFileId) {
             this.retryCount += 1;
@@ -833,8 +840,6 @@ class Preview extends EventEmitter {
         if (!this.open) {
             return;
         }
-
-        this.logger.setFileIds(this.file.id, this.file.file_version.id);
 
         // Check if preview permissions exist
         if (!checkPermission(this.file, PERMISSION_PREVIEW)) {
