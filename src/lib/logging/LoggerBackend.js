@@ -1,4 +1,6 @@
-import { LOG_CODES, LOG_LEVELS } from './logConstants';
+import Browser from '../Browser';
+import { LOG_CODES, CLIENT_VERSION } from './logConstants';
+import { transformMetrics, transformWarnings, transformInfo, transformErrors } from './logTransformers';
 
 class LoggerBackend {
     /** @property {string} - URL to POST log events to */
@@ -21,12 +23,46 @@ class LoggerBackend {
     }
 
     /**
+     * Given a type of log, get a transformer that can format the data to suit the backend recieving it.
+     *
+     * @param {LOG_CODES} type - Type of transformer to get.
+     * @return {Function} A function that transforms the data to suit storage requirements.
+     */
+    getTransformer(type) {
+        let transformer;
+
+        switch (type) {
+            case LOG_CODES.error:
+            case LOG_CODES.uncaught_error:
+                transformer = transformErrors;
+                break;
+            case LOG_CODES.metric:
+                transformer = transformMetrics;
+                break;
+            case LOG_CODES.warning:
+                transformer = transformWarnings;
+                break;
+            case LOG_CODES.info:
+            default:
+                transformer = transformInfo;
+        }
+
+        return transformer;
+    }
+
+    /**
      * Create a properly formatted batch of logs to be saved to the backend.
      *
+     * @param {LOG_CODES} type - Type of logs contained in the batch.
      * @param {Object} logs - Object containing type and array of logs that belong to it.
      * @return {Object} Formatted object to be saved to the backend.
      */
-    createBatch(logs) {}
+    createBatch(type, logs) {
+        const transform = this.getTransformer(type);
+        const batch = transform(logs);
+
+        return batch;
+    }
 
     /**
      * Saves all of the logs in the cache, filtered by what is allowed.
@@ -35,7 +71,19 @@ class LoggerBackend {
      * @return {void}
      */
     save(batchList) {
-        console.log(batchList);
+        const info = {
+            file_id: 'FILL_THIS_IN',
+            client_version: CLIENT_VERSION,
+            browser_name: Browser.getName(),
+            country_code: 'FILL_THIS_IN'
+        };
+
+        const logsToSave = {
+            info,
+            events: batchList
+        };
+
+        console.log(logsToSave);
     }
 }
 
@@ -48,7 +96,49 @@ export default LoggerBackend;
  * file_id: <string>,
  * client_version: <string>, // preview version number
  * browser_name: <string>,
+ *
  * country_code: <string>,
  * code: <string>, // Corresponds to the strings defined by us for events
  * value: <any> // Must be serializable
  */
+
+/** TOTAL POST REQUEST SHOULD BE:
+  *  Remember, for event_type METRIC and CODE: METRIC_CONTROLS,
+  *  the value is the whole list of Interactions with controls
+
+    {
+        info: {
+            file_id,
+            client_version,
+            browser_name,
+            country_code
+        },
+        events: [
+            {
+                event_type: <ERROR | METRIC | WARNING | INFO>,
+                events: [
+                    {
+                        timestamp,
+                        code,
+                        value
+                    }
+                ]
+            }
+        ]
+    }
+  */
+
+/** preview_metric endpoint, in Box, will translate to the following:
+    [
+        {
+            event_type,
+            timestamp,
+            file_id,
+            client_version,
+            browser_name,
+            country_code,
+            code,
+            value
+        }
+    ]
+*/

@@ -4,7 +4,7 @@ import LoggerCache from './LoggerCache';
 import LoggerBackend from './LoggerBackend';
 import { registerLogger, unregisterLogger } from './loggerRegistry';
 import { LOG_CODES, LOG_LEVELS } from './logConstants';
-import { arrayToString, sortLogsByTime, printLog } from './logUtils';
+import { arrayToString, sortLogsByTime, printLog, getISOTime } from './logUtils';
 import { APP_HOST } from '../constants';
 
 // Filter for logs allowed to be saved to the logUrl
@@ -39,6 +39,9 @@ class Logger {
     /** @property {string} - The name of the logger. Used with the Global Registry */
     name;
 
+    /** @property {Object} - The logs we're allowed to save to the backend. Defaults to all allowed. */
+    allowedLogs;
+
     /**
      * @constructor
      *
@@ -62,8 +65,6 @@ class Logger {
             this.setLogLevel(logLevel);
         }
 
-        this.allowedLogs = { ...DEFAULT_ALLOWED_LOGS, ...(config.allowedLogs || {}) };
-
         this.onUncaughtError = this.onUncaughtError.bind(this);
         window.addEventListener('error', this.onUncaughtError);
 
@@ -72,6 +73,7 @@ class Logger {
         if (backendConfig) {
             const sanitizedConfig = this.sanitizeBackendConfig(backendConfig);
             this.backend = new LoggerBackend(sanitizedConfig);
+            this.allowedLogs = { ...DEFAULT_ALLOWED_LOGS, ...(config.allowedLogs || {}) };
         }
     }
 
@@ -106,7 +108,7 @@ class Logger {
             logUrl = `${appHost || APP_HOST}${logEndpoint || DEFAULT_LOG_ENDPOINT}`;
         }
 
-        if (!auth.header || !auth.value) {
+        if (auth && (!auth.header || !auth.value)) {
             throw new Error('Invalid authorization object provided for saving logs!');
         }
 
@@ -158,15 +160,6 @@ class Logger {
     }
 
     /**
-     * Get current time in ISO format.
-     *
-     * @return {string} The time in ISO format.
-     */
-    getISOTime() {
-        return new Date().toISOString();
-    }
-
-    /**
      * Commit a message to the cache and run the appropriate log function.
      *
      * @private
@@ -178,7 +171,7 @@ class Logger {
         const logFunction = this.getLoggerFunction(code);
 
         // Format message and add a timestamp
-        const timestamp = this.getISOTime();
+        const timestamp = getISOTime();
         this.cache.add(code, timestamp, message);
 
         // Also wrapping the code into the message
@@ -235,8 +228,8 @@ class Logger {
      */
     metric(code, value) {
         this.commitMessage(LOG_CODES.metric, {
-            metric_code: code,
-            metric_value: value
+            metricCode: code,
+            metricValue: value
         });
     }
 
@@ -264,6 +257,7 @@ class Logger {
     /**
      * Get logs from the cache.
      *
+     * @public
      * @param {LOG_CODES|LOG_CODES[]} [code] - Type of logs to get. If empty, will get all logs.
      * If a list is given, will get each entry specified.
      * @return {Object} The cache entry(ies) requested.
@@ -291,6 +285,7 @@ class Logger {
     /**
      * Print logs from the cache, to the console.
      *
+     * @public
      * @param {LOG_CODES|LOG_CODES[]} [code] - Type of logs to print. If empty, will print all logs.
      * If a list is given, will print each entry specified.
      * @return {void}
@@ -321,6 +316,7 @@ class Logger {
     /**
      * Saves the logs to the backend.
      *
+     * @public
      * @param {LOG_CODES|LOG_CODES[]} code - Type of logs to save.
      * @return {void}
      */
@@ -345,6 +341,7 @@ class Logger {
             // Filter out empty logs
             if (!logs[logType].length) {
                 delete logs[logType];
+                return;
             }
 
             const batch = this.backend.createBatch(logType, logs[logType]);

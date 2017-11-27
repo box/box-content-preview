@@ -41,7 +41,7 @@ import {
 import {
     METRIC_FILE_PREVIEW_SUCCESS,
     METRIC_FILE_PREVIEW_FAIL,
-    METRIC_CONTROLS,
+    METRIC_CONTROL,
     METRIC_CONTROL_ACTIONS
 } from './logging/metricsConstants';
 import { LOG_CODES } from './logging/logConstants';
@@ -150,7 +150,7 @@ class Preview extends EventEmitter {
         this.cache = new Cache();
         this.ui = new PreviewUI();
         this.browserInfo = Browser.getBrowserInfo();
-        this.logger = new Logger();
+        this.logger = new Logger({ backendConfig: {} });
     }
 
     /**
@@ -1361,7 +1361,7 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     uiNavigateRight() {
-        this.logger.metric(METRIC_CONTROLS, METRIC_CONTROL_ACTIONS.navigate_prev_button);
+        this.logger.metric(METRIC_CONTROL, METRIC_CONTROL_ACTIONS.navigate_prev_button);
         this.navigateRight();
     }
 
@@ -1372,7 +1372,7 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     uiNavigateLeft() {
-        this.logger.metric(METRIC_CONTROLS, METRIC_CONTROL_ACTIONS.navigate_next_button);
+        this.logger.metric(METRIC_CONTROL, METRIC_CONTROL_ACTIONS.navigate_next_button);
         this.navigateRight();
     }
 
@@ -1415,12 +1415,12 @@ class Preview extends EventEmitter {
         if (!consumed) {
             switch (key) {
                 case 'ArrowLeft':
-                    this.logger.metric(METRIC_CONTROLS, METRIC_CONTROL_ACTIONS.navigate_prev_key);
+                    this.logger.metric(METRIC_CONTROL, METRIC_CONTROL_ACTIONS.navigate_prev_key);
                     this.navigateLeft();
                     consumed = true;
                     break;
                 case 'ArrowRight':
-                    this.logger.metric(METRIC_CONTROLS, METRIC_CONTROL_ACTIONS.navigate_next_key);
+                    this.logger.metric(METRIC_CONTROL, METRIC_CONTROL_ACTIONS.navigate_next_key);
                     this.navigateRight();
                     consumed = true;
                     break;

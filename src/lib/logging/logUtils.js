@@ -76,3 +76,12 @@ export function printLog(log) {
     // eslint-disable-next-line no-console
     console.log(`%c [${log.type}] `, `color: ${color}`, output);
 }
+
+/**
+ * Get current time in ISO format.
+ *
+ * @return {string} The time in ISO format.
+ */
+export function getISOTime() {
+    return new Date().toISOString();
+}
