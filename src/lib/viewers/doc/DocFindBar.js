@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import { decodeKeydown } from '../../util';
 import { CLASS_HIDDEN } from '../../constants';
@@ -13,7 +12,6 @@ const FIND_MATCH_FOUND = 0;
 const FIND_MATCH_NOT_FOUND = 1;
 const FIND_MATCH_PENDING = 3;
 
-@autobind
 class DocFindBar extends EventEmitter {
     /**
      * [constructor]
@@ -36,9 +34,16 @@ class DocFindBar extends EventEmitter {
             throw new Error('DocFindBar cannot be used without a PDFFindController instance.');
         }
 
+        // Bind context for callbacks
+        this.displayFindBarHandler = this.displayFindBarHandler.bind(this);
+        this.findFieldHandler = this.findFieldHandler.bind(this);
+        this.barKeyDownHandler = this.barKeyDownHandler.bind(this);
+        this.findNextHandler = this.findNextHandler.bind(this);
+        this.findPreviousHandler = this.findPreviousHandler.bind(this);
+
         // overriding some find controller methods to update match count
-        this.findController.updateUIState = this.updateUIState;
-        this.findController.updateUIResultsCount = this.updateUIResultsCount;
+        this.findController.updateUIState = this.updateUIState.bind(this);
+        this.findController.updateUIResultsCount = this.updateUIResultsCount.bind(this);
 
         // Default hides find bar on load
         this.bar.classList.add(CLASS_HIDDEN);

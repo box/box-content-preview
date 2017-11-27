@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import throttle from 'lodash.throttle';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
@@ -73,11 +72,30 @@ const LOADING_ICON_MAP = {
     xlsx: ICON_FILE_EXCEL
 };
 
-@autobind
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
+
+    /**
+     * @inheritdoc
+     */
+    constructor(options) {
+        super(options);
+
+        // Bind context for callbacks
+        this.handleAssetAndRepLoad = this.handleAssetAndRepLoad.bind(this);
+        this.print = this.print.bind(this);
+        this.setPage = this.setPage.bind(this);
+        this.zoomIn = this.zoomIn.bind(this);
+        this.zoomOut = this.zoomOut.bind(this);
+        this.pagerenderedHandler = this.pagerenderedHandler.bind(this);
+        this.pagechangeHandler = this.pagechangeHandler.bind(this);
+        this.pagesinitHandler = this.pagesinitHandler.bind(this);
+        this.enterfullscreenHandler = this.enterfullscreenHandler.bind(this);
+        this.exitfullscreenHandler = this.exitfullscreenHandler.bind(this);
+        this.throttledScrollHandler = this.getScrollHandler().bind(this);
+    }
 
     /**
      * @inheritdoc
@@ -250,21 +268,21 @@ class DocBaseViewer extends BaseViewer {
         this.pdfUrl = this.createContentUrlWithAuthParams(template);
 
         return Promise.all([this.loadAssets(JS, CSS), this.getRepStatus().getPromise()])
-            .then(this.postload)
+            .then(this.handleAssetAndRepLoad)
             .catch(this.handleAssetError);
     }
 
     /**
-     * Loads a document.
+     * Loads a document after assets and representation are ready.
      *
      * @return {void}
      */
-    postload = () => {
+    handleAssetAndRepLoad() {
         this.setupPdfjs();
         this.initViewer(this.pdfUrl);
         this.initPrint();
         this.initFind();
-    };
+    }
 
     /**
      * Initializes the Find Bar and Find Controller
@@ -803,7 +821,7 @@ class DocBaseViewer extends BaseViewer {
         this.docEl.addEventListener('pagechange', this.pagechangeHandler);
 
         // Detects scroll so an event can be fired
-        this.docEl.addEventListener('scroll', this.scrollHandler);
+        this.docEl.addEventListener('scroll', this.throttledScrollHandler);
 
         // Fullscreen
         fullscreen.addListener('enter', this.enterfullscreenHandler);
@@ -832,7 +850,7 @@ class DocBaseViewer extends BaseViewer {
             this.docEl.removeEventListener('pagesinit', this.pagesinitHandler);
             this.docEl.removeEventListener('pagerendered', this.pagerenderedHandler);
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
-            this.docEl.removeEventListener('scroll', this.scrollHandler);
+            this.docEl.removeEventListener('scroll', this.throttledScrollHandler);
 
             if (this.isMobile) {
                 if (Browser.isIOS()) {
@@ -909,7 +927,7 @@ class DocBaseViewer extends BaseViewer {
                 pageNum: pageNumber
             });
 
-            // Fire postload event to hide progress bar and cleanup preload after a page is rendered
+            // Fire progressend event to hide progress bar and cleanup preload after a page is rendered
             if (!this.somePageRendered) {
                 this.hidePreload();
                 this.emit('progressend');
@@ -964,34 +982,36 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Scroll handler. Fires an event on start and stop
+     * Returns throttled handler. Fires an event on start and stop
      *
      * @private
      * @return {void}
      */
-    scrollHandler = throttle(() => {
-        // Reset the scroll timer if we are continuing a scroll
-        if (this.scrollTimer) {
-            clearTimeout(this.scrollTimer);
-        }
+    getScrollHandler() {
+        return throttle(() => {
+            // Reset the scroll timer if we are continuing a scroll
+            if (this.scrollTimer) {
+                clearTimeout(this.scrollTimer);
+            }
 
-        // only fire the scroll start event if this is a new scroll
-        if (!this.scrollStarted) {
-            this.emit('scrollstart', {
-                scrollTop: this.docEl.scrollTop,
-                scrollLeft: this.docEl.scrollLeft
-            });
-            this.scrollStarted = true;
-        }
+            // only fire the scroll start event if this is a new scroll
+            if (!this.scrollStarted) {
+                this.emit('scrollstart', {
+                    scrollTop: this.docEl.scrollTop,
+                    scrollLeft: this.docEl.scrollLeft
+                });
+                this.scrollStarted = true;
+            }
 
-        this.scrollTimer = setTimeout(() => {
-            this.emit('scrollend', {
-                scrollTop: this.docEl.scrollTop,
-                scrollLeft: this.docEl.scrollLeft
-            });
-            this.scrollStarted = false;
-        }, SCROLL_END_TIMEOUT);
-    }, SCROLL_EVENT_THROTTLE_INTERVAL);
+            this.scrollTimer = setTimeout(() => {
+                this.emit('scrollend', {
+                    scrollTop: this.docEl.scrollTop,
+                    scrollLeft: this.docEl.scrollLeft
+                });
+                this.scrollStarted = false;
+            }, SCROLL_END_TIMEOUT);
+        }, SCROLL_EVENT_THROTTLE_INTERVAL);
+    }
 }
 
 export default DocBaseViewer;

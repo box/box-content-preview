@@ -125,9 +125,9 @@ describe('lib/viewers/BaseViewer', () => {
         });
     });
 
-    describe('debouncedResizeHandler()', () => {
+    describe('getResizeHandler()', () => {
         it('should return a resize handler', () => {
-            expect(base.debouncedResizeHandler()).to.be.a.function;
+            expect(base.getResizeHandler()).to.be.a.function;
         });
     });
 
@@ -288,15 +288,14 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.baseAddListener = sandbox.spy(base, 'addListener');
             stubs.documentAddEventListener = sandbox.stub(document.defaultView, 'addEventListener');
             sandbox.stub(base, 'initAnnotations');
-
-
         });
+
         it('should append common event listeners', () => {
             base.addCommonListeners();
 
             expect(stubs.fullscreenAddListener).to.be.calledWith('enter', sinon.match.func);
             expect(stubs.fullscreenAddListener).to.be.calledWith('exit', sinon.match.func);
-            expect(stubs.documentAddEventListener).to.be.calledWith('resize', base.debouncedResizeHandler);
+            expect(stubs.documentAddEventListener).to.be.calledWith('resize', sinon.match.func);
             expect(stubs.baseAddListener).to.be.calledWith('load', sinon.match.func);
         });
 
@@ -446,8 +445,7 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.destroy();
 
-            expect(base.containerEl.removeEventListener).to.be.calledWith('contextmenu', sinon.match.func)
-            expect(base.preventDefault).to.be.null;
+            expect(base.containerEl.removeEventListener).to.be.calledWith('contextmenu', sinon.match.func);
         });
     });
 

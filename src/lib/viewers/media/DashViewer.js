@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import VideoBaseViewer from './VideoBaseViewer';
 import fullscreen from '../../Fullscreen';
 import { appendQueryParams, get } from '../../util';
@@ -15,8 +14,24 @@ const MANIFEST = 'manifest.mpd';
 const DEFAULT_VIDEO_WIDTH_PX = 854;
 const DEFAULT_VIDEO_HEIGHT_PX = 480;
 
-@autobind
 class DashViewer extends VideoBaseViewer {
+    /**
+     * @inheritdoc
+     */
+    constructor(options) {
+        super(options);
+
+        // Bind context for callbacks
+        this.loadeddataHandler = this.loadeddataHandler.bind(this);
+        this.adaptationHandler = this.adaptationHandler.bind(this);
+        this.shakaErrorHandler = this.shakaErrorHandler.bind(this);
+        this.requestFilter = this.requestFilter.bind(this);
+        this.handleQuality = this.handleQuality.bind(this);
+        this.handleSubtitle = this.handleSubtitle.bind(this);
+        this.handleAudioTrack = this.handleAudioTrack.bind(this);
+        this.getBandwidthInterval = this.getBandwidthInterval.bind(this);
+    }
+
     /**
      * @inheritdoc
      */
@@ -328,8 +343,9 @@ class DashViewer extends VideoBaseViewer {
      */
     shakaErrorHandler(shakaError) {
         const error = new Error(
-            `Shaka error. Code = ${shakaError.detail.code}, Category = ${shakaError.detail
-                .category}, Severity = ${shakaError.detail.severity}, Data = ${shakaError.detail.data.toString()}`
+            `Shaka error. Code = ${shakaError.detail.code}, Category = ${shakaError.detail.category}, Severity = ${
+                shakaError.detail.severity
+            }, Data = ${shakaError.detail.data.toString()}`
         );
         error.displayMessage = __('error_refresh');
 
@@ -491,7 +507,10 @@ class DashViewer extends VideoBaseViewer {
     resize() {
         let width = this.videoWidth || 0;
         let height = this.videoHeight || 0;
-        const viewport = this.wrapperEl.getBoundingClientRect();
+        const viewport = {
+            height: this.wrapperEl.clientHeight,
+            width: this.wrapperEl.clientWidth
+        };
 
         // We need the width to be atleast wide enough for the controls
         // to not overflow and fit properly

@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import debounce from 'lodash.debounce';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
@@ -14,8 +13,33 @@ const MEDIA_AUTOPLAY_CACHE_KEY = 'media-autoplay';
 const MEDIA_VOLUME_INCREMENT = 0.05;
 const EMIT_WAIT_TIME_IN_MILLIS = 100;
 
-@autobind
 class MediaBaseViewer extends BaseViewer {
+    /**
+     * @inheritdoc
+     */
+    constructor(options) {
+        super(options);
+
+        // Bind context for callbacks
+        this.errorHandler = this.errorHandler.bind(this);
+        this.setTimeCode = this.setTimeCode.bind(this);
+        this.progressHandler = this.progressHandler.bind(this);
+        this.updateVolumeIcon = this.updateVolumeIcon.bind(this);
+        this.playingHandler = this.playingHandler.bind(this);
+        this.pauseHandler = this.pauseHandler.bind(this);
+        this.resetPlayIcon = this.resetPlayIcon.bind(this);
+        this.seekHandler = this.seekHandler.bind(this);
+        this.loadeddataHandler = this.loadeddataHandler.bind(this);
+        this.errorHandler = this.errorHandler.bind(this);
+        this.containerClickHandler = this.containerClickHandler.bind(this);
+        this.handleTimeupdateFromMediaControls = this.handleTimeupdateFromMediaControls.bind(this);
+        this.setVolume = this.setVolume.bind(this);
+        this.togglePlay = this.togglePlay.bind(this);
+        this.toggleMute = this.toggleMute.bind(this);
+        this.handleRate = this.handleRate.bind(this);
+        this.handleAutoplay = this.handleAutoplay.bind(this);
+        this.mediaendHandler = this.mediaendHandler.bind(this);
+    }
     /**
      * @inheritdoc
      */
@@ -166,7 +190,7 @@ class MediaBaseViewer extends BaseViewer {
      * @emits error
      * @return {void}
      */
-    errorHandler = (err) => {
+    errorHandler(err) {
         this.logError(err);
 
         // Display a generic error message but log the real one
@@ -176,7 +200,7 @@ class MediaBaseViewer extends BaseViewer {
         }
 
         this.emit('error', error);
-    };
+    }
 
     /**
      * Handler for playback rate

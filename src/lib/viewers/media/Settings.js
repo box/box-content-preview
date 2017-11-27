@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import { addActivationListener, removeActivationListener, decodeKeydown, insertTemplate } from '../../util';
 import { ICON_ARROW_LEFT, ICON_ARROW_RIGHT, ICON_CHECK_MARK } from '../../icons/icons';
@@ -128,7 +127,6 @@ const SUBMENU_SUBITEM_TEMPLATE = `<div class="bp-media-settings-sub-item" data-t
     <div class="bp-media-settings-value"></div>
 </div>`;
 
-@autobind
 class Settings extends EventEmitter {
     /** @property {HTMLElement} - Settings container element */
     containerEl;
@@ -172,6 +170,11 @@ class Settings extends EventEmitter {
         this.containerEl = containerEl;
         this.cache = cache;
 
+        // Bind context for callbacks
+        this.handleTransitionEnd = this.handleTransitionEnd.bind(this);
+        this.blurHandler = this.blurHandler.bind(this);
+        this.menuEventHandler = this.menuEventHandler.bind(this);
+
         insertTemplate(this.containerEl, SETTINGS_TEMPLATE, containerEl.querySelector('.bp-media-controls-wrapper'));
         this.settingsEl = this.containerEl.querySelector('.bp-media-settings');
         this.firstMenuItem = this.settingsEl.querySelectorAll('.bp-media-settings-item')[0];
@@ -182,6 +185,9 @@ class Settings extends EventEmitter {
         addActivationListener(this.settingsEl, this.menuEventHandler);
         this.containerEl.classList.add(CLASS_SETTINGS_SUBTITLES_UNAVAILABLE);
         this.containerEl.classList.add(CLASS_SETTINGS_AUDIOTRACKS_UNAVAILABLE);
+
+        // Allow scrollbars after animations end
+        this.settingsEl.addEventListener('transitionend', this.handleTransitionEnd);
 
         if (Browser.isMobile()) {
             this.containerEl.classList.add(CLASS_SETTINGS_AUTOPLAY_UNAVAILABLE);
@@ -214,6 +220,7 @@ class Settings extends EventEmitter {
     destroy() {
         if (this.settingsEl) {
             removeActivationListener(this.settingsEl, this.menuEventHandler);
+            this.settingsEl.removeEventListener('transitionend', this.handleTransitionEnd);
         }
         document.removeEventListener('click', this.blurHandler);
     }
@@ -311,6 +318,7 @@ class Settings extends EventEmitter {
     showSubMenu(type) {
         const subMenu = this.settingsEl.querySelector(`.bp-media-settings-menu-${type}`);
         this.settingsEl.classList.add(`bp-media-settings-show-${type}`);
+
         this.setMenuContainerDimensions(subMenu);
         // Move focus to the currently selected value
         const curSelectedOption = this.settingsEl.querySelector(
@@ -329,6 +337,9 @@ class Settings extends EventEmitter {
     menuItemSelect(menuItem) {
         const type = menuItem.getAttribute('data-type');
         const value = menuItem.getAttribute('data-value');
+
+        // Hide scrollbars while menu animation is happening - this is removed when transition ends
+        this.settingsEl.classList.add('bp-media-settings-in-transition');
 
         if (type === 'menu') {
             // We are in the sub menu and going back to the main menu
@@ -425,6 +436,15 @@ class Settings extends EventEmitter {
             event.preventDefault();
             event.stopPropagation();
         }
+    }
+
+    /**
+     * Handles transitionend event by removing transition class.
+     *
+     * @return {void}
+     */
+    handleTransitionEnd() {
+        this.settingsEl.classList.remove('bp-media-settings-in-transition');
     }
 
     /**

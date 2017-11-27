@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import Box3DControls from '../Box3DControls';
 import Model3DAnimationClipsPullup from './Model3DAnimationClipsPullup';
 import Model3DSettingsPullup from './Model3DSettingsPullup';
@@ -25,7 +24,6 @@ import { ICON_3D_RESET, ICON_ANIMATION, ICON_GEAR, ICON_PAUSE, ICON_PLAY } from 
  * This class handles the UI for 3d preview controls. This includes Reset,
  * Render Mode selection, VR and fullscreen buttons.
  */
-@autobind
 class Model3DControls extends Box3DControls {
     /** @property {Model3DAnimationClipsPullup} - UI Component for listing and interacting with animation clips */
     animationClipsPullup;
@@ -57,8 +55,21 @@ class Model3DControls extends Box3DControls {
      */
     constructor(containerEl) {
         super(containerEl);
+
         this.animationClipsPullup = new Model3DAnimationClipsPullup(containerEl);
         this.settingsPullup = new Model3DSettingsPullup();
+
+        this.handleSelectAnimationClip = this.handleSelectAnimationClip.bind(this);
+        this.handleToggleAnimation = this.handleToggleAnimation.bind(this);
+        this.handleToggleAnimationClips = this.handleToggleAnimationClips.bind(this);
+        this.handleToggleSettings = this.handleToggleSettings.bind(this);
+
+        this.handleSetRenderMode = this.handleSetRenderMode.bind(this);
+        this.handleSetSkeletonsVisible = this.handleSetSkeletonsVisible.bind(this);
+        this.handleSetWireframesVisible = this.handleSetWireframesVisible.bind(this);
+        this.handleSetGridVisible = this.handleSetGridVisible.bind(this);
+        this.handleSetCameraProjection = this.handleSetCameraProjection.bind(this);
+        this.handleAxisRotation = this.handleAxisRotation.bind(this);
     }
 
     /** @inheritdoc */

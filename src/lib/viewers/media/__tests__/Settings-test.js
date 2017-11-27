@@ -186,6 +186,7 @@ describe('lib/viewers/media/Settings', () => {
             sandbox.stub(settings, 'findParentDataType').returns(document.querySelector('[data-type="menu"]'));
 
             settings.menuEventHandler({ type: 'click' });
+            settings.settingsEl.classList.remove('bp-media-settings-in-transition'); // simulate transition end
 
             expect(settings.reset).to.be.called;
             expect(settings.chooseOption).to.not.be.called;
@@ -203,6 +204,7 @@ describe('lib/viewers/media/Settings', () => {
             };
 
             settings.menuEventHandler(event);
+            settings.settingsEl.classList.remove('bp-media-settings-in-transition'); // simulate transition end
 
             expect(settings.reset).to.be.called;
             expect(settings.chooseOption).to.not.be.called;
@@ -223,6 +225,7 @@ describe('lib/viewers/media/Settings', () => {
             };
 
             settings.menuEventHandler(event);
+            settings.settingsEl.classList.remove('bp-media-settings-in-transition'); // simulate transition end
 
             expect(settings.reset).to.be.called;
             expect(settings.chooseOption).to.not.be.called;
@@ -238,6 +241,7 @@ describe('lib/viewers/media/Settings', () => {
                 .stub(settings, 'findParentDataType')
                 .returns(document.querySelector('[data-type="speed"][data-value="2.0"]'));
             settings.menuEventHandler({ type: 'click' });
+            settings.settingsEl.classList.remove('bp-media-settings-in-transition'); // simulate transition end
 
             expect(settings.reset).to.not.be.called;
             expect(settings.chooseOption).to.be.calledWith('speed', '2.0');
@@ -256,6 +260,7 @@ describe('lib/viewers/media/Settings', () => {
                 stopPropagation: sandbox.stub()
             };
             settings.menuEventHandler(event);
+            settings.settingsEl.classList.remove('bp-media-settings-in-transition'); // simulate transition end
 
             expect(settings.reset).to.not.be.called;
             expect(settings.chooseOption).to.be.calledWith('speed', '2.0');
@@ -277,6 +282,7 @@ describe('lib/viewers/media/Settings', () => {
                 stopPropagation: sandbox.stub()
             };
             settings.menuEventHandler(event);
+            settings.settingsEl.classList.remove('bp-media-settings-in-transition'); // simulate transition end
 
             expect(settings.reset).to.not.be.called;
             expect(settings.chooseOption).to.be.calledWith('speed', '2.0');
@@ -558,6 +564,14 @@ describe('lib/viewers/media/Settings', () => {
         });
     });
 
+    describe('handleTransitionEnd', () => {
+        it('should remove in transition class', () => {
+            settings.settingsEl.classList.add('bp-media-settings-in-transition');
+            settings.handleTransitionEnd();
+            expect(settings.settingsEl).to.not.have.class('bp-media-settings-in-transition');
+        });
+    });
+
     describe('showSubMenu()', () => {
         it('should show the speed submenu if speed is selected', () => {
             settings.showSubMenu('speed');
@@ -589,6 +603,50 @@ describe('lib/viewers/media/Settings', () => {
             settings.showSubMenu('speed');
 
             expect(settings.setMenuContainerDimensions).to.be.called;
+        });
+    });
+
+    describe('menuItemSelect()', () => {
+        let menuItem;
+
+        beforeEach(() => {
+            menuItem = document.createElement('div');
+            menuItem.setAttribute('data-type', 'someOption');
+            menuItem.setAttribute('data-value', 'someValue');
+
+            sandbox.stub(settings, 'reset');
+            settings.firstMenuItem = {
+                focus: sandbox.stub()
+            };
+            sandbox.stub(settings, 'chooseOption');
+            sandbox.stub(settings, 'showSubMenu');
+        });
+
+        it('should add menu settings in transition class', () => {
+            settings.menuItemSelect(menuItem);
+            expect(settings.settingsEl).to.have.class('bp-media-settings-in-transition');
+        });
+
+        it('should reset and focus first menu item if selected item is the option to return to menu', () => {
+            menuItem.setAttribute('data-type', 'menu');
+
+            settings.menuItemSelect(menuItem);
+            expect(settings.reset).to.be.called;
+            expect(settings.firstMenuItem.focus).to.be.called;
+        });
+
+        it('should choose option if an menu option with a type and value are selected', () => {
+            settings.menuItemSelect(menuItem);
+            expect(settings.chooseOption).to.be.calledWith('someOption', 'someValue');
+        });
+
+        it('should show sub menu if selected option is a sub menu option', () => {
+            const optionType = 'submenu';
+            menuItem.setAttribute('data-type', optionType);
+            menuItem.setAttribute('data-value', '');
+
+            settings.menuItemSelect(menuItem);
+            expect(settings.showSubMenu).to.be.calledWith(optionType);
         });
     });
 

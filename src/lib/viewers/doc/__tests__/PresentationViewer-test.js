@@ -264,7 +264,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
         it('should add a wheel handler', () => {
             presentation.bindDOMListeners();
-            expect(stubs.addEventListener).to.be.calledWith('wheel', presentation.wheelHandler());
+            expect(stubs.addEventListener).to.be.calledWith('wheel', presentation.throttledWheelHandler);
         });
 
         it('should add a touch handlers if touch events are supported', () => {
@@ -284,7 +284,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
 
         it('should remove a wheel handler', () => {
             presentation.unbindDOMListeners();
-            expect(stubs.removeEventListener).to.be.calledWith('wheel', presentation.wheelHandler());
+            expect(stubs.removeEventListener).to.be.calledWith('wheel', presentation.throttledWheelHandler);
         });
 
         it('should remove the touchhandlers if on mobile', () => {
@@ -438,7 +438,9 @@ describe('lib/viewers/doc/PresentationViewer', () => {
         });
     });
 
-    describe('wheelHandler()', () => {
+    describe('getWheelHandler()', () => {
+        let wheelHandler;
+
         beforeEach(() => {
             stubs.nextPage = sandbox.stub(presentation, 'nextPage');
             stubs.previousPage = sandbox.stub(presentation, 'previousPage');
@@ -447,52 +449,32 @@ describe('lib/viewers/doc/PresentationViewer', () => {
                 deltaY: 5,
                 deltaX: -0
             };
-        });
-
-        it('should create a new throttle if the wheel handler does not exist', () => {
-            const result = presentation.wheelHandler();
-
-            expect(result).to.equal(presentation.throttledWheelHandler);
+            wheelHandler = presentation.getWheelHandler();
         });
 
         it('should call next page if the event delta is positive', () => {
-            presentation.wheelHandler();
-
-            presentation.throttledWheelHandler(presentation.event);
+            wheelHandler(presentation.event);
             expect(stubs.nextPage).to.be.called;
         });
 
         it('should call previous page if the event delta is negative', () => {
             presentation.event.deltaY = -5;
-
-            presentation.wheelHandler();
-            presentation.throttledWheelHandler(presentation.event);
+            wheelHandler(presentation.event);
             expect(stubs.previousPage).to.be.called;
         });
 
         it('should do nothing if x scroll is detected', () => {
             presentation.event.deltaX = -7;
-
-            presentation.wheelHandler();
-            presentation.throttledWheelHandler(presentation.event);
+            wheelHandler(presentation.event);
             expect(stubs.previousPage).to.not.be.called;
             expect(stubs.nextPage).to.not.be.called;
         });
 
         it('should do nothing if there is overflow', () => {
             stubs.checkOverflow.returns(true);
-
-            presentation.wheelHandler();
-            presentation.throttledWheelHandler(presentation.event);
+            wheelHandler(presentation.event);
             expect(stubs.previousPage).to.not.be.called;
             expect(stubs.nextPage).to.not.be.called;
-        });
-
-        it('should return the original function if the wheel handler already exists', () => {
-            presentation.throttledWheelHandler = true;
-            const result = presentation.wheelHandler();
-
-            expect(result).to.be.truthy;
         });
     });
 

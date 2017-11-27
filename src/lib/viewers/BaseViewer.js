@@ -1,6 +1,5 @@
 import 'box-annotations/lib/Annotator.scss';
 import BoxAnnotations from 'box-annotations/lib/BoxAnnotations';
-import autobind from 'autobind-decorator';
 import EventEmitter from 'events';
 import debounce from 'lodash.debounce';
 import cloneDeep from 'lodash.clonedeep';
@@ -56,7 +55,6 @@ const ANNOTATOR_EVENT = {
     scale: 'scaleannotations'
 };
 
-@autobind
 class BaseViewer extends EventEmitter {
     /** @property {Controls} - UI used to interact with the document in the viewer */
     controls;
@@ -108,6 +106,18 @@ class BaseViewer extends EventEmitter {
         this.repStatuses = [];
         this.isMobile = Browser.isMobile();
         this.hasTouch = Browser.hasTouch();
+
+        // Bind context for callbacks
+        this.resetLoadTimeout = this.resetLoadTimeout.bind(this);
+        this.preventDefault = this.preventDefault.bind(this);
+        this.debouncedResizeHandler = this.getResizeHandler().bind(this);
+        this.handleAssetError = this.handleAssetError.bind(this);
+        this.toggleFullscreen = this.toggleFullscreen.bind(this);
+        this.onFullscreenToggled = this.onFullscreenToggled.bind(this);
+        this.mobileZoomStartHandler = this.mobileZoomStartHandler.bind(this);
+        this.mobileZoomChangeHandler = this.mobileZoomChangeHandler.bind(this);
+        this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
+        this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
     }
 
     /**
@@ -178,15 +188,10 @@ class BaseViewer extends EventEmitter {
 
         fullscreen.removeAllListeners();
         document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
-
-        if (this.preventDefault) {
-            this.containerEl.removeEventListener('contextmenu', this.preventDefault);
-            this.preventDefault = null;
-        }
-
         this.removeAllListeners();
 
         if (this.containerEl) {
+            this.containerEl.removeEventListener('contextmenu', this.preventDefault);
             this.containerEl.innerHTML = '';
         }
 
@@ -206,9 +211,11 @@ class BaseViewer extends EventEmitter {
      * @private
      * @return {Function} debounced resize handler
      */
-    debouncedResizeHandler = debounce(() => {
-        this.resize();
-    }, RESIZE_WAIT_TIME_IN_MILLIS);
+    getResizeHandler() {
+        return debounce(() => {
+            this.resize();
+        }, RESIZE_WAIT_TIME_IN_MILLIS);
+    }
 
     /**
      * Loads content.
@@ -227,7 +234,7 @@ class BaseViewer extends EventEmitter {
      * @emits Error
      * @return {void}
      */
-    resetLoadTimeout = () => {
+    resetLoadTimeout() {
         clearTimeout(this.loadTimeoutId);
         /* istanbul ignore next */
         this.loadTimeoutId = setTimeout(() => {
@@ -239,7 +246,7 @@ class BaseViewer extends EventEmitter {
                 this.triggerError();
             }
         }, this.loadTimeout);
-    };
+    }
 
     /**
      * Triggers an error when an asset (static or representation) fails to load.
@@ -247,10 +254,10 @@ class BaseViewer extends EventEmitter {
      * @param {string} [err] - Optional error message
      * @return {void}
      */
-    handleAssetError = (err) => {
+    handleAssetError(err) {
         this.triggerError(err);
         this.destroyed = true;
-    };
+    }
 
     /**
      * Emits error event with refresh message.
@@ -358,7 +365,6 @@ class BaseViewer extends EventEmitter {
 
         const { permissions } = this.options.file;
         if (permissions && !permissions.can_download) {
-            this.preventDefault = (event) => event.preventDefault();
             this.containerEl.addEventListener('contextmenu', this.preventDefault);
         }
 
@@ -371,6 +377,16 @@ class BaseViewer extends EventEmitter {
                 this.initAnnotations();
             }
         });
+    }
+
+    /**
+     * Prevents default behavior.
+     *
+     * @param {Event} event - Some event
+     * @return {void}
+     */
+    preventDefault(event) {
+        event.preventDefault();
     }
 
     /**

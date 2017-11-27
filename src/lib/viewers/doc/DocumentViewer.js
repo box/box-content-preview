@@ -1,11 +1,9 @@
-import autobind from 'autobind-decorator';
 import DocBaseViewer from './DocBaseViewer';
 import DocPreloader from './DocPreloader';
 import fullscreen from '../../Fullscreen';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
 import './Document.scss';
 
-@autobind
 class DocumentViewer extends DocBaseViewer {
     //--------------------------------------------------------------------------
     // Public

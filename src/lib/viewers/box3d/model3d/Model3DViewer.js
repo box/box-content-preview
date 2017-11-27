@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import Box3DViewer from '../Box3DViewer';
 import Model3DControls from './Model3DControls';
 import Model3DRenderer from './Model3DRenderer';
@@ -28,7 +27,6 @@ const LOAD_TIMEOUT = 180000; // 3 minutes
  * Model3d
  * This is the entry point for the model3d preview.
  */
-@autobind
 class Model3DViewer extends Box3DViewer {
     /** @property {Object[]} - List of Box3D instances added to the scene */
     instances = [];
@@ -38,6 +36,24 @@ class Model3DViewer extends Box3DViewer {
         up: null,
         forward: null
     };
+
+    /** @inheritdoc */
+    constructor(option) {
+        super(option);
+
+        this.handleRotateOnAxis = this.handleRotateOnAxis.bind(this);
+        this.handleSelectAnimationClip = this.handleSelectAnimationClip.bind(this);
+        this.handleSetCameraProjection = this.handleSetCameraProjection.bind(this);
+        this.handleSetRenderMode = this.handleSetRenderMode.bind(this);
+        this.handleShowSkeletons = this.handleShowSkeletons.bind(this);
+        this.handleShowWireframes = this.handleShowWireframes.bind(this);
+        this.handleShowGrid = this.handleShowGrid.bind(this);
+        this.handleToggleAnimation = this.handleToggleAnimation.bind(this);
+        this.handleToggleHelpers = this.handleToggleHelpers.bind(this);
+        this.handleCanvasClick = this.handleCanvasClick.bind(this);
+
+        this.onMetadataError = this.onMetadataError.bind(this);
+    }
 
     /**
      * @inheritdoc

@@ -1,4 +1,3 @@
-import autobind from 'autobind-decorator';
 import Controls from '../../Controls';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
@@ -11,8 +10,35 @@ const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
 const CSS_CLASS_PANNABLE = 'pannable';
 
-@autobind
 class ImageBaseViewer extends BaseViewer {
+    /** @inheritdoc */
+    constructor(options) {
+        super(options);
+
+        // Explicit event handler bindings
+        this.pan = this.pan.bind(this);
+        this.stopPanning = this.stopPanning.bind(this);
+        this.zoomIn = this.zoomIn.bind(this);
+        this.zoomOut = this.zoomOut.bind(this);
+
+        this.handleMouseDown = this.handleMouseDown.bind(this);
+        this.handleMouseUp = this.handleMouseUp.bind(this);
+        this.cancelDragEvent = this.cancelDragEvent.bind(this);
+        this.finishLoading = this.finishLoading.bind(this);
+        this.errorHandler = this.errorHandler.bind(this);
+
+        if (this.isMobile) {
+            if (Browser.isIOS()) {
+                this.mobileZoomStartHandler = this.mobileZoomStartHandler.bind(this);
+                this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
+            } else {
+                this.mobileZoomStartHandler = this.mobileZoomStartHandler.bind(this);
+                this.mobileZoomChangeHandler = this.mobileZoomChangeHandler.bind(this);
+                this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
+            }
+        }
+    }
+
     /**
      * [destructor]
      *
@@ -290,7 +316,7 @@ class ImageBaseViewer extends BaseViewer {
      * @param {Error} err - Error to handle
      * @return {void}
      */
-    errorHandler = (err) => {
+    errorHandler(err) {
         this.logError(err);
 
         // Display a generic error message but log the real one
@@ -299,7 +325,7 @@ class ImageBaseViewer extends BaseViewer {
             error.displayMessage = __('error_refresh');
         }
         this.emit('error', error);
-    };
+    }
 
     /**
      * Handles keyboard events for media
