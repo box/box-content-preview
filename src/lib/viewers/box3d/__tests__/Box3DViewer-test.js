@@ -556,7 +556,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
         });
 
         it('should call detachEventHandlers', () => {
-            const detachHandlers = sandbox.stub(box3d, 'detachEventHandlers', () => {});
+            const detachHandlers = sandbox.stub(box3d, 'detachEventHandlers');
             box3d.handleContextRestored();
             expect(detachHandlers).to.be.called;
         });
