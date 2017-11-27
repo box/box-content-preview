@@ -72,7 +72,6 @@ class LoggerBackend {
      */
     save(batchList) {
         const info = {
-            file_id: 'FILL_THIS_IN',
             client_version: CLIENT_VERSION,
             browser_name: Browser.getName(),
             country_code: 'FILL_THIS_IN'
@@ -108,7 +107,6 @@ export default LoggerBackend;
 
     {
         info: {
-            file_id,
             client_version,
             browser_name,
             country_code
@@ -118,6 +116,8 @@ export default LoggerBackend;
                 event_type: <ERROR | METRIC | WARNING | INFO>,
                 events: [
                     {
+                        file_id,
+                        file_version,
                         timestamp,
                         code,
                         value
@@ -134,6 +134,7 @@ export default LoggerBackend;
             event_type,
             timestamp,
             file_id,
+            file_version,
             client_version,
             browser_name,
             country_code,

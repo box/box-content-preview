@@ -834,6 +834,8 @@ class Preview extends EventEmitter {
             return;
         }
 
+        this.logger.setFileIds(this.file.id, this.file.file_version.id);
+
         // Check if preview permissions exist
         if (!checkPermission(this.file, PERMISSION_PREVIEW)) {
             throw new Error(__('error_permissions'));

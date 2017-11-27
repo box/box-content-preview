@@ -61,7 +61,7 @@ export function sortLogsByTime(prev, next) {
  * @return {void}
  */
 export function printLog(log) {
-    const { type, message, timestamp } = log;
+    const { type, message, timestamp, fileId, fileVersionId } = log;
     const color = CONSOLE_COLORS[type] || CONSOLE_COLORS.none;
     let msg = message;
 
@@ -71,7 +71,7 @@ export function printLog(log) {
         msg = arrayToString([message]);
     }
 
-    const output = `${timestamp} "${msg}"`;
+    const output = `${timestamp} id:${fileId} v_id:${fileVersionId} "${msg}"`;
 
     // eslint-disable-next-line no-console
     console.log(`%c [${log.type}] `, `color: ${color}`, output);

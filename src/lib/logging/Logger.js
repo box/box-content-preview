@@ -42,6 +42,12 @@ class Logger {
     /** @property {Object} - The logs we're allowed to save to the backend. Defaults to all allowed. */
     allowedLogs;
 
+    /** @property {string} - File ID to associate logs with. */
+    fileID;
+
+    /** @property {string} - File version ID to associate logs with. */
+    fileVersionID;
+
     /**
      * @constructor
      *
@@ -92,6 +98,18 @@ class Logger {
 
         unregisterLogger(this.name);
         this.name = null;
+    }
+
+    /**
+     * Set the current file ID to associate logs with.
+     *
+     * @param {string} fileId - File ID to set
+     * @param {string} fileVersionId - File Version ID to set
+     * @return {void}
+     */
+    setFileIds(fileId, fileVersionId) {
+        this.fileId = fileId;
+        this.fileVersionID = fileVersionId;
     }
 
     /**
@@ -172,7 +190,7 @@ class Logger {
 
         // Format message and add a timestamp
         const timestamp = getISOTime();
-        this.cache.add(code, timestamp, message);
+        this.cache.add(code, timestamp, this.fileId, this.fileVersionID, message);
 
         // Also wrapping the code into the message
         // #TODO(@jholdstock): abstract this step
@@ -297,11 +315,13 @@ class Logger {
         // Collect all in the appropriate format to sort and print
         Object.keys(logs).forEach((logGroupKey) => {
             logs[logGroupKey].forEach((log) => {
-                const { timestamp, message } = log;
+                const { timestamp, message, fileId, fileVersionId } = log;
                 logArray.push({
                     type: logGroupKey,
                     timestamp,
-                    message
+                    message,
+                    fileId,
+                    fileVersionId
                 });
             });
         });

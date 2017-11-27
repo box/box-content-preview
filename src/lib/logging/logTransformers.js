@@ -76,31 +76,50 @@ export function transformErrors(logs) {
  */
 export function transformMetrics(logs) {
     const batch = makeBatchContainer(LOG_CODES.metric);
-    const controlEvents = [];
+    const controlEvents = {};
 
     logs.forEach((log) => {
-        const { timestamp, message } = log;
+        const { timestamp, message, fileId, fileVersionId } = log;
         const { metricCode, metricValue } = message;
 
         if (metricCode === METRIC_CONTROL) {
-            controlEvents.push({
+            if (!controlEvents[fileId]) {
+                controlEvents[fileId] = {};
+            }
+
+            if (!controlEvents[fileId][fileVersionId]) {
+                controlEvents[fileId][fileVersionId] = [];
+            }
+
+            controlEvents[fileId][fileVersionId].push({
                 timestamp,
                 code: metricValue // The value of a metric is the metric code of the action event
             });
         } else {
             batch.events.push({
                 timestamp,
+                fileId,
+                fileVersionId,
                 code: metricCode,
                 value: metricValue
             });
         }
     });
 
-    if (controlEvents.length) {
-        batch.events.push({
-            timestamp: getISOTime(),
-            code: METRIC_CONTROL,
-            value: controlEvents
+    // If control events occurred, save those too.
+    const controlEventKeys = Object.keys(controlEvents);
+    if (controlEventKeys.length) {
+        controlEventKeys.forEach((fileId) => {
+            Object.keys(controlEvents[fileId]).forEach((fileVersionId) => {
+                const eventList = controlEvents[fileId][fileVersionId];
+                batch.events.push({
+                    fileId,
+                    fileVersionId,
+                    timestamp: getISOTime(),
+                    code: METRIC_CONTROL,
+                    value: eventList
+                });
+            });
         });
     }
 
@@ -113,6 +132,8 @@ export function transformMetrics(logs) {
        {
            timestamp,
            code,
+           fileId,
+           fileVersionId,
            value
        }
    ]
