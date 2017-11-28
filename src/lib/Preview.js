@@ -148,10 +148,7 @@ class Preview extends EventEmitter {
         this.cache = new Cache();
         this.ui = new PreviewUI();
         this.browserInfo = Browser.getBrowserInfo();
-        this.logger = new Logger({
-            locale: this.location.locale,
-            backendConfig: {}
-        });
+        this.logger = new Logger();
 
         // Bind context for callbacks
         this.print = this.print.bind(this);
@@ -555,6 +552,29 @@ class Preview extends EventEmitter {
                     });
                 }
             });
+    }
+
+    /**
+     * Setup additional configuration for the logger.
+     *
+     * @param {Object} config - Configures log level and network layer.
+     * @param {LOG_LEVELS|string} [config.logLevel] - Level to set for writing to the browser console.
+     * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a backend.
+     * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
+     * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
+     * @param {string} [config.logEndpoint] - URL Tail to save logs to. Combined with appHost (above)
+     * @param {Object} [config.auth] - Authorization object containing a header named <header>, with value: <value>
+     * @param {string} [config.locale] - User's locale
+     * @param {Object} [config.allowedLogs] - Logs that are allowed to be saved to the backend.
+     * @return {void}
+     */
+    setupLogger(config = {}) {
+        const { logLevel } = config;
+        if (logLevel) {
+            this.logger.setLogLevel(logLevel);
+        }
+
+        this.logger.setupBackend(config);
     }
 
     //--------------------------------------------------------------------------

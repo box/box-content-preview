@@ -40,7 +40,7 @@ class Logger {
     name;
 
     /** @property {Object} - The logs we're allowed to save to the backend. Defaults to all allowed. */
-    allowedLogs;
+    allowedLogs = { ...DEFAULT_ALLOWED_LOGS };
 
     /** @property {string} - File ID to associate logs with. */
     fileID;
@@ -53,9 +53,13 @@ class Logger {
      *
      * @param {Object} config - Configures log level and network layer.
      * @param {LOG_LEVELS|string} [config.logLevel] - Level to set for writing to the browser console.
-     * @param {string} [config.backendConfig] - Configuration for saving logs to an endpoint. If empty, does
-     * not save logs to a URL.
-     * @param {Object} [config.allowedLogs] - Flags to allow types of logs to be saved and logged.
+     * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a backend.
+     * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
+     * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
+     * @param {string} [config.logEndpoint] - URL Tail to save logs to. Combined with appHost (above)
+     * @param {Object} [config.auth] - Authorization object containing a header named <header>, with value: <value>
+     * @param {string} [config.locale] - User's locale
+     * @param {Object} [config.allowedLogs] - Logs that are allowed to be saved to the backend.
      * @return {Logger} Newly created Logger instance.
      */
     constructor(config = {}) {
@@ -65,8 +69,7 @@ class Logger {
         // If a log level has not been set and/or persisted, default to silent
         this.logger.setDefaultLevel(DEFAULT_LOG_LEVEL);
 
-        const { logLevel, locale, backendConfig } = config;
-
+        const { logLevel } = config;
         if (logLevel) {
             this.setLogLevel(logLevel);
         }
@@ -76,10 +79,48 @@ class Logger {
 
         this.name = registerLogger(this);
 
-        if (backendConfig) {
-            const sanitizedConfig = this.sanitizeBackendConfig({ locale, ...backendConfig });
-            this.backend = new LoggerBackend(sanitizedConfig);
-            this.allowedLogs = { ...DEFAULT_ALLOWED_LOGS, ...(config.allowedLogs || {}) };
+        this.setupBackend(config);
+    }
+
+    /**
+     * Override previous configuration for the logger backend.
+     *
+     * @param {Object} config - Configuration object for the backend
+     * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a backend.
+     * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
+     * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
+     * @param {string} [config.logEndpoint] - URL Tail to save logs to. Combined with appHost (above)
+     * @param {Object} [config.auth] - Authorization object containing a header named <header>, with value: <value>
+     * @param {string} [config.locale] - User's locale
+     * @param {Object} [config.allowedLogs] - Logs that are allowed to be saved to the backend.
+     * @return {void}
+     */
+    setupBackend(config = {}) {
+        const { savingEnabled } = config;
+        if (!savingEnabled) {
+            return;
+        }
+
+        const { logURL, locale, auth } = this.sanitizeBackendConfig(config);
+        if (!this.backend) {
+            this.backend = new LoggerBackend();
+        }
+
+        if (logURL) {
+            this.backend.setURL(logURL);
+        }
+
+        if (locale) {
+            this.backend.setLocale(locale);
+        }
+
+        if (auth) {
+            this.backend.setAuth(auth);
+        }
+
+        // Override logs allowed to be saved to the backend
+        if (config.allowedLogs) {
+            this.allowedLogs = { ...config.allowedLogs };
         }
     }
 

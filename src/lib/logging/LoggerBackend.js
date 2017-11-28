@@ -6,7 +6,7 @@ import { uuidv4 } from './logUtils';
 
 class LoggerBackend {
     /** @property {string} - URL to POST log events to */
-    logURL;
+    url;
 
     /** @property {Object} - Auth token to set as a Header on each log request */
     auth;
@@ -25,12 +25,42 @@ class LoggerBackend {
     constructor(config = {}) {
         const { logURL, locale, auth } = config;
 
-        this.logURL = logURL;
-        this.locale = locale;
+        this.setURL(logURL);
+        this.setLocale(locale);
 
         if (auth) {
-            this.auth = auth;
+            this.setAuth(auth);
         }
+    }
+
+    /**
+     * Set the url to POST logs to.
+     *
+     * @param {string} url - The url to POST logs to.
+     * @return {void}
+     */
+    setURL(url) {
+        this.url = url;
+    }
+
+    /**
+     * Set local to record logs for.
+     *
+     * @param {string} locale - The new locale to set.
+     * @return {void}
+     */
+    setLocale(locale) {
+        this.locale = locale;
+    }
+
+    /**
+     * Auth object to set for sending with log POST.
+     *
+     * @param {Object} auth - The auth Object
+     * @return {void}
+     */
+    setAuth(auth) {
+        this.auth = auth;
     }
 
     /**
@@ -94,7 +124,8 @@ class LoggerBackend {
             events: batchList
         };
 
-        post(this.logURL, {}, logsToSave);
+        // #TODO(@jholdstock): ADD HEADERS
+        post(this.url, {}, logsToSave);
     }
 }
 
