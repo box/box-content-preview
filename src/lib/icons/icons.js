@@ -57,29 +57,6 @@ export const ICON_ARROW_LEFT = ARROW_LEFT;
 export const ICON_ARROW_RIGHT = ARROW_RIGHT;
 export const ICON_CHECK_MARK = CHECK_MARK;
 export const ICON_GEAR = GEAR;
-export const ICON_FILE_AUDIO = FILE_AUDIO;
-export const ICON_FILE_BOX_NOTE = FILE_BOX_NOTE;
-export const ICON_FILE_CODE = FILE_CODE;
-export const ICON_FILE_DEFAULT = FILE_DEFAULT;
-export const ICON_FILE_DICOM = FILE_DICOM;
-export const ICON_FILE_DOCUMENT = FILE_DOCUMENT;
-export const ICON_FILE_EXCEL = FILE_EXCEL;
-export const ICON_FILE_GOOGLE_DOC = FILE_GOOGLE_DOC;
-export const ICON_FILE_GOOGLE_SHEET = FILE_GOOGLE_SHEET;
-export const ICON_FILE_GOOGLE_SLIDE = FILE_GOOGLE_SLIDE;
-export const ICON_FILE_ILLUSTRATOR = FILE_ILLUSTRATOR;
-export const ICON_FILE_IMAGE = FILE_IMAGE;
-export const ICON_FILE_KEYNOTE = FILE_KEYNOTE;
-export const ICON_FILE_MEDIA = FILE_MEDIA;
-export const ICON_FILE_NUMBERS = FILE_NUMBERS;
-export const ICON_FILE_OBJ = FILE_OBJ;
-export const ICON_FILE_PAGES = FILE_PAGES;
-export const ICON_FILE_PDF = FILE_PDF;
-export const ICON_FILE_POWERPOINT = FILE_POWERPOINT;
-export const ICON_FILE_PRESENTATION = FILE_PRESENTATION;
-export const ICON_FILE_SPREADSHEET = FILE_SPREADSHEET;
-export const ICON_FILE_WORD = FILE_WORD;
-export const ICON_FILE_ZIP = FILE_ZIP;
 export const ICON_ANIMATION = ANIMATION;
 export const ICON_PAUSE = PAUSE;
 export const ICON_PLAY = PLAY;
@@ -91,3 +68,239 @@ export const ICON_FIND_DROP_UP = FIND_DROP_UP;
 export const ICON_CLOSE = CLOSE;
 export const ICON_SEARCH = SEARCH;
 export const ICON_PRINT_CHECKMARK = PRINT_CHECKMARK;
+
+const FILE_LOADING_ICONS = {
+    FILE_AUDIO,
+    FILE_BOX_NOTE,
+    FILE_CODE,
+    FILE_DEFAULT,
+    FILE_DICOM,
+    FILE_DOCUMENT,
+    FILE_EXCEL,
+    FILE_GOOGLE_DOC,
+    FILE_GOOGLE_SHEET,
+    FILE_GOOGLE_SLIDE,
+    FILE_ILLUSTRATOR,
+    FILE_IMAGE,
+    FILE_KEYNOTE,
+    FILE_MEDIA,
+    FILE_NUMBERS,
+    FILE_OBJ,
+    FILE_PAGES,
+    FILE_PDF,
+    FILE_POWERPOINT,
+    FILE_PRESENTATION,
+    FILE_SPREADSHEET,
+    FILE_WORD,
+    FILE_ZIP
+};
+
+export const ICON_FILE_MAP = {};
+
+// AUDIO ICON EXTENSIONS
+['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_AUDIO';
+});
+
+// BOXNOTE ICON EXTENSIONS
+['boxnote'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_BOX_NOTE';
+});
+
+// CODE ICON EXTENSIONS
+[
+    'as',
+    'as3',
+    'asm',
+    'bat',
+    'c',
+    'cc',
+    'cmake',
+    'cpp',
+    'cs',
+    'css',
+    'cxx',
+    'diff',
+    'erb',
+    'groovy',
+    'h',
+    'haml',
+    'hh',
+    'htm',
+    'html',
+    'java',
+    'js',
+    'json',
+    'less',
+    'm',
+    'make',
+    'md',
+    'ml',
+    'mm',
+    'php',
+    'pl',
+    'plist',
+    'properties',
+    'py',
+    'rb',
+    'rst',
+    'sass',
+    'scala',
+    'script',
+    'scm',
+    'sml',
+    'sql',
+    'sh',
+    'vi',
+    'vim',
+    'webdoc',
+    'xml',
+    'xsd',
+    'xsl',
+    'yaml'
+].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_CODE';
+});
+
+// EXCEL ICON EXTENSIONS
+['xls', 'xlsm', 'xlsx'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_EXCEL';
+});
+
+// DOCUMENT ICON EXTENSIONS
+['log', 'msg', 'ods', 'rtf', 'txt', 'wpd'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_DOCUMENT';
+});
+
+// GOOGLE DOC ICON EXTENSIONS
+['gdoc'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_GOOGLE_DOC';
+});
+
+// GOOGLE SHEET ICON EXTENSIONS
+['gsheet'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_GOOGLE_SHEET';
+});
+
+// GOOGLE SLIDE ICON EXTENSIONS
+['gslide'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_GOOGLE_SLIDE';
+});
+
+// IMAGE ICON EXTENSIONS
+[
+    'ai',
+    'bmp',
+    'dcm',
+    'eps',
+    'gif',
+    'jpg',
+    'jpeg',
+    'png',
+    'ps',
+    'psd',
+    'svg',
+    'svs',
+    'swf',
+    'tga',
+    'tif',
+    'tiff'
+].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_IMAGE';
+});
+
+// KEYNOTE ICON EXTENSIONS
+['key'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_KEYNOTE';
+});
+
+// MEDIA ICON EXTENSIONS
+[
+    '3g2',
+    '3gp',
+    'avi',
+    'flv',
+    'm2v',
+    'm2ts',
+    'm4v',
+    'mkv',
+    'mov',
+    'mp4',
+    'mpeg',
+    'mpg',
+    'mts',
+    'ogg',
+    'qt',
+    'ts',
+    'wmv'
+].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_MEDIA';
+});
+
+// NUMBERS ICON EXTENSIONS
+['numbers'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_NUMBERS';
+});
+
+// OBJ ICON EXTENSIONS
+['3ds', 'box3d', 'dae', 'fbx', 'obj', 'ply', 'stl'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_OBJ';
+});
+
+// PAGES ICON EXTENSIONS
+['pages'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_PAGES';
+});
+
+// PDF ICON EXTENSIONS
+['pdf'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_PDF';
+});
+
+// POWERPOINT ICON EXTENSIONS
+['ppt', 'pptx'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_POWERPOINT';
+});
+
+// PRESENTATION ICON EXTENSIONS
+['odp'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_PRESENTATION';
+});
+
+// SPREADSHEET ICON EXTENSIONS
+['csv', 'tsv'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_SPREADSHEET';
+});
+
+// WORD ICON EXTENSIONS
+['doc', 'docx'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_WORD';
+});
+
+// ZIP ICON EXTENSIONS
+['tgz', 'zip'].forEach((extension) => {
+    ICON_FILE_MAP[extension] = 'FILE_ZIP';
+});
+
+/**
+ * Map from file extension to svg.
+ *
+ * @public
+ * @param {string} fileExtension - The extension of the file
+ * @return {HTMLElement} The SVG of the requested file icon
+ */
+export function getIconFromExtension(fileExtension) {
+    const iconName = ICON_FILE_MAP[fileExtension];
+    return FILE_LOADING_ICONS[iconName];
+}
+
+/**
+ * Map from icon file name to svg.
+ *
+ * @public
+ * @param {string} iconName - The name of the icon
+ * @return {HTMLElement} The SVG of the requested file icon
+ */
+export function getIconFromName(iconName) {
+    return FILE_LOADING_ICONS[iconName];
+}

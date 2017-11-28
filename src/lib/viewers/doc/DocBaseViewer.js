@@ -20,22 +20,7 @@ import {
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { get, createAssetUrlCreator } from '../../util';
-import {
-    ICON_FILE_DOCUMENT,
-    ICON_FILE_EXCEL,
-    ICON_FILE_GOOGLE_DOC,
-    ICON_FILE_GOOGLE_SHEET,
-    ICON_FILE_GOOGLE_SLIDE,
-    ICON_FILE_KEYNOTE,
-    ICON_FILE_NUMBERS,
-    ICON_FILE_PAGES,
-    ICON_FILE_PDF,
-    ICON_FILE_POWERPOINT,
-    ICON_FILE_PRESENTATION,
-    ICON_FILE_SPREADSHEET,
-    ICON_FILE_WORD,
-    ICON_PRINT_CHECKMARK
-} from '../../icons/icons';
+import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { JS, CSS } from './docAssets';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
@@ -52,25 +37,6 @@ const RANGE_REQUEST_CHUNK_SIZE_US = 1048576; // 1MB
 const RANGE_REQUEST_CHUNK_SIZE_NON_US = 524288; // 512KB
 const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 26214400; // 25MB
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
-
-const LOADING_ICON_MAP = {
-    csv: ICON_FILE_SPREADSHEET,
-    doc: ICON_FILE_WORD,
-    docx: ICON_FILE_WORD,
-    gdoc: ICON_FILE_GOOGLE_DOC,
-    gsheet: ICON_FILE_GOOGLE_SHEET,
-    gslide: ICON_FILE_GOOGLE_SLIDE,
-    key: ICON_FILE_KEYNOTE,
-    numbers: ICON_FILE_NUMBERS,
-    odp: ICON_FILE_PRESENTATION,
-    pages: ICON_FILE_PAGES,
-    pdf: ICON_FILE_PDF,
-    ppt: ICON_FILE_POWERPOINT,
-    pptx: ICON_FILE_POWERPOINT,
-    xls: ICON_FILE_EXCEL,
-    xlsm: ICON_FILE_EXCEL,
-    xlsx: ICON_FILE_EXCEL
-};
 
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
@@ -101,9 +67,6 @@ class DocBaseViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        const fileExt = this.options.file.extension;
-        this.fileLoadingIcon = LOADING_ICON_MAP[fileExt] || ICON_FILE_DOCUMENT;
-
         // Call super() to set up common layout
         super.setup();
 

@@ -2,7 +2,7 @@ import BaseViewer from '../BaseViewer';
 import { checkPermission } from '../../file';
 import Browser from '../../Browser';
 import { PERMISSION_DOWNLOAD } from '../../constants';
-import { ICON_FILE_DEFAULT, ICON_FILE_MEDIA, ICON_FILE_ZIP } from '../../icons/icons';
+import { getIconFromExtension, getIconFromName } from '../../icons/icons';
 import './PreviewError.scss';
 
 class PreviewErrorViewer extends BaseViewer {
@@ -57,17 +57,15 @@ class PreviewErrorViewer extends BaseViewer {
         this.setup();
 
         const { file, showDownload } = this.options;
-        this.icon = ICON_FILE_DEFAULT;
+        this.icon = getIconFromName('FILE_DEFAULT');
 
         // Generic errors will not have the file object
         if (file) {
             switch (file.extension) {
                 case 'zip':
                 case 'tgz':
-                    this.icon = ICON_FILE_ZIP;
-                    break;
                 case 'flv':
-                    this.icon = ICON_FILE_MEDIA;
+                    this.icon = getIconFromExtension(file.extension);
                     break;
                 default:
                 // no-op
