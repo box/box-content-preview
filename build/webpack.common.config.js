@@ -50,7 +50,7 @@ module.exports = (language) => {
                     }),
                     exclude: [
                         path.resolve('src/third-party'),
-                        path.resolve('^(?!node_modules/box-annotations).*')
+                        path.resolve('node_modules')
                     ]
                 },
                 {
@@ -58,7 +58,7 @@ module.exports = (language) => {
                     loader: 'raw-loader',
                     exclude: [
                         path.resolve('src/third-party'),
-                        path.resolve('^(?!node_modules/box-annotations).*')
+                        path.resolve('node_modules')
                     ]
                 },
                 {

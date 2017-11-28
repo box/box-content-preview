@@ -61,6 +61,7 @@ const languages = isRelease
 function updateConfig(conf, language, index) {
     const config = Object.assign(conf, {
         entry: {
+            annotations: ['box-annotations'],
             preview: [`${lib}/Preview.js`],
             csv: [`${lib}/viewers/text/BoxCSV.js`]
         },
@@ -86,6 +87,7 @@ function updateConfig(conf, language, index) {
             );
         }
     }
+
 
     if (isDev) {
         // If build/rsync.json exists, rsync bundled files to specified directory
