@@ -2,6 +2,7 @@ import Browser from '../Browser';
 import { LOG_CODES, CLIENT_VERSION } from './logConstants';
 import { transformMetrics, transformWarnings, transformInfo, transformErrors } from './logTransformers';
 import { post } from '../util';
+import { uuidv4 } from './logUtils';
 
 class LoggerBackend {
     /** @property {string} - URL to POST log events to */
@@ -10,16 +11,25 @@ class LoggerBackend {
     /** @property {Object} - Auth token to set as a Header on each log request */
     auth;
 
+    /** @property {string} - The locale the preview session occurs in. An estimate. */
+    locale;
+
+    /** @property {string} - Unique GUID/UUID for identifying session */
+    sessionID = uuidv4();
+
     /**
      * @param {Object} config - Object used to initialize the backend.
      * @param {string} config.logURL - The full URL to POST log events to. REQUIRED.
      * @param {string} [config.auth] - If provided, sends as a header named <header>, with value: <value>
      */
     constructor(config = {}) {
-        this.logURL = config.logURL;
+        const { logURL, locale, auth } = config;
 
-        if (config.auth) {
-            this.auth = config.auth;
+        this.logURL = logURL;
+        this.locale = locale;
+
+        if (auth) {
+            this.auth = auth;
         }
     }
 
@@ -73,9 +83,10 @@ class LoggerBackend {
      */
     save(batchList) {
         const info = {
-            client_version: CLIENT_VERSION,
             browser_name: Browser.getName(),
-            country_code: 'FILL_THIS_IN'
+            client_version: CLIENT_VERSION,
+            locale: this.locale,
+            session_id: this.sessionID
         };
 
         const logsToSave = {
@@ -93,11 +104,12 @@ export default LoggerBackend;
  *
  * event_type: <ERROR | METRIC | WARNING | INFO>
  * timestamp: <string>, // ISO Format
- * file_id: <string>,
  * client_version: <string>, // preview version number
  * browser_name: <string>,
- *
  * country_code: <string>,
+ *
+ * file_id: <string>,
+ * file_version_id: <string>,
  * code: <string>, // Corresponds to the strings defined by us for events
  * value: <any> // Must be serializable
  */
@@ -110,7 +122,8 @@ export default LoggerBackend;
         info: {
             client_version,
             browser_name,
-            country_code
+            country_code,
+            session_id
         },
         events: [
             {
@@ -118,7 +131,7 @@ export default LoggerBackend;
                 events: [
                     {
                         file_id,
-                        file_version,
+                        file_version_id,
                         timestamp,
                         code,
                         value
@@ -138,7 +151,7 @@ export default LoggerBackend;
             file_version,
             client_version,
             browser_name,
-            country_code,
+            locale,
             code,
             value
         }

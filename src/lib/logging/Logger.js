@@ -65,7 +65,7 @@ class Logger {
         // If a log level has not been set and/or persisted, default to silent
         this.logger.setDefaultLevel(DEFAULT_LOG_LEVEL);
 
-        const { logLevel, backendConfig } = config;
+        const { logLevel, locale, backendConfig } = config;
 
         if (logLevel) {
             this.setLogLevel(logLevel);
@@ -77,7 +77,7 @@ class Logger {
         this.name = registerLogger(this);
 
         if (backendConfig) {
-            const sanitizedConfig = this.sanitizeBackendConfig(backendConfig);
+            const sanitizedConfig = this.sanitizeBackendConfig({ locale, ...backendConfig });
             this.backend = new LoggerBackend(sanitizedConfig);
             this.allowedLogs = { ...DEFAULT_ALLOWED_LOGS, ...(config.allowedLogs || {}) };
         }
@@ -120,7 +120,7 @@ class Logger {
      */
     sanitizeBackendConfig(config) {
         let { logURL } = config;
-        const { appHost, logEndpoint, auth } = config;
+        const { appHost, logEndpoint, auth, locale } = config;
 
         if (!logURL) {
             logURL = `${appHost || APP_HOST}/${logEndpoint || DEFAULT_LOG_ENDPOINT}`;
@@ -132,7 +132,8 @@ class Logger {
 
         return {
             logURL,
-            auth
+            auth,
+            locale
         };
     }
 

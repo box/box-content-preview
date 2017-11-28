@@ -27,11 +27,13 @@ function transformGeneric(event, logs) {
     const batch = makeBatchContainer(event);
 
     logs.forEach((log) => {
-        const { timestamp, message } = log;
+        const { timestamp, message, fileId, fileVersionId } = log;
         batch.events.push({
+            code: event,
+            file_id: fileId,
+            file_version_id: fileVersionId,
             timestamp,
-            value: message,
-            code: event
+            value: message
         });
     });
 
@@ -97,10 +99,10 @@ export function transformMetrics(logs) {
             });
         } else {
             batch.events.push({
-                timestamp,
-                fileId,
-                fileVersionId,
                 code: metricCode,
+                file_id: fileId,
+                file_version_id: fileVersionId,
+                timestamp,
                 value: metricValue
             });
         }
@@ -113,10 +115,10 @@ export function transformMetrics(logs) {
             Object.keys(controlEvents[fileId]).forEach((fileVersionId) => {
                 const eventList = controlEvents[fileId][fileVersionId];
                 batch.events.push({
-                    fileId,
-                    fileVersionId,
-                    timestamp: getISOTime(),
                     code: METRIC_CONTROL,
+                    file_id: fileId,
+                    file_version_id: fileVersionId,
+                    timestamp: getISOTime(),
                     value: eventList
                 });
             });
@@ -132,8 +134,8 @@ export function transformMetrics(logs) {
        {
            timestamp,
            code,
-           fileId,
-           fileVersionId,
+           file_id,
+           file_version_id,
            value
        }
    ]
