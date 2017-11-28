@@ -148,7 +148,9 @@ class Preview extends EventEmitter {
         this.cache = new Cache();
         this.ui = new PreviewUI();
         this.browserInfo = Browser.getBrowserInfo();
-        this.logger = new Logger();
+        this.logger = new Logger({
+            locale: this.location.locale
+        });
 
         // Bind context for callbacks
         this.print = this.print.bind(this);
