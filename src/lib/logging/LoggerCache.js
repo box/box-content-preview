@@ -26,32 +26,6 @@ class LoggerCache {
     }
 
     /**
-     * Initialize a group in the cache based off of the code provided, if it doesn't exist.
-     *
-     * @private
-     * @param {LOG_CODES|string} code - One of the possible codes that exists in the logging cache.
-     * @return {void}
-     */
-    initializeGroup(code) {
-        this.cache[code] = this.cache[code] || [];
-    }
-
-    /**
-     * Validates the cache group type.
-     *
-     * @private
-     * @param {LOG_CODES|string} code - The code to validate.
-     * @return {void|Error} - Throws an error if an invalid code.
-     */
-    validateLogCode(code) {
-        const isValid = Object.keys(LOG_CODES).some((logCode) => logCode !== code);
-
-        if (!isValid) {
-            throw new Error(`Invalid Message Code: ${code}`);
-        }
-    }
-
-    /**
      * Add a message to the cache after validating it.
      *
      * @public
@@ -120,6 +94,36 @@ class LoggerCache {
         Object.keys(this.cache).forEach((code) => {
             this.clearGroup(code);
         });
+    }
+
+    //--------------------------------------------------------
+    // PRIVATE
+    //--------------------------------------------------------
+
+    /**
+     * Initialize a group in the cache based off of the code provided, if it doesn't exist.
+     *
+     * @private
+     * @param {LOG_CODES|string} code - One of the possible codes that exists in the logging cache.
+     * @return {void}
+     */
+    initializeGroup(code) {
+        this.cache[code] = this.cache[code] || [];
+    }
+
+    /**
+     * Validates the cache group type.
+     *
+     * @private
+     * @param {LOG_CODES|string} code - The code to validate.
+     * @return {void|Error} - Throws an error if an invalid code.
+     */
+    validateLogCode(code) {
+        const isValid = Object.keys(LOG_CODES).some((logCode) => logCode !== code);
+
+        if (!isValid) {
+            throw new Error(`Invalid Message Code: ${code}`);
+        }
     }
 }
 

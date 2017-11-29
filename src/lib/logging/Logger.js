@@ -85,6 +85,7 @@ class Logger {
     /**
      * Override previous configuration for the logger backend.
      *
+     * @public
      * @param {Object} config - Configuration object for the backend
      * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a backend.
      * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
@@ -125,6 +126,19 @@ class Logger {
     }
 
     /**
+     * Set the current file ID to associate logs with.
+     *
+     * @public
+     * @param {string} fileId - File ID to set
+     * @param {string} fileVersionId - File Version ID to set
+     * @return {void}
+     */
+    setFileIds(fileId, fileVersionId) {
+        this.fileId = fileId;
+        this.fileVersionID = fileVersionId;
+    }
+
+    /**
      * Destroys the logger.
      *
      * @public
@@ -139,107 +153,6 @@ class Logger {
 
         unregisterLogger(this.name);
         this.name = null;
-    }
-
-    /**
-     * Set the current file ID to associate logs with.
-     *
-     * @param {string} fileId - File ID to set
-     * @param {string} fileVersionId - File Version ID to set
-     * @return {void}
-     */
-    setFileIds(fileId, fileVersionId) {
-        this.fileId = fileId;
-        this.fileVersionID = fileVersionId;
-    }
-
-    /**
-     * Sanitizes the configuration for the backend and creates the proper parameters from it.
-     *
-     * @param {Object} config - Configuration required for configuring the LoggerBackend
-     * @return {Object} Sanitized configuration for the LoggerBackend.
-     */
-    sanitizeBackendConfig(config) {
-        let { logURL } = config;
-        const { appHost, logEndpoint, auth, locale } = config;
-
-        if (!logURL) {
-            logURL = `${appHost || APP_HOST}/${logEndpoint || DEFAULT_LOG_ENDPOINT}`;
-        }
-
-        if (auth && (!auth.header || !auth.value)) {
-            throw new Error('Invalid authorization object provided for saving logs!');
-        }
-
-        return {
-            logURL,
-            auth,
-            locale
-        };
-    }
-
-    /**
-     * Maps logging code to a logging function in our third-party logger. Defaults
-     * to regular 'info' if nothing available.
-     *
-     * @private
-     * @param {LOG_CODES|string} code - The log code to lookup a corresponding function on the logger.
-     * @return {Function} A function that can be invoked with a string, to log a message.
-     */
-    getLoggerFunction(code) {
-        let logFunction;
-
-        switch (code) {
-            case LOG_CODES.warning:
-                logFunction = this.logger.warn;
-                break;
-            case LOG_CODES.error:
-            case LOG_CODES.uncaught_error:
-                logFunction = this.logger.error;
-                break;
-            case LOG_CODES.info:
-                logFunction = this.logger.info;
-                break;
-            default:
-                logFunction = null;
-        }
-
-        return logFunction;
-    }
-
-    /**
-     * Handler for uncaught errors. Logs and caches
-     *
-     * @private
-     * @param {Error} error - Error object provided by the error event.
-     * @return {void}
-     */
-    onUncaughtError(error) {
-        const message = `${error.message} \n ${error.error.stack}`;
-        this.commitMessage(LOG_CODES.uncaught_error, message);
-    }
-
-    /**
-     * Commit a message to the cache and run the appropriate log function.
-     *
-     * @private
-     * @param {LOG_CODES|string} code - The log code this belongs to.
-     * @param {*} message - The message to log.
-     * @return {void}
-     */
-    commitMessage(code, message) {
-        const logFunction = this.getLoggerFunction(code);
-
-        // Format message and add a timestamp
-        const timestamp = getISOTime();
-        this.cache.add(code, timestamp, this.fileId, this.fileVersionID, message);
-
-        // Also wrapping the code into the message
-        // #TODO(@jholdstock): abstract this step
-        if (logFunction) {
-            const formattedMessage = `${timestamp} "${message}"`;
-            logFunction(`[${code}] ${formattedMessage}`);
-        }
     }
 
     /**
@@ -306,6 +219,7 @@ class Logger {
     /**
      * Sets the current level of messages to be logged to the console.
      *
+     * @public
      * @param {LOG_LEVELS|string} level - The level of logging to log to console.
      * @param {boolean} [persist] - Whether or not to persist across sessions.
      * @return {void}
@@ -412,6 +326,100 @@ class Logger {
 
         // save the whole thing
         this.backend.save(logBatch);
+    }
+
+    //--------------------------------------------------------
+    // PRIVATE
+    //--------------------------------------------------------
+
+    /**
+     * Sanitizes the configuration for the backend and creates the proper parameters from it.
+     *
+     * @private
+     * @param {Object} config - Configuration required for configuring the LoggerBackend
+     * @return {Object} Sanitized configuration for the LoggerBackend.
+     */
+    sanitizeBackendConfig(config) {
+        let { logURL } = config;
+        const { appHost, logEndpoint, auth, locale } = config;
+
+        if (!logURL) {
+            logURL = `${appHost || APP_HOST}/${logEndpoint || DEFAULT_LOG_ENDPOINT}`;
+        }
+
+        if (auth && (!auth.header || !auth.value)) {
+            throw new Error('Invalid authorization object provided for saving logs!');
+        }
+
+        return {
+            logURL,
+            auth,
+            locale
+        };
+    }
+
+    /**
+     * Maps logging code to a logging function in our third-party logger. Defaults
+     * to regular 'info' if nothing available.
+     *
+     * @private
+     * @param {LOG_CODES|string} code - The log code to lookup a corresponding function on the logger.
+     * @return {Function} A function that can be invoked with a string, to log a message.
+     */
+    getLoggerFunction(code) {
+        let logFunction;
+
+        switch (code) {
+            case LOG_CODES.warning:
+                logFunction = this.logger.warn;
+                break;
+            case LOG_CODES.error:
+            case LOG_CODES.uncaught_error:
+                logFunction = this.logger.error;
+                break;
+            case LOG_CODES.info:
+                logFunction = this.logger.info;
+                break;
+            default:
+                logFunction = null;
+        }
+
+        return logFunction;
+    }
+
+    /**
+     * Handler for uncaught errors. Logs and caches
+     *
+     * @private
+     * @param {Error} error - Error object provided by the error event.
+     * @return {void}
+     */
+    onUncaughtError(error) {
+        const message = `${error.message} \n ${error.error.stack}`;
+        this.commitMessage(LOG_CODES.uncaught_error, message);
+    }
+
+    /**
+     * Commit a message to the cache and run the appropriate log function.
+     *
+     * @private
+     * @param {LOG_CODES|string} code - The log code this belongs to.
+     * @param {*} message - The message to log.
+     * @return {void}
+     */
+    commitMessage(code, message) {
+        const logFunction = this.getLoggerFunction(code);
+
+        // Format message and add a timestamp
+        const timestamp = getISOTime();
+        this.cache.add(code, timestamp, this.fileId, this.fileVersionID, message);
+
+        // Also wrapping the code into the message
+        // #TODO(@jholdstock): abstract this step
+        if (logFunction) {
+            const formattedMessage = `${timestamp} "${message}"`;
+            logFunction(`[${code}] ${formattedMessage}`);
+        }
     }
 }
 

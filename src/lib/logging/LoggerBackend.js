@@ -64,34 +64,6 @@ class LoggerBackend {
     }
 
     /**
-     * Given a type of log, get a transformer that can format the data to suit the backend recieving it.
-     *
-     * @param {LOG_CODES} type - Type of transformer to get.
-     * @return {Function} A function that transforms the data to suit storage requirements.
-     */
-    getTransformer(type) {
-        let transformer;
-
-        switch (type) {
-            case LOG_CODES.error:
-            case LOG_CODES.uncaught_error:
-                transformer = transformErrors;
-                break;
-            case LOG_CODES.metric:
-                transformer = transformMetrics;
-                break;
-            case LOG_CODES.warning:
-                transformer = transformWarnings;
-                break;
-            case LOG_CODES.info:
-            default:
-                transformer = transformInfo;
-        }
-
-        return transformer;
-    }
-
-    /**
      * Create a properly formatted batch of logs to be saved to the backend.
      *
      * @param {LOG_CODES} type - Type of logs contained in the batch.
@@ -127,6 +99,38 @@ class LoggerBackend {
         // #TODO(@jholdstock): ADD HEADERS
         post(this.url, {}, logsToSave);
     }
+
+    //--------------------------------------------------------
+    // PRIVATE
+    //--------------------------------------------------------
+
+    /**
+     * Given a type of log, get a transformer that can format the data to suit the backend recieving it.
+     *
+     * @param {LOG_CODES} type - Type of transformer to get.
+     * @return {Function} A function that transforms the data to suit storage requirements.
+     */
+    getTransformer(type) {
+        let transformer;
+
+        switch (type) {
+            case LOG_CODES.error:
+            case LOG_CODES.uncaught_error:
+                transformer = transformErrors;
+                break;
+            case LOG_CODES.metric:
+                transformer = transformMetrics;
+                break;
+            case LOG_CODES.warning:
+                transformer = transformWarnings;
+                break;
+            case LOG_CODES.info:
+            default:
+                transformer = transformInfo;
+        }
+
+        return transformer;
+    }
 }
 
 export default LoggerBackend;
@@ -153,7 +157,7 @@ export default LoggerBackend;
         info: {
             client_version,
             browser_name,
-            country_code,
+            locale,
             session_id
         },
         events: [
