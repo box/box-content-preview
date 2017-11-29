@@ -144,6 +144,7 @@ class TextBaseViewer extends BaseViewer {
      * @inheritdoc
      */
     resize() {
+        // Fixes inheritance chain from CSVViewer
         super.resize();
     }
 }

@@ -78,6 +78,14 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     /**
+     * @inheritdoc
+     */
+    showLoadingIcon() {
+        // Fixes inheritance chain from DashViewer
+        super.showLoadingIcon();
+    }
+
+    /**
      * Handler for a pointer event on the media element.
      *
      * @param  {Event} event pointer event, either touch or mouse
@@ -208,6 +216,14 @@ class VideoBaseViewer extends MediaBaseViewer {
         if (this.containerEl) {
             this.containerEl.classList.add(CLASS_DARK);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    onKeydown(key) {
+        // Fixes inheritance chain from DashViewer
+        return super.onKeydown(key);
     }
 }
 
