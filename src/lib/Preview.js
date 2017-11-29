@@ -138,6 +138,7 @@ class Preview extends EventEmitter {
         this.browserInfo = Browser.getBrowserInfo();
 
         // Bind context for callbacks
+        this.download = this.download.bind(this);
         this.print = this.print.bind(this);
         this.handleTokenResponse = this.handleTokenResponse.bind(this);
         this.handleFileInfoResponse = this.handleFileInfoResponse.bind(this);
