@@ -172,6 +172,13 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     /**
+     * @inheritdoc
+     */
+    showLoadingIcon() {
+        super.showLoadingIcon();
+    }
+
+    /**
      * Overriden method to handle resizing of the window.
      * Adjusts the size of the time scrubber since its
      * senstive to the containers width.
@@ -208,6 +215,13 @@ class VideoBaseViewer extends MediaBaseViewer {
         if (this.containerEl) {
             this.containerEl.classList.add(CLASS_DARK);
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    onKeydown(key) {
+        return super.onKeydown(key);
     }
 }
 
