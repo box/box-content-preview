@@ -62,10 +62,6 @@ class MediaControls extends EventEmitter {
         this.subtitlesButtonEl = this.wrapperEl.querySelector('.bp-media-cc-icon');
         this.setLabel(this.subtitlesButtonEl, __('media_subtitles_cc'));
 
-        this.setDuration(this.mediaEl.duration);
-        this.setupSettings();
-        this.setupScrubbers();
-
         // Bind context for callbacks
         this.mouseenterHandler = this.mouseenterHandler.bind(this);
         this.mouseleaveHandler = this.mouseleaveHandler.bind(this);
@@ -83,7 +79,13 @@ class MediaControls extends EventEmitter {
         this.filmstripShowHandler = this.filmstripShowHandler.bind(this);
         this.filmstripHideHandler = this.filmstripHideHandler.bind(this);
         this.timeScrubbingStopHandler = this.timeScrubbingStopHandler.bind(this);
+        this.handleRate = this.handleRate.bind(this);
+        this.handleQuality = this.handleQuality.bind(this);
+        this.handleAutoplay = this.handleAutoplay.bind(this);
 
+        this.setDuration(this.mediaEl.duration);
+        this.setupSettings();
+        this.setupScrubbers();
         this.attachEventHandlers();
     }
 
