@@ -1,3 +1,12 @@
+<a name="1.20.1"></a>
+## 1.20.1 (2017-11-30)
+
+* Update: box-annotations to v0.5.1 (#524) ([c3a8bd4](https://github.com/box/box-content-preview/commit/c3a8bd4))
+* Fix: Bind download function in Preview.js (#520) ([0f1d11a](https://github.com/box/box-content-preview/commit/0f1d11a))
+* Fix: Fix inheritance and add bindings for controls options (#523) ([fcd34b1](https://github.com/box/box-content-preview/commit/fcd34b1)), closes [#523](https://github.com/box/box-content-preview/issues/523)
+
+
+
 <a name="1.20.0"></a>
 # 1.20.0 (2017-11-29)
 
