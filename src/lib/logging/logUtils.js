@@ -71,7 +71,7 @@ export function printLog(log) {
         msg = arrayToString([message]);
     }
 
-    const output = `${timestamp} "${msg}" File Info: ${JSON.stringify(fileInfo.file)}`;
+    const output = `${timestamp} id: ${fileInfo.file.id} "${msg}" \n `;
 
     // eslint-disable-next-line no-console
     console.log(`%c [${log.type.toUpperCase()}] `, `color: ${color}`, output);
