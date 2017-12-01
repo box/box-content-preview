@@ -1,14 +1,14 @@
 // Kinds of logs that can be stored
 export const LOG_CODES = {
-    error: 'ERROR',
-    uncaught_error: 'UNCAUGHT_ERROR',
-    warning: 'WARNING',
-    info: 'INFO',
-    metric: 'METRIC'
+    error: 'error',
+    uncaught_error: 'uncaught_error',
+    warning: 'warning',
+    info: 'info',
+    metric: 'metric'
 };
 
 // Levels to set on the logger, to enable/disable printing to the console.
-export const LOG_LEVELS = {
+export const CONSOLE_LEVELS = {
     error: 'error',
     warning: 'warning',
     info: 'info',

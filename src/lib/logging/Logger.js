@@ -3,7 +3,7 @@ import * as LogLevel from 'loglevel';
 import LoggerCache from './LoggerCache';
 import LoggerBackend from './LoggerBackend';
 import { registerLogger, unregisterLogger } from './loggerRegistry';
-import { LOG_CODES, LOG_LEVELS } from './logConstants';
+import { LOG_CODES, CONSOLE_LEVELS } from './logConstants';
 import { arrayToString, sortLogsByTime, printLog, getISOTime } from './logUtils';
 import { APP_HOST } from '../constants';
 
@@ -20,7 +20,7 @@ const DEFAULT_ALLOWED_LOGS = {
 const DEFAULT_LOG_ENDPOINT = 'index.php?rm=preview_metrics';
 
 // By default, print nothing.
-const DEFAULT_LOG_LEVEL = LOG_LEVELS.silent;
+const DEFAULT_LOG_LEVEL = CONSOLE_LEVELS.silent;
 
 /**
  * Logging mechanism that allows for storage of log messages, saving to backend, and
@@ -52,14 +52,12 @@ class Logger {
      * @constructor
      *
      * @param {Object} config - Configures log level and network layer.
-     * @param {LOG_LEVELS|string} [config.logLevel] - Level to set for writing to the browser console.
+     * @param {CONSOLE_LEVELS|string} [config.logLevel] - Level to set for writing to the browser console.
      * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a backend.
      * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
      * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
      * @param {string} [config.logEndpoint] - URL Tail to save logs to. Combined with appHost (above)
-     * @param {Object} [config.auth] - Authorization object containing a header named <header>, with value: <value>
      * @param {string} [config.locale] - User's locale
-     * @param {Object} [config.allowedLogs] - Logs that are allowed to be saved to the backend.
      * @return {Logger} Newly created Logger instance.
      */
     constructor(config = {}) {
@@ -91,18 +89,16 @@ class Logger {
      * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
      * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
      * @param {string} [config.logEndpoint] - URL Tail to save logs to. Combined with appHost (above)
-     * @param {Object} [config.auth] - Authorization object containing a header named <header>, with value: <value>
      * @param {string} [config.locale] - User's locale
-     * @param {Object} [config.allowedLogs] - Logs that are allowed to be saved to the backend.
      * @return {void}
      */
     setupBackend(config = {}) {
         const { savingEnabled } = config;
-        // if (!savingEnabled) {
-        //     return;
-        // }
+        if (!savingEnabled) {
+            return;
+        }
 
-        const { logURL, locale, auth } = this.sanitizeBackendConfig(config);
+        const { logURL, locale } = this.sanitizeBackendConfig(config);
         if (!this.backend) {
             this.backend = new LoggerBackend();
         }
@@ -113,15 +109,6 @@ class Logger {
 
         if (locale) {
             this.backend.setLocale(locale);
-        }
-
-        if (auth) {
-            this.backend.setAuth(auth);
-        }
-
-        // Override logs allowed to be saved to the backend
-        if (config.allowedLogs) {
-            this.allowedLogs = { ...config.allowedLogs };
         }
     }
 
@@ -228,7 +215,7 @@ class Logger {
      * Sets the current level of messages to be logged to the console.
      *
      * @public
-     * @param {LOG_LEVELS|string} level - The level of logging to log to console.
+     * @param {CONSOLE_LEVELS|string} level - The level of logging to log to console.
      * @param {boolean} [persist] - Whether or not to persist across sessions.
      * @return {void}
      */
@@ -348,19 +335,14 @@ class Logger {
      */
     sanitizeBackendConfig(config) {
         let { logURL } = config;
-        const { appHost, logEndpoint, auth, locale } = config;
+        const { appHost, logEndpoint, locale } = config;
 
         if (!logURL) {
             logURL = `${appHost || APP_HOST}/${logEndpoint || DEFAULT_LOG_ENDPOINT}`;
         }
 
-        if (auth && (!auth.header || !auth.value)) {
-            throw new Error('Invalid authorization object provided for saving logs!');
-        }
-
         return {
             logURL,
-            auth,
             locale
         };
     }

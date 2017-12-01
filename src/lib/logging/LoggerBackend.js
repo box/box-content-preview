@@ -8,9 +8,6 @@ class LoggerBackend {
     /** @property {string} - URL to POST log events to */
     url;
 
-    /** @property {Object} - Auth token to set as a Header on each log request */
-    auth;
-
     /** @property {string} - The locale the preview session occurs in. An estimate. */
     locale;
 
@@ -20,17 +17,12 @@ class LoggerBackend {
     /**
      * @param {Object} config - Object used to initialize the backend.
      * @param {string} config.logURL - The full URL to POST log events to. REQUIRED.
-     * @param {string} [config.auth] - If provided, sends as a header named <header>, with value: <value>
      */
     constructor(config = {}) {
-        const { logURL, locale, auth } = config;
+        const { logURL, locale } = config;
 
         this.setURL(logURL);
         this.setLocale(locale);
-
-        if (auth) {
-            this.setAuth(auth);
-        }
     }
 
     /**
@@ -51,16 +43,6 @@ class LoggerBackend {
      */
     setLocale(locale) {
         this.locale = locale;
-    }
-
-    /**
-     * Auth object to set for sending with log POST.
-     *
-     * @param {Object} auth - The auth Object
-     * @return {void}
-     */
-    setAuth(auth) {
-        this.auth = auth;
     }
 
     /**
@@ -88,7 +70,7 @@ class LoggerBackend {
             browser_name: Browser.getName(),
             client_version: CLIENT_VERSION,
             locale: this.locale,
-            session_id: this.sessionID
+            logger_session_id: this.sessionID
         };
 
         const logsToSave = {
@@ -96,9 +78,8 @@ class LoggerBackend {
             events: batchList
         };
 
+        post(this.url, {}, logsToSave);
         console.log(logsToSave);
-        // #TODO(@jholdstock): ADD HEADERS
-        // post(this.url, {}, logsToSave);
     }
 
     //--------------------------------------------------------

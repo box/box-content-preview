@@ -561,7 +561,7 @@ class Preview extends EventEmitter {
      * Setup additional configuration for the logger.
      *
      * @param {Object} config - Configures log level and network layer.
-     * @param {LOG_LEVELS|string} [config.logLevel] - Level to set for writing to the browser console.
+     * @param {CONSOLE_LEVELS|string} [config.logLevel] - Level to set for writing to the browser console.
      * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a backend.
      * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
      * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
