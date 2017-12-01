@@ -91,7 +91,7 @@ function updateConfig(conf, language, index) {
         }
 
         // Add inline source map
-        config.devtool = 'inline-source-map';
+        config.devtool = 'inline-cheap-source-map';
     }
 
     if (isRelease) {

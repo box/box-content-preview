@@ -1,19 +1,10 @@
 import BaseViewer from '../BaseViewer';
-import { ICON_FILE_BOX_NOTE, ICON_FILE_DICOM } from '../../icons/icons';
-
-const LOADING_ICON_MAP = {
-    boxdicom: ICON_FILE_DICOM,
-    boxnote: ICON_FILE_BOX_NOTE
-};
 
 class IFrameViewer extends BaseViewer {
     /**
      * @inheritdoc
      */
     setup() {
-        const fileExt = this.options.file.extension;
-        this.fileLoadingIcon = LOADING_ICON_MAP[fileExt];
-
         // Call super() to set up common layout
         super.setup();
 

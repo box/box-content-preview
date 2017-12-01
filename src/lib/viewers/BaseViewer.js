@@ -30,8 +30,8 @@ import {
     STATUS_SUCCESS,
     STATUS_VIEWABLE
 } from '../constants';
-import { ICON_FILE_DEFAULT } from '../icons/icons';
 import { LOG_CODES } from '../logging/logConstants';
+import { getIconFromExtension, getIconFromName } from '../icons/icons';
 
 const ANNOTATION_TYPE_DRAW = 'draw';
 const ANNOTATION_TYPE_POINT = 'point';
@@ -126,6 +126,11 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     setup() {
+        if (this.options.file) {
+            const fileExt = this.options.file.extension;
+            this.fileLoadingIcon = getIconFromExtension(fileExt);
+        }
+
         this.finishLoadingSetup();
 
         // Get the container dom element if selector was passed, in tests
@@ -169,7 +174,7 @@ class BaseViewer extends EventEmitter {
         }
 
         const iconWrapperEl = container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
-        iconWrapperEl.innerHTML = this.fileLoadingIcon || ICON_FILE_DEFAULT;
+        iconWrapperEl.innerHTML = this.fileLoadingIcon || getIconFromName('FILE_DEFAULT');
     }
 
     /**

@@ -19,7 +19,6 @@ import {
 } from './box3DConstants';
 import JS from './box3DAssets';
 import './Box3D.scss';
-import { ICON_FILE_OBJ } from '../../icons/icons';
 
 // Milliseconds to wait for model to load before cancelling Preview
 const LOAD_TIMEOUT = 50000;
@@ -63,8 +62,6 @@ class Box3DViewer extends BaseViewer {
      * @inheritdoc
      */
     setup() {
-        this.fileLoadingIcon = this.fileLoadingIcon || ICON_FILE_OBJ;
-
         // Call super() to set up common layout
         super.setup();
 
