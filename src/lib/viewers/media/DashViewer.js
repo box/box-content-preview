@@ -344,8 +344,9 @@ class DashViewer extends VideoBaseViewer {
      */
     shakaErrorHandler(shakaError) {
         const error = new Error(
-            `Shaka error. Code = ${shakaError.detail.code}, Category = ${shakaError.detail
-                .category}, Severity = ${shakaError.detail.severity}, Data = ${shakaError.detail.data.toString()}`
+            `Shaka error. Code = ${shakaError.detail.code}, Category = ${shakaError.detail.category}, Severity = ${
+                shakaError.detail.severity
+            }, Data = ${shakaError.detail.data.toString()}`
         );
         error.displayMessage = __('error_refresh');
 
@@ -451,6 +452,9 @@ class DashViewer extends VideoBaseViewer {
         this.mediaContainerEl.focus();
     }
 
+    /**
+     * @inheritdoc
+     */
     loadUI() {
         super.loadUI();
 

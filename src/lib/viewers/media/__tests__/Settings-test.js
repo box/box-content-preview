@@ -573,12 +573,19 @@ describe('lib/viewers/media/Settings', () => {
     });
 
     describe('showSubMenu()', () => {
+        it('should do nothing if the sub menu is disabled', () => {
+            sandbox.stub(settings, 'setMenuContainerDimensions');
+            settings.showSubMenu('quality');
+            expect(settings.setMenuContainerDimensions).to.not.be.called;
+        });
+
         it('should show the speed submenu if speed is selected', () => {
             settings.showSubMenu('speed');
             expect(settings.settingsEl).to.have.class('bp-media-settings-show-speed');
         });
 
         it('should show the quality submenu if quality is selected', () => {
+            settings.enableHD();
             settings.showSubMenu('quality');
             expect(settings.settingsEl).to.have.class('bp-media-settings-show-quality');
         });
@@ -1065,14 +1072,17 @@ describe('lib/viewers/media/Settings', () => {
     });
 
     describe('enableHD()', () => {
-        it('should remove the unavailable class, and choose the cached quality option', () => {
+        it('should remove the unavailable class, enable the sub menu, and choose the cached quality option', () => {
             sandbox.stub(settings.cache, 'get').returns('hd');
             sandbox.stub(settings, 'chooseOption');
+            const CLASS_SETTINGS_QUALITY_MENU = 'bp-media-settings-menu-quality';
+            const qualitySubMenu = settings.containerEl.querySelector(`.${CLASS_SETTINGS_QUALITY_MENU}`)
 
             settings.enableHD();
 
             expect(settings.containerEl.classList.contains('bp-media-settings-hd-unavailable')).to.be.false;
             expect(settings.chooseOption).to.be.calledWith('quality', 'hd');
+            expect(qualitySubMenu.getAttribute('data-disabled')).to.equal('');
         });
     });
 });

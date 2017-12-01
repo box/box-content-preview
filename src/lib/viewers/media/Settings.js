@@ -13,6 +13,7 @@ const CLASS_SETTINGS_OPEN = 'bp-media-settings-is-open';
 const CLASS_SETTINGS_SUBTITLES_UNAVAILABLE = 'bp-media-settings-subtitles-unavailable';
 const CLASS_SETTINGS_AUDIOTRACKS_UNAVAILABLE = 'bp-media-settings-audiotracks-unavailable';
 const CLASS_SETTINGS_HD_UNAVAILABLE = 'bp-media-settings-hd-unavailable';
+const CLASS_SETTINGS_QUALITY_MENU = 'bp-media-settings-menu-quality';
 const CLASS_SETTINGS_AUTOPLAY_UNAVAILABLE = 'bp-media-settings-autoplay-unavailable';
 const CLASS_SETTINGS_SUBTITLES_ON = 'bp-media-settings-subtitles-on';
 const SELECTOR_SETTINGS_SUB_ITEM = '.bp-media-settings-sub-item';
@@ -90,7 +91,7 @@ const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
             <div class="bp-media-settings-value">2.0</div>
         </div>
     </div>
-    <div class="bp-media-settings-menu-quality bp-media-settings-menu bp-media-settings-is-hidden" role="menu">
+    <div class="bp-media-settings-menu-quality bp-media-settings-menu bp-media-settings-is-hidden" data-disabled="true" role="menu">
         <div class="bp-media-settings-sub-item bp-media-settings-sub-item-quality" data-type="menu" tabindex="0" role="menuitem" aria-haspopup="true">
             <div class="bp-media-settings-arrow">${ICON_ARROW_LEFT}</div>
             <div class="bp-media-settings-label" aria-label="${__('media_quality')}">${__('media_quality')}</div>
@@ -328,6 +329,10 @@ class Settings extends EventEmitter {
      */
     showSubMenu(type) {
         const subMenu = this.settingsEl.querySelector(`.bp-media-settings-menu-${type}`);
+        if (subMenu.getAttribute('data-disabled')) {
+            return;
+        }
+
         this.settingsEl.classList.add(`bp-media-settings-show-${type}`);
 
         this.setMenuContainerDimensions(subMenu);
@@ -721,12 +726,14 @@ class Settings extends EventEmitter {
      */
     enableHD() {
         this.containerEl.classList.remove(CLASS_SETTINGS_HD_UNAVAILABLE);
+        const qualitySubMenu = this.containerEl.querySelector(`.${CLASS_SETTINGS_QUALITY_MENU}`);
+
+        // Sub menu should no longer be disabled
+        qualitySubMenu.setAttribute('data-disabled', '');
 
         // Check our cached settings value now that we know the HD rep is available
         const quality = this.cache.get('media-quality') || MEDIA_QUALITY_AUTO;
         this.chooseOption(TYPE_QUALITY, quality);
-
-        // this.reset();
     }
 }
 

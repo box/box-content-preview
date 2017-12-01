@@ -349,9 +349,18 @@ describe('lib/viewers/media/DashViewer', () => {
     describe('handleQuality()', () => {
         beforeEach(() => {
             dash.hdVideoId = 1;
-            dash.sdVideoId = 2;
+            dash.sdVideoId = -1;
             stubs.enableVideoId = sandbox.stub(dash, 'enableVideoId');
             stubs.adapt = sandbox.stub(dash, 'enableAdaptation');
+        });
+
+        it('should enforce SD if there is no HD video ID', () => {
+            dash.hdVideoId = -1;
+            sandbox.stub(dash.cache, 'get').returns('hd');
+            dash.handleQuality();
+
+            expect(stubs.enableVideoId).to.be.calledWith(dash.sdVideoId);
+            expect(dash.emit).to.be.calledWith('qualitychange', 'sd');
         });
 
         it('should enable HD video', () => {

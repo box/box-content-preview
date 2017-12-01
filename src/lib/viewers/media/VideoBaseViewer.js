@@ -77,6 +77,9 @@ class VideoBaseViewer extends MediaBaseViewer {
         this.mediaControls.show();
     }
 
+    /**
+     * @inheritdoc
+     */
     loadUI() {
         super.loadUI();
     }
