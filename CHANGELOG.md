@@ -1,3 +1,10 @@
+<a name="1.20.2"></a>
+## 1.20.2 (2017-12-01)
+
+* Fix: Properly bind download button in PreviewErrorViewer ([16e4dd4](https://github.com/box/box-content-preview/commit/16e4dd4))
+
+
+
 <a name="1.20.1"></a>
 ## 1.20.1 (2017-11-30)
 
