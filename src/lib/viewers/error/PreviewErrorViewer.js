@@ -7,11 +7,17 @@ import './PreviewError.scss';
 
 class PreviewErrorViewer extends BaseViewer {
     /**
-     * [constructor]
-     *
-     * @param {string|HTMLElement} container - The container
-     * @param {Object} options - Some options
-     * @return {Error} Error instance
+     * @inheritdoc
+     */
+    constructor(options) {
+        super(options);
+
+        // Bind context for handler
+        this.download = this.download.bind(this);
+    }
+
+    /**
+     * @inheritdoc
      */
     setup() {
         // Call super() first to set up common layout
