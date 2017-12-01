@@ -4,7 +4,7 @@ import BaseViewer from '../../BaseViewer';
 import Browser from '../../../Browser';
 import * as file from '../../../file';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
-import { ICON_FILE_DEFAULT, ICON_FILE_ZIP, ICON_FILE_MEDIA } from '../../../icons/icons';
+import * as icons from '../../../icons/icons';
 
 const sandbox = sinon.sandbox.create();
 let error;
@@ -55,21 +55,26 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
 
     describe('load()', () => {
         [
-            ['zip', ICON_FILE_ZIP],
-            ['tgz', ICON_FILE_ZIP],
-            ['flv', ICON_FILE_MEDIA],
-            ['blah', ICON_FILE_DEFAULT]
+            ['zip', true],
+            ['tgz', true],
+            ['flv', true],
+            ['blah', false]
         ].forEach((testCase) => {
             it('should set appropriate icon', () => {
+                const getIconFromExtensionStub = sandbox.stub(icons, 'getIconFromExtension');
+                const getIconFromNameStub = sandbox.stub(icons, 'getIconFromName');
                 const extension = testCase[0];
-                const expectedIcon = testCase[1];
+                const hasCustomIcon = testCase[1];
 
                 const err = new Error();
                 err.displayMessage = 'reason';
                 error.options.file.extension = extension;
                 error.load(err);
 
-                expect(error.icon).to.equal(expectedIcon);
+                expect(getIconFromNameStub).to.be.called;
+                if (hasCustomIcon) {
+                    expect(getIconFromExtensionStub).to.be.calledWith(extension);
+                }
                 expect(error.messageEl.textContent).to.equal(err.displayMessage);
             });
         });

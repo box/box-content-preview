@@ -1,3 +1,32 @@
+<a name="1.20.0"></a>
+# 1.20.0 (2017-11-29)
+
+* Chore: extract file loading icons to be used globally throughout preview (#490) ([ec2fc3b](https://github.com/box/box-content-preview/commit/ec2fc3b))
+* Chore: Remove autobind for Office and Media files (#505) ([0ecfd5e](https://github.com/box/box-content-preview/commit/0ecfd5e))
+* Chore: Remove autobind from 3d controls (#508) ([5aa3bc8](https://github.com/box/box-content-preview/commit/5aa3bc8))
+* Chore: Remove autobind from 3d viewers (#503) ([411f319](https://github.com/box/box-content-preview/commit/411f319))
+* Chore: Remove autobind from BaseViewer (#502) ([6d534be](https://github.com/box/box-content-preview/commit/6d534be))
+* Chore: Remove autobind from DocFindBar (#510) ([2a750e7](https://github.com/box/box-content-preview/commit/2a750e7))
+* Chore: Remove autobind from Document and Presentation Viewers (#507) ([cd3c67e](https://github.com/box/box-content-preview/commit/cd3c67e))
+* Chore: Remove autobind from error viewer (#506) ([4fd7eda](https://github.com/box/box-content-preview/commit/4fd7eda))
+* Chore: Remove autobind from text viewers (#511) ([a2b93fd](https://github.com/box/box-content-preview/commit/a2b93fd))
+* Chore: Remove autobind-decorator (#519) ([146f55c](https://github.com/box/box-content-preview/commit/146f55c))
+* Chore: Removing autobind from Preview.js (#500) ([6d61b9d](https://github.com/box/box-content-preview/commit/6d61b9d))
+* Update: box-annotations to v0.3.1 (#489) ([a9580a6](https://github.com/box/box-content-preview/commit/a9580a6))
+* Update: box-annotations to v0.4.0 (#497) ([808270b](https://github.com/box/box-content-preview/commit/808270b))
+* Update: box-annotations to v0.5.0 (#518) ([ef82f49](https://github.com/box/box-content-preview/commit/ef82f49))
+* Remove autobind from image viewers (#501) ([3b596b0](https://github.com/box/box-content-preview/commit/3b596b0))
+* Fix: BaseViewer debounced resize handler binding (#509) ([32f3c9a](https://github.com/box/box-content-preview/commit/32f3c9a))
+* Fix: Cachebust original representation URL (#493) ([2005863](https://github.com/box/box-content-preview/commit/2005863))
+* Fix: fix full screen overflow on Windows Chrome (#491) ([eee1525](https://github.com/box/box-content-preview/commit/eee1525)), closes [#491](https://github.com/box/box-content-preview/issues/491)
+* Fix: Media player control menus show scrollbars during transition (#494) ([80e07c6](https://github.com/box/box-content-preview/commit/80e07c6))
+* Fix: Presentation preloading scales without max (#487) ([11b2277](https://github.com/box/box-content-preview/commit/11b2277))
+* Fix: Properly remove transitionend handler (#499) ([79b4576](https://github.com/box/box-content-preview/commit/79b4576))
+* Fix: Remove unhandled errors from unit tests (#498) ([2e71743](https://github.com/box/box-content-preview/commit/2e71743))
+* Fix: Reset retry count after successful preview (#488) ([a8f66ed](https://github.com/box/box-content-preview/commit/a8f66ed))
+
+
+
 <a name="1.19.0"></a>
 # 1.19.0 (2017-11-14)
 

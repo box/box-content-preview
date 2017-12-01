@@ -6,6 +6,7 @@ import RepStatus from '../../RepStatus';
 import fullscreen from '../../Fullscreen';
 import * as util from '../../util';
 import * as file from '../../file';
+import * as icons from '../../icons/icons';
 import * as constants from '../../constants';
 
 let base;
@@ -48,6 +49,7 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('setup()', () => {
         it('should set options, a container, bind event listeners, and set timeout', () => {
+            const getIconFromExtensionStub = sandbox.stub(icons, 'getIconFromExtension');
             sandbox.stub(base, 'addCommonListeners');
             sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
             sandbox.stub(base, 'finishLoadingSetup');
@@ -63,8 +65,10 @@ describe('lib/viewers/BaseViewer', () => {
                 },
                 showAnnotations: true
             });
+
             expect(base.containerEl).to.have.class('bp');
             expect(base.addCommonListeners).to.be.called;
+            expect(getIconFromExtensionStub).to.be.called;
             expect(base.loadTimeout).to.be.a.number;
             expect(base.loadAnnotator).to.be.called;
         });
