@@ -42,11 +42,11 @@ class Logger {
     /** @property {Object} - The logs we're allowed to save to the backend. Defaults to all allowed. */
     allowedLogs = { ...DEFAULT_ALLOWED_LOGS };
 
-    /** @property {string} - File ID to associate logs with. */
-    fileID;
+    /** @property {Object} - File info object for current logs. */
+    file;
 
-    /** @property {string} - File version ID to associate logs with. */
-    fileVersionID;
+    /** @property {string} - Type of content previewed for current logs. */
+    contentType;
 
     /**
      * @constructor
@@ -98,9 +98,9 @@ class Logger {
      */
     setupBackend(config = {}) {
         const { savingEnabled } = config;
-        if (!savingEnabled) {
-            return;
-        }
+        // if (!savingEnabled) {
+        //     return;
+        // }
 
         const { logURL, locale, auth } = this.sanitizeBackendConfig(config);
         if (!this.backend) {
@@ -126,16 +126,24 @@ class Logger {
     }
 
     /**
-     * Set the current file ID to associate logs with.
+     * Set the current file info object.
      *
      * @public
-     * @param {string} fileId - File ID to set
-     * @param {string} fileVersionId - File Version ID to set
+     * @param {Object} file - The file with file info to attach to logs.
      * @return {void}
      */
-    setFileIds(fileId, fileVersionId) {
-        this.fileId = fileId;
-        this.fileVersionID = fileVersionId;
+    setFile(file) {
+        this.file = file;
+    }
+
+    /**
+     * Set current content type of file with logs attached.
+     *
+     * @param {string} type - Content type for the current logs.
+     * @return {void}
+     */
+    setContentType(type) {
+        this.contentType = type;
     }
 
     /**
@@ -196,13 +204,13 @@ class Logger {
      *
      * @public
      * @param {number} code - Code associated with a specific metric.
-     * @param {*} value -
+     * @param {*} value - Value of the metric
      * @return {void}
      */
     metric(code, value) {
         this.commitMessage(LOG_CODES.metric, {
-            metricCode: code,
-            metricValue: value
+            code,
+            value
         });
     }
 
@@ -271,13 +279,12 @@ class Logger {
         // Collect all in the appropriate format to sort and print
         Object.keys(logs).forEach((logGroupKey) => {
             logs[logGroupKey].forEach((log) => {
-                const { timestamp, message, fileId, fileVersionId } = log;
+                const { timestamp, message, file } = log;
                 logArray.push({
                     type: logGroupKey,
                     timestamp,
                     message,
-                    fileId,
-                    fileVersionId
+                    file
                 });
             });
         });
@@ -412,7 +419,15 @@ class Logger {
 
         // Format message and add a timestamp
         const timestamp = getISOTime();
-        this.cache.add(code, timestamp, this.fileId, this.fileVersionID, message);
+        this.cache.add(
+            code,
+            timestamp,
+            {
+                contentType: this.contentType,
+                file: this.file
+            },
+            message
+        );
 
         // Also wrapping the code into the message
         // #TODO(@jholdstock): abstract this step

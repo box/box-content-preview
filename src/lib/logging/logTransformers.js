@@ -17,6 +17,28 @@ function makeBatchContainer(event) {
 }
 
 /**
+ * Create an event log object.
+ *
+ * @param {string} event - Event type that occurred
+ * @param {Object} log  - Log object to parse
+ * @return {Object} Contains info for one log event
+ */
+function makeEvent(event, log) {
+    const { timestamp, message, fileInfo } = log;
+    const { id, file_version, extension } = fileInfo.file;
+    return {
+        code: event,
+        content_type: fileInfo.contentType,
+        extension,
+        file_id: id,
+        // eslint-disable-next-line
+        file_version_id: file_version ? file_version.id : '',
+        timestamp,
+        value: message
+    };
+}
+
+/**
  * Create a generic batch of logs.
  *
  * @param {string} event - Type of event being logged.
@@ -27,17 +49,54 @@ function transformGeneric(event, logs) {
     const batch = makeBatchContainer(event);
 
     logs.forEach((log) => {
-        const { timestamp, message, fileId, fileVersionId } = log;
-        batch.events.push({
-            code: event,
-            file_id: fileId,
-            file_version_id: fileVersionId,
-            timestamp,
-            value: message
-        });
+        const logEvent = makeEvent(event, log);
+        // const fileId;
+        batch.events.push(logEvent);
     });
 
     return batch;
+}
+
+/**
+ * If a dictionary of objects is passed in, groups events and adds to the batch.
+ *
+ * @param {Object} events - Dictionary of preview_control events, key: file_id, value: { version_id: [] }
+ * @param {Object} batch - Batch Object.
+ * @return {void}
+ */
+function addControlEventsToBatch(events, batch) {
+    // If control events occurred, save those too.
+    const keys = Object.keys(events);
+    if (!keys.length) {
+        return;
+    }
+
+    keys.forEach((fileId) => {
+        Object.keys(events[fileId]).forEach((fileVersionId) => {
+            Object.keys(events[fileId][fileVersionId]).forEach((contentType) => {
+                // Since they're from the same file version, we only need to
+                // batch, further based on content_type
+                const eventList = events[fileId][fileVersionId][contentType];
+                const { length } = eventList;
+                if (!length) {
+                    return;
+                }
+
+                // Extension is shared
+                const { extension } = eventList[length - 1];
+
+                batch.events.push({
+                    code: METRIC_CONTROL,
+                    content_type: contentType,
+                    extension,
+                    file_id: fileId,
+                    file_version_id: fileVersionId,
+                    timestamp: getISOTime(),
+                    value: eventList
+                });
+            });
+        });
+    });
 }
 
 /**
@@ -81,49 +140,42 @@ export function transformMetrics(logs) {
     const controlEvents = {};
 
     logs.forEach((log) => {
-        const { timestamp, message, fileId, fileVersionId } = log;
-        const { metricCode, metricValue } = message;
+        const { message } = log;
+        const { code } = message;
 
-        if (metricCode === METRIC_CONTROL) {
-            if (!controlEvents[fileId]) {
-                controlEvents[fileId] = {};
+        const metricEvent = makeEvent(code, log);
+
+        // Filter out control events, so we can group them.
+        // Groups are base on file_id, content_type, and file_version_id
+        if (code === METRIC_CONTROL) {
+            const { value } = message;
+            const { file_id, file_version_id, content_type } = metricEvent;
+
+            // File ID Group
+            if (!controlEvents[file_id]) {
+                controlEvents[file_id] = {};
             }
 
-            if (!controlEvents[fileId][fileVersionId]) {
-                controlEvents[fileId][fileVersionId] = [];
+            // File Version ID Group
+            if (!controlEvents[file_id][file_version_id]) {
+                controlEvents[file_id][file_version_id] = {};
             }
 
-            controlEvents[fileId][fileVersionId].push({
-                timestamp,
-                code: metricValue // The value of a metric is the metric code of the action event
+            // Content Type Group
+            if (!controlEvents[file_id][file_version_id][content_type]) {
+                controlEvents[file_id][file_version_id][content_type] = [];
+            }
+
+            controlEvents[file_id][file_version_id][content_type].push({
+                timestamp: metricEvent.timestamp,
+                code: value // The value of a metric is the metric code of the action event
             });
         } else {
-            batch.events.push({
-                code: metricCode,
-                file_id: fileId,
-                file_version_id: fileVersionId,
-                timestamp,
-                value: metricValue
-            });
+            batch.events.push(metricEvent);
         }
     });
 
-    // If control events occurred, save those too.
-    const controlEventKeys = Object.keys(controlEvents);
-    if (controlEventKeys.length) {
-        controlEventKeys.forEach((fileId) => {
-            Object.keys(controlEvents[fileId]).forEach((fileVersionId) => {
-                const eventList = controlEvents[fileId][fileVersionId];
-                batch.events.push({
-                    code: METRIC_CONTROL,
-                    file_id: fileId,
-                    file_version_id: fileVersionId,
-                    timestamp: getISOTime(),
-                    value: eventList
-                });
-            });
-        });
-    }
+    addControlEventsToBatch(controlEvents, batch);
 
     return batch;
 }

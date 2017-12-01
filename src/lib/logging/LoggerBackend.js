@@ -96,8 +96,9 @@ class LoggerBackend {
             events: batchList
         };
 
+        console.log(logsToSave);
         // #TODO(@jholdstock): ADD HEADERS
-        post(this.url, {}, logsToSave);
+        // post(this.url, {}, logsToSave);
     }
 
     //--------------------------------------------------------
@@ -145,6 +146,8 @@ export default LoggerBackend;
  *
  * file_id: <string>,
  * file_version_id: <string>,
+ * content_type,
+ * extension,
  * code: <string>, // Corresponds to the strings defined by us for events
  * value: <any> // Must be serializable
  */
@@ -167,6 +170,8 @@ export default LoggerBackend;
                     {
                         file_id,
                         file_version_id,
+                        content_type,
+                        extension,
                         timestamp,
                         code,
                         value
@@ -182,6 +187,8 @@ export default LoggerBackend;
         {
             event_type,
             timestamp,
+            content_type,
+            extension,
             file_id,
             file_version,
             client_version,

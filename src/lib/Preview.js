@@ -228,8 +228,9 @@ class Preview extends EventEmitter {
         // Nuke the file
         this.file = undefined;
 
-        // Clear logger from logging ids
-        this.logger.setFileIds(null, null);
+        // Clear logger from logging out of date file info
+        this.logger.setFile(null);
+        this.logger.setContentType(null);
     }
 
     /**
@@ -622,9 +623,8 @@ class Preview extends EventEmitter {
             );
         }
 
-        // Set logger to use up to date file and file version ids.
-        const fileVersion = this.file.file_version ? this.file.file_version.id : null;
-        this.logger.setFileIds(this.file.id, fileVersion);
+        // Set logger to use up to date file info
+        this.logger.setFile(this.file);
 
         // Retry up to RETRY_COUNT if we are reloading same file
         if (this.file.id === currentFileId) {
@@ -820,6 +820,7 @@ class Preview extends EventEmitter {
         try {
             // Save reference to the file and update file metrics tracker
             this.file = file;
+            this.logger.setFile(file);
             this.fileMetrics.setFile(file);
 
             // Keep reference to previously cached file version
@@ -890,6 +891,7 @@ class Preview extends EventEmitter {
 
         // Store the type of file
         this.fileMetrics.setType(viewer.NAME);
+        this.logger.setContentType(viewer.NAME);
 
         // Determine the representation to use
         const representation = loader.determineRepresentation(this.file, viewer);
@@ -947,7 +949,7 @@ class Preview extends EventEmitter {
                 this.logger.error(...data);
                 break;
             case LOG_CODES.metric:
-                this.logger.metric(data.metricCode, data.metricValue);
+                this.logger.metric(data.code, data.value);
                 break;
             case LOG_CODES.info:
             default:

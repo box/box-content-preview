@@ -31,12 +31,11 @@ class LoggerCache {
      * @public
      * @param {LOG_CODES|string} code - Type of message to add to the cache.
      * @param {string} timestamp - A timestamp of when the log occurred.
-     * @param {string} fileId - The file id associated with the log.
-     * @param {string} fileVersionId - The file version id associated with the log.
+     * @param {string} fileInfo - The file info associated with the log.
      * @param {string|Object} message - The message to store in the cache.
      * @return {void|Error} - Validation throws an error if if fails.
      */
-    add(code, timestamp, fileId, fileVersionId, message) {
+    add(code, timestamp, fileInfo, message) {
         this.validateLogCode(code);
 
         if (!this.cache[code]) {
@@ -45,8 +44,7 @@ class LoggerCache {
 
         this.cache[code].push({
             timestamp,
-            fileId,
-            fileVersionId,
+            fileInfo,
             message
         });
     }

@@ -899,16 +899,16 @@ class BaseViewer extends EventEmitter {
     /**
      * Emit a Metric event message.
      *
-     * @param {integer} metricCode - The metric code corresponding to the action to record. See metricsConstants.js
-     * @param {*} metricValue - The value to save as a metric
+     * @param {integer} code - The metric code corresponding to the action to record. See metricsConstants.js
+     * @param {*} value - The value to save as a metric
      * @return {void}
      */
-    logMetric(metricCode, metricValue) {
+    logMetric(code, value) {
         const data = {
             event: LOG_CODES.metric,
             data: {
-                metricCode,
-                metricValue
+                code,
+                value
             }
         };
 
