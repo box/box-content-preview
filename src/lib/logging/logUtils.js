@@ -1,11 +1,11 @@
-import { LOG_CODES } from './logConstants';
+import { LOG_TYPES } from './logConstants';
 
 const CONSOLE_COLORS = {
-    [LOG_CODES.error]: '#900C3F', // Red
-    [LOG_CODES.uncaught_error]: '#C70039', // Red
-    [LOG_CODES.warning]: '#FFBE33', // Yellow
-    [LOG_CODES.info]: '#33BEFF', // Blue
-    [LOG_CODES.metric]: '#A233FF', // Purple
+    [LOG_TYPES.error]: '#900C3F', // Red
+    [LOG_TYPES.uncaught_error]: '#C70039', // Red
+    [LOG_TYPES.warning]: '#FFBE33', // Yellow
+    [LOG_TYPES.info]: '#33BEFF', // Blue
+    [LOG_TYPES.metric]: '#A233FF', // Purple
     none: '#000' // Black
 };
 
@@ -71,7 +71,7 @@ export function printLog(log) {
         msg = arrayToString([message]);
     }
 
-    const output = `${timestamp} id:${fileInfo.file.id} "${msg}"`;
+    const output = `${timestamp} "${msg}" File Info: ${JSON.stringify(fileInfo.file)}`;
 
     // eslint-disable-next-line no-console
     console.log(`%c [${log.type.toUpperCase()}] `, `color: ${color}`, output);

@@ -1,4 +1,4 @@
-// Codes that correspond to an action that requires a metric to be recorded
+// Names that correspond to an action that requires a metric to be recorded
 
 // Initial file preview metrics. See Preview.js 'load' event, 'metrics' property
 export const METRIC_FILE_PREVIEW_SUCCESS = 'file_preview_success';

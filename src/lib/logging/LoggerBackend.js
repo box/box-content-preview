@@ -1,5 +1,5 @@
 import Browser from '../Browser';
-import { LOG_CODES, CLIENT_VERSION } from './logConstants';
+import { LOG_TYPES, CLIENT_VERSION } from './logConstants';
 import { transformMetrics, transformWarnings, transformInfo, transformErrors } from './logTransformers';
 import { post } from '../util';
 import { uuidv4 } from './logUtils';
@@ -48,7 +48,7 @@ class LoggerBackend {
     /**
      * Create a properly formatted batch of logs to be saved to the backend.
      *
-     * @param {LOG_CODES} type - Type of logs contained in the batch.
+     * @param {LOG_TYPES} type - Type of logs contained in the batch.
      * @param {Object} logs - Object containing type and array of logs that belong to it.
      * @return {Object} Formatted object to be saved to the backend.
      */
@@ -89,24 +89,24 @@ class LoggerBackend {
     /**
      * Given a type of log, get a transformer that can format the data to suit the backend recieving it.
      *
-     * @param {LOG_CODES} type - Type of transformer to get.
+     * @param {LOG_TYPES} type - Type of transformer to get.
      * @return {Function} A function that transforms the data to suit storage requirements.
      */
     getTransformer(type) {
         let transformer;
 
         switch (type) {
-            case LOG_CODES.error:
-            case LOG_CODES.uncaught_error:
+            case LOG_TYPES.error:
+            case LOG_TYPES.uncaught_error:
                 transformer = transformErrors;
                 break;
-            case LOG_CODES.metric:
+            case LOG_TYPES.metric:
                 transformer = transformMetrics;
                 break;
-            case LOG_CODES.warning:
+            case LOG_TYPES.warning:
                 transformer = transformWarnings;
                 break;
-            case LOG_CODES.info:
+            case LOG_TYPES.info:
             default:
                 transformer = transformInfo;
         }
@@ -129,12 +129,12 @@ export default LoggerBackend;
  * file_version_id: <string>,
  * content_type,
  * extension,
- * code: <string>, // Corresponds to the strings defined by us for events
+ * type: <string>, // Corresponds to the strings defined by us for events
  * value: <any> // Must be serializable
  */
 
 /** TOTAL POST REQUEST SHOULD BE:
-  *  Remember, for event_type METRIC and CODE: METRIC_CONTROLS,
+  *  Remember, for event_type METRIC and event_name: METRIC_CONTROLS,
   *  the value is the whole list of Interactions with controls
 
     {
@@ -154,7 +154,7 @@ export default LoggerBackend;
                         content_type,
                         extension,
                         timestamp,
-                        code,
+                        event_name,
                         value
                     }
                 ]
@@ -175,7 +175,7 @@ export default LoggerBackend;
             client_version,
             browser_name,
             locale,
-            code,
+            event_name,
             value
         }
     ]

@@ -30,7 +30,7 @@ import {
     STATUS_SUCCESS,
     STATUS_VIEWABLE
 } from '../constants';
-import { LOG_CODES } from '../logging/logConstants';
+import { LOG_TYPES } from '../logging/logConstants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 
 const ANNOTATION_TYPE_DRAW = 'draw';
@@ -864,7 +864,7 @@ class BaseViewer extends EventEmitter {
      */
     logInfo(...args) {
         const dataWithType = {
-            event: LOG_CODES.info,
+            event: LOG_TYPES.info,
             data: args
         };
 
@@ -879,7 +879,7 @@ class BaseViewer extends EventEmitter {
      */
     logWarning(...args) {
         const dataWithType = {
-            event: LOG_CODES.warning,
+            event: LOG_TYPES.warning,
             data: args
         };
 
@@ -894,7 +894,7 @@ class BaseViewer extends EventEmitter {
      */
     logError(...args) {
         const dataWithType = {
-            event: LOG_CODES.error,
+            event: LOG_TYPES.error,
             data: args
         };
 
@@ -904,15 +904,15 @@ class BaseViewer extends EventEmitter {
     /**
      * Emit a Metric event message.
      *
-     * @param {integer} code - The metric code corresponding to the action to record. See metricsConstants.js
+     * @param {string} metricName - The metric name corresponding to the action to record. See metricsConstants.js
      * @param {*} value - The value to save as a metric
      * @return {void}
      */
-    logMetric(code, value) {
+    logMetric(metricName, value) {
         const data = {
-            event: LOG_CODES.metric,
+            event: LOG_TYPES.metric,
             data: {
-                code,
+                eventName: metricName,
                 value
             }
         };

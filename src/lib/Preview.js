@@ -43,7 +43,7 @@ import {
     METRIC_CONTROL,
     METRIC_CONTROL_ACTIONS
 } from './logging/metricsConstants';
-import { LOG_CODES } from './logging/logConstants';
+import { LOG_TYPES } from './logging/logConstants';
 import './Preview.scss';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
@@ -937,22 +937,22 @@ class Preview extends EventEmitter {
     /**
      * Handles log events and delegates to the Logger instance.
      *
-     * @param {LOG_CODES} event - Log event that occurred.
+     * @param {LOG_TYPES} event - Log event that occurred.
      * @param {Object} data - Log event data.
      * @return {void}
      */
     handlLogEvent(event, data) {
         switch (event) {
-            case LOG_CODES.warning:
+            case LOG_TYPES.warning:
                 this.logger.warn(...data);
                 break;
-            case LOG_CODES.error:
+            case LOG_TYPES.error:
                 this.logger.error(...data);
                 break;
-            case LOG_CODES.metric:
-                this.logger.metric(data.code, data.value);
+            case LOG_TYPES.metric:
+                this.logger.metric(data.eventName, data.value);
                 break;
-            case LOG_CODES.info:
+            case LOG_TYPES.info:
             default:
                 this.logger.info(...data);
         }

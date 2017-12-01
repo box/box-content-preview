@@ -1,5 +1,5 @@
-// Kinds of logs that can be stored
-export const LOG_CODES = {
+// Kinds of events that can be logged
+export const LOG_TYPES = {
     error: 'error',
     uncaught_error: 'uncaught_error',
     warning: 'warning',

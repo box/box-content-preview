@@ -1,4 +1,4 @@
-import { LOG_CODES } from './logConstants';
+import { LOG_TYPES } from './logConstants';
 
 /**
  * Caching mechanism for for logging messages.
@@ -29,20 +29,20 @@ class LoggerCache {
      * Add a message to the cache after validating it.
      *
      * @public
-     * @param {LOG_CODES|string} code - Type of message to add to the cache.
+     * @param {LOG_TYPES|string} type - Type of message to add to the cache.
      * @param {string} timestamp - A timestamp of when the log occurred.
      * @param {string} fileInfo - The file info associated with the log.
      * @param {string|Object} message - The message to store in the cache.
      * @return {void|Error} - Validation throws an error if if fails.
      */
-    add(code, timestamp, fileInfo, message) {
-        this.validateLogCode(code);
+    add(type, timestamp, fileInfo, message) {
+        this.validateLogType(type);
 
-        if (!this.cache[code]) {
-            this.initializeGroup(code);
+        if (!this.cache[type]) {
+            this.initializeGroup(type);
         }
 
-        this.cache[code].push({
+        this.cache[type].push({
             timestamp,
             fileInfo,
             message
@@ -52,30 +52,30 @@ class LoggerCache {
     /**
      * Get a group of logs from the cache.
      *
-     * @param {LOG_CODES|string} code - Group name to get from the cache.
+     * @param {LOG_TYPES|string} type - Group name to get from the cache.
      * @return {Array} The group from the cache, if available, otherwise an empty array.
      */
-    getGroup(code) {
-        if (!this.cache || !this.cache[code]) {
+    getGroup(type) {
+        if (!this.cache || !this.cache[type]) {
             return [];
         }
 
-        return this.cache[code];
+        return this.cache[type];
     }
 
     /**
      * Purges a group from the cache.
      *
      * @public
-     * @param {LOG_CODES|string} code - Group name to purge from the cache.
+     * @param {LOG_TYPES|string} type - Group type to purge from the cache.
      * @return {void}
      */
-    clearGroup(code) {
-        if (!this.cache || !this.cache[code]) {
+    clearGroup(type) {
+        if (!this.cache || !this.cache[type]) {
             return;
         }
 
-        this.cache[code].length = 0;
+        this.cache[type].length = 0;
     }
 
     /**
@@ -89,8 +89,8 @@ class LoggerCache {
             return;
         }
 
-        Object.keys(this.cache).forEach((code) => {
-            this.clearGroup(code);
+        Object.keys(this.cache).forEach((type) => {
+            this.clearGroup(type);
         });
     }
 
@@ -99,28 +99,28 @@ class LoggerCache {
     //--------------------------------------------------------
 
     /**
-     * Initialize a group in the cache based off of the code provided, if it doesn't exist.
+     * Initialize a group in the cache based off of the type provided, if it doesn't exist.
      *
      * @private
-     * @param {LOG_CODES|string} code - One of the possible codes that exists in the logging cache.
+     * @param {LOG_TYPES|string} type - One of the possible types that exists in the logging cache.
      * @return {void}
      */
-    initializeGroup(code) {
-        this.cache[code] = this.cache[code] || [];
+    initializeGroup(type) {
+        this.cache[type] = this.cache[type] || [];
     }
 
     /**
      * Validates the cache group type.
      *
      * @private
-     * @param {LOG_CODES|string} code - The code to validate.
-     * @return {void|Error} - Throws an error if an invalid code.
+     * @param {LOG_TYPES|string} type - The type to validate.
+     * @return {void|Error} - Throws an error if an invalid type.
      */
-    validateLogCode(code) {
-        const isValid = Object.keys(LOG_CODES).some((logCode) => logCode !== code);
+    validateLogType(type) {
+        const isValid = Object.keys(LOG_TYPES).some((logType) => logType !== type);
 
         if (!isValid) {
-            throw new Error(`Invalid Message Code: ${code}`);
+            throw new Error(`Invalid Message Type: ${type}`);
         }
     }
 }

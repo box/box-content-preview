@@ -1,6 +1,6 @@
 // Set of Transformers that translate data for storage
 import { getISOTime } from './logUtils';
-import { LOG_CODES } from './logConstants';
+import { LOG_TYPES } from './logConstants';
 import { METRIC_CONTROL } from './metricsConstants';
 
 /**
@@ -27,8 +27,8 @@ function makeEvent(event, log) {
     const { timestamp, message, fileInfo } = log;
     const { id, file_version, extension } = fileInfo.file;
     return {
-        code: event,
         content_type: fileInfo.contentType,
+        event_name: event,
         extension,
         file_id: id,
         // eslint-disable-next-line
@@ -86,7 +86,7 @@ function addControlEventsToBatch(events, batch) {
                 const { extension } = eventList[length - 1];
 
                 batch.events.push({
-                    code: METRIC_CONTROL,
+                    event_name: METRIC_CONTROL,
                     content_type: contentType,
                     extension,
                     file_id: fileId,
@@ -106,7 +106,7 @@ function addControlEventsToBatch(events, batch) {
  * @return {Object} The transformed log batch.
  */
 export function transformWarnings(logs) {
-    return transformGeneric(LOG_CODES.warning, logs);
+    return transformGeneric(LOG_TYPES.warning, logs);
 }
 
 /**
@@ -116,7 +116,7 @@ export function transformWarnings(logs) {
  * @return {Object} The transformed log batch.
  */
 export function transformInfo(logs) {
-    return transformGeneric(LOG_CODES.info, logs);
+    return transformGeneric(LOG_TYPES.info, logs);
 }
 
 /**
@@ -126,7 +126,7 @@ export function transformInfo(logs) {
  * @return {Object} The transformed log batch.
  */
 export function transformErrors(logs) {
-    return transformGeneric(LOG_CODES.error, logs);
+    return transformGeneric(LOG_TYPES.error, logs);
 }
 
 /**
@@ -136,18 +136,18 @@ export function transformErrors(logs) {
  * @return {Object} The transformed log batch.
  */
 export function transformMetrics(logs) {
-    const batch = makeBatchContainer(LOG_CODES.metric);
+    const batch = makeBatchContainer(LOG_TYPES.metric);
     const controlEvents = {};
 
     logs.forEach((log) => {
         const { message } = log;
-        const { code } = message;
+        const { eventName } = message;
 
-        const metricEvent = makeEvent(code, log);
+        const metricEvent = makeEvent(eventName, log);
 
         // Filter out control events, so we can group them.
         // Groups are base on file_id, content_type, and file_version_id
-        if (code === METRIC_CONTROL) {
+        if (eventName === METRIC_CONTROL) {
             const { value } = message;
             const { file_id, file_version_id, content_type } = metricEvent;
 
@@ -168,7 +168,7 @@ export function transformMetrics(logs) {
 
             controlEvents[file_id][file_version_id][content_type].push({
                 timestamp: metricEvent.timestamp,
-                code: value // The value of a metric is the metric code of the action event
+                event_name: value // The value of a metric is the metric name of the action event
             });
         } else {
             batch.events.push(metricEvent);
@@ -185,7 +185,7 @@ export function transformMetrics(logs) {
    events: [
        {
            timestamp,
-           code,
+           event_name,
            file_id,
            file_version_id,
            value

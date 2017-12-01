@@ -3,7 +3,7 @@ import * as LogLevel from 'loglevel';
 import LoggerCache from './LoggerCache';
 import LoggerBackend from './LoggerBackend';
 import { registerLogger, unregisterLogger } from './loggerRegistry';
-import { LOG_CODES, CONSOLE_LEVELS } from './logConstants';
+import { LOG_TYPES, CONSOLE_LEVELS } from './logConstants';
 import { arrayToString, sortLogsByTime, printLog, getISOTime } from './logUtils';
 import { APP_HOST } from '../constants';
 
@@ -159,7 +159,7 @@ class Logger {
      */
     info(...args) {
         const message = arrayToString(args);
-        this.commitMessage(LOG_CODES.info, message);
+        this.commitMessage(LOG_TYPES.info, message);
     }
 
     /**
@@ -171,7 +171,7 @@ class Logger {
      */
     warn(...args) {
         const message = arrayToString(args);
-        this.commitMessage(LOG_CODES.warning, message);
+        this.commitMessage(LOG_TYPES.warning, message);
     }
 
     /**
@@ -183,20 +183,20 @@ class Logger {
      */
     error(...args) {
         const message = arrayToString(args);
-        this.commitMessage(LOG_CODES.error, message);
+        this.commitMessage(LOG_TYPES.error, message);
     }
 
     /**
      * Log a metric message to the logger, and commit to the cache.
      *
      * @public
-     * @param {number} code - Code associated with a specific metric.
+     * @param {string} eventName - Name associated with a specific metric.
      * @param {*} value - Value of the metric
      * @return {void}
      */
-    metric(code, value) {
-        this.commitMessage(LOG_CODES.metric, {
-            code,
+    metric(eventName, value) {
+        this.commitMessage(LOG_TYPES.metric, {
+            eventName,
             value
         });
     }
@@ -227,25 +227,25 @@ class Logger {
      * Get logs from the cache.
      *
      * @public
-     * @param {LOG_CODES|LOG_CODES[]} [code] - Type of logs to get. If empty, will get all logs.
+     * @param {LOG_TYPES|LOG_TYPES[]} [type] - Type of logs to get. If empty, will get all logs.
      * If a list is given, will get each entry specified.
      * @return {Object} The cache entry(ies) requested.
      */
-    getLogs(code) {
+    getLogs(type) {
         const logs = {};
 
         // eslint-disable-next-line require-jsdoc
-        const addGroupToLogs = (msgCode) => {
-            const logCode = LOG_CODES[msgCode];
-            logs[logCode] = this.cache.getGroup(logCode);
+        const addGroupToLogs = (msgType) => {
+            const logType = LOG_TYPES[msgType];
+            logs[logType] = this.cache.getGroup(logType);
         };
 
-        if (!code) {
-            Object.keys(LOG_CODES).forEach(addGroupToLogs);
-        } else if (Array.isArray(code)) {
-            code.forEach(addGroupToLogs);
+        if (!type) {
+            Object.keys(LOG_TYPES).forEach(addGroupToLogs);
+        } else if (Array.isArray(type)) {
+            type.forEach(addGroupToLogs);
         } else {
-            addGroupToLogs(code.toLowerCase());
+            addGroupToLogs(type.toLowerCase());
         }
 
         return logs;
@@ -255,23 +255,23 @@ class Logger {
      * Print logs from the cache, to the console.
      *
      * @public
-     * @param {LOG_CODES|LOG_CODES[]} [code] - Type of logs to print. If empty, will print all logs.
+     * @param {LOG_TYPES|LOG_TYPES[]} [type] - Type of logs to print. If empty, will print all logs.
      * If a list is given, will print each entry specified.
      * @return {void}
      */
-    printLogs(code) {
-        const logs = this.getLogs(code);
+    printLogs(type) {
+        const logs = this.getLogs(type);
         let logArray = [];
 
         // Collect all in the appropriate format to sort and print
         Object.keys(logs).forEach((logGroupKey) => {
             logs[logGroupKey].forEach((log) => {
-                const { timestamp, message, file } = log;
+                const { timestamp, message, fileInfo } = log;
                 logArray.push({
                     type: logGroupKey,
                     timestamp,
                     message,
-                    file
+                    fileInfo
                 });
             });
         });
@@ -287,16 +287,16 @@ class Logger {
      * Saves the logs to the backend.
      *
      * @public
-     * @param {LOG_CODES|LOG_CODES[]} code - Type of logs to save.
+     * @param {LOG_TYPES|LOG_TYPES[]} type - Type of logs to save.
      * @return {void}
      */
-    save(code) {
+    save(type) {
         // If we're not supposed to save, don't attempt it.
         if (!this.backend) {
             return;
         }
 
-        const logs = this.getLogs(code);
+        const logs = this.getLogs(type);
 
         // Filter out disallowed log types
         Object.keys(this.allowedLogs).forEach((logType) => {
@@ -348,25 +348,25 @@ class Logger {
     }
 
     /**
-     * Maps logging code to a logging function in our third-party logger. Defaults
+     * Maps logging type to a logging function in our third-party logger. Defaults
      * to regular 'info' if nothing available.
      *
      * @private
-     * @param {LOG_CODES|string} code - The log code to lookup a corresponding function on the logger.
+     * @param {LOG_TYPES|string} type - The log type to lookup a corresponding function on the logger.
      * @return {Function} A function that can be invoked with a string, to log a message.
      */
-    getLoggerFunction(code) {
+    getLoggerFunction(type) {
         let logFunction;
 
-        switch (code) {
-            case LOG_CODES.warning:
+        switch (type) {
+            case LOG_TYPES.warning:
                 logFunction = this.logger.warn;
                 break;
-            case LOG_CODES.error:
-            case LOG_CODES.uncaught_error:
+            case LOG_TYPES.error:
+            case LOG_TYPES.uncaught_error:
                 logFunction = this.logger.error;
                 break;
-            case LOG_CODES.info:
+            case LOG_TYPES.info:
                 logFunction = this.logger.info;
                 break;
             default:
@@ -385,37 +385,37 @@ class Logger {
      */
     onUncaughtError(error) {
         const message = `${error.message} \n ${error.error.stack}`;
-        this.commitMessage(LOG_CODES.uncaught_error, message);
+        this.commitMessage(LOG_TYPES.uncaught_error, message);
     }
 
     /**
      * Commit a message to the cache and run the appropriate log function.
      *
      * @private
-     * @param {LOG_CODES|string} code - The log code this belongs to.
+     * @param {LOG_TYPES|string} type - The log type this belongs to.
      * @param {*} message - The message to log.
      * @return {void}
      */
-    commitMessage(code, message) {
-        const logFunction = this.getLoggerFunction(code);
+    commitMessage(type, message) {
+        const logFunction = this.getLoggerFunction(type);
 
         // Format message and add a timestamp
         const timestamp = getISOTime();
         this.cache.add(
-            code,
+            type,
             timestamp,
             {
                 contentType: this.contentType,
-                file: this.file
+                file: { ...this.file }
             },
             message
         );
 
-        // Also wrapping the code into the message
+        // Also wrapping the type into the message
         // #TODO(@jholdstock): abstract this step
         if (logFunction) {
             const formattedMessage = `${timestamp} "${message}"`;
-            logFunction(`[${code}] ${formattedMessage}`);
+            logFunction(`[${type}] ${formattedMessage}`);
         }
     }
 }
