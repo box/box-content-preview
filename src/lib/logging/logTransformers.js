@@ -50,7 +50,6 @@ function transformGeneric(event, logs) {
 
     logs.forEach((log) => {
         const logEvent = makeEvent(event, log);
-        // const fileId;
         batch.events.push(logEvent);
     });
 
@@ -130,6 +129,24 @@ export function transformErrors(logs) {
 }
 
 /**
+ * Creates a batch of logs for uncaught_error events.
+ *
+ * @param {Object[]} logs - List of error logs.
+ * @return {Object} The transformed log batch.
+ */
+export function transformUncaughtErrors(logs) {
+    const batch = makeBatchContainer(LOG_TYPES.error);
+
+    //  event_type will be error, but event_name will be uncaught_error
+    logs.forEach((log) => {
+        const logEvent = makeEvent(LOG_TYPES.uncaught_error, log);
+        batch.events.push(logEvent);
+    });
+
+    return batch;
+}
+
+/**
  * Creates a batch of logs for metric events.
  *
  * @param {Object[]} logs - List of metric logs.
@@ -179,16 +196,3 @@ export function transformMetrics(logs) {
 
     return batch;
 }
-
-/**
- * event_type: <ERROR | METRIC | WARNING | INFO>,
-   events: [
-       {
-           timestamp,
-           event_name,
-           file_id,
-           file_version_id,
-           value
-       }
-   ]
- */

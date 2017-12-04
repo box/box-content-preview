@@ -1,6 +1,12 @@
 import Browser from '../Browser';
 import { LOG_TYPES, CLIENT_VERSION } from './logConstants';
-import { transformMetrics, transformWarnings, transformInfo, transformErrors } from './logTransformers';
+import {
+    transformMetrics,
+    transformWarnings,
+    transformInfo,
+    transformErrors,
+    transformUncaughtErrors
+} from './logTransformers';
 import { post } from '../util';
 import { uuidv4 } from './logUtils';
 
@@ -97,8 +103,10 @@ class LoggerBackend {
 
         switch (type) {
             case LOG_TYPES.error:
-            case LOG_TYPES.uncaught_error:
                 transformer = transformErrors;
+                break;
+            case LOG_TYPES.uncaught_error:
+                transformer = transformUncaughtErrors;
                 break;
             case LOG_TYPES.metric:
                 transformer = transformMetrics;
