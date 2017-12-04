@@ -26,6 +26,8 @@ export function arrayToString(array) {
 
         if (Array.isArray(value)) {
             parsedValue = `[${arrayToString(value)}]`;
+        } else if (value instanceof Error) {
+            parsedValue = `${value.message} \n ${value.stack}`;
         } else if (typeof value === 'object') {
             parsedValue = JSON.stringify(value);
         } else {

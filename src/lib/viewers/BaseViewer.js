@@ -31,6 +31,7 @@ import {
     STATUS_VIEWABLE
 } from '../constants';
 import { LOG_TYPES } from '../logging/logConstants';
+import { METRIC_CONTROL, METRIC_CONTROL_ACTIONS } from '../logging/metricsConstants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 
 const ANNOTATION_TYPE_DRAW = 'draw';
@@ -402,6 +403,8 @@ class BaseViewer extends EventEmitter {
      */
     toggleFullscreen() {
         fullscreen.toggle(this.containerEl);
+
+        this.logMetric(METRIC_CONTROL, METRIC_CONTROL_ACTIONS.toggle_fullscreen_button);
     }
 
     /**
@@ -904,15 +907,15 @@ class BaseViewer extends EventEmitter {
     /**
      * Emit a Metric event message.
      *
-     * @param {string} metricName - The metric name corresponding to the action to record. See metricsConstants.js
+     * @param {string} eventName - The metric name corresponding to the action to record. See metricsConstants.js
      * @param {*} value - The value to save as a metric
      * @return {void}
      */
-    logMetric(metricName, value) {
+    logMetric(eventName, value) {
         const data = {
             event: LOG_TYPES.metric,
             data: {
-                eventName: metricName,
+                eventName,
                 value
             }
         };

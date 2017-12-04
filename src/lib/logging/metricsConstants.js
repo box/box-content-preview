@@ -10,6 +10,7 @@ export const METRIC_FILE_PREVIEW_ABORTED = 'file_preview_aborted';
 // Interaction with Preview controls
 export const METRIC_CONTROL = 'preview_controls';
 
+// General control actions
 export const METRIC_CONTROL_ACTIONS = {
     zoom_in_button: 'zoom_in_button',
     zoom_in_pointer: 'zoom_in_pointer',
@@ -18,5 +19,22 @@ export const METRIC_CONTROL_ACTIONS = {
     navigate_prev_button: 'navigate_prev_button',
     navigate_prev_key: 'navigate_prev_key',
     navigate_next_button: 'navigate_next_button',
-    navigate_next_key: 'navigate_next_key'
+    navigate_next_key: 'navigate_next_key',
+    toggle_fullscreen_button: 'toggle_fullscreen_button'
+};
+
+// Image preview controls
+export const IMAGE_CONTROL_ACTIONS = {
+    rotate_left_button: 'image_rotate_left_button'
+};
+
+// 3D preview controls
+export const BOX3D_CONTROL_ACTIONS = {
+    toggle_vr_button: '3d_toggle_vr_button',
+    reset_button: '3d_reset_button'
+};
+
+// Error viewer
+export const ERROR_CONTROL_ACTIONS = {
+    download_button: 'error_download_button'
 };

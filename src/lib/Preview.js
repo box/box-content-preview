@@ -937,24 +937,24 @@ class Preview extends EventEmitter {
     /**
      * Handles log events and delegates to the Logger instance.
      *
-     * @param {LOG_TYPES} event - Log event that occurred.
      * @param {Object} data - Log event data.
      * @return {void}
      */
-    handlLogEvent(event, data) {
+    handleLogEvent(data) {
+        const { event } = data;
         switch (event) {
             case LOG_TYPES.warning:
-                this.logger.warn(...data);
+                this.logger.warn(...data.data);
                 break;
             case LOG_TYPES.error:
-                this.logger.error(...data);
+                this.logger.error(...data.data);
                 break;
             case LOG_TYPES.metric:
-                this.logger.metric(data.eventName, data.value);
+                this.logger.metric(data.data.eventName, data.data.value);
                 break;
             case LOG_TYPES.info:
             default:
-                this.logger.info(...data);
+                this.logger.info(...data.data);
         }
     }
 
@@ -993,7 +993,7 @@ class Preview extends EventEmitter {
                 this.navigateRight();
                 break;
             case EVENT_LOG:
-                this.handlLogEvent(data.event, data.data);
+                this.handleLogEvent(data.data);
                 break;
             default:
                 // This includes 'notification', 'preload' and others

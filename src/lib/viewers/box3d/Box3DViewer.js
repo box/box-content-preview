@@ -19,6 +19,7 @@ import {
 } from './box3DConstants';
 import JS from './box3DAssets';
 import './Box3D.scss';
+import { METRIC_CONTROL, BOX3D_CONTROL_ACTIONS } from '../../logging/metricsConstants';
 
 // Milliseconds to wait for model to load before cancelling Preview
 const LOAD_TIMEOUT = 50000;
@@ -261,6 +262,8 @@ class Box3DViewer extends BaseViewer {
      */
     handleToggleVr() {
         this.renderer.toggleVr();
+
+        this.logMetric(METRIC_CONTROL, BOX3D_CONTROL_ACTIONS.toggle_vr_button);
     }
 
     /**
@@ -337,6 +340,8 @@ class Box3DViewer extends BaseViewer {
         if (this.renderer) {
             this.renderer.reset();
         }
+
+        this.logMetric(METRIC_CONTROL, BOX3D_CONTROL_ACTIONS.reset_button);
     }
 
     /**
