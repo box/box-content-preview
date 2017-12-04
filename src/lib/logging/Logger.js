@@ -52,7 +52,7 @@ class Logger {
      * @constructor
      *
      * @param {Object} config - Configures log level and network layer.
-     * @param {CONSOLE_LEVELS|string} [config.logLevel] - Level to set for writing to the browser console.
+     * @param {CONSOLE_LEVELS|string} [config.consoleLevel] - Level to set for writing to the browser console.
      * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a backend.
      * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
      * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
@@ -67,9 +67,9 @@ class Logger {
         // If a log level has not been set and/or persisted, default to silent
         this.logger.setDefaultLevel(DEFAULT_LOG_LEVEL);
 
-        const { logLevel } = config;
-        if (logLevel) {
-            this.setLogLevel(logLevel);
+        const { consoleLevel } = config;
+        if (consoleLevel) {
+            this.setConsoleLevel(consoleLevel);
         }
 
         this.onUncaughtError = this.onUncaughtError.bind(this);
@@ -219,7 +219,7 @@ class Logger {
      * @param {boolean} [persist] - Whether or not to persist across sessions.
      * @return {void}
      */
-    setLogLevel(level, persist = false) {
+    setConsoleLevel(level, persist = false) {
         this.logger.setLevel(level, persist);
     }
 
