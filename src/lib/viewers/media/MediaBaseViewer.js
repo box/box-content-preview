@@ -481,13 +481,13 @@ class MediaBaseViewer extends BaseViewer {
     }
 
     /**
-     * Removes pause event listener
+     * Removes pause event listener if it exists
      *
      * @private
      * @return {void}
      */
     removePauseEventListener() {
-        if (this.mediaEl) {
+        if (this.mediaEl && this.pauseListener) {
             this.mediaEl.removeEventListener('timeupdate', this.pauseListener);
         }
     }
