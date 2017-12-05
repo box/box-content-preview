@@ -191,14 +191,6 @@ $header-height: 48px;
     }
 }
 
-.bp-popup-modal {
-    left: 0;
-    margin: 0 auto;
-    position: absolute;
-    right: 0;
-    top: 100px;
-}
-
 //---------- Override popup related CSS from _boxui.scss ----------//
 .bp-modal-dialog {
     padding: 20px;
@@ -262,7 +254,13 @@ $header-height: 48px;
     margin: 0 auto;
 }
 
-// z-index as the base modal
 .bp-popup-modal {
+    left: 0;
+    margin: 0 auto;
+    position: absolute;
+    right: 0;
+    top: 100px;
+
+    // z-index as the base modal
     z-index: 160; // follows bp-modal from boxui
 }
