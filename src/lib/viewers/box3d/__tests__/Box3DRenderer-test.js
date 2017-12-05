@@ -183,7 +183,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
         });
 
         it('should append "boxapi" request header to the XHR with the provided shared link', () => {
-            sandbox.stub(window, 'encodeURI', (uri) => {
+            sandbox.stub(window, 'encodeURI').callsFake((uri) => {
                 return uri;
             });
             const setReqHeaderSpy = sandbox.spy(XMLHttpRequest.prototype, 'setRequestHeader');
@@ -196,7 +196,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
         });
 
         it('should append "boxapi" request header to the XHR with the shared link AND shared link password', () => {
-            sandbox.stub(window, 'encodeURI', (uri) => {
+            sandbox.stub(window, 'encodeURI').callsFake((uri) => {
                 return uri;
             });
             const setReqHeaderSpy = sandbox.spy(XMLHttpRequest.prototype, 'setRequestHeader');
@@ -267,7 +267,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                     two: 'b'
                 };
 
-                const creatBox3DStub = sandbox.stub(renderer, 'createBox3d', (loader, entities) => {
+                const creatBox3DStub = sandbox.stub(renderer, 'createBox3d').callsFake((loader, entities) => {
                     expect(entities).to.deep.equal(expectedEntities);
                     done();
                 });
@@ -279,12 +279,12 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             });
 
             it('should produce an XhrResourceLoader which supports token, sharedLink and sharedLinkPassword', (done) => {
-                const creatBox3DStub = sandbox.stub(renderer, 'createBox3d', (loader) => {
-                    sandbox.stub(loader.queue, 'add', (fn) => fn());
+                const creatBox3DStub = sandbox.stub(renderer, 'createBox3d').callsFake((loader) => {
+                    sandbox.stub(loader.queue, 'add').callsFake((fn) => fn());
                     const resource = {
                         once: (event, cb) => cb()
                     };
-                    sandbox.stub(loader, 'load', () => resource);
+                    sandbox.stub(loader, 'load').callsFake(() => resource);
 
                     loader.load('path/to/texture.jpg', window.Box3D.LoadingType.IMAGE, {});
 
@@ -368,7 +368,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
                         load: function load() {}
                     });
                     this.canvas = { addEventListener: () => {}};
-                    sandbox.stub(this.canvas, 'addEventListener', () => {
+                    sandbox.stub(this.canvas, 'addEventListener').callsFake(() => {
                         renderer.handleContextRestored()
                     })
                 }
@@ -433,7 +433,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
     describe('handleContextRestored()', () => {
         it('should fire event to be picked up by the viewer', () => {
-            const emitStub = sandbox.stub(renderer, 'emit', (eventName) => {
+            const emitStub = sandbox.stub(renderer, 'emit').callsFake((eventName) => {
                 expect(eventName).to.equal(EVENT_WEBGL_CONTEXT_RESTORED);
             });
             renderer.handleContextRestored();
@@ -444,7 +444,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
     describe('toggleVr()', () => {
         it('should enable vr if it\'s currently disabled', () => {
             let called = false;
-            sandbox.stub(renderer, 'enableVr', () => {
+            sandbox.stub(renderer, 'enableVr').callsFake(() => {
                 called = true;
             });
             renderer.toggleVr();
@@ -453,7 +453,7 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
 
         it('should disable vr if it\'s currently enabled', () => {
             let called = false;
-            sandbox.stub(renderer, 'disableVr', () => {
+            sandbox.stub(renderer, 'disableVr').callsFake(() => {
                 called = true;
             });
             renderer.vrEnabled = true;
@@ -658,27 +658,27 @@ describe('lib/viewers/box3d/Box3DRenderer', () => {
             });
 
             it('should emit a EVENT_SHOW_VR_BUTTON event when vr displays are ready', (done) => {
-                sandbox.stub(vrPresenter, 'whenDisplaysAvailable', (callback) => {
+                sandbox.stub(vrPresenter, 'whenDisplaysAvailable').callsFake((callback) => {
                     callback([{}, {}]);
                     done();
                 });
-                sandbox.stub(renderer, 'createVrGamepads', () => {});
+                sandbox.stub(renderer, 'createVrGamepads').callsFake(() => {});
                 renderer.initVr();
                 expect(emitStub).to.be.calledWith(EVENT_SHOW_VR_BUTTON);
             });
 
             it('should add an event listeners for vr enabled/disabled events via listenTo', (done) => {
                 box3dMock.expects('listenTo').twice();
-                sandbox.stub(vrPresenter, 'whenDisplaysAvailable', (callback) => {
+                sandbox.stub(vrPresenter, 'whenDisplaysAvailable').callsFake((callback) => {
                     callback([{}, {}]);
                     done();
                 });
-                sandbox.stub(renderer, 'createVrGamepads', () => {});
+                sandbox.stub(renderer, 'createVrGamepads').callsFake(() => {});
                 renderer.initVr();
             });
 
             it('should do nothing if no displays are available', (done) => {
-                sandbox.stub(vrPresenter, 'whenDisplaysAvailable', (callback) => {
+                sandbox.stub(vrPresenter, 'whenDisplaysAvailable').callsFake((callback) => {
                     callback([]);
                     done();
                 });
