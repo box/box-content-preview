@@ -288,7 +288,8 @@ class DashViewer extends VideoBaseViewer {
      * @return {void}
      */
     handleQuality() {
-        const quality = this.cache.get('media-quality');
+        // If there is no HD rep, use the standard definition option
+        const quality = this.hdVideoId !== -1 ? this.cache.get('media-quality') : 'sd';
 
         switch (quality) {
             case 'hd':
@@ -449,6 +450,17 @@ class DashViewer extends VideoBaseViewer {
         this.showMedia();
         this.mediaControls.show();
         this.mediaContainerEl.focus();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    loadUI() {
+        super.loadUI();
+
+        if (this.hdVideoId !== -1) {
+            this.mediaControls.enableHDSettings();
+        }
     }
 
     /**

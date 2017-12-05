@@ -78,6 +78,13 @@ class VideoBaseViewer extends MediaBaseViewer {
     }
 
     /**
+     * @inheritdoc
+     */
+    loadUI() {
+        super.loadUI();
+    }
+
+    /**
      * Handler for a pointer event on the media element.
      *
      * @param  {Event} event pointer event, either touch or mouse

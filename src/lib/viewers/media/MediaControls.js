@@ -933,6 +933,15 @@ class MediaControls extends EventEmitter {
         this.settings.addListener('audiotracks', this.handleAudioTrack);
         this.settings.loadAlternateAudio(audioLanguages);
     }
+
+    /**
+     * Adds the quality options to the settings menu
+     *
+     * @return {void}
+     */
+    enableHDSettings() {
+        this.settings.enableHD();
+    }
 }
 
 export default MediaControls;
