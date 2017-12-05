@@ -1042,5 +1042,14 @@ describe('lib/viewers/media/MediaControls', () => {
         expect(mediaControls.settings.loadAlternateAudio).to.be.calledWith(audios);
         });
     });
+
+    describe('enableHDSettings()', () => {
+        it('enable HD in the settings menu', () => {
+            sandbox.stub(mediaControls.settings, 'enableHD');
+            mediaControls.enableHDSettings();
+
+            expect(mediaControls.settings.enableHD).to.be.called;
+        });
+    });
 });
 /* eslint-enable no-unused-expressions */
