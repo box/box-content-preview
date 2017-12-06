@@ -162,7 +162,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
                 action: ':D'
             };
 
-            sandbox.stub(renderer, 'initBox3d', (options) => {
+            sandbox.stub(renderer, 'initBox3d').callsFake((options) => {
                 expect(options.sceneEntities).to.deep.equal(mySceneEntities);
                 done();
                 return new Promise(() => {});
@@ -172,7 +172,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
         });
 
         it('should use default sceneEntities, if none provided, for initialization', (done) => {
-            sandbox.stub(renderer, 'initBox3d', (options) => {
+            sandbox.stub(renderer, 'initBox3d').callsFake((options) => {
                 expect(options.sceneEntities).to.deep.equal(sceneEntities);
                 done();
                 return new Promise(() => {});
@@ -189,7 +189,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
                 middle_click: 'always'
             };
 
-            sandbox.stub(renderer, 'initBox3d', (options) => {
+            sandbox.stub(renderer, 'initBox3d').callsFake((options) => {
                 expect(options.inputSettings).to.deep.equal(myInputSettings);
                 done();
                 return new Promise(() => {});
@@ -205,7 +205,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
                 even: { more: 'things' }
             };
 
-            sandbox.stub(renderer, 'initBox3d', (options) => {
+            sandbox.stub(renderer, 'initBox3d').callsFake((options) => {
                 expect(options).to.deep.equal(myOptions);
                 done();
                 return new Promise(() => {});
@@ -218,7 +218,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
             const fileUrl = 'I/am/a/url';
 
             sandbox.stub(renderer, 'initBox3d').returns(Promise.resolve());
-            sandbox.stub(renderer, 'loadPanoramaFile', (url) => {
+            sandbox.stub(renderer, 'loadPanoramaFile').callsFake((url) => {
                 expect(url).to.equal(fileUrl);
                 done();
                 return new Promise(() => {});
@@ -230,7 +230,7 @@ describe('lib/viewers/box3d/image360/Image360Renderer', () => {
         it('should call onSceneLoad() when done loading file', (done) => {
             sandbox.stub(renderer, 'initBox3d').returns(Promise.resolve());
             sandbox.stub(renderer, 'loadPanoramaFile').returns(Promise.resolve());
-            sandbox.stub(renderer, 'onSceneLoad', () => {
+            sandbox.stub(renderer, 'onSceneLoad').callsFake(() => {
                 done();
             });
 
