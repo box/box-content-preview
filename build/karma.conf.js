@@ -3,7 +3,7 @@ const webpackConfig = require('./webpack.karma.config');
 
 // These should be updated to match the Preview version in package.json whenever a file in that third party directory
 // is updated. Also, update the matching configuration in constants.js, which is needed for main preview functionality
-const DOC_STATIC_ASSETS_VERSION = '1.17.0';
+const DOC_STATIC_ASSETS_VERSION = '1.21.0';
 const MEDIA_STATIC_ASSETS_VERSION = '1.8.0';
 const MODEL3D_STATIC_ASSETS_VERSION = '1.12.0';
 const SWF_STATIC_ASSETS_VERSION = '0.112.0';
