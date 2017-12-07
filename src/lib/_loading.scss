@@ -110,16 +110,6 @@
     }
 }
 
-// Center spinner horizontally and vertically within container
-.bp-spinner {
-    bottom: 0;
-    left: 0;
-    margin: auto;
-    position: absolute;
-    right: 0;
-    top: 0;
-}
-
 .bp-spinner div,
 .bp-spinner div::after {
     border: 25px solid #0061d5;
@@ -140,8 +130,15 @@
     transform: rotate(90deg);
 }
 
+// Center spinner horizontally and vertically within container
 .bp-spinner {
+    bottom: 0;
     height: 30px;
+    left: 0;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
     transform: translate(-15px, -15px) scale(.15) translate(15px, 15px);
     width: 30px;
 }

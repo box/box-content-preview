@@ -1,3 +1,22 @@
+<a name="1.21.0"></a>
+# 1.21.0 (2017-12-06)
+
+* Fix: Bind download function in Preview.js (#520) ([359abcf](https://github.com/box/box-content-preview/commit/359abcf))
+* Fix: Enable HD settings only if HD rep is available (#495) ([e4302e3](https://github.com/box/box-content-preview/commit/e4302e3))
+* Fix: Fix inheritance and add bindings for controls options (#523) ([942329d](https://github.com/box/box-content-preview/commit/942329d)), closes [#523](https://github.com/box/box-content-preview/issues/523)
+* Fix: Only remove the timeupdate listener if it has been bound before (#525) ([5c8dffa](https://github.com/box/box-content-preview/commit/5c8dffa))
+* Fix: Properly bind download button in PreviewErrorViewer (#527) ([122e0c9](https://github.com/box/box-content-preview/commit/122e0c9))
+* Fix: Revert source-map change to fix imported values (#530) ([66c71b1](https://github.com/box/box-content-preview/commit/66c71b1)), closes [#530](https://github.com/box/box-content-preview/issues/530)
+* Update: box-annotations to v0.5.1 (#524) ([518f42b](https://github.com/box/box-content-preview/commit/518f42b))
+* Update: box-annotations to v0.6.0 (#531) ([1f26be5](https://github.com/box/box-content-preview/commit/1f26be5))
+* Update: Sinon to v4.1.2 & remove deprecated methods from tests (#529) ([b1596ee](https://github.com/box/box-content-preview/commit/b1596ee))
+* Mojito: adding Bengali, Hindi and Latin America Spanish (#526) ([96916a6](https://github.com/box/box-content-preview/commit/96916a6))
+* Mojito: Update translations (#515) ([5503738](https://github.com/box/box-content-preview/commit/5503738))
+* Chore: Change webpack source maps to 'inline-cheap-source-map' (#513) ([fc71416](https://github.com/box/box-content-preview/commit/fc71416))
+* Chore: only use source maps when running unit tests in debug mode (#514) ([06e390d](https://github.com/box/box-content-preview/commit/06e390d))
+
+
+
 <a name="1.20.0"></a>
 # 1.20.0 (2017-11-29)
 

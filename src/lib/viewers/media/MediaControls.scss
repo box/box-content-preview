@@ -127,19 +127,6 @@
     }
 }
 
-.bp-media-gear-icon {
-    position: relative;
-
-    svg path {
-        transform-origin: 50%;
-        transition: all .3s;
-    }
-
-    .bp-media-settings-is-open & svg path {
-        transform: rotateZ(60deg);
-    }
-}
-
 .bp-is-fullscreen {
     .bp-media-fullscreen-icon .bp-exit-fullscreen-icon {
         display: inline-block;
@@ -154,6 +141,15 @@
 .bp-media-gear-icon {
     position: absolute;
     right: 55px;
+
+    svg path {
+        transform-origin: 50%;
+        transition: all .3s;
+    }
+
+    .bp-media-settings-is-open & svg path {
+        transform: rotateZ(60deg);
+    }
 }
 
 .bp-media-cc-icon {

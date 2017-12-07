@@ -134,7 +134,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
     describe('load()', () => {
         it('should do nothing with scene entities if location is not present in options', (done) => {
             const options = { file: {id: 'dummyId'}};
-            sandbox.stub(renderer, 'initBox3d', (opts) => {
+            sandbox.stub(renderer, 'initBox3d').callsFake((opts) => {
                 expect(opts.sceneEntities).to.not.exist;
                 done();
                 return Promise.resolve();
@@ -149,7 +149,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                     staticBaseURI: ''
                 }
             };
-            sandbox.stub(renderer, 'initBox3d', (opts) => {
+            sandbox.stub(renderer, 'initBox3d').callsFake((opts) => {
                 expect(opts.sceneEntities).to.exist;
                 done();
                 return Promise.resolve();
@@ -184,7 +184,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         it('should setup the scene via onUnsupportedRepresentation() if it cannot load the model', (done) => {
             const options = { file: { id: ''}};
             renderMock.expects('onUnsupportedRepresentation');
-            sandbox.stub(renderer, 'loadBox3dFile', () => Promise.reject());
+            sandbox.stub(renderer, 'loadBox3dFile').callsFake(() => Promise.reject());
             renderer.load('', options).then(() => done());
         });
     });
@@ -238,7 +238,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         it('should invoke onSceneLoad when the scene has been loaded', () => {
             renderer.instance = instance;
             sandbox.stub(renderer, 'getScene').returns(scene);
-            sandbox.stub(scene, 'when', (event, cb) => cb());
+            sandbox.stub(scene, 'when').callsFake((event, cb) => cb());
             const stub = sandbox.stub(renderer, 'onSceneLoad');
             renderer.setupScene();
             expect(stub).to.be.called;
@@ -375,7 +375,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
                     updateMatrixWorld: () => {}
                 }
             };
-            sandbox.stub(renderer, 'getCamera', () => camera);
+            sandbox.stub(renderer, 'getCamera').callsFake(() => camera);
         });
 
         it('should do nothing if there is no camera', () => {
@@ -423,7 +423,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
         const videos = [];
 
         beforeEach(() => {
-            sandbox.stub(renderer.box3d, 'getEntitiesByType', (type) => {
+            sandbox.stub(renderer.box3d, 'getEntitiesByType').callsFake((type) => {
                 switch (type) {
                     case 'animation':
                         return animations;
@@ -560,15 +560,15 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
             });
 
             it('should add an event listener for the instance to load, after animation asset loads', () => {
-                sandbox.stub(animAsset, 'when', (event, cb) => cb());
+                sandbox.stub(animAsset, 'when').callsFake((event, cb) => cb());
                 sandbox.mock(renderer.instance).expects('when').withArgs('load');
                 renderer.toggleAnimation();
             });
 
             describe('after instance and animation asset loaded', () => {
                 beforeEach(() => {
-                    sandbox.stub(animAsset, 'when', (event, cb) => cb());
-                    sandbox.stub(renderer.instance, 'when', (event, cb) => cb());
+                    sandbox.stub(animAsset, 'when').callsFake((event, cb) => cb());
+                    sandbox.stub(renderer.instance, 'when').callsFake((event, cb) => cb());
                 });
 
                 it('should pause the animation, by default', () => {
@@ -791,7 +791,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
         it('should set the perspective properties of the camera if perspective mode is selected', (done) => {
             sandbox.stub(renderer, 'getCamera').returns(camera);
-            sandbox.stub(camera, 'setProperty', (prop, value) => {
+            sandbox.stub(camera, 'setProperty').callsFake((prop, value) => {
                 expect(prop).to.equal('cameraType');
                 expect(value).to.equal('perspective');
                 done();
@@ -801,7 +801,7 @@ describe('lib/viewers/box3d/model3d/Model3DRenderer', () => {
 
         it('should set the orthographic properties of the camera if ortho mode is selected', (done) => {
             sandbox.stub(renderer, 'getCamera').returns(camera);
-            sandbox.stub(camera, 'setProperty', (prop, value) => {
+            sandbox.stub(camera, 'setProperty').callsFake((prop, value) => {
                 expect(prop).to.equal('cameraType');
                 expect(value).to.equal('orthographic');
                 done();
