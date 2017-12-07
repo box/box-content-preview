@@ -150,7 +150,7 @@ export default LoggerBackend;
             client_version,
             browser_name,
             locale,
-            session_id
+            logger_session_id
         },
         events: [
             {
@@ -175,6 +175,7 @@ export default LoggerBackend;
     [
         {
             event_type,
+            logger_session_id
             timestamp,
             content_type,
             extension,
