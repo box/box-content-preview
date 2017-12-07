@@ -462,12 +462,20 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
     });
 
     describe('removePauseEventListener()', () => {
-        it('should remove pause event listener', () => {
-            const pauseListener = () => {};
+        it('should remove pause event listener if it exists', () => {
+            let pauseListener = null
             media.mediaEl = { removeEventListener: sandbox.stub() };
+
+            media.pauseListener = pauseListener;
+            media.removePauseEventListener();
+            expect(media.mediaEl.removeEventListener).to.be.not.be.called
+
+            pauseListener = () => {};
             media.pauseListener = pauseListener;
             media.removePauseEventListener();
             expect(media.mediaEl.removeEventListener).to.be.calledWith('timeupdate', pauseListener);
+
+
         });
     });
 

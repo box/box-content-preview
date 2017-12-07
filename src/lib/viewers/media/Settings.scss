@@ -128,6 +128,22 @@ $item-hover-color: #f6fafd;
     }
 }
 
+.bp-media-settings-menu-quality {
+    .bp-media-settings-hd-unavailable & {
+        display: none;
+    }
+}
+
+.bp-media-settings-item-quality {
+    .bp-media-settings-hd-unavailable & {
+        pointer-events: none;
+
+        .bp-media-settings-arrow {
+            display: none;
+        }
+    }
+}
+
 .bp-media-settings-label,
 .bp-media-settings-value {
     display: table-cell;

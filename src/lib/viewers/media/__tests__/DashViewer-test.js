@@ -349,9 +349,18 @@ describe('lib/viewers/media/DashViewer', () => {
     describe('handleQuality()', () => {
         beforeEach(() => {
             dash.hdVideoId = 1;
-            dash.sdVideoId = 2;
+            dash.sdVideoId = -1;
             stubs.enableVideoId = sandbox.stub(dash, 'enableVideoId');
             stubs.adapt = sandbox.stub(dash, 'enableAdaptation');
+        });
+
+        it('should enforce SD if there is no HD video ID', () => {
+            dash.hdVideoId = -1;
+            sandbox.stub(dash.cache, 'get').returns('hd');
+            dash.handleQuality();
+
+            expect(stubs.enableVideoId).to.be.calledWith(dash.sdVideoId);
+            expect(dash.emit).to.be.calledWith('qualitychange', 'sd');
         });
 
         it('should enable HD video', () => {
@@ -382,6 +391,14 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.handleQuality();
             expect(stubs.adapt).to.be.calledWith(true); // default to adapt=true
             expect(dash.emit).to.not.be.called;
+        });
+
+        it('should enable SD if there is no HD rep available', () => {
+            dash.hdVideoId = -1;
+            sandbox.stub(dash.cache, 'get').returns('hd');
+            dash.handleQuality();
+            expect(stubs.adapt).to.be.calledWith(false);
+            expect(dash.emit).to.be.calledWith('qualitychange', 'sd');
         });
     });
 
@@ -516,6 +533,38 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.loaded).to.be.true;
             expect(document.activeElement).to.equal(dash.mediaContainerEl);
             expect(dash.mediaControls.show).to.be.called;
+        });
+    });
+
+    describe('loadUI()', () => {
+        beforeEach(() => {
+            stubs.loadUI = DashViewer.prototype.loadUI;
+            dash.mediaControls = {
+                enableHDSettings: sandbox.stub(),
+                removeListener: sandbox.stub(),
+                removeAllListeners: sandbox.stub(),
+                destroy: sandbox.stub()
+            };
+
+            Object.defineProperty(VideoBaseViewer.prototype, 'loadUI', { value: sandbox.mock() });
+
+        });
+
+        afterEach(() => {
+            Object.defineProperty(VideoBaseViewer.prototype, 'loadUI', { value: stubs.loadUI });
+        });
+
+        it('should enable HD settings if an HD rep exists', () => {
+            dash.hdVideoId = 3;
+            dash.loadUI();
+            expect(dash.mediaControls.enableHDSettings).to.be.called;
+
+        });
+
+        it('should do nothing if there is no HD rep', () => {
+            dash.hdVideoId = -1;
+            dash.loadUI();
+            expect(dash.mediaControls.enableHDSettings).to.not.be.called;
         });
     });
 
