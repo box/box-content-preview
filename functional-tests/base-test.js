@@ -43,9 +43,9 @@ describe('Base Test', () => {
 
     it('should load a file', () => {
         return this.browser
-            .wait(webdriver.until.elementLocated(webdriver.By.className('bp-loaded')), 5000)
+            .wait(webdriver.until.elementLocated(webdriver.By.className('bp-loaded')), 10000)
             .then((element) => {
-                this.browser.wait(webdriver.until.elementIsVisible(element), 5000).then((el) => {
+                this.browser.wait(webdriver.until.elementIsVisible(element), 10000).then((el) => {
                     expect(el).to.not.equal(undefined);
                 });
             });
