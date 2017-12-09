@@ -14,20 +14,6 @@ class MP4Viewer extends VideoBaseViewer {
         // mp4 specific class
         this.wrapperEl.classList.add(CSS_CLASS_MP4);
     }
-
-    /**
-     * Prefetches assets for a video.
-     *
-     * @param {boolean} [options.content] - Whether or not to prefetch rep content
-     * @return {void}
-     */
-    prefetch({ content = true }) {
-        const { representation } = this.options;
-        if (content && this.isRepresentationReady(representation)) {
-            const template = representation.content.url_template;
-            document.createElement('video').src = this.createContentUrlWithAuthParams(template);
-        }
-    }
 }
 
 export default MP4Viewer;

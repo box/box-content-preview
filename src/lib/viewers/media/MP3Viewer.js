@@ -20,20 +20,6 @@ class MP3Viewer extends MediaBaseViewer {
     }
 
     /**
-     * Prefetches assets for a mp3.
-     *
-     * @param {boolean} [options.content] - Whether or not to prefetch rep content
-     * @return {void}
-     */
-    prefetch({ content = true }) {
-        const { representation } = this.options;
-        if (content && this.isRepresentationReady(representation)) {
-            const template = representation.content.url_template;
-            document.createElement('audio').src = this.createContentUrlWithAuthParams(template);
-        }
-    }
-
-    /**
      * Loads the controls
      *
      * @private

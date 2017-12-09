@@ -50,30 +50,6 @@ describe('lib/viewers/media/MP3Viewer', () => {
         });
     });
 
-    describe('prefetch()', () => {
-        beforeEach(() => {
-            mp3.options.representation = {
-                content: {
-                    url_template: 'sometemplate'
-                }
-            };
-        });
-
-        it('should prefetch content if content is true and representation is ready', () => {
-            sandbox.stub(mp3, 'isRepresentationReady').returns(true);
-            sandbox.stub(mp3, 'createContentUrlWithAuthParams').returns('someContentUrl');
-            mp3.prefetch({ content: true });
-            expect(mp3.createContentUrlWithAuthParams).to.be.calledWith('sometemplate');
-        });
-
-        it('should not prefetch content if content is true but representation is not ready', () => {
-            sandbox.stub(mp3, 'isRepresentationReady').returns(false);
-            sandbox.stub(mp3, 'createContentUrlWithAuthParams');
-            mp3.prefetch({ content: true });
-            expect(mp3.createContentUrlWithAuthParams).to.not.be.called;
-        });
-    });
-
     describe('loadUI()', () => {
         const loadUIFunc = MediaBaseViewer.prototype.loadUI;
 
