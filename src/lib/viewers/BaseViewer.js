@@ -689,11 +689,6 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     loadAnnotator() {
-        // Do nothing if annotations are disabled for the viewer
-        if (!this.areAnnotationsEnabled()) {
-            return;
-        }
-
         // Auto-resolves promise if BoxAnnotations is passed in as a Preview option
         this.annotationsLoadPromise =
             window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations

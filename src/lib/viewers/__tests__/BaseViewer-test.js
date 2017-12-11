@@ -772,22 +772,13 @@ describe('lib/viewers/BaseViewer', () => {
         };
 
         beforeEach(() => {
-            sandbox.stub(base, 'areAnnotationsEnabled');
             sandbox.stub(base, 'loadAssets');
             window.BoxAnnotations = function BoxAnnotations() {
                 this.determineAnnotator = sandbox.stub().returns(conf);
             }
         });
 
-        it('should do nothing if annotations are not enabled', () => {
-            base.areAnnotationsEnabled.returns(false);
-            base.loadAnnotator();
-            expect(base.loadAssets).to.not.be.called;
-
-        });
-
         it('should resolve the promise if a BoxAnnotations instance was passed into Preview', (done) => {
-            base.areAnnotationsEnabled.returns(true);
             base.options.boxAnnotations = new window.BoxAnnotations({});
 
             base.loadAnnotator();
@@ -796,7 +787,6 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should load the annotations assets', () => {
-            base.areAnnotationsEnabled.returns(true);
             base.loadAnnotator();
             expect(base.loadAssets).to.be.calledWith(['annotations.js'], ['annotations.css']);
         });
