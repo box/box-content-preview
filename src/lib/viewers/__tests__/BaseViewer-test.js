@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-expressions */
 import EventEmitter from 'events';
-import BoxAnnotations from 'box-annotations';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import RepStatus from '../../RepStatus';
@@ -764,21 +763,23 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('loadAnnotator()', () => {
+        const conf = {
+            annotationsEnabled: true,
+            types: {
+                point: true,
+                highlight: false
+            }
+        };
+
         beforeEach(() => {
-            sandbox.stub(base, 'areAnnotationsEnabled');
             sandbox.stub(base, 'loadAssets');
-        });
-
-        it('should do nothing if annotations are not enabled', () => {
-            base.areAnnotationsEnabled.returns(false);
-            base.loadAnnotator();
-            expect(base.loadAssets).to.not.be.called;
-
+            window.BoxAnnotations = function BoxAnnotations() {
+                this.determineAnnotator = sandbox.stub().returns(conf);
+            }
         });
 
         it('should resolve the promise if a BoxAnnotations instance was passed into Preview', (done) => {
-            base.areAnnotationsEnabled.returns(true);
-            base.options.boxAnnotations = new BoxAnnotations({});
+            base.options.boxAnnotations = new window.BoxAnnotations({});
 
             base.loadAnnotator();
             expect(base.loadAssets).to.not.be.calledWith(['annotations.js']);
@@ -786,7 +787,6 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should load the annotations assets', () => {
-            base.areAnnotationsEnabled.returns(true);
             base.loadAnnotator();
             expect(base.loadAssets).to.be.calledWith(['annotations.js'], ['annotations.css']);
         });
@@ -907,6 +907,9 @@ describe('lib/viewers/BaseViewer', () => {
                 'viewerName': { enabled: true }
             }
             expect(base.areAnnotationsEnabled()).to.equal(true);
+
+            window.BoxAnnotations = undefined;
+            expect(base.areAnnotationsEnabled()).to.equal(false);
         });
     });
 

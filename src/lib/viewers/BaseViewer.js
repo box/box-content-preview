@@ -689,14 +689,9 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     loadAnnotator() {
-        // Do nothing if annotations are disabled for the viewer
-        if (!this.areAnnotationsEnabled()) {
-            return;
-        }
-
         // Auto-resolves promise if BoxAnnotations is passed in as a Preview option
         this.annotationsLoadPromise =
-            this.options.boxAnnotations instanceof BoxAnnotations
+            window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations
                 ? Promise.resolve()
                 : this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS]);
     }
@@ -764,7 +759,7 @@ class BaseViewer extends EventEmitter {
      */
     areAnnotationsEnabled() {
         // Respect viewer-specific annotation option if it is set
-        if (this.options.boxAnnotations instanceof BoxAnnotations) {
+        if (window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations) {
             const { boxAnnotations, viewer } = this.options;
             const annotatorConfig = boxAnnotations.options[viewer.NAME];
             this.viewerConfig = {
