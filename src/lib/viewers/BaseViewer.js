@@ -695,9 +695,10 @@ class BaseViewer extends EventEmitter {
         }
 
         // Auto-resolves promise if BoxAnnotations is passed in as a Preview option
-        this.annotationsLoadPromise = this.options.boxAnnotations
-            ? Promise.resolve()
-            : this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS]);
+        this.annotationsLoadPromise =
+            this.options.boxAnnotations instanceof BoxAnnotations
+                ? Promise.resolve()
+                : this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS]);
     }
 
     /**
@@ -772,7 +773,8 @@ class BaseViewer extends EventEmitter {
 
         // Ignore viewer config if BoxAnnotations was pass into Preview as an option
         // Otherwise, use global preview annotation option
-        return this.options.boxAnnotations || !!this.options.showAnnotations;
+        /* global BoxAnnotations */
+        return this.options.boxAnnotations instanceof BoxAnnotations || !!this.options.showAnnotations;
     }
 
     /**
