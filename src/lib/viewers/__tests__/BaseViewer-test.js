@@ -291,7 +291,6 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.fullscreenAddListener = sandbox.stub(fullscreen, 'addListener');
             stubs.baseAddListener = sandbox.spy(base, 'addListener');
             stubs.documentAddEventListener = sandbox.stub(document.defaultView, 'addEventListener');
-            sandbox.stub(base, 'initAnnotations');
         });
 
         it('should append common event listeners', () => {
@@ -318,27 +317,34 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.containerEl.addEventListener).to.be.calledWith('contextmenu', sinon.match.func);
         });
 
-        it('should load the annotator when load is emitted with scale', () => {
-            base.containerEl = containerEl;
-            base.annotatorConf = {};
-
+        it('should handle annotations load', () => {
             base.addCommonListeners();
-            expect(base.scale).to.equal(1);
+            expect(stubs.baseAddListener).to.be.calledWith('load', sinon.match.func);
+        });
+    });
 
-            base.emit('load', {
-                scale: 1.5
-            });
-            expect(base.scale).to.equal(1.5);
-            expect(base.initAnnotations).to.be.called;
+    describe('viewerLoadHandler()', () => {
+        beforeEach(() => {
+            base.annotationsLoadPromise = Promise.resolve();
+            sandbox.stub(base, 'annotationsLoadHandler');
         });
 
-        it('should not load the annotator when there is no annotator config', () => {
-            base.containerEl = containerEl;
-            base.annotatorConf = undefined;
+        it('should set the scale if it exists', () => {
+            base.viewerLoadHandler({
+                scale: 1.5
+            });
 
-            base.addCommonListeners();
-            base.emit('load');
-            expect(base.initAnnotations).to.not.be.called;
+            expect(base.scale).to.equal(1.5);
+        });
+
+        it('should handle the annotations load promise', () => {
+             base.viewerLoadHandler({
+                scale: 1.5
+            });
+
+            return base.annotationsLoadPromise.then(() => {
+                expect(base.annotationsLoadHandler).to.be.called;
+            });
         });
     });
 
@@ -758,70 +764,50 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('loadAnnotator()', () => {
         beforeEach(() => {
-            base.options.viewer = {
-                NAME: Document
-            };
-
-            stubs.annotatorConf = {
-                TYPE: ['point', 'highlight']
-            };
-            stubs.areAnnotationsEnabled = sandbox.stub(base, 'areAnnotationsEnabled').returns(true);
-
-            base.options = {
-                viewer: {
-                    NAME: 'VIEWER'
-                },
-                file: {
-                    permissions: {
-                        can_annotate: true,
-                        can_view_annotations_all: true,
-                        can_view_annotations_self: true
-                    }
-                }
-            };
+            sandbox.stub(base, 'areAnnotationsEnabled');
+            sandbox.stub(base, 'loadAssets');
         });
 
-        it('should load the appropriate annotator for the current viewer', () => {
-            class BoxAnnotations {
-                determineAnnotator() {
-                    return stubs.annotatorConf;
-                }
-            }
-
-            base.options = {
-                viewer: {
-                    NAME: 'VIEWER'
-                },
-                file: {
-                    permissions: {
-                        can_annotate: true,
-                        can_view_annotations_all: true,
-                        can_view_annotations_self: true
-                    }
-                }
-            };
-
-            window.BoxAnnotations = BoxAnnotations;
+        it('should do nothing if annotations are not enabled', () => {
+            base.areAnnotationsEnabled.returns(false);
             base.loadAnnotator();
+            expect(base.loadAssets).to.not.be.called;
+
         });
 
-        it('should not load an annotator if no loader was found', () => {
-            class BoxAnnotations {
-                determineAnnotator() {}
-            }
-            window.BoxAnnotations = BoxAnnotations;
+        it('should load the annotations assets', () => {
+            base.areAnnotationsEnabled.returns(true);
             base.loadAnnotator();
+            expect(base.loadAssets).to.be.calledWith(['annotations.js']);
+        });
+    });
+
+    describe('annotationsLoadHandler()', () => {
+        const conf = {
+            annotationsEnabled: true,
+            types: {
+                point: true,
+                highlight: false
+            }
+        };
+
+        beforeEach(() => {
+            window.BoxAnnotations = function BoxAnnotations() {
+                this.determineAnnotator = sandbox.stub().returns(conf);
+            }
+
+            sandbox.stub(base, 'initAnnotations');
         });
 
-        it('should not load an annotator if the viewer is not annotatable', () => {
-            class BoxAnnotations {
-                determineAnnotator() {
-                    return stubs.annotatorConf;
-                }
-            }
-            window.BoxAnnotations = BoxAnnotations;
-            stubs.areAnnotationsEnabled.returns(false);
-            base.loadAnnotator();
+        it('should determine the annotator', () => {
+            base.annotationsLoadHandler();
+            expect(base.annotatorConf).to.equal(conf);
+        });
+
+        it('should init annotations if a conf is present', () => {
+            base.annotationsLoadHandler();
+            expect(base.initAnnotations).to.be.called;
+
         });
     });
 
