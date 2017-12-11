@@ -103,7 +103,7 @@
     "debug": "NODE_ENV=test ./node_modules/.bin/karma start build/karma.conf.js --no-single-run --auto-watch",
     "dev": "BABEL_ENV=dev NODE_ENV=dev ./node_modules/.bin/webpack --progress --colors --config build/webpack.config.js",
     "functional-tests": "python -m SimpleHTTPServer 8000 & node ./node_modules/mocha/bin/mocha --recursive ./functional-tests/ --timeout 10000 ; killall python -m SimpleHTTPServer 8000",
-    "functional-tests-ci": "yarn run clean && yarn run build-ci && node ./node_modules/mocha/bin/mocha ./functional-tests/ --timeout 10000",
+    "functional-tests-ci": "yarn run clean && yarn run build-rb && yarn run build-ci && node ./node_modules/mocha/bin/mocha ./functional-tests/ --timeout 10000",
     "lint": "NODE_ENV=dev ./node_modules/.bin/eslint src/lib && ./node_modules/.bin/stylelint 'src/lib/**/*.scss'",
     "precommit": "lint-staged",
     "prepush": "yarn run lint",
