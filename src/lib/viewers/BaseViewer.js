@@ -1,5 +1,3 @@
-import 'box-annotations/lib/Annotator.scss';
-import BoxAnnotations from 'box-annotations/lib/BoxAnnotations';
 import EventEmitter from 'events';
 import debounce from 'lodash.debounce';
 import cloneDeep from 'lodash.clonedeep';
@@ -30,6 +28,9 @@ import {
     STATUS_VIEWABLE
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
+
+const ANNOTATIONS_JS = 'annotations.js';
+const ANNOTATIONS_CSS = 'annotations.css';
 
 const ANNOTATION_TYPE_DRAW = 'draw';
 const ANNOTATION_TYPE_POINT = 'point';
@@ -116,6 +117,8 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomChangeHandler = this.mobileZoomChangeHandler.bind(this);
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
+        this.annotationsLoadHandler = this.annotationsLoadHandler.bind(this);
+        this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
     }
 
     /**
@@ -371,15 +374,28 @@ class BaseViewer extends EventEmitter {
             this.containerEl.addEventListener('contextmenu', this.preventDefault);
         }
 
-        this.addListener('load', (event) => {
-            if (event && event.scale) {
-                this.scale = event.scale;
-            }
+        this.addListener('load', this.viewerLoadHandler);
+    }
 
-            if (this.annotatorConf) {
-                this.initAnnotations();
-            }
-        });
+    /**
+     * Handles the viewer load to potentially set up Box Annotations.
+     *
+     * @private
+     * @param {Object} event - load event data
+     * @return {void}
+     */
+    viewerLoadHandler(event) {
+        if (event && event.scale) {
+            this.scale = event.scale;
+        }
+
+        if (this.annotationsLoadPromise) {
+            this.annotationsLoadPromise.then(this.annotationsLoadHandler).catch(() => {
+                /* eslint-disable no-console */
+                console.error('Annotation assets failed to load');
+                /* eslint-enable no-console */
+            });
+        }
     }
 
     /**
@@ -678,13 +694,22 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        try {
-            const boxAnnotations = new BoxAnnotations();
-            this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
-        } catch (err) {
-            /* eslint-disable no-console */
-            console.error('Annotation assets failed to load');
-            /* eslint-enable no-console */
+        this.annotationsLoadPromise = this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS]);
+    }
+
+    /**
+     * Fetches the Box Annotations library
+     *
+     * @protected
+     * @return {void}
+     */
+    annotationsLoadHandler() {
+        /* global BoxAnnotations */
+        const boxAnnotations = new BoxAnnotations();
+        this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
+
+        if (this.annotatorConf) {
+            this.initAnnotations();
         }
     }
 
