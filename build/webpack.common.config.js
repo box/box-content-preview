@@ -50,7 +50,7 @@ module.exports = (language) => {
                     }),
                     exclude: [
                         path.resolve('src/third-party'),
-                        path.resolve('node_modules')
+                        path.resolve('^(?!node_modules/box-annotations).*')
                     ]
                 },
                 {

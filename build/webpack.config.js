@@ -88,7 +88,6 @@ function updateConfig(conf, language, index) {
         }
     }
 
-
     if (isDev) {
         // If build/rsync.json exists, rsync bundled files to specified directory
         if (rsyncLocation) {
