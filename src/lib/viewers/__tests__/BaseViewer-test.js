@@ -342,7 +342,7 @@ describe('lib/viewers/BaseViewer', () => {
                 scale: 1.5
             });
 
-            base.annotationsLoadPromise.then(() => {
+            return base.annotationsLoadPromise.then(() => {
                 expect(base.annotationsLoadHandler).to.be.called;
             });
         });
@@ -779,6 +779,35 @@ describe('lib/viewers/BaseViewer', () => {
             base.areAnnotationsEnabled.returns(true);
             base.loadAnnotator();
             expect(base.loadAssets).to.be.calledWith(['annotations.js']);
+        });
+    });
+
+    describe('annotationsLoadHandler()', () => {
+        const conf = {
+            annotationsEnabled: true,
+            types: {
+                point: true,
+                highlight: false
+            }
+        };
+
+        beforeEach(() => {
+            window.BoxAnnotations = function BoxAnnotations() {
+                this.determineAnnotator = sandbox.stub().returns(conf);
+            }
+
+            sandbox.stub(base, 'initAnnotations');
+        });
+
+        it('should determine the annotator', () => {
+            base.annotationsLoadHandler();
+            expect(base.annotatorConf).to.equal(conf);
+        });
+
+        it('should init annotations if a conf is present', () => {
+            base.annotationsLoadHandler();
+            expect(base.initAnnotations).to.be.called;
+
         });
     });
 
