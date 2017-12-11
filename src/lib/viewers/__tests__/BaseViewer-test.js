@@ -895,13 +895,17 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.areAnnotationsEnabled()).to.equal(false);
         });
 
-        it('should ignore viewer config if an instance of BoxAnnotations is passed into Preview', () => {
+        it('should user BoxAnnotations options if an instance of BoxAnnotations is passed into Preview', () => {
             stubs.getViewerOption.withArgs('annotations').returns(null);
             base.options.showAnnotations = false;
             base.options.boxAnnotations = undefined;
             expect(base.areAnnotationsEnabled()).to.equal(false);
 
+            base.options.viewer = { NAME: 'viewerName' };
             base.options.boxAnnotations = sinon.createStubInstance(window.BoxAnnotations);
+            base.options.boxAnnotations.options = {
+                'viewerName': { enabled: true }
+            }
             expect(base.areAnnotationsEnabled()).to.equal(true);
         });
     });

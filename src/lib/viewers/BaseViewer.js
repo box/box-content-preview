@@ -764,8 +764,15 @@ class BaseViewer extends EventEmitter {
      */
     areAnnotationsEnabled() {
         // Respect viewer-specific annotation option if it is set
-        // #TODO(@spramod|@jholdstock): remove this after we have annotation instancing
-        this.viewerConfig = this.getViewerAnnotationsConfig();
+        if (this.options.boxAnnotations instanceof BoxAnnotations) {
+            const { boxAnnotations, viewer } = this.options;
+            const annotatorConfig = boxAnnotations.options[viewer.NAME];
+            this.viewerConfig = {
+                enabled: annotatorConfig.enabled || !!annotatorConfig.enabledTypes
+            };
+        } else {
+            this.viewerConfig = this.getViewerAnnotationsConfig();
+        }
 
         if (this.viewerConfig && this.viewerConfig.enabled !== undefined) {
             return this.viewerConfig.enabled;
@@ -773,8 +780,7 @@ class BaseViewer extends EventEmitter {
 
         // Ignore viewer config if BoxAnnotations was pass into Preview as an option
         // Otherwise, use global preview annotation option
-        /* global BoxAnnotations */
-        return this.options.boxAnnotations instanceof BoxAnnotations || !!this.options.showAnnotations;
+        return !!this.options.showAnnotations;
     }
 
     /**
