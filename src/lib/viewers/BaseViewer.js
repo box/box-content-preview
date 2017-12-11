@@ -694,18 +694,27 @@ class BaseViewer extends EventEmitter {
             return;
         }
 
-        this.annotationsLoadPromise = this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS]);
+        // Auto-resolves promise if BoxAnnotations is passed in as a Preview option
+        this.annotationsLoadPromise =
+            this.options.boxAnnotations instanceof BoxAnnotations
+                ? Promise.resolve()
+                : this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS]);
     }
 
     /**
-     * Fetches the Box Annotations library
+     * Fetches the Box Annotations library. Creates an instance of BoxAnnotations
+     * if one isn't passed in to the preview options
      *
      * @protected
      * @return {void}
      */
     annotationsLoadHandler() {
+        // Set viewer-specific annotation options
+        const viewerOptions = {};
+        viewerOptions[this.options.viewer.NAME] = this.viewerConfig;
+
         /* global BoxAnnotations */
-        const boxAnnotations = new BoxAnnotations();
+        const boxAnnotations = this.options.boxAnnotations || new BoxAnnotations(viewerOptions);
         this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
 
         if (this.annotatorConf) {
@@ -755,13 +764,21 @@ class BaseViewer extends EventEmitter {
      */
     areAnnotationsEnabled() {
         // Respect viewer-specific annotation option if it is set
-        // #TODO(@spramod|@jholdstock): remove this after we have annotation instancing
-        this.viewerConfig = this.getViewerAnnotationsConfig();
+        if (this.options.boxAnnotations instanceof BoxAnnotations) {
+            const { boxAnnotations, viewer } = this.options;
+            const annotatorConfig = boxAnnotations.options[viewer.NAME];
+            this.viewerConfig = {
+                enabled: annotatorConfig.enabled || !!annotatorConfig.enabledTypes
+            };
+        } else {
+            this.viewerConfig = this.getViewerAnnotationsConfig();
+        }
 
         if (this.viewerConfig && this.viewerConfig.enabled !== undefined) {
             return this.viewerConfig.enabled;
         }
 
+        // Ignore viewer config if BoxAnnotations was pass into Preview as an option
         // Otherwise, use global preview annotation option
         return !!this.options.showAnnotations;
     }

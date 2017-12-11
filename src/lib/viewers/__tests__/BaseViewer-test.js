@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-expressions */
 import EventEmitter from 'events';
+import BoxAnnotations from 'box-annotations';
 import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import RepStatus from '../../RepStatus';
@@ -775,10 +776,19 @@ describe('lib/viewers/BaseViewer', () => {
 
         });
 
+        it('should resolve the promise if a BoxAnnotations instance was passed into Preview', (done) => {
+            base.areAnnotationsEnabled.returns(true);
+            base.options.boxAnnotations = new BoxAnnotations({});
+
+            base.loadAnnotator();
+            expect(base.loadAssets).to.not.be.calledWith(['annotations.js']);
+            base.annotationsLoadPromise.then(() => done());
+        });
+
         it('should load the annotations assets', () => {
             base.areAnnotationsEnabled.returns(true);
             base.loadAnnotator();
-            expect(base.loadAssets).to.be.calledWith(['annotations.js']);
+            expect(base.loadAssets).to.be.calledWith(['annotations.js'], ['annotations.css']);
         });
     });
 
@@ -792,6 +802,7 @@ describe('lib/viewers/BaseViewer', () => {
         };
 
         beforeEach(() => {
+            base.options.viewer = { NAME: 'viewerName' };
             window.BoxAnnotations = function BoxAnnotations() {
                 this.determineAnnotator = sandbox.stub().returns(conf);
             }
@@ -802,6 +813,14 @@ describe('lib/viewers/BaseViewer', () => {
         it('should determine the annotator', () => {
             base.annotationsLoadHandler();
             expect(base.annotatorConf).to.equal(conf);
+        });
+
+        it('should not instantiate an instance of BoxAnnotations if one is already passed in', () => {
+            base.options.boxAnnotations = {
+                determineAnnotator: sandbox.stub()
+            };
+            base.annotationsLoadHandler();
+            expect(base.options.boxAnnotations.determineAnnotator).to.be.called;
         });
 
         it('should init annotations if a conf is present', () => {
@@ -874,6 +893,20 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.options.showAnnotations = false;
             expect(base.areAnnotationsEnabled()).to.equal(false);
+        });
+
+        it('should user BoxAnnotations options if an instance of BoxAnnotations is passed into Preview', () => {
+            stubs.getViewerOption.withArgs('annotations').returns(null);
+            base.options.showAnnotations = false;
+            base.options.boxAnnotations = undefined;
+            expect(base.areAnnotationsEnabled()).to.equal(false);
+
+            base.options.viewer = { NAME: 'viewerName' };
+            base.options.boxAnnotations = sinon.createStubInstance(window.BoxAnnotations);
+            base.options.boxAnnotations.options = {
+                'viewerName': { enabled: true }
+            }
+            expect(base.areAnnotationsEnabled()).to.equal(true);
         });
     });
 
