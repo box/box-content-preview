@@ -1,3 +1,20 @@
+<a name="1.22.0"></a>
+# 1.22.0 (2017-12-12)
+
+* Update: box-annotations to v0.7.0 (#545) ([414113a](https://github.com/box/box-content-preview/commit/414113a))
+* Update: Do not prefetch for mp4 and mp3 viewers (#536) ([f5e487f](https://github.com/box/box-content-preview/commit/f5e487f))
+* Fix: build-rb required before building ci (#538) ([85215b5](https://github.com/box/box-content-preview/commit/85215b5))
+* Fix: Building preview before running tests (#537) ([a0e4e0c](https://github.com/box/box-content-preview/commit/a0e4e0c))
+* Fix: Validate passed in boxAnnotations is instance of the proper type (#542) ([3a1ae72](https://github.com/box/box-content-preview/commit/3a1ae72))
+* New: Allow BoxAnnotations to be passed in as a Preview option (#539) ([e3281cf](https://github.com/box/box-content-preview/commit/e3281cf))
+* Chore: Add multiple travis steps so we can run UI tests in a 'cron' case (#532) ([65e35f1](https://github.com/box/box-content-preview/commit/65e35f1))
+* Chore: add slack notifications for failed cron jobs (#541) ([a2763af](https://github.com/box/box-content-preview/commit/a2763af))
+* Chore: Add tests for annotationsLoadHandler (#540) ([ae68bcb](https://github.com/box/box-content-preview/commit/ae68bcb))
+* Chore: Increasing wait time and test timeouts (#535) ([2220c1c](https://github.com/box/box-content-preview/commit/2220c1c))
+* Chore: Lazy load annotations using new chunk (#516) ([062ea38](https://github.com/box/box-content-preview/commit/062ea38))
+
+
+
 <a name="1.21.0"></a>
 # 1.21.0 (2017-12-06)
 
