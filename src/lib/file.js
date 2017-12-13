@@ -1,5 +1,5 @@
 import { appendQueryParams } from './util';
-import { ORIGINAL_REP_NAME } from './constants';
+import { ORIGINAL_REP_NAME, PERMISSION_PREVIEW } from './constants';
 
 // List of Box Content API fields that the Preview library requires for every file. Updating this list is most likely
 // a breaking change and should be done with care. Clients that leverage functionality dependent on this format
@@ -75,6 +75,18 @@ export function isWatermarked(file) {
  */
 export function checkPermission(file, operation) {
     return !!file && !!file.permissions && !!file.permissions[operation];
+}
+
+/**
+ * Checks permission
+ *
+ * @public
+ * @param {Object} file - Box file
+ * @param {string} operation - Action to check permission for
+ * @return {boolean} Whether or not action is permitted
+ */
+export function canDownloadWatermarkedRep(file) {
+    return isWatermarked(file) && checkPermission(file, PERMISSION_PREVIEW);
 }
 
 /**
