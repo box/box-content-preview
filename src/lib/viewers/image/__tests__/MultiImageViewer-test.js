@@ -3,6 +3,7 @@ import MultiImageViewer from '../MultiImageViewer';
 import PageControls from '../../../PageControls';
 import fullscreen from '../../../Fullscreen';
 import BaseViewer from '../../BaseViewer';
+import ImageBaseViewer from '../ImageBaseViewer';
 import Browser from '../../../Browser';
 import * as util from '../../../util';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../../icons/icons';
@@ -19,6 +20,7 @@ let containerEl;
 describe('lib/viewers/image/MultiImageViewer', () => {
     stubs.errorHandler = MultiImageViewer.prototype.errorHandler;
     const setupFunc = BaseViewer.prototype.setup;
+    const sizeFunc = ImageBaseViewer.prototype.setOriginalImageSize;
 
     before(() => {
         fixture.setBase('src/lib');
@@ -61,11 +63,15 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         multiImage = new MultiImageViewer(options);
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        Object.defineProperty(ImageBaseViewer.prototype, 'setOriginalImageSize', { 
+            value: sandbox.stub().returns(Promise.resolve()) 
+        });
         multiImage.containerEl = containerEl;
     });
 
     afterEach(() => {
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
+        Object.defineProperty(ImageBaseViewer.prototype, 'setOriginalImageSize', { value: sizeFunc });
 
         if (multiImage && multiImage.imagesEl) {
             multiImage.destroy();
@@ -229,7 +235,12 @@ describe('lib/viewers/image/MultiImageViewer', () => {
             expect(promise).to.be.a('Promise');
         });
 
-        it('should return a promise that resolves after each image has a proper size');
+        it('should return a promise that resolves after each image has a proper size', (done) => {
+            // We've overridden super.setOriginalImageSize() to resolve immediately 
+            multiImage.setOriginalImageSize().then(() => {
+                done();
+            });
+        });
     });
 
     describe('updatePannability()', () => {
