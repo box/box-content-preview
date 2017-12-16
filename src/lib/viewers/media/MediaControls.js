@@ -82,6 +82,8 @@ class MediaControls extends EventEmitter {
         this.handleRate = this.handleRate.bind(this);
         this.handleQuality = this.handleQuality.bind(this);
         this.handleAutoplay = this.handleAutoplay.bind(this);
+        this.handleSubtitle = this.handleSubtitle.bind(this);
+        this.handleAudioTrack = this.handleAudioTrack.bind(this);
 
         this.setDuration(this.mediaEl.duration);
         this.setupSettings();
