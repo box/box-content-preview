@@ -183,7 +183,7 @@ class DashViewer extends VideoBaseViewer {
         request.uris = request.uris.map((uri) => {
             let newUri = this.createContentUrlWithAuthParams(uri, asset);
             if (asset !== MANIFEST && this.options.file.watermark_info.is_watermarked) {
-                newUri = appendQueryParams(newUri, { 'watermark-cache': this.watermarkCacheBust });
+                newUri = appendQueryParams(newUri, { watermark_content: this.watermarkCacheBust });
             }
             return newUri;
         });
