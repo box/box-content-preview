@@ -1,3 +1,10 @@
+<a name="1.23.1"></a>
+## 1.23.1 (2017-12-20)
+
+* Update: box-annotations to v0.7.3 (#559) ([66f653c](https://github.com/box/box-content-preview/commit/66f653c))
+
+
+
 <a name="1.23.0"></a>
 # 1.23.0 (2017-12-20)
 
