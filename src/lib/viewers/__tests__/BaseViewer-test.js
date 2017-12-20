@@ -326,25 +326,35 @@ describe('lib/viewers/BaseViewer', () => {
     describe('viewerLoadHandler()', () => {
         beforeEach(() => {
             base.annotationsLoadPromise = Promise.resolve();
-            sandbox.stub(base, 'annotationsLoadHandler');
+            stubs.annotationsLoadHandler = sandbox.stub(base, 'annotationsLoadHandler');
         });
 
         it('should set the scale if it exists', () => {
-            base.viewerLoadHandler({
-                scale: 1.5
-            });
-
+            base.viewerLoadHandler({ scale: 1.5 });
             expect(base.scale).to.equal(1.5);
         });
 
         it('should handle the annotations load promise', () => {
-             base.viewerLoadHandler({
-                scale: 1.5
-            });
-
+            base.viewerLoadHandler({ scale: 1.5 });
             return base.annotationsLoadPromise.then(() => {
                 expect(base.annotationsLoadHandler).to.be.called;
             });
+        });
+
+        it('should handle the annotations load promise', () => {
+            stubs.annotationsLoadHandler.callsFake(() => {
+                throw new Error('message');
+            });
+
+            base.viewerLoadHandler({ scale: 1.5 });
+            return base.annotationsLoadPromise
+                .then(() => {
+                    sinon.assert.failException;
+                })
+                .catch((error) => {
+                    expect(error).equals(sinon.match.error);
+                    expect(error.message).equals('message');
+                });
         });
     });
 
@@ -886,7 +896,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.areAnnotationsEnabled()).to.equal(true);
         });
 
-        it('should use the global show annotationsBoolean if the viewer param is not specified', () => {
+        it('should use the global show annotations boolean if the viewer param is not specified', () => {
             stubs.getViewerOption.withArgs('annotations').returns(null);
             base.options.showAnnotations = true;
             expect(base.areAnnotationsEnabled()).to.equal(true);
@@ -895,7 +905,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.areAnnotationsEnabled()).to.equal(false);
         });
 
-        it('should user BoxAnnotations options if an instance of BoxAnnotations is passed into Preview', () => {
+        it('should use BoxAnnotations options if an instance of BoxAnnotations is passed into Preview', () => {
             stubs.getViewerOption.withArgs('annotations').returns(null);
             base.options.showAnnotations = false;
             base.options.boxAnnotations = undefined;
@@ -903,11 +913,30 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.options.viewer = { NAME: 'viewerName' };
             base.options.boxAnnotations = sinon.createStubInstance(window.BoxAnnotations);
+
+            // No enabled annotators in options
+            base.options.boxAnnotations.options = {};
+            expect(base.areAnnotationsEnabled()).to.equal(false);
+
+            // All default types enabled
             base.options.boxAnnotations.options = {
                 'viewerName': { enabled: true }
-            }
+            };
             expect(base.areAnnotationsEnabled()).to.equal(true);
 
+            // No specified enabled types
+            base.options.boxAnnotations.options = {
+                'viewerName': { enabledTypes: [] }
+            };
+            expect(base.areAnnotationsEnabled()).to.equal(false);
+
+            // Specified types enabled
+            base.options.boxAnnotations.options = {
+                'viewerName': { enabledTypes: [ 'point' ] }
+            };
+            expect(base.areAnnotationsEnabled()).to.equal(true);
+
+            // No passed in version of BoxAnnotations
             window.BoxAnnotations = undefined;
             expect(base.areAnnotationsEnabled()).to.equal(false);
         });
