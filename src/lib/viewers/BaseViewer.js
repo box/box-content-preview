@@ -763,7 +763,7 @@ class BaseViewer extends EventEmitter {
             const { boxAnnotations, viewer } = this.options;
             const annotatorConfig = boxAnnotations.options[viewer.NAME];
             this.viewerConfig = {
-                enabled: annotatorConfig && (annotatorConfig.enabled || !!annotatorConfig.enabledTypes)
+                enabled: annotatorConfig && (annotatorConfig.enabled || annotatorConfig.enabledTypes.length > 0)
             };
         } else {
             this.viewerConfig = this.getViewerAnnotationsConfig();
