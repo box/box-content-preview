@@ -349,7 +349,7 @@ class Logger {
      */
     getLoggerFunction(type) {
         let logFunction;
-
+        /* eslint-disable no-console */
         switch (type) {
             case LOG_TYPES.warning:
                 logFunction = console.warn;
@@ -364,6 +364,7 @@ class Logger {
             default:
                 logFunction = null;
         }
+        /* eslint-enable no-console */
 
         return logFunction;
     }
