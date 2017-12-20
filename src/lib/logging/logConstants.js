@@ -9,10 +9,10 @@ export const LOG_TYPES = {
 
 // Levels to set on the logger, to enable/disable printing to the console.
 export const CONSOLE_LEVELS = {
-    error: 'error',
-    warning: 'warning',
-    info: 'info',
-    silent: 'silent'
+    silent: 3,
+    error: 2,
+    warning: 1,
+    info: 0
 };
 
 /* eslint-disable no-undef */

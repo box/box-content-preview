@@ -1,5 +1,3 @@
-import * as LogLevel from 'loglevel';
-
 import LoggerCache from './LoggerCache';
 import LoggerBackend from './LoggerBackend';
 import { registerLogger, unregisterLogger } from './loggerRegistry';
@@ -20,16 +18,13 @@ const DEFAULT_ALLOWED_LOGS = {
 const DEFAULT_LOG_ENDPOINT = 'index.php?rm=preview_metrics';
 
 // By default, print nothing.
-const DEFAULT_LOG_LEVEL = CONSOLE_LEVELS.silent;
+const DEFAULT_CONSOLE_LEVEL = CONSOLE_LEVELS.silent;
 
 /**
  * Logging mechanism that allows for storage of log messages, saving to backend, and
  * controlling what messages are shown to the user via browser console.
  */
 class Logger {
-    /** @property {Object} - Instance of internal logger */
-    logger;
-
     /** @property {LoggerCache} - Cache for storing and validating log messages */
     cache;
 
@@ -48,6 +43,9 @@ class Logger {
     /** @property {string} - Type of content previewed for current logs. */
     contentType;
 
+    /** @property {CONSOLE_LEVELS} - Level of logging allowed to the console */
+    consoleLevel = DEFAULT_CONSOLE_LEVEL;
+
     /**
      * @constructor
      *
@@ -62,10 +60,6 @@ class Logger {
      */
     constructor(config = {}) {
         this.cache = new LoggerCache();
-        this.logger = LogLevel.noConflict();
-
-        // If a log level has not been set and/or persisted, default to silent
-        this.logger.setDefaultLevel(DEFAULT_LOG_LEVEL);
 
         const { consoleLevel } = config;
         if (consoleLevel) {
@@ -142,7 +136,6 @@ class Logger {
     destroy() {
         this.cache.destroy();
         this.cache = null;
-        this.logger = null;
 
         window.removeEventListener('error', this.onUncaughtError);
 
@@ -216,11 +209,10 @@ class Logger {
      *
      * @public
      * @param {CONSOLE_LEVELS|string} level - The level of logging to log to console.
-     * @param {boolean} [persist] - Whether or not to persist across sessions.
      * @return {void}
      */
-    setConsoleLevel(level, persist = false) {
-        this.logger.setLevel(level, persist);
+    setConsoleLevel(level) {
+        this.consoleLevel = level;
     }
 
     /**
@@ -360,20 +352,45 @@ class Logger {
 
         switch (type) {
             case LOG_TYPES.warning:
-                logFunction = this.logger.warn;
+                logFunction = console.warn;
                 break;
             case LOG_TYPES.error:
             case LOG_TYPES.uncaught_error:
-                logFunction = this.logger.error;
+                logFunction = console.error;
                 break;
             case LOG_TYPES.info:
-                logFunction = this.logger.info;
+                logFunction = console.log;
                 break;
             default:
                 logFunction = null;
         }
 
         return logFunction;
+    }
+
+    /**
+     * Determine whether or not we can print to the console, based on consoleLevel.
+     *
+     * @param {LOG_TYPES} type - Type of log to check.
+     * @return {boolean} True if we can print to the console.
+     */
+    canPrintLog(type) {
+        let typeValue;
+
+        switch (type) {
+            case LOG_TYPES.warning:
+                typeValue = CONSOLE_LEVELS.warning;
+                break;
+            case LOG_TYPES.error:
+            case LOG_TYPES.uncaught_error:
+                typeValue = CONSOLE_LEVELS.error;
+                break;
+            case LOG_TYPES.info:
+            default:
+                typeValue = CONSOLE_LEVELS.info;
+        }
+
+        return this.consoleLevel <= typeValue;
     }
 
     /**
@@ -397,7 +414,7 @@ class Logger {
      * @return {void}
      */
     commitMessage(type, message) {
-        const logFunction = this.getLoggerFunction(type);
+        const logFunction = this.canPrintLog(type) ? this.getLoggerFunction(type) : null;
 
         // Format message and add a timestamp
         const timestamp = getISOTime();
