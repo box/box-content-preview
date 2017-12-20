@@ -1,3 +1,13 @@
+<a name="1.23.0"></a>
+# 1.23.0 (2017-12-20)
+
+* Fix: Add bindings for more audio-track and subtitles controls (#550) ([2028939](https://github.com/box/box-content-preview/commit/2028939))
+* Fix: Rename "watermark-cache" query param to "watermark_content" (#557) ([a8639a9](https://github.com/box/box-content-preview/commit/a8639a9))
+* Update: box-annotations to v0.7.1 (#555) ([00fd0cb](https://github.com/box/box-content-preview/commit/00fd0cb))
+* Chore: Update documentation to include disabling presentation viewer (#552) ([0c47805](https://github.com/box/box-content-preview/commit/0c47805))
+
+
+
 <a name="1.22.0"></a>
 # 1.22.0 (2017-12-12)
 
