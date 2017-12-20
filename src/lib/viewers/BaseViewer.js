@@ -1,5 +1,3 @@
-import 'box-annotations/lib/Annotator.scss';
-import BoxAnnotations from 'box-annotations/lib/BoxAnnotations';
 import EventEmitter from 'events';
 import debounce from 'lodash.debounce';
 import cloneDeep from 'lodash.clonedeep';
@@ -33,6 +31,9 @@ import {
 import { LOG_TYPES } from '../logging/logConstants';
 import { METRIC_CONTROL, METRIC_CONTROL_ACTIONS } from '../logging/metricsConstants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
+
+const ANNOTATIONS_JS = 'annotations.js';
+const ANNOTATIONS_CSS = 'annotations.css';
 
 const ANNOTATION_TYPE_DRAW = 'draw';
 const ANNOTATION_TYPE_POINT = 'point';
@@ -119,6 +120,8 @@ class BaseViewer extends EventEmitter {
         this.mobileZoomChangeHandler = this.mobileZoomChangeHandler.bind(this);
         this.mobileZoomEndHandler = this.mobileZoomEndHandler.bind(this);
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
+        this.annotationsLoadHandler = this.annotationsLoadHandler.bind(this);
+        this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
     }
 
     /**
@@ -374,15 +377,28 @@ class BaseViewer extends EventEmitter {
             this.containerEl.addEventListener('contextmenu', this.preventDefault);
         }
 
-        this.addListener('load', (event) => {
-            if (event && event.scale) {
-                this.scale = event.scale;
-            }
+        this.addListener('load', this.viewerLoadHandler);
+    }
 
-            if (this.annotatorConf) {
-                this.initAnnotations();
-            }
-        });
+    /**
+     * Handles the viewer load to potentially set up Box Annotations.
+     *
+     * @private
+     * @param {Object} event - load event data
+     * @return {void}
+     */
+    viewerLoadHandler(event) {
+        if (event && event.scale) {
+            this.scale = event.scale;
+        }
+
+        if (this.annotationsLoadPromise) {
+            this.annotationsLoadPromise.then(this.annotationsLoadHandler).catch(() => {
+                /* eslint-disable no-console */
+                console.error('Annotation assets failed to load');
+                /* eslint-enable no-console */
+            });
+        }
     }
 
     /**
@@ -678,16 +694,31 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     loadAnnotator() {
-        // Do nothing if annotations are disabled for the viewer
-        if (!this.areAnnotationsEnabled()) {
-            return;
-        }
+        // Auto-resolves promise if BoxAnnotations is passed in as a Preview option
+        this.annotationsLoadPromise =
+            window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations
+                ? Promise.resolve()
+                : this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS]);
+    }
 
-        try {
-            const boxAnnotations = new BoxAnnotations();
-            this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
-        } catch (err) {
-            this.logError('Annotation assets failed to load');
+    /**
+     * Fetches the Box Annotations library. Creates an instance of BoxAnnotations
+     * if one isn't passed in to the preview options
+     *
+     * @protected
+     * @return {void}
+     */
+    annotationsLoadHandler() {
+        // Set viewer-specific annotation options
+        const viewerOptions = {};
+        viewerOptions[this.options.viewer.NAME] = this.viewerConfig;
+
+        /* global BoxAnnotations */
+        const boxAnnotations = this.options.boxAnnotations || new BoxAnnotations(viewerOptions);
+        this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
+
+        if (this.annotatorConf) {
+            this.initAnnotations();
         }
     }
 
@@ -733,13 +764,21 @@ class BaseViewer extends EventEmitter {
      */
     areAnnotationsEnabled() {
         // Respect viewer-specific annotation option if it is set
-        // #TODO(@spramod|@jholdstock): remove this after we have annotation instancing
-        this.viewerConfig = this.getViewerAnnotationsConfig();
+        if (window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations) {
+            const { boxAnnotations, viewer } = this.options;
+            const annotatorConfig = boxAnnotations.options[viewer.NAME];
+            this.viewerConfig = {
+                enabled: annotatorConfig.enabled || !!annotatorConfig.enabledTypes
+            };
+        } else {
+            this.viewerConfig = this.getViewerAnnotationsConfig();
+        }
 
         if (this.viewerConfig && this.viewerConfig.enabled !== undefined) {
             return this.viewerConfig.enabled;
         }
 
+        // Ignore viewer config if BoxAnnotations was pass into Preview as an option
         // Otherwise, use global preview annotation option
         return !!this.options.showAnnotations;
     }

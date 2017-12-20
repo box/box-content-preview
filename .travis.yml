@@ -1,5 +1,27 @@
 language: node_js
 node_js:
 - '6'
-script: yarn run ci
-cache: yarn
+stages:
+- ci
+- name: sauce-labs
+  if: type = cron
+jobs:
+  include:
+  - stage: ci
+    script: yarn run ci
+    cache: yarn
+  - stage: sauce-labs
+    addons:
+      sauce_connect:
+        username: box-content-preview
+      jwt:
+        secure: EPjmiionirVVkbFbp9r4DjMLMcfmdj9Sq8UiMcIGGf5gQk0cV5sgJpDHUDlKhFL3na8FkYf27qadaaJHG9Lr7o1V6IN1tsLamD9kdQjeG1pUSZbyMoMbja9i8CY0/MnQPaPL8UBXbcPrJoBwPNp6PphZ1PtBW68oXale3Xdfd7JMyTtm8f6G40pxpDl50dKI2VZHKKrfWakFkK2DMM73vJScxCrlyJEDc+wSJi2Mr/lrZc/QYy3ug3BGq1S6vV6wsOCk/4Jx+W1hvqK0QBgIytv1XzypqDFJ0OiTiOccsbwvEUHOepQl0EQxBZtM9PO//SBMFc2TqAhldta37JFrEcOEtqrsHwqVELzRMJm9lDSSD+TSj/tri6Kevy311gboZsJh2T3Znkq2h5Zpx8ImbgZCKvQyn8bTSp9MOkb9bGt1tUkZ1LEk3Pj0PUEjFZMnAsT/fLg2EGdXRQWb1W/ZyknoNPfvsU5Po8obQ/AOlKMqaMM7YiGQWruL7Esml0XaiL9H1TSUwmtyAnAU+Q1eYv7II7SnQmVxcgILX7D7nAO82/jP2f12fszEOlgivLr0AS9iAMLcNsrTfSO2p60MESmc/2ZVGjIagNEaGohfb9AI5d0tezU6+GWijuRijVqn1x2rLbSXOV7c3G9yrJpGTru9WD3n/ekgVvg/0nanBpU=
+    before_script:
+    - python -m SimpleHTTPServer &
+    - sleep 5
+    script: yarn run functional-tests-ci
+    notifications:
+      slack:
+        secure: WdQMB2bWBYgAwTN8h8PqKrEaeigsqbH18Mk9kn/hMeUq33tZeqg6cvZ9UymY2rvGCn8X+/HQW3PFQuXURvMWmyU9deDadrGabjmDzwQ5pfOID4ALtUu0HuN+7jzSLw6cbYTfSJV+E95+VtHxe3qjikqfS9ntKjkIZMl6fiZGL7Uiio7W1Qy28GJK3dFN7U9U2aSc4ttc6skl3a0/OjSPCj3KMTrbQEY/RhRXYEzgeDH2vNcGv9boZbjYreHB2aSD3VrSrSgMWpNLqBm0lVsksYicp6M4++EBLC8NLvldQ13gzSq8MIcdoZTcpycNqXKBfa73sQkdYvCKJubTEZ7BhkeW2hlfWKQbm93G00GqlQ8FgdjTERoyKWNmA/K4j+8LjvfxW0B2jh6m8PDNkw0cf1uHQFy3LhU6JFZm4bQHTGzaDe7eWLgiHq7J54x3+6sNjS2seJNivf2/clpdETKRBy5PljUDdEwJ1xT96N5J9MB8dwhdIqWXKvbjqlRzSFN9Stq3qCGebMopPUOf0HrcvmQqb73LQX6xMWc03HXoJVwAF7FvQSo0JI8rU7O2tegXIj7TyGTi/JrtXREL0U+i1bpXimsF2juidA8Ck01iu+HmnXACDXd03xZrPVTYywYeH1JRsMiUNauLj1ANNk3jS4cEIwJJONuhT+2ZhU4qB/8=
+        on_failure: always
+    cache: yarn

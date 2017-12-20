@@ -258,7 +258,7 @@ describe('lib/viewers/media/DashViewer', () => {
             dash.requestFilter('', stubs.req);
 
             expect(stubs.createUrl).to.be.calledOnce;
-            expect(stubs.req.uris).to.deep.equal(['www.authed.com/?foo=bar&watermark-cache=123']);
+            expect(stubs.req.uris).to.deep.equal(['www.authed.com/?foo=bar&watermark_content=123']);
         });
     });
 
