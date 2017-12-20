@@ -85,7 +85,6 @@ class LoggerBackend {
         };
 
         post(this.url, {}, logsToSave);
-        console.log(logsToSave);
     }
 
     //--------------------------------------------------------

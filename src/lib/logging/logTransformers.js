@@ -1,3 +1,5 @@
+/* eslint-disable camelcase */
+
 // Set of Transformers that translate data for storage
 import { getISOTime } from './logUtils';
 import { LOG_TYPES } from './logConstants';
@@ -196,3 +198,5 @@ export function transformMetrics(logs) {
 
     return batch;
 }
+
+/* eslint-enable camelcase */
