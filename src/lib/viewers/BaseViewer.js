@@ -390,9 +390,9 @@ class BaseViewer extends EventEmitter {
         }
 
         if (this.annotationsLoadPromise) {
-            this.annotationsLoadPromise.then(this.annotationsLoadHandler).catch(() => {
+            this.annotationsLoadPromise.then(this.annotationsLoadHandler).catch((err) => {
                 /* eslint-disable no-console */
-                console.error('Annotation assets failed to load');
+                console.error('Annotation assets failed to load', err);
                 /* eslint-enable no-console */
             });
         }
@@ -763,7 +763,7 @@ class BaseViewer extends EventEmitter {
             const { boxAnnotations, viewer } = this.options;
             const annotatorConfig = boxAnnotations.options[viewer.NAME];
             this.viewerConfig = {
-                enabled: annotatorConfig.enabled || !!annotatorConfig.enabledTypes
+                enabled: annotatorConfig && (annotatorConfig.enabled || annotatorConfig.enabledTypes.length > 0)
             };
         } else {
             this.viewerConfig = this.getViewerAnnotationsConfig();
