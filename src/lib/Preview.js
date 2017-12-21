@@ -757,6 +757,10 @@ class Preview extends EventEmitter {
         // Optional additional query params to append to requests
         this.options.queryParams = options.queryParams || {};
 
+        // Option to pause requireJS while Preview loads third party dependencies
+        // RequireJS will be re-enabled on the 'assetsloaded' event fired by Preview
+        this.options.pauseRequireJS = !!options.pauseRequireJS;
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 

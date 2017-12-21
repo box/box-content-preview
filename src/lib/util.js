@@ -467,11 +467,19 @@ export function loadStylesheets(urls) {
  *
  * @public
  * @param {Array} urls - Asset urls
+ * @param {string} [disableRequireJS] - Should requireJS be temporarily disabled
  * @return {Promise} Promise to load scripts
  */
-export function loadScripts(urls) {
+export function loadScripts(urls, disableRequireJS = false) {
     const { head } = document;
     const promises = [];
+    const { define, require, requirejs } = window;
+
+    if (disableRequireJS) {
+        window.define = undefined;
+        window.require = undefined;
+        window.requirejs = undefined;
+    }
 
     urls.forEach((url) => {
         if (!head.querySelector(`script[src="${url}"]`)) {
@@ -486,7 +494,21 @@ export function loadScripts(urls) {
         }
     });
 
-    return Promise.all(promises);
+    return Promise.all(promises)
+        .then(() => {
+            if (disableRequireJS) {
+                window.define = define;
+                window.require = require;
+                window.requirejs = requirejs;
+            }
+        })
+        .catch(() => {
+            if (disableRequireJS) {
+                window.define = define;
+                window.require = require;
+                window.requirejs = requirejs;
+            }
+        });
 }
 
 /**
