@@ -6,9 +6,8 @@ describe('Base Test', () => {
         if (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
             this.browser = new webdriver.Builder()
                 .usingServer(
-                    `http://${process.env.SAUCE_USERNAME}:${
-                        process.env.SAUCE_ACCESS_KEY
-                    }@ondemand.saucelabs.com:80/wd/hub`
+                    `http://${process.env.SAUCE_USERNAME}:${process.env
+                        .SAUCE_ACCESS_KEY}@ondemand.saucelabs.com:80/wd/hub`
                 )
                 .withCapabilities({
                     'tunnel-identifier': process.env.TRAVIS_JOB_NUMBER,

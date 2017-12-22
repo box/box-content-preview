@@ -19,6 +19,7 @@ import {
     CLASS_FULLSCREEN_UNSUPPORTED,
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
+    EVENT_LOG,
     SELECTOR_BOX_PREVIEW,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
@@ -27,6 +28,8 @@ import {
     STATUS_SUCCESS,
     STATUS_VIEWABLE
 } from '../constants';
+import { LOG_TYPES } from '../logging/logConstants';
+import { METRIC_CONTROL, METRIC_CONTROL_ACTIONS } from '../logging/metricsConstants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
 
 const ANNOTATIONS_JS = 'annotations.js';
@@ -416,6 +419,8 @@ class BaseViewer extends EventEmitter {
      */
     toggleFullscreen() {
         fullscreen.toggle(this.containerEl);
+
+        this.logMetric(METRIC_CONTROL, METRIC_CONTROL_ACTIONS.toggle_fullscreen_button);
     }
 
     /**
@@ -629,13 +634,13 @@ class BaseViewer extends EventEmitter {
      * @return {RepStatus} Instance of RepStatus
      */
     getRepStatus(representation) {
-        const { token, sharedLink, sharedLinkPassword, logger } = this.options;
+        const { token, sharedLink, sharedLinkPassword, fileMetrics } = this.options;
         const repStatus = new RepStatus({
             representation: representation || this.options.representation,
             token,
             sharedLink,
             sharedLinkPassword,
-            logger: representation ? null : logger // Do not log to main preview status if rep is passed in
+            fileMetrics: representation ? null : fileMetrics // Do not log to main preview status if rep is passed in
         });
 
         // Don't time out while conversion is pending
@@ -887,6 +892,74 @@ class BaseViewer extends EventEmitter {
                 localizedStrings
             })
         );
+    }
+
+    //--------------------------------------------------------------------------
+    // Logging
+    //--------------------------------------------------------------------------
+
+    /**
+     * Emit an Info log event.
+     *
+     * @param {*} args - Data to be logged to the Logger as info.
+     * @return {void}
+     */
+    logInfo(...args) {
+        const dataWithType = {
+            event: LOG_TYPES.info,
+            data: args
+        };
+
+        this.emit(EVENT_LOG, dataWithType);
+    }
+
+    /**
+     * Emit a Warning log event.
+     *
+     * @param {*} args - Data to be logged to the Logger as info.
+     * @return {void}
+     */
+    logWarning(...args) {
+        const dataWithType = {
+            event: LOG_TYPES.warning,
+            data: args
+        };
+
+        this.emit(EVENT_LOG, dataWithType);
+    }
+
+    /**
+     * Emit a Error log event message.
+     *
+     * @param {*} args - Data to be logged to the Logger as info.
+     * @return {void}
+     */
+    logError(...args) {
+        const dataWithType = {
+            event: LOG_TYPES.error,
+            data: args
+        };
+
+        this.emit(EVENT_LOG, dataWithType);
+    }
+
+    /**
+     * Emit a Metric event message.
+     *
+     * @param {string} eventName - The metric name corresponding to the action to record. See metricsConstants.js
+     * @param {*} value - The value to save as a metric
+     * @return {void}
+     */
+    logMetric(eventName, value) {
+        const data = {
+            event: LOG_TYPES.metric,
+            data: {
+                eventName,
+                value
+            }
+        };
+
+        this.emit(EVENT_LOG, data);
     }
 }
 
