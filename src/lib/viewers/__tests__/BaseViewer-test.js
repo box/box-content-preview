@@ -325,8 +325,16 @@ describe('lib/viewers/BaseViewer', () => {
 
     describe('viewerLoadHandler()', () => {
         beforeEach(() => {
+            base.previewUI = {
+                setupNotification: sandbox.stub()
+            };
             base.annotationsLoadPromise = Promise.resolve();
             stubs.annotationsLoadHandler = sandbox.stub(base, 'annotationsLoadHandler');
+        });
+
+        it('should setup the viewer notification', () => {
+            base.viewerLoadHandler({ scale: 1.5 });
+            expect(base.previewUI.setupNotification).to.be.called;
         });
 
         it('should set the scale if it exists', () => {

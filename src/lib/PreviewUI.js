@@ -264,9 +264,6 @@ class PreviewUI {
                 // part of finishLoadingSetup in BaseViewer.js
                 crawler.classList.remove(CLASS_HIDDEN);
             }
-
-            // Setup viewer notification
-            this.notification = new Notification(this.contentContainer);
         }
     }
 
@@ -291,6 +288,20 @@ class PreviewUI {
     }
 
     /**
+     * Setup viewer notification
+     *
+     * @public
+     * @return {void}
+     */
+    setupNotification() {
+        if (!this.contentContainer) {
+            return;
+        }
+
+        this.notification = new Notification(this.contentContainer);
+    }
+
+    /**
      * Shows a notification message.
      *
      * @public
@@ -299,6 +310,10 @@ class PreviewUI {
      * @return {void}
      */
     showNotification(message, buttonText) {
+        if (!this.notification) {
+            this.setupNotification();
+        }
+
         this.notification.show(message, buttonText);
     }
 
@@ -309,6 +324,10 @@ class PreviewUI {
      * @return {void}
      */
     hideNotification() {
+        if (!this.notification) {
+            this.setupNotification();
+        }
+
         this.notification.hide();
     }
 

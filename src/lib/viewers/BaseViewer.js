@@ -385,6 +385,9 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     viewerLoadHandler(event) {
+        // Setup viewer notifications
+        this.previewUI.setupNotification();
+
         if (event && event.scale) {
             this.scale = event.scale;
         }
