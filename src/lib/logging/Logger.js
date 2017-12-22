@@ -1,5 +1,5 @@
 import LoggerCache from './LoggerCache';
-import LoggerBackend from './LoggerBackend';
+import LogNetworkLayer from './LogNetworkLayer';
 import { registerLogger, unregisterLogger } from './loggerRegistry';
 import { LOG_TYPES, CONSOLE_LEVELS } from './logConstants';
 import { arrayToString, sortLogsByTime, printLog, getISOTime } from './logUtils';
@@ -21,20 +21,20 @@ const DEFAULT_LOG_ENDPOINT = 'index.php?rm=preview_metrics';
 const DEFAULT_CONSOLE_LEVEL = CONSOLE_LEVELS.silent;
 
 /**
- * Logging mechanism that allows for storage of log messages, saving to backend, and
+ * Logging mechanism that allows for storage of log messages, saving to network layer, and
  * controlling what messages are shown to the user via browser console.
  */
 class Logger {
     /** @property {LoggerCache} - Cache for storing and validating log messages */
     cache;
 
-    /** @property {LoggerBackend} - Backend object for translating and saving logs. */
-    backend;
+    /** @property {LogNetworkLayer} - Network Layer object for translating and saving logs. */
+    networkLayer;
 
     /** @property {string} - The name of the logger. Used with the Global Registry */
     name;
 
-    /** @property {Object} - The logs we're allowed to save to the backend. Defaults to all allowed. */
+    /** @property {Object} - The logs we're allowed to save to the networkLayer. Defaults to all allowed. */
     allowedLogs = { ...DEFAULT_ALLOWED_LOGS };
 
     /** @property {Object} - File info object for current logs. */
@@ -51,7 +51,7 @@ class Logger {
      *
      * @param {Object} config - Configures log level and network layer.
      * @param {CONSOLE_LEVELS|string} [config.consoleLevel] - Level to set for writing to the browser console.
-     * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a backend.
+     * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a networkLayer.
      * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
      * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
      * @param {string} [config.logEndpoint] - URL Tail to save logs to. Combined with appHost (above)
@@ -71,38 +71,38 @@ class Logger {
 
         this.name = registerLogger(this);
 
-        this.setupBackend(config);
+        this.setupNetworkLayer(config);
     }
 
     /**
-     * Override previous configuration for the logger backend.
+     * Override previous configuration for the logger network layer.
      *
      * @public
-     * @param {Object} config - Configuration object for the backend
-     * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a backend.
+     * @param {Object} config - Configuration object for the network layer
+     * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a network layer.
      * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
      * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
      * @param {string} [config.logEndpoint] - URL Tail to save logs to. Combined with appHost (above)
      * @param {string} [config.locale] - User's locale
      * @return {void}
      */
-    setupBackend(config = {}) {
+    setupNetworkLayer(config = {}) {
         const { savingEnabled } = config;
         if (!savingEnabled) {
             return;
         }
 
-        const { logURL, locale } = this.sanitizeBackendConfig(config);
-        if (!this.backend) {
-            this.backend = new LoggerBackend();
+        const { logURL, locale } = this.sanitizeNetworkLayerConfig(config);
+        if (!this.networkLayer) {
+            this.networkLayer = new LogNetworkLayer();
         }
 
         if (logURL) {
-            this.backend.setURL(logURL);
+            this.networkLayer.setURL(logURL);
         }
 
         if (locale) {
-            this.backend.setLocale(locale);
+            this.networkLayer.setLocale(locale);
         }
     }
 
@@ -276,7 +276,7 @@ class Logger {
     }
 
     /**
-     * Saves the logs to the backend.
+     * Saves the logs to the network layer.
      *
      * @public
      * @param {LOG_TYPES|LOG_TYPES[]} type - Type of logs to save.
@@ -284,7 +284,7 @@ class Logger {
      */
     save(type) {
         // If we're not supposed to save, don't attempt it.
-        if (!this.backend) {
+        if (!this.networkLayer) {
             return;
         }
 
@@ -306,12 +306,23 @@ class Logger {
                 return;
             }
 
-            const batch = this.backend.createBatch(logType, logs[logType]);
+            const batch = this.networkLayer.createBatch(logType, logs[logType]);
             logBatch.push(batch);
         });
 
         // save the whole thing
-        this.backend.save(logBatch);
+        this.networkLayer.save(logBatch);
+    }
+
+    /**
+     * Reset file related information.
+     *
+     * @public
+     * @return {void}
+     */
+    reset() {
+        this.setFile(null);
+        this.setContentType(null);
     }
 
     //--------------------------------------------------------
@@ -319,13 +330,13 @@ class Logger {
     //--------------------------------------------------------
 
     /**
-     * Sanitizes the configuration for the backend and creates the proper parameters from it.
+     * Sanitizes the configuration for the network layer and creates the proper parameters from it.
      *
      * @private
-     * @param {Object} config - Configuration required for configuring the LoggerBackend
-     * @return {Object} Sanitized configuration for the LoggerBackend.
+     * @param {Object} config - Configuration required for configuring the LogNetworkLayer
+     * @return {Object} Sanitized configuration for the LogNetworkLayer.
      */
-    sanitizeBackendConfig(config) {
+    sanitizeNetworkLayerConfig(config) {
         let { logURL } = config;
         const { appHost, logEndpoint, locale } = config;
 

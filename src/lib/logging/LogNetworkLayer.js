@@ -10,7 +10,7 @@ import {
 import { post } from '../util';
 import { uuidv4 } from './logUtils';
 
-class LoggerBackend {
+class LogNetworkLayer {
     /** @property {string} - URL to POST log events to */
     url;
 
@@ -21,7 +21,7 @@ class LoggerBackend {
     sessionID = uuidv4();
 
     /**
-     * @param {Object} config - Object used to initialize the backend.
+     * @param {Object} config - Object used to initialize the network layer.
      * @param {string} config.logURL - The full URL to POST log events to. REQUIRED.
      */
     constructor(config = {}) {
@@ -52,11 +52,11 @@ class LoggerBackend {
     }
 
     /**
-     * Create a properly formatted batch of logs to be saved to the backend.
+     * Create a properly formatted batch of logs to be saved to the network layer.
      *
      * @param {LOG_TYPES} type - Type of logs contained in the batch.
      * @param {Object} logs - Object containing type and array of logs that belong to it.
-     * @return {Object} Formatted object to be saved to the backend.
+     * @return {Object} Formatted object to be saved to the network layer.
      */
     createBatch(type, logs) {
         const transform = this.getTransformer(type);
@@ -92,7 +92,7 @@ class LoggerBackend {
     //--------------------------------------------------------
 
     /**
-     * Given a type of log, get a transformer that can format the data to suit the backend recieving it.
+     * Given a type of log, get a transformer that can format the data to suit the network layer recieving it.
      *
      * @param {LOG_TYPES} type - Type of transformer to get.
      * @return {Function} A function that transforms the data to suit storage requirements.
@@ -122,7 +122,7 @@ class LoggerBackend {
     }
 }
 
-export default LoggerBackend;
+export default LogNetworkLayer;
 
 /**
  *

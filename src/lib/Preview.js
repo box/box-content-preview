@@ -230,8 +230,7 @@ class Preview extends EventEmitter {
         this.file = undefined;
 
         // Clear logger from logging out of date file info
-        this.logger.setFile(null);
-        this.logger.setContentType(null);
+        this.logger.reset();
     }
 
     /**
@@ -563,13 +562,13 @@ class Preview extends EventEmitter {
      *
      * @param {Object} config - Configures log level and network layer.
      * @param {CONSOLE_LEVELS|string} [config.consoleLevel] - Level to set for writing to the browser console.
-     * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a backend.
+     * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a network layer.
      * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
      * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
      * @param {string} [config.logEndpoint] - URL Tail to save logs to. Combined with appHost (above)
      * @param {Object} [config.auth] - Authorization object containing a header named <header>, with value: <value>
      * @param {string} [config.locale] - User's locale
-     * @param {Object} [config.allowedLogs] - Logs that are allowed to be saved to the backend.
+     * @param {Object} [config.allowedLogs] - Logs that are allowed to be saved to the network layer.
      * @return {void}
      */
     setupLogger(config = {}) {
@@ -578,7 +577,7 @@ class Preview extends EventEmitter {
             this.logger.setLogLevel(consoleLevel);
         }
 
-        this.logger.setupBackend(config);
+        this.logger.setupNetworkLayer(config);
     }
 
     //--------------------------------------------------------------------------
@@ -822,7 +821,7 @@ class Preview extends EventEmitter {
         }
 
         try {
-            // Save reference to the file and update file metrics tracker
+            // Save reference to the file and update file metrics tracker and logger
             this.file = file;
             this.logger.setFile(file);
             this.fileMetrics.setFile(file);
