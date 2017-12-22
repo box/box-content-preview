@@ -258,10 +258,10 @@ class PreviewUI {
     hideLoadingIndicator() {
         if (this.contentContainer) {
             this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
+
+            // Re-show the cralwer for the next preview since it is hidden in finishLoadingSetup() in BaseViewer.js
             const crawler = this.contentContainer.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
             if (crawler) {
-                // We need to remove this since it was hidden specially as a
-                // part of finishLoadingSetup in BaseViewer.js
                 crawler.classList.remove(CLASS_HIDDEN);
             }
 

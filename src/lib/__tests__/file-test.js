@@ -119,6 +119,21 @@ describe('lib/file', () => {
     });
 
     describe('cacheFile', () => {
+        it('should not cache file if it is watermarked', () => {
+            const cache = {
+                set: sandbox.stub()
+            };
+            const file = {
+                watermark_info: {
+                    is_watermarked: true
+                }
+            };
+
+            cacheFile(cache, file);
+
+            expect(cache.set).to.not.be.called;
+        });
+
         it('should not add original representation if file object doesnt have any to start with', () => {
             const cache = {
                 set: sandbox.stub()
