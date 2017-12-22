@@ -1,7 +1,7 @@
 import LoggerCache from './LoggerCache';
 import LogNetworkLayer from './LogNetworkLayer';
 import { registerLogger, unregisterLogger } from './loggerRegistry';
-import { LOG_TYPES, CONSOLE_LEVELS } from './logConstants';
+import { LOG_TYPES } from './logConstants';
 import { arrayToString, sortLogsByTime, printLog, getISOTime } from './logUtils';
 import { APP_HOST } from '../constants';
 
@@ -17,12 +17,8 @@ const DEFAULT_ALLOWED_LOGS = {
 // Publicliy accessible, doesn't require auth token.
 const DEFAULT_LOG_ENDPOINT = 'index.php?rm=preview_metrics';
 
-// By default, print nothing.
-const DEFAULT_CONSOLE_LEVEL = CONSOLE_LEVELS.silent;
-
 /**
- * Logging mechanism that allows for storage of log messages, saving to network layer, and
- * controlling what messages are shown to the user via browser console.
+ * Logging mechanism that allows for storage of log messages and saving to network layer.
  */
 class Logger {
     /** @property {LoggerCache} - Cache for storing and validating log messages */
@@ -43,14 +39,10 @@ class Logger {
     /** @property {string} - Type of content previewed for current logs. */
     contentType;
 
-    /** @property {CONSOLE_LEVELS} - Level of logging allowed to the console */
-    consoleLevel = DEFAULT_CONSOLE_LEVEL;
-
     /**
      * @constructor
      *
      * @param {Object} config - Configures log level and network layer.
-     * @param {CONSOLE_LEVELS|string} [config.consoleLevel] - Level to set for writing to the browser console.
      * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a networkLayer.
      * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
      * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
@@ -60,11 +52,6 @@ class Logger {
      */
     constructor(config = {}) {
         this.cache = new LoggerCache();
-
-        const { consoleLevel } = config;
-        if (consoleLevel) {
-            this.setConsoleLevel(consoleLevel);
-        }
 
         this.onUncaughtError = this.onUncaughtError.bind(this);
         window.addEventListener('error', this.onUncaughtError);
@@ -205,17 +192,6 @@ class Logger {
     }
 
     /**
-     * Sets the current level of messages to be logged to the console.
-     *
-     * @public
-     * @param {CONSOLE_LEVELS|string} level - The level of logging to log to console.
-     * @return {void}
-     */
-    setConsoleLevel(level) {
-        this.consoleLevel = level;
-    }
-
-    /**
      * Get logs from the cache.
      *
      * @public
@@ -348,61 +324,6 @@ class Logger {
             logURL,
             locale
         };
-    }
-
-    /**
-     * Maps logging type to a logging function in our third-party logger. Defaults
-     * to regular 'info' if nothing available.
-     *
-     * @private
-     * @param {LOG_TYPES|string} type - The log type to lookup a corresponding function on the logger.
-     * @return {Function} A function that can be invoked with a string, to log a message.
-     */
-    getLoggerFunction(type) {
-        let logFunction;
-        /* eslint-disable no-console */
-        switch (type) {
-            case LOG_TYPES.warning:
-                logFunction = console.warn;
-                break;
-            case LOG_TYPES.error:
-            case LOG_TYPES.uncaught_error:
-                logFunction = console.error;
-                break;
-            case LOG_TYPES.info:
-                logFunction = console.log;
-                break;
-            default:
-                logFunction = null;
-        }
-        /* eslint-enable no-console */
-
-        return logFunction;
-    }
-
-    /**
-     * Determine whether or not we can print to the console, based on consoleLevel.
-     *
-     * @param {LOG_TYPES} type - Type of log to check.
-     * @return {boolean} True if we can print to the console.
-     */
-    canPrintLog(type) {
-        let typeValue;
-
-        switch (type) {
-            case LOG_TYPES.warning:
-                typeValue = CONSOLE_LEVELS.warning;
-                break;
-            case LOG_TYPES.error:
-            case LOG_TYPES.uncaught_error:
-                typeValue = CONSOLE_LEVELS.error;
-                break;
-            case LOG_TYPES.info:
-            default:
-                typeValue = CONSOLE_LEVELS.info;
-        }
-
-        return this.consoleLevel <= typeValue;
     }
 
     /**
