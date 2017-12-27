@@ -57,6 +57,12 @@
         }
     }
 
+    .disable-textLayer {
+        .textLayer {
+            display: none;
+        }
+    }
+
     .textLayer {
         bottom: auto;
         top: 15px; // Match 15px padding top on page

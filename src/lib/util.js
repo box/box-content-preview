@@ -751,3 +751,33 @@ export function pageNumberFromScroll(currentPageNum, previousScrollTop, currentP
 
     return pageNum;
 }
+
+/**
+ * Calculates the midpoint from two points.
+ *
+ * @public
+ * @param {number} x1 - The x value of the first point
+ * @param {number} y1 - The y value of the first point
+ * @param {number} x2 - The x value of the second point
+ * @param {number} y2 - The y value of the second point
+ * @return {Array} the resulting x,y point
+ */
+export function getMidpoint(x1, y1, x2, y2) {
+    const x = (x1 + x2) / 2;
+    const y = (y1 + y2) / 2;
+    return [x, y];
+}
+
+/**
+ * Calculates the distance between two points.
+ *
+ * @public
+ * @param {number} x1 - The x value of the first point
+ * @param {number} y1 - The y value of the first point
+ * @param {number} x2 - The x value of the second point
+ * @param {number} y2 - The y value of the second point
+ * @return {number} the resulting distance
+ */
+export function getDistance(x1, y1, x2, y2) {
+    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+}
