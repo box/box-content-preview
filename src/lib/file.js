@@ -155,8 +155,7 @@ function addOriginalRepresentation(file) {
 }
 
 /**
- * Wrapper for caching a file object. Adds the faked 'ORIGINAL' representation
- * when appropraite before caching.
+ * Wrapper for caching a file object.
  *
  * @public
  * @param {Cache} cache - Cache instance
@@ -164,6 +163,12 @@ function addOriginalRepresentation(file) {
  * @return {void}
  */
 export function cacheFile(cache, file) {
+    // Don't cache watermarked files
+    if (isWatermarked(file)) {
+        return;
+    }
+
+    // Some viewers require the original file for preview, so this adds a faked 'ORIGINAL' representation
     if (file.representations) {
         addOriginalRepresentation(file);
     }

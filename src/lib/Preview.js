@@ -24,11 +24,12 @@ import {
     getURL,
     getDownloadURL,
     checkPermission,
-    canDownloadWatermarkedRep,
     checkFeature,
     checkFileValid,
     cacheFile,
-    uncacheFile
+    uncacheFile,
+    isWatermarked,
+    canDownloadWatermarkedRep
 } from './file';
 import {
     API_HOST,
@@ -220,6 +221,44 @@ class Preview extends EventEmitter {
 
         // Nuke the file
         this.file = undefined;
+    }
+
+    /**
+     * Reloads the current preview. Cleans up existing preview and re-loads from cache.
+     * Note that reload() will not do anything if either:
+     *   - skipServerUpdate is true (either passed in or defined in preview options) AND cached file is not valid
+     *   - skipServerUpdate is false AND there is no cached file ID
+     *
+     * @public
+     * @param {boolean} skipServerUpdate - Whether or not to update file info from server
+     * @return {void}
+     */
+    reload(skipServerUpdate) {
+        // If not passed in, default to Preview option for skipping server update
+        if (typeof skipServerUpdate === 'undefined') {
+            /* eslint-disable prefer-destructuring, no-param-reassign */
+            skipServerUpdate = this.options.skipServerUpdate;
+            /* eslint-enable prefer-destructuring, no-param-reassign */
+        }
+
+        // Reload preview without fetching updated file info from server
+        if (skipServerUpdate) {
+            if (!checkFileValid(this.file)) {
+                return;
+            }
+
+            this.destroy();
+            this.setupUI();
+            this.loadViewer();
+
+            // Fetch file info from server and reload preview
+        } else {
+            if (!this.file.id) {
+                return;
+            }
+
+            this.load(this.file.id);
+        }
     }
 
     /**
@@ -457,15 +496,15 @@ class Preview extends EventEmitter {
      * @public
      * @param {string|Function} tokenOrTokenFunc - Either an access token or token
      * generator function
-     * @param {boolean} [reloadPreview] - Whether or not to reload the current
-     * preview with the updated token, defaults to true
+     * @param {boolean} [reload] - Whether or not to reload the current preview
+     * with the updated token, defaults to true
      * @return {void}
      */
-    updateToken(tokenOrTokenFunc, reloadPreview = true) {
+    updateToken(tokenOrTokenFunc, reload = true) {
         this.previewOptions.token = tokenOrTokenFunc;
 
-        if (reloadPreview) {
-            this.load(this.file.id);
+        if (reload) {
+            this.reload(false); // Fetch file info from server and reload preview with updated token
         }
     }
 
@@ -639,6 +678,23 @@ class Preview extends EventEmitter {
         // Parse the preview options supplied by show()
         this.parseOptions(this.previewOptions, tokenMap);
 
+        this.setupUI();
+
+        // Load from cache if the current file is valid, otherwise load file info from server
+        if (checkFileValid(this.file)) {
+            this.loadFromCache();
+        } else {
+            this.loadFromServer();
+        }
+    }
+
+    /**
+     * Sets up preview shell and navigation and starts progress.
+     *
+     * @private
+     * @return {void}
+     */
+    setupUI() {
         // Setup the shell
         this.container = this.ui.setup(
             this.options,
@@ -648,21 +704,12 @@ class Preview extends EventEmitter {
             this.throttledMousemoveHandler
         );
 
-        // Setup loading UI and progress bar
-        this.ui.showLoadingIndicator();
-        this.ui.startProgressBar();
-
         // Update navigation
         this.ui.showNavigation(this.file.id, this.collection);
 
-        if (checkFileValid(this.file)) {
-            // Save file in cache. This also adds the 'ORIGINAL' representation.
-            cacheFile(this.cache, this.file);
-            this.loadFromCache();
-        } else {
-            // Cache miss, fetch from the server.
-            this.loadFromServer();
-        }
+        // Setup loading UI and progress bar
+        this.ui.showLoadingIndicator();
+        this.ui.startProgressBar();
     }
 
     /**
@@ -763,7 +810,7 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     loadFromCache() {
-        // Add details to the logger
+        // Log cache hit
         this.logger.setCached();
 
         // Finally load the viewer
@@ -804,7 +851,7 @@ class Preview extends EventEmitter {
         }
 
         try {
-            // Save reference to the file and update logger
+            // Set current file to file data from server and update file in logger
             this.file = file;
             this.logger.setFile(file);
 
@@ -812,27 +859,25 @@ class Preview extends EventEmitter {
             const cachedFile = this.cache.get(file.id);
 
             // Explicitly uncache watermarked files, otherwise update cache
-            const isWatermarked = file.watermark_info && file.watermark_info.is_watermarked;
-            if (isWatermarked) {
+            const isFileWatermarked = isWatermarked(file);
+            if (isFileWatermarked) {
                 uncacheFile(this.cache, file);
             } else {
                 cacheFile(this.cache, file);
             }
 
-            // Should load/reload viewer if:
-            // - File isn't cached
-            // - Cached file isn't valid
-            // - Cached file is stale
-            // - File is watermarked
-            const shouldLoadViewer =
-                !cachedFile ||
-                !checkFileValid(cachedFile) ||
-                cachedFile.file_version.sha1 !== file.file_version.sha1 ||
-                isWatermarked;
-
-            if (shouldLoadViewer) {
-                this.logger.setCacheStale();
+            // Should load viewer for first time if:
+            //   - File isn't cached OR
+            //   - Cached file doesn't have a valid structure
+            if (!cachedFile || !checkFileValid(cachedFile)) {
                 this.loadViewer();
+
+                // Otherwise re-load viewer if:
+                //   - Cached file is stale
+                //   - File is newly watermarked
+            } else if (cachedFile.file_version.sha1 !== file.file_version.sha1 || isFileWatermarked) {
+                this.logger.setCacheStale(); // Log that cache is stale
+                this.reload(true); // Reload viewer without fetching updated file info from server
             }
         } catch (err) {
             this.triggerError(err instanceof Error ? err : new Error(__('error_refresh')));
@@ -935,7 +980,7 @@ class Preview extends EventEmitter {
                 this.download();
                 break;
             case 'reload':
-                this.show(this.file.id, this.previewOptions);
+                this.reload(); // Reload preview and fetch updated file info depending on `skipServerUpdate` option
                 break;
             case 'load':
                 this.finishLoading(data.data);
