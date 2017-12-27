@@ -212,6 +212,67 @@ describe('lib/Preview', () => {
         });
     });
 
+    describe('reload()', () => {
+        beforeEach(() => {
+            sandbox.stub(preview, 'destroy');
+            sandbox.stub(preview, 'setupUI');
+            sandbox.stub(preview, 'loadViewer');
+            sandbox.stub(preview, 'load');
+
+            preview.file = {
+                id: '123',
+                permissions: [],
+                shared_link: '',
+                sha1: '',
+                file_version: {},
+                name: 'blah',
+                size: 123,
+                extension: 'docx',
+                representations: {},
+                watermark_info: {},
+                authenticated_download_url: 'url'
+            };
+        });
+
+        it('should default to skipServerUpdate Preview option if no params are passed in', () => {
+            preview.options.skipServerUpdate = true;
+            preview.reload();
+            expect(preview.load).to.not.be.called;
+        });
+
+        it('should not do anything if skipServerUpdate is true and file is not valid', () => {
+            preview.file = {};
+
+            preview.reload(true);
+
+            expect(preview.destroy).to.not.be.called;
+            expect(preview.setupUI).to.not.be.called;
+            expect(preview.loadViewer).to.not.be.called;
+        });
+
+        it('should reload preview without fetching file info if skipServerUpdate is true', () => {
+            preview.reload(true);
+
+            expect(preview.destroy).to.be.called;
+            expect(preview.setupUI).to.be.called;
+            expect(preview.loadViewer).to.be.called;
+            expect(preview.load).to.not.be.called;
+        });
+
+        it('should not do anything if skipServerUpdate is false and file ID does not exist', () => {
+            preview.file = {};
+
+            preview.reload(false);
+
+            expect(preview.load).to.not.be.called;
+        });
+
+        it('should fetch file info and reload preview if skipServerUpdate is false', () => {
+            preview.reload(false);
+            expect(preview.load).to.be.called;
+        });
+    });
+
     describe('updateCollection()', () => {
         beforeEach(() => {
             stubs.showNavigation = sandbox.stub(preview.ui, 'showNavigation');
@@ -660,6 +721,10 @@ describe('lib/Preview', () => {
     });
 
     describe('updateToken()', () => {
+        beforeEach(() => {
+            sandbox.stub(preview, 'reload');
+        });
+
         it('should update token in options with the passed in string or function', () => {
             const newToken = 'daredevil';
             preview.updateToken(newToken, false);
@@ -670,14 +735,14 @@ describe('lib/Preview', () => {
             preview.file = { id: '1' };
             sandbox.stub(preview, 'load');
             preview.updateToken('dr-strange');
-            expect(preview.load).to.be.calledWith(preview.file.id);
+            expect(preview.reload).to.be.called;
         });
 
-        it('should not reload preview if reloadPreview is false', () => {
+        it('should not reload preview if reload is false', () => {
             preview.file = { id: '123' };
             sandbox.stub(preview, 'load');
             preview.updateToken('nick-fury', false);
-            expect(preview.load).to.not.be.calledWith(preview.file);
+            expect(preview.reload).to.not.be.called;
         });
     });
 
@@ -776,11 +841,8 @@ describe('lib/Preview', () => {
         beforeEach(() => {
             stubs.loadFromServer = sandbox.stub(preview, 'loadFromServer');
             stubs.parseOptions = sandbox.stub(preview, 'parseOptions');
-            stubs.setup = sandbox.stub(preview.ui, 'setup');
-            stubs.showLoadingIndicator = sandbox.stub(preview.ui, 'showLoadingIndicator');
-            stubs.startProgressBar = sandbox.stub(preview.ui, 'startProgressBar');
+            stubs.setupUI = sandbox.stub(preview, 'setupUI');
             stubs.checkPermission = sandbox.stub(file, 'checkPermission');
-            stubs.showNavigation = sandbox.stub(preview.ui, 'showNavigation');
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid');
             stubs.loadFromCache = sandbox.stub(preview, 'loadFromCache');
             stubs.cacheFile = sandbox.stub(file, 'cacheFile');
@@ -801,23 +863,15 @@ describe('lib/Preview', () => {
             expect(stubs.parseOptions).to.be.called;
         });
 
-        it('should setup the container and show the loading indicator and progress bar', () => {
+        it('should setup UI', () => {
             preview.handleTokenResponse({});
-            expect(stubs.setup).to.be.called;
-            expect(stubs.showLoadingIndicator).to.be.called;
-            expect(stubs.startProgressBar).to.be.called;
-        });
-
-        it('should show navigation', () => {
-            preview.handleTokenResponse({});
-            expect(stubs.showNavigation).to.be.called;
+            expect(stubs.setupUI).to.be.called;
         });
 
         it('should load from cache if the file is valid', () => {
             stubs.checkFileValid.returns(true);
 
             preview.handleTokenResponse({});
-            expect(stubs.cacheFile).to.be.calledWith(preview.cache, preview.file);
             expect(stubs.loadFromCache).to.be.called;
             expect(stubs.loadFromServer).to.not.be.called;
         });
@@ -829,6 +883,18 @@ describe('lib/Preview', () => {
             expect(stubs.loadFromCache).to.not.be.called;
             expect(stubs.loadFromServer).to.be.called;
         });
+    });
+
+    describe('setupUI', () => {
+        it('should setup the shell, update navigation, and show loading/start progress', () => {
+            const previewUIMock = sandbox.mock(preview.ui);
+            previewUIMock.expects('setup');
+            previewUIMock.expects('showLoadingIndicator');
+            previewUIMock.expects('startProgressBar');
+            previewUIMock.expects('showNavigation');
+
+            preview.setupUI();
+        })
     });
 
     describe('parseOptions()', () => {
@@ -1038,15 +1104,16 @@ describe('lib/Preview', () => {
             stubs.set = sandbox.stub(preview.cache, 'set');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.loadViewer = sandbox.stub(preview, 'loadViewer');
+            stubs.reload = sandbox.stub(preview, 'reload');
+            stubs.cacheFile = sandbox.stub(file, 'cacheFile');
+            stubs.uncacheFile = sandbox.stub(file, 'uncacheFile');
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid').returns(true);
+            stubs.isWatermarked = sandbox.stub(file, 'isWatermarked').returns(false);
             stubs.file = {
                 id: 0,
                 name: 'file',
                 file_version: {
                     sha1: 2
-                },
-                watermark_info: {
-                    is_watermarked: false
                 },
                 representations: {
                     entries: []
@@ -1098,12 +1165,12 @@ describe('lib/Preview', () => {
 
             preview.handleFileInfoResponse(stubs.file);
             expect(stubs.get).to.be.calledWith(stubs.file.id);
-            expect(stubs.set).to.be.calledWith(stubs.file.id);
+            expect(stubs.cacheFile).to.be.calledWith(preview.cache, stubs.file);
             expect(stubs.loadViewer).to.not.be.called;
         });
 
-        it('should not cache the file if the file is watermarked', () => {
-            stubs.file.watermark_info.is_watermarked = true;
+        it('should uncache the file if the file is watermarked', () => {
+            stubs.isWatermarked.returns(true);
             preview.open = true;
             preview.file = {
                 id: 0
@@ -1118,10 +1185,10 @@ describe('lib/Preview', () => {
             stubs.file.file_version.sha1 = 0;
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(stubs.set).to.be.not.be.called;
+            expect(stubs.uncacheFile).to.be.be.calledWith(preview.cache, stubs.file);
         });
 
-        it('should set the cache stale and re-load the viewer if the file is not in the cache', () => {
+        it('should load the viewer if the file is not in the cache', () => {
             preview.open = true;
             preview.file = {
                 id: 0
@@ -1130,11 +1197,10 @@ describe('lib/Preview', () => {
             stubs.get.returns(false);
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(preview.logger.setCacheStale).to.be.called;
             expect(stubs.loadViewer).to.be.called;
         });
 
-        it('should set the cache stale and re-load the viewer if the cached file is not valid', () => {
+        it('should load the viewer if the cached file is not valid', () => {
             preview.open = true;
             preview.file = {
                 id: 0
@@ -1143,7 +1209,6 @@ describe('lib/Preview', () => {
             stubs.checkFileValid.returns(false);
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(preview.logger.setCacheStale).to.be.called;
             expect(stubs.loadViewer).to.be.called;
         });
 
@@ -1163,7 +1228,7 @@ describe('lib/Preview', () => {
 
             preview.handleFileInfoResponse(stubs.file);
             expect(preview.logger.setCacheStale).to.be.called;
-            expect(stubs.loadViewer).to.be.called;
+            expect(stubs.reload).to.be.called;
         });
 
         it('should set the cache stale and re-load the viewer if the file is watermarked', () => {
@@ -1172,7 +1237,7 @@ describe('lib/Preview', () => {
                 id: 0
             };
 
-            stubs.file.watermark_info.is_watermarked = true;
+            stubs.isWatermarked.returns(true);
             stubs.get.returns({
                 file_version: {
                     sha1: 0
@@ -1183,7 +1248,7 @@ describe('lib/Preview', () => {
 
             preview.handleFileInfoResponse(stubs.file);
             expect(preview.logger.setCacheStale).to.be.called;
-            expect(stubs.loadViewer).to.be.called;
+            expect(stubs.reload).to.be.called;
         });
 
         it('should trigger an error if any cache or load operations fail', () => {
@@ -1377,9 +1442,9 @@ describe('lib/Preview', () => {
         });
 
         it('should reload preview on reload event', () => {
-            sandbox.stub(preview, 'show');
+            sandbox.stub(preview, 'reload');
             preview.handleViewerEvents({ event: 'reload' });
-            expect(preview.show).to.be.called;
+            expect(preview.reload).to.be.called;
         });
 
         it('should finish loading preview on load event', () => {
