@@ -54,6 +54,8 @@ const ANNOTATOR_EVENT = {
     scale: 'scaleannotations'
 };
 
+const DEFAULT_FILE_ICON_NAME = 'FILE_DEFAULT';
+
 class BaseViewer extends EventEmitter {
     /** @property {Controls} - UI used to interact with the document in the viewer */
     controls;
@@ -175,7 +177,9 @@ class BaseViewer extends EventEmitter {
         }
 
         const iconWrapperEl = container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
-        iconWrapperEl.innerHTML = this.fileLoadingIcon || getIconFromName('FILE_DEFAULT');
+        if (iconWrapperEl) {
+            iconWrapperEl.innerHTML = this.fileLoadingIcon || getIconFromName(DEFAULT_FILE_ICON_NAME);
+        }
     }
 
     /**
