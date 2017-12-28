@@ -54,6 +54,8 @@ const ANNOTATOR_EVENT = {
     scale: 'scaleannotations'
 };
 
+const DEFAULT_FILE_ICON_NAME = 'FILE_DEFAULT';
+
 class BaseViewer extends EventEmitter {
     /** @property {Controls} - UI used to interact with the document in the viewer */
     controls;
@@ -175,7 +177,9 @@ class BaseViewer extends EventEmitter {
         }
 
         const iconWrapperEl = container.querySelector(SELECTOR_BOX_PREVIEW_ICON);
-        iconWrapperEl.innerHTML = this.fileLoadingIcon || getIconFromName('FILE_DEFAULT');
+        if (iconWrapperEl) {
+            iconWrapperEl.innerHTML = this.fileLoadingIcon || getIconFromName(DEFAULT_FILE_ICON_NAME);
+        }
     }
 
     /**
@@ -390,9 +394,9 @@ class BaseViewer extends EventEmitter {
         }
 
         if (this.annotationsLoadPromise) {
-            this.annotationsLoadPromise.then(this.annotationsLoadHandler).catch(() => {
+            this.annotationsLoadPromise.then(this.annotationsLoadHandler).catch((err) => {
                 /* eslint-disable no-console */
-                console.error('Annotation assets failed to load');
+                console.error('Annotation assets failed to load', err);
                 /* eslint-enable no-console */
             });
         }
@@ -763,7 +767,7 @@ class BaseViewer extends EventEmitter {
             const { boxAnnotations, viewer } = this.options;
             const annotatorConfig = boxAnnotations.options[viewer.NAME];
             this.viewerConfig = {
-                enabled: annotatorConfig.enabled || !!annotatorConfig.enabledTypes
+                enabled: annotatorConfig && (annotatorConfig.enabled || annotatorConfig.enabledTypes.length > 0)
             };
         } else {
             this.viewerConfig = this.getViewerAnnotationsConfig();
