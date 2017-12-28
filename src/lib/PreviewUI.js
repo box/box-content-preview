@@ -117,6 +117,9 @@ class PreviewUI {
         // Setup progress bar
         this.progressBar = new ProgressBar(this.container);
 
+        // Setup notification
+        this.notification = new Notification(this.contentContainer);
+
         // Setup loading indicator
         this.setupLoading();
 
@@ -256,14 +259,16 @@ class PreviewUI {
      * @return {void}
      */
     hideLoadingIndicator() {
-        if (this.contentContainer) {
-            this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
-            const crawler = this.contentContainer.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
-            if (crawler) {
-                // We need to remove this since it was hidden specially as a
-                // part of finishLoadingSetup in BaseViewer.js
-                crawler.classList.remove(CLASS_HIDDEN);
-            }
+        if (!this.contentContainer) {
+            return;
+        }
+
+        this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
+        const crawler = this.contentContainer.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
+        if (crawler) {
+            // We need to remove this since it was hidden specially as a
+            // part of finishLoadingSetup in BaseViewer.js
+            crawler.classList.remove(CLASS_HIDDEN);
         }
     }
 
@@ -288,20 +293,6 @@ class PreviewUI {
     }
 
     /**
-     * Setup viewer notification
-     *
-     * @public
-     * @return {void}
-     */
-    setupNotification() {
-        if (!this.contentContainer) {
-            return;
-        }
-
-        this.notification = new Notification(this.contentContainer);
-    }
-
-    /**
      * Shows a notification message.
      *
      * @public
@@ -311,7 +302,7 @@ class PreviewUI {
      */
     showNotification(message, buttonText) {
         if (!this.notification) {
-            this.setupNotification();
+            return;
         }
 
         this.notification.show(message, buttonText);
@@ -325,7 +316,7 @@ class PreviewUI {
      */
     hideNotification() {
         if (!this.notification) {
-            this.setupNotification();
+            return;
         }
 
         this.notification.hide();
