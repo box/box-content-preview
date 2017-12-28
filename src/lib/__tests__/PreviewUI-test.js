@@ -57,6 +57,9 @@ describe('lib/PreviewUI', () => {
             // Check progress bar
             expect(resultEl).to.contain(constants.SELECTOR_BOX_PREVIEW_PROGRESS_BAR);
 
+            // Check notification
+            expect(resultEl).to.contain(constants.SELECTOR_BOX_PREVIEW_NOTIFICATION);
+
             // Check loading state
             const loadingWrapperEl = resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOADING_WRAPPER);
             expect(loadingWrapperEl).to.contain(constants.SELECTOR_BOX_PREVIEW_ICON);
