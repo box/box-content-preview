@@ -1,3 +1,17 @@
+<a name="1.24.0"></a>
+# 1.24.0 (2018-01-03)
+
+* Update: box-annotations to v0.7.2 (#558) ([0fb95c1](https://github.com/box/box-content-preview/commit/0fb95c1))
+* Update: box-annotations to v0.7.3 (#559) ([8c1f6a7](https://github.com/box/box-content-preview/commit/8c1f6a7))
+* Update: box-annotations to v0.8.0 (#565) ([df38a05](https://github.com/box/box-content-preview/commit/df38a05))
+* Update: Link to specific Annotations release tag in commit (#564) ([907599b](https://github.com/box/box-content-preview/commit/907599b))
+* Chore: Add safety check for annotatorConfig (#554) ([c1f0bc0](https://github.com/box/box-content-preview/commit/c1f0bc0))
+* Chore: setOriginalImageSize() for multi image viewer (#547) ([697b03c](https://github.com/box/box-content-preview/commit/697b03c))
+* Fix: Auto hide scrollbars for CSV on IE/Edge (#546) ([9509619](https://github.com/box/box-content-preview/commit/9509619))
+* Fix: Never cache watermarked files, add reload() method (#562) ([3302906](https://github.com/box/box-content-preview/commit/3302906))
+
+
+
 <a name="1.23.0"></a>
 # 1.23.0 (2017-12-20)
 
