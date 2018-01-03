@@ -28,7 +28,7 @@ get_changelog() {
 
 push_to_github() {
     # Add new files
-    git add . && git commit -m "Update: box-annotations to v$UPDATED_VERSION" -m "https://github.com/box/box-annotations/releases" -m "$CHANGELOG"
+    git add . && git commit -m "Update: box-annotations to v$UPDATED_VERSION" -m "https://github.com/box/box-annotations/releases/tag/v$LATEST_VERSION" -m "$CHANGELOG"
 
     # Push commit to GitHub
     if git push origin -f --no-verify; then
