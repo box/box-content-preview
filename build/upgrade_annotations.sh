@@ -22,13 +22,13 @@ update_version() {
 }
 
 get_changelog() {
-    CHANGELOG="$(curl https://raw.githubusercontent.com/box/box-annotations/master/CHANGELOG.md | awk '/\#/{f=1} f{print; if (/\<a/) exit}' | grep . | sed 's/\<a.*//')";
+    CHANGELOG="$(curl -k https://raw.githubusercontent.com/box/box-annotations/master/CHANGELOG.md | awk '/\#/{f=1} f{print; if (/\<a/) exit}' | grep . | sed 's/\<a.*//')";
 }
 
 
 push_to_github() {
     # Add new files
-    git add . && git commit -m "Update: box-annotations to v$UPDATED_VERSION" -m "https://github.com/box/box-annotations/releases/tag/v$LATEST_VERSION" -m "$CHANGELOG"
+    git add . && git commit -m "Update: box-annotations to v$LATEST_VERSION" -m "https://github.com/box/box-annotations/releases/tag/v$LATEST_VERSION" -m "$CHANGELOG"
 
     # Push commit to GitHub
     if git push origin -f --no-verify; then
@@ -43,7 +43,43 @@ push_to_github() {
     fi
 }
 
+
+reset_to_master() {
+    # Add the upstream remote if it is not present
+    if ! git remote get-url github-upstream; then
+        git remote add github-upstream git@github.com:box/box-content-preview.git || return 1
+    fi
+
+    # The master branch should not have any commits
+    if [[ $(git log --oneline ...github-upstream/master) != "" ]] ; then
+        echo "----------------------------------------------------"
+        echo "Error in resetting to master!"
+        echo "----------------------------------------------------"
+        exit 1
+    fi
+
+    # Update to latest code on GitHub master
+    git checkout master || return 1
+
+    # Fetch latest code with tags
+    git fetch github-upstream || return 1;
+
+    # Reset to latest code and clear unstashed changes
+    git reset --hard github-upstream/master || return 1
+}
+
+
 upgrade_box_annotations() {
+    if [[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]] ; then
+        echo "----------------------------------------------------"
+        echo "Your branch is dirty!"
+        echo "----------------------------------------------------"
+        exit 1
+    fi
+
+    # Get latest commited code and tags
+    reset_to_master || return 1
+
     # Bump the version number
     update_version || return 1
 
