@@ -3,6 +3,7 @@ import MultiImageViewer from '../MultiImageViewer';
 import PageControls from '../../../PageControls';
 import fullscreen from '../../../Fullscreen';
 import BaseViewer from '../../BaseViewer';
+import ImageBaseViewer from '../ImageBaseViewer';
 import Browser from '../../../Browser';
 import * as util from '../../../util';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../../icons/icons';
@@ -19,6 +20,7 @@ let containerEl;
 describe('lib/viewers/image/MultiImageViewer', () => {
     stubs.errorHandler = MultiImageViewer.prototype.errorHandler;
     const setupFunc = BaseViewer.prototype.setup;
+    const sizeFunc = ImageBaseViewer.prototype.setOriginalImageSize;
 
     before(() => {
         fixture.setBase('src/lib');
@@ -61,11 +63,15 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         multiImage = new MultiImageViewer(options);
 
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: sandbox.stub() });
+        Object.defineProperty(ImageBaseViewer.prototype, 'setOriginalImageSize', { 
+            value: sandbox.stub().returns(Promise.resolve()) 
+        });
         multiImage.containerEl = containerEl;
     });
 
     afterEach(() => {
         Object.defineProperty(BaseViewer.prototype, 'setup', { value: setupFunc });
+        Object.defineProperty(ImageBaseViewer.prototype, 'setOriginalImageSize', { value: sizeFunc });
 
         if (multiImage && multiImage.imagesEl) {
             multiImage.destroy();
@@ -186,9 +192,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
 
         it('should set the single image el and error handler if it is not the first image', () => {
-            multiImage.singleImageEls = {
-                1: stubs.singleImageEl
-            };
+            multiImage.singleImageEls = [,stubs.singleImageEl];
 
             multiImage.setupImageEls('file/100/content/{page}.png', 1);
             expect(multiImage.singleImageEls[1].src).to.not.equal(undefined);
@@ -196,30 +200,46 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
 
         it('should set the image source', () => {
-            multiImage.singleImageEls = {
-                0: stubs.singleImageEl
-            };
+            multiImage.singleImageEls = [stubs.singleImageEl];
 
             multiImage.setupImageEls('file/100/content/{page}.png', 0);
             expect(multiImage.singleImageEls[0].src).to.be.equal('file/100/content/{page}.png');
         });
 
         it('should set the page number for each image el', () => {
-            multiImage.singleImageEls = {
-                0: stubs.singleImageEl
-            };
+            multiImage.singleImageEls = [stubs.singleImageEl];
 
             multiImage.setupImageEls('file/100/content/{page}.png', 0);
             expect(stubs.singleImageEl.setAttribute).to.be.calledWith('data-page-number', 1);
         });
 
         it('should add the "page" class to all image pages', () => {
-            multiImage.singleImageEls = {
-                0: stubs.singleImageEl
-            };
+            multiImage.singleImageEls = [stubs.singleImageEl];
 
             multiImage.setupImageEls('file/100/content/{page}.png', 0);
             expect(stubs.singleImageEl.classList.add).to.be.calledWith('page');
+        });
+    });
+    
+    describe('setOriginalImageSize()', () => {
+        beforeEach(() => {
+            multiImage.singleImageEls = [
+                stubs.singleImageEl,
+                stubs.singleImageEl,
+                stubs.singleImageEl
+            ];
+        });
+
+        it('should return a promise', () => {
+            const promise = multiImage.setOriginalImageSize();
+            expect(promise).to.be.a('Promise');
+        });
+
+        it('should return a promise that resolves after each image has a proper size', (done) => {
+            // We've overridden super.setOriginalImageSize() to resolve immediately 
+            multiImage.setOriginalImageSize().then(() => {
+                done();
+            });
         });
     });
 
@@ -357,14 +377,14 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
     describe('bindImageListeners', () => {
         beforeEach(() => {
-            multiImage.singleImageEls = {
-                0: {
+            multiImage.singleImageEls = [
+                {
                     addEventListener: sandbox.stub()
                 },
-                1: {
+                {
                     addEventListener: sandbox.stub()
                 }
-            };
+            ];
         });
 
         it('should add the load event listener to the first image', () => {
@@ -380,14 +400,14 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
     describe('unbindImageListeners', () => {
         beforeEach(() => {
-            multiImage.singleImageEls = {
-                0: {
+            multiImage.singleImageEls = [
+                {
                     removeEventListener: sandbox.stub()
                 },
-                1: {
+                {
                     removeEventListener: sandbox.stub()
                 }
-            };
+            ];
         });
 
         it('should remove the load event listener from the first image', () => {
@@ -403,11 +423,11 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
     describe('setPage()', () => {
         beforeEach(() => {
-            multiImage.singleImageEls = {
-                1: stubs.singleImageEl,
-                2: stubs.singleImageEl,
-                3: stubs.singleImageEl
-            };
+            multiImage.singleImageEls = [,
+                stubs.singleImageEl,
+                stubs.singleImageEl,
+                stubs.singleImageEl
+            ];
             sandbox.stub(multiImage, 'emit');
             stubs.isValidPageChange = sandbox.stub(multiImage, 'isValidPageChange');
             stubs.updateCurrentPage = sandbox.stub(multiImage, 'updateCurrentPage')
