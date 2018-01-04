@@ -203,7 +203,7 @@ class ImageBaseViewer extends BaseViewer {
      * Sets the original image width and height on the img element. Can be removed when
      * naturalHeight and naturalWidth attributes work correctly in IE 11.
      *
-     * @private
+     * @protected
      * @param {HTMLElement} imageEl - The image to set the original size attributes on
      * @return {Promise} A promise that is resolved if the original image dimensions were set.
      */

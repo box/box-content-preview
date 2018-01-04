@@ -55,6 +55,8 @@ export const DOCUMENT_EXTENSIONS = CODE_EXTENSIONS.concat(NON_CODE_EXTENSIONS)
         'docx',
         'gdoc',
         'gsheet',
+        'gslide',
+        'gslides',
         'msg',
         'odp',
         'ods',

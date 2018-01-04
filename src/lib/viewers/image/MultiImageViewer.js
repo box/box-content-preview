@@ -11,6 +11,9 @@ const CSS_CLASS_IMAGE_WRAPPER = 'bp-images-wrapper';
 const ZOOM_UPDATE_PAN_DELAY = 50;
 
 class MultiImageViewer extends ImageBaseViewer {
+    /** @property {Image[]} - List of images rendered sequentially */
+    singleImageEls = [];
+
     /** @inheritdoc */
     constructor(options) {
         super(options);
@@ -33,7 +36,7 @@ class MultiImageViewer extends ImageBaseViewer {
         this.imageEl = this.wrapperEl.appendChild(document.createElement('div'));
         this.imageEl.classList.add(CSS_CLASS_IMAGE);
 
-        this.singleImageEls = [this.imageEl.appendChild(document.createElement('img'))];
+        this.singleImageEls.push(this.imageEl.appendChild(document.createElement('img')));
         this.loadTimeout = 60000;
 
         // Defaults the current page number to 1
@@ -128,6 +131,17 @@ class MultiImageViewer extends ImageBaseViewer {
         this.singleImageEls[index].classList.add('page');
 
         this.singleImageEls[index].src = imageUrl;
+    }
+
+    /** @inheritdoc */
+    setOriginalImageSize() {
+        const promises = [];
+
+        this.singleImageEls.forEach((imageEl) => {
+            promises.push(super.setOriginalImageSize(imageEl));
+        });
+
+        return Promise.all(promises);
     }
 
     /**
