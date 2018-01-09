@@ -1,4 +1,4 @@
-import { CLASS_HIDDEN } from './constants';
+import { CLASS_HIDDEN, CLASS_BOX_PREVIEW_NOTIFICATION, CLASS_BOX_PREVIEW_NOTIFICATION_WRAPPER } from './constants';
 
 const HIDE_TIMEOUT_MS = 5000; // 5s
 
@@ -13,7 +13,8 @@ class Notification {
         const uniqueLabel = `notification_${new Date().getTime()}_label`;
 
         this.notificationEl = document.createElement('div');
-        this.notificationEl.className = 'bp-notification bp-is-hidden';
+        this.notificationEl.classList.add(CLASS_BOX_PREVIEW_NOTIFICATION);
+        this.notificationEl.classList.add(CLASS_HIDDEN);
         this.notificationEl.addEventListener('click', this.clickHandler);
 
         // ARIA for accessibility
@@ -31,7 +32,7 @@ class Notification {
 
         // Append and position notification
         const notificationWrapperEl = document.createElement('div');
-        notificationWrapperEl.className = 'bp-notifications-wrapper';
+        notificationWrapperEl.classList.add(CLASS_BOX_PREVIEW_NOTIFICATION_WRAPPER);
         notificationWrapperEl.appendChild(this.notificationEl);
         containerEl.appendChild(notificationWrapperEl);
     }

@@ -57,6 +57,9 @@ describe('lib/PreviewUI', () => {
             // Check progress bar
             expect(resultEl).to.contain(constants.SELECTOR_BOX_PREVIEW_PROGRESS_BAR);
 
+            // Check notification
+            expect(resultEl).to.contain(constants.SELECTOR_BOX_PREVIEW_NOTIFICATION);
+
             // Check loading state
             const loadingWrapperEl = resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOADING_WRAPPER);
             expect(loadingWrapperEl).to.contain(constants.SELECTOR_BOX_PREVIEW_ICON);
@@ -187,13 +190,10 @@ describe('lib/PreviewUI', () => {
         });
 
         describe('hideLoadingIndicator()', () => {
-            it('should hide loading indicator and intializes the notification', () => {
+            it('should hide loading indicator', () => {
                 const contentContainerEl = containerEl.querySelector(constants.SELECTOR_BOX_PREVIEW);
                 ui.hideLoadingIndicator();
                 expect(contentContainerEl).to.have.class(constants.CLASS_PREVIEW_LOADED);
-
-                // Check that notification is initialized
-                expect(contentContainerEl).to.contain('.bp-notification');
             });
 
             it('should remove the hidden class from the crawler', () => {

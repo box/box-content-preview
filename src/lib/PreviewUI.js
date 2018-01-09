@@ -117,6 +117,9 @@ class PreviewUI {
         // Setup progress bar
         this.progressBar = new ProgressBar(this.container);
 
+        // Setup notification
+        this.notification = new Notification(this.contentContainer);
+
         // Setup loading indicator
         this.setupLoading();
 
@@ -256,17 +259,16 @@ class PreviewUI {
      * @return {void}
      */
     hideLoadingIndicator() {
-        if (this.contentContainer) {
-            this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
+        if (!this.contentContainer) {
+            return;
+        }
 
-            // Re-show the cralwer for the next preview since it is hidden in finishLoadingSetup() in BaseViewer.js
-            const crawler = this.contentContainer.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
-            if (crawler) {
-                crawler.classList.remove(CLASS_HIDDEN);
-            }
+        this.contentContainer.classList.add(CLASS_PREVIEW_LOADED);
 
-            // Setup viewer notification
-            this.notification = new Notification(this.contentContainer);
+        // Re-show the cralwer for the next preview since it is hidden in finishLoadingSetup() in BaseViewer.js
+        const crawler = this.contentContainer.querySelector(SELECTOR_BOX_PREVIEW_CRAWLER_WRAPPER);
+        if (crawler) {
+            crawler.classList.remove(CLASS_HIDDEN);
         }
     }
 
@@ -299,6 +301,10 @@ class PreviewUI {
      * @return {void}
      */
     showNotification(message, buttonText) {
+        if (!this.notification) {
+            return;
+        }
+
         this.notification.show(message, buttonText);
     }
 
@@ -309,6 +315,10 @@ class PreviewUI {
      * @return {void}
      */
     hideNotification() {
+        if (!this.notification) {
+            return;
+        }
+
         this.notification.hide();
     }
 
