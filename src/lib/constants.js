@@ -82,6 +82,10 @@ export const X_REP_HINT_IMAGE = '[jpg?dimensions=2048x2048,png?dimensions=2048x2
 export const X_REP_HINT_VIDEO_DASH = '[dash,mp4][filmstrip]';
 export const X_REP_HINT_VIDEO_MP4 = '[mp4]';
 
+// X-Box-Accept-Encoding Header for requesting non-gzipped representation
+export const X_BOX_ACCEPT_ENCODING_HEADER = 'x-box-accept-encoding';
+export const X_BOX_ACCEPT_ENCODING_IDENTITY = 'identity';
+
 export const PDFJS_CSS_UNITS = 96.0 / 72.0; // Should match CSS_UNITS in pdf_viewer.js
 export const PDFJS_MAX_AUTO_SCALE = 1.25; // Should match MAX_AUTO_SCALE in pdf_viewer.js
 export const PDFJS_WIDTH_PADDING_PX = 40; // Should match SCROLLBAR_PADDING in pdf_viewer.js

@@ -16,7 +16,9 @@ import {
     DOC_STATIC_ASSETS_VERSION,
     PERMISSION_DOWNLOAD,
     PRELOAD_REP_NAME,
-    STATUS_SUCCESS
+    STATUS_SUCCESS,
+    X_BOX_ACCEPT_ENCODING_HEADER,
+    X_BOX_ACCEPT_ENCODING_IDENTITY
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
 import { get, createAssetUrlCreator } from '../../util';
@@ -523,6 +525,12 @@ class DocBaseViewer extends BaseViewer {
             };
         }
 
+        // If range requests are enabled, request the non-gzip compressed version of the representation
+        if (!PDFJS.disableRange) {
+            docInitParams.httpHeaders = docInitParams.httpHeaders || {};
+            docInitParams.httpHeaders[X_BOX_ACCEPT_ENCODING_HEADER] = X_BOX_ACCEPT_ENCODING_IDENTITY;
+        }
+
         // Load PDF from representation URL and set as document for pdf.js. Cache
         // the loading task so we can cancel if needed
         this.pdfLoadingTask = PDFJS.getDocument(docInitParams);
@@ -612,7 +620,7 @@ class DocBaseViewer extends BaseViewer {
         PDFJS.disableRange = location.locale !== 'en-US' && size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US;
 
         // Disable range requests for watermarked files since they are streamed
-        PDFJS.disableRange = PDFJS.disableRange || (watermarkInfo && watermarkInfo.is_watermarked);
+        PDFJS.disableRange = false; // PDFJS.disableRange || (watermarkInfo && watermarkInfo.is_watermarked);
 
         // Disable text layer if user doesn't have download permissions
         PDFJS.disableTextLayer =
