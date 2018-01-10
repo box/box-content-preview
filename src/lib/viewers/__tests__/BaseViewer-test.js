@@ -817,7 +817,7 @@ describe('lib/viewers/BaseViewer', () => {
                 this.determineAnnotator = sandbox.stub().returns(conf);
             }
 
-            sandbox.stub(base, 'initAnnotations');
+            sandbox.stub(base, 'setupAnnotations');
         });
 
         it('should determine the annotator', () => {
@@ -835,12 +835,12 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should init annotations if a conf is present', () => {
             base.annotationsLoadHandler();
-            expect(base.initAnnotations).to.be.called;
+            expect(base.setupAnnotations).to.be.called;
 
         });
     });
 
-    describe('initAnnotations()', () => {
+    describe('setupAnnotations()', () => {
         beforeEach(() => {
             base.options = {
                 container: document,
@@ -855,7 +855,6 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.scale = 1.5;
             base.annotator = {
-                init: sandbox.stub(),
                 addListener: sandbox.stub()
             };
             base.annotatorConf = {
@@ -863,12 +862,10 @@ describe('lib/viewers/BaseViewer', () => {
             };
         });
 
-        it('should initialize the annotator', () => {
+        it('should set up the annotator', () => {
             sandbox.stub(base, 'emit');
             base.addListener = sandbox.stub();
-            base.initAnnotations();
-
-            expect(base.annotator.init).to.be.calledWith(1.5);
+            base.setupAnnotations();
             expect(base.addListener).to.be.calledWith('toggleannotationmode', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scale', sinon.match.func);
             expect(base.addListener).to.be.calledWith('scrolltoannotation', sinon.match.func);
@@ -877,7 +874,7 @@ describe('lib/viewers/BaseViewer', () => {
         });
 
         it('should call the correct handler to toggle annotation modes', () => {
-            base.initAnnotations();
+            base.setupAnnotations();
             base.annotator.toggleAnnotationMode = sandbox.stub();
 
             base.emit('toggleannotationmode', 'mode');
@@ -975,6 +972,7 @@ describe('lib/viewers/BaseViewer', () => {
         beforeEach(() => {
             sandbox.stub(base, 'emit');
             base.annotator = {
+                init: sandbox.stub(),
                 isInAnnotationMode: sandbox.stub()
             };
             sandbox.stub(base, 'disableViewerControls');
@@ -1050,17 +1048,14 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
 
-        it('should scale annotations on annotationsfetched', () => {
+        it('should init annotations on annotationsfetched', () => {
             base.scale = 1;
             base.rotationAngle = 90;
             const data = {
                 event: ANNOTATOR_EVENT.fetch
             };
             base.handleAnnotatorEvents(data);
-            expect(base.emit).to.be.calledWith('scale', {
-                scale: base.scale,
-                rotationAngle: base.rotationAngle
-            });
+            expect(base.annotator.init).to.be.calledWith(base.scale);
             expect(base.emit).to.be.calledWith(data.event, data.data);
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });

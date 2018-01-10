@@ -717,24 +717,23 @@ class BaseViewer extends EventEmitter {
         this.annotatorConf = boxAnnotations.determineAnnotator(this.options, this.viewerConfig);
 
         if (this.annotatorConf) {
-            this.initAnnotations();
+            this.setupAnnotations();
         }
     }
 
     /**
-     * Initializes annotations.
+     * Sets up the annotator and fetches the appropriate annotations
      *
      * @protected
      * @return {void}
      */
-    initAnnotations() {
-        // Construct and init annotator
+    setupAnnotations() {
+        // Construct and fetch annotations
         const annotatorOptions = this.createAnnotatorOptions({
             annotator: this.annotatorConf,
             modeButtons: ANNOTATION_BUTTONS
         });
         this.annotator = new this.annotatorConf.CONSTRUCTOR(annotatorOptions);
-        this.annotator.init(this.scale);
 
         // Once the annotator instance has been created, emit it so that clients can attach their events.
         // Annotator object will still be sent along with the viewer in the load event also.
@@ -835,10 +834,8 @@ class BaseViewer extends EventEmitter {
                 this.emit('notificationshow', data.data);
                 break;
             case ANNOTATOR_EVENT.fetch:
-                this.emit('scale', {
-                    scale: this.scale,
-                    rotationAngle: this.rotationAngle
-                });
+                // Need to initialize annotations from Preview because it requires the viewer scale
+                this.annotator.init(this.scale);
                 break;
             default:
         }
