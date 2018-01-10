@@ -3,7 +3,6 @@ import DocBaseViewer from './DocBaseViewer';
 import PresentationPreloader from './PresentationPreloader';
 import { CLASS_INVISIBLE } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
-import { getDistance } from '../../util';
 import './Presentation.scss';
 
 const WHEEL_THROTTLE = 200;
@@ -153,14 +152,14 @@ class PresentationViewer extends DocBaseViewer {
      * @protected
      */
     bindDOMListeners() {
+        super.bindDOMListeners();
+
         this.docEl.addEventListener('wheel', this.throttledWheelHandler);
         if (this.hasTouch) {
             this.docEl.addEventListener('touchstart', this.mobileScrollHandler);
             this.docEl.addEventListener('touchmove', this.mobileScrollHandler);
             this.docEl.addEventListener('touchend', this.mobileScrollHandler);
         }
-
-        super.bindDOMListeners();
     }
 
     /**
@@ -171,14 +170,14 @@ class PresentationViewer extends DocBaseViewer {
      * @protected
      */
     unbindDOMListeners() {
+        super.unbindDOMListeners();
+
         this.docEl.removeEventListener('wheel', this.throttledWheelHandler);
         if (this.hasTouch) {
             this.docEl.removeEventListener('touchstart', this.mobileScrollHandler);
             this.docEl.removeEventListener('touchmove', this.mobileScrollHandler);
             this.docEl.removeEventListener('touchend', this.mobileScrollHandler);
         }
-
-        super.unbindDOMListeners();
     }
 
     /**
@@ -291,61 +290,6 @@ class PresentationViewer extends DocBaseViewer {
                 this.previousPage();
             }
         }, WHEEL_THROTTLE);
-    }
-
-    /**
-     * Setups pinch to zoom behavior by wrapping zoomed divs and determining the original pinch distance.
-     *
-     * @protected
-     * @param {Event} event - object
-     * @return {void}
-     */
-    pinchToZoomStartHandler(event) {
-        if (this.isPinching || event.touches.length < 2) {
-            return;
-        }
-
-        this.isPinching = true;
-        event.preventDefault();
-        event.stopPropagation();
-
-        const firstVisiblePage = document.querySelector(`#bp-page-${this.pdfViewer.currentPageNumber}`);
-        this.zoomWrapper = firstVisiblePage;
-
-        this.originalDistance = getDistance(
-            event.touches[0].pageX,
-            event.touches[0].pageY,
-            event.touches[1].pageX,
-            event.touches[1].pageY
-        );
-    }
-
-    /**
-     * Updates the CSS transform zoom based on the distance of the pinch gesture.
-     *
-     * @protected
-     * @param {Event} event - object
-     * @return {void}
-     */
-    pinchToZoomEndHandler() {
-        if (this.zoomWrapper && this.isPinching) {
-            const firstVisiblePage = document.querySelector(`#bp-page-${this.pdfViewer.currentPageNumber}`);
-
-            this.pdfViewer.currentScaleValue = this.pdfViewer.currentScale * this.pinchScale;
-            this.zoomWrapper.style.transform = 'scale(1, 1)';
-
-            const x = firstVisiblePage.offsetLeft + firstVisiblePage.clientWidth / 2 - this.docEl.clientWidth / 2;
-            const y = firstVisiblePage.offsetTop + firstVisiblePage.clientHeight / 2 - this.docEl.clientHeight / 2;
-
-            // Prevents scrolling to another page when zooming out
-            if (this.checkOverflow()) {
-                this.docEl.scroll(x, y);
-            }
-
-            this.pinchScale = 1;
-            this.isPinching = false;
-            this.originalDistance = 0;
-        }
     }
 
     //--------------------------------------------------------------------------

@@ -19,7 +19,7 @@ import {
     STATUS_SUCCESS
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
-import { get, createAssetUrlCreator, getMidpoint, getDistance } from '../../util';
+import { get, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { JS, CSS } from './docAssets';
 
@@ -30,6 +30,9 @@ const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
+const MAX_PINCH_SCALE_VALUE = 3;
+const MIN_PINCH_SCALE_VALUE = 0.25;
+const MIN_PINCH_SCALE_DELTA = 0.01;
 const IS_SAFARI_CLASS = 'is-safari';
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
@@ -37,6 +40,8 @@ const RANGE_REQUEST_CHUNK_SIZE_US = 1048576; // 1MB
 const RANGE_REQUEST_CHUNK_SIZE_NON_US = 524288; // 512KB
 const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 26214400; // 25MB
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
+const PINCH_PAGE_CLASS = 'pinch-page';
+const PINCHING_CLASS = 'pinching';
 
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
@@ -970,31 +975,21 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Setups pinch to zoom behavior by wrapping zoomed divs and determining the original pinch distance.
+     * Sets up pinch to zoom behavior by wrapping zoomed divs and determining the original pinch distance.
      *
      * @protected
      * @param {Event} event - object
      * @return {void}
      */
     pinchToZoomStartHandler(event) {
-        if (this.isPinching || event.touches.length < 2) {
+        if (event.touches.length < 2) {
             return;
         }
 
-        this.isPinching = true;
         event.preventDefault();
         event.stopPropagation();
 
-        // Wrap the visible pages in a wrapper div
-        const visiblePages = this.pdfViewer._getVisiblePages();
-        const firstVisiblePage = document.querySelector(`#bp-page-${visiblePages.first.id}`);
-        this.zoomWrapper = firstVisiblePage.parentNode.insertBefore(document.createElement('div'), firstVisiblePage);
-
-        for (let i = visiblePages.first.id; i <= visiblePages.last.id; i++) {
-            const page = document.querySelector(`#bp-page-${i}`);
-            this.zoomWrapper.appendChild(page);
-            page.classList.add('disable-textLayer');
-        }
+        this.isPinching = true;
 
         // Determine the midpoint of our pinch event if it is not provided for us
         const touchMidpoint =
@@ -1007,26 +1002,25 @@ class DocBaseViewer extends BaseViewer {
                     event.touches[1].pageY
                 );
 
+        // Find the page closest to the pinch
+        const visiblePages = this.pdfViewer._getVisiblePages();
+        this.pinchPage = getClosestPageToPinch(
+            this.docEl.scrollLeft + touchMidpoint[0],
+            this.docEl.scrollTop + touchMidpoint[1],
+            visiblePages
+        );
+
         // Set the scale point based on the pinch midpoint and scroll offsets
-        const xOrigin = touchMidpoint[0] + this.docEl.scrollLeft;
-        const yOrigin = this.docEl.scrollTop - (this.zoomWrapper.offsetTop + 15) + touchMidpoint[1];
+        this.scaledXOffset = this.docEl.scrollLeft - this.pinchPage.offsetLeft + touchMidpoint[0];
+        this.scaledYOffset = this.docEl.scrollTop - this.pinchPage.offsetTop + touchMidpoint[1] + 15;
 
-        this.zoomWrapper.style['transform-origin'] = `${xOrigin}px ${yOrigin}px`;
+        this.pinchPage.style['transform-origin'] = `${this.scaledXOffset}px ${this.scaledYOffset}px`;
 
-        console.log(touchMidpoint[0]);
-        console.log(touchMidpoint[1]);
+        // Preserve the original touch offset
+        this.originalXOffset = touchMidpoint[0];
+        this.originalYOffset = touchMidpoint[1];
 
-        // Calculate current scroll position and gesture offset
-        this.xScrollPercentage =
-            (this.docEl.scrollLeft + touchMidpoint[0]) / Math.max(firstVisiblePage.scrollWidth, this.docEl.offsetWidth);
-
-        this.yScrollPercentage = (this.docEl.scrollTop + touchMidpoint[1] + 15) / this.docEl.firstChild.offsetHeight;
-        this.scrollLeft = this.docEl.scrollLeft;
-        this.scrollTop = this.docEl.scrollTop;
-
-        this.yOffset = touchMidpoint[1];
-        this.xOffset = touchMidpoint[0]; // MINUS LEFT DIFFERENCE IF THERE IS ANY;
-
+        // Used by non-iOS browsers that do not provide a scale value
         this.originalDistance = getDistance(
             event.touches[0].pageX,
             event.touches[0].pageY,
@@ -1056,17 +1050,28 @@ class DocBaseViewer extends BaseViewer {
                 event.touches[1].pageY
             ) / this.originalDistance;
 
-        if (scale === 1 || Math.abs(this.pinchScale - scale) < 0.01) {
+        const proposedNewScale = this.pdfViewer.currentScale * scale;
+        if (
+            scale === 1 ||
+            Math.abs(this.pinchScale - scale) < MIN_PINCH_SCALE_DELTA ||
+            proposedNewScale >= MAX_SCALE ||
+            proposedNewScale <= MIN_SCALE ||
+            scale > MAX_PINCH_SCALE_VALUE ||
+            scale < MIN_PINCH_SCALE_VALUE
+        ) {
+            // There are a variety of circumstances where we don't want to scale'
+            // 1. We haven't detected a changes
+            // 2. The change isn't significant enough
+            // 3. We will exceed our max or min scale
+            // 4. The scale is too significant, which can lead to performance issues
             return;
         }
 
-        if (scale > 1) {
-            this.pinchScale = Math.min(scale, 10 / this.pdfViewer.currentScale);
-        } else if (scale < 1) {
-            this.pinchScale = Math.max(scale, 0.1 / this.pdfViewer.currentScale);
-        }
+        this.pinchScale = scale;
+        this.pinchPage.classList.add(PINCH_PAGE_CLASS);
+        this.docEl.firstChild.classList.add(PINCHING_CLASS);
 
-        this.zoomWrapper.style.transform = `scale(${this.pinchScale}, ${this.pinchScale})`;
+        this.pinchPage.style.transform = `scale(${this.pinchScale})`;
     }
 
     /**
@@ -1076,34 +1081,28 @@ class DocBaseViewer extends BaseViewer {
      * @return {void}
      */
     pinchToZoomEndHandler() {
-        if (!this.zoomWrapper || !this.isPinching) {
+        if (!this.pinchPage || !this.isPinching || this.pinchScale === 1) {
             return;
         }
-
-        this.zoomWrapper.style.transform = `scale(${1 / this.pinchScale})`;
-
-        // Unwrap visible pages
-        const pageWrapperParent = this.zoomWrapper.parentNode;
-        while (this.zoomWrapper.childNodes.length > 0) {
-            const page = this.zoomWrapper.childNodes[0];
-            page.classList.remove('disable-textLayer');
-            pageWrapperParent.insertBefore(this.zoomWrapper.childNodes[0], this.zoomWrapper);
-        }
-
-        pageWrapperParent.removeChild(this.zoomWrapper);
 
         // PDF.js zoom
         this.pdfViewer.currentScaleValue = this.pdfViewer.currentScale * this.pinchScale;
 
+        this.pinchPage.style.transform = null;
+        this.pinchPage.style['transform-origin'] = null;
+        this.pinchPage.classList.remove(PINCH_PAGE_CLASS);
+        this.docEl.firstChild.classList.remove(PINCHING_CLASS);
+
         // Scroll to correct position after zoom
-        const adjustedXScrollPosition = this.xScrollPercentage * this.docEl.firstChild.scrollWidth - this.xOffset;
-        const adjustedYScrollPosition = this.yScrollPercentage * this.docEl.firstChild.offsetHeight - this.yOffset;
+        this.docEl.scroll(
+            this.scaledXOffset * this.pinchScale - this.originalXOffset,
+            this.scaledYOffset * this.pinchScale - this.originalYOffset + this.pinchPage.offsetTop
+        );
 
-        this.docEl.scroll(adjustedXScrollPosition, adjustedYScrollPosition);
-
-        this.pinchScale = 1;
         this.isPinching = false;
         this.originalDistance = 0;
+        this.pinchScale = 1;
+        this.pinchPage = null;
     }
 }
 

@@ -760,7 +760,7 @@ export function pageNumberFromScroll(currentPageNum, previousScrollTop, currentP
  * @param {number} y1 - The y value of the first point
  * @param {number} x2 - The x value of the second point
  * @param {number} y2 - The y value of the second point
- * @return {Array} the resulting x,y point
+ * @return {Array} The resulting x,y point
  */
 export function getMidpoint(x1, y1, x2, y2) {
     const x = (x1 + x2) / 2;
@@ -776,8 +776,42 @@ export function getMidpoint(x1, y1, x2, y2) {
  * @param {number} y1 - The y value of the first point
  * @param {number} x2 - The x value of the second point
  * @param {number} y2 - The y value of the second point
- * @return {number} the resulting distance
+ * @return {number} The resulting distance
  */
 export function getDistance(x1, y1, x2, y2) {
     return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+}
+
+/**
+ * Returns the closest visible page to a pinch event
+ *
+ * @public
+ * @param {number} x - The x value of pinch
+ * @param {number} y - The y value of the pinch
+ * @param {Object} visiblePages - Object of visible pages to consider
+ * @return {HTMLElement} The resulting page
+ */
+export function getClosestPageToPinch(x, y, visiblePages) {
+    if (!visiblePages || !visiblePages.first || !visiblePages.last) {
+        return null;
+    }
+
+    let closestPage = null;
+    for (let i = visiblePages.first.id, closestDistance = null; i <= visiblePages.last.id; i++) {
+        const page = document.querySelector(`#bp-page-${i}`);
+        const pageMidpoint = getMidpoint(
+            page.offsetLeft,
+            page.offsetTop,
+            page.offsetLeft + page.scrollWidth,
+            page.offsetTop + page.scrollHeight
+        );
+
+        const distance = getDistance(pageMidpoint[0], pageMidpoint[1], x, y);
+        if (!closestPage || distance < closestDistance) {
+            closestPage = page;
+            closestDistance = distance;
+        }
+    }
+
+    return closestPage;
 }

@@ -3,7 +3,13 @@ import 'whatwg-fetch';
 import fetchMock from 'fetch-mock';
 import * as util from '../util';
 
+const sandbox = sinon.sandbox.create();
+
 describe('lib/util', () => {
+    afterEach(() => {
+        sandbox.verifyAndRestore();
+    });
+
     describe('get()', () => {
         const url = 'foo?bar=bum';
 
@@ -661,6 +667,69 @@ describe('lib/util', () => {
 
             const result = util.pageNumberFromScroll(currentPageNum, previousScrollTop, currentPageEl, wrapperEl);
             expect(result).to.equal(2);
+        });
+    });
+
+    describe('getMidpoint()', () => {
+        it('should correctly calculate the midpoint', () => {
+            const result = util.getMidpoint(10, 10, 0, 0);
+            expect(result).to.deep.equal([5, 5]);
+        });
+    });
+
+    describe('getDistance()', () => {
+        it('should correctly calculate the distance', () => {
+            const result = util.getDistance(0, 0, 6, 8);
+            expect(result).to.equal(10);
+        });
+    });
+
+    describe('getClosestPageToPinch()', () => {
+        it('should find the closest page', () => {
+            const page1 = {
+                id: 1,
+                offsetLeft: 0,
+                offsetTop: 0,
+                scrollWidth: 0,
+                scrollHeight: 0
+            };
+            const page2 = {
+                id: 2,
+                offsetLeft: 100,
+                offsetTop: 0,
+                scrollWidth: 100,
+                scrollHeight: 0
+            };
+            const visiblePages = {
+                first: {
+                    id: 1
+                },
+                last: {
+                    id: 2
+                }
+            }
+
+            const midpointStub = sandbox.stub(document, 'querySelector');
+            midpointStub.onCall(0).returns(page1);
+            midpointStub.onCall(1).returns(page2);
+
+            sandbox.stub(util, 'getMidpoint').returns([0, 0]);
+            const distanceStub = sandbox.stub(util, 'getDistance').returns(100)
+
+            const result = util.getClosestPageToPinch(0, 0, visiblePages);
+            expect(result.id).to.equal(page1.id)
+        });
+
+        it('should return null if there are no pages', () => {
+            let result = util.getClosestPageToPinch(0, 0, null);
+            expect(result).to.equal(null);
+
+            result = util.getClosestPageToPinch(0, 0, {
+                first: null,
+                last: null
+            });
+
+            expect(result).to.equal(null);
         });
     });
 });
