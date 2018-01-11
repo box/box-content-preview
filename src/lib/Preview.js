@@ -1064,13 +1064,16 @@ class Preview extends EventEmitter {
             this.ui.finishProgressBar();
         }
 
-        // Programmtically focus on the viewer after it loads
+        // Programmatically focus on the viewer after it loads
         if (this.viewer && this.viewer.containerEl) {
             this.viewer.containerEl.focus();
         }
 
         // Hide the loading indicator
         this.ui.hideLoadingIndicator();
+
+        // Set up the notification
+        this.ui.setupNotification();
 
         // Prefetch next few files
         this.prefetchNextFiles();

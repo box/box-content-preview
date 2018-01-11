@@ -57,9 +57,6 @@ describe('lib/PreviewUI', () => {
             // Check progress bar
             expect(resultEl).to.contain(constants.SELECTOR_BOX_PREVIEW_PROGRESS_BAR);
 
-            // Check notification
-            expect(resultEl).to.contain(constants.SELECTOR_BOX_PREVIEW_NOTIFICATION);
-
             // Check loading state
             const loadingWrapperEl = resultEl.querySelector(constants.SELECTOR_BOX_PREVIEW_LOADING_WRAPPER);
             expect(loadingWrapperEl).to.contain(constants.SELECTOR_BOX_PREVIEW_ICON);
@@ -201,6 +198,13 @@ describe('lib/PreviewUI', () => {
                 ui.hideLoadingIndicator();
                 expect(crawlerEl).to.not.have.class(constants.CLASS_HIDDEN);
             });
+        });
+
+        describe('setupNotification()', () => {
+            it('should set up the notification', () => {
+                ui.setupNotification();
+                expect(containerEl).to.contain(constants.SELECTOR_BOX_PREVIEW_NOTIFICATION);
+            })
         });
     });
 
