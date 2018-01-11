@@ -592,11 +592,11 @@ class BaseViewer extends EventEmitter {
      * @protected
      * @param {Array} [js] - js assets
      * @param {Array} [css] - css assets
-     * @param {boolean} [isThirdParty] is the asset to load third party
+     * @param {boolean} [isViewerAsset] is the asset to load third party
      * @return {Promise} Promise to load scripts
      */
-    loadAssets(js, css, isThirdParty = true) {
-        const disableRequireJS = isThirdParty && !!this.options.pauseRequireJS;
+    loadAssets(js, css, isViewerAsset = true) {
+        const disableRequireJS = isViewerAsset && !!this.options.pauseRequireJS;
         // Create an asset path creator function
         const { location } = this.options;
         const assetUrlCreator = createAssetUrlCreator(location);
@@ -606,7 +606,7 @@ class BaseViewer extends EventEmitter {
 
         // Then load the scripts needed for this preview
         return loadScripts((js || []).map(assetUrlCreator), disableRequireJS).then(() => {
-            if (isThirdParty) {
+            if (isViewerAsset) {
                 this.emit('assetsloaded');
             }
         });
