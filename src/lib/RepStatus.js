@@ -42,13 +42,13 @@ class RepStatus extends EventEmitter {
      * @param {string} options.token - Access token
      * @param {string} options.sharedLink - Shared link
      * @param {string} options.sharedLinkPassword - Shared link password
-     * @param {Object} [options.logger] - Optional logger instance
+     * @param {Object} [options.fileMetrics] - Optional fileMetrics instance
      * @return {RepStatus} RepStatus instance
      */
-    constructor({ representation, token, sharedLink, sharedLinkPassword, logger }) {
+    constructor({ representation, token, sharedLink, sharedLinkPassword, fileMetrics }) {
         super();
         this.representation = representation;
-        this.logger = logger;
+        this.fileMetrics = fileMetrics;
 
         // Some representations (e.g. ORIGINAL) may not have an info url
         const repInfo = this.representation.info;
@@ -136,8 +136,8 @@ class RepStatus extends EventEmitter {
             case 'none':
             case 'pending':
                 // If we are doing some logging, log that the file needed conversion
-                if (this.logger) {
-                    this.logger.setUnConverted();
+                if (this.fileMetrics) {
+                    this.fileMetrics.setUnConverted();
                 }
 
                 this.emit('conversionpending');

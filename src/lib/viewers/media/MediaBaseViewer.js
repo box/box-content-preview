@@ -188,9 +188,7 @@ class MediaBaseViewer extends BaseViewer {
      * @return {void}
      */
     errorHandler(err) {
-        /* eslint-disable no-console */
-        console.error(err);
-        /* eslint-enable no-console */
+        this.logError(err);
 
         // Display a generic error message but log the real one
         const error = err;

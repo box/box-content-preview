@@ -3,6 +3,7 @@ import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
 import { get } from '../../util';
+import { METRIC_CONTROL, METRIC_CONTROL_ACTIONS } from '../../logging/metricsConstants';
 
 import { CLASS_INVISIBLE } from '../../constants';
 
@@ -20,6 +21,10 @@ class ImageBaseViewer extends BaseViewer {
         this.stopPanning = this.stopPanning.bind(this);
         this.zoomIn = this.zoomIn.bind(this);
         this.zoomOut = this.zoomOut.bind(this);
+
+        // Control bar events
+        this.zoomInControl = this.zoomInControl.bind(this);
+        this.zoomOutControl = this.zoomOutControl.bind(this);
 
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.handleMouseUp = this.handleMouseUp.bind(this);
@@ -93,12 +98,32 @@ class ImageBaseViewer extends BaseViewer {
     }
 
     /**
+     * Zooms in via controls.
+     *
+     * @return {void}
+     */
+    zoomInControl() {
+        this.zoomIn();
+        this.logMetric(METRIC_CONTROL, METRIC_CONTROL_ACTIONS.zoom_in_button);
+    }
+
+    /**
      * Zooms out.
      *
      * @return {void}
      */
     zoomOut() {
         this.zoom('out');
+    }
+
+    /**
+     * Zooms out via controls.
+     *
+     * @return {void}
+     */
+    zoomOutControl() {
+        this.zoomOut();
+        this.logMetric(METRIC_CONTROL, METRIC_CONTROL_ACTIONS.zoom_out_button);
     }
 
     /**
@@ -257,8 +282,8 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     bindControlListeners() {
-        this.controls.add(__('zoom_out'), this.zoomOut, 'bp-image-zoom-out-icon', ICON_ZOOM_OUT);
-        this.controls.add(__('zoom_in'), this.zoomIn, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
+        this.controls.add(__('zoom_out'), this.zoomOutControl, 'bp-image-zoom-out-icon', ICON_ZOOM_OUT);
+        this.controls.add(__('zoom_in'), this.zoomInControl, 'bp-image-zoom-in-icon', ICON_ZOOM_IN);
     }
 
     /**
@@ -317,9 +342,7 @@ class ImageBaseViewer extends BaseViewer {
      * @return {void}
      */
     errorHandler(err) {
-        /* eslint-disable no-console */
-        console.error(err);
-        /* eslint-enable no-console */
+        this.logError(err);
 
         // Display a generic error message but log the real one
         const error = err;

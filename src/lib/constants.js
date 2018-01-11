@@ -106,3 +106,5 @@ export const FILE_EXT_ERROR_MAP = {
 };
 
 export const PREVIEW_SCRIPT_NAME = 'preview.js';
+
+export const EVENT_LOG = 'logevent';
