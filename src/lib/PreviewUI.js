@@ -117,9 +117,6 @@ class PreviewUI {
         // Setup progress bar
         this.progressBar = new ProgressBar(this.container);
 
-        // Setup notification
-        this.notification = new Notification(this.contentContainer);
-
         // Setup loading indicator
         this.setupLoading();
 
@@ -290,6 +287,16 @@ class PreviewUI {
      */
     finishProgressBar() {
         this.progressBar.finish();
+    }
+
+    /**
+     * Setup notification
+     *
+     * @public
+     * @return {void}
+     */
+    setupNotification() {
+        this.notification = new Notification(this.contentContainer);
     }
 
     /**
