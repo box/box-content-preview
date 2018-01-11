@@ -354,6 +354,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
                         clientY: 0
                     }
                 ],
+                touches: [1],
                 preventDefault: sandbox.stub()
             };
             stubs.nextPage = sandbox.stub(presentation, 'nextPage');
@@ -368,6 +369,21 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             expect(stubs.event.preventDefault).to.not.be.called;
         });
 
+        it('should do nothing if we are pinching or touch with more than one finger', () => {
+            presentation.isPinching = true;
+
+            presentation.mobileScrollHandler(stubs.event);
+            expect(presentation.scrollStart).to.equal(undefined);
+            expect(stubs.event.preventDefault).to.not.be.called;
+
+            presentation.isPinching = false;
+            stubs.event.touches = [1, 2];
+
+            presentation.mobileScrollHandler(stubs.event);
+            expect(presentation.scrollStart).to.equal(undefined);
+            expect(stubs.event.preventDefault).to.not.be.called;
+        });
+
         it('should set the scroll start position if the event is a touch start', () => {
             stubs.event.type = 'touchstart';
             stubs.event.changedTouches[0].clientY = 100;
@@ -376,7 +392,7 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             expect(presentation.scrollStart).to.equal(100);
         });
 
-        it('should prevent default behaviour if the event is touchmove', () => {
+        it('should prevent default behavior if the event is touchmove', () => {
             stubs.event.type = 'touchmove';
             stubs.event.changedTouches[0].clientY = 100;
 
