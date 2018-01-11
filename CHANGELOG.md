@@ -1,3 +1,10 @@
+<a name="1.25.1"></a>
+## 1.25.1 (2018-01-11)
+
+* Fix: Set up notification in Preview.finishLoading() (#579) ([9876751](https://github.com/box/box-content-preview/commit/9876751)), closes [#563](https://github.com/box/box-content-preview/issues/563)
+
+
+
 <a name="1.25.0"></a>
 # 1.25.0 (2018-01-11)
 
