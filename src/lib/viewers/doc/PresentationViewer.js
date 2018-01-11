@@ -211,7 +211,7 @@ class PresentationViewer extends DocBaseViewer {
      * @return {void}
      */
     mobileScrollHandler(event) {
-        if (this.checkOverflow()) {
+        if (this.checkOverflow() || this.isPinching || event.touches.length > 1) {
             return;
         }
 
@@ -222,12 +222,18 @@ class PresentationViewer extends DocBaseViewer {
         } else {
             const scrollEnd = event.changedTouches[0].clientY;
 
+            if (!this.scrollStart || !scrollEnd) {
+                return;
+            }
+
             // scroll event offset prevents tapping from triggering a scroll
-            if (this.scrollStart && this.scrollStart > scrollEnd + SCROLL_EVENT_OFFSET) {
+            if (this.scrollStart > scrollEnd + SCROLL_EVENT_OFFSET) {
                 this.nextPage();
-            } else if (this.scrollStart && this.scrollStart < scrollEnd - SCROLL_EVENT_OFFSET) {
+            } else if (this.scrollStart < scrollEnd - SCROLL_EVENT_OFFSET) {
                 this.previousPage();
             }
+
+            this.scrollStart = null;
         }
     }
 
