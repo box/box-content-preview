@@ -613,7 +613,7 @@ class Preview extends EventEmitter {
     setupLogger(config = {}) {
         const { consoleLevel } = config;
         if (consoleLevel) {
-            this.logger.setLogLevel(consoleLevel);
+            this.logger.setConsoleLevel(consoleLevel);
         }
 
         this.logger.setupNetworkLayer({
