@@ -42,6 +42,7 @@ The image viewer fires the following events
 | rotate | The image rotates ||
 | printsuccess | An attempt to print triggered successfully ||
 
+
 ## Methods
 
 The following methods are available for the image viewer.

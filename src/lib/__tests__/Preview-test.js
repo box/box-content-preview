@@ -917,6 +917,7 @@ describe('lib/Preview', () => {
                 logoUrl: stubs.logoUrl,
                 showDownload: true,
                 showAnnotations: true,
+                pauseRequireJS: true,
                 collection: stubs.collection,
                 loaders: stubs.loaders
             };
@@ -1000,6 +1001,11 @@ describe('lib/Preview', () => {
             preview.previewOptions.skipServerUpdate = true;
             preview.parseOptions(preview.previewOptions, stubs.tokens);
             expect(preview.options.skipServerUpdate).to.be.true;
+        });
+
+        it('should set whether to pause requireJS when loading dependencies', () => {
+            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            expect(preview.options.pauseRequireJS).to.be.true;
         });
 
         it('should add user created loaders before standard loaders', () => {

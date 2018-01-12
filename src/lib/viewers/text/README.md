@@ -35,6 +35,8 @@ The CSV viewer fires the following events
 | reload | The preview reloads ||
 | resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
 | zoom | The preview zooms in or out | 1. {number} **zoom**: new zoom value 2. {boolean} **canZoomIn**: true if the viewer can zoom in more 3. {boolean} **canZoomOut**: true if the viewer can zoom out more |
+| assetsloaded | The viewer's third party assets have loaded ||
+
 
 ## Methods
 

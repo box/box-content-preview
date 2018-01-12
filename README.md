@@ -121,6 +121,7 @@ preview.show(fileId, accessToken, {
 | showAnnotations | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. See [Box Annotations](https://github.com/box/box-annotations) for more details. |
 | showDownload | false | Whether download button is shown |
 | useHotkeys | true | Whether hotkeys (keyboard shortcuts) are enabled |
+| pauseRequireJS | false | Temporarily disables requireJS to allow Preview's third party dependencies to load |
 
 Access Token
 ------------

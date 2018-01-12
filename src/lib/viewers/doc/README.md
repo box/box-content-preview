@@ -48,6 +48,7 @@ The document viewer fires the following events
 | scrollend | The viewer stops scrolling | 1. {number} **scrollTop**: number of pixels scrolled from top of viewport 2. {number} **scrollLeft**: number of pixels scrolled from left of viewport |
 | printsuccess | An attempt to print triggered successfully ||
 | printsuccess | An attempt to print failed ||
+| assetsloaded | The viewer's third party assets have loaded ||
 
 ## Methods
 
