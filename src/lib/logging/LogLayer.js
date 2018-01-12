@@ -25,6 +25,11 @@ class LogLayer {
      *
      * @param {Object} config - Configures level to log for console log level and network layer.
      * @param {CONSOLE_LEVELS|string} [config.consoleLevel] - Level to set for writing to the browser console.
+     * @param {boolean} [config.savingEnabled] - If true, allows the Logger to save logs to Box.
+     * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
+     * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
+     * @param {string} [config.logEndpoint] - URL Tail to save logs to. Combined with appHost (above)
+     * @param {string} [config.locale] - User's locale.
      */
     constructor(config = {}) {
         const { consoleLevel } = config;
@@ -52,7 +57,7 @@ class LogLayer {
      * Interface to the Logger for info messages.
      *
      * @public
-     * @param {*} args - Arguments to be printed to the log and cache.
+     * @param {*} args - Arguments to be printed to the console and stored in the Logger.
      * @return {void}
      */
     info(...args) {
@@ -69,7 +74,7 @@ class LogLayer {
      * Interface to the Logger for warning messages.
      *
      * @public
-     * @param {*} args - Arguments to be printed to the log and cache.
+     * @param {*} args - Arguments to be printed to the console and stored in the Logger.
      * @return {void}
      */
     warn(...args) {
@@ -86,7 +91,7 @@ class LogLayer {
      * Interface to the Logger for error messages.
      *
      * @public
-     * @param {*} args - Arguments to be printed to the log and cache.
+     * @param {*} args - Arguments to be printed to the console and stored in the Logger.
      * @return {void}
      */
     error(...args) {
@@ -100,7 +105,7 @@ class LogLayer {
     }
 
     /**
-     * Interface to the Logger for metric messages.
+     * Interface to the Logger for metric messages, and print to console.
      *
      * @public
      * @param {string} eventName - Name associated with a specific metric.
@@ -152,6 +157,11 @@ class LogLayer {
      *
      * @public
      * @param {Object} config - Network related settings to pass to the Logger.
+     * @param {boolean} [config.savingEnabled] - If true, allows the Logger to save logs to Box.
+     * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
+     * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
+     * @param {string} [config.logEndpoint] - URL Tail to save logs to. Combined with appHost (above)
+     * @param {string} [config.locale] - User's locale.
      * @return {void}
      */
     setupNetworkLayer(config) {
@@ -177,7 +187,7 @@ class LogLayer {
     }
 
     /**
-     * Save the current state of the logger, for this session, and
+     * Save the current state of the Logger, for this session of this preview, and
      * clear out any old data.
      *
      * @public
@@ -198,14 +208,13 @@ class LogLayer {
     //--------------------------------------------------------
 
     /**
-     * Maps logging type to a logging function in our third-party logger. Defaults
-     * to regular 'info' if nothing available.
+     * Maps logging type to a console printing function. Defaults to 'info = console.log'
      *
      * @private
-     * @param {LOG_TYPES|string} type - The log type to lookup a corresponding function on the logger.
-     * @return {Function} A function that can be invoked with a string, to log a message.
+     * @param {LOG_TYPES|string|null} type - The log type to lookup a corresponding console print method.
+     * @return {Function} A function that can be invoked with a string, to print a message to the console.
      */
-    getLoggerFunction(type) {
+    getConsoleFunction(type) {
         let logFunction;
         /* eslint-disable no-console */
         switch (type) {
@@ -217,10 +226,9 @@ class LogLayer {
                 logFunction = console.error;
                 break;
             case LOG_TYPES.info:
-                logFunction = console.log;
-                break;
+            // fall through
             default:
-                logFunction = null;
+                logFunction = console.log;
         }
         /* eslint-enable no-console */
 
@@ -231,7 +239,7 @@ class LogLayer {
      * Determine whether or not we can print to the console, based on consoleLevel.
      *
      * @private
-     * @param {LOG_TYPES} type - Type of log to check.
+     * @param {LOG_TYPES|string} type - Type of log to check.
      * @return {boolean} True if we can print to the console.
      */
     canPrintLog(type) {
@@ -279,12 +287,12 @@ class LogLayer {
      * Print a message to the console if allowed to.
      *
      * @private
-     * @param {LOG_TYPE} type - Type of log to check and print to the console.
+     * @param {LOG_TYPES|string} type - Type of log to check and print to the console.
      * @param {*} data - Data to print to the console.
      * @return {void}
      */
     printLog(type, data) {
-        const logFunction = this.canPrintLog(type) ? this.getLoggerFunction(type) : null;
+        const logFunction = this.canPrintLog(type) ? this.getConsoleFunction(type) : null;
         if (logFunction) {
             const message = arrayToString(data);
             logFunction(`[${type}] ${message}`);
@@ -297,6 +305,11 @@ class LogLayer {
      *
      * @private
      * @param {Object} config - Configuration for the global logger
+     * @param {boolean} [config.savingEnabled] - If true, allows the Logger to save logs to Box.
+     * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
+     * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
+     * @param {string} [config.logEndpoint] - URL Tail to save logs to. Combined with appHost (above)
+     * @param {string} [config.locale] - User's locale.
      * @return {void}
      */
     setupGlobalLogger(config) {
