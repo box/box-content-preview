@@ -161,6 +161,21 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
                 }
             );
         });
+
+        it('should filter out access tokens before broadcasting', () => {
+            sandbox.stub(error, 'emit');
+
+            const err = new Error();
+            err.message = 'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=blah&test=okay"';
+
+            error.load(err);
+
+            expect(error.emit).to.be.calledWith(
+                'load', {
+                    error: 'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=[FILTERED]&test=okay"'
+                }
+            );
+        });
     });
 
     describe('addDownloadButton()', () => {
