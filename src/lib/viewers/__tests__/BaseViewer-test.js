@@ -912,7 +912,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.areAnnotationsEnabled()).to.equal(true);
         });
 
-        it('should use the global show annotations boolean if the viewer param is not specified', () => {
+        it('should use the global showAnnotations boolean if the viewer param is not specified', () => {
             stubs.getViewerOption.withArgs('annotations').returns(null);
             base.options.showAnnotations = true;
             expect(base.areAnnotationsEnabled()).to.equal(true);
@@ -929,25 +929,27 @@ describe('lib/viewers/BaseViewer', () => {
 
             base.options.viewer = { NAME: 'viewerName' };
             base.options.boxAnnotations = sinon.createStubInstance(window.BoxAnnotations);
+            const boxAnnotations = base.options.boxAnnotations;
 
             // No enabled annotators in options
-            base.options.boxAnnotations.options = {};
+            boxAnnotations.options = { 'nope': 'wrong options type' };
+            boxAnnotations.viewerOptions = undefined;
             expect(base.areAnnotationsEnabled()).to.equal(false);
 
             // All default types enabled
-            base.options.boxAnnotations.options = {
+            boxAnnotations.viewerOptions = {
                 'viewerName': { enabled: true }
             };
             expect(base.areAnnotationsEnabled()).to.equal(true);
 
             // No specified enabled types
-            base.options.boxAnnotations.options = {
+            boxAnnotations.viewerOptions = {
                 'viewerName': { enabledTypes: [] }
             };
             expect(base.areAnnotationsEnabled()).to.equal(false);
 
             // Specified types enabled
-            base.options.boxAnnotations.options = {
+            boxAnnotations.viewerOptions = {
                 'viewerName': { enabledTypes: [ 'point' ] }
             };
             expect(base.areAnnotationsEnabled()).to.equal(true);
