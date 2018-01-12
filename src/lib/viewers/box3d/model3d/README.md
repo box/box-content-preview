@@ -46,6 +46,8 @@ The Model3D viewer fires the following events
 | navigate | The preview is shown for a given index | {object} file |
 | reload | The preview reloads ||
 | resize | The preview resizes | 1. {number} **height**: window height 2. {number} **width**: window width |
+| assetsloaded | The viewer's third party assets have loaded ||
+
 
 ## Methods
 

@@ -917,6 +917,7 @@ describe('lib/Preview', () => {
                 logoUrl: stubs.logoUrl,
                 showDownload: true,
                 showAnnotations: true,
+                pauseRequireJS: true,
                 collection: stubs.collection,
                 loaders: stubs.loaders
             };
@@ -1000,6 +1001,11 @@ describe('lib/Preview', () => {
             preview.previewOptions.skipServerUpdate = true;
             preview.parseOptions(preview.previewOptions, stubs.tokens);
             expect(preview.options.skipServerUpdate).to.be.true;
+        });
+
+        it('should set whether to pause requireJS when loading dependencies', () => {
+            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            expect(preview.options.pauseRequireJS).to.be.true;
         });
 
         it('should add user created loaders before standard loaders', () => {
@@ -1514,6 +1520,7 @@ describe('lib/Preview', () => {
             stubs.logPreviewEvent = sandbox.stub(preview, 'logPreviewEvent');
             stubs.prefetchNextFiles = sandbox.stub(preview, 'prefetchNextFiles');
             stubs.finishProgressBar = sandbox.stub(preview.ui, 'finishProgressBar');
+            stubs.setupNotification = sandbox.stub(preview.ui, 'setupNotification');
 
             stubs.logger = {
                 done: sandbox.stub()
@@ -1647,6 +1654,11 @@ describe('lib/Preview', () => {
         it('should hide the loading indicator', () => {
             preview.finishLoading();
             expect(stubs.hideLoadingIndicator).to.be.called;
+        });
+
+        it('should set up the notification', () => {
+            preview.finishLoading();
+            expect(stubs.setupNotification).to.be.called;
         });
 
         it('should prefetch next files', () => {

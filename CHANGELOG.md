@@ -1,3 +1,14 @@
+<a name="1.25.0"></a>
+# 1.25.0 (2018-01-11)
+
+* Update: box-annotations to v0.8.1 (#575) ([1f98c92](https://github.com/box/box-content-preview/commit/1f98c92))
+* Update: box-annotations to v0.9.0 (#578) ([c1bdd28](https://github.com/box/box-content-preview/commit/c1bdd28))
+* Mojito: Update translations (#574) ([5689492](https://github.com/box/box-content-preview/commit/5689492))
+* Chore: Setup viewer notifications in the correct location (#563) ([2b37a36](https://github.com/box/box-content-preview/commit/2b37a36))
+* New: Add preview support for Google Slides (#302) ([f914930](https://github.com/box/box-content-preview/commit/f914930))
+
+
+
 <a name="1.24.0"></a>
 # 1.24.0 (2018-01-03)
 
