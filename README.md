@@ -6,9 +6,9 @@
 
 [Box Content Preview](https://developer.box.com/docs/box-content-preview)
 ====================================================================
-The Box Content Preview UI Element allows developers to easily embed high quality and interactive previews of Box files in their desktop or mobile web application. The JavaScript library fetches information about the file and its converted representations through the Box API, chooses the appropriate viewer for the file type, dynamically loads the necessary static assets and file representations, and finally renders the file. Box Content Preview also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
+The Box Content Preview library allows developers to easily embed high quality and interactive previews of Box files in  desktop and mobile web applications. The JavaScript library fetches information about the file and its converted representations through the Box API, chooses the appropriate viewer for the file type, dynamically loads the necessary static assets and file representations, and finally renders the file. Box Content Preview also allows previews of multiple files to be loaded in the same container and exposes arrows to navigate between those files.
 
-This UI Element powers Preview in the main Box web application as well as the 'expiring embed' Box API endpoint.
+This library powers Preview in the main Box web application as well as the 'Get Embed Link' Box API endpoint.
 
 Browser Support
 ---------------
@@ -37,10 +37,8 @@ Box Content Preview supports 100+ file types, including most document and image 
 
 Usage
 -----
-The Box Content Preview UI Element can be used either by including the JavaScript/CSS scripts linked above or by pulling from our [NPM package](https://www.npmjs.com/package/box-ui-elements).
-
-### Including preview as a library
-You can self-host the Box Content Preview UI Element or reference the versions available on Box's CDN.
+### Including Preview as a library
+You can self-host the Box Content Preview library or reference the versions available on Box's CDN.
 
 ```html
 <!DOCTYPE html>
@@ -68,8 +66,8 @@ You can self-host the Box Content Preview UI Element or reference the versions a
 </html>
 ```
 
-### Importing preview as a React Component
-Please reference https://github.com/box/box-content-preview-demo for a minimal React application using the Preview UI Element.
+### Importing Preview as a React Component
+Preview can also be used as a React Component with the Box Element framework. The source code for the Content Preview Element wrapper is located at https://github.com/box/box-ui-elements/tree/master/src/components/ContentPreview. Please reference https://github.com/box/box-content-preview-demo for a minimal React application using this wrapper.
 
 CORS (Cross-Origin Resource Sharing)
 ------------------------------------
@@ -129,9 +127,9 @@ Box Content Preview needs an access token to make Box API calls. You can either 
 
 If your application requires the end user to only be able to access a subset of the Content Preview functionality, you can use [Token Exchange](https://developer.box.com/reference#token-exchange) to appropriately downscope your App/Managed or Service Account token to a resulting token that has the desired set of permissions, and can thus, be securely passed to the end user client initializing the Content Preview.
 
-Below are a set of new UI Element-specific scopes to go alongside Token Exchange. These allow developers to enable/disable UI controls on the Content Preview by configuring the appropriate scopes on the downscoped token. To learn more, see [Special Scopes for Box UI Elements](https://developer.box.com/v2.0/docs/special-scopes-for-box-ui-elements).
+Below are a set of new Box Element-specific scopes to go alongside Token Exchange. These allow developers to enable/disable UI controls on the Content Preview by configuring the appropriate scopes on the downscoped token. To learn more, see [Special Scopes for Box Elements](https://developer.box.com/docs/special-scopes-for-box-ui-elements).
 
-Wish to learn more about when, why and how you can use Token Exchange with the Content Preview? See our [blueprint on Customizing Access for the Box UI Elements](https://developer.box.com/v2.0/docs/customizing-access-for-ui-elements).
+Wish to learn more about when, why and how you can use Token Exchange with the Content Preview? See our [blueprint on Customizing Access for the Box Elements](https://developer.box.com/docs/customizing-access-for-ui-elements).
 
 ### Base Scope
 
@@ -333,7 +331,7 @@ Support
 -------
 If you have any questions, please search our [issues list](https://github.com/box/box-content-preview/issues) to see if they have been previously answered. Report new issues [here](https://github.com/box/box-content-preview/issues/new).
 
-For general Box Platform, API, and UI Element questions, please visit our [developer forum](https://community.box.com/t5/Developer-Forum/bd-p/DeveloperForum) or contact us via one of our [available support channels](https://community.box.com/t5/Community/ct-p/English).
+For general Box Platform, API, and Box Element questions, please visit our [developer forum](https://community.box.com/t5/Developer-Forum/bd-p/DeveloperForum) or contact us via one of our [available support channels](https://community.box.com/t5/Community/ct-p/English).
 
 Copyright and License
 ---------------------
