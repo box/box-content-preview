@@ -592,9 +592,11 @@ class BaseViewer extends EventEmitter {
      * @protected
      * @param {Array} [js] - js assets
      * @param {Array} [css] - css assets
+     * @param {boolean} [isViewerAsset] is the asset to load third party
      * @return {Promise} Promise to load scripts
      */
-    loadAssets(js, css) {
+    loadAssets(js, css, isViewerAsset = true) {
+        const disableRequireJS = isViewerAsset && !!this.options.pauseRequireJS;
         // Create an asset path creator function
         const { location } = this.options;
         const assetUrlCreator = createAssetUrlCreator(location);
@@ -603,7 +605,11 @@ class BaseViewer extends EventEmitter {
         loadStylesheets((css || []).map(assetUrlCreator));
 
         // Then load the scripts needed for this preview
-        return loadScripts((js || []).map(assetUrlCreator));
+        return loadScripts((js || []).map(assetUrlCreator), disableRequireJS).then(() => {
+            if (isViewerAsset) {
+                this.emit('assetsloaded');
+            }
+        });
     }
 
     /**
@@ -697,7 +703,7 @@ class BaseViewer extends EventEmitter {
         this.annotationsLoadPromise =
             window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations
                 ? Promise.resolve()
-                : this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS]);
+                : this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS], false);
     }
 
     /**

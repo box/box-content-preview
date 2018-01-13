@@ -48,12 +48,12 @@ import './Preview.scss';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
 const PREFETCH_COUNT = 4; // number of files to prefetch
-const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
-const RETRY_TIMEOUT = 500; // retry network request interval for a file
+const MOUSEMOVE_THROTTLE_MS = 1500; // for showing or hiding the navigation icons
 const RETRY_COUNT = 5; // number of times to retry network request for a file
 const KEYDOWN_EXCEPTIONS = ['INPUT', 'SELECT', 'TEXTAREA']; // Ignore keydown events on these elements
-const LOG_RETRY_TIMEOUT = 500; // retry interval for logging preview event
+const LOG_RETRY_TIMEOUT_MS = 500; // retry interval for logging preview event
 const LOG_RETRY_COUNT = 3; // number of times to retry logging preview event
+const MS_IN_S = 1000; // ms in a sec
 
 // All preview assets are relative to preview.js. Here we create a location
 // object that mimics the window location object and points to where
@@ -757,6 +757,10 @@ class Preview extends EventEmitter {
         // Optional additional query params to append to requests
         this.options.queryParams = options.queryParams || {};
 
+        // Option to pause requireJS while Preview loads third party dependencies
+        // RequireJS will be re-enabled on the 'assetsloaded' event fired by Preview
+        this.options.pauseRequireJS = !!options.pauseRequireJS;
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
@@ -1117,7 +1121,7 @@ class Preview extends EventEmitter {
                 clearTimeout(this.logRetryTimeout);
                 this.logRetryTimeout = setTimeout(() => {
                     this.logPreviewEvent(fileId, options);
-                }, LOG_RETRY_TIMEOUT * this.logRetryCount);
+                }, LOG_RETRY_TIMEOUT_MS * this.logRetryCount);
             });
     }
 
@@ -1149,9 +1153,19 @@ class Preview extends EventEmitter {
         }
 
         clearTimeout(this.retryTimeout);
+
+        // Respect 'Retry-After' header if present, otherwise retry using exponential backoff
+        let timeoutMs = 2 ** this.retryCount * MS_IN_S;
+        if (err.headers) {
+            const retryAfterS = parseInt(err.headers.get('Retry-After'), 10);
+            if (!Number.isNaN(retryAfterS)) {
+                timeoutMs = retryAfterS * MS_IN_S;
+            }
+        }
+
         this.retryTimeout = setTimeout(() => {
             this.load(this.file.id);
-        }, RETRY_TIMEOUT * this.retryCount);
+        }, timeoutMs);
     }
 
     /**
@@ -1323,9 +1337,9 @@ class Preview extends EventEmitter {
                     if (this.container) {
                         this.container.classList.remove(CLASS_NAVIGATION_VISIBILITY);
                     }
-                }, MOUSEMOVE_THROTTLE);
+                }, MOUSEMOVE_THROTTLE_MS);
             },
-            MOUSEMOVE_THROTTLE - 500,
+            MOUSEMOVE_THROTTLE_MS - 500,
             true
         );
     }

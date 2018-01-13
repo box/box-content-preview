@@ -11,7 +11,6 @@ import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
 
 const tokens = require('../tokens');
 
-const RETRY_TIMEOUT = 500; // retry network request interval for a file
 const PREFETCH_COUNT = 4; // number of files to prefetch
 const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
 const KEYDOWN_EXCEPTIONS = ['INPUT', 'SELECT', 'TEXTAREA']; // Ignore keydown events on these elements
@@ -917,6 +916,7 @@ describe('lib/Preview', () => {
                 logoUrl: stubs.logoUrl,
                 showDownload: true,
                 showAnnotations: true,
+                pauseRequireJS: true,
                 collection: stubs.collection,
                 loaders: stubs.loaders
             };
@@ -1000,6 +1000,11 @@ describe('lib/Preview', () => {
             preview.previewOptions.skipServerUpdate = true;
             preview.parseOptions(preview.previewOptions, stubs.tokens);
             expect(preview.options.skipServerUpdate).to.be.true;
+        });
+
+        it('should set whether to pause requireJS when loading dependencies', () => {
+            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            expect(preview.options.pauseRequireJS).to.be.true;
         });
 
         it('should add user created loaders before standard loaders', () => {
@@ -1783,8 +1788,45 @@ describe('lib/Preview', () => {
             preview.handleFetchError(stubs.error);
             expect(stubs.triggerError).to.not.be.called;
 
-            clock.tick(RETRY_TIMEOUT + 1);
+            clock.tick(2001);
             expect(stubs.load).to.be.calledWith(1);
+        });
+
+        it('should retry using exponential backoff', () => {
+            preview.file = {
+                id: '0'
+            };
+            const clock = sinon.useFakeTimers();
+            preview.open = true;
+            preview.retryCount = 3;
+
+            preview.handleFetchError(stubs.error);
+
+            clock.tick(7000);
+            expect(stubs.load).to.not.be.called;
+
+            clock.tick(8001);
+            expect(stubs.load).to.be.called;
+        });
+
+        it('should retry after length specified in Retry-After header if set', () => {
+            preview.file = {
+                id: '0'
+            };
+            stubs.error.headers = {
+                get: sandbox.stub().withArgs('Retry-After').returns(5)
+            }
+            const clock = sinon.useFakeTimers();
+            preview.open = true;
+            preview.retryCount = 1;
+
+            preview.handleFetchError(stubs.error);
+
+            clock.tick(4000);
+            expect(stubs.load).to.not.be.called;
+
+            clock.tick(5001);
+            expect(stubs.load).to.be.called;
         });
     });
 
