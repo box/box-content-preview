@@ -1,6 +1,5 @@
 import LoggerCache from './LoggerCache';
 import LogNetworkLayer from './LogNetworkLayer';
-import { registerLogger, unregisterLogger } from './loggerRegistry';
 import { LOG_TYPES } from './logConstants';
 import { arrayToString, sortLogsByTime, printLog, getISOTime } from './logUtils';
 import { APP_HOST } from '../constants';
@@ -14,7 +13,6 @@ const DEFAULT_ALLOWED_LOGS = {
     uncaught_error: true
 };
 
-// Publicliy accessible, doesn't require auth token.
 const DEFAULT_LOG_ENDPOINT = 'index.php?rm=box_gen204_json_record';
 
 /**
@@ -26,9 +24,6 @@ class Logger {
 
     /** @property {LogNetworkLayer} - Network Layer object for translating and saving logs. */
     networkLayer;
-
-    /** @property {string} - The name of the logger. Used with the Global Registry */
-    name;
 
     /** @property {Object} - The logs we're allowed to save to the networkLayer. Defaults to all allowed. */
     allowedLogs = { ...DEFAULT_ALLOWED_LOGS };
@@ -55,8 +50,6 @@ class Logger {
 
         this.onUncaughtError = this.onUncaughtError.bind(this);
         window.addEventListener('error', this.onUncaughtError);
-
-        this.name = registerLogger(this);
 
         this.setupNetworkLayer(config);
     }
@@ -125,9 +118,6 @@ class Logger {
         this.cache = null;
 
         window.removeEventListener('error', this.onUncaughtError);
-
-        unregisterLogger(this.name);
-        this.name = null;
     }
 
     /**

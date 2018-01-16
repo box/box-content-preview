@@ -48,7 +48,7 @@ class Console {
     }
 
     /**
-     * Determine whether or not we can print to the console, based on consoleLevel.
+     * Determine whether or not we can print to the console, based on level.
      *
      * @private
      * @param {LOG_TYPES|string} type - Type of log to check.

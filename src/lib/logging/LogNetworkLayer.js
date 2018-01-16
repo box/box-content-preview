@@ -21,8 +21,11 @@ class LogNetworkLayer {
     sessionID = uuidv4();
 
     /**
+     * @constructor
+     *
      * @param {Object} config - Object used to initialize the network layer.
      * @param {string} config.logURL - The full URL to POST log events to. REQUIRED.
+     * @param {string} [config.locale] - Locale string for the session. ie: en-US
      */
     constructor(config = {}) {
         const { logURL, locale } = config;
@@ -55,8 +58,8 @@ class LogNetworkLayer {
      * Create a properly formatted batch of logs to be saved to the network layer.
      *
      * @param {LOG_TYPES} type - Type of logs contained in the batch.
-     * @param {Object} logs - Object containing type and array of logs that belong to it.
-     * @return {Object} Formatted object to be saved to the network layer.
+     * @param {Object[]} logs - Array of logs to be transformed and batched.
+     * @return {Object[]} List of logs transformed to output spec. See logTransformers.js
      */
     createBatch(type, logs) {
         const transform = this.getTransformer(type);
