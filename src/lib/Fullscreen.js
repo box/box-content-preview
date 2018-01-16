@@ -12,9 +12,42 @@ class Fullscreen extends EventEmitter {
     constructor() {
         super();
 
+        this.bindDOMListeners();
+    }
+
+    /**
+     * Binds DOM listeners for Fullscreen.
+     *
+     * @protected
+     * @return {void}
+     */
+    bindDOMListeners() {
         // as of now (1/12/18) fullscreenchange is not universally adopted, fscreen will
         // detect and add the appropriate vendor prefixed event
         fscreen.addEventListener('fullscreenchange', this.fullscreenchangeHandler);
+    }
+
+    /**
+     * Binds DOM listeners for Fullscreen.
+     *
+     * @protected
+     * @return {void}
+     */
+    unbindDOMListeners() {
+        // as of now (1/12/18) fullscreenchange is not universally adopted, fscreen will
+        // detect and add the appropriate vendor prefixed event
+        fscreen.removeEventListener('fullscreenchange', this.fullscreenchangeHandler);
+    }
+
+    /**
+     * [destructor]
+     *
+     * @protected
+     * @return {void}
+     */
+    destroy() {
+        this.unbindDOMListeners();
+        this.removeAllListeners();
     }
 
     /**
