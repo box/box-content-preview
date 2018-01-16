@@ -28,6 +28,7 @@ import {
     STATUS_VIEWABLE
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
+import { VIEWER_EVENTS } from '../events';
 
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
@@ -378,7 +379,7 @@ class BaseViewer extends EventEmitter {
             this.containerEl.addEventListener('contextmenu', this.preventDefault);
         }
 
-        this.addListener('load', this.viewerLoadHandler);
+        this.addListener(VIEWER_EVENTS.load, this.viewerLoadHandler);
     }
 
     /**
@@ -474,7 +475,7 @@ class BaseViewer extends EventEmitter {
         const { file, viewer } = this.options;
 
         super.emit(event, data);
-        super.emit('viewerevent', {
+        super.emit(VIEWER_EVENTS.generic, {
             event,
             data,
             viewerName: viewer ? viewer.NAME : '',
@@ -823,22 +824,22 @@ class BaseViewer extends EventEmitter {
                 this.disableViewerControls();
 
                 if (data.data.mode === ANNOTATION_TYPE_POINT) {
-                    this.emit('notificationshow', __('notification_annotation_point_mode'));
+                    this.emit(VIEWER_EVENTS.notificationShow, __('notification_annotation_point_mode'));
                 } else if (data.data.mode === ANNOTATION_TYPE_DRAW) {
-                    this.emit('notificationshow', __('notification_annotation_draw_mode'));
+                    this.emit(VIEWER_EVENTS.notificationShow, __('notification_annotation_draw_mode'));
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.modeExit:
                 this.enableViewerControls();
-                this.emit('notificationhide');
+                this.emit(VIEWER_EVENTS.notificationHide);
 
                 if (data.data.mode === ANNOTATION_TYPE_DRAW) {
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.error:
-                this.emit('notificationshow', data.data);
+                this.emit(VIEWER_EVENTS.notificationShow, data.data);
                 break;
             case ANNOTATOR_EVENT.fetch:
                 this.emit('scale', {

@@ -4,6 +4,7 @@ import Browser from '../../Browser';
 import { PERMISSION_DOWNLOAD } from '../../constants';
 import { getIconFromExtension, getIconFromName } from '../../icons/icons';
 import './PreviewError.scss';
+import { VIEWER_EVENTS } from '../../events';
 
 class PreviewErrorViewer extends BaseViewer {
     /**
@@ -103,7 +104,7 @@ class PreviewErrorViewer extends BaseViewer {
         // Filter out any access tokens
         const filteredMsg = errorMsg.replace(/access_token=([^&]*)/, 'access_token=[FILTERED]');
 
-        this.emit('load', {
+        this.emit(VIEWER_EVENTS.load, {
             error: filteredMsg
         });
     }
@@ -131,7 +132,7 @@ class PreviewErrorViewer extends BaseViewer {
      * @return {void}
      */
     download() {
-        this.emit('download');
+        this.emit(VIEWER_EVENTS.download);
     }
 }
 

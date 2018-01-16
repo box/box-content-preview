@@ -19,6 +19,7 @@ import {
 } from './box3DConstants';
 import JS from './box3DAssets';
 import './Box3D.scss';
+import { VIEWER_EVENTS } from '../../events';
 
 // Milliseconds to wait for model to load before cancelling Preview
 const LOAD_TIMEOUT = 50000;
@@ -249,7 +250,7 @@ class Box3DViewer extends BaseViewer {
     handleContextRestored() {
         this.detachEventHandlers();
         this.contextNotification.show('WebGL Context Restored');
-        this.emit('progressstart');
+        this.emit(VIEWER_EVENTS.progressStart);
         this.previewUI.showLoadingIndicator();
         this.postLoad();
     }

@@ -6,6 +6,7 @@ import { CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { HIGHLIGHTTABLE_EXTENSIONS } from '../../extensions';
 import { get, openContentInsideIframe, createAssetUrlCreator, createStylesheet } from '../../util';
+import { VIEWER_EVENTS } from '../../events';
 
 // Inline web worker JS
 const HIGHLIGHT_WORKER_JS =
@@ -160,7 +161,7 @@ class PlainTextViewer extends TextBaseViewer {
         this.textEl.classList.remove(CLASS_HIDDEN);
 
         this.loaded = true;
-        this.emit('load');
+        this.emit(VIEWER_EVENTS.load);
 
         // Show message that text was truncated along with a download button
         if (this.truncated) {
@@ -342,7 +343,7 @@ class PlainTextViewer extends TextBaseViewer {
      * @return {void}
      */
     download() {
-        this.emit('download');
+        this.emit(VIEWER_EVENTS.download);
     }
 }
 

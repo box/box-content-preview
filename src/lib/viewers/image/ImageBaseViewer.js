@@ -5,6 +5,7 @@ import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../icons/icons';
 import { get } from '../../util';
 
 import { CLASS_INVISIBLE } from '../../constants';
+import { VIEWER_EVENTS } from '../../events';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -78,7 +79,7 @@ class ImageBaseViewer extends BaseViewer {
 
                 this.imageEl.classList.remove(CLASS_INVISIBLE);
                 this.loaded = true;
-                this.emit('load');
+                this.emit(VIEWER_EVENTS.load);
             })
             .catch(this.errorHandler);
     }

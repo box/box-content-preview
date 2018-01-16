@@ -5,6 +5,7 @@ import { getRepresentation } from '../../file';
 import { MEDIA_STATIC_ASSETS_VERSION } from '../../constants';
 import './Dash.scss';
 import getLanguageName from '../../lang';
+import { VIEWER_EVENTS } from '../../events';
 
 const CSS_CLASS_DASH = 'bp-media-dash';
 const CSS_CLASS_HD = 'bp-media-controls-is-hd';
@@ -444,7 +445,7 @@ class DashViewer extends VideoBaseViewer {
         this.showPlayButton();
 
         this.loaded = true;
-        this.emit('load');
+        this.emit(VIEWER_EVENTS.load);
 
         // Make media element visible after resize
         this.showMedia();
