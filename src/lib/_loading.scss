@@ -39,8 +39,12 @@
 }
 
 // Only the loading wrapper should be interactable inside the Preview container
-.bp:not(.bp-loaded) > div:not(.bp-loading-wrapper) {
+.bp:not(.bp-loaded) {
     pointer-events: none;
+
+    & .bp-loading-wrapper {
+        pointer-events: all;
+    }
 }
 
 .bp-loading {
