@@ -1,9 +1,6 @@
 import Logger from './Logger';
-import { LOG_TYPES, CONSOLE_LEVELS } from './logConstants';
-import { arrayToString } from './logUtils';
-
-// By default, print nothing.
-const DEFAULT_CONSOLE_LEVEL = CONSOLE_LEVELS.silent;
+import Console from './Console';
+import { LOG_TYPES } from './logConstants';
 
 /**
  * Abstraction layer for communicating with a global logging mechanism and
@@ -11,9 +8,6 @@ const DEFAULT_CONSOLE_LEVEL = CONSOLE_LEVELS.silent;
  * to the console.
  */
 class LogLayer {
-    /** @property {CONSOLE_LEVELS} - Level of logging allowed to the console */
-    consoleLevel = DEFAULT_CONSOLE_LEVEL;
-
     /** @property {Object} - Reference to the global Box Logger object */
     loggerRef;
 
@@ -43,14 +37,14 @@ class LogLayer {
     }
 
     /**
-     * Sets the current level of messages to be logged to the console.
+     * Sets the current level of the Console instance.
      *
      * @public
      * @param {CONSOLE_LEVELS|string} level - The level of logging to log to console.
      * @return {void}
      */
     setConsoleLevel(level) {
-        this.consoleLevel = level;
+        Console.setLevel(level);
     }
 
     /**
@@ -61,7 +55,7 @@ class LogLayer {
      * @return {void}
      */
     info(...args) {
-        this.printLog(LOG_TYPES.info, args);
+        Console.print(LOG_TYPES.info, args);
 
         if (!this.boxLoggerExists()) {
             return;
@@ -78,7 +72,7 @@ class LogLayer {
      * @return {void}
      */
     warn(...args) {
-        this.printLog(LOG_TYPES.warning, args);
+        Console.print(LOG_TYPES.warning, args);
 
         if (!this.boxLoggerExists()) {
             return;
@@ -95,7 +89,7 @@ class LogLayer {
      * @return {void}
      */
     error(...args) {
-        this.printLog(LOG_TYPES.error, args);
+        Console.print(LOG_TYPES.error, args);
 
         if (!this.boxLoggerExists()) {
             return;
@@ -113,7 +107,7 @@ class LogLayer {
      * @return {void}
      */
     metric(eventName, value) {
-        this.printLog(LOG_TYPES.metric, [eventName, value]);
+        Console.print(LOG_TYPES.metric, [eventName, value]);
 
         if (!this.boxLoggerExists()) {
             return;
@@ -208,60 +202,6 @@ class LogLayer {
     //--------------------------------------------------------
 
     /**
-     * Maps logging type to a console printing function. Defaults to 'info = console.log'
-     *
-     * @private
-     * @param {LOG_TYPES|string|null} type - The log type to lookup a corresponding console print method.
-     * @return {Function} A function that can be invoked with a string, to print a message to the console.
-     */
-    getConsoleFunction(type) {
-        let logFunction;
-        /* eslint-disable no-console */
-        switch (type) {
-            case LOG_TYPES.warning:
-                logFunction = console.warn;
-                break;
-            case LOG_TYPES.error:
-            case LOG_TYPES.uncaught_error:
-                logFunction = console.error;
-                break;
-            case LOG_TYPES.info:
-            // fall through
-            default:
-                logFunction = console.log;
-        }
-        /* eslint-enable no-console */
-
-        return logFunction;
-    }
-
-    /**
-     * Determine whether or not we can print to the console, based on consoleLevel.
-     *
-     * @private
-     * @param {LOG_TYPES|string} type - Type of log to check.
-     * @return {boolean} True if we can print to the console.
-     */
-    canPrintLog(type) {
-        let typeValue;
-
-        switch (type) {
-            case LOG_TYPES.warning:
-                typeValue = CONSOLE_LEVELS.warning;
-                break;
-            case LOG_TYPES.error:
-            case LOG_TYPES.uncaught_error:
-                typeValue = CONSOLE_LEVELS.error;
-                break;
-            case LOG_TYPES.info:
-            default:
-                typeValue = CONSOLE_LEVELS.info;
-        }
-
-        return this.consoleLevel <= typeValue;
-    }
-
-    /**
      * Check to see if the global logger exists, and create a reference to it.
      *
      * @private
@@ -281,22 +221,6 @@ class LogLayer {
     resinExists() {
         this.resinRef = global.Resin;
         return !!this.resinRef;
-    }
-
-    /**
-     * Print a message to the console if allowed to.
-     *
-     * @private
-     * @param {LOG_TYPES|string} type - Type of log to check and print to the console.
-     * @param {*} data - Data to print to the console.
-     * @return {void}
-     */
-    printLog(type, data) {
-        const logFunction = this.canPrintLog(type) ? this.getConsoleFunction(type) : null;
-        if (logFunction) {
-            const message = arrayToString(data);
-            logFunction(`[${type}] ${message}`);
-        }
     }
 
     /**
