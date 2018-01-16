@@ -379,6 +379,22 @@ describe('lib/util', () => {
                 assert.ok(head.querySelector('script[src="foo"]') instanceof HTMLScriptElement);
                 assert.ok(head.querySelector('script[src="bar"]') instanceof HTMLScriptElement);
             });
+
+            it('should clear requireJS until scripts are loaded or fail to load', () => {
+                window.define = true;
+                window.require = true;
+                window.requrejs = true;
+
+                return util.loadScripts(['foo', 'bar'], true).catch(() => {
+                    expect(window.define).to.equal(true);
+                    expect(window.require).to.equal(true);
+                    expect(window.requirejs).to.equal(true);
+                });
+
+                expect(window.define).to.equal(undefined);
+                expect(window.require).to.equal(undefined);
+                expect(window.requirejs).to.equal(undefined);
+            });
         });
 
         describe('findScriptLocation()', () => {

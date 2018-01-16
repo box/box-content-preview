@@ -49,6 +49,8 @@ The DASH viewer fires the following events
 | autoplay | the autoplay option has been enabled/disabled | {boolean} new autoplay value|
 | pause | The video pauses ||
 | seeked | The video skips to a time | {number} time |
+| assetsloaded | The viewer's third party assets have loaded ||
+
 
 ## Methods
 

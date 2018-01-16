@@ -99,8 +99,13 @@ class PreviewErrorViewer extends BaseViewer {
 
         // The error will either be the message from the original error, the displayMessage from the orignal error,
         // or the default message from the locally created error
+        const errorMsg = err.message || displayMessage;
+
+        // Filter out any access tokens
+        const filteredMsg = errorMsg.replace(/access_token=([^&]*)/, 'access_token=[FILTERED]');
+
         this.emit('load', {
-            error: err.message || displayMessage
+            error: filteredMsg
         });
 
         // Log that an error occurred. Not translated

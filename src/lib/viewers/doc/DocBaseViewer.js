@@ -547,11 +547,11 @@ class DocBaseViewer extends BaseViewer {
 
                 // Display a generic error message but log the real one
                 const error = err;
-                if (err instanceof Error) {
+                if (error instanceof Error) {
                     error.displayMessage = __('error_document');
                 }
 
-                this.triggerError(err);
+                this.triggerError(error);
             });
     }
 

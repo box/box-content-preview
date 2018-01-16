@@ -680,19 +680,35 @@ describe('lib/viewers/BaseViewer', () => {
     });
 
     describe('loadAssets()', () => {
-        it('should create an asset URL and load the relevant stylesheets and scripts', () => {
-            base.options.location = {};
-            const promise = Promise.resolve();
-
+        beforeEach(() => {
             sandbox.stub(util, 'createAssetUrlCreator').returns(() => {});
             sandbox.stub(util, 'loadStylesheets');
-            sandbox.stub(util, 'loadScripts').returns(promise);
+            sandbox.stub(util, 'loadScripts').returns(Promise.resolve());
+            sandbox.stub(base, 'emit');
+            base.options.location = {};
+            base.options.viewer = {
+                pauseRequireJS: true
+            };
+        });
 
-            const result = base.loadAssets();
+        it('should create an asset URL and load the relevant stylesheets and scripts', () => {
+            base.loadAssets();
+
             expect(util.createAssetUrlCreator).to.be.calledWith(base.options.location);
             expect(util.loadStylesheets).to.be.called;
             expect(util.loadScripts).to.be.called;
-            expect(result).to.equal(promise);
+        });
+
+        it('should emit "assetsloaded" if requireJS is paused and the asset is third party', () => {
+            return base.loadAssets().then(() => {
+                expect(base.emit).to.be.calledWith('assetsloaded');
+            });
+        });
+
+        it('should not emit "assetsloaded" if we load one of our own assets', () => {
+            return base.loadAssets([], [], false).then(() => {
+                expect(base.emit).to.not.be.called;
+            });
         });
     });
 
@@ -798,7 +814,7 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should load the annotations assets', () => {
             base.loadAnnotator();
-            expect(base.loadAssets).to.be.calledWith(['annotations.js'], ['annotations.css']);
+            expect(base.loadAssets).to.be.calledWith(['annotations.js'], ['annotations.css'], false);
         });
     });
 
