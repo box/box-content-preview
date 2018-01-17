@@ -8,6 +8,7 @@ import * as util from '../../util';
 import * as file from '../../file';
 import * as icons from '../../icons/icons';
 import * as constants from '../../constants';
+import { VIEWER_EVENTS } from '../../events';
 
 let base;
 let containerEl;
@@ -299,7 +300,7 @@ describe('lib/viewers/BaseViewer', () => {
             expect(stubs.fullscreenAddListener).to.be.calledWith('enter', sinon.match.func);
             expect(stubs.fullscreenAddListener).to.be.calledWith('exit', sinon.match.func);
             expect(stubs.documentAddEventListener).to.be.calledWith('resize', sinon.match.func);
-            expect(stubs.baseAddListener).to.be.calledWith('load', sinon.match.func);
+            expect(stubs.baseAddListener).to.be.calledWith(VIEWER_EVENTS.load, sinon.match.func);
         });
 
         it('should prevent the context menu if preview only permissions', () => {
@@ -319,7 +320,7 @@ describe('lib/viewers/BaseViewer', () => {
 
         it('should handle annotations load', () => {
             base.addCommonListeners();
-            expect(stubs.baseAddListener).to.be.calledWith('load', sinon.match.func);
+            expect(stubs.baseAddListener).to.be.calledWith(VIEWER_EVENTS.load, sinon.match.func);
         });
     });
 
@@ -496,7 +497,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.emit(event, data);
 
             expect(emitStub).to.be.calledWith(event, data);
-            expect(emitStub).to.be.calledWithMatch('viewerevent', {
+            expect(emitStub).to.be.calledWithMatch(VIEWER_EVENTS.generic, {
                 event,
                 data,
                 viewerName,
@@ -1007,7 +1008,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.disableViewerControls).to.be.called;
-            expect(base.emit).to.be.calledWith('notificationshow', sinon.match.string);
+            expect(base.emit).to.be.calledWith(VIEWER_EVENTS.notificationShow, sinon.match.string);
             expect(base.emit).to.be.calledWith(data.event, data.data);
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
@@ -1022,7 +1023,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.disableViewerControls).to.be.called;
-            expect(base.emit).to.be.calledWith('notificationshow', sinon.match.string);
+            expect(base.emit).to.be.calledWith(VIEWER_EVENTS.notificationShow, sinon.match.string);
             expect(base.emit).to.be.calledWith(data.event, data.data);
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
@@ -1036,7 +1037,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.enableViewerControls).to.be.called;
-            expect(base.emit).to.be.calledWith('notificationhide');
+            expect(base.emit).to.be.calledWith(VIEWER_EVENTS.notificationHide);
             expect(base.emit).to.be.calledWith(data.event, data.data);
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
@@ -1050,7 +1051,7 @@ describe('lib/viewers/BaseViewer', () => {
             };
             base.handleAnnotatorEvents(data);
             expect(base.enableViewerControls).to.be.called;
-            expect(base.emit).to.be.calledWith('notificationhide');
+            expect(base.emit).to.be.calledWith(VIEWER_EVENTS.notificationHide);
             expect(base.emit).to.be.calledWith(data.event, data.data);
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
@@ -1061,7 +1062,7 @@ describe('lib/viewers/BaseViewer', () => {
                 data: 'message'
             };
             base.handleAnnotatorEvents(data);
-            expect(base.emit).to.be.calledWith('notificationshow', data.data);
+            expect(base.emit).to.be.calledWith(VIEWER_EVENTS.notificationShow, data.data);
             expect(base.emit).to.be.calledWith(data.event, data.data);
             expect(base.emit).to.be.calledWith('annotatorevent', data);
         });
@@ -1089,7 +1090,7 @@ describe('lib/viewers/BaseViewer', () => {
             base.handleAnnotatorEvents(data);
             expect(base.disableViewerControls).to.not.be.called;
             expect(base.enableViewerControls).to.not.be.called;
-            expect(base.emit).to.not.be.calledWith('notificationshow', data.data);
+            expect(base.emit).to.not.be.calledWith(VIEWER_EVENTS.notificationShow, data.data);
             expect(base.emit).to.not.be.calledWith('scale', {
                 scale: base.scale,
                 rotationAngle: base.rotationAngle

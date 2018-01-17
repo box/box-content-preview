@@ -3,6 +3,7 @@ import MarkdownViewer from '../MarkdownViewer';
 import BaseViewer from '../../BaseViewer';
 import Popup from '../../../Popup';
 import { TEXT_STATIC_ASSETS_VERSION } from '../../../constants';
+import { VIEWER_EVENTS } from '../../../events';
 
 let containerEl;
 let markdown;
@@ -127,7 +128,7 @@ describe('lib/viewers/text/MarkdownViewer', () => {
             expect(markdown.initRemarkable).to.be.called;
             expect(md.render).to.be.called;
             expect(markdown.loadUI).to.be.called;
-            expect(markdown.emit).to.be.calledWith('load');
+            expect(markdown.emit).to.be.calledWith(VIEWER_EVENTS.load);
             expect(markdown.loaded).to.be.true;
             expect(markdown.textEl.classList.contains('bp-is-hidden')).to.be.false;
         });

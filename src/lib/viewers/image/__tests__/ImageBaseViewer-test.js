@@ -5,6 +5,7 @@ import Browser from '../../../Browser';
 import fullscreen from '../../../Fullscreen';
 import * as util from '../../../util';
 import { ICON_ZOOM_IN, ICON_ZOOM_OUT } from '../../../icons/icons';
+import { VIEWER_EVENTS } from '../../../events';
 
 const CSS_CLASS_PANNING = 'panning';
 const CSS_CLASS_ZOOMABLE = 'zoomable';
@@ -568,7 +569,7 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         });
 
         it('should load UI if not destroyed', (done) => {
-            imageBase.on('load', () => {
+            imageBase.on(VIEWER_EVENTS.load, () => {
                 expect(stubs.errorHandler).to.not.have.been.called;
                 expect(imageBase.loaded).to.be.true;
                 expect(stubs.zoom).to.have.been.called;
