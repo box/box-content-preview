@@ -77,6 +77,17 @@ describe('lib/Fullscreen', () => {
 
             expect(fullscreen.emit).to.have.been.calledWith('exit');
         });
+
+        it('should be called only once when the fullscreenchange event is emitted', () => {
+            const spy = sandbox.spy(fullscreen, 'fullscreenchangeHandler');
+            //rebind the dom listeners to use the spy
+            fullscreen.bindDOMListeners();
+
+            const event = new Event('webkitfullscreenchange');
+
+            window.document.dispatchEvent(event);
+            expect(spy).to.be.called.once;
+        });
     });
 
     describe('toggle()', () => {
