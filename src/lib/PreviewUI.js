@@ -7,6 +7,7 @@ import {
     CLASS_INVISIBLE,
     CLASS_BOX_PREVIEW_BASE_HEADER,
     CLASS_BOX_PREVIEW_HAS_HEADER,
+    CLASS_BOX_PREVIEW_HAS_NAVIGATION,
     CLASS_BOX_PREVIEW_HEADER,
     CLASS_BOX_PREVIEW_THEME_DARK,
     CLASS_PREVIEW_LOADED,
@@ -157,6 +158,7 @@ class PreviewUI {
         // Hide the arrows by default
         leftNavEl.classList.add(CLASS_HIDDEN);
         rightNavEl.classList.add(CLASS_HIDDEN);
+        this.contentContainer.classList.remove(CLASS_BOX_PREVIEW_HAS_NAVIGATION);
 
         leftNavEl.removeEventListener('click', this.leftHandler);
         rightNavEl.removeEventListener('click', this.rightHandler);
@@ -166,6 +168,8 @@ class PreviewUI {
         if (collection.length < 2) {
             return;
         }
+
+        this.contentContainer.classList.add(CLASS_BOX_PREVIEW_HAS_NAVIGATION);
 
         this.contentContainer.addEventListener('mousemove', this.mousemoveHandler);
 
