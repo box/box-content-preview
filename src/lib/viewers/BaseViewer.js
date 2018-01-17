@@ -197,7 +197,7 @@ class BaseViewer extends EventEmitter {
             });
         }
 
-        fullscreen.removeAllListeners();
+        fullscreen.destroy();
         document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
         this.removeAllListeners();
 
@@ -770,9 +770,13 @@ class BaseViewer extends EventEmitter {
      */
     areAnnotationsEnabled() {
         // Respect viewer-specific annotation option if it is set
-        if (window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations) {
+        if (
+            window.BoxAnnotations &&
+            this.options.boxAnnotations instanceof window.BoxAnnotations &&
+            this.options.boxAnnotations.viewerOptions
+        ) {
             const { boxAnnotations, viewer } = this.options;
-            const annotatorConfig = boxAnnotations.options[viewer.NAME];
+            const annotatorConfig = boxAnnotations.viewerOptions[viewer.NAME];
             this.viewerConfig = {
                 enabled: annotatorConfig && (annotatorConfig.enabled || annotatorConfig.enabledTypes.length > 0)
             };
