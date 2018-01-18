@@ -538,6 +538,8 @@ class DocBaseViewer extends BaseViewer {
             docInitParams.httpHeaders[X_BOX_ACCEPT_ENCODING_HEADER] = X_BOX_ACCEPT_ENCODING_IDENTITY;
         }
 
+        console.error(docInitParams);
+
         // Load PDF from representation URL and set as document for pdf.js. Cache
         // the loading task so we can cancel if needed
         this.pdfLoadingTask = PDFJS.getDocument(docInitParams);
@@ -627,7 +629,7 @@ class DocBaseViewer extends BaseViewer {
         PDFJS.disableRange = location.locale !== 'en-US' && size < MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US;
 
         // Disable range requests for watermarked files since they are streamed
-        PDFJS.disableRange = false; // PDFJS.disableRange || (watermarkInfo && watermarkInfo.is_watermarked);
+        PDFJS.disableRange = PDFJS.disableRange || (watermarkInfo && watermarkInfo.is_watermarked);
 
         // Disable text layer if user doesn't have download permissions
         PDFJS.disableTextLayer =

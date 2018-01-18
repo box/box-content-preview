@@ -16,6 +16,8 @@ import {
     STATUS_ERROR,
     STATUS_PENDING,
     STATUS_SUCCESS,
+    X_BOX_ACCEPT_ENCODING_HEADER,
+    X_BOX_ACCEPT_ENCODING_IDENTITY
 } from '../../../constants';
 
 import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
@@ -837,6 +839,30 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                         'If-None-Match': 'webkit-no-cache'
                     }
                 });
+            });
+        });
+
+        it('should set a x-box-accept-encoding header when range requests are enabled', () => {
+            docBase.options.location = {
+                locale: 'en-GB'
+            };
+            const isDisbled = PDFJS.disableRange;
+            sandbox.stub(Browser, 'isIOS').returns(false);
+            sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve({}));
+
+            PDFJS.disableRange = false;
+            
+            return docBase.initViewer('').then(() => {
+                expect(PDFJS.getDocument).to.be.calledWith({
+                    url: '',
+                    rangeChunkSize: 524288,
+                    httpHeaders: {
+                        [X_BOX_ACCEPT_ENCODING_HEADER]: X_BOX_ACCEPT_ENCODING_IDENTITY
+                    }
+                });
+
+                // Reset to original value
+                PDFJS.disableRange = isDisbled;
             });
         });
 
