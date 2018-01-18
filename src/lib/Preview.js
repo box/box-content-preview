@@ -44,6 +44,7 @@ import {
     X_REP_HINT_VIDEO_DASH,
     X_REP_HINT_VIDEO_MP4
 } from './constants';
+import { VIEWER_EVENT } from './events';
 import './Preview.scss';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
@@ -946,7 +947,7 @@ class Preview extends EventEmitter {
     attachViewerListeners() {
         // Node requires listener attached to 'error'
         this.viewer.addListener('error', this.triggerError);
-        this.viewer.addListener('viewerevent', this.handleViewerEvents);
+        this.viewer.addListener(VIEWER_EVENT.default, this.handleViewerEvents);
     }
 
     /**
@@ -959,34 +960,34 @@ class Preview extends EventEmitter {
     handleViewerEvents(data) {
         /* istanbul ignore next */
         switch (data.event) {
-            case 'download':
+            case VIEWER_EVENT.download:
                 this.download();
                 break;
-            case 'reload':
+            case VIEWER_EVENT.reload:
                 this.reload(); // Reload preview and fetch updated file info depending on `skipServerUpdate` option
                 break;
-            case 'load':
+            case VIEWER_EVENT.load:
                 this.finishLoading(data.data);
                 break;
-            case 'progressstart':
+            case VIEWER_EVENT.progressStart:
                 this.ui.startProgressBar();
                 break;
-            case 'progressend':
+            case VIEWER_EVENT.progressEnd:
                 this.ui.finishProgressBar();
                 break;
-            case 'notificationshow':
+            case VIEWER_EVENT.notificationShow:
                 this.ui.showNotification(data.data);
                 break;
-            case 'notificationhide':
+            case VIEWER_EVENT.notificationHide:
                 this.ui.hideNotification();
                 break;
-            case 'mediaendautoplay':
+            case VIEWER_EVENT.mediaEndAutoplay:
                 this.navigateRight();
                 break;
             default:
                 // This includes 'notification', 'preload' and others
                 this.emit(data.event, data.data);
-                this.emit('viewerevent', data);
+                this.emit(VIEWER_EVENT.default, data);
         }
     }
 
@@ -1033,7 +1034,7 @@ class Preview extends EventEmitter {
             this.count.error += 1;
 
             // 'load' with { error } signifies a preview error
-            this.emit('load', {
+            this.emit(VIEWER_EVENT.load, {
                 error,
                 metrics: this.logger.done(this.count),
                 file: this.file
@@ -1048,7 +1049,7 @@ class Preview extends EventEmitter {
             this.count.success += 1;
 
             // Finally emit the viewer instance back with a load event
-            this.emit('load', {
+            this.emit(VIEWER_EVENT.load, {
                 viewer: this.viewer,
                 metrics: this.logger.done(this.count),
                 file: this.file
