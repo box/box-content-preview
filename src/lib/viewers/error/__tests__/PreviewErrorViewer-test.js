@@ -5,6 +5,7 @@ import Browser from '../../../Browser';
 import * as file from '../../../file';
 import { PERMISSION_DOWNLOAD } from '../../../constants';
 import * as icons from '../../../icons/icons';
+import { VIEWER_EVENT } from '../../../events';
 
 const sandbox = sinon.sandbox.create();
 let error;
@@ -139,7 +140,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             error.load(err);
 
             expect(error.emit).to.be.calledWith(
-                'load', {
+                VIEWER_EVENT.load, {
                     error: 'this is bad'
                 }
             );
@@ -156,8 +157,23 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
 
 
             expect(error.emit).to.be.calledWith(
-                'load', {
+                VIEWER_EVENT.load, {
                     error: 'reason'
+                }
+            );
+        });
+
+        it('should filter out access tokens before broadcasting', () => {
+            sandbox.stub(error, 'emit');
+
+            const err = new Error();
+            err.message = 'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=blah&test=okay"';
+
+            error.load(err);
+
+            expect(error.emit).to.be.calledWith(
+                VIEWER_EVENT.load, {
+                    error: 'Unexpected server response (0) while retrieving PDF "www.box.com?access_token=[FILTERED]&test=okay"'
                 }
             );
         });
@@ -187,7 +203,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
             error.setup();
             sandbox.stub(error, 'emit');
             error.download();
-            expect(error.emit).to.be.calledWith('download');
+            expect(error.emit).to.be.calledWith(VIEWER_EVENT.download);
         });
     });
 

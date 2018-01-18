@@ -21,9 +21,10 @@ import {
     X_BOX_ACCEPT_ENCODING_IDENTITY
 } from '../../constants';
 import { checkPermission, getRepresentation } from '../../file';
-import { get, createAssetUrlCreator } from '../../util';
+import { get, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { JS, CSS } from './docAssets';
+import { VIEWER_EVENT } from '../../events';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
@@ -32,6 +33,9 @@ const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
 const PRINT_DIALOG_TIMEOUT_MS = 500;
 const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
+const MAX_PINCH_SCALE_VALUE = 3;
+const MIN_PINCH_SCALE_VALUE = 0.25;
+const MIN_PINCH_SCALE_DELTA = 0.01;
 const IS_SAFARI_CLASS = 'is-safari';
 const SCROLL_EVENT_THROTTLE_INTERVAL = 200;
 const SCROLL_END_TIMEOUT = this.isMobile ? 500 : 250;
@@ -39,6 +43,8 @@ const RANGE_REQUEST_CHUNK_SIZE_US = 1048576; // 1MB
 const RANGE_REQUEST_CHUNK_SIZE_NON_US = 524288; // 512KB
 const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 26214400; // 25MB
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
+const PINCH_PAGE_CLASS = 'pinch-page';
+const PINCHING_CLASS = 'pinching';
 
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
@@ -63,6 +69,9 @@ class DocBaseViewer extends BaseViewer {
         this.enterfullscreenHandler = this.enterfullscreenHandler.bind(this);
         this.exitfullscreenHandler = this.exitfullscreenHandler.bind(this);
         this.throttledScrollHandler = this.getScrollHandler().bind(this);
+        this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
+        this.pinchToZoomChangeHandler = this.pinchToZoomChangeHandler.bind(this);
+        this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
     }
 
     /**
@@ -91,8 +100,6 @@ class DocBaseViewer extends BaseViewer {
         this.viewerEl = this.docEl.appendChild(document.createElement('div'));
         this.viewerEl.classList.add('pdfViewer');
         this.loadTimeout = LOAD_TIMEOUT_MS;
-
-        this.scaling = false;
     }
 
     /**
@@ -551,11 +558,11 @@ class DocBaseViewer extends BaseViewer {
 
                 // Display a generic error message but log the real one
                 const error = err;
-                if (err instanceof Error) {
+                if (error instanceof Error) {
                     error.displayMessage = __('error_document');
                 }
 
-                this.triggerError(err);
+                this.triggerError(error);
             });
     }
 
@@ -800,15 +807,10 @@ class DocBaseViewer extends BaseViewer {
         fullscreen.addListener('enter', this.enterfullscreenHandler);
         fullscreen.addListener('exit', this.exitfullscreenHandler);
 
-        if (this.isMobile) {
-            if (Browser.isIOS()) {
-                this.docEl.addEventListener('gesturestart', this.mobileZoomStartHandler);
-                this.docEl.addEventListener('gestureend', this.mobileZoomEndHandler);
-            } else {
-                this.docEl.addEventListener('touchstart', this.mobileZoomStartHandler);
-                this.docEl.addEventListener('touchmove', this.mobileZoomChangeHandler);
-                this.docEl.addEventListener('touchend', this.mobileZoomEndHandler);
-            }
+        if (this.hasTouch) {
+            this.docEl.addEventListener('touchstart', this.pinchToZoomStartHandler);
+            this.docEl.addEventListener('touchmove', this.pinchToZoomChangeHandler);
+            this.docEl.addEventListener('touchend', this.pinchToZoomEndHandler);
         }
     }
 
@@ -825,15 +827,10 @@ class DocBaseViewer extends BaseViewer {
             this.docEl.removeEventListener('pagechange', this.pagechangeHandler);
             this.docEl.removeEventListener('scroll', this.throttledScrollHandler);
 
-            if (this.isMobile) {
-                if (Browser.isIOS()) {
-                    this.docEl.removeEventListener('gesturestart', this.mobileZoomStartHandler);
-                    this.docEl.removeEventListener('gestureend', this.mobileZoomEndHandler);
-                } else {
-                    this.docEl.removeEventListener('touchstart', this.mobileZoomStartHandler);
-                    this.docEl.removeEventListener('touchmove', this.mobileZoomChangeHandler);
-                    this.docEl.removeEventListener('touchend', this.mobileZoomEndHandler);
-                }
+            if (this.hasTouch) {
+                this.docEl.removeEventListener('touchstart', this.pinchToZoomStartHandler);
+                this.docEl.removeEventListener('touchmove', this.pinchToZoomChangeHandler);
+                this.docEl.removeEventListener('touchend', this.pinchToZoomEndHandler);
             }
         }
 
@@ -869,7 +866,7 @@ class DocBaseViewer extends BaseViewer {
         // Broadcast that preview has 'loaded' when page structure is available
         if (!this.loaded) {
             this.loaded = true;
-            this.emit('load', {
+            this.emit(VIEWER_EVENT.load, {
                 numPages: this.pdfViewer.pagesCount,
                 endProgress: false, // Indicate that viewer will end progress later
                 scale: this.pdfViewer.currentScale
@@ -903,7 +900,7 @@ class DocBaseViewer extends BaseViewer {
             // Fire progressend event to hide progress bar and cleanup preload after a page is rendered
             if (!this.somePageRendered) {
                 this.hidePreload();
-                this.emit('progressend');
+                this.emit(VIEWER_EVENT.progressEnd);
                 this.somePageRendered = true;
             }
         }
@@ -984,6 +981,137 @@ class DocBaseViewer extends BaseViewer {
                 this.scrollStarted = false;
             }, SCROLL_END_TIMEOUT);
         }, SCROLL_EVENT_THROTTLE_INTERVAL);
+    }
+
+    /**
+     * Sets up pinch to zoom behavior by wrapping zoomed divs and determining the original pinch distance.
+     *
+     * @protected
+     * @param {Event} event - object
+     * @return {void}
+     */
+    pinchToZoomStartHandler(event) {
+        if (event.touches.length < 2) {
+            return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        this.isPinching = true;
+
+        // Determine the midpoint of our pinch event if it is not provided for us
+        const touchMidpoint =
+            event.pageX && event.pageY
+                ? [event.pageX, event.pageY]
+                : getMidpoint(
+                    event.touches[0].pageX,
+                    event.touches[0].pageY,
+                    event.touches[1].pageX,
+                    event.touches[1].pageY
+                );
+
+        // Find the page closest to the pinch
+        const visiblePages = this.pdfViewer._getVisiblePages();
+        this.pinchPage = getClosestPageToPinch(
+            this.docEl.scrollLeft + touchMidpoint[0],
+            this.docEl.scrollTop + touchMidpoint[1],
+            visiblePages
+        );
+
+        // Set the scale point based on the pinch midpoint and scroll offsets
+        this.scaledXOffset = this.docEl.scrollLeft - this.pinchPage.offsetLeft + touchMidpoint[0];
+        this.scaledYOffset = this.docEl.scrollTop - this.pinchPage.offsetTop + touchMidpoint[1] + 15;
+
+        this.pinchPage.style['transform-origin'] = `${this.scaledXOffset}px ${this.scaledYOffset}px`;
+
+        // Preserve the original touch offset
+        this.originalXOffset = touchMidpoint[0];
+        this.originalYOffset = touchMidpoint[1];
+
+        // Used by non-iOS browsers that do not provide a scale value
+        this.originalDistance = getDistance(
+            event.touches[0].pageX,
+            event.touches[0].pageY,
+            event.touches[1].pageX,
+            event.touches[1].pageY
+        );
+    }
+
+    /**
+     * Updates the CSS transform zoom based on the distance of the pinch gesture.
+     *
+     * @protected
+     * @param {Event} event - object
+     * @return {void}
+     */
+    pinchToZoomChangeHandler(event) {
+        if (!this.isPinching) {
+            return;
+        }
+
+        const scale = event.scale
+            ? event.scale
+            : getDistance(
+                event.touches[0].pageX,
+                event.touches[0].pageY,
+                event.touches[1].pageX,
+                event.touches[1].pageY
+            ) / this.originalDistance;
+
+        const proposedNewScale = this.pdfViewer.currentScale * scale;
+        if (
+            scale === 1 ||
+            Math.abs(this.pinchScale - scale) < MIN_PINCH_SCALE_DELTA ||
+            proposedNewScale >= MAX_SCALE ||
+            proposedNewScale <= MIN_SCALE ||
+            scale > MAX_PINCH_SCALE_VALUE ||
+            scale < MIN_PINCH_SCALE_VALUE
+        ) {
+            // There are a variety of circumstances where we don't want to scale'
+            // 1. We haven't detected a changes
+            // 2. The change isn't significant enough
+            // 3. We will exceed our max or min scale
+            // 4. The scale is too significant, which can lead to performance issues
+            return;
+        }
+
+        this.pinchScale = scale;
+        this.pinchPage.classList.add(PINCH_PAGE_CLASS);
+        this.docEl.firstChild.classList.add(PINCHING_CLASS);
+
+        this.pinchPage.style.transform = `scale(${this.pinchScale})`;
+    }
+
+    /**
+     * Replaces the CSS transform with a native PDF.js zoom and scrolls to maintain positioning.
+     *
+     * @protected
+     * @return {void}
+     */
+    pinchToZoomEndHandler() {
+        if (!this.pinchPage || !this.isPinching || this.pinchScale === 1) {
+            return;
+        }
+
+        // PDF.js zoom
+        this.pdfViewer.currentScaleValue = this.pdfViewer.currentScale * this.pinchScale;
+
+        this.pinchPage.style.transform = null;
+        this.pinchPage.style['transform-origin'] = null;
+        this.pinchPage.classList.remove(PINCH_PAGE_CLASS);
+        this.docEl.firstChild.classList.remove(PINCHING_CLASS);
+
+        // Scroll to correct position after zoom
+        this.docEl.scroll(
+            this.scaledXOffset * this.pinchScale - this.originalXOffset,
+            this.scaledYOffset * this.pinchScale - this.originalYOffset + this.pinchPage.offsetTop
+        );
+
+        this.isPinching = false;
+        this.originalDistance = 0;
+        this.pinchScale = 1;
+        this.pinchPage = null;
     }
 }
 

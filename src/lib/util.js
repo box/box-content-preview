@@ -467,11 +467,19 @@ export function loadStylesheets(urls) {
  *
  * @public
  * @param {Array} urls - Asset urls
+ * @param {string} [disableRequireJS] - Should requireJS be temporarily disabled
  * @return {Promise} Promise to load scripts
  */
-export function loadScripts(urls) {
+export function loadScripts(urls, disableRequireJS = false) {
     const { head } = document;
     const promises = [];
+    const { define, require, requirejs } = window;
+
+    if (disableRequireJS) {
+        window.define = undefined;
+        window.require = undefined;
+        window.requirejs = undefined;
+    }
 
     urls.forEach((url) => {
         if (!head.querySelector(`script[src="${url}"]`)) {
@@ -486,7 +494,21 @@ export function loadScripts(urls) {
         }
     });
 
-    return Promise.all(promises);
+    return Promise.all(promises)
+        .then(() => {
+            if (disableRequireJS) {
+                window.define = define;
+                window.require = require;
+                window.requirejs = requirejs;
+            }
+        })
+        .catch(() => {
+            if (disableRequireJS) {
+                window.define = define;
+                window.require = require;
+                window.requirejs = requirejs;
+            }
+        });
 }
 
 /**
@@ -750,4 +772,68 @@ export function pageNumberFromScroll(currentPageNum, previousScrollTop, currentP
     }
 
     return pageNum;
+}
+
+/**
+ * Calculates the midpoint from two points.
+ *
+ * @public
+ * @param {number} x1 - The x value of the first point
+ * @param {number} y1 - The y value of the first point
+ * @param {number} x2 - The x value of the second point
+ * @param {number} y2 - The y value of the second point
+ * @return {Array} The resulting x,y point
+ */
+export function getMidpoint(x1, y1, x2, y2) {
+    const x = (x1 + x2) / 2;
+    const y = (y1 + y2) / 2;
+    return [x, y];
+}
+
+/**
+ * Calculates the distance between two points.
+ *
+ * @public
+ * @param {number} x1 - The x value of the first point
+ * @param {number} y1 - The y value of the first point
+ * @param {number} x2 - The x value of the second point
+ * @param {number} y2 - The y value of the second point
+ * @return {number} The resulting distance
+ */
+export function getDistance(x1, y1, x2, y2) {
+    return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+}
+
+/**
+ * Returns the closest visible page to a pinch event
+ *
+ * @public
+ * @param {number} x - The x value of pinch
+ * @param {number} y - The y value of the pinch
+ * @param {Object} visiblePages - Object of visible pages to consider
+ * @return {HTMLElement} The resulting page
+ */
+export function getClosestPageToPinch(x, y, visiblePages) {
+    if (!visiblePages || !visiblePages.first || !visiblePages.last) {
+        return null;
+    }
+
+    let closestPage = null;
+    for (let i = visiblePages.first.id, closestDistance = null; i <= visiblePages.last.id; i++) {
+        const page = document.querySelector(`#bp-page-${i}`);
+        const pageMidpoint = getMidpoint(
+            page.offsetLeft,
+            page.offsetTop,
+            page.offsetLeft + page.scrollWidth,
+            page.offsetTop + page.scrollHeight
+        );
+
+        const distance = getDistance(pageMidpoint[0], pageMidpoint[1], x, y);
+        if (!closestPage || distance < closestDistance) {
+            closestPage = page;
+            closestDistance = distance;
+        }
+    }
+
+    return closestPage;
 }

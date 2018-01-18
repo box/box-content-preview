@@ -19,6 +19,7 @@ import {
 } from '../../../constants';
 
 import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
+import { VIEWER_EVENT } from '../../../events';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -1159,37 +1160,29 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
         });
 
         it('should add the correct listeners', () => {
-            docBase.isMobile = false;
+            docBase.hasTouch = false;
             docBase.bindDOMListeners();
             expect(stubs.addEventListener).to.be.calledWith('pagesinit', docBase.pagesinitHandler);
             expect(stubs.addEventListener).to.be.calledWith('pagerendered', docBase.pagerenderedHandler);
             expect(stubs.addEventListener).to.be.calledWith('pagechange', docBase.pagechangeHandler);
             expect(stubs.addEventListener).to.be.calledWith('scroll', docBase.throttledScrollHandler);
 
-            expect(stubs.addEventListener).to.not.be.calledWith('gesturestart', docBase.mobileZoomStartHandler);
-            expect(stubs.addEventListener).to.not.be.calledWith('gestureend', docBase.mobileZoomEndHandler);
+
+            expect(stubs.addEventListener).to.not.be.calledWith('touchstart', docBase.pinchToZoomStartHandler);
+            expect(stubs.addEventListener).to.not.be.calledWith('touchmove', docBase.pinchToZoomChangeHandler);
+            expect(stubs.addEventListener).to.not.be.calledWith('touchend', docBase.pinchToZoomEndHandler);
 
             expect(stubs.addListener).to.be.calledWith('enter', docBase.enterfullscreenHandler);
             expect(stubs.addListener).to.be.calledWith('exit', docBase.exitfullscreenHandler);
         });
 
-        it('should add gesture listeners if the browser is iOS', () => {
-            docBase.isMobile = true;
-            stubs.isIOS.returns(true);
-
+        it('should add the pinch to zoom handler if touch is detected', () => {
+            docBase.hasTouch = true;
             docBase.bindDOMListeners();
-            expect(stubs.addEventListener).to.be.calledWith('gesturestart', docBase.mobileZoomStartHandler);
-            expect(stubs.addEventListener).to.be.calledWith('gestureend', docBase.mobileZoomEndHandler);
-        });
 
-        it('should add the touch event listeners if the browser is not iOS', () => {
-            docBase.isMobile = true;
-            stubs.isIOS.returns(false);
-
-            docBase.bindDOMListeners();
-            expect(stubs.addEventListener).to.be.calledWith('touchstart', docBase.mobileZoomStartHandler);
-            expect(stubs.addEventListener).to.be.calledWith('touchmove', docBase.mobileZoomChangeHandler);
-            expect(stubs.addEventListener).to.be.calledWith('touchend', docBase.mobileZoomEndHandler);
+            expect(stubs.addEventListener).to.be.calledWith('touchstart', docBase.pinchToZoomStartHandler);
+            expect(stubs.addEventListener).to.be.calledWith('touchmove', docBase.pinchToZoomChangeHandler);
+            expect(stubs.addEventListener).to.be.calledWith('touchend', docBase.pinchToZoomEndHandler);
         });
     });
 
@@ -1224,23 +1217,22 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(stubs.removeFullscreenListener).to.be.calledWith('exit', docBase.exitfullscreenHandler);
         });
 
-        it('should remove gesture listeners if the browser is iOS', () => {
-            docBase.isMobile = true;
-            stubs.isIOS.returns(true);
+        it('should remove pinch to zoom listeners if the browser has touch', () => {
+            docBase.hasTouch = true;
 
             docBase.unbindDOMListeners();
-            expect(stubs.removeEventListener).to.be.calledWith('gesturestart', docBase.mobileZoomStartHandler);
-            expect(stubs.removeEventListener).to.be.calledWith('gestureend', docBase.mobileZoomEndHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('touchstart', docBase.pinchToZoomStartHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('touchmove', docBase.pinchToZoomChangeHandler);
+            expect(stubs.removeEventListener).to.be.calledWith('touchend', docBase.pinchToZoomEndHandler);
         });
 
-        it('should remove the touch event listeners if the browser is not iOS', () => {
-            docBase.isMobile = true;
-            stubs.isIOS.returns(false);
+        it('should not remove the pinch to zoom listeners if the browser does not have touch', () => {
+            docBase.hasTouch = false;
 
             docBase.unbindDOMListeners();
-            expect(stubs.removeEventListener).to.be.calledWith('touchstart', docBase.mobileZoomStartHandler);
-            expect(stubs.removeEventListener).to.be.calledWith('touchmove', docBase.mobileZoomChangeHandler);
-            expect(stubs.removeEventListener).to.be.calledWith('touchend', docBase.mobileZoomEndHandler);
+            expect(stubs.removeEventListener).to.not.be.calledWith('touchstart', docBase.pinchToZoomStartHandler);
+            expect(stubs.removeEventListener).to.not.be.calledWith('touchmove', docBase.pinchToZoomChangeHandler);
+            expect(stubs.removeEventListener).to.not.be.calledWith('touchend', docBase.pinchToZoomEndHandler);
         });
     });
 
@@ -1273,7 +1265,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.pdfViewer.pagesCount = 5;
 
             docBase.pagesinitHandler();
-            expect(stubs.emit).to.be.calledWith('load', {
+            expect(stubs.emit).to.be.calledWith(VIEWER_EVENT.load, {
                 endProgress: false,
                 numPages: 5,
                 scale: sinon.match.any
@@ -1304,7 +1296,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should emit handleAssetAndRepLoad event if not already emitted', () => {
             docBase.pagerenderedHandler(docBase.event);
-            expect(stubs.emit).to.be.calledWith('progressend');
+            expect(stubs.emit).to.be.calledWith(VIEWER_EVENT.progressEnd);
         });
     });
 
@@ -1409,5 +1401,237 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             clock.tick(SCROLL_END_TIMEOUT + 1);
             expect(stubs.emit).to.be.calledWith('scrollend');
         });
+    });
+
+    describe('pinchToZoomStartHandler()', () => {
+        let event;
+
+        beforeEach(() => {
+            event = {
+                touches: {
+                    length: 2
+                },
+                stopPropagation: sandbox.stub(),
+                preventDefault: sandbox.stub(),
+                pageX: 0,
+                pageY: 0,
+                touches: [
+                    {
+                        pageX: 0,
+                        pageY: 100
+                    },
+                    {
+                        pageX: 200,
+                        pageY: 200
+                    }
+                ]
+            };
+            docBase.isPinching = false;
+            docBase.pdfViewer = {
+                _getVisiblePages: sandbox.stub()
+            }
+            sandbox.stub(util, 'getClosestPageToPinch').returns(document.createElement('div'));
+            sandbox.stub(util, 'getDistance');
+        });
+
+        it('should do nothing if we are already pinching or if the event does not use two finger', () => {
+            event.touches.length = 1;
+
+            docBase.pinchToZoomStartHandler(event);
+            expect(event.stopPropagation).to.not.be.called;
+
+            event.touches = [
+                {
+                    pageX: 0,
+                    pageY: 100
+                },
+                {
+                    pageX: 200,
+                    pageY: 200
+                }
+            ];
+
+            docBase.pinchToZoomStartHandler(event);
+            expect(event.stopPropagation).to.be.called;
+        });
+
+        it('should prevent default behavior and indicate that we are pinching', () => {
+            docBase.pinchToZoomStartHandler(event);
+
+            expect(docBase.isPinching).to.be.true;
+            expect(event.stopPropagation).to.be.called;
+            expect(event.preventDefault).to.be.called;
+        });
+
+        it('should get the closest page and setup the pinching clases', () => {
+            docBase.docEl = document.createElement('div');
+            const pdfViewer = document.createElement('div');
+            docBase.docEl.appendChild(pdfViewer);
+            docBase.pinchToZoomStartHandler(event);
+
+            expect(docBase.pdfViewer._getVisiblePages).to.be.called;
+            expect(util.getClosestPageToPinch).to.be.called;
+        });
+
+        it('should save the original distance for later scale calculation', () => {
+            docBase.pinchToZoomStartHandler(event);
+            expect(util.getDistance).to.be.calledWith(event.touches[0].pageX, event.touches[0].pageY, event.touches[1].pageX, event.touches[1].pageY)
+        });
+    });
+
+    describe('pinchToZoomChangeHandler()', () => {
+        let eventWithScale;
+        let eventWithoutScale;
+
+        beforeEach(() => {
+            docBase.originalDistance = 1;
+            docBase.pinchPage = document.createElement('div');
+            docBase.isPinching = true;
+            eventWithScale = {
+                scale: 1.5
+            };
+
+            eventWithoutScale = {
+                touches: [
+                    {
+                        pageX: 100,
+                        pageY: 100
+                    },
+                    {
+                        pageX: 300,
+                        pageY: 300
+                    }
+                ]
+            };
+
+            docBase.pdfViewer = {
+                currentScale: 1
+            }
+
+            sandbox.stub(util, 'getDistance');
+        });
+
+        it('should do nothing if we are not pinching', () => {
+            docBase.isPinching = false;
+
+            docBase.pinchToZoomChangeHandler(eventWithoutScale);
+            expect(util.getDistance).to.not.be.called;
+
+            docBase.isPinching = true;
+
+            docBase.pinchToZoomChangeHandler(eventWithoutScale);
+            expect(util.getDistance).to.be.called;
+        });
+
+        describe('ignored chages', () => {
+            it('should do nothing if the scale is 1', () => {
+                eventWithScale.scale = 1;
+                docBase.pinchToZoomChangeHandler(eventWithScale);
+
+                expect(docBase.pinchPage.style.transform).to.equal(undefined);
+            });
+
+            it('should do nothing if the scale change is less than 0.01', () => {
+                docBase.pinchScale = 1.5;
+                eventWithScale.scale = 1.501;
+                docBase.pinchToZoomChangeHandler(eventWithScale);
+
+                expect(docBase.pinchPage.style.transform).to.equal(undefined);
+            });
+
+            it('should do nothing if the scale change bigger than 3', () => {
+                docBase.pinchScale = 1;
+                eventWithScale.scale = 3.5;
+                docBase.pinchToZoomChangeHandler(eventWithScale);
+
+                expect(docBase.pinchPage.style.transform).to.equal(undefined);
+            });
+
+            it('should do nothing if the scale change bigger than .25', () => {
+                docBase.pinchScale = 1;
+                eventWithScale.scale = .1;
+                docBase.pinchToZoomChangeHandler(eventWithScale);
+
+                expect(docBase.pinchPage.style.transform).to.equal(undefined);
+            });
+
+            it('should do nothing if the proposed scale is greater than the MAX_SCALE', () => {
+                docBase.pdfViewer = {
+                    currentScale: 7
+                }
+
+                eventWithScale.scale = 2;
+                docBase.pinchToZoomChangeHandler(eventWithScale);
+
+                expect(docBase.pinchPage.style.transform).to.equal(undefined);
+            });
+
+            it('should do nothing if the proposed scale is less than the MIN_SCALE', () => {
+                docBase.pdfViewer = {
+                    currentScale: .12
+                }
+
+                eventWithScale.scale = .25;
+                docBase.pinchToZoomChangeHandler(eventWithScale);
+
+                expect(docBase.pinchPage.style.transform).to.equal(undefined);
+            });
+        });
+
+        it('should transform the pinched page based on the new scale value', () => {
+            docBase.pinchToZoomChangeHandler(eventWithScale);
+            expect(docBase.pinchPage.style.transform).to.equal('scale(1.5)');
+            expect(docBase.pinchPage.classList.contains('pinch-page')).to.be.true;
+        });
+
+    });
+
+    describe('pinchToZoomEndHandler()', () => {
+        beforeEach(() => {
+            docBase.pdfViewer = {
+                currentScaleValue: 1,
+                currentScale: 1,
+                update: sandbox.stub()
+            }
+
+            docBase.pinchScale = 1.5;
+
+            docBase.docEl.scroll = sandbox.stub();
+
+            docBase.isPinching = true;
+            docBase.pinchPage = document.createElement('div');
+        });
+
+        it('should do nothing if we are not pinching', () => {
+            docBase.isPinching = false;
+            docBase.pinchToZoomEndHandler()
+            expect(docBase.pdfViewer.currentScaleValue).to.equal(1);
+        });
+
+        it('should do nothing if no pinched page exists', () => {
+            docBase.pinchPage = null;
+            docBase.pinchToZoomEndHandler()
+            expect(docBase.pdfViewer.currentScaleValue).to.equal(1);
+        });
+
+        it('should perform a pdf.js zoom', () => {
+            docBase.pinchToZoomEndHandler()
+            expect(docBase.pdfViewer.currentScaleValue).to.equal(1.5);
+        });
+
+        it('should scroll to offset the zoom', () => {
+            docBase.pinchToZoomEndHandler()
+            expect(docBase.docEl.scroll).to.be.called;
+        });
+
+        it('should reset pinching state variables', () => {
+            docBase.pinchToZoomEndHandler()
+
+            expect(docBase.isPinching).to.be.false;
+            expect(docBase.originalDistance).to.equal(0);
+            expect(docBase.pinchScale).to.equal(1);
+            expect(docBase.pinchPage).to.equal(null);
+        });
+
     });
 });

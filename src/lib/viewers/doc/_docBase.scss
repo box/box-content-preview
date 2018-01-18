@@ -22,14 +22,13 @@
         /* stylelint-enable declaration-no-important */
     }
 
-    &.is-safari {
-        // Fixes bug in Safari https://css-tricks.com/forums/topic/safari-for-ios-z-index-ordering-bug-while-scrolling-a-page-with-a-fixed-element/
-        transform: translate3d(0, 0, 0);
-    }
-
     // Fixes vertical scroll issue - scrollbars should be disabled until after preview is loaded
     &.bp-is-scrollable {
         overflow: auto;
+    }
+
+    .pdfViewer.pinching {
+        visibility: hidden;
     }
 
     //---------- Override CSS from generic PDFJS viewer build ----------//
@@ -54,6 +53,15 @@
         // Fixes annotation icon broken src
         .textAnnotation > img {
             opacity: 0;
+        }
+    }
+
+    .pdfViewer .page.pinch-page {
+        padding: 0;
+        visibility: visible;
+
+        .textLayer {
+            display: none;
         }
     }
 

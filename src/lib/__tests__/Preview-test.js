@@ -8,10 +8,10 @@ import Browser from '../Browser';
 import * as file from '../file';
 import * as util from '../util';
 import { API_HOST, CLASS_NAVIGATION_VISIBILITY } from '../constants';
+import { VIEWER_EVENT } from '../events';
 
 const tokens = require('../tokens');
 
-const RETRY_TIMEOUT = 500; // retry network request interval for a file
 const PREFETCH_COUNT = 4; // number of files to prefetch
 const MOUSEMOVE_THROTTLE = 1500; // for showing or hiding the navigation icons
 const KEYDOWN_EXCEPTIONS = ['INPUT', 'SELECT', 'TEXTAREA']; // Ignore keydown events on these elements
@@ -917,6 +917,7 @@ describe('lib/Preview', () => {
                 logoUrl: stubs.logoUrl,
                 showDownload: true,
                 showAnnotations: true,
+                pauseRequireJS: true,
                 collection: stubs.collection,
                 loaders: stubs.loaders
             };
@@ -1000,6 +1001,11 @@ describe('lib/Preview', () => {
             preview.previewOptions.skipServerUpdate = true;
             preview.parseOptions(preview.previewOptions, stubs.tokens);
             expect(preview.options.skipServerUpdate).to.be.true;
+        });
+
+        it('should set whether to pause requireJS when loading dependencies', () => {
+            preview.parseOptions(preview.previewOptions, stubs.tokens);
+            expect(preview.options.pauseRequireJS).to.be.true;
         });
 
         it('should add user created loaders before standard loaders', () => {
@@ -1430,38 +1436,38 @@ describe('lib/Preview', () => {
 
             preview.attachViewerListeners();
             expect(preview.viewer.addListener).to.be.calledWith('error', sinon.match.func);
-            expect(preview.viewer.addListener).to.be.calledWith('viewerevent', sinon.match.func);
+            expect(preview.viewer.addListener).to.be.calledWith(VIEWER_EVENT.default, sinon.match.func);
         });
     });
 
     describe('handleViewerEvents()', () => {
         it('should call download on download event', () => {
             sandbox.stub(preview, 'download');
-            preview.handleViewerEvents({ event: 'download' });
+            preview.handleViewerEvents({ event: VIEWER_EVENT.download });
             expect(preview.download).to.be.called;
         });
 
         it('should reload preview on reload event', () => {
             sandbox.stub(preview, 'reload');
-            preview.handleViewerEvents({ event: 'reload' });
+            preview.handleViewerEvents({ event: VIEWER_EVENT.reload });
             expect(preview.reload).to.be.called;
         });
 
         it('should finish loading preview on load event', () => {
             sandbox.stub(preview, 'finishLoading');
-            preview.handleViewerEvents({ event: 'load' });
+            preview.handleViewerEvents({ event: VIEWER_EVENT.load });
             expect(preview.finishLoading).to.be.called;
         });
 
         it('should start progress bar on progressstart event', () => {
             sandbox.stub(preview.ui, 'startProgressBar');
-            preview.handleViewerEvents({ event: 'progressstart' });
+            preview.handleViewerEvents({ event: VIEWER_EVENT.progressStart });
             expect(preview.ui.startProgressBar).to.be.called;
         });
 
         it('should finish progress bar on progressend event', () => {
             sandbox.stub(preview.ui, 'finishProgressBar');
-            preview.handleViewerEvents({ event: 'progressend' });
+            preview.handleViewerEvents({ event: VIEWER_EVENT.progressEnd });
             expect(preview.ui.finishProgressBar).to.be.called;
         });
 
@@ -1469,7 +1475,7 @@ describe('lib/Preview', () => {
             const message = 'notification_message';
             sandbox.stub(preview.ui, 'showNotification');
             preview.handleViewerEvents({
-                event: 'notificationshow',
+                event: VIEWER_EVENT.notificationShow,
                 data: message
             });
             expect(preview.ui.showNotification).to.be.calledWith(message);
@@ -1477,13 +1483,13 @@ describe('lib/Preview', () => {
 
         it('should hide notification on notificationhide event', () => {
             sandbox.stub(preview.ui, 'hideNotification');
-            preview.handleViewerEvents({ event: 'notificationhide' });
+            preview.handleViewerEvents({ event: VIEWER_EVENT.notificationHide });
             expect(preview.ui.hideNotification).to.be.called;
         });
 
         it('should navigate right on mediaendautoplay event', () => {
             sandbox.stub(preview, 'navigateRight');
-            const data = { event: 'mediaendautoplay' };
+            const data = { event: VIEWER_EVENT.mediaEndAutoplay };
 
             preview.handleViewerEvents(data);
             expect(preview.navigateRight).to.be.called;
@@ -1497,7 +1503,7 @@ describe('lib/Preview', () => {
             };
             preview.handleViewerEvents(data);
             expect(preview.emit).to.be.calledWith(data.event, data.data);
-            expect(preview.emit).to.be.calledWith('viewerevent', data);
+            expect(preview.emit).to.be.calledWith(VIEWER_EVENT.default, data);
         });
     });
 
@@ -1514,6 +1520,7 @@ describe('lib/Preview', () => {
             stubs.logPreviewEvent = sandbox.stub(preview, 'logPreviewEvent');
             stubs.prefetchNextFiles = sandbox.stub(preview, 'prefetchNextFiles');
             stubs.finishProgressBar = sandbox.stub(preview.ui, 'finishProgressBar');
+            stubs.setupNotification = sandbox.stub(preview.ui, 'setupNotification');
 
             stubs.logger = {
                 done: sandbox.stub()
@@ -1649,6 +1656,11 @@ describe('lib/Preview', () => {
             expect(stubs.hideLoadingIndicator).to.be.called;
         });
 
+        it('should set up the notification', () => {
+            preview.finishLoading();
+            expect(stubs.setupNotification).to.be.called;
+        });
+
         it('should prefetch next files', () => {
             preview.finishLoading();
             expect(stubs.prefetchNextFiles).to.be.called;
@@ -1777,8 +1789,45 @@ describe('lib/Preview', () => {
             preview.handleFetchError(stubs.error);
             expect(stubs.triggerError).to.not.be.called;
 
-            clock.tick(RETRY_TIMEOUT + 1);
+            clock.tick(2001);
             expect(stubs.load).to.be.calledWith(1);
+        });
+
+        it('should retry using exponential backoff', () => {
+            preview.file = {
+                id: '0'
+            };
+            const clock = sinon.useFakeTimers();
+            preview.open = true;
+            preview.retryCount = 3;
+
+            preview.handleFetchError(stubs.error);
+
+            clock.tick(7000);
+            expect(stubs.load).to.not.be.called;
+
+            clock.tick(8001);
+            expect(stubs.load).to.be.called;
+        });
+
+        it('should retry after length specified in Retry-After header if set', () => {
+            preview.file = {
+                id: '0'
+            };
+            stubs.error.headers = {
+                get: sandbox.stub().withArgs('Retry-After').returns(5)
+            }
+            const clock = sinon.useFakeTimers();
+            preview.open = true;
+            preview.retryCount = 1;
+
+            preview.handleFetchError(stubs.error);
+
+            clock.tick(4000);
+            expect(stubs.load).to.not.be.called;
+
+            clock.tick(5001);
+            expect(stubs.load).to.be.called;
         });
     });
 

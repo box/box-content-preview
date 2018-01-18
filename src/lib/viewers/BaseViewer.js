@@ -28,6 +28,7 @@ import {
     STATUS_VIEWABLE
 } from '../constants';
 import { getIconFromExtension, getIconFromName } from '../icons/icons';
+import { VIEWER_EVENT } from '../events';
 
 const ANNOTATIONS_JS = 'annotations.js';
 const ANNOTATIONS_CSS = 'annotations.css';
@@ -196,7 +197,7 @@ class BaseViewer extends EventEmitter {
             });
         }
 
-        fullscreen.removeAllListeners();
+        fullscreen.destroy();
         document.defaultView.removeEventListener('resize', this.debouncedResizeHandler);
         this.removeAllListeners();
 
@@ -378,7 +379,7 @@ class BaseViewer extends EventEmitter {
             this.containerEl.addEventListener('contextmenu', this.preventDefault);
         }
 
-        this.addListener('load', this.viewerLoadHandler);
+        this.addListener(VIEWER_EVENT.load, this.viewerLoadHandler);
     }
 
     /**
@@ -474,7 +475,7 @@ class BaseViewer extends EventEmitter {
         const { file, viewer } = this.options;
 
         super.emit(event, data);
-        super.emit('viewerevent', {
+        super.emit(VIEWER_EVENT.default, {
             event,
             data,
             viewerName: viewer ? viewer.NAME : '',
@@ -592,9 +593,11 @@ class BaseViewer extends EventEmitter {
      * @protected
      * @param {Array} [js] - js assets
      * @param {Array} [css] - css assets
+     * @param {boolean} [isViewerAsset] is the asset to load third party
      * @return {Promise} Promise to load scripts
      */
-    loadAssets(js, css) {
+    loadAssets(js, css, isViewerAsset = true) {
+        const disableRequireJS = isViewerAsset && !!this.options.pauseRequireJS;
         // Create an asset path creator function
         const { location } = this.options;
         const assetUrlCreator = createAssetUrlCreator(location);
@@ -603,7 +606,11 @@ class BaseViewer extends EventEmitter {
         loadStylesheets((css || []).map(assetUrlCreator));
 
         // Then load the scripts needed for this preview
-        return loadScripts((js || []).map(assetUrlCreator));
+        return loadScripts((js || []).map(assetUrlCreator), disableRequireJS).then(() => {
+            if (isViewerAsset) {
+                this.emit('assetsloaded');
+            }
+        });
     }
 
     /**
@@ -697,7 +704,7 @@ class BaseViewer extends EventEmitter {
         this.annotationsLoadPromise =
             window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations
                 ? Promise.resolve()
-                : this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS]);
+                : this.loadAssets([ANNOTATIONS_JS], [ANNOTATIONS_CSS], false);
     }
 
     /**
@@ -763,9 +770,13 @@ class BaseViewer extends EventEmitter {
      */
     areAnnotationsEnabled() {
         // Respect viewer-specific annotation option if it is set
-        if (window.BoxAnnotations && this.options.boxAnnotations instanceof window.BoxAnnotations) {
+        if (
+            window.BoxAnnotations &&
+            this.options.boxAnnotations instanceof window.BoxAnnotations &&
+            this.options.boxAnnotations.viewerOptions
+        ) {
             const { boxAnnotations, viewer } = this.options;
-            const annotatorConfig = boxAnnotations.options[viewer.NAME];
+            const annotatorConfig = boxAnnotations.viewerOptions[viewer.NAME];
             this.viewerConfig = {
                 enabled: annotatorConfig && (annotatorConfig.enabled || annotatorConfig.enabledTypes.length > 0)
             };
@@ -817,22 +828,22 @@ class BaseViewer extends EventEmitter {
                 this.disableViewerControls();
 
                 if (data.data.mode === ANNOTATION_TYPE_POINT) {
-                    this.emit('notificationshow', __('notification_annotation_point_mode'));
+                    this.emit(VIEWER_EVENT.notificationShow, __('notification_annotation_point_mode'));
                 } else if (data.data.mode === ANNOTATION_TYPE_DRAW) {
-                    this.emit('notificationshow', __('notification_annotation_draw_mode'));
+                    this.emit(VIEWER_EVENT.notificationShow, __('notification_annotation_draw_mode'));
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.modeExit:
                 this.enableViewerControls();
-                this.emit('notificationhide');
+                this.emit(VIEWER_EVENT.notificationHide);
 
                 if (data.data.mode === ANNOTATION_TYPE_DRAW) {
                     this.previewUI.replaceHeader(data.data.headerSelector);
                 }
                 break;
             case ANNOTATOR_EVENT.error:
-                this.emit('notificationshow', data.data);
+                this.emit(VIEWER_EVENT.notificationShow, data.data);
                 break;
             case ANNOTATOR_EVENT.fetch:
                 this.emit('scale', {
