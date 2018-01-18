@@ -475,7 +475,7 @@ class BaseViewer extends EventEmitter {
         const { file, viewer } = this.options;
 
         super.emit(event, data);
-        super.emit(VIEWER_EVENT.defaultÍS, {
+        super.emit(VIEWER_EVENT.default, {
             event,
             data,
             viewerName: viewer ? viewer.NAME : '',
