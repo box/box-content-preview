@@ -126,12 +126,26 @@ class ImageViewer extends ImageBaseViewer {
     zoom(type) {
         let newWidth;
         let newHeight;
-        const imageCurrentDimensions = this.imageEl.getBoundingClientRect(); // Getting bounding rect does not ignore transforms / rotates
+        let imageCurrentDimensions;
+        if (type === 'reset') {
+            // when it is a reset, take the original dimensions of the image
+            // rather than setting the resetting height and width and calling
+            // getBoundingClientRect as it will cause flickering on IE11
+            const height = this.imageEl.getAttribute('originalHeight');
+            const width = this.imageEl.getAttribute('originalWidth');
+            imageCurrentDimensions = {
+                height,
+                width
+            };
+        } else {
+            imageCurrentDimensions = this.imageEl.getBoundingClientRect(); // Getting bounding rect does not ignore transforms / rotates
+        }
+
         const { height, width } = imageCurrentDimensions;
         const aspect = width / height;
         const viewport = {
-            width: this.wrapperEl.clientWidth - IMAGE_PADDING,
-            height: this.wrapperEl.clientHeight - IMAGE_PADDING
+            width: this.wrapperEl.offsetWidth - 2 * IMAGE_PADDING,
+            height: this.wrapperEl.offsetHeight - 2 * IMAGE_PADDING
         };
 
         // For multi page tifs, we always modify the width, since its essentially a DIV and not IMG tag.
@@ -157,29 +171,12 @@ class ImageViewer extends ImageBaseViewer {
                     newHeight = height / IMAGE_ZOOM_SCALE;
                 }
                 break;
-
-            case 'reset':
-                // Reset the dimensions to their original values by removing overrides
-                // Doing so will make the browser render the image in its natural size
-                // Then we can proceed by recalculating stuff from that natural size.
-                this.imageEl.style.width = '';
-                this.imageEl.style.height = '';
-
-                this.adjustImageZoomPadding();
-
-                // Image may still overflow the page, so do the default zoom by calling zoom again
-                // This will go through the same workflow but end up in another case block.
-                this.zoom();
-
-                // Kill further execution
-                return;
             /* istanbul ignore next */
             default:
                 // If the image is overflowing the viewport, figure out by how much
                 // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
                 if (width > viewport.width || height > viewport.height) {
                     const ratio = Math.min(viewport.width / width, viewport.height / height);
-
                     if (modifyWidthInsteadOfHeight) {
                         newWidth = width * ratio;
                     } else {

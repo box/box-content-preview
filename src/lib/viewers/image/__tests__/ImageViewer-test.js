@@ -287,16 +287,38 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
 
         it('should reset dimensions and adjust padding when called with reset', () => {
-            image.imageEl.style.width = '10px';
-            image.imageEl.style.height = '20px';
+            image.imageEl.style.width = '1000px';
+            image.imageEl.style.height = '2000px';
+            const naturalHeight = 10;
+            const naturalWidth = 5;
+            image.imageEl.setAttribute('originalHeight', naturalHeight);
+            image.imageEl.setAttribute('originalWidth', naturalWidth);
+
             sandbox.spy(image, 'zoom');
 
             image.zoom('reset');
 
             expect(image.imageEl.style.width).to.equal('');
-            expect(image.imageEl.style.height).to.equal('');
+            expect(image.imageEl.style.height).to.equal(`${naturalHeight}px`);
             expect(stubs.adjustZoom).to.be.called;
-            expect(image.zoom).to.be.calledWith();
+        });
+
+        it('when rotated should reset dimensions and adjust padding when called with reset', () => {
+            image.currentRotationAngle = -90;
+            image.imageEl.style.width = '1000px';
+            image.imageEl.style.height = '2000px';
+            const naturalHeight = 5;
+            const naturalWidth = 10;
+            image.imageEl.setAttribute('originalHeight', naturalHeight);
+            image.imageEl.setAttribute('originalWidth', naturalWidth);
+
+            sandbox.spy(image, 'zoom');
+
+            image.zoom('reset');
+
+            expect(image.imageEl.style.width).to.equal('');
+            expect(image.imageEl.style.height).to.equal(`${naturalHeight}px`);
+            expect(stubs.adjustZoom).to.be.called;
         });
     });
 
