@@ -18,7 +18,8 @@ import {
     openUrlInsideIframe,
     getHeaders,
     findScriptLocation,
-    appendQueryParams
+    appendQueryParams,
+    replacePlaceholders
 } from './util';
 import {
     getURL,
@@ -34,7 +35,6 @@ import {
     API_HOST,
     APP_HOST,
     CLASS_NAVIGATION_VISIBILITY,
-    FILE_EXT_ERROR_MAP,
     PERMISSION_DOWNLOAD,
     PERMISSION_PREVIEW,
     PREVIEW_SCRIPT_NAME,
@@ -898,10 +898,18 @@ class Preview extends EventEmitter {
         // Determine the asset loader to use
         const loader = this.getLoader(this.file);
 
-        // If no loader then throw an unsupported error
-        // If file type specific error message, throw the generic one
+        // If no loader, then check to see if any of our viewers support this file type.
+        // If they do, we know the account can't preview this file type. If they can't we know this file type is unsupported.
         if (!loader) {
-            throw new Error(FILE_EXT_ERROR_MAP[this.file.extension] || __('error_default'));
+            const isFileTypeSupported = this.getViewers().find((viewer) => {
+                return viewer.EXT.indexOf(this.file.extension) > -1;
+            });
+
+            throw new Error(
+                isFileTypeSupported
+                    ? __('error_account')
+                    : replacePlaceholders(__('error_unsupported'), [`.${this.file.extension}`])
+            );
         }
 
         // Determine the viewer to use

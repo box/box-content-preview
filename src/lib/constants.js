@@ -99,11 +99,4 @@ export const MODEL3D_STATIC_ASSETS_VERSION = '1.12.0';
 export const SWF_STATIC_ASSETS_VERSION = '0.112.0';
 export const TEXT_STATIC_ASSETS_VERSION = '0.114.0';
 
-//  Maps file extension to error message.
-export const FILE_EXT_ERROR_MAP = {
-    numbers: __('error_iwork'),
-    pages: __('error_iwork'),
-    key: __('error_iwork')
-};
-
 export const PREVIEW_SCRIPT_NAME = 'preview.js';

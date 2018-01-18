@@ -633,7 +633,7 @@ export function findScriptLocation(name, script) {
  *
  * @public
  * @param {string} string - String to be interpolated
- * @param {string[]} placeholderValues - Custom values to replace into string
+ * @param {Array} placeholderValues - Ordered array of replacement strings
  * @return {string} Properly translated string with replaced custom variable
  */
 export function replacePlaceholders(string, placeholderValues) {
