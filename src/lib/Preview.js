@@ -5,7 +5,8 @@ import throttle from 'lodash.throttle';
 import cloneDeep from 'lodash.clonedeep';
 /* eslint-enable import/first */
 import Browser from './Browser';
-import Logger from './Logger';
+import FileMetrics from './FileMetrics';
+import LogLayer from './logging/LogLayer';
 import loaderList from './loaders';
 import Cache from './Cache';
 import PreviewErrorViewer from './viewers/error/PreviewErrorViewer';
@@ -34,6 +35,7 @@ import {
     API_HOST,
     APP_HOST,
     CLASS_NAVIGATION_VISIBILITY,
+    EVENT_LOG,
     FILE_EXT_ERROR_MAP,
     PERMISSION_DOWNLOAD,
     PERMISSION_PREVIEW,
@@ -44,6 +46,8 @@ import {
     X_REP_HINT_VIDEO_DASH,
     X_REP_HINT_VIDEO_MP4
 } from './constants';
+import { METRIC_FILE_PREVIEW_SUCCESS, METRIC_FILE_PREVIEW_FAIL } from './logging/metricsConstants';
+import { LOG_TYPES } from './logging/logConstants';
 import './Preview.scss';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
@@ -97,8 +101,8 @@ class Preview extends EventEmitter {
     /** @property {AssetLoader[]} - List of asset loaders */
     loaders = loaderList;
 
-    /** @property {Logger} - Logger instance */
-    logger;
+    /** @property {FileMetrics} - File metrics tracker instance */
+    fileMetrics;
 
     /** @property {number} - Number of times a particular preview has been retried */
     retryCount = 0;
@@ -120,6 +124,9 @@ class Preview extends EventEmitter {
 
     /** @property {PreviewUI} - Preview's UI instance */
     ui;
+
+    /** @property {LogLayer} - Preview's LogLayer instance */
+    logLayer;
 
     //--------------------------------------------------------------------------
     // Public
@@ -145,6 +152,7 @@ class Preview extends EventEmitter {
         this.cache = new Cache();
         this.ui = new PreviewUI();
         this.browserInfo = Browser.getBrowserInfo();
+        this.logLayer = new LogLayer();
 
         // Bind context for callbacks
         this.download = this.download.bind(this);
@@ -171,6 +179,7 @@ class Preview extends EventEmitter {
             this.viewer.destroy();
         }
 
+        this.logLayer.save();
         this.viewer = undefined;
     }
 
@@ -220,6 +229,9 @@ class Preview extends EventEmitter {
 
         // Nuke the file
         this.file = undefined;
+
+        // Clear logLayer from logging out of date file info
+        this.logLayer.reset();
     }
 
     /**
@@ -325,9 +337,7 @@ class Preview extends EventEmitter {
             if (checkFileValid(file)) {
                 cacheFile(this.cache, file);
             } else {
-                /* eslint-disable no-console */
-                console.error('[Preview SDK] Tried to cache invalid file: ', file);
-                /* eslint-enable no-console */
+                this.logLayer.error('[Preview SDK] Tried to cache invalid file: ', file);
             }
         });
     }
@@ -527,9 +537,7 @@ class Preview extends EventEmitter {
                 return;
             }
         } catch (err) {
-            /* eslint-disable no-console */
-            console.error(`Error prefetching file ID ${fileId} - ${err}`);
-            /* eslint-enable no-console */
+            this.logLayer.error(`Error prefetching file ID ${fileId} - ${err}`);
             return;
         }
 
@@ -588,6 +596,32 @@ class Preview extends EventEmitter {
             });
     }
 
+    /**
+     * Setup additional configuration for the logLayer.
+     *
+     * @param {Object} config - Configures log level and network layer.
+     * @param {CONSOLE_LEVELS|string} [config.consoleLevel] - Level to set for writing to the browser console.
+     * @param {boolean} [config.savingEnabled] - If true, allows saving of logs to a network layer.
+     * @param {string} [config.logURL] - Full url to save logs to. Can instead use appHost with logEndpoint (see below)
+     * @param {string} [config.appHost] - Base URL to save logs to. Is combined with logEndpoint (below)
+     * @param {string} [config.logEndpoint] - URL Tail to save logs to. Combined with appHost (above)
+     * @param {Object} [config.auth] - Authorization object containing a header named <header>, with value: <value>
+     * @param {string} [config.locale] - User's locale
+     * @param {Object} [config.allowedLogs] - Logs that are allowed to be saved to the network layer.
+     * @return {void}
+     */
+    setupLogLayer(config = {}) {
+        const { consoleLevel } = config;
+        if (consoleLevel) {
+            this.logLayer.setConsoleLevel(consoleLevel);
+        }
+
+        this.logLayer.setupNetworkLayer({
+            locale: this.location.locale, // feeds through to global Logger
+            ...config
+        });
+    }
+
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -607,7 +641,7 @@ class Preview extends EventEmitter {
         this.open = true;
 
         // Init performance logging
-        this.logger = new Logger(this.location.locale, this.browserInfo);
+        this.fileMetrics = new FileMetrics(this.location.locale, this.browserInfo);
 
         // Clear any existing retry timeouts
         clearTimeout(this.retryTimeout);
@@ -630,6 +664,9 @@ class Preview extends EventEmitter {
                 'File is not a well-formed Box File object. See FILE_FIELDS in file.js for a list of required fields.'
             );
         }
+
+        // Set logLayer to use up to date file info
+        this.logLayer.setFile(this.file);
 
         // Retry up to RETRY_COUNT if we are reloading same file
         if (this.file.id === currentFileId) {
@@ -693,6 +730,12 @@ class Preview extends EventEmitter {
         // Setup loading UI and progress bar
         this.ui.showLoadingIndicator();
         this.ui.startProgressBar();
+
+        this.setupLogLayer({
+            consoleLevel: this.options.consoleLevel,
+            appHost: this.options.appHost,
+            savingEnabled: !this.options.disableLogSaving
+        });
     }
 
     /**
@@ -761,6 +804,12 @@ class Preview extends EventEmitter {
         // RequireJS will be re-enabled on the 'assetsloaded' event fired by Preview
         this.options.pauseRequireJS = !!options.pauseRequireJS;
 
+        // Tier of logs to print to the console. See tiers in logConstants.js, CONSOLE_LEVELS for more.
+        this.options.consoleLevel = options.consoleLevel;
+
+        // Explicit disabling of log saving. Saves logs by default.
+        this.options.disableLogSaving = !!options.disableLogSaving;
+
         // Prefix any user created loaders before our default ones
         this.loaders = (options.loaders || []).concat(loaderList);
 
@@ -797,8 +846,8 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     loadFromCache() {
-        // Log cache hit
-        this.logger.setCached();
+        // Add details to the file metrics tracker
+        this.fileMetrics.setCached();
 
         // Finally load the viewer
         this.loadViewer();
@@ -838,9 +887,10 @@ class Preview extends EventEmitter {
         }
 
         try {
-            // Set current file to file data from server and update file in logger
+            // Save reference to the file and update file metrics tracker and logLayer
             this.file = file;
-            this.logger.setFile(file);
+            this.logLayer.setFile(file);
+            this.fileMetrics.setFile(file);
 
             // Keep reference to previously cached file version
             const cachedFile = this.cache.get(file.id);
@@ -863,7 +913,7 @@ class Preview extends EventEmitter {
                 //   - Cached file is stale
                 //   - File is newly watermarked
             } else if (cachedFile.file_version.sha1 !== file.file_version.sha1 || isFileWatermarked) {
-                this.logger.setCacheStale(); // Log that cache is stale
+                this.fileMetrics.setCacheStale(); // Log that cache is stale
                 this.reload(true); // Reload viewer without fetching updated file info from server
             }
         } catch (err) {
@@ -906,8 +956,9 @@ class Preview extends EventEmitter {
         // Determine the viewer to use
         const viewer = loader.determineViewer(this.file, Object.keys(this.disabledViewers));
 
-        // Log the type of file
-        this.logger.setType(viewer.NAME);
+        // Store the type of file
+        this.fileMetrics.setType(viewer.NAME);
+        this.logLayer.setContentType(viewer.NAME);
 
         // Determine the representation to use
         const representation = loader.determineRepresentation(this.file, viewer);
@@ -919,7 +970,7 @@ class Preview extends EventEmitter {
             container: this.container,
             file: this.file
         });
-        viewerOptions.logger = this.logger; // Don't clone the logger since it needs to track metrics
+        viewerOptions.fileMetrics = this.fileMetrics; // Don't clone the file metrics tracker since it needs to track metrics
         this.viewer = new viewer.CONSTRUCTOR(viewerOptions);
 
         // Add listeners for viewer events
@@ -947,6 +998,30 @@ class Preview extends EventEmitter {
         // Node requires listener attached to 'error'
         this.viewer.addListener('error', this.triggerError);
         this.viewer.addListener('viewerevent', this.handleViewerEvents);
+    }
+
+    /**
+     * Handles log events and delegates to the LogLayer instance.
+     *
+     * @param {Object} data - Log event data.
+     * @return {void}
+     */
+    handleLogEvent(data) {
+        const { event } = data;
+        switch (event) {
+            case LOG_TYPES.warning:
+                this.logLayer.warn(...data.data);
+                break;
+            case LOG_TYPES.error:
+                this.logLayer.error(...data.data);
+                break;
+            case LOG_TYPES.metric:
+                this.logLayer.metric(data.data.eventName, data.data.value);
+                break;
+            case LOG_TYPES.info:
+            default:
+                this.logLayer.info(...data.data);
+        }
     }
 
     /**
@@ -983,6 +1058,9 @@ class Preview extends EventEmitter {
             case 'mediaendautoplay':
                 this.navigateRight();
                 break;
+            case EVENT_LOG:
+                this.handleLogEvent(data.data);
+                break;
             default:
                 // This includes 'notification', 'preload' and others
                 this.emit(data.event, data.data);
@@ -1002,9 +1080,7 @@ class Preview extends EventEmitter {
         try {
             super.emit(eventName, data);
         } catch (e) {
-            /* eslint-disable no-console */
-            console.error(e);
-            /* eslint-enable no-console */
+            this.logLayer.error(e);
         }
     }
 
@@ -1032,12 +1108,16 @@ class Preview extends EventEmitter {
             // Bump up preview count
             this.count.error += 1;
 
+            const metrics = this.fileMetrics.done(this.count);
+
             // 'load' with { error } signifies a preview error
             this.emit('load', {
                 error,
-                metrics: this.logger.done(this.count),
+                metrics,
                 file: this.file
             });
+
+            this.logLayer.metric(METRIC_FILE_PREVIEW_FAIL, metrics);
 
             // Hookup for phantom JS health check
             if (typeof window.callPhantom === 'function') {
@@ -1047,12 +1127,17 @@ class Preview extends EventEmitter {
             // Bump up preview count
             this.count.success += 1;
 
+            const metrics = this.fileMetrics.done(this.count);
+
             // Finally emit the viewer instance back with a load event
             this.emit('load', {
                 viewer: this.viewer,
-                metrics: this.logger.done(this.count),
+                metrics,
                 file: this.file
             });
+
+            // Track in interal logLayer
+            this.logLayer.metric(METRIC_FILE_PREVIEW_SUCCESS, metrics);
 
             // If there wasn't an error, use Events API to log a preview
             this.logPreviewEvent(this.file.id, this.options);
@@ -1085,7 +1170,7 @@ class Preview extends EventEmitter {
 
     /**
      * Logs 'preview' event via the Events API. This is used for logging that a
-     * preview happened for access stats, unlike the Logger, which logs preview
+     * preview happened for access stats, unlike the LogLayer, which logs preview
      * errors and performance metrics.
      *
      * @private
@@ -1291,16 +1376,12 @@ class Preview extends EventEmitter {
                             });
                         })
                         .catch((err) => {
-                            /* eslint-disable no-console */
-                            console.error(`Error prefetching file ID ${id} - ${err}`);
-                            /* eslint-enable no-console */
+                            this.logLayer.error(`Error prefetching file ID ${id} - ${err}`);
                         });
                 });
             })
             .catch(() => {
-                /* eslint-disable no-console */
-                console.error('Error prefetching files');
-                /* eslint-enable no-console */
+                this.logLayer.error('Error prefetching files');
             });
     }
 

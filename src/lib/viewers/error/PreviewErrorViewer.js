@@ -3,6 +3,7 @@ import { checkPermission } from '../../file';
 import Browser from '../../Browser';
 import { PERMISSION_DOWNLOAD } from '../../constants';
 import { getIconFromExtension, getIconFromName } from '../../icons/icons';
+import { METRIC_CONTROL, ERROR_CONTROL_ACTIONS } from '../../logging/metricsConstants';
 import './PreviewError.scss';
 
 class PreviewErrorViewer extends BaseViewer {
@@ -106,6 +107,9 @@ class PreviewErrorViewer extends BaseViewer {
         this.emit('load', {
             error: filteredMsg
         });
+
+        // Log that an error occurred. Not translated
+        this.logError(err);
     }
 
     /**
@@ -132,6 +136,7 @@ class PreviewErrorViewer extends BaseViewer {
      */
     download() {
         this.emit('download');
+        this.logMetric(METRIC_CONTROL, ERROR_CONTROL_ACTIONS.download_button);
     }
 }
 

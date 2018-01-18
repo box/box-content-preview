@@ -3,6 +3,7 @@ import ImageBaseViewer from './ImageBaseViewer';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT, ICON_ROTATE_LEFT } from '../../icons/icons';
 import { CLASS_INVISIBLE } from '../../constants';
 import { openContentInsideIframe } from '../../util';
+import { METRIC_CONTROL, IMAGE_CONTROL_ACTIONS } from '../../logging/metricsConstants';
 import './Image.scss';
 
 const CSS_CLASS_IMAGE = 'bp-image';
@@ -114,6 +115,8 @@ class ImageViewer extends ImageBaseViewer {
         // Re-adjust image position after rotation
         this.handleOrientationChange();
         this.setScale(this.imageEl.offsetwidth, this.imageEl.offsetHeight);
+
+        this.logMetric(METRIC_CONTROL, IMAGE_CONTROL_ACTIONS.rotate_left_button);
     }
 
     /**

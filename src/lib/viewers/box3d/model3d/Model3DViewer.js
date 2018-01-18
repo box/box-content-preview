@@ -212,9 +212,7 @@ class Model3DViewer extends Box3DViewer {
      * @return {void}
      */
     onMetadataError(err) {
-        /* eslint-disable no-console */
-        console.error('Error loading metadata:', err.toString());
-        /* eslint-enable no-console */
+        this.logError('Error loading metadata:', err.toString());
 
         // Continue with default settings.
         return {};

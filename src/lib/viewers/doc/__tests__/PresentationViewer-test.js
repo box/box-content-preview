@@ -80,11 +80,11 @@ describe('lib/viewers/doc/PresentationViewer', () => {
             expect(presentation.preloader).to.be.instanceof(PresentationPreloader);
         });
 
-        it('should set logger to be preloaded and reset load timeout when preload event is received', () => {
-            presentation.options.logger = {
+        it('should set fileMetrics to be preloaded and reset load timeout when preload event is received', () => {
+            presentation.options.fileMetrics = {
                 setPreloaded: sandbox.stub()
             };
-            stubs.setPreloaded = presentation.options.logger.setPreloaded;
+            stubs.setPreloaded = presentation.options.fileMetrics.setPreloaded;
             stubs.resetLoadTimeout = sandbox.stub(presentation, 'resetLoadTimeout');
 
             presentation.preloader.emit('preload');

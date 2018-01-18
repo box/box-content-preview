@@ -3,7 +3,7 @@ import fetchMock from 'fetch-mock';
 import Preview from '../Preview';
 import ProgressBar from '../ProgressBar';
 import loaders from '../loaders';
-import Logger from '../Logger';
+import FileMetrics from '../FileMetrics';
 import Browser from '../Browser';
 import * as file from '../file';
 import * as util from '../util';
@@ -779,11 +779,11 @@ describe('lib/Preview', () => {
             expect(stubs.destroy).to.be.called;
         });
 
-        it('should set the preview to open, and initialize the performance logger', () => {
+        it('should set the preview to open, and initialize the file metrics tracker', () => {
             sandbox.stub(Browser, 'getBrowserInfo');
             preview.load('0');
             expect(preview.open).to.be.true;
-            expect(preview.logger instanceof Logger);
+            expect(preview.fileMetrics instanceof FileMetrics);
             expect(Browser.getBrowserInfo).to.not.be.called; // cached from preview constructor
         });
 
@@ -1045,7 +1045,7 @@ describe('lib/Preview', () => {
 
     describe('loadFromCache()', () => {
         beforeEach(() => {
-            preview.logger = {
+            preview.fileMetrics = {
                 setCached: sandbox.stub()
             };
 
@@ -1053,9 +1053,9 @@ describe('lib/Preview', () => {
             stubs.loadFromServer = sandbox.stub(preview, 'loadFromServer');
         });
 
-        it('should set the file as cached in the logger', () => {
+        it('should set the file as cached in the file metrics tracker', () => {
             preview.loadFromCache();
-            expect(preview.logger.setCached).to.be.called;
+            expect(preview.fileMetrics.setCached).to.be.called;
         });
 
         it('should load the viewer', () => {
@@ -1100,7 +1100,7 @@ describe('lib/Preview', () => {
 
     describe('handleFileInfoResponse()', () => {
         beforeEach(() => {
-            preview.logger = {
+            preview.fileMetrics = {
                 setFile: sandbox.stub(),
                 setCacheStale: sandbox.stub()
             };
@@ -1143,7 +1143,7 @@ describe('lib/Preview', () => {
             expect(stubs.set).to.not.be.called;
         });
 
-        it('should save a reference to the file and update the logger', () => {
+        it('should save a reference to the file and update the file metrics tracker', () => {
             preview.open = true;
             preview.file = {
                 id: 0
@@ -1151,7 +1151,7 @@ describe('lib/Preview', () => {
 
             preview.handleFileInfoResponse(stubs.file);
             expect(preview.file).to.equal(stubs.file);
-            expect(preview.logger.setFile).to.be.called;
+            expect(preview.fileMetrics.setFile).to.be.called;
         });
 
         it('should get the latest cache, then update it with the new file', () => {
@@ -1232,7 +1232,7 @@ describe('lib/Preview', () => {
             stubs.file.file_version.sha1 = 2;
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(preview.logger.setCacheStale).to.be.called;
+            expect(preview.fileMetrics.setCacheStale).to.be.called;
             expect(stubs.reload).to.be.called;
         });
 
@@ -1252,7 +1252,7 @@ describe('lib/Preview', () => {
             stubs.file.file_version.sha1 = 2;
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(preview.logger.setCacheStale).to.be.called;
+            expect(preview.fileMetrics.setCacheStale).to.be.called;
             expect(stubs.reload).to.be.called;
         });
 
@@ -1301,7 +1301,7 @@ describe('lib/Preview', () => {
 
             stubs.getLoader = sandbox.stub(preview, 'getLoader').returns(stubs.loader);
 
-            preview.logger = {
+            preview.fileMetrics = {
                 setType: sandbox.stub()
             };
 
@@ -1393,7 +1393,7 @@ describe('lib/Preview', () => {
             preview.loadViewer();
             expect(stubs.getLoader).to.be.calledWith(sinon.match.object);
             expect(stubs.loader.determineViewer).to.be.called;
-            expect(preview.logger.setType).to.be.called;
+            expect(preview.fileMetrics.setType).to.be.called;
         });
 
         it('should determine the representation to use', () => {
@@ -1401,7 +1401,7 @@ describe('lib/Preview', () => {
             expect(stubs.loader.determineRepresentation).to.be.called;
         });
 
-        it('should instantiate the viewer, set logger, attach viewer events, and load the viewer', () => {
+        it('should instantiate the viewer, set fileMetrics, attach viewer events, and load the viewer', () => {
             stubs.loader.determineViewer.returns({
                 CONSTRUCTOR: () => {
                     return stubs.viewer;
@@ -1411,7 +1411,7 @@ describe('lib/Preview', () => {
 
             preview.loadViewer();
 
-            expect(preview.logger.setType).to.be.calledWith('someViewerName');
+            expect(preview.fileMetrics.setType).to.be.calledWith('someViewerName');
             expect(stubs.viewer.load).to.be.called;
         });
 
@@ -1521,7 +1521,7 @@ describe('lib/Preview', () => {
             stubs.finishProgressBar = sandbox.stub(preview.ui, 'finishProgressBar');
             stubs.setupNotification = sandbox.stub(preview.ui, 'setupNotification');
 
-            stubs.logger = {
+            stubs.fileMetrics = {
                 done: sandbox.stub()
             };
 
@@ -1533,7 +1533,7 @@ describe('lib/Preview', () => {
                 getPointModeClickHandler: sandbox.stub()
             };
 
-            preview.logger = stubs.logger;
+            preview.fileMetrics = stubs.fileMetrics;
             preview.options.showDownload = true;
             stubs.canDownload.returns(true);
             stubs.checkPermission.returns(true);
@@ -1604,7 +1604,7 @@ describe('lib/Preview', () => {
         it('should emit the load event', () => {
             preview.finishLoading();
             expect(stubs.emit).to.be.called;
-            expect(preview.logger.done).to.be.called;
+            expect(preview.fileMetrics.done).to.be.called;
         });
 
         it('should log a preview event via the Events API if there was not an error', () => {
