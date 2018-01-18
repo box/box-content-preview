@@ -538,8 +538,6 @@ class DocBaseViewer extends BaseViewer {
             docInitParams.httpHeaders[X_BOX_ACCEPT_ENCODING_HEADER] = X_BOX_ACCEPT_ENCODING_IDENTITY;
         }
 
-        console.error(docInitParams);
-
         // Load PDF from representation URL and set as document for pdf.js. Cache
         // the loading task so we can cancel if needed
         this.pdfLoadingTask = PDFJS.getDocument(docInitParams);
