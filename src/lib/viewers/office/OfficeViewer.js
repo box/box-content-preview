@@ -5,7 +5,7 @@ import { CLASS_HIDDEN } from '../../constants';
 import { getRepresentation } from '../../file';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { get } from '../../util';
-import { VIEWER_EVENTS } from '../../events';
+import { VIEWER_EVENT } from '../../events';
 
 const LOAD_TIMEOUT_MS = 120000;
 const SAFARI_PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -74,7 +74,7 @@ class OfficeViewer extends BaseViewer {
         this.setup();
         super.load();
         this.loaded = true;
-        this.emit(VIEWER_EVENTS.load);
+        this.emit(VIEWER_EVENT.load);
     }
 
     /**

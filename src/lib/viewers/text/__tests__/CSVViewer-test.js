@@ -5,7 +5,7 @@ import CSVViewer from '../CSVViewer';
 import TextBaseViewer from '../TextBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import * as util from '../../../util';
-import { VIEWER_EVENTS } from '../../../events';
+import { VIEWER_EVENT } from '../../../events';
 
 let containerEl;
 let options;
@@ -169,7 +169,7 @@ describe('lib/viewers/text/CSVViewer', () => {
 
             expect(csv.loadUI).to.be.called;
             expect(csv.loaded).to.be.true;
-            expect(csv.emit).to.be.calledWith(VIEWER_EVENTS.load);
+            expect(csv.emit).to.be.calledWith(VIEWER_EVENT.load);
         });
     });
 });

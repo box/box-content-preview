@@ -3,7 +3,7 @@ import PlainTextViewer from './PlainTextViewer';
 import { CLASS_HIDDEN, TEXT_STATIC_ASSETS_VERSION } from '../../constants';
 import { ICON_FULLSCREEN_IN, ICON_FULLSCREEN_OUT } from '../../icons/icons';
 import './Markdown.scss';
-import { VIEWER_EVENTS } from '../../events';
+import { VIEWER_EVENT } from '../../events';
 
 const STATIC_URI = `third-party/text/${TEXT_STATIC_ASSETS_VERSION}/`;
 
@@ -78,7 +78,7 @@ class MarkdownViewer extends PlainTextViewer {
         this.loadUI();
         this.textEl.classList.remove(CLASS_HIDDEN);
         this.loaded = true;
-        this.emit(VIEWER_EVENTS.load);
+        this.emit(VIEWER_EVENT.load);
 
         // Show message that text was truncated along with a download button
         if (this.truncated) {

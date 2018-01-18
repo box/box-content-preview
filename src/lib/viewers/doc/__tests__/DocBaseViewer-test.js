@@ -19,7 +19,7 @@ import {
 } from '../../../constants';
 
 import { ICON_PRINT_CHECKMARK } from '../../../icons/icons';
-import { VIEWER_EVENTS } from '../../../events';
+import { VIEWER_EVENT } from '../../../events';
 
 const LOAD_TIMEOUT_MS = 180000; // 3 min timeout
 const PRINT_TIMEOUT_MS = 1000; // Wait 1s before trying to print
@@ -1265,7 +1265,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             docBase.pdfViewer.pagesCount = 5;
 
             docBase.pagesinitHandler();
-            expect(stubs.emit).to.be.calledWith(VIEWER_EVENTS.load, {
+            expect(stubs.emit).to.be.calledWith(VIEWER_EVENT.load, {
                 endProgress: false,
                 numPages: 5,
                 scale: sinon.match.any
@@ -1296,7 +1296,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
 
         it('should emit handleAssetAndRepLoad event if not already emitted', () => {
             docBase.pagerenderedHandler(docBase.event);
-            expect(stubs.emit).to.be.calledWith(VIEWER_EVENTS.progressEnd);
+            expect(stubs.emit).to.be.calledWith(VIEWER_EVENT.progressEnd);
         });
     });
 

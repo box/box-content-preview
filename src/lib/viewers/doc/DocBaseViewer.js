@@ -22,7 +22,7 @@ import { checkPermission, getRepresentation } from '../../file';
 import { get, createAssetUrlCreator, getMidpoint, getDistance, getClosestPageToPinch } from '../../util';
 import { ICON_PRINT_CHECKMARK } from '../../icons/icons';
 import { JS, CSS } from './docAssets';
-import { VIEWER_EVENTS } from '../../events';
+import { VIEWER_EVENT } from '../../events';
 
 const CURRENT_PAGE_MAP_KEY = 'doc-current-page-map';
 const DEFAULT_SCALE_DELTA = 1.1;
@@ -858,7 +858,7 @@ class DocBaseViewer extends BaseViewer {
         // Broadcast that preview has 'loaded' when page structure is available
         if (!this.loaded) {
             this.loaded = true;
-            this.emit(VIEWER_EVENTS.load, {
+            this.emit(VIEWER_EVENT.load, {
                 numPages: this.pdfViewer.pagesCount,
                 endProgress: false, // Indicate that viewer will end progress later
                 scale: this.pdfViewer.currentScale
@@ -892,7 +892,7 @@ class DocBaseViewer extends BaseViewer {
             // Fire progressend event to hide progress bar and cleanup preload after a page is rendered
             if (!this.somePageRendered) {
                 this.hidePreload();
-                this.emit(VIEWER_EVENTS.progressEnd);
+                this.emit(VIEWER_EVENT.progressEnd);
                 this.somePageRendered = true;
             }
         }

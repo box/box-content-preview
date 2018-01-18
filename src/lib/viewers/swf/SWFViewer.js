@@ -1,6 +1,6 @@
 import BaseViewer from '../BaseViewer';
 import { SWF_STATIC_ASSETS_VERSION } from '../../constants';
-import { VIEWER_EVENTS } from '../../events';
+import { VIEWER_EVENT } from '../../events';
 
 const SWF_PARAMS = {
     allowfullscreen: 'true',
@@ -64,7 +64,7 @@ class SWFViewer extends BaseViewer {
                     return;
                 }
                 this.loaded = true;
-                this.emit(VIEWER_EVENTS.load);
+                this.emit(VIEWER_EVENT.load);
             }
         );
     };

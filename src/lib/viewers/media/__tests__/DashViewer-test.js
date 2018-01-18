@@ -5,7 +5,7 @@ import BaseViewer from '../../BaseViewer';
 import fullscreen from '../../../Fullscreen';
 import * as util from '../../../util';
 import { MEDIA_STATIC_ASSETS_VERSION } from '../../../constants';
-import { VIEWER_EVENTS } from '../../../events';
+import { VIEWER_EVENT } from '../../../events';
 
 let dash;
 let stubs = {};
@@ -530,7 +530,7 @@ describe('lib/viewers/media/DashViewer', () => {
             expect(dash.showPlayButton).to.be.called;
             expect(dash.loadSubtitles).to.be.called;
             expect(dash.loadAlternateAudio).to.be.called;
-            expect(dash.emit).to.be.calledWith(VIEWER_EVENTS.load);
+            expect(dash.emit).to.be.calledWith(VIEWER_EVENT.load);
             expect(dash.loaded).to.be.true;
             expect(document.activeElement).to.equal(dash.mediaContainerEl);
             expect(dash.mediaControls.show).to.be.called;

@@ -3,7 +3,7 @@ import BaseViewer from '../BaseViewer';
 import Browser from '../../Browser';
 import MediaControls from './MediaControls';
 import { CLASS_ELEM_KEYBOARD_FOCUS, CLASS_HIDDEN, CLASS_IS_BUFFERING, CLASS_IS_VISIBLE } from '../../constants';
-import { VIEWER_EVENTS } from '../../events';
+import { VIEWER_EVENT } from '../../events';
 
 const CSS_CLASS_MEDIA = 'bp-media';
 const CSS_CLASS_MEDIA_CONTAINER = 'bp-media-container';
@@ -160,7 +160,7 @@ class MediaBaseViewer extends BaseViewer {
         }
         this.handleVolume();
         this.loaded = true;
-        this.emit(VIEWER_EVENTS.load);
+        this.emit(VIEWER_EVENT.load);
 
         this.loadUI();
         this.resize();
@@ -441,7 +441,7 @@ class MediaBaseViewer extends BaseViewer {
      */
     mediaendHandler() {
         if (this.isAutoplayEnabled()) {
-            this.emit(VIEWER_EVENTS.mediaEndAutoplay);
+            this.emit(VIEWER_EVENT.mediaEndAutoplay);
         }
     }
 

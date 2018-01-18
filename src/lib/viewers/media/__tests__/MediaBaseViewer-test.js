@@ -4,7 +4,7 @@ import MediaBaseViewer from '../MediaBaseViewer';
 import BaseViewer from '../../BaseViewer';
 import Cache from '../../../Cache';
 import { CLASS_ELEM_KEYBOARD_FOCUS } from '../../../constants';
-import { VIEWER_EVENTS } from '../../../events';
+import { VIEWER_EVENT } from '../../../events';
 
 let media;
 let stubs;
@@ -162,7 +162,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             expect(media.handleVolume).to.be.called;
             expect(media.loaded).to.be.true;
-            expect(media.emit).to.be.calledWith(VIEWER_EVENTS.load);
+            expect(media.emit).to.be.calledWith(VIEWER_EVENT.load);
             expect(media.loadUI).to.be.called;
             expect(media.resize).to.be.called;
             expect(media.showMedia).to.be.called;
@@ -409,7 +409,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
             media.isAutoplayEnabled.returns(true);
 
             media.mediaendHandler();
-            expect(media.emit).to.be.calledWith(VIEWER_EVENTS.mediaEndAutoplay);
+            expect(media.emit).to.be.calledWith(VIEWER_EVENT.mediaEndAutoplay);
         });
     });
 

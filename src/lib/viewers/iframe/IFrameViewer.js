@@ -1,5 +1,5 @@
 import BaseViewer from '../BaseViewer';
-import { VIEWER_EVENTS } from '../../events';
+import { VIEWER_EVENT } from '../../events';
 
 class IFrameViewer extends BaseViewer {
     /**
@@ -44,7 +44,7 @@ class IFrameViewer extends BaseViewer {
 
         this.iframeEl.src = src;
         this.loaded = true;
-        this.emit(VIEWER_EVENTS.load);
+        this.emit(VIEWER_EVENT.load);
         super.load();
     }
 }

@@ -1,6 +1,6 @@
 // Events emitted by Viewers
 // eslint-disable-next-line import/prefer-default-export
-export const VIEWER_EVENTS = {
+export const VIEWER_EVENT = {
     download: 'download', // Begin downloading the file.
     reload: 'reload', // Reload preview.
     load: 'load', // Preview is finished loading.
@@ -9,5 +9,5 @@ export const VIEWER_EVENTS = {
     notificationShow: 'notificationshow', // Show notification modal.
     notificationHide: 'notificationhide', // Hide notification modal.
     mediaEndAutoplay: 'mediaendautoplay', // Media playback has completed, with autoplay enabled.
-    generic: 'viewerevent' // The generic default viewer event
+    default: 'viewerevent' // The default viewer event
 };

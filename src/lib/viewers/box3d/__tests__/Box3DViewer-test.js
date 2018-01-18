@@ -16,7 +16,7 @@ import {
     EVENT_TOGGLE_VR,
     EVENT_WEBGL_CONTEXT_RESTORED
 } from '../box3DConstants';
-import { VIEWER_EVENTS } from '../../../events';
+import { VIEWER_EVENT } from '../../../events';
 
 const sandbox = sinon.sandbox.create();
 
@@ -548,7 +548,7 @@ describe('lib/viewers/box3d/Box3DViewer', () => {
     describe('handleContextRestored()', () => {
         it('should call emit() with params ["progressstart"]', () => {
             const emitStub = sandbox.stub(box3d, 'emit').callsFake((eventName) => {
-                expect(eventName).to.equal(VIEWER_EVENTS.progressStart);
+                expect(eventName).to.equal(VIEWER_EVENT.progressStart);
             });
 
             box3d.handleContextRestored();
