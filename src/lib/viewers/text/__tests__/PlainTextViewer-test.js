@@ -6,6 +6,7 @@ import Popup from '../../../Popup';
 import TextBaseViewer from '../TextBaseViewer';
 import * as util from '../../../util';
 import { TEXT_STATIC_ASSETS_VERSION } from '../../../constants';
+import { VIEWER_EVENT } from '../../../events';
 
 let containerEl;
 let text;
@@ -378,7 +379,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
             text.finishLoading('', true);
 
             expect(text.loadUI).to.be.called;
-            expect(text.emit).to.be.calledWith('load');
+            expect(text.emit).to.be.calledWith(VIEWER_EVENT.load);
             expect(text.loaded).to.be.true;
             expect(text.textEl.classList.contains('bp-is-hidden')).to.be.false;
         });
@@ -418,7 +419,7 @@ describe('lib/viewers/text/PlainTextViewer', () => {
         it('should emit download', () => {
             sandbox.stub(text, 'emit');
             text.download();
-            expect(text.emit).to.be.calledWith('download');
+            expect(text.emit).to.be.calledWith(VIEWER_EVENT.download);
         });
     });
 });
