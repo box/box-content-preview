@@ -117,6 +117,23 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
+     * Getter for modifyWidthInsteadOfHeight which will be used in zoom
+     * and will determine if the width or the height needs to be modified
+     *
+     * @private
+     * @param {number} [width] - The width in px
+     * @param {number} [height] - The height in px
+     * @return {boolean} true if the width will be modified instead of height
+     */
+    getModifyWidthInsteadOfHeight(width, height) {
+        const aspect = width / height;
+        // For multi page tifs, we always modify the width, since its essentially a DIV and not IMG tag.
+        // For images that are wider than taller we use width. For images that are taller than wider, we use height.
+        const modifyWidthInsteadOfHeight = aspect >= 1;
+        return modifyWidthInsteadOfHeight;
+    }
+
+    /**
      * Handles zoom
      *
      * @private
@@ -126,76 +143,57 @@ class ImageViewer extends ImageBaseViewer {
     zoom(type) {
         let newWidth;
         let newHeight;
-        let imageCurrentDimensions;
-        if (type === 'reset') {
-            // when it is a reset, take the original dimensions of the image
-            // rather than setting the resetting height and width and calling
-            // getBoundingClientRect as it will cause flickering on IE11
-            const height = this.imageEl.getAttribute('originalHeight');
-            const width = this.imageEl.getAttribute('originalWidth');
-            imageCurrentDimensions = {
-                height,
-                width
-            };
-        } else {
-            imageCurrentDimensions = this.imageEl.getBoundingClientRect(); // Getting bounding rect does not ignore transforms / rotates
-        }
-
-        const { height, width } = imageCurrentDimensions;
-        const aspect = width / height;
-        const viewport = {
-            width: this.wrapperEl.offsetWidth - 2 * IMAGE_PADDING,
-            height: this.wrapperEl.offsetHeight - 2 * IMAGE_PADDING
-        };
-
-        // For multi page tifs, we always modify the width, since its essentially a DIV and not IMG tag.
-        // For images that are wider than taller we use width. For images that are taller than wider, we use height.
-        const modifyWidthInsteadOfHeight = aspect >= 1;
+        let height;
+        let width;
 
         // From this point on, only 1 dimension will be modified. Either it will be width or it will be height.
         // The other one will remain null and eventually get cleared out. The image should automatically use the proper value
         // for the dimension that was cleared out.
-        switch (type) {
-            case 'in':
-                if (modifyWidthInsteadOfHeight) {
-                    newWidth = width * IMAGE_ZOOM_SCALE;
-                } else {
-                    newHeight = height * IMAGE_ZOOM_SCALE;
-                }
-                break;
+        if (type === 'in' || type === 'out') {
+            const imageCurrentDimensions = this.imageEl.getBoundingClientRect(); // Getting bounding rect does not ignore transforms / rotates
+            ({ height, width } = imageCurrentDimensions);
 
-            case 'out':
-                if (modifyWidthInsteadOfHeight) {
-                    newWidth = width / IMAGE_ZOOM_SCALE;
-                } else {
-                    newHeight = height / IMAGE_ZOOM_SCALE;
-                }
-                break;
-            /* istanbul ignore next */
-            default:
-                // If the image is overflowing the viewport, figure out by how much
-                // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
-                if (width > viewport.width || height > viewport.height) {
-                    const ratio = Math.min(viewport.width / width, viewport.height / height);
-                    if (modifyWidthInsteadOfHeight) {
-                        newWidth = width * ratio;
-                    } else {
-                        newHeight = height * ratio;
-                    }
+            const modifyWidthInsteadOfHeight = this.getModifyWidthInsteadOfHeight(width, height);
+            if (modifyWidthInsteadOfHeight) {
+                newWidth = type === 'in' ? width * IMAGE_ZOOM_SCALE : width / IMAGE_ZOOM_SCALE;
+            } else {
+                newHeight = type === 'in' ? height * IMAGE_ZOOM_SCALE : (newHeight = height / IMAGE_ZOOM_SCALE);
+            }
+        } else {
+            // This can be triggered by initial render as well as reset
+            // When it is an initial render or reset, take the original dimensions of the image
+            // dont use getBoundingClientRect because it may be a reset, and it causes a reflow
+            height = parseInt(this.imageEl.getAttribute('originalHeight'), 10);
+            width = parseInt(this.imageEl.getAttribute('originalWidth'), 10);
+            const modifyWidthInsteadOfHeight = this.getModifyWidthInsteadOfHeight(width, height);
 
-                    // If the image is smaller than the new viewport, zoom up to a
-                    // max of the original file size
-                } else if (modifyWidthInsteadOfHeight) {
-                    const originalWidth = this.isRotated()
-                        ? this.imageEl.getAttribute('originalHeight')
-                        : this.imageEl.getAttribute('originalWidth');
-                    newWidth = Math.min(viewport.width, originalWidth);
+            const viewport = {
+                width: this.wrapperEl.offsetWidth - 2 * IMAGE_PADDING,
+                height: this.wrapperEl.offsetHeight - 2 * IMAGE_PADDING
+            };
+            // If the image is overflowing the viewport, figure out by how much
+            // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
+            if (width > viewport.width || height > viewport.height) {
+                const ratio = Math.min(viewport.width / width, viewport.height / height);
+                if (modifyWidthInsteadOfHeight) {
+                    newWidth = width * ratio;
                 } else {
-                    const originalHeight = this.isRotated()
-                        ? this.imageEl.getAttribute('originalWidth')
-                        : this.imageEl.getAttribute('originalHeight');
-                    newHeight = Math.min(viewport.height, originalHeight);
+                    newHeight = height * ratio;
                 }
+
+                // If the image is smaller than the new viewport, zoom up to a
+                // max of the original file size
+            } else if (modifyWidthInsteadOfHeight) {
+                const originalWidth = this.isRotated()
+                    ? this.imageEl.getAttribute('originalHeight')
+                    : this.imageEl.getAttribute('originalWidth');
+                newWidth = Math.min(viewport.width, originalWidth);
+            } else {
+                const originalHeight = this.isRotated()
+                    ? this.imageEl.getAttribute('originalWidth')
+                    : this.imageEl.getAttribute('originalHeight');
+                newHeight = Math.min(viewport.height, originalHeight);
+            }
         }
 
         // If the image has been rotated, we need to swap the width and height

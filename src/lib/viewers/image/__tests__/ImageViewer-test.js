@@ -543,4 +543,16 @@ describe('lib/viewers/image/ImageViewer', () => {
             });
         });
     });
+
+    describe('getModifyWidthInsteadOfHeight()', () => {
+        it('should modify the width if the aspect ratio is >= 1', () => {
+            const getModifyWidthInsteadOfHeight = image.getModifyWidthInsteadOfHeight(100, 50);
+            expect(getModifyWidthInsteadOfHeight).to.be.true;
+        });
+
+        it('should modify the height if the aspect ratio is < 1', () => {
+            const getModifyWidthInsteadOfHeight = image.getModifyWidthInsteadOfHeight(100, 500);
+            expect(getModifyWidthInsteadOfHeight).to.be.false;
+        });
+    })
 });
