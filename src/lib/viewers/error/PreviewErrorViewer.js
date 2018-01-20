@@ -80,12 +80,12 @@ class PreviewErrorViewer extends BaseViewer {
         }
 
         /* eslint-disable no-param-reassign */
-        err = err instanceof Error ? err : new Error(__('error_default'));
+        err = err instanceof Error ? err : new Error(__('error_generic'));
         /* eslint-enable no-param-reassign */
 
         // If there is no display message fallback to the message from above
         let displayMessage = err.displayMessage || err.message;
-        displayMessage = typeof displayMessage === 'string' ? displayMessage : __('error_default');
+        displayMessage = typeof displayMessage === 'string' ? displayMessage : __('error_generic');
 
         this.iconEl.innerHTML = this.icon;
         this.messageEl.textContent = displayMessage;

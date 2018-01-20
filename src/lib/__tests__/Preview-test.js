@@ -1325,7 +1325,7 @@ describe('lib/Preview', () => {
             try {
                 preview.loadViewer();
             } catch (e) {
-                expect(spy.threw('Error'));
+                expect(e.message).to.equal(__('error_permissions'));
             }
         });
 
@@ -1366,27 +1366,25 @@ describe('lib/Preview', () => {
             expect(stubs.showLoadingDownloadButton).to.be.called;
         });
 
-        it('should throw a generic error if there is no loader for general file types', () => {
+        it('should throw an unsupported error if there is no loader for general file types', () => {
             preview.file.extension = 'zip';
             stubs.getLoader.returns(undefined);
-            const spy = sandbox.spy(preview, 'loadViewer');
 
             try {
                 preview.loadViewer();
             } catch (e) {
-                expect(spy.threw('Error', __('error_default')));
+                expect(e.message).to.equal(util.replacePlaceholders(__('error_unsupported'), [`.${preview.file.extension}`]));
             }
         });
 
-        it('should throw a specific error if there is no loader for a specific file type', () => {
-            preview.file.extension = 'key';
+        it('should throw an account upgrade error if there is no loader but the file type is supported', () => {
+            preview.file.extension = 'mp4';
             stubs.getLoader.returns(undefined);
-            const spy = sandbox.spy(preview, 'loadViewer');
 
             try {
                 preview.loadViewer();
             } catch (e) {
-                expect(spy.threw('Error', __('error_iwork')));
+                expect(e.message).to.equal(__('error_account'));
             }
         });
 
