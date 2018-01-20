@@ -52,12 +52,13 @@ class ImageViewer extends ImageBaseViewer {
 
         const { representation, viewer } = this.options;
         const template = representation.content.url_template;
+        const downloadURL = this.createContentUrlWithAuthParams(template, viewer.ASSET);
 
         this.bindDOMListeners();
         return this.getRepStatus()
             .getPromise()
             .then(() => {
-                this.imageEl.src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
+                this.imageEl.src = downloadURL;
             })
             .catch(this.handleAssetError);
     }
@@ -360,7 +361,7 @@ class ImageViewer extends ImageBaseViewer {
         super.bindDOMListeners();
 
         this.imageEl.addEventListener('load', this.finishLoading);
-        this.imageEl.addEventListener('error', this.errorHandler);
+        this.imageEl.addEventListener('error', (err) => this.handleDownloadError(err, this.imageEl.src));
 
         if (this.isMobile) {
             this.imageEl.addEventListener('orientationchange', this.handleOrientationChange);

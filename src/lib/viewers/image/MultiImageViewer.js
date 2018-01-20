@@ -253,7 +253,9 @@ class MultiImageViewer extends ImageBaseViewer {
             this.singleImageEls[index].addEventListener('load', this.finishLoading);
         }
 
-        this.singleImageEls[index].addEventListener('error', this.errorHandler);
+        this.singleImageEls[index].addEventListener('error', (err) =>
+            this.handleDownloadError(err, this.singleImageEls[0])
+        );
     }
 
     /**

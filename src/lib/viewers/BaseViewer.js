@@ -7,11 +7,15 @@ import {
     getProp,
     appendQueryParams,
     appendAuthParams,
-    getHeaders,
     createContentUrl,
+    getHeaders,
+    isNonDefaultDownloadHost,
     loadStylesheets,
     loadScripts,
     prefetchAssets,
+    setDownloadHostFallback,
+    setDownloadNotificationCookie,
+    shouldShowDegradedDownloadNotification,
     createAssetUrlCreator
 } from '../util';
 import Browser from '../Browser';
@@ -272,6 +276,23 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
+     * Handles a download error when using a non default host.
+     *
+     * @param {Error} err - Load error
+     * @param {string} downloadURL - download URL
+     * @return {boolean} If the error was handled
+     */
+    handleDownloadError(err, downloadURL) {
+        if (isNonDefaultDownloadHost(downloadURL)) {
+            setDownloadHostFallback();
+            this.load();
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Emits error event with refresh message.
      *
      * @protected
@@ -384,13 +405,22 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
-     * Handles the viewer load to potentially set up Box Annotations.
+     * Handles the viewer load to finish viewer setup after loading.
      *
      * @private
      * @param {Object} event - load event data
      * @return {void}
      */
     viewerLoadHandler(event) {
+        if (shouldShowDegradedDownloadNotification()) {
+            this.previewUI.notification.show(
+                __('notification_degraded_preview'),
+                __('notification_button_default_text'),
+                true
+            );
+            setDownloadNotificationCookie();
+        }
+
         if (event && event.scale) {
             this.scale = event.scale;
         }

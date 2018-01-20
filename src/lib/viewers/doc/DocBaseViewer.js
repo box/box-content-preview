@@ -538,19 +538,31 @@ class DocBaseViewer extends BaseViewer {
                     linkService.setViewer(this.pdfViewer);
                 }
             })
-            .catch((err) => {
-                /* eslint-disable no-console */
-                console.error(err);
-                /* eslint-enable no-console */
+            .catch((err) => this.handleDownloadError(err, pdfUrl));
+    }
 
-                // Display a generic error message but log the real one
-                const error = err;
-                if (error instanceof Error) {
-                    error.displayMessage = __('error_document');
-                }
+    /**
+     * Handles a content download error
+     *
+     * @param {Error} err - Load error
+     * @param {string} pdfUrl - URL we are using to download the PDF
+     * @return {void}
+     */
+    handleDownloadError(err, pdfUrl) {
+        const errorHandled = super.handleDownloadError(err, pdfUrl);
+        if (!errorHandled) {
+            /* eslint-disable no-console */
+            console.error(err);
+            /* eslint-enable no-console */
 
-                this.triggerError(error);
-            });
+            // Display a generic error message but log the real one
+            const error = err;
+            if (err instanceof Error) {
+                error.displayMessage = __('error_document');
+            }
+
+            this.triggerError(error);
+        }
     }
 
     /**
