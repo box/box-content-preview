@@ -543,6 +543,7 @@ class DocBaseViewer extends BaseViewer {
                     linkService.setViewer(this.pdfViewer);
                 }
             })
+            .catch((err) => this.handleDownloadError(err, pdfUrl))
             .catch((err) => {
                 /* eslint-disable no-console */
                 console.error(err);
