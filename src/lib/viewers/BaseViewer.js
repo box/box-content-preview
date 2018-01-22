@@ -764,18 +764,28 @@ class BaseViewer extends EventEmitter {
     }
 
     /**
+     * Returns whether or not user has permissions to load annotations on the current file
+     *
+     * @param {Object} permissions Permissions on the current file
+     * @return {boolean} Whether or not user has the correct permissions
+     */
+    hasAnnotationPermissions(permissions) {
+        if (!permissions) {
+            return false;
+        }
+
+        const canViewAnnotations = !!(permissions.can_view_annotations_all || permissions.can_view_annotations_self);
+        return !permissions.can_annotate && !canViewAnnotations;
+    }
+
+    /**
      * Returns whether or not annotations are enabled for this viewer.
      *
      * @return {boolean} Whether or not viewer is annotatable
      */
     areAnnotationsEnabled() {
         // Do not attempt to fetch annotations if the user cannot create or view annotations
-        const { permissions } = this.options.file;
-        if (
-            permissions &&
-            !permissions.can_annotate &&
-            !(permissions.can_view_annotations_all || permissions.can_view_annotations_self)
-        ) {
+        if (!this.hasAnnotationPermissions(this.options.file)) {
             return false;
         }
 
