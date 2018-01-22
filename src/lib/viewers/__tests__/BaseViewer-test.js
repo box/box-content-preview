@@ -35,7 +35,10 @@ describe('lib/viewers/BaseViewer', () => {
         base = new BaseViewer({
             container: containerEl,
             file: {
-                id: '0'
+                id: '0',
+                permissions: {
+                    can_annotate: false
+                }
             }
         });
     });
@@ -62,7 +65,10 @@ describe('lib/viewers/BaseViewer', () => {
             expect(base.options).to.deep.equal({
                 container: containerEl,
                 file: {
-                    id: '0'
+                    id: '0',
+                    permissions: {
+                        can_annotate: false
+                    }
                 },
                 showAnnotations: true
             });
@@ -292,6 +298,7 @@ describe('lib/viewers/BaseViewer', () => {
             stubs.fullscreenAddListener = sandbox.stub(fullscreen, 'addListener');
             stubs.baseAddListener = sandbox.spy(base, 'addListener');
             stubs.documentAddEventListener = sandbox.stub(document.defaultView, 'addEventListener');
+            base.containerEl = document;
         });
 
         it('should append common event listeners', () => {
@@ -517,6 +524,7 @@ describe('lib/viewers/BaseViewer', () => {
                 }
             });
             sandbox.stub(base, 'loadAssets').returns(Promise.resolve());
+            sandbox.stub(base, 'areAnnotationsEnabled').returns(false);
             sandbox.stub(base, 'loadAnnotator');
             sandbox.stub(base, 'finishLoadingSetup');
             base.setup();
@@ -902,9 +910,41 @@ describe('lib/viewers/BaseViewer', () => {
         })
     });
 
+    describe('hasAnnotationPermissions()', () => {
+        const permissions = {
+            can_annotate: false,
+            can_view_annotations_all: false,
+            can_view_annotations_self: false
+        };
+
+        it('does nothing if file permissions are undefined', () => {
+            expect(base.hasAnnotationPermissions()).to.be.falsy;
+        });
+
+        it('should return false if the user can neither annotate nor view all or their own annotations', () => {
+            expect(base.hasAnnotationPermissions(permissions)).to.be.falsy;
+        });
+
+        it('should return true if the user can at least view all annotations', () => {
+            permissions.can_view_annotations_all = true;
+            expect(base.hasAnnotationPermissions(permissions)).to.be.truthy;
+        });
+
+        it('should return true if the user can at least view their own annotations', () => {
+            permissions.can_view_annotations_all = false;
+            permissions.can_view_annotations_self = true;
+            expect(base.hasAnnotationPermissions(permissions)).to.be.truthy;
+        });
+    });
+
     describe('areAnnotationsEnabled()', () => {
         beforeEach(() => {
             stubs.getViewerOption = sandbox.stub(base, 'getViewerOption').withArgs('annotations').returns(false);
+            base.options.file = {
+                permissions: {
+                    can_annotate: true
+                }
+            };
         });
 
         it('should return true if viewer option is set to true', () => {
