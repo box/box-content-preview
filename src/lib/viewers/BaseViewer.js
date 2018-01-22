@@ -769,6 +769,15 @@ class BaseViewer extends EventEmitter {
      * @return {boolean} Whether or not viewer is annotatable
      */
     areAnnotationsEnabled() {
+        // Do not attempt to fetch annotations if the user cannot create or view annotations
+        const { permissions } = this.options.file;
+        if (
+            !permissions.can_annotate &&
+            !(permissions.can_view_annotations_all || permissions.can_view_annotations_self)
+        ) {
+            return false;
+        }
+
         // Respect viewer-specific annotation option if it is set
         if (
             window.BoxAnnotations &&
