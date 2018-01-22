@@ -772,6 +772,7 @@ class BaseViewer extends EventEmitter {
         // Do not attempt to fetch annotations if the user cannot create or view annotations
         const { permissions } = this.options.file;
         if (
+            permissions &&
             !permissions.can_annotate &&
             !(permissions.can_view_annotations_all || permissions.can_view_annotations_self)
         ) {
