@@ -118,7 +118,7 @@ describe('lib/viewers/error/PreviewErrorViewer', () => {
 
             error.load(err);
 
-            expect(error.messageEl.textContent).to.equal(__('error_default'));
+            expect(error.messageEl.textContent).to.equal(__('error_generic'));
         });
 
         it('should not add download button if the browser cannot download', () => {

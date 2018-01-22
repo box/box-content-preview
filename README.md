@@ -66,6 +66,17 @@ You can self-host the Box Content Preview library or reference the versions avai
 </html>
 ```
 
+### Self-hosting
+To self-host the Box Content Preview library, follow these steps:
+1. Either fork the repo and check out the version you want to host or download the specific version as a zip
+  * Check out a specific version with `git checkout v1.26.0`
+  * Download a specific version as a zip from https://github.com/box/box-content-preview/releases
+2. Install dependencies and build the library with `yarn install && yarn run prod`
+3. Self-host everything except for the `dev` folder from the `/dist` folder. You must not alter the folder structure and `third-party` needs to be in the same folder as `1.26.0`. For example, if you self-host using a `box-assets` folder, these URLs must be accessible:
+  * https://cdn.YOUR_SITE.com/box-assets/1.26.0/en-US/preview.js
+  * https://cdn.YOUR_SITE.com/box-assets/third-party/text/0.114.0/papaparse.min.js
+  * https://cdn.YOUR_SITE.com/box-assets/third-party/model3d/1.12.0/three.min.js
+
 ### Importing Preview as a React Component
 Preview can also be used as a React Component with the Box Element framework. The source code for the Content Preview Element wrapper is located at https://github.com/box/box-ui-elements/tree/master/src/components/ContentPreview. Please reference https://github.com/box/box-content-preview-demo for a minimal React application using this wrapper.
 
