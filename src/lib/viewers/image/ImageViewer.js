@@ -125,12 +125,10 @@ class ImageViewer extends ImageBaseViewer {
      * @param {number} [height] - The height in px
      * @return {boolean} true if the width will be modified instead of height
      */
-    getModifyWidthInsteadOfHeight(width, height) {
-        const aspect = width / height;
+    isLandscape(width, height) {
         // For multi page tifs, we always modify the width, since its essentially a DIV and not IMG tag.
         // For images that are wider than taller we use width. For images that are taller than wider, we use height.
-        const modifyWidthInsteadOfHeight = aspect >= 1;
-        return modifyWidthInsteadOfHeight;
+        return width >= height;
     }
 
     /**
@@ -153,11 +151,11 @@ class ImageViewer extends ImageBaseViewer {
             const imageCurrentDimensions = this.imageEl.getBoundingClientRect(); // Getting bounding rect does not ignore transforms / rotates
             ({ height, width } = imageCurrentDimensions);
 
-            const modifyWidthInsteadOfHeight = this.getModifyWidthInsteadOfHeight(width, height);
+            const modifyWidthInsteadOfHeight = this.isLandscape(width, height);
             if (modifyWidthInsteadOfHeight) {
                 newWidth = type === 'in' ? width * IMAGE_ZOOM_SCALE : width / IMAGE_ZOOM_SCALE;
             } else {
-                newHeight = type === 'in' ? height * IMAGE_ZOOM_SCALE : (newHeight = height / IMAGE_ZOOM_SCALE);
+                newHeight = type === 'in' ? height * IMAGE_ZOOM_SCALE : height / IMAGE_ZOOM_SCALE;
             }
         } else {
             // This can be triggered by initial render as well as reset
@@ -165,7 +163,7 @@ class ImageViewer extends ImageBaseViewer {
             // dont use getBoundingClientRect because it may be a reset, and it causes a reflow
             height = parseInt(this.imageEl.getAttribute('originalHeight'), 10);
             width = parseInt(this.imageEl.getAttribute('originalWidth'), 10);
-            const modifyWidthInsteadOfHeight = this.getModifyWidthInsteadOfHeight(width, height);
+            const modifyWidthInsteadOfHeight = this.isLandscape(width, height);
 
             const viewport = {
                 width: this.wrapperEl.offsetWidth - 2 * IMAGE_PADDING,
