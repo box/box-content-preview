@@ -544,15 +544,15 @@ describe('lib/viewers/image/ImageViewer', () => {
         });
     });
 
-    describe('getModifyWidthInsteadOfHeight()', () => {
+    describe('isLandscape()', () => {
         it('should modify the width if the aspect ratio is >= 1', () => {
-            const getModifyWidthInsteadOfHeight = image.isLandscape(100, 50);
-            expect(getModifyWidthInsteadOfHeight).to.be.true;
+            const isLandscape = image.isLandscape(100, 50);
+            expect(isLandscape).to.be.true;
         });
 
         it('should modify the height if the aspect ratio is < 1', () => {
-            const getModifyWidthInsteadOfHeight = image.isLandscape(100, 500);
-            expect(getModifyWidthInsteadOfHeight).to.be.false;
+            const isLandscape = image.isLandscape(100, 500);
+            expect(isLandscape).to.be.false;
         });
     })
 });

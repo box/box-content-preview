@@ -118,17 +118,15 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
-     * Getter for modifyWidthInsteadOfHeight which will be used in zoom
-     * and will determine if the width or the height needs to be modified
+     * Getter for isLandscape which will detmine if the image is landscape.
+     * Will be used in zoom and will determine if the width or the height needs to be modified
      *
      * @private
      * @param {number} [width] - The width in px
      * @param {number} [height] - The height in px
-     * @return {boolean} true if the width will be modified instead of height
+     * @return {boolean} true if it is landscape
      */
     isLandscape(width, height) {
-        // For multi page tifs, we always modify the width, since its essentially a DIV and not IMG tag.
-        // For images that are wider than taller we use width. For images that are taller than wider, we use height.
         return width >= height;
     }
 
@@ -144,19 +142,29 @@ class ImageViewer extends ImageBaseViewer {
         let newHeight;
         let height;
         let width;
+        const isRotated = this.isRotated();
 
         // From this point on, only 1 dimension will be modified. Either it will be width or it will be height.
         // The other one will remain null and eventually get cleared out. The image should automatically use the proper value
         // for the dimension that was cleared out.
         if (type === 'in' || type === 'out') {
-            const imageCurrentDimensions = this.imageEl.getBoundingClientRect(); // Getting bounding rect does not ignore transforms / rotates
-            ({ height, width } = imageCurrentDimensions);
-
+            // Image offsetHeight & offsetWidth will be the image dimensions without transforms applied.
+            // So, if the image is rotated, swap the width & height
+            width = isRotated ? this.imageEl.offsetHeight : this.imageEl.offsetWidth;
+            height = isRotated ? this.imageEl.offsetWidth : this.imageEl.offsetHeight;
             const modifyWidthInsteadOfHeight = this.isLandscape(width, height);
             if (modifyWidthInsteadOfHeight) {
                 newWidth = type === 'in' ? width * IMAGE_ZOOM_SCALE : width / IMAGE_ZOOM_SCALE;
             } else {
                 newHeight = type === 'in' ? height * IMAGE_ZOOM_SCALE : height / IMAGE_ZOOM_SCALE;
+            }
+
+            // If the image has been rotated, we need to swap the width and height
+            // because when setting width or height, transforms / rotates are ignored.
+            if (isRotated) {
+                const temp = newWidth;
+                newWidth = newHeight;
+                newHeight = temp;
             }
         } else {
             // This can be triggered by initial render as well as reset
@@ -183,28 +191,15 @@ class ImageViewer extends ImageBaseViewer {
                 // If the image is smaller than the new viewport, zoom up to a
                 // max of the original file size
             } else if (modifyWidthInsteadOfHeight) {
-                const originalWidth = this.isRotated()
-                    ? this.imageEl.getAttribute('originalHeight')
-                    : this.imageEl.getAttribute('originalWidth');
+                const originalWidth = isRotated ? height : width;
                 newWidth = Math.min(viewport.width, originalWidth);
             } else {
-                const originalHeight = this.isRotated()
-                    ? this.imageEl.getAttribute('originalWidth')
-                    : this.imageEl.getAttribute('originalHeight');
+                const originalHeight = isRotated ? width : height;
                 newHeight = Math.min(viewport.height, originalHeight);
             }
         }
 
-        // If the image has been rotated, we need to swap the width and height
-        // getBoundingClientRect always gives values based on how its rendered on the screen
-        // But when setting width or height, transforms / rotates are ignored.
-        if (this.isRotated()) {
-            const temp = newWidth;
-            newWidth = newHeight;
-            newHeight = temp;
-        }
-
-        // Set the new dimensions. This ignores rotates, hence we need to swap the dimensions above.
+        // Set the new dimensions. This ignores rotates, hence we need to swap the dimensions above (if zooming).
         // Only one of the below will be set, while the other will get cleared out to let the browser
         // adjust it automatically based on the images aspect ratio.
         this.imageEl.style.width = newWidth ? `${newWidth}px` : '';
