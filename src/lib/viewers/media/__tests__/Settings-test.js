@@ -111,29 +111,19 @@ describe('lib/viewers/media/Settings', () => {
         });
 
         it('should add extra padding to settingsEl based on menu contents that require scroll bar', () => {
-            const menuEl = document.createElement('div');
-            // Greater than enough to add a scroll bar.
-            menuEl.appendChild(document.createElement('span'));
-            menuEl.appendChild(document.createElement('span'));
-            menuEl.appendChild(document.createElement('span'));
-            menuEl.appendChild(document.createElement('span'));
-            menuEl.appendChild(document.createElement('span'));
-            menuEl.appendChild(document.createElement('span'));
-            menuEl.appendChild(document.createElement('span'));
-            menuEl.appendChild(document.createElement('span'));
+            const menuEl = {
+                offsetWidth: 0,
+                offsetHeight: 500 // 210 is max height of settings menu
+            };
             settings.setMenuContainerDimensions(menuEl);
 
             expect(settings.settingsEl.style.width).to.equal('32px');
         });
 
-        it('should grow the height of the settingsEl based on the number of child elements inside of it', () => {
+        it('should grow the height of the settingsEl to that of the sub-menu, with padding', () => {
             const menuEl = {
                 offsetWidth: 0,
-                children: [
-                    {
-                        offsetHeight: 18
-                    }
-                ]
+                offsetHeight: 18
             };
             settings.setMenuContainerDimensions(menuEl);
 

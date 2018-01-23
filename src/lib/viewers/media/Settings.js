@@ -22,6 +22,9 @@ const MEDIA_SPEEDS = ['0.5', '1.0', '1.25', '1.5', '2.0'];
 const MEDIA_QUALITY_SD = 'sd';
 const MEDIA_QUALITY_HD = 'hd';
 const MEDIA_QUALITY_AUTO = 'auto';
+const SETTINGS_MENU_PADDING = 18;
+const SETTINGS_MENU_PADDING_SCROLL = 32;
+const SETTINGS_MENU_MAX_HEIGHT = 210;
 
 const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
     <div class="bp-media-settings-menu-main bp-media-settings-menu" role="menu">
@@ -292,16 +295,13 @@ class Settings extends EventEmitter {
      * @return {void}
      */
     setMenuContainerDimensions(menu) {
-        const { children } = menu;
+        const paddedHeight = menu.offsetHeight + SETTINGS_MENU_PADDING;
+        this.settingsEl.style.height = `${paddedHeight}px`;
 
-        // If we have enough children to require scrolling, take into account scroll bar width.
-        const scrollPadding = children.length > 7 ? 32 : 18;
+        // If the menu grows tall enough to require scrolling, take into account scroll bar width.
+        const scrollPadding =
+            paddedHeight >= SETTINGS_MENU_MAX_HEIGHT ? SETTINGS_MENU_PADDING_SCROLL : SETTINGS_MENU_PADDING;
         this.settingsEl.style.width = `${menu.offsetWidth + scrollPadding}px`;
-
-        // height = n * $item-height + 2 * $padding (see Settings.scss) + 2 * border (see Settings.scss)
-        // where n is the number of displayed items in the menu
-        const sumHeight = [].reduce.call(children, (sum, child) => sum + child.offsetHeight, 0);
-        this.settingsEl.style.height = `${sumHeight + 18}px`;
     }
 
     /**
