@@ -15,6 +15,7 @@ class ImageViewer extends ImageBaseViewer {
         super(options);
 
         this.rotateLeft = this.rotateLeft.bind(this);
+        this.updatePannability = this.updatePannability.bind(this);
 
         if (this.isMobile) {
             this.handleOrientationChange = this.handleOrientationChange.bind(this);
