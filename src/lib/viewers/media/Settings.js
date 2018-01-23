@@ -292,11 +292,15 @@ class Settings extends EventEmitter {
      * @return {void}
      */
     setMenuContainerDimensions(menu) {
-        // NOTE: need to explicitly set the dimensions in order to get css transitions. width=auto doesn't work with css transitions
-        this.settingsEl.style.width = `${menu.offsetWidth + 18}px`;
+        const { children } = menu;
+
+        // If we have enough children to require scrolling, take into account scroll bar width.
+        const scrollPadding = children.length > 7 ? 32 : 18;
+        this.settingsEl.style.width = `${menu.offsetWidth + scrollPadding}px`;
+
         // height = n * $item-height + 2 * $padding (see Settings.scss) + 2 * border (see Settings.scss)
         // where n is the number of displayed items in the menu
-        const sumHeight = [].reduce.call(menu.children, (sum, child) => sum + child.offsetHeight, 0);
+        const sumHeight = [].reduce.call(children, (sum, child) => sum + child.offsetHeight, 0);
         this.settingsEl.style.height = `${sumHeight + 18}px`;
     }
 
