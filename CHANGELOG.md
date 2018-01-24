@@ -1,3 +1,19 @@
+<a name="1.27.0"></a>
+# 1.27.0 (2018-01-24)
+
+* Event names into separate file (#589) ([3805904](https://github.com/box/box-content-preview/commit/3805904))
+* Fix settings menu title cut off by scrollbar (#599) ([cdb627e](https://github.com/box/box-content-preview/commit/cdb627e)), closes [#599](https://github.com/box/box-content-preview/issues/599)
+* Update README.md ([e590ff9](https://github.com/box/box-content-preview/commit/e590ff9))
+* Update: box-annotations to v0.10.0 (#601) ([a2397ce](https://github.com/box/box-content-preview/commit/a2397ce))
+* Fix: Disable annotations if user has neither annotate nor view permissions (#598) ([d8c4ebd](https://github.com/box/box-content-preview/commit/d8c4ebd))
+* Fix: mobile audio controls overlap with navigation (#590) ([a7ed4fc](https://github.com/box/box-content-preview/commit/a7ed4fc))
+* Fix: Properly binding imageViewer.updatePannability() (#600) ([e18aeb6](https://github.com/box/box-content-preview/commit/e18aeb6))
+* Docs: Add self-hosting instructions to README.md (#597) ([56cbb11](https://github.com/box/box-content-preview/commit/56cbb11))
+* Mojito: Update translations (#596) ([fd635b2](https://github.com/box/box-content-preview/commit/fd635b2))
+* New: Specific error messages for unsupported/tariff restricted files (#593) ([941070e](https://github.com/box/box-content-preview/commit/941070e))
+
+
+
 <a name="1.26.0"></a>
 # 1.26.0 (2018-01-18)
 
