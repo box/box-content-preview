@@ -118,16 +118,28 @@ class ImageViewer extends ImageBaseViewer {
     }
 
     /**
-     * Getter for isLandscape which will detmine if the image is landscape.
-     * Will be used in zoom and will determine if the width or the height needs to be modified
+     * Gets the width & height after the transforms are applied.
+     * When an image is rotated, the width & height of an image, e.g. offsetWidth & offsetHeight,
+     * are the values before transforms are applied, so if the image is rotated we need to swap the
+     * width & height
      *
      * @private
      * @param {number} [width] - The width in px
      * @param {number} [height] - The height in px
-     * @return {boolean} true if it is landscape
+     * @param {boolean} [isRotated] - if the image has a transform rotate applied to it
+     * @return {Object} the width & height of the image after tranformations
      */
-    isLandscape(width, height) {
-        return width >= height;
+    getTransformWidthAndHeight(width, height, isRotated) {
+        if (isRotated) {
+            return {
+                width: height,
+                height: width
+            };
+        }
+        return {
+            width,
+            height
+        };
     }
 
     /**
@@ -148,35 +160,24 @@ class ImageViewer extends ImageBaseViewer {
         // The other one will remain null and eventually get cleared out. The image should automatically use the proper value
         // for the dimension that was cleared out.
         if (type === 'in' || type === 'out') {
-            // Image offsetHeight & offsetWidth will be the image dimensions without transforms applied.
-            // So, if the image is rotated, swap the width & height
-            width = isRotated ? this.imageEl.offsetHeight : this.imageEl.offsetWidth;
-            height = isRotated ? this.imageEl.offsetWidth : this.imageEl.offsetHeight;
-            const modifyWidthInsteadOfHeight = this.isLandscape(width, height);
-            if (modifyWidthInsteadOfHeight) {
-                newWidth = type === 'in' ? width * IMAGE_ZOOM_SCALE : width / IMAGE_ZOOM_SCALE;
-            } else {
-                newHeight = type === 'in' ? height * IMAGE_ZOOM_SCALE : height / IMAGE_ZOOM_SCALE;
-            }
+            ({ width, height } = this.getTransformWidthAndHeight(
+                this.imageEl.offsetWidth,
+                this.imageEl.offsetHeight,
+                isRotated
+            ));
 
-            // If the image has been rotated, we need to swap the width and height
-            // because when setting width or height, transforms / rotates are ignored.
-            if (isRotated) {
-                const temp = newWidth;
-                newWidth = newHeight;
-                newHeight = temp;
-            }
+            newWidth = type === 'in' ? width * IMAGE_ZOOM_SCALE : width / IMAGE_ZOOM_SCALE;
         } else {
             // This can be triggered by initial render as well as reset
             // When it is an initial render or reset, take the original dimensions of the image
-            // dont use getBoundingClientRect because it may be a reset, and it causes a reflow
-            height = parseInt(this.imageEl.getAttribute('originalHeight'), 10);
-            width = parseInt(this.imageEl.getAttribute('originalWidth'), 10);
-            const modifyWidthInsteadOfHeight = this.isLandscape(width, height);
+            const origHeight = parseInt(this.imageEl.getAttribute('originalHeight'), 10);
+            const origWidth = parseInt(this.imageEl.getAttribute('originalWidth'), 10);
+            ({ width, height } = this.getTransformWidthAndHeight(origWidth, origHeight, isRotated));
+            const modifyWidthInsteadOfHeight = width >= height;
 
             const viewport = {
-                width: this.wrapperEl.offsetWidth - 2 * IMAGE_PADDING,
-                height: this.wrapperEl.offsetHeight - 2 * IMAGE_PADDING
+                width: this.wrapperEl.clientWidth - 2 * IMAGE_PADDING,
+                height: this.wrapperEl.clientHeight - 2 * IMAGE_PADDING
             };
             // If the image is overflowing the viewport, figure out by how much
             // Then take that aspect that reduces the image the maximum (hence min ratio) to fit both width and height
@@ -191,12 +192,18 @@ class ImageViewer extends ImageBaseViewer {
                 // If the image is smaller than the new viewport, zoom up to a
                 // max of the original file size
             } else if (modifyWidthInsteadOfHeight) {
-                const originalWidth = isRotated ? height : width;
-                newWidth = Math.min(viewport.width, originalWidth);
+                newWidth = Math.min(viewport.width, origWidth);
             } else {
-                const originalHeight = isRotated ? width : height;
-                newHeight = Math.min(viewport.height, originalHeight);
+                newHeight = Math.min(viewport.height, origHeight);
             }
+        }
+
+        // If the image has been rotated, we need to swap the width and height
+        // because when setting width or height, transforms / rotates are ignored.
+        if (isRotated) {
+            const temp = newWidth;
+            newWidth = newHeight;
+            newHeight = temp;
         }
 
         // Set the new dimensions. This ignores rotates, hence we need to swap the dimensions above (if zooming).

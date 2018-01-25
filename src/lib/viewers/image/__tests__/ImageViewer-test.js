@@ -238,16 +238,6 @@ describe('lib/viewers/image/ImageViewer', () => {
                 const newImageSize = image.imageEl.getBoundingClientRect();
                 expect(newImageSize.width).gt(origImageSize.width);
             });
-
-            it('height', () => {
-                image.imageEl.style.height = '200px';
-
-                const origImageSize = image.imageEl.getBoundingClientRect();
-                image.zoomIn();
-                const newImageSize = image.imageEl.getBoundingClientRect();
-                expect(newImageSize.height).gt(origImageSize.height);
-                expect(stubs.adjustZoom).to.be.called;
-            });
         });
 
         describe('should zoom out by modifying', () => {
@@ -276,14 +266,18 @@ describe('lib/viewers/image/ImageViewer', () => {
             sandbox.stub(image, 'isRotated').returns(true);
 
             image.load(imageUrl).catch(() => {});
-            image.imageEl.style.width = '200px'; // ensures width > height
-
+            image.imageEl.style.transform = 'rotate(90deg)';
+            image.imageEl.style.width = '200px';
+            image.imageEl.setAttribute('originalWidth', '150');
+            image.imageEl.setAttribute('originalHeight', '100');
+            image.imageEl.src = imageUrl;
             const origImageSize = image.imageEl.getBoundingClientRect();
             image.zoomIn();
             const newImageSize = image.imageEl.getBoundingClientRect();
 
             expect(newImageSize.height).gt(origImageSize.height);
             expect(stubs.adjustZoom).to.be.called;
+            image.imageEl.style.transform = '';
         });
 
         it('should reset dimensions and adjust padding when called with reset', () => {
@@ -307,17 +301,15 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.currentRotationAngle = -90;
             image.imageEl.style.width = '1000px';
             image.imageEl.style.height = '2000px';
-            const naturalHeight = 5;
             const naturalWidth = 10;
+            const naturalHeight = 5;
             image.imageEl.setAttribute('originalHeight', naturalHeight);
             image.imageEl.setAttribute('originalWidth', naturalWidth);
 
-            sandbox.spy(image, 'zoom');
-
             image.zoom('reset');
 
-            expect(image.imageEl.style.width).to.equal('');
-            expect(image.imageEl.style.height).to.equal(`${naturalHeight}px`);
+            expect(image.imageEl.style.width).to.equal('5px');
+            expect(image.imageEl.style.height).to.equal('');
             expect(stubs.adjustZoom).to.be.called;
         });
     });
@@ -396,6 +388,28 @@ describe('lib/viewers/image/ImageViewer', () => {
             image.currentRotationAngle = 90;
             const result = image.isRotated();
             expect(result).to.be.true;
+        });
+    });
+
+    describe('getTransformWidthAndHeight', () => {
+        it('should return the same width & height if the image is not rotated', () => {
+            const width = 100;
+            const height = 200;
+            const widthAndHeightObj = image.getTransformWidthAndHeight(width, height, false);
+            expect(widthAndHeightObj).to.deep.equal({
+                width,
+                height
+            });
+        });
+
+        it('should return swap the width & height if the image is rotated', () => {
+            const width = 100;
+            const height = 200;
+            const widthAndHeightObj = image.getTransformWidthAndHeight(width, height, true);
+            expect(widthAndHeightObj).to.deep.equal({
+                width: height,
+                height: width
+            });
         });
     });
 
@@ -543,16 +557,4 @@ describe('lib/viewers/image/ImageViewer', () => {
             });
         });
     });
-
-    describe('isLandscape()', () => {
-        it('should modify the width if the aspect ratio is >= 1', () => {
-            const isLandscape = image.isLandscape(100, 50);
-            expect(isLandscape).to.be.true;
-        });
-
-        it('should modify the height if the aspect ratio is < 1', () => {
-            const isLandscape = image.isLandscape(100, 500);
-            expect(isLandscape).to.be.false;
-        });
-    })
 });
