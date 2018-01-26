@@ -497,12 +497,7 @@ class DocBaseViewer extends BaseViewer {
         this.bindDOMListeners();
 
         // Initialize pdf.js in container
-        this.pdfViewer = new PDFJS.PDFViewer({
-            container: this.docEl,
-            linkService: new PDFJS.PDFLinkService(),
-            // Enhanced text selection uses more memory, so disable on mobile
-            enhanceTextSelection: !this.isMobile
-        });
+        this.pdfViewer = this.getPdfViewer();
 
         // Use chunk size set in viewer options if available
         let rangeChunkSize = this.getViewerOption('rangeChunkSize');
@@ -556,6 +551,22 @@ class DocBaseViewer extends BaseViewer {
 
                 this.triggerError(error);
             });
+    }
+
+    /**
+     * Get pdf.js viewer.
+     *
+     * @protected
+     * @override
+     * @return {PDFJS.PDFViewer} PDF viewer type
+     */
+    getPdfViewer() {
+        return new PDFJS.PDFViewer({
+            container: this.docEl,
+            linkService: new PDFJS.PDFLinkService(),
+            // Enhanced text selection uses more memory, so disable on mobile
+            enhanceTextSelection: !this.isMobile
+        });
     }
 
     /**

@@ -2,6 +2,7 @@ import AssetLoader from '../AssetLoader';
 import { getRepresentation } from '../../file';
 import DocumentViewer from './DocumentViewer';
 import PresentationViewer from './PresentationViewer';
+import SinglePageViewer from './SinglePageViewer';
 import RepStatus from '../../RepStatus';
 import { ORIGINAL_REP_NAME, STATUS_SUCCESS } from '../../constants';
 import { DOCUMENT_EXTENSIONS } from '../../extensions';
@@ -22,6 +23,12 @@ const VIEWERS = [
         REP: 'pdf',
         EXT: DOCUMENT_EXTENSIONS
     },
+    {
+        NAME: 'SinglePage',
+        CONSTRUCTOR: SinglePageViewer,
+        REP: 'pdf',
+        EXT: DOCUMENT_EXTENSIONS
+    },
     // Allows other document types to use the presentation viewer when the document viewer is disabled.
     {
         NAME: 'Presentation',
@@ -32,6 +39,12 @@ const VIEWERS = [
     {
         NAME: 'Document',
         CONSTRUCTOR: DocumentViewer,
+        REP: ORIGINAL_REP_NAME,
+        EXT: ['pdf', 'lcdpdf']
+    },
+    {
+        NAME: 'SinglePage',
+        CONSTRUCTOR: SinglePageViewer,
         REP: ORIGINAL_REP_NAME,
         EXT: ['pdf', 'lcdpdf']
     },
