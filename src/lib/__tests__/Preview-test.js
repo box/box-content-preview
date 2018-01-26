@@ -447,7 +447,7 @@ describe('lib/Preview', () => {
                 CONSTRUCTOR: () => {}
             };
 
-            sandbox.stub(preview.cache, 'get').withArgs(fileId).returns(someFile);
+            sandbox.stub(file, 'getCachedFile').withArgs(preview.cache, sinon.match.any).returns(someFile);
             sandbox.stub(preview, 'getLoader').withArgs(someFile).returns(loader);
         });
 
@@ -773,6 +773,10 @@ describe('lib/Preview', () => {
             stubs.handleTokenResponse = sandbox.stub(preview, 'handleTokenResponse');
             stubs.get = sandbox.stub(preview.cache, 'get');
             stubs.destroy = sandbox.stub(preview, 'destroy');
+
+            stubs.getCachedFile = sandbox.stub(file, 'getCachedFile');
+
+            preview.fileVersions = {};
         });
 
         it('should cleanup any existing viewer', () => {
@@ -788,12 +792,28 @@ describe('lib/Preview', () => {
             expect(Browser.getBrowserInfo).to.not.be.called; // cached from preview constructor
         });
 
+        it('should fetch file from cache using file ID as key if file version ID is not in options', () => {
+            const fileId = '123';
+            preview.load(fileId);
+            expect(file.getCachedFile).to.be.calledWith(preview.cache, { fileId });
+        });
+
+        it('should fetch file from cache using file version ID as key if file version ID is in options', () => {
+            const fileId = '123';
+            const fileVersionId = '1234';
+
+            sandbox.stub(preview, 'getFileOption').withArgs(fileId, 'fileVersionId').returns(fileVersionId);
+            preview.load(fileId);
+
+            expect(file.getCachedFile).to.be.calledWith(preview.cache, { fileVersionId });
+        });
+
         it('should clear the retry timeout', () => {
             preview.load('0');
             expect(preview.retryTimeout).to.equal(undefined);
         });
 
-        it('should set the retry count', () => {
+        it('should set the retry count if we are retrying by file ID', () => {
             preview.retryCount = 0;
             preview.file.id = '0';
 
@@ -803,6 +823,29 @@ describe('lib/Preview', () => {
             preview.file = undefined;
 
             preview.load('0');
+            expect(preview.retryCount).to.equal(0);
+        });
+
+        it('should set the retry count if we are retrying by file version ID', () => {
+            preview.retryCount = 0;
+
+            // The current file we are attempting to preview has file version '1234'
+            preview.file.file_version = {
+                id: '1234'
+            };
+
+            // Calling load() with file version ID '1234'
+            stubs.getFileVersionId = sandbox.stub(preview, 'getFileOption').withArgs(sinon.match.any, 'fileVersionId').returns('1234');
+            preview.load('0');
+
+            // Expect retry count to go up by 1
+            expect(preview.retryCount).to.equal(1);
+
+            // Calling load() with file version ID '12345'
+            stubs.getFileVersionId.returns('12345');
+            preview.load('0');
+
+            // Expect retry count to reset to 0 since it doesn't match current file version ID '1234'
             expect(preview.retryCount).to.equal(0);
         });
 
@@ -1106,7 +1149,7 @@ describe('lib/Preview', () => {
                 setCacheStale: sandbox.stub()
             };
 
-            stubs.get = sandbox.stub(preview.cache, 'get').returns(true);
+            stubs.getCachedFile = sandbox.stub(file, 'getCachedFile');
             stubs.set = sandbox.stub(preview.cache, 'set');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.loadViewer = sandbox.stub(preview, 'loadViewer');
@@ -1116,19 +1159,41 @@ describe('lib/Preview', () => {
             stubs.checkFileValid = sandbox.stub(file, 'checkFileValid').returns(true);
             stubs.isWatermarked = sandbox.stub(file, 'isWatermarked').returns(false);
             stubs.file = {
-                id: 0,
+                id: '123',
                 name: 'file',
                 file_version: {
+                    id: '1234',
                     sha1: 2
                 },
                 representations: {
                     entries: []
                 }
             };
+            preview.fileVersions = {};
+        });
+
+        it('should normalize the file version object from server if previewing a file verison', () => {
+            preview.file.id = '123';
+            sandbox.stub(file, 'normalizeFileVersion').returns({
+                id: preview.file.id,
+                shared_link: {},
+                file_version: {
+                    id: '1234'
+                }
+            });
+            const fileVersion = {
+                id: '1234'
+            };
+            sandbox.stub(preview, 'getFileOption').withArgs('123', 'fileVersionId').returns(fileVersion.id);
+
+            preview.handleFileInfoResponse(fileVersion);
+
+            expect(file.normalizeFileVersion).to.be.calledWith(fileVersion, preview.file.id);
         });
 
         it('should do nothing if the preview is closed', () => {
             preview.open = false;
+            preview.file.id = '123';
             preview.handleFileInfoResponse(stubs.file);
             expect(stubs.set).to.not.be.called;
         });
@@ -1136,9 +1201,12 @@ describe('lib/Preview', () => {
         it('should do nothing if response comes back for an incorrect file', () => {
             preview.open = true;
             preview.file = {
-                id: 0
+                id: '123',
+                file_version: {
+                    id: '1234'
+                }
             };
-            stubs.file.id = 1;
+            stubs.file.file_version.id = '1233';
 
             preview.handleFileInfoResponse(stubs.file);
             expect(stubs.set).to.not.be.called;
@@ -1161,7 +1229,7 @@ describe('lib/Preview', () => {
                 id: 0
             };
 
-            stubs.get.returns({
+            stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
                 }
@@ -1170,7 +1238,7 @@ describe('lib/Preview', () => {
             stubs.file.file_version.sha1 = 0;
 
             preview.handleFileInfoResponse(stubs.file);
-            expect(stubs.get).to.be.calledWith(stubs.file.id);
+            expect(stubs.getCachedFile).to.be.calledWith(preview.cache, { fileVersionId: stubs.file.file_version.id });
             expect(stubs.cacheFile).to.be.calledWith(preview.cache, stubs.file);
             expect(stubs.loadViewer).to.not.be.called;
         });
@@ -1182,7 +1250,7 @@ describe('lib/Preview', () => {
                 id: 0
             };
 
-            stubs.get.returns({
+            stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
                 }
@@ -1200,7 +1268,7 @@ describe('lib/Preview', () => {
                 id: 0
             };
 
-            stubs.get.returns(false);
+            stubs.getCachedFile.returns(null);
 
             preview.handleFileInfoResponse(stubs.file);
             expect(stubs.loadViewer).to.be.called;
@@ -1224,7 +1292,7 @@ describe('lib/Preview', () => {
                 id: 0
             };
 
-            stubs.get.returns({
+            stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
                 }
@@ -1244,7 +1312,7 @@ describe('lib/Preview', () => {
             };
 
             stubs.isWatermarked.returns(true);
-            stubs.get.returns({
+            stubs.getCachedFile.returns({
                 file_version: {
                     sha1: 0
                 }
@@ -1263,7 +1331,7 @@ describe('lib/Preview', () => {
                 id: 0
             };
 
-            stubs.get.throws(new Error());
+            stubs.getCachedFile.throws(new Error());
 
             preview.handleFileInfoResponse(stubs.file);
             expect(stubs.triggerError).to.be.called;
@@ -1718,7 +1786,7 @@ describe('lib/Preview', () => {
 
     describe('handleFetchError()', () => {
         beforeEach(() => {
-            stubs.unset = sandbox.stub(preview.cache, 'unset');
+            stubs.uncacheFile = sandbox.stub(file, 'uncacheFile');
             stubs.triggerError = sandbox.stub(preview, 'triggerError');
             stubs.load = sandbox.stub(preview, 'load');
             stubs.error = {
@@ -1735,7 +1803,7 @@ describe('lib/Preview', () => {
             preview.open = false;
 
             preview.handleFetchError(stubs.error);
-            expect(stubs.unset).to.not.be.called;
+            expect(stubs.uncacheFile).to.not.be.called;
         });
 
         it('should clear the current file from the cache', () => {
@@ -1745,7 +1813,7 @@ describe('lib/Preview', () => {
             preview.open = true;
 
             preview.handleFetchError(stubs.error);
-            expect(stubs.unset).to.be.called;
+            expect(stubs.uncacheFile).to.be.called;
         });
 
         it('should trigger an error if we have hit our retry count limit', () => {
@@ -1836,7 +1904,7 @@ describe('lib/Preview', () => {
         };
 
         beforeEach(() => {
-            stubs.unset = sandbox.stub(preview.cache, 'unset');
+            stubs.uncacheFile = sandbox.stub(file, 'uncacheFile');
             stubs.destroy = sandbox.stub(preview, 'destroy');
             stubs.finishLoading = sandbox.stub(preview, 'finishLoading');
             stubs.getErrorViewer = sandbox.stub(preview, 'getErrorViewer').returns(ErrorViewer);
@@ -1854,14 +1922,14 @@ describe('lib/Preview', () => {
             preview.open = false;
 
             preview.triggerError();
-            expect(stubs.unset).to.not.be.called;
+            expect(stubs.uncacheFile).to.not.be.called;
             expect(stubs.destroy).to.not.be.called;
         });
 
         it('should prevent any other viewers from loading, clear the cache, complete postload tasks, and destroy anything still visible', () => {
             preview.triggerError();
             expect(preview.open).to.be.false;
-            expect(stubs.unset).to.be.called;
+            expect(stubs.uncacheFile).to.be.called;
             expect(stubs.destroy).to.be.called;
         });
 
@@ -2252,6 +2320,50 @@ describe('lib/Preview', () => {
             preview.keydownHandler(stubs.event);
             expect(stubs.event.preventDefault).to.be.called;
             expect(stubs.event.stopPropagation).to.be.called;
+        });
+    });
+
+    describe('getFileOption()', () => {
+        it('should return matching file option', () => {
+            preview.previewOptions = {
+                fileOptions: {
+                    123: {
+                        'fileVersionId': '1234'
+                    }
+                }
+            };
+
+            expect(preview.getFileOption('123', 'fileVersionId')).to.equal('1234');
+        });
+
+        it('should return matching file option when file object is passed', () => {
+            preview.previewOptions = {
+                fileOptions: {
+                    123: {
+                        'fileVersionId': '1234'
+                    }
+                }
+            };
+
+            expect(preview.getFileOption({ id: '123' }, 'fileVersionId')).to.equal('1234');
+        });
+
+        it('should return undefined when no matching file option is set', () => {
+            preview.previewOptions = {
+                fileOptions: {
+                    123: {
+                        'fileVersionId': '1234'
+                    }
+                }
+            };
+
+            expect(preview.getFileOption({ id: '1234' }, 'fileVersionId')).to.equal(undefined);
+            expect(preview.getFileOption('1234', 'fileVersionId')).to.equal(undefined);
+            expect(preview.getFileOption('123', 'location')).to.equal(undefined);
+
+            preview.previewOptions = undefined;
+
+            expect(preview.getFileOption('123', 'fileVersionId')).to.equal(undefined);
         });
     });
 });

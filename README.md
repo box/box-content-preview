@@ -127,10 +127,15 @@ preview.show(fileId, accessToken, {
 | collection |  | List of file IDs to iterate over for previewing |
 | header | 'light' | String value of 'none' or 'dark' or 'light' that controls header visibility and theme |
 | logoUrl |  | URL of logo to show in header |
-| showAnnotations | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. See [Box Annotations](https://github.com/box/box-annotations) for more details. |
+| showAnnotations | false | Whether annotations and annotation controls are shown. This option will be overridden by viewer-specific annotation options if they are set. See [Box Annotations](https://github.com/box/box-annotations) for more details |
 | showDownload | false | Whether download button is shown |
 | useHotkeys | true | Whether hotkeys (keyboard shortcuts) are enabled |
 | pauseRequireJS | false | Temporarily disables requireJS to allow Preview's third party dependencies to load |
+| fileOptions | {} | Mapping of file ID to file-level option. See below for details |
+
+| File Option | Description |
+| --- | --- |
+| fileVersionId | File version ID to preview. This must be a valid non-current file version ID. Use [Get Versions](https://developer.box.com/reference#view-versions-of-a-file) to fetch a list of file versions |
 
 Access Token
 ------------
