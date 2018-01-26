@@ -166,6 +166,8 @@ class ImageViewer extends ImageBaseViewer {
                 isRotated
             ));
 
+            // Since we are taking offsetWidth, we only need to apply the zoom to the width
+            // as clearing the height will preserve the aspect ratio
             newWidth = type === 'in' ? width * IMAGE_ZOOM_SCALE : width / IMAGE_ZOOM_SCALE;
         } else {
             // This can be triggered by initial render as well as reset

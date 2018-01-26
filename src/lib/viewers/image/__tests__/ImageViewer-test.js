@@ -262,10 +262,9 @@ describe('lib/viewers/image/ImageViewer', () => {
             });
         });
 
-        it('should swap height & width when image is rotated', () => {
+        it('should zoom the width & height when the image rotated', () => {
             sandbox.stub(image, 'isRotated').returns(true);
 
-            image.load(imageUrl).catch(() => {});
             image.imageEl.style.transform = 'rotate(90deg)';
             image.imageEl.style.width = '200px';
             image.imageEl.setAttribute('originalWidth', '150');
@@ -274,7 +273,7 @@ describe('lib/viewers/image/ImageViewer', () => {
             const origImageSize = image.imageEl.getBoundingClientRect();
             image.zoomIn();
             const newImageSize = image.imageEl.getBoundingClientRect();
-
+            expect(newImageSize.width).gt(origImageSize.width);
             expect(newImageSize.height).gt(origImageSize.height);
             expect(stubs.adjustZoom).to.be.called;
             image.imageEl.style.transform = '';
