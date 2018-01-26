@@ -1356,11 +1356,15 @@ class Preview extends EventEmitter {
     /**
      * Shows a preview of a file at the specified index in the current collection.
      *
-     * @private
+     * @public
      * @param {number} index - Index of file to preview
      * @return {void}
      */
     navigateToIndex(index) {
+        if (!Array.isArray(this.collection) || this.collection.length < 2) {
+            return;
+        }
+
         const fileId = this.collection[index];
         this.emit('navigate', fileId);
         this.count.navigation += 1;
@@ -1370,7 +1374,7 @@ class Preview extends EventEmitter {
     /**
      * Shows a preview of the previous file.
      *
-     * @private
+     * @public
      * @return {void}
      */
     navigateLeft() {
@@ -1384,7 +1388,7 @@ class Preview extends EventEmitter {
     /**
      * Shows a preview of the next file.
      *
-     * @private
+     * @public
      * @return {void}
      */
     navigateRight() {

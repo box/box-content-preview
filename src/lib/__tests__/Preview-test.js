@@ -2076,9 +2076,19 @@ describe('lib/Preview', () => {
                 navigation: 0
             };
 
-            preview.collection = {
-                2: 'file'
-            };
+            preview.collection = [
+                'file', 'file2', 'file3'
+            ]
+        });
+
+        it('should do nothing if the collection is invalid', () => {
+            preview.collection = 'foo'
+            preview.navigateToIndex(1);
+            expect(stubs.emit).to.not.be.called;
+
+            preview.collection = []
+            preview.navigateToIndex(1);
+            expect(stubs.emit).to.not.be.called;
         });
 
         it('should emit the navigation event', () => {
@@ -2093,7 +2103,7 @@ describe('lib/Preview', () => {
 
         it('should load the requested file', () => {
             preview.navigateToIndex(2);
-            expect(stubs.load).to.be.calledWith('file');
+            expect(stubs.load).to.be.calledWith('file3');
         });
     });
 
