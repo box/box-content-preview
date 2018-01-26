@@ -1,7 +1,10 @@
 /* eslint-disable no-unused-expressions */
 import Notification from '../Notification';
 
+const HIDE_TIMEOUT_MS = 5000; // 5s
+
 let notif;
+let clock;
 
 const sandbox = sinon.sandbox.create();
 
@@ -41,6 +44,12 @@ describe('lib/Notification', () => {
     describe('show()', () => {
         beforeEach(() => {
             sandbox.stub(window, 'setTimeout');
+            sandbox.stub(notif, 'hide');
+            clock = sinon.useFakeTimers();
+        });
+
+        afterEach(() => {
+            clock.restore();
         });
 
         it('should properly show the notification', () => {
@@ -60,6 +69,18 @@ describe('lib/Notification', () => {
             notif.show('test');
             assert.equal(notif.messageEl.textContent, 'test');
             assert.equal(notif.buttonEl.textContent, __('notification_button_default_text'));
+        });
+
+        it('should hide after the timeout', () => {
+            notif.show('test', 'test');
+            clock.tick(HIDE_TIMEOUT_MS + 1);
+            expect(notif.hide).to.be.called;
+        });
+
+        it('should not hide after the timeout if the notification is set to persist', () => {
+            notif.show('test', 'test', true);
+            clock.tick(HIDE_TIMEOUT_MS + 1);
+            expect(notif.hide).to.not.be.called;
         });
     });
 
