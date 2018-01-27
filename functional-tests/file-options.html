@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        .preview-container {
+            border: 1px solid #eee;
+            height: 490px;
+            width: 100%;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="../dist/dev/en-US/preview.css">
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Promise"></script>
+    <script src="../dist/dev/en-US/preview.js"></script>
+
+</head>
+
+<body>
+    <div class="preview-container"></div>
+    <script>
+        var ACCESS_TOKEN = 'EqFyi1Yq1tD9mxY8F38sxDfp73pFd7FP';
+
+        var FILE_ID_DOC = '93392244621';
+        var FILE_ID_VIDEO = '101504801571';
+        var FILE_ID_MP3 = '193985625282';
+
+        var preview = new Box.Preview();
+        preview.show(FILE_ID_DOC, ACCESS_TOKEN, {
+            container: '.preview-container',
+            showDownload: false,
+            collection: [FILE_ID_DOC, FILE_ID_VIDEO, FILE_ID_MP3],
+            fileOptions: {
+                [FILE_ID_DOC]: {
+                    start: {
+                        value: 2,
+                        unit: 'pages'
+                    }
+                },
+                [FILE_ID_VIDEO]: {
+                    start: {
+                        value: 15,
+                        unit: 'seconds'
+                    }
+                },
+                [FILE_ID_MP3]: {
+                    start: {
+                        value: 3,
+                        unit: 'seconds'
+                    }
+                },
+            }
+        });
+
+        function disableDash() {
+            preview.disableViewers('Dash');
+            preview.show(FILE_ID_VIDEO, ACCESS_TOKEN, {
+                container: '.preview-container',
+                showDownload: false,
+                fileOptions: {
+                    [FILE_ID_VIDEO]: {
+                        start: {
+                            value: 10,
+                            unit: 'seconds'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

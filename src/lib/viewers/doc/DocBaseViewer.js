@@ -43,6 +43,7 @@ const MINIMUM_RANGE_REQUEST_FILE_SIZE_NON_US = 26214400; // 25MB
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
 const PINCH_PAGE_CLASS = 'pinch-page';
 const PINCHING_CLASS = 'pinching';
+const PAGES_UNIT_NAME = 'pages';
 
 class DocBaseViewer extends BaseViewer {
     //--------------------------------------------------------------------------
@@ -70,6 +71,7 @@ class DocBaseViewer extends BaseViewer {
         this.pinchToZoomStartHandler = this.pinchToZoomStartHandler.bind(this);
         this.pinchToZoomChangeHandler = this.pinchToZoomChangeHandler.bind(this);
         this.pinchToZoomEndHandler = this.pinchToZoomEndHandler.bind(this);
+        this.startPageNum = this.getStartPage();
     }
 
     /**
@@ -154,6 +156,33 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
+     * Converts a value and unit to page number
+     *
+     * @return {number|undefined} a page number > 0
+     */
+    getStartPage() {
+        let convertedValue;
+
+        const { unit, value } = this.fileStartObj || {};
+
+        if (value && unit) {
+            switch (unit) {
+                case PAGES_UNIT_NAME:
+                    convertedValue = parseInt(value, 10);
+                    if (Number.isNaN(convertedValue) || convertedValue < 1) {
+                        // Negative values aren't allowed, fall back to default behavior
+                        convertedValue = undefined;
+                    }
+                    break;
+                default:
+                    console.error('Invalid unit for start:', unit); // eslint-disable-line no-console
+            }
+        }
+
+        return convertedValue;
+    }
+
+    /**
      * Prefetches assets for a document.
      *
      * @param {boolean} [options.assets] - Whether or not to prefetch static assets
@@ -232,6 +261,7 @@ class DocBaseViewer extends BaseViewer {
     load() {
         this.setup();
         super.load();
+
         this.showPreload();
 
         const template = this.options.representation.content.url_template;
@@ -482,6 +512,18 @@ class DocBaseViewer extends BaseViewer {
         return true;
     }
 
+    /**
+     * Sets the start page the preview should start at
+     *
+     * @param {Object} doc - the PDFjs document
+     * @return {void}
+     */
+    setStartPage(doc) {
+        if (doc && this.startPageNum && this.startPageNum > 0 && this.startPageNum <= doc.numPages) {
+            this.cachePage(this.startPageNum);
+        }
+    }
+
     //--------------------------------------------------------------------------
     // Protected
     //--------------------------------------------------------------------------
@@ -533,6 +575,7 @@ class DocBaseViewer extends BaseViewer {
         this.pdfLoadingTask = PDFJS.getDocument(docInitParams);
         return this.pdfLoadingTask
             .then((doc) => {
+                this.setStartPage(doc);
                 this.pdfViewer.setDocument(doc);
 
                 const { linkService } = this.pdfViewer;

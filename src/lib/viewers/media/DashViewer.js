@@ -149,6 +149,7 @@ class DashViewer extends VideoBaseViewer {
         this.adapting = true;
         this.player = new shaka.Player(this.mediaEl);
         this.player.addEventListener('adaptation', this.adaptationHandler);
+
         this.player.addEventListener('error', this.shakaErrorHandler);
         this.player.configure({
             abr: {
@@ -168,7 +169,7 @@ class DashViewer extends VideoBaseViewer {
         this.player.getNetworkingEngine().registerRequestFilter(this.requestFilter);
 
         this.startLoadTimer();
-        this.player.load(this.mediaUrl);
+        this.player.load(this.mediaUrl, this.startTimeInSeconds);
     }
 
     /**

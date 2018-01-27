@@ -222,6 +222,16 @@ describe('lib/viewers/media/DashViewer', () => {
 
             expect(dash.startLoadTimer).to.be.called;
         });
+
+        it('should load the player with the start time', () => {
+            const START_TIME_IN_SECONDS = 3;
+            dash.mediaUrl = 'url';
+            dash.startTimeInSeconds = START_TIME_IN_SECONDS;
+            sandbox.stub(shaka, 'Player').returns(dash.player);
+            stubs.mockPlayer.expects('load').withArgs('url', START_TIME_IN_SECONDS);
+
+            dash.loadDashPlayer();
+        })
     });
 
     describe('requestFilter()', () => {

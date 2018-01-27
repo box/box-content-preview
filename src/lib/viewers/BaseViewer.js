@@ -20,6 +20,7 @@ import {
     CLASS_FULLSCREEN_UNSUPPORTED,
     CLASS_HIDDEN,
     CLASS_BOX_PREVIEW_MOBILE,
+    FILE_OPTION_START,
     SELECTOR_BOX_PREVIEW,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_POINT,
     SELECTOR_BOX_PREVIEW_BTN_ANNOTATE_DRAW,
@@ -108,6 +109,10 @@ class BaseViewer extends EventEmitter {
         this.options = options;
         this.cache = options.cache;
         this.previewUI = options.ui;
+        const fileOptions = options.fileOptions || {};
+        const fileId = getProp(options, 'file.id');
+        const optionsForFileId = fileOptions[fileId] || {};
+        this.fileStartObj = optionsForFileId[FILE_OPTION_START];
         this.repStatuses = [];
         this.isMobile = Browser.isMobile();
         this.hasTouch = Browser.hasTouch();

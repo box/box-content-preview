@@ -105,7 +105,7 @@ describe('lib/viewers/media/MediaBaseViewer', () => {
 
             media.destroy();
 
-            expect(media.mediaEl.removeEventListener.callCount).to.equal(9);
+            expect(media.mediaEl.removeEventListener.callCount).to.equal(10);
             expect(media.mediaEl.removeAttribute).to.be.calledWith('src');
             expect(media.mediaEl.load).to.be.called;
             expect(media.removePauseEventListener.callCount).to.equal(1);

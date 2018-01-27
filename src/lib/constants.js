@@ -102,3 +102,4 @@ export const TEXT_STATIC_ASSETS_VERSION = '0.114.0';
 export const PREVIEW_SCRIPT_NAME = 'preview.js';
 
 export const FILE_OPTION_FILE_VERSION_ID = 'fileVersionId';
+export const FILE_OPTION_START = 'start';

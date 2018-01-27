@@ -29,6 +29,7 @@ const MAX_SCALE = 10.0;
 const MIN_SCALE = 0.1;
 const SCROLL_END_TIMEOUT = 500;
 const MOBILE_MAX_CANVAS_SIZE = 2949120; // ~3MP 1920x1536
+const PAGES_UNIT_NAME = 'pages';
 
 const sandbox = sinon.sandbox.create();
 let docBase;
@@ -844,6 +845,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             const doc = {
                 url: 'url'
             };
+            const spy = sandbox.spy(docBase, 'setStartPage');
             const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.resolve(doc));
             sandbox.stub(docBase, 'getViewerOption').returns(100);
 
@@ -853,6 +855,7 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.bindDOMListeners).to.be.called;
                 expect(stubs.pdfViewer.setDocument).to.be.called;
                 expect(stubs.pdfViewer.linkService.setDocument).to.be.called;
+                expect(spy).to.have.been.calledOnce;
             });
         });
 
@@ -1644,6 +1647,101 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
             expect(docBase.pinchScale).to.equal(1);
             expect(docBase.pinchPage).to.equal(null);
         });
+    });
 
+    describe('getStartPage()', () => {
+        it('should return the start page as a number', () => {
+            docBase.fileStartObj = {
+                value : 3,
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage()).to.equal(3);
+        });
+
+        it('should return the floored number if a floating point number is passed', () => {
+            docBase.fileStartObj = {
+                value : 4.1,
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage()).to.equal(4);
+        });
+
+        it('should return undefined if a value < 1 is passed', () => {
+            docBase.fileStartObj = {
+                value : 0,
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage()).to.be.undefined;
+
+            docBase.fileStartObj = {
+                value : -100,
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage()).to.be.undefined;
+        });
+
+        it('should return undefined if an invalid unit is passed', () => {
+            docBase.fileStartObj = {
+                value : 3,
+                unit : 'foo'
+            };
+
+            expect(docBase.getStartPage()).to.be.undefined;
+        });
+
+        it('should return undefined if an invalid value is passed', () => {
+            docBase.fileStartObj = {
+                value : 'foo',
+                unit : PAGES_UNIT_NAME
+            };
+
+            expect(docBase.getStartPage()).to.be.undefined;
+        });
+
+        it('should return undefined if no unit and value is passed', () => {
+            expect(docBase.fileStartObj).to.be.undefined;
+            expect(docBase.getStartPage()).to.be.undefined;
+        });
+    });
+
+    describe('setStartPage()', () => {
+        let doc;
+        let spy;
+        beforeEach(()=>{
+            doc = {
+                numPages : 3
+            };
+            spy = sandbox.spy(docBase, 'cachePage');
+        });
+
+        it('should set the cached page', () => {
+            const PAGE_NUM = 2;
+            docBase.startPageNum = PAGE_NUM;
+            docBase.setStartPage(doc);
+            expect(spy).to.have.been.calledWith(PAGE_NUM);
+        });
+
+        it('should not set the start page if called with out of bounds page number', () => {
+            docBase.startPageNum = 5;
+            docBase.setStartPage(doc);
+            expect(spy).to.have.not.been.called;
+
+            docBase.startPageNum = 0;
+            docBase.setStartPage(doc);
+            expect(spy).to.have.not.been.called;
+
+            docBase.startPageNum = -1;
+            docBase.setStartPage(doc);
+            expect(spy).to.have.not.been.called;
+        });
+
+        it('should not set the start page if no page number set', () => {
+            docBase.setStartPage(doc);
+            expect(spy).to.have.not.been.called;
+        });
     });
 });
