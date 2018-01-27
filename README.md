@@ -176,6 +176,12 @@ Additional Methods
 
 `preview.getCurrentCollection()` returns the current collection if any.
 
+`preview.navigateLeft()` shows previous file in the collection.
+
+`preview.navigateRight()` shows next file in the collection.
+
+`preview.navigateToIndex(index)` shows the specified index in the current collection.
+
 `preview.getCurrentFile()` returns the current file being previewed if any. The file object structure is the same as returned by the [Box API](https://developer.box.com/reference#files).
 
 `preview.getCurrentViewer()` returns the current viewer instance. May be undefined if the viewer isn't ready yet and waiting on conversion to happen.
