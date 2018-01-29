@@ -127,8 +127,8 @@ describe('lib/viewers/media/Settings', () => {
             };
             settings.setMenuContainerDimensions(menuEl);
 
-            // Adds 18px to the offsetHeight of sum of child element's heights
-            expect(settings.settingsEl.style.height).to.equal('36px');
+            // Adds 18px (padding) + 1px (extra zoom height) to the offsetHeight of sum of child element's heights
+            expect(settings.settingsEl.style.height).to.equal(18 + 18 + 1 + 'px');
         });
     });
 
