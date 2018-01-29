@@ -161,6 +161,10 @@ $header-height: 48px;
     visibility: hidden;
 }
 
+.bp-notifications-wrapper {
+    position: absolute; // Override _boxui.scss because Preview cannot assume taking up the full viewport
+}
+
 .bp-has-header .bp-notifications-wrapper {
     top: 48px;
 }
