@@ -1,10 +1,12 @@
 import Uri from 'jsuri';
 import 'whatwg-fetch';
+import { DEFAULT_DOWNLOAD_HOST_PREFIX } from './constants';
 
 const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
 const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
 const CLIENT_NAME_KEY = 'box_client_name';
 const CLIENT_VERSION_KEY = 'box_client_version';
+const ONE_WEEK_IN_DAYS = 7;
 /* eslint-disable no-undef */
 const CLIENT_NAME = __NAME__;
 const CLIENT_VERSION = __VERSION__;
@@ -112,6 +114,65 @@ function createDownloadIframe() {
 }
 
 /**
+ * Checks if the url is a download host, but not the default download host.
+ *
+ * @public
+ * @param {string} url - The URL to check
+ * @return {boolean} - HTTP response
+ */
+export function isNonDefaultDownloadHost(url) {
+    return !url.startsWith(DEFAULT_DOWNLOAD_HOST_PREFIX) && url.match(/^https:\/\/dl\d+\./);
+}
+
+/**
+ * Replaces the hostname of a download URL with the default hostname, https://dl.
+ *
+ * @public
+ * @param {string} url - The URL to modify
+ * @return {string} - The updated download URL
+ */
+export function replaceDownloadHostWithDefault(url) {
+    return url.replace(/^https:\/\/dl\d+\./, DEFAULT_DOWNLOAD_HOST_PREFIX);
+}
+
+/**
+ * Sets local storage to use the default download host
+ *
+ * @public
+ * @return {void}
+ */
+export function setDownloadHostFallback() {
+    sessionStorage.setItem('download_host_fallback', 'true');
+}
+
+/**
+ * Determines if the degraded download notification should be shown.
+ *
+ * @public
+ * @return {boolean} Should the notification be shown
+ */
+export function shouldShowDegradedDownloadNotification() {
+    return (
+        !document.cookie.match('show_degraded_download_notification=true') &&
+        sessionStorage.getItem('download_host_fallback') === 'true'
+    );
+}
+
+/**
+ * Sets a cookie to show the degraded download notification that expires after 1 week.
+ *
+ * @public
+ * @return {void}
+ */
+export function setDownloadNotificationCookie() {
+    const currentDate = new Date();
+    // Add one week for cookie expiry
+    currentDate.setDate(currentDate.getDate() + ONE_WEEK_IN_DAYS);
+
+    document.cookie = `show_degraded_download_notification=true;expires=${currentDate.toUTCString()};secure`;
+}
+
+/**
  * HTTP GETs a URL
  * Usage:
  *     get(url, headers, type)
@@ -158,7 +219,20 @@ export function get(url, ...rest) {
 
     return fetch(url, { headers })
         .then(checkStatus)
-        .then(parser);
+        .then(parser)
+        .catch((e) => {
+            // Make sure we are making a dl call
+            if (isNonDefaultDownloadHost(url)) {
+                // Retry download with default host.
+                setDownloadHostFallback();
+                return get(url, ...rest);
+            }
+
+            /* eslint-disable no-console */
+            console.error(e);
+            /* eslint-enable no-console */
+            return Promise.reject();
+        });
 }
 
 /**
@@ -397,6 +471,12 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
  * @return {string} Content url
  */
 export function createContentUrl(template, asset) {
+    if (sessionStorage.getItem('download_host_fallback') === 'true') {
+        /* eslint-disable no-param-reassign */
+        template = replaceDownloadHostWithDefault(template);
+        /* eslint-enable no-param-reassign */
+    }
+
     return template.replace('{+asset_path}', asset || '');
 }
 

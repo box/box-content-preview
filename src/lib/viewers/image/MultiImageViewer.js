@@ -367,6 +367,20 @@ class MultiImageViewer extends ImageBaseViewer {
         this.scrollCheckHandler = null;
         this.previousScrollTop = this.wrapperEl.scrollTop;
     }
+
+    /**
+     * Handles image element loading errors.
+     *
+     * @override
+     */
+    errorHandler(err) {
+        try {
+            // Assume that all pages will download from the same host, so we only need to check the first page
+            this.handleDownloadError(err, this.singleImageEls[0]);
+        } catch (error) {
+            super.errorHandler();
+        }
+    }
 }
 
 export default MultiImageViewer;

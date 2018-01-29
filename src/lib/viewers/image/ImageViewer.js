@@ -52,12 +52,13 @@ class ImageViewer extends ImageBaseViewer {
 
         const { representation, viewer } = this.options;
         const template = representation.content.url_template;
+        const downloadURL = this.createContentUrlWithAuthParams(template, viewer.ASSET);
 
         this.bindDOMListeners();
         return this.getRepStatus()
             .getPromise()
             .then(() => {
-                this.imageEl.src = this.createContentUrlWithAuthParams(template, viewer.ASSET);
+                this.imageEl.src = downloadURL;
             })
             .catch(this.handleAssetError);
     }
@@ -403,6 +404,19 @@ class ImageViewer extends ImageBaseViewer {
             scale: this.scale,
             rotationAngle: this.rotationAngle
         });
+    }
+
+    /**
+     * Handles image element loading errors.
+     *
+     * @override
+     */
+    errorHandler(err) {
+        try {
+            this.handleDownloadError(err, this.imageEl.src);
+        } catch (error) {
+            super.errorHandler(error);
+        }
     }
 }
 
