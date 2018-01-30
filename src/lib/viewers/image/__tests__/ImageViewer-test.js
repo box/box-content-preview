@@ -444,6 +444,12 @@ describe('lib/viewers/image/ImageViewer', () => {
             stubs.listeners = image.imageEl.addEventListener;
         });
 
+        it('should bind error and load listeners', () => {
+            image.bindDOMListeners();
+            expect(stubs.listeners).to.have.been.calledWith('load', image.finishLoading);
+            expect(stubs.listeners).to.have.been.calledWith('error', image.handleImageDownloadError);
+        });
+
         it('should bind all mobile listeners', () => {
             sandbox.stub(Browser, 'isIOS').returns(true);
             image.bindDOMListeners();
@@ -462,6 +468,7 @@ describe('lib/viewers/image/ImageViewer', () => {
         it('should unbind all default image listeners', () => {
             image.unbindDOMListeners();
             expect(stubs.listeners).to.have.been.calledWith('load', image.finishLoading);
+            expect(stubs.listeners).to.have.been.calledWith('error', image.handleImageDownloadError);
         });
 
         it('should unbind all mobile listeners', () => {

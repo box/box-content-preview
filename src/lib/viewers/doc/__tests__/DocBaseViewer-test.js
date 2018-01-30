@@ -855,6 +855,49 @@ describe('src/lib/viewers/doc/DocBaseViewer', () => {
                 expect(stubs.pdfViewer.linkService.setDocument).to.be.called;
             });
         });
+
+        it('should handle any download error', () => {
+            stubs.handleDownloadError = sandbox.stub(docBase, 'handleDownloadError');
+            const doc = {
+                url: 'url'
+            };
+    
+            docBase.options.location = {
+                locale: 'en-US'
+            };
+    
+            const getDocumentStub = sandbox.stub(PDFJS, 'getDocument').returns(Promise.reject(doc));
+
+            return docBase.initViewer('url').catch(() => {
+                expect(stubs.handleDownloadError).to.be.called;
+            });
+        });
+    });
+
+    describe('handleDownloadError()', () => {
+        beforeEach(() => {
+            sandbox.stub(docBase, 'triggerError');
+        });
+
+        it('should do nothing if the error is handled', () => {
+            Object.defineProperty(Object.getPrototypeOf(DocBaseViewer.prototype), 'handleDownloadError', {
+                value: sandbox.stub().returns(true)
+            });
+
+            docBase.handleDownloadError('error', 'url');
+
+            expect(docBase.triggerError).to.not.be.called;
+        });
+
+        it('should trigger an error if the error is not handled', () => {
+            Object.defineProperty(Object.getPrototypeOf(DocBaseViewer.prototype), 'handleDownloadError', {
+                value: sandbox.stub().returns(false)
+            });
+
+            docBase.handleDownloadError('error', 'url');
+
+            expect(docBase.triggerError).to.be.called;
+        });
     });
 
     describe('resize()', () => {

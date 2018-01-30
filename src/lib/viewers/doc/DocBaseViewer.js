@@ -550,19 +550,21 @@ class DocBaseViewer extends BaseViewer {
      */
     handleDownloadError(err, pdfUrl) {
         const errorHandled = super.handleDownloadError(err, pdfUrl);
-        if (!errorHandled) {
-            /* eslint-disable no-console */
-            console.error(err);
-            /* eslint-enable no-console */
-
-            // Display a generic error message but log the real one
-            const error = err;
-            if (err instanceof Error) {
-                error.displayMessage = __('error_document');
-            }
-
-            this.triggerError(error);
+        if (errorHandled) {
+            return;
         }
+
+        /* eslint-disable no-console */
+        console.error(err);
+        /* eslint-enable no-console */
+
+        // Display a generic error message but log the real one
+        const error = err;
+        if (err instanceof Error) {
+            error.displayMessage = __('error_document');
+        }
+
+        this.triggerError(error);
     }
 
     /**

@@ -21,6 +21,7 @@ class MultiImageViewer extends ImageBaseViewer {
         this.setPage = this.setPage.bind(this);
         this.scrollHandler = this.scrollHandler.bind(this);
         this.handlePageChangeFromScroll = this.handlePageChangeFromScroll.bind(this);
+        this.handleMultiImageDownloadError = this.handleMultiImageDownloadError.bind(this);
     }
 
     /**
@@ -243,6 +244,17 @@ class MultiImageViewer extends ImageBaseViewer {
     }
 
     /**
+     * Passes the error and download URL to the download error handler.
+     *
+     * @param {Error} err - Download error
+     * @return {void}
+     */
+    handleMultiImageDownloadError(err) {
+        // Since we're using the src to get the hostname, we can always use the src of the first page
+        this.handleMultiImageDownloadError(err, this.singleImageEls[0]);
+    }
+
+    /**
      * Binds error and load event listeners for an image element.
      *
      * @param {number} index - Index of image to bind listeners to
@@ -253,9 +265,7 @@ class MultiImageViewer extends ImageBaseViewer {
             this.singleImageEls[index].addEventListener('load', this.finishLoading);
         }
 
-        this.singleImageEls[index].addEventListener('error', (err) =>
-            this.handleDownloadError(err, this.singleImageEls[0])
-        );
+        this.singleImageEls[index].addEventListener('error', this.handleMultiImageDownloadError);
     }
 
     /**
@@ -269,9 +279,7 @@ class MultiImageViewer extends ImageBaseViewer {
             this.singleImageEls[index].removeEventListener('load', this.finishLoading);
         }
 
-        this.singleImageEls[index].removeEventListener('error', (err) => {
-            this.handleDownloadError(err, this.singleImageEls[0].src);
-        });
+        this.singleImageEls[index].removeEventListener('error', this.handleMultiImageDownloadError);
     }
 
     /**

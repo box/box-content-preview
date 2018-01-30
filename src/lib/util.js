@@ -1,12 +1,15 @@
 import Uri from 'jsuri';
 import 'whatwg-fetch';
-import { DEFAULT_DOWNLOAD_HOST_PREFIX } from './constants';
 
 const HEADER_CLIENT_NAME = 'X-Box-Client-Name';
 const HEADER_CLIENT_VERSION = 'X-Box-Client-Version';
 const CLIENT_NAME_KEY = 'box_client_name';
 const CLIENT_VERSION_KEY = 'box_client_version';
-const ONE_WEEK_IN_DAYS = 7;
+
+const DEFAULT_DOWNLOAD_HOST_PREFIX = 'https://dl.';
+const DOWNLOAD_NOTIFICATION_SHOWN_KEY = 'download_host_notification_shown';
+const DOWNLOAD_HOST_FALLBACK_KEY = 'download_host_fallback';
+
 /* eslint-disable no-undef */
 const CLIENT_NAME = __NAME__;
 const CLIENT_VERSION = __VERSION__;
@@ -136,40 +139,38 @@ export function replaceDownloadHostWithDefault(url) {
 }
 
 /**
- * Sets local storage to use the default download host
+ * Sets session storage to use the default download host
  *
  * @public
  * @return {void}
  */
 export function setDownloadHostFallback() {
-    sessionStorage.setItem('download_host_fallback', 'true');
+    sessionStorage.setItem(DOWNLOAD_HOST_FALLBACK_KEY, 'true');
+}
+
+/**
+ * Stores the host in an array via localstorage so that we don't show a notification for it again
+ *
+ * @public
+ * @param {string} downloadHost - Download URL host
+ * @return {void}
+ */
+export function setDownloadHostNotificationShown(downloadHost) {
+    const shownHostsArr = JSON.parse(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)) || [];
+    shownHostsArr.push(downloadHost);
+    localStorage.setItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY, JSON.stringify(shownHostsArr));
 }
 
 /**
  * Determines if the degraded download notification should be shown.
  *
  * @public
+ * @param {string} downloadHost - Download URL host
  * @return {boolean} Should the notification be shown
  */
-export function shouldShowDegradedDownloadNotification() {
-    return (
-        !document.cookie.match('show_degraded_download_notification=true') &&
-        sessionStorage.getItem('download_host_fallback') === 'true'
-    );
-}
-
-/**
- * Sets a cookie to show the degraded download notification that expires after 1 week.
- *
- * @public
- * @return {void}
- */
-export function setDownloadNotificationCookie() {
-    const currentDate = new Date();
-    // Add one week for cookie expiry
-    currentDate.setDate(currentDate.getDate() + ONE_WEEK_IN_DAYS);
-
-    document.cookie = `show_degraded_download_notification=true;expires=${currentDate.toUTCString()};secure`;
+export function shouldShowDegradedDownloadNotification(downloadHost) {
+    const shownHostsArr = JSON.parse(localStorage.getItem(DOWNLOAD_NOTIFICATION_SHOWN_KEY)) || [];
+    return sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY) === 'true' && !shownHostsArr.includes(downloadHost);
 }
 
 /**
@@ -471,7 +472,7 @@ export function appendAuthParams(url, token = '', sharedLink = '', password = ''
  * @return {string} Content url
  */
 export function createContentUrl(template, asset) {
-    if (sessionStorage.getItem('download_host_fallback') === 'true') {
+    if (sessionStorage.getItem(DOWNLOAD_HOST_FALLBACK_KEY) === 'true') {
         /* eslint-disable no-param-reassign */
         template = replaceDownloadHostWithDefault(template);
         /* eslint-enable no-param-reassign */

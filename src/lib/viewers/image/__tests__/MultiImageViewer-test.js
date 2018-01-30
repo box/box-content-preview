@@ -343,7 +343,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
     });
 
-    describe('bindPageControlListeners', () => {
+    describe('bindPageControlListeners()', () => {
         beforeEach(() => {
             multiImage.currentPageNumber = 1;
             multiImage.pagesCount = 10;
@@ -373,8 +373,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
 
     });
 
-
-    describe('bindImageListeners', () => {
+    describe('bindImageListeners()', () => {
         beforeEach(() => {
             multiImage.singleImageEls = [
                 {
@@ -397,7 +396,7 @@ describe('lib/viewers/image/MultiImageViewer', () => {
         });
     });
 
-    describe('unbindImageListeners', () => {
+    describe('unbindImageListeners()', () => {
         beforeEach(() => {
             multiImage.singleImageEls = [
                 {

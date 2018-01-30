@@ -530,6 +530,32 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         });
     });
 
+    describe('handleDownloadError()', () => {
+        beforeEach(() => {
+            sandbox.stub(imageBase, 'triggerError');
+        });
+
+        it('should do nothing if the error is handled', () => {
+            Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'handleDownloadError', {
+                value: sandbox.stub().returns(true)
+            });
+
+            imageBase.handleDownloadError('error', 'url');
+
+            expect(imageBase.triggerError).to.not.be.called;
+        });
+
+        it('should trigger an error if the error is not handled', () => {
+            Object.defineProperty(Object.getPrototypeOf(ImageBaseViewer.prototype), 'handleDownloadError', {
+                value: sandbox.stub().returns(false)
+            });
+
+            imageBase.handleDownloadError('error', 'url');
+
+            expect(imageBase.triggerError).to.be.called;
+        });
+    });
+
     describe('finishLoading()', () => {
         beforeEach(() => {
             imageBase.loaded = false;

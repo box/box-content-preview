@@ -14,9 +14,10 @@ import {
     loadScripts,
     prefetchAssets,
     setDownloadHostFallback,
-    setDownloadNotificationCookie,
+    setDownloadHostNotificationShown,
     shouldShowDegradedDownloadNotification,
-    createAssetUrlCreator
+    createAssetUrlCreator,
+    replacePlaceholders
 } from '../util';
 import Browser from '../Browser';
 import {
@@ -127,11 +128,6 @@ class BaseViewer extends EventEmitter {
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
         this.annotationsLoadHandler = this.annotationsLoadHandler.bind(this);
         this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
-
-        this.options.representation.content.url_template = this.options.representation.content.url_template.replace(
-            'https://dl.',
-            'https://dl88.'
-        );
     }
 
     /**
@@ -417,13 +413,17 @@ class BaseViewer extends EventEmitter {
      * @return {void}
      */
     viewerLoadHandler(event) {
-        if (shouldShowDegradedDownloadNotification()) {
+        const contentTemplate = document.createElement('a');
+        contentTemplate.href = this.options.representation.content.url_template;
+        const contentHost = contentTemplate.hostname;
+        if (shouldShowDegradedDownloadNotification(contentHost)) {
             this.previewUI.notification.show(
-                __('notification_degraded_preview'),
+                replacePlaceholders(__('notification_degraded_preview'), [contentHost]),
                 __('notification_button_default_text'),
                 true
             );
-            setDownloadNotificationCookie();
+
+            setDownloadHostNotificationShown(contentHost);
         }
 
         if (event && event.scale) {
