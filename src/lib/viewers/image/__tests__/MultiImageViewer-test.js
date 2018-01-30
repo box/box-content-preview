@@ -18,7 +18,6 @@ let clock;
 let containerEl;
 
 describe('lib/viewers/image/MultiImageViewer', () => {
-    stubs.errorHandler = MultiImageViewer.prototype.errorHandler;
     const setupFunc = BaseViewer.prototype.setup;
     const sizeFunc = ImageBaseViewer.prototype.setOriginalImageSize;
 

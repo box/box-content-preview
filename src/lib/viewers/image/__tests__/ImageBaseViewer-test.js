@@ -530,29 +530,12 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
         });
     });
 
-    describe('errorHandler()', () => {
-        beforeEach(() => {
-            stubs.emit = sandbox.stub(imageBase, 'emit');
-        });
-
-        it('should console log error and emit with generic display error message', () => {
-            const err = new Error('blah');
-            sandbox.mock(window.console).expects('error').withArgs(err);
-
-            imageBase.errorHandler(err);
-
-            err.displayMessage = 'We\'re sorry, the preview didn\'t load. Please refresh the page.';
-            expect(stubs.emit).to.have.been.calledWith('error', err);
-        });
-    });
-
     describe('finishLoading()', () => {
         beforeEach(() => {
             imageBase.loaded = false;
             stubs.zoom = sandbox.stub(imageBase, 'zoom');
             stubs.loadUI = sandbox.stub(imageBase, 'loadUI');
             stubs.setOriginalImageSize = sandbox.stub(imageBase, 'setOriginalImageSize');
-            stubs.errorHandler = sandbox.stub(imageBase, 'errorHandler');
         });
 
         it('should do nothing if already destroyed', () => {
@@ -565,12 +548,10 @@ describe('lib/viewers/image/ImageBaseViewer', () => {
             expect(stubs.zoom).to.not.have.been.called;
             expect(stubs.setOriginalImageSize).to.not.have.been.called;
             expect(stubs.loadUI).to.not.have.been.called;
-            expect(stubs.errorHandler).to.not.have.been.called;
         });
 
         it('should load UI if not destroyed', (done) => {
             imageBase.on(VIEWER_EVENT.load, () => {
-                expect(stubs.errorHandler).to.not.have.been.called;
                 expect(imageBase.loaded).to.be.true;
                 expect(stubs.zoom).to.have.been.called;
                 expect(stubs.loadUI).to.have.been.called;

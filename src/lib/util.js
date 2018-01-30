@@ -231,7 +231,7 @@ export function get(url, ...rest) {
             /* eslint-disable no-console */
             console.error(e);
             /* eslint-enable no-console */
-            return Promise.reject();
+            return Promise.reject(e);
         });
 }
 

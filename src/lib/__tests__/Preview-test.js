@@ -935,6 +935,7 @@ describe('lib/Preview', () => {
             previewUIMock.expects('showLoadingIndicator');
             previewUIMock.expects('startProgressBar');
             previewUIMock.expects('showNavigation');
+            previewUIMock.expects('setupNotification');
 
             preview.setupUI();
         })
@@ -1720,11 +1721,6 @@ describe('lib/Preview', () => {
         it('should hide the loading indicator', () => {
             preview.finishLoading();
             expect(stubs.hideLoadingIndicator).to.be.called;
-        });
-
-        it('should set up the notification', () => {
-            preview.finishLoading();
-            expect(stubs.setupNotification).to.be.called;
         });
 
         it('should prefetch next files', () => {
