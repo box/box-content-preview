@@ -121,7 +121,7 @@ function createDownloadIframe() {
  * @return {boolean} - HTTP response
  */
 export function isNonDefaultDownloadHost(url) {
-    return !url.startsWith(DEFAULT_DOWNLOAD_HOST_PREFIX) && url.match(/^https:\/\/dl\d+\./);
+    return !url.startsWith(DEFAULT_DOWNLOAD_HOST_PREFIX) && !!url.match(/^https:\/\/dl\d+\./);
 }
 
 /**

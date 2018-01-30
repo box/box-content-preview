@@ -10,6 +10,56 @@ describe('lib/util', () => {
         sandbox.verifyAndRestore();
     });
 
+    describe('isNonDefaultDownloadHost()', () => {
+        it('should be true if the url does not start with the default host prefix and is a dl host', () => {
+            let url = 'https://dl3.boxcloud.com/foo';
+            let result = util.isNonDefaultDownloadHost(url)
+            expect(result).to.be.true;
+
+            url = 'https://dl.boxcloud.com/foo';
+            expect(util.isNonDefaultDownloadHost(url)).to.be.false;
+
+            url = 'https://www.google.com';
+            expect(util.isNonDefaultDownloadHost(url)).to.be.false;
+        });
+    });
+
+    describe('replaceDownloadHostWithDefault()', () => {
+        it('should return a download URL with the default host', () => {
+            let url = 'https://dl3.boxcloud.com/foo';
+            const result = util.replaceDownloadHostWithDefault(url);
+
+            expect(result).to.equal('https://dl.boxcloud.com/foo');
+        });
+    });
+
+    describe('shouldShowDegradedDownloadNotification()', () => {
+
+        after(() => {
+            sessionStorage.setItem('download_host_fallback', 'false');
+
+            let date = new Date();
+            date.setDate(date.getDate() - 1);
+
+            document.cookie = `show_degraded_download_notification=true;expires=${date.toUTCString()};secure`
+        });
+
+        it('should return true if we do not have a notification cookie and our session indicates we are falling back to the default host', () => {
+            let result = util.shouldShowDegradedDownloadNotification();
+            expect(result).to.be.false;
+
+            sessionStorage.setItem('download_host_fallback', 'true');
+            result = util.shouldShowDegradedDownloadNotification();
+            expect(result).to.be.true;
+        
+            document.cookie = 'show_degraded_download_notification=true'
+            result = util.shouldShowDegradedDownloadNotification();
+            expect(result).to.be.false;
+
+        });
+    });
+
+
     describe('get()', () => {
         const url = 'foo?bar=bum';
 

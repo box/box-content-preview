@@ -127,6 +127,11 @@ class BaseViewer extends EventEmitter {
         this.handleAnnotatorEvents = this.handleAnnotatorEvents.bind(this);
         this.annotationsLoadHandler = this.annotationsLoadHandler.bind(this);
         this.viewerLoadHandler = this.viewerLoadHandler.bind(this);
+
+        this.options.representation.content.url_template = this.options.representation.content.url_template.replace(
+            'https://dl.',
+            'https://dl88.'
+        );
     }
 
     /**
