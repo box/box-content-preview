@@ -50,6 +50,12 @@ reset_to_master() {
         git remote add github-upstream git@github.com:box/box-content-preview.git || return 1
     fi
 
+    # Fetch latest code with tags
+    git fetch github-upstream || return 1;
+
+    # Update to latest code on GitHub master
+    git checkout master || return 1
+
     # The master branch should not have any commits
     if [[ $(git log --oneline ...github-upstream/master) != "" ]] ; then
         echo "----------------------------------------------------"
@@ -57,12 +63,6 @@ reset_to_master() {
         echo "----------------------------------------------------"
         exit 1
     fi
-
-    # Update to latest code on GitHub master
-    git checkout master || return 1
-
-    # Fetch latest code with tags
-    git fetch github-upstream || return 1;
 
     # Reset to latest code and clear unstashed changes
     git reset --hard github-upstream/master || return 1
