@@ -1164,9 +1164,9 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
-box-annotations@^0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-0.10.0.tgz#9d2de686d8b1afda94a2f594be4d8e28875ee697"
+box-annotations@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/box-annotations/-/box-annotations-0.11.0.tgz#776304de58d0cab6661373d028e6ad35e4c0f298"
   dependencies:
     box-react-ui "^21.0.3"
     rangy "^1.3.0"
