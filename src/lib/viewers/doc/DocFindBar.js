@@ -40,6 +40,7 @@ class DocFindBar extends EventEmitter {
         this.barKeyDownHandler = this.barKeyDownHandler.bind(this);
         this.findNextHandler = this.findNextHandler.bind(this);
         this.findPreviousHandler = this.findPreviousHandler.bind(this);
+        this.close = this.close.bind(this);
 
         // overriding some find controller methods to update match count
         this.findController.updateUIState = this.updateUIState.bind(this);
