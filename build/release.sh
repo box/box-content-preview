@@ -101,10 +101,10 @@ update_readme() {
 
 push_to_github() {
     # Add new files
-    git commit -am "Release: $VERSION"
+    git commit -am "Release: $VERSION" || return 1
 
     # Force update tag after updating files
-    git tag -a v$VERSION -m $VERSION
+    git tag -a v$VERSION -m $VERSION || return 1
 
     echo "----------------------------------------------------------------------"
     echo "Master version is now at" $VERSION
