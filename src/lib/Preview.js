@@ -19,7 +19,8 @@ import {
     getHeaders,
     findScriptLocation,
     appendQueryParams,
-    replacePlaceholders
+    replacePlaceholders,
+    stripAuthFromString
 } from './util';
 import {
     getURL,
@@ -1253,12 +1254,17 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     logPreviewError(error) {
-        const errorMessage = {
-            error,
+        const err = error;
+        // Make sure to strip auth
+        err.message = stripAuthFromString(error.message || '');
+        err.displayMessage = stripAuthFromString(error.displayMessage || '');
+
+        const errorLog = {
+            error: err,
             data: error.data || ''
         };
 
-        this.emit('preview_error', errorMessage);
+        this.emit('preview_error', errorLog);
     }
 
     /**
