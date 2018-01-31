@@ -166,7 +166,12 @@ class DashViewer extends VideoBaseViewer {
             }
         });
         this.player.getNetworkingEngine().registerRequestFilter(this.requestFilter);
-        this.player.load(this.mediaUrl);
+        return this.player.load(this.mediaUrl).catch((error) => {
+            // The error is of a different format than the shakaErrorHandler expects
+            this.shakaErrorHandler({
+                detail: error
+            });
+        });
     }
 
     /**
