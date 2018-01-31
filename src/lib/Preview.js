@@ -44,7 +44,7 @@ import {
     X_REP_HINT_VIDEO_DASH,
     X_REP_HINT_VIDEO_MP4
 } from './constants';
-import { VIEWER_EVENT } from './events';
+import { VIEWER_EVENT, ERROR_CODE } from './events';
 import './Preview.scss';
 
 const DEFAULT_DISABLED_VIEWERS = ['Office']; // viewers disabled by default
@@ -329,6 +329,10 @@ class Preview extends EventEmitter {
                 /* eslint-disable no-console */
                 console.error('[Preview SDK] Tried to cache invalid file: ', file);
                 /* eslint-enable no-console */
+
+                const err = new Error(ERROR_CODE.invalidCacheAttempt);
+                err.data = file;
+                this.logPreviewError(err);
             }
         });
     }
@@ -531,6 +535,11 @@ class Preview extends EventEmitter {
             /* eslint-disable no-console */
             console.error(`Error prefetching file ID ${fileId} - ${err}`);
             /* eslint-enable no-console */
+
+            const error = new Error(ERROR_CODE.prefetchFileId);
+            error.data = fileId;
+            this.logPreviewError(error);
+
             return;
         }
 
@@ -992,6 +1001,9 @@ class Preview extends EventEmitter {
             case VIEWER_EVENT.mediaEndAutoplay:
                 this.navigateRight();
                 break;
+            case VIEWER_EVENT.error:
+                this.logPreviewError(data.data);
+                break;
             default:
                 // This includes 'notification', 'preload' and others
                 this.emit(data.event, data.data);
@@ -1152,12 +1164,16 @@ class Preview extends EventEmitter {
 
         // Check if hit the retry limit
         if (this.retryCount > RETRY_COUNT) {
+            let errorCode = ERROR_CODE.retriesExceeded;
             let errorMessage = __('error_refresh');
             if (err.response && err.response.status === 429) {
+                errorCode = ERROR_CODE.rateLimit;
                 errorMessage = __('error_rate_limit');
             }
 
-            this.triggerError(new Error(errorMessage));
+            const error = new Error(errorCode);
+            error.displayMessage = errorMessage;
+            this.triggerError(error);
             return;
         }
 
@@ -1202,6 +1218,9 @@ class Preview extends EventEmitter {
      * @return {void}
      */
     triggerError(err) {
+        // Always log preview errors
+        this.logPreviewError(err);
+
         // If preview is closed don't do anything
         if (!this.open) {
             return;
@@ -1224,6 +1243,22 @@ class Preview extends EventEmitter {
 
         // Load the error viewer
         this.viewer.load(err);
+    }
+
+    /**
+     * Message, to any listeners of Preview, that an error has occurred.
+     *
+     * @private
+     * @param {Error} error - The error that occurred.
+     * @return {void}
+     */
+    logPreviewError(error) {
+        const errorMessage = {
+            error,
+            data: error.data || ''
+        };
+
+        this.emit('preview_error', errorMessage);
     }
 
     /**
@@ -1303,6 +1338,9 @@ class Preview extends EventEmitter {
                             /* eslint-disable no-console */
                             console.error(`Error prefetching file ID ${id} - ${err}`);
                             /* eslint-enable no-console */
+                            const error = new Error(ERROR_CODE.prefetchFileId);
+                            error.data = id;
+                            this.logPreviewError(error);
                         });
                 });
             })
@@ -1310,6 +1348,9 @@ class Preview extends EventEmitter {
                 /* eslint-disable no-console */
                 console.error('Error prefetching files');
                 /* eslint-enable no-console */
+                const error = new Error(ERROR_CODE.prefetchFileId);
+                error.data = filesToPrefetch;
+                this.logPreviewError(error);
             });
     }
 

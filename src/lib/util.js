@@ -837,3 +837,14 @@ export function getClosestPageToPinch(x, y, visiblePages) {
 
     return closestPage;
 }
+
+/**
+ * Strip out auth related fields from a string.
+ *
+ * @param {string} string - A string containing any auth related fields.
+ * @return {string} A string with [FILTERED] replacing any auth related fields.
+ */
+export function stripAuthFromString(string) {
+    // Strip out "access_token"
+    return string.replace(/access_token=([^&]*)/, 'access_token=[FILTERED]');
+}
