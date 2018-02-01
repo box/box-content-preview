@@ -25,7 +25,6 @@ const MEDIA_QUALITY_AUTO = 'auto';
 const SETTINGS_MENU_PADDING = 18;
 const SETTINGS_MENU_PADDING_SCROLL = 32;
 const SETTINGS_MENU_MAX_HEIGHT = 210;
-const EXTRA_ZOOM_PADDING = 1;
 
 const SETTINGS_TEMPLATE = `<div class="bp-media-settings">
     <div class="bp-media-settings-menu-main bp-media-settings-menu" role="menu">
@@ -296,16 +295,17 @@ class Settings extends EventEmitter {
      * @return {void}
      */
     setMenuContainerDimensions(menu) {
-        // When the browser is zoomed in, sometimes the height can be a floating point value rather
-        // than an integer. OffsetHeight rounds to the nearest integer, so if it rounds down, there
-        // will be a vertical scrollbar. To account for this, add in some extra padding.
-        const paddedHeight = menu.offsetHeight + SETTINGS_MENU_PADDING + EXTRA_ZOOM_PADDING;
+        // Use getBoundingClientRect because when browsers are zoomed, the height/width
+        // Can be a fractional value, which gets stripped off with offsetHeight/offsetWidth
+        const { width, height } = menu.getBoundingClientRect();
+
+        const paddedHeight = height + SETTINGS_MENU_PADDING;
         this.settingsEl.style.height = `${paddedHeight}px`;
 
         // If the menu grows tall enough to require scrolling, take into account scroll bar width.
         const scrollPadding =
             paddedHeight >= SETTINGS_MENU_MAX_HEIGHT ? SETTINGS_MENU_PADDING_SCROLL : SETTINGS_MENU_PADDING;
-        this.settingsEl.style.width = `${menu.offsetWidth + scrollPadding}px`;
+        this.settingsEl.style.width = `${width + scrollPadding}px`;
     }
 
     /**
