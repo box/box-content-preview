@@ -50,10 +50,8 @@ reset_to_master() {
         git remote add github-upstream git@github.com:box/box-content-preview.git || return 1
     fi
 
-    # Fetch latest code with tags
+    # Fetch latest code
     git fetch github-upstream || return 1;
-
-    # Update to latest code on GitHub master
     git checkout master || return 1
 
     # The master branch should not have any commits
