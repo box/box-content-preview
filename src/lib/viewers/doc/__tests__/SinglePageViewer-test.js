@@ -44,7 +44,7 @@ describe('lib/viewers/doc/SinglePageViewer', () => {
         stubs = {};
     });
 
-    describe('getPdfViewer()', () => {
+    describe('initPdfViewer()', () => {
         const pdfViewer = {
             linkService: new PDFJS.PDFLinkService(),
             setDocument: sandbox.stub(),
@@ -56,7 +56,7 @@ describe('lib/viewers/doc/SinglePageViewer', () => {
         });
 
         it('should return the default pdfViewer', () => {
-            const result = doc.getPdfViewer();
+            const result = doc.initPdfViewer();
             expect(stubs.pdfViewerStub).to.be.calledWith({
                 container: sinon.match.any,
                 linkService: sinon.match.any,

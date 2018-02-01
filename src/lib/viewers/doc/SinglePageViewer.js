@@ -6,13 +6,13 @@ class SinglePageViewer extends DocumentViewer {
     //--------------------------------------------------------------------------
 
     /**
-     * Get pdf.js viewer.
+     * Initialize pdf.js viewer.
      *
      * @protected
      * @override
      * @return {PDFJS.PDFViewer} PDF viewer type
      */
-    getPdfViewer() {
+    initPdfViewer() {
         return new PDFJS.PDFSinglePageViewer({
             container: this.docEl,
             linkService: new PDFJS.PDFLinkService(),

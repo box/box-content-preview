@@ -497,7 +497,7 @@ class DocBaseViewer extends BaseViewer {
         this.bindDOMListeners();
 
         // Initialize pdf.js in container
-        this.pdfViewer = this.getPdfViewer();
+        this.pdfViewer = this.initPdfViewer();
 
         // Use chunk size set in viewer options if available
         let rangeChunkSize = this.getViewerOption('rangeChunkSize');
@@ -554,13 +554,13 @@ class DocBaseViewer extends BaseViewer {
     }
 
     /**
-     * Get pdf.js viewer.
+     * Initialize pdf.js viewer.
      *
      * @protected
      * @override
      * @return {PDFJS.PDFViewer} PDF viewer type
      */
-    getPdfViewer() {
+    initPdfViewer() {
         return new PDFJS.PDFViewer({
             container: this.docEl,
             linkService: new PDFJS.PDFLinkService(),

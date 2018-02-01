@@ -23,16 +23,16 @@ const VIEWERS = [
         REP: 'pdf',
         EXT: DOCUMENT_EXTENSIONS
     },
-    {
-        NAME: 'SinglePage',
-        CONSTRUCTOR: SinglePageViewer,
-        REP: 'pdf',
-        EXT: DOCUMENT_EXTENSIONS
-    },
     // Allows other document types to use the presentation viewer when the document viewer is disabled.
     {
         NAME: 'Presentation',
         CONSTRUCTOR: PresentationViewer,
+        REP: 'pdf',
+        EXT: DOCUMENT_EXTENSIONS
+    },
+    {
+        NAME: 'SinglePage',
+        CONSTRUCTOR: SinglePageViewer,
         REP: 'pdf',
         EXT: DOCUMENT_EXTENSIONS
     },
@@ -42,17 +42,17 @@ const VIEWERS = [
         REP: ORIGINAL_REP_NAME,
         EXT: ['pdf', 'lcdpdf']
     },
-    {
-        NAME: 'SinglePage',
-        CONSTRUCTOR: SinglePageViewer,
-        REP: ORIGINAL_REP_NAME,
-        EXT: ['pdf', 'lcdpdf']
-    },
     //  Allows PDFs and lcpdf files that only have an original rep
     // to use the presentation viewer when the document viewer is disabled.
     {
         NAME: 'Presentation',
         CONSTRUCTOR: PresentationViewer,
+        REP: ORIGINAL_REP_NAME,
+        EXT: ['pdf', 'lcdpdf']
+    },
+    {
+        NAME: 'SinglePage',
+        CONSTRUCTOR: SinglePageViewer,
         REP: ORIGINAL_REP_NAME,
         EXT: ['pdf', 'lcdpdf']
     }
